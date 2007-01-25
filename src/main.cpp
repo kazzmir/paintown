@@ -87,7 +87,11 @@ void init( int gfx ){
 	cout<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
 	srand( time( NULL ) );
 	all_fonts = load_datafile( "data/fonts.dat" );
-	cout<<"Loaded fonts: "<< (all_fonts != NULL) <<endl;
+	if ( ! all_fonts ){
+		cout << "Could not load data/fonts.dat!" << endl;
+		exit( 1 );
+	}
+	cout<<"Loaded fonts " << endl;
 
 	cout<<"-- END init --"<<endl;
 
