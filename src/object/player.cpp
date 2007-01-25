@@ -1,0 +1,650 @@
+#include <iostream>
+
+#include "animation.h"
+#include "util/bitmap.h"
+#include "character.h" 
+#include "util/font.h"
+#include "factory/font_factory.h"
+#include "factory/font_render.h"
+#include "globals.h"
+#include "util/keyboard.h"
+#include "nameplacer.h"
+#include "util/load_exception.h"
+#include "object.h"
+#include "player.h"
+
+// how many ticks to wait before the key cache is cleared.
+// this can probably be user defined in the future
+const int GLOBAL_KEY_DELAY = 13;
+
+using namespace std;
+
+/*
+#define MIN_PLAYER_Z 160
+#define MAX_PLAYER_Z 232
+*/
+
+#ifndef debug
+#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
+// #define debug
+#endif
+
+Player::Player( const char * filename ) throw( LoadException ): 
+Character( filename, ALLIANCE_PLAYER ),
+acts(0){
+	
+	// if ( movements[ "grab" ] == NULL ){
+	if ( getMovement( "grab" ) == NULL ){
+		throw LoadException("No 'grab' movement");
+	}
+
+	show_life = getHealth();
+
+	int x, y;
+	NamePlacer::getPlacement( x, y, name_id );
+}
+	
+Player::Player( const Character & chr ) throw( LoadException ):
+Character( chr ),
+acts(0){
+	show_life = getHealth();
+}
+
+Player::Player( const Player & pl ) throw( LoadException ):
+Character( pl ),
+acts( 0 ){
+	show_life = getHealth();
+}
+
+void Player::fillKeyCache(){
+
+	keyboard.poll();
+
+	if ( acts++ > GLOBAL_KEY_DELAY ){
+		key_cache.clear();
+		/*
+		if ( !key_cache.empty() )
+			key_cache.pop_front();
+		*/
+		acts = 0;
+	}
+
+	if ( keyboard.keypressed() ){
+		// acts = 0;
+		vector< int > all_keys;
+		keyboard.readKeys( all_keys );
+		map< int, bool > new_last;
+		for ( vector<int>::iterator it = all_keys.begin(); it != all_keys.end(); it++ ){
+			int n = *it;
+			if ( ! last_key[ n ] ){
+				// cout<<"Last key[ "<<n<<" ] = "<<last_key[n]<<endl;
+				key_cache.push_back( n );
+				acts = 0;
+			}
+			new_last[ n ] = true;		
+			// cout<<"Read "<<n<<" Last = "<<last_key<<" Acts = "<<acts<<endl;
+			/*
+			if ( n != last_key ){
+				key_cache.push_back( n );
+				last_key = n;
+			} else {
+				if ( acts > 2 ){
+					acts = 0;
+					key_cache.clear();
+				}
+			}
+			*/
+		}
+		last_key = new_last;
+		// cout<<"Last key[ "<<83<<" ] = "<<last_key[83]<<endl;
+		// cout<<endl;
+	} else {
+		last_key.clear();
+		// last_key = -1;
+	}
+
+	while ( key_cache.size() > 16 ){
+		key_cache.pop_front();
+	}
+	// cout<<"Last key[ "<<83<<" ] = "<<last_key[83]<<endl;
+
+	#if 0
+	if ( keyboard.keypressed() ){
+
+		vector< int > all_keys;
+		keyboard.readKeys( all_keys );
+		// cout<<"Add ";
+		for ( vector<int>::iterator it = all_keys.begin(); it != all_keys.end(); it++ ){
+			int n = *it;
+			/*
+			if ( key_cache.size() >= 16 )
+				key_cache.pop_front();
+			*/
+
+			// cout<< n <<" ";
+			if ( key_cache.back() != n )
+				key_cache.push_back( n );
+		}
+		// cout<<endl;
+	} else {
+		/*
+		if ( key_cache.size() >= 16 )
+			key_cache.pop_front();
+		*/
+		if ( key_cache.back() != -99 )
+			key_cache.push_back( -99 );
+
+		/*
+		if ( key_cache.size() >= 16 ){
+			key_cache.pop_front();
+			key_cache.pop_front();
+		}
+
+		// -2345 is a very important number to someone, somewhere
+		key_cache.push_back( -2345 );
+		key_cache.push_back( -2345 );
+		key_cache.push_back( -2345 );
+		*/
+
+	}
+	#endif
+		
+
+	/*
+	if ( acts++ > 1 ){
+		if ( !key_cache.empty() )
+			key_cache.pop_front();
+		acts = 0;
+	}
+	*/
+}
+	
+void Player::draw( Bitmap * work, int rel_x ){
+
+	Character::draw( work, rel_x );
+
+	int x1, y1;
+	NamePlacer::getPlacement( x1, y1, name_id );
+	
+	if ( icon )
+		icon->draw( x1, y1, *work );
+
+	int ky = icon ? icon->getWidth() : 0;
+	if ( show_life < getHealth() )
+		show_life++;
+	else if ( show_life > getHealth() )
+		show_life--;
+	if ( show_life < 0 )
+		show_life = 0;
+	Font * player_font = FontFactory::getFont( NAME_FONT );
+	// Font * player_font = FontFactory::getFont( "bios" );
+
+	if ( player_font != NULL ){
+		// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
+		FontRender * render = FontRender::getInstance();
+		render->addMessage( player_font, (ky + x1) * 2, y1, Bitmap::makeColor(255,255,255), -1, getName() );
+		drawLifeBar( ky + x1, y1 + player_font->getHeight() / 2, show_life, work );
+		// work->printf( ky + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
+		render->addMessage( player_font, (x1 + ky + getMaxHealth() + 5) * 2, y1 + player_font->getHeight() / 2, Bitmap::makeColor(255,255,255), -1, "x %d", 3 );
+	}
+}
+
+bool Player::combo( Animation * ani ){
+	deque<int>::reverse_iterator cache_cur_key = key_cache.rbegin();
+			
+	const vector< KeyPress > & keys = ani->getKeys();
+	if ( keys.empty() )
+		return false;
+	for ( vector<KeyPress>::const_reverse_iterator k = keys.rbegin(); k != keys.rend(); k++ ){
+		if ( cache_cur_key == key_cache.rend() ){
+			return false;
+		}
+
+		const KeyPress & kp = *k;
+		bool all_pressed = false;
+		for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
+			int find_key = getKey(*cur_key);
+			if ( find_key == (*cache_cur_key) ){
+				all_pressed = true;
+			}
+		}
+		if ( !all_pressed ){
+			return false;
+		}
+
+		cache_cur_key++;
+	}
+	return true;
+	
+}
+
+int Player::getKey( int x ){
+	switch( x ){
+		case PAIN_KEY_FORWARD : {
+			if ( getFacing() == Object::FACING_LEFT ) 
+				return Keyboard::Key_LEFT;
+			else 	return Keyboard::Key_RIGHT;
+		}
+		case PAIN_KEY_BACK : {
+			if ( getFacing() == Object::FACING_LEFT )
+				return Keyboard::Key_RIGHT;
+			else	return Keyboard::Key_LEFT;
+		}
+		case PAIN_KEY_UP : return Keyboard::Key_UP;
+		case PAIN_KEY_DOWN : return Keyboard::Key_DOWN;
+		case PAIN_KEY_ATTACK1 : return Keyboard::Key_A;
+		case PAIN_KEY_ATTACK2 : return Keyboard::Key_S;
+		case PAIN_KEY_ATTACK3 : return Keyboard::Key_D;
+		case PAIN_KEY_JUMP : return Keyboard::Key_SPACE;
+		default : return -1;
+	}
+}
+	
+Object * Player::copy(){
+	return new Player( *this );
+}
+	
+
+void Player::takeDamage( ObjectAttack * obj, int x ){
+	if ( getLink() != NULL ){
+		getLink()->unGrab();
+		unGrab();
+	}
+
+	Character::takeDamage( obj, x );
+
+	// cout<<"Player taking "<<x<<" damage"<<endl;
+}
+
+/* check to see if the player is close enough to an enemy */
+bool Player::canGrab( Object * enemy ){
+	return false;
+	if ( !enemy->isCollidable( this ) )
+		return false;
+	/*
+	bool d = ZDistance( enemy ) < MIN_RELATIVE_DISTANCE;
+	bool c = realCollision( enemy );
+	cout<<enemy<<": distance = "<<d<<" collision = "<<c<<endl;
+	*/
+	// if ( ZDistance( enemy ) < MIN_RELATIVE_DISTANCE && enemy->collision( this ) ){
+
+	// animation_current = movements[ "grab" ];
+	animation_current = getMovement( "grab" );
+
+	// if ( ZDistance( enemy ) < MIN_RELATIVE_DISTANCE && realCollision( enemy ) ){
+	if ( ZDistance( enemy ) < MIN_RELATIVE_DISTANCE && XDistance( enemy ) < 30 ){
+		return true;
+	}
+	return false;
+}
+
+void Player::grabEnemy( Object * enemy ){
+	// enemy->setStatus( Status_Grabbed );
+	enemy->grabbed( this );
+	setLink( enemy );
+}
+
+void Player::act( vector< Object * > * others, World * world ){
+
+	/* Character handles jumping and possibly other things */
+	Character::act( others, world );
+
+	/* special cases... */
+	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise )
+		return;
+
+	/*
+	if ( getStatus() == Status_Grab ){
+		return;
+	}
+	*/
+	
+	/* Now the real meat */
+
+	fillKeyCache();
+
+	/*
+	if ( !key_cache.empty() ){
+		for ( deque<int>::iterator dit = key_cache.begin(); dit != key_cache.end(); dit++ ){
+			cout<< *dit <<" ";
+		}
+		cout<<endl;
+	}
+	*/
+	
+	bool reset = animation_current->Act();
+
+	/* cant interrupt an animation unless its walking or idling */
+	// if ( animation_current != movements[ "walk" ] && animation_current != movements[ "idle" ]  && animation_current != movements[ "jump" ] ){
+	if ( animation_current != getMovement( "walk" ) && animation_current != getMovement( "idle" ) && animation_current != getMovement( "jump" ) ){
+	// if ( animation_current != movements[ "walk" ] && animation_current != movements[ "idle" ] ){
+		// if ( !animation_current->Act() ) return;
+		// animation_current = movements[ "idle" ];
+		if ( !reset ) return;
+	} else {
+		/*
+		if ( animation_current->Act() )
+			animation_current->reset();
+		*/
+	}
+	string current_name = animation_current->getName();
+
+	// bool status = animation_current->getStatus();
+
+	if ( reset ){
+		animation_current->reset();
+
+		const vector<string> & allow = animation_current->getCommisions();
+		for ( vector<string>::const_iterator it = allow.begin(); it != allow.end(); it++ ){
+			// cout<<"Commision: "<<*it<<endl;
+			// Animation * ok = movements[ *it ];
+			Animation * ok = getMovement( *it );
+			if ( ok != NULL ){
+				ok->setCommision( true );
+			}
+		}
+		
+		const vector<string> & disallow = animation_current->getDecommisions();
+		for ( vector<string>::const_iterator it = disallow.begin(); it != disallow.end(); it++ ){
+			// cout<<"Decommision: "<<*it<<endl;
+			// Animation * ok = movements[ *it ];
+			Animation * ok = getMovement( *it );
+			if ( ok != NULL ){
+				ok->setCommision( false );
+			}
+		}
+		
+		// leave this line here, ill figure out why its important later
+		// if you need the animation_current->getName(), use current_name
+		animation_current = NULL;
+
+	}
+	// animation_current = NULL;
+
+	if ( true ){
+		Animation * final = NULL;
+		// unsigned int num_keys = 0;
+		map<Animation *, int > possible_animations;
+
+
+		/*
+		vector< Animation * > xv;
+		for ( map<string,Animation*>::const_iterator it = movements.begin(); it != movements.end(); it++ ){
+			xv.push_back( (*it).second );
+		}
+		for ( vector< Animation * >::iterator it = xv.begin(); it != xv.end(); ){
+			Animation * b = *it;
+			if ( combo( b ) ){
+				it++;
+				if ( b->getStatus() == getStatus() && (b->getPreviousSequence() == "none" || current_name == b->getPreviousSequence() ) ){
+					possible_animations[ b ] = b->getKeys().size();
+				}
+			} else it = xv.erase( it );
+		}
+		*/
+
+		for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
+			if ( (*it).second == NULL ) continue;
+			Animation * b = (*it).second;
+			if ( b->isCommisioned() && combo(b) && b->getStatus() == getStatus() ){
+				// cout<<b->getName() << " has sequences"<<endl;
+				/*
+				for ( vector<string>::const_iterator it = b->getSequences().begin(); it != b->getSequences().end(); it++ ){
+					cout<< *it << endl;
+				}
+				*/
+				// cout<<"Testing proper sequence with "<<b->getName()<<endl;
+				if ( b->properSequence( current_name ) ){
+				// if ( b->getPreviousSequence() == "none" || current_name == b->getPreviousSequence() ){
+					// cout<<"Possible sequence " <<b->getName()<<endl;
+					possible_animations[ b ] = b->getKeys().size();
+				}
+			} 
+		}
+
+		/*
+		for ( map<string,Animation*>::const_iterator it = movements.begin(); it != movements.end(); it++ ){
+
+			// word up
+			debug
+			Animation *const & ani = (*it).second;
+		
+			if ( animation_current != movements[ "walk" ] && animation_current != movements[ "idle" ] ){
+				debug
+				if ( current_name != ani->getPreviousSequence() )
+					continue;
+			}
+
+			const vector< KeyPress > & keys = ani->getKeys();
+			for ( vector<KeyPress>::const_iterator k = keys.begin(); k != keys.end(); k++ ){
+				const KeyPress & kp = *k;
+				bool all_pressed = false;
+				debug
+				for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
+		
+					int find_key = getKey(*cur_key);
+
+					/ *
+					if ( key[ *cur_key ] )
+						all_pressed = true;
+					else {
+						all_pressed = false;
+						break;
+					}
+					* /
+					bool found_it = false;
+					for ( deque<int>::iterator dit = key_cache.begin(); dit != key_cache.end(); dit++ ){
+						if ( find_key == *dit ) 
+							found_it = true;
+					}
+
+					if ( found_it ){
+						all_pressed = true;
+					} else {
+						all_pressed = false;
+						break;
+					}
+				}
+
+				debug
+				// if ( all_pressed && num_keys < keys.size() ){
+				if ( all_pressed ){
+					debug
+					if ( getStatus() == ani->getStatus() ){
+						debug
+						// cout<<"Valid movement "<<(*it).first<<" Current = "<<animation_current->getName()<<". Previous = "<<ani->getPreviousSequence()<<endl;
+						if ( ani->getPreviousSequence() == "none" || current_name == ani->getPreviousSequence() ){
+							debug
+							final = ani;
+							num_keys = keys.size();
+							// cout<< "map: " << possible_animations[ ani ] << " " << kp.combo.size() << endl;
+							if ( possible_animations[ ani ] < kp.combo.size() )
+								possible_animations[ ani ] = kp.combo.size();
+							// cout<<"Chose "<<(*it).first<<endl;
+						}
+					}
+					// cout<<endl;
+				}
+			}
+			debug
+		}
+		*/
+
+		int max = -1;
+		if ( !possible_animations.empty() ){
+			for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
+				int & cur = (*mit).second;
+				Animation * blah = (*mit).first;
+				if ( global_debug ){
+					cout<< blah->getName() << "? ";
+				}
+				// if ( cur > max || blah->getPreviousSequence() == current_name ){
+				// cout<<"Testing "<<blah->getName()<<endl;
+				if ( blah->hasSequence( current_name ) ){
+					// cout<<blah->getName() << " has "<< current_name << endl;
+				}
+				if ( cur > max || blah->hasSequence( current_name ) ){
+					// cout<<"Current choice = "<<blah->getName() <<endl;
+					final = blah;
+					max = cur;
+				}
+			}
+			if ( global_debug )
+				cout<<endl;
+		}
+		// cout<< final->getName() << endl;
+		
+		if ( final == NULL /* && animation_current == NULL ){ */ && getStatus() != Status_Grab ){
+			// cout<<"Going to walk or idle"<<endl;
+
+			// cout<<"Grabbing,walking,idling"<<endl;
+
+			bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ];
+			// if ( animation_current != movements[ "jump" ] ){
+			if ( animation_current != getMovement( "jump" ) ){
+				if ( !moving ){
+					// animation_current = movements[ "idle" ];
+					animation_current = getMovement( "idle" );
+				} else	{
+					vector< Object * > my_enemies;
+					filterEnemies( my_enemies, others );
+					bool cy = false;
+					for ( vector< Object * >:: iterator it = my_enemies.begin(); it != my_enemies.end(); it++ ){
+						Object * guy = *it;
+
+						if ( canGrab( guy ) ){
+							cy = true;
+							grabEnemy( guy );
+							setZ( guy->getZ()+1 );
+							// animation_current = movements[ "grab" ];
+							animation_current = getMovement( "grab" );
+							setStatus( Status_Grab );
+							// cout<<"Grabbed"<<endl;
+						}
+						if ( cy )
+							break;
+					}
+					if ( !cy ){
+						// animation_current = movements[ "walk" ];
+						animation_current = getMovement( "walk" );
+					}
+				}
+			}
+			
+			// cout<<"Animation is "<<animation_current<<endl;
+
+			/*
+			if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
+				animation_current = movements[ "walk" ];
+				// animation_current->reset();
+			} else if ( animation_current != movements[ "jump" ] ){
+				// nextTicket();
+				animation_current = movements[ "idle" ];
+				animation_current->reset();
+			}
+			*/
+		} else if ( final != NULL && animation_current != final ){
+			// cout<<"Final animation = "<<final->getName()<<endl;
+			nextTicket();
+			animation_current = final;
+			animation_current->reset();
+			// if ( animation_current == movements["jump"] ) {
+			if ( animation_current == getMovement("jump") ) {
+				double x = 0;
+				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
+					x = 1.2;
+				}
+
+				doJump( x );
+				/*
+				int x = 0;
+				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
+					if ( keyboard[ KEY_RIGHT ] ){
+						x = 1;
+					} else	x = -1;
+				}
+				doJump( x );
+				*/
+			}
+		}
+		
+		// key_cache.clear();
+	}
+
+	if ( getStatus() == Status_Grab && animation_current == NULL ){
+		// animation_current = movements[ "grab" ];
+		animation_current = getMovement( "grab" );
+	}
+
+	
+
+	// cout<<"Animation ticket = "<<getTicket()<<endl;
+
+	/*
+	key_cache.clear();
+	*/
+	/*
+	if ( animation_current != movements[ "walk" ] )
+		key_cache.clear();
+	*/
+
+	if ( getStatus() == Status_Ground ){
+		/*
+		if ( keyboard[ KEY_RIGHT ] ){
+			setFacing( Object::FACING_RIGHT );
+		} else if ( keyboard[ KEY_LEFT ] ) {
+			setFacing( Object::FACING_LEFT ); 
+		}
+		*/
+
+
+		// if ( keyboard[ KEY_RIGHT ] || keyboard[ KEY_LEFT ] ){
+		if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
+			moveX( 1 );
+		} else if ( keyboard[ getKey( PAIN_KEY_BACK ) ] ){
+			setFacing( getOppositeFacing() );
+		}
+		/*
+		if ( keyboard[ KEY_RIGHT ] ){
+			// setX( getX() + 1 );
+			moveX( 1.2 );
+		} else if ( keyboard[ KEY_LEFT ] ){
+			// setX( getX() - 1 );
+			moveX( -1.2 );
+		}
+		*/
+
+		if ( keyboard[ Keyboard::Key_UP ] ){
+			// setZ( getZ() - 1);
+			moveZ( -1 );
+		} else if ( keyboard[ Keyboard::Key_DOWN ] ){
+			// setZ( getZ() + 1 );
+			moveZ( 1 );
+		}
+	} else {
+	
+		// if ( animation_current == movements[ "throw" ] ){
+		if ( animation_current == getMovement( "throw" ) ){
+			if ( getLink() == NULL ){
+				cout<<"Link is null. This cant happen."<<endl;
+				exit( 1 );
+			}
+			getLink()->thrown();
+			getLink()->fall( 3.2, 5.0 );
+		}
+	}
+
+	/*
+	if ( getZ() < MIN_WORLD_Z ){
+		setZ( MIN_WORLD_Z );
+	}
+	if ( getZ() > MAX_WORLD_Z ){
+		setZ( MAX_WORLD_Z );
+	}
+	*/
+
+
+	// cout<<"Ultimate animation current = "<< animation_current->getName() <<endl;
+	// animation_current->Act();
+
+}

@@ -1,0 +1,3 @@
+Import( 'env' );
+
+env.CXXFile( target='lex.yy.cpp', source='parser.ll' );

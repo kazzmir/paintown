@@ -1,0 +1,135 @@
+#include "object.h"
+#include "object_attack.h"
+#include "util/ebox.h"
+#include <exception>
+#include <iostream>
+
+using namespace std;
+
+#ifndef debug
+#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
+#endif
+
+/*
+const int Object::FACING_LEFT = 0; 
+const int Object::FACING_RIGHT = 1;
+*/
+
+Object::Object( int _alliance ):
+actualx( 0 ),
+actualy( 0 ),
+actualz( 0 ),
+virtualx( 0 ),
+virtualy( 0 ),
+virtualz( 0 ),
+health( 0 ),
+max_health( 0 ),
+facing( FACING_RIGHT ),
+alliance( _alliance ){
+}
+
+Object::Object( const int x, const int y, int _alliance ):
+actualx( x ),
+actualy( 0 ),
+actualz( y ),
+virtualx( (double)x ),
+virtualy( (double)y ),
+virtualz( 0 ),
+health( 0 ),
+max_health( 0 ),
+facing( FACING_RIGHT ),
+alliance( _alliance ){
+}
+
+Object::Object( const Object & copy ){
+	actualx = copy.actualx;
+	actualy = copy.actualy;
+	actualz = copy.actualz;
+	virtualx = copy.virtualx;
+	virtualy = copy.virtualy;
+	virtualz = copy.virtualz;
+	facing = copy.facing;
+	health = copy.health;
+	setMaxHealth( copy.getMaxHealth() );
+	setAlliance( copy.getAlliance() );
+}
+	
+int Object::ZDistance( Object * obj ){
+	if ( obj->getZ() > getZ() )
+		return obj->getZ() - getZ();
+	return getZ() - obj->getZ();
+}
+	
+int Object::XDistance( Object * obj ){
+	if ( obj->getX() > getX() )
+		return obj->getX() - getX();
+	return getX() - obj->getX();
+}
+	
+void Object::moveX( int dir, const int x ){
+	if ( dir == getFacing() )
+		moveX( x );
+	else	moveX( -x );
+}
+
+void Object::thrown(){
+}
+	
+void Object::moveX( const int x ){
+	moveX( (double)x );
+}
+
+void Object::moveY( const int y ){
+	moveY( (double)y );
+}
+
+void Object::moveZ( const int z ){
+	moveZ( (double)z );
+}
+
+void Object::moveX( double x ){
+	if ( getFacing() == FACING_LEFT )
+		virtualx -= x;
+	else 	virtualx += x;
+	actualx = (int)virtualx;
+}
+
+void Object::moveY( double y ){
+	virtualy += y;
+	actualy = (int)virtualy;
+	if ( actualy < 0 ){
+		virtualy = 0;
+		actualy = 0;
+	}
+}
+	
+const int Object::getAlliance() const{
+	return alliance;
+}
+
+void Object::moveZ( double z ){
+	virtualz += z;
+	actualz = (int)virtualz;
+}
+
+void Object::print() const{
+}
+	
+void Object::fall( double x_vel, double y_vel ){
+}
+	
+void Object::hurt( int x ){
+	setHealth( getHealth() - x );
+}
+	
+void Object::takeDamage( ObjectAttack * obj, int x ){
+	this->hurt( x );
+	// health -= x;
+}
+
+ECollide * Object::getCollide(){
+	return 0;
+}
+
+Object::~Object(){
+}

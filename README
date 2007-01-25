@@ -1,0 +1,28 @@
+Paintown
+Version 0.1
+Jon Rafkind
+1/10/05
+
+INSTALL:
+
+	If you have a program called 'scons', type 'make' to compile paintown. If you do not have 'scons', type 'make stupid'. Get scons: http://www.scons.org/.
+
+REQUIREMENTS:
+
+	You need the following things to compile Paintown:
+	* gcc - http://www.gnu.org/software/gcc/
+	* Allegro - 4.1 or higher. http://alleg.sf.net
+	* libpng - http://www.libpng.org/pub/png/libpng.html
+	* loadpng - http://members.ozadsl.com.au/~tjaden/loadpng/
+	* pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
+
+KEYS:
+
+A - attack1
+S - attack2
+D - attack3
+UP - up
+DOWN - down
+LEFT - left
+RIGHT - right
+SPACE - jump

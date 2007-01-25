@@ -1,0 +1,77 @@
+Import( 'env' );
+
+obj_files = map( lambda(x): "./"+x, 
+Split( """
+globals.cpp
+loading.cpp
+main.cpp
+nameplacer.cpp
+world.cpp
+""") ) + map( lambda(x) : "level/" + x,
+Split( """
+block.cpp
+blockobject.cpp
+scene.cpp
+""")) + map( lambda(x) : "factory/" + x,
+Split( """
+font_factory.cpp
+heart_factory.cpp
+object_factory.cpp
+font_render.cpp
+collector.cpp
+shadow.cpp
+""")) + map( lambda(x) : "object/" + x,
+Split("""
+animation.cpp
+animation_event.cpp
+animation_event_attack.cpp
+animation_event_bbox.cpp
+animation_event_coords.cpp
+animation_event_delay.cpp
+animation_event_frame.cpp
+animation_event_move.cpp
+animation_event_nop.cpp
+animation_event_offset.cpp
+animation_event_sound.cpp
+animation_event_status.cpp
+effect.cpp
+enemy.cpp
+object.cpp
+object_attack.cpp
+object_nonattack.cpp
+player.cpp
+attack.cpp
+character.cpp
+heart.cpp
+""")) + map( lambda(x) : "util/" + x,
+Split("""
+token.cpp
+token_exception.cpp
+tokenreader.cpp
+timedifference.cpp
+sound.cpp
+keyboard.cpp
+bitmap.cpp
+font.cpp
+funcs.cpp
+ebox.cpp
+load_exception.cpp
+""")) + map( lambda(x) : "parser/" + x,
+Split("""
+parser.cpp
+lex.yy.cpp
+"""));
+
+# scale2x.cpp
+# scalebit.cpp
+
+# env = Environment( CCFLAGS = flags, CPPPATH = [ '.' ] );
+
+# env.Append( LIBS = [ 'ldpng', 'pthread' ] );
+# env.ParseConfig( 'libpng-config --libs' );
+# env.ParseConfig( 'allegro-config --libs' );
+
+env.SConscript( 'parser/SConscript', exports = 'env' );
+
+env.Program( 'paintown', obj_files );
+
