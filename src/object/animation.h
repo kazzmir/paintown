@@ -139,6 +139,8 @@ public:
 	void addDecommision( const string & s );
 	void addCommision( const string & s );
 
+	const string getCurrentFramePath() const;
+
 	inline const vector<string> & getDecommisions() const {
 		return disable_animations;
 	}

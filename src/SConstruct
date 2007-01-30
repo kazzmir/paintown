@@ -4,7 +4,7 @@ obj_files = map( lambda(x): "./"+x,
 Split( """
 globals.cpp
 loading.cpp
-main.cpp
+init.cpp
 nameplacer.cpp
 world.cpp
 """) ) + map( lambda(x) : "level/" + x,
@@ -73,5 +73,8 @@ lex.yy.cpp
 
 env.SConscript( 'parser/SConscript', exports = 'env' );
 
-env.Program( 'paintown', obj_files );
+env.Append( CCFLAGS = '-g3' )
+
+env.Program( 'paintown', obj_files + ['main.cpp'] );
+env.Program( 'test', obj_files + ['test.cpp'] );
 

@@ -379,6 +379,10 @@ bool Character::isCollidable( Object * obj ){
 	// return true;
 }
 	
+Animation * Character::getCurrentMovement(){
+	return this->animation_current;
+}
+	
 Animation * Character::getMovement( const string & str ){
 	// cout<<getName()<<" map = "<<current_map<<endl;
 	map< string, Animation * > & xmap = mapper[ current_map ];

@@ -177,6 +177,7 @@ public:
 		return mapper;
 	}
 
+	virtual Animation * getCurrentMovement();
 	virtual Animation * getMovement( const string & str );
 	virtual Animation * getMovement( const unsigned int x );
 	virtual const map<string,Animation*> & getMovements();

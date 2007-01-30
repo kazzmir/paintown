@@ -645,6 +645,10 @@ const int Animation::getHeight() const{
 	return 0;
 }
 
+const string Animation::getCurrentFramePath() const {
+	return current_frame->getPath();
+}
+
 void Animation::Draw( int x, int y, Bitmap * work ){
 
 	int w = current_frame->getWidth() / 2;
@@ -652,7 +656,7 @@ void Animation::Draw( int x, int y, Bitmap * work ){
 
 	if ( global_debug ){
 		work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
-		work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
+		// work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
 	}
 
 	x += offset_x;

@@ -10,17 +10,12 @@
 
 #include "loading.h"
 #include "util/bitmap.h"
-
+#include "init.h"
 #include "fonts.h"
 #include "util/funcs.h"
 #include <vector>
 
 using namespace std;
-
-extern pthread_mutex_t loading_screen_mutex;
-extern bool done_loading;
-extern int speed_counter;
-extern DATAFILE * all_fonts;
 
 void * loadingScreen( void * arg ){
 	
