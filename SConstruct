@@ -3,7 +3,15 @@ import os;
 env = Environment( ENV = os.environ );
 config = env.Configure();
 
-flags = [ '-Wall', '-fno-rtti', '-Woverloaded-virtual', '-O' ];
+debug = 1
+
+flags = [ '-Wall', '-fno-rtti', '-Woverloaded-virtual' ];
+
+if debug:
+	flags.append( '-g3' )
+else:
+	flags.append( '-O2' )
+
 env.Append( CCFLAGS = flags, CPPPATH = [ "." ] );
 
 env.Append( LIBS = [ 'fl', 'ldpng', 'pthread', 'aldmb', 'dumb' ] );

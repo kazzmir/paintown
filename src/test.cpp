@@ -365,7 +365,7 @@ void showAnimations( string person, int xmap = 0 ){
 
 	((Character *)ch)->setMap( xmap );
 
-	ch->setX( 40 );
+	ch->setX( 320 / 2 );
 	ch->setZ( 170 );
 
 	// Bitmap * Screen = new Bitmap( screen );
@@ -374,6 +374,9 @@ void showAnimations( string person, int xmap = 0 ){
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 	Bitmap Screen( screen );
 	Global::speed_counter = 0;
+
+	double runSpeed = 1.0;
+	double runCounter = 0;
 
 	int stay_x = ch->getX();
 	int stay_z = ch->getZ();
@@ -387,12 +390,18 @@ void showAnimations( string person, int xmap = 0 ){
 			// cout<<"Counter = "<<speed_counter<<endl;
 			int think = Global::speed_counter;
 			while ( think-- > 0 ){
-				if ( ((Character *)ch)->testAnimation() ){
-					// cout<<"Reseting position"<<endl;
-					ch->setX( stay_x );
-					ch->setZ( stay_z );
-					ch->setY( 0 );
-					((Character *)ch)->testReset();
+				runCounter += runSpeed;
+
+				while ( runCounter >= 1.0 ){
+					if ( ((Character *)ch)->testAnimation() ){
+						// cout<<"Reseting position"<<endl;
+						ch->setX( stay_x );
+						ch->setZ( stay_z );
+						ch->setY( 0 );
+						((Character *)ch)->testReset();
+					}
+
+					runCounter -= 1.0;
 				}
 
 				map< int, int > xkey;
@@ -454,6 +463,21 @@ void showAnimations( string person, int xmap = 0 ){
 				stay_x -= 1;
 			}
 
+			if ( key[ KEY_MINUS_PAD ] ){
+				runSpeed -= 0.01;
+				if ( runSpeed < 0.01 ){
+					runSpeed = 0.01;
+				}
+			}
+
+			if ( key[ KEY_PLUS_PAD ] ){
+				runSpeed += 0.01;
+			}
+
+			if ( key[ KEY_ENTER_PAD ] ){
+				runSpeed = 1.0;
+			}
+
 			if ( key[ KEY_V ] ){
 				delete ch;
 
@@ -499,6 +523,7 @@ void showAnimations( string person, int xmap = 0 ){
 			// td.printTime("Stretch");
 			
 			screen_buffer.printfNormal( 1, 1, Bitmap::makeColor( 255, 255, 255 ), ch->getCurrentMovement()->getCurrentFramePath() );
+			screen_buffer.printfNormal( 1, 10, Bitmap::makeColor( 255, 255, 255 ), "Speed %f", runSpeed );
 
 			td.startTime();
 			acquire_screen();

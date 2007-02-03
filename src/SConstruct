@@ -84,8 +84,6 @@ if False:
 
 env.SConscript( 'parser/SConscript', exports = 'env' );
 
-env.Append( CCFLAGS = '-g3' )
-
 env.Program( 'paintown', obj_files + ['main.cpp'] );
 env.Program( 'test', obj_files + ['test.cpp'] );
 
