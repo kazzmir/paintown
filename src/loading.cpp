@@ -60,7 +60,7 @@ void * loadingScreen( void * arg ){
 	}
 
 	int colors[ 32 ];
-	blend_palette( colors, 32, Bitmap::makeColor( 16, 16, 16 ), Bitmap::makeColor( 192, 8, 8 ) );
+	Util::blend_palette( colors, 32, Bitmap::makeColor( 16, 16, 16 ), Bitmap::makeColor( 192, 8, 8 ) );
 
 	unsigned int which_letter = 0;
 

@@ -204,12 +204,12 @@ void World::draw( Bitmap * work ){
 	
 int World::getX(){
 	if ( quake_time )
-		return rnd( 9 ) - 4;
+		return Util::rnd( 9 ) - 4;
 	return 0;
 }
 
 int World::getY(){
 	if ( quake_time )
-		return rnd( 9 ) - 4;
+		return Util::rnd( 9 ) - 4;
 	return 0;
 }

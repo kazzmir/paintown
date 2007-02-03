@@ -139,11 +139,11 @@ void Enemy::act( vector< Object * > * others, World * world ){
 				setFacing( Object::FACING_LEFT );
 			} else	setFacing( Object::FACING_RIGHT );
 
-			if ( !want_path && rnd( 30 ) > 10 ) {
+			if ( !want_path && Util::rnd( 30 ) > 10 ) {
 				/*want_x == getX() && want_z == getZ() ){ */
-				want_x = rnd( main_enemy->getX() - 200, main_enemy->getX() + 200 );
+				want_x = Util::rnd( main_enemy->getX() - 200, main_enemy->getX() + 200 );
 				// want_z = rnd( main_enemy->getZ(), 10, 10 );
-				want_z = rnd( MIN_WORLD_Z, MAX_WORLD_Z );
+				want_z = Util::rnd( MIN_WORLD_Z, MAX_WORLD_Z );
 
 				if ( want_z < MIN_WORLD_Z ){
 					want_z = MIN_WORLD_Z;
@@ -160,7 +160,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 			 * If we are in range of the Z coordinate, relativeDistance(), then find an attack 
 			 * with a suitable X range.  
 			 */
-			if ( ZDistance( main_enemy ) < MIN_RELATIVE_DISTANCE && rnd( 100 ) >= 97 ){
+			if ( ZDistance( main_enemy ) < MIN_RELATIVE_DISTANCE && Util::rnd( 100 ) >= 97 ){
 				// cout<<getName()<<":In range"<<endl;
 				vector< Animation * > attacks;
 				for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
@@ -181,7 +181,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 
 				if ( !attacks.empty() ){
 					// Animation * choose = attacks[ rnd( attacks.size() ) ];
-					animation_current = attacks[ rnd( attacks.size() ) ];
+					animation_current = attacks[ Util::rnd( attacks.size() ) ];
 					// cout<<getName()<<" chose "<<animation_current->getName()<<endl;
 					nextTicket();
 					animation_current->reset();

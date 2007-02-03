@@ -1,27 +1,34 @@
 Import( 'env' );
 
-obj_files = map( lambda(x): "./"+x, 
-Split( """
+obj_files = []
+
+def addFiles( dir, files ):
+	obj_files.append( map( lambda x: dir + x, files ) )
+
+addFiles( './', Split( """
 globals.cpp
 loading.cpp
 init.cpp
 nameplacer.cpp
 world.cpp
-""") ) + map( lambda(x) : "level/" + x,
-Split( """
+"""))
+
+addFiles( "level/", Split( """
 block.cpp
 blockobject.cpp
 scene.cpp
-""")) + map( lambda(x) : "factory/" + x,
-Split( """
+"""))
+
+addFiles( "factory/", Split( """
 font_factory.cpp
 heart_factory.cpp
 object_factory.cpp
 font_render.cpp
 collector.cpp
 shadow.cpp
-""")) + map( lambda(x) : "object/" + x,
-Split("""
+"""))
+
+addFiles( "object/", Split("""
 animation.cpp
 animation_event.cpp
 animation_event_attack.cpp
@@ -43,8 +50,9 @@ player.cpp
 attack.cpp
 character.cpp
 heart.cpp
-""")) + map( lambda(x) : "util/" + x,
-Split("""
+"""))
+
+addFiles( "util/", Split("""
 token.cpp
 token_exception.cpp
 tokenreader.cpp
@@ -52,15 +60,18 @@ timedifference.cpp
 sound.cpp
 keyboard.cpp
 bitmap.cpp
+music.cpp
 font.cpp
 funcs.cpp
 ebox.cpp
 load_exception.cpp
-""")) + map( lambda(x) : "parser/" + x,
-Split("""
-parser.cpp
-lex.yy.cpp
-"""));
+"""))
+
+if False:
+	addFiles( "parser/", Split("""
+	parser.cpp
+	lex.yy.cpp
+	"""));
 
 # scale2x.cpp
 # scalebit.cpp
