@@ -65,11 +65,22 @@ int Object::XDistance( Object * obj ){
 		return obj->getX() - getX();
 	return getX() - obj->getX();
 }
+
+/* move in an absolute direction */
+void Object::moveRight( const int x ){
+	moveX( FACING_RIGHT, x );
+}
+
+void Object::moveLeft( const int x ){
+	moveX( FACING_LEFT, x );
+}
 	
 void Object::moveX( int dir, const int x ){
-	if ( dir == getFacing() )
+	if ( dir == getFacing() ){
 		moveX( x );
-	else	moveX( -x );
+	} else {
+		moveX( -x );
+	}
 }
 
 void Object::thrown(){
@@ -88,9 +99,13 @@ void Object::moveZ( const int z ){
 }
 
 void Object::moveX( double x ){
-	if ( getFacing() == FACING_LEFT )
+
+	if ( getFacing() == FACING_LEFT ){
 		virtualx -= x;
-	else 	virtualx += x;
+	} else {
+		virtualx += x;
+	}
+
 	actualx = (int)virtualx;
 }
 

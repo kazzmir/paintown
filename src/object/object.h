@@ -181,6 +181,9 @@ public:
 	/* object has been thrown */
 	virtual void thrown();
 
+	void moveRight( const int x );
+	void moveLeft( const int x );
+
 	void moveX( const int x );
 	void moveY( const int y );
 	void moveZ( const int z );

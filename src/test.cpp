@@ -512,7 +512,8 @@ void showAnimations( string person, int xmap = 0 ){
 			draw = true;
 
 			if ( key[ KEY_RIGHT ] ){
-				ch->moveX( 1 );
+				// ch->moveX( 1 );
+				ch->moveRight( 1 );
 				stay_x += 1;
 			}
 
@@ -527,7 +528,8 @@ void showAnimations( string person, int xmap = 0 ){
 			}
 
 			if ( key[ KEY_LEFT ] ){
-				ch->moveX( -1 );
+				// ch->moveX( -1 );
+				ch->moveLeft( 1 );
 				stay_x -= 1;
 			}
 
