@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
+#include <vector>
+#include <map>
 
 #include "factory/collector.h"
 #include "factory/font_render.h"
@@ -24,6 +26,7 @@
 #include "object/player.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
+#include "util/font.h"
 #include "util/load_exception.h"
 #include "util/timedifference.h"
 #include "object/animation.h"
@@ -31,6 +34,7 @@
 
 #include "init.h"
 
+using namespace std;
 
 static Object * bang = NULL;
 
@@ -337,6 +341,84 @@ void testAnimation( ){
 
 }
 
+char getKey( int index ){
+	switch ( index ){
+		case 0 : return 'Q';
+		case 1 : return 'W';
+		case 2 : return 'E';
+		case 3 : return 'R';
+		case 4 : return 'T';
+		case 5 : return 'Y';
+		case 6 : return 'U';
+		case 7 : return 'I';
+		case 8 : return 'O';
+		case 9 : return 'P';
+		case 10 : return 'A';
+		case 11 : return 'S';
+		case 12 : return 'D';
+		case 13 : return 'F';
+		case 14 : return 'G';
+		case 15 : return 'H';
+		case 16 : return 'J';
+		case 17 : return 'K';
+		case 18 : return 'L';
+		case 19 : return 'Z';
+		case 20 : return 'X';
+		default : return '!';
+	}
+}
+
+map< int, int > mapKeys(){
+	
+	map< int, int > xkey;
+
+	xkey[ KEY_Q ] = 0;
+	xkey[ KEY_W ] = 1;
+	xkey[ KEY_E ] = 2;
+	xkey[ KEY_R ] = 3;
+	xkey[ KEY_T ] = 4;
+	xkey[ KEY_Y ] = 5;
+	xkey[ KEY_U ] = 6;
+	xkey[ KEY_I ] = 7;
+	xkey[ KEY_O ] = 8;
+	xkey[ KEY_P ] = 9;
+	xkey[ KEY_A ] = 10;
+	xkey[ KEY_S ] = 11;
+	xkey[ KEY_D ] = 12;
+	xkey[ KEY_F ] = 13;
+	xkey[ KEY_G ] = 14;
+	xkey[ KEY_H ] = 15;
+	xkey[ KEY_J ] = 16;
+	xkey[ KEY_K ] = 17;
+	xkey[ KEY_L ] = 18;
+	xkey[ KEY_Z ] = 19;
+	xkey[ KEY_X ] = 20;
+
+	return xkey;
+}
+
+void displayLines( const Bitmap & bitmap, int x_original, int y_original, const map< string, Animation * > & lines, int index, const Font & font ){
+
+	int x = x_original;
+	int y = y_original;
+
+	int count = 0;
+	for ( map< string, Animation * >::const_iterator it = lines.begin(); it != lines.end(); it++ ){
+		int color = Bitmap::makeColor( 255, 255, 255 );
+		if ( count == index ){
+			color = Bitmap::makeColor( 255, 0, 0 );
+		}
+
+		bitmap.printf( x, y, color, &font, "%c: %s", getKey( count ), (*it).first.c_str() );
+		y += font.getHeight() + 2;
+		if ( y > 480 - font.getHeight() - 1 ){
+			y = y_original;
+			x += font.textLength( "x" ) * 20;
+		}
+		count += 1;
+	}
+}
+
 void waitOnKey( int xkey ){
 	while ( key[ xkey ] ) rest( 1 );
 }
@@ -363,7 +445,7 @@ void showAnimations( string person, int xmap = 0 ){
 		return;
 	}
 
-	((Character *)ch)->setMap( xmap );
+	ch->setMap( xmap );
 
 	ch->setX( 320 / 2 );
 	ch->setZ( 170 );
@@ -375,8 +457,12 @@ void showAnimations( string person, int xmap = 0 ){
 	Bitmap Screen( screen );
 	Global::speed_counter = 0;
 
+	map< int, int > keyHold;
+
 	double runSpeed = 1.0;
 	double runCounter = 0;
+
+	int currentAnimation = 0;
 
 	int stay_x = ch->getX();
 	int stay_z = ch->getZ();
@@ -393,46 +479,28 @@ void showAnimations( string person, int xmap = 0 ){
 				runCounter += runSpeed;
 
 				while ( runCounter >= 1.0 ){
-					if ( ((Character *)ch)->testAnimation() ){
+					if ( ch->testAnimation() ){
 						// cout<<"Reseting position"<<endl;
 						ch->setX( stay_x );
 						ch->setZ( stay_z );
 						ch->setY( 0 );
-						((Character *)ch)->testReset();
+						ch->testReset();
 					}
 
 					runCounter -= 1.0;
 				}
 
-				map< int, int > xkey;
-				xkey[ KEY_Q ] = 0;
-				xkey[ KEY_W ] = 1;
-				xkey[ KEY_E ] = 2;
-				xkey[ KEY_R ] = 3;
-				xkey[ KEY_T ] = 4;
-				xkey[ KEY_Y ] = 5;
-				xkey[ KEY_U ] = 6;
-				xkey[ KEY_I ] = 7;
-				xkey[ KEY_O ] = 8;
-				xkey[ KEY_P ] = 9;
-				xkey[ KEY_A ] = 10;
-				xkey[ KEY_S ] = 11;
-				xkey[ KEY_D ] = 12;
-				xkey[ KEY_F ] = 13;
-				xkey[ KEY_G ] = 14;
-				xkey[ KEY_H ] = 15;
-				xkey[ KEY_J ] = 16;
-				xkey[ KEY_K ] = 17;
-				xkey[ KEY_L ] = 18;
+				map< int, int > xkey = mapKeys();
 				for ( map<int,int>::iterator it = xkey.begin(); it != xkey.end(); it++ ){
 					int lkey = (*it).first;
 					int num = (*it).second;
 					if ( key[ lkey ] ){
-						((Character *)ch)->testAnimation( num );
+						currentAnimation = num;
+						ch->testAnimation( num );
 						// cout<<"Reseting position"<<endl;
 						ch->setX( stay_x );
 						ch->setZ( stay_z );
-						((Character *)ch)->testReset();
+						ch->testReset();
 					}
 				}
 			}
@@ -463,6 +531,17 @@ void showAnimations( string person, int xmap = 0 ){
 				stay_x -= 1;
 			}
 
+			if ( key[ KEY_ALT ] ){
+				if ( keyHold[ KEY_ALT ] == 0 ){
+					ch->reverseFacing();
+					keyHold[ KEY_ALT ] = 20;
+				} else {
+					keyHold[ KEY_ALT ] -= 1;
+				}
+			} else {
+				keyHold[ KEY_ALT ] = 0;
+			}
+
 			if ( key[ KEY_MINUS_PAD ] ){
 				runSpeed -= 0.01;
 				if ( runSpeed < 0.01 ){
@@ -491,7 +570,7 @@ void showAnimations( string person, int xmap = 0 ){
 				ch->setX( stay_x );
 				ch->setZ( stay_z );
 				ch->setY( 0 );
-
+				ch->testAnimation( currentAnimation );
 				waitOnKey( KEY_V );
 			}
 
@@ -504,26 +583,17 @@ void showAnimations( string person, int xmap = 0 ){
 		}
 
 		if ( draw ){
-
-			// cout<<"X: "<<ch->getX()<<" Z:"<<ch->getZ()<<endl;
 			ch->draw( &work, 0 );
 
-			// work.Blit( 0, 0, Screen );
-			// work.Stretch( Screen );
-			/*
-			Screen.acquire();
-			work.StretchBy2( Screen );
-			Screen.release();
-			*/
 			TimeDifference td;
 			td.startTime();
-			// work.StretchBy2( screen_buffer );
 			work.Stretch( screen_buffer );
 			td.endTime();
-			// td.printTime("Stretch");
 			
 			screen_buffer.printfNormal( 1, 1, Bitmap::makeColor( 255, 255, 255 ), ch->getCurrentMovement()->getCurrentFramePath() );
-			screen_buffer.printfNormal( 1, 10, Bitmap::makeColor( 255, 255, 255 ), "Speed %f", runSpeed );
+			screen_buffer.printfNormal( 1, getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), "Speed %f", runSpeed );
+
+			displayLines( screen_buffer, 10, 400, ch->getMovements(), currentAnimation, getDefaultFont() );
 
 			td.startTime();
 			acquire_screen();
@@ -542,6 +612,8 @@ void showAnimations( string person, int xmap = 0 ){
 			rest( 1 );
 		}
 	}
+
+	waitOnKey( KEY_ESC );
 }
 
 int addFile( const char * filename, int attribute, void * param ){

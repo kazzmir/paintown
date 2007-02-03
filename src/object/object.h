@@ -234,6 +234,10 @@ public:
 			facing = FACING_RIGHT;
 	}
 
+	inline void reverseFacing(){
+		setFacing( getOppositeFacing() );
+	}
+
 	inline const int getOppositeFacing() const{
 		if ( getFacing() == FACING_LEFT )
 			return FACING_RIGHT;
