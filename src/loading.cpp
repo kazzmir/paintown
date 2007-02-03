@@ -12,6 +12,7 @@
 #include "util/bitmap.h"
 #include "init.h"
 #include "fonts.h"
+#include "util/font.h"
 #include "util/funcs.h"
 #include <vector>
 
@@ -25,11 +26,12 @@ void * loadingScreen( void * arg ){
 
 	int load_x = 80;
 	int load_y = 120;
-	FONT * my_font = (FONT *)all_fonts[ JOKERMAN_PCX ].dat;
+	Font myFont = getFont( JOKERMAN_PCX );
+	// FONT * my_font = (FONT *)Global::all_fonts[ JOKERMAN_PCX ].dat;
 	const char * the_string = "Loading Paintown";
 	// const char * the_string = (const char *)arg;
-	int load_width = text_length( my_font, the_string );
-	int load_height = text_height( my_font );
+	int load_width = myFont.textLength( the_string );
+	int load_height = myFont.getHeight();
 
 	Bitmap work( load_width, load_height );
 
@@ -60,19 +62,23 @@ void * loadingScreen( void * arg ){
 	}
 
 	int colors[ 32 ];
+	/* blend from dark grey to light red */
 	Util::blend_palette( colors, 32, Bitmap::makeColor( 16, 16, 16 ), Bitmap::makeColor( 192, 8, 8 ) );
 
 	unsigned int which_letter = 0;
 
 	bool quit = false;
-	speed_counter = 0;
+	Global::speed_counter = 0;
+
+	/* I made this :p */
 	Screen.printfNormal( 400, 470, Bitmap::makeColor( 192, 0, 0 ), "Made by Jon Rafkind" );
+
 	while ( !quit ){
 
 		bool draw = false;
-		if ( speed_counter > 0 ){
+		if ( Global::speed_counter > 0 ){
 
-			int think = speed_counter;
+			int think = Global::speed_counter;
 			while ( think-- ){
 		
 				caps[ which_letter ] += 3;
@@ -88,7 +94,7 @@ void * loadingScreen( void * arg ){
 					string h;
 					for ( int i = 0; i <= q; i++ )
 						h += the_string[i];
-					work.printf( 1, 1, col, my_font, h.c_str() );
+					work.printf( 1, 1, col, myFont, h.c_str() );
 				}
 
 			}
@@ -106,7 +112,7 @@ void * loadingScreen( void * arg ){
 			}
 			*/
 
-			speed_counter = 0;
+			Global::speed_counter = 0;
 			draw = true;
 		} else {
 			// sched_yield();
@@ -121,13 +127,13 @@ void * loadingScreen( void * arg ){
 			// work.clear();
 		}
 
-		pthread_mutex_lock( &loading_screen_mutex );
-		quit = done_loading;
-		pthread_mutex_unlock( &loading_screen_mutex );
+		pthread_mutex_lock( &Global::loading_screen_mutex );
+		quit = Global::done_loading;
+		pthread_mutex_unlock( &Global::loading_screen_mutex );
 
 	}
+
 	cout<<"Done loading"<<endl;
 
 	return NULL;
-			
 }

@@ -88,9 +88,9 @@ void testAnimation( ){
 	}
 	*/
 
-	done_loading = false;
+	Global::done_loading = false;
 	pthread_t loading_screen_thread;
-	pthread_mutex_init( &loading_screen_mutex, NULL );
+	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
 	// const char * this_level = "Loading Level 1";
 	// string * str_level = new string( "Loading Level 1" );
 	// const char * this_level = str_level->c_str();
@@ -129,9 +129,9 @@ void testAnimation( ){
 	}
 
 	if ( show_loading_screen ){
-		pthread_mutex_lock( &loading_screen_mutex );
-		done_loading = true;
-		pthread_mutex_unlock( &loading_screen_mutex );
+		pthread_mutex_lock( &Global::loading_screen_mutex );
+		Global::done_loading = true;
+		pthread_mutex_unlock( &Global::loading_screen_mutex );
 
 		pthread_join( loading_screen_thread, NULL );
 	}
@@ -147,7 +147,7 @@ void testAnimation( ){
 	Bitmap work( 320, 240 );
 	// Bitmap * screen_buffer = new Bitmap( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
-	speed_counter = 0;
+	Global::speed_counter = 0;
 
 	vector< Object * > objects;
 	objects.push_back( ch );
@@ -167,9 +167,9 @@ void testAnimation( ){
 		// int x = speed_counter;
 		// cout<<"Speed: "<<x<<endl;
 
-		if ( speed_counter > 0 ){
+		if ( Global::speed_counter > 0 ){
 			// cout<<"Counter = "<<speed_counter<<endl;
-			int think = speed_counter;
+			int think = Global::speed_counter;
 			TimeDifference logic_time;
 			logic_time.startTime();
 			while ( think > 0 ){
@@ -210,7 +210,7 @@ void testAnimation( ){
 			}
 			logic_time.endTime();
 			// logic_time.printTime("Logic: ");
-			speed_counter = 0;
+			Global::speed_counter = 0;
 
 		}
 	
@@ -373,7 +373,7 @@ void showAnimations( string person, int xmap = 0 ){
 	// Bitmap * screen_buffer = new Bitmap( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 	Bitmap Screen( screen );
-	speed_counter = 0;
+	Global::speed_counter = 0;
 
 	int stay_x = ch->getX();
 	int stay_z = ch->getZ();
@@ -383,9 +383,9 @@ void showAnimations( string person, int xmap = 0 ){
 		// int x = speed_counter;
 		// cout<<"Speed: "<<x<<endl;
 
-		if ( speed_counter > 0 ){
+		if ( Global::speed_counter > 0 ){
 			// cout<<"Counter = "<<speed_counter<<endl;
-			int think = speed_counter;
+			int think = Global::speed_counter;
 			while ( think-- > 0 ){
 				if ( ((Character *)ch)->testAnimation() ){
 					// cout<<"Reseting position"<<endl;
@@ -431,7 +431,7 @@ void showAnimations( string person, int xmap = 0 ){
 			// ch->setZ( stay_z );
 			// ch->setY( 0 );
 			// logic_time.printTime("Logic: ");
-			speed_counter = 0;
+			Global::speed_counter = 0;
 			draw = true;
 
 			if ( key[ KEY_RIGHT ] ){
@@ -513,7 +513,7 @@ void showAnimations( string person, int xmap = 0 ){
 			work.fill( Bitmap::makeColor(32,32,32) );
 		}
 
-		while ( speed_counter == 0 ){
+		while ( Global::speed_counter == 0 ){
 			rest( 1 );
 		}
 	}
@@ -540,7 +540,7 @@ vector< string > findAvailableCharacters( string base ){
 string chooseCharacter(){
 	Bitmap work( GFX_X, GFX_Y );
 
-	speed_counter = 0;
+	Global::speed_counter = 0;
 
 	bool done = false;
 
@@ -557,9 +557,9 @@ string chooseCharacter(){
 
 	while ( ! done ){
 		bool draw = false;
-		while ( speed_counter > 0 ){
+		while ( Global::speed_counter > 0 ){
 			draw = true;
-			speed_counter--;
+			Global::speed_counter--;
 
 			if ( key[ KEY_ESC ] ){
 				return characters[ 0 ];
@@ -616,7 +616,7 @@ string chooseCharacter(){
 			work.BlitToScreen();
 		}
 
-		while ( speed_counter == 0 ){
+		while ( Global::speed_counter == 0 ){
 			rest( 1 );
 		}
 	}

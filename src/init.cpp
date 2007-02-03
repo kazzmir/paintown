@@ -7,21 +7,21 @@
 
 using namespace std;
 
-volatile int speed_counter = 0;
-volatile int second_counter = 0;
+volatile int Global::speed_counter = 0;
+volatile int Global::second_counter = 0;
 
-pthread_mutex_t loading_screen_mutex;
-bool done_loading = false;
+pthread_mutex_t Global::loading_screen_mutex;
+bool Global::done_loading = false;
 
-DATAFILE * all_fonts;
+DATAFILE * Global::all_fonts;
 
 void inc_speed_counter() {
-	speed_counter++;
+	Global::speed_counter++;
 }
 END_OF_FUNCTION( inc_speed_counter );
 
 void inc_second_counter() {
-	second_counter++;
+	Global::second_counter++;
 }
 END_OF_FUNCTION( inc_second_counter );
 
@@ -50,9 +50,13 @@ void init( int gfx ){
 	cout<<"Install timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( 90 ) )<<endl;
 	cout<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
 	srand( time( NULL ) );
-	all_fonts = load_datafile( "data/fonts.dat" );
-	if ( ! all_fonts ){
-		cout << "Could not load data/fonts.dat!" << endl;
+	Global::all_fonts = load_datafile( "data/fonts.dat" );
+	if ( ! Global::all_fonts ){
+		if ( ! exists( "data/fonts.dat" ) ){
+			cout << "data/fonts.dat is missing!" << endl;
+		} else {
+			cout << "data/fonts.dat is corrupted!" << endl;
+		}
 		exit( 1 );
 	}
 	cout<<"Loaded fonts " << endl;

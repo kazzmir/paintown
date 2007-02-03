@@ -50,7 +50,7 @@ void realGame( Object * player ){
 	// global_debug = true;
 	bool show_loading_screen = true;
 
-	done_loading = false;
+	Global::done_loading = false;
 	pthread_t loading_screen_thread;
 	
 	if ( show_loading_screen ){
@@ -60,9 +60,9 @@ void realGame( Object * player ){
 	World world = World( player, "data/levels/easy/1aeasy.txt" );
 	
 	if ( show_loading_screen ){
-		pthread_mutex_lock( &loading_screen_mutex );
-		done_loading = true;
-		pthread_mutex_unlock( &loading_screen_mutex );
+		pthread_mutex_lock( &Global::loading_screen_mutex );
+		Global::done_loading = true;
+		pthread_mutex_unlock( &Global::loading_screen_mutex );
 
 		pthread_join( loading_screen_thread, NULL );
 	}
@@ -71,8 +71,8 @@ void realGame( Object * player ){
 	Bitmap work( 320, 240 );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 	// Bitmap screen_buffer( Screen.getWidth(), Screen.getHeight() );
-	speed_counter = 0;
-	second_counter = 0;
+	Global::speed_counter = 0;
+	Global::second_counter = 0;
 	int game_time = 100;
 
 	/* end of init stuff */
@@ -81,19 +81,19 @@ void realGame( Object * player ){
 
 		bool draw = false;
 
-		if ( speed_counter > 0 ){
-			int think = speed_counter;
+		if ( Global::speed_counter > 0 ){
+			int think = Global::speed_counter;
 			while ( think > 0 ){
 				draw = true;
 				world.act();
 				think--;
 			}
-			speed_counter = 0;
+			Global::speed_counter = 0;
 		}
 		
-		while ( second_counter > 0 ){
+		while ( Global::second_counter > 0 ){
 			game_time--;
-			second_counter--;
+			Global::second_counter--;
 			if ( game_time < 0 )
 				game_time = 0;
 		}
@@ -118,7 +118,7 @@ void realGame( Object * player ){
 			work.clear();
 		}
 
-		while ( speed_counter == 0 ){
+		while ( Global::speed_counter == 0 ){
 			rest( 1 );
 		}
 	}
@@ -173,7 +173,7 @@ int main( int argc, char ** argv ){
 
 	// loadingScreen( NULL );
 
-	pthread_mutex_init( &loading_screen_mutex, NULL );
+	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
 	
 	pthread_t loading_screen_thread;
 	pthread_create( &loading_screen_thread, NULL, loadingScreen, NULL );
@@ -189,9 +189,9 @@ int main( int argc, char ** argv ){
 		return 1;
 	}
 
-	pthread_mutex_lock( &loading_screen_mutex );
-	done_loading = true;
-	pthread_mutex_unlock( &loading_screen_mutex );
+	pthread_mutex_lock( &Global::loading_screen_mutex );
+	Global::done_loading = true;
+	pthread_mutex_unlock( &Global::loading_screen_mutex );
 	pthread_join( loading_screen_thread, NULL );
 
 	realGame( ch );
@@ -200,7 +200,7 @@ int main( int argc, char ** argv ){
 
 	// testAnimation( );
 
-	unload_datafile( all_fonts );
+	unload_datafile( Global::all_fonts );
 	cout<<"Exiting normally"<<endl;
 
 	return 0;
