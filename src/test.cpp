@@ -501,6 +501,7 @@ void showAnimations( string person, int xmap = 0 ){
 						ch->setX( stay_x );
 						ch->setZ( stay_z );
 						ch->testReset();
+						waitOnKey( lkey );
 					}
 				}
 			}
