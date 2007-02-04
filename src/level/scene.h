@@ -48,11 +48,11 @@ protected:
 	Bitmap * background;
 	Bitmap * arrow;
 	int arrow_blink;
-	string order;
+	vector< int > order;
 	// vector< Panel * > front_panels;
 	// vector< Bitmap * > back_panels;
 	vector< Bitmap * > front_panels;
-	map< char, Panel * > panels;
+	map< int, Panel * > panels;
 
 	deque< Block * > level_blocks;
 

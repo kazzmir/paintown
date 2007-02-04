@@ -41,7 +41,7 @@ current_block( NULL ){
 	Token * current;
 
 	/* the first panel index */
-	char panel_num = 'a';
+	// char panel_num = 'a';
 
 	try {
 		current = tr.readToken();
@@ -60,8 +60,9 @@ current_block( NULL ){
 				*tok >> n;
 				background = new Bitmap( n );
 			} else if ( *tok == "panel" ){
+				int num;
 				string normal, neon, s_screen;
-				*tok >> normal >> neon >> s_screen;
+				*tok >> num >> normal >> neon >> s_screen;
 
 				Bitmap * x_normal = NULL;
 				Bitmap * x_neon = NULL;
@@ -76,9 +77,8 @@ current_block( NULL ){
 					x_screen = new Bitmap( s_screen );
 				}
 				Panel * p = new Panel( x_normal, x_neon, x_screen );
-				panels[ panel_num ] = p;
-				panel_num++;
-
+				panels[ num ] = p;
+				// panel_num++;
 			} else if ( *tok == "block" ){
 				Block * b = new Block( tok );
 				level_blocks.push_back( b );
@@ -88,7 +88,12 @@ current_block( NULL ){
 				Bitmap * front = new Bitmap( file );
 				front_panels.push_back( front );
 			} else if ( *tok == "order" ){
-				*tok >> order;
+				// *tok >> order;
+				while ( tok->hasTokens() ){
+					int x;
+					*tok >> x;
+					order.push_back( x );
+				}
 			} else {
 				cout<<"Unhandled scene attribute: "<<endl;
 				tok->print(" ");
@@ -262,7 +267,7 @@ Scene::~Scene(){
 	for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
 		delete *it;
 	}
-	for ( map< char, Panel * >::iterator it = panels.begin(); it != panels.end(); it++ ){
+	for ( map< int, Panel * >::iterator it = panels.begin(); it != panels.end(); it++ ){
 		delete (*it).second;
 	}
 	
