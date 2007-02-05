@@ -43,6 +43,7 @@ animation_event_sound.cpp
 animation_event_status.cpp
 effect.cpp
 enemy.cpp
+item.cpp
 object.cpp
 object_attack.cpp
 object_nonattack.cpp

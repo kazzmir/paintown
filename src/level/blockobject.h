@@ -8,7 +8,7 @@ using namespace std;
 
 class Token;
 
-const int OBJECT_1UP = 1;
+const int OBJECT_ITEM = 1;
 const int OBJECT_ENEMY = 2;
 
 class BlockObject{

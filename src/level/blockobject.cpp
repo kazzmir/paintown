@@ -19,8 +19,8 @@ coords_z( 0 ){
 			if ( *current == "type" ){
 				string k;
 				*current >> k;
-				if ( k == "1up" ){
-					type = OBJECT_1UP;
+				if ( k == "item" ){
+					type = OBJECT_ITEM;
 				} else if ( k == "enemy" ){
 					type = OBJECT_ENEMY;
 				} else {
@@ -34,8 +34,9 @@ coords_z( 0 ){
 			} else if ( *current == "name" ){
 				string n;
 				*current >> n;
-				if ( n.length() > 0 && (n[0] >= 'a' && n[0] <= 'z') )
+				if ( n.length() > 0 && (n[0] >= 'a' && n[0] <= 'z') ){
 					n[0] = n[0] - 'a' + 'A';
+				}
 				setName( n );
 			} else if ( *current == "alias" ){
 				string n;

@@ -19,6 +19,7 @@ private:
 	ObjectFactory();
 	Object * makeObject( BlockObject * block );
 
+	Object * makeItem( BlockObject * block );
 	Object * makeEnemy( BlockObject * block );
 
 	~ObjectFactory();

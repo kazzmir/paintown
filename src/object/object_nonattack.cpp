@@ -4,7 +4,7 @@
 #include "object_nonattack.h"
 #include <string>
 
-ObjectNonAttack::ObjectNonAttack( int alliance = ALLIANCE_NONE ):
+ObjectNonAttack::ObjectNonAttack( int alliance ):
 Object( alliance ){
 	no_name = "";
 }

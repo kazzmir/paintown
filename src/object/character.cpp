@@ -230,22 +230,11 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 			} else if ( *n == "hit-sound" ){
 				string _snd;
 				*n >> _snd;
-				cout << "Set hit to " << _snd << endl;
 				setHit( Sound( _snd ) );
 			} else if ( *n == "die-sound" ){
-
 				string _snd;
 				*n >> _snd;
-
 				die_sound = new Sound( _snd );
-
-				/* TODO: implement a sound class
-				die_sound = load_sample( _snd.c_str() );
-				if ( !die_sound ){
-					cout<<"*WARNING*: Could not load sound "<<_snd<<endl;
-					// throw exception();
-				}
-				*/
 			} else if ( *n == "landed" ){
 				string st;
 				*n >> st;
@@ -261,7 +250,7 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 			} else if ( *n == "icon" ){
 				string icon_path;
 				*n >> icon_path;
-				cout<<"Loading icon "<<icon_path<<endl;
+				// cout<<"Loading icon "<<icon_path<<endl;
 				icon = new Bitmap( icon_path );
 			} else if ( *n == "remap" ){
 				string first;

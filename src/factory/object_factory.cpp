@@ -4,6 +4,7 @@
 #include "level/blockobject.h"
 #include "object/enemy.h"
 #include "object/heart.h"
+#include "object/item.h"
 #include "util/load_exception.h"
 #include "object/object.h"
 #include "object_factory.h"
@@ -34,9 +35,23 @@ void ObjectFactory::destroy(){
 ObjectFactory::ObjectFactory(){
 }
 
+Object * ObjectFactory::makeItem( BlockObject * block ){
+	Item * item;
+	
+	try{
+		item = new Item( block->getPath() );
+	} catch ( LoadException le ){
+		cout << __FILE__ << " : " << le.getReason() << endl;
+		// delete ret;
+		return NULL;
+	}
+
+	return item;
+}
+
 Object * ObjectFactory::makeEnemy( BlockObject * block ){
 
-	Object * ret;
+	Enemy * ret;
 	/*
 	string name = block->getName();
 	for ( int q = 0; q < name.size(); q++ ){
@@ -64,12 +79,19 @@ Object * ObjectFactory::makeEnemy( BlockObject * block ){
 	ret->setX( x );
 	ret->setZ( z );
 	// cout<<__FILE__<<":"<<((Enemy *)ret)->getName()<<" map = "<<block->getMap()<<endl;
+	
+	
+	/*
 	((Enemy *)ret)->setName( block->getAlias() );
 	((Enemy *)ret)->setMap( block->getMap() );
+	*/
+	
+	ret->setName( block->getAlias() );
+	ret->setMap( block->getMap() );
 	ret->setHealth( block->getHealth() );
 	ret->setMaxHealth( block->getHealth() );
 
-	hearts.push_back( ((Enemy *)ret)->getHeart() );
+	hearts.push_back( ret->getHeart() );
 
 	return ret;
 }
@@ -78,6 +100,15 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 	Object * ret;
 	
 	switch( block->getType() ){
+		case OBJECT_ITEM : {
+			if ( cached[ block->getName() ] != NULL ){
+				return cached[ block->getName() ]->copy();
+			}
+			
+			cout << "ObjectFactory creating " << block->getPath() << endl;
+			ret = makeItem( block );
+			break;
+		}
 		case OBJECT_ENEMY : {
 		
 			if ( cached[ block->getName() ] != NULL ){
@@ -93,6 +124,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				return ret;
 			}
 
+			cout << "ObjectFactory creating " << block->getPath() << endl;
 			ret = makeEnemy( block );
 			if ( ret == NULL ){
 				cout<<"Could not instantiate enemy"<<endl;
