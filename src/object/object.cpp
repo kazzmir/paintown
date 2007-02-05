@@ -50,6 +50,7 @@ Object::Object( const Object & copy ){
 	virtualz = copy.virtualz;
 	facing = copy.facing;
 	health = copy.health;
+	hit = copy.hit;
 	setMaxHealth( copy.getMaxHealth() );
 	setAlliance( copy.getAlliance() );
 }
@@ -90,6 +91,9 @@ void Object::moveX( const int x ){
 	moveX( (double)x );
 }
 
+void Object::died( vector< Object * > & objects ){
+}
+
 void Object::moveY( const int y ){
 	moveY( (double)y );
 }
@@ -120,6 +124,10 @@ void Object::moveY( double y ){
 	
 const int Object::getAlliance() const{
 	return alliance;
+}
+	
+void Object::collided( ObjectAttack * obj, vector< Object * > & objects ){
+	hit.play();
 }
 
 void Object::moveZ( double z ){

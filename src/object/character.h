@@ -56,12 +56,12 @@ public:
 	virtual void thrown();
 
 	/* you have collided with obj */
-	virtual void collided( ObjectAttack * obj );
+	virtual void collided( ObjectAttack * obj, vector< Object * > & objects );
 	
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	
-	virtual void attacked( Object * something );
+	virtual void attacked( Object * something, vector< Object * > & objects );
 
 	/* obj hurt you, take some damage */
 	virtual void takeDamage( ObjectAttack * obj, int x );

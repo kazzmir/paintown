@@ -17,9 +17,6 @@ bool ObjectNonAttack::collision( ObjectAttack * obj ){
 	return false;
 }
 
-void ObjectNonAttack::collided( ObjectAttack * obj ){
-}
-	
 void ObjectNonAttack::grabbed( Object * obj ){
 }
 	

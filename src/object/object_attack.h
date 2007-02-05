@@ -3,6 +3,9 @@
 
 #include "object.h"
 #include <string>
+#include <vector>
+
+using namespace std;
 
 class ObjectAttack: public Object{
 public:
@@ -14,7 +17,8 @@ public:
 	virtual void getAttackCoords( int & x, int & y) = 0;
 	virtual const std::string & getAttackName() = 0;
 
-	virtual void attacked( Object * something ) = 0;
+	/* this object just attached 'something' */
+	virtual void attacked( Object * something, vector< Object * > & objects ) = 0;
 	
 	virtual inline const unsigned int getTicket() const{
 		return attack_ticket;

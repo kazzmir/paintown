@@ -111,15 +111,17 @@ void World::doLogic(){
 							x = (*fight)->getX();
 							y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
 							
+							/*
 							Object * addx = bang->copy();
 							addx->setX( x );
 							addx->setY( 0 );
 							addx->setZ( y+addx->getHeight()/2 );
 							addx->setHealth( 1 );
 							added_effects.push_back( addx );
+							*/
 
-							o_good->attacked( *fight );
-							(*fight)->collided( o_good );
+							o_good->attacked( *fight, added_effects );
+							(*fight)->collided( o_good, added_effects );
 							(*fight)->takeDamage( o_good, o_good->getDamage() );
 						// }
 					}
@@ -128,6 +130,7 @@ void World::doLogic(){
 		}
 
 		if ( (*it)->getHealth() <= 0 ){
+			(*it)->died( added_effects );
 			if ( *it != player ){
 				delete *it;
 			}

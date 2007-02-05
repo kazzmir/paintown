@@ -190,8 +190,9 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
 			if ( *n == "name" ){
 				*n >> name;
-				if ( name.length() > 0 && (name[0] >= 'a' && name[0] <= 'z') )
+				if ( name.length() > 0 && (name[0] >= 'a' && name[0] <= 'z') ){
 					name[0] = name[0] - 'a' + 'A';
+				}
 					
 			} else if ( *n == "anim" ){
 
@@ -226,7 +227,12 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 				double h;
 				*n >> h;
 				setJumpingYVelocity( h );
-			} else if ( *n == "diesound" ){
+			} else if ( *n == "hit-sound" ){
+				string _snd;
+				*n >> _snd;
+				cout << "Set hit to " << _snd << endl;
+				setHit( Sound( _snd ) );
+			} else if ( *n == "die-sound" ){
 
 				string _snd;
 				*n >> _snd;
@@ -790,15 +796,17 @@ const map<string,Animation*> & Character::getMovements() {
 	return mapper[ current_map ];
 }
 	
-void Character::attacked( Object * something ){
+void Character::attacked( Object * something, vector< Object * > & objects ){
 	animation_current->contacted();
 }
-	
-void Character::collided( ObjectAttack * obj ){
+
+void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	/*
 	last_obj = obj;
 	last_collide = obj->getTicket();
 	*/
+
+	Object::collided( obj, objects );
 
 	collision_objects[ obj ] = obj->getTicket();
 

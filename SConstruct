@@ -5,7 +5,7 @@ config = env.Configure();
 
 debug = 1
 
-flags = [ '-Wall', '-fno-rtti', '-Woverloaded-virtual' ];
+flags = [ '-Wall', '-Werror', '-fno-rtti', '-Woverloaded-virtual' ];
 
 if debug:
 	flags.append( '-g3' )

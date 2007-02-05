@@ -2,8 +2,11 @@
 #define _object_nonattack_h
 
 #include <string>
+#include <vector>
 
 #include "object.h"
+
+using namespace std;
 
 class ObjectAttack;
 
@@ -14,7 +17,6 @@ public:
 	ObjectNonAttack( const ObjectNonAttack & obj );
 	
 	virtual bool collision( ObjectAttack * obj );
-	virtual void collided( ObjectAttack * obj );
 	
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
@@ -25,7 +27,7 @@ public:
 	virtual const std::string & getAttackName();
 
 protected:
-	std::string no_name;
+	string no_name;
 
 };
 

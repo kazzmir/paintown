@@ -6,6 +6,7 @@ class ECollide;
 class ObjectAttack;
 class World;
 
+#include "util/sound.h"
 #include <string>
 #include <vector>
 
@@ -65,7 +66,7 @@ public:
 	/* collided
 	 * You have collided with this object. Make your time.
 	 */
-	virtual void collided( ObjectAttack * obj ) = 0;
+	virtual void collided( ObjectAttack * obj, vector< Object * > & objects );
 
 	/* getCollide
 	 * Returns the ECollide object that encompasses this object
@@ -175,6 +176,11 @@ public:
 		virtualz = (double)z;
 	}
 
+	/* this object died. this object can add arbitrary objects
+	 * into 'objects'
+	 */
+	virtual void died( vector< Object * > & objects );
+
 	/* set fall velocities */
 	virtual void fall( double x_vel, double y_vel );
 
@@ -221,6 +227,10 @@ public:
 		actualz = (int) virtualz;
 	}
 	*/
+
+	inline void setHit( const Sound & s ){
+		this->hit = s;
+	}
 
 	inline void setAlliance( const int x ){
 		alliance = x;
@@ -316,6 +326,9 @@ private:
 	int facing; // 0 for left, 1 for right
 
 	int alliance;
+
+	/* the sound played when this object gets hit */
+	Sound hit;
 
 };
 

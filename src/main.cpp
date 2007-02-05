@@ -33,7 +33,7 @@
 #define GFX_Y 480
 
 /* Global effect for copying */
-static Object * bang = NULL;
+// static Object * bang = NULL;
 
 #ifndef debug
 #define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
