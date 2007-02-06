@@ -108,7 +108,8 @@ vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, 
 				Heart * h = ((Enemy *)newobj)->getHeart();
 				hearts.push_back( h );
 			}
-			newobj->moveX( total_length );
+			// newobj->moveX( total_length );
+			newobj->moveRight( total_length );
 			newobj->moveZ( MIN_WORLD_Z );
 			if ( newobj->getZ() < MIN_WORLD_Z ){
 				newobj->setZ( MIN_WORLD_Z );

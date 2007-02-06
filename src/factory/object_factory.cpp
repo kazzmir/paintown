@@ -36,17 +36,20 @@ ObjectFactory::ObjectFactory(){
 }
 
 Object * ObjectFactory::makeItem( BlockObject * block ){
-	Item * item;
 	
 	try{
+		Item * item;
 		item = new Item( block->getPath() );
+		int x, z;
+		block->getCoords( x, z );
+		item->setX( x );
+		item->setZ( z );
+		return item;
 	} catch ( LoadException le ){
 		cout << __FILE__ << " : " << le.getReason() << endl;
 		// delete ret;
 		return NULL;
 	}
-
-	return item;
 }
 
 Object * ObjectFactory::makeEnemy( BlockObject * block ){

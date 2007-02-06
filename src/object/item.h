@@ -4,6 +4,7 @@
 #include "util/load_exception.h"
 #include "object/object_nonattack.h"
 #include "heart.h"
+#include "util/bitmap.h"
 
 #include <string>
 #include <vector>
@@ -27,6 +28,9 @@ public:
 	virtual Object * copy();
 	
 	virtual ~Item();
+
+protected:
+	Bitmap picture;
 };
 
 #endif
