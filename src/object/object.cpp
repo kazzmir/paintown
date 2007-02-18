@@ -15,7 +15,7 @@ const int Object::FACING_LEFT = 0;
 const int Object::FACING_RIGHT = 1;
 */
 
-Object::Object( int _alliance ):
+Object::Object( int alliance ):
 actualx( 0 ),
 actualy( 0 ),
 actualz( 0 ),
@@ -25,7 +25,7 @@ virtualz( 0 ),
 health( 0 ),
 max_health( 0 ),
 facing( FACING_RIGHT ),
-alliance( _alliance ){
+alliance( alliance ){
 }
 
 Object::Object( const int x, const int y, int _alliance ):

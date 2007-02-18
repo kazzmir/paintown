@@ -18,10 +18,20 @@
 
 using namespace std;
 
+void drawLetters( Bitmap & work, vector< int > caps, const char * str, int * colors, Font & myFont ){
+	for ( int q = caps.size() - 1; q >= 0; q-- ){
+		int col = colors[ (int)fabs( caps[ q ] ) ];
+		string h;
+		for ( int i = 0; i <= q; i++ )
+			h += str[ i ];
+		work.printf( 1, 1, col, myFont, h.c_str() );
+	}
+}
+
 void * loadingScreen( void * arg ){
 	
 	cout<<"Loading"<<endl;
-	Bitmap Screen( screen );
+	// Bitmap Screen( screen );
 	// Bitmap work( Screen.getWidth(), Screen.getHeight() );
 
 	int load_x = 80;
@@ -35,43 +45,32 @@ void * loadingScreen( void * arg ){
 
 	Bitmap work( load_width, load_height );
 
-	// make some scope
-	/*
-	if ( true ){
-		
-		Bitmap tmp( "data/paintown-title.png" );
-		tmp.Blit( 0, 0, Screen );
-		tmp.Blit( load_x, load_y, load_width, load_height, 0, 0, work );
-	}
-	*/
-	Screen.Blit( string( "data/paintown-title.png" ) );
-
-	Screen.Blit( load_x, load_y, load_width, load_height, 0, 0, work );
-
-	// DATAFILE * all_fonts = load_datafile( "data/fonts.dat" );
-
-	// caps.reserve( strlen( the_string ) );
-	vector< int > caps( strlen( the_string ) );
+	static vector< int > caps( strlen( the_string ) );
 	// cout<<"Caps size = "<<caps.size()<<endl;
 	int xp = 31;
-	for ( vector< int >::iterator it = caps.begin(); it != caps.end(); it++ ){
-		*it = xp;
-		xp -= 3;
-		if ( xp < -31 )
-			xp = xp + 31 + 31;
-	}
 
 	int colors[ 32 ];
 	/* blend from dark grey to light red */
 	Util::blend_palette( colors, 32, Bitmap::makeColor( 16, 16, 16 ), Bitmap::makeColor( 192, 8, 8 ) );
 
-	unsigned int which_letter = 0;
+	static unsigned int which_letter = 0xfff;
+	if ( which_letter == 0xfff ){
+		for ( vector< int >::iterator it = caps.begin(); it != caps.end(); it++ ){
+			*it = xp;
+			xp -= 3;
+			if ( xp < -31 )
+				xp = xp + 31 + 31;
+		}
+	}
 
 	bool quit = false;
 	Global::speed_counter = 0;
 
+	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
+	Bitmap::Screen->Blit( load_x, load_y, load_width, load_height, 0, 0, work );
 	/* I made this :p */
-	Screen.printfNormal( 400, 470, Bitmap::makeColor( 192, 0, 0 ), "Made by Jon Rafkind" );
+	Bitmap::Screen->printfNormal( 400, 470, Bitmap::makeColor( 192, 0, 0 ), "Made by Jon Rafkind" );
+	drawLetters( work, caps, the_string, colors, myFont );
 
 	while ( !quit ){
 
@@ -81,6 +80,7 @@ void * loadingScreen( void * arg ){
 			int think = Global::speed_counter;
 			while ( think-- ){
 		
+				draw = true;
 				caps[ which_letter ] += 3;
 				if ( caps[ which_letter ] > 31 ){
 					caps[ which_letter ] = -31 + (caps[which_letter] - 31);
@@ -88,43 +88,20 @@ void * loadingScreen( void * arg ){
 				which_letter++;
 				if ( which_letter >= caps.size() )
 					which_letter = 0;
-
-				for ( int q = caps.size() - 1; q >= 0; q-- ){
-					int col = colors[ (int)fabs( caps[ q ] ) ];
-					string h;
-					for ( int i = 0; i <= q; i++ )
-						h += the_string[i];
-					work.printf( 1, 1, col, myFont, h.c_str() );
-				}
-
 			}
-
-			// work.rectangle( 1, 1, work.getWidth() - 1, work.getHeight() - 1, Bitmap::makeColor(255,255,255) );
-
-			/*
-			int think = speed_counter;
-
-			while ( think-- ){
-
-				// work.rectangleFill( rnd( work.getWidth() ), rnd( work.getHeight() ), rnd( work.getWidth() ), rnd( work.getHeight() ), Bitmap::makeColor( rnd( 64 ) + 128, rnd ( 64 ) + 128, rnd( 64 ) + 128 ) );
-				work.printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), my_font, "Hello world" );
-
-			}
-			*/
 
 			Global::speed_counter = 0;
 			draw = true;
 		} else {
-			// sched_yield();
-			// pthread_yield();
 			rest( 1 );
 		}
 
 		if ( draw ){
-			Screen.acquire();
-			work.Blit( load_x, load_y, Screen );
-			Screen.release();
-			// work.clear();
+			drawLetters( work, caps, the_string, colors, myFont );
+
+			// Bitmap::Screen.acquire();
+			work.Blit( load_x, load_y, *Bitmap::Screen );
+			// Bitmap::Screen.release();
 		}
 
 		pthread_mutex_lock( &Global::loading_screen_mutex );
@@ -133,7 +110,7 @@ void * loadingScreen( void * arg ){
 
 	}
 
-	cout<<"Done loading"<<endl;
+	// cout<<"Done loading"<<endl;
 
 	return NULL;
 }
