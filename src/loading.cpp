@@ -18,13 +18,14 @@
 
 using namespace std;
 
-void drawLetters( Bitmap & work, vector< int > caps, const char * str, int * colors, Font & myFont ){
+void drawLetters( Bitmap & work, vector< int > caps, const char * str, int * colors, const Font & myFont ){
 	for ( int q = caps.size() - 1; q >= 0; q-- ){
 		int col = colors[ (int)fabs( caps[ q ] ) ];
 		string h;
 		for ( int i = 0; i <= q; i++ )
 			h += str[ i ];
-		work.printf( 1, 1, col, myFont, h.c_str() );
+		// work.printf( 1, 1, col, myFont, h.c_str() );
+		myFont.printf( 0, 0, col, work, h.c_str() );
 	}
 }
 
@@ -36,12 +37,13 @@ void * loadingScreen( void * arg ){
 
 	int load_x = 80;
 	int load_y = 120;
-	Font myFont = getFont( JOKERMAN_PCX );
-	// FONT * my_font = (FONT *)Global::all_fonts[ JOKERMAN_PCX ].dat;
+	string name = "tmp/comic.ttf";
+	name = "tmp/arial.ttf";
+	const Font & myFont = Font::getFont( name, 20, 20 );
 	const char * the_string = "Loading Paintown";
 	// const char * the_string = (const char *)arg;
 	int load_width = myFont.textLength( the_string );
-	int load_height = myFont.getHeight();
+	int load_height = myFont.getHeight() * 3 / 2;
 
 	Bitmap work( load_width, load_height );
 
@@ -69,7 +71,8 @@ void * loadingScreen( void * arg ){
 	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
 	Bitmap::Screen->Blit( load_x, load_y, load_width, load_height, 0, 0, work );
 	/* I made this :p */
-	Bitmap::Screen->printfNormal( 400, 470, Bitmap::makeColor( 192, 0, 0 ), "Made by Jon Rafkind" );
+	// Bitmap::Screen->printfNormal( 400, 470, Bitmap::makeColor( 192, 0, 0 ), "Made by Jon Rafkind" );
+	Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 0, 0 ), *Bitmap::Screen, "Made by Jon Rafkind" );
 	drawLetters( work, caps, the_string, colors, myFont );
 
 	while ( !quit ){

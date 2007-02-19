@@ -9,12 +9,12 @@
 using namespace std;
 
 FontFactory * FontFactory::my_factory = NULL;
-Font * FontFactory::getFont( const string & str ){
+Font * FontFactory::getFont( const string & str, const int x, const int y ){
 	if ( my_factory == NULL ){
 		my_factory = new FontFactory();
 	}
 
-	return my_factory->getRealFont( str );
+	return my_factory->getRealFont( str, x, y );
 }
 
 void FontFactory::destroy(){
@@ -22,14 +22,20 @@ void FontFactory::destroy(){
 		delete my_factory;
 }
 	
-Font * FontFactory::getRealFont( const string & str ){
+Font * FontFactory::getRealFont( const string & str, const int x, const int y ){
 	if ( font_mapper.find( str ) == font_mapper.end() ){
 	
 		DATAFILE * obj = find_datafile_object( my_data, str.c_str() );
-		if ( obj == NULL )
-			return NULL;
+		if ( obj == NULL ){
+			font_mapper[ str ] = new FreeTypeFont( str );
+			font_mapper[ str ]->setSize( x, y );
+		} else {
+			font_mapper[ str ] = new AllegroFont( (FONT *)( obj->dat ) );
+		}
 
-		font_mapper[ str ] = new Font( (FONT *)( obj->dat ) );
+		// font_mapper[ str ] = new AllegroFont( (FONT *)( obj->dat ) );
+		// Font * f = new FreeTypeFont( str );
+		// font_mapper[ str ] = f;
 	}
 
 	return font_mapper[ str ];
@@ -37,7 +43,7 @@ Font * FontFactory::getRealFont( const string & str ){
 
 FontFactory::FontFactory(){
 	my_data = load_datafile( "data/fonts.dat" );
-	font_mapper[ "bios" ] = new Font( font );
+	font_mapper[ "bios" ] = new AllegroFont( font );
 }
 
 FontFactory::~FontFactory(){

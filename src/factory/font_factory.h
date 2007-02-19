@@ -11,14 +11,14 @@ using namespace std;
 
 class FontFactory{
 public:
-	static Font * getFont( const string & str );
+	static Font * getFont( const string & str, const int x, const int y );
 	static void destroy();
 
 private:
 	FontFactory();
 	~FontFactory();
 
-	Font * getRealFont( const string & str );
+	Font * getRealFont( const string & str, const int x, const int y );
 
 private:
 	static FontFactory * my_factory;

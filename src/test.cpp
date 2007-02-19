@@ -409,7 +409,8 @@ void displayLines( const Bitmap & bitmap, int x_original, int y_original, const 
 			color = Bitmap::makeColor( 255, 0, 0 );
 		}
 
-		bitmap.printf( x, y, color, &font, "%c: %s", getKey( count ), (*it).first.c_str() );
+		// bitmap.printf( x, y, color, &font, "%c: %s", getKey( count ), (*it).first.c_str() );
+		font.printf( x, y, color, bitmap, "%c: %s", getKey( count ), (*it).first.c_str() );
 		y += font.getHeight() + 2;
 		if ( y > 480 - font.getHeight() - 1 ){
 			y = y_original;
@@ -593,10 +594,12 @@ void showAnimations( string person, int xmap = 0 ){
 			work.Stretch( screen_buffer );
 			td.endTime();
 			
-			screen_buffer.printfNormal( 1, 1, Bitmap::makeColor( 255, 255, 255 ), ch->getCurrentMovement()->getCurrentFramePath() );
-			screen_buffer.printfNormal( 1, getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), "Speed %f", runSpeed );
+			// screen_buffer.printfNormal( 1, 1, Bitmap::makeColor( 255, 255, 255 ), ch->getCurrentMovement()->getCurrentFramePath() );
+			Font::getDefaultFont().printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, ch->getCurrentMovement()->getCurrentFramePath() );
+			// screen_buffer.printfNormal( 1, getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), "Speed %f", runSpeed );
+			Font::getDefaultFont().printf( 1, Font::getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Speed %f", runSpeed );
 
-			displayLines( screen_buffer, 10, 400, ch->getMovements(), currentAnimation, getDefaultFont() );
+			displayLines( screen_buffer, 10, 400, ch->getMovements(), currentAnimation, Font::getDefaultFont() );
 
 			td.startTime();
 			acquire_screen();
@@ -694,6 +697,7 @@ string chooseCharacter(){
 
 		if ( draw ){
 			
+			const Font & font = Font::getDefaultFont();
 			int color = 32;
 			work.fill( Bitmap::makeColor( color, color, color ) );
 
@@ -705,11 +709,12 @@ string chooseCharacter(){
 
 				if ( count == selected ){
 					int background = Bitmap::makeColor( 92, 39, 120 );
-					work.rectangleFill( x, y, x + 300, y + 10, background );
+					work.rectangleFill( x, y, x + 300, y + font.getHeight(), background );
 				}
-				work.printfNormal( x, y, white, (*it).c_str() );
+				// work.printfNormal( x, y, white, (*it).c_str() );
+				font.printf( x, y, white, work, (*it).c_str() );
 
-				y += 10;
+				y += font.getHeight() + 1;
 				count += 1;
 			}
 

@@ -17,6 +17,7 @@ env.Append( CCFLAGS = flags, CPPPATH = [ "." ] );
 env.Append( LIBS = [ 'fl', 'ldpng', 'pthread', 'aldmb', 'dumb' ] );
 env.ParseConfig( 'libpng-config --libs' );
 env.ParseConfig( 'allegro-config --libs' );
+env.ParseConfig( 'freetype-config --libs --cflags' );
 
 SConscript( 'src/SConstruct', build_dir='build', exports = 'env' );
 env.Install( '.', 'build/paintown' );

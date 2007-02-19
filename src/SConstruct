@@ -63,6 +63,7 @@ keyboard.cpp
 bitmap.cpp
 music.cpp
 font.cpp
+ftalleg.cpp
 funcs.cpp
 ebox.cpp
 load_exception.cpp

@@ -4,14 +4,14 @@
 #include <string>
 #include <vector>
 
+#include "util/font.h"
+
 using namespace std;
 
-class Font;
 class Bitmap;
 
 struct render_message{
-	render_message( Font * f, int x, int y, int fg, int bg, const string & str ){
-		r_font = f;
+	render_message( const Font & f, int x, int y, int fg, int bg, const string & str ):r_font( f ){
 		this->x = x;
 		this->y = y;
 		this->fg = fg;
@@ -19,8 +19,8 @@ struct render_message{
 		this->str = str;
 	}
 
-	render_message( const render_message & c ){
-		r_font = c.r_font;
+	render_message( const render_message & c ):
+		r_font( c.r_font ){
 		x = c.x;
 		y = c.y;
 		fg = c.fg;
@@ -28,7 +28,21 @@ struct render_message{
 		str = c.str;
 	}
 
-	Font * r_font;
+	render_message & operator=( const render_message & rhs ){
+		if ( this == &rhs ) return *this;
+
+		/*
+		this->r_font = rhs.r_font;
+		this->x = rhs.x;
+		this->y = rhs.y;
+		this->fg = rhs.fg;
+		this->bg = rhs.bg;
+		this->str = rhs.str;
+		*/
+		return *this;
+	}
+
+	mutable const Font & r_font;
 	int x;
 	int y;
 	int fg;
@@ -43,8 +57,8 @@ public:
 	static FontRender * getInstance();
 	static void destroy();
 
-	void addMessage( Font * f, int x, int y, int fg, int bg, const string & str );
-	void addMessage( Font * f, int x, int y, int fg, int bg, const char * str, ... );
+	void addMessage( const Font & f, int x, int y, int fg, int bg, const string & str );
+	void addMessage( const Font & f, int x, int y, int fg, int bg, const char * str, ... );
 	void addMessage( const char * font_name, int x, int y, int fg, int bg, const string & str );
 	void render( Bitmap * work );
 

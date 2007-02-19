@@ -176,17 +176,16 @@ void Player::draw( Bitmap * work, int rel_x ){
 		show_life--;
 	if ( show_life < 0 )
 		show_life = 0;
-	Font * player_font = FontFactory::getFont( NAME_FONT );
+	// Font * player_font = FontFactory::getFont( NAME_FONT );
+	const Font & player_font = Font::getFont( NAME_FONT );
 	// Font * player_font = FontFactory::getFont( "bios" );
 
-	if ( player_font != NULL ){
-		// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
-		FontRender * render = FontRender::getInstance();
-		render->addMessage( player_font, (ky + x1) * 2, y1, Bitmap::makeColor(255,255,255), -1, getName() );
-		drawLifeBar( ky + x1, y1 + player_font->getHeight() / 2, show_life, work );
-		// work->printf( ky + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
-		render->addMessage( player_font, (x1 + ky + getMaxHealth() + 5) * 2, y1 + player_font->getHeight() / 2, Bitmap::makeColor(255,255,255), -1, "x %d", 3 );
-	}
+	// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
+	FontRender * render = FontRender::getInstance();
+	render->addMessage( player_font, (ky + x1) * 2, y1, Bitmap::makeColor(255,255,255), -1, getName() );
+	drawLifeBar( ky + x1, y1 + player_font.getHeight() / 2, show_life, work );
+	// work->printf( ky + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
+	render->addMessage( player_font, (x1 + ky + getMaxHealth() + 5) * 2, y1 + player_font.getHeight() / 2, Bitmap::makeColor(255,255,255), -1, "x %d", 3 );
 }
 
 bool Player::combo( Animation * ani ){
