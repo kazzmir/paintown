@@ -374,6 +374,10 @@ bool Character::isCollidable( Object * obj ){
 	// return true;
 }
 	
+bool Character::isGettable(){
+	return false;
+}
+	
 Animation * Character::getCurrentMovement(){
 	return this->animation_current;
 }
@@ -673,15 +677,15 @@ void Character::act( vector< Object * > * others, World * world ){
 
 	} else if ( getStatus() == Status_Hurt ){
 		if ( animation_current->Act() ){
-			if ( getLink() == NULL )
+			if ( getLink() == NULL ){
 				setStatus( Status_Ground );	
-			else	{
+			} else {
 				setStatus( Status_Grabbed );
 				// animation_current = movements["pain"];
 				animation_current = getMovement( "pain" );
 			}
 		}
-	} else if ( getStatus() == Status_Rise ){
+	} else if ( getStatus() == Status_Rise || getStatus() == Status_Get ){
 		if ( animation_current->Act() ){
 			animation_current = getMovement( "idle" );
 			setStatus( Status_Ground );
@@ -817,10 +821,12 @@ bool Character::realCollision( Object * obj ){
 
 		ECollide * me = getCollide();
 		ECollide * him = obj->getCollide();
+		/*
 		if ( !me ){
 			// cout<<"No collide"<<endl;
 			return false;
 		}
+		*/
 		
 		mx = this->getRX() - getWidth() / 2;
 		my = this->getRY() - getHeight();
@@ -924,7 +930,7 @@ const int Character::getHeight() const{
 	return 0;
 }
 
-ECollide * Character::getCollide(){
+ECollide * Character::getCollide() const {
 	if ( animation_current ){
 		return animation_current->getCollide( getFacing() );
 	}

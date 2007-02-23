@@ -86,11 +86,11 @@ void Attack::print(){
 	cout<<"Damage: "<<getDamage()<<endl;
 }
 	
-const int Attack::getXLen(){
+const int Attack::getXLen() const {
 	return getX2() - getX1();
 }
 
-const int Attack::getYLen(){
+const int Attack::getYLen() const {
 	return getY2() - getY1();
 }
 

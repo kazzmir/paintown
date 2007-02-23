@@ -1,6 +1,7 @@
 #include "util/funcs.h"
 #include "object/object.h"
 #include "object/object_attack.h"
+#include "object/character.h"
 #include "util/load_exception.h"
 #include "globals.h"
 #include "object/effect.h"
@@ -138,8 +139,21 @@ void World::doLogic(){
 		} else ++it;
 		// it++;
 	}
-	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 
+	/* special case for getting items */
+	Character * const cplayer = (Character *) player; 
+	if ( cplayer->getStatus() == Status_Get ){
+		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+			Object * const o = *it;
+			if ( o->isGettable() && o->collision( cplayer ) ){
+				o->touch( cplayer );
+				delete o;
+				it = objects.erase( it );
+			} else ++it;
+		}
+	}
+
+	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 }
 
 void World::act(){

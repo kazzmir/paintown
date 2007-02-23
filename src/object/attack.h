@@ -18,8 +18,8 @@ public:
 
 	Attack & operator = ( const Attack & a );
 
-	const int getXLen();
-	const int getYLen();
+	const int getXLen() const;
+	const int getYLen() const;
 
 public:
 

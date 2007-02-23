@@ -297,6 +297,17 @@ void Player::grabEnemy( Object * enemy ){
 	enemy->grabbed( this );
 	setLink( enemy );
 }
+			
+static Animation * hasGetAnimation( const map< Animation *, int > & animations ){
+	for ( map< Animation *, int >::const_iterator it = animations.begin(); it != animations.end(); it++ ){
+		Animation * a = (*it).first;
+		if ( a->getName() == "get" ){
+			return a;
+		}
+	}
+
+	return NULL;
+}
 
 void Player::act( vector< Object * > * others, World * world ){
 
@@ -304,7 +315,7 @@ void Player::act( vector< Object * > * others, World * world ){
 	Character::act( others, world );
 
 	/* special cases... */
-	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise )
+	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise || getStatus() == Status_Get )
 		return;
 
 	/*
@@ -485,26 +496,42 @@ void Player::act( vector< Object * > * others, World * world ){
 		*/
 
 		int max = -1;
-		if ( !possible_animations.empty() ){
-			for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
-				int & cur = (*mit).second;
-				Animation * blah = (*mit).first;
-				if ( global_debug ){
-					cout<< blah->getName() << "? ";
+		if ( ! possible_animations.empty() ){
+
+			Animation * get = hasGetAnimation( possible_animations );
+			if ( get != NULL ){
+				for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
+					Object * o = *it;
+					if ( o->isGettable() && fabs(o->getX() - getX()) < 25 ){
+						final = get;
+						setStatus( Status_Get );
+					}
 				}
-				// if ( cur > max || blah->getPreviousSequence() == current_name ){
-				// cout<<"Testing "<<blah->getName()<<endl;
-				if ( blah->hasSequence( current_name ) ){
-					// cout<<blah->getName() << " has "<< current_name << endl;
-				}
-				if ( cur > max || blah->hasSequence( current_name ) ){
-					// cout<<"Current choice = "<<blah->getName() <<endl;
-					final = blah;
-					max = cur;
-				}
+				possible_animations.erase( get );
 			}
-			if ( global_debug )
-				cout<<endl;
+
+			if ( getStatus() != Status_Get ){
+
+				for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
+					int & cur = (*mit).second;
+					Animation * blah = (*mit).first;
+					if ( global_debug ){
+						cout<< blah->getName() << "? ";
+					}
+					// if ( cur > max || blah->getPreviousSequence() == current_name ){
+					// cout<<"Testing "<<blah->getName()<<endl;
+					if ( blah->hasSequence( current_name ) ){
+						// cout<<blah->getName() << " has "<< current_name << endl;
+					}
+					if ( cur > max || blah->hasSequence( current_name ) ){
+						// cout<<"Current choice = "<<blah->getName() <<endl;
+						final = blah;
+						max = cur;
+					}
+				}
+				if ( global_debug )
+					cout<<endl;
+			}
 		}
 		// cout<< final->getName() << endl;
 		

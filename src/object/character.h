@@ -24,8 +24,9 @@ const int Status_Hurt = 4;
 const int Status_Rise = 5;
 const int Status_Fell = 6;
 const int Status_Dead = 7;
+const int Status_Get = 8;
 
-class Character: public ObjectAttack{
+class Character: public ObjectAttack {
 public:
 
 	/* constructors and destructor */
@@ -163,7 +164,7 @@ public:
 	virtual int getDamage() const;
 
 	/* collision detection object */
-	virtual ECollide * getCollide();
+	virtual ECollide * getCollide() const;
 
 	inline Object * getLink(){
 		return linked;
@@ -177,6 +178,7 @@ public:
 		return mapper;
 	}
 
+	virtual bool isGettable();
 	virtual Animation * getCurrentMovement();
 	virtual Animation * getMovement( const string & str );
 	virtual Animation * getMovement( const unsigned int x );

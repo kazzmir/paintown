@@ -22,6 +22,9 @@ public:
 	virtual void act( vector< Object * > * others, World * world );
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual bool isCollidable( Object * obj );
+	virtual ECollide * getCollide() const;
+	virtual bool collision( ObjectAttack * obj );
+	virtual bool isGettable();
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
 	
@@ -31,6 +34,7 @@ public:
 
 protected:
 	Bitmap picture;
+	ECollide * collide;
 };
 
 #endif

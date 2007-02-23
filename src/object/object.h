@@ -48,6 +48,7 @@ public:
 	 */
 	virtual Object * copy() = 0;
 
+	virtual void touch( Object * obj );
 	
 	virtual const string & getAttackName() = 0;
 
@@ -71,7 +72,7 @@ public:
 	/* getCollide
 	 * Returns the ECollide object that encompasses this object
 	 */
-	virtual ECollide * getCollide();
+	virtual ECollide * getCollide() const;
 
 	/* takeDamage
 	 * Take some damage and do other things
@@ -87,6 +88,8 @@ public:
 	 * Returns true if this object can collide with other objects
 	 */
 	virtual bool isCollidable( Object * obj ) = 0;
+
+	virtual bool isGettable() = 0;
 
 	/* isAttacking:
 	 * Returns true if this object is performing an attack move

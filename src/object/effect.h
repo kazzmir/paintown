@@ -13,7 +13,7 @@ class Animation;
 
 extern const int ALLIANCE_NONE;
 
-class Effect: public ObjectNonAttack{
+class Effect: public ObjectNonAttack {
 public:
 	Effect( int alliance = ALLIANCE_NONE );
 	Effect( const Effect & ef );
@@ -22,6 +22,7 @@ public:
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
 	virtual bool isCollidable( Object * obj );
+	virtual bool isGettable();
 
 	virtual void act( vector< Object * > * others, World * world );
 	virtual void draw( Bitmap * work, int rel_x );

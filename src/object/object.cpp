@@ -149,8 +149,11 @@ void Object::takeDamage( ObjectAttack * obj, int x ){
 	this->hurt( x );
 	// health -= x;
 }
+	
+void Object::touch( Object * obj ){
+}
 
-ECollide * Object::getCollide(){
+ECollide * Object::getCollide() const {
 	return 0;
 }
 

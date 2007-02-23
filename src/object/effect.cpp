@@ -94,6 +94,10 @@ Object * Effect::copy(){
 	return new Effect( *this );
 }
 	
+bool Effect::isGettable(){
+	return false;
+}
+	
 const int Effect::getWidth() const{
 	if ( image )
 		return image->getWidth();
