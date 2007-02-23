@@ -77,21 +77,30 @@ void Enemy::draw( Bitmap * work, int rel_x ){
 		int x, y;
 		NamePlacer::getPlacement( x, y, id );
 
-		if ( icon )
+		if ( icon ){
 			icon->draw( x, y, *work );
+		}
 		int icon_x = icon ? icon->getWidth() : 0;
 
 		// work->printfNormal( icon_x + x + 1, y, Bitmap::makeColor(255,255,255), getName() );
 		FontRender * fac = FontRender::getInstance();
 		// Font * my_font = FontFactory::getFont( NAME_FONT );
-		const Font & my_font = Font::getFont( NAME_FONT );
-		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Bitmap::makeColor(255,255,255), -1, getName() );
+		// const Font & my_font = Font::getFont( NAME_FONT );
+		const Font & my_font = Font::getFont( "tmp/arial.ttf", 20, 20 );
+		const string & name = getName();
+		// const int height = my_font.getHeight( name ) / 2;
+		const int height = 20 / 2;
+		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Bitmap::makeColor(255,255,255), -1, name );
 
-		if ( show_life > getHealth() )
+		if ( show_life > getHealth() ){
 			show_life--;
-		if ( show_life < getHealth() )
+		}
+
+		if ( show_life < getHealth() ){
 			show_life++;
-		drawLifeBar( icon_x + x + 1, y + my_font.getHeight() / 2, show_life, work );
+		}
+
+		drawLifeBar( icon_x + x + 1, y + height, show_life, work );
 	}
 }
 

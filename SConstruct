@@ -3,7 +3,7 @@ import os;
 env = Environment( ENV = os.environ );
 config = env.Configure();
 
-debug = 1
+debug = 0
 
 flags = [ '-Wall', '-Werror', '-fno-rtti', '-Woverloaded-virtual' ];
 

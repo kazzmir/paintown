@@ -39,11 +39,12 @@ void * loadingScreen( void * arg ){
 	int load_y = 120;
 	string name = "tmp/comic.ttf";
 	name = "tmp/arial.ttf";
-	const Font & myFont = Font::getFont( name, 20, 20 );
+	const Font & myFont = Font::getFont( name, 24, 24 );
 	const char * the_string = "Loading Paintown";
 	// const char * the_string = (const char *)arg;
 	int load_width = myFont.textLength( the_string );
-	int load_height = myFont.getHeight() * 3 / 2;
+	// int load_height = myFont.getHeight() * 3 / 2;
+	int load_height = myFont.getHeight( the_string );
 
 	Bitmap work( load_width, load_height );
 
@@ -72,7 +73,7 @@ void * loadingScreen( void * arg ){
 	Bitmap::Screen->Blit( load_x, load_y, load_width, load_height, 0, 0, work );
 	/* I made this :p */
 	// Bitmap::Screen->printfNormal( 400, 470, Bitmap::makeColor( 192, 0, 0 ), "Made by Jon Rafkind" );
-	Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 0, 0 ), *Bitmap::Screen, "Made by Jon Rafkind" );
+	Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), *Bitmap::Screen, "Made by Jon Rafkind" );
 	drawLetters( work, caps, the_string, colors, myFont );
 
 	while ( !quit ){

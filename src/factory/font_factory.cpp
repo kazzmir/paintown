@@ -28,7 +28,6 @@ Font * FontFactory::getRealFont( const string & str, const int x, const int y ){
 		DATAFILE * obj = find_datafile_object( my_data, str.c_str() );
 		if ( obj == NULL ){
 			font_mapper[ str ] = new FreeTypeFont( str );
-			font_mapper[ str ]->setSize( x, y );
 		} else {
 			font_mapper[ str ] = new AllegroFont( (FONT *)( obj->dat ) );
 		}
@@ -38,12 +37,16 @@ Font * FontFactory::getRealFont( const string & str, const int x, const int y ){
 		// font_mapper[ str ] = f;
 	}
 
-	return font_mapper[ str ];
+	Font * f = font_mapper[ str ];
+	f->setSize( x, y );
+
+	return f;
+	// return font_mapper[ str ];
 }
 
 FontFactory::FontFactory(){
 	my_data = load_datafile( "data/fonts.dat" );
-	font_mapper[ "bios" ] = new AllegroFont( font );
+	font_mapper[ "bios" ] = new AllegroFont( ::font );
 }
 
 FontFactory::~FontFactory(){

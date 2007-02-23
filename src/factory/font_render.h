@@ -42,7 +42,7 @@ struct render_message{
 		return *this;
 	}
 
-	mutable const Font & r_font;
+	const Font & r_font;
 	int x;
 	int y;
 	int fg;
