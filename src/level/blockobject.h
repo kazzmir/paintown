@@ -34,6 +34,14 @@ public:
 		return path;
 	}
 
+	inline const string getStimulationType(){
+		return stimulationType;
+	}
+
+	inline const int getStimulationValue(){
+		return stimulationValue;
+	}
+
 	inline const int getMap() const {
 		return map;
 	}
@@ -70,6 +78,14 @@ public:
 		map = m;
 	}
 
+	inline void setStimulationType( string s ){
+		stimulationType = s;
+	}
+
+	inline void setStimulationValue( int i ){
+		stimulationValue = i;
+	}
+
 	inline void setHealth( int h ) {
 		health = h;
 	}
@@ -96,7 +112,9 @@ protected:
 	int health;
 
 	int coords_x, coords_z;
-	
+
+	string stimulationType;
+	int stimulationValue;
 };
 
 #endif

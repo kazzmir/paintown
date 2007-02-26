@@ -10,6 +10,7 @@
 class Bitmap;
 class Animation;
 class ObjectAttack;
+class Stimulation;
 class World;
 class Sound;
 
@@ -52,6 +53,8 @@ public:
 
 	/* make the character jump with an x velocity of x_ */
 	virtual void doJump( double x_ );
+	
+	virtual void stimulate( const Stimulation & stim );
 
 	/* inherited from object */
 	virtual void thrown();

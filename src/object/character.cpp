@@ -10,6 +10,7 @@
 #include "globals.h"
 #include "object.h"
 #include "object_attack.h"
+#include "stimulation.h"
 
 #include "factory/shadow.h"
 #include "util/bitmap.h"
@@ -546,6 +547,10 @@ const string & Character::getAttackName(){
 
 void Character::decreaseYVelocity(){
 	y_velocity -= 0.18;
+}
+	
+void Character::stimulate( const Stimulation & stim ){
+	stim.stimulate( *(Character *) this );
 }
 	
 void Character::decreaseXVelocity(){

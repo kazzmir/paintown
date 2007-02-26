@@ -49,6 +49,8 @@ object_attack.cpp
 object_nonattack.cpp
 player.cpp
 attack.cpp
+stimulation.cpp
+health_stimulation.cpp
 character.cpp
 heart.cpp
 """))

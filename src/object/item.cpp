@@ -1,5 +1,6 @@
 #include "object/item.h"
 #include "object/object_attack.h"
+#include "stimulation.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/bitmap.h"
@@ -9,8 +10,9 @@
 
 using namespace std;
 
-Item::Item( const string & filename ) throw( LoadException ):
-collide( 0 ){
+Item::Item( const string & filename, Stimulation * const stimulation ) throw( LoadException ):
+collide( 0 ),
+stimulation( stimulation ){
 	TokenReader tr( filename );
 
 	setHealth( 1 );
@@ -41,7 +43,8 @@ collide( 0 ){
 }
 
 Item::Item( const Item & item ):
-collide( 0 ){
+collide( 0 ),
+stimulation( item.copyStimulation() ){
 	this->picture = item.picture;
 	collide = new ECollide( this->picture );
 	setHealth( item.getHealth() );
@@ -50,12 +53,20 @@ collide( 0 ){
 	setZ( item.getZ() );
 }
 	
+Stimulation * const Item::copyStimulation() const {
+	return getStimulation()->copy();
+}
+	
 Object * Item::copy(){
 	return new Item( *this );
 }
 	
 bool Item::isGettable(){
 	return true;
+}
+	
+void Item::touch( Object * obj ){
+	obj->stimulate( *getStimulation() );
 }
 
 ECollide * Item::getCollide() const {
@@ -117,4 +128,5 @@ const int Item::getHeight() const {
 	
 Item::~Item(){
 	delete collide;
+	delete stimulation;
 }

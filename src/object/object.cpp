@@ -1,5 +1,6 @@
 #include "object.h"
 #include "object_attack.h"
+#include "stimulation.h"
 #include "util/ebox.h"
 #include <exception>
 #include <iostream>
@@ -74,6 +75,10 @@ void Object::moveRight( const int x ){
 
 void Object::moveLeft( const int x ){
 	moveX( FACING_LEFT, x );
+}
+	
+void Object::stimulate( const Stimulation & stim ){
+	stim.stimulate( *this );
 }
 	
 void Object::moveX( int dir, const int x ){

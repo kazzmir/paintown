@@ -1,6 +1,8 @@
 #include <iostream>
 #include <map>
 
+#include "object/health_stimulation.h"
+#include "object/stimulation.h"
 #include "level/blockobject.h"
 #include "object/enemy.h"
 #include "object/heart.h"
@@ -35,11 +37,18 @@ void ObjectFactory::destroy(){
 ObjectFactory::ObjectFactory(){
 }
 
+static Stimulation * makeStimulation( const string & str, int value ){
+	if ( str == "health" ){
+		return new HealthStimulation( value );
+	}
+	return new Stimulation();
+}
+
 Object * ObjectFactory::makeItem( BlockObject * block ){
 	
 	try{
 		Item * item;
-		item = new Item( block->getPath() );
+		item = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) );
 		int x, z;
 		block->getCoords( x, z );
 		item->setX( x );

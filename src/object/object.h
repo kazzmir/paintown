@@ -5,6 +5,7 @@ class Bitmap;
 class ECollide;
 class ObjectAttack;
 class World;
+class Stimulation;
 
 #include "util/sound.h"
 #include <string>
@@ -68,6 +69,9 @@ public:
 	 * You have collided with this object. Make your time.
 	 */
 	virtual void collided( ObjectAttack * obj, vector< Object * > & objects );
+
+	/* send an arbitrary stimulation to an object */
+	virtual void stimulate( const Stimulation & stim );
 
 	/* getCollide
 	 * Returns the ECollide object that encompasses this object
@@ -300,6 +304,11 @@ public:
 		max_health = h;
 	}
 
+	/* hurt:
+	 * take some damage
+	 */
+	virtual void hurt( int x );
+
 	/* destructor
 	 * Nothing to cleanup.
 	 */
@@ -307,14 +316,6 @@ public:
 
 	static const int FACING_LEFT = 0;
 	static const int FACING_RIGHT = 1;
-
-protected:
-
-	 /* hurt:
-	 * take some damage
-	 */
-	virtual void hurt( int x );
-
 
 private:
 	int actualx;

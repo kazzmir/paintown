@@ -10,7 +10,9 @@ type( -1 ),
 map( 0 ),
 health( 1 ),
 coords_x( 0 ),
-coords_z( 0 ){
+coords_z( 0 ),
+stimulationType( "none" ),
+stimulationValue( 0 ){
 	while ( tok->hasTokens() ){
 		try{
 			Token * current;
@@ -27,6 +29,15 @@ coords_z( 0 ){
 					tok->print(" ");
 					throw LoadException("Not a valid type");
 				}
+			} else if ( *current == "stimulation" ){
+				string type;
+				int value;
+				Token * next;
+				*current >> next;
+				type = next->getName();
+				*next >> value;
+				setStimulationValue( value );
+				setStimulationType( type );
 			} else if ( *current == "path" ){
 				string n;
 				*current >> n;
@@ -63,8 +74,8 @@ coords_z( 0 ){
 				current->print(" ");
 			}
 
-		} catch( const TokenException & te ){
-			throw LoadException("Blockobject parse exception");
+		} catch ( const TokenException & te ){
+			throw LoadException("Blockobject parse exception: " + te.getReason() );
 		}
 	}
 

@@ -3,12 +3,12 @@
 
 #include "util/load_exception.h"
 #include "object/object_nonattack.h"
-#include "heart.h"
 #include "util/bitmap.h"
 
 #include <string>
 #include <vector>
 
+class Stimulation;
 class Object;
 class World;
 
@@ -16,7 +16,7 @@ using namespace std;
 
 class Item: public ObjectNonAttack {
 public:
-	Item( const string & filename ) throw( LoadException );
+	Item( const string & filename, Stimulation * const stimulation ) throw( LoadException );
 	Item( const Item & item );
 	
 	virtual void act( vector< Object * > * others, World * world );
@@ -25,6 +25,7 @@ public:
 	virtual ECollide * getCollide() const;
 	virtual bool collision( ObjectAttack * obj );
 	virtual bool isGettable();
+	virtual void touch( Object * obj );
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
 	
@@ -33,8 +34,15 @@ public:
 	virtual ~Item();
 
 protected:
+	Stimulation * const copyStimulation() const;
+
+	inline Stimulation * const getStimulation() const {
+		return stimulation;
+	}
+
 	Bitmap picture;
 	ECollide * collide;
+	Stimulation * const stimulation;
 };
 
 #endif
