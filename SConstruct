@@ -5,7 +5,7 @@ config = env.Configure();
 
 def getDebug():
 	try:
-		return os.environ[ 'DEBUG' ]
+		return int(os.environ[ 'DEBUG' ])
 	except KeyError:
 		return 0
 
