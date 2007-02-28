@@ -193,6 +193,15 @@ public:
 	virtual void getAttackCoords( int & x, int & y);
 	const string getName() const;
 	void setName( const string & str );
+
+	inline void setSpeed( const double s ){
+		speed = s;
+	}
+
+	inline const double getSpeed() const {
+		return speed;
+	}
+
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
 	virtual const string & getAttackName();
@@ -236,7 +245,7 @@ protected:
 
 protected:
 	string name;
-	int speed;
+	// int speed;
 	int type;
 	int shadow;
 	Bitmap * icon;
@@ -285,6 +294,8 @@ private:
 
 	/* being thrown or not */
 	bool thrown_status;
+
+	double speed;
 	
 	/* object this is linked to */
 	Object * linked;

@@ -594,7 +594,7 @@ void Player::act( vector< Object * > * others, World * world ){
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;
 				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
-					x = 1.2;
+					x = getSpeed() * 1.2;
 				}
 
 				doJump( x );
@@ -642,7 +642,7 @@ void Player::act( vector< Object * > * others, World * world ){
 
 		// if ( keyboard[ KEY_RIGHT ] || keyboard[ KEY_LEFT ] ){
 		if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
-			moveX( 1 );
+			moveX( getSpeed() );
 		} else if ( keyboard[ getKey( PAIN_KEY_BACK ) ] ){
 			setFacing( getOppositeFacing() );
 		}
@@ -658,10 +658,10 @@ void Player::act( vector< Object * > * others, World * world ){
 
 		if ( keyboard[ Keyboard::Key_UP ] ){
 			// setZ( getZ() - 1);
-			moveZ( -1 );
+			moveZ( -getSpeed() );
 		} else if ( keyboard[ Keyboard::Key_DOWN ] ){
 			// setZ( getZ() + 1 );
-			moveZ( 1 );
+			moveZ( getSpeed() );
 		}
 	} else {
 	

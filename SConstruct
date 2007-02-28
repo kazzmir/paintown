@@ -3,7 +3,13 @@ import os;
 env = Environment( ENV = os.environ );
 config = env.Configure();
 
-debug = 0
+def getDebug():
+	try:
+		return os.environ[ 'DEBUG' ]
+	except KeyError:
+		return 0
+
+debug = getDebug()
 
 flags = [ '-Wall', '-Werror', '-fno-rtti', '-Woverloaded-virtual' ];
 

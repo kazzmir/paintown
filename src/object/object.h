@@ -204,9 +204,9 @@ public:
 	void moveX( const int x );
 	void moveY( const int y );
 	void moveZ( const int z );
-	void moveX( double x );
-	void moveY( double y );
-	void moveZ( double z );
+	void moveX( const double x );
+	void moveY( const double y );
+	void moveZ( const double z );
 
 	void moveX( int dir, const int x );
 

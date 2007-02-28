@@ -37,6 +37,7 @@ x_velocity( 0 ),
 y_velocity( 0 ),
 death( 0 ),
 thrown_status( false ),
+speed( 1 ),
 linked( NULL ),
 moving( 0 ),
 current_map( 0 ),
@@ -46,7 +47,6 @@ landed_sound( NULL ){
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
 ObjectAttack( 0, 0, alliance ),
-speed( 0 ),
 type( 0 ),
 shadow( 0 ),
 icon( NULL ),
@@ -55,6 +55,7 @@ y_velocity( 0 ),
 status( Status_Ground ),
 death( 0 ),
 thrown_status( false ),
+speed( 1 ),
 linked( NULL ),
 moving( 0 ),
 current_map( 0 ),
@@ -67,7 +68,6 @@ landed_sound( NULL ){
 
 Character::Character( const char * filename, int alliance ) throw( LoadException ):
 ObjectAttack( 0, 0, alliance ),
-speed( 0 ),
 type( 0 ),
 shadow( 0 ),
 icon( NULL ),
@@ -76,6 +76,7 @@ y_velocity( 0 ),
 status( Status_Ground ),
 death( 0 ),
 thrown_status( false ),
+speed( 1 ),
 linked( NULL ),
 moving( 0 ),
 current_map( 0 ),
@@ -106,10 +107,10 @@ die_sound( NULL ){
 	// setZ( chr.getZ() );
 
 	name = chr.getName();
-	speed = chr.speed;
 	type = chr.type;
 	shadow = chr.shadow;
 	icon = chr.icon;
+	setSpeed( chr.getSpeed() );
 
 	linked = NULL;
 	setYVelocity( 0 );
