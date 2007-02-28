@@ -11,6 +11,10 @@ class Stimulation;
 #include <string>
 #include <vector>
 
+#define MIN_(a,b) ((a) < (b) ? (a) : (b))
+#define MAX_(a,b) ((a) > (b) ? (a) : (b))
+#define MID_(a,b,c) MAX_(a,MIN_(b,c))
+
 using namespace std;
 
 /* generic game object
@@ -297,7 +301,7 @@ public:
 	 * Sets the amount of health the object has
 	 */
 	inline void setHealth( int h ){
-		health = h;
+		health = MID_( 0, h, getMaxHealth() );
 	}
 
 	inline void setMaxHealth( int h ){

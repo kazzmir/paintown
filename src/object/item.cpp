@@ -15,6 +15,7 @@ collide( 0 ),
 stimulation( stimulation ){
 	TokenReader tr( filename );
 
+	setMaxHealth( 1 );
 	setHealth( 1 );
 
 	Token * head;
@@ -43,6 +44,7 @@ stimulation( stimulation ){
 }
 
 Item::Item( const Item & item ):
+ObjectNonAttack( item ),
 collide( 0 ),
 stimulation( item.copyStimulation() ){
 	this->picture = item.picture;

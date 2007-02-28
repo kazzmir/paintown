@@ -222,8 +222,8 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 			} else if ( *n == "health" ){
 				int h;
 				*n >> h;
-				setHealth( h );
 				setMaxHealth( h );
+				setHealth( h );
 			} else if ( *n == "jump-velocity" ){
 				double h;
 				*n >> h;
