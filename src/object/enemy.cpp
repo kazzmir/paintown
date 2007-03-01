@@ -123,6 +123,24 @@ void Enemy::filterEnemies( vector< Object * > * mine, vector< Object * > * all )
 }
 */
 
+static inline double min( double a, double b ){
+	return a < b ? a : b;
+}
+
+static inline double max( double a, double b ){
+	return a > b ? a : b;
+}
+
+/* if x1 < x2, return the minimum of speed and x2 - x1 */
+static double velocity( double x1, double x2, double speed ){
+	if ( x2 > x1 ){
+		return min( speed, x2 - x1 );
+	} else {
+		return -min( speed, fabs( x1 - x2 ) );
+	}
+	// moveX( want_x > getX() ? getSpeed() : -getSpeed() );
+}
+
 void Enemy::act( vector< Object * > * others, World * world ){
 
 	Character::act( others, world );
@@ -208,6 +226,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 
 	// if ( getStatus() == Status_Ground ){
 		// cout<<"WantX: "<<want_x<<" WantZ: "<<want_z<<" getX: "<<getX()<<" getZ: "<<getZ()<<endl;
+		// cout << "Speed: " << getSpeed() << endl;
 		if ( want_path ){
 		// if ( want_x != getX() || want_z != getZ() ){
 			if ( want_x == getX() && want_z == getZ() ){
@@ -217,13 +236,21 @@ void Enemy::act( vector< Object * > * others, World * world ){
 			// animation_current = movements[ "walk" ];
 			animation_current = getMovement( "walk" );
 			if ( want_x != getX() ){
+				int dir = 1;
 				if ( getFacing() == Object::FACING_LEFT ){
-					moveX( want_x > getX() ? -1 : 1 );
-				} else	moveX( want_x > getX() ? 1 : -1 );
+					dir = -1;
+					// moveX( velocity( want_x, getX(), getSpeed() ) );
+					// want_x > getX() ? -getSpeed() : getSpeed() );
+				} else {
+					// moveX( - velocity( want_x, getX(), getSpeed() ) );
+					// moveX( want_x > getX() ? getSpeed() : -getSpeed() );
+				}
+				// cout << "X: " << getX() << " WantX: " << want_x << " Velocity: " << velocity( getX(), want_x, getSpeed() ) << endl;
+				moveX( dir * velocity( getX(), want_x, getSpeed() ) );
 			}
 
 			if ( want_z != getZ() ){
-				moveZ( want_z > getZ() ? 1 : -1 );
+				moveZ( velocity( getZ(), want_z, getSpeed() ) );
 			}
 
 		}
