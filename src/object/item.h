@@ -3,6 +3,7 @@
 
 #include "util/load_exception.h"
 #include "object/object_nonattack.h"
+#include "util/sound.h"
 #include "util/bitmap.h"
 
 #include <string>
@@ -43,6 +44,7 @@ protected:
 	Bitmap picture;
 	ECollide * collide;
 	Stimulation * const stimulation;
+	Sound sound;
 };
 
 #endif

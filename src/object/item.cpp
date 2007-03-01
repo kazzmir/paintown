@@ -37,6 +37,10 @@ stimulation( stimulation ){
 			string file;
 			*next >> file;
 			picture.load( file );
+		} else if ( *next == "sound" ){
+			string path;
+			*next >> path;
+			sound = Sound( path );
 		}
 	}
 
@@ -50,6 +54,7 @@ stimulation( item.copyStimulation() ){
 	this->picture = item.picture;
 	collide = new ECollide( this->picture );
 	setHealth( item.getHealth() );
+	sound = item.sound;
 	setX( item.getX() );
 	setY( item.getY() );
 	setZ( item.getZ() );
@@ -69,6 +74,8 @@ bool Item::isGettable(){
 	
 void Item::touch( Object * obj ){
 	obj->stimulate( *getStimulation() );
+	printf( "play sound\n" );
+	sound.play();
 }
 
 ECollide * Item::getCollide() const {
