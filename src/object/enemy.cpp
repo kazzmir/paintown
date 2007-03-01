@@ -245,7 +245,6 @@ void Enemy::act( vector< Object * > * others, World * world ){
 					// moveX( - velocity( want_x, getX(), getSpeed() ) );
 					// moveX( want_x > getX() ? getSpeed() : -getSpeed() );
 				}
-				// cout << "X: " << getX() << " WantX: " << want_x << " Velocity: " << velocity( getX(), want_x, getSpeed() ) << endl;
 				moveX( dir * velocity( getX(), want_x, getSpeed() ) );
 			}
 
@@ -254,17 +253,6 @@ void Enemy::act( vector< Object * > * others, World * world ){
 			}
 
 		}
-		/*
-		if (	animation_current == movements[ "idle" ] ||
-			animation_current == movements[ "walk" ] ){
-		}
-		*/
-
-		/*
-		if ( animation_current == getMovement( "idle" ) )
-			animation_current = getMovement( "walk" );
-		*/
-			
 		
 	// }
 
