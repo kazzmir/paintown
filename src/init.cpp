@@ -2,6 +2,8 @@
 #include <pthread.h>
 #include <allegro.h>
 #include <iostream>
+#include <dumb.h>
+#include <aldumb.h>
 #include <loadpng.h>
 #include "util/bitmap.h"
 
@@ -60,6 +62,9 @@ void init( int gfx ){
 		exit( 1 );
 	}
 	cout<<"Loaded fonts " << endl;
+
+	atexit( &dumb_exit );
+	dumb_register_packfiles();
 
 	cout<<"-- END init --"<<endl;
 

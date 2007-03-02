@@ -8,6 +8,7 @@ def addFiles( dir, files ):
 addFiles( './', Split( """
 globals.cpp
 loading.cpp
+music.cpp
 init.cpp
 nameplacer.cpp
 world.cpp
@@ -63,7 +64,6 @@ timedifference.cpp
 sound.cpp
 keyboard.cpp
 bitmap.cpp
-music.cpp
 font.cpp
 ftalleg.cpp
 funcs.cpp

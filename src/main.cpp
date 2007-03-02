@@ -14,8 +14,10 @@
 #include "factory/font_render.h"
 #include "fonts.h"
 #include "globals.h"
+#include "init.h"
 #include "level/scene.h"
 #include "loading.h"
+#include "music.h"
 #include "object/character.h"
 #include "object/effect.h"
 #include "object/enemy.h"
@@ -27,7 +29,6 @@
 #include "util/load_exception.h"
 #include "util/timedifference.h"
 #include "world.h"
-#include "init.h"
 
 #define GFX_X 640
 #define GFX_Y 480
@@ -76,6 +77,12 @@ void realGame( Object * player ){
 	int game_time = 100;
 
 	/* end of init stuff */
+
+	Music::pause();
+	Music::setVolume( 0.3 );
+	Music::fadeIn();
+	Music::loadSong( "data/music/song1.xm" );
+	Music::play();
 	
 	while ( !key[ KEY_ESC ] ){
 
@@ -125,11 +132,10 @@ void realGame( Object * player ){
 
 }
 
-
-
 int main( int argc, char ** argv ){
 	
 	Collector janitor;
+	Music m;
 	int gfx = GFX_AUTODETECT_WINDOWED;
 
 	bool tester = false;

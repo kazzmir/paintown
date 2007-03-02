@@ -74,7 +74,6 @@ bool Item::isGettable(){
 	
 void Item::touch( Object * obj ){
 	obj->stimulate( *getStimulation() );
-	printf( "play sound\n" );
 	sound.play();
 }
 
