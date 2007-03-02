@@ -401,7 +401,7 @@ bool Music::internal_loadSong( const char * path ){
 	}
 
 	if ( music_file ){
-		int buf = 1 << 10;
+		int buf = 1 << 11;
 		player = al_start_duh( music_file, 2, 0, volume, buf, 22050 );
 		// cout << "Loaded music player " << player << endl;
 
