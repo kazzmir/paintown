@@ -564,10 +564,23 @@ void Character::landed( World * world ){
 	setThrown( false );
 
 	switch( getStatus() ){
+		case Status_Falling : {
+			if ( landed_sound ){
+				landed_sound->play();
+			}
+
+			world->Quake( (int)fabs(getYVelocity()) );
+
+			setStatus( Status_Ground );
+			animation_current = getMovement( "idle" );
+			animation_current->reset();
+			break;
+		}
 		case Status_Fell : {
 	
-			if ( landed_sound )
+			if ( landed_sound ){
 				landed_sound->play();
+			}
 		
 			double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
 			// cout<<getName()<<" taking "<<cur<<" from falling. Health = "<<getHealth()<<endl;
@@ -606,8 +619,12 @@ void Character::landed( World * world ){
 
 void Character::act( vector< Object * > * others, World * world ){
 		
+	/* when the character moves not because of a move or walking */
 	if ( isMoving() ){
 			
+		/* force of gravity, subtract acceleration for
+		 * downward movement
+		 */
 		decreaseYVelocity();
 		moveX( getXVelocity() );
 		moveY( getYVelocity() );

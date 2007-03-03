@@ -17,15 +17,16 @@ class Sound;
 using namespace std;
 
 /* these should be self explanatory.. */
-const int Status_Ground = 0;
-const int Status_Jumping = 1;
+const int Status_Ground = 0; /* normal status, on the ground */
+const int Status_Jumping = 1; /* jumping */
 const int Status_Grab = 2; /* grabbing another character */
 const int Status_Grabbed = 3; /* this character is being grabbed */
-const int Status_Hurt = 4;
-const int Status_Rise = 5;
-const int Status_Fell = 6;
-const int Status_Dead = 7;
-const int Status_Get = 8;
+const int Status_Hurt = 4; /* just got hurt */
+const int Status_Rise = 5; /* getting up from ground */
+const int Status_Fell = 6; /* fell down due to damage */
+const int Status_Dead = 7; /* dying */
+const int Status_Get = 8; /* getting an object */
+const int Status_Falling = 9; /* falling due to lack of ground beneath them */
 
 class Character: public ObjectAttack {
 public:
@@ -196,6 +197,10 @@ public:
 
 	inline void setSpeed( const double s ){
 		speed = s;
+	}
+
+	inline void setDeath( int i ){
+		death = i;
 	}
 
 	inline const double getSpeed() const {

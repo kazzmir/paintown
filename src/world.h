@@ -24,10 +24,14 @@ public:
 
 	void act();
 	void draw( Bitmap * work );
+	void addObject( Object * o );
 
 	/* upper left hand corner of the screen */
 	int getX();
 	int getY();
+
+	int getMaximumZ();
+	int getMinimumZ();
 
 protected:
 	

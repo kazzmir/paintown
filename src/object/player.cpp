@@ -32,7 +32,8 @@ using namespace std;
 
 Player::Player( const char * filename ) throw( LoadException ): 
 Character( filename, ALLIANCE_PLAYER ),
-acts(0){
+acts(0),
+lives(3){
 	
 	// if ( movements[ "grab" ] == NULL ){
 	if ( getMovement( "grab" ) == NULL ){
@@ -47,7 +48,8 @@ acts(0){
 	
 Player::Player( const Character & chr ) throw( LoadException ):
 Character( chr ),
-acts(0){
+acts(0),
+lives(3){
 	show_life = getHealth();
 }
 
@@ -55,6 +57,14 @@ Player::Player( const Player & pl ) throw( LoadException ):
 Character( pl ),
 acts( 0 ){
 	show_life = getHealth();
+}
+
+void Player::loseLife( int l ){
+	lives -= l;
+}
+
+void Player::gainLife( int l ){
+	lives += l;
 }
 
 void Player::fillKeyCache(){
@@ -199,7 +209,7 @@ void Player::draw( Bitmap * work, int rel_x ){
 	drawLifeBar( hasIcon + x1, y1 + nameHeight, show_life, work );
 	// cout << "Y1: " << y1 << " Height: " << player_font.getHeight() << " new y1: " << (y1 + player_font.getHeight() / 2) << endl;
 	// work->printf( hasIcon + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
-	render->addMessage( player_font, (x1 + hasIcon + getMaxHealth() + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", 3 );
+	render->addMessage( player_font, (x1 + hasIcon + getMaxHealth() + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
 
 	// work->rectangle( x1, y1, x1 + 100, y1 + nameHeight + 1, Bitmap::makeColor( 255, 255, 255 ) );
 }
@@ -310,13 +320,23 @@ static Animation * hasGetAnimation( const map< Animation *, int > & animations )
 	return NULL;
 }
 
+void Player::deathReset(){
+	setY( 200 );
+	setMoving( true );
+	setStatus( Status_Falling );
+	setHealth( getMaxHealth() );
+	setDeath( 0 );
+	animation_current = getMovement( "idle" );
+	loseLife();
+}
+
 void Player::act( vector< Object * > * others, World * world ){
 
 	/* Character handles jumping and possibly other things */
 	Character::act( others, world );
 
 	/* special cases... */
-	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise || getStatus() == Status_Get )
+	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise || getStatus() == Status_Get || getStatus() == Status_Falling )
 		return;
 
 	/*

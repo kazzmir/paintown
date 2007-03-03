@@ -79,10 +79,14 @@ void realGame( Object * player ){
 	/* end of init stuff */
 
 	Music::pause();
-	Music::setVolume( 0.3 );
-	Music::fadeIn();
-	Music::loadSong( "data/music/song1.xm" );
+	Music::fadeIn( 0.3 );
+	Music::loadSong( Util::getFiles( "data/music/", "*" ) );
 	Music::play();
+
+	Player * playerX = (Player *) player;
+	playerX->setY( 200 );
+	playerX->setMoving( true );
+	playerX->setStatus( Status_Falling );
 	
 	while ( !key[ KEY_ESC ] ){
 
@@ -94,6 +98,11 @@ void realGame( Object * player ){
 				draw = true;
 				world.act();
 				think--;
+
+				if ( playerX->getHealth() <= 0 ){
+					playerX->deathReset();
+					world.addObject( player );
+				}
 			}
 			Global::speed_counter = 0;
 		}

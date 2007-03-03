@@ -27,6 +27,15 @@ public:
 	
 	virtual void takeDamage( ObjectAttack * obj, int x );
 
+	virtual void loseLife( int l = 1 );
+	virtual void gainLife( int l = 1 );
+
+	inline const int getLives(){
+		return lives;
+	}
+
+	/* reset some stuff when the player dies */
+	void deathReset();
 	
 protected:
 	void fillKeyCache();
@@ -44,6 +53,7 @@ protected:
 	int acts;
 	Keyboard keyboard;
 	int show_life;
+	int lives;
 
 	int name_id;
 

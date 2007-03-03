@@ -148,15 +148,17 @@ music_file( NULL ){
 }
 */
 
-void Music::fadeIn(){
+void Music::fadeIn( double vol ){
 	LOCK;{
+		volume = vol;
 		instance->_fadeIn();
 	}
 	UNLOCK;
 }
 
-void Music::fadeOut(){
+void Music::fadeOut( double vol ){
 	LOCK;{
+		volume = vol;
 		instance->_fadeOut();
 	}
 	UNLOCK;

@@ -36,8 +36,8 @@ public:
 	static void play();
 	static void soften();
 	static void louden();
-	static void fadeIn();
-	static void fadeOut();
+	static void fadeIn( double vol );
+	static void fadeOut( double vol );
 	static void setVolume( double v );
 	static double getVolume();
 	static void mute();

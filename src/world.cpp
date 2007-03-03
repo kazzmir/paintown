@@ -79,7 +79,7 @@ void World::loadLevel( const string & path ){
 
 	if ( player != NULL ){
 		player->setX( 140 );
-		player->setZ( 100 );
+		player->setZ( (getMinimumZ() + getMaximumZ()) / 2 );
 	}
 }
 
@@ -156,6 +156,14 @@ void World::doLogic(){
 	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 }
 
+int World::getMinimumZ(){
+	return MIN_WORLD_Z;
+}
+
+int World::getMaximumZ(){
+	return MAX_WORLD_Z;
+}
+
 void World::act(){
 	if ( quake_time > 0 )
 		quake_time--;
@@ -183,17 +191,21 @@ void World::act(){
 		if ( player->getX() > scene->getLimit() ){
 			player->setX( scene->getLimit() );
 		}
-		if ( player->getZ() < MIN_WORLD_Z ){
-			player->setZ( MIN_WORLD_Z );
+		if ( player->getZ() < getMinimumZ() ){
+			player->setZ( getMinimumZ() );
 		}
-		if ( player->getZ() > MAX_WORLD_Z ){
-			player->setZ( MAX_WORLD_Z );
+		if ( player->getZ() > getMaximumZ() ){
+			player->setZ( getMaximumZ() );
 		}
 
 	}
 
 	scene->act( min_x, min_x + screen_size, &objects );
 
+}
+
+void World::addObject( Object * o ){
+	objects.push_back( o );
 }
 
 void World::draw( Bitmap * work ){
