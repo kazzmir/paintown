@@ -198,6 +198,7 @@ public:
 	void playSound( const string & path );
 
 	ECollide * getCollide( int facing );
+	ECollide * getNormalCollide();
 	void Draw( int x, int y, Bitmap * work );
 	void DrawFlipped( int x, int y, Bitmap * work );
 	void setDelay( int _delay );

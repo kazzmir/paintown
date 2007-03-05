@@ -235,13 +235,15 @@ protected:
 	virtual void filterEnemies( vector< Object * > & mine, vector< Object * > * all );
 	virtual void reMap( const string & from, const string & to, int id );
 	void loadSelf( const char * filename ) throw ( LoadException );
-	bool realCollision( Object * obj );
+	bool realCollision( ObjectAttack * obj );
 
 	virtual void landed( World * world );
 
 	virtual void fall( double x_vel, double y_vel );
 
 	void drawLifeBar( int x, int y, int he, Bitmap * work );
+	
+	virtual ECollide * getNormalCollide() const;
 
 	/* helper functions */
 

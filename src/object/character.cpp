@@ -829,9 +829,11 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	setFacing( obj->getOppositeFacing() );
 }
 
-bool Character::realCollision( Object * obj ){
+bool Character::realCollision( ObjectAttack * obj ){
 
-	if ( this->getCollide() != 0 && obj->getCollide() != 0 ){
+	ECollide * myCollide = this->getNormalCollide();
+	ECollide * hisCollide = obj->getCollide();
+	if ( myCollide != 0 && hisCollide ){
 		bool my_xflip = false;
 		bool his_xflip = false;
 		if ( getFacing() == FACING_LEFT )
@@ -842,8 +844,8 @@ bool Character::realCollision( Object * obj ){
 		int mx, my;
 		int ax, ay;
 
-		ECollide * me = getCollide();
-		ECollide * him = obj->getCollide();
+		// ECollide * me = getCollide();
+		// ECollide * him = obj->getCollide();
 		/*
 		if ( !me ){
 			// cout<<"No collide"<<endl;
@@ -866,7 +868,7 @@ bool Character::realCollision( Object * obj ){
 		// cout<<"Mx: "<<mx<< " My: "<<my<<" Width: "<<me->getWidth()<<" Height: "<<me->getHeight()<<endl;
 		// cout<<"Ax: "<<ax<< " Ay: "<<ay<<" Width: "<<him->getWidth()<<" Height: "<<him->getHeight()<<endl;
 
-		return ( me->Collision( him, mx, my, ax, ay, my_xflip, false, his_xflip, false ) );
+		return ( myCollide->Collision( hisCollide, mx, my, ax, ay, my_xflip, false, his_xflip, false ) );
 
 	}
 	return false;
@@ -958,6 +960,13 @@ ECollide * Character::getCollide() const {
 		return animation_current->getCollide( getFacing() );
 	}
 	cout<<"No animation collide"<<endl;
+	return NULL;
+}
+	
+ECollide * Character::getNormalCollide() const {
+	if ( animation_current ){
+		return animation_current->getNormalCollide();
+	}
 	return NULL;
 }
 

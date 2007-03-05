@@ -542,6 +542,10 @@ void Animation::getAttackCoords( int & x, int & y ){
 	y = (attack.getY1() + attack.getY2() ) / 2;
 	cout<<getName()<<"[ "<<attack.getX1()<<","<<attack.getY1()<<","<<attack.getX2()<<","<<attack.getY2()<<"]"<<endl;
 }
+	
+ECollide * Animation::getNormalCollide(){
+	return current_collide;
+}
 
 ECollide * Animation::getCollide( int facing ){
 	if ( isAttack() ){
