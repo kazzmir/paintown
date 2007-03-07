@@ -250,6 +250,14 @@ protected:
 	// void parseObject( string object_string ) throw( exception );
 	void upperCase( string & who );
 
+	inline const int getInvincibility() const {
+		return invincibility;
+	}
+
+	inline void setInvincibility( const int x ){
+		invincibility = x;
+	}
+
 protected:
 	string name;
 	// int speed;
@@ -318,7 +326,7 @@ private:
 
 	Sound * die_sound;
 	Sound * landed_sound;
-
+	int invincibility;
 };
 
 #endif

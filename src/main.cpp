@@ -60,14 +60,7 @@ void realGame( Object * player ){
 
 	World world = World( player, "data/levels/easy/1aeasy.txt" );
 	
-	if ( show_loading_screen ){
-		pthread_mutex_lock( &Global::loading_screen_mutex );
-		Global::done_loading = true;
-		pthread_mutex_unlock( &Global::loading_screen_mutex );
-
-		pthread_join( loading_screen_thread, NULL );
-	}
-
+	
 	// Bitmap Screen( screen );
 	Bitmap work( 320, 240 );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
@@ -87,6 +80,14 @@ void realGame( Object * player ){
 	playerX->setY( 200 );
 	playerX->setMoving( true );
 	playerX->setStatus( Status_Falling );
+
+	if ( show_loading_screen ){
+		pthread_mutex_lock( &Global::loading_screen_mutex );
+		Global::done_loading = true;
+		pthread_mutex_unlock( &Global::loading_screen_mutex );
+
+		pthread_join( loading_screen_thread, NULL );
+	}
 	
 	while ( !key[ KEY_ESC ] ){
 

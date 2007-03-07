@@ -325,12 +325,17 @@ void Player::deathReset(){
 	setMoving( true );
 	setStatus( Status_Falling );
 	setHealth( getMaxHealth() );
+	setInvincibility( 20 );
 	setDeath( 0 );
 	animation_current = getMovement( "idle" );
 	loseLife();
 }
 
 void Player::act( vector< Object * > * others, World * world ){
+	
+	if ( getInvincibility() < 500 ){
+		setInvincibility( 1000 );
+	}
 
 	/* Character handles jumping and possibly other things */
 	Character::act( others, world );

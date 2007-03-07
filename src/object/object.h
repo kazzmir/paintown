@@ -53,6 +53,9 @@ public:
 	 */
 	virtual Object * copy() = 0;
 
+	/* called when this object touches 'obj' regardless of an attack.
+	 * usually only called for things that are gettable, like items.
+	 */
 	virtual void touch( Object * obj );
 	
 	virtual const string & getAttackName() = 0;

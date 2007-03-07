@@ -14,6 +14,7 @@
 
 #include "factory/shadow.h"
 #include "util/bitmap.h"
+#include "util/lit_bitmap.h"
 #include "util/ebox.h"
 #include "util/load_exception.h"
 #include "util/sound.h"
@@ -42,7 +43,8 @@ linked( NULL ),
 moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
-landed_sound( NULL ){
+landed_sound( NULL ),
+invincibility( 0 ){
 }
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
@@ -60,7 +62,8 @@ linked( NULL ),
 moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
-landed_sound( NULL ){
+landed_sound( NULL ),
+invincibility( 0 ){
 	name = "";
 
 	loadSelf( filename.c_str() );
@@ -81,7 +84,8 @@ linked( NULL ),
 moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
-landed_sound( NULL ){
+landed_sound( NULL ),
+invincibility( 0 ){
 	name = "";
 
 	loadSelf( filename );
@@ -121,6 +125,7 @@ die_sound( NULL ){
 	setJumpingYVelocity( chr.getMaxJumpingVelocity() );
 	setShadow( chr.getShadow() );
 	status = chr.getStatus();
+	invincibility = chr.invincibility;
 
 	if ( chr.die_sound != NULL ) 
 		die_sound = new Sound( *(chr.die_sound) );
@@ -161,6 +166,7 @@ die_sound( NULL ){
 
 void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
+	// setInvincibility( 1000 );
 	TokenReader tr( filename );
 
 	Token * head;
@@ -618,6 +624,10 @@ void Character::landed( World * world ){
 }
 
 void Character::act( vector< Object * > * others, World * world ){
+
+	if ( invincibility > 0 ){
+		invincibility--;
+	}
 		
 	/* when the character moves not because of a move or walking */
 	if ( isMoving() ){
@@ -877,6 +887,10 @@ bool Character::realCollision( ObjectAttack * obj ){
 
 bool Character::collision( ObjectAttack * obj ){
 
+	if ( getInvincibility() > 0 ){
+		return false;
+	}
+
 	if ( collision_objects[ obj ] == obj->getTicket() )
 	// if ( last_obj == obj && last_collide == obj->getTicket() )
 		return false;
@@ -917,11 +931,35 @@ void Character::draw( Bitmap * work, int rel_x ){
 	shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x, getZ() - shadow->getHeight() / 2, *work );
 
 	if ( animation_current ){
-		if ( getFacing() == Object::FACING_RIGHT ){
-			animation_current->Draw( getRX() - rel_x, getRY(), work );
+		// printf( "invincibility = %d\n", invincibility );
+		if ( invincibility > 0 ){
+			// Bitmap::drawingMode( Bitmap::MODE_LIT );
+			// Bitmap::transBlender( 0, 0, (int)(sin( getInvincibility() ) * 200 + 10), 0 );
+			double f = sin( 3.14159 / 180.0 * getInvincibility() * 6 );
+			int max_white = 80;
+			int base_blue = 120;
+			int c = (int)(f * max_white);
+			if ( c < 0 ) c = 0;
+			Bitmap::transBlender( c, c, (int)(f * (255 - (max_white + base_blue)) + base_blue + c), 50 );
+			if ( getFacing() == Object::FACING_RIGHT ){
+				animation_current->DrawLit( getRX() - rel_x, getRY(), work );
+			} else {
+				animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
+			}
 		} else {
-			animation_current->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+
+			if ( getFacing() == Object::FACING_RIGHT ){
+				animation_current->Draw( getRX() - rel_x, getRY(), work );
+			} else {
+				animation_current->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+			}
 		}
+
+		/*
+		if ( invincibility > 0 ){
+			Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		}
+		*/
 	}
 
 	// work->circleFill( getRX(), getRY(), 3, Bitmap::makeColor(255,255,0) );

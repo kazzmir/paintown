@@ -1,24 +1,35 @@
 Paintown
 Version 0.1
 Jon Rafkind
-1/10/05
+3/6/2007
 
-INSTALL:
+Get Source:
 
-	If you have a program called 'scons', type 'make' to compile paintown. If you do not have 'scons', type 'make stupid'. Get scons: http://www.scons.org/.
+	If you are reading this you might already have the source. If not get it from here
+	Game engine: https://paintown.svn.sourceforge.net/svnroot/paintown/trunk
+	Data: https://paintown.svn.sourceforge.net/svnroot/paintown/data
 
-REQUIREMENTS:
+	Put the data directory inside the trunk directory, trunk/data.
+
+Compilation:
+
+	$ scons
+
+Requirements:
 
 	You need the following things to compile Paintown:
 	* gcc - http://www.gnu.org/software/gcc/
+	* scons - http://www.scons.org
 	* Allegro - 4.1 or higher. http://alleg.sf.net
 	* libpng - http://www.libpng.org/pub/png/libpng.html
 	* loadpng - http://members.ozadsl.com.au/~tjaden/loadpng/
 	* pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
+	* DUMB - http://dumb.sf.net
+	* freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm
 
 KEYS:
 
-A - attack1
+A - attack1 / grab
 S - attack2
 D - attack3
 UP - up

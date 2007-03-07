@@ -201,6 +201,8 @@ public:
 	ECollide * getNormalCollide();
 	void Draw( int x, int y, Bitmap * work );
 	void DrawFlipped( int x, int y, Bitmap * work );
+	void DrawLit( int x, int y, Bitmap * work );
+	void DrawLitFlipped( int x, int y, Bitmap * work );
 	void setDelay( int _delay );
 	void setStatus( const int status );
 	void setFrame( const string & path );
@@ -221,6 +223,9 @@ protected:
 
 	// void parseObject( string str ) throw( exception );
 	void upperCase( string & who );
+
+	void doDraw( int x, int y, const Bitmap & frame, Bitmap * work );
+	void doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work );
 
 protected:
 	string name;
