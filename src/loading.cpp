@@ -1,16 +1,18 @@
+/*
 #include <allegro.h>
 
 #ifdef WINDOWS
 #include <winalleg.h>
 #endif
+*/
 
 #include <pthread.h>
 #include <math.h>
 #include <iostream>
 
+#include "init.h"
 #include "loading.h"
 #include "util/bitmap.h"
-#include "init.h"
 #include "fonts.h"
 #include "util/font.h"
 #include "util/funcs.h"
@@ -82,7 +84,7 @@ void * loadingScreen( void * arg ){
 				think -= 1;
 			}
 		} else {
-			rest( 1 );
+			Util::rest( 1 );
 		}
 
 		if ( draw ){

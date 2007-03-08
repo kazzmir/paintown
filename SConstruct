@@ -20,6 +20,10 @@ else:
 
 env.Append( CCFLAGS = flags, CPPPATH = [ "." ] );
 
+if False:
+	env.Append( CCFLAGS = '-pg' )
+	env.Append( LINKFLAGS = '-pg' )
+
 env.Append( LIBS = [ 'fl', 'ldpng', 'pthread', 'aldmb', 'dumb' ] );
 env.ParseConfig( 'libpng-config --libs' );
 env.ParseConfig( 'allegro-config --libs' );

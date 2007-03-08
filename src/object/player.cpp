@@ -333,9 +333,11 @@ void Player::deathReset(){
 
 void Player::act( vector< Object * > * others, World * world ){
 	
+	/*
 	if ( getInvincibility() < 500 ){
 		setInvincibility( 1000 );
 	}
+	*/
 
 	/* Character handles jumping and possibly other things */
 	Character::act( others, world );

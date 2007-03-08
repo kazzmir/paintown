@@ -9,6 +9,7 @@ addFiles( './', Split( """
 globals.cpp
 loading.cpp
 music.cpp
+main.cpp
 init.cpp
 nameplacer.cpp
 world.cpp
@@ -89,6 +90,6 @@ if False:
 
 env.SConscript( 'parser/SConscript', exports = 'env' );
 
-env.Program( 'paintown', obj_files + ['main.cpp'] );
+env.Program( 'paintown', obj_files + ['xmain.cpp'] );
 env.Program( 'test', obj_files + ['test.cpp'] );
 
