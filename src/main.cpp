@@ -163,18 +163,29 @@ static Object * selectPlayer() throw( LoadException ){
 	vector< Object * > temp;
 	World world;
 
-	Character * current1 = (Character *)mandy;
+	Object ** current1 = all;
+
+	key.setDelay( Keyboard::Key_RIGHT, 50 );
+	key.setDelay( Keyboard::Key_LEFT, 50 );
 
 	bool draw = true;
 	while ( ! key[ Keyboard::Key_ESC ] ){
 		key.poll();
 
+		Character * ch = (Character *) *current1;
+
 		if ( Global::speed_counter > 0 ){
 			int think = Global::speed_counter;
 			while ( think > 0 ){
-				if ( current1->testAnimation() ){
-					current1->testReset();
+
+				if ( key[ Keyboard::Key_LEFT ] ){
+					
 				}
+
+				if ( ch->testAnimation() ){
+					ch->testReset();
+				}
+
 				think--;
 			}
 
@@ -184,12 +195,13 @@ static Object * selectPlayer() throw( LoadException ){
 
 		if ( draw ){
 
-			current1->setX( 83 );
-			current1->setY( 0 );
-			current1->setZ( 240 );
+			Character copy( *ch );
+			copy.setX( 83 );
+			copy.setY( 0 );
+			copy.setZ( 240 );
 
 			background.Blit( work );
-			current1->draw( &work, 0 );
+			copy.draw( &work, 0 );
 			work.Stretch( *Bitmap::Screen );
 			draw = false;
 		}
@@ -200,13 +212,14 @@ static Object * selectPlayer() throw( LoadException ){
 		}
 	}
 
+	// Object * v = new Player( *(Character *)*current1 );
 	for ( unsigned int i = 0; i < sizeof( all ) / sizeof( Object * ); i++ ){
-		if ( current1 != all[ i ] ){
+		if ( current1 != &all[ i ] ){
 			delete all[ i ];
 		}
 	}
 
-	return current1;
+	return *current1;
 }
 
 static void titleScreen(){
