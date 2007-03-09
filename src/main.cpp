@@ -139,6 +139,10 @@ void realGame( Object * player ){
 		}
 	}
 
+	while ( key[ Keyboard::Key_ESC ] ){
+		key.poll();
+		Util::rest( 1 );
+	}
 }
 
 static bool isArg( const char * s1, const char * s2 ){

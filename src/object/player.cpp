@@ -15,8 +15,8 @@
 
 // how many ticks to wait before the key cache is cleared.
 // this can probably be user defined in the future
-const int GLOBAL_KEY_DELAY = 13;
-const char * PLAYER_FONT = "data/fonts/arial.ttf";
+static const int GLOBAL_KEY_DELAY = 13;
+static const char * PLAYER_FONT = "data/fonts/arial.ttf";
 
 using namespace std;
 
@@ -320,12 +320,13 @@ static Animation * hasGetAnimation( const map< Animation *, int > & animations )
 	return NULL;
 }
 
+/* things to do when the player dies */
 void Player::deathReset(){
 	setY( 200 );
 	setMoving( true );
 	setStatus( Status_Falling );
 	setHealth( getMaxHealth() );
-	setInvincibility( 20 );
+	setInvincibility( 400 );
 	setDeath( 0 );
 	animation_current = getMovement( "idle" );
 	loseLife();

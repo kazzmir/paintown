@@ -88,6 +88,8 @@ public:
 	inline const bool isMoving() const{
 		return moving;
 	}
+	
+	virtual const double minZDistance() const;
 
 	/* can I be hit? */
 	virtual bool isCollidable( Object * obj );

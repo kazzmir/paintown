@@ -17,6 +17,8 @@ public:
 	virtual void getAttackCoords( int & x, int & y) = 0;
 	virtual const std::string & getAttackName() = 0;
 
+	virtual const double minZDistance() const = 0;
+
 	/* this object just attached 'something' */
 	virtual void attacked( Object * something, vector< Object * > & objects ) = 0;
 	

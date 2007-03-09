@@ -15,6 +15,7 @@
 #include "animation_event_status.h"
 #include "animation_event_sound.h"
 #include "animation_event_shadow.h"
+#include "animation_event_zdistance.h"
 #include "attack.h"
 #include "util/bitmap.h"
 #include "util/lit_bitmap.h"
@@ -58,6 +59,7 @@ parent( owner ),
 current_frame( NULL ),
 attack_collide( NULL ),
 delay( 1 ),
+minZDistance( 10 ),
 bbox_x1( 0 ),
 bbox_y1( 0 ),
 bbox_x2( 1 ),
@@ -247,7 +249,11 @@ contact( NULL ){
 				// AnimationEvent * ani = new AnimationEventAttack( x1, y1, x2, y2, damage, force );
 				AnimationEvent * ani = new AnimationEventAttack( ak );
 				events.push_back( ani );
-
+			} else if ( *current == "z-distance" ){
+				double d;
+				*current >> d;
+				AnimationEvent * e = new AnimationEventZDistance( d );
+				events.push_back( e );
 			} else if ( *current == "sound" ){
 				string st;
 				*current >> st;
@@ -378,6 +384,8 @@ commision( true ){
 	events = animation.events;
 
 	name = animation.getName();
+
+	setMinZDistance( animation.getMinZDistance() );
 
 	bbox_x1 = animation.bbox_x1;
 	bbox_y1 = animation.bbox_y1;

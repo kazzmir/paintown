@@ -220,6 +220,14 @@ public:
 		attack = a;
 	}
 
+	inline const double getMinZDistance() const {
+		return minZDistance;
+	}
+
+	inline void setMinZDistance( const double x ){
+		minZDistance = x;	
+	}
+
 	void playSound( const string & path );
 
 	ECollide * getCollide( int facing );
@@ -263,6 +271,8 @@ protected:
 	ECollide * attack_collide;
 	int delay;
 	int delay_counter;
+
+	double minZDistance;
 
 	int bbox_x1, bbox_y1, bbox_x2, bbox_y2;
 	// int attack_x1, attack_y1, attack_x2, attack_y2;

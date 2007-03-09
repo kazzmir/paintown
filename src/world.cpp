@@ -104,7 +104,7 @@ void World::doLogic(){
 
 					// cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < MIN_RELATIVE_DISTANCE) << endl;
 					// cout << "Collision: " << (*fight)->collision( o_good ) << endl;
-					if ( good->ZDistance( *fight ) < MIN_RELATIVE_DISTANCE && (*fight)->collision( o_good ) ){ 
+					if ( good->ZDistance( *fight ) < o_good->minZDistance() && (*fight)->collision( o_good ) ){ 
 
 						// cout << "There was a collision" << endl;
 						// cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;

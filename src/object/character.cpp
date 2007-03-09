@@ -920,6 +920,13 @@ bool Character::realCollision( ObjectAttack * obj ){
 	return false;
 
 }
+	
+const double Character::minZDistance() const {
+	if ( animation_current ){
+		return animation_current->getMinZDistance();
+	}
+	return 10;
+}
 
 bool Character::collision( ObjectAttack * obj ){
 
