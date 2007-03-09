@@ -100,7 +100,8 @@ death( 0 ),
 thrown_status( false ),
 moving( 0 ),
 current_map( 0 ),
-die_sound( NULL ){
+die_sound( NULL ),
+landed_sound( NULL ){
 	own_stuff = false;
 
 	/* these are set in object.cpp */
@@ -131,8 +132,9 @@ die_sound( NULL ){
 	if ( chr.die_sound != NULL ) 
 		die_sound = new Sound( *(chr.die_sound) );
 
-	if ( chr.landed_sound != NULL )
+	if ( chr.landed_sound != NULL ){
 		landed_sound = new Sound( *(chr.landed_sound) );
+	}
 
 	/*
 	for ( map<string,Animation*>::const_iterator it = chr.movements.begin(); it != chr.movements.end(); it++ ){
