@@ -133,8 +133,18 @@ public:
 
 	/* offsets the frame absolutely within the scene. Only x and y matter
 	 */
-	void setOffsetX( const int x );
-	void setOffsetY( const int y );
+	inline void setOffsetX( const int x ){
+		offset_x = x;
+	}
+	inline void setOffsetY( const int y ){
+		offset_y = y;
+	}
+	inline const int getOffsetX(){
+		return offset_x;
+	}
+	inline const int getOffsetY(){
+		return offset_y;
+	}
 
 	void addDecommision( const string & s );
 	void addCommision( const string & s );

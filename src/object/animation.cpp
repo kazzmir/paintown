@@ -670,8 +670,10 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
 		work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
 	}
 
+	/*
 	x += offset_x;
 	y += offset_y;
+	*/
 
 	frame.draw( x-w, y-h, *work );
 
@@ -728,8 +730,10 @@ void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work
 		// work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
 	}
 
+	/*
 	x -= offset_x;
 	y += offset_y;
+	*/
 
 	frame.drawHFlip( x-w, y-h, *work );
 
@@ -773,6 +777,7 @@ void Animation::DrawFlipped( int x, int y, Bitmap * work ){
 #endif
 }
 	
+/*
 void Animation::setOffsetX( const int x ){
 	// cout<<"Setting offset x to "<<x<<endl;
 	offset_x = x;
@@ -782,6 +787,7 @@ void Animation::setOffsetY( const int y ){
 	// cout<<"Setting offset y to "<<y<<endl;
 	offset_y = y;
 }
+*/
 
 void Animation::contacted(){
 	if ( contact )

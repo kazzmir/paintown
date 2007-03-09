@@ -56,13 +56,13 @@ Object::Object( const Object & copy ){
 	setAlliance( copy.getAlliance() );
 }
 	
-int Object::ZDistance( Object * obj ){
+double Object::ZDistance( Object * obj ){
 	if ( obj->getZ() > getZ() )
 		return obj->getZ() - getZ();
 	return getZ() - obj->getZ();
 }
 	
-int Object::XDistance( Object * obj ){
+double Object::XDistance( Object * obj ){
 	if ( obj->getX() > getX() )
 		return obj->getX() - getX();
 	return getX() - obj->getX();

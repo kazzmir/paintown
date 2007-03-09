@@ -106,6 +106,9 @@ public:
 		status = _status;
 	}
 
+	virtual const double getX() const;
+	virtual const double getZ() const;
+
 	virtual inline void setShadow( int i ){
 		shadow = i;
 	}

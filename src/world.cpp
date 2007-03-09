@@ -107,19 +107,17 @@ void World::doLogic(){
 						// cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;
 
 						// if ( good->isAttacking() ){
-							int x = 0, y = 0;
+							double x = 0, y = 0;
 							// o_good->getAttackCoords(x,y);
 							x = (*fight)->getX();
 							y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
 							
-							/*
 							Object * addx = bang->copy();
 							addx->setX( x );
 							addx->setY( 0 );
 							addx->setZ( y+addx->getHeight()/2 );
 							addx->setHealth( 1 );
 							added_effects.push_back( addx );
-							*/
 
 							o_good->attacked( *fight, added_effects );
 							(*fight)->collided( o_good, added_effects );
@@ -171,7 +169,7 @@ void World::act(){
 	doLogic();
 	
 	if ( player != NULL ){
-		int mx = player->getX() - screen_size / 2;
+		double mx = player->getX() - screen_size / 2;
 		// double mx = ch->getX() - work.getWidth() / 2;
 		if ( min_x < mx ){
 			min_x++;
@@ -214,7 +212,7 @@ void World::draw( Bitmap * work ){
 
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * n = *it;
-		object_z[ n->getZ() ].push_back( n );
+		object_z[ n->getRZ() ].push_back( n );
 	}
 	
 	// min_x = (int)min_x_virtual;

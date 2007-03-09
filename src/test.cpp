@@ -182,7 +182,7 @@ void testAnimation( ){
 				world.act();
 				think--;
 				
-				int mx = ch->getX() - work.getWidth() / 2;
+				double mx = ch->getX() - work.getWidth() / 2;
 				// double mx = ch->getX() - work.getWidth() / 2;
 				if ( min_x < mx ){
 					min_x++;
@@ -220,8 +220,8 @@ void testAnimation( ){
 	
 		if ( key[ KEY_R ] ){
 			objects.clear();
-			int x = ch->getX();
-			int y = ch->getZ();
+			double x = ch->getX();
+			double y = ch->getZ();
 			delete ch;
 
 			try{
@@ -264,7 +264,7 @@ void testAnimation( ){
 
 			for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 				Object * n = *it;
-				object_z[ n->getZ() ].push_back( n );
+				object_z[ n->getRZ() ].push_back( n );
 			}
 			
 			// min_x = (int)min_x_virtual;
@@ -465,8 +465,8 @@ void showAnimations( string person, int xmap = 0 ){
 
 	int currentAnimation = 0;
 
-	int stay_x = ch->getX();
-	int stay_z = ch->getZ();
+	double stay_x = ch->getX();
+	double stay_z = ch->getZ();
 	while ( !key[ KEY_ESC ] ){
 
 		bool draw = false;
@@ -669,6 +669,9 @@ string chooseCharacter(){
 			}
 
 			if ( key[ KEY_ENTER ] ){
+				while ( key[ KEY_ENTER ] ){
+					rest( 1 );
+				}
 				done = true;
 			}
 
@@ -733,6 +736,7 @@ int main(){
 	init( GFX_AUTODETECT_WINDOWED );
 
 	string next = chooseCharacter();
+	cout << "Next = " << next << endl;
 	while ( next != "Quit" ){
 		showAnimations( next, 0 );
 		next = chooseCharacter();

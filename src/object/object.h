@@ -64,8 +64,8 @@ public:
 	 * Computes the distance in the Z coordinate between two
 	 * objects.
 	 */
-	virtual int ZDistance( Object * obj );
-	virtual int XDistance( Object * obj );
+	virtual double ZDistance( Object * obj );
+	virtual double XDistance( Object * obj );
 
 	/* collision:
 	 * Returns true if this collides with obj
@@ -126,68 +126,72 @@ public:
 	/* getRX:
 	 * Returns the absolute X position of the object
 	 */
-	inline const int getRX() const{
-		return actualx;
+	virtual inline const int getRX() const {
+		return (int) getX();
+	}
+
+	virtual inline const int getRZ() const {
+		return (int) getZ();
 	}
 
 	/* getRY:
 	 * Returns the absolute Y position of the object.
-	 * This turns out to be the Z coordinate plus the Y coordinate.
+	 * This turns out to be the Z coordinate minus the Y coordinate.
 	 * Z specifies how far into the screen the object is, Y is how high the
 	 * object is off of the ground
 	 */
-	inline const int getRY() const{
-		// return actualy + actualz;
-		return actualz - actualy;
+	virtual inline const int getRY() const {
+		return (int)(getZ() - getY());
 	}
 
 	/* getX:
 	 * Returns the X coordinate of the object
 	 */
-	inline const int getX() const{
-		return actualx;
+	virtual inline const double getX() const {
+		return virtualx;
 	}
 
 	/* getY:
 	 * Returns the Y coordinate of the object
 	 * Y is how far the object is from the ground
 	 */
-	inline const int getY() const{
-		return actualy;
+	virtual inline const double getY() const {
+		return virtualy;
 	}
 
 	/* getZ:
 	 * Returns the Z coordinate of the object
 	 * Z is how far the object is into the screen
 	 */
-	inline const int getZ() const{
-		return actualz;
+	virtual inline const double getZ() const {
+		return virtualz;
 	}
 
 	/* setX:
 	 * Set the X coordinate
 	 */
-	inline void setX( const int x ){
-		actualx = x;
-		virtualx = (double)x;
+	inline void setX( const double x ){
+		actualx = (int) x;
+		virtualx = x;
 	}
 
 	/* setY:
 	 * Set the Y coordinate
 	 */
-	inline void setY( const int y ){
-		actualy = y;
-		if ( actualy < 0 )
-			actualy = 0;
-		virtualy = (double)y;
+	inline void setY( const double y ){
+		virtualy = y;
+		if ( virtualy < 0 ){
+			virtualy = 0;
+		}
+		actualy = (int) y;
 	}
 
 	/* setZ:
 	 * Set the Z coordinate
 	 */
-	inline void setZ( const int z ){
-		actualz = z;
-		virtualz = (double)z;
+	inline void setZ( const double z ){
+		actualz = (int) z;
+		virtualz = z;
 	}
 
 	/* this object died. this object can add arbitrary objects

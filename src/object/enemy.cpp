@@ -171,7 +171,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 
 			if ( !want_path && Util::rnd( 30 ) > 10 ) {
 				/*want_x == getX() && want_z == getZ() ){ */
-				want_x = Util::rnd( main_enemy->getX() - 200, main_enemy->getX() + 200 );
+				want_x = Util::rnd( (int) main_enemy->getX() - 200, (int) main_enemy->getX() + 200 );
 				// want_z = rnd( main_enemy->getZ(), 10, 10 );
 				want_z = Util::rnd( MIN_WORLD_Z, MAX_WORLD_Z );
 
@@ -199,7 +199,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 						attacks.push_back( maybe );
 				}
 
-				int attack_range = getX() > main_enemy->getX() ? getX() - main_enemy->getX() : main_enemy->getX() - getX();
+				double attack_range = getX() > main_enemy->getX() ? getX() - main_enemy->getX() : main_enemy->getX() - getX();
 				// cout<<getName()<<": Range = "<<attack_range<<endl;
 				for ( vector< Animation * >::iterator it = attacks.begin(); it != attacks.end(); ){
 					Animation * maybe = *it;

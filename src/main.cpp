@@ -150,9 +150,9 @@ static Object * selectPlayer() throw( LoadException ){
 	// background.resize( GFX_X, GFX_Y );
 
 	Object * maxima = new Player( "data/chars/maxima/maxima.txt" );
-	maxima->setX( 83 );
-	maxima->setY( 0 );
-	maxima->setZ( 240 );
+	Object * mandy = new Player( "data/chars/mandy/mandy.txt" );
+
+	Object * all[] = { maxima, mandy };
 
 	Keyboard key;
 
@@ -163,7 +163,7 @@ static Object * selectPlayer() throw( LoadException ){
 	vector< Object * > temp;
 	World world;
 
-	Character * current1 = (Character *)maxima;
+	Character * current1 = (Character *)mandy;
 
 	bool draw = true;
 	while ( ! key[ Keyboard::Key_ESC ] ){
@@ -183,6 +183,11 @@ static Object * selectPlayer() throw( LoadException ){
 		}
 
 		if ( draw ){
+
+			current1->setX( 83 );
+			current1->setY( 0 );
+			current1->setZ( 240 );
+
 			background.Blit( work );
 			current1->draw( &work, 0 );
 			work.Stretch( *Bitmap::Screen );
@@ -192,6 +197,12 @@ static Object * selectPlayer() throw( LoadException ){
 		while ( Global::speed_counter == 0 ){
 			key.poll();
 			Util::rest( 1 );
+		}
+	}
+
+	for ( unsigned int i = 0; i < sizeof( all ) / sizeof( Object * ); i++ ){
+		if ( current1 != all[ i ] ){
+			delete all[ i ];
 		}
 	}
 

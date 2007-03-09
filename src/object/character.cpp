@@ -839,6 +839,20 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	setFacing( obj->getOppositeFacing() );
 }
 
+const double Character::getX() const {
+	if ( animation_current ){
+		return Object::getX() + animation_current->getOffsetX();
+	}
+	return Object::getX();
+}
+
+const double Character::getZ() const {
+	if ( animation_current ){
+		return Object::getZ() + animation_current->getOffsetY();
+	}
+	return Object::getZ();
+}
+
 bool Character::realCollision( ObjectAttack * obj ){
 
 	ECollide * myCollide = this->getNormalCollide();
@@ -928,7 +942,7 @@ void Character::draw( Bitmap * work, int rel_x ){
 	Bitmap const * shadow = Shadow::getShadow( getShadow() );
 	// set_multiply_blender( 0, 0, 0, 164 );
 	Bitmap::multiplyBlender( 0, 0, 0, 164 );
-	shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x, getZ() - shadow->getHeight() / 2, *work );
+	shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x, getRZ() - shadow->getHeight() / 2, *work );
 
 	if ( animation_current ){
 		// printf( "invincibility = %d\n", invincibility );
@@ -1021,8 +1035,6 @@ void Character::print() const{
 Character::~Character(){
 	if ( own_stuff ){
 		if ( icon ) delete icon;
-		/* TODO: use sound class here */
-		// if ( die_sound ) destroy_sample( die_sound );
 	}
 
 	for ( map< int, map<string,Animation*> >::iterator it = mapper.begin(); it != mapper.end(); it++ ){
@@ -1035,12 +1047,8 @@ Character::~Character(){
 		}
 	}
 
-	if ( die_sound ){
-		delete die_sound;
-	}
-	if ( landed_sound ){
-		delete landed_sound;
-	}
+	delete die_sound;
+	delete landed_sound;
 
 	/*
 	for ( map<string,Animation*>::iterator it = movements.begin(); it != movements.end(); it++ ){
