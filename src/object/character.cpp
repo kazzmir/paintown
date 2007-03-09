@@ -968,7 +968,7 @@ void Character::draw( Bitmap * work, int rel_x ){
 	if ( icon )
 		icon->draw( 1, 1, *work );
 	*/
-	
+
 }
 
 /*

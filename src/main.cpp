@@ -145,6 +145,59 @@ static bool isArg( const char * s1, const char * s2 ){
 	return strcasecmp( s1, s2 ) == 0;
 }
 
+static Object * selectPlayer() throw( LoadException ){
+	Bitmap background( "data/sprites/select.png" );
+	// background.resize( GFX_X, GFX_Y );
+
+	Object * maxima = new Player( "data/chars/maxima/maxima.txt" );
+	maxima->setX( 83 );
+	maxima->setY( 0 );
+	maxima->setZ( 240 );
+
+	Keyboard key;
+
+	Bitmap work( GFX_X / 2, GFX_Y / 2 );
+
+	Global::speed_counter = 0;
+
+	vector< Object * > temp;
+	World world;
+
+	Character * current1 = (Character *)maxima;
+
+	bool draw = true;
+	while ( ! key[ Keyboard::Key_ESC ] ){
+		key.poll();
+
+		if ( Global::speed_counter > 0 ){
+			int think = Global::speed_counter;
+			while ( think > 0 ){
+				if ( current1->testAnimation() ){
+					current1->testReset();
+				}
+				think--;
+			}
+
+			Global::speed_counter = 0;
+			draw = true;
+		}
+
+		if ( draw ){
+			background.Blit( work );
+			current1->draw( &work, 0 );
+			work.Stretch( *Bitmap::Screen );
+			draw = false;
+		}
+
+		while ( Global::speed_counter == 0 ){
+			key.poll();
+			Util::rest( 1 );
+		}
+	}
+
+	return current1;
+}
+
 static void titleScreen(){
 	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
 
@@ -155,13 +208,20 @@ static void titleScreen(){
 	                           "Change controls",
 				   "Quit" };
 	// font.printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "foo" );
+	unsigned int choose = 0;
 	const unsigned int maxOptions = sizeof( options ) / sizeof( char* );
 	for ( unsigned int i = 0; i < maxOptions; i++ ){
-		font.printf( 200, (int)(200 + i * fontY * 1.2), Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, options[ i ] );
+		int yellow = Bitmap::makeColor( 255, 255, 0 );
+		int white = Bitmap::makeColor( 255, 255, 255 );
+		unsigned int color = i == choose ? yellow : white;
+		font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, options[ i ] );
+
 	}
-	unsigned int choose = 0;
 
 	Keyboard key;
+
+	key.setDelay( Keyboard::Key_UP, 100 );
+	key.setDelay( Keyboard::Key_DOWN, 100 );
 
 	while ( ! key[ Keyboard::Key_ESC ] ){
 		
@@ -177,9 +237,18 @@ static void titleScreen(){
 					draw = true;
 					choose = (choose - 1 + maxOptions) % maxOptions;
 				}
+
 				if ( key[ Keyboard::Key_DOWN ] ){
 					draw = true;
 					choose = (choose + 1 + maxOptions) % maxOptions;
+				}
+
+				if ( key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] ){
+					try{
+						realGame( selectPlayer() );
+					} catch ( const LoadException & le ){
+						cout << "Could not load player: " << le.getReason() << endl;
+					}
 				}
 			}
 
