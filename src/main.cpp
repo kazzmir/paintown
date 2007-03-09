@@ -153,6 +153,7 @@ static Object * selectPlayer() throw( LoadException ){
 	Object * mandy = new Player( "data/chars/mandy/mandy.txt" );
 
 	Object * all[] = { maxima, mandy };
+	Object ** end = &all[ 1 ];
 
 	Keyboard key;
 
@@ -165,11 +166,11 @@ static Object * selectPlayer() throw( LoadException ){
 
 	Object ** current1 = all;
 
-	key.setDelay( Keyboard::Key_RIGHT, 50 );
-	key.setDelay( Keyboard::Key_LEFT, 50 );
+	key.setDelay( Keyboard::Key_RIGHT, 100 );
+	key.setDelay( Keyboard::Key_LEFT, 100 );
 
 	bool draw = true;
-	while ( ! key[ Keyboard::Key_ESC ] ){
+	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
 		key.poll();
 
 		Character * ch = (Character *) *current1;
@@ -179,7 +180,17 @@ static Object * selectPlayer() throw( LoadException ){
 			while ( think > 0 ){
 
 				if ( key[ Keyboard::Key_LEFT ] ){
-					
+					current1 -= 1;
+					if ( current1 < all ){
+						current1 = end;
+					}
+				}
+
+				if ( key[ Keyboard::Key_RIGHT ] ){
+					current1 += 1;
+					if ( current1 > end ){
+						current1 = all;
+					}
 				}
 
 				if ( ch->testAnimation() ){
@@ -222,12 +233,15 @@ static Object * selectPlayer() throw( LoadException ){
 	return *current1;
 }
 
-static void titleScreen(){
+static bool titleScreen(){
 	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
+	Music::loadSong( "data/music/aqua.s3m" );
 
 	const int fontY = 20;
 	const Font & font = Font::getFont( "data/fonts/arial.ttf", 20, fontY );
 
+	const int PLAY = 0;
+	const int QUIT = 2;
 	const char * options[] = { "New game",
 	                           "Change controls",
 				   "Quit" };
@@ -247,7 +261,8 @@ static void titleScreen(){
 	key.setDelay( Keyboard::Key_UP, 100 );
 	key.setDelay( Keyboard::Key_DOWN, 100 );
 
-	while ( ! key[ Keyboard::Key_ESC ] ){
+	bool done = false;
+	while ( ! done ){
 		
 		key.poll();
 		bool draw = false;
@@ -267,13 +282,12 @@ static void titleScreen(){
 					choose = (choose + 1 + maxOptions) % maxOptions;
 				}
 
-				if ( key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] ){
-					try{
-						realGame( selectPlayer() );
-					} catch ( const LoadException & le ){
-						cout << "Could not load player: " << le.getReason() << endl;
-					}
+				done = key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] || key[ Keyboard::Key_ESC ];
+				if ( key[ Keyboard::Key_ESC ] ){
+					choose = QUIT;
 				}
+				if ( key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] ){
+									}
 			}
 
 			Global::speed_counter = 0;
@@ -292,6 +306,33 @@ static void titleScreen(){
 			Util::rest( 1 );
 			key.poll();
 		}
+	}
+
+	while ( key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] ){
+		key.poll();
+		Util::rest( 1 );
+	}
+
+	switch ( choose ){
+		case QUIT : {
+			return false;
+			break;
+		}
+		case PLAY : {
+			try{
+				realGame( selectPlayer() );
+			} catch ( const LoadException & le ){
+				cout << "Could not load player: " << le.getReason() << endl;
+			}
+			return true;
+			break;
+		}
+		default : return true;
+	}
+
+	while ( key.keypressed() ){
+		key.poll();
+		Util::rest( 1 );
 	}
 }
 
@@ -321,7 +362,7 @@ int paintown_main( int argc, char ** argv ){
 	diff.endTime();
 	diff.printTime("Init: ");
 
-	titleScreen();
+	while ( titleScreen() != false );
 
 	/*
 	pthread_mutex_init( &Global::loading_screen_mutex, NULL );

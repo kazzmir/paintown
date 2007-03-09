@@ -41,6 +41,7 @@ animation_event_frame.cpp
 animation_event_move.cpp
 animation_event_nop.cpp
 animation_event_offset.cpp
+animation_event_shadow.cpp
 animation_event_sound.cpp
 animation_event_status.cpp
 effect.cpp

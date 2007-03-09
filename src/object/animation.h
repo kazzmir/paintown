@@ -131,6 +131,21 @@ public:
 	void moveY( const int y );
 	void moveZ( const int z );
 
+	inline void setShadowX( const int x ){
+		shadowX = x;
+	}
+	inline void setShadowY( const int y ){
+		shadowY = y;
+	}
+
+	inline const int getShadowX() const {
+		return shadowX;
+	}
+	
+	inline const int getShadowY() const {
+		return shadowY;
+	}
+
 	/* offsets the frame absolutely within the scene. Only x and y matter
 	 */
 	inline void setOffsetX( const int x ){
@@ -253,6 +268,7 @@ protected:
 	// int attack_x1, attack_y1, attack_x2, attack_y2;
 
 	int offset_x, offset_y;
+	int shadowX, shadowY;
 
 	/* I dont think we need range_x/range_y */
 	int range_x, range_y;

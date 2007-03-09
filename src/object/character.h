@@ -109,6 +109,7 @@ public:
 	virtual const double getX() const;
 	virtual const double getZ() const;
 
+
 	virtual inline void setShadow( int i ){
 		shadow = i;
 	}
@@ -234,6 +235,9 @@ public:
 	}
 
 protected:
+	
+	const int getShadowX();
+	const int getShadowY();
 
 	virtual void filterEnemies( vector< Object * > & mine, vector< Object * > * all );
 	virtual void reMap( const string & from, const string & to, int id );

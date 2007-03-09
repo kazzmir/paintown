@@ -841,7 +841,11 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 
 const double Character::getX() const {
 	if ( animation_current ){
-		return Object::getX() + animation_current->getOffsetX();
+		if ( getFacing() == FACING_LEFT ){
+			return Object::getX() - animation_current->getOffsetX();
+		} else {
+			return Object::getX() + animation_current->getOffsetX();
+		}
 	}
 	return Object::getX();
 }
@@ -931,6 +935,24 @@ void Character::drawLifeBar( int x, int y, int he, Bitmap * work ){
 	// work->rectangleFill( x, y, x + getHealth(), y + 10, Bitmap::makeColor( 255, 255, 255 ) );
 }
 
+const int Character::getShadowX(){
+	if ( animation_current ){
+		if ( getFacing() == FACING_LEFT ){
+			return -animation_current->getShadowX();
+		} else {
+			return animation_current->getShadowX();
+		}
+	}
+	return 0;
+}
+
+const int Character::getShadowY(){
+	if ( animation_current ){
+		return animation_current->getShadowY();
+	}
+	return 0;
+}
+
 void Character::draw( Bitmap * work, int rel_x ){	
 
 	if ( death >= 15 ){
@@ -939,12 +961,13 @@ void Character::draw( Bitmap * work, int rel_x ){
 		}
 	}
 
-	Bitmap const * shadow = Shadow::getShadow( getShadow() );
-	// set_multiply_blender( 0, 0, 0, 164 );
-	Bitmap::multiplyBlender( 0, 0, 0, 164 );
-	shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x, getRZ() - shadow->getHeight() / 2, *work );
-
 	if ( animation_current ){
+		Bitmap const * shadow = Shadow::getShadow( getShadow() );
+		// set_multiply_blender( 0, 0, 0, 164 );
+		Bitmap::multiplyBlender( 0, 0, 0, 164 );
+		shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
+
+
 		// printf( "invincibility = %d\n", invincibility );
 		if ( invincibility > 0 ){
 			// Bitmap::drawingMode( Bitmap::MODE_LIT );

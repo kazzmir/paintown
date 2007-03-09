@@ -22,7 +22,6 @@ image( NULL ){
 
 Effect::Effect( const Effect & ef ):
 ObjectNonAttack( ef ){
-	setHealth( ef.getHealth() );
 	image = new Animation( *(ef.image), NULL );
 }
 
@@ -31,6 +30,8 @@ ObjectNonAttack( alliance ),
 image( NULL ){
 
 	TokenReader tr( _filename );
+
+	setMaxHealth( 100 );
 
 	Token * head;
 	try{ 
@@ -118,6 +119,7 @@ void Effect::act( vector< Object * > * others, World * world ){
 	if ( image ){
 		if ( image->Act() ){
 			setHealth( -1 );
+			// image->reset();
 		}
 	}
 }

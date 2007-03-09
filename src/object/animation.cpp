@@ -14,6 +14,7 @@
 #include "animation_event_offset.h"
 #include "animation_event_status.h"
 #include "animation_event_sound.h"
+#include "animation_event_shadow.h"
 #include "attack.h"
 #include "util/bitmap.h"
 #include "util/lit_bitmap.h"
@@ -69,6 +70,8 @@ attack_y2( 1 ),
 */
 offset_x( 0 ),
 offset_y( 0 ),
+shadowX( 0 ),
+shadowY( 0 ),
 range( 0 ),
 is_attack( false ),
 status( Status_Ground ),
@@ -191,6 +194,11 @@ contact( NULL ){
 				} else {
 					cout<<"Unhandled status "<<st<<endl;
 				}
+			} else if ( *current == "shadow" ){
+				int x, y;
+				*current >> x >> y;
+				AnimationEvent * ani = new AnimationEventShadow( x, y );
+				events.push_back( ani );
 			} else if ( *current == "coords" ){
 				Token * c;
 				*current >> c;
@@ -387,6 +395,8 @@ commision( true ){
 	// offset_y = animation.offset_y;
 	offset_x = 0;
 	offset_y = 0;
+	shadowX = 0;
+	shadowY = 0;
 	is_attack = animation.isAttack();
 	status = animation.getStatus();
 	damage = animation.getDamage();
