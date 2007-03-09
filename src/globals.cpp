@@ -2,8 +2,10 @@
 
 bool global_debug = false;
 
+/*
 const int MIN_WORLD_Z = 160;
 const int MAX_WORLD_Z = 232;
+*/
 
 const int ALLIANCE_NONE = 0;
 const int ALLIANCE_PLAYER = 1;

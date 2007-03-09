@@ -100,10 +100,13 @@ void World::doLogic(){
 			ObjectAttack * o_good = (ObjectAttack *)good;
 			for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
 				if ( (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
-
 					// cout<<"Attacking"<<endl;
+
+					// cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < MIN_RELATIVE_DISTANCE) << endl;
+					// cout << "Collision: " << (*fight)->collision( o_good ) << endl;
 					if ( good->ZDistance( *fight ) < MIN_RELATIVE_DISTANCE && (*fight)->collision( o_good ) ){ 
 
+						// cout << "There was a collision" << endl;
 						// cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;
 
 						// if ( good->isAttacking() ){
@@ -155,10 +158,12 @@ void World::doLogic(){
 }
 
 int World::getMinimumZ(){
+	const int MIN_WORLD_Z = 160;
 	return MIN_WORLD_Z;
 }
 
 int World::getMaximumZ(){
+	const int MAX_WORLD_Z = 232;
 	return MAX_WORLD_Z;
 }
 
@@ -198,7 +203,7 @@ void World::act(){
 
 	}
 
-	scene->act( min_x, min_x + screen_size, &objects );
+	scene->act( min_x, min_x + screen_size, getMinimumZ(), getMaximumZ(), &objects );
 
 }
 

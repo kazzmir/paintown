@@ -36,8 +36,9 @@
 
 using namespace std;
 
-static Object * bang = NULL;
+// static Object * bang = NULL;
 
+#if 0
 void testAnimation( ){
 
 	/*
@@ -202,12 +203,14 @@ void testAnimation( ){
 				if ( ch->getX() > scene->getLimit() ){
 					ch->setX( scene->getLimit() );
 				}
+				/*
 				if ( ch->getZ() < MIN_WORLD_Z ){
 					ch->setZ( MIN_WORLD_Z );
 				}
 				if ( ch->getZ() > MAX_WORLD_Z ){
 					ch->setZ( MAX_WORLD_Z );
 				}
+				*/
 
 				scene->act( min_x, min_x + work.getWidth(), &objects );
 
@@ -340,6 +343,7 @@ void testAnimation( ){
 	delete scene;
 
 }
+#endif
 
 char getKey( int index ){
 	switch ( index ){
@@ -465,6 +469,8 @@ void showAnimations( string person, int xmap = 0 ){
 
 	int currentAnimation = 0;
 
+	const int baseZ = 170;
+
 	double stay_x = ch->getX();
 	double stay_z = ch->getZ();
 	while ( !key[ KEY_ESC ] ){
@@ -517,6 +523,11 @@ void showAnimations( string person, int xmap = 0 ){
 				// ch->moveX( 1 );
 				ch->moveRight( 1 );
 				stay_x += 1;
+			}
+
+			if ( key[ KEY_SPACE ] ){
+				stay_z = baseZ;
+				ch->setZ( stay_z );
 			}
 
 			if ( key[ KEY_UP ] ){
@@ -587,6 +598,8 @@ void showAnimations( string person, int xmap = 0 ){
 		}
 
 		if ( draw ){
+			work.line( 0, baseZ, work.getWidth(), baseZ, Bitmap::makeColor( 255, 255, 0 ) );
+			work.circleFill( (int) ch->getX(), (int) ch->getZ(), 5, Bitmap::makeColor( 255, 0, 0 ) );
 			ch->draw( &work, 0 );
 
 			TimeDifference td;

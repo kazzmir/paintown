@@ -13,6 +13,7 @@
 #include "stimulation.h"
 
 #include "factory/shadow.h"
+#include "util/funcs.h"
 #include "util/bitmap.h"
 #include "util/lit_bitmap.h"
 #include "util/ebox.h"
@@ -806,6 +807,7 @@ void Character::thrown(){
 	thrown_from = getLink();
 }
 	
+/* used to find the x/y where the attack takes place for effects */
 void Character::getAttackCoords( int & x, int & y){
 	if ( animation_current ){
 		animation_current->getAttackCoords( x, y );
@@ -839,22 +841,31 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	setFacing( obj->getOppositeFacing() );
 }
 
-const double Character::getX() const {
+const int Character::getRX() const {
 	if ( animation_current ){
 		if ( getFacing() == FACING_LEFT ){
-			return Object::getX() - animation_current->getOffsetX();
+			return Object::getRX() - animation_current->getOffsetX();
 		} else {
-			return Object::getX() + animation_current->getOffsetX();
+			return Object::getRX() + animation_current->getOffsetX();
 		}
 	}
-	return Object::getX();
+	return Object::getRX();
 }
 
-const double Character::getZ() const {
+const int Character::getRZ() const {
+	/*
 	if ( animation_current ){
 		return Object::getZ() + animation_current->getOffsetY();
 	}
-	return Object::getZ();
+	*/
+	return Object::getRZ();
+}
+
+const int Character::getRY() const {
+	if ( animation_current ){
+		return Object::getRY() + animation_current->getOffsetY();
+	}
+	return Object::getRY();
 }
 
 bool Character::realCollision( ObjectAttack * obj ){
@@ -886,17 +897,24 @@ bool Character::realCollision( ObjectAttack * obj ){
 		ax = obj->getRX() - obj->getWidth() / 2;
 		ay = obj->getRY() - obj->getHeight();
 
+		// Bitmap Screen( screen );
 		/*
-		Bitmap Screen( screen );
-		me->draw( &Screen, mx, my, my_xflip );
-		him->draw( &Screen, ax, ay, his_xflip );
+		myCollide->draw( *Bitmap::Screen, mx, my, my_xflip );
+		hisCollide->draw( *Bitmap::Screen, ax, ay, his_xflip );
 		*/
-		
 
 		// cout<<"Mx: "<<mx<< " My: "<<my<<" Width: "<<me->getWidth()<<" Height: "<<me->getHeight()<<endl;
 		// cout<<"Ax: "<<ax<< " Ay: "<<ay<<" Width: "<<him->getWidth()<<" Height: "<<him->getHeight()<<endl;
 
-		return ( myCollide->Collision( hisCollide, mx, my, ax, ay, my_xflip, false, his_xflip, false ) );
+		bool b = myCollide->Collision( hisCollide, mx, my, ax, ay, my_xflip, false, his_xflip, false );
+		/*
+		if ( b ){
+			myCollide->draw( *Bitmap::Screen, mx * 2, my * 2, my_xflip );
+			hisCollide->draw( *Bitmap::Screen, ax * 2, ay * 2, his_xflip );
+			Util::rest( 500 );
+		}
+		*/
+		return b;
 
 	}
 	return false;
@@ -909,9 +927,11 @@ bool Character::collision( ObjectAttack * obj ){
 		return false;
 	}
 
-	if ( collision_objects[ obj ] == obj->getTicket() )
+	if ( collision_objects[ obj ] == obj->getTicket() ){
 	// if ( last_obj == obj && last_collide == obj->getTicket() )
+		// cout << this << " already collided with " << obj << endl;
 		return false;
+	}
 
 	return realCollision( obj );
 }

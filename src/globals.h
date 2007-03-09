@@ -3,8 +3,10 @@
 
 extern bool global_debug;
 
+/*
 extern const int MIN_WORLD_Z;
 extern const int MAX_WORLD_Z;
+*/
 
 extern const int ALLIANCE_NONE;
 extern const int ALLIANCE_PLAYER;

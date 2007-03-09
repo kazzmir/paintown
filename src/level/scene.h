@@ -31,7 +31,7 @@ public:
 	void drawBack( int x, Bitmap * work );
 
 	int getLimit();
-	void act( int min_x, int max_x, vector< Object * > * objects );
+	void act( int min_x, int max_x, int min_z, int max_z, vector< Object * > * objects );
 
 	~Scene();
 

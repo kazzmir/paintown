@@ -692,9 +692,9 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
 	// work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
 	if ( global_debug ){
 		work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
+		// current_collide->draw( *work, x-w, y-h );
 	}
 
-	// current_collide->draw( work, x-w, y-h );
 	// work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
 	// cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
@@ -751,9 +751,9 @@ void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work
 	// work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
 	if ( global_debug ){
 		work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
+		// current_collide->draw( *work, x-w, y-h, true );
 	}
 
-	// current_collide->draw( work, x-w, y-h, true );
 	// cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
 

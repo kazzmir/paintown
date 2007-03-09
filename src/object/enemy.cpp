@@ -15,6 +15,7 @@
 #include "factory/heart_factory.h"
 #include "util/load_exception.h"
 #include "object.h"
+#include "world.h"
 
 using namespace std;
 
@@ -173,13 +174,13 @@ void Enemy::act( vector< Object * > * others, World * world ){
 				/*want_x == getX() && want_z == getZ() ){ */
 				want_x = Util::rnd( (int) main_enemy->getX() - 200, (int) main_enemy->getX() + 200 );
 				// want_z = rnd( main_enemy->getZ(), 10, 10 );
-				want_z = Util::rnd( MIN_WORLD_Z, MAX_WORLD_Z );
+				want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
 
-				if ( want_z < MIN_WORLD_Z ){
-					want_z = MIN_WORLD_Z;
+				if ( want_z < world->getMinimumZ() ){
+					want_z = world->getMinimumZ();
 				}
-				if ( want_z > MAX_WORLD_Z ){
-					want_z = MAX_WORLD_Z;
+				if ( want_z > world->getMaximumZ() ){
+					want_z = world->getMaximumZ();
 				}
 				// cout<<"Min: "<<MIN_WORLD_Z<<" Max: "<<MAX_WORLD_Z<<" Want: "<<want_z <<endl;
 

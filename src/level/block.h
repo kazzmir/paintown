@@ -23,7 +23,7 @@ public:
 
 	bool empty();
 
-	vector< Heart * > createObjects( int total_length, int min_x, int max_x, vector< Object * > * list );
+	vector< Heart * > createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, vector< Object * > * list );
 
 	~Block();
 

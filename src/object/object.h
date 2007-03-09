@@ -147,7 +147,7 @@ public:
 	/* getX:
 	 * Returns the X coordinate of the object
 	 */
-	virtual inline const double getX() const {
+	inline const double getX() const {
 		return virtualx;
 	}
 
@@ -155,7 +155,7 @@ public:
 	 * Returns the Y coordinate of the object
 	 * Y is how far the object is from the ground
 	 */
-	virtual inline const double getY() const {
+	inline const double getY() const {
 		return virtualy;
 	}
 
@@ -163,7 +163,7 @@ public:
 	 * Returns the Z coordinate of the object
 	 * Z is how far the object is into the screen
 	 */
-	virtual inline const double getZ() const {
+	inline const double getZ() const {
 		return virtualz;
 	}
 

@@ -159,7 +159,7 @@ void Scene::clearHearts(){
 	}
 }
 
-void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
+void Scene::act( int min_x, int max_x, int min_z, int max_z, vector< Object * > * objects ){
 	clearHearts();
 
 	// cout<<"Min_x = "<<min_x<<" block_length = "<<block_length<<endl;
@@ -174,7 +174,7 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 		}
 	}
 
-	vector< Heart * > new_hearts = current_block->createObjects( block_length - 320, min_x, max_x, objects );
+	vector< Heart * > new_hearts = current_block->createObjects( block_length - 320, min_x, max_x, min_z, max_z, objects );
 	hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
 }
 
