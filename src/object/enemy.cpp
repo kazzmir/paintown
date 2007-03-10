@@ -22,23 +22,27 @@ using namespace std;
 static const char * ENEMY_FONT = "data/fonts/arial.ttf";
 
 Enemy::Enemy( ):
-Character( ALLIANCE_ENEMY ){
+Character( ALLIANCE_ENEMY ),
+aggression( 97 ){
 
 	constructSelf();
 }
 
 Enemy::Enemy( const char * filename ) throw( LoadException ):
-Character( filename, ALLIANCE_ENEMY  ){
+Character( filename, ALLIANCE_ENEMY  ),
+aggression( 97 ){
 	constructSelf();
 }
 
 Enemy::Enemy( const string & filename ) throw( LoadException ):
-Character( filename, ALLIANCE_ENEMY  ){
+Character( filename, ALLIANCE_ENEMY  ),
+aggression( 97 ){
 	constructSelf();
 }
 
 Enemy::Enemy( const Enemy & chr ) throw( LoadException ):
-Character( chr ){
+Character( chr ),
+aggression( chr.getAggression() ){
 	constructSelf();
 }
 
@@ -191,7 +195,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 			 * If we are in range of the Z coordinate, relativeDistance(), then find an attack 
 			 * with a suitable X range.  
 			 */
-			if ( ZDistance( main_enemy ) < MIN_RELATIVE_DISTANCE && Util::rnd( 100 ) >= 97 ){
+			if ( ZDistance( main_enemy ) < MIN_RELATIVE_DISTANCE && Util::rnd( 100 ) >= getAggression() ){
 				// cout<<getName()<<":In range"<<endl;
 				vector< Animation * > attacks;
 				for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
@@ -200,14 +204,16 @@ void Enemy::act( vector< Object * > * others, World * world ){
 						attacks.push_back( maybe );
 				}
 
-				double attack_range = getX() > main_enemy->getX() ? getX() - main_enemy->getX() : main_enemy->getX() - getX();
+				double attack_range = fabs( getX() - main_enemy->getX() );
 				// cout<<getName()<<": Range = "<<attack_range<<endl;
 				for ( vector< Animation * >::iterator it = attacks.begin(); it != attacks.end(); ){
 					Animation * maybe = *it;
 					// cout<<getName()<<":"<<maybe->getName()<<" range = "<<maybe->getRange()<<endl;
 					if ( attack_range > maybe->getRange() ){
 						it = attacks.erase( it );
-					} else	it++;
+					} else {
+						it++;
+					}
 				}
 
 				if ( !attacks.empty() ){

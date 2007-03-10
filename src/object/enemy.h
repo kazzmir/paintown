@@ -36,6 +36,15 @@ public:
 	
 	virtual ~Enemy();
 
+	/* the chances this enemy will try to attack */
+	virtual const int getAggression() const {
+		return aggression;
+	}
+
+	virtual void setAggression( const int a ){
+		aggression = a;
+	}
+
 protected:
 
 	// void filterEnemies( vector< Object * > * mine, vector< Object * > * all );
@@ -50,6 +59,7 @@ protected:
 	int show_name_time;
 	int id;
 	int show_life;
+	int aggression;
 
 };
 
