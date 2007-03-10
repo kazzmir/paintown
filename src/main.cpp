@@ -6,6 +6,8 @@
 #include <time.h>
 
 #include "factory/collector.h"
+#include "factory/object_factory.h"
+#include "factory/heart_factory.h"
 #include "factory/font_render.h"
 #include "fonts.h"
 #include "globals.h"
@@ -43,6 +45,38 @@ void resize_callback( int w, int h, void * data ){
 }
 */
 
+/* fade the screen and tell the player they lost */
+void fadeOut(){
+	Bitmap dark( GFX_X, GFX_Y );
+	dark.fill( Bitmap::makeColor( 0, 0, 0 ) );
+	Global::speed_counter = 0;
+	Bitmap::transBlender( 0, 0, 0, 10 );
+	int fade = 0;
+	const Font & f = Font::getFont( "data/fonts/arial.ttf", 50, 50 );
+	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, "You lose" );
+	while ( fade < 100 ){
+		fade++;
+	
+		Bitmap::transBlender( 0, 0, 0, fade / 2 );
+
+		bool draw = false;
+		if ( Global::speed_counter > 0 ){
+			draw = true;
+			Global::speed_counter = 0;
+		}
+
+		if ( draw ){
+			dark.drawTrans( 0, 0, *Bitmap::Screen );
+		}
+		
+		while ( Global::speed_counter == 0 ){
+			Util::rest( 1 );
+		}
+	}
+
+	Util::rest( 1000 );
+}
+
 void realGame( Object * player ){
 	// global_debug = true;
 	bool show_loading_screen = true;
@@ -75,6 +109,11 @@ void realGame( Object * player ){
 	playerX->setY( 200 );
 	playerX->setMoving( true );
 	playerX->setStatus( Status_Falling );
+					
+	/*
+	playerX->deathReset();
+	playerX->deathReset();
+	*/
 
 	if ( show_loading_screen ){
 		pthread_mutex_lock( &Global::loading_screen_mutex );
@@ -102,6 +141,12 @@ void realGame( Object * player ){
 					playerX->deathReset();
 					world.addObject( player );
 				}
+				/*
+				if ( key[ Keyboard::Key_SPACE ] || playerX->getLives() <= 0 ){
+					fadeOut();
+					return;
+				}
+				*/
 			}
 			Global::speed_counter = 0;
 		}
@@ -155,9 +200,10 @@ static Object * selectPlayer() throw( LoadException ){
 
 	Object * maxima = new Player( "data/chars/maxima/maxima.txt" );
 	Object * mandy = new Player( "data/chars/mandy/mandy.txt" );
+	Object * kula = new Player( "data/chars/kula/kula.txt" );
 
-	Object * all[] = { maxima, mandy };
-	Object ** end = &all[ 1 ];
+	Object * all[] = { maxima, mandy, kula };
+	Object ** end = &all[ 2 ];
 
 	Keyboard key;
 
@@ -325,6 +371,8 @@ static bool titleScreen(){
 		case PLAY : {
 			try{
 				realGame( selectPlayer() );
+				ObjectFactory::destroy();
+				HeartFactory::destroy();
 			} catch ( const LoadException & le ){
 				cout << "Could not load player: " << le.getReason() << endl;
 			}

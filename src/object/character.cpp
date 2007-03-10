@@ -322,13 +322,13 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
 	// animation_current = movements[ "idle" ];
 	animation_current = getMovement( "idle" );
-
 }
 	
 void Character::setMap( const unsigned int x ){
 	current_map = x;
-	if ( current_map >= mapper.size() )
+	if ( current_map >= mapper.size() ){
 		current_map = mapper.size() - 1;
+	}
 	animation_current = getMovement( animation_current->getName() );
 }
 
@@ -364,7 +364,6 @@ void Character::reMap( const string & from, const string & to, int id ){
 
 		new_map[ name ] = new_ani;
 	}
-
 }
 	
 bool Character::isCollidable( Object * obj ){

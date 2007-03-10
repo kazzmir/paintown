@@ -146,6 +146,20 @@ static double velocity( double x1, double x2, double speed ){
 	// moveX( want_x > getX() ? getSpeed() : -getSpeed() );
 }
 
+const Object * Enemy::findClosest( const vector< Object * > & enemies ){
+	Object * e = NULL;
+	double max = 0;
+	for ( vector< Object * >::const_iterator it = enemies.begin(); it != enemies.end(); it++ ){
+		Object * current = *it;
+		double distance = fabs( current->getX() - getX() );
+		if ( e == NULL || distance < max ){
+			e = current;
+		}
+	}
+
+	return e;
+}
+
 void Enemy::act( vector< Object * > * others, World * world ){
 
 	Character::act( others, world );
@@ -166,7 +180,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 	}
 	
 	if ( !enemies.empty() ){
-		Object * main_enemy = enemies[ 0 ];
+		const Object * main_enemy = findClosest( enemies );
 
 		// if ( animation_current == movements["idle"] || animation_current == movements["walk"] ){
 		if ( animation_current == getMovement( "idle" ) || animation_current == getMovement( "walk" ) ){

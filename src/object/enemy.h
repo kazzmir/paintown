@@ -50,6 +50,8 @@ protected:
 	// void filterEnemies( vector< Object * > * mine, vector< Object * > * all );
 	void constructSelf();
 
+	const Object * findClosest( const vector< Object * > & enemies );
+
 protected:
 
 	Heart * heart;

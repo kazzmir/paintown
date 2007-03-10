@@ -64,8 +64,8 @@ public:
 	 * Computes the distance in the Z coordinate between two
 	 * objects.
 	 */
-	virtual double ZDistance( Object * obj );
-	virtual double XDistance( Object * obj );
+	virtual double ZDistance( const Object * obj );
+	virtual double XDistance( const Object * obj );
 
 	/* collision:
 	 * Returns true if this collides with obj

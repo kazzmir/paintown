@@ -332,7 +332,7 @@ private:
 	unsigned int current_map;
 	/* map from id to map of animations */
 	map< int, map<string,Animation*> > mapper;
-
+	
 	Sound * die_sound;
 	Sound * landed_sound;
 	int invincibility;

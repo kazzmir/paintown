@@ -531,7 +531,7 @@ void Player::act( vector< Object * > * others, World * world ){
 			if ( get != NULL ){
 				for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
 					Object * o = *it;
-					if ( o->isGettable() && fabs(o->getX() - getX()) < 25 ){
+					if ( o->isGettable() && fabs(o->getRX() - getRX()) < 25 ){
 						final = get;
 						setStatus( Status_Get );
 					}
@@ -615,6 +615,13 @@ void Player::act( vector< Object * > * others, World * world ){
 			*/
 		} else if ( final != NULL && animation_current != final ){
 			// cout<<"Final animation = "<<final->getName()<<endl;
+			if ( final->getName() == "special" ){
+				if ( getHealth() <= 10 ){
+					return;
+				} else {
+					hurt( 10 );
+				}
+			}
 			nextTicket();
 			animation_current = final;
 			animation_current->reset();
