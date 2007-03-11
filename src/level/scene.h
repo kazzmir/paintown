@@ -30,6 +30,8 @@ public:
 	void drawFront( int x, Bitmap * work );
 	void drawBack( int x, Bitmap * work );
 
+	const int getFinished() const;
+
 	int getLimit();
 	void act( int min_x, int max_x, int min_z, int max_z, vector< Object * > * objects );
 

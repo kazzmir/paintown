@@ -148,6 +148,14 @@ int Scene::getLimit(){
 	return block_length + current_block->getLength();
 }
 
+const int Scene::getFinished() const {
+	int finished = current_block->getFinished();
+	if ( finished == -1 ){
+		return -1;
+	}
+	return block_length + current_block->getFinished();
+}
+
 void Scene::clearHearts(){
 	for ( vector< Heart * >::iterator it = hearts.begin(); it != hearts.end(); ){
 		Heart * h = *it;

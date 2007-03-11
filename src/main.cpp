@@ -46,14 +46,14 @@ void resize_callback( int w, int h, void * data ){
 */
 
 /* fade the screen and tell the player they lost */
-void fadeOut(){
+void fadeOut( const string & message ){
 	Bitmap dark( GFX_X, GFX_Y );
 	dark.fill( Bitmap::makeColor( 0, 0, 0 ) );
 	Global::speed_counter = 0;
 	Bitmap::transBlender( 0, 0, 0, 10 );
 	int fade = 0;
 	const Font & f = Font::getFont( "data/fonts/arial.ttf", 50, 50 );
-	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, "You lose" );
+	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, message );
 	while ( fade < 100 ){
 		fade++;
 	
@@ -77,55 +77,18 @@ void fadeOut(){
 	Util::rest( 1000 );
 }
 
-void realGame( Object * player ){
-	// global_debug = true;
-	bool show_loading_screen = true;
-
-	Global::done_loading = false;
-	pthread_t loading_screen_thread;
+static bool playLevel( World & world, Player * player ){
+	Keyboard key;
 	
-	if ( show_loading_screen ){
-		pthread_create( &loading_screen_thread, NULL, loadingScreen, NULL );
-	}
-
-	World world = World( player, "data/levels/easy/1aeasy.txt" );
-	
-	// Bitmap Screen( screen );
 	Bitmap work( GFX_X / 2, GFX_Y / 2 );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
-	// Bitmap screen_buffer( Screen.getWidth(), Screen.getHeight() );
+
 	Global::speed_counter = 0;
 	Global::second_counter = 0;
 	int game_time = 100;
-
-	/* end of init stuff */
-
-	Music::pause();
-	Music::fadeIn( 0.3 );
-	Music::loadSong( Util::getFiles( "data/music/", "*" ) );
-	Music::play();
-
-	Player * playerX = (Player *) player;
-	playerX->setY( 200 );
-	playerX->setMoving( true );
-	playerX->setStatus( Status_Falling );
-					
-	/*
-	playerX->deathReset();
-	playerX->deathReset();
-	*/
-
-	if ( show_loading_screen ){
-		pthread_mutex_lock( &Global::loading_screen_mutex );
-		Global::done_loading = true;
-		pthread_mutex_unlock( &Global::loading_screen_mutex );
-
-		pthread_join( loading_screen_thread, NULL );
-	}
-
-	Keyboard key;
-
-	while ( !key[ Keyboard::Key_ESC ] ){
+	bool done = false;
+	
+	while ( ! done ){
 
 		bool draw = false;
 		key.poll();
@@ -137,8 +100,12 @@ void realGame( Object * player ){
 				world.act();
 				think--;
 
-				if ( playerX->getHealth() <= 0 ){
-					playerX->deathReset();
+				if ( player->getHealth() <= 0 ){
+					player->deathReset();
+					if ( player->getLives() == 0 ){
+						fadeOut( "You lose" );
+						return false;
+					}
 					world.addObject( player );
 				}
 				/*
@@ -182,12 +149,66 @@ void realGame( Object * player ){
 			Util::rest( 1 );
 			key.poll();
 		}
+
+		done |= key[ Keyboard::Key_ESC ] || world.finished();
 	}
 
 	while ( key[ Keyboard::Key_ESC ] ){
 		key.poll();
 		Util::rest( 1 );
+		return false;
 	}
+
+	return true;
+}
+
+void realGame( Object * player ){
+
+	vector< string > levels;
+	levels.push_back( "data/levels/easy/1aeasy.txt" );
+
+	// global_debug = true;
+	bool show_loading_screen = true;
+
+	for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
+		Global::done_loading = false;
+		pthread_t loading_screen_thread;
+
+		if ( show_loading_screen ){
+			pthread_create( &loading_screen_thread, NULL, loadingScreen, NULL );
+		}
+
+		World world = World( player, *it );
+
+		Music::pause();
+		Music::fadeIn( 0.3 );
+		Music::loadSong( Util::getFiles( "data/music/", "*" ) );
+		Music::play();
+
+		Player * playerX = (Player *) player;
+		playerX->setY( 200 );
+		playerX->setMoving( true );
+		playerX->setStatus( Status_Falling );
+
+		if ( show_loading_screen ){
+			pthread_mutex_lock( &Global::loading_screen_mutex );
+			Global::done_loading = true;
+			pthread_mutex_unlock( &Global::loading_screen_mutex );
+
+			pthread_join( loading_screen_thread, NULL );
+		}
+
+		bool b = playLevel( world, playerX );
+
+		ObjectFactory::destroy();
+		HeartFactory::destroy();
+
+		if ( ! b ){
+			return;
+		}
+	}
+
+	fadeOut( "You win!" );
 }
 
 static bool isArg( const char * s1, const char * s2 ){
@@ -371,8 +392,6 @@ static bool titleScreen(){
 		case PLAY : {
 			try{
 				realGame( selectPlayer() );
-				ObjectFactory::destroy();
-				HeartFactory::destroy();
 			} catch ( const LoadException & le ){
 				cout << "Could not load player: " << le.getReason() << endl;
 			}

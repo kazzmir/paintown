@@ -15,7 +15,8 @@
 #endif
 
 	
-Block::Block( Token * tok ) throw ( LoadException ){
+Block::Block( Token * tok ) throw ( LoadException ):
+finished( -1 ){
 
 	if ( *tok != "block" ){
 		throw LoadException("Not a scene block");
@@ -32,6 +33,10 @@ Block::Block( Token * tok ) throw ( LoadException ){
 				setLength( l );
 			} else if ( *current == "wait" ){
 				*current >> wait;
+			} else if ( *current == "finish" ){
+				int f;
+				*current >> f;
+				setFinished( f );
 			} else if ( *current == "object" ){
 				BlockObject * so;
 				try{ 

@@ -87,6 +87,20 @@ void World::Quake( int q ){
 	quake_time += q;
 }
 
+const bool World::finished() const {
+	cout << "Player: " << player->getX() << " Finish: " << scene->getFinished() << endl;
+	if ( player != NULL ){
+		int f = scene->getFinished();
+		if ( f != -1 ){
+			return player->getX() >= f;
+		} else {
+			return false;
+		}
+	} else {
+		return true;
+	}
+}
+
 void World::doLogic(){
 
 	vector< Object * > added_effects;

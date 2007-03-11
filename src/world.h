@@ -26,6 +26,8 @@ public:
 	void draw( Bitmap * work );
 	void addObject( Object * o );
 
+	const bool finished() const;
+
 	/* upper left hand corner of the screen */
 	int getX();
 	int getY();
