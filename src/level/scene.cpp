@@ -32,6 +32,8 @@ Panel::~Panel(){
 Scene::Scene( const char * filename ) throw( LoadException ):
 background( NULL ),
 block_length( 0 ),
+minimum_z( 0 ),
+maximum_z( 0 ),
 current_block( NULL ){
 
 
@@ -59,6 +61,20 @@ current_block( NULL ){
 				string n;
 				*tok >> n;
 				background = new Bitmap( n );
+			} else if ( *tok == "z" ){
+				while ( tok->hasTokens() ){
+					Token * next;
+					*tok >> next;
+					if ( *next == "minimum" ){
+						int m;
+						*next >> m;
+						setMinimumZ( m );
+					} else if ( *next == "maximum" ){
+						int m;
+						*next >> m;
+						setMaximumZ( m );
+					}
+				}
 			} else if ( *tok == "panel" ){
 				int num;
 				string normal, neon, s_screen;
@@ -167,7 +183,7 @@ void Scene::clearHearts(){
 	}
 }
 
-void Scene::act( int min_x, int max_x, int min_z, int max_z, vector< Object * > * objects ){
+void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 	clearHearts();
 
 	// cout<<"Min_x = "<<min_x<<" block_length = "<<block_length<<endl;
@@ -182,7 +198,7 @@ void Scene::act( int min_x, int max_x, int min_z, int max_z, vector< Object * > 
 		}
 	}
 
-	vector< Heart * > new_hearts = current_block->createObjects( block_length - 320, min_x, max_x, min_z, max_z, objects );
+	vector< Heart * > new_hearts = current_block->createObjects( block_length - 320, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
 	hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
 }
 

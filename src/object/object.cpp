@@ -2,6 +2,7 @@
 #include "object_attack.h"
 #include "stimulation.h"
 #include "util/ebox.h"
+#include <math.h>
 #include <exception>
 #include <iostream>
 
@@ -57,9 +58,12 @@ Object::Object( const Object & copy ){
 }
 	
 double Object::ZDistance( const Object * obj ){
+	return fabs( obj->getZ() - getZ() );
+	/*
 	if ( obj->getZ() > getZ() )
 		return obj->getZ() - getZ();
 	return getZ() - obj->getZ();
+	*/
 }
 	
 double Object::XDistance( const Object * obj ){

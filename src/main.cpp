@@ -23,13 +23,11 @@
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/load_exception.h"
+#include "util/token.h"
+#include "util/token_exception.h"
+#include "util/tokenreader.h"
 #include "util/timedifference.h"
 #include "world.h"
-
-/*
-#define GFX_X 640
-#define GFX_Y 480
-*/
 
 /* Global effect for copying */
 // static Object * bang = NULL;
@@ -81,6 +79,7 @@ static bool playLevel( World & world, Player * player ){
 	Keyboard key;
 	
 	Bitmap work( GFX_X / 2, GFX_Y / 2 );
+	// Bitmap work( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 
 	Global::speed_counter = 0;
@@ -88,17 +87,20 @@ static bool playLevel( World & world, Player * player ){
 	int game_time = 100;
 	bool done = false;
 	
+	double gameSpeed = 1.0;
+	
 	while ( ! done ){
 
 		bool draw = false;
 		key.poll();
 
-		if ( Global::speed_counter > 0 ){
-			int think = Global::speed_counter;
-			while ( think > 0 ){
+		if ( Global::speed_counter >= gameSpeed ){
+			double think = Global::speed_counter;
+			double lose = think;
+			while ( think >= gameSpeed ){
 				draw = true;
 				world.act();
-				think--;
+				think -= gameSpeed;
 
 				if ( player->getHealth() <= 0 ){
 					player->deathReset();
@@ -114,8 +116,20 @@ static bool playLevel( World & world, Player * player ){
 					return;
 				}
 				*/
+
+				if ( key[ Keyboard::Key_MINUS_PAD ] ){
+					gameSpeed -= 0.01;
+					if ( gameSpeed < 0.01 ){
+						gameSpeed = 0.01;
+					}
+				}
+
+				if ( key[ Keyboard::Key_PLUS_PAD ] ){
+					gameSpeed += 0.01;
+				}
 			}
-			Global::speed_counter = 0;
+
+			Global::speed_counter -= lose;
 		}
 		
 		while ( Global::second_counter > 0 ){
@@ -134,9 +148,8 @@ static bool playLevel( World & world, Player * player ){
 			FontRender * render = FontRender::getInstance();
 			render->render( &screen_buffer );
 
-			// acquire_screen();
+			/* getX/Y move when the world is quaking */
 			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
-			// release_screen();
 
 			if ( key[ Keyboard::Key_F12 ] ){
 				work.save( "scr.bmp" );
@@ -145,7 +158,7 @@ static bool playLevel( World & world, Player * player ){
 			work.clear();
 		}
 
-		while ( Global::speed_counter == 0 ){
+		while ( Global::speed_counter < gameSpeed ){
 			Util::rest( 1 );
 			key.poll();
 		}
@@ -153,22 +166,45 @@ static bool playLevel( World & world, Player * player ){
 		done |= key[ Keyboard::Key_ESC ] || world.finished();
 	}
 
-	while ( key[ Keyboard::Key_ESC ] ){
-		key.poll();
-		Util::rest( 1 );
+	if ( key[ Keyboard::Key_ESC ] ){
+		while ( key[ Keyboard::Key_ESC ] ){
+			key.poll();
+			Util::rest( 1 );
+		}
 		return false;
 	}
 
 	return true;
 }
 
+static vector< string > readLevels( const string & filename ){
+	try{
+		TokenReader tr( filename );
+		Token * head = tr.readToken();
+
+		vector< string > levels;
+		if ( *head == "levels" ){
+			while ( head->hasTokens() ){
+				string s;
+				*head >> s;
+				levels.push_back( s );
+			}
+		}
+
+		return levels;
+	} catch ( const LoadException & lex ){
+		cout << "Could not load " << filename << ". Reason: " << lex.getReason() << endl;
+		return vector< string >();
+	}
+}
+
 void realGame( Object * player ){
 
-	vector< string > levels;
-	levels.push_back( "data/levels/easy/1aeasy.txt" );
+	vector< string > levels = readLevels( "data/levels/w1.txt" );
 
 	// global_debug = true;
 	bool show_loading_screen = true;
+
 
 	for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
 		Global::done_loading = false;
@@ -178,27 +214,31 @@ void realGame( Object * player ){
 			pthread_create( &loading_screen_thread, NULL, loadingScreen, NULL );
 		}
 
-		World world = World( player, *it );
+		bool b = false;
+		{ /* force scope */
+			World world = World( player, *it );
 
-		Music::pause();
-		Music::fadeIn( 0.3 );
-		Music::loadSong( Util::getFiles( "data/music/", "*" ) );
-		Music::play();
+			Music::pause();
+			Music::fadeIn( 0.3 );
+			Music::loadSong( Util::getFiles( "data/music/", "*" ) );
+			Music::play();
 
-		Player * playerX = (Player *) player;
-		playerX->setY( 200 );
-		playerX->setMoving( true );
-		playerX->setStatus( Status_Falling );
+			Player * playerX = (Player *) player;
+			playerX->setY( 200 );
+			playerX->setMoving( true );
+			playerX->setStatus( Status_Falling );
 
-		if ( show_loading_screen ){
-			pthread_mutex_lock( &Global::loading_screen_mutex );
-			Global::done_loading = true;
-			pthread_mutex_unlock( &Global::loading_screen_mutex );
+			if ( show_loading_screen ){
+				pthread_mutex_lock( &Global::loading_screen_mutex );
+				Global::done_loading = true;
+				pthread_mutex_unlock( &Global::loading_screen_mutex );
 
-			pthread_join( loading_screen_thread, NULL );
+				pthread_join( loading_screen_thread, NULL );
+			}
+
+			b = playLevel( world, playerX );
+
 		}
-
-		bool b = playLevel( world, playerX );
 
 		ObjectFactory::destroy();
 		HeartFactory::destroy();
@@ -247,7 +287,7 @@ static Object * selectPlayer() throw( LoadException ){
 		Character * ch = (Character *) *current1;
 
 		if ( Global::speed_counter > 0 ){
-			int think = Global::speed_counter;
+			double think = Global::speed_counter;
 			while ( think > 0 ){
 
 				if ( key[ Keyboard::Key_LEFT ] ){
@@ -338,7 +378,7 @@ static bool titleScreen(){
 		key.poll();
 		bool draw = false;
 		if ( Global::speed_counter > 0 ){
-			int think = Global::speed_counter;
+			double think = Global::speed_counter;
 
 			while ( think > 0 ){
 				think--;

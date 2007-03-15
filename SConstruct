@@ -3,6 +3,11 @@ import os;
 env = Environment( ENV = os.environ );
 config = env.Configure();
 
+def isWindows():
+	import re
+	import sys
+	return re.compile( '.*win32.*' ).match( sys.platform )
+
 def getDebug():
 	try:
 		return int(os.environ[ 'DEBUG' ])
@@ -25,9 +30,12 @@ if False:
 	env.Append( LINKFLAGS = '-pg' )
 
 env.Append( LIBS = [ 'fl', 'ldpng', 'pthread', 'aldmb', 'dumb' ] );
-env.ParseConfig( 'libpng-config --libs' );
-env.ParseConfig( 'allegro-config --libs' );
-env.ParseConfig( 'freetype-config --libs --cflags' );
+if isWindows():
+	env.Append( LIBS = [ 'alleg' ] )
+else:
+	env.ParseConfig( 'libpng-config --libs' );
+	env.ParseConfig( 'allegro-config --libs' );
+	env.ParseConfig( 'freetype-config --libs --cflags' );
 
 SConscript( 'src/SConstruct', build_dir='build', exports = 'env' );
 env.Install( '.', 'build/paintown' );

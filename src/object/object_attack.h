@@ -26,7 +26,6 @@ public:
 		return attack_ticket;
 	}
 
-protected:
 	virtual void nextTicket();
 
 protected:

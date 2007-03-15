@@ -46,6 +46,10 @@ public:
 		return map;
 	}
 
+	inline const int getAggression() const {
+		return aggression;
+	}
+
 	inline const int getHealth() const {
 		return health;
 	}
@@ -64,6 +68,10 @@ public:
 
 	inline void setPath( const string & p ){
 		path = p;
+	}
+
+	inline void setAggression( const int a ){
+		aggression = a;
 	}
 
 	inline void setName( const string & s ) {
@@ -101,6 +109,8 @@ protected:
 
 	/* the type of object this is */
 	int type;
+
+	int aggression;
 
 	string name;
 	string alias;

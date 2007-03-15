@@ -164,6 +164,7 @@ public:
 	/* for testing purposes only */
 	virtual bool testAnimation();
 	virtual void testAnimation( unsigned int x );
+	virtual void testAnimation( string name );
 	void testReset();
 
 

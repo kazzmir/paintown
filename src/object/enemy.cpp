@@ -21,22 +21,24 @@ using namespace std;
 
 static const char * ENEMY_FONT = "data/fonts/arial.ttf";
 
+const int NORMAL_AGRESSION = 97;
+
 Enemy::Enemy( ):
 Character( ALLIANCE_ENEMY ),
-aggression( 97 ){
+aggression( NORMAL_AGRESSION ){
 
 	constructSelf();
 }
 
 Enemy::Enemy( const char * filename ) throw( LoadException ):
 Character( filename, ALLIANCE_ENEMY  ),
-aggression( 97 ){
+aggression( NORMAL_AGRESSION ){
 	constructSelf();
 }
 
 Enemy::Enemy( const string & filename ) throw( LoadException ):
 Character( filename, ALLIANCE_ENEMY  ),
-aggression( 97 ){
+aggression( NORMAL_AGRESSION ){
 	constructSelf();
 }
 
@@ -209,7 +211,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 			 * If we are in range of the Z coordinate, relativeDistance(), then find an attack 
 			 * with a suitable X range.  
 			 */
-			if ( ZDistance( main_enemy ) < MIN_RELATIVE_DISTANCE && Util::rnd( 100 ) >= getAggression() ){
+			if ( Util::rnd( 100 ) >= getAggression() ){
 				// cout<<getName()<<":In range"<<endl;
 				vector< Animation * > attacks;
 				for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
@@ -219,11 +221,12 @@ void Enemy::act( vector< Object * > * others, World * world ){
 				}
 
 				double attack_range = fabs( getX() - main_enemy->getX() );
+				double zdistance = ZDistance( main_enemy );
 				// cout<<getName()<<": Range = "<<attack_range<<endl;
 				for ( vector< Animation * >::iterator it = attacks.begin(); it != attacks.end(); ){
 					Animation * maybe = *it;
 					// cout<<getName()<<":"<<maybe->getName()<<" range = "<<maybe->getRange()<<endl;
-					if ( attack_range > maybe->getRange() ){
+					if ( attack_range > maybe->getRange() || zdistance > maybe->getMinZDistance() ){
 						it = attacks.erase( it );
 					} else {
 						it++;

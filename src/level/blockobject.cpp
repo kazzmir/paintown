@@ -7,6 +7,7 @@
 
 BlockObject::BlockObject( Token * tok ) throw ( LoadException ):
 type( -1 ),
+aggression( -1 ),
 map( 0 ),
 health( 1 ),
 coords_x( 0 ),
@@ -42,6 +43,10 @@ stimulationValue( 0 ){
 				string n;
 				*current >> n;
 				setPath( n );
+			} else if ( *current == "aggression" ){
+				int a;
+				*current >> a;
+				setAggression( a );
 			} else if ( *current == "name" ){
 				string n;
 				*current >> n;

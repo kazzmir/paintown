@@ -450,6 +450,7 @@ void showAnimations( string person, int xmap = 0 ){
 		return;
 	}
 
+	
 	ch->setMap( xmap );
 
 	ch->setX( 320 / 2 );
@@ -471,6 +472,13 @@ void showAnimations( string person, int xmap = 0 ){
 
 	const int baseZ = 170;
 
+	Enemy enemy( "data/chars/shermie/shermie.txt" );
+
+	enemy.setX( 320 / 2 + 100 );
+	enemy.setY( 0 );
+	enemy.setZ( baseZ );
+	enemy.setFacing( Object::FACING_LEFT );
+
 	double stay_x = ch->getX();
 	double stay_z = ch->getZ();
 	while ( !key[ KEY_ESC ] ){
@@ -481,7 +489,7 @@ void showAnimations( string person, int xmap = 0 ){
 
 		if ( Global::speed_counter > 0 ){
 			// cout<<"Counter = "<<speed_counter<<endl;
-			int think = Global::speed_counter;
+			double think = Global::speed_counter;
 			while ( think-- > 0 ){
 				runCounter += runSpeed;
 
@@ -492,6 +500,18 @@ void showAnimations( string person, int xmap = 0 ){
 						ch->setZ( stay_z );
 						ch->setY( 0 );
 						ch->testReset();
+						ch->nextTicket();
+					}
+
+					if ( enemy.testAnimation() ){
+						enemy.testAnimation( "idle" );
+					}
+
+					if ( ch->isAttacking() ){
+						if ( enemy.collision( ch ) ){
+							// cout << "Collision" << endl;
+							enemy.testAnimation( "pain" );
+						}
 					}
 
 					runCounter -= 1.0;
@@ -600,6 +620,7 @@ void showAnimations( string person, int xmap = 0 ){
 		if ( draw ){
 			work.line( 0, baseZ, work.getWidth(), baseZ, Bitmap::makeColor( 255, 255, 0 ) );
 			work.circleFill( (int) ch->getX(), (int) ch->getZ(), 5, Bitmap::makeColor( 255, 0, 0 ) );
+			enemy.draw( &work, 0 );
 			ch->draw( &work, 0 );
 
 			TimeDifference td;

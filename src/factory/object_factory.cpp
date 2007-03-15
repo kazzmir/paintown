@@ -44,26 +44,19 @@ static Stimulation * makeStimulation( const string & str, int value ){
 	return new Stimulation();
 }
 
-Object * ObjectFactory::makeItem( BlockObject * block ){
+Object * ObjectFactory::makeItem( Item * item, BlockObject * block ){
 	
-	try{
-		Item * item;
-		item = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) );
-		int x, z;
-		block->getCoords( x, z );
-		item->setX( x );
-		item->setZ( z );
-		return item;
-	} catch ( LoadException le ){
-		cout << __FILE__ << " : " << le.getReason() << endl;
-		// delete ret;
-		return NULL;
-	}
+	int x, z;
+	block->getCoords( x, z );
+	item->setX( x );
+	item->setZ( z );
+	return item;
+
 }
 
-Object * ObjectFactory::makeEnemy( BlockObject * block ){
+Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 
-	Enemy * ret;
+	// Enemy * ret;
 	/*
 	string name = block->getName();
 	for ( int q = 0; q < name.size(); q++ ){
@@ -78,6 +71,7 @@ Object * ObjectFactory::makeEnemy( BlockObject * block ){
 	filename += name;
 	filename += ".txt";
 	*/
+	/*
 	string filename = block->getPath();
 	try{ 
 		ret = new Enemy( filename );
@@ -86,17 +80,14 @@ Object * ObjectFactory::makeEnemy( BlockObject * block ){
 		// delete ret;
 		return NULL;
 	}
+	*/
 	int x, z;
 	block->getCoords( x, z );
 	ret->setX( x );
 	ret->setZ( z );
-	// cout<<__FILE__<<":"<<((Enemy *)ret)->getName()<<" map = "<<block->getMap()<<endl;
-	
-	
-	/*
-	((Enemy *)ret)->setName( block->getAlias() );
-	((Enemy *)ret)->setMap( block->getMap() );
-	*/
+	if ( block->getAggression() > 0 ){
+		ret->setAggression( block->getAggression() );
+	}
 	
 	ret->setName( block->getAlias() );
 	ret->setMap( block->getMap() );
@@ -109,38 +100,51 @@ Object * ObjectFactory::makeEnemy( BlockObject * block ){
 }
 
 Object * ObjectFactory::makeObject( BlockObject * block ){
-	Object * ret;
+	// Object * ret = NULL;
 	
 	switch( block->getType() ){
 		case OBJECT_ITEM : {
-			if ( cached[ block->getName() ] != NULL ){
-				return cached[ block->getName() ]->copy();
+			try{
+				if ( cached[ block->getName() ] == NULL ){
+					cached[ block->getName() ] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
+					cout << "Cached " << block->getPath() << endl;
+				}
+				
+				return makeItem( (Item *) cached[ block->getName() ]->copy(), block );
+			} catch ( const LoadException & le ){
+				cout << "Could not load " << block->getName() << " because " << le.getReason() << endl;
 			}
-			
-			cout << "ObjectFactory creating " << block->getPath() << endl;
-			ret = makeItem( block );
 			break;
 		}
 		case OBJECT_ENEMY : {
 		
-			if ( cached[ block->getName() ] != NULL ){
-				ret = cached[ block->getName() ]->copy();
-				int x, z;
-				block->getCoords( x, z );
-				ret->setX( x );
-				ret->setZ( z );
-				((Enemy *)ret)->setName( block->getAlias() );
-				((Enemy *)ret)->setMap( block->getMap() );
-				ret->setHealth( block->getHealth() );
-				ret->setMaxHealth( block->getHealth() );
-				return ret;
-			}
+			try{
+				if ( cached[ block->getName() ] == NULL ){
+					cached[ block->getName() ] = new Enemy( block->getPath() );
+					cout << "Cached " << block->getPath() << endl;
+				}
 
-			cout << "ObjectFactory creating " << block->getPath() << endl;
-			ret = makeEnemy( block );
-			if ( ret == NULL ){
-				cout<<"Could not instantiate enemy"<<endl;
-				return NULL;
+				/*
+					ret = cached[ block->getName() ]->copy();
+					Enemy * enemy = (Enemy *) ret;
+					int x, z;
+					block->getCoords( x, z );
+					ret->setX( x );
+					ret->setZ( z );
+					if ( block->getAggression() > 0 ){
+						enemy->setAggression( block->getAggression() );
+					}
+					enemy->setName( block->getAlias() );
+					enemy->setMap( block->getMap() );
+					ret->setHealth( block->getHealth() );
+					ret->setMaxHealth( block->getHealth() );
+					return ret;
+				}
+					*/
+
+				return makeEnemy( (Enemy *) cached[ block->getName() ]->copy(), block );
+			} catch ( const LoadException & le ){
+				cout << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
 			}
 			break;
 		}
@@ -156,9 +160,10 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 	 * and other special memory things 
 	 */
 	// cout<<"Adding cached object to factory"<<endl;
-	cached[ block->getName() ] = ret;
+	// cached[ block->getName() ] = ret;
 	// cout<<"Object factory has "<<cached.size()<<" elements"<<endl;
-	return ret->copy();
+	// return ret->copy();
+	return NULL;
 }
 
 ObjectFactory::~ObjectFactory(){

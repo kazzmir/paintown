@@ -4,6 +4,8 @@
 class Object;
 class BlockObject;
 class Heart;
+class Item;
+class Enemy;
 
 #include <map>
 #include <vector>
@@ -20,8 +22,8 @@ private:
 	ObjectFactory();
 	Object * makeObject( BlockObject * block );
 
-	Object * makeItem( BlockObject * block );
-	Object * makeEnemy( BlockObject * block );
+	Object * makeItem( Item * item, BlockObject * block );
+	Object * makeEnemy( Enemy * enemy, BlockObject * block );
 
 	~ObjectFactory();
 

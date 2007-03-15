@@ -9,7 +9,7 @@ bool init( int gfx );
 /* global vars */
 
 namespace Global{
-	extern volatile int speed_counter;
+	extern volatile double speed_counter;
 	extern volatile int second_counter;
 
 	extern pthread_mutex_t loading_screen_mutex;
@@ -23,5 +23,10 @@ namespace Global{
 
 #define GFX_X 640
 #define GFX_Y 480
+
+/*
+#define GFX_X 320
+#define GFX_Y 240
+*/
 
 #endif

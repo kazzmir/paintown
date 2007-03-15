@@ -77,6 +77,8 @@ void World::loadLevel( const string & path ){
 		cout<<"Error loading scene: "<<e.getReason()<<endl;
 	}
 
+	printf( "minimum: %d maximum %d", getMinimumZ(), getMaximumZ() );
+
 	if ( player != NULL ){
 		player->setX( 140 );
 		player->setZ( (getMinimumZ() + getMaximumZ()) / 2 );
@@ -87,8 +89,8 @@ void World::Quake( int q ){
 	quake_time += q;
 }
 
+/* true if the player has crossed the finish line */
 const bool World::finished() const {
-	cout << "Player: " << player->getX() << " Finish: " << scene->getFinished() << endl;
 	if ( player != NULL ){
 		int f = scene->getFinished();
 		if ( f != -1 ){
@@ -118,7 +120,7 @@ void World::doLogic(){
 
 					// cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < MIN_RELATIVE_DISTANCE) << endl;
 					// cout << "Collision: " << (*fight)->collision( o_good ) << endl;
-					if ( good->ZDistance( *fight ) < o_good->minZDistance() && (*fight)->collision( o_good ) ){ 
+					if ( good->ZDistance( *fight ) <= o_good->minZDistance() && (*fight)->collision( o_good ) ){ 
 
 						// cout << "There was a collision" << endl;
 						// cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;
@@ -172,13 +174,19 @@ void World::doLogic(){
 }
 
 int World::getMinimumZ(){
+	return scene->getMinimumZ();
+	/*
 	const int MIN_WORLD_Z = 160;
 	return MIN_WORLD_Z;
+	*/
 }
 
 int World::getMaximumZ(){
+	return scene->getMaximumZ();
+	/*
 	const int MAX_WORLD_Z = 232;
 	return MAX_WORLD_Z;
+	*/
 }
 
 void World::act(){
@@ -217,7 +225,7 @@ void World::act(){
 
 	}
 
-	scene->act( min_x, min_x + screen_size, getMinimumZ(), getMaximumZ(), &objects );
+	scene->act( min_x, min_x + screen_size, &objects );
 
 }
 

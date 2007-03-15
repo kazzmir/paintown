@@ -9,8 +9,10 @@
 
 using namespace std;
 
-volatile int Global::speed_counter = 0;
+volatile double Global::speed_counter = 0;
 volatile int Global::second_counter = 0;
+
+static const int TICS_PER_SECOND = 90;
 
 pthread_mutex_t Global::loading_screen_mutex;
 bool Global::done_loading = false;
@@ -21,7 +23,7 @@ const int Global::FULLSCREEN = GFX_AUTODETECT_FULLSCREEN;
 // DATAFILE * Global::all_fonts;
 
 void inc_speed_counter() {
-	Global::speed_counter++;
+	Global::speed_counter += 1.0;
 }
 END_OF_FUNCTION( inc_speed_counter );
 
@@ -49,7 +51,7 @@ bool init( int gfx ){
 	LOCK_VARIABLE( second_counter );
 	LOCK_FUNCTION( (void *)inc_speed_counter );
 	LOCK_FUNCTION( (void *)inc_second_counter );
-	cout<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( 90 ) )<<endl;
+	cout<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
 	cout<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
 	srand( time( NULL ) );
 	// Global::all_fonts = load_datafile( "data/fonts.dat" );

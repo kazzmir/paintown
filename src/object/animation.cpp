@@ -570,11 +570,6 @@ ECollide * Animation::getCollide( int facing ){
 	if ( isAttack() ){
 		if ( attack.getX1() != attack.getX2() && attack.getY1() != attack.getY2() ){
 			if ( attack_collide ){
-				/*
-				if ( attack_collide->getWidth() == attack_x2 - attack_x1 && attack_collide->getHeight() == attack_y2 - attack_y1 ){
-					return attack_collide;
-				}
-				*/
 				delete attack_collide;
 			}
 
@@ -591,6 +586,7 @@ ECollide * Animation::getCollide( int facing ){
 				adder->setMinX( attack.getX1() );
 				adder->setMinY( attack.getY1() );
 			}
+
 			adder->setFull( true );
 			ac->addQuad( adder );
 
@@ -699,9 +695,13 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
 
 	// work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
 	if ( global_debug ){
-		work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
+		// work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
 		work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
 		// current_collide->draw( *work, x-w, y-h );
+		ECollide * c = getCollide( Object::FACING_RIGHT );
+		if ( c != NULL ){
+			c->draw( *work, x - w, y - h, Bitmap::makeColor( 255, 255, 255 ) );
+		}
 	}
 
 	// work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
@@ -759,9 +759,13 @@ void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work
 	// work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
 	// work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
 	if ( global_debug ){
-		work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
+		// work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
 		work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
 		// current_collide->draw( *work, x-w, y-h, true );
+		ECollide * c = getCollide( Object::FACING_LEFT );
+		if ( c != NULL ){
+			c->draw( *work, x - w, y - h, Bitmap::makeColor( 255, 255, 255 ), true );
+		}
 	}
 
 	// cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;

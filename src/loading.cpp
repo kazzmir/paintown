@@ -76,7 +76,7 @@ void * loadingScreen( void * arg ){
 
 		bool draw = false;
 		if ( Global::speed_counter > 0 ){
-			int think = Global::speed_counter;	
+			double think = Global::speed_counter;	
 			Global::speed_counter = 0;
 			draw = true;
 			while ( think > 0 ){

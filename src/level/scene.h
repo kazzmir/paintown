@@ -32,12 +32,28 @@ public:
 
 	const int getFinished() const;
 
+	inline const int getMinimumZ() const {
+		return minimum_z;
+	}
+
+	inline const int getMaximumZ() const {
+		return maximum_z;
+	}
+
 	int getLimit();
-	void act( int min_x, int max_x, int min_z, int max_z, vector< Object * > * objects );
+	void act( int min_x, int max_x, vector< Object * > * objects );
 
 	~Scene();
 
 protected:
+
+	inline void setMinimumZ( const int z ){
+		minimum_z = z;
+	}
+
+	inline void setMaximumZ( const int z ){
+		maximum_z = z;
+	}
 
 	void calculateLength();
 
@@ -64,6 +80,8 @@ protected:
 
 	/* how far the scene has progressed */
 	int block_length;
+
+	int minimum_z, maximum_z;
 
 	Block * current_block;
 

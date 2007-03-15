@@ -428,6 +428,11 @@ void Character::testReset(){
 	animation_current->reset();
 }
 
+void Character::testAnimation( string name ){
+	animation_current = getMovement( name );
+	animation_current->reset();
+}
+
 void Character::testAnimation( unsigned int x ){
 	animation_current = getMovement( x );
 	animation_current->reset();
@@ -881,6 +886,11 @@ bool Character::realCollision( ObjectAttack * obj ){
 		if ( obj->getFacing() == FACING_LEFT )
 			his_xflip = true;
 
+		/*
+		my_xflip = false;
+		his_xflip = false;
+		*/
+
 		int mx, my;
 		int ax, ay;
 
@@ -898,25 +908,29 @@ bool Character::realCollision( ObjectAttack * obj ){
 		ax = obj->getRX() - obj->getWidth() / 2;
 		ay = obj->getRY() - obj->getHeight();
 
+		/*
+		mx = getRX();
+		my = getRY();
+		ax = obj->getRX();
+		ay = obj->getRY();
+		*/
+
 		// Bitmap Screen( screen );
 		/*
-		myCollide->draw( *Bitmap::Screen, mx, my, my_xflip );
-		hisCollide->draw( *Bitmap::Screen, ax, ay, his_xflip );
+		myCollide->draw( *Bitmap::Screen, mx, my, Bitmap::makeColor( 255, 0, 128 ), my_xflip );
+		hisCollide->draw( *Bitmap::Screen, ax, ay, Bitmap::makeColor( 128, 255, 0 ), his_xflip );
 		*/
 
 		// cout<<"Mx: "<<mx<< " My: "<<my<<" Width: "<<me->getWidth()<<" Height: "<<me->getHeight()<<endl;
 		// cout<<"Ax: "<<ax<< " Ay: "<<ay<<" Width: "<<him->getWidth()<<" Height: "<<him->getHeight()<<endl;
 
 		bool b = myCollide->Collision( hisCollide, mx, my, ax, ay, my_xflip, false, his_xflip, false );
-		/*
-		if ( b ){
-			myCollide->draw( *Bitmap::Screen, mx * 2, my * 2, my_xflip );
-			hisCollide->draw( *Bitmap::Screen, ax * 2, ay * 2, his_xflip );
+		if ( b && false ){
+			myCollide->draw( *Bitmap::Screen, 50, 50, my_xflip );
+			hisCollide->draw( *Bitmap::Screen, 50 + (ax - mx), 50 + (ay - my), his_xflip );
 			Util::rest( 500 );
 		}
-		*/
 		return b;
-
 	}
 	return false;
 
@@ -936,7 +950,7 @@ bool Character::collision( ObjectAttack * obj ){
 	}
 
 	if ( collision_objects[ obj ] == obj->getTicket() ){
-	// if ( last_obj == obj && last_collide == obj->getTicket() )
+		// if ( last_obj == obj && last_collide == obj->getTicket() )
 		// cout << this << " already collided with " << obj << endl;
 		return false;
 	}
@@ -1023,6 +1037,12 @@ void Character::draw( Bitmap * work, int rel_x ){
 		/*
 		if ( invincibility > 0 ){
 			Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		}
+		*/
+
+		/*
+		if ( global_debug ){
+			work->circleFill( getRX() - rel_x, (int) getZ(), 3, Bitmap::makeColor(255,255,0) );
 		}
 		*/
 	}
