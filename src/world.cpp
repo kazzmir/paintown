@@ -77,8 +77,6 @@ void World::loadLevel( const string & path ){
 		cout<<"Error loading scene: "<<e.getReason()<<endl;
 	}
 
-	printf( "minimum: %d maximum %d", getMinimumZ(), getMaximumZ() );
-
 	if ( player != NULL ){
 		player->setX( 140 );
 		player->setZ( (getMinimumZ() + getMaximumZ()) / 2 );

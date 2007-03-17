@@ -315,7 +315,7 @@ contact( NULL ){
 				AnimationEvent * ani = new AnimationEventFrame( path );
 				events.push_back( ani );
 			} else {
-				cout<<"Unhandled animation attribute: "<<endl;
+				cout << tok->getFileName() << " Unhandled animation attribute: "<<endl;
 				current->print(" ");
 			}
 

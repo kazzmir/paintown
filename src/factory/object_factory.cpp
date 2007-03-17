@@ -105,22 +105,22 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 	switch( block->getType() ){
 		case OBJECT_ITEM : {
 			try{
-				if ( cached[ block->getName() ] == NULL ){
-					cached[ block->getName() ] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
+				if ( cached[ block->getPath() ] == NULL ){
+					cached[ block->getPath() ] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
 					cout << "Cached " << block->getPath() << endl;
 				}
 				
-				return makeItem( (Item *) cached[ block->getName() ]->copy(), block );
+				return makeItem( (Item *) cached[ block->getPath() ]->copy(), block );
 			} catch ( const LoadException & le ){
-				cout << "Could not load " << block->getName() << " because " << le.getReason() << endl;
+				cout << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
 			}
 			break;
 		}
 		case OBJECT_ENEMY : {
 		
 			try{
-				if ( cached[ block->getName() ] == NULL ){
-					cached[ block->getName() ] = new Enemy( block->getPath() );
+				if ( cached[ block->getPath() ] == NULL ){
+					cached[ block->getPath() ] = new Enemy( block->getPath() );
 					cout << "Cached " << block->getPath() << endl;
 				}
 
@@ -142,14 +142,14 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				}
 					*/
 
-				return makeEnemy( (Enemy *) cached[ block->getName() ]->copy(), block );
+				return makeEnemy( (Enemy *) cached[ block->getPath() ]->copy(), block );
 			} catch ( const LoadException & le ){
 				cout << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
 			}
 			break;
 		}
 		default : {
-			cout<<__FILE__<<": No type given for: "<<block->getName()<<endl;
+			cout<<__FILE__<<": No type given for: "<<block->getPath()<<endl;
 			return NULL;
 
 			break;
