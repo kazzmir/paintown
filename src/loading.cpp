@@ -13,7 +13,6 @@
 #include "init.h"
 #include "loading.h"
 #include "util/bitmap.h"
-#include "fonts.h"
 #include "util/font.h"
 #include "util/funcs.h"
 #include <vector>
