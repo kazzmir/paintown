@@ -959,7 +959,7 @@ bool Character::collision( ObjectAttack * obj ){
 }
 
 /* draw a nifty translucent life bar */
-void Character::drawLifeBar( int x, int y, int he, Bitmap * work ){
+void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
 	// set_trans_blender( 0, 0, 0, 128 );
 	Bitmap::drawingMode( Bitmap::MODE_TRANS );
 	Bitmap::transBlender( 0, 0, 0, 128 );
@@ -969,7 +969,7 @@ void Character::drawLifeBar( int x, int y, int he, Bitmap * work ){
 	// set_trans_blender( 0, 0, 0, 64 );
 	Bitmap::transBlender( 0, 0, 0, 64 );
 	for ( int y1 = y; y1 <= y+health_height; y1++ ){
-		work->rectangleFill( x, y, x + he, y1, Bitmap::makeColor( 16, 162, 246 ) );
+		work->rectangleFill( x, y, x + health, y1, Bitmap::makeColor( 16, 162, 246 ) );
 	}
 	// drawing_mode( DRAW_MODE_SOLID, NULL, 0, 0 );
 	Bitmap::drawingMode( Bitmap::MODE_SOLID );

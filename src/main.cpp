@@ -471,7 +471,7 @@ int paintown_main( int argc, char ** argv ){
 		cout << "Could not initialize system" << endl;
 	}
 	diff.endTime();
-	diff.printTime("Init: ");
+	diff.printTime("Init:");
 
 	while ( titleScreen() != false );
 

@@ -343,6 +343,8 @@ void Player::act( vector< Object * > * others, World * world ){
 	/* Character handles jumping and possibly other things */
 	Character::act( others, world );
 
+	fillKeyCache();
+
 	/* special cases... */
 	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise || getStatus() == Status_Get || getStatus() == Status_Falling )
 		return;
@@ -355,7 +357,7 @@ void Player::act( vector< Object * > * others, World * world ){
 	
 	/* Now the real meat */
 
-	fillKeyCache();
+	// fillKeyCache();
 
 	/*
 	if ( !key_cache.empty() ){
