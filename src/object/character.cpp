@@ -172,7 +172,7 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	// setInvincibility( 1000 );
 	TokenReader tr( filename );
 
-	Token * head;
+	Token * head = NULL;
 	try{
 		head = tr.readToken();
 	} catch( const TokenException & ex ){

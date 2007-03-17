@@ -29,15 +29,20 @@ if False:
 	env.Append( CCFLAGS = '-pg' )
 	env.Append( LINKFLAGS = '-pg' )
 
-env.Append( LIBS = [ 'fl', 'ldpng', 'pthread', 'aldmb', 'dumb' ] );
+env.Append( LIBS = [ 'ldpng', 'aldmb', 'dumb' ] );
 if isWindows():
-	env.Append( LIBS = [ 'alleg' ] )
+	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype' ] )
 	env.Append( CPPDEFINES = 'WINDOWS' )
 else:
+	env.Append( LIBS = [ 'pthread' ] )
 	env.ParseConfig( 'libpng-config --libs' );
 	env.ParseConfig( 'allegro-config --libs' );
 	env.ParseConfig( 'freetype-config --libs --cflags' );
 
 SConscript( 'src/SConstruct', build_dir='build', exports = 'env' );
-env.Install( '.', 'build/paintown' );
-env.Install( '.', 'build/test' )
+if isWindows():
+	env.Install( '.', 'build/paintown.exe' )
+	env.Install( '.', 'build/test.exe' )
+else:
+	env.Install( '.', 'build/paintown' );
+	env.Install( '.', 'build/test' )

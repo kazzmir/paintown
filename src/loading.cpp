@@ -6,16 +6,16 @@
 #endif
 */
 
-#include <pthread.h>
+#include "util/bitmap.h"
 #include <math.h>
 #include <iostream>
 
-#include "init.h"
 #include "loading.h"
-#include "util/bitmap.h"
 #include "util/font.h"
 #include "util/funcs.h"
 #include <vector>
+#include <pthread.h>
+#include "init.h"
 
 using namespace std;
 

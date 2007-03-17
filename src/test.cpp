@@ -775,4 +775,7 @@ int main(){
 		showAnimations( next, 0 );
 		next = chooseCharacter();
 	}
+
+	return 0;
 }
+END_OF_MAIN()

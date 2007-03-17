@@ -5,3 +5,4 @@ int main( int argc, char ** argv ){
 	paintown_main( argc, argv );
 	return 0;
 }
+END_OF_MAIN()

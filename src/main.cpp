@@ -1,8 +1,13 @@
+#ifdef WINDOWS
+#define BITMAP dummyBITMAP
+#include <windows.h>
+#undef BITMAP
+#endif
+
 #include "main.h"
 #include "init.h"
 #include <iostream>
 #include <stdlib.h>
-#include <pthread.h>
 #include <time.h>
 
 #include "factory/collector.h"
@@ -28,6 +33,8 @@
 #include "util/tokenreader.h"
 #include "util/timedifference.h"
 #include "world.h"
+
+#include <pthread.h>
 
 /* Global effect for copying */
 // static Object * bang = NULL;
