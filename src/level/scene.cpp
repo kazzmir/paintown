@@ -153,6 +153,9 @@ void Scene::calculateLength(){
 	scene_length = 0;
 	for ( unsigned int q = 0; q < order.size(); q++ ){
 		Panel *& cur = panels[ order[q] ];
+		if ( cur == NULL ){
+			continue;
+		}
 		Bitmap * normal = cur->pic;
 		// normal->draw( fx-x, 0, *work );
 		scene_length += normal->getWidth();
@@ -204,12 +207,18 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 
 /* draw the background */
 void Scene::drawBack( int x, Bitmap * work ){
-	if ( background )
-		background->Blit( x, 0, 0, 20, *work );
+	if ( background ){
+		int y = 0;
+		background->Blit( x % background->getWidth() - background->getWidth(), 0, 0, y, *work );
+		background->Blit( x % background->getWidth(), 0, 0, y, *work );
+	}
 		
 	int fx = 0;
 	for ( unsigned int q = 0; q < order.size(); q++ ){
 		Panel *& cur = panels[ order[q] ];
+		if ( cur == NULL ){
+			continue;
+		}
 		Bitmap * normal = cur->pic;
 		normal->draw( fx-x, 0, *work );
 		
@@ -228,11 +237,13 @@ void Scene::drawBack( int x, Bitmap * work ){
 /* draw the foreground */
 void Scene::drawFront( int x, Bitmap * work ){
 	int fx = 0;
-	while ( fx < scene_length ){
-		for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
-			Bitmap * b = *it;
-			b->draw( fx - x, 0, *work );
-			fx += b->getWidth();
+	if ( front_panels.size() > 0 ){
+		while ( fx < scene_length ){
+			for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
+				Bitmap * b = *it;
+				b->draw( fx - x, 0, *work );
+				fx += b->getWidth();
+			}
 		}
 	}
 

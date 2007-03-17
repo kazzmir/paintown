@@ -90,7 +90,7 @@ if False:
 # env.ParseConfig( 'libpng-config --libs' );
 # env.ParseConfig( 'allegro-config --libs' );
 
-env.SConscript( 'parser/SConscript', exports = 'env' );
+# env.SConscript( 'parser/SConscript', exports = 'env' );
 
 env.Program( 'paintown', obj_files + ['xmain.cpp'] );
 env.Program( 'test', obj_files + ['test.cpp'] );
