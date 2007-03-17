@@ -56,31 +56,6 @@ Object * ObjectFactory::makeItem( Item * item, BlockObject * block ){
 
 Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 
-	// Enemy * ret;
-	/*
-	string name = block->getName();
-	for ( int q = 0; q < name.size(); q++ ){
-		if ( name[q] >= 'A' && name[q] <= 'Z' ){
-			name[q] = name[q] - 'A' + 'a';
-		}
-	}
-	string filename( "data/chars/" );
-
-	filename += name;
-	filename += "/";
-	filename += name;
-	filename += ".txt";
-	*/
-	/*
-	string filename = block->getPath();
-	try{ 
-		ret = new Enemy( filename );
-	} catch( const LoadException & le ){
-		cout<<__FILE__<<" : "<<le.getReason()<<endl;
-		// delete ret;
-		return NULL;
-	}
-	*/
 	int x, z;
 	block->getCoords( x, z );
 	ret->setX( x );
@@ -91,8 +66,8 @@ Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 	
 	ret->setName( block->getAlias() );
 	ret->setMap( block->getMap() );
-	ret->setHealth( block->getHealth() );
 	ret->setMaxHealth( block->getHealth() );
+	ret->setHealth( block->getHealth() );
 
 	hearts.push_back( ret->getHeart() );
 
@@ -123,24 +98,6 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 					cached[ block->getPath() ] = new Enemy( block->getPath() );
 					cout << "Cached " << block->getPath() << endl;
 				}
-
-				/*
-					ret = cached[ block->getName() ]->copy();
-					Enemy * enemy = (Enemy *) ret;
-					int x, z;
-					block->getCoords( x, z );
-					ret->setX( x );
-					ret->setZ( z );
-					if ( block->getAggression() > 0 ){
-						enemy->setAggression( block->getAggression() );
-					}
-					enemy->setName( block->getAlias() );
-					enemy->setMap( block->getMap() );
-					ret->setHealth( block->getHealth() );
-					ret->setMaxHealth( block->getHealth() );
-					return ret;
-				}
-					*/
 
 				return makeEnemy( (Enemy *) cached[ block->getPath() ]->copy(), block );
 			} catch ( const LoadException & le ){
