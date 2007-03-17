@@ -1,9 +1,9 @@
 #include "init.h"
 #include <pthread.h>
+#include <allegro.h>
 #ifdef WINDOWS
 #include <winalleg.h>
 #endif
-#include <allegro.h>
 #include <iostream>
 #include <dumb.h>
 #include <aldumb.h>
