@@ -78,7 +78,10 @@ void fadeOut( const string & message ){
 static bool playLevel( World & world, Player * player ){
 	Keyboard key;
 	
-	Bitmap work( GFX_X / 2, GFX_Y / 2 );
+	/* the game graphics are meant for 320x240 and will be stretched
+	 * to fit the screen
+	 */
+	Bitmap work( 320, 240 );
 	// Bitmap work( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 

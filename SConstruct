@@ -32,6 +32,7 @@ if False:
 env.Append( LIBS = [ 'fl', 'ldpng', 'pthread', 'aldmb', 'dumb' ] );
 if isWindows():
 	env.Append( LIBS = [ 'alleg' ] )
+	env.Append( DEFINES = 'WINDOWS' )
 else:
 	env.ParseConfig( 'libpng-config --libs' );
 	env.ParseConfig( 'allegro-config --libs' );
