@@ -30,6 +30,11 @@ public:
 
 	virtual void hurt( int x );
 
+	virtual inline void setMaxHealth( int h ){
+		Character::setMaxHealth( h );
+		show_life = h;
+	}
+
 	virtual inline Heart * getHeart() const{
 		return heart;
 	}

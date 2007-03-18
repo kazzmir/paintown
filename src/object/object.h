@@ -292,14 +292,14 @@ public:
 		// return health;
 	}
 
-	inline const int getMaxHealth() const{
+	inline const int getMaxHealth() const {
 		return max_health;
 	}
 
 	/* getLife:
 	 * alternate spelling for getHealth()
 	 */
-	inline const int getLife() const{
+	inline const int getLife() const {
 		return getHealth();
 		// return health;
 	}
@@ -311,7 +311,7 @@ public:
 		health = MID_( 0, h, getMaxHealth() );
 	}
 
-	inline void setMaxHealth( int h ){
+	virtual inline void setMaxHealth( int h ){
 		max_health = h;
 	}
 
