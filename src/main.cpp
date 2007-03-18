@@ -467,7 +467,6 @@ int paintown_main( int argc, char ** argv ){
 	
 	/* janitor cleans up some global stuff */
 	Collector janitor;
-	Music m;
 	int gfx = Global::WINDOWED;
 
 	// bool tester = false;
@@ -488,6 +487,8 @@ int paintown_main( int argc, char ** argv ){
 	}
 	diff.endTime();
 	diff.printTime("Init:");
+	
+	Music m;
 
 	while ( titleScreen() != false );
 
