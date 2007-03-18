@@ -270,8 +270,11 @@ static Object * selectPlayer() throw( LoadException ){
 	// background.resize( GFX_X, GFX_Y );
 
 	Object * maxima = new Player( "data/chars/maxima/maxima.txt" );
+	cout << "Loaded maxima" << endl;
 	Object * mandy = new Player( "data/chars/mandy/mandy.txt" );
+	cout << "Loaded mandy" << endl;
 	Object * kula = new Player( "data/chars/kula/kula.txt" );
+	cout << "Loaded kula" << endl;
 
 	Object * all[] = { maxima, mandy, kula };
 	Object ** end = &all[ 2 ];
