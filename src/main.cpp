@@ -215,6 +215,9 @@ void realGame( Object * player ){
 	// global_debug = true;
 	bool show_loading_screen = true;
 
+	if ( show_loading_screen ){
+		pthread_mutex_init( &Global::loading_screen_mutex, NULL );
+	}
 
 	for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
 		Global::done_loading = false;
