@@ -60,6 +60,7 @@ bool init( int gfx ){
 	cout<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
 	cout<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
 	srand( time( NULL ) );
+	set_display_switch_mode( SWITCH_BACKGROUND );
 	// Global::all_fonts = load_datafile( "data/fonts.dat" );
 	/*
 	if ( ! Global::all_fonts ){
