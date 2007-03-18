@@ -39,6 +39,7 @@ END_OF_FUNCTION( inc_second_counter );
 
 bool init( int gfx ){
 
+	cout << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
 	cout<<"Allegro init: "<<allegro_init()<<endl;
 	cout<<"Loadpng init: "<<loadpng_init()<<endl;
 	cout<<"Install timer: "<<install_timer()<<endl;
