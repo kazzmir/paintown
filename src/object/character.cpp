@@ -965,12 +965,34 @@ void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
 	Bitmap::transBlender( 0, 0, 0, 128 );
 	// drawing_mode( DRAW_MODE_TRANS, NULL, 0, 0 );
 	const int health_height = 7;
-	work->rectangleFill( x, y, x + getMaxHealth(), y + health_height, Bitmap::makeColor( 192, 32, 32 ) );
+	int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
+	work->rectangleFill( x, y, x + max, y + health_height, Bitmap::makeColor( 192, 32, 32 ) );
 	// set_trans_blender( 0, 0, 0, 64 );
 	Bitmap::transBlender( 0, 0, 0, 64 );
+
+	int colors[ 5 ] = { Bitmap::makeColor( 16, 162, 246 ),
+			     Bitmap::makeColor( 214, 184, 48 ),
+			     Bitmap::makeColor( 244, 16, 12 ),
+			     Bitmap::makeColor( 237, 173, 71 ),
+			     Bitmap::makeColor( 183, 217, 180 ) };
+
+	int color = 0;
+	for ( int s = 0; s < health; s += 100 ){
+		int e = s + 100 < health ? s + 100 : health;
+		for ( int y1 = y; y1 <= y+health_height; y1++ ){
+			work->rectangleFill( x, y, x + e - s, y1, colors[ color ] );
+		}
+		color += 1;
+		if ( color > 4 ){
+			color = 4;
+		}
+	}
+
+	/*
 	for ( int y1 = y; y1 <= y+health_height; y1++ ){
 		work->rectangleFill( x, y, x + health, y1, Bitmap::makeColor( 16, 162, 246 ) );
 	}
+	*/
 	// drawing_mode( DRAW_MODE_SOLID, NULL, 0, 0 );
 	Bitmap::drawingMode( Bitmap::MODE_SOLID );
 

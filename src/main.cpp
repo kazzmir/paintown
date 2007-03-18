@@ -259,6 +259,8 @@ void realGame( Object * player ){
 		if ( ! b ){
 			return;
 		}
+
+		fadeOut( "Next level" );
 	}
 
 	fadeOut( "You win!" );

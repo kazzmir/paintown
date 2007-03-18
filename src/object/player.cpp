@@ -209,7 +209,8 @@ void Player::draw( Bitmap * work, int rel_x ){
 	drawLifeBar( hasIcon + x1, y1 + nameHeight, show_life, work );
 	// cout << "Y1: " << y1 << " Height: " << player_font.getHeight() << " new y1: " << (y1 + player_font.getHeight() / 2) << endl;
 	// work->printf( hasIcon + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
-	render->addMessage( player_font, (x1 + hasIcon + getMaxHealth() + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
+	int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
+	render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
 
 	// work->rectangle( x1, y1, x1 + 100, y1 + nameHeight + 1, Bitmap::makeColor( 255, 255, 255 ) );
 }
