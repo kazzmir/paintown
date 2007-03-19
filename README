@@ -19,19 +19,20 @@ Requirements:
 
 	You need the following things to compile Paintown:
 	* gcc - http://www.gnu.org/software/gcc/
+	* python - http://www.python.org
 	* scons - http://www.scons.org
 	* Allegro - 4.1 or higher. http://alleg.sf.net
+	* zlib - http://www.zlib.net/
 	* libpng - http://www.libpng.org/pub/png/libpng.html
-	* loadpng - http://members.ozadsl.com.au/~tjaden/loadpng/
+	* loadpng - http://tjaden.strangesoft.net/loadpng/
 	* pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
 	* DUMB - http://dumb.sf.net
 	* freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm
 
 KEYS:
 
-A - attack1 / grab
-S - attack2
-D - attack3
+A - attack1 / grab / pickup
+S - special attack
 UP - up
 DOWN - down
 LEFT - left
