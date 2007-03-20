@@ -274,14 +274,14 @@ static Object * selectPlayer() throw( LoadException ){
 	Bitmap background( "data/sprites/select.png" );
 	// background.resize( GFX_X, GFX_Y );
 
-	Object * maxima = new Player( "data/chars/maxima/maxima.txt" );
-	cout << "Loaded maxima" << endl;
 	Object * mandy = new Player( "data/chars/mandy/mandy.txt" );
 	cout << "Loaded mandy" << endl;
+	Object * maxima = new Player( "data/chars/maxima/maxima.txt" );
+	cout << "Loaded maxima" << endl;
 	Object * kula = new Player( "data/chars/kula/kula.txt" );
 	cout << "Loaded kula" << endl;
 
-	Object * all[] = { maxima, mandy, kula };
+	Object * all[] = { mandy, maxima, kula };
 	Object ** end = &all[ 2 ];
 
 	Keyboard key;

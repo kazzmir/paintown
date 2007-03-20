@@ -631,11 +631,18 @@ void Player::act( vector< Object * > * others, World * world ){
 			// if ( animation_current == movements["jump"] ) {
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;
+				double y = 0;
 				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
 					x = getSpeed() * 1.2;
 				}
+				if ( keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
+					y = getSpeed() * 1.2;	
+				}
+				if ( keyboard[ getKey( PAIN_KEY_UP ) ] ){
+					y = -getSpeed() * 1.2;	
+				}
 
-				doJump( x );
+				doJump( x, y );
 				/*
 				int x = 0;
 				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){

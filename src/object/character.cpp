@@ -37,6 +37,7 @@ Character::Character( int alliance ):
 ObjectAttack( alliance ),
 x_velocity( 0 ),
 y_velocity( 0 ),
+z_velocity( 0 ),
 death( 0 ),
 thrown_status( false ),
 speed( 1 ),
@@ -55,6 +56,7 @@ shadow( 0 ),
 icon( NULL ),
 x_velocity( 0 ),
 y_velocity( 0 ),
+z_velocity( 0 ),
 status( Status_Ground ),
 death( 0 ),
 thrown_status( false ),
@@ -77,6 +79,7 @@ shadow( 0 ),
 icon( NULL ),
 x_velocity( 0 ),
 y_velocity( 0 ),
+z_velocity( 0 ),
 status( Status_Ground ),
 death( 0 ),
 thrown_status( false ),
@@ -473,9 +476,10 @@ void Character::setName( const string & str ){
 	name = str;
 }
 
-void Character::doJump( double x_ ){
+void Character::doJump( double x_, double y_ ){
 	setStatus( Status_Jumping );
 	setXVelocity( x_ );
+	setZVelocity( y_ );
 	initJumpingYVelocity();
 	// cout<<"Jumping velocity: "<<getMaxJumpingVelocity()<<endl;
 	// cout<<"Do jump: "<<getJumpingYVelocity()<<endl;
@@ -571,6 +575,10 @@ void Character::decreaseXVelocity(){
 	x_velocity -= 0.6;
 }
 
+void Character::decreaseZVelocity(){
+	z_velocity -= 0.6;
+}
+
 void Character::landed( World * world ){
 	if ( death >= 2 ) return;
 
@@ -645,6 +653,7 @@ void Character::act( vector< Object * > * others, World * world ){
 		decreaseYVelocity();
 		moveX( getXVelocity() );
 		moveY( getYVelocity() );
+		moveZ( getZVelocity() );
 	
 		if ( getY() == 0 ){
 			landed( world );

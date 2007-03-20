@@ -53,7 +53,7 @@ public:
 	virtual Object * copy();
 
 	/* make the character jump with an x velocity of x_ */
-	virtual void doJump( double x_ );
+	virtual void doJump( double x_, double y_ );
 	
 	virtual void stimulate( const Stimulation & stim );
 
@@ -135,6 +135,11 @@ public:
 		moving = true;
 		x_velocity = j;
 	}
+
+	inline void setZVelocity( const double j ){
+		moving = true;
+		z_velocity = j;
+	}
 	
 	inline void setYVelocity( const double j ){
 		moving = true;
@@ -145,6 +150,7 @@ public:
 		if ( x == false ){
 			setXVelocity( 0 );
 			setYVelocity( 0 );
+			setZVelocity( 0 );
 		}
 		moving = x;
 	}
@@ -159,6 +165,7 @@ public:
 		
 	void decreaseYVelocity();
 	void decreaseXVelocity();
+	void decreaseZVelocity();
 
 public:
 	/* for testing purposes only */
@@ -229,12 +236,16 @@ public:
 		return jumping_starting_velocity;
 	}
 
-	inline const double getYVelocity() const{
+	inline const double getYVelocity() const {
 		return y_velocity;
 	}
 	
-	inline const double getXVelocity() const{
+	inline const double getXVelocity() const {
 		return x_velocity;
+	}
+
+	inline const double getZVelocity() const {
+		return z_velocity;
 	}
 
 protected:
@@ -298,6 +309,7 @@ private:
 	int max_jump_height;
 	double x_velocity;
 	double y_velocity;
+	double z_velocity;
 
 	/*
 	double jumping_x; // velocity in the X direction
