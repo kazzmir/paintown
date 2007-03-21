@@ -113,23 +113,6 @@ void Enemy::draw( Bitmap * work, int rel_x ){
 	}
 }
 
-/*
-void Enemy::filterEnemies( vector< Object * > * mine, vector< Object * > * all ){
-	for ( vector< Object * >::iterator it = all->begin(); it != all->end(); it++ ){
-		Object * n = *it;
-		int q = n->getAlliance();
-		if ( q != ALLIANCE_NONE && q != getAlliance() )
-			mine->push_back( n );
-
-			/ *
-		if ( n->getAlliance() == ALLIANCE_PLAYER ){
-			mine->push_back( n );
-		}
-		* /
-	}
-}
-*/
-
 static inline double min( double a, double b ){
 	return a < b ? a : b;
 }
@@ -148,6 +131,7 @@ static double velocity( double x1, double x2, double speed ){
 	// moveX( want_x > getX() ? getSpeed() : -getSpeed() );
 }
 
+/* returns the closest object in the X plane */
 const Object * Enemy::findClosest( const vector< Object * > & enemies ){
 	Object * e = NULL;
 	double max = 0;
@@ -181,20 +165,30 @@ void Enemy::act( vector< Object * > * others, World * world ){
 		animation_current->reset();
 	}
 	
-	if ( !enemies.empty() ){
+	if ( ! enemies.empty() ){
+		/* guaranteed to get something back ... */
 		const Object * main_enemy = findClosest( enemies );
 
 		// if ( animation_current == movements["idle"] || animation_current == movements["walk"] ){
 		if ( animation_current == getMovement( "idle" ) || animation_current == getMovement( "walk" ) ){
+			faceObject( main_enemy );
+
+			/*
 			if ( main_enemy->getX() < getX() ){
 				setFacing( Object::FACING_LEFT );
 			} else	setFacing( Object::FACING_RIGHT );
+			*/
 
-			if ( !want_path && Util::rnd( 30 ) > 10 ) {
-				/*want_x == getX() && want_z == getZ() ){ */
-				want_x = Util::rnd( (int) main_enemy->getX() - 200, (int) main_enemy->getX() + 200 );
-				// want_z = rnd( main_enemy->getZ(), 10, 10 );
-				want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
+			if ( ! want_path && Util::rnd( 50 ) > 30 ) {
+				if ( Util::rnd( 15 ) < (double)getAggression() / 20.0 ){
+					want_x = Util::rnd( (int) main_enemy->getX() - 200, (int) main_enemy->getX() + 200 );
+					// want_z = rnd( main_enemy->getZ(), 10, 10 );
+					want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
+					
+				} else {
+					want_x = (int)(main_enemy->getX() + (Util::rnd( 20 ) + 20) * (Util::rnd( 2 ) * 2 - 1));
+					want_z = Util::rnd( (int) main_enemy->getZ() - 1, (int) main_enemy->getZ() + 1 );
+				}
 
 				if ( want_z < world->getMinimumZ() ){
 					want_z = world->getMinimumZ();
@@ -202,7 +196,6 @@ void Enemy::act( vector< Object * > * others, World * world ){
 				if ( want_z > world->getMaximumZ() ){
 					want_z = world->getMaximumZ();
 				}
-				// cout<<"Min: "<<MIN_WORLD_Z<<" Max: "<<MAX_WORLD_Z<<" Want: "<<want_z <<endl;
 
 				want_path = true;
 			}
@@ -279,19 +272,4 @@ void Enemy::act( vector< Object * > * others, World * world ){
 		}
 		
 	// }
-
-	/*
-	if ( animation_current ){
-		if ( animation_current->Act() ){
-			// animation_current->reset();
-			nextTicket();
-			if ( getStatus() == Status_Fell ){
-				animation_current = movements[ "rise" ];
-				setStatus( Status_Ground );
-			} else	animation_current = movements[ "idle" ];
-
-			animation_current->reset();
-		}
-	}
-	*/
 }

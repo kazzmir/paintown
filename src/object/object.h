@@ -315,6 +315,8 @@ public:
 		max_health = h;
 	}
 
+	virtual void faceObject( const Object * o );
+
 	/* hurt:
 	 * take some damage
 	 */
