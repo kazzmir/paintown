@@ -44,5 +44,10 @@ if isWindows():
 	env.Install( '.', 'build/paintown.exe' )
 	env.Install( '.', 'build/test.exe' )
 else:
-	env.Install( '.', 'build/paintown' );
+	env.Install( '.', 'build/paintown' )
 	env.Install( '.', 'build/test' )
+
+env2 = Environment()
+
+env2.BuildDir( 'build-editor', 'src' )
+env2.Program( 'level-editor', 'build-editor/editor/editor.cpp' )

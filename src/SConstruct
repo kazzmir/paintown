@@ -94,4 +94,3 @@ if False:
 
 env.Program( 'paintown', obj_files + ['xmain.cpp'] );
 env.Program( 'test', obj_files + ['test.cpp'] );
-
