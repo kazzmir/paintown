@@ -47,7 +47,11 @@ else:
 	env.Install( '.', 'build/paintown' )
 	env.Install( '.', 'build/test' )
 
-env2 = Environment()
+editorEnv = Environment()
 
-env2.BuildDir( 'build-editor', 'src' )
-env2.Program( 'level-editor', 'build-editor/editor/editor.cpp' )
+editorEnv.BuildDir( 'build-editor', 'src' )
+editorEnv.Append( CPPPATH = ['saggui/include'] )
+editorEnv.ParseConfig( 'allegro-config --libs' )
+editorEnv.Append( LIBS = ['saggui-alleg','saggui'] )
+editorEnv.Append( LIBPATH = 'saggui/lib' )
+editorEnv.Program( 'level-editor', 'build-editor/editor/editor.cpp' )
