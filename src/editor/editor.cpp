@@ -9,6 +9,7 @@
 #include "saggui/saggui.h"
 #include "saggui/saggui_alleg.h"
 
+using namespace saggui;
 using namespace std;
 
 static bool leftClick(){
@@ -17,13 +18,19 @@ static bool leftClick(){
 
 int main(){
 
-	saggui::resourceManager::registerBackend<saggui::ALLEGRO_SAGGUI>();
+	resourceManager::registerBackend<saggui::ALLEGRO_SAGGUI>();
 
-	saggui::guiManager::setup("allegro");
+	guiManager::setup("allegro");
 
-	if ( ! saggui::guiManager::setupScreen( 640, 480 ) ){
+	if ( ! guiManager::setupScreen( 640, 480 ) ){
 		return 1;
 	}
+
+	button bu;
+	graphic * g = resourceManager::createGraphic();
+	g->loadBmp( "test.bmp" );
+	bu.setBitmap( g );
+	bu.position.set( 20, 20, 100, 100 );
 
 	bool quit = false;
 	while ( ! quit ){
@@ -41,27 +48,6 @@ int main(){
 
 		rest( 1 );
 	}
-
-	/*
-	
-	// Bitmap work( 640, 480 );
-	// bool quit = false;
-
-	show_mouse( screen );
-
-	bool holdLeft = false;
-
-	// Menu 
-
-	while ( ! key[ KEY_ESC ] ){
-		if ( leftClick() && ! holdLeft ){
-			holdLeft = true;
-		} else if ( ! leftClick() ){
-			holdLeft = false;
-		}
-		rest( 1 );
-	}
-	*/
 
 	cout << "Exiting.." << endl;
 }
