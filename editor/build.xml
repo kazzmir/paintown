@@ -1,0 +1,35 @@
+<project name="paintown editor" default="all">
+
+	<target name="all">
+		<mkdir dir="classes" />
+		<javac srcdir="src"
+		       destdir="classes"
+		       includeAntruntime="false"
+		       debug="true"
+		       fork="true">
+		       <classpath>
+		       	<pathelement path="lib/ui.jar" />
+		       	<pathelement path="lib/jdom.jar" />
+		       </classpath>
+	       </javac>
+	</target>
+
+	<target name="jar" depends="all">
+		<unjar src="lib/jdom.jar" dest="classes" />
+		<unjar src="lib/ui.jar" dest="classes" />
+		<copy todir="classes">
+			<fileset dir="resources">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+		<jar destfile="editor.jar"
+		     basedir="classes"
+		     manifest="manifest" />
+	</target>
+
+	<target name="clean">
+		<delete dir="classes" quiet="true" />
+		<delete file="editor.jar" quiet="true" />
+	</target>
+
+</project>

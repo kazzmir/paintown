@@ -1,0 +1,40 @@
+<panel layout="GridBagLayout">
+
+	<panel id="view" border="MatteBorder(2,2,2,2,667A63)">
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="0.5"
+			weighty="1"
+			gridheight="2"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.NORTHWEST"
+			/>
+	</panel>
+
+	<scrollpane size="100,30">
+		<gridbagconstraints
+			gridx="1"
+			gridy="0"
+			weightx="0.4"
+			weighty="1"
+			gridheight="0"
+			fill="GridBagConstraints.HORIZONTAL"
+			anchor="GridBagConstraints.NORTHWEST"
+			/>
+		<list size="10,10" id="files" />
+	</scrollpane>
+
+	<hbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="2"
+			insets="10,10,0,10"
+			weightx="1"
+			weighty="0.1"
+			fill="GridBagConstraints.HORIZONTAL"
+			anchor="GridBagConstraints.NORTH" />
+	
+		<label text="here" />
+	</hbox>
+</panel>
