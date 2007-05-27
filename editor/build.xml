@@ -1,6 +1,6 @@
-<project name="paintown editor" default="all">
+<project name="paintown editor" default="jar">
 
-	<target name="all">
+	<target name="compile">
 		<mkdir dir="classes" />
 		<javac srcdir="src"
 		       destdir="classes"
@@ -14,7 +14,7 @@
 	       </javac>
 	</target>
 
-	<target name="jar" depends="all">
+	<target name="jar" depends="compile">
 		<unjar src="lib/jdom.jar" dest="classes" />
 		<unjar src="lib/ui.jar" dest="classes" />
 		<copy todir="classes">

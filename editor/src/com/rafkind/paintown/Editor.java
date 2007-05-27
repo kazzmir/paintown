@@ -33,22 +33,7 @@ public class Editor extends JFrame {
 		this.getContentPane().add( (JPanel) engine.getRootComponent() );
 
 		JList list = (JList) engine.find( "files" );
-		Vector v = new Vector();
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		v.add( "foo" );
-		list.setListData( v );
+		list.setModel( new DirectoryModel( "data" ) );
 
 		this.setJMenuBar( menuBar );
 		this.addWindowListener( new CloseHook( closeHook ) );

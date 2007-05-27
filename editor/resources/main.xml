@@ -25,16 +25,15 @@
 		<list size="10,10" id="files" />
 	</scrollpane>
 
-	<hbox>
+	<textarea rows="10" cols="100" editable="false">
 		<gridbagconstraints
 			gridx="0"
 			gridy="2"
 			insets="10,10,0,10"
 			weightx="1"
 			weighty="0.1"
+			gridwidth="2"
 			fill="GridBagConstraints.HORIZONTAL"
 			anchor="GridBagConstraints.NORTH" />
-	
-		<label text="here" />
-	</hbox>
+	</textarea>
 </panel>
