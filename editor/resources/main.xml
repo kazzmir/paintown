@@ -25,7 +25,7 @@
 		<list size="10,10" id="files" />
 	</scrollpane>
 
-	<textarea rows="10" cols="100" editable="false">
+	<textarea rows="6" cols="100" editable="false">
 		<gridbagconstraints
 			gridx="0"
 			gridy="2"

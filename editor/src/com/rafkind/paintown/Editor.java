@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.io.*;
 
+import com.rafkind.paintown.level.Level;
+
 import org.swixml.SwingEngine;
 
 public class Editor extends JFrame {
@@ -42,39 +44,46 @@ public class Editor extends JFrame {
 
 		SwingEngine engine = new SwingEngine( "main.xml" );
 		this.getContentPane().add( (JPanel) engine.getRootComponent() );
+
+		final Level level = new Level();
 		
 		final JPanel viewContainer = (JPanel) engine.find( "view" );
 		final JScrollPane viewScroll = new JScrollPane( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
 		final JPanel view = new MyCanvas(){
 			protected void paintComponent( Graphics g ){
-				renderLevel( g,
-				             viewScroll.getHorizontalScrollBar().getValue(),
-				             viewScroll.getVerticalScrollBar().getValue() );
-				// g.drawImage( levelImage, 0, 0, Color.WHITE, null );
+				JScrollBar h = viewScroll.getHorizontalScrollBar();
+				JScrollBar v = viewScroll.getVerticalScrollBar();
+				level.render( g, h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount() );
 			}
 		};
 		viewScroll.setPreferredSize( new Dimension( 200, 200 ) );
 		viewScroll.setViewportView( view );
 		viewScroll.getHorizontalScrollBar().setBackground( new Color( 128, 255, 0 ) );
-		// viewScroll.getHorizontalScrollBar().setForeground( new Color( 255, 128, 0 ) );
-		System.out.println( "Maximum size: " + viewScroll.getHorizontalScrollBar().getMaximum() );
-		System.out.println( "Viewable size: " + viewScroll.getHorizontalScrollBar().getVisibleAmount() );
-		viewScroll.getHorizontalScrollBar().addAdjustmentListener( new AdjustmentListener(){
-			public void adjustmentValueChanged( AdjustmentEvent e ){
-				System.out.println( "New horizontal: " + viewScroll.getHorizontalScrollBar().getValue() );
+
+		view.addMouseListener( new MouseInputAdapter(){
+			public void mouseClicked( MouseEvent event ){
+				System.out.println( "Mouse clicked at " + event.getX() + " " + event.getY() );
 			}
 		});
-		System.out.println( "Horizontal value: " + viewScroll.getHorizontalScrollBar().getValue() );
+
+		/*
+		viewScroll.getHorizontalScrollBar().addAdjustmentListener( new AdjustmentListener(){
+			public void adjustmentValueChanged( AdjustmentEvent e ){
+				viewScroll.repaint();
+			}
+		});
+		viewScroll.getVerticalScrollBar().addAdjustmentListener( new AdjustmentListener(){
+			public void adjustmentValueChanged( AdjustmentEvent e ){
+				viewScroll.repaint();
+			}
+		});
+		*/
+
 		GridBagLayout layout = new GridBagLayout();
 		viewContainer.setLayout( layout );
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		
-		/*
-		constraints.anchor = GridBagConstraints.NORTHWEST;
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		*/
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		layout.setConstraints( viewScroll, constraints );
@@ -138,77 +147,15 @@ public class Editor extends JFrame {
 	private void loadLevel( File f ){
 	}
 
-	private void renderLevel( Graphics g, int x, int y ){
-		Image i = new BufferedImage( 640, 480, BufferedImage.TYPE_INT_RGB );
-		Graphics ig = i.getGraphics();
-		ig.setColor( new Color( 255, 0, 0 ) );
-		ig.fillOval( 50, 50, 50, 50 );
-		g.drawImage( i, x, y, Color.WHITE, null );
-	}
-
-	private class ShitRange implements BoundedRangeModel {
-		private int extent;
-		private int maximum;
-		private int minimum;
-		private int value;
-		private boolean adjusting;
-
-		public ShitRange(){
-		}
-
-		public void addChangeListener(ChangeListener x){
-		}
-
-		public int getExtent(){
-			return extent;
-		}
-
-		public int getMaximum(){
-			return maximum;
-		}
-
-		public int getMinimum(){
-			return minimum;
-		}
-
-		public int getValue(){
-			return value;
-		}
-
-		public boolean getValueIsAdjusting(){
-			return adjusting;
-		}
-
-		public void removeChangeListener(ChangeListener x){
-		}
-
-		public void setExtent(int newExtent){
-			extent = newExtent;
-		}
-
-		public void setMaximum(int newMaximum){
-			maximum = newMaximum;
-		}
-
-		public void setMinimum(int newMinimum){
-			minimum = newMinimum;
-		}
-
-		public void setRangeProperties(int value, int extent, int min, int max, boolean adjusting){
-			this.value = value;
-			this.extent = extent;
-			this.minimum = min;
-			this.maximum = max;
-			this.adjusting = adjusting;
-		}
-
-		public void setValue(int newValue){
-			value = newValue;
-		}
-
-		public void setValueIsAdjusting(boolean b){
-			adjusting = b;
-		}
+	private void renderLevel( Graphics g, int x, int y, int width, int height ){
+		// Image i = new BufferedImage( 640, 480, BufferedImage.TYPE_INT_RGB );
+		// Graphics ig = i.getGraphics();
+		g.clearRect( x, y, width, height );
+		g.setColor( new Color( 255, 0, 0 ) );
+		g.fillOval( 50, 50, 50, 50 );
+		// g.drawImage( i, x, y, Color.WHITE, null );
+		g.setColor( new Color( 0, 0, 0 ) );
+		g.fillOval( 80, 52, 20, 20 );
 	}
 
 	public static void main( String[] args ){
