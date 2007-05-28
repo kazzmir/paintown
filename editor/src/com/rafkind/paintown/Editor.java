@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.io.*;
 
+import com.rafkind.paintown.exception.LoadException;
+
 import com.rafkind.paintown.level.Level;
 
 import org.swixml.SwingEngine;
@@ -49,7 +51,12 @@ public class Editor extends JFrame {
 		
 		final JPanel viewContainer = (JPanel) engine.find( "view" );
 		final JScrollPane viewScroll = new JScrollPane( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
-		final JPanel view = new MyCanvas(){
+		final JPanel view = new JPanel(){
+
+			public Dimension getPreferredSize(){
+				return level.getSize();
+			}
+
 			protected void paintComponent( Graphics g ){
 				JScrollBar h = viewScroll.getHorizontalScrollBar();
 				JScrollBar v = viewScroll.getVerticalScrollBar();
@@ -103,7 +110,13 @@ public class Editor extends JFrame {
 						if ( f.isDirectory() ){
 							model.setDirectory( f );
 						} else {
-							loadLevel( f );
+							try{
+								level.load( f );
+								viewScroll.repaint();
+							} catch ( LoadException le ){
+								System.out.println( "Could not load " + f.getName() );
+								le.printStackTrace();
+							}
 						}
 					}
 				}
@@ -119,9 +132,11 @@ public class Editor extends JFrame {
 			super();
 		}
 
+		/*
 		public Dimension getPreferredSize(){
-			return new Dimension( 1000, 480 );
+			return level.getSize();
 		}
+		*/
 
 		public Dimension getPreferredScrollableViewportSize(){
 			return getPreferredSize();
@@ -144,9 +159,7 @@ public class Editor extends JFrame {
 		}
 	}
 
-	private void loadLevel( File f ){
-	}
-
+	/*
 	private void renderLevel( Graphics g, int x, int y, int width, int height ){
 		// Image i = new BufferedImage( 640, 480, BufferedImage.TYPE_INT_RGB );
 		// Graphics ig = i.getGraphics();
@@ -157,6 +170,7 @@ public class Editor extends JFrame {
 		g.setColor( new Color( 0, 0, 0 ) );
 		g.fillOval( 80, 52, 20, 20 );
 	}
+	*/
 
 	public static void main( String[] args ){
 
