@@ -34,7 +34,7 @@ public class Token{
 
 	public void endData(){
 		if ( ! currentData.equals( "" ) ){
-			System.out.println( "Added " + currentData );
+			// System.out.println( "Added " + currentData );
 			this.tokens.add( new Token( this, currentData ) );
 			currentData = "";
 		}
@@ -53,6 +53,46 @@ public class Token{
 
 	private String getData(){
 		return data;
+	}
+
+	public Token findToken( String name ){
+		/*
+		for ( Iterator it = this.iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			if ( t.getName().equals( name ) ){
+				return t;
+			}
+		}
+		return null;
+		*/
+		List l = findTokens( name );
+		if ( l.isEmpty() ){
+			return null;
+		}
+		return (Token) l.get( 0 );
+	}
+
+	public List findTokens( String name ){
+		int seperator = name.indexOf( "/" );
+		String part = null;
+		if ( seperator != -1 ){
+			part = name.substring( 0, seperator );
+			name = name.substring( seperator + 1 );
+		}
+		List all = new ArrayList();
+		for ( Iterator it = this.iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			if ( part == null ){
+				if ( t.getName().equals( name ) ){
+					all.add( t );
+				}
+			} else {
+				if ( t.getName().equals( part ) ){
+					all.addAll( t.findTokens( name ) );
+				}
+			}
+		}
+		return all;
 	}
 
 	public void addToken( Token n ){

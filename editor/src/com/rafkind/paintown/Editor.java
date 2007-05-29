@@ -60,7 +60,7 @@ public class Editor extends JFrame {
 			protected void paintComponent( Graphics g ){
 				JScrollBar h = viewScroll.getHorizontalScrollBar();
 				JScrollBar v = viewScroll.getVerticalScrollBar();
-				level.render( g, h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount() );
+				level.render( (Graphics2D) g, h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount() );
 			}
 		};
 		viewScroll.setPreferredSize( new Dimension( 200, 200 ) );

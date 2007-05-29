@@ -24,7 +24,7 @@ public class TokenReader{
 				char c = (char) i;
 				switch ( c ){
 					case '(' : {
-						System.out.println( "Read new token" );
+						// System.out.println( "Read new token" );
 						if ( current == null ){
 							current = new Token( null );
 							tokens.add( current );
@@ -154,7 +154,11 @@ public class TokenReader{
 
 			System.out.println( "Read " + (line - 1) + " lines" );
 
-			System.out.println( tokens.get( 0 ) );
+			/*
+			Token f1 = (Token) tokens.get( 0 );
+			System.out.println( f1 );
+			System.out.println( f1.findToken( "background" ) );
+			*/
 
 		} catch ( IOException ie ){
 			throw new LoadException( "Could not read file", ie );
