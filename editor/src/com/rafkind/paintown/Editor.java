@@ -19,7 +19,7 @@ public class Editor extends JFrame {
 	private Image levelImage;
 
 	public Editor(){
-		this.setSize( 900, 600 );
+		this.setSize( 900, 500 );
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuProgram = new JMenu( "Program" );

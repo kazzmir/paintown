@@ -95,6 +95,14 @@ public class Token{
 		return all;
 	}
 
+	public int readInt( int index ){
+		Iterator it = this.iterator();
+		for ( int i = 0; i < index; i++ ){
+			it.next();
+		}
+		return Integer.parseInt( it.next().toString() );
+	}
+
 	public void addToken( Token n ){
 		tokens.add( n );
 	}

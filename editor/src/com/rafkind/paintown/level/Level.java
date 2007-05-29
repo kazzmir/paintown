@@ -68,11 +68,12 @@ public class Level{
 	}
 
 	private int calculateWidth( List lengths ){
-		System.out.println( "Found " + lengths.size() + " tokens" );
+		int w = 0;
 		for ( Iterator it = lengths.iterator(); it.hasNext(); ){
-			System.out.println( it.next() );
+			Token t = (Token) it.next();
+			w += t.readInt( 0 );
 		}
-		return 0;
+		return w;
 	}
 	
 	private void setBackground( Image i ){
@@ -84,7 +85,7 @@ public class Level{
 	}
 
 	private int getWidth(){
-		return 1000;
+		return width;
 	}
 
 	private int getHeight(){

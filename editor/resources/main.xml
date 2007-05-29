@@ -4,7 +4,7 @@
 		<gridbagconstraints
 			gridx="0"
 			gridy="0"
-			weightx="0.7"
+			weightx="0.9"
 			weighty="1"
 			gridheight="2"
 			fill="GridBagConstraints.BOTH"
@@ -17,22 +17,22 @@
 			gridx="1"
 			gridy="0"
 			weightx="0.1"
-			weighty="1"
-			gridheight="0"
+			weighty="0.1"
+			gridheight="1"
 			fill="GridBagConstraints.HORIZONTAL"
 			anchor="GridBagConstraints.NORTHWEST"
 			/>
 		<list size="10,10" id="files" />
 	</scrollpane>
 
-	<textarea rows="6" cols="100" editable="false">
+	<textarea rows="6" cols="10" editable="false" border="MatteBorder(2,2,2,2,667A63)">
 		<gridbagconstraints
-			gridx="0"
-			gridy="2"
-			insets="10,10,0,10"
-			weightx="1"
-			weighty="0.1"
-			gridwidth="2"
+			gridx="1"
+			gridy="1"
+			insets="1,1,1,1"
+			weightx="0.1"
+			weighty="0.9"
+			gridwidth="1"
 			fill="GridBagConstraints.HORIZONTAL"
 			anchor="GridBagConstraints.NORTH" />
 	</textarea>
