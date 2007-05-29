@@ -1,15 +1,173 @@
 package com.rafkind.paintown;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.*;
+import java.io.*;
 import com.rafkind.paintown.exception.LoadException;
 
 public class TokenReader{
 
+	private List tokens;
+	private Iterator iterator;
+
 	public TokenReader( File f ) throws LoadException {
+		try{
+			tokens = new ArrayList();
+			BufferedReader reader = new BufferedReader( new FileReader( f ) );
+	
+			Token current = null;
+			int line = 1;
+			while ( reader.ready() ){
+				int i = reader.read();
+				if ( i == -1 ){
+					break;
+				}
+				char c = (char) i;
+				switch ( c ){
+					case '(' : {
+						System.out.println( "Read new token" );
+						if ( current == null ){
+							current = new Token( null );
+							tokens.add( current );
+						} else {
+							current.endData();
+							Token n = new Token( current );
+							current.addToken( n );
+							current = n;
+						}
+						break;
+					}
+					case '	' :
+					case ' ' : {
+						/* whitespace */
+						if ( current != null ){
+							current.endData();
+						}
+						break;
+					}
+					case ';' : {
+						reader.readLine();
+						line += 1;
+						break;
+					}
+					case ')' : {
+						if ( current == null ){
+							throw new LoadException( "Too many ')' found. Line " + line );
+						} else {
+							current.endData();
+							current = current.getParent();
+						}
+						break;
+					}
+					case '\n' : {
+						line += 1;
+						if ( current != null ){
+							current.endData();
+						}
+						break;
+					}
+					case 'a' :
+					case 'b' :
+					case 'c' :
+					case 'd' :
+					case 'e' :
+					case 'f' :
+					case 'g' :
+					case 'h' :
+					case 'i' :
+					case 'j' :
+					case 'k' :
+					case 'l' :
+					case 'm' :
+					case 'n' :
+					case 'o' :
+					case 'p' :
+					case 'q' :
+					case 'r' :
+					case 's' :
+					case 't' :
+					case 'u' :
+					case 'v' :
+					case 'w' :
+					case 'x' :
+					case 'y' :
+					case 'z' :
+
+					case 'A' :
+					case 'B' :
+					case 'C' :
+					case 'D' :
+					case 'E' :
+					case 'F' :
+					case 'G' :
+					case 'H' :
+					case 'I' :
+					case 'J' :
+					case 'K' :
+					case 'L' :
+					case 'M' :
+					case 'N' :
+					case 'O' :
+					case 'P' :
+					case 'Q' :
+					case 'R' :
+					case 'S' :
+					case 'T' :
+					case 'U' :
+					case 'V' :
+					case 'W' :
+					case 'X' :
+					case 'Y' :
+					case 'Z' :
+
+					case '/' :
+					case '\\' :
+					case '\'' :
+					case '"' :
+					case '.' :
+					case ':' :
+					case '!' :
+					case '@' :
+					case '#' :
+					case '$' :
+					case '%' :
+					case '^' :
+					case '&' :
+					case '_' :
+					case '-' :
+					case '0' :
+					case '1' :
+					case '2' :
+					case '3' :
+					case '4' :
+					case '5' :
+					case '6' :
+					case '7' :
+					case '8' :
+					case '9' : {
+						if ( current != null ){
+							current.addData( c );
+						}
+						break;
+					}
+				}
+			}
+
+			System.out.println( "Read " + (line - 1) + " lines" );
+
+			System.out.println( tokens.get( 0 ) );
+
+		} catch ( IOException ie ){
+			throw new LoadException( "Could not read file", ie );
+		}
+
+		reset();
+	}
+
+	public void reset(){
+		iterator = tokens.iterator();
 	}
 
 	public Token nextToken(){
-		return null;
+		return (Token) iterator.next();
 	}
 }
