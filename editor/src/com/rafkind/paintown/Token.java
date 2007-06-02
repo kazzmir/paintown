@@ -95,12 +95,20 @@ public class Token{
 		return all;
 	}
 
-	public int readInt( int index ){
+	private Token readIndex( int index ){
 		Iterator it = this.iterator();
 		for ( int i = 0; i < index; i++ ){
 			it.next();
 		}
-		return Integer.parseInt( it.next().toString() );
+		return (Token) it.next();
+	}
+
+	public int readInt( int index ){
+		return Integer.parseInt( readIndex( index ).toString() );
+	}
+
+	public String readString( int index ){
+		return readIndex( index ).toString();
 	}
 
 	public void addToken( Token n ){

@@ -1,11 +1,13 @@
 package com.rafkind.paintown.level;
 
 import java.awt.*;
+import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.Token;
@@ -15,9 +17,24 @@ public class Level{
 	private String name;
 	private Image background;
 	private int width;
+	private List frontPanels;
 
 	public Level(){
 		this.width = 640;
+		this.frontPanels = new ArrayList();
+	}
+
+	private void drawFrontPanels( Graphics2D g ){
+		int w = 0;
+		if ( ! frontPanels.isEmpty() ){
+			while ( w < getWidth() ){
+				for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
+					Image panel = (Image) it.next();
+					g.drawImage( panel, w, 0, null );
+					w += panel.getWidth( null );
+				}
+			}
+		}
 	}
 
 	public void render( Graphics2D g, int x, int y, int width, int height ){
@@ -38,6 +55,9 @@ public class Level{
 			}
 		}
 
+		drawFrontPanels( g );	
+		
+
 		/*
 		g.setColor( new Color( 0, 255, 0 ) );
 		g.fillOval( 50, 50, 50, 50 );
@@ -54,16 +74,36 @@ public class Level{
 		loadBackground( head.findToken( "background" ) );
 
 		setWidth( calculateWidth( head.findTokens( "block/length" ) ) );
+		for ( Iterator it = head.findTokens( "frontpanel" ).iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			String file = t.readString( 0 );
+			frontPanels.add( loadImage( file ) );
+		}
+	}
+
+	private Image loadImage( String s ) throws LoadException {
+		try{
+			BufferedImage temp = ImageIO.read( new File( s ) );
+			BufferedImage image = new BufferedImage( temp.getWidth(), temp.getHeight(), BufferedImage.TYPE_INT_ARGB );
+			for ( int x = 0; x < temp.getWidth(); x++ ){
+				for ( int y = 0; y < temp.getHeight(); y++ ){
+					int pixel = temp.getRGB( x, y );
+					if ( (pixel & 0x00ffffff) == 0x00ff00ff ){
+						pixel = 0x00ffffff;
+					}
+					image.setRGB( x, y, pixel );
+				}
+			}
+			return image;
+		} catch ( IOException ie ){
+			throw new LoadException( "Could not load " + s );
+		}
 	}
 
 	private void loadBackground( Token t ) throws LoadException {
 		if ( t != null ){
 			String s = String.valueOf( t.iterator().next() );
-			try{
-				setBackground( ImageIO.read( new File( s ) ) );
-			} catch ( IOException ie ){
-				throw new LoadException( "Could not load " + s );
-			}
+			setBackground( loadImage( s ) );
 		}
 	}
 

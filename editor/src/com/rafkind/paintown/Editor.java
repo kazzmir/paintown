@@ -33,6 +33,7 @@ public class Editor extends JFrame {
 			}
 		};
 
+		/*
 		levelImage = new BufferedImage( 1000, 300, BufferedImage.TYPE_INT_RGB );
 		Graphics g = levelImage.getGraphics();
 		g.setColor( new Color( 64, 192, 54 ) );
@@ -43,6 +44,7 @@ public class Editor extends JFrame {
 				closeHook.invoke_();
 			}
 		});
+		*/
 
 		SwingEngine engine = new SwingEngine( "main.xml" );
 		this.getContentPane().add( (JPanel) engine.getRootComponent() );
