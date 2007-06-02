@@ -31,7 +31,11 @@ public class Level{
 
 		g.scale( 2, 2 );
 		if ( background != null ){
-			g.drawImage( background, 0, 0, null );
+			int w = 0;
+			while ( w < getWidth() ){
+				g.drawImage( background, w, 0, null );
+				w += background.getWidth( null );
+			}
 		}
 
 		/*
