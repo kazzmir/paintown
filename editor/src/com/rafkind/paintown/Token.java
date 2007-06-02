@@ -23,7 +23,7 @@ public class Token{
 	public Iterator iterator(){
 		Iterator i = tokens.iterator();
 		if ( i.hasNext() ){
-				  i.next();
+			i.next();
 		}
 		return i;
 	}

@@ -6,7 +6,7 @@
 			gridy="0"
 			weightx="0.9"
 			weighty="1"
-			gridheight="2"
+			gridheight="3"
 			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTHWEST"
 			/>
@@ -25,10 +25,23 @@
 		<list size="10,10" id="files" />
 	</scrollpane>
 
-	<textarea rows="6" cols="10" editable="false" border="MatteBorder(2,2,2,2,667A63)">
+	<hbox>
 		<gridbagconstraints
 			gridx="1"
 			gridy="1"
+			weightx="0.1"
+			weighty="0.1"
+			gridheight="1"
+			fill="GridBagConstraints.HORIZONTAL"
+			anchor="GridBagConstraints.NORTHWEST"
+			/>
+		<button id="render" label="Render" />
+	</hbox>
+
+	<textarea rows="6" cols="10" editable="false" border="MatteBorder(2,2,2,2,667A63)">
+		<gridbagconstraints
+			gridx="1"
+			gridy="2"
 			insets="1,1,1,1"
 			weightx="0.1"
 			weighty="0.9"

@@ -88,6 +88,13 @@ public class Editor extends JFrame {
 		});
 		*/
 
+		JButton render = (JButton) engine.find( "render" );
+		render.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				view.repaint();
+			}
+		});
+
 		GridBagLayout layout = new GridBagLayout();
 		viewContainer.setLayout( layout );
 		GridBagConstraints constraints = new GridBagConstraints();

@@ -8,6 +8,7 @@ import javax.imageio.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.Token;
@@ -18,10 +19,17 @@ public class Level{
 	private Image background;
 	private int width;
 	private List frontPanels;
+	private HashMap backPanels;
+	private List panelOrder;
+
+	private List blocks;
 
 	public Level(){
 		this.width = 640;
 		this.frontPanels = new ArrayList();
+		this.backPanels = new HashMap();
+		this.panelOrder = new ArrayList();
+		this.blocks = new ArrayList();
 	}
 
 	private void drawFrontPanels( Graphics2D g ){
@@ -37,16 +45,7 @@ public class Level{
 		}
 	}
 
-	public void render( Graphics2D g, int x, int y, int width, int height ){
-		g.clearRect( 0, 0, getWidth(), getHeight() );
-		/*
-		g.setColor( new Color( 255, 0, 0 ) );
-		g.drawString( this.name, 20, 20 );
-		g.setColor( new Color( 0, 255, 0 ) );
-		g.fillOval( 50, 50, 50, 50 );
-		*/
-
-		g.scale( 2, 2 );
+	private void drawBackground( Graphics2D g ){
 		if ( background != null ){
 			int w = 0;
 			while ( w < getWidth() ){
@@ -54,14 +53,24 @@ public class Level{
 				w += background.getWidth( null );
 			}
 		}
+	}
 
+	private void drawBackPanels( Graphics2D g ){
+		int w = 0;
+		for ( Iterator it = this.panelOrder.iterator(); it.hasNext(); ){
+			Integer i = (Integer) it.next();
+			Image image = (Image) this.backPanels.get( i );
+			g.drawImage( image, w, 0, null );
+			w += image.getWidth( null );
+		}
+	}
+
+	public void render( Graphics2D g, int x, int y, int width, int height ){
+		g.clearRect( 0, 0, getWidth(), getHeight() );
+		g.scale( 2, 2 );
+		drawBackground( g );
+		drawBackPanels( g );
 		drawFrontPanels( g );	
-		
-
-		/*
-		g.setColor( new Color( 0, 255, 0 ) );
-		g.fillOval( 50, 50, 50, 50 );
-		*/
 	}
 
 	public void load( File f ) throws LoadException {
@@ -79,6 +88,29 @@ public class Level{
 			String file = t.readString( 0 );
 			frontPanels.add( loadImage( file ) );
 		}
+
+		for ( Iterator it = head.findTokens( "panel" ).iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			int index = t.readInt( 0 );
+			String file = t.readString( 1 );
+			this.backPanels.put( new Integer( index ), loadImage( file  ) );
+		}
+
+		Token order = head.findToken( "order" );
+		if ( order != null ){
+			for ( Iterator it = order.iterator(); it.hasNext(); ){
+				panelOrder.add( Integer.valueOf( it.next().toString() ) );	
+			}
+		} else {
+			System.out.println( "No 'order' token given" );
+		}
+
+		for ( Iterator it = head.findTokens( "block" ).iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			this.blocks.add( new Block( t ) );
+		}
+
+		System.out.println( "Loaded " + f );
 	}
 
 	private Image loadImage( String s ) throws LoadException {
@@ -89,6 +121,7 @@ public class Level{
 				for ( int y = 0; y < temp.getHeight(); y++ ){
 					int pixel = temp.getRGB( x, y );
 					if ( (pixel & 0x00ffffff) == 0x00ff00ff ){
+						/* convert masking color into an alpha channel that is translucent */
 						pixel = 0x00ffffff;
 					}
 					image.setRGB( x, y, pixel );
