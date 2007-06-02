@@ -65,12 +65,22 @@ public class Level{
 		}
 	}
 
+	private void drawBlocks( Graphics2D g ){
+		int w = 0;
+		for ( Iterator it = this.blocks.iterator(); it.hasNext(); ){
+			Block b = (Block) it.next();
+			b.render( g, w );
+			w += b.getLength();
+		}
+	}
+
 	public void render( Graphics2D g, int x, int y, int width, int height ){
 		g.clearRect( 0, 0, getWidth(), getHeight() );
 		g.scale( 2, 2 );
 		drawBackground( g );
 		drawBackPanels( g );
 		drawFrontPanels( g );	
+		drawBlocks( g );
 	}
 
 	public void load( File f ) throws LoadException {

@@ -44,6 +44,7 @@ public class TokenReader{
 						}
 						break;
 					}
+					case '#' :
 					case ';' : {
 						reader.readLine();
 						line += 1;
@@ -51,7 +52,7 @@ public class TokenReader{
 					}
 					case ')' : {
 						if ( current == null ){
-							throw new LoadException( "Too many ')' found. Line " + line );
+							throw new LoadException( "Too many ')' found. Line " + line + ". File " + f.getName() );
 						} else {
 							current.endData();
 							current = current.getParent();
@@ -127,7 +128,6 @@ public class TokenReader{
 					case ':' :
 					case '!' :
 					case '@' :
-					case '#' :
 					case '$' :
 					case '%' :
 					case '^' :
