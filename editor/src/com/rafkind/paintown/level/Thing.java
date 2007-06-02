@@ -3,9 +3,11 @@ package com.rafkind.paintown.level;
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.TokenReader;
+import com.rafkind.paintown.MaskedImage;
 
 import java.io.*;
 import java.awt.*;
+import java.awt.geom.*;
 import javax.imageio.*;
 
 import java.util.HashMap;
@@ -31,8 +33,22 @@ public class Thing{
 		}
 	}
 
+	public int getY(){
+		return y;
+	}
+
+	public int getX(){
+		return x;
+	}
+
 	public void render( Graphics2D g, int startX ){
-		g.drawImage( main, startX + x, y, null );
+		// g.drawImage( main, startX + x, y, null );
+		// int mx = startX + x - main.getWidth( null ) / 2;
+		int mx = startX + x + main.getWidth( null ) / 2;
+		int my = y - main.getHeight( null );
+		g.drawImage( main, new AffineTransform( -1, 0, 0, 1, mx, my ), null );
+		g.setColor( new Color( 255, 255, 255 ) );
+		g.fillOval( startX + x, y, 5, 5 );
 	}
 
 	private static Image loadIdleImage( String file ) throws LoadException {
@@ -63,7 +79,7 @@ public class Thing{
 			if ( frame != null ){
 				String pic = frame.readString( 0 );
 				try{
-					return ImageIO.read( new File( base + pic ) );
+					return MaskedImage.load( base + pic );
 				} catch ( IOException ie ){
 					throw new LoadException( "Could not load " + base + pic, ie );
 				}

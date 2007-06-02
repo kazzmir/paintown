@@ -115,6 +115,10 @@ public class Token{
 		tokens.add( n );
 	}
 
+	public void removeToken( Token n ){
+		tokens.remove( n );
+	}
+
 	public String toString( int spaces ){
 		if ( isDatum() ){
 			return getData();

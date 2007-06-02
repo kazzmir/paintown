@@ -12,6 +12,7 @@ import java.util.HashMap;
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.MaskedImage;
 
 public class Level{
 
@@ -21,6 +22,8 @@ public class Level{
 	private List frontPanels;
 	private HashMap backPanels;
 	private List panelOrder;
+	private int minZ;
+	private int maxZ;
 
 	private List blocks;
 
@@ -65,11 +68,11 @@ public class Level{
 		}
 	}
 
-	private void drawBlocks( Graphics2D g ){
+	private void drawBlocks( Graphics2D g, int height ){
 		int w = 0;
 		for ( Iterator it = this.blocks.iterator(); it.hasNext(); ){
 			Block b = (Block) it.next();
-			b.render( g, w );
+			b.render( g, w, height, minZ, maxZ );
 			w += b.getLength();
 		}
 	}
@@ -79,8 +82,8 @@ public class Level{
 		g.scale( 2, 2 );
 		drawBackground( g );
 		drawBackPanels( g );
+		drawBlocks( g, height );
 		drawFrontPanels( g );	
-		drawBlocks( g );
 	}
 
 	public void load( File f ) throws LoadException {
@@ -88,6 +91,18 @@ public class Level{
 		Token head = reader.nextToken();
 		if ( ! head.getName().equals( "level" ) ){
 			throw new LoadException( "Starting token is not 'level'" );
+		}
+		
+		Token z = head.findToken( "z" );
+		if ( z != null ){
+			Token min = z.findToken( "minimum" );
+			if ( min != null ){
+				minZ = min.readInt( 0 );
+			}
+			Token max = z.findToken( "maximum" );
+			if ( max != null ){
+				maxZ = max.readInt( 0 );
+			}
 		}
 
 		loadBackground( head.findToken( "background" ) );
@@ -120,24 +135,28 @@ public class Level{
 			this.blocks.add( new Block( t ) );
 		}
 
+
 		System.out.println( "Loaded " + f );
 	}
 
 	private Image loadImage( String s ) throws LoadException {
 		try{
+			return MaskedImage.load( s );
+			/*
 			BufferedImage temp = ImageIO.read( new File( s ) );
 			BufferedImage image = new BufferedImage( temp.getWidth(), temp.getHeight(), BufferedImage.TYPE_INT_ARGB );
 			for ( int x = 0; x < temp.getWidth(); x++ ){
 				for ( int y = 0; y < temp.getHeight(); y++ ){
 					int pixel = temp.getRGB( x, y );
 					if ( (pixel & 0x00ffffff) == 0x00ff00ff ){
-						/* convert masking color into an alpha channel that is translucent */
+						/ * convert masking color into an alpha channel that is translucent * /
 						pixel = 0x00ffffff;
 					}
 					image.setRGB( x, y, pixel );
 				}
 			}
 			return image;
+			*/
 		} catch ( IOException ie ){
 			throw new LoadException( "Could not load " + s );
 		}
@@ -158,7 +177,7 @@ public class Level{
 		int w = 0;
 		for ( Iterator it = lengths.iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
-			w += t.readInt( 0 );
+			w += t.readInt( 0 ) * 2;
 		}
 		return w;
 	}
