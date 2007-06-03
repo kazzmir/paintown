@@ -77,7 +77,14 @@ public class Block{
 	}
 
 	public boolean hasThing( Thing t ){
-		return this.objects.contains( t );
+		// System.out.println( this + " contains = " + this.objects.contains( t ) );
+		for ( Iterator it = objects.iterator(); it.hasNext(); ){
+			if ( it.next() == t ){
+				return true;
+			}
+		}
+		return false;
+		// return this.objects.contains( t );
 	}
 
 	public int getLength(){

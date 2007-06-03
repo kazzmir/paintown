@@ -111,13 +111,14 @@ public class Level{
 			Block b = (Block) it.next();
 			if ( b.isEnabled() ){
 				if ( b.hasThing( thing ) ){
-					System.out.println( b + ". Move " + thing + " to " + x + " " + (y - getMinZ()) );
+					int my = y - getMinZ();
+					// System.out.println( b + ". Move " + thing + " to " + x + " " + my );
 					thing.setX( x );
-					thing.setY( y - getMinZ() );
+					thing.setY( my );
 				} else {
-					System.out.println( b + " does not have " + thing );
+					// System.out.println( b + " does not have " + thing );
 				}
-				x -= b.getLength();
+				// x -= b.getLength();
 			}
 		}
 	}

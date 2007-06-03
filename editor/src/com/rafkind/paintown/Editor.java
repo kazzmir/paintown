@@ -78,14 +78,22 @@ public class Editor extends JFrame {
 
 		class Mouser extends MouseMotionAdapter implements MouseInputListener {
 			Thing selected = null;
+			int dx, dy;
+			int sx, sy;
 
 			public void mouseDragged( MouseEvent event ){
 				if ( selected == null ){
 					selected = level.findThing( event.getX() / 2, event.getY() / 2 );
-					System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
+					sx = selected.getX();
+					sy = selected.getY() + level.getMinZ();
+					// System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
+					dx = event.getX() / 2;
+					dy = event.getY() / 2;
+					// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
 				}
 				if ( selected != null ){
-					level.moveThing( selected, event.getX() / 2, event.getY() / 2 );
+					// System.out.println( "sx,sy: " + sx + ", " + sy + " ex,ey: " + (event.getX() / 2) + ", " + (event.getY() / 2) + " dx, dy: " + dx + ", " + dy );
+					level.moveThing( selected, sx + event.getX() / 2 - dx, sy + event.getY() / 2 - dy );
 				}
 			}
 			
@@ -228,7 +236,6 @@ public class Editor extends JFrame {
 									JCheckBox c = (JCheckBox) event.getSource();
 									b.setEnabled( c.isSelected() );
 									view.revalidate();
-									// view.repaint();
 									viewScroll.repaint();
 								}
 							});
