@@ -241,9 +241,6 @@ public class Level{
 	}
 
 	private int getWidth(){
-		/*
-		return width;
-		*/
 		int w = 0;
 		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
 			Block b = (Block) it.next();

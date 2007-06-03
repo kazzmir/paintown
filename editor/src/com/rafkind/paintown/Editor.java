@@ -227,7 +227,9 @@ public class Editor extends JFrame {
 								public void actionPerformed( ActionEvent event ){
 									JCheckBox c = (JCheckBox) event.getSource();
 									b.setEnabled( c.isSelected() );
-									view.repaint();
+									view.revalidate();
+									// view.repaint();
+									viewScroll.repaint();
 								}
 							});
 
@@ -240,6 +242,7 @@ public class Editor extends JFrame {
 						}
 
 						blocks.repaint();
+						view.revalidate();
 						viewScroll.repaint();
 					} catch ( LoadException le ){
 						System.out.println( "Could not load " + f.getName() );
