@@ -76,8 +76,10 @@ public class Level{
 		int w = 0;
 		for ( Iterator it = this.blocks.iterator(); it.hasNext(); ){
 			Block b = (Block) it.next();
-			b.render( g, w, height, minZ, maxZ );
-			w += b.getLength();
+			if ( b.isEnabled() ){
+				b.render( g, w, height, minZ, maxZ );
+				w += b.getLength();
+			}
 		}
 	}
 

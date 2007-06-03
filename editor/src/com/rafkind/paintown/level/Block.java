@@ -14,6 +14,7 @@ public class Block{
 
 	private int length;
 	private TreeSet objects;
+	private boolean enabled = true;
 
 	public Block( Token token ) throws LoadException {
 		Token l = token.findToken( "length" );
@@ -42,6 +43,14 @@ public class Block{
 			Token t = (Token) it.next();
 			objects.add( new Thing( t ) );
 		}
+	}
+
+	public boolean isEnabled(){
+		return enabled;
+	}
+
+	public void setEnabled( boolean b ){
+		enabled = b;
 	}
 
 	public void render( Graphics2D g, int x, int height, int minZ, int maxZ ){

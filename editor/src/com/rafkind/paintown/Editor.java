@@ -140,9 +140,15 @@ public class Editor extends JFrame {
 								blocks.removeAll();
 								int n = 1;
 								for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-									Block b = (Block) it.next();
+									final Block b = (Block) it.next();
 									Box stuff = Box.createHorizontalBox();
-									JCheckBox check = new JCheckBox();
+									JCheckBox check = new JCheckBox( new AbstractAction(){
+										public void actionPerformed( ActionEvent event ){
+											JCheckBox c = (JCheckBox) event.getSource();
+											b.setEnabled( c.isSelected() );
+											view.repaint();
+										}
+									});
 									check.setSelected( true );
 									stuff.add( check );
 									stuff.add( new JLabel( "Block " + n + " : " + b.getLength() ) );
