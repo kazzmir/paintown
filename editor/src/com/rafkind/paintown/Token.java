@@ -20,6 +20,10 @@ public class Token{
 		currentData = "";
 	}
 
+	public List getTokens(){
+		return tokens;
+	}
+
 	public Iterator iterator(){
 		Iterator i = tokens.iterator();
 		if ( i.hasNext() ){
@@ -28,7 +32,7 @@ public class Token{
 		return i;
 	}
 
-	private boolean isDatum(){
+	public boolean isDatum(){
 		return this.tokens.isEmpty();
 	}
 

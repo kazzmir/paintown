@@ -11,6 +11,7 @@ import java.io.*;
 import com.rafkind.paintown.exception.LoadException;
 
 import com.rafkind.paintown.level.Level;
+import com.rafkind.paintown.level.Block;
 
 import org.swixml.SwingEngine;
 
@@ -76,6 +77,21 @@ public class Editor extends JFrame {
 		});
 
 		/*
+		class BlockModel implements ListModel {
+			private List objects;
+			private List enabled;
+			public BlockModel(){
+				objects = new ArrayList();
+				enabled = new ArrayList();
+			}
+		}
+		*/
+
+		JTabbedPane tabbed = (JTabbedPane) engine.find( "tabbed" );
+		final Box blocks = Box.createVerticalBox();
+		tabbed.add( "Blocks", new JScrollPane( blocks ) );
+		
+		/*
 		viewScroll.getHorizontalScrollBar().addAdjustmentListener( new AdjustmentListener(){
 			public void adjustmentValueChanged( AdjustmentEvent e ){
 				viewScroll.repaint();
@@ -121,6 +137,20 @@ public class Editor extends JFrame {
 						} else {
 							try{
 								level.load( f );
+								blocks.removeAll();
+								int n = 1;
+								for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+									Block b = (Block) it.next();
+									Box stuff = Box.createHorizontalBox();
+									JCheckBox check = new JCheckBox();
+									check.setSelected( true );
+									stuff.add( check );
+									stuff.add( new JLabel( "Block " + n + " : " + b.getLength() ) );
+									stuff.add( Box.createHorizontalGlue() );
+									blocks.add( stuff );
+									n += 1;
+								}
+								blocks.repaint();
 								viewScroll.repaint();
 							} catch ( LoadException le ){
 								System.out.println( "Could not load " + f.getName() );
@@ -135,51 +165,6 @@ public class Editor extends JFrame {
 		this.setJMenuBar( menuBar );
 		this.addWindowListener( new CloseHook( closeHook ) );
 	}
-
-	private class MyCanvas extends JPanel implements Scrollable {
-		public MyCanvas(){
-			super();
-		}
-
-		/*
-		public Dimension getPreferredSize(){
-			return level.getSize();
-		}
-		*/
-
-		public Dimension getPreferredScrollableViewportSize(){
-			return getPreferredSize();
-		}
-
-		public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction){
-		 	return 10;
-		}
-
-		public boolean getScrollableTracksViewportHeight(){
-			return false;
-		}
-
-		public boolean getScrollableTracksViewportWidth(){
-			return false;
-		}
-
-		public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction){
-			return 1;
-		}
-	}
-
-	/*
-	private void renderLevel( Graphics g, int x, int y, int width, int height ){
-		// Image i = new BufferedImage( 640, 480, BufferedImage.TYPE_INT_RGB );
-		// Graphics ig = i.getGraphics();
-		g.clearRect( x, y, width, height );
-		g.setColor( new Color( 255, 0, 0 ) );
-		g.fillOval( 50, 50, 50, 50 );
-		// g.drawImage( i, x, y, Color.WHITE, null );
-		g.setColor( new Color( 0, 0, 0 ) );
-		g.fillOval( 80, 52, 20, 20 );
-	}
-	*/
 
 	public static void main( String[] args ){
 

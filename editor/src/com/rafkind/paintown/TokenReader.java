@@ -164,11 +164,29 @@ public class TokenReader{
 			throw new LoadException( "Could not read file", ie );
 		}
 
+		filterTokens( tokens, "!" );
+
 		reset();
 	}
 
 	public void reset(){
 		iterator = tokens.iterator();
+	}
+
+	/* remove any tokens that start with the invalid string */
+	private void filterTokens( List tokens, String invalid ){
+		List filtered = new ArrayList();
+		for ( Iterator it = tokens.iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			if ( ! t.isDatum() && t.getName().startsWith( invalid ) ){
+				filtered.add( t );
+			} else if ( ! t.isDatum() ){
+				filterTokens( t.getTokens(), invalid );
+			}
+		}
+		for ( Iterator it = filtered.iterator(); it.hasNext(); ){
+			tokens.remove( it.next() );
+		}
 	}
 
 	public Token nextToken(){

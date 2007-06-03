@@ -38,7 +38,7 @@
 		<button id="render" label="Render" />
 	</hbox>
 
-	<textarea rows="6" cols="10" editable="false" border="MatteBorder(2,2,2,2,667A63)">
+	<tabbedpane id="tabbed" border="MatteBorder(2,2,2,2,667A63)">
 		<gridbagconstraints
 			gridx="1"
 			gridy="2"
@@ -46,7 +46,7 @@
 			weightx="0.1"
 			weighty="0.9"
 			gridwidth="1"
-			fill="GridBagConstraints.HORIZONTAL"
+			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTH" />
-	</textarea>
+	</tabbedpane>
 </panel>

@@ -35,6 +35,10 @@ public class Level{
 		this.blocks = new ArrayList();
 	}
 
+	public List getBlocks(){
+		return blocks;
+	}
+
 	private void drawFrontPanels( Graphics2D g ){
 		int w = 0;
 		if ( ! frontPanels.isEmpty() ){
