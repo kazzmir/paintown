@@ -12,6 +12,8 @@ import com.rafkind.paintown.exception.LoadException;
 
 import com.rafkind.paintown.level.Level;
 import com.rafkind.paintown.level.Block;
+import com.rafkind.paintown.level.Thing;
+import javax.swing.filechooser.FileFilter;
 
 import org.swixml.SwingEngine;
 
@@ -25,6 +27,8 @@ public class Editor extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuProgram = new JMenu( "Program" );
 		menuBar.add( menuProgram );
+		JMenu menuLevel = new JMenu( "Level" );
+		menuBar.add( menuLevel );
 		JMenuItem quit = new JMenuItem( "Quit" );
 		menuProgram.add( quit );
 		final Lambda0 closeHook = new Lambda0(){
@@ -33,19 +37,21 @@ public class Editor extends JFrame {
 				return null;
 			}
 		};
+		JMenuItem loadLevel = new JMenuItem( "Open Level" );
+		menuLevel.add( loadLevel );
 
 		/*
 		levelImage = new BufferedImage( 1000, 300, BufferedImage.TYPE_INT_RGB );
 		Graphics g = levelImage.getGraphics();
 		g.setColor( new Color( 64, 192, 54 ) );
 		g.fillRect( 10, 10, 200, 200 );
+		*/
 
 		quit.addActionListener( new ActionListener(){
 			public void actionPerformed( ActionEvent event ){
 				closeHook.invoke_();
 			}
 		});
-		*/
 
 		SwingEngine engine = new SwingEngine( "main.xml" );
 		this.getContentPane().add( (JPanel) engine.getRootComponent() );
@@ -70,11 +76,76 @@ public class Editor extends JFrame {
 		viewScroll.setViewportView( view );
 		viewScroll.getHorizontalScrollBar().setBackground( new Color( 128, 255, 0 ) );
 
-		view.addMouseListener( new MouseInputAdapter(){
+		class Mouser extends MouseMotionAdapter implements MouseInputListener {
+			Thing selected = null;
+
+			public void mouseDragged( MouseEvent event ){
+				if ( selected == null ){
+					selected = level.findThing( event.getX() / 2, event.getY() / 2 );
+					System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
+				}
+				if ( selected != null ){
+					level.moveThing( selected, event.getX() / 2, event.getY() / 2 );
+				}
+			}
+			
+			public void mousePressed( MouseEvent event ){
+			}
+			
+			public void mouseExited( MouseEvent event ){
+				if ( selected != null ){
+					selected = null;
+					view.repaint();
+				}
+			}
+
 			public void mouseClicked( MouseEvent event ){
-				System.out.println( "Mouse clicked at " + event.getX() + " " + event.getY() );
+			}
+			
+			public void mouseEntered( MouseEvent event ){
+			}
+			
+			public void mouseReleased( MouseEvent event ){
+				if ( selected != null ){
+					selected = null;
+					view.repaint();
+				}
+			}
+		}
+
+		Mouser m = new Mouser();
+
+		view.addMouseMotionListener( m );
+		view.addMouseListener( m );
+
+		/*
+		view.addMouseMotionListener( new MouseMotionAdapter(){
+			Thing selected = null;
+			public void mouseDragged( MouseEvent event ){
+				if ( selected == null ){
+					selected = level.findThing( event.getX(), event.getY() );
+				}
+				if ( selected != null ){
+					level.moveThing( selected, event.getX(), event.getY() );
+				}
+				// view.repaint();
+				// System.out.println( "Mouse dragged at " + event.getX() + " " + event.getY() );
 			}
 		});
+
+		view.addMouseListener( new MouseInputAdapter(){
+			public void mousePressed( MouseEvent event ){
+				// System.out.println( "Mouse pushed at " + event.getX() + " " + event.getY() );
+			}
+
+			public void mouseClicked( MouseEvent event ){
+				// System.out.println( "Mouse clicked at " + event.getX() + " " + event.getY() );
+			}
+
+			public void mouseReleased( MouseEvent event ){
+			}
+		});
+		*/
 
 		/*
 		class BlockModel implements ListModel {
@@ -122,47 +193,57 @@ public class Editor extends JFrame {
 		view.setBorder( BorderFactory.createLineBorder( new Color( 255, 0, 0 ) ) );
 		viewContainer.add( viewScroll );
 
+		/*
 		final JList list = (JList) engine.find( "files" );
 		final DirectoryModel model = new DirectoryModel( "data" );
 		list.setModel( model );
+		*/
 
-		list.addMouseListener( new MouseAdapter(){
-			public void mouseClicked( MouseEvent event ){
-				if ( event.getClickCount() == 2 ){
-					int i = list.locationToIndex( event.getPoint() );
-					if ( i != -1 ){
-						File f = (File) model.getElementAt( i );
-						if ( f.isDirectory() ){
-							model.setDirectory( f );
-						} else {
-							try{
-								level.load( f );
-								blocks.removeAll();
-								int n = 1;
-								for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-									final Block b = (Block) it.next();
-									Box stuff = Box.createHorizontalBox();
-									JCheckBox check = new JCheckBox( new AbstractAction(){
-										public void actionPerformed( ActionEvent event ){
-											JCheckBox c = (JCheckBox) event.getSource();
-											b.setEnabled( c.isSelected() );
-											view.repaint();
-										}
-									});
-									check.setSelected( true );
-									stuff.add( check );
-									stuff.add( new JLabel( "Block " + n + " : " + b.getLength() ) );
-									stuff.add( Box.createHorizontalGlue() );
-									blocks.add( stuff );
-									n += 1;
+		loadLevel.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				JFileChooser chooser = new JFileChooser( new File( "." ) );	
+				chooser.setFileFilter( new FileFilter(){
+					public boolean accept( File f ){
+						return f.isDirectory() || f.getName().endsWith( ".txt" );
+					}
+
+					public String getDescription(){
+						return "Level files";
+					}
+				});
+
+				// chooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
+				int returnVal = chooser.showOpenDialog( Editor.this );
+				if ( returnVal == JFileChooser.APPROVE_OPTION ){
+					final File f = chooser.getSelectedFile();
+					try{
+						level.load( f );
+						blocks.removeAll();
+						int n = 1;
+						for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+							final Block b = (Block) it.next();
+							Box stuff = Box.createHorizontalBox();
+							JCheckBox check = new JCheckBox( new AbstractAction(){
+								public void actionPerformed( ActionEvent event ){
+									JCheckBox c = (JCheckBox) event.getSource();
+									b.setEnabled( c.isSelected() );
+									view.repaint();
 								}
-								blocks.repaint();
-								viewScroll.repaint();
-							} catch ( LoadException le ){
-								System.out.println( "Could not load " + f.getName() );
-								le.printStackTrace();
-							}
+							});
+
+							check.setSelected( true );
+							stuff.add( check );
+							stuff.add( new JLabel( "Block " + n + " : " + b.getLength() ) );
+							stuff.add( Box.createHorizontalGlue() );
+							blocks.add( stuff );
+							n += 1;
 						}
+
+						blocks.repaint();
+						viewScroll.repaint();
+					} catch ( LoadException le ){
+						System.out.println( "Could not load " + f.getName() );
+						le.printStackTrace();
 					}
 				}
 			}

@@ -12,6 +12,7 @@
 			/>
 	</panel>
 
+	<!--
 	<scrollpane size="100,30">
 		<gridbagconstraints
 			gridx="1"
@@ -24,6 +25,19 @@
 			/>
 		<list size="10,10" id="files" />
 	</scrollpane>
+	-->
+
+	<tabbedpane id="tabbed" border="MatteBorder(2,2,2,2,667A63)">
+		<gridbagconstraints
+			gridx="1"
+			gridy="0"
+			insets="1,1,1,1"
+			weightx="0.1"
+			weighty="0.9"
+			gridwidth="1"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.NORTH" />
+	</tabbedpane>
 
 	<hbox>
 		<gridbagconstraints
@@ -37,16 +51,4 @@
 			/>
 		<button id="render" label="Render" />
 	</hbox>
-
-	<tabbedpane id="tabbed" border="MatteBorder(2,2,2,2,667A63)">
-		<gridbagconstraints
-			gridx="1"
-			gridy="2"
-			insets="1,1,1,1"
-			weightx="0.1"
-			weighty="0.9"
-			gridwidth="1"
-			fill="GridBagConstraints.BOTH"
-			anchor="GridBagConstraints.NORTH" />
-	</tabbedpane>
 </panel>

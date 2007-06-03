@@ -17,7 +17,9 @@ import java.util.List;
 public class Thing{
 
 	private int x, y;
+	private int width, height;
 	private Image main;
+	private String name;
 	private static HashMap images = new HashMap();
 
 	public Thing( Token token ) throws LoadException {
@@ -31,6 +33,18 @@ public class Thing{
 			String file = path.readString( 0 );
 			main = loadIdleImage( file );
 		}
+
+		Token alias = token.findToken( "name" );
+		if ( alias == null ){
+			alias = token.findToken( "alias" );
+		}
+		if ( alias != null ){
+			name = alias.readString( 0 );	
+		}
+	}
+
+	public String toString(){
+		return "X: " + getX() + " Y: " + getY() + " Name: " + name;
 	}
 
 	public int getY(){
@@ -39,6 +53,30 @@ public class Thing{
 
 	public int getX(){
 		return x;
+	}
+
+	public void setY( int y ){
+		this.y = y + main.getHeight( null ) / 2;
+	}
+
+	public void setX( int x ){
+		this.x = x;
+	}
+
+	public int getX1(){
+		return getX() - main.getWidth( null ) / 2;
+	}
+
+	public int getY1(){
+		return getY() - main.getHeight( null );
+	}
+
+	public int getX2(){
+		return getX() + main.getWidth( null ) / 2;
+	}
+
+	public int getY2(){
+		return getY();
 	}
 
 	public void render( Graphics2D g, int startX ){

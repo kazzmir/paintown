@@ -28,15 +28,15 @@ public class Level{
 	private List blocks;
 
 	public Level(){
-		this.width = 640;
-		this.frontPanels = new ArrayList();
-		this.backPanels = new HashMap();
-		this.panelOrder = new ArrayList();
-		this.blocks = new ArrayList();
+		initAll();
 	}
 
 	public List getBlocks(){
 		return blocks;
+	}
+
+	public int getMinZ(){
+		return minZ;
 	}
 
 	private void drawFrontPanels( Graphics2D g ){
@@ -92,7 +92,49 @@ public class Level{
 		drawFrontPanels( g );	
 	}
 
+	public Thing findThing( int x, int y ){
+		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
+			Block b = (Block) it.next();
+			if ( b.isEnabled() ){
+				Thing t = b.findThing( x, y - getMinZ() );
+				if ( t != null ){
+					return t;
+				}
+				x -= b.getLength();
+			}
+		}
+		return null;
+	}
+
+	public void moveThing( Thing thing, int x, int y ){
+		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
+			Block b = (Block) it.next();
+			if ( b.isEnabled() ){
+				if ( b.hasThing( thing ) ){
+					System.out.println( "Move " + thing + " to " + x + " " + (y - getMinZ()) );
+					thing.setX( x );
+					thing.setY( y - getMinZ() );
+				}
+				x -= b.getLength();
+			}
+		}
+	}
+
+	private void initAll(){
+		this.name = null;
+		this.background = null;
+		this.minZ = 0;
+		this.maxZ = 0;
+
+		this.width = 640;
+		this.frontPanels = new ArrayList();
+		this.backPanels = new HashMap();
+		this.panelOrder = new ArrayList();
+		this.blocks = new ArrayList();
+	}
+
 	public void load( File f ) throws LoadException {
+		initAll();
 		TokenReader reader = new TokenReader( f );
 		Token head = reader.nextToken();
 		if ( ! head.getName().equals( "level" ) ){
