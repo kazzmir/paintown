@@ -111,9 +111,11 @@ public class Level{
 			Block b = (Block) it.next();
 			if ( b.isEnabled() ){
 				if ( b.hasThing( thing ) ){
-					System.out.println( "Move " + thing + " to " + x + " " + (y - getMinZ()) );
+					System.out.println( b + ". Move " + thing + " to " + x + " " + (y - getMinZ()) );
 					thing.setX( x );
 					thing.setY( y - getMinZ() );
+				} else {
+					System.out.println( b + " does not have " + thing );
 				}
 				x -= b.getLength();
 			}
@@ -155,7 +157,7 @@ public class Level{
 
 		loadBackground( head.findToken( "background" ) );
 
-		setWidth( calculateWidth( head.findTokens( "block/length" ) ) );
+		// setWidth( calculateWidth( head.findTokens( "block/length" ) ) );
 		for ( Iterator it = head.findTokens( "frontpanel" ).iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
 			String file = t.readString( 0 );
@@ -239,7 +241,17 @@ public class Level{
 	}
 
 	private int getWidth(){
+		/*
 		return width;
+		*/
+		int w = 0;
+		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
+			Block b = (Block) it.next();
+			if ( b.isEnabled() ){
+				w += b.getLength() * 2;
+			}
+		}
+		return w;
 	}
 
 	private int getHeight(){

@@ -126,6 +126,10 @@ public class Thing{
 		throw new LoadException( "No idle animation given for " + file );
 	}
 
+	public boolean equals( Object t ){
+		return this == t;
+	}
+
 	private static Token findIdle( List tokens ){
 		for ( Iterator it = tokens.iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();

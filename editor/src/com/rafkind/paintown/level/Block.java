@@ -67,11 +67,11 @@ public class Block{
 	public Thing findThing( int x, int y ){
 		for ( Iterator it = this.objects.iterator(); it.hasNext(); ){
 			Thing t = (Thing) it.next();
-			System.out.println( "Check " + t + " X1: " + t.getX1() + " Y1: " + t.getY1() + " X2: " + t.getX2() + " Y2: " + t.getY2() + " vs " + x + ", " + y );
+			// System.out.println( "Check " + t + " X1: " + t.getX1() + " Y1: " + t.getY1() + " X2: " + t.getX2() + " Y2: " + t.getY2() + " vs " + x + ", " + y );
 			if ( x >= t.getX1() && x <= t.getX2() &&
 			     y >= t.getY1() && y <= t.getY2() ){
 				return t;
-		        }
+			}
 		}
 		return null;
 	}
