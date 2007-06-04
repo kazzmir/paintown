@@ -38,6 +38,10 @@ public class Level{
 	public int getMinZ(){
 		return minZ;
 	}
+	
+	public int getMaxZ(){
+		return maxZ;
+	}
 
 	private void drawFrontPanels( Graphics2D g ){
 		int w = 0;
@@ -112,6 +116,12 @@ public class Level{
 			if ( b.isEnabled() ){
 				if ( b.hasThing( thing ) ){
 					int my = y - getMinZ();
+					if ( my > getMaxZ() - getMinZ() ){
+						my = getMaxZ() - getMinZ();
+					}
+					if ( my < 0 ){
+						my = 0;
+					}
 					// System.out.println( b + ". Move " + thing + " to " + x + " " + my );
 					thing.setX( x );
 					thing.setY( my );
@@ -185,7 +195,6 @@ public class Level{
 			Token t = (Token) it.next();
 			this.blocks.add( new Block( t ) );
 		}
-
 
 		System.out.println( "Loaded " + f );
 	}

@@ -8,12 +8,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.TreeSet;
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class Block{
 
 	private int length;
-	private TreeSet objects;
+	private List objects;
 	private boolean enabled = true;
 
 	public Block( Token token ) throws LoadException {
@@ -22,9 +23,38 @@ public class Block{
 			length = l.readInt( 0 );	
 		}
 
-		objects = new TreeSet( new Comparator(){
+		objects = new ArrayList();
+		for ( Iterator it = token.findTokens( "object" ).iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			objects.add( new Thing( t ) );
+		}
+	}
+
+	/*
+	public synchronized void reorder(){
+		Object[] a = objects.toArray();
+		objects.clear();
+		for ( int i = 0; i < a.length; i++ ){
+			objects.add( a[ i ] );
+		}
+		System.out.println( "Reorder: " + objects.size() );
+	}
+	*/
+
+	public boolean isEnabled(){
+		return enabled;
+	}
+
+	public void setEnabled( boolean b ){
+		enabled = b;
+	}
+
+	public synchronized void render( Graphics2D g, int x, int height, int minZ, int maxZ ){
+		g.translate( 0, minZ );
+		Object[] objs = this.objects.toArray();
+		Arrays.sort( objs, new Comparator(){
 			public int compare( Object o1, Object o2 ){
-				Thing t1 = (Thing) o1;
+		 		Thing t1 = (Thing) o1;
 				Thing t2 = (Thing) o2;
 				if ( t1.getY() < t2.getY() ){
 					return -1;
@@ -39,29 +69,14 @@ public class Block{
 				return false;
 			}
 		});
-		for ( Iterator it = token.findTokens( "object" ).iterator(); it.hasNext(); ){
-			Token t = (Token) it.next();
-			objects.add( new Thing( t ) );
-		}
-	}
-
-	public boolean isEnabled(){
-		return enabled;
-	}
-
-	public void setEnabled( boolean b ){
-		enabled = b;
-	}
-
-	public void render( Graphics2D g, int x, int height, int minZ, int maxZ ){
-		g.translate( 0, minZ );
-		for ( Iterator it = this.objects.iterator(); it.hasNext(); ){
-			Thing t = (Thing) it.next();
+		for ( int i = 0; i < objs.length; i++ ){
+			Thing t = (Thing) objs[ i ];
 			t.render( g, x );
 		}
 		g.translate( 0, -minZ );
 		g.setColor( new Color( 255, 255, 255 ) );
-		g.fillRect( x, 0, 2, height );
+		g.fillRect( x, 0, 1, height );
+		g.fillRect( x + getLength() * 2, 0, 1, height );
 	}
 
 	public Thing findThing( int x, int y ){

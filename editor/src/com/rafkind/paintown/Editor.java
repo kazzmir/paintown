@@ -94,6 +94,7 @@ public class Editor extends JFrame {
 				if ( selected != null ){
 					// System.out.println( "sx,sy: " + sx + ", " + sy + " ex,ey: " + (event.getX() / 2) + ", " + (event.getY() / 2) + " dx, dy: " + dx + ", " + dy );
 					level.moveThing( selected, sx + event.getX() / 2 - dx, sy + event.getY() / 2 - dy );
+					view.repaint();
 				}
 			}
 			
