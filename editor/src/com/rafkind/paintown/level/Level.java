@@ -92,6 +92,9 @@ public class Level{
 		g.scale( 2, 2 );
 		drawBackground( g );
 		drawBackPanels( g );
+		g.setColor( new Color( 255, 0, 0 ) );
+		g.drawLine( 0, getMinZ(), getWidth() / 2, getMinZ() );
+		g.drawLine( 0, getMaxZ(), getWidth() / 2, getMaxZ() );
 		drawBlocks( g, height );
 		drawFrontPanels( g );	
 	}

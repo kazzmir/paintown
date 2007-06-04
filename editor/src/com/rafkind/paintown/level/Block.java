@@ -30,17 +30,6 @@ public class Block{
 		}
 	}
 
-	/*
-	public synchronized void reorder(){
-		Object[] a = objects.toArray();
-		objects.clear();
-		for ( int i = 0; i < a.length; i++ ){
-			objects.add( a[ i ] );
-		}
-		System.out.println( "Reorder: " + objects.size() );
-	}
-	*/
-
 	public boolean isEnabled(){
 		return enabled;
 	}
@@ -49,7 +38,7 @@ public class Block{
 		enabled = b;
 	}
 
-	public synchronized void render( Graphics2D g, int x, int height, int minZ, int maxZ ){
+	public void render( Graphics2D g, int x, int height, int minZ, int maxZ ){
 		g.translate( 0, minZ );
 		Object[] objs = this.objects.toArray();
 		Arrays.sort( objs, new Comparator(){
