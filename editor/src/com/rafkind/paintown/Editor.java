@@ -41,6 +41,9 @@ public class Editor extends JFrame {
 		menuLevel.add( loadLevel );
 		JMenuItem saveLevel = new JMenuItem( "Save Level" );
 		menuLevel.add( saveLevel );
+		menuLevel.setMnemonic( KeyEvent.VK_L );
+		saveLevel.setMnemonic( KeyEvent.VK_S );
+		loadLevel.setMnemonic( KeyEvent.VK_O );
 
 		/*
 		levelImage = new BufferedImage( 1000, 300, BufferedImage.TYPE_INT_RGB );
@@ -72,6 +75,14 @@ public class Editor extends JFrame {
 				JScrollBar h = viewScroll.getHorizontalScrollBar();
 				JScrollBar v = viewScroll.getVerticalScrollBar();
 				level.render( (Graphics2D) g, h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount() );
+				/*
+				System.out.println( "Visible vertical: " + v.getVisibleAmount() );
+				if ( v.getVisibleAmount() > level.getHeight() ){
+					g.setColor( new Color( 255, 255, 255 ) );
+					System.out.println( "Clear a rect from 0, " + level.getHeight() + " to " + level.getWidth() + ", " + (v.getVisibleAmount() - level.getHeight()) );
+					g.clearRect( 0, level.getHeight(), level.getWidth(), v.getVisibleAmount() - level.getHeight() );
+				}
+				*/
 			}
 		};
 		viewScroll.setPreferredSize( new Dimension( 200, 200 ) );
@@ -242,6 +253,7 @@ public class Editor extends JFrame {
 						label.setText( "Filename: " + f.getName() );
 						blocks.removeAll();
 						int n = 1;
+						int total = 0;
 						for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
 							final Block b = (Block) it.next();
 							Box stuff = Box.createHorizontalBox();
@@ -257,10 +269,12 @@ public class Editor extends JFrame {
 							check.setSelected( true );
 							stuff.add( check );
 							stuff.add( new JLabel( "Block " + n + " : " + b.getLength() ) );
+							total += b.getLength();
 							stuff.add( Box.createHorizontalGlue() );
 							blocks.add( stuff );
 							n += 1;
 						}
+						blocks.add( new JLabel( "Total length " + total ) );
 
 						blocks.repaint();
 						view.revalidate();

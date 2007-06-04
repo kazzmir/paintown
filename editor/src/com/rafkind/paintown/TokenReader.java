@@ -26,7 +26,7 @@ public class TokenReader{
 					case '(' : {
 						// System.out.println( "Read new token" );
 						if ( current == null ){
-							current = new Token( null );
+							current = new Token();
 							tokens.add( current );
 						} else {
 							current.endData();

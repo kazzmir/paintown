@@ -18,6 +18,7 @@ public class Thing{
 
 	private int x, y;
 	private int width, height;
+	private String path;
 	private Image main;
 	private String name;
 	private static HashMap images = new HashMap();
@@ -28,10 +29,10 @@ public class Thing{
 			x = coords.readInt( 0 );
 			y = coords.readInt( 1 );
 		}
-		Token path = token.findToken( "path" );
-		if ( path != null ){
-			String file = path.readString( 0 );
-			main = loadIdleImage( file );
+		Token tpath = token.findToken( "path" );
+		if ( tpath != null ){
+			path = tpath.readString( 0 );
+			main = loadIdleImage( path );
 		}
 
 		Token alias = token.findToken( "name" );
@@ -45,6 +46,10 @@ public class Thing{
 
 	public String toString(){
 		return "X: " + getX() + " Y: " + getY() + " Name: " + name;
+	}
+
+	public String getPath(){
+		return path;
 	}
 
 	public int getY(){
@@ -143,5 +148,19 @@ public class Thing{
 			}
 		}
 		return null;
+	}
+
+	private String getType(){
+		return "enemy";
+	}
+
+	public Token toToken(){
+		Token thing = new Token();
+		thing.addToken( new Token( "object" ) );
+		thing.addToken( new String[]{ "type", getType() } );
+		thing.addToken( new String[]{ "path", getPath() } );
+		thing.addToken( new String[]{ "coords", String.valueOf( getX() ), String.valueOf( getY() ) } );
+
+		return thing;
 	}
 }

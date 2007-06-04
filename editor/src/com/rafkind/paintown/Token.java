@@ -13,6 +13,14 @@ public class Token{
 		this( parent, null );
 	}
 
+	public Token(){
+		this( (Token) null );
+	}
+
+	public Token( String data ){
+		this( null, data );
+	}
+
 	public Token( Token parent, String data ){
 		tokens = new ArrayList();
 		this.parent = parent;
@@ -115,8 +123,17 @@ public class Token{
 		return readIndex( index ).toString();
 	}
 
-	public void addToken( Token n ){
+	public Token addToken( Token n ){
 		tokens.add( n );
+		return this;
+	}
+
+	public Token addToken( String[] args ){
+		Token t = new Token( this );
+		for ( int i = 0; i < args.length; i++ ){
+			t.addToken( new Token( args[ i ] ) );
+		}
+		return addToken( t );
 	}
 
 	public void removeToken( Token n ){

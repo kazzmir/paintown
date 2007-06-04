@@ -93,8 +93,18 @@ public class Block{
 		// return this.objects.contains( t );
 	}
 
+	public Token toToken(){
+		Token block = new Token();
+		block.addToken( new Token( "block" ) );
+		block.addToken( new Token().addToken( new Token( "length" ) ).addToken( new Token( String.valueOf( getLength() ) ) ) );
+		for ( Iterator it = objects.iterator(); it.hasNext(); ){
+			Thing t = (Thing) it.next();
+			block.addToken( t.toToken() );
+		}
+		return block;
+	}
+
 	public int getLength(){
 		return length;
 	}
-
 }

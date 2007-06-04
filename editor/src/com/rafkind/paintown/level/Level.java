@@ -266,7 +266,7 @@ public class Level{
 		return new Dimension( getWidth(), getHeight() );
 	}
 
-	private int getWidth(){
+	public int getWidth(){
 		int w = 0;
 		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
 			Block b = (Block) it.next();
@@ -278,7 +278,7 @@ public class Level{
 	}
 
 	public Token toToken(){
-		Token level = new Token( null );
+		Token level = new Token();
 		level.addToken( new Token( level, "level" ) );
 		Token z = new Token( level );
 		level.addToken( z );
@@ -312,14 +312,22 @@ public class Level{
 			f.addToken( new Token( f, "junk" ) );
 		}
 
+		Token order = new Token( level );
+		level.addToken( order );
+		order.addToken( new Token( order, "order" ) );
 		for ( Iterator it = panelOrder.iterator(); it.hasNext(); ){
-			it.next();
+			order.addToken( new Token( order, it.next().toString() ) );
+		}
+
+		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
+			Block b = (Block) it.next();
+			level.addToken( b.toToken() );
 		}
 
 		return level;
 	}
 
-	private int getHeight(){
+	public int getHeight(){
 		return 480;
 	}
 }
