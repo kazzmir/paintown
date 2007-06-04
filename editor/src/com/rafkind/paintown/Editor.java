@@ -39,6 +39,8 @@ public class Editor extends JFrame {
 		};
 		JMenuItem loadLevel = new JMenuItem( "Open Level" );
 		menuLevel.add( loadLevel );
+		JMenuItem saveLevel = new JMenuItem( "Save Level" );
+		menuLevel.add( saveLevel );
 
 		/*
 		levelImage = new BufferedImage( 1000, 300, BufferedImage.TYPE_INT_RGB );
@@ -53,7 +55,7 @@ public class Editor extends JFrame {
 			}
 		});
 
-		SwingEngine engine = new SwingEngine( "main.xml" );
+		final SwingEngine engine = new SwingEngine( "main.xml" );
 		this.getContentPane().add( (JPanel) engine.getRootComponent() );
 
 		final Level level = new Level();
@@ -84,12 +86,14 @@ public class Editor extends JFrame {
 			public void mouseDragged( MouseEvent event ){
 				if ( selected == null ){
 					selected = level.findThing( event.getX() / 2, event.getY() / 2 );
-					sx = selected.getX();
-					sy = selected.getY() + level.getMinZ();
-					// System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
-					dx = event.getX() / 2;
-					dy = event.getY() / 2;
-					// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
+					if ( selected != null ){
+							  sx = selected.getX();
+							  sy = selected.getY() + level.getMinZ();
+							  // System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
+							  dx = event.getX() / 2;
+							  dy = event.getY() / 2;
+							  // System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
+					}
 				}
 				if ( selected != null ){
 					// System.out.println( "sx,sy: " + sx + ", " + sy + " ex,ey: " + (event.getX() / 2) + ", " + (event.getY() / 2) + " dx, dy: " + dx + ", " + dy );
@@ -208,6 +212,13 @@ public class Editor extends JFrame {
 		list.setModel( model );
 		*/
 
+		saveLevel.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				Token t = level.toToken();
+				System.out.println( t );
+			}
+		});
+
 		loadLevel.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				JFileChooser chooser = new JFileChooser( new File( "." ) );	
@@ -227,6 +238,8 @@ public class Editor extends JFrame {
 					final File f = chooser.getSelectedFile();
 					try{
 						level.load( f );
+						JLabel label = (JLabel) engine.find( "file" );
+						label.setText( "Filename: " + f.getName() );
 						blocks.removeAll();
 						int n = 1;
 						for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){

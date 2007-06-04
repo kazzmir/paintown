@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.Token;
@@ -26,6 +27,15 @@ public class Level{
 	private int maxZ;
 
 	private List blocks;
+
+	private class Panel{
+		public String name;
+		public Image image;
+		public Panel( String name, Image i ){
+			this.name = name;
+			this.image = i;
+		}
+	}
 
 	public Level(){
 		initAll();
@@ -48,7 +58,8 @@ public class Level{
 		if ( ! frontPanels.isEmpty() ){
 			while ( w < getWidth() ){
 				for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
-					Image panel = (Image) it.next();
+					Panel p = (Panel) it.next();
+					Image panel = (Image) p.image;
 					g.drawImage( panel, w, 0, null );
 					w += panel.getWidth( null );
 				}
@@ -70,7 +81,7 @@ public class Level{
 		int w = 0;
 		for ( Iterator it = this.panelOrder.iterator(); it.hasNext(); ){
 			Integer i = (Integer) it.next();
-			Image image = (Image) this.backPanels.get( i );
+			Image image = ((Panel) this.backPanels.get( i )).image;
 			g.drawImage( image, w, 0, null );
 			w += image.getWidth( null );
 		}
@@ -177,14 +188,14 @@ public class Level{
 		for ( Iterator it = head.findTokens( "frontpanel" ).iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
 			String file = t.readString( 0 );
-			frontPanels.add( loadImage( file ) );
+			frontPanels.add( new Panel( file, loadImage( file ) ) );
 		}
 
 		for ( Iterator it = head.findTokens( "panel" ).iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
 			int index = t.readInt( 0 );
 			String file = t.readString( 1 );
-			this.backPanels.put( new Integer( index ), loadImage( file  ) );
+			this.backPanels.put( new Integer( index ), new Panel( file, loadImage( file ) ) );
 		}
 
 		Token order = head.findToken( "order" );
@@ -264,6 +275,48 @@ public class Level{
 			}
 		}
 		return w;
+	}
+
+	public Token toToken(){
+		Token level = new Token( null );
+		level.addToken( new Token( level, "level" ) );
+		Token z = new Token( level );
+		level.addToken( z );
+		z.addToken( new Token( z, "z" ) );
+		Token min = new Token( z );
+		z.addToken( min );
+		min.addToken( new Token( min, "minimum" ) );
+		min.addToken( new Token( min, String.valueOf( getMinZ() ) ) );
+		Token max = new Token( z );
+		z.addToken( max );
+		max.addToken( new Token( max, "maximum" ) );
+		max.addToken( new Token( max, String.valueOf( getMaxZ() ) ) );
+
+		for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
+			Token f = new Token( level );
+			level.addToken( f );
+			Panel p = (Panel) it.next();
+			f.addToken( new Token( f, "frontpanel" ) );
+			f.addToken( new Token( f, p.name ) );
+		}
+
+		for ( Iterator it = backPanels.entrySet().iterator(); it.hasNext(); ){
+			Map.Entry entry = (Map.Entry) it.next();
+			Token f = new Token( level );
+			level.addToken( f );
+			f.addToken( new Token( f, "panel" ) );
+			Panel p = (Panel) entry.getValue();
+			f.addToken( new Token( f, entry.getKey().toString() ) );
+			f.addToken( new Token( f, p.name ) );
+			f.addToken( new Token( f, "junk" ) );
+			f.addToken( new Token( f, "junk" ) );
+		}
+
+		for ( Iterator it = panelOrder.iterator(); it.hasNext(); ){
+			it.next();
+		}
+
+		return level;
 	}
 
 	private int getHeight(){
