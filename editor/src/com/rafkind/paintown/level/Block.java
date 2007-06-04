@@ -38,8 +38,7 @@ public class Block{
 		enabled = b;
 	}
 
-	public void render( Graphics2D g, int x, int height, int minZ, int maxZ ){
-		g.translate( 0, minZ );
+	public void render( Graphics2D g, int x, int height, int minZ, int maxZ, int num ){
 		Object[] objs = this.objects.toArray();
 		Arrays.sort( objs, new Comparator(){
 			public int compare( Object o1, Object o2 ){
@@ -58,14 +57,17 @@ public class Block{
 				return false;
 			}
 		});
+		g.translate( x, minZ );
 		for ( int i = 0; i < objs.length; i++ ){
 			Thing t = (Thing) objs[ i ];
-			t.render( g, x );
+			t.render( g );
+			g.drawString( "Block " + num, t.getX(), t.getY() );
 		}
 		g.translate( 0, -minZ );
 		g.setColor( new Color( 255, 255, 255 ) );
-		g.fillRect( x, 0, 1, height );
-		g.fillRect( x + getLength() * 2, 0, 1, height );
+		g.fillRect( 0, 0, 1, height );
+		g.fillRect( getLength() * 2, 0, 1, height );
+		g.translate( -x, 0 );
 	}
 
 	public Thing findThing( int x, int y ){

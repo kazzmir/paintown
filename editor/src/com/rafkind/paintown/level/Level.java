@@ -78,12 +78,14 @@ public class Level{
 
 	private void drawBlocks( Graphics2D g, int height ){
 		int w = 0;
+		int num = 1;
 		for ( Iterator it = this.blocks.iterator(); it.hasNext(); ){
 			Block b = (Block) it.next();
 			if ( b.isEnabled() ){
-				b.render( g, w, height, minZ, maxZ );
+				b.render( g, w, height, minZ, maxZ, num );
 				w += b.getLength();
 			}
+			num += 1;
 		}
 	}
 
