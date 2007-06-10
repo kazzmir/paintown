@@ -39,6 +39,7 @@
 			anchor="GridBagConstraints.NORTH" />
 	</tabbedpane>
 
+	<!--
 	<label id="file" text="Filename:">
 		<gridbagconstraints
 			gridx="1"
@@ -50,6 +51,7 @@
 			anchor="GridBagConstraints.NORTHWEST"
 			/>
 	</label>
+	-->
 
 	<hbox>
 		<gridbagconstraints

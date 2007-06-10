@@ -267,8 +267,10 @@ public class Editor extends JFrame {
 					final File f = chooser.getSelectedFile();
 					try{
 						level.load( f );
+						/*
 						JLabel label = (JLabel) engine.find( "file" );
 						label.setText( "Filename: " + f.getName() );
+						*/
 						blocks.removeAll();
 						int n = 1;
 						int total = 0;
