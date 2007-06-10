@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class Thing{
+public abstract class Thing{
 
 	private int x, y;
 	private int width, height;
@@ -29,23 +29,24 @@ public class Thing{
 			x = coords.readInt( 0 );
 			y = coords.readInt( 1 );
 		}
+
 		Token tpath = token.findToken( "path" );
 		if ( tpath != null ){
 			path = tpath.readString( 0 );
-			main = loadIdleImage( path );
-		}
-
-		Token alias = token.findToken( "name" );
-		if ( alias == null ){
-			alias = token.findToken( "alias" );
-		}
-		if ( alias != null ){
-			name = alias.readString( 0 );	
+			main = loadIdleImage( path, this );
 		}
 	}
 
+	public void setName( String s ){
+		this.name = s;
+	}
+
+	public String getName(){
+		return name;
+	}
+
 	public String toString(){
-		return "X: " + getX() + " Y: " + getY() + " Name: " + name;
+		return "X: " + getX() + " Y: " + getY() + " Name: " + getName();
 	}
 
 	public String getPath(){
@@ -93,19 +94,23 @@ public class Thing{
 		int my = y - main.getHeight( null );
 		g.drawImage( main, new AffineTransform( -1, 0, 0, 1, mx, my ), null );
 		g.setColor( new Color( 255, 255, 255 ) );
+		g.drawRect( getX1(), getY1(), main.getWidth( null ), main.getHeight( null ) );
 		g.fillOval( x, y, 5, 5 );
 	}
 
-	private static Image loadIdleImage( String file ) throws LoadException {
+	private static Image loadIdleImage( String file, Thing t ) throws LoadException {
 
 		if ( images.get( file ) != null ){
 			return (Image) images.get( file );
 		}
-		images.put( file, readIdleImage( file ) );
-		return loadIdleImage( file );
+		images.put( file, t.readIdleImage( file ) );
+		return loadIdleImage( file, t );
 	}
 
-	private static Image readIdleImage( String file ) throws LoadException {
+	protected abstract Image readIdleImage( String file ) throws LoadException;
+
+	/*
+	protected abstract Image readIdleImage( String file ) throws LoadException {
 		TokenReader reader = new TokenReader( new File( file ) );
 		Token head = reader.nextToken();
 		Token idle = null;
@@ -132,35 +137,12 @@ public class Thing{
 		}
 		throw new LoadException( "No idle animation given for " + file );
 	}
+	*/
 
 	public boolean equals( Object t ){
 		return this == t;
 	}
 
-	private static Token findIdle( List tokens ){
-		for ( Iterator it = tokens.iterator(); it.hasNext(); ){
-			Token t = (Token) it.next();
-			Token name = t.findToken( "name" );
-			if ( name != null ){
-				if ( name.readString( 0 ).equals( "idle" ) ){
-					return t;
-				}
-			}
-		}
-		return null;
-	}
-
-	private String getType(){
-		return "enemy";
-	}
-
-	public Token toToken(){
-		Token thing = new Token();
-		thing.addToken( new Token( "object" ) );
-		thing.addToken( new String[]{ "type", getType() } );
-		thing.addToken( new String[]{ "path", getPath() } );
-		thing.addToken( new String[]{ "coords", String.valueOf( getX() ), String.valueOf( getY() ) } );
-
-		return thing;
-	}
+	protected abstract String getType();
+	public abstract Token toToken();
 }

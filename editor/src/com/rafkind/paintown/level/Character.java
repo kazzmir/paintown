@@ -1,0 +1,79 @@
+package com.rafkind.paintown.level;
+
+import java.awt.*;
+import java.io.*;
+
+import java.util.List;
+import java.util.Iterator;
+
+import com.rafkind.paintown.exception.LoadException;
+import com.rafkind.paintown.Token;
+import com.rafkind.paintown.TokenReader;
+import com.rafkind.paintown.MaskedImage;
+
+public class Character extends Thing {
+
+	public Character( Token token ) throws LoadException {
+		super( token );
+
+		Token alias = token.findToken( "name" );
+		if ( alias == null ){
+			alias = token.findToken( "alias" );
+		}
+		if ( alias != null ){
+			setName( alias.readString( 0 ) );
+		}
+	}
+
+	protected Image readIdleImage( String file ) throws LoadException {
+		TokenReader reader = new TokenReader( new File( file ) );
+		Token head = reader.nextToken();
+		Token idle = null;
+		idle = findIdle( head.findTokens( "anim" ) );
+
+		if ( idle != null ){
+			String base = "./";
+			Token basedir = idle.findToken( "basedir" );
+			if ( basedir != null ){
+				base = basedir.readString( 0 );
+			}
+			Token frame = idle.findToken( "frame" );
+			if ( frame != null ){
+				String pic = frame.readString( 0 );
+				try{
+					return MaskedImage.load( base + pic );
+				} catch ( IOException ie ){
+					throw new LoadException( "Could not load " + base + pic + " at line " + frame.getLine(), ie );
+				}
+			}
+		}
+		throw new LoadException( "No idle animation given for " + file );
+	}
+	
+	private Token findIdle( List tokens ){
+		for ( Iterator it = tokens.iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			Token name = t.findToken( "name" );
+			if ( name != null ){
+				if ( name.readString( 0 ).equals( "idle" ) ){
+					return t;
+				}
+			}
+		}
+		return null;
+	}
+	
+	protected String getType(){
+		return "enemy";
+	}
+
+	public Token toToken(){
+		Token thing = new Token();
+		thing.addToken( new Token( "object" ) );
+		thing.addToken( new String[]{ "type", getType() } );
+		thing.addToken( new String[]{ "path", getPath() } );
+		thing.addToken( new String[]{ "coords", String.valueOf( getX() ), String.valueOf( getY() ) } );
+		return thing;
+	}
+
+}

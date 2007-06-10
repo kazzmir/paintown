@@ -27,7 +27,19 @@ public class Block{
 		objects = new ArrayList();
 		for ( Iterator it = token.findTokens( "object" ).iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
-			objects.add( new Thing( t ) );
+			Token type = t.findToken( "type" );
+			if ( type != null ){
+				String str = type.readString( 0 );
+				if ( str.equals( "enemy" ) ){
+					objects.add( new Character( t ) );
+				} else if ( str.equals( "item" ) ){
+					objects.add( new Item( t ) );
+				} else {
+					System.out.println( "Warning: ignoring object of type '" + str + "' at line " + type.getLine() );
+				}
+			} else {
+				throw new LoadException( "Object does not have a 'type' expression at line " + t.getLine() );
+			}
 		}
 	}
 

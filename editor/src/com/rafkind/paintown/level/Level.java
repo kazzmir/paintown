@@ -338,6 +338,6 @@ public class Level{
 	}
 
 	public double getHeight(){
-		return 480 * getScale();
+		return 240 * getScale();
 	}
 }

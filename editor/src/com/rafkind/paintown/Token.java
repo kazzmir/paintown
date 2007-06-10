@@ -8,9 +8,18 @@ public class Token{
 	private Token parent;
 	private String data;
 	private String currentData;
+	private int line;
 
 	public Token( Token parent ){
-		this( parent, null );
+		this( 0, parent, null );
+	}
+
+	public Token( int line, Token parent ){
+		this( line, parent, null );
+	}
+
+	public Token( int line ){
+		this( line, (Token) null );
 	}
 
 	public Token(){
@@ -22,10 +31,19 @@ public class Token{
 	}
 
 	public Token( Token parent, String data ){
+		this( 0, parent, data );
+	}
+
+	public Token( int line, Token parent, String data ){
 		tokens = new ArrayList();
 		this.parent = parent;
 		this.data = data;
+		this.line = line;
 		currentData = "";
+	}
+
+	public int getLine(){
+		return line;
 	}
 
 	public List getTokens(){
