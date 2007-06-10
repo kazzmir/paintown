@@ -61,6 +61,10 @@
 			fill="GridBagConstraints.HORIZONTAL"
 			anchor="GridBagConstraints.NORTHWEST"
 			/>
+		<panel id="scroll" />
+		<!--
 		<button id="render" label="Render" />
+		-->
+		<glue />
 	</hbox>
 </panel>

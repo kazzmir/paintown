@@ -16,6 +16,7 @@ public class Block{
 	private int length;
 	private List objects;
 	private boolean enabled = true;
+	private boolean highlight = false;
 
 	public Block( Token token ) throws LoadException {
 		Token l = token.findToken( "length" );
@@ -58,8 +59,14 @@ public class Block{
 			}
 		});
 		g.translate( x, minZ );
+		/*
+		if ( highlight ){
+			g.setXORMode( new Color( 54, 10, 23 ) );
+		}
+		*/
 		for ( int i = 0; i < objs.length; i++ ){
 			Thing t = (Thing) objs[ i ];
+			g.setColor( new Color( 255, 255, 255 ) );
 			t.render( g );
 			g.drawString( "Block " + num, t.getX(), t.getY() );
 		}
@@ -102,6 +109,10 @@ public class Block{
 			block.addToken( t.toToken() );
 		}
 		return block;
+	}
+
+	public void setHighlight( boolean h ){
+		this.highlight = h;
 	}
 
 	public int getLength(){

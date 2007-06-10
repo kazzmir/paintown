@@ -91,24 +91,24 @@ public class Editor extends JFrame {
 
 		class Mouser extends MouseMotionAdapter implements MouseInputListener {
 			Thing selected = null;
-			int dx, dy;
-			int sx, sy;
+			double dx, dy;
+			double sx, sy;
 
 			public void mouseDragged( MouseEvent event ){
 				if ( selected == null ){
-					selected = level.findThing( event.getX() / 2, event.getY() / 2 );
+					selected = findThingAt( event );
 					if ( selected != null ){
 							  sx = selected.getX();
 							  sy = selected.getY() + level.getMinZ();
 							  // System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
-							  dx = event.getX() / 2;
-							  dy = event.getY() / 2;
+							  dx = event.getX() / level.getScale();
+							  dy = event.getY() / level.getScale();
 							  // System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
 					}
 				}
 				if ( selected != null ){
 					// System.out.println( "sx,sy: " + sx + ", " + sy + " ex,ey: " + (event.getX() / 2) + ", " + (event.getY() / 2) + " dx, dy: " + dx + ", " + dy );
-					level.moveThing( selected, sx + event.getX() / 2 - dx, sy + event.getY() / 2 - dy );
+					level.moveThing( selected, (int)(sx + event.getX() / level.getScale() - dx), (int)(sy + event.getY() / level.getScale() - dy) );
 					view.repaint();
 				}
 			}
@@ -123,7 +123,23 @@ public class Editor extends JFrame {
 				}
 			}
 
+			private Thing findThingAt( MouseEvent event ){
+				return level.findThing( (int)(event.getX() / level.getScale()), (int)(event.getY() / level.getScale()) );
+			}
+
 			public void mouseClicked( MouseEvent event ){
+				Thing t = findThingAt( event );
+				Block has = null;
+				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+					Block b = (Block) it.next();
+					b.setHighlight( false );
+					if ( t != null && b.hasThing( t ) ){
+						has = b;
+					}
+				}
+				if ( has != null ){
+					has.setHighlight( true );
+				}
 			}
 			
 			public void mouseEntered( MouseEvent event ){
@@ -199,12 +215,14 @@ public class Editor extends JFrame {
 		});
 		*/
 
+		/*
 		JButton render = (JButton) engine.find( "render" );
 		render.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				view.repaint();
 			}
 		});
+		*/
 
 		GridBagLayout layout = new GridBagLayout();
 		viewContainer.setLayout( layout );
@@ -284,6 +302,17 @@ public class Editor extends JFrame {
 						le.printStackTrace();
 					}
 				}
+			}
+		});
+
+		JPanel scroll = (JPanel) engine.find( "scroll" );
+		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 10, 0, 1, 10 );
+		scroll.add( scrolly );
+		scrolly.addAdjustmentListener( new AdjustmentListener(){
+			public void adjustmentValueChanged( AdjustmentEvent e ){
+				level.setScale( (double) e.getValue() * 2.0 / scrolly.getMaximum() );
+				view.revalidate();
+				viewScroll.repaint();
 			}
 		});
 

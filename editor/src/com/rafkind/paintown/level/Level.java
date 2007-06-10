@@ -25,6 +25,7 @@ public class Level{
 	private List panelOrder;
 	private int minZ;
 	private int maxZ;
+	private double scale;
 
 	private List blocks;
 
@@ -101,13 +102,13 @@ public class Level{
 	}
 
 	public void render( Graphics2D g, int x, int y, int width, int height ){
-		g.clearRect( 0, 0, getWidth(), getHeight() );
-		g.scale( 2, 2 );
+		g.clearRect( 0, 0, (int) getWidth(), (int) getHeight() );
+		g.scale( getScale(), getScale() );
 		drawBackground( g );
 		drawBackPanels( g );
 		g.setColor( new Color( 255, 0, 0 ) );
-		g.drawLine( 0, getMinZ(), getWidth() / 2, getMinZ() );
-		g.drawLine( 0, getMaxZ(), getWidth() / 2, getMaxZ() );
+		g.drawLine( 0, getMinZ(), (int)(getWidth() / getScale()), getMinZ() );
+		g.drawLine( 0, getMaxZ(), (int)(getWidth() / getScale()), getMaxZ() );
 		drawBlocks( g, height );
 		drawFrontPanels( g );	
 	}
@@ -154,6 +155,7 @@ public class Level{
 		this.background = null;
 		this.minZ = 0;
 		this.maxZ = 0;
+		this.scale = 2;
 
 		this.width = 640;
 		this.frontPanels = new ArrayList();
@@ -253,7 +255,7 @@ public class Level{
 		int w = 0;
 		for ( Iterator it = lengths.iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
-			w += t.readInt( 0 ) * 2;
+			w += t.readInt( 0 ) * getScale();
 		}
 		return w;
 	}
@@ -263,15 +265,15 @@ public class Level{
 	}
 
 	public Dimension getSize(){
-		return new Dimension( getWidth(), getHeight() );
+		return new Dimension( (int) getWidth(), (int) getHeight() );
 	}
 
-	public int getWidth(){
-		int w = 0;
+	public double getWidth(){
+		double w = 0;
 		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
 			Block b = (Block) it.next();
 			if ( b.isEnabled() ){
-				w += b.getLength() * 2;
+				w += b.getLength() * getScale();
 			}
 		}
 		return w;
@@ -327,7 +329,15 @@ public class Level{
 		return level;
 	}
 
-	public int getHeight(){
-		return 480;
+	public double getScale(){
+		return scale;
+	}
+
+	public void setScale( double s ){
+		scale = s;
+	}
+
+	public double getHeight(){
+		return 480 * getScale();
 	}
 }
