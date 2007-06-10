@@ -288,7 +288,7 @@ public class Editor extends JFrame {
 
 							check.setSelected( true );
 							stuff.add( check );
-							stuff.add( new JLabel( "Block " + n + " : " + b.getLength() ) );
+							stuff.add( new JButton( "Block " + n + " : " + b.getLength() ) );
 							total += b.getLength();
 							stuff.add( Box.createHorizontalGlue() );
 							blocks.add( stuff );
@@ -309,10 +309,12 @@ public class Editor extends JFrame {
 
 		JPanel scroll = (JPanel) engine.find( "scroll" );
 		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 10, 0, 1, 10 );
+		final JLabel scale = (JLabel) engine.find( "scale" );
 		scroll.add( scrolly );
 		scrolly.addAdjustmentListener( new AdjustmentListener(){
 			public void adjustmentValueChanged( AdjustmentEvent e ){
 				level.setScale( (double) e.getValue() * 2.0 / scrolly.getMaximum() );
+				scale.setText( "Scale: " + level.getScale() );
 				view.revalidate();
 				viewScroll.repaint();
 			}

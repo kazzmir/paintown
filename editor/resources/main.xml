@@ -63,6 +63,8 @@
 			fill="GridBagConstraints.HORIZONTAL"
 			anchor="GridBagConstraints.NORTHWEST"
 			/>
+		<glue size="1" />
+		<label text="Scale: 2" id="scale" />
 		<panel id="scroll" />
 		<!--
 		<button id="render" label="Render" />
