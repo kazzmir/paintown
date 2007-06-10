@@ -114,6 +114,19 @@ public class Editor extends JFrame {
 			}
 			
 			public void mousePressed( MouseEvent event ){
+				Thing t = findThingAt( event );
+				Block has = null;
+				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+					Block b = (Block) it.next();
+					b.setHighlight( false );
+					if ( t != null && b.hasThing( t ) ){
+						has = b;
+					}
+				}
+				if ( has != null ){
+					has.setHighlight( true );
+					view.repaint();
+				}
 			}
 			
 			public void mouseExited( MouseEvent event ){
@@ -128,18 +141,6 @@ public class Editor extends JFrame {
 			}
 
 			public void mouseClicked( MouseEvent event ){
-				Thing t = findThingAt( event );
-				Block has = null;
-				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-					Block b = (Block) it.next();
-					b.setHighlight( false );
-					if ( t != null && b.hasThing( t ) ){
-						has = b;
-					}
-				}
-				if ( has != null ){
-					has.setHighlight( true );
-				}
 			}
 			
 			public void mouseEntered( MouseEvent event ){
@@ -201,6 +202,9 @@ public class Editor extends JFrame {
 		JTabbedPane tabbed = (JTabbedPane) engine.find( "tabbed" );
 		final Box blocks = Box.createVerticalBox();
 		tabbed.add( "Blocks", new JScrollPane( blocks ) );
+
+		final JList objects = new JList();
+		tabbed.add( "Objects", objects );
 		
 		/*
 		viewScroll.getHorizontalScrollBar().addAdjustmentListener( new AdjustmentListener(){

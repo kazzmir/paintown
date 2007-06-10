@@ -86,15 +86,20 @@ public abstract class Thing{
 		return getY();
 	}
 
-	public void render( Graphics2D g ){
+	public void render( Graphics2D g, boolean highlight ){
 		// g.drawImage( main, startX + x, y, null );
 		// int mx = startX + x - main.getWidth( null ) / 2;
 		// int mx = startX + x + main.getWidth( null ) / 2;
 		int mx = x + main.getWidth( null ) / 2;
 		int my = y - main.getHeight( null );
 		g.drawImage( main, new AffineTransform( -1, 0, 0, 1, mx, my ), null );
-		g.setColor( new Color( 255, 255, 255 ) );
+		if ( highlight ){
+				  g.setColor( new Color( 0x66, 0xff, 0x22 ) );
+		} else {
+				  g.setColor( new Color( 64, 64, 255 ) );
+		}
 		g.drawRect( getX1(), getY1(), main.getWidth( null ), main.getHeight( null ) );
+		g.setColor( new Color( 255, 255, 255 ) );
 		g.fillOval( x, y, 5, 5 );
 	}
 

@@ -71,15 +71,11 @@ public class Block{
 			}
 		});
 		g.translate( x, minZ );
-		/*
-		if ( highlight ){
-			g.setXORMode( new Color( 54, 10, 23 ) );
-		}
-		*/
+		
 		for ( int i = 0; i < objs.length; i++ ){
 			Thing t = (Thing) objs[ i ];
 			g.setColor( new Color( 255, 255, 255 ) );
-			t.render( g );
+			t.render( g, getHighlight() );
 			g.drawString( "Block " + num, t.getX(), t.getY() );
 		}
 		g.translate( 0, -minZ );
@@ -125,6 +121,10 @@ public class Block{
 
 	public void setHighlight( boolean h ){
 		this.highlight = h;
+	}
+
+	public boolean getHighlight(){
+		return this.highlight;
 	}
 
 	public int getLength(){
