@@ -220,21 +220,6 @@ public class Level{
 	private Image loadImage( String s ) throws LoadException {
 		try{
 			return MaskedImage.load( s );
-			/*
-			BufferedImage temp = ImageIO.read( new File( s ) );
-			BufferedImage image = new BufferedImage( temp.getWidth(), temp.getHeight(), BufferedImage.TYPE_INT_ARGB );
-			for ( int x = 0; x < temp.getWidth(); x++ ){
-				for ( int y = 0; y < temp.getHeight(); y++ ){
-					int pixel = temp.getRGB( x, y );
-					if ( (pixel & 0x00ffffff) == 0x00ff00ff ){
-						/ * convert masking color into an alpha channel that is translucent * /
-						pixel = 0x00ffffff;
-					}
-					image.setRGB( x, y, pixel );
-				}
-			}
-			return image;
-			*/
 		} catch ( IOException ie ){
 			throw new LoadException( "Could not load " + s );
 		}

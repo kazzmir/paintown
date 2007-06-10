@@ -72,17 +72,13 @@ public class Editor extends JFrame {
 			}
 
 			protected void paintComponent( Graphics g ){
+					// System.out.println( "Clear a rect from 0, " + level.getHeight() + " to " + level.getWidth() + ", " + (v.getVisibleAmount() - level.getHeight()) );
 				JScrollBar h = viewScroll.getHorizontalScrollBar();
 				JScrollBar v = viewScroll.getVerticalScrollBar();
+				g.setColor( new Color( 255, 255, 255 ) );
+				g.clearRect( 0, 0, (int) level.getWidth(), v.getVisibleAmount() );
 				level.render( (Graphics2D) g, h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount() );
-				/*
-				System.out.println( "Visible vertical: " + v.getVisibleAmount() );
-				if ( v.getVisibleAmount() > level.getHeight() ){
-					g.setColor( new Color( 255, 255, 255 ) );
-					System.out.println( "Clear a rect from 0, " + level.getHeight() + " to " + level.getWidth() + ", " + (v.getVisibleAmount() - level.getHeight()) );
-					g.clearRect( 0, level.getHeight(), level.getWidth(), v.getVisibleAmount() - level.getHeight() );
-				}
-				*/
+				// System.out.println( "Visible vertical: " + v.getVisibleAmount() );
 			}
 		};
 		viewScroll.setPreferredSize( new Dimension( 200, 200 ) );
