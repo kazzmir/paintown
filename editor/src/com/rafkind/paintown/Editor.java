@@ -93,22 +93,20 @@ public class Editor extends JFrame {
 			double sx, sy;
 
 			public void mouseDragged( MouseEvent event ){
-				if ( selected == null ){
-					selected = findThingAt( event );
-					if ( selected != null ){
-							  sx = selected.getX();
-							  sy = selected.getY() + level.getMinZ();
-							  // System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
-							  dx = event.getX() / level.getScale();
-							  dy = event.getY() / level.getScale();
-							  // System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
-					}
-				}
+				
 				if ( selected != null ){
 					// System.out.println( "sx,sy: " + sx + ", " + sy + " ex,ey: " + (event.getX() / 2) + ", " + (event.getY() / 2) + " dx, dy: " + dx + ", " + dy );
 					level.moveThing( selected, (int)(sx + event.getX() / level.getScale() - dx), (int)(sy + event.getY() / level.getScale() - dy) );
 					view.repaint();
 				}
+			}
+
+			private boolean leftClick( MouseEvent event ){
+				return event.getButton() == MouseEvent.BUTTON1;
+			}
+			
+			private boolean rightClick( MouseEvent event ){
+				return event.getButton() == MouseEvent.BUTTON2;
 			}
 			
 			public void mousePressed( MouseEvent event ){
@@ -124,6 +122,22 @@ public class Editor extends JFrame {
 				if ( has != null ){
 					has.setHighlight( true );
 					view.repaint();
+				}
+
+				if ( leftClick( event ) ){
+					if ( selected == null && t != null ){
+						// selected = findThingAt( event );
+						selected = t;
+						if ( selected != null ){
+								  sx = selected.getX();
+								  sy = selected.getY() + level.getMinZ();
+								  // System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
+								  dx = event.getX() / level.getScale();
+								  dy = event.getY() / level.getScale();
+								  // System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
+						}
+					}
+				} else if ( rightClick( event ) ){
 				}
 			}
 			
