@@ -119,6 +119,10 @@ public class Block{
 		return block;
 	}
 
+	public List getThings(){
+		return this.objects;
+	}
+
 	public void setHighlight( boolean h ){
 		this.highlight = h;
 	}

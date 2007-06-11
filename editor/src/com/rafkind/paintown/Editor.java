@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.io.*;
 
+import java.util.List;
+
 import com.rafkind.paintown.exception.LoadException;
 
 import com.rafkind.paintown.level.Level;
@@ -196,8 +198,54 @@ public class Editor extends JFrame {
 		*/
 
 		JTabbedPane tabbed = (JTabbedPane) engine.find( "tabbed" );
+		final Box holder = Box.createVerticalBox();
 		final Box blocks = Box.createVerticalBox();
-		tabbed.add( "Blocks", new JScrollPane( blocks ) );
+		holder.add( new JScrollPane( blocks ) );
+
+		holder.add( new JSeparator() );
+
+		class ObjectList implements ListModel {
+			private List listeners;
+			private List things;
+			public ObjectList(){
+				listeners = new ArrayList();
+				things = new ArrayList();
+			}
+
+			public void setBlock( Block b ){
+				this.things = b.getThings();
+
+				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 999999 );
+				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+						  ListDataListener l = (ListDataListener) it.next();
+						  l.contentsChanged( event );
+				}
+			}
+
+			public void addListDataListener( ListDataListener l ){
+				listeners.add( l );
+			}
+
+			public Object getElementAt( int index ){
+				return this.things.get( index );
+			}
+
+			public int getSize(){
+				return this.things.size();
+			}
+
+			public void removeListDataListener( ListDataListener l ){
+				this.listeners.remove( l );
+			}
+		}
+
+		final ObjectList objectList = new ObjectList();
+		final JList currentObjects = new JList( objectList );
+		holder.add( new JLabel( "Objects" ) );
+		holder.add( new JScrollPane( currentObjects ) );
+		holder.add( Box.createVerticalGlue() );
+
+		tabbed.add( "Blocks", holder );
 
 		final JList objects = new JList();
 		tabbed.add( "Objects", objects );
@@ -275,12 +323,12 @@ public class Editor extends JFrame {
 						int n = 1;
 						int total = 0;
 						for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-							final Block b = (Block) it.next();
+							final Block block = (Block) it.next();
 							Box stuff = Box.createHorizontalBox();
 							JCheckBox check = new JCheckBox( new AbstractAction(){
 								public void actionPerformed( ActionEvent event ){
 									JCheckBox c = (JCheckBox) event.getSource();
-									b.setEnabled( c.isSelected() );
+									block.setEnabled( c.isSelected() );
 									view.revalidate();
 									viewScroll.repaint();
 								}
@@ -288,8 +336,14 @@ public class Editor extends JFrame {
 
 							check.setSelected( true );
 							stuff.add( check );
-							stuff.add( new JButton( "Block " + n + " : " + b.getLength() ) );
-							total += b.getLength();
+							JButton button = new JButton( "Block " + n + " : " + block.getLength() );
+							button.addActionListener( new AbstractAction(){
+								public void actionPerformed( ActionEvent event ){
+									objectList.setBlock( block );
+								}
+							});
+							stuff.add( button );
+							total += block.getLength();
 							stuff.add( Box.createHorizontalGlue() );
 							blocks.add( stuff );
 							n += 1;
