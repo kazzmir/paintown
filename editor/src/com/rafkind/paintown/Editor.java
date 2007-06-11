@@ -129,12 +129,12 @@ public class Editor extends JFrame {
 						// selected = findThingAt( event );
 						selected = t;
 						if ( selected != null ){
-								  sx = selected.getX();
-								  sy = selected.getY() + level.getMinZ();
-								  // System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
-								  dx = event.getX() / level.getScale();
-								  dy = event.getY() / level.getScale();
-								  // System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
+							sx = selected.getX();
+							sy = selected.getY() + level.getMinZ();
+							// System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
+							dx = event.getX() / level.getScale();
+							dy = event.getY() / level.getScale();
+							// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
 						}
 					}
 				} else if ( rightClick( event ) ){
