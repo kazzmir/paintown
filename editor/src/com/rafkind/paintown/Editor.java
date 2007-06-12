@@ -142,23 +142,57 @@ public class Editor extends JFrame {
 					System.out.println( "Properties of " + selected );
 				}
 			}
+
+			private List findFiles( File dir, final String ending ){
+				File[] all = dir.listFiles( new java.io.FileFilter(){
+					public boolean accept( File path ){
+						return path.isDirectory() || path.getName().endsWith( ending );
+					}
+				});
+				List files = new ArrayList();
+				for ( int i = 0; i < all.length; i++ ){
+					if ( all[ i ].isDirectory() ){
+						files.addAll( findFiles( all[ i ], ending ) );
+					} else {
+						files.add( all[ i ] );
+					}
+				}
+				return files;
+			}
+
+			private void showAddObjectPopup( MouseEvent event ){
+				// JPanel panel = new JPanel();
+				Vector v = new Vector();
+				for ( Iterator it = findFiles( new File( "data/chars" ), ".txt" ).iterator(); it.hasNext(); ){
+					v.add( it.next() );
+				}
+				Box panel = Box.createVerticalBox();
+				JList all = new JList( v );
+				panel.add( new JScrollPane( all ) );
+				JButton add = new JButton( "Add" );
+				JButton close = new JButton( "Close" );
+				Box buttons = Box.createHorizontalBox();
+				buttons.add( add );
+				buttons.add( close );
+				panel.add( buttons );
+				if ( currentPopup != null ){
+					currentPopup.hide();
+				}
+				final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, event.getX() + viewScroll.getX(), event.getY() + viewScroll.getY() );
+				close.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
+						p.hide();
+					}
+				});
+				currentPopup = p;
+				p.show();
+			}
 			
 			public void mousePressed( MouseEvent event ){
 				if ( leftClick( event ) ){
 					selectThing( event );
 				} else if ( rightClick( event ) ){
-					JButton button = new JButton( "Hello" );
-					if ( currentPopup != null ){
-						currentPopup.hide();
-					}
-					final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, button, event.getX() + viewScroll.getX(), event.getY() + viewScroll.getY() );
-					button.addActionListener( new AbstractAction(){
-						public void actionPerformed( ActionEvent event ){
-							p.hide();
-						}
-					});
-					currentPopup = p;
-					p.show();
+					showAddObjectPopup( event );
 				}
 			}
 			

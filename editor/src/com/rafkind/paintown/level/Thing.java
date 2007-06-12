@@ -113,41 +113,10 @@ public abstract class Thing{
 	}
 
 	protected abstract Image readIdleImage( String file ) throws LoadException;
-
-	/*
-	protected abstract Image readIdleImage( String file ) throws LoadException {
-		TokenReader reader = new TokenReader( new File( file ) );
-		Token head = reader.nextToken();
-		Token idle = null;
-		if ( head.getName().equals( "character" ) ){
-			idle = findIdle( head.findTokens( "anim" ) );
-		} else if ( head.getName().equals( "item" ) ){
-			idle = head;
-		}
-		if ( idle != null ){
-			String base = "./";
-			Token basedir = idle.findToken( "basedir" );
-			if ( basedir != null ){
-				base = basedir.readString( 0 );
-			}
-			Token frame = idle.findToken( "frame" );
-			if ( frame != null ){
-				String pic = frame.readString( 0 );
-				try{
-					return MaskedImage.load( base + pic );
-				} catch ( IOException ie ){
-					throw new LoadException( "Could not load " + base + pic, ie );
-				}
-			}
-		}
-		throw new LoadException( "No idle animation given for " + file );
-	}
-	*/
-
+	protected abstract String getType();
+	public abstract Token toToken();
+	
 	public boolean equals( Object t ){
 		return this == t;
 	}
-
-	protected abstract String getType();
-	public abstract Token toToken();
 }
