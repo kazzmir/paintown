@@ -91,6 +91,7 @@ public class Editor extends JFrame {
 			Thing selected = null;
 			double dx, dy;
 			double sx, sy;
+			Popup currentPopup;
 
 			public void mouseDragged( MouseEvent event ){
 				
@@ -106,10 +107,10 @@ public class Editor extends JFrame {
 			}
 			
 			private boolean rightClick( MouseEvent event ){
-				return event.getButton() == MouseEvent.BUTTON2;
+				return event.getButton() == MouseEvent.BUTTON3;
 			}
-			
-			public void mousePressed( MouseEvent event ){
+
+			private void selectThing( MouseEvent event ){
 				Thing t = findThingAt( event );
 				Block has = null;
 				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
@@ -117,27 +118,47 @@ public class Editor extends JFrame {
 					b.setHighlight( false );
 					if ( t != null && b.hasThing( t ) ){
 						has = b;
-					}
+					 }
 				}
+
 				if ( has != null ){
 					has.setHighlight( true );
 					view.repaint();
 				}
 
-				if ( leftClick( event ) ){
-					if ( selected == null && t != null ){
-						// selected = findThingAt( event );
-						selected = t;
-						if ( selected != null ){
-							sx = selected.getX();
-							sy = selected.getY() + level.getMinZ();
-							// System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
-							dx = event.getX() / level.getScale();
-							dy = event.getY() / level.getScale();
-							// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
-						}
+				if ( selected == null && t != null ){
+					// selected = findThingAt( event );
+					selected = t;
+					if ( selected != null ){
+						sx = selected.getX();
+						sy = selected.getY() + level.getMinZ();
+						// System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
+						dx = event.getX() / level.getScale();
+						dy = event.getY() / level.getScale();
+						// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
 					}
+				}
+				if ( selected != null && event.getClickCount() == 2 ){
+					System.out.println( "Properties of " + selected );
+				}
+			}
+			
+			public void mousePressed( MouseEvent event ){
+				if ( leftClick( event ) ){
+					selectThing( event );
 				} else if ( rightClick( event ) ){
+					JButton button = new JButton( "Hello" );
+					if ( currentPopup != null ){
+						currentPopup.hide();
+					}
+					final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, button, event.getX() + viewScroll.getX(), event.getY() + viewScroll.getY() );
+					button.addActionListener( new AbstractAction(){
+						public void actionPerformed( ActionEvent event ){
+							p.hide();
+						}
+					});
+					currentPopup = p;
+					p.show();
 				}
 			}
 			
