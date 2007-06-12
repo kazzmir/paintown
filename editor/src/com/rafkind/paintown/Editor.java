@@ -15,6 +15,7 @@ import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.level.Level;
 import com.rafkind.paintown.level.Block;
 import com.rafkind.paintown.level.Thing;
+import com.rafkind.paintown.level.Character;
 import javax.swing.filechooser.FileFilter;
 
 import org.swixml.SwingEngine;
@@ -160,14 +161,29 @@ public class Editor extends JFrame {
 				return files;
 			}
 
-			private void showAddObjectPopup( MouseEvent event ){
+			private Block findBlock( MouseEvent event ){
+				int x = (int)(event.getX() / level.getScale());
+				int total = 0;
+				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+					Block b = (Block) it.next();
+					if ( b.isEnabled() ){
+						if ( x >= total && x <= total + b.getLength() ){
+							return b;
+						}
+						total += b.getLength();
+					}
+				}
+				return null;
+			}
+
+			private void showAddObjectPopup( final MouseEvent event ){
 				// JPanel panel = new JPanel();
-				Vector v = new Vector();
+				final Vector files = new Vector();
 				for ( Iterator it = findFiles( new File( "data/chars" ), ".txt" ).iterator(); it.hasNext(); ){
-					v.add( it.next() );
+					files.add( it.next() );
 				}
 				Box panel = Box.createVerticalBox();
-				JList all = new JList( v );
+				final JList all = new JList( files );
 				panel.add( new JScrollPane( all ) );
 				JButton add = new JButton( "Add" );
 				JButton close = new JButton( "Close" );
@@ -186,6 +202,28 @@ public class Editor extends JFrame {
 				});
 				currentPopup = p;
 				p.show();
+
+				all.addMouseListener( new MouseAdapter() {
+					public void mouseClicked( MouseEvent event ){
+						if ( event.getClickCount() == 2 ){
+							int index = all.locationToIndex( event.getPoint() );
+							File f = (File) files.get( index );
+							try{
+								Block b = findBlock( event );
+								if ( b != null ){
+									TokenReader reader = new TokenReader( f );
+									/*
+									Character c = new Character( reader.nextToken() );
+									b.add( new Character( reader.nextToken() ) );
+									*/
+								}
+							} catch ( LoadException e ){
+								System.out.println( "Could not load " + f );
+								e.printStackTrace();
+							}
+						}
+					}
+				});
 			}
 			
 			public void mousePressed( MouseEvent event ){
