@@ -10,8 +10,12 @@ import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
+import com.rafkind.paintown.PropertyEditor;
+import com.rafkind.paintown.CharacterEditor;
 
 public class Character extends Thing {
+
+	private List remaps;
 
 	public Character( Token token ) throws LoadException {
 		super( token );
@@ -65,6 +69,10 @@ public class Character extends Thing {
 	
 	protected String getType(){
 		return "enemy";
+	}
+	
+	public PropertyEditor getEditor(){
+		return new CharacterEditor( this );
 	}
 
 	public Token toToken(){

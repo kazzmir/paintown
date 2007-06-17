@@ -7,13 +7,19 @@ import java.io.IOException;
 
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.PropertyEditor;
+import com.rafkind.paintown.ItemEditor;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
 
 public class Item extends Thing {
 
-	public Item( Token t ) throws LoadException {
-		super( t );
+	public Item( Token token ) throws LoadException {
+		super( token );
+		Token name = token.findToken( "name" );
+		if ( name != null ){
+			setName( name.readString( 0 ) );
+		}
 	}
 
 	protected Image readIdleImage( String file ) throws LoadException {
@@ -41,6 +47,10 @@ public class Item extends Thing {
 	
 	protected String getType(){
 		return "item";
+	}
+
+	public PropertyEditor getEditor(){
+		return new ItemEditor( this );
 	}
 
 	public Token toToken(){

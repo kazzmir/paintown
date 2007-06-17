@@ -4,6 +4,7 @@ import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
+import com.rafkind.paintown.PropertyEditor;
 
 import java.io.*;
 import java.awt.*;
@@ -53,6 +54,8 @@ public abstract class Thing{
 	public String getPath(){
 		return path;
 	}
+
+	public abstract PropertyEditor getEditor();
 
 	public int getY(){
 		return y;

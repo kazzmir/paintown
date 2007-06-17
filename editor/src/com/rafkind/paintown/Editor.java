@@ -119,6 +119,14 @@ public class Editor extends JFrame {
 				return event.getButton() == MouseEvent.BUTTON3;
 			}
 
+			private void editSelected( Thing thing ){
+				JDialog dialog = new JDialog( Editor.this, "Edit" );
+				dialog.setSize( 300, 300 );
+				PropertyEditor editor = thing.getEditor();
+				dialog.add( editor.createPane( level ) );
+				dialog.setVisible( true );
+			}
+
 			private void selectThing( MouseEvent event ){
 				Thing t = findThingAt( event );
 				Block has = null;
@@ -146,8 +154,9 @@ public class Editor extends JFrame {
 					dy = event.getY() / level.getScale();
 					// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
 				}
-				if ( selected != null && event.getClickCount() == 2 ){
-					System.out.println( "Properties of " + selected );
+				if ( getSelected() != null && event.getClickCount() == 2 ){
+					editSelected( getSelected() );
+					// System.out.println( "Properties of " + getSelected() );
 				}
 			}
 
@@ -231,8 +240,8 @@ public class Editor extends JFrame {
 					currentPopup.hide();
 				}
 				// Point px = viewContainer.getLocationOnScreen();
-				// final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, event.getX() - viewScroll.getX(), event.getY() - viewScroll.getY() );
-				final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, 100, 100 );
+				final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, event.getX() - viewScroll.getHorizontalScrollBar().getValue(), event.getY() );
+				// final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, 100, 100 );
 				close.addActionListener( new AbstractAction(){
 					public void actionPerformed( ActionEvent event ){
 						p.hide();
