@@ -258,7 +258,9 @@ public class Editor extends JFrame {
 										if ( b1 == b ){
 											break;
 										}
-										x -= b1.getLength();
+										if ( b1.isEnabled() ){
+											x -= b1.getLength();
+										}
 									}
 									b.addThing( makeThing( head, x, y, f.getPath() ) );
 									/*
@@ -419,6 +421,7 @@ public class Editor extends JFrame {
 				t.setSelected( true );
 				mousey.setSelected( t );
 
+				/* the current X position within the world */
 				int currentX = 0;
 				Block b = level.findBlock( t );
 				b.setHighlight( true );
