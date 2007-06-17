@@ -189,7 +189,10 @@ public class TokenReader{
 		}
 	}
 
-	public Token nextToken(){
+	public Token nextToken() throws LoadException {
+		if ( ! iterator.hasNext() ){
+			throw new LoadException( "No tokens left" );
+		}
 		return (Token) iterator.next();
 	}
 }

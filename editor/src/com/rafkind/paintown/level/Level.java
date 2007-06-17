@@ -113,6 +113,16 @@ public class Level{
 		drawFrontPanels( g );	
 	}
 
+	public Block findBlock( Thing t ){
+		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
+			Block b = (Block) it.next();
+			if ( b.hasThing( t ) ){
+				return b;
+			}
+		}
+		return null;
+	}
+
 	public Thing findThing( int x, int y ){
 		for ( Iterator it = blocks.iterator(); it.hasNext(); ){
 			Block b = (Block) it.next();

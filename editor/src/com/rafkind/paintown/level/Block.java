@@ -51,6 +51,14 @@ public class Block{
 		enabled = b;
 	}
 
+	public void addThing( Thing t ){
+		objects.add( t );
+	}
+
+	public void removeThing( Thing t ){
+		objects.remove( t );
+	}
+
 	public void render( Graphics2D g, int x, int height, int minZ, int maxZ, int num ){
 		Object[] objs = this.objects.toArray();
 		Arrays.sort( objs, new Comparator(){

@@ -94,6 +94,10 @@ public class Editor extends JFrame {
 			double sx, sy;
 			Popup currentPopup;
 
+			public Thing getSelected(){
+				return selected;
+			}
+
 			public void mouseDragged( MouseEvent event ){
 				
 				if ( selected != null ){
@@ -163,6 +167,7 @@ public class Editor extends JFrame {
 
 			private Block findBlock( MouseEvent event ){
 				int x = (int)(event.getX() / level.getScale());
+				// System.out.println( event.getX() + " -> " + x );
 				int total = 0;
 				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
 					Block b = (Block) it.next();
@@ -174,6 +179,17 @@ public class Editor extends JFrame {
 					}
 				}
 				return null;
+			}
+
+			private Thing makeThing( Token head, int x, int y, String path ) throws LoadException {
+				if ( head.getName().equals( "character" ) ){
+					Token temp = new Token();
+					temp.addToken( new String[]{ "name", "TempName" } );
+					temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
+					temp.addToken( new String[]{ "path", path } );
+					return new Character( temp );
+				}
+				throw new LoadException( "Unknown type: " + head.getName() );
 			}
 
 			private void showAddObjectPopup( final MouseEvent event ){
@@ -194,7 +210,9 @@ public class Editor extends JFrame {
 				if ( currentPopup != null ){
 					currentPopup.hide();
 				}
-				final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, event.getX() + viewScroll.getX(), event.getY() + viewScroll.getY() );
+				// Point px = viewContainer.getLocationOnScreen();
+				// final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, event.getX() - viewScroll.getX(), event.getY() - viewScroll.getY() );
+				final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, 100, 100 );
 				close.addActionListener( new AbstractAction(){
 					public void actionPerformed( ActionEvent event ){
 						p.hide();
@@ -204,23 +222,36 @@ public class Editor extends JFrame {
 				p.show();
 
 				all.addMouseListener( new MouseAdapter() {
-					public void mouseClicked( MouseEvent event ){
-						if ( event.getClickCount() == 2 ){
-							int index = all.locationToIndex( event.getPoint() );
+					public void mouseClicked( MouseEvent clicked ){
+						if ( clicked.getClickCount() == 2 ){
+							int index = all.locationToIndex( clicked.getPoint() );
 							File f = (File) files.get( index );
 							try{
 								Block b = findBlock( event );
 								if ( b != null ){
 									TokenReader reader = new TokenReader( f );
+									Token head = reader.nextToken();
+									int x = (int)(event.getX() / level.getScale());
+									int y = (int)(event.getY() / level.getScale());
+									for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+										Block b1 = (Block) it.next();
+										if ( b1 == b ){
+											break;
+										}
+										x -= b1.getLength();
+									}
+									b.addThing( makeThing( head, x, y, f.getPath() ) );
 									/*
 									Character c = new Character( reader.nextToken() );
 									b.add( new Character( reader.nextToken() ) );
 									*/
+									view.repaint();
 								}
 							} catch ( LoadException e ){
 								System.out.println( "Could not load " + f );
 								e.printStackTrace();
 							}
+							p.hide();
 						}
 					}
 				});
@@ -259,10 +290,20 @@ public class Editor extends JFrame {
 			}
 		}
 
-		Mouser m = new Mouser();
+		final Mouser mousey = new Mouser();
 
-		view.addMouseMotionListener( m );
-		view.addMouseListener( m );
+		view.addMouseMotionListener( mousey );
+		view.addMouseListener( mousey );
+
+		view.addKeyListener( new KeyAdapter(){
+			public void keyTyped( KeyEvent e ){
+				if ( e.getKeyChar() == KeyEvent.VK_DELETE ){
+					if ( mousey.getSelected() != null ){
+						level.findBlock( mousey.getSelected() ).removeThing( mousey.getSelected() );
+					}
+				}
+			}
+		});
 
 		/*
 		view.addMouseMotionListener( new MouseMotionAdapter(){
