@@ -16,6 +16,7 @@ import com.rafkind.paintown.CharacterEditor;
 public class Character extends Thing {
 
 	private List remaps;
+	private int health;
 
 	public Character( Token token ) throws LoadException {
 		super( token );
@@ -52,6 +53,14 @@ public class Character extends Thing {
 			}
 		}
 		throw new LoadException( "No idle animation given for " + file );
+	}
+
+	public int getHealth(){
+		return health;
+	}
+
+	public void setHealth( int i ){
+		health = i;
 	}
 	
 	private Token findIdle( List tokens ){

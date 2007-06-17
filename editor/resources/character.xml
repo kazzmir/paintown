@@ -3,15 +3,41 @@
 		<gridbagconstraints
 			gridx="0"
 			gridy="0"
-			weightx="0.9"
+			weightx="1"
 			weighty="1"
 			gridheight="1"
-			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.HORIZONTAL"
 			/>
-		<label text="hello 1" />
-		<label text="hello 2" />
-		<label text="hello 3" />
-		<label text="hello 4" />
+			<!--
+			-->
+		<hbox>				
+			<label text="Name:" />
+			<textfield size="20" id="name" />
+		</hbox>
+		<hbox>
+			<label text="Health:" />
+			<textfield size="4" id="health" />
+		</hbox>
+		<hbox>
+			<label text="X: " />
+			<textfield size="3" id="x" />
+		</hbox>
+		<hbox>
+			<label text="Y: " />
+			<textfield size="3" id="y" />
+		</hbox>
+		<hbox>
+			<label text="Block: " />
+			<spinner id="block" />
+		</hbox>
+		<hbox>
+			<label text="Path: " />
+			<list id="paths" />
+		</hbox>
+		<hbox>
+			<label text="Map" />
+			<spinner id="map" />
+		</hbox>
 	</vbox>
 </panel>
