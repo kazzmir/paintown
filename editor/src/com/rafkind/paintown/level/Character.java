@@ -5,6 +5,7 @@ import java.io.*;
 
 import java.util.List;
 import java.util.Iterator;
+import java.util.HashMap;
 
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;
@@ -12,10 +13,11 @@ import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.PropertyEditor;
 import com.rafkind.paintown.CharacterEditor;
+import com.rafkind.paintown.Lambda0;
 
 public class Character extends Thing {
 
-	private List remaps;
+	private HashMap remaps;
 	private int health;
 	private int map;
 	private int maxMaps;
@@ -33,17 +35,33 @@ public class Character extends Thing {
 		}
 		Token remap = token.findToken( "map" );
 		if ( remap != null ){
-			map = remap.readInt( 0 );	
+			setMap( remap.readInt( 0 ) );
 		} else {
-			map = 0;
+			setMap( 0 );
 		}
 		Token aggr = token.findToken( "aggression" );
 		if ( aggr != null ){
-			aggression = aggr.readInt( 0 );
+			setAggression( aggr.readInt( 0 ) );
 		} else {
-			aggression = -1;
+			setAggression( -1 );
 		}
 		maxMaps = calculateMaxMaps( getPath() );
+
+		remaps = new HashMap();
+
+		this.remaps.put( new Integer( 0 ), new Lambda0(){
+			public Object invoke(){
+				return getMain();
+			}
+		});
+	}
+
+	public void render( Graphics2D g, boolean highlight ){
+		Lambda0 proc = (Lambda0) this.remaps.get( new Integer( getMap() ) );
+		if ( proc == null ){
+			proc = (Lambda0) this.remaps.get( new Integer( 0 ) );
+		}
+		render( (Image) proc.invoke_(), g, highlight );
 	}
 
 	public int getAggression(){
@@ -131,6 +149,10 @@ public class Character extends Thing {
 		thing.addToken( new Token( "object" ) );
 		thing.addToken( new String[]{ "type", getType() } );
 		thing.addToken( new String[]{ "path", getPath() } );
+		thing.addToken( new String[]{ "map", String.valueOf( getMap() ) } );
+		if ( getAggression() != -1 ){
+			thing.addToken( new String[]{ "aggression", String.valueOf( getAggression() ) } );
+		}
 		thing.addToken( new String[]{ "coords", String.valueOf( getX() ), String.valueOf( getY() ) } );
 		return thing;
 	}

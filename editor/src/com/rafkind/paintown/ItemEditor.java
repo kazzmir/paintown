@@ -9,7 +9,7 @@ public class ItemEditor implements PropertyEditor {
 	public ItemEditor( Item i ){
 	}
 
-	public JComponent createPane( Level level ){
+	public JComponent createPane( final Level level, final Lambda0 closeProc ){
 		return new JPanel();
 	}
 }

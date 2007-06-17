@@ -120,10 +120,16 @@ public class Editor extends JFrame {
 			}
 
 			private void editSelected( Thing thing ){
-				JDialog dialog = new JDialog( Editor.this, "Edit" );
+				final JDialog dialog = new JDialog( Editor.this, "Edit" );
 				dialog.setSize( 300, 300 );
 				PropertyEditor editor = thing.getEditor();
-				dialog.add( editor.createPane( level ) );
+				dialog.add( editor.createPane( level, new Lambda0(){
+					public Object invoke(){
+						dialog.setVisible( false );
+						view.repaint();
+						return null;
+					}
+				}) );
 				dialog.setVisible( true );
 			}
 
@@ -582,7 +588,7 @@ public class Editor extends JFrame {
 		});
 
 		JPanel scroll = (JPanel) engine.find( "scroll" );
-		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 10, 0, 1, 10 );
+		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 10, 0, 1, 20 );
 		final JLabel scale = (JLabel) engine.find( "scale" );
 		scroll.add( scrolly );
 		scrolly.addAdjustmentListener( new AdjustmentListener(){

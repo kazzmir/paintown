@@ -1,5 +1,6 @@
 package com.rafkind.paintown;
 
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -31,7 +32,11 @@ public class CharacterEditor implements PropertyEditor {
 		return i;
 	}
 
-	public JComponent createPane( final Level level ){
+	private Block getBlock( int num, Level level ){
+		return (Block) level.getBlocks().get( num - 1 );
+	}
+
+	public JComponent createPane( final Level level, final Lambda0 closeProc ){
 		final SwingEngine engine = new SwingEngine( "character.xml" );
 		final JTextField name = (JTextField) engine.find( "name" );
 		name.setText( character.getName() );
@@ -93,6 +98,35 @@ public class CharacterEditor implements PropertyEditor {
 		block.setModel( new MinMaxSpinnerModel( findBlock( level ), 1, level.getBlocks().size() ) );
 		final JSpinner map = (JSpinner) engine.find( "map" );
 		map.setModel( new MinMaxSpinnerModel( character.getMap(), 0, character.getMaxMaps() ) );
+
+		final JButton save = (JButton) engine.find( "save" );
+		final JButton close = (JButton) engine.find( "close" );
+
+		save.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				character.setName( name.getText() );
+				character.setHealth( Integer.parseInt( health.getText() ) );
+				character.setX( Integer.parseInt( x.getText() ) );
+				character.setY( Integer.parseInt( y.getText() ) );
+				int a = Integer.parseInt( aggression.getText() );
+				if ( a != -1 ){
+					character.setAggression( a );
+				}
+				Block b = getBlock( ((Integer) block.getValue()).intValue(), level );
+				Block old = level.findBlock( character );
+				old.removeThing( character );
+				b.addThing( character );
+
+				closeProc.invoke_();
+			}
+		});
+
+		close.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				closeProc.invoke_();		
+			}
+		});
+
 		return (JPanel) engine.getRootComponent();
 	}
 }

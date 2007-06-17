@@ -35,8 +35,12 @@ public abstract class Thing{
 		Token tpath = token.findToken( "path" );
 		if ( tpath != null ){
 			path = tpath.readString( 0 );
-			main = loadIdleImage( path, this );
+			main = loadImage( path, this );
 		}
+	}
+
+	public Image getMain(){
+		return main;
 	}
 
 	public void setName( String s ){
@@ -98,7 +102,7 @@ public abstract class Thing{
 		selected = s;
 	}
 
-	public void render( Graphics2D g, boolean highlight ){
+	protected void render( Image look, Graphics2D g, boolean highlight ){
 		// g.drawImage( main, startX + x, y, null );
 		// int mx = startX + x - main.getWidth( null ) / 2;
 		// int mx = startX + x + main.getWidth( null ) / 2;
@@ -116,15 +120,20 @@ public abstract class Thing{
 		g.drawRect( getX1(), getY1(), main.getWidth( null ), main.getHeight( null ) );
 		g.setColor( new Color( 255, 255, 255 ) );
 		g.fillOval( x, y, 5, 5 );
+
 	}
 
-	private static Image loadIdleImage( String file, Thing t ) throws LoadException {
+	public void render( Graphics2D g, boolean highlight ){
+		render( getMain(), g, highlight );
+	}
+
+	private static Image loadImage( String file, Thing t ) throws LoadException {
 
 		if ( images.get( file ) != null ){
 			return (Image) images.get( file );
 		}
 		images.put( file, t.readIdleImage( file ) );
-		return loadIdleImage( file, t );
+		return loadImage( file, t );
 	}
 
 	protected abstract Image readIdleImage( String file ) throws LoadException;
