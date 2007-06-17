@@ -41,6 +41,9 @@ public class CharacterEditor implements PropertyEditor {
 		x.setText( String.valueOf( character.getX() ) );
 		final JTextField y = (JTextField) engine.find( "y" );
 		y.setText( String.valueOf( character.getY() ) );
+		final JTextField path = (JTextField) engine.find( "path" );
+		path.setText( character.getPath() );
+		path.setEditable( false );
 		final JSpinner block = (JSpinner) engine.find( "block" );
 		block.setModel( new SpinnerModel(){
 			int value = findBlock( level );

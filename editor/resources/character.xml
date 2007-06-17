@@ -28,12 +28,12 @@
 			<textfield size="3" id="y" />
 		</hbox>
 		<hbox>
-			<label text="Block: " />
-			<spinner id="block" />
+			<label text="Path: " />
+			<textfield size="15" id="path" />
 		</hbox>
 		<hbox>
-			<label text="Path: " />
-			<list id="paths" />
+			<label text="Block: " />
+			<spinner id="block" />
 		</hbox>
 		<hbox>
 			<label text="Map" />
