@@ -17,6 +17,9 @@ public class Character extends Thing {
 
 	private List remaps;
 	private int health;
+	private int map;
+	private int maxMaps;
+	private int aggression;
 
 	public Character( Token token ) throws LoadException {
 		super( token );
@@ -28,6 +31,45 @@ public class Character extends Thing {
 		if ( alias != null ){
 			setName( alias.readString( 0 ) );
 		}
+		Token remap = token.findToken( "map" );
+		if ( remap != null ){
+			map = remap.readInt( 0 );	
+		} else {
+			map = 0;
+		}
+		Token aggr = token.findToken( "aggression" );
+		if ( aggr != null ){
+			aggression = aggr.readInt( 0 );
+		} else {
+			aggression = -1;
+		}
+		maxMaps = calculateMaxMaps( getPath() );
+	}
+
+	public int getAggression(){
+		return aggression;
+	}
+
+	public void setAggression( int a ){
+		this.aggression = a;
+	}
+	
+	public int getMap(){
+		return this.map;
+	}
+
+	public void setMap( int m ){
+		this.map = m;
+	}
+
+	public int getMaxMaps(){
+		return maxMaps;
+	}
+
+	private int calculateMaxMaps( String file ) throws LoadException {
+		TokenReader reader = new TokenReader( new File( file ) );
+		Token head = reader.nextToken();
+		return head.findTokens( "remap" ).size();
 	}
 
 	protected Image readIdleImage( String file ) throws LoadException {

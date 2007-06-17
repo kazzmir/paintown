@@ -44,12 +44,23 @@ public class CharacterEditor implements PropertyEditor {
 		final JTextField path = (JTextField) engine.find( "path" );
 		path.setText( character.getPath() );
 		path.setEditable( false );
+		final JTextField aggression = (JTextField) engine.find( "aggression" );
+		aggression.setText( String.valueOf( character.getAggression() ) );
 		final JSpinner block = (JSpinner) engine.find( "block" );
-		block.setModel( new SpinnerModel(){
-			int value = findBlock( level );
+
+		class MinMaxSpinnerModel implements SpinnerModel {
 			List listeners = new ArrayList();
+			int value;
+			int min;
+			int max;
+
+			public MinMaxSpinnerModel( int value, int min, int max ){
+				this.value = value;
+				this.min = min;
+				this.max = max;
+			}
+
 			public Object getNextValue(){
-				int max = level.getBlocks().size();
 				return max > value ? new Integer( value + 1 ) : null;
 			}
 
@@ -62,7 +73,7 @@ public class CharacterEditor implements PropertyEditor {
 			}
 
 			public Object getPreviousValue(){
-				return value > 1 ? new Integer( value - 1 ) : null;
+				return value > min ? new Integer( value - 1 ) : null;
 			}
 
 			public void setValue( Object o ){
@@ -77,7 +88,11 @@ public class CharacterEditor implements PropertyEditor {
 			public Object getValue(){
 				return new Integer( value );
 			}
-		});
+		}
+
+		block.setModel( new MinMaxSpinnerModel( findBlock( level ), 1, level.getBlocks().size() ) );
+		final JSpinner map = (JSpinner) engine.find( "map" );
+		map.setModel( new MinMaxSpinnerModel( character.getMap(), 0, character.getMaxMaps() ) );
 		return (JPanel) engine.getRootComponent();
 	}
 }

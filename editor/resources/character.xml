@@ -28,6 +28,10 @@
 			<textfield size="3" id="y" />
 		</hbox>
 		<hbox>
+			<label text="Aggression: " />
+			<textfield size="3" id="aggression" />
+		</hbox>
+		<hbox>
 			<label text="Path: " />
 			<textfield size="15" id="path" />
 		</hbox>
@@ -40,4 +44,18 @@
 			<spinner id="map" />
 		</hbox>
 	</vbox>
+	<hbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="1"
+			weightx="1"
+			weighty="0.5"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.HORIZONTAL"
+			/>
+
+		<button id="save" text="Save" />
+		<button id="close" text="Close" />
+	</hbox>
 </panel>
