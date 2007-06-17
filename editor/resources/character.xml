@@ -1,0 +1,17 @@
+<panel layout="GridBagLayout">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="0.9"
+			weighty="1"
+			gridheight="1"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.NORTHWEST"
+			/>
+		<label text="hello 1" />
+		<label text="hello 2" />
+		<label text="hello 3" />
+		<label text="hello 4" />
+	</vbox>
+</panel>
