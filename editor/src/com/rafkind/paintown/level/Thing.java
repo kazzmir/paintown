@@ -21,6 +21,7 @@ public abstract class Thing{
 	private String path;
 	private Image main;
 	private String name;
+	private boolean selected;
 	private static HashMap images = new HashMap();
 
 	public Thing( Token token ) throws LoadException {
@@ -70,6 +71,10 @@ public abstract class Thing{
 		this.x = x;
 	}
 
+	public int getWidth(){
+		return main.getWidth( null );
+	}
+
 	public int getX1(){
 		return getX() - main.getWidth( null ) / 2;
 	}
@@ -86,6 +91,10 @@ public abstract class Thing{
 		return getY();
 	}
 
+	public void setSelected( boolean s ){
+		selected = s;
+	}
+
 	public void render( Graphics2D g, boolean highlight ){
 		// g.drawImage( main, startX + x, y, null );
 		// int mx = startX + x - main.getWidth( null ) / 2;
@@ -93,10 +102,13 @@ public abstract class Thing{
 		int mx = x + main.getWidth( null ) / 2;
 		int my = y - main.getHeight( null );
 		g.drawImage( main, new AffineTransform( -1, 0, 0, 1, mx, my ), null );
-		if ( highlight ){
-				  g.setColor( new Color( 0x66, 0xff, 0x22 ) );
+		if ( selected ){
+			g.setColor( new Color( 0x66, 0xff, 0x77 ) );
+		} else if ( highlight ){
+			// g.setColor( new Color( 0x66, 0xff, 0x22 ) );
+			g.setColor( new Color( 0xff, 0x44, 0x33 ) );
 		} else {
-				  g.setColor( new Color( 64, 64, 255 ) );
+			g.setColor( new Color( 64, 64, 255 ) );
 		}
 		g.drawRect( getX1(), getY1(), main.getWidth( null ), main.getHeight( null ) );
 		g.setColor( new Color( 255, 255, 255 ) );

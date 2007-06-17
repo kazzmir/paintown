@@ -98,6 +98,10 @@ public class Editor extends JFrame {
 				return selected;
 			}
 
+			public void setSelected( Thing t ){
+				selected = t;
+			}
+
 			public void mouseDragged( MouseEvent event ){
 				
 				if ( selected != null ){
@@ -134,14 +138,13 @@ public class Editor extends JFrame {
 				if ( selected == null && t != null ){
 					// selected = findThingAt( event );
 					selected = t;
-					if ( selected != null ){
-						sx = selected.getX();
-						sy = selected.getY() + level.getMinZ();
-						// System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
-						dx = event.getX() / level.getScale();
-						dy = event.getY() / level.getScale();
-						// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
-					}
+					selected.setSelected( true );
+					sx = selected.getX();
+					sy = selected.getY() + level.getMinZ();
+					// System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
+					dx = event.getX() / level.getScale();
+					dy = event.getY() / level.getScale();
+					// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
 				}
 				if ( selected != null && event.getClickCount() == 2 ){
 					System.out.println( "Properties of " + selected );
@@ -192,12 +195,29 @@ public class Editor extends JFrame {
 				throw new LoadException( "Unknown type: " + head.getName() );
 			}
 
+			private Vector collectCharFiles(){
+				Vector v = new Vector();
+				/*
+				for ( Iterator it = findFiles( new File( "data/chars" ), ".txt" ).iterator(); it.hasNext(); ){
+					v.add( it.next() );
+				}
+				*/
+				v.add( new File( "data/chars/angel/angel.txt" ) );
+				v.add( new File( "data/chars/billy/billy.txt" ) );
+				v.add( new File( "data/chars/heavy/heavy.txt" ) );
+				v.add( new File( "data/chars/joe/joe.txt" ) );
+				v.add( new File( "data/chars/kula/kula.txt" ) );
+				v.add( new File( "data/chars/mandy/mandy.txt" ) );
+				v.add( new File( "data/chars/maxima/maxima.txt" ) );
+				v.add( new File( "data/chars/shermie/shermie.txt" ) );
+				v.add( new File( "data/chars/yashiro/yashiro.txt" ) );
+
+				return v;
+			}
+
 			private void showAddObjectPopup( final MouseEvent event ){
 				// JPanel panel = new JPanel();
-				final Vector files = new Vector();
-				for ( Iterator it = findFiles( new File( "data/chars" ), ".txt" ).iterator(); it.hasNext(); ){
-					files.add( it.next() );
-				}
+				final Vector files = collectCharFiles();
 				Box panel = Box.createVerticalBox();
 				final JList all = new JList( files );
 				panel.add( new JScrollPane( all ) );
@@ -259,6 +279,10 @@ public class Editor extends JFrame {
 			
 			public void mousePressed( MouseEvent event ){
 				if ( leftClick( event ) ){
+					if ( selected != null ){
+						selected.setSelected( false );
+					}
+					selected = null;
 					selectThing( event );
 				} else if ( rightClick( event ) ){
 					showAddObjectPopup( event );
@@ -267,7 +291,7 @@ public class Editor extends JFrame {
 			
 			public void mouseExited( MouseEvent event ){
 				if ( selected != null ){
-					selected = null;
+					// selected = null;
 					view.repaint();
 				}
 			}
@@ -284,7 +308,7 @@ public class Editor extends JFrame {
 			
 			public void mouseReleased( MouseEvent event ){
 				if ( selected != null ){
-					selected = null;
+					// selected = null;
 					view.repaint();
 				}
 			}
@@ -295,16 +319,7 @@ public class Editor extends JFrame {
 		view.addMouseMotionListener( mousey );
 		view.addMouseListener( mousey );
 
-		view.addKeyListener( new KeyAdapter(){
-			public void keyTyped( KeyEvent e ){
-				if ( e.getKeyChar() == KeyEvent.VK_DELETE ){
-					if ( mousey.getSelected() != null ){
-						level.findBlock( mousey.getSelected() ).removeThing( mousey.getSelected() );
-					}
-				}
-			}
-		});
-
+		
 		/*
 		view.addMouseMotionListener( new MouseMotionAdapter(){
 			Thing selected = null;
@@ -392,6 +407,51 @@ public class Editor extends JFrame {
 		holder.add( new JLabel( "Objects" ) );
 		holder.add( new JScrollPane( currentObjects ) );
 		holder.add( Box.createVerticalGlue() );
+
+		currentObjects.addListSelectionListener( new ListSelectionListener(){
+			public void valueChanged( ListSelectionEvent e ){
+				Thing t = (Thing) currentObjects.getSelectedValue();
+				if ( mousey.getSelected() != null ){
+					Thing old = mousey.getSelected();
+					old.setSelected( false );
+					level.findBlock( old ).setHighlight( false );
+				}
+				t.setSelected( true );
+				mousey.setSelected( t );
+
+				int currentX = 0;
+				Block b = level.findBlock( t );
+				b.setHighlight( true );
+
+				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+					Block next = (Block) it.next();
+					if ( next == b ){
+						break;
+					}
+					if ( next.isEnabled() ){
+						currentX += next.getLength();
+					}
+				}
+				currentX += t.getX() - t.getWidth();
+				viewScroll.getHorizontalScrollBar().setValue( (int)(currentX * level.getScale()) );
+
+				view.repaint();
+			}
+		});
+
+		currentObjects.addKeyListener( new KeyAdapter(){
+			public void keyTyped( KeyEvent e ){
+				System.out.println( "Key event!" );
+				if ( e.getKeyChar() == KeyEvent.VK_DELETE ){
+					/*
+					if ( mousey.getSelected() != null ){
+						level.findBlock( mousey.getSelected() ).removeThing( mousey.getSelected() );
+					}
+					*/
+				}
+			}
+		});
+
 
 		tabbed.add( "Blocks", holder );
 
