@@ -16,6 +16,7 @@ import com.rafkind.paintown.level.Level;
 import com.rafkind.paintown.level.Block;
 import com.rafkind.paintown.level.Thing;
 import com.rafkind.paintown.level.Character;
+import com.rafkind.paintown.level.Item;
 import javax.swing.filechooser.FileFilter;
 
 import org.swixml.SwingEngine;
@@ -202,10 +203,19 @@ public class Editor extends JFrame {
 			private Thing makeThing( Token head, int x, int y, String path ) throws LoadException {
 				if ( head.getName().equals( "character" ) ){
 					Token temp = new Token();
+					temp.addToken( new Token( "character" ) );
 					temp.addToken( new String[]{ "name", "TempName" } );
 					temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
+					temp.addToken( new String[]{ "health", "40" } );
 					temp.addToken( new String[]{ "path", path } );
 					return new Character( temp );
+				} else if ( head.getName().equals( "item" ) ){
+					Token temp = new Token();
+					temp.addToken( new Token( "item" ) );
+					temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
+					temp.addToken( new String[]{ "path", path } );
+					System.out.println( "Make item from " + temp.toString() );
+					return new Item( temp );
 				}
 				throw new LoadException( "Unknown type: " + head.getName() );
 			}
@@ -226,6 +236,7 @@ public class Editor extends JFrame {
 				v.add( new File( "data/chars/maxima/maxima.txt" ) );
 				v.add( new File( "data/chars/shermie/shermie.txt" ) );
 				v.add( new File( "data/chars/yashiro/yashiro.txt" ) );
+				v.add( new File( "data/misc/apple/apple.txt" ) );
 
 				return v;
 			}

@@ -171,7 +171,7 @@ public class Token{
 		for ( Iterator it = this.iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
 			b.append( " " );
-			b.append( t.toString( spaces + 3 ) );
+			b.append( t.toString( spaces + 2 ) );
 		}
 		b.append( ")" );
 		return b.toString();
