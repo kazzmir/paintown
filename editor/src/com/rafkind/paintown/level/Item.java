@@ -1,6 +1,7 @@
 package com.rafkind.paintown.level;
 
 import java.awt.*;
+import java.awt.image.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class Item extends Thing {
 		}
 	}
 
-	protected Image readIdleImage( String file ) throws LoadException {
+	protected BufferedImage readIdleImage( String file ) throws LoadException {
 		TokenReader reader = new TokenReader( new File( file ) );
 		Token head = reader.nextToken();
 		Token idle = head;

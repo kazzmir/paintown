@@ -108,6 +108,7 @@ public class CharacterEditor implements PropertyEditor {
 				character.setHealth( Integer.parseInt( health.getText() ) );
 				character.setX( Integer.parseInt( x.getText() ) );
 				character.setY( Integer.parseInt( y.getText() ) );
+				character.setMap( ((Integer) map.getValue()).intValue() );
 				int a = Integer.parseInt( aggression.getText() );
 				if ( a != -1 ){
 					character.setAggression( a );

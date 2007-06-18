@@ -2,6 +2,7 @@ package com.rafkind.paintown.level;
 
 import java.awt.*;
 import java.io.*;
+import java.awt.image.*;
 
 import java.util.List;
 import java.util.Iterator;
@@ -45,7 +46,9 @@ public class Character extends Thing {
 		} else {
 			setAggression( -1 );
 		}
-		maxMaps = calculateMaxMaps( getPath() );
+
+		Token data = new TokenReader( new File( getPath() ) ).nextToken();
+		maxMaps = calculateMaxMaps( data );
 
 		remaps = new HashMap();
 
@@ -54,14 +57,84 @@ public class Character extends Thing {
 				return getMain();
 			}
 		});
+
+		int num = 1;
+		for ( Iterator it = data.findTokens( "remap" ).iterator(); it.hasNext(); ){
+			Token re = (Token) it.next();
+			final String normalPath = re.readString( 0 );
+			final String altPath = re.readString( 1 );
+			final int tnum = num;
+			synchronized( remaps ){
+				this.remaps.put( new Integer( tnum ), new Lambda0(){
+					public Object invoke(){
+						try{
+							final Image alt = createRemap( normalPath, altPath, getMain() );
+							synchronized( remaps ){
+								remaps.put( new Integer( tnum ), new Lambda0(){
+									public Object invoke(){
+										return alt;
+									}
+								});
+							}
+							return alt;
+						} catch ( IOException ie ){
+							ie.printStackTrace();
+							synchronized( remaps ){
+								remaps.put( new Integer( tnum ), new Lambda0(){
+									public Object invoke(){
+										return getMain();
+									}
+								});
+							}
+							return getMain();
+						}
+					}
+				});
+			}
+			num += 1;
+		}
+	}
+
+	private Image createRemap( String normal, String alt, BufferedImage original ) throws IOException {
+		HashMap colors = new HashMap();
+		BufferedImage old = MaskedImage.load( normal );
+		BufferedImage xnew = MaskedImage.load( alt );
+		BufferedImage map = new MaskedImage( original.getWidth( null ), original.getHeight( null ) );
+
+		for ( int x = 0; x < old.getWidth( null ); x += 1 ){
+			for ( int y = 0; y < old.getHeight( null ); y += 1 ){
+				int oldPixel = old.getRGB( x, y );
+				int newPixel = xnew.getRGB( x, y );
+				if ( oldPixel != newPixel ){
+					colors.put( new Integer( oldPixel ), new Integer( newPixel ) );
+				}
+			}
+		}
+
+		for ( int x = 0; x < original.getWidth( null ); x += 1 ){
+			for ( int y = 0; y < original.getHeight( null ); y += 1 ){
+				int pixel = original.getRGB( x, y );
+				Integer r = (Integer) colors.get( new Integer( pixel ) );
+				if ( r != null ){
+					pixel = r.intValue();
+				}
+				map.setRGB( x, y, pixel );
+			}
+		}
+
+		return map;
 	}
 
 	public void render( Graphics2D g, boolean highlight ){
-		Lambda0 proc = (Lambda0) this.remaps.get( new Integer( getMap() ) );
-		if ( proc == null ){
-			proc = (Lambda0) this.remaps.get( new Integer( 0 ) );
+		Lambda0 proc = null;
+		synchronized( remaps ){
+			proc = (Lambda0) this.remaps.get( new Integer( getMap() ) );
+			if ( proc == null ){
+				proc = (Lambda0) this.remaps.get( new Integer( 0 ) );
+			}
 		}
-		render( (Image) proc.invoke_(), g, highlight );
+		Image i = (Image) proc.invoke_();
+		render( i, g, highlight );
 	}
 
 	public int getAggression(){
@@ -84,13 +157,11 @@ public class Character extends Thing {
 		return maxMaps;
 	}
 
-	private int calculateMaxMaps( String file ) throws LoadException {
-		TokenReader reader = new TokenReader( new File( file ) );
-		Token head = reader.nextToken();
+	private int calculateMaxMaps( Token head ) throws LoadException {
 		return head.findTokens( "remap" ).size();
 	}
 
-	protected Image readIdleImage( String file ) throws LoadException {
+	protected BufferedImage readIdleImage( String file ) throws LoadException {
 		TokenReader reader = new TokenReader( new File( file ) );
 		Token head = reader.nextToken();
 		Token idle = null;

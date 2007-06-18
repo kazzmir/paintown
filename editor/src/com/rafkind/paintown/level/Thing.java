@@ -8,6 +8,7 @@ import com.rafkind.paintown.PropertyEditor;
 
 import java.io.*;
 import java.awt.*;
+import java.awt.image.*;
 import java.awt.geom.*;
 import javax.imageio.*;
 
@@ -20,7 +21,7 @@ public abstract class Thing{
 	private int x, y;
 	private int width, height;
 	private String path;
-	private Image main;
+	private BufferedImage main;
 	private String name;
 	private boolean selected;
 	private static HashMap images = new HashMap();
@@ -39,7 +40,7 @@ public abstract class Thing{
 		}
 	}
 
-	public Image getMain(){
+	public BufferedImage getMain(){
 		return main;
 	}
 
@@ -106,9 +107,9 @@ public abstract class Thing{
 		// g.drawImage( main, startX + x, y, null );
 		// int mx = startX + x - main.getWidth( null ) / 2;
 		// int mx = startX + x + main.getWidth( null ) / 2;
-		int mx = x + main.getWidth( null ) / 2;
-		int my = y - main.getHeight( null );
-		g.drawImage( main, new AffineTransform( -1, 0, 0, 1, mx, my ), null );
+		int mx = x + look.getWidth( null ) / 2;
+		int my = y - look.getHeight( null );
+		g.drawImage( look, new AffineTransform( -1, 0, 0, 1, mx, my ), null );
 		if ( selected ){
 			g.setColor( new Color( 0x66, 0xff, 0x77 ) );
 		} else if ( highlight ){
@@ -117,7 +118,7 @@ public abstract class Thing{
 		} else {
 			g.setColor( new Color( 64, 64, 255 ) );
 		}
-		g.drawRect( getX1(), getY1(), main.getWidth( null ), main.getHeight( null ) );
+		g.drawRect( getX1(), getY1(), look.getWidth( null ), look.getHeight( null ) );
 		g.setColor( new Color( 255, 255, 255 ) );
 		g.fillOval( x, y, 5, 5 );
 
@@ -127,10 +128,10 @@ public abstract class Thing{
 		render( getMain(), g, highlight );
 	}
 
-	private static Image loadImage( String file, Thing t ) throws LoadException {
+	private static BufferedImage loadImage( String file, Thing t ) throws LoadException {
 
 		if ( images.get( file ) != null ){
-			return (Image) images.get( file );
+			return (BufferedImage) images.get( file );
 		}
 		images.put( file, t.readIdleImage( file ) );
 		return loadImage( file, t );
