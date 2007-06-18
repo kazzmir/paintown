@@ -47,6 +47,13 @@ public class Character extends Thing {
 			setAggression( -1 );
 		}
 
+		Token health = token.findToken( "health" );
+		if ( health != null ){
+			setHealth( health.readInt( 0 ) );
+		} else {
+			throw new LoadException( "No health token given" );
+		}
+
 		Token data = new TokenReader( new File( getPath() ) ).nextToken();
 		maxMaps = calculateMaxMaps( data );
 
@@ -221,6 +228,7 @@ public class Character extends Thing {
 		thing.addToken( new String[]{ "type", getType() } );
 		thing.addToken( new String[]{ "path", getPath() } );
 		thing.addToken( new String[]{ "map", String.valueOf( getMap() ) } );
+		thing.addToken( new String[]{ "health", String.valueOf( getHealth() ) } );
 		if ( getAggression() != -1 ){
 			thing.addToken( new String[]{ "aggression", String.valueOf( getAggression() ) } );
 		}
