@@ -89,6 +89,24 @@ public class Editor extends JFrame {
 		viewScroll.setViewportView( view );
 		viewScroll.getHorizontalScrollBar().setBackground( new Color( 128, 255, 0 ) );
 
+		final Lambda1 editSelected = new Lambda1(){
+			public Object invoke( Object t ){
+				Thing thing = (Thing) t;
+				final JDialog dialog = new JDialog( Editor.this, "Edit" );
+				dialog.setSize( 300, 300 );
+				PropertyEditor editor = thing.getEditor();
+				dialog.add( editor.createPane( level, new Lambda0(){
+					public Object invoke(){
+						dialog.setVisible( false );
+						viewScroll.repaint();
+						return null;
+					}
+				}) );
+				dialog.setVisible( true );
+				return null;
+			}
+		};
+
 		class Mouser extends MouseMotionAdapter implements MouseInputListener {
 			Thing selected = null;
 			double dx, dy;
@@ -108,7 +126,7 @@ public class Editor extends JFrame {
 				if ( selected != null ){
 					// System.out.println( "sx,sy: " + sx + ", " + sy + " ex,ey: " + (event.getX() / 2) + ", " + (event.getY() / 2) + " dx, dy: " + dx + ", " + dy );
 					level.moveThing( selected, (int)(sx + event.getX() / level.getScale() - dx), (int)(sy + event.getY() / level.getScale() - dy) );
-					view.repaint();
+					viewScroll.repaint();
 				}
 			}
 
@@ -118,20 +136,6 @@ public class Editor extends JFrame {
 			
 			private boolean rightClick( MouseEvent event ){
 				return event.getButton() == MouseEvent.BUTTON3;
-			}
-
-			private void editSelected( Thing thing ){
-				final JDialog dialog = new JDialog( Editor.this, "Edit" );
-				dialog.setSize( 300, 300 );
-				PropertyEditor editor = thing.getEditor();
-				dialog.add( editor.createPane( level, new Lambda0(){
-					public Object invoke(){
-						dialog.setVisible( false );
-						view.repaint();
-						return null;
-					}
-				}) );
-				dialog.setVisible( true );
 			}
 
 			private void selectThing( MouseEvent event ){
@@ -147,7 +151,7 @@ public class Editor extends JFrame {
 
 				if ( has != null ){
 					has.setHighlight( true );
-					view.repaint();
+					viewScroll.repaint();
 				}
 
 				if ( selected == null && t != null ){
@@ -162,7 +166,7 @@ public class Editor extends JFrame {
 					// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
 				}
 				if ( getSelected() != null && event.getClickCount() == 2 ){
-					editSelected( getSelected() );
+					editSelected.invoke_( getSelected() );
 					// System.out.println( "Properties of " + getSelected() );
 				}
 			}
@@ -220,6 +224,7 @@ public class Editor extends JFrame {
 				throw new LoadException( "Unknown type: " + head.getName() );
 			}
 
+			/* TODO: change this to be more dynamic */
 			private Vector collectCharFiles(){
 				Vector v = new Vector();
 				/*
@@ -293,7 +298,7 @@ public class Editor extends JFrame {
 									Character c = new Character( reader.nextToken() );
 									b.add( new Character( reader.nextToken() ) );
 									*/
-									view.repaint();
+									viewScroll.repaint();
 								}
 							} catch ( LoadException e ){
 								System.out.println( "Could not load " + f );
@@ -320,7 +325,7 @@ public class Editor extends JFrame {
 			public void mouseExited( MouseEvent event ){
 				if ( selected != null ){
 					// selected = null;
-					view.repaint();
+					viewScroll.repaint();
 				}
 			}
 
@@ -337,7 +342,7 @@ public class Editor extends JFrame {
 			public void mouseReleased( MouseEvent event ){
 				if ( selected != null ){
 					// selected = null;
-					view.repaint();
+					viewScroll.repaint();
 				}
 			}
 		}
@@ -464,19 +469,29 @@ public class Editor extends JFrame {
 				currentX += t.getX() - t.getWidth();
 				viewScroll.getHorizontalScrollBar().setValue( (int)(currentX * level.getScale()) );
 
-				view.repaint();
+				viewScroll.repaint();
 			}
 		});
 
-		currentObjects.addKeyListener( new KeyAdapter(){
+		currentObjects.addMouseListener( new MouseAdapter() {
+			public void mouseClicked( MouseEvent clicked ){
+				if ( clicked.getClickCount() == 2 ){
+					Thing t = (Thing) currentObjects.getSelectedValue();	
+					editSelected.invoke_( t );
+				}
+			}
+		});
+
+		viewScroll.setFocusable( true );
+
+		viewScroll.addKeyListener( new KeyAdapter(){
 			public void keyTyped( KeyEvent e ){
 				System.out.println( "Key event!" );
 				if ( e.getKeyChar() == KeyEvent.VK_DELETE ){
-					/*
 					if ( mousey.getSelected() != null ){
 						level.findBlock( mousey.getSelected() ).removeThing( mousey.getSelected() );
+						viewScroll.repaint();
 					}
-					*/
 				}
 			}
 		});
