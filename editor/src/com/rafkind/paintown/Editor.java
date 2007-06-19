@@ -23,8 +23,6 @@ import org.swixml.SwingEngine;
 
 public class Editor extends JFrame {
 
-	private Image levelImage;
-
 	public Editor(){
 		this.setSize( 900, 500 );
 
@@ -352,47 +350,6 @@ public class Editor extends JFrame {
 		view.addMouseMotionListener( mousey );
 		view.addMouseListener( mousey );
 
-		
-		/*
-		view.addMouseMotionListener( new MouseMotionAdapter(){
-			Thing selected = null;
-			public void mouseDragged( MouseEvent event ){
-				if ( selected == null ){
-					selected = level.findThing( event.getX(), event.getY() );
-				}
-				if ( selected != null ){
-					level.moveThing( selected, event.getX(), event.getY() );
-				}
-				// view.repaint();
-				// System.out.println( "Mouse dragged at " + event.getX() + " " + event.getY() );
-			}
-		});
-
-		view.addMouseListener( new MouseInputAdapter(){
-			public void mousePressed( MouseEvent event ){
-				// System.out.println( "Mouse pushed at " + event.getX() + " " + event.getY() );
-			}
-
-			public void mouseClicked( MouseEvent event ){
-				// System.out.println( "Mouse clicked at " + event.getX() + " " + event.getY() );
-			}
-
-			public void mouseReleased( MouseEvent event ){
-			}
-		});
-		*/
-
-		/*
-		class BlockModel implements ListModel {
-			private List objects;
-			private List enabled;
-			public BlockModel(){
-				objects = new ArrayList();
-				enabled = new ArrayList();
-			}
-		}
-		*/
-
 		JTabbedPane tabbed = (JTabbedPane) engine.find( "tabbed" );
 		final Box holder = Box.createVerticalBox();
 		final Box blocks = Box.createVerticalBox();
@@ -473,6 +430,21 @@ public class Editor extends JFrame {
 			}
 		});
 
+		currentObjects.addKeyListener( new KeyAdapter(){
+			public void keyTyped( KeyEvent e ){
+				if ( e.getKeyChar() == KeyEvent.VK_DELETE ){
+					Thing t = (Thing) currentObjects.getSelectedValue();
+					if ( t != null ){
+						mousey.setSelected( null );
+						Block b = level.findBlock( t );
+						b.removeThing( t );
+						objectList.setBlock( b );
+						viewScroll.repaint();
+					}
+				}
+			}
+		});
+
 		currentObjects.addMouseListener( new MouseAdapter() {
 			public void mouseClicked( MouseEvent clicked ){
 				if ( clicked.getClickCount() == 2 ){
@@ -486,7 +458,6 @@ public class Editor extends JFrame {
 
 		viewScroll.addKeyListener( new KeyAdapter(){
 			public void keyTyped( KeyEvent e ){
-				System.out.println( "Key event!" );
 				if ( e.getKeyChar() == KeyEvent.VK_DELETE ){
 					if ( mousey.getSelected() != null ){
 						level.findBlock( mousey.getSelected() ).removeThing( mousey.getSelected() );
@@ -496,34 +467,11 @@ public class Editor extends JFrame {
 			}
 		});
 
-
 		tabbed.add( "Blocks", holder );
 
 		final JList objects = new JList();
 		tabbed.add( "Objects", objects );
 		
-		/*
-		viewScroll.getHorizontalScrollBar().addAdjustmentListener( new AdjustmentListener(){
-			public void adjustmentValueChanged( AdjustmentEvent e ){
-				viewScroll.repaint();
-			}
-		});
-		viewScroll.getVerticalScrollBar().addAdjustmentListener( new AdjustmentListener(){
-			public void adjustmentValueChanged( AdjustmentEvent e ){
-				viewScroll.repaint();
-			}
-		});
-		*/
-
-		/*
-		JButton render = (JButton) engine.find( "render" );
-		render.addActionListener( new AbstractAction(){
-			public void actionPerformed( ActionEvent event ){
-				view.repaint();
-			}
-		});
-		*/
-
 		GridBagLayout layout = new GridBagLayout();
 		viewContainer.setLayout( layout );
 		GridBagConstraints constraints = new GridBagConstraints();
