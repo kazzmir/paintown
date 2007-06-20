@@ -496,6 +496,62 @@ public class Editor extends JFrame {
 			}
 		});
 
+		final Lambda2 setupBlocks = new Lambda2(){
+			public Object invoke( Object l, Object recur ){
+				final Lambda2 setupBlocksRecur = (Lambda2) recur;
+				final Level level = (Level) l;
+				blocks.removeAll();
+				int n = 1;
+				int total = 0;
+				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+					final Block block = (Block) it.next();
+					Box stuff = Box.createHorizontalBox();
+					JCheckBox check = new JCheckBox( new AbstractAction(){
+						public void actionPerformed( ActionEvent event ){
+							JCheckBox c = (JCheckBox) event.getSource();
+							block.setEnabled( c.isSelected() );
+							view.revalidate();
+							viewScroll.repaint();
+						}
+					});
+
+					check.setSelected( true );
+					stuff.add( check );
+					JButton button = new JButton( "Block " + n + " : " + block.getLength() );
+					button.addActionListener( new AbstractAction(){
+						public void actionPerformed( ActionEvent event ){
+							objectList.setBlock( block );
+						}
+					});
+					stuff.add( button );
+					stuff.add( Box.createHorizontalStrut( 3 ) );
+					JButton erase = new JButton( "Delete" );
+					erase.addActionListener( new AbstractAction(){
+						public void actionPerformed( ActionEvent event ){
+							mousey.setSelected( null );
+							level.getBlocks().remove( block );
+							setupBlocksRecur.invoke_( level, setupBlocksRecur );
+							view.repaint();
+						}
+					});
+					stuff.add( erase );
+
+					stuff.add( Box.createHorizontalGlue() );
+					blocks.add( stuff );
+					
+					total += block.getLength();
+					n += 1;
+				}
+				Box f = Box.createHorizontalBox();
+				f.add( new JLabel( "Total length " + total ) );
+				f.add( Box.createHorizontalGlue() );
+				blocks.add( f );
+				blocks.revalidate();
+				blocks.repaint();
+				return null;
+			}
+		};
+
 		loadLevel.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				JFileChooser chooser = new JFileChooser( new File( "." ) );	
@@ -515,42 +571,7 @@ public class Editor extends JFrame {
 					final File f = chooser.getSelectedFile();
 					try{
 						level.load( f );
-						/*
-						JLabel label = (JLabel) engine.find( "file" );
-						label.setText( "Filename: " + f.getName() );
-						*/
-						blocks.removeAll();
-						int n = 1;
-						int total = 0;
-						for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-							final Block block = (Block) it.next();
-							Box stuff = Box.createHorizontalBox();
-							JCheckBox check = new JCheckBox( new AbstractAction(){
-								public void actionPerformed( ActionEvent event ){
-									JCheckBox c = (JCheckBox) event.getSource();
-									block.setEnabled( c.isSelected() );
-									view.revalidate();
-									viewScroll.repaint();
-								}
-							});
-
-							check.setSelected( true );
-							stuff.add( check );
-							JButton button = new JButton( "Block " + n + " : " + block.getLength() );
-							button.addActionListener( new AbstractAction(){
-								public void actionPerformed( ActionEvent event ){
-									objectList.setBlock( block );
-								}
-							});
-							stuff.add( button );
-							total += block.getLength();
-							stuff.add( Box.createHorizontalGlue() );
-							blocks.add( stuff );
-							n += 1;
-						}
-						blocks.add( new JLabel( "Total length " + total ) );
-
-						blocks.repaint();
+						setupBlocks.invoke_( level, setupBlocks );
 						view.revalidate();
 						viewScroll.repaint();
 					} catch ( LoadException le ){
