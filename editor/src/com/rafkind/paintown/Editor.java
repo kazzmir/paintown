@@ -24,6 +24,7 @@ import org.swixml.SwingEngine;
 public class Editor extends JFrame {
 
 	public Editor(){
+		super( "Paintown Editor" );
 		this.setSize( 900, 500 );
 
 		JMenuBar menuBar = new JMenuBar();
@@ -297,6 +298,8 @@ public class Editor extends JFrame {
 									b.add( new Character( reader.nextToken() ) );
 									*/
 									viewScroll.repaint();
+								} else {
+									JOptionPane.showMessageDialog( null, "The cursor is not within a block. Either move the cursor or add a block.", "Paintown Editor Error", JOptionPane.ERROR_MESSAGE );
 								}
 							} catch ( LoadException e ){
 								System.out.println( "Could not load " + f );
@@ -586,6 +589,7 @@ public class Editor extends JFrame {
 					total += block.getLength();
 					n += 1;
 				}
+				blocks.add( Box.createVerticalGlue() );
 				Box f = Box.createHorizontalBox();
 				f.add( new JLabel( "Total length " + total ) );
 				f.add( Box.createHorizontalGlue() );
@@ -627,7 +631,7 @@ public class Editor extends JFrame {
 		});
 
 		JPanel scroll = (JPanel) engine.find( "scroll" );
-		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 10, 0, 1, 20 );
+		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 20, 0, 1, 20 );
 		final JLabel scale = (JLabel) engine.find( "scale" );
 		scroll.add( scrolly );
 		scrolly.addAdjustmentListener( new AdjustmentListener(){
