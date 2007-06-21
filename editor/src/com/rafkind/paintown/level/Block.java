@@ -89,7 +89,7 @@ public class Block{
 		g.translate( 0, -minZ );
 		g.setColor( new Color( 255, 255, 255 ) );
 		g.fillRect( 0, 0, 1, height );
-		g.fillRect( getLength() * 2, 0, 1, height );
+		g.fillRect( getLength(), 0, 1, height );
 		g.translate( -x, 0 );
 	}
 
