@@ -366,7 +366,11 @@ public class Editor extends JFrame {
 			}
 
 			public void setBlock( Block b ){
-				this.things = b.getThings();
+				if ( b == null ){
+					this.things = new ArrayList();
+				} else {
+					this.things = b.getThings();
+				}
 
 				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 999999 );
 				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
@@ -497,8 +501,16 @@ public class Editor extends JFrame {
 		});
 
 		final Lambda2 setupBlocks = new Lambda2(){
-			public Object invoke( Object l, Object recur ){
-				final Lambda2 setupBlocksRecur = (Lambda2) recur;
+			private void editBlockProperties( Block block, Level level ){
+				final JDialog dialog = new JDialog( Editor.this, "Edit" );
+				dialog.setSize( 200, 200 );
+				final SwingEngine engine = new SwingEngine( "block.xml" );
+				dialog.add( (JPanel) engine.getRootComponent() );
+				dialog.setVisible( true );
+			}
+
+			public Object invoke( Object l, Object self_ ){
+				final Lambda2 self = (Lambda2) self_;
 				final Level level = (Level) l;
 				blocks.removeAll();
 				int n = 1;
@@ -525,12 +537,23 @@ public class Editor extends JFrame {
 					});
 					stuff.add( button );
 					stuff.add( Box.createHorizontalStrut( 3 ) );
+
+					JButton edit = new JButton( "Edit" );
+					edit.addActionListener( new AbstractAction(){
+						public void actionPerformed( ActionEvent event ){
+							editBlockProperties( block, level );	
+						}
+					});
+					stuff.add( edit );
+					stuff.add( Box.createHorizontalStrut( 3 ) );
+
 					JButton erase = new JButton( "Delete" );
 					erase.addActionListener( new AbstractAction(){
 						public void actionPerformed( ActionEvent event ){
 							mousey.setSelected( null );
+							objectList.setBlock( null );
 							level.getBlocks().remove( block );
-							setupBlocksRecur.invoke_( level, setupBlocksRecur );
+							self.invoke_( level, self );
 							view.repaint();
 						}
 					});
