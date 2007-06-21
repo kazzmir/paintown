@@ -501,11 +501,24 @@ public class Editor extends JFrame {
 		});
 
 		final Lambda2 setupBlocks = new Lambda2(){
-			private void editBlockProperties( Block block, Level level ){
+			private void editBlockProperties( final Block block, final Lambda0 done ){
 				final JDialog dialog = new JDialog( Editor.this, "Edit" );
 				dialog.setSize( 200, 200 );
 				final SwingEngine engine = new SwingEngine( "block.xml" );
 				dialog.add( (JPanel) engine.getRootComponent() );
+
+				final JTextField length = (JTextField) engine.find( "length" );
+				final JButton save = (JButton) engine.find( "save" );
+				final JButton close = (JButton) engine.find( "close" );
+
+				save.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
+						block.setLength( Integer.parseInt( length.getText() ) );
+						done.invoke_();
+						dialog.setVisible( false );
+					}
+				});
+
 				dialog.setVisible( true );
 			}
 
@@ -529,7 +542,7 @@ public class Editor extends JFrame {
 
 					check.setSelected( true );
 					stuff.add( check );
-					JButton button = new JButton( "Block " + n + " : " + block.getLength() );
+					final JButton button = new JButton( "Block " + n + " : " + block.getLength() );
 					button.addActionListener( new AbstractAction(){
 						public void actionPerformed( ActionEvent event ){
 							objectList.setBlock( block );
@@ -539,9 +552,17 @@ public class Editor extends JFrame {
 					stuff.add( Box.createHorizontalStrut( 3 ) );
 
 					JButton edit = new JButton( "Edit" );
+					final int xnum = n;
 					edit.addActionListener( new AbstractAction(){
 						public void actionPerformed( ActionEvent event ){
-							editBlockProperties( block, level );	
+							editBlockProperties( block, new Lambda0(){
+								public Object invoke(){
+									button.setText( "Block " + xnum + " : " + block.getLength() );
+									view.revalidate();
+									viewScroll.repaint();
+									return null;
+								}
+							});
 						}
 					});
 					stuff.add( edit );

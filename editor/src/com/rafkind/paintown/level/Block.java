@@ -139,6 +139,10 @@ public class Block{
 		return this.highlight;
 	}
 
+	public void setLength( int i ){
+		length = i;
+	}
+
 	public int getLength(){
 		return length;
 	}
