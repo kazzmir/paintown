@@ -106,6 +106,18 @@ public class Editor extends JFrame {
 			}
 		};
 
+		final Vector allowableObjects = new Vector();
+		allowableObjects.add( new File( "data/chars/angel/angel.txt" ) );
+		allowableObjects.add( new File( "data/chars/billy/billy.txt" ) );
+		allowableObjects.add( new File( "data/chars/heavy/heavy.txt" ) );
+		allowableObjects.add( new File( "data/chars/joe/joe.txt" ) );
+		allowableObjects.add( new File( "data/chars/kula/kula.txt" ) );
+		allowableObjects.add( new File( "data/chars/mandy/mandy.txt" ) );
+		allowableObjects.add( new File( "data/chars/maxima/maxima.txt" ) );
+		allowableObjects.add( new File( "data/chars/shermie/shermie.txt" ) );
+		allowableObjects.add( new File( "data/chars/yashiro/yashiro.txt" ) );
+		allowableObjects.add( new File( "data/misc/apple/apple.txt" ) );
+
 		class Mouser extends MouseMotionAdapter implements MouseInputListener {
 			Thing selected = null;
 			double dx, dy;
@@ -225,12 +237,13 @@ public class Editor extends JFrame {
 
 			/* TODO: change this to be more dynamic */
 			private Vector collectCharFiles(){
-				Vector v = new Vector();
+				return allowableObjects;
+
 				/*
+				Vector v = new Vector();
 				for ( Iterator it = findFiles( new File( "data/chars" ), ".txt" ).iterator(); it.hasNext(); ){
 					v.add( it.next() );
 				}
-				*/
 				v.add( new File( "data/chars/angel/angel.txt" ) );
 				v.add( new File( "data/chars/billy/billy.txt" ) );
 				v.add( new File( "data/chars/heavy/heavy.txt" ) );
@@ -243,6 +256,7 @@ public class Editor extends JFrame {
 				v.add( new File( "data/misc/apple/apple.txt" ) );
 
 				return v;
+				*/
 			}
 
 			private void showAddObjectPopup( final MouseEvent event ){
@@ -353,6 +367,8 @@ public class Editor extends JFrame {
 		view.addMouseMotionListener( mousey );
 		view.addMouseListener( mousey );
 
+		
+
 		JTabbedPane tabbed = (JTabbedPane) engine.find( "tabbed" );
 		final Box holder = Box.createVerticalBox();
 		final Box blocks = Box.createVerticalBox();
@@ -376,6 +392,14 @@ public class Editor extends JFrame {
 				}
 
 				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 999999 );
+				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+						  ListDataListener l = (ListDataListener) it.next();
+						  l.contentsChanged( event );
+				}
+			}
+
+			public void update( int index ){
+				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, index, index + 1 );
 				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
 						  ListDataListener l = (ListDataListener) it.next();
 						  l.contentsChanged( event );
@@ -457,6 +481,8 @@ public class Editor extends JFrame {
 				if ( clicked.getClickCount() == 2 ){
 					Thing t = (Thing) currentObjects.getSelectedValue();	
 					editSelected.invoke_( t );
+					currentObjects.repaint();
+					// objectList.update( currentObjects.getSelectedIndex() );
 				}
 			}
 		});
@@ -476,7 +502,8 @@ public class Editor extends JFrame {
 
 		tabbed.add( "Blocks", holder );
 
-		final JList objects = new JList();
+		
+		final JList objects = new JList( allowableObjects );
 		tabbed.add( "Objects", objects );
 		
 		GridBagLayout layout = new GridBagLayout();

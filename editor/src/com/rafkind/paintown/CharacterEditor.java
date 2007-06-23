@@ -115,8 +115,10 @@ public class CharacterEditor implements PropertyEditor {
 				}
 				Block b = getBlock( ((Integer) block.getValue()).intValue(), level );
 				Block old = level.findBlock( character );
-				old.removeThing( character );
-				b.addThing( character );
+				if ( b != null && old != null && b != old ){
+					old.removeThing( character );
+					b.addThing( character );
+				}
 
 				closeProc.invoke_();
 			}
