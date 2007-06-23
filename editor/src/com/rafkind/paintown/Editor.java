@@ -628,6 +628,18 @@ public class Editor extends JFrame {
 					n += 1;
 				}
 				blocks.add( Box.createVerticalGlue() );
+				Box addf = Box.createHorizontalBox();
+				JButton add = new JButton( "Add block" );
+				add.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
+						Block b = new Block();
+						level.getBlocks().add( b );
+						self.invoke_( level, self );
+					}
+				});
+				addf.add( add );
+				addf.add( Box.createHorizontalGlue() );
+				blocks.add( addf );
 				Box f = Box.createHorizontalBox();
 				f.add( new JLabel( "Total length " + total ) );
 				f.add( Box.createHorizontalGlue() );

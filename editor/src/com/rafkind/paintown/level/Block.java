@@ -49,6 +49,10 @@ public class Block{
 		}
 	}
 
+	public Block(){
+		this.objects = new ArrayList();
+	}
+
 	public void setFinish( int s ){
 		if ( s > 0 ){
 			finish = s;
