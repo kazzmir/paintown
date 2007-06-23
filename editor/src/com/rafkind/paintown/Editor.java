@@ -511,13 +511,24 @@ public class Editor extends JFrame {
 				dialog.add( (JPanel) engine.getRootComponent() );
 
 				final JTextField length = (JTextField) engine.find( "length" );
+				final JTextField finish = (JTextField) engine.find( "finish" );
 				final JButton save = (JButton) engine.find( "save" );
 				final JButton close = (JButton) engine.find( "close" );
+
+				length.setText( String.valueOf( block.getLength() ) );
+				finish.setText( String.valueOf( block.getFinish() ) );
 
 				save.addActionListener( new AbstractAction(){
 					public void actionPerformed( ActionEvent event ){
 						block.setLength( Integer.parseInt( length.getText() ) );
+						block.setFinish( Integer.parseInt( finish.getText() ) );
 						done.invoke_();
+						dialog.setVisible( false );
+					}
+				});
+
+				close.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
 						dialog.setVisible( false );
 					}
 				});

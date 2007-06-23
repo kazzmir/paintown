@@ -17,11 +17,17 @@ public class Block{
 	private List objects;
 	private boolean enabled = true;
 	private boolean highlight = false;
+	private int finish = -1;
 
 	public Block( Token token ) throws LoadException {
 		Token l = token.findToken( "length" );
 		if ( l != null ){
 			length = l.readInt( 0 );	
+		}
+
+		Token f = token.findToken( "finish" );
+		if ( f != null ){
+			finish = f.readInt( 0 );
 		}
 
 		objects = new ArrayList();
@@ -41,6 +47,20 @@ public class Block{
 				throw new LoadException( "Object does not have a 'type' expression at line " + t.getLine() );
 			}
 		}
+	}
+
+	public void setFinish( int s ){
+		if ( s > 0 ){
+			finish = s;
+		}
+	}
+
+	public boolean isFinish(){
+		return finish > 0;
+	}
+
+	public int getFinish(){
+		return finish;
 	}
 
 	public boolean isEnabled(){
@@ -119,7 +139,11 @@ public class Block{
 	public Token toToken(){
 		Token block = new Token();
 		block.addToken( new Token( "block" ) );
-		block.addToken( new Token().addToken( new Token( "length" ) ).addToken( new Token( String.valueOf( getLength() ) ) ) );
+		// block.addToken( new Token().addToken( new Token( "length" ) ).addToken( new Token( String.valueOf( getLength() ) ) ) );
+		block.addToken( new String[]{ "length", String.valueOf( getLength() ) } );
+		if ( isFinish() ){
+			block.addToken( new String[]{ "finish", String.valueOf( getFinish() ) } );
+		}
 		for ( Iterator it = objects.iterator(); it.hasNext(); ){
 			Thing t = (Thing) it.next();
 			block.addToken( t.toToken() );

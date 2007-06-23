@@ -13,6 +13,10 @@
 			<label text="Length:" />
 			<textfield size="10" id="length" />
 		</hbox>
+		<hbox>
+			<label text="Finish:" />
+			<textfield size="4" id="finish" />
+		</hbox>
 	</vbox>
 	<hbox>
 		<gridbagconstraints
