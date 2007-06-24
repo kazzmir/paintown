@@ -23,6 +23,8 @@ import org.swixml.SwingEngine;
 
 public class Editor extends JFrame {
 
+	/* look ma, no member variables! */
+
 	public Editor(){
 		super( "Paintown Editor" );
 		this.setSize( 900, 500 );
@@ -679,6 +681,8 @@ public class Editor extends JFrame {
 				}
 			}
 		});
+
+		setupBlocks.invoke_( level, setupBlocks );
 
 		JPanel scroll = (JPanel) engine.find( "scroll" );
 		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 20, 0, 1, 20 );
