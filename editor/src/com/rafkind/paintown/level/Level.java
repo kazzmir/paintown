@@ -58,11 +58,18 @@ public class Level{
 		int w = 0;
 		if ( ! frontPanels.isEmpty() ){
 			while ( w < getWidth() ){
+				int ow = w;
 				for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
 					Panel p = (Panel) it.next();
 					Image panel = (Image) p.image;
 					g.drawImage( panel, w, 0, null );
 					w += panel.getWidth( null );
+				}
+				/* make sure not to get into an infinite loop due to lack
+				 * of width on the images
+				 */
+				if ( w == ow ){
+					w += 1;
 				}
 			}
 		}
@@ -163,8 +170,8 @@ public class Level{
 	private void initAll(){
 		this.name = null;
 		this.background = null;
-		this.minZ = 0;
-		this.maxZ = 0;
+		this.minZ = 100;
+		this.maxZ = 200;
 		this.scale = 2;
 
 		this.width = 640;

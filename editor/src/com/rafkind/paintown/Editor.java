@@ -50,13 +50,6 @@ public class Editor extends JFrame {
 		saveLevel.setMnemonic( KeyEvent.VK_S );
 		loadLevel.setMnemonic( KeyEvent.VK_O );
 
-		/*
-		levelImage = new BufferedImage( 1000, 300, BufferedImage.TYPE_INT_RGB );
-		Graphics g = levelImage.getGraphics();
-		g.setColor( new Color( 64, 192, 54 ) );
-		g.fillRect( 10, 10, 200, 200 );
-		*/
-
 		quit.addActionListener( new ActionListener(){
 			public void actionPerformed( ActionEvent event ){
 				closeHook.invoke_();
@@ -237,7 +230,6 @@ public class Editor extends JFrame {
 				throw new LoadException( "Unknown type: " + head.getName() );
 			}
 
-			/* TODO: change this to be more dynamic */
 			private Vector collectCharFiles(){
 				return allowableObjects;
 
@@ -246,17 +238,6 @@ public class Editor extends JFrame {
 				for ( Iterator it = findFiles( new File( "data/chars" ), ".txt" ).iterator(); it.hasNext(); ){
 					v.add( it.next() );
 				}
-				v.add( new File( "data/chars/angel/angel.txt" ) );
-				v.add( new File( "data/chars/billy/billy.txt" ) );
-				v.add( new File( "data/chars/heavy/heavy.txt" ) );
-				v.add( new File( "data/chars/joe/joe.txt" ) );
-				v.add( new File( "data/chars/kula/kula.txt" ) );
-				v.add( new File( "data/chars/mandy/mandy.txt" ) );
-				v.add( new File( "data/chars/maxima/maxima.txt" ) );
-				v.add( new File( "data/chars/shermie/shermie.txt" ) );
-				v.add( new File( "data/chars/yashiro/yashiro.txt" ) );
-				v.add( new File( "data/misc/apple/apple.txt" ) );
-
 				return v;
 				*/
 			}
@@ -368,8 +349,6 @@ public class Editor extends JFrame {
 
 		view.addMouseMotionListener( mousey );
 		view.addMouseListener( mousey );
-
-		
 
 		JTabbedPane tabbed = (JTabbedPane) engine.find( "tabbed" );
 		final Box holder = Box.createVerticalBox();
@@ -503,11 +482,17 @@ public class Editor extends JFrame {
 		});
 
 		tabbed.add( "Blocks", holder );
-
 		
 		final JList objects = new JList( allowableObjects );
 		tabbed.add( "Objects", objects );
+
+
+		final SwingEngine levelEngine = new SwingEngine( "level.xml" );
+		final JPanel levelPane = (JPanel) levelEngine.getRootComponent();
 		
+		final JPanel levelProperties = new JPanel();
+		tabbed.add( "Level", levelPane );
+
 		GridBagLayout layout = new GridBagLayout();
 		viewContainer.setLayout( layout );
 		GridBagConstraints constraints = new GridBagConstraints();
