@@ -19,6 +19,7 @@ public class Level{
 
 	private String name;
 	private Image background;
+	private String backgroundFile;
 	private int width;
 	private List frontPanels;
 	private HashMap backPanels;
@@ -254,7 +255,21 @@ public class Level{
 		if ( t != null ){
 			String s = String.valueOf( t.iterator().next() );
 			setBackground( loadImage( s ) );
+			backgroundFile = s;
 		}
+	}
+
+	public void loadBackground( String s ){
+		try{
+			setBackground( loadImage( s ) );
+			backgroundFile = s;
+		} catch ( LoadException e ){
+			e.printStackTrace();
+		}
+	}
+
+	public String getBackgroundFile(){
+		return backgroundFile;
 	}
 
 	private void setWidth( int w ){
@@ -295,21 +310,21 @@ public class Level{
 		Token z = new Token( level );
 		level.addToken( z );
 		z.addToken( new Token( z, "z" ) );
-		Token min = new Token( z );
-		z.addToken( min );
-		min.addToken( new Token( min, "minimum" ) );
-		min.addToken( new Token( min, String.valueOf( getMinZ() ) ) );
-		Token max = new Token( z );
-		z.addToken( max );
-		max.addToken( new Token( max, "maximum" ) );
-		max.addToken( new Token( max, String.valueOf( getMaxZ() ) ) );
+		z.addToken( new String[]{ "minimum", String.valueOf( getMinZ() ) } );
+		z.addToken( new String[]{ "maximum", String.valueOf( getMaxZ() ) } );
+
+		level.addToken( new String[]{ "background", backgroundFile } );
 
 		for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
+			/*
 			Token f = new Token( level );
 			level.addToken( f );
 			Panel p = (Panel) it.next();
 			f.addToken( new Token( f, "frontpanel" ) );
 			f.addToken( new Token( f, p.name ) );
+			*/
+			Panel p = (Panel) it.next();
+			level.addToken( new String[]{ "frontpanel", p.name } );
 		}
 
 		for ( Iterator it = backPanels.entrySet().iterator(); it.hasNext(); ){

@@ -51,6 +51,7 @@ public class Block{
 
 	public Block(){
 		this.objects = new ArrayList();
+		this.length = 200;
 	}
 
 	public void setFinish( int s ){

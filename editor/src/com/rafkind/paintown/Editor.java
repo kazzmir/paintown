@@ -492,6 +492,8 @@ public class Editor extends JFrame {
 
 		final JSpinner levelMinZ = (JSpinner) levelEngine.find( "min-z" );
 		final JSpinner levelMaxZ = (JSpinner) levelEngine.find( "max-z" );
+		final JTextField levelBackground = (JTextField) levelEngine.find( "background" );
+		final JButton levelChangeBackground = (JButton) levelEngine.find( "change-background" );
 		levelMinZ.setModel( new SpinnerNumberModel() );
 		levelMinZ.addChangeListener( new ChangeListener(){
 			public void stateChanged( ChangeEvent e ){
@@ -512,11 +514,36 @@ public class Editor extends JFrame {
 			}
 		});
 
+		levelBackground.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				level.loadBackground( levelBackground.getText() );
+				viewScroll.repaint();
+			}
+		});
+
+		levelChangeBackground.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				JFileChooser chooser = new JFileChooser( new File( "." ) );
+				int returnVal = chooser.showOpenDialog( Editor.this );
+				if ( returnVal == JFileChooser.APPROVE_OPTION ){
+					final File f = chooser.getSelectedFile();
+					try{
+						level.loadBackground( f.getCanonicalPath() );
+						levelBackground.setText( level.getBackgroundFile() );
+						viewScroll.repaint();
+					} catch ( IOException ie ){
+						ie.printStackTrace();
+					}
+				}
+			}
+		});
+
 		final Lambda1 loadLevelProperties = new Lambda1(){
 			public Object invoke( Object level_ ){
 				Level level = (Level) level_;
 				levelMinZ.setValue( new Integer( level.getMinZ() ) );
 				levelMaxZ.setValue( new Integer( level.getMaxZ() ) );
+				levelBackground.setText( level.getBackgroundFile() );
 				return null;
 			}
 		};
@@ -650,6 +677,7 @@ public class Editor extends JFrame {
 						Block b = new Block();
 						level.getBlocks().add( b );
 						self.invoke_( level, self );
+						viewScroll.repaint();
 					}
 				});
 				addf.add( add );

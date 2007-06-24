@@ -19,5 +19,10 @@
 			<spinner id="max-z" />
 			<glue />
 		</hbox>
+		<hbox>
+			<label text="Background: " />
+			<textfield id="background" />
+			<button text="Change" id="change-background" />
+		</hbox>
 	</vbox>
 </panel>
