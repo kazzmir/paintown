@@ -54,6 +54,14 @@ public class Level{
 		return maxZ;
 	}
 
+	public void setMinZ( int z ){
+		minZ = z;
+	}
+
+	public void setMaxZ( int z ){
+		maxZ = z;
+	}
+
 	private void drawFrontPanels( Graphics2D g ){
 		int w = 0;
 		if ( ! frontPanels.isEmpty() ){

@@ -10,7 +10,14 @@
 			fill="GridBagConstraints.HORIZONTAL"
 			/>
 		<hbox>
-			<label text="Z plane" />
+			<label text="Min Z plane" />
+			<spinner id="min-z" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Max Z plane" />
+			<spinner id="max-z" />
+			<glue />
 		</hbox>
 	</vbox>
 </panel>

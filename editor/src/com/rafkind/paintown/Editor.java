@@ -486,12 +486,40 @@ public class Editor extends JFrame {
 		final JList objects = new JList( allowableObjects );
 		tabbed.add( "Objects", objects );
 
-
 		final SwingEngine levelEngine = new SwingEngine( "level.xml" );
 		final JPanel levelPane = (JPanel) levelEngine.getRootComponent();
-		
-		final JPanel levelProperties = new JPanel();
 		tabbed.add( "Level", levelPane );
+
+		final JSpinner levelMinZ = (JSpinner) levelEngine.find( "min-z" );
+		final JSpinner levelMaxZ = (JSpinner) levelEngine.find( "max-z" );
+		levelMinZ.setModel( new SpinnerNumberModel() );
+		levelMinZ.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				JSpinner spinner = (JSpinner) e.getSource();
+				Integer i = (Integer) spinner.getValue();
+				level.setMinZ( i.intValue() );
+				viewScroll.repaint();
+			}
+		});
+
+		levelMaxZ.setModel( new SpinnerNumberModel() );
+		levelMaxZ.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				JSpinner spinner = (JSpinner) e.getSource();
+				Integer i = (Integer) spinner.getValue();
+				level.setMaxZ( i.intValue() );
+				viewScroll.repaint();
+			}
+		});
+
+		final Lambda1 loadLevelProperties = new Lambda1(){
+			public Object invoke( Object level_ ){
+				Level level = (Level) level_;
+				levelMinZ.setValue( new Integer( level.getMinZ() ) );
+				levelMaxZ.setValue( new Integer( level.getMaxZ() ) );
+				return null;
+			}
+		};
 
 		GridBagLayout layout = new GridBagLayout();
 		viewContainer.setLayout( layout );
@@ -657,6 +685,7 @@ public class Editor extends JFrame {
 					try{
 						level.load( f );
 						setupBlocks.invoke_( level, setupBlocks );
+						loadLevelProperties.invoke_( level );
 						view.revalidate();
 						viewScroll.repaint();
 					} catch ( LoadException le ){
