@@ -10,6 +10,19 @@
 			fill="GridBagConstraints.HORIZONTAL"
 			/>
 		<label text="Choose a file" />
-		<textfield editable="false" id="path" />
+		<hbox>
+			<label text="Path" />
+			<textfield editable="false" id="path" />
+		</hbox>
+		<button id="up" text="Go up" />
+		<scrollpane>
+			<list id="files" />
+		</scrollpane>
+		<hbox>
+			<button id="ok" text="OK" />
+			<glue size="1" />
+			<button id="cancel" text="Cancel" />
+			<glue />
+		</hbox>
 	</vbox>
 </panel>

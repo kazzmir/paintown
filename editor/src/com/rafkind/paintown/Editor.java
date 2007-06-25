@@ -374,8 +374,8 @@ public class Editor extends JFrame {
 
 				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 999999 );
 				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-						  ListDataListener l = (ListDataListener) it.next();
-						  l.contentsChanged( event );
+					ListDataListener l = (ListDataListener) it.next();
+					l.contentsChanged( event );
 				}
 			}
 
