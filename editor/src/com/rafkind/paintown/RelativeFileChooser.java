@@ -52,6 +52,7 @@ public class RelativeFileChooser extends JDialog {
 				files = new ArrayList();
 				if ( file.isDirectory() ){
 					File[] all = file.listFiles();
+					files.add( new File( ".." ) );
 					for ( int i = 0; i < all.length; i++ ){
 						files.add( all[ i ] );
 					}
@@ -93,6 +94,9 @@ public class RelativeFileChooser extends JDialog {
 					paths.add( file );
 					list.setFile( file );
 					path.setText( getPath() );
+					if ( ! file.isDirectory() ){
+						RelativeFileChooser.this.setVisible( false );
+					}
 				}
 			}
 		});
@@ -100,6 +104,11 @@ public class RelativeFileChooser extends JDialog {
 		final JButton up = (JButton) engine.find( "up" );
 		up.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent e ){
+				if ( paths.size() > 1 ){
+					paths.remove( paths.size() - 1 );
+					list.setFile( (File) paths.get( paths.size() - 1 ) );
+					path.setText( getPath() );
+				}
 			}
 		});
 
