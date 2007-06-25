@@ -7,7 +7,7 @@
 			weighty="1"
 			gridheight="1"
 			anchor="GridBagConstraints.NORTHWEST"
-			fill="GridBagConstraints.HORIZONTAL"
+			fill="GridBagConstraints.BOTH"
 			/>
 		<hbox>
 			<label text="Min Z plane" />
@@ -27,7 +27,7 @@
 		<vbox>
 			<label text="Front panels" />
 			<scrollpane>
-				<list id="front-panels" />
+				<list id="front-panels" minimumsize="5" />
 			</scrollpane>
 			<hbox>
 				<button text="Add" id="add-front-panel" />
@@ -40,5 +40,34 @@
 				<glue size="1" />
 			</hbox>
 		</vbox>
+		<glue size="1" />
+		<vbox>
+			<label text="Back panels" />
+			<scrollpane>
+				<list id="back-panels" />
+			</scrollpane>
+			<hbox>
+				<button text="Add" id="add-back-panel" />
+				<glue size="1" />
+				<button text="Delete" id="delete-back-panel" />
+				<glue size="1" />
+				<button text="Move Up" id="up-back-panel" />
+				<glue size="1" />
+				<button text="Move Down" id="down-back-panel" />
+				<glue size="1" />
+			</hbox>
+		</vbox>
+		<glue size="1" />
+		<label text="Back Panel Order" />
+		<textarea id="order" editable="false" rows="5" cols="3" />
+		<glue size="1" />
+		<hbox>
+			<combobox id="pick-order" />
+			<glue size="1" />
+			<button id="add-order" text="Add" />
+			<glue size="1" />
+			<button id="remove-order" text="Remove Last" />
+			<glue />
+		</hbox>
 	</vbox>
 </panel>
