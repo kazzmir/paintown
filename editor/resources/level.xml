@@ -24,5 +24,21 @@
 			<textfield id="background" />
 			<button text="Change" id="change-background" />
 		</hbox>
+		<vbox>
+			<label text="Front panels" />
+			<scrollpane>
+				<list id="front-panels" />
+			</scrollpane>
+			<hbox>
+				<button text="Add" id="add" />
+				<glue size="1" />
+				<button text="Delete" id="delete" />
+				<glue size="1" />
+				<button text="Move Up" id="up" />
+				<glue size="1" />
+				<button text="Move Down" id="down" />
+				<glue size="1" />
+			</hbox>
+		</vbox>
 	</vbox>
 </panel>
