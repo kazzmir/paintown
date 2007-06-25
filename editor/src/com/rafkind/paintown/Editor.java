@@ -494,6 +494,44 @@ public class Editor extends JFrame {
 		final JSpinner levelMaxZ = (JSpinner) levelEngine.find( "max-z" );
 		final JTextField levelBackground = (JTextField) levelEngine.find( "background" );
 		final JButton levelChangeBackground = (JButton) levelEngine.find( "change-background" );
+		final Vector frontPanelsData = new Vector();
+		final JList frontPanels = (JList) levelEngine.find( "front-panels" );
+		frontPanels.setListData( frontPanelsData );
+
+		{ /* force scope */
+			final JButton add = (JButton) levelEngine.find( "add-front-panel" );
+			add.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, new File( "." ) );
+					int ret = chooser.open();
+					if ( ret == RelativeFileChooser.OK ){
+						try{
+							final String path = chooser.getPath();
+							level.addFrontPanel( path );
+							frontPanelsData.add( path );
+							frontPanels.setListData( frontPanelsData );
+							viewScroll.repaint();
+						} catch ( LoadException le ){
+							le.printStackTrace();
+						}
+					}
+				}
+			});
+
+			final JButton remove = (JButton) levelEngine.find( "delete-front-panel" );
+			remove.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					if ( frontPanels.getSelectedValue() != null ){
+						String path = (String) frontPanels.getSelectedValue();
+						level.removeFrontPanel( path );
+						frontPanelsData.remove( path );
+						frontPanels.setListData( frontPanelsData );
+						viewScroll.repaint();
+					}
+				}
+			});
+		}
+
 		levelMinZ.setModel( new SpinnerNumberModel() );
 		levelMinZ.addChangeListener( new ChangeListener(){
 			public void stateChanged( ChangeEvent e ){
@@ -531,16 +569,6 @@ public class Editor extends JFrame {
 					levelBackground.setText( path );
 					viewScroll.repaint();
 				}
-				/*
-				JFileChooser chooser = new JFileChooser( new File( "." ) );
-				int returnVal = chooser.showOpenDialog( Editor.this );
-				if ( returnVal == JFileChooser.APPROVE_OPTION ){
-					final File f = chooser.getSelectedFile();
-					level.loadBackground( f.getPath() );
-					levelBackground.setText( f.getPath() );
-					viewScroll.repaint();
-				}
-				*/
 			}
 		});
 
@@ -683,6 +711,7 @@ public class Editor extends JFrame {
 						Block b = new Block();
 						level.getBlocks().add( b );
 						self.invoke_( level, self );
+						view.revalidate();
 						viewScroll.repaint();
 					}
 				});

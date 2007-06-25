@@ -30,13 +30,13 @@
 				<list id="front-panels" />
 			</scrollpane>
 			<hbox>
-				<button text="Add" id="add" />
+				<button text="Add" id="add-front-panel" />
 				<glue size="1" />
-				<button text="Delete" id="delete" />
+				<button text="Delete" id="delete-front-panel" />
 				<glue size="1" />
-				<button text="Move Up" id="up" />
+				<button text="Move Up" id="up-front-panel" />
 				<glue size="1" />
-				<button text="Move Down" id="down" />
+				<button text="Move Down" id="down-front-panel" />
 				<glue size="1" />
 			</hbox>
 		</vbox>

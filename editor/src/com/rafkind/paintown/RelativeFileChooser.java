@@ -123,6 +123,7 @@ public class RelativeFileChooser extends JDialog {
 		final JButton ok = (JButton) engine.find( "ok" );
 		ok.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent e ){
+				paths.add( files.getSelectedValue() );
 				setOption( OK );
 				RelativeFileChooser.this.setVisible( false );
 			}

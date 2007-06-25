@@ -12,9 +12,10 @@
 		<label text="Choose a file" />
 		<hbox>
 			<label text="Path" />
+			<!-- TODO: change some colors -->
 			<textfield editable="false" id="path" />
 		</hbox>
-		<button id="up" text="Go up" />
+		<button id="up" text="Back" />
 		<scrollpane>
 			<list id="files" />
 		</scrollpane>

@@ -63,6 +63,20 @@ public class Level{
 		maxZ = z;
 	}
 
+	public void addFrontPanel( String s ) throws LoadException {
+		frontPanels.add( new Panel( s, loadImage( s ) ) );
+	}
+
+	public void removeFrontPanel( String s ){
+		for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
+			Panel panel = (Panel) it.next();
+			if ( panel.name.equals( s ) ){
+				frontPanels.remove( panel );
+				break;
+			}
+		}
+	}
+
 	private void drawFrontPanels( Graphics2D g ){
 		int w = 0;
 		if ( ! frontPanels.isEmpty() ){
