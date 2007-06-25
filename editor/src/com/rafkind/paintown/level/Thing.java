@@ -162,7 +162,7 @@ public abstract class Thing{
 		return loadImage( file, t );
 	}
 
-	protected abstract Image readIdleImage( String file ) throws LoadException;
+	protected abstract BufferedImage readIdleImage( String file ) throws LoadException;
 	protected abstract String getType();
 	public abstract Token toToken();
 	
