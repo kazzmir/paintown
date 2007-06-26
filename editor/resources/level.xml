@@ -59,7 +59,9 @@
 		</vbox>
 		<glue size="1" />
 		<label text="Back Panel Order" />
-		<textarea id="order" editable="false" rows="5" cols="3" />
+		<scrollpane>
+			<textarea id="order" editable="false" rows="5" cols="3" />
+		</scrollpane>
 		<glue size="1" />
 		<hbox>
 			<combobox id="pick-order" />

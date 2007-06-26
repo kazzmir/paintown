@@ -67,6 +67,33 @@ public class Level{
 		frontPanels.add( new Panel( s, loadImage( s ) ) );
 	}
 
+	public List getBackPanelOrder(){
+		return new ArrayList( panelOrder );
+	}
+
+	public String getBackPanelName( int i ){
+		Panel panel = (Panel) backPanels.get( new Integer( i ) );
+		return panel.name;
+	}
+
+	public List getFrontPanelNames(){
+		List names = new ArrayList();
+		for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
+			Panel panel = (Panel) it.next();
+			names.add( panel.name );
+		}
+		return names;
+	}
+
+	public List getBackPanelNames(){
+		List names = new ArrayList();
+		for ( Iterator it = backPanels.values().iterator(); it.hasNext(); ){
+			Panel panel = (Panel) it.next();
+			names.add( panel.name );
+		}
+		return names;
+	}
+
 	public void removeFrontPanel( String s ){
 		for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
 			Panel panel = (Panel) it.next();

@@ -497,6 +497,9 @@ public class Editor extends JFrame {
 		final Vector frontPanelsData = new Vector();
 		final JList frontPanels = (JList) levelEngine.find( "front-panels" );
 		frontPanels.setListData( frontPanelsData );
+		final Vector backPanelsData = new Vector();
+		final JList backPanels = (JList) levelEngine.find( "back-panels" );
+		final JTextArea order = (JTextArea) levelEngine.find( "order" );
 
 		{ /* force scope */
 			final JButton add = (JButton) levelEngine.find( "add-front-panel" );
@@ -578,6 +581,18 @@ public class Editor extends JFrame {
 				levelMinZ.setValue( new Integer( level.getMinZ() ) );
 				levelMaxZ.setValue( new Integer( level.getMaxZ() ) );
 				levelBackground.setText( level.getBackgroundFile() );
+				frontPanelsData.addAll( level.getFrontPanelNames() );
+				frontPanels.setListData( frontPanelsData );
+				backPanelsData.addAll( level.getBackPanelNames() );
+				backPanels.setListData( backPanelsData );
+
+				StringBuffer orderText = new StringBuffer();
+				for ( Iterator it = level.getBackPanelOrder().iterator(); it.hasNext(); ){
+					Integer num = (Integer) it.next();
+					String name = level.getBackPanelName( num.intValue() );
+					orderText.append( name ).append( "\n" );
+				}
+				order.setText( orderText.toString() );
 				return null;
 			}
 		};
