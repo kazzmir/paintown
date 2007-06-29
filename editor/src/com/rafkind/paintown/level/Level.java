@@ -71,9 +71,42 @@ public class Level{
 		return new ArrayList( panelOrder );
 	}
 
+	private Integer findFreeKey( HashMap map ){
+		int i = 0;
+		for ( Iterator it = map.keySet().iterator(); it.hasNext(); ){
+			Integer x = (Integer) it.next();
+			if ( i <= x.intValue() ){
+				i = x.intValue() + 1;	
+			}
+		}
+		return new Integer( i );
+	}
+
+	public void addBackPanel( String path ) throws LoadException {
+		this.backPanels.put( findFreeKey( backPanels ), new Panel( path, loadImage( path ) ) );
+	}
+
 	public String getBackPanelName( int i ){
 		Panel panel = (Panel) backPanels.get( new Integer( i ) );
 		return panel.name;
+	}
+
+	public void removeBackPanel( String path ){
+		for ( Iterator it = this.backPanels.entrySet().iterator(); it.hasNext(); ){
+			Map.Entry entry = (Map.Entry) it.next();
+			Integer key = (Integer) entry.getKey();
+			Panel panel = (Panel) entry.getValue();
+			if ( panel.name.equals( path ) ){
+				this.backPanels.remove( key );
+				for ( Iterator orders = this.panelOrder.iterator(); orders.hasNext(); ){
+					Integer o = (Integer) orders.next();
+					if ( o.equals( key ) ){
+						orders.remove();	
+					}
+				}
+				return;
+			}
+		}
 	}
 
 	public List getFrontPanelNames(){

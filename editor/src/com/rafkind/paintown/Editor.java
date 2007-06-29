@@ -535,6 +535,40 @@ public class Editor extends JFrame {
 			});
 		}
 
+		{ /* force scope */
+			final JButton add = (JButton) levelEngine.find( "add-back-panel" );
+			add.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, new File( "." ) );
+					int ret = chooser.open();
+					if ( ret == RelativeFileChooser.OK ){
+						try{
+							final String path = chooser.getPath();
+							level.addBackPanel( path );
+							backPanelsData.add( path );
+							backPanels.setListData( backPanelsData );
+							viewScroll.repaint();
+						} catch ( LoadException le ){
+							le.printStackTrace();
+						}
+					}
+				}
+			});
+
+			final JButton remove = (JButton) levelEngine.find( "delete-back-panel" );
+			remove.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					if ( backPanels.getSelectedValue() != null ){
+						String path = (String) backPanels.getSelectedValue();
+						level.removeBackPanel( path );
+						backPanelsData.remove( path );
+						backPanels.setListData( backPanelsData );
+						viewScroll.repaint();
+					}
+				}
+			});
+		}
+
 		levelMinZ.setModel( new SpinnerNumberModel() );
 		levelMinZ.addChangeListener( new ChangeListener(){
 			public void stateChanged( ChangeEvent e ){
