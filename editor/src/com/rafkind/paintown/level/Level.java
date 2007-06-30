@@ -71,6 +71,24 @@ public class Level{
 		return new ArrayList( panelOrder );
 	}
 
+	public void addBackPanelOrder( String path ){
+		for ( Iterator it = this.backPanels.entrySet().iterator(); it.hasNext(); ){
+			Map.Entry entry = (Map.Entry) it.next();
+			Integer key = (Integer) entry.getKey();
+			Panel panel = (Panel) entry.getValue();
+			if ( panel.name.equals( path ) ){
+				panelOrder.add( key );
+				return;
+			}
+		}
+	}
+
+	public void removeLastOrder(){
+		if ( ! panelOrder.isEmpty() ){
+			panelOrder.remove( panelOrder.size() - 1 );
+		}
+	}
+
 	private Integer findFreeKey( HashMap map ){
 		int i = 0;
 		for ( Iterator it = map.keySet().iterator(); it.hasNext(); ){

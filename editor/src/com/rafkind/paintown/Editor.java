@@ -567,11 +567,20 @@ public class Editor extends JFrame {
 			final JButton remove = (JButton) levelEngine.find( "remove-order" );
 			add.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
+					String path = (String) pickOrder.getSelectedItem();
+					if ( path != null ){
+						level.addBackPanelOrder( path );
+						setOrderText.invoke_();
+						viewScroll.repaint();
+					}
 				}
 			});
 
 			remove.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
+					level.removeLastOrder();
+					setOrderText.invoke_();
+					viewScroll.repaint();
 				}
 			});
 		}
