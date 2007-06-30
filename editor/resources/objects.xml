@@ -1,0 +1,11 @@
+<vbox>
+		<scrollpane>
+			<list id="objects" />
+		</scrollpane>
+		<hbox>
+			<button text="Add" id="add" />
+			<glue />
+			<button text="Remove" id="delete" />
+			<glue />
+		</hbox>
+</vbox>

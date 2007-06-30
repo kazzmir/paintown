@@ -483,8 +483,11 @@ public class Editor extends JFrame {
 
 		tabbed.add( "Blocks", holder );
 		
-		final JList objects = new JList( allowableObjects );
-		tabbed.add( "Objects", objects );
+		final SwingEngine objectEngine = new SwingEngine( "objects.xml" );
+		tabbed.add( "Objects", (JComponent) objectEngine.getRootComponent() );
+
+		// final JList objects = new JList( allowableObjects );
+		final JList objects = (JList) objectEngine.find( "objects" );
 
 		final SwingEngine levelEngine = new SwingEngine( "level.xml" );
 		final JPanel levelPane = (JPanel) levelEngine.getRootComponent();
