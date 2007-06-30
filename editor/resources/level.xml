@@ -63,9 +63,8 @@
 			<textarea id="order" editable="false" rows="5" cols="3" />
 		</scrollpane>
 		<glue size="1" />
+		<combobox id="pick-order" />
 		<hbox>
-			<combobox id="pick-order" />
-			<glue size="1" />
 			<button id="add-order" text="Add" />
 			<glue size="1" />
 			<button id="remove-order" text="Remove Last" />

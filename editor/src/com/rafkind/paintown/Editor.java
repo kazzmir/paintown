@@ -500,6 +500,54 @@ public class Editor extends JFrame {
 		final Vector backPanelsData = new Vector();
 		final JList backPanels = (JList) levelEngine.find( "back-panels" );
 		final JTextArea order = (JTextArea) levelEngine.find( "order" );
+		final JComboBox pickOrder = (JComboBox) levelEngine.find( "pick-order" );
+
+		class BackPanelCombo implements ComboBoxModel {
+			private Object selected;
+			private Vector data;
+			private List listeners;
+
+			public BackPanelCombo( Vector data ){
+				this.data = data;
+				this.listeners = new ArrayList();
+			}
+
+			public Object getSelectedItem(){
+				return selected;
+			}
+
+			public void update(){
+				selected = null;
+				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 99999 );
+				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+						  ListDataListener l = (ListDataListener) it.next();
+						  l.contentsChanged( event );
+				}
+			}
+
+			public void setSelectedItem( Object i ){
+				selected = i;
+			}
+
+			public void addListDataListener( ListDataListener l ){
+				listeners.add( l );
+			}
+
+			public Object getElementAt( int index ){
+				return this.data.get( index );
+			}
+
+			public int getSize(){
+				return this.data.size();
+			}
+
+			public void removeListDataListener( ListDataListener l ){
+				this.listeners.remove( l );
+			}
+		};
+
+		final BackPanelCombo comboModel = new BackPanelCombo( backPanelsData );
+		pickOrder.setModel( comboModel );
 
 		final Lambda0 setOrderText = new Lambda0(){
 			public Object invoke(){
@@ -513,6 +561,20 @@ public class Editor extends JFrame {
 				return null;
 			}
 		};
+
+		{
+			final JButton add = (JButton) levelEngine.find( "add-order" );
+			final JButton remove = (JButton) levelEngine.find( "remove-order" );
+			add.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+				}
+			});
+
+			remove.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+				}
+			});
+		}
 
 		{ /* force scope */
 			final JButton add = (JButton) levelEngine.find( "add-front-panel" );
@@ -560,6 +622,7 @@ public class Editor extends JFrame {
 							level.addBackPanel( path );
 							backPanelsData.add( path );
 							backPanels.setListData( backPanelsData );
+							comboModel.update();
 							viewScroll.repaint();
 						} catch ( LoadException le ){
 							le.printStackTrace();
@@ -577,6 +640,7 @@ public class Editor extends JFrame {
 						backPanelsData.remove( path );
 						backPanels.setListData( backPanelsData );
 						setOrderText.invoke_();
+						comboModel.update();
 						viewScroll.repaint();
 					}
 				}
@@ -635,15 +699,7 @@ public class Editor extends JFrame {
 				backPanels.setListData( backPanelsData );
 
 				setOrderText.invoke_();
-				/*
-				StringBuffer orderText = new StringBuffer();
-				for ( Iterator it = level.getBackPanelOrder().iterator(); it.hasNext(); ){
-					Integer num = (Integer) it.next();
-					String name = level.getBackPanelName( num.intValue() );
-					orderText.append( name ).append( "\n" );
-				}
-				order.setText( orderText.toString() );
-				*/
+				comboModel.update();
 				return null;
 			}
 		};

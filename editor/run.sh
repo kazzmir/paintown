@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -jar editor.jar
+java -jar editor.jar -client
