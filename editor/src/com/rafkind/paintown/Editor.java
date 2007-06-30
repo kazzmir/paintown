@@ -501,6 +501,19 @@ public class Editor extends JFrame {
 		final JList backPanels = (JList) levelEngine.find( "back-panels" );
 		final JTextArea order = (JTextArea) levelEngine.find( "order" );
 
+		final Lambda0 setOrderText = new Lambda0(){
+			public Object invoke(){
+				StringBuffer orderText = new StringBuffer();
+				for ( Iterator it = level.getBackPanelOrder().iterator(); it.hasNext(); ){
+					Integer num = (Integer) it.next();
+					String name = level.getBackPanelName( num.intValue() );
+					orderText.append( name ).append( "\n" );
+				}
+				order.setText( orderText.toString() );
+				return null;
+			}
+		};
+
 		{ /* force scope */
 			final JButton add = (JButton) levelEngine.find( "add-front-panel" );
 			add.addActionListener( new AbstractAction(){
@@ -563,6 +576,7 @@ public class Editor extends JFrame {
 						level.removeBackPanel( path );
 						backPanelsData.remove( path );
 						backPanels.setListData( backPanelsData );
+						setOrderText.invoke_();
 						viewScroll.repaint();
 					}
 				}
@@ -620,6 +634,8 @@ public class Editor extends JFrame {
 				backPanelsData.addAll( level.getBackPanelNames() );
 				backPanels.setListData( backPanelsData );
 
+				setOrderText.invoke_();
+				/*
 				StringBuffer orderText = new StringBuffer();
 				for ( Iterator it = level.getBackPanelOrder().iterator(); it.hasNext(); ){
 					Integer num = (Integer) it.next();
@@ -627,6 +643,7 @@ public class Editor extends JFrame {
 					orderText.append( name ).append( "\n" );
 				}
 				order.setText( orderText.toString() );
+				*/
 				return null;
 			}
 		};
@@ -827,69 +844,7 @@ public class Editor extends JFrame {
 		this.addWindowListener( new CloseHook( closeHook ) );
 	}
 
-	/* f1 = /blah/whatever/foo
-	 * f2 = /blah/whatever/foo/bar/baz
-	 * return bar/baz
-	 * or if
-	 * f1 = /blah/whatever/foo
-	 * f2 = /bee/mop/bar
-	 * return ../../../bee/mop/bar
-	 *
-	 * basically return the path to f2 relative to f1
-	 * 
-	 * kind of unix centric..
-	 */
-	private static String sanitizePath( File f1, File f2 ){
-		System.out.println( "Sanitize " + f1.getPath() + " and " + f2.getPath() );
-		List allF1 = new ArrayList();
-		File parents = f1;
-		while ( parents != null ){
-			allF1.add( 0, parents );
-			parents = parents.getParentFile();
-		}
-
-		List allF2 = new ArrayList();
-		parents = f2;
-		while ( parents != null ){
-			allF2.add( 0, parents );
-			parents = parents.getParentFile();
-		}
-
-		int index = 0;
-		while ( index < allF1.size() && index < allF2.size() ){
-			if ( ! allF1.get( index ).equals( allF2.get( index ) ) ){
-				break;
-			}
-			index += 1;
-		}
-
-		System.out.println( "In common: " );
-		for ( int i = 0; i < index; i++ ){
-			System.out.print( allF1.get( i ) + " " );
-			System.out.println();
-		}
-
-		StringBuffer result = new StringBuffer();
-		for ( int i = index; i < allF1.size(); i++ ){
-			result.append( "../" );
-		}
-
-		if ( index > 1 ){
-			String base = ((File) allF2.get( index - 1 )).getPath();
-			result.append( f2.getPath().substring( base.length() + 1 ) );
-		} else {
-			result.append( f2.getPath().substring( 1 ) );
-		}
-
-		return result.toString();
-	}
-
 	public static void main( String[] args ){
-
-		/*
-		System.out.println( "Sanitized: " + sanitizePath( new File( "/usr" ), new File( "/home/shit" ) ) );
-		System.out.println( "Sanitized: " + sanitizePath( new File( "/usr" ), new File( "/usr/local/lib" ) ) );
-		*/
 
 		final Editor editor = new Editor();
 		SwingUtilities.invokeLater(

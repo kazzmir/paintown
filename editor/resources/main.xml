@@ -61,7 +61,7 @@
 			weighty="0.1"
 			gridheight="1"
 			fill="GridBagConstraints.HORIZONTAL"
-			anchor="GridBagConstraints.NORTHWEST"
+			anchor="GridBagConstraints.WEST"
 			/>
 		<glue size="1" />
 		<label text="Scale: 2" id="scale" />
