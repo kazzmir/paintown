@@ -16,12 +16,25 @@ public class TokenReader{
 	
 			Token current = null;
 			int line = 1;
+			boolean inString = false;
 			while ( reader.ready() ){
 				int i = reader.read();
 				if ( i == -1 ){
 					break;
 				}
 				char c = (char) i;
+
+				if ( inString ){
+					if ( c == '"' ){
+						inString = false;
+					} else {
+						if ( current != null ){
+							current.addData( c );
+						}
+					}
+					continue;
+				}
+
 				switch ( c ){
 					case '(' : {
 						// System.out.println( "Read new token" );
@@ -34,6 +47,10 @@ public class TokenReader{
 							current.addToken( n );
 							current = n;
 						}
+						break;
+					}
+					case '"' : {
+						inString = true;
 						break;
 					}
 					case '	' :
@@ -123,7 +140,6 @@ public class TokenReader{
 					case '/' :
 					case '\\' :
 					case '\'' :
-					case '"' :
 					case '.' :
 					case ':' :
 					case '!' :

@@ -115,9 +115,6 @@ public class Editor extends JFrame {
 				data.add( new File( "data/chars/billy/billy.txt" ) );
 				data.add( new File( "data/chars/heavy/heavy.txt" ) );
 				data.add( new File( "data/chars/joe/joe.txt" ) );
-				data.add( new File( "data/chars/kula/kula.txt" ) );
-				data.add( new File( "data/chars/mandy/mandy.txt" ) );
-				data.add( new File( "data/chars/maxima/maxima.txt" ) );
 				data.add( new File( "data/chars/shermie/shermie.txt" ) );
 				data.add( new File( "data/chars/yashiro/yashiro.txt" ) );
 				data.add( new File( "data/misc/apple/apple.txt" ) );
@@ -322,40 +319,61 @@ public class Editor extends JFrame {
 				currentPopup = p;
 				p.show();
 
+				final Lambda1 addThing = new Lambda1(){
+					public Object invoke( Object f ){
+						File file = (File) f;
+						try{
+							Block b = findBlock( event );
+							if ( b != null ){
+								TokenReader reader = new TokenReader( file );
+								Token head = reader.nextToken();
+								int x = (int)(event.getX() / level.getScale());
+								int y = (int)(event.getY() / level.getScale());
+								for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+									Block b1 = (Block) it.next();
+									if ( b1 == b ){
+										break;
+									}
+									if ( b1.isEnabled() ){
+										x -= b1.getLength();
+									}
+								}
+								b.addThing( makeThing( head, x, y, file.getPath() ) );
+								/*
+									Character c = new Character( reader.nextToken() );
+									b.add( new Character( reader.nextToken() ) );
+									*/
+								viewScroll.repaint();
+							} else {
+								// JOptionPane.showMessageDialog( null, "The cursor is not within a block. Either move the cursor or add a block.", "Paintown Editor Error", JOptionPane.ERROR_MESSAGE );
+								showError( "The cursor is not within a block. Either move the cursor or add a block." );
+							}
+						} catch ( LoadException e ){
+							System.out.println( "Could not load " + file );
+							e.printStackTrace();
+						}
+
+						return null;
+					}
+				};
+
 				all.addMouseListener( new MouseAdapter() {
 					public void mouseClicked( MouseEvent clicked ){
 						if ( clicked.getClickCount() == 2 ){
 							int index = all.locationToIndex( clicked.getPoint() );
 							File f = (File) files.get( index );
-							try{
-								Block b = findBlock( event );
-								if ( b != null ){
-									TokenReader reader = new TokenReader( f );
-									Token head = reader.nextToken();
-									int x = (int)(event.getX() / level.getScale());
-									int y = (int)(event.getY() / level.getScale());
-									for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-										Block b1 = (Block) it.next();
-										if ( b1 == b ){
-											break;
-										}
-										if ( b1.isEnabled() ){
-											x -= b1.getLength();
-										}
-									}
-									b.addThing( makeThing( head, x, y, f.getPath() ) );
-									/*
-									Character c = new Character( reader.nextToken() );
-									b.add( new Character( reader.nextToken() ) );
-									*/
-									viewScroll.repaint();
-								} else {
-									JOptionPane.showMessageDialog( null, "The cursor is not within a block. Either move the cursor or add a block.", "Paintown Editor Error", JOptionPane.ERROR_MESSAGE );
-								}
-							} catch ( LoadException e ){
-								System.out.println( "Could not load " + f );
-								e.printStackTrace();
-							}
+							addThing.invoke_( f );
+							p.hide();
+						}
+					}
+				});
+
+				add.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
+						int index = all.getSelectedIndex();
+						if ( index != -1 ){
+							File f = (File) files.get( index );
+							addThing.invoke_( f );
 							p.hide();
 						}
 					}
@@ -808,12 +826,6 @@ public class Editor extends JFrame {
 		view.setBorder( BorderFactory.createLineBorder( new Color( 255, 0, 0 ) ) );
 		viewContainer.add( viewScroll );
 
-		/*
-		final JList list = (JList) engine.find( "files" );
-		final DirectoryModel model = new DirectoryModel( "data" );
-		list.setModel( model );
-		*/
-
 		saveLevel.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				JFileChooser chooser = new JFileChooser( new File( "." ) );
@@ -1013,6 +1025,10 @@ public class Editor extends JFrame {
 
 		this.setJMenuBar( menuBar );
 		this.addWindowListener( new CloseHook( closeHook ) );
+	}
+
+	private static void showError( String message ){
+		JOptionPane.showMessageDialog( null, message, "Paintown Editor Error", JOptionPane.ERROR_MESSAGE );
 	}
 
 	public static void main( String[] args ){
