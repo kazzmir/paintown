@@ -979,5 +979,3 @@ Animation::~Animation(){
 	if ( attack_collide )
 		delete attack_collide;
 }
-
-

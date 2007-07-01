@@ -9,6 +9,8 @@ public:
 
 	virtual void Interact( Animation * animation );
 
+	virtual ~AnimationEvent();
+
 };
 
 #endif

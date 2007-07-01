@@ -16,3 +16,6 @@ void Stimulation::stimulate( Character & obj ) const {
 Stimulation * Stimulation::copy() const {
 	return new Stimulation( *this );
 }
+
+Stimulation::~Stimulation(){
+}

@@ -12,6 +12,8 @@ public:
 	virtual void stimulate( Object & o ) const;
 	virtual void stimulate( Character & c ) const;
 	virtual Stimulation * copy() const;
+
+	virtual ~Stimulation();
 };
 
 #endif

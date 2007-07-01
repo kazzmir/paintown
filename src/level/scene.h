@@ -81,9 +81,13 @@ protected:
 	/* how far the scene has progressed */
 	int block_length;
 
+	/* minimum/maximum values characters can move within the z-plane */
 	int minimum_z, maximum_z;
 
 	Block * current_block;
+
+	/* count of how many blocks have gone by */
+	int blockNumber;
 
 };
 

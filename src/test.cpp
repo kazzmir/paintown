@@ -431,7 +431,7 @@ void waitOnKey( int xkey ){
 void showAnimations( string person, int xmap = 0 ){
 
 	cout << "Loading " << person << "\n";
-	global_debug = true;
+	enableDebug();
 	/*
 	string path( "data/chars/" );
 	path += person;

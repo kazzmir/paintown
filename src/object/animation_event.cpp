@@ -6,3 +6,6 @@ AnimationEvent::AnimationEvent( ){
 void AnimationEvent::Interact( Animation * parent ){
 
 }
+
+AnimationEvent::~AnimationEvent(){
+}

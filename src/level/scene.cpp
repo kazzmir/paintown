@@ -8,6 +8,7 @@
 #include "util/load_exception.h"
 #include "object/object.h"
 #include "scene.h"
+#include "globals.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
 
@@ -34,8 +35,8 @@ background( NULL ),
 block_length( 0 ),
 minimum_z( 0 ),
 maximum_z( 0 ),
-current_block( NULL ){
-
+current_block( NULL ),
+blockNumber( 1 ){
 
 	TokenReader tr( filename );
 
@@ -86,12 +87,16 @@ current_block( NULL ){
 				if ( normal != "none" ){
 					x_normal = new Bitmap( normal );
 				}
+				x_neon = new Bitmap();
+				x_screen = new Bitmap();
+				/*
 				if ( neon != "none" ){
 					x_neon = new Bitmap( neon );
 				}
 				if ( s_screen != "none" ){
 					x_screen = new Bitmap( s_screen );
 				}
+				*/
 				Panel * p = new Panel( x_normal, x_neon, x_screen );
 				panels[ num ] = p;
 				// panel_num++;
@@ -198,6 +203,10 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 			delete current_block;
 			current_block = level_blocks.front();
 			level_blocks.pop_front();
+			blockNumber += 1;
+			if ( globalDebug() ){
+				cout << "[Scene] Current block is " << blockNumber << endl;	
+			}
 		}
 	}
 

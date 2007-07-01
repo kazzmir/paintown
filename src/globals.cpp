@@ -1,7 +1,5 @@
 #include "globals.h"
 
-bool global_debug = false;
-
 /*
 const int MIN_WORLD_Z = 160;
 const int MAX_WORLD_Z = 232;
