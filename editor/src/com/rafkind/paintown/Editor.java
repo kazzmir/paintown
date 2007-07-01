@@ -42,10 +42,14 @@ public class Editor extends JFrame {
 				return null;
 			}
 		};
+		JMenuItem newLevel = new JMenuItem( "New Level" );
+		menuLevel.add( newLevel );
 		JMenuItem loadLevel = new JMenuItem( "Open Level" );
 		menuLevel.add( loadLevel );
 		JMenuItem saveLevel = new JMenuItem( "Save Level" );
 		menuLevel.add( saveLevel );
+
+		newLevel.setMnemonic( KeyEvent.VK_N );
 		menuLevel.setMnemonic( KeyEvent.VK_L );
 		saveLevel.setMnemonic( KeyEvent.VK_S );
 		loadLevel.setMnemonic( KeyEvent.VK_O );
@@ -101,17 +105,67 @@ public class Editor extends JFrame {
 			}
 		};
 
-		final Vector allowableObjects = new Vector();
-		allowableObjects.add( new File( "data/chars/angel/angel.txt" ) );
-		allowableObjects.add( new File( "data/chars/billy/billy.txt" ) );
-		allowableObjects.add( new File( "data/chars/heavy/heavy.txt" ) );
-		allowableObjects.add( new File( "data/chars/joe/joe.txt" ) );
-		allowableObjects.add( new File( "data/chars/kula/kula.txt" ) );
-		allowableObjects.add( new File( "data/chars/mandy/mandy.txt" ) );
-		allowableObjects.add( new File( "data/chars/maxima/maxima.txt" ) );
-		allowableObjects.add( new File( "data/chars/shermie/shermie.txt" ) );
-		allowableObjects.add( new File( "data/chars/yashiro/yashiro.txt" ) );
-		allowableObjects.add( new File( "data/misc/apple/apple.txt" ) );
+		class ObjectListModel implements ListModel{
+			private List data;
+			private List listeners;
+			public ObjectListModel(){
+				/* fill up some defaults */
+				this.data = new ArrayList();
+				data.add( new File( "data/chars/angel/angel.txt" ) );
+				data.add( new File( "data/chars/billy/billy.txt" ) );
+				data.add( new File( "data/chars/heavy/heavy.txt" ) );
+				data.add( new File( "data/chars/joe/joe.txt" ) );
+				data.add( new File( "data/chars/kula/kula.txt" ) );
+				data.add( new File( "data/chars/mandy/mandy.txt" ) );
+				data.add( new File( "data/chars/maxima/maxima.txt" ) );
+				data.add( new File( "data/chars/shermie/shermie.txt" ) );
+				data.add( new File( "data/chars/yashiro/yashiro.txt" ) );
+				data.add( new File( "data/misc/apple/apple.txt" ) );
+
+				this.listeners = new ArrayList();
+			}
+
+			public void add( File file ){
+				data.add( file );
+				ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_ADDED, data.size(), data.size() );
+				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+					ListDataListener l = (ListDataListener) it.next();
+					l.intervalAdded( event );
+				}
+			}
+
+			public void remove( int index ){
+				data.remove( index );
+				ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_REMOVED, index, index );
+				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+					ListDataListener l = (ListDataListener) it.next();
+					l.intervalAdded( event );
+				}
+
+			}
+
+			public List getAll(){
+				return data;
+			}
+
+			public void addListDataListener( ListDataListener l ){
+				listeners.add( l );
+			}
+
+			public Object getElementAt( int index ){
+				return this.data.get( index );
+			}
+
+			public int getSize(){
+				return this.data.size();
+			}
+
+			public void removeListDataListener( ListDataListener l ){
+				this.listeners.remove( l );
+			}
+		};
+
+		final ObjectListModel objectsModel = new ObjectListModel();
 
 		class Mouser extends MouseMotionAdapter implements MouseInputListener {
 			Thing selected = null;
@@ -231,7 +285,7 @@ public class Editor extends JFrame {
 			}
 
 			private Vector collectCharFiles(){
-				return allowableObjects;
+				return new Vector( objectsModel.getAll() );
 
 				/*
 				Vector v = new Vector();
@@ -488,6 +542,33 @@ public class Editor extends JFrame {
 
 		// final JList objects = new JList( allowableObjects );
 		final JList objects = (JList) objectEngine.find( "objects" );
+		/* objectsModel is declared way up top */
+		objects.setModel( objectsModel  );
+
+		{
+			final JButton add = (JButton) objectEngine.find( "add" );
+			final JButton remove = (JButton) objectEngine.find( "delete" );
+
+			add.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, new File( "." ) );
+					int ret = chooser.open();
+					if ( ret == RelativeFileChooser.OK ){
+						final String path = chooser.getPath();
+						objectsModel.add( new File( path ) );
+					}
+				}
+			});
+
+			remove.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					int index = objects.getSelectedIndex();
+					if ( index != -1 ){
+						objectsModel.remove( index );
+					}
+				}
+			});
+		}
 
 		final SwingEngine levelEngine = new SwingEngine( "level.xml" );
 		final JPanel levelPane = (JPanel) levelEngine.getRootComponent();
@@ -890,6 +971,16 @@ public class Editor extends JFrame {
 						le.printStackTrace();
 					}
 				}
+			}
+		});
+
+		newLevel.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				level.initAll();
+				setupBlocks.invoke_( level, setupBlocks );
+				loadLevelProperties.invoke_( level );
+				view.revalidate();
+				viewScroll.repaint();
 			}
 		});
 

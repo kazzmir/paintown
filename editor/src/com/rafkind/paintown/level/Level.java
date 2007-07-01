@@ -268,7 +268,7 @@ public class Level{
 		}
 	}
 
-	private void initAll(){
+	public void initAll(){
 		this.name = null;
 		this.background = null;
 		this.minZ = 100;
