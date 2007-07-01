@@ -816,8 +816,20 @@ public class Editor extends JFrame {
 
 		saveLevel.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				Token t = level.toToken();
-				System.out.println( t );
+				JFileChooser chooser = new JFileChooser( new File( "." ) );
+				int returnVal = chooser.showOpenDialog( Editor.this );
+				/* write the text to a file */
+				if ( returnVal == JFileChooser.APPROVE_OPTION ){
+					final File f = chooser.getSelectedFile();
+					try{
+						FileOutputStream out = new FileOutputStream( f );
+						new PrintStream( out ).print( level.toToken().toString() );
+						out.close();
+						System.out.println( level.toToken().toString() );
+					} catch ( IOException e ){
+						e.printStackTrace();
+					}
+				}
 			}
 		});
 
