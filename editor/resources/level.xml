@@ -65,7 +65,7 @@
 		<glue size="1" />
 		<combobox id="pick-order" />
 		<hbox>
-			<button id="add-order" text="Add" />
+			<button id="add-order" text="Add to end" />
 			<glue size="1" />
 			<button id="remove-order" text="Remove Last" />
 			<glue />
