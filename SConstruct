@@ -6,7 +6,7 @@ config = env.Configure();
 def isWindows():
 	import re
 	import sys
-	return re.compile( '.*win32.*' ).match( sys.platform )
+	return "win32" in sys.platform
 
 def getDebug():
 	try:
@@ -47,11 +47,11 @@ else:
 	env.Install( '.', 'build/paintown' )
 	env.Install( '.', 'build/test' )
 
-editorEnv = Environment()
-
-editorEnv.BuildDir( 'build-editor', 'src' )
-editorEnv.Append( CPPPATH = ['saggui/include'] )
-editorEnv.ParseConfig( 'allegro-config --libs' )
-editorEnv.Append( LIBS = ['saggui-alleg','saggui'] )
-editorEnv.Append( LIBPATH = 'saggui/lib' )
+# editorEnv = Environment()
+# 
+# editorEnv.BuildDir( 'build-editor', 'src' )
+# editorEnv.Append( CPPPATH = ['saggui/include'] )
+# editorEnv.ParseConfig( 'allegro-config --libs' )
+# editorEnv.Append( LIBS = ['saggui-alleg','saggui'] )
+# editorEnv.Append( LIBPATH = 'saggui/lib' )
 # editorEnv.Program( 'level-editor', 'build-editor/editor/editor.cpp' )
