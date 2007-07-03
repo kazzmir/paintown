@@ -63,7 +63,7 @@ public abstract class Thing{
 	}
 
 	public String getPath(){
-		return path;
+		return path.replaceAll( "\\\\", "/" );
 	}
 
 	public abstract PropertyEditor getEditor();

@@ -405,7 +405,7 @@ public class Level{
 		z.addToken( new String[]{ "minimum", String.valueOf( getMinZ() ) } );
 		z.addToken( new String[]{ "maximum", String.valueOf( getMaxZ() ) } );
 
-		level.addToken( new String[]{ "background", "\"" + backgroundFile + "\"" } );
+		level.addToken( new String[]{ "background", "\"" + backgroundFile.replaceAll( "\\\\", "/" ) + "\"" } );
 
 		for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
 			/*
@@ -416,7 +416,7 @@ public class Level{
 			f.addToken( new Token( f, p.name ) );
 			*/
 			Panel p = (Panel) it.next();
-			level.addToken( new String[]{ "frontpanel", "\"" + p.name + "\"" } );
+			level.addToken( new String[]{ "frontpanel", "\"" + p.name.replaceAll( "\\\\", "/" ) + "\"" } );
 		}
 
 		for ( Iterator it = backPanels.entrySet().iterator(); it.hasNext(); ){
@@ -426,7 +426,7 @@ public class Level{
 			f.addToken( new Token( f, "panel" ) );
 			Panel p = (Panel) entry.getValue();
 			f.addToken( new Token( f, entry.getKey().toString() ) );
-			f.addToken( new Token( f, "\"" + p.name + "\"" ) );
+			f.addToken( new Token( f, "\"" + p.name.replaceAll( "\\\\", "/" ) + "\"" ) );
 			f.addToken( new Token( f, "junk" ) );
 			f.addToken( new Token( f, "junk" ) );
 		}
