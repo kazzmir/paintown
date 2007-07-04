@@ -275,7 +275,7 @@ public class Editor extends JFrame {
 					temp.addToken( new Token( "item" ) );
 					temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
 					temp.addToken( new String[]{ "path", path } );
-					System.out.println( "Make item from " + temp.toString() );
+					// System.out.println( "Make item from " + temp.toString() );
 					return new Item( temp );
 				}
 				throw new LoadException( "Unknown type: " + head.getName() );
@@ -804,8 +804,10 @@ public class Editor extends JFrame {
 				levelMinZ.setValue( new Integer( level.getMinZ() ) );
 				levelMaxZ.setValue( new Integer( level.getMaxZ() ) );
 				levelBackground.setText( level.getBackgroundFile() );
+				frontPanelsData.clear();
 				frontPanelsData.addAll( level.getFrontPanelNames() );
 				frontPanels.setListData( frontPanelsData );
+				backPanelsData.clear();
 				backPanelsData.addAll( level.getBackPanelNames() );
 				backPanels.setListData( backPanelsData );
 

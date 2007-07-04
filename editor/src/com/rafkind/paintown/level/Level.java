@@ -271,6 +271,7 @@ public class Level{
 	public void initAll(){
 		this.name = null;
 		this.background = null;
+		this.backgroundFile = null;
 		this.minZ = 100;
 		this.maxZ = 200;
 		this.scale = 2;
