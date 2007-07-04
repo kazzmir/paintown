@@ -1009,6 +1009,7 @@ public class Editor extends JFrame {
 		});
 
 		setupBlocks.invoke_( level, setupBlocks );
+		loadLevelProperties.invoke_( level );
 
 		JPanel scroll = (JPanel) engine.find( "scroll" );
 		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 20, 0, 1, 20 );
