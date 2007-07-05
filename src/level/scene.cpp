@@ -204,7 +204,7 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 			current_block = level_blocks.front();
 			level_blocks.pop_front();
 			blockNumber += 1;
-			if ( globalDebug() ){
+			if ( Global::globalDebug() ){
 				cout << "[Scene] Current block is " << blockNumber << endl;	
 			}
 		}

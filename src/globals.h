@@ -1,7 +1,6 @@
 #ifndef _global_things_h
 #define _global_things_h
 
-static bool global_debug;
 
 /*
 extern const int MIN_WORLD_Z;
@@ -16,16 +15,13 @@ extern const int MIN_RELATIVE_DISTANCE;
 
 extern const char * NAME_FONT;
 
-inline bool globalDebug(){
-	return global_debug;
-}
+namespace Global{
 
-inline void disableDebug(){
-	global_debug = false;
-}
+bool globalDebug();
+void invertDebug();
+void disableDebug();
+void enableDebug();
 
-inline void enableDebug(){
-	global_debug = true;
 }
 
 #endif

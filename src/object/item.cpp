@@ -121,7 +121,7 @@ void Item::draw( Bitmap * work, int rel_x ){
 	// cout << "draw item at " << getRX() - rel_x << " " << getRY() << endl;
 	picture.draw( getRX() - rel_x - picture.getWidth() / 2, getRY() - picture.getHeight(), *work );
 
-	if ( global_debug ){
+	if ( Global::globalDebug() ){
 		work->circleFill( getRX() - rel_x, (int) getZ(), 5, Bitmap::makeColor( 255, 255, 255 ) );
 	}
 }

@@ -148,7 +148,9 @@ const Object * Enemy::findClosest( const vector< Object * > & enemies ){
 
 void Enemy::act( vector< Object * > * others, World * world ){
 
-	// cout << this << " " << getX() << ", " << getZ() << endl;
+	if ( Global::globalDebug() ){
+		cout << this << " " << getName() << " (x,y,z) = ( " << getX() << ", " << getY() << ", " << getZ() << " ) " << endl;
+	}
 
 	Character::act( others, world );
 

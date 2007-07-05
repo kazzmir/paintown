@@ -45,6 +45,8 @@ invincible( false ){
 
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
+
+	keyboard.setDelay( Keyboard::Key_F1, 100 );
 }
 	
 Player::Player( const Character & chr ) throw( LoadException ):
@@ -73,6 +75,10 @@ void Player::gainLife( int l ){
 void Player::fillKeyCache(){
 
 	keyboard.poll();
+
+	if ( keyboard[ Keyboard::Key_F1 ] ){
+		Global::invertDebug();
+	}
 
 	if ( acts++ > GLOBAL_KEY_DELAY ){
 		key_cache.clear();
@@ -555,7 +561,7 @@ void Player::act( vector< Object * > * others, World * world ){
 				for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
 					int & cur = (*mit).second;
 					Animation * blah = (*mit).first;
-					if ( global_debug ){
+					if ( Global::globalDebug() ){
 						cout<< blah->getName() << "? ";
 					}
 					// if ( cur > max || blah->getPreviousSequence() == current_name ){
@@ -569,8 +575,9 @@ void Player::act( vector< Object * > * others, World * world ){
 						max = cur;
 					}
 				}
-				if ( global_debug )
+				if ( Global::globalDebug() ){
 					cout<<endl;
+				}
 			}
 		}
 		// cout<< final->getName() << endl;

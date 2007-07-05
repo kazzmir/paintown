@@ -333,7 +333,7 @@ contact( NULL ){
 
 	string xls = "Animation ";
 	xls += getName();
-	if ( global_debug ){
+	if ( Global::globalDebug() ){
 		diff.printTime( xls );
 	}
 
@@ -680,7 +680,7 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
 	int w = frame.getWidth() / 2;
 	int h = frame.getHeight();
 
-	if ( global_debug ){
+	if ( Global::globalDebug() ){
 		work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
 	}
 
@@ -694,7 +694,7 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
 	// cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
 
 	// work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
-	if ( global_debug ){
+	if ( Global::globalDebug() ){
 		// work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
 		work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
 		// current_collide->draw( *work, x-w, y-h );
@@ -744,7 +744,7 @@ void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work
 	int w = frame.getWidth() / 2;
 	int h = frame.getHeight();
 
-	if ( global_debug ){
+	if ( Global::globalDebug() ){
 		work->rectangle( x, y, x-range, y+1, Bitmap::makeColor(255,255,255) );
 		// work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
 	}
@@ -758,7 +758,7 @@ void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work
 
 	// work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
 	// work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
-	if ( global_debug ){
+	if ( Global::globalDebug() ){
 		// work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
 		work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
 		// current_collide->draw( *work, x-w, y-h, true );
