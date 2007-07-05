@@ -26,12 +26,22 @@ public:
 	virtual void act( vector< Object * > * others, World * world ); 
 	
 	virtual void takeDamage( ObjectAttack * obj, int x );
+	
+	virtual void hurt( int x );
 
 	virtual void loseLife( int l = 1 );
 	virtual void gainLife( int l = 1 );
 
 	inline const int getLives(){
 		return lives;
+	}
+
+	inline const void setInvincible( const bool b ){
+		this->invincible = b;
+	}
+
+	inline const bool isInvincible() const {
+		return this->invincible;
 	}
 
 	/* reset some stuff when the player dies */
@@ -56,6 +66,8 @@ protected:
 	int lives;
 
 	int name_id;
+
+	bool invincible;
 
 	// int last_key;
 

@@ -270,16 +270,20 @@ static bool isArg( const char * s1, const char * s2 ){
 	return strcasecmp( s1, s2 ) == 0;
 }
 
-static Object * selectPlayer() throw( LoadException ){
+static Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	Bitmap background( "data/sprites/select.png" );
 	// background.resize( GFX_X, GFX_Y );
 
-	Object * mandy = new Player( "data/chars/mandy/mandy.txt" );
+	Player * mandy = new Player( "data/chars/mandy/mandy.txt" );
 	cout << "Loaded mandy" << endl;
-	Object * maxima = new Player( "data/chars/maxima/maxima.txt" );
+	Player * maxima = new Player( "data/chars/maxima/maxima.txt" );
 	cout << "Loaded maxima" << endl;
-	Object * kula = new Player( "data/chars/kula/kula.txt" );
+	Player * kula = new Player( "data/chars/kula/kula.txt" );
 	cout << "Loaded kula" << endl;
+
+	mandy->setInvincible( invincibile );
+	maxima->setInvincible( invincibile );
+	kula->setInvincible( invincibile );
 
 	Object * all[] = { mandy, maxima, kula };
 	Object ** end = &all[ 2 ];
@@ -363,20 +367,42 @@ static Object * selectPlayer() throw( LoadException ){
 }
 
 static bool titleScreen(){
-	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
+	Bitmap background( "data/paintown-title.png" );
+	// Bitmap::Screen->Blit( background );
+	background.BlitToScreen();
 	Music::loadSong( "data/music/aqua.s3m" );
 
 	const int fontY = 20;
 	const Font & font = Font::getFont( "data/fonts/arial.ttf", 20, fontY );
 
-	const int PLAY = 0;
-	const int QUIT = 2;
-	const char * options[] = { "New game",
-	                           "Change controls",
-				   "Quit" };
+	const int MAIN_PLAY = 0;
+	const int MAIN_QUIT = 3;
+	const int MAIN_CHANGE_CONTROLS = 1;
+	const int MAIN_MORE_OPTIONS = 2;
+	const char * mainOptions[] = { "New game",
+	                               "Change controls",
+				       "More options",
+				       "Quit" };
+	const unsigned int mainMax = sizeof( mainOptions ) / sizeof( char* );
+
+	bool isInvincible = false;
+	const int MORE_INVINCIBLE = 0;
+	const int MORE_GAME_SPEED = 1;
+	const int MORE_BACK = 2;
+	char invincible[ 128 ];
+	strcpy( invincible, "Invincible: No" );
+	char gameSpeed[ 128 ];
+	strcpy( gameSpeed, "Game speed: 1.0" );
+	const char * moreOptions[] = { invincible,
+				       gameSpeed,
+				       "Back"
+				       };
+	const unsigned int moreMax = sizeof( moreOptions ) / sizeof( char* );
+
 	// font.printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "foo" );
 	unsigned int choose = 0;
-	const unsigned int maxOptions = sizeof( options ) / sizeof( char* );
+	const char * const * options = mainOptions;
+	unsigned int maxOptions = mainMax;
 	for ( unsigned int i = 0; i < maxOptions; i++ ){
 		int yellow = Bitmap::makeColor( 255, 255, 0 );
 		int white = Bitmap::makeColor( 255, 255, 255 );
@@ -399,6 +425,7 @@ static bool titleScreen(){
 			double think = Global::speed_counter;
 
 			while ( think > 0 ){
+				bool enter = key[ Keyboard::Key_ENTER ];
 				think--;
 
 				if ( key[ Keyboard::Key_UP ] ){
@@ -411,18 +438,74 @@ static bool titleScreen(){
 					choose = (choose + 1 + maxOptions) % maxOptions;
 				}
 
-				done = key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] || key[ Keyboard::Key_ESC ];
-				if ( key[ Keyboard::Key_ESC ] ){
-					choose = QUIT;
+				if ( enter ){
+					draw = true;
+					if ( options == mainOptions ){
+						switch ( choose ){
+							case MAIN_QUIT :
+							case MAIN_PLAY : {
+								done = true;
+								break;
+							}
+							case MAIN_CHANGE_CONTROLS : {
+								break;
+							}
+							case MAIN_MORE_OPTIONS : {
+								options = moreOptions;
+								maxOptions = moreMax;
+								choose = 0;
+								break;
+							}
+						}
+					} else if ( options == moreOptions ){
+						switch ( choose ){
+							case MORE_INVINCIBLE : {
+								isInvincible = ! isInvincible;
+								sprintf( invincible, "Invincible: %s", isInvincible ? "Yes" : "No" );
+								break;
+							}
+							case MORE_BACK : {
+								options = mainOptions;
+								maxOptions = mainMax;
+								choose = 0;
+								break;
+							}
+							case MORE_GAME_SPEED : {
+								break;
+							}
+						}
+					}
+
+					while ( key[ Keyboard::Key_ENTER ] ){
+						Util::rest( 1 );
+						key.poll();
+					}
 				}
+
+				// done = key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] || key[ Keyboard::Key_ESC ];
+				if ( key[ Keyboard::Key_ESC ] ){
+					draw = true;
+					if ( options == mainOptions ){
+						done = true;
+						choose = MAIN_QUIT;
+					} else {
+						options = mainOptions;
+						maxOptions = mainMax;
+					}
+				}
+				/*
 				if ( key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] ){
-									}
+				}
+				*/
 			}
 
 			Global::speed_counter = 0;
 		}
 
 		if ( draw ){
+			// Bitmap::Screen->Blit( background );
+			background.BlitToScreen();
+			// Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
 			for ( unsigned int i = 0; i < maxOptions; i++ ){
 				int yellow = Bitmap::makeColor( 255, 255, 0 );
 				int white = Bitmap::makeColor( 255, 255, 255 );
@@ -442,27 +525,31 @@ static bool titleScreen(){
 		Util::rest( 1 );
 	}
 
-	switch ( choose ){
-		case QUIT : {
-			return false;
-			break;
-		}
-		case PLAY : {
-			try{
-				realGame( selectPlayer() );
-			} catch ( const LoadException & le ){
-				cout << "Could not load player: " << le.getReason() << endl;
+	if ( options == mainOptions ){
+		switch ( choose ){
+			case MAIN_QUIT : {
+				return false;
+				break;
 			}
-			return true;
-			break;
+			case MAIN_PLAY : {
+				try{
+					realGame( selectPlayer( isInvincible ) );
+				} catch ( const LoadException & le ){
+					cout << "Could not load player: " << le.getReason() << endl;
+				}
+				return true;
+				break;
+			}
+			default : return true;
 		}
-		default : return true;
 	}
 
 	while ( key.keypressed() ){
 		key.poll();
 		Util::rest( 1 );
 	}
+
+	return false;
 }
 
 int paintown_main( int argc, char ** argv ){
@@ -488,8 +575,11 @@ int paintown_main( int argc, char ** argv ){
 		cout << "Could not initialize system" << endl;
 	}
 	diff.endTime();
-	diff.printTime("Init:");
+	diff.printTime( "Init:" );
 	
+	/* there can be only one music object. forget stupid
+	 * factory crap, just create one here
+	 */
 	Music m;
 
 	while ( titleScreen() != false );

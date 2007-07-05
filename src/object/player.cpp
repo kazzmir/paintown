@@ -33,7 +33,8 @@ using namespace std;
 Player::Player( const char * filename ) throw( LoadException ): 
 Character( filename, ALLIANCE_PLAYER ),
 acts(0),
-lives(3){
+lives(3),
+invincible( false ){
 	
 	// if ( movements[ "grab" ] == NULL ){
 	if ( getMovement( "grab" ) == NULL ){
@@ -49,13 +50,15 @@ lives(3){
 Player::Player( const Character & chr ) throw( LoadException ):
 Character( chr ),
 acts(0),
-lives(3){
+lives(3),
+invincible( false ){
 	show_life = getHealth();
 }
 
 Player::Player( const Player & pl ) throw( LoadException ):
 Character( pl ),
-acts( 0 ){
+acts( 0 ),
+invincible( false ){
 	show_life = getHealth();
 }
 
@@ -270,6 +273,11 @@ Object * Player::copy(){
 	return new Player( *this );
 }
 	
+void Player::hurt( int x ){
+	if ( ! isInvincible() ){
+		Character::hurt( x );
+	}
+}
 
 void Player::takeDamage( ObjectAttack * obj, int x ){
 	if ( getLink() != NULL ){
