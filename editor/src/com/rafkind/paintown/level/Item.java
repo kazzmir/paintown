@@ -15,12 +15,15 @@ import com.rafkind.paintown.MaskedImage;
 
 public class Item extends Thing {
 
+	private Token stimulation;
+
 	public Item( Token token ) throws LoadException {
 		super( token );
 		Token name = token.findToken( "name" );
 		if ( name != null ){
 			setName( name.readString( 0 ) );
 		}
+		stimulation = token.findToken( "stimulation" );
 	}
 
 	protected BufferedImage readIdleImage( String file ) throws LoadException {
@@ -61,6 +64,9 @@ public class Item extends Thing {
 		thing.addToken( new String[]{ "type", getType() } );
 		thing.addToken( new String[]{ "path", getPath() } );
 		thing.addToken( new String[]{ "coords", String.valueOf( getX() ), String.valueOf( getY() ) } );
+		if ( stimulation != null ){
+			thing.addToken( stimulation );
+		}
 
 		return thing;
 	}
