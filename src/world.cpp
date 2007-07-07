@@ -30,16 +30,19 @@ min_x( 0 ){
 World::World( Object * _player, const string & path, int _screen_size ):
 player( _player ),
 quake_time( 0 ),
-min_x( 0 ){
+min_x( 0 ),
+path( path ){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
 
 	loadLevel( path );
 
+	/*
 	if ( player != NULL ){
 		objects.push_back( player );
 	}
+	*/
 }
 
 World::~World(){
@@ -56,14 +59,30 @@ World::~World(){
 	}
 
 }
+
+void World::reloadLevel(){
+	min_x = 0;
+	loadLevel( path );
+}
 	
 void World::loadLevel( const string & path ){
-	if ( scene )
+	if ( scene ){
 		delete scene;
+		scene = NULL;
+	}
 	if ( bang ){
 		delete bang;
+		bang = NULL;
 	}
-		
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+		if ( *it != player )
+			delete *it;
+	}
+	objects.clear();
+	if ( player != NULL ){
+		objects.push_back( player );
+	}
+
 	string bang_path( "data/misc/flash/flash.txt" );
 	try{
 		bang = new Effect( bang_path.c_str() );
@@ -80,6 +99,7 @@ void World::loadLevel( const string & path ){
 	if ( player != NULL ){
 		player->setX( 140 );
 		player->setZ( (getMinimumZ() + getMaximumZ()) / 2 );
+		player->setY( 0 );
 	}
 }
 

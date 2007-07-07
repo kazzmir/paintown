@@ -33,7 +33,7 @@ void inc_speed_counter() {
 END_OF_FUNCTION( inc_speed_counter );
 
 void inc_second_counter() {
-	Global::second_counter++;
+	Global::second_counter += 1;
 }
 END_OF_FUNCTION( inc_second_counter );
 

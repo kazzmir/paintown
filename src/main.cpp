@@ -88,9 +88,10 @@ static bool playLevel( World & world, Player * player ){
 	key.setDelay( Keyboard::Key_F1, 100 );
 	key.setDelay( Keyboard::Key_F12, 50 );
 
-
 	key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
 	key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
+
+	key.setDelay( Keyboard::Key_F4, 100 );
 	
 	/* the game graphics are meant for 320x240 and will be stretched
 	 * to fit the screen
@@ -113,52 +114,53 @@ static bool playLevel( World & world, Player * player ){
 		key.poll();
 
 		if ( Global::speed_counter > 0 ){
-			int think = Global::speed_counter;
-			int lose = think;
-			while ( think > 0 ){
-				think -= 1;
+			runCounter += Global::speed_counter * gameSpeed;
+
+			while ( runCounter >= 1.0 ){
 				draw = true;
-				runCounter += gameSpeed;
-				while ( runCounter >= 1.0 ){
-					world.act();
-					runCounter -= 1.0;
+				world.act();
+				runCounter -= 1.0;
 
-					if ( player->getHealth() <= 0 ){
-						player->deathReset();
-						if ( player->getLives() == 0 ){
-							fadeOut( "You lose" );
-							return false;
-						}
-						world.addObject( player );
+				if ( player->getHealth() <= 0 ){
+					player->deathReset();
+					if ( player->getLives() == 0 ){
+						fadeOut( "You lose" );
+						return false;
 					}
-
-					const double SPEED_INC = 0.02;
-					if ( key[ Keyboard::Key_MINUS_PAD ] ){
-						gameSpeed -= SPEED_INC;
-						if ( gameSpeed < SPEED_INC ){
-							gameSpeed = SPEED_INC;
-						}
-						cout << "Game speed " << gameSpeed << endl;
-					}
-
-					if ( key[ Keyboard::Key_PLUS_PAD ] ){
-						gameSpeed += SPEED_INC;
-						cout << "Game speed " << gameSpeed << endl;
-					}
-
-					if ( key[ Keyboard::Key_ENTER_PAD ] ){
-						gameSpeed = 1;
-						cout << "Game speed " << gameSpeed << endl;
-					}
-
-					if ( key[ Keyboard::Key_F1 ] ){
-						Global::invertDebug();
-					}
+					world.addObject( player );
 				}
 
 			}
 
-			Global::speed_counter -= lose;
+			const double SPEED_INC = 0.02;
+			if ( key[ Keyboard::Key_MINUS_PAD ] ){
+				gameSpeed -= SPEED_INC;
+				if ( gameSpeed < SPEED_INC ){
+					gameSpeed = SPEED_INC;
+				}
+				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_PLUS_PAD ] ){
+				gameSpeed += SPEED_INC;
+				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_ENTER_PAD ] ){
+				gameSpeed = 1;
+				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_F1 ] ){
+				Global::invertDebug();
+			}
+
+			if ( key[ Keyboard::Key_F4 ] ){
+				world.reloadLevel();
+				draw = true;
+			}
+
+			Global::speed_counter = 0;
 		}
 		
 		while ( Global::second_counter > 0 ){
@@ -188,7 +190,7 @@ static bool playLevel( World & world, Player * player ){
 			work.clear();
 		}
 
-		while ( Global::speed_counter < gameSpeed ){
+		while ( Global::speed_counter < 1 ){
 			Util::rest( 1 );
 			key.poll();
 		}

@@ -28,6 +28,8 @@ public:
 
 	const bool finished() const;
 
+	void reloadLevel();
+
 	/* upper left hand corner of the screen */
 	int getX();
 	int getY();
@@ -52,6 +54,7 @@ protected:
 	int quake_time;
 	int min_x;
 	int screen_size;
+	string path;
 
 };
 
