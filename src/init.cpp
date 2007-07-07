@@ -14,7 +14,7 @@
 
 using namespace std;
 
-volatile double Global::speed_counter = 0;
+volatile int Global::speed_counter = 0;
 volatile int Global::second_counter = 0;
 
 static const int TICS_PER_SECOND = 90;
@@ -28,7 +28,7 @@ const int Global::FULLSCREEN = GFX_AUTODETECT_FULLSCREEN;
 // DATAFILE * Global::all_fonts;
 
 void inc_speed_counter() {
-	Global::speed_counter += 1.0;
+	Global::speed_counter += 1;
 }
 END_OF_FUNCTION( inc_speed_counter );
 

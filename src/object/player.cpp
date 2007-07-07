@@ -46,7 +46,6 @@ invincible( false ){
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
 
-	keyboard.setDelay( Keyboard::Key_F1, 100 );
 }
 	
 Player::Player( const Character & chr ) throw( LoadException ):
@@ -76,9 +75,6 @@ void Player::fillKeyCache(){
 
 	keyboard.poll();
 
-	if ( keyboard[ Keyboard::Key_F1 ] ){
-		Global::invertDebug();
-	}
 
 	if ( acts++ > GLOBAL_KEY_DELAY ){
 		key_cache.clear();

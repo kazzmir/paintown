@@ -85,6 +85,13 @@ void fadeOut( const string & message ){
 static bool playLevel( World & world, Player * player ){
 	Keyboard key;
 	
+	key.setDelay( Keyboard::Key_F1, 100 );
+	key.setDelay( Keyboard::Key_F12, 50 );
+
+
+	key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
+	key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
+	
 	/* the game graphics are meant for 320x240 and will be stretched
 	 * to fit the screen
 	 */
@@ -99,44 +106,56 @@ static bool playLevel( World & world, Player * player ){
 	
 	double gameSpeed = 1.0;
 	
+	double runCounter = 0;
 	while ( ! done ){
 
 		bool draw = false;
 		key.poll();
 
-		if ( Global::speed_counter >= gameSpeed ){
-			double think = Global::speed_counter;
-			double lose = think;
-			while ( think >= gameSpeed ){
+		if ( Global::speed_counter > 0 ){
+			int think = Global::speed_counter;
+			int lose = think;
+			while ( think > 0 ){
+				think -= 1;
 				draw = true;
-				world.act();
-				think -= gameSpeed;
+				runCounter += gameSpeed;
+				while ( runCounter >= 1.0 ){
+					world.act();
+					runCounter -= 1.0;
 
-				if ( player->getHealth() <= 0 ){
-					player->deathReset();
-					if ( player->getLives() == 0 ){
-						fadeOut( "You lose" );
-						return false;
+					if ( player->getHealth() <= 0 ){
+						player->deathReset();
+						if ( player->getLives() == 0 ){
+							fadeOut( "You lose" );
+							return false;
+						}
+						world.addObject( player );
 					}
-					world.addObject( player );
-				}
-				/*
-				if ( key[ Keyboard::Key_SPACE ] || playerX->getLives() <= 0 ){
-					fadeOut();
-					return;
-				}
-				*/
 
-				if ( key[ Keyboard::Key_MINUS_PAD ] ){
-					gameSpeed -= 0.01;
-					if ( gameSpeed < 0.01 ){
-						gameSpeed = 0.01;
+					const double SPEED_INC = 0.02;
+					if ( key[ Keyboard::Key_MINUS_PAD ] ){
+						gameSpeed -= SPEED_INC;
+						if ( gameSpeed < SPEED_INC ){
+							gameSpeed = SPEED_INC;
+						}
+						cout << "Game speed " << gameSpeed << endl;
+					}
+
+					if ( key[ Keyboard::Key_PLUS_PAD ] ){
+						gameSpeed += SPEED_INC;
+						cout << "Game speed " << gameSpeed << endl;
+					}
+
+					if ( key[ Keyboard::Key_ENTER_PAD ] ){
+						gameSpeed = 1;
+						cout << "Game speed " << gameSpeed << endl;
+					}
+
+					if ( key[ Keyboard::Key_F1 ] ){
+						Global::invertDebug();
 					}
 				}
 
-				if ( key[ Keyboard::Key_PLUS_PAD ] ){
-					gameSpeed += 0.01;
-				}
 			}
 
 			Global::speed_counter -= lose;
@@ -162,6 +181,7 @@ static bool playLevel( World & world, Player * player ){
 			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
 
 			if ( key[ Keyboard::Key_F12 ] ){
+				cout << "Saved screenshot to scr.bmp" << endl;
 				work.save( "scr.bmp" );
 			}
 
