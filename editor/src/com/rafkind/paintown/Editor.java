@@ -1003,6 +1003,10 @@ public class Editor extends JFrame {
 		newLevel.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				level.initAll();
+				/* add 3 blocks to get the user started */
+				level.getBlocks().add( new Block() );
+				level.getBlocks().add( new Block() );
+				level.getBlocks().add( new Block() );
 				setupBlocks.invoke_( level, setupBlocks );
 				loadLevelProperties.invoke_( level );
 				view.revalidate();

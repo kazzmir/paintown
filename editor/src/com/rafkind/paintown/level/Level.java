@@ -282,10 +282,7 @@ public class Level{
 		this.panelOrder = new ArrayList();
 		this.blocks = new ArrayList();
 
-		/* add 3 blocks to get the user started */
-		this.blocks.add( new Block() );
-		this.blocks.add( new Block() );
-		this.blocks.add( new Block() );
+
 	}
 
 	public void load( File f ) throws LoadException {
