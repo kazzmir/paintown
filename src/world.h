@@ -12,7 +12,7 @@ using namespace std;
 class World{
 public:
 	World();
-	World( Object * player, const string & path, int screen_size = 320 );
+	World( Object * player, const string & path, int screen_size = 320 ) throw(  LoadException );
 
 	~World();
 
@@ -28,7 +28,7 @@ public:
 
 	const bool finished() const;
 
-	void reloadLevel();
+	void reloadLevel() throw( LoadException );
 
 	/* upper left hand corner of the screen */
 	int getX();
@@ -39,7 +39,7 @@ public:
 
 protected:
 	
-	void loadLevel( const string & path );
+	void loadLevel( const string & path ) throw( LoadException );
 
 	void doLogic();
 

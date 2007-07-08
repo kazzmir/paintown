@@ -156,8 +156,12 @@ static bool playLevel( World & world, Player * player ){
 			}
 
 			if ( key[ Keyboard::Key_F4 ] ){
-				world.reloadLevel();
-				draw = true;
+				try{
+					world.reloadLevel();
+					draw = true;
+				} catch ( const LoadException & le ){
+					cout << "Could not reload world: " << le.getReason() << endl;
+				}
 			}
 
 			Global::speed_counter = 0;
@@ -250,8 +254,8 @@ void realGame( Object * player ){
 		}
 
 		bool b = false;
-		{ /* force scope */
-			World world = World( player, *it );
+		try {
+			World world( player, *it );
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
@@ -273,6 +277,8 @@ void realGame( Object * player ){
 
 			b = playLevel( world, playerX );
 
+		} catch ( const LoadException & le ){
+			cout << "Could not load " << *it << " because " << le.getReason() << endl;
 		}
 
 		ObjectFactory::destroy();

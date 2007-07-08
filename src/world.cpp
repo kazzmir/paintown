@@ -27,11 +27,11 @@ min_x( 0 ){
 	bang = NULL;
 }
 
-World::World( Object * _player, const string & path, int _screen_size ):
+World::World( Object * _player, const string & path, int _screen_size ) throw( LoadException ):
 player( _player ),
 quake_time( 0 ),
 min_x( 0 ),
-path( path ){
+path( path ){ 
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -60,12 +60,13 @@ World::~World(){
 
 }
 
-void World::reloadLevel(){
+void World::reloadLevel() throw( LoadException ){
 	min_x = 0;
 	loadLevel( path );
 }
 	
-void World::loadLevel( const string & path ){
+void World::loadLevel( const string & path ) throw( LoadException ){
+	/*
 	if ( scene ){
 		delete scene;
 		scene = NULL;
@@ -74,6 +75,27 @@ void World::loadLevel( const string & path ){
 		delete bang;
 		bang = NULL;
 	}
+	*/
+
+	Scene * s = new Scene( path.c_str() );
+	if ( scene != NULL ){
+		delete scene;
+	}
+	scene = s;
+	
+	string bang_path( "data/misc/flash/flash.txt" );
+	Object * effect = new Effect( bang_path.c_str() );
+	if ( bang != NULL ){
+		delete bang;
+	}
+	bang = effect;
+		
+	if ( player != NULL ){
+		player->setX( 140 );
+		player->setZ( (getMinimumZ() + getMaximumZ()) / 2 );
+		player->setY( 0 );
+	}
+
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		if ( *it != player )
 			delete *it;
@@ -83,24 +105,6 @@ void World::loadLevel( const string & path ){
 		objects.push_back( player );
 	}
 
-	string bang_path( "data/misc/flash/flash.txt" );
-	try{
-		bang = new Effect( bang_path.c_str() );
-	} catch ( const LoadException & ex ){
-		cout<<"Could not load effect: "<< ex.getReason() << endl;
-	}
-	
-	try{
-		scene = new Scene( path.c_str() );
-	} catch ( const LoadException & e ){
-		cout<<"Error loading scene: "<<e.getReason()<<endl;
-	}
-
-	if ( player != NULL ){
-		player->setX( 140 );
-		player->setZ( (getMinimumZ() + getMaximumZ()) / 2 );
-		player->setY( 0 );
-	}
 }
 
 void World::Quake( int q ){
