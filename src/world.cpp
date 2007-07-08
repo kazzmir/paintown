@@ -132,6 +132,13 @@ void World::doLogic(){
 		Object * good = *it;
 		good->act( &objects, this );
 
+		if ( good->getZ() < getMinimumZ() ){
+			good->setZ( getMinimumZ() );
+		}
+		if ( good->getZ() > getMaximumZ() ){
+			good->setZ( getMaximumZ() );
+		}
+
 		/* Check for collisions */
 		if ( good->isAttacking() ){
 			// ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
