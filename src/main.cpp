@@ -90,6 +90,7 @@ static bool playLevel( World & world, Player * player ){
 
 	key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
 	key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
+	key.setDelay( Keyboard::Key_P, 100 );
 
 	key.setDelay( Keyboard::Key_F4, 100 );
 	
@@ -108,28 +109,30 @@ static bool playLevel( World & world, Player * player ){
 	double gameSpeed = 1.0;
 	
 	double runCounter = 0;
+	bool paused = false;
 	while ( ! done ){
 
 		bool draw = false;
 		key.poll();
 
 		if ( Global::speed_counter > 0 ){
-			runCounter += Global::speed_counter * gameSpeed;
+			if ( ! paused ){
+				runCounter += Global::speed_counter * gameSpeed;
 
-			while ( runCounter >= 1.0 ){
-				draw = true;
-				world.act();
-				runCounter -= 1.0;
+				while ( runCounter >= 1.0 ){
+					draw = true;
+					world.act();
+					runCounter -= 1.0;
 
-				if ( player->getHealth() <= 0 ){
-					player->deathReset();
-					if ( player->getLives() == 0 ){
-						fadeOut( "You lose" );
-						return false;
+					if ( player->getHealth() <= 0 ){
+						player->deathReset();
+						if ( player->getLives() == 0 ){
+							fadeOut( "You lose" );
+							return false;
+						}
+						world.addObject( player );
 					}
-					world.addObject( player );
 				}
-
 			}
 
 			const double SPEED_INC = 0.02;
@@ -139,6 +142,11 @@ static bool playLevel( World & world, Player * player ){
 					gameSpeed = SPEED_INC;
 				}
 				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_P ] ){
+				paused = ! paused;
+				draw = true;
 			}
 
 			if ( key[ Keyboard::Key_PLUS_PAD ] ){
@@ -182,6 +190,15 @@ static bool playLevel( World & world, Player * player ){
 			work.Stretch( screen_buffer );
 			FontRender * render = FontRender::getInstance();
 			render->render( &screen_buffer );
+
+			if ( paused ){
+				screen_buffer.transBlender( 0, 0, 0, 128 );
+				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
+				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
+				const Font & font = Font::getFont( "data/fonts/arial.ttf" );
+				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused" );
+			}
 
 			/* getX/Y move when the world is quaking */
 			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
