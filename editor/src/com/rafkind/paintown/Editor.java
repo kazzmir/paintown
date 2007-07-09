@@ -430,11 +430,26 @@ public class Editor extends JFrame {
 		holder.add( new JSeparator() );
 
 		class ObjectList implements ListModel {
+			/* list listeners */
 			private List listeners;
 			private List things;
+			private Lambda1 update;
 			public ObjectList(){
 				listeners = new ArrayList();
 				things = new ArrayList();
+				update = new Lambda1(){
+					public Object invoke( Object t ){
+						Thing thing = (Thing) t;
+						int count = 0;
+						for ( Iterator it = things.iterator(); it.hasNext(); count += 1 ){
+							Thing current = (Thing) it.next();
+							if ( current == thing ){
+								contentsChanged( new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, count, count ) );
+							}
+						}
+						return null;
+					}
+				};
 			}
 
 			public void setBlock( Block b ){
@@ -442,15 +457,23 @@ public class Editor extends JFrame {
 					this.things = new ArrayList();
 				} else {
 					this.things = b.getThings();
+					for ( Iterator it = things.iterator(); it.hasNext(); ){
+						Thing t = (Thing) it.next();
+						t.addListener( this.update );
+					}
 				}
 
-				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 999999 );
+				contentsChanged( new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 999999 ) );
+			}
+
+			private void contentsChanged( ListDataEvent event ){
 				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
 					ListDataListener l = (ListDataListener) it.next();
 					l.contentsChanged( event );
 				}
 			}
 
+			/*
 			public void update( int index ){
 				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, index, index + 1 );
 				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
@@ -458,6 +481,7 @@ public class Editor extends JFrame {
 						  l.contentsChanged( event );
 				}
 			}
+			*/
 
 			public void addListDataListener( ListDataListener l ){
 				listeners.add( l );
@@ -534,7 +558,7 @@ public class Editor extends JFrame {
 				if ( clicked.getClickCount() == 2 ){
 					Thing t = (Thing) currentObjects.getSelectedValue();	
 					editSelected.invoke_( t );
-					currentObjects.repaint();
+					// currentObjects.repaint();
 					// objectList.update( currentObjects.getSelectedIndex() );
 				}
 			}

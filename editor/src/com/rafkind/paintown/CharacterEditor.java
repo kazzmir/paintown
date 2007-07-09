@@ -53,15 +53,16 @@ public class CharacterEditor implements PropertyEditor {
 		aggression.setText( String.valueOf( character.getAggression() ) );
 		final JSpinner block = (JSpinner) engine.find( "block" );
 
-		final Lambda2 updatePosition = new Lambda2(){
-			public Object invoke( Object ix, Object iy ){
-				x.setText( ix.toString() );
-				y.setText( iy.toString() );
+		final Lambda1 update = new Lambda1(){
+			public Object invoke( Object c ){
+				Character guy = (Character) c;
+				x.setText( String.valueOf( guy.getX() ) );
+				y.setText( String.valueOf( guy.getY() ) );
 				return null;
 			}
 		};
 
-		character.addPositionListener( updatePosition );
+		character.addListener( update );
 
 		class MinMaxSpinnerModel implements SpinnerModel {
 			List listeners = new ArrayList();
@@ -130,14 +131,14 @@ public class CharacterEditor implements PropertyEditor {
 					b.addThing( character );
 				}
 
-				character.removePositionListener( updatePosition );
+				character.removeListener( update );
 				closeProc.invoke_();
 			}
 		});
 
 		close.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				character.removePositionListener( updatePosition );
+				character.removeListener( update );
 				closeProc.invoke_();		
 			}
 		});

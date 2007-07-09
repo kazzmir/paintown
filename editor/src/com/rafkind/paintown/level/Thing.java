@@ -5,7 +5,7 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.PropertyEditor;
-import com.rafkind.paintown.Lambda2;
+import com.rafkind.paintown.Lambda1;
 
 import java.io.*;
 import java.awt.*;
@@ -28,7 +28,7 @@ public abstract class Thing{
 	private boolean selected;
 	private static HashMap images = new HashMap();
 
-	private List positionListeners;
+	private List listeners;
 
 	public Thing( Token token ) throws LoadException {
 		Token coords = token.findToken( "coords" );
@@ -43,7 +43,7 @@ public abstract class Thing{
 			main = loadImage( path, this );
 		}
 
-		positionListeners = new ArrayList();
+		listeners = new ArrayList();
 	}
 
 	public BufferedImage getMain(){
@@ -52,6 +52,7 @@ public abstract class Thing{
 
 	public void setName( String s ){
 		this.name = s;
+		fireUpdate();
 	}
 
 	public String getName(){
@@ -79,29 +80,29 @@ public abstract class Thing{
 	public void setY( int y ){
 		// this.y = y + main.getHeight( null ) / 2;
 		this.y = y;
-		fireUpdatePosition();
+		fireUpdate();
 	}
 
 	public void setX( int x ){
 		this.x = x;
-		fireUpdatePosition();
+		fireUpdate();
 	}
 
-	private void fireUpdatePosition(){
-		Integer ix = new Integer( getX() );
-		Integer iy = new Integer( getY() );
-		for ( Iterator it = positionListeners.iterator(); it.hasNext(); ){
-			Lambda2 proc = (Lambda2) it.next();
-			proc.invoke_( ix, iy );
+	private void fireUpdate(){
+		for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+			Lambda1 proc = (Lambda1) it.next();
+			proc.invoke_( this );
 		}
 	}
 
-	public void addPositionListener( Lambda2 proc ){
-		positionListeners.add( proc );
+	public void addListener( Lambda1 proc ){
+		if ( ! listeners.contains( proc ) ){
+			listeners.add( proc );
+		}
 	}
 
-	public void removePositionListener( Lambda2 proc ){
-		positionListeners.remove( proc );
+	public void removeListener( Lambda1 proc ){
+		listeners.remove( proc );
 	}
 
 	public int getWidth(){
