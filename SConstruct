@@ -35,8 +35,8 @@ if isWindows():
 	env.Append( CPPDEFINES = 'WINDOWS' )
 else:
 	env.Append( LIBS = [ 'pthread' ] )
-	env.ParseConfig( 'libpng-config --libs' );
-	env.ParseConfig( 'allegro-config --libs' );
+	env.ParseConfig( 'libpng-config --libs --cflags' );
+	env.ParseConfig( 'allegro-config --libs --cflags' );
 	env.ParseConfig( 'freetype-config --libs --cflags' );
 
 SConscript( 'src/SConstruct', build_dir='build', exports = 'env' );
