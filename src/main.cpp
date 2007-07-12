@@ -58,7 +58,7 @@ void fadeOut( const string & message ){
 	Bitmap::transBlender( 0, 0, 0, 10 );
 	int fade = 0;
 	const Font & f = Font::getFont( "data/fonts/arial.ttf", 50, 50 );
-	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, message );
+	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, message, 0 );
 	while ( fade < 100 ){
 		fade++;
 	
@@ -197,7 +197,7 @@ static bool playLevel( World & world, Player * player ){
 				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
 				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
 				const Font & font = Font::getFont( "data/fonts/arial.ttf" );
-				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused" );
+				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
 
 			/* getX/Y move when the world is quaking */
@@ -452,7 +452,7 @@ static bool titleScreen(){
 		int yellow = Bitmap::makeColor( 255, 255, 0 );
 		int white = Bitmap::makeColor( 255, 255, 255 );
 		unsigned int color = i == choose ? yellow : white;
-		font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, options[ i ] );
+		font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, options[ i ], 0 );
 
 	}
 
@@ -555,7 +555,7 @@ static bool titleScreen(){
 				int yellow = Bitmap::makeColor( 255, 255, 0 );
 				int white = Bitmap::makeColor( 255, 255, 255 );
 				unsigned int color = i == choose ? yellow : white;
-				font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, options[ i ] );
+				font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, options[ i ], 0 );
 			}
 		}
 		

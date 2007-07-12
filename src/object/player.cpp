@@ -544,7 +544,7 @@ void Player::act( vector< Object * > * others, World * world ){
 			if ( get != NULL ){
 				for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
 					Object * o = *it;
-					if ( o->isGettable() && fabs(o->getRX() - getRX()) < 25 && ZDistance( o ) <= get->getMinZDistance() ){
+					if ( o->isGettable() && fabs((double)(o->getRX() - getRX())) < 25 && ZDistance( o ) <= get->getMinZDistance() ){
 						final = get;
 						setStatus( Status_Get );
 					}

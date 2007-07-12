@@ -629,9 +629,9 @@ void showAnimations( string person, int xmap = 0 ){
 			td.endTime();
 			
 			// screen_buffer.printfNormal( 1, 1, Bitmap::makeColor( 255, 255, 255 ), ch->getCurrentMovement()->getCurrentFramePath() );
-			Font::getDefaultFont().printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, ch->getCurrentMovement()->getCurrentFramePath() );
+			Font::getDefaultFont().printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, ch->getCurrentMovement()->getCurrentFramePath(), 0 );
 			// screen_buffer.printfNormal( 1, getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), "Speed %f", runSpeed );
-			Font::getDefaultFont().printf( 1, Font::getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Speed %f", runSpeed );
+			Font::getDefaultFont().printf( 1, Font::getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Speed %f", 0, runSpeed );
 
 			displayLines( screen_buffer, 10, 400, ch->getMovements(), currentAnimation, Font::getDefaultFont() );
 
@@ -749,7 +749,7 @@ string chooseCharacter(){
 					work.rectangleFill( x, y, x + 300, y + font.getHeight(), background );
 				}
 				// work.printfNormal( x, y, white, (*it).c_str() );
-				font.printf( x, y, white, work, (*it).c_str() );
+				font.printf( x, y, white, work, (*it).c_str(), 0 );
 
 				y += font.getHeight() + 1;
 				count += 1;

@@ -54,7 +54,7 @@ void FontRender::render( Bitmap * work ){
 	for ( vector< render_message >::const_iterator it = messages.begin(); it != messages.end(); it++ ){
 		const render_message & r = *it;
 		// work->printf( r.x, r.y, r.fg, r.r_font, r.str );
-		r.r_font.printf( r.x, r.y, r.fg, *work, r.str );
+		r.r_font.printf( r.x, r.y, r.fg, *work, r.str, 0 );
 		// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
 	}
 	messages.clear();

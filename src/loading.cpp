@@ -36,7 +36,7 @@ void * loadingScreen( void * arg ){
 	Bitmap letters( load_width, load_height );
 
 	letters.fill( Bitmap::MaskColor );
-	myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, the_string ); 
+	myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, the_string, 0 ); 
 
 	vector< ppair > pairs;
 	/* store every pixel we need to draw */
@@ -65,7 +65,7 @@ void * loadingScreen( void * arg ){
 
 	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
 	Bitmap::Screen->Blit( load_x, load_y, load_width, load_height, 0, 0, work );
-	Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), *Bitmap::Screen, "Made by Jon Rafkind" );
+	Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), *Bitmap::Screen, "Made by Jon Rafkind", 0 );
 	bool quit = false;
 
 	/* keeps the colors moving */
