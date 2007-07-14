@@ -48,10 +48,13 @@ public class Editor extends JFrame {
 		menuLevel.add( loadLevel );
 		JMenuItem saveLevel = new JMenuItem( "Save Level" );
 		menuLevel.add( saveLevel );
+		JMenuItem saveLevelAs = new JMenuItem( "Save Level As" );
+		menuLevel.add( saveLevelAs );
 
 		newLevel.setMnemonic( KeyEvent.VK_N );
 		menuLevel.setMnemonic( KeyEvent.VK_L );
 		saveLevel.setMnemonic( KeyEvent.VK_S );
+		saveLevelAs.setMnemonic( KeyEvent.VK_A );
 		loadLevel.setMnemonic( KeyEvent.VK_O );
 
 		final JTabbedPane tabbed = new JTabbedPane();
@@ -64,6 +67,18 @@ public class Editor extends JFrame {
 		});
 
 		final HashMap levels = new HashMap();
+
+		final Lambda2 doSave = new Lambda2(){
+			public Object invoke( Object level_, Object file_ ) throws IOException {
+				final Level level = (Level) level_;
+				final File file = (File) file_;
+				FileOutputStream out = new FileOutputStream( file );
+				new PrintStream( out ).print( level.toToken().toString() );
+				out.close();
+				System.out.println( level.toToken().toString() );
+				return null;
+			}
+		};
 
 		newLevel.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
@@ -89,20 +104,39 @@ public class Editor extends JFrame {
 			public void actionPerformed( ActionEvent event ){
 				if ( tabbed.getSelectedComponent() != null ){
 					Level level = (Level) levels.get( tabbed.getSelectedComponent() );
-					JFileChooser chooser = new JFileChooser( new File( "." ) );
-					int returnVal = chooser.showOpenDialog( Editor.this );
+					File file = level.getPath();
+					if ( file == null ){
+						file = userSelectFile();
+					}
 					/* write the text to a file */
-					if ( returnVal == JFileChooser.APPROVE_OPTION ){
-						final File f = chooser.getSelectedFile();
+					if ( file != null ){
 						try{
-							FileOutputStream out = new FileOutputStream( f );
-							new PrintStream( out ).print( level.toToken().toString() );
-							out.close();
-							System.out.println( level.toToken().toString() );
-							tabbed.setTitleAt( tabbed.getSelectedIndex(), f.getName() );
-						} catch ( IOException e ){
+							doSave.invoke( level, file );
+							level.setPath( file );
+							tabbed.setTitleAt( tabbed.getSelectedIndex(), file.getName() );
+						} catch ( Exception e ){
 							e.printStackTrace();
-							showError( "Could not save " + f + " because " + e.getMessage() );
+							showError( "Could not save " + file + " because " + e.getMessage() );
+						}
+					}
+				}
+			}
+		});
+
+		saveLevelAs.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( tabbed.getSelectedComponent() != null ){
+					Level level = (Level) levels.get( tabbed.getSelectedComponent() );
+					File file = userSelectFile();
+					/* write the text to a file */
+					if ( file != null ){
+						try{
+							doSave.invoke( level, file );
+							level.setPath( file );
+							tabbed.setTitleAt( tabbed.getSelectedIndex(), file.getName() );
+						} catch ( Exception e ){
+							e.printStackTrace();
+							showError( "Could not save " + file + " because " + e.getMessage() );
 						}
 					}
 				}
@@ -148,6 +182,16 @@ public class Editor extends JFrame {
 		
 		this.setJMenuBar( menuBar );
 		this.addWindowListener( new CloseHook( closeHook ) );
+	}
+
+	private File userSelectFile(){
+		JFileChooser chooser = new JFileChooser( new File( "." ) );
+		int returnVal = chooser.showOpenDialog( Editor.this );
+		if ( returnVal == JFileChooser.APPROVE_OPTION ){
+			return chooser.getSelectedFile();
+		} else {
+			return null;
+		}
 	}
 
 	private JPanel createEditPanel( final Level level ){
