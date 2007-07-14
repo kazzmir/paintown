@@ -27,6 +27,7 @@ public class Level{
 	private int minZ;
 	private int maxZ;
 	private double scale;
+	private File path;
 
 	private List blocks;
 
@@ -41,6 +42,20 @@ public class Level{
 
 	public Level(){
 		initAll();
+		this.path = null;
+	}
+
+	public File getPath(){
+		return path;
+	}
+
+	public void setPath( File path ){
+		this.path = path;
+	}
+
+	public Level( File path ) throws LoadException {
+		this.path = path;
+		load( path );
 	}
 
 	public List getBlocks(){
@@ -285,7 +300,7 @@ public class Level{
 
 	}
 
-	public void load( File f ) throws LoadException {
+	private void load( File f ) throws LoadException {
 		initAll();
 		TokenReader reader = new TokenReader( f );
 		Token head = reader.nextToken();
@@ -408,7 +423,9 @@ public class Level{
 		z.addToken( new String[]{ "minimum", String.valueOf( getMinZ() ) } );
 		z.addToken( new String[]{ "maximum", String.valueOf( getMaxZ() ) } );
 
-		level.addToken( new String[]{ "background", "\"" + backgroundFile.replaceAll( "\\\\", "/" ) + "\"" } );
+		if ( backgroundFile != null ){
+			level.addToken( new String[]{ "background", "\"" + backgroundFile.replaceAll( "\\\\", "/" ) + "\"" } );
+		}
 
 		for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
 			/*

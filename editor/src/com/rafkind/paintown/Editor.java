@@ -54,16 +54,106 @@ public class Editor extends JFrame {
 		saveLevel.setMnemonic( KeyEvent.VK_S );
 		loadLevel.setMnemonic( KeyEvent.VK_O );
 
+		final JTabbedPane tabbed = new JTabbedPane();
+		this.getContentPane().add( tabbed );
+
 		quit.addActionListener( new ActionListener(){
 			public void actionPerformed( ActionEvent event ){
 				closeHook.invoke_();
 			}
 		});
 
-		final SwingEngine engine = new SwingEngine( "main.xml" );
-		this.getContentPane().add( (JPanel) engine.getRootComponent() );
+		final HashMap levels = new HashMap();
 
-		final Level level = new Level();
+		newLevel.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				Level level = new Level();
+				// level.initAll();
+				/* add 3 blocks to get the user started */
+				level.getBlocks().add( new Block() );
+				level.getBlocks().add( new Block() );
+				level.getBlocks().add( new Block() );
+				/*
+				setupBlocks.invoke_( level, setupBlocks );
+				loadLevelProperties.invoke_( level );
+				view.revalidate();
+				viewScroll.repaint();
+				*/
+				// JPanel panel = createEditPanel( level );
+				// tabbed.add( panel );
+				levels.put( tabbed.add( createEditPanel( level ) ), level );
+			}
+		});
+
+		saveLevel.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( tabbed.getSelectedComponent() != null ){
+					Level level = (Level) levels.get( tabbed.getSelectedComponent() );
+					JFileChooser chooser = new JFileChooser( new File( "." ) );
+					int returnVal = chooser.showOpenDialog( Editor.this );
+					/* write the text to a file */
+					if ( returnVal == JFileChooser.APPROVE_OPTION ){
+						final File f = chooser.getSelectedFile();
+						try{
+							FileOutputStream out = new FileOutputStream( f );
+							new PrintStream( out ).print( level.toToken().toString() );
+							out.close();
+							System.out.println( level.toToken().toString() );
+							tabbed.setTitleAt( tabbed.getSelectedIndex(), f.getName() );
+						} catch ( IOException e ){
+							e.printStackTrace();
+							showError( "Could not save " + f + " because " + e.getMessage() );
+						}
+					}
+				}
+			}
+		});
+
+		loadLevel.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				JFileChooser chooser = new JFileChooser( new File( "." ) );	
+				chooser.setFileFilter( new FileFilter(){
+					public boolean accept( File f ){
+						return f.isDirectory() || f.getName().endsWith( ".txt" );
+					}
+
+					public String getDescription(){
+						return "Level files";
+					}
+				});
+
+				// chooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
+				int returnVal = chooser.showOpenDialog( Editor.this );
+				if ( returnVal == JFileChooser.APPROVE_OPTION ){
+					final File f = chooser.getSelectedFile();
+					try{
+						Level level = new Level( f );
+						levels.put( tabbed.add( f.getName(), createEditPanel( level ) ), level );
+						// level.load( f );
+						/*
+						setupBlocks.invoke_( level, setupBlocks );
+						loadLevelProperties.invoke_( level );
+						view.revalidate();
+						viewScroll.repaint();
+						*/
+					} catch ( LoadException le ){
+						System.out.println( "Could not load " + f.getName() );
+						le.printStackTrace();
+					}
+				}
+			}
+		});
+
+
+		
+		this.setJMenuBar( menuBar );
+		this.addWindowListener( new CloseHook( closeHook ) );
+	}
+
+	private JPanel createEditPanel( final Level level ){
+		final SwingEngine engine = new SwingEngine( "main.xml" );
+
+		// final Level level = new Level();
 		
 		final JPanel viewContainer = (JPanel) engine.find( "view" );
 		final JScrollPane viewScroll = new JScrollPane( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
@@ -93,7 +183,7 @@ public class Editor extends JFrame {
 				final JDialog dialog = new JDialog( Editor.this, "Edit" );
 				dialog.setSize( 300, 300 );
 				PropertyEditor editor = thing.getEditor();
-				dialog.add( editor.createPane( level, new Lambda0(){
+				dialog.getContentPane().add( editor.createPane( level, new Lambda0(){
 					public Object invoke(){
 						dialog.setVisible( false );
 						viewScroll.repaint();
@@ -558,8 +648,6 @@ public class Editor extends JFrame {
 				if ( clicked.getClickCount() == 2 ){
 					Thing t = (Thing) currentObjects.getSelectedValue();	
 					editSelected.invoke_( t );
-					// currentObjects.repaint();
-					// objectList.update( currentObjects.getSelectedIndex() );
 				}
 			}
 		});
@@ -852,31 +940,13 @@ public class Editor extends JFrame {
 		view.setBorder( BorderFactory.createLineBorder( new Color( 255, 0, 0 ) ) );
 		viewContainer.add( viewScroll );
 
-		saveLevel.addActionListener( new AbstractAction(){
-			public void actionPerformed( ActionEvent event ){
-				JFileChooser chooser = new JFileChooser( new File( "." ) );
-				int returnVal = chooser.showOpenDialog( Editor.this );
-				/* write the text to a file */
-				if ( returnVal == JFileChooser.APPROVE_OPTION ){
-					final File f = chooser.getSelectedFile();
-					try{
-						FileOutputStream out = new FileOutputStream( f );
-						new PrintStream( out ).print( level.toToken().toString() );
-						out.close();
-						System.out.println( level.toToken().toString() );
-					} catch ( IOException e ){
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-
+		
 		final Lambda2 setupBlocks = new Lambda2(){
 			private void editBlockProperties( final Block block, final Lambda0 done ){
 				final JDialog dialog = new JDialog( Editor.this, "Edit" );
 				dialog.setSize( 200, 200 );
 				final SwingEngine engine = new SwingEngine( "block.xml" );
-				dialog.add( (JPanel) engine.getRootComponent() );
+				dialog.getContentPane().add( (JPanel) engine.getRootComponent() );
 
 				final JTextField length = (JTextField) engine.find( "length" );
 				final JTextField finish = (JTextField) engine.find( "finish" );
@@ -992,52 +1062,7 @@ public class Editor extends JFrame {
 				return null;
 			}
 		};
-
-		loadLevel.addActionListener( new AbstractAction(){
-			public void actionPerformed( ActionEvent event ){
-				JFileChooser chooser = new JFileChooser( new File( "." ) );	
-				chooser.setFileFilter( new FileFilter(){
-					public boolean accept( File f ){
-						return f.isDirectory() || f.getName().endsWith( ".txt" );
-					}
-
-					public String getDescription(){
-						return "Level files";
-					}
-				});
-
-				// chooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
-				int returnVal = chooser.showOpenDialog( Editor.this );
-				if ( returnVal == JFileChooser.APPROVE_OPTION ){
-					final File f = chooser.getSelectedFile();
-					try{
-						level.load( f );
-						setupBlocks.invoke_( level, setupBlocks );
-						loadLevelProperties.invoke_( level );
-						view.revalidate();
-						viewScroll.repaint();
-					} catch ( LoadException le ){
-						System.out.println( "Could not load " + f.getName() );
-						le.printStackTrace();
-					}
-				}
-			}
-		});
-
-		newLevel.addActionListener( new AbstractAction(){
-			public void actionPerformed( ActionEvent event ){
-				level.initAll();
-				/* add 3 blocks to get the user started */
-				level.getBlocks().add( new Block() );
-				level.getBlocks().add( new Block() );
-				level.getBlocks().add( new Block() );
-				setupBlocks.invoke_( level, setupBlocks );
-				loadLevelProperties.invoke_( level );
-				view.revalidate();
-				viewScroll.repaint();
-			}
-		});
-
+		
 		setupBlocks.invoke_( level, setupBlocks );
 		loadLevelProperties.invoke_( level );
 
@@ -1054,8 +1079,7 @@ public class Editor extends JFrame {
 			}
 		});
 
-		this.setJMenuBar( menuBar );
-		this.addWindowListener( new CloseHook( closeHook ) );
+		return (JPanel) engine.getRootComponent();
 	}
 
 	private static void showError( String message ){
