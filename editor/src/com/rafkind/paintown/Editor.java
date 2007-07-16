@@ -1,5 +1,8 @@
 package com.rafkind.paintown;
 
+// set tabstop=3
+// set shiftwidth=3
+
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
@@ -50,12 +53,15 @@ public class Editor extends JFrame {
 		menuLevel.add( saveLevel );
 		JMenuItem saveLevelAs = new JMenuItem( "Save Level As" );
 		menuLevel.add( saveLevelAs );
+		JMenuItem closeLevel = new JMenuItem( "Close Level" );
+		menuLevel.add( closeLevel );
 
 		newLevel.setMnemonic( KeyEvent.VK_N );
 		menuLevel.setMnemonic( KeyEvent.VK_L );
 		saveLevel.setMnemonic( KeyEvent.VK_S );
 		saveLevelAs.setMnemonic( KeyEvent.VK_A );
 		loadLevel.setMnemonic( KeyEvent.VK_O );
+		closeLevel.setMnemonic( KeyEvent.VK_C );
 
 		final JTabbedPane tabbed = new JTabbedPane();
 		this.getContentPane().add( tabbed );
@@ -83,19 +89,11 @@ public class Editor extends JFrame {
 		newLevel.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				Level level = new Level();
-				// level.initAll();
 				/* add 3 blocks to get the user started */
 				level.getBlocks().add( new Block() );
 				level.getBlocks().add( new Block() );
 				level.getBlocks().add( new Block() );
-				/*
-				setupBlocks.invoke_( level, setupBlocks );
-				loadLevelProperties.invoke_( level );
-				view.revalidate();
-				viewScroll.repaint();
-				*/
-				// JPanel panel = createEditPanel( level );
-				// tabbed.add( panel );
+				
 				levels.put( tabbed.add( createEditPanel( level ) ), level );
 			}
 		});
@@ -143,6 +141,15 @@ public class Editor extends JFrame {
 			}
 		});
 
+		closeLevel.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( tabbed.getSelectedComponent() != null ){
+					levels.remove( tabbed.getSelectedComponent() );
+					tabbed.remove( tabbed.getSelectedComponent() );
+				}
+			}
+		});
+
 		loadLevel.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				JFileChooser chooser = new JFileChooser( new File( "." ) );	
@@ -163,13 +170,6 @@ public class Editor extends JFrame {
 					try{
 						Level level = new Level( f );
 						levels.put( tabbed.add( f.getName(), createEditPanel( level ) ), level );
-						// level.load( f );
-						/*
-						setupBlocks.invoke_( level, setupBlocks );
-						loadLevelProperties.invoke_( level );
-						view.revalidate();
-						viewScroll.repaint();
-						*/
 					} catch ( LoadException le ){
 						System.out.println( "Could not load " + f.getName() );
 						le.printStackTrace();
@@ -177,8 +177,6 @@ public class Editor extends JFrame {
 				}
 			}
 		});
-
-
 		
 		this.setJMenuBar( menuBar );
 		this.addWindowListener( new CloseHook( closeHook ) );
@@ -194,10 +192,21 @@ public class Editor extends JFrame {
 		}
 	}
 
+	/* provide default list of objects that can be added to the level */
+	private List defaultObjects(){
+		List data = new ArrayList();
+		data.add( new File( "data/chars/angel/angel.txt" ) );
+		data.add( new File( "data/chars/billy/billy.txt" ) );
+		data.add( new File( "data/chars/heavy/heavy.txt" ) );
+		data.add( new File( "data/chars/joe/joe.txt" ) );
+		data.add( new File( "data/chars/shermie/shermie.txt" ) );
+		data.add( new File( "data/chars/yashiro/yashiro.txt" ) );
+		data.add( new File( "data/misc/apple/apple.txt" ) );
+		return data;
+	}
+
 	private JPanel createEditPanel( final Level level ){
 		final SwingEngine engine = new SwingEngine( "main.xml" );
-
-		// final Level level = new Level();
 		
 		final JPanel viewContainer = (JPanel) engine.find( "view" );
 		final JScrollPane viewScroll = new JScrollPane( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
@@ -243,16 +252,7 @@ public class Editor extends JFrame {
 			private List data;
 			private List listeners;
 			public ObjectListModel(){
-				/* fill up some defaults */
-				this.data = new ArrayList();
-				data.add( new File( "data/chars/angel/angel.txt" ) );
-				data.add( new File( "data/chars/billy/billy.txt" ) );
-				data.add( new File( "data/chars/heavy/heavy.txt" ) );
-				data.add( new File( "data/chars/joe/joe.txt" ) );
-				data.add( new File( "data/chars/shermie/shermie.txt" ) );
-				data.add( new File( "data/chars/yashiro/yashiro.txt" ) );
-				data.add( new File( "data/misc/apple/apple.txt" ) );
-
+				this.data = defaultObjects();
 				this.listeners = new ArrayList();
 			}
 
@@ -417,14 +417,6 @@ public class Editor extends JFrame {
 
 			private Vector collectCharFiles(){
 				return new Vector( objectsModel.getAll() );
-
-				/*
-				Vector v = new Vector();
-				for ( Iterator it = findFiles( new File( "data/chars" ), ".txt" ).iterator(); it.hasNext(); ){
-					v.add( it.next() );
-				}
-				return v;
-				*/
 			}
 
 			private void showAddObjectPopup( final MouseEvent event ){
@@ -656,6 +648,7 @@ public class Editor extends JFrame {
 				Block b = level.findBlock( t );
 				b.setHighlight( true );
 
+				/* calculate absolute X position of the selected thing */
 				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
 					Block next = (Block) it.next();
 					if ( next == b ){
@@ -665,7 +658,11 @@ public class Editor extends JFrame {
 						currentX += next.getLength();
 					}
 				}
+
+				/* adjust X position a little bit to show the entire thing */
 				currentX += t.getX() - t.getWidth();
+
+				/* scroll over to the selected thing */
 				viewScroll.getHorizontalScrollBar().setValue( (int)(currentX * level.getScale()) );
 
 				viewScroll.repaint();
@@ -696,6 +693,7 @@ public class Editor extends JFrame {
 			}
 		});
 
+		/* so the user can click on the scrolly pane */
 		viewScroll.setFocusable( true );
 
 		viewScroll.addKeyListener( new KeyAdapter(){
@@ -778,8 +776,8 @@ public class Editor extends JFrame {
 				selected = null;
 				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 99999 );
 				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-						  ListDataListener l = (ListDataListener) it.next();
-						  l.contentsChanged( event );
+					ListDataListener l = (ListDataListener) it.next();
+					l.contentsChanged( event );
 				}
 			}
 
@@ -954,6 +952,7 @@ public class Editor extends JFrame {
 			}
 		});
 
+		/* initialize all the other crap for a level */
 		final Lambda1 loadLevelProperties = new Lambda1(){
 			public Object invoke( Object level_ ){
 				Level level = (Level) level_;
@@ -973,6 +972,7 @@ public class Editor extends JFrame {
 			}
 		};
 
+		/* mess around with layout nonsense */
 		GridBagLayout layout = new GridBagLayout();
 		viewContainer.setLayout( layout );
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -983,7 +983,6 @@ public class Editor extends JFrame {
 		layout.setConstraints( viewScroll, constraints );
 		view.setBorder( BorderFactory.createLineBorder( new Color( 255, 0, 0 ) ) );
 		viewContainer.add( viewScroll );
-
 		
 		final Lambda2 setupBlocks = new Lambda2(){
 			private void editBlockProperties( final Block block, final Lambda0 done ){
@@ -1018,6 +1017,9 @@ public class Editor extends JFrame {
 				dialog.setVisible( true );
 			}
 
+			/* self_ should be the 'setupBlocks' lambda so that it can
+			 * call itself recursively
+			 */
 			public Object invoke( Object l, Object self_ ){
 				final Lambda2 self = (Lambda2) self_;
 				final Level level = (Level) l;
