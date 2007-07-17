@@ -129,16 +129,17 @@ contact( NULL ){
 				AnimationEventOffset * ani = new AnimationEventOffset( x, y );
 				events.push_back( ani );
 			} else if ( *current == "move" ){
-				int x, y, z;
-				x = y = z = 0;
 				try{
+					int x, y, z;
+					x = y = z = 0;
 					*current >> x >> y >> z;
+
+					AnimationEventMove * em = new AnimationEventMove( x, y, z );
+					events.push_back( em );
 				} catch( const TokenException & te ){
+					cout << "Could not read move event: " << te.getReason() << endl;
 					/* ignore token exceptions here */
 				}
-				AnimationEventMove * em = new AnimationEventMove( x, y, z );
-				events.push_back( em );
-
 			} else if ( *current == "blast" ){
 			} else if ( *current == "damage" ){
 				*current >> damage;

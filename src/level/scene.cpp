@@ -210,7 +210,6 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 		}
 	}
 
-	// vector< Heart * > new_hearts = current_block->createObjects( block_length - 320, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
 	vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
 	hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
 }

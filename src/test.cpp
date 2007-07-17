@@ -414,7 +414,7 @@ void displayLines( const Bitmap & bitmap, int x_original, int y_original, const 
 		}
 
 		// bitmap.printf( x, y, color, &font, "%c: %s", getKey( count ), (*it).first.c_str() );
-		font.printf( x, y, color, bitmap, "%c: %s", getKey( count ), (*it).first.c_str() );
+		font.printf( x, y, color, bitmap, "%c: %s", 0, getKey( count ), (*it).first.c_str() );
 		y += font.getHeight() + 2;
 		if ( y > 480 - font.getHeight() - 1 ){
 			y = y_original;
@@ -632,6 +632,7 @@ void showAnimations( string person, int xmap = 0 ){
 			Font::getDefaultFont().printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, ch->getCurrentMovement()->getCurrentFramePath(), 0 );
 			// screen_buffer.printfNormal( 1, getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), "Speed %f", runSpeed );
 			Font::getDefaultFont().printf( 1, Font::getDefaultFont().getHeight() + 1, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Speed %f", 0, runSpeed );
+			Font::getDefaultFont().printf( 1, Font::getDefaultFont().getHeight() * 2 + 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "X: %f Y: %f Z: %f", 0, ch->getX(), ch->getY(), ch->getZ() );
 
 			displayLines( screen_buffer, 10, 400, ch->getMovements(), currentAnimation, Font::getDefaultFont() );
 
