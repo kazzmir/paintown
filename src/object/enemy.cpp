@@ -270,6 +270,11 @@ void Enemy::act( vector< Object * > * others, World * world ){
 			}
 
 			if ( want_z != getZ() ){
+				/*
+				if ( Global::globalDebug() ){
+					cout << "Z = " << getZ() << " velocity = " << velocity( getZ(), want_z, getSpeed() ) << endl;
+				}
+				*/
 				moveZ( velocity( getZ(), want_z, getSpeed() ) );
 			}
 

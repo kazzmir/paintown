@@ -312,6 +312,10 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	if ( getMovement( "pain" ) == NULL ){
 		throw LoadException("No 'pain' movement");
 	}
+	
+	if ( getMovement( "rise" ) == NULL ){
+		throw LoadException("No 'rise' movement");
+	}
 	/*
 	if ( movements[ "grab" ] == NULL ){
 		throw LoadException("No 'grab' movement");
