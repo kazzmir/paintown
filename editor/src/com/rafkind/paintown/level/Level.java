@@ -311,8 +311,6 @@ public class Level{
 		this.backPanels = new HashMap();
 		this.panelOrder = new ArrayList();
 		this.blocks = new ArrayList();
-
-
 	}
 
 	private void load( File f ) throws LoadException {

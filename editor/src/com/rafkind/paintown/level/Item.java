@@ -28,6 +28,7 @@ public class Item extends Thing {
 
 	public Item( Item copy ){
 		super( copy );
+		stimulation = copy.stimulation;
 	}
 
 	protected BufferedImage readIdleImage( String file ) throws LoadException {

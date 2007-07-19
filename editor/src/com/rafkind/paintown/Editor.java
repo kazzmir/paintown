@@ -463,6 +463,10 @@ public class Editor extends JFrame {
 				p.show();
 
 				final Lambda1 addThing = new Lambda1(){
+					private int mid( int a, int b, int c ){
+						return Math.max( Math.min( b, c ), a );
+					}
+
 					public Object invoke( Object f ){
 						File file = (File) f;
 						try{
@@ -481,7 +485,7 @@ public class Editor extends JFrame {
 										x -= b1.getLength();
 									}
 								}
-								b.addThing( makeThing( head, x, y, file.getPath() ) );
+								b.addThing( makeThing( head, x, mid( 0, y - level.getMinZ(), level.getMaxZ() - level.getMinZ() ), file.getPath() ) );
 								/*
 									Character c = new Character( reader.nextToken() );
 									b.add( new Character( reader.nextToken() ) );
