@@ -228,7 +228,7 @@ public class Editor extends JFrame {
 				JScrollBar v = viewScroll.getVerticalScrollBar();
 				g.setColor( new Color( 64, 64, 64 ) );
 				g.fillRect( 0, 0, (int) level.getWidth(), v.getVisibleAmount() );
-				// g.clearRect( 0, 0, (int) level.getWidth(), v.getVisibleAmount() );
+				g.clearRect( 0, (int) v.getVisibleAmount() + 1, (int) level.getWidth(), (int) level.getHeight() );
 				level.render( (Graphics2D) g, h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount() );
 			}
 		};
@@ -554,6 +554,12 @@ public class Editor extends JFrame {
 
 		view.addMouseMotionListener( mousey );
 		view.addMouseListener( mousey );
+		view.addMouseListener( new MouseAdapter(){
+			public void mouseClicked( MouseEvent event ){
+				/* force focus to move to the view */
+				view.requestFocusInWindow(); 
+			}
+		});
 
 		JTabbedPane tabbed = (JTabbedPane) engine.find( "tabbed" );
 		final Box holder = Box.createVerticalBox();
@@ -701,15 +707,19 @@ public class Editor extends JFrame {
 		});
 
 		/* so the user can click on the scrolly pane */
-		viewScroll.setFocusable( true );
+		// viewScroll.setFocusable( true );
+		view.setFocusable( true );
 
-		viewScroll.addKeyListener( new KeyAdapter(){
-			public void keyTyped( KeyEvent e ){
-				if ( e.getKeyChar() == KeyEvent.VK_DELETE ){
-					if ( mousey.getSelected() != null ){
-						level.findBlock( mousey.getSelected() ).removeThing( mousey.getSelected() );
-						viewScroll.repaint();
-					}
+		view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "delete" );
+
+		view.getActionMap().put( "delete", new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( mousey.getSelected() != null ){
+					Block b = level.findBlock( mousey.getSelected() );
+					b.removeThing( mousey.getSelected() );
+					mousey.setSelected( null );
+					objectList.setBlock( b );
+					viewScroll.repaint();
 				}
 			}
 		});
