@@ -631,6 +631,7 @@ void Player::act( vector< Object * > * others, World * world ){
 			// cout<<"Final animation = "<<final->getName()<<endl;
 			if ( final->getName() == "special" ){
 				if ( getHealth() <= 10 ){
+					animation_current = getMovement( "idle" );
 					return;
 				} else {
 					hurt( 10 );

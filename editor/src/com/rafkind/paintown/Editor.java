@@ -201,8 +201,10 @@ public class Editor extends JFrame {
 		data.add( new File( "data/chars/heavy/heavy.txt" ) );
 		data.add( new File( "data/chars/jhun/jhun.txt" ) );
 		data.add( new File( "data/chars/joe/joe.txt" ) );
+		data.add( new File( "data/chars/punk/punk.txt" ) );
 		data.add( new File( "data/chars/ralf/ralf.txt" ) );
 		data.add( new File( "data/chars/robert/robert.txt" ) );
+		data.add( new File( "data/chars/rugal/rugal.txt" ) );
 		data.add( new File( "data/chars/shermie/shermie.txt" ) );
 		data.add( new File( "data/chars/yamazaki/yamazaki.txt" ) );
 		data.add( new File( "data/chars/yashiro/yashiro.txt" ) );
