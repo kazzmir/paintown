@@ -173,7 +173,7 @@ public class Level{
 	private void drawFrontPanels( Graphics2D g ){
 		int w = 0;
 		if ( ! frontPanels.isEmpty() ){
-			while ( w < getWidth() ){
+			while ( w < getWidth() / getScale() ){
 				int ow = w;
 				for ( Iterator it = frontPanels.iterator(); it.hasNext(); ){
 					Panel p = (Panel) it.next();
@@ -194,7 +194,7 @@ public class Level{
 	private void drawBackground( Graphics2D g ){
 		if ( background != null ){
 			int w = 0;
-			while ( w < getWidth() ){
+			while ( w < getWidth() / getScale() ){
 				g.drawImage( background, w, 0, null );
 				w += background.getWidth( null );
 			}
@@ -241,6 +241,21 @@ public class Level{
 			Block b = (Block) it.next();
 			if ( b.hasThing( t ) ){
 				return b;
+			}
+		}
+		return null;
+	}
+
+	/* find the block that contains point x */
+	public Block findBlock( int x ){
+		int total = 0;
+		for ( Iterator it = getBlocks().iterator(); it.hasNext(); ){
+			Block b = (Block) it.next();
+			if ( b.isEnabled() ){
+				if ( x >= total && x <= total + b.getLength() ){
+					return b;
+				}
+				total += b.getLength();
 			}
 		}
 		return null;

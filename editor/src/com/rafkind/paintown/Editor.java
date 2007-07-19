@@ -26,7 +26,8 @@ import org.swixml.SwingEngine;
 
 public class Editor extends JFrame {
 
-	/* look ma, no member variables! */
+	/* global thing for copy/pasting */
+	private Thing copy;
 
 	public Editor(){
 		super( "Paintown Editor" );
@@ -182,6 +183,14 @@ public class Editor extends JFrame {
 		this.addWindowListener( new CloseHook( closeHook ) );
 	}
 
+	private Thing getCopy(){
+		return copy;
+	}
+
+	private void setCopy( Thing t ){
+		copy = t;
+	}
+
 	private File userSelectFile(){
 		JFileChooser chooser = new JFileChooser( new File( "." ) );
 		int returnVal = chooser.showOpenDialog( Editor.this );
@@ -249,7 +258,7 @@ public class Editor extends JFrame {
 						viewScroll.repaint();
 						return null;
 					}
-				}) );
+				}));
 				dialog.setVisible( true );
 				return null;
 			}
@@ -363,6 +372,7 @@ public class Editor extends JFrame {
 					dy = event.getY() / level.getScale();
 					// System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
 				}
+
 				if ( getSelected() != null && event.getClickCount() == 2 ){
 					editSelected.invoke_( getSelected() );
 					// System.out.println( "Properties of " + getSelected() );
@@ -682,17 +692,16 @@ public class Editor extends JFrame {
 			}
 		});
 
-		currentObjects.addKeyListener( new KeyAdapter(){
-			public void keyTyped( KeyEvent e ){
-				if ( e.getKeyChar() == KeyEvent.VK_DELETE ){
-					Thing t = (Thing) currentObjects.getSelectedValue();
-					if ( t != null ){
-						mousey.setSelected( null );
-						Block b = level.findBlock( t );
-						b.removeThing( t );
-						objectList.setBlock( b );
-						viewScroll.repaint();
-					}
+		currentObjects.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "delete" );
+		currentObjects.getActionMap().put( "delete", new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				Thing t = (Thing) currentObjects.getSelectedValue();
+				if ( t != null ){
+					mousey.setSelected( null );
+					Block b = level.findBlock( t );
+					b.removeThing( t );
+					objectList.setBlock( b );
+					viewScroll.repaint();
 				}
 			}
 		});
@@ -712,6 +721,11 @@ public class Editor extends JFrame {
 
 		view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "delete" );
 
+		/* ctrl-c */
+		view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_C, 2 ), "copy" );
+		/* ctrl-v */
+		view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_V, 2 ), "paste" );
+
 		view.getActionMap().put( "delete", new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( mousey.getSelected() != null ){
@@ -720,6 +734,45 @@ public class Editor extends JFrame {
 					mousey.setSelected( null );
 					objectList.setBlock( b );
 					viewScroll.repaint();
+				}
+			}
+		});
+		
+		view.getActionMap().put( "copy", new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				// System.out.println( "Copy object" );
+				if ( mousey.getSelected() != null ){
+					setCopy( mousey.getSelected().copy() );
+				}
+			}
+		});
+
+		view.getActionMap().put( "paste", new AbstractAction(){
+			private int calculateLength( List blocks ){
+				int total = 0;
+				for ( Iterator it = blocks.iterator(); it.hasNext(); ){
+					Block b = (Block) it.next();
+					total += b.getLength();
+				}
+				return total;
+			}
+
+			public void actionPerformed( ActionEvent event ){
+				/* middle of the current screen */
+				int x = (int)(viewScroll.getHorizontalScrollBar().getValue() / level.getScale() + viewScroll.getHorizontalScrollBar().getVisibleAmount() / level.getScale() / 2 );
+				/* in between the min and max z lines */
+				int y = (int)((level.getMaxZ() - level.getMinZ()) / 2);
+				Block b = level.findBlock( x );
+				if ( b != null && getCopy() != null ){
+					Thing copy = getCopy().copy();
+					/* x has to be relative to the beginning of the block */
+					copy.setX( x - calculateLength( level.getBlocks().subList( 0, level.getBlocks().indexOf( b ) ) ) );
+					copy.setY( y );
+					b.addThing( copy );
+					objectList.setBlock( b );
+					viewScroll.repaint();
+				} else {
+					System.out.println( "No block found at " + x );
 				}
 			}
 		});

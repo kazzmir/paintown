@@ -16,6 +16,7 @@ import org.swixml.SwingEngine;
 
 public class CharacterEditor implements PropertyEditor {
 	private Character character;
+
 	public CharacterEditor( Character i ){
 		this.character = i;
 	}

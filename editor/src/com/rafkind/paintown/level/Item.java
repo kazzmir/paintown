@@ -26,6 +26,10 @@ public class Item extends Thing {
 		stimulation = token.findToken( "stimulation" );
 	}
 
+	public Item( Item copy ){
+		super( copy );
+	}
+
 	protected BufferedImage readIdleImage( String file ) throws LoadException {
 		TokenReader reader = new TokenReader( new File( file ) );
 		Token head = reader.nextToken();
@@ -47,6 +51,10 @@ public class Item extends Thing {
 			}
 		}
 		throw new LoadException( "No idle animation given for " + file );
+	}
+	
+	public Thing copy(){
+		return new Item( this );
 	}
 	
 	protected String getType(){

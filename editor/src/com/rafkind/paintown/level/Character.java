@@ -102,6 +102,23 @@ public class Character extends Thing {
 		}
 	}
 
+	public Character( Character copy ){
+		super( copy );
+		setRemaps( copy.getRemaps() );
+		setMap( copy.getMap() );
+		setAggression( copy.getAggression() );
+		setMaxMaps( copy.getMaxMaps() );
+		setHealth( copy.getHealth() );
+	}
+
+	private HashMap getRemaps(){
+		return remaps;
+	}
+
+	private void setRemaps( HashMap remaps ){
+		this.remaps = remaps;
+	}
+
 	private Image createRemap( String normal, String alt, BufferedImage original ) throws IOException {
 		HashMap colors = new HashMap();
 		BufferedImage old = MaskedImage.load( normal );
@@ -130,6 +147,10 @@ public class Character extends Thing {
 		}
 
 		return map;
+	}
+	
+	public Thing copy(){
+		return new Character( this );
 	}
 
 	public void render( Graphics2D g, boolean highlight ){
@@ -162,6 +183,10 @@ public class Character extends Thing {
 
 	public int getMaxMaps(){
 		return maxMaps;
+	}
+
+	private void setMaxMaps( int i ){
+		maxMaps = i;
 	}
 
 	private int calculateMaxMaps( Token head ) throws LoadException {

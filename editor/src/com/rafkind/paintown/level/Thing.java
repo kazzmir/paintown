@@ -39,11 +39,24 @@ public abstract class Thing{
 
 		Token tpath = token.findToken( "path" );
 		if ( tpath != null ){
-			path = tpath.readString( 0 );
-			main = loadImage( path, this );
+			setPath( tpath.readString( 0 ) );
+			main = loadImage( getPath(), this );
 		}
 
 		listeners = new ArrayList();
+	}
+
+	public Thing( Thing copy ){
+		listeners = new ArrayList();
+		setX( copy.getX() );
+		setY( copy.getY() );
+		setMain( copy.getMain() );
+		setPath( copy.getPath() );
+		setName( copy.getName() );
+	}
+
+	private void setMain( BufferedImage image ){
+		main = image;
 	}
 
 	public BufferedImage getMain(){
@@ -55,12 +68,18 @@ public abstract class Thing{
 		fireUpdate();
 	}
 
+	public abstract Thing copy();
+
 	public String getName(){
 		return name;
 	}
 
 	public String toString(){
 		return "X: " + getX() + " Y: " + getY() + " Name: " + getName();
+	}
+
+	private void setPath( String p ){
+		path = p;
 	}
 
 	public String getPath(){
