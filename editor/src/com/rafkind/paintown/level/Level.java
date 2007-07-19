@@ -225,7 +225,7 @@ public class Level{
 	}
 
 	public void render( Graphics2D g, int x, int y, int width, int height ){
-		g.clearRect( 0, 0, (int) getWidth(), (int) getHeight() );
+		// g.clearRect( 0, 0, (int) getWidth(), (int) getHeight() );
 		g.scale( getScale(), getScale() );
 		drawBackground( g );
 		drawBackPanels( g );
