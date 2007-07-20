@@ -569,7 +569,7 @@ public class Editor extends JFrame {
 		view.addMouseMotionListener( mousey );
 		view.addMouseListener( mousey );
 		view.addMouseListener( new MouseAdapter(){
-			public void mouseClicked( MouseEvent event ){
+			public void mousePressed( MouseEvent event ){
 				/* force focus to move to the view */
 				view.requestFocusInWindow(); 
 			}
