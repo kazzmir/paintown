@@ -245,15 +245,15 @@ static vector< string > readLevels( const string & filename ){
 		}
 
 		return levels;
-	} catch ( const LoadException & lex ){
+	} catch ( const TokenException & lex ){
 		cout << "Could not load " << filename << ". Reason: " << lex.getReason() << endl;
 		return vector< string >();
 	}
 }
 
-void realGame( Object * player ){
+void realGame( Object * player, const string & levelFile ){
 
-	vector< string > levels = readLevels( "data/levels/w1.txt" );
+	vector< string > levels = readLevels( levelFile );
 
 	// global_debug = true;
 	bool show_loading_screen = true;
@@ -409,6 +409,85 @@ static Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	}
 
 	return *current1;
+}
+
+static const string selectLevelSet( const string & base ){
+	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
+	// Bitmap background( "data/paintown-title.png" );
+	int fontY = 20;
+	const Font & font = Font::getFont( "data/fonts/arial.ttf", 20, fontY );
+	vector< string > possible = Util::getFiles( base + "/", "*.txt" );
+	if ( possible.size() == 0 ){
+		return "no-files!!!";
+	}
+
+	/*
+	for ( vector< string >::iterator it = possible.begin(); it != possible.end(); it++ ){
+		string & s = *it;
+		s.insert( 0, base + "/" );
+	}
+	*/
+	int choose = 0;
+
+	font.printf( 180, (int)(200 - fontY * 1.2), Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Select a set of levels to play", 0 );
+	for ( unsigned int i = 0; i < possible.size(); i++ ){
+		int yellow = Bitmap::makeColor( 255, 255, 0 );
+		int white = Bitmap::makeColor( 255, 255, 255 );
+		unsigned int color = i == (unsigned) choose ? yellow : white;
+		font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, possible[ i ], 0 );
+	}
+
+	Keyboard key;
+	bool done = false;
+
+	key.setDelay( Keyboard::Key_UP, 100 );
+	key.setDelay( Keyboard::Key_DOWN, 100 );
+	Global::speed_counter = 0;
+
+	while ( ! done ){
+		
+		key.poll();
+		bool draw = false;
+		if ( Global::speed_counter > 0 ){
+			double think = Global::speed_counter;
+
+			while ( think > 0 ){
+				think--;
+
+				if ( key[ Keyboard::Key_UP ] ){
+					draw = true;
+					choose = (choose - 1 + possible.size()) % possible.size();
+				}
+
+				if ( key[ Keyboard::Key_DOWN ] ){
+					draw = true;
+					choose = (choose + 1 + possible.size()) % possible.size();
+				}
+
+				if ( key[ Keyboard::Key_ENTER ] ){
+					return possible[ choose ];
+				}
+			}
+
+			Global::speed_counter = 0;
+		}
+
+		if ( draw ){
+			for ( unsigned int i = 0; i < possible.size(); i++ ){
+				int yellow = Bitmap::makeColor( 255, 255, 0 );
+				int white = Bitmap::makeColor( 255, 255, 255 );
+				unsigned int color = i == (unsigned) choose ? yellow : white;
+				font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, possible[ i ], 0 );
+			}		
+		}
+		
+		while ( Global::speed_counter == 0 ){
+			Util::rest( 1 );
+			key.poll();
+		}
+	}
+
+	return "nothing-selected";
 }
 
 static bool titleScreen(){
@@ -578,7 +657,8 @@ static bool titleScreen(){
 			}
 			case MAIN_PLAY : {
 				try{
-					realGame( selectPlayer( isInvincible ) );
+					string level = selectLevelSet( "data/levels" );
+					realGame( selectPlayer( isInvincible ), level );
 				} catch ( const LoadException & le ){
 					cout << "Could not load player: " << le.getReason() << endl;
 				}
