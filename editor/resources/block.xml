@@ -14,6 +14,8 @@
 			<textfield size="10" id="length" />
 		</hbox>
 		<hbox>
+			<checkbox id="is-finish" />
+			<glue size="1" />
 			<label text="Finish:" />
 			<textfield size="4" id="finish" />
 		</hbox>

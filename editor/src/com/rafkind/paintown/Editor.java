@@ -1067,16 +1067,29 @@ public class Editor extends JFrame {
 
 				final JTextField length = (JTextField) engine.find( "length" );
 				final JTextField finish = (JTextField) engine.find( "finish" );
+				final JCheckBox isFinish = (JCheckBox) engine.find( "is-finish" );
 				final JButton save = (JButton) engine.find( "save" );
 				final JButton close = (JButton) engine.find( "close" );
 
 				length.setText( String.valueOf( block.getLength() ) );
+				isFinish.setSelected( block.isFinish() );
+				finish.setEnabled( block.isFinish() );
 				finish.setText( String.valueOf( block.getFinish() ) );
+
+				isFinish.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
+						finish.setEnabled( isFinish.isSelected() );
+					}
+				});
 
 				save.addActionListener( new AbstractAction(){
 					public void actionPerformed( ActionEvent event ){
 						block.setLength( Integer.parseInt( length.getText() ) );
-						block.setFinish( Integer.parseInt( finish.getText() ) );
+						if ( isFinish.isSelected() ){
+							block.setFinish( Integer.parseInt( finish.getText() ) );
+						} else {
+							block.setFinish( 0 );
+						}
 						done.invoke_();
 						dialog.setVisible( false );
 					}

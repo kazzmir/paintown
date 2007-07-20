@@ -17,7 +17,7 @@ public class Block{
 	private List objects;
 	private boolean enabled = true;
 	private boolean highlight = false;
-	private int finish = -1;
+	private int finish = 0;
 
 	public Block( Token token ) throws LoadException {
 		Token l = token.findToken( "length" );
@@ -55,9 +55,7 @@ public class Block{
 	}
 
 	public void setFinish( int s ){
-		if ( s > 0 ){
-			finish = s;
-		}
+		finish = s;
 	}
 
 	public boolean isFinish(){

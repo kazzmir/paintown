@@ -239,6 +239,10 @@ public class Character extends Thing {
 		return null;
 	}
 	
+	public String toString(){
+		return super.toString() + " Health: " + getHealth();
+	}
+	
 	protected String getType(){
 		return "enemy";
 	}
