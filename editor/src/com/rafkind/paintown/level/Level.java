@@ -218,6 +218,7 @@ public class Level{
 			Block b = (Block) it.next();
 			if ( b.isEnabled() ){
 				b.render( g, w, height, minZ, maxZ, num );
+				g.drawString( "Block " + num, w + 5, 15 );
 				w += b.getLength();
 			}
 			num += 1;
