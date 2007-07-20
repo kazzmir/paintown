@@ -681,9 +681,11 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
 	int w = frame.getWidth() / 2;
 	int h = frame.getHeight();
 
+	/*
 	if ( Global::globalDebug() ){
 		work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
 	}
+	*/
 
 	/*
 	x += offset_x;
@@ -745,10 +747,12 @@ void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work
 	int w = frame.getWidth() / 2;
 	int h = frame.getHeight();
 
+	/*
 	if ( Global::globalDebug() ){
 		work->rectangle( x, y, x-range, y+1, Bitmap::makeColor(255,255,255) );
 		// work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
 	}
+	*/
 
 	/*
 	x -= offset_x;

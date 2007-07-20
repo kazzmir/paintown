@@ -1069,6 +1069,17 @@ void Character::draw( Bitmap * work, int rel_x ){
 			}
 		}
 
+
+		if ( Global::globalDebug() ){
+			int x = (int)(getX() - rel_x);
+			int y = (int) getRY();
+			int x2 = x + animation_current->getRange();
+			if ( getFacing() == Object::FACING_LEFT ){
+				x2 = x - animation_current->getRange();
+			}
+			work->rectangle( x, y, x2, y + 1, Bitmap::makeColor(255,255,255) );
+		}
+
 		/*
 		if ( invincibility > 0 ){
 			Bitmap::drawingMode( Bitmap::MODE_SOLID );
