@@ -399,6 +399,8 @@ public class Editor extends JFrame {
 			private Block findBlock( MouseEvent event ){
 				int x = (int)(event.getX() / level.getScale());
 				// System.out.println( event.getX() + " -> " + x );
+				return level.findBlock( x );
+				/*
 				int total = 0;
 				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
 					Block b = (Block) it.next();
@@ -410,6 +412,7 @@ public class Editor extends JFrame {
 					}
 				}
 				return null;
+				*/
 			}
 
 			private Thing makeThing( Token head, int x, int y, String path ) throws LoadException {
@@ -686,11 +689,12 @@ public class Editor extends JFrame {
 					}
 				}
 
-				/* adjust X position a little bit to show the entire thing */
-				currentX += t.getX() - t.getWidth();
+				currentX += t.getX();
+				/* show the object in the center if the view */
+				int move = (int)(currentX * level.getScale() - viewScroll.getHorizontalScrollBar().getVisibleAmount() / 2);
 
 				/* scroll over to the selected thing */
-				viewScroll.getHorizontalScrollBar().setValue( (int)(currentX * level.getScale()) );
+				viewScroll.getHorizontalScrollBar().setValue( move );
 
 				viewScroll.repaint();
 			}
