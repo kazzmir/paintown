@@ -183,6 +183,25 @@ public class Editor extends JFrame {
 		this.addWindowListener( new CloseHook( closeHook ) );
 	}
 
+	/* doesn't work too well... */
+	private void smoothScroll( final JScrollBar scroll, final int start, final int end ){
+		new Thread(){
+			public void run(){
+				int begin = start;
+				for ( int i = 0; i < 6; i++ ){
+					int to = (begin + end) / 2;	
+					scroll.setValue( to );
+					begin = to;
+					try{
+						Thread.sleep( 10 );
+					} catch ( Exception e ){
+					}
+				}
+				scroll.setValue( end );
+			}
+		}.start();
+	}
+
 	private Thing getCopy(){
 		return copy;
 	}
@@ -662,6 +681,7 @@ public class Editor extends JFrame {
 		holder.add( new JScrollPane( currentObjects ) );
 		holder.add( Box.createVerticalGlue() );
 
+		/* if an object is selected highlight it and scroll over to it */
 		currentObjects.addListSelectionListener( new ListSelectionListener(){
 			public void valueChanged( ListSelectionEvent e ){
 				Thing t = (Thing) currentObjects.getSelectedValue();
@@ -690,7 +710,7 @@ public class Editor extends JFrame {
 				}
 
 				currentX += t.getX();
-				/* show the object in the center if the view */
+				/* show the object in the center of the view */
 				int move = (int)(currentX * level.getScale() - viewScroll.getHorizontalScrollBar().getVisibleAmount() / 2);
 
 				/* scroll over to the selected thing */
@@ -1108,6 +1128,19 @@ public class Editor extends JFrame {
 				dialog.setVisible( true );
 			}
 
+			private void scrollToBlock( Block block ){
+				int length = 0;
+				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+					Block b = (Block) it.next();
+					if ( b == block ){
+						break;
+					}
+					length += b.getLength();
+				}
+				// smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), (int)(length * level.getScale() - 10) );
+				viewScroll.getHorizontalScrollBar().setValue( (int)(length * level.getScale() - 10) );
+			}
+
 			/* self_ should be the 'setupBlocks' lambda so that it can
 			 * call itself recursively
 			 */
@@ -1134,6 +1167,7 @@ public class Editor extends JFrame {
 					final JButton button = new JButton( "Block " + n + " : " + block.getLength() );
 					button.addActionListener( new AbstractAction(){
 						public void actionPerformed( ActionEvent event ){
+							scrollToBlock( block );
 							objectList.setBlock( block );
 						}
 					});
