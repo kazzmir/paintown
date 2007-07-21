@@ -116,10 +116,12 @@ public class CharacterEditor implements PropertyEditor {
 
 		save.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
+				int xInt = Integer.parseInt( x.getText() );
+				int yInt = Integer.parseInt( y.getText() );
 				character.setName( name.getText() );
 				character.setHealth( Integer.parseInt( health.getText() ) );
-				character.setX( Integer.parseInt( x.getText() ) );
-				character.setY( Integer.parseInt( y.getText() ) );
+				character.setX( xInt );
+				character.setY( yInt );
 				character.setMap( ((Integer) map.getValue()).intValue() );
 				int a = Integer.parseInt( aggression.getText() );
 				if ( a != -1 ){
