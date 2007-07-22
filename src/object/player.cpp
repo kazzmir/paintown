@@ -350,6 +350,9 @@ void Player::act( vector< Object * > * others, World * world ){
 		setInvincibility( 1000 );
 	}
 	*/
+	if ( isInvincible() && getInvincibility() < 1 ){
+		setInvincibility( 100 );
+	}
 
 	/* Character handles jumping and possibly other things */
 	Character::act( others, world );

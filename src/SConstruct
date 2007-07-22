@@ -67,7 +67,6 @@ timedifference.cpp
 sound.cpp
 keyboard.cpp
 bitmap.cpp
-lit_bitmap.cpp
 font.cpp
 ftalleg.cpp
 funcs.cpp
