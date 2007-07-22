@@ -50,6 +50,8 @@ void resize_callback( int w, int h, void * data ){
 }
 */
 
+static double startingGameSpeed = 1.0;
+
 /* fade the screen and tell the player they lost */
 void fadeOut( const string & message ){
 	Bitmap dark( GFX_X, GFX_Y );
@@ -106,7 +108,7 @@ static bool playLevel( World & world, Player * player ){
 	int game_time = 100;
 	bool done = false;
 	
-	double gameSpeed = 1.0;
+	double gameSpeed = startingGameSpeed;
 	
 	double runCounter = 0;
 	bool paused = false;
@@ -510,13 +512,13 @@ static bool titleScreen(){
 	const unsigned int mainMax = sizeof( mainOptions ) / sizeof( char* );
 
 	bool isInvincible = false;
-	const int MORE_INVINCIBLE = 0;
-	const int MORE_GAME_SPEED = 1;
-	const int MORE_BACK = 2;
+	const unsigned int MORE_INVINCIBLE = 0;
+	const unsigned int MORE_GAME_SPEED = 1;
+	const unsigned int MORE_BACK = 2;
 	char invincible[ 128 ];
 	strcpy( invincible, "Invincible: No" );
 	char gameSpeed[ 128 ];
-	strcpy( gameSpeed, "Game speed: 1.0" );
+	sprintf( gameSpeed, "Game speed: %0.2f", startingGameSpeed );
 	const char * moreOptions[] = { invincible,
 				       gameSpeed,
 				       "Back"
@@ -539,6 +541,8 @@ static bool titleScreen(){
 
 	key.setDelay( Keyboard::Key_UP, 100 );
 	key.setDelay( Keyboard::Key_DOWN, 100 );
+	key.setDelay( Keyboard::Key_LEFT, 20 );
+	key.setDelay( Keyboard::Key_RIGHT, 20 );
 
 	bool done = false;
 	while ( ! done ){
@@ -560,6 +564,21 @@ static bool titleScreen(){
 				if ( key[ Keyboard::Key_DOWN ] ){
 					draw = true;
 					choose = (choose + 1 + maxOptions) % maxOptions;
+				}
+
+				if ( options == moreOptions && choose == MORE_GAME_SPEED ){
+					if ( key[ Keyboard::Key_RIGHT ] ){
+						draw = true;
+						startingGameSpeed += 0.05;
+					}
+					if ( key[ Keyboard::Key_LEFT ] ){
+						draw = true;
+						startingGameSpeed -= 0.05;
+						if ( startingGameSpeed < 0.1 ){
+							startingGameSpeed = 0.1;
+						}
+					}
+					sprintf( gameSpeed, "Game speed: %0.2f", startingGameSpeed );
 				}
 
 				if ( enter ){
