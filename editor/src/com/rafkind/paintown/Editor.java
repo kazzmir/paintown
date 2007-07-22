@@ -183,17 +183,16 @@ public class Editor extends JFrame {
 		this.addWindowListener( new CloseHook( closeHook ) );
 	}
 
-	/* doesn't work too well... */
 	private void smoothScroll( final JScrollBar scroll, final int start, final int end ){
 		new Thread(){
 			public void run(){
 				int begin = start;
 				for ( int i = 0; i < 6; i++ ){
-					int to = (begin + end) / 2;	
+					int to = (begin + end) / 2;
 					scroll.setValue( to );
 					begin = to;
 					try{
-						Thread.sleep( 10 );
+						Thread.sleep( 20 );
 					} catch ( Exception e ){
 					}
 				}
@@ -263,6 +262,16 @@ public class Editor extends JFrame {
 		
 		viewScroll.setPreferredSize( new Dimension( 200, 200 ) );
 		viewScroll.setViewportView( view );
+
+		/* this allows smooth scrolling of the level */
+		viewScroll.getViewport().setScrollMode( JViewport.BACKINGSTORE_SCROLL_MODE );
+
+		/*
+		System.out.println( "JViewport.BLIT_SCROLL_MODE = " + JViewport.BLIT_SCROLL_MODE );
+		System.out.println( "JViewport.BACKINGSTORE_SCROLL_MODE = " + JViewport.BACKINGSTORE_SCROLL_MODE );
+		System.out.println( "JViewport.SIMPLE_SCROLL_MODE = " + JViewport.SIMPLE_SCROLL_MODE );
+		System.out.println( "View scroll mode: " + viewScroll.getViewport().getScrollMode() );
+		*/
 		viewScroll.getHorizontalScrollBar().setBackground( new Color( 128, 255, 0 ) );
 
 		final Lambda1 editSelected = new Lambda1(){
@@ -714,7 +723,8 @@ public class Editor extends JFrame {
 				int move = (int)(currentX * level.getScale() - viewScroll.getHorizontalScrollBar().getVisibleAmount() / 2);
 
 				/* scroll over to the selected thing */
-				viewScroll.getHorizontalScrollBar().setValue( move );
+				// viewScroll.getHorizontalScrollBar().setValue( move );
+				smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), move );
 
 				viewScroll.repaint();
 			}
@@ -1137,8 +1147,8 @@ public class Editor extends JFrame {
 					}
 					length += b.getLength();
 				}
-				// smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), (int)(length * level.getScale() - 10) );
-				viewScroll.getHorizontalScrollBar().setValue( (int)(length * level.getScale() - 10) );
+				smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), (int)(length * level.getScale() - 10) );
+				// viewScroll.getHorizontalScrollBar().setValue( (int)(length * level.getScale() - 10) );
 			}
 
 			/* self_ should be the 'setupBlocks' lambda so that it can
