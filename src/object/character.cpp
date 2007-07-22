@@ -124,6 +124,7 @@ landed_sound( NULL ){
 	linked = NULL;
 	setYVelocity( 0 );
 	setXVelocity( 0 );
+	setZVelocity( 0 );
 
 	current_map = 0;
 
@@ -650,6 +651,7 @@ void Character::act( vector< Object * > * others, World * world ){
 		
 	/* when the character moves not because of a move or walking */
 	if ( isMoving() ){
+		// cout << this << " is moving with velocities " << getXVelocity() << " " << getYVelocity() << " " << getZVelocity() << endl;
 			
 		/* force of gravity, subtract acceleration for
 		 * downward movement
