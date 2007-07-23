@@ -236,6 +236,8 @@ public class Editor extends JFrame {
 		data.add( new File( "data/chars/yamazaki/yamazaki.txt" ) );
 		data.add( new File( "data/chars/yashiro/yashiro.txt" ) );
 		data.add( new File( "data/misc/apple/apple.txt" ) );
+		data.add( new File( "data/misc/cake/cake.txt" ) );
+		data.add( new File( "data/misc/chicken/chicken.txt" ) );
 		return data;
 	}
 
