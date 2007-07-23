@@ -85,6 +85,12 @@ public:
 	 */
 	virtual ECollide * getCollide() const;
 
+	virtual const double currentDamage() const {
+		return damage;
+	}
+
+	virtual void reduceDamage( const double much = 0.09 );
+
 	/* takeDamage
 	 * Take some damage and do other things
 	 */
@@ -339,6 +345,7 @@ private:
 	double virtualz;
 	int health;
 	int max_health;
+	double damage;
 	
 	int facing; // 0 for left, 1 for right
 

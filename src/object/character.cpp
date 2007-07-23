@@ -46,7 +46,8 @@ moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
-invincibility( 0 ){
+invincibility( 0 ),
+toughness( 10 ){
 }
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
@@ -66,7 +67,8 @@ moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
-invincibility( 0 ){
+invincibility( 0 ),
+toughness( 10 ){
 	name = "";
 
 	loadSelf( filename.c_str() );
@@ -89,7 +91,8 @@ moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
-invincibility( 0 ){
+invincibility( 0 ),
+toughness( 10 ){
 	name = "";
 
 	loadSelf( filename );
@@ -132,6 +135,7 @@ landed_sound( NULL ){
 	setShadow( chr.getShadow() );
 	status = chr.getStatus();
 	invincibility = chr.invincibility;
+	toughness = chr.getToughness();
 
 	if ( chr.die_sound != NULL ) 
 		die_sound = new Sound( *(chr.die_sound) );
@@ -522,12 +526,14 @@ void Character::fall( double x_vel, double y_vel ){
 
 }
 	
-void Character::takeDamage( ObjectAttack * obj, int x ){
+void Character::takeDamage( ObjectAttack * obj, int damage ){
 	// if ( getStatus() == Status_Dead ) return;
 	// cout<<this<<" "<<getName()<<" taking "<<x<<" damage"<<endl;
-	Object::takeDamage( obj, x );
+	Object::takeDamage( obj, damage );
 	
-	if ( (x > 6 || getHealth() <= 0 || getStatus() == Status_Jumping) && getStatus() != Status_Fell ){
+	// cout << getName() << " has " << currentDamage() << " damage" << endl;
+	if ( (currentDamage() > getToughness() || getHealth() <= 0 || getStatus() == Status_Jumping) && getStatus() != Status_Fell ){
+		reduceDamage( currentDamage() );
 		/*
 		animation_current = movements[ "fall" ];
 		setStatus( Status_Fell );
@@ -651,6 +657,9 @@ void Character::act( vector< Object * > * others, World * world ){
 	if ( invincibility > 0 ){
 		invincibility--;
 	}
+
+	reduceDamage();
+	// cout << getName() << " now has " << currentDamage() << endl;
 
 	/* when the character moves not because of a move or walking */
 	if ( isMoving() ){

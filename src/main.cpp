@@ -51,6 +51,7 @@ void resize_callback( int w, int h, void * data ){
 */
 
 static double startingGameSpeed = 1.0;
+static int LAZY_KEY_DELAY = 300;
 
 /* fade the screen and tell the player they lost */
 void fadeOut( const string & message ){
@@ -94,7 +95,7 @@ static bool playLevel( World & world, Player * player ){
 	key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
 	key.setDelay( Keyboard::Key_P, 100 );
 
-	key.setDelay( Keyboard::Key_F4, 100 );
+	key.setDelay( Keyboard::Key_F4, 200 );
 	
 	/* the game graphics are meant for 320x240 and will be stretched
 	 * to fit the screen
@@ -346,8 +347,8 @@ static Object * selectPlayer( bool invincibile ) throw( LoadException ){
 
 	Object ** current1 = all;
 
-	key.setDelay( Keyboard::Key_RIGHT, 100 );
-	key.setDelay( Keyboard::Key_LEFT, 100 );
+	key.setDelay( Keyboard::Key_RIGHT, 150 );
+	key.setDelay( Keyboard::Key_LEFT, 150 );
 
 	bool draw = true;
 	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
@@ -442,8 +443,8 @@ static const string selectLevelSet( const string & base ){
 	Keyboard key;
 	bool done = false;
 
-	key.setDelay( Keyboard::Key_UP, 100 );
-	key.setDelay( Keyboard::Key_DOWN, 100 );
+	key.setDelay( Keyboard::Key_UP, LAZY_KEY_DELAY );
+	key.setDelay( Keyboard::Key_DOWN, LAZY_KEY_DELAY );
 	Global::speed_counter = 0;
 
 	while ( ! done ){
@@ -539,10 +540,10 @@ static bool titleScreen(){
 
 	Keyboard key;
 
-	key.setDelay( Keyboard::Key_UP, 100 );
-	key.setDelay( Keyboard::Key_DOWN, 100 );
-	key.setDelay( Keyboard::Key_LEFT, 20 );
-	key.setDelay( Keyboard::Key_RIGHT, 20 );
+	key.setDelay( Keyboard::Key_UP, LAZY_KEY_DELAY );
+	key.setDelay( Keyboard::Key_DOWN, LAZY_KEY_DELAY );
+	key.setDelay( Keyboard::Key_LEFT, 30 );
+	key.setDelay( Keyboard::Key_RIGHT, 30 );
 
 	bool done = false;
 	while ( ! done ){

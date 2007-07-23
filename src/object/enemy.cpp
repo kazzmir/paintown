@@ -190,7 +190,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 					want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
 					
 				} else {
-					want_x = (int)(main_enemy->getX() + (Util::rnd( 20 ) + 20) * (Util::rnd( 2 ) * 2 - 1));
+					want_x = (int)(main_enemy->getX() + (Util::rnd( 20 ) + 35) * (Util::rnd( 2 ) * 2 - 1));
 					want_z = Util::rnd( (int) main_enemy->getZ() - 1, (int) main_enemy->getZ() + 1 );
 				}
 

@@ -108,6 +108,10 @@ public:
 		status = _status;
 	}
 
+	virtual const int getToughness() const {
+		return toughness;
+	}
+
 	virtual const int getRX() const;
 	virtual const int getRZ() const;
 	virtual const int getRY() const;
@@ -349,6 +353,7 @@ private:
 	Sound * die_sound;
 	Sound * landed_sound;
 	int invincibility;
+	int toughness;
 };
 
 #endif

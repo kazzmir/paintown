@@ -26,6 +26,7 @@ virtualy( 0 ),
 virtualz( 0 ),
 health( 0 ),
 max_health( 0 ),
+damage( 0 ),
 facing( FACING_RIGHT ),
 alliance( alliance ){
 }
@@ -39,11 +40,13 @@ virtualy( (double)y ),
 virtualz( 0 ),
 health( 0 ),
 max_health( 0 ),
+damage( 0 ),
 facing( FACING_RIGHT ),
 alliance( _alliance ){
 }
 
-Object::Object( const Object & copy ){
+Object::Object( const Object & copy ):
+damage( 0 ){
 	actualx = copy.actualx;
 	actualy = copy.actualy;
 	actualz = copy.actualz;
@@ -162,8 +165,16 @@ void Object::hurt( int x ){
 	setHealth( getHealth() - x );
 }
 	
+void Object::reduceDamage( const double much ){
+	damage -= much;
+	if ( damage < 0 ){
+		damage = 0;
+	}
+}
+	
 void Object::takeDamage( ObjectAttack * obj, int x ){
 	this->hurt( x );
+	damage += x;
 	// health -= x;
 }
 	
