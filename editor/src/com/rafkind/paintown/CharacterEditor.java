@@ -37,6 +37,38 @@ public class CharacterEditor implements PropertyEditor {
 		return (Block) level.getBlocks().get( num - 1 );
 	}
 
+	private String convertAggressionLevel( int level ){
+
+		if ( level == -1 ){
+			return "default";
+		}
+		if ( level > 90 ){
+			return "calm";
+		}
+		if ( level > 80 ){
+			return "unpleasant";
+		}
+		if ( level > 70 ){
+			return "mild";
+		}
+		if ( level > 60 ){
+			return "angry";
+		}
+		if ( level > 50 ){
+			return "hot headed";
+		}
+		if ( level > 40 ){
+			return "wild";
+		}
+		if ( level > 30 ){
+			return "furious";
+		}
+		if ( level > 20 ){
+			return "temper tantrum";
+		}
+		return "insane";
+	}
+
 	public JComponent createPane( final Level level, final Lambda0 closeProc ){
 		final SwingEngine engine = new SwingEngine( "character.xml" );
 		final JTextField name = (JTextField) engine.find( "name" );
@@ -53,7 +85,28 @@ public class CharacterEditor implements PropertyEditor {
 		final JTextField aggression = (JTextField) engine.find( "aggression" );
 		aggression.setText( String.valueOf( character.getAggression() ) );
 		final JSpinner block = (JSpinner) engine.find( "block" );
+		final JSlider aggressionScroll = (JSlider) engine.find( "aggression-slider" );
+		final JLabel aggressionLevel = (JLabel) engine.find( "aggression-level" );
 
+		if ( character.getAggression() == -1 ){
+			aggressionScroll.setValue( aggressionScroll.getMaximum() );
+		} else {
+			aggressionScroll.setValue( character.getAggression() );
+		}
+
+		aggressionLevel.setText( "Aggression level: " + convertAggressionLevel( aggressionScroll.getValue() ) );
+
+		aggressionScroll.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				int level = aggressionScroll.getValue();
+				if ( level == 100 ){
+					level = -1;
+				}
+				aggressionLevel.setText( "Aggression level: " + convertAggressionLevel( level ) );
+				aggression.setText( String.valueOf( level ) );
+			}
+		});
+		
 		final Lambda1 update = new Lambda1(){
 			public Object invoke( Object c ){
 				Character guy = (Character) c;
@@ -124,9 +177,7 @@ public class CharacterEditor implements PropertyEditor {
 				character.setY( yInt );
 				character.setMap( ((Integer) map.getValue()).intValue() );
 				int a = Integer.parseInt( aggression.getText() );
-				if ( a != -1 ){
-					character.setAggression( a );
-				}
+				character.setAggression( a );
 				Block b = getBlock( ((Integer) block.getValue()).intValue(), level );
 				Block old = level.findBlock( character );
 				if ( b != null && old != null && b != old ){

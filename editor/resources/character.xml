@@ -32,6 +32,11 @@
 			<textfield size="3" id="aggression" />
 		</hbox>
 		<hbox>
+			<label id="aggression-level" text="Aggression level: " />
+			<glue />
+		</hbox>
+		<slider id="aggression-slider" minimum="1" maximum="100" />
+		<hbox>
 			<label text="Path: " />
 			<textfield size="15" id="path" />
 		</hbox>

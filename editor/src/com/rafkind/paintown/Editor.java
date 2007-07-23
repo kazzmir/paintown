@@ -404,8 +404,11 @@ public class Editor extends JFrame {
 				}
 
 				if ( getSelected() != null && event.getClickCount() == 2 ){
-					editSelected.invoke_( getSelected() );
-					// System.out.println( "Properties of " + getSelected() );
+					try{
+						editSelected.invoke( getSelected() );
+					} catch ( Exception e ){
+						e.printStackTrace();
+					}
 				}
 			}
 
