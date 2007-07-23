@@ -124,6 +124,9 @@ public:
 	void setY( const int x );
 	void setZ( const int x );
 
+	/* makes the owner jump with velocity x,y,z */
+	void jump( double vx, double vy, double vz );
+
 	/* moveX, moveY, moveZ:
 	 * Moves the owner by X,Y,Z 
 	 */

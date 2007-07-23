@@ -9,6 +9,7 @@
 #include "animation_event_coords.h"
 #include "animation_event_delay.h"
 #include "animation_event_frame.h"
+#include "animation_event_jump.h"
 #include "animation_event_move.h"
 #include "animation_event_nop.h"
 #include "animation_event_offset.h"
@@ -277,6 +278,11 @@ contact( NULL ){
 					m = Status_Grab;
 				}
 				AnimationEvent * ani = new AnimationEventStatus( m );
+				events.push_back( ani );
+			} else if ( *current == "jump" ){
+				double x, y, z;
+				*current >> x >> y >> z;
+				AnimationEvent * ani = new AnimationEventJump( x, y, z );
 				events.push_back( ani );
 			} else if ( *current == "decommision" ){
 				string l;
@@ -817,6 +823,16 @@ void Animation::setOffsetY( const int y ){
 	offset_y = y;
 }
 */
+
+/* the parent will jump up( the Y direction ) based on their
+ * own starting y velocity so the vy parameter is not really used.
+ * maybe this should call parent->jump( vx, vy, vz ) instead..
+ */
+void Animation::jump( double vx, double vy, double vz ){
+	if ( parent ){
+		parent->doJump( vx, vz );
+	}
+}
 
 void Animation::contacted(){
 	if ( contact )

@@ -429,6 +429,9 @@ Animation * Character::getMovement( const unsigned int x ){
 }
 
 bool Character::testAnimation(){
+	World w;
+	vector< Object * > others;
+	act( &others, &w );
 	return animation_current->Act();
 }
 
@@ -481,10 +484,10 @@ void Character::setName( const string & str ){
 	name = str;
 }
 
-void Character::doJump( double x_, double y_ ){
+void Character::doJump( double vx, double vz ){
 	setStatus( Status_Jumping );
-	setXVelocity( x_ );
-	setZVelocity( y_ );
+	setXVelocity( vx );
+	setZVelocity( vz );
 	initJumpingYVelocity();
 	// cout<<"Jumping velocity: "<<getMaxJumpingVelocity()<<endl;
 	// cout<<"Do jump: "<<getJumpingYVelocity()<<endl;
@@ -648,7 +651,7 @@ void Character::act( vector< Object * > * others, World * world ){
 	if ( invincibility > 0 ){
 		invincibility--;
 	}
-		
+
 	/* when the character moves not because of a move or walking */
 	if ( isMoving() ){
 		// cout << this << " is moving with velocities " << getXVelocity() << " " << getYVelocity() << " " << getZVelocity() << endl;

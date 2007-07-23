@@ -156,7 +156,7 @@ void Enemy::act( vector< Object * > * others, World * world ){
 
 	vector< Object * > enemies;
 	
-	if ( getStatus() != Status_Ground )
+	if ( getStatus() != Status_Ground && getStatus() != Status_Jumping )
 		return;
 
 	filterEnemies( enemies, others );

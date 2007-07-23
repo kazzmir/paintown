@@ -38,6 +38,7 @@ animation_event_bbox.cpp
 animation_event_coords.cpp
 animation_event_delay.cpp
 animation_event_frame.cpp
+animation_event_jump.cpp
 animation_event_move.cpp
 animation_event_nop.cpp
 animation_event_offset.cpp

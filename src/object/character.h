@@ -53,7 +53,7 @@ public:
 	virtual Object * copy();
 
 	/* make the character jump with an x velocity of x_ */
-	virtual void doJump( double x_, double y_ );
+	virtual void doJump( double x_, double z_ );
 	
 	virtual void stimulate( const Stimulation & stim );
 
