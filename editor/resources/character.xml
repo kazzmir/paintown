@@ -29,7 +29,7 @@
 		</hbox>
 		<hbox>
 			<label text="Aggression: " />
-			<textfield size="3" id="aggression" />
+			<textfield editable="false" size="3" id="aggression" />
 		</hbox>
 		<hbox>
 			<label id="aggression-level" text="Aggression level: " />
