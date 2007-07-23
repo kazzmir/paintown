@@ -191,7 +191,7 @@ void World::doLogic(){
 	if ( cplayer->getStatus() == Status_Get ){
 		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 			Object * const o = *it;
-			if ( o->isGettable() && o->collision( cplayer ) ){
+			if ( o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision( cplayer ) ){
 				o->touch( cplayer );
 				delete o;
 				it = objects.erase( it );

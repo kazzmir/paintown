@@ -107,10 +107,8 @@ bool Item::collision( ObjectAttack * obj ){
 
 		return ( me->Collision( him, mx, my, ax, ay, my_xflip, false, his_xflip, false ) );
 
-}
-return false;
-
-
+	}
+	return false;
 }
 
 void Item::act( vector< Object * > * others, World * world ){
