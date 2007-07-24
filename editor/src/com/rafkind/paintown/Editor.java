@@ -1150,7 +1150,9 @@ public class Editor extends JFrame {
 					if ( b == block ){
 						break;
 					}
-					length += b.getLength();
+					if ( b.isEnabled() ){
+						length += b.getLength();
+					}
 				}
 				smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), (int)(length * level.getScale() - 10) );
 				// viewScroll.getHorizontalScrollBar().setValue( (int)(length * level.getScale() - 10) );
@@ -1182,8 +1184,10 @@ public class Editor extends JFrame {
 					final JButton button = new JButton( "Block " + n + " : " + block.getLength() );
 					button.addActionListener( new AbstractAction(){
 						public void actionPerformed( ActionEvent event ){
-							scrollToBlock( block );
-							objectList.setBlock( block );
+							if ( block.isEnabled() ){
+								scrollToBlock( block );
+								objectList.setBlock( block );
+							}
 						}
 					});
 					stuff.add( button );
