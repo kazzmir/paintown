@@ -65,7 +65,10 @@
 			/>
 		<glue size="1" />
 		<label text="Scale: 2" id="scale" />
+		<slider id="level-scale" minimum="1" maximum="20" />
+		<!--
 		<panel id="scroll" />
+		-->
 		<!--
 		<button id="render" label="Render" />
 		-->

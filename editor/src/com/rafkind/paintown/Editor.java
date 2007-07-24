@@ -1252,6 +1252,18 @@ public class Editor extends JFrame {
 		setupBlocks.invoke_( level, setupBlocks );
 		loadLevelProperties.invoke_( level );
 
+		final JSlider scroll = (JSlider) engine.find( "level-scale" );
+		final JLabel scale = (JLabel) engine.find( "scale" );
+		scroll.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				level.setScale( (double) scroll.getValue() * 2.0 / scroll.getMaximum() );
+				scale.setText( "Scale: " + level.getScale() );
+				view.revalidate();
+				viewScroll.repaint();
+			}
+		});
+
+		/*
 		JPanel scroll = (JPanel) engine.find( "scroll" );
 		final JScrollBar scrolly = new JScrollBar( JScrollBar.HORIZONTAL, 20, 0, 1, 20 );
 		final JLabel scale = (JLabel) engine.find( "scale" );
@@ -1264,6 +1276,7 @@ public class Editor extends JFrame {
 				viewScroll.repaint();
 			}
 		});
+		*/
 
 		return (JPanel) engine.getRootComponent();
 	}
