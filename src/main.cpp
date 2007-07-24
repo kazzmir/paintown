@@ -322,11 +322,11 @@ static Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	Bitmap background( "data/sprites/select.png" );
 	// background.resize( GFX_X, GFX_Y );
 
-	Player * mandy = new Player( "data/chars/mandy/mandy.txt" );
+	Player * mandy = new Player( "data/players/mandy/mandy.txt" );
 	cout << "Loaded mandy" << endl;
-	Player * maxima = new Player( "data/chars/maxima/maxima.txt" );
+	Player * maxima = new Player( "data/players/maxima/maxima.txt" );
 	cout << "Loaded maxima" << endl;
-	Player * kula = new Player( "data/chars/kula/kula.txt" );
+	Player * kula = new Player( "data/players/kula/kula.txt" );
 	cout << "Loaded kula" << endl;
 
 	mandy->setInvincible( invincibile );
