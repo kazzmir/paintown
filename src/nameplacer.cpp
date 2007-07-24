@@ -45,5 +45,5 @@ void NamePlacer::doPlacement( int & x, int & y, int & id ){
 	places[ id ] = 10;
 	const Font & ft = Font::getFont( "data/fonts/arial.ttf" );
 	x = 1 + (count&1) * 170;
-	y = 1 + (count/2) * ft.getHeight();
+	y = 1 + (count/2) * ft.getHeight() / 2;
 }
