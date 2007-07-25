@@ -30,10 +30,12 @@ using namespace std;
 // #define debug
 #endif
 
+#define DEFAULT_LIVES 4
+
 Player::Player( const char * filename ) throw( LoadException ): 
 Character( filename, ALLIANCE_PLAYER ),
 acts(0),
-lives(3),
+lives(DEFAULT_LIVES),
 invincible( false ){
 	
 	// if ( movements[ "grab" ] == NULL ){
@@ -51,7 +53,7 @@ invincible( false ){
 Player::Player( const Character & chr ) throw( LoadException ):
 Character( chr ),
 acts(0),
-lives(3),
+lives(DEFAULT_LIVES),
 invincible( false ){
 	show_life = getHealth();
 }
