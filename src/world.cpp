@@ -83,7 +83,7 @@ void World::loadLevel( const string & path ) throw( LoadException ){
 	}
 	scene = s;
 	
-	string bang_path( "data/misc/flash/flash.txt" );
+	string bang_path( Util::getDataPath() + "/misc/flash/flash.txt" );
 	Object * effect = new Effect( bang_path.c_str() );
 	if ( bang != NULL ){
 		delete bang;

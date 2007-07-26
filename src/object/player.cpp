@@ -4,6 +4,7 @@
 #include "util/bitmap.h"
 #include "character.h" 
 #include "util/font.h"
+#include "util/funcs.h"
 #include "factory/font_factory.h"
 #include "factory/font_render.h"
 #include "globals.h"
@@ -16,7 +17,7 @@
 // how many ticks to wait before the key cache is cleared.
 // this can probably be user defined in the future
 static const int GLOBAL_KEY_DELAY = 13;
-static const char * PLAYER_FONT = "data/fonts/arial.ttf";
+static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 using namespace std;
 
@@ -217,7 +218,7 @@ void Player::draw( Bitmap * work, int rel_x ){
 
 	// Font * player_font = FontFactory::getFont( NAME_FONT );
 	// const Font & player_font = Font::getFont( NAME_FONT );
-	const Font & player_font = Font::getFont( PLAYER_FONT, 20, 20 );
+	const Font & player_font = Font::getFont( Util::getDataPath() + PLAYER_FONT, 20, 20 );
 	const string & name = getName();
 	int nameHeight = player_font.getHeight( name ) / 2;
 	nameHeight = 20 / 2;

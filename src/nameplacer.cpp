@@ -3,6 +3,7 @@
 #include "nameplacer.h"
 #include "util/font.h"
 #include "factory/font_factory.h"
+#include "util/funcs.h"
 #include "globals.h"
 
 NamePlacer * NamePlacer::placer = NULL;
@@ -43,7 +44,7 @@ void NamePlacer::doPlacement( int & x, int & y, int & id ){
 	}
 	/* give the place some buffer room to go away */
 	places[ id ] = 10;
-	const Font & ft = Font::getFont( "data/fonts/arial.ttf" );
+	const Font & ft = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
 	x = 1 + (count&1) * 170;
 	y = 1 + (count/2) * ft.getHeight() / 2;
 }

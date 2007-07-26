@@ -6,6 +6,7 @@
 #include "block.h"
 #include "object/heart.h"
 #include "util/load_exception.h"
+#include "util/funcs.h"
 #include "object/object.h"
 #include "scene.h"
 #include "globals.h"
@@ -137,7 +138,7 @@ blockNumber( 1 ){
 	current_block = level_blocks.front();
 	level_blocks.pop_front();
 
-	arrow = new Bitmap( "data/sprites/arrow.png" );
+	arrow = new Bitmap( Util::getDataPath() + "/sprites/arrow.png" );
 	arrow_blink = 0;
 
 	// delete current;

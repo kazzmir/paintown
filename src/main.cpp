@@ -44,12 +44,6 @@
 // #define debug
 #endif
 
-/*
-void resize_callback( int w, int h, void * data ){
-	*(bool *)data = true;
-}
-*/
-
 static double startingGameSpeed = 1.0;
 static int LAZY_KEY_DELAY = 300;
 
@@ -416,7 +410,7 @@ static Object * selectPlayer( bool invincibile ) throw( LoadException ){
 
 static const string selectLevelSet( const string & base ){
 	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
-	// Bitmap background( "data/paintown-title.png" );
+	// Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	int fontY = 20;
 	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, fontY );
 	vector< string > possible = Util::getFiles( base + "/", "*.txt" );

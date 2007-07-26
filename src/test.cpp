@@ -472,7 +472,7 @@ void showAnimations( string person, int xmap = 0 ){
 
 	const int baseZ = 170;
 
-	Enemy enemy( "data/chars/shermie/shermie.txt" );
+	Enemy enemy( Util::getDataPath() + "/chars/shermie/shermie.txt" );
 
 	enemy.setX( 320 / 2 + 100 );
 	enemy.setY( 0 );
@@ -683,7 +683,7 @@ string chooseCharacter(){
 	bool done = false;
 
 	map< int, int > hold;
-	vector< string > characters = findAvailableCharacters( "data/chars" );
+	vector< string > characters = findAvailableCharacters( Util::getDataPath() + "/chars" );
 	typedef vector< string >::iterator iterator;
 
 	characters.insert( characters.begin(), "Quit" );

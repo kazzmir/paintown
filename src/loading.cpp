@@ -26,7 +26,7 @@ typedef struct pair{
 void * loadingScreen( void * arg ){
 	int load_x = 80;
 	int load_y = 120;
-	string name = "data/fonts/arial.ttf";
+	string name = Util::getDataPath() + "/fonts/arial.ttf";
 	const Font & myFont = Font::getFont( name, 24, 24 );
 	const char * the_string = "Loading Paintown";
 	int load_width = myFont.textLength( the_string );
@@ -63,7 +63,7 @@ void * loadingScreen( void * arg ){
 
 	Global::speed_counter = 0;
 
-	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
+	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
 	Bitmap::Screen->Blit( load_x, load_y, load_width, load_height, 0, 0, work );
 	Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), *Bitmap::Screen, "Made by Jon Rafkind", 0 );
 	bool quit = false;

@@ -25,8 +25,6 @@ bool Global::done_loading = false;
 const int Global::WINDOWED = GFX_AUTODETECT_WINDOWED;
 const int Global::FULLSCREEN = GFX_AUTODETECT_FULLSCREEN;
 
-// DATAFILE * Global::all_fonts;
-
 void inc_speed_counter() {
 	Global::speed_counter += 1;
 }
@@ -61,19 +59,7 @@ bool init( int gfx ){
 	cout<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
 	srand( time( NULL ) );
 	set_display_switch_mode( SWITCH_BACKGROUND );
-	// Global::all_fonts = load_datafile( "data/fonts.dat" );
-	/*
-	if ( ! Global::all_fonts ){
-		if ( ! exists( "data/fonts.dat" ) ){
-			cout << "data/fonts.dat is missing!" << endl;
-		} else {
-			cout << "data/fonts.dat is corrupted!" << endl;
-		}
-		return false;
-	}
-	cout<<"Loaded fonts " << endl;
-	*/
-
+	
 	atexit( &dumb_exit );
 	dumb_register_packfiles();
 
