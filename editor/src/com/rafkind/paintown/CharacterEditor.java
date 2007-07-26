@@ -90,9 +90,12 @@ public class CharacterEditor implements PropertyEditor {
 					files.put( file, readFile( new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream( "/" + file ) ) ) ) );
 					names = (List) files.get( file );
 				} catch ( IOException ie ){
+					ie.printStackTrace();
 					names = new ArrayList();
 					names.add( "TempName" );
 				}
+			} else {
+				names = (List) files.get( file );
 			}
 		}
 
@@ -133,7 +136,6 @@ public class CharacterEditor implements PropertyEditor {
 				name.setText( generateName() );
 			}
 		});
-
 
 		if ( character.getAggression() == -1 ){
 			aggressionScroll.setValue( aggressionScroll.getMaximum() );
