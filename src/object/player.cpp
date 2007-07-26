@@ -50,6 +50,23 @@ invincible( false ){
 
 }
 	
+Player::Player( const string & filename ) throw( LoadException ):
+Character( filename, ALLIANCE_PLAYER ),
+acts(0),
+lives(DEFAULT_LIVES),
+invincible( false ){
+	
+	// if ( movements[ "grab" ] == NULL ){
+	if ( getMovement( "grab" ) == NULL ){
+		throw LoadException("No 'grab' movement");
+	}
+
+	show_life = getHealth();
+
+	int x, y;
+	NamePlacer::getPlacement( x, y, name_id );
+}
+	
 Player::Player( const Character & chr ) throw( LoadException ):
 Character( chr ),
 acts(0),

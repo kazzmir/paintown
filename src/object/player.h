@@ -15,6 +15,7 @@ class Player: public Character{
 public:
 
 	Player( const char * filename ) throw( LoadException );
+	Player( const string & str ) throw( LoadException );
 	Player( const Player & pl ) throw( LoadException );
 	Player( const Character & chr ) throw( LoadException );
 	

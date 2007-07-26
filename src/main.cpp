@@ -60,7 +60,7 @@ void fadeOut( const string & message ){
 	Global::speed_counter = 0;
 	Bitmap::transBlender( 0, 0, 0, 10 );
 	int fade = 0;
-	const Font & f = Font::getFont( "data/fonts/arial.ttf", 50, 50 );
+	const Font & f = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 50, 50 );
 	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, message, 0 );
 	while ( fade < 100 ){
 		fade++;
@@ -199,7 +199,7 @@ static bool playLevel( World & world, Player * player ){
 				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
 				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
 				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
-				const Font & font = Font::getFont( "data/fonts/arial.ttf" );
+				const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
 
@@ -279,7 +279,7 @@ void realGame( Object * player, const string & levelFile ){
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
-			Music::loadSong( Util::getFiles( "data/music/", "*" ) );
+			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
 			Music::play();
 
 			Player * playerX = (Player *) player;
@@ -319,14 +319,14 @@ static bool isArg( const char * s1, const char * s2 ){
 }
 
 static Object * selectPlayer( bool invincibile ) throw( LoadException ){
-	Bitmap background( "data/sprites/select.png" );
+	Bitmap background( Util::getDataPath() + "/sprites/select.png" );
 	// background.resize( GFX_X, GFX_Y );
 
-	Player * mandy = new Player( "data/players/mandy/mandy.txt" );
+	Player * mandy = new Player( Util::getDataPath() + "/players/mandy/mandy.txt" );
 	cout << "Loaded mandy" << endl;
-	Player * maxima = new Player( "data/players/maxima/maxima.txt" );
+	Player * maxima = new Player( Util::getDataPath() + "/players/maxima/maxima.txt" );
 	cout << "Loaded maxima" << endl;
-	Player * kula = new Player( "data/players/kula/kula.txt" );
+	Player * kula = new Player( Util::getDataPath() + "/players/kula/kula.txt" );
 	cout << "Loaded kula" << endl;
 
 	mandy->setInvincible( invincibile );
@@ -415,10 +415,10 @@ static Object * selectPlayer( bool invincibile ) throw( LoadException ){
 }
 
 static const string selectLevelSet( const string & base ){
-	Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
+	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
 	// Bitmap background( "data/paintown-title.png" );
 	int fontY = 20;
-	const Font & font = Font::getFont( "data/fonts/arial.ttf", 20, fontY );
+	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, fontY );
 	vector< string > possible = Util::getFiles( base + "/", "*.txt" );
 	if ( possible.size() == 0 ){
 		return "no-files!!!";
@@ -494,13 +494,13 @@ static const string selectLevelSet( const string & base ){
 }
 
 static bool titleScreen(){
-	Bitmap background( "data/paintown-title.png" );
+	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	// Bitmap::Screen->Blit( background );
 	background.BlitToScreen();
-	Music::loadSong( "data/music/aqua.s3m" );
+	Music::loadSong( Util::getDataPath() + "/music/aqua.s3m" );
 
 	const int fontY = 20;
-	const Font & font = Font::getFont( "data/fonts/arial.ttf", 20, fontY );
+	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, fontY );
 
 	const int MAIN_PLAY = 0;
 	const int MAIN_QUIT = 3;
@@ -677,7 +677,7 @@ static bool titleScreen(){
 			}
 			case MAIN_PLAY : {
 				try{
-					string level = selectLevelSet( "data/levels" );
+					string level = selectLevelSet( Util::getDataPath() + "/levels" );
 					realGame( selectPlayer( isInvincible ), level );
 				} catch ( const LoadException & le ){
 					cout << "Could not load player: " << le.getReason() << endl;
@@ -697,20 +697,31 @@ static bool titleScreen(){
 	return false;
 }
 
+static void showOptions(){
+	cout << "Paintown by Jon Rafkind" << endl;
+	cout << "-w : Fullscreen mode" << endl;
+	cout << "-d <path> : Use data path of <path>. Default is ./data/" << endl;
+	cout << endl;
+}
+
 int paintown_main( int argc, char ** argv ){
 	
 	/* janitor cleans up some global stuff */
 	Collector janitor;
 	int gfx = Global::WINDOWED;
 
-	// bool tester = false;
-	// const char * name = NULL;
-	// int xmap = 0;
+	showOptions();
 	const char * WINDOWED_ARG = "-w";
+	const char * DATAPATH_ARG = "-d";
 	
 	for ( int q = 1; q < argc; q++ ){
 		if ( isArg( argv[ q ], WINDOWED_ARG ) ){
 			gfx = Global::FULLSCREEN;
+		} else if ( isArg( argv[ q ], DATAPATH_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				Util::setDataPath( argv[ q ] );
+			}
 		}
 	}
 	
@@ -729,34 +740,6 @@ int paintown_main( int argc, char ** argv ){
 
 	while ( titleScreen() != false );
 
-	/*
-	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
-	
-	pthread_t loading_screen_thread;
-	pthread_create( &loading_screen_thread, NULL, loadingScreen, NULL );
-
-	const char * player_path = "data/chars/maxima/maxima.txt";
-	// const char * player_path = "data/chars/gangmember/gangmember.txt";
-
-	Object * ch;
-	try{
-		ch = new Player( player_path );
-	} catch ( const LoadException & ex ){
-		cout<<"Could not load player: "<< ex.getReason() << endl;
-		return 1;
-	}
-
-	pthread_mutex_lock( &Global::loading_screen_mutex );
-	Global::done_loading = true;
-	pthread_mutex_unlock( &Global::loading_screen_mutex );
-	pthread_join( loading_screen_thread, NULL );
-
-	realGame( ch );
-
-	delete ch;
-	*/
-
-	// unload_datafile( Global::all_fonts );
 	cout<<"Exiting normally"<<endl;
 
 	return 0;

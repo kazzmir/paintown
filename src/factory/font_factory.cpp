@@ -25,11 +25,15 @@ void FontFactory::destroy(){
 Font * FontFactory::getRealFont( const string & str, const int x, const int y ){
 	if ( font_mapper.find( str ) == font_mapper.end() ){
 	
-		DATAFILE * obj = find_datafile_object( my_data, str.c_str() );
-		if ( obj == NULL ){
-			font_mapper[ str ] = new FreeTypeFont( str );
+		if ( my_data != NULL ){
+			DATAFILE * obj = find_datafile_object( my_data, str.c_str() );
+			if ( obj == NULL ){
+				font_mapper[ str ] = new FreeTypeFont( str );
+			} else {
+				font_mapper[ str ] = new AllegroFont( (FONT *)( obj->dat ) );
+			}
 		} else {
-			font_mapper[ str ] = new AllegroFont( (FONT *)( obj->dat ) );
+			font_mapper[ str ] = new AllegroFont( ::font );
 		}
 
 		// font_mapper[ str ] = new AllegroFont( (FONT *)( obj->dat ) );
@@ -54,5 +58,7 @@ FontFactory::~FontFactory(){
 		Font * s = (*it).second;
 		delete s;
 	}
-	unload_datafile( my_data );
+	if ( my_data != NULL ){
+		unload_datafile( my_data );
+	}
 }
