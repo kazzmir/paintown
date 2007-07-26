@@ -26,6 +26,7 @@
 		<copy todir="classes">
 			<fileset dir="resources">
 				<include name="*.xml" />
+				<include name="*.txt" />
 			</fileset>
 		</copy>
 		<jar destfile="editor.jar"

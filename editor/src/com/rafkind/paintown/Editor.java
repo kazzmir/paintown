@@ -280,7 +280,7 @@ public class Editor extends JFrame {
 			public Object invoke( Object t ){
 				Thing thing = (Thing) t;
 				final JDialog dialog = new JDialog( Editor.this, "Edit" );
-				dialog.setSize( 300, 300 );
+				dialog.setSize( 350, 300 );
 				PropertyEditor editor = thing.getEditor();
 				dialog.getContentPane().add( editor.createPane( level, new Lambda0(){
 					public Object invoke(){

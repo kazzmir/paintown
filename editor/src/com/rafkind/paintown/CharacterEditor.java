@@ -4,9 +4,12 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import java.io.*;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.rafkind.paintown.level.Character;
 import com.rafkind.paintown.level.Level;
@@ -15,6 +18,7 @@ import com.rafkind.paintown.level.Block;
 import org.swixml.SwingEngine;
 
 public class CharacterEditor implements PropertyEditor {
+	private static HashMap files = new HashMap();
 	private Character character;
 
 	public CharacterEditor( Character i ){
@@ -69,6 +73,34 @@ public class CharacterEditor implements PropertyEditor {
 		return "insane";
 	}
 
+	private abstract class RandomNameAction extends AbstractAction {
+		private List names;
+
+		private List readFile( BufferedReader reader ) throws IOException {
+			List l = new ArrayList();
+			while ( reader.ready() ){
+				l.add( reader.readLine() );
+			}
+			return l;
+		}
+
+		public RandomNameAction( String file ){
+			if ( files.get( file ) == null ){
+				try{
+					files.put( file, readFile( new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream( "/" + file ) ) ) ) );
+					names = (List) files.get( file );
+				} catch ( IOException ie ){
+					names = new ArrayList();
+					names.add( "TempName" );
+				}
+			}
+		}
+
+		public String generateName(){
+			return (String) names.get( (int)(Math.random() * (names.size() - 1)) );
+		}
+	}
+
 	public JComponent createPane( final Level level, final Lambda0 closeProc ){
 		final SwingEngine engine = new SwingEngine( "character.xml" );
 		final JTextField name = (JTextField) engine.find( "name" );
@@ -87,6 +119,21 @@ public class CharacterEditor implements PropertyEditor {
 		final JSpinner block = (JSpinner) engine.find( "block" );
 		final JSlider aggressionScroll = (JSlider) engine.find( "aggression-slider" );
 		final JLabel aggressionLevel = (JLabel) engine.find( "aggression-level" );
+		final JButton boysName = (JButton) engine.find( "boys-name" );
+		final JButton girlsName = (JButton) engine.find( "girls-name" );
+
+		boysName.addActionListener( new RandomNameAction( "boys.txt" ){
+			public void actionPerformed( ActionEvent event ){
+				name.setText( generateName() );
+			}
+		});
+		
+		girlsName.addActionListener( new RandomNameAction( "girls.txt" ){
+			public void actionPerformed( ActionEvent event ){
+				name.setText( generateName() );
+			}
+		});
+
 
 		if ( character.getAggression() == -1 ){
 			aggressionScroll.setValue( aggressionScroll.getMaximum() );

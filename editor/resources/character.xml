@@ -14,6 +14,9 @@
 		<hbox>				
 			<label text="Name:" />
 			<textfield size="20" id="name" />
+			<glue size="1" />
+			<button id="boys-name" text="Boys Name" />
+			<button id="girls-name" text="Girls Name" />
 		</hbox>
 		<hbox>
 			<label text="Health:" />
