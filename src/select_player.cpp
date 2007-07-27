@@ -69,6 +69,14 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 					current = (current + 1) % players.size();
 				}
 
+				if ( key[ Keyboard::Key_UP ] ){
+					current = (current - 3 + players.size()) % players.size();
+				}
+
+				if ( key[ Keyboard::Key_DOWN ] ){
+					current = (current + 3) % players.size();
+				}
+
 				if ( ch->testAnimation() ){
 					ch->testReset();
 				}
