@@ -234,6 +234,7 @@ public class Editor extends JFrame {
 						Level level = new Level( f );
 						levels.put( tabbed.add( f.getName(), createEditPanel( level ) ), level );
 					} catch ( LoadException le ){
+						showError( "Could not load " + f.getName() );
 						System.out.println( "Could not load " + f.getName() );
 						le.printStackTrace();
 					}
