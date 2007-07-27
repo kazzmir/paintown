@@ -6,6 +6,7 @@ import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.PropertyEditor;
 import com.rafkind.paintown.Lambda1;
+import com.rafkind.paintown.Editor;
 
 import java.io.*;
 import java.awt.*;
@@ -40,7 +41,7 @@ public abstract class Thing{
 		Token tpath = token.findToken( "path" );
 		if ( tpath != null ){
 			setPath( tpath.readString( 0 ) );
-			main = loadImage( getPath(), this );
+			main = loadImage( Editor.dataPath( getPath() ), this );
 		}
 
 		listeners = new ArrayList();
@@ -174,7 +175,6 @@ public abstract class Thing{
 	}
 
 	private static BufferedImage loadImage( String file, Thing t ) throws LoadException {
-
 		if ( images.get( file ) != null ){
 			return (BufferedImage) images.get( file );
 		}

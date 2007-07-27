@@ -12,6 +12,7 @@ import com.rafkind.paintown.PropertyEditor;
 import com.rafkind.paintown.ItemEditor;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
+import com.rafkind.paintown.Editor;
 
 public class Item extends Thing {
 
@@ -45,7 +46,7 @@ public class Item extends Thing {
 			if ( frame != null ){
 				String pic = frame.readString( 0 );
 				try{
-					return MaskedImage.load( base + pic );
+					return MaskedImage.load( Editor.dataPath( base + pic ) );
 				} catch ( IOException ie ){
 					throw new LoadException( "Could not load " + base + pic + " at line " + frame.getLine(), ie );
 				}

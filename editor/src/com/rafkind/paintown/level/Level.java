@@ -14,6 +14,7 @@ import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.MaskedImage;
+import com.rafkind.paintown.Editor;
 
 public class Level{
 
@@ -369,7 +370,7 @@ public class Level{
 
 	private Image loadImage( String s ) throws LoadException {
 		try{
-			return MaskedImage.load( s );
+			return MaskedImage.load( Editor.dataPath( s ) );
 		} catch ( IOException ie ){
 			throw new LoadException( "Could not load " + s );
 		}

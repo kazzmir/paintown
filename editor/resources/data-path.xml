@@ -1,0 +1,26 @@
+<panel layout="GridBagLayout">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.HORIZONTAL"
+			/>
+			<!--
+			-->
+		<hbox>				
+			<label text="Data Path:" />
+			<textfield editable="false" size="20" id="path" />
+			<glue size="1" />
+			<button id="change" text="Change" />
+		</hbox>
+		<hbox>
+			<button id="save" text="Save changes" />
+			<glue size="1" />
+			<button id="cancel" text="Ignore changes" />
+		</hbox>
+	</vbox>
+</panel>

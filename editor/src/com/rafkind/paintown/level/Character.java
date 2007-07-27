@@ -15,6 +15,7 @@ import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.PropertyEditor;
 import com.rafkind.paintown.CharacterEditor;
 import com.rafkind.paintown.Lambda0;
+import com.rafkind.paintown.Editor;
 
 public class Character extends Thing {
 
@@ -54,7 +55,7 @@ public class Character extends Thing {
 			throw new LoadException( "No health token given" );
 		}
 
-		Token data = new TokenReader( new File( getPath() ) ).nextToken();
+		Token data = new TokenReader( new File( Editor.dataPath( getPath() ) ) ).nextToken();
 		maxMaps = calculateMaxMaps( data );
 
 		remaps = new HashMap();
@@ -75,7 +76,7 @@ public class Character extends Thing {
 				this.remaps.put( new Integer( tnum ), new Lambda0(){
 					public Object invoke(){
 						try{
-							final Image alt = createRemap( normalPath, altPath, getMain() );
+							final Image alt = createRemap( Editor.dataPath( normalPath ), Editor.dataPath( altPath ), getMain() );
 							synchronized( remaps ){
 								remaps.put( new Integer( tnum ), new Lambda0(){
 									public Object invoke(){
@@ -209,7 +210,7 @@ public class Character extends Thing {
 			if ( frame != null ){
 				String pic = frame.readString( 0 );
 				try{
-					return MaskedImage.load( base + pic );
+					return MaskedImage.load( Editor.dataPath( base + pic ) );
 				} catch ( IOException ie ){
 					throw new LoadException( "Could not load " + base + pic + " at line " + frame.getLine(), ie );
 				}

@@ -34,7 +34,8 @@ public class RelativeFileChooser extends JDialog {
 		});
 		
 		paths = new ArrayList();
-		paths.add( start );
+		// paths.add( start );
+		paths.add( new File( "." ) );
 		option = OK;
 
 		final JTextField path = (JTextField) engine.find( "path" );

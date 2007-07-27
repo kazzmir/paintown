@@ -7,7 +7,7 @@
 			weighty="1"
 			gridheight="1"
 			anchor="GridBagConstraints.NORTHWEST"
-			fill="GridBagConstraints.HORIZONTAL"
+			fill="GridBagConstraints.BOTH"
 			/>
 		<label text="Choose a file" />
 		<hbox>
@@ -16,7 +16,7 @@
 			<textfield editable="false" id="path" />
 		</hbox>
 		<button id="up" text="Back" />
-		<scrollpane>
+		<scrollpane size="100,100">
 			<list id="files" />
 		</scrollpane>
 		<hbox>
@@ -25,5 +25,6 @@
 			<button id="cancel" text="Cancel" />
 			<glue />
 		</hbox>
+		<glue />
 	</vbox>
 </panel>

@@ -28,6 +28,7 @@ public class Editor extends JFrame {
 
 	/* global thing for copy/pasting */
 	private Thing copy;
+	private static File dataPath = new File( "data" );
 
 	public Editor(){
 		super( "Paintown Editor" );
@@ -35,11 +36,13 @@ public class Editor extends JFrame {
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuProgram = new JMenu( "Program" );
+		JMenuItem quit = new JMenuItem( "Quit" );
+		JMenuItem data = new JMenuItem( "Data path" );
+		menuProgram.add( data );
+		menuProgram.add( quit );
 		menuBar.add( menuProgram );
 		JMenu menuLevel = new JMenu( "Level" );
 		menuBar.add( menuLevel );
-		JMenuItem quit = new JMenuItem( "Quit" );
-		menuProgram.add( quit );
 		final Lambda0 closeHook = new Lambda0(){
 			public Object invoke(){
 				System.exit( 0 );
@@ -57,6 +60,9 @@ public class Editor extends JFrame {
 		JMenuItem closeLevel = new JMenuItem( "Close Level" );
 		menuLevel.add( closeLevel );
 
+		menuProgram.setMnemonic( KeyEvent.VK_P );
+		data.setMnemonic( KeyEvent.VK_D );
+		quit.setMnemonic( KeyEvent.VK_Q );
 		newLevel.setMnemonic( KeyEvent.VK_N );
 		menuLevel.setMnemonic( KeyEvent.VK_L );
 		saveLevel.setMnemonic( KeyEvent.VK_S );
@@ -70,6 +76,62 @@ public class Editor extends JFrame {
 		quit.addActionListener( new ActionListener(){
 			public void actionPerformed( ActionEvent event ){
 				closeHook.invoke_();
+			}
+		});
+
+		data.addActionListener( new ActionListener(){
+			public void actionPerformed( ActionEvent event ){
+				/* just a container for an object */
+				class ObjectBox {
+					private Object internal;
+
+					public ObjectBox(){
+					}
+
+					public void set( Object o ){
+						internal = o;
+					}
+
+					public Object get(){
+						return internal;
+					}
+				}
+				final SwingEngine engine = new SwingEngine( "data-path.xml" );
+				final JTextField path = (JTextField) engine.find( "path" );
+				final ObjectBox box = new ObjectBox();
+				box.set( getDataPath() );
+				path.setText( getDataPath().getPath() );
+				final JButton change = (JButton) engine.find( "change" );
+				change.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
+						JFileChooser chooser = new JFileChooser( new File( "." ) );	
+						chooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
+						int returnVal = chooser.showOpenDialog( Editor.this );
+						if ( returnVal == JFileChooser.APPROVE_OPTION ){
+							final File newPath = chooser.getSelectedFile();
+							path.setText( newPath.getPath() );
+							box.set( newPath );
+						}
+					}
+				});
+				final JButton save = (JButton) engine.find( "save" );
+				final JButton cancel = (JButton) engine.find( "cancel" );
+				final JDialog dialog = new JDialog( Editor.this, "Paintown data path" );
+				save.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
+						setDataPath( (File) box.get() );
+						dialog.setVisible( false );
+					}
+				});
+				cancel.addActionListener( new AbstractAction(){
+					public void actionPerformed( ActionEvent event ){
+						dialog.setVisible( false );
+					}
+				});
+				JPanel panel = (JPanel) engine.getRootComponent();
+				dialog.getContentPane().add( panel );
+				dialog.setSize( 300, 300 );
+				dialog.setVisible( true );
 			}
 		});
 
@@ -183,6 +245,22 @@ public class Editor extends JFrame {
 		this.addWindowListener( new CloseHook( closeHook ) );
 	}
 
+	public static File dataPath( File f ){
+		return new File( getDataPath().getPath() + "/" + f.getPath() );
+	}
+
+	public static String dataPath( String s ){
+		return getDataPath().getPath() + "/" + s;
+	}
+
+	private static File getDataPath(){
+		return dataPath;
+	}
+
+	private static void setDataPath( File f ){
+		dataPath = f;
+	}
+
 	private void smoothScroll( final JScrollBar scroll, final int start, final int end ){
 		new Thread(){
 			public void run(){
@@ -222,22 +300,22 @@ public class Editor extends JFrame {
 	/* provide default list of objects that can be added to the level */
 	private List defaultObjects(){
 		List data = new ArrayList();
-		data.add( new File( "data/chars/angel/angel.txt" ) );
-		data.add( new File( "data/chars/billy/billy.txt" ) );
-		data.add( new File( "data/chars/eiji/eiji.txt" ) );
-		data.add( new File( "data/chars/heavy/heavy.txt" ) );
-		data.add( new File( "data/chars/jhun/jhun.txt" ) );
-		data.add( new File( "data/chars/joe/joe.txt" ) );
-		data.add( new File( "data/chars/punk/punk.txt" ) );
-		data.add( new File( "data/chars/ralf/ralf.txt" ) );
-		data.add( new File( "data/chars/robert/robert.txt" ) );
-		data.add( new File( "data/chars/rugal/rugal.txt" ) );
-		data.add( new File( "data/chars/shermie/shermie.txt" ) );
-		data.add( new File( "data/chars/yamazaki/yamazaki.txt" ) );
-		data.add( new File( "data/chars/yashiro/yashiro.txt" ) );
-		data.add( new File( "data/misc/apple/apple.txt" ) );
-		data.add( new File( "data/misc/cake/cake.txt" ) );
-		data.add( new File( "data/misc/chicken/chicken.txt" ) );
+		data.add( new File( "chars/angel/angel.txt" ) );
+		data.add( new File( "chars/billy/billy.txt" ) );
+		data.add( new File( "chars/eiji/eiji.txt" ) );
+		data.add( new File( "chars/heavy/heavy.txt" ) );
+		data.add( new File( "chars/jhun/jhun.txt" ) );
+		data.add( new File( "chars/joe/joe.txt" ) );
+		data.add( new File( "chars/punk/punk.txt" ) );
+		data.add( new File( "chars/ralf/ralf.txt" ) );
+		data.add( new File( "chars/robert/robert.txt" ) );
+		data.add( new File( "chars/rugal/rugal.txt" ) );
+		data.add( new File( "chars/shermie/shermie.txt" ) );
+		data.add( new File( "chars/yamazaki/yamazaki.txt" ) );
+		data.add( new File( "chars/yashiro/yashiro.txt" ) );
+		data.add( new File( "misc/apple/apple.txt" ) );
+		data.add( new File( "misc/cake/cake.txt" ) );
+		data.add( new File( "misc/chicken/chicken.txt" ) );
 		return data;
 	}
 
@@ -508,7 +586,7 @@ public class Editor extends JFrame {
 						try{
 							Block b = findBlock( event );
 							if ( b != null ){
-								TokenReader reader = new TokenReader( file );
+								TokenReader reader = new TokenReader( dataPath( file ) );
 								Token head = reader.nextToken();
 								int x = (int)(event.getX() / level.getScale());
 								int y = (int)(event.getY() / level.getScale());
@@ -836,7 +914,7 @@ public class Editor extends JFrame {
 
 			add.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, new File( "." ) );
+					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, getDataPath() );
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
@@ -958,7 +1036,7 @@ public class Editor extends JFrame {
 			final JButton add = (JButton) levelEngine.find( "add-front-panel" );
 			add.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, new File( "." ) );
+					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, getDataPath() );
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						try{
@@ -992,7 +1070,7 @@ public class Editor extends JFrame {
 			final JButton add = (JButton) levelEngine.find( "add-back-panel" );
 			add.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, new File( "." ) );
+					RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, getDataPath() );
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						try{
@@ -1054,7 +1132,7 @@ public class Editor extends JFrame {
 
 		levelChangeBackground.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, new File( "." ) );
+				RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, getDataPath() );
 				int ret = chooser.open();
 				if ( ret == RelativeFileChooser.OK ){
 					final String path = chooser.getPath();
