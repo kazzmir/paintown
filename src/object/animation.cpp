@@ -21,6 +21,7 @@
 #include "util/bitmap.h"
 #include "util/lit_bitmap.h"
 #include "character.h"
+#include "util/funcs.h"
 #include "util/ebox.h"
 #include "globals.h"
 #include "util/load_exception.h"
@@ -35,6 +36,10 @@ using namespace std;
 #ifndef debug
 #define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
 #endif
+
+static const string dataPath( const string & str ){
+	return Util::getDataPath() + str;
+}
 
 Frame::Frame( Bitmap * p, ECollide * e ){
 	pic = p;
@@ -154,7 +159,7 @@ contact( NULL ){
 			} else if ( *current == "contact" ){
 				string st;
 				*current >> st;
-				contact = new Sound( st );
+				contact = new Sound( dataPath( st ) );
 			} else if ( *current == "keys" ){
 
 				while ( current->hasTokens() ){
@@ -261,7 +266,7 @@ contact( NULL ){
 				*current >> st;
 
 				if ( sounds.find( st ) == sounds.end() ){
-					Sound * sp = new Sound( st );
+					Sound * sp = new Sound( dataPath( st ) );
 					sounds[ st ] = sp;
 				}
 
@@ -308,7 +313,7 @@ contact( NULL ){
 			} else if ( *current == "frame" ){
 				string path;
 				*current >> path;
-				path = basedir + path;
+				path = dataPath( basedir + path );
 				if ( frames.find( path ) == frames.end() ){
 					Bitmap * pic = new Bitmap( path );
 					ECollide * collide = new ECollide( pic );

@@ -5,10 +5,15 @@
 #include "util/token.h"
 #include "util/bitmap.h"
 #include "util/ebox.h"
+#include "util/funcs.h"
 #include <iostream>
 #include <string>
 
 using namespace std;
+
+static const string dataPath( const string & str ){
+	return Util::getDataPath() + str;
+}
 
 Item::Item( const string & filename, Stimulation * const stimulation ) throw( LoadException ):
 collide( 0 ),
@@ -36,11 +41,11 @@ stimulation( stimulation ){
 		if ( *next == "frame" ){
 			string file;
 			*next >> file;
-			picture.load( file );
+			picture.load( dataPath( file ) );
 		} else if ( *next == "sound" ){
 			string path;
 			*next >> path;
-			sound = Sound( path );
+			sound = Sound( dataPath( path ) );
 		}
 	}
 

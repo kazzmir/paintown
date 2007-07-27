@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "util/load_exception.h"
 #include "util/token.h"
+#include "util/funcs.h"
 #include "util/token_exception.h"
 #include "factory/object_factory.h"
 
@@ -14,6 +15,11 @@
 // #define debug
 #endif
 
+/*
+static const string dataPath( const string & str ){
+	return Util::getDataPath() + str;
+}
+*/
 	
 Block::Block( Token * tok ) throw ( LoadException ):
 finished( -1 ){

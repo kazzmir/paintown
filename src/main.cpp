@@ -32,6 +32,7 @@
 #include "util/token_exception.h"
 #include "util/tokenreader.h"
 #include "util/timedifference.h"
+#include "select_player.h"
 #include "world.h"
 
 #include <pthread.h>
@@ -237,7 +238,7 @@ static vector< string > readLevels( const string & filename ){
 			while ( head->hasTokens() ){
 				string s;
 				*head >> s;
-				levels.push_back( s );
+				levels.push_back( Util::getDataPath() + s );
 			}
 		}
 
@@ -310,102 +311,6 @@ void realGame( Object * player, const string & levelFile ){
 
 static bool isArg( const char * s1, const char * s2 ){
 	return strcasecmp( s1, s2 ) == 0;
-}
-
-static Object * selectPlayer( bool invincibile ) throw( LoadException ){
-	Bitmap background( Util::getDataPath() + "/sprites/select.png" );
-	// background.resize( GFX_X, GFX_Y );
-
-	Player * mandy = new Player( Util::getDataPath() + "/players/mandy/mandy.txt" );
-	cout << "Loaded mandy" << endl;
-	Player * maxima = new Player( Util::getDataPath() + "/players/maxima/maxima.txt" );
-	cout << "Loaded maxima" << endl;
-	Player * kula = new Player( Util::getDataPath() + "/players/kula/kula.txt" );
-	cout << "Loaded kula" << endl;
-
-	mandy->setInvincible( invincibile );
-	maxima->setInvincible( invincibile );
-	kula->setInvincible( invincibile );
-
-	Object * all[] = { mandy, maxima, kula };
-	Object ** end = &all[ 2 ];
-
-	Keyboard key;
-
-	Bitmap work( GFX_X / 2, GFX_Y / 2 );
-
-	Global::speed_counter = 0;
-
-	vector< Object * > temp;
-	World world;
-
-	Object ** current1 = all;
-
-	key.setDelay( Keyboard::Key_RIGHT, 150 );
-	key.setDelay( Keyboard::Key_LEFT, 150 );
-
-	bool draw = true;
-	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
-		key.poll();
-
-		Character * ch = (Character *) *current1;
-
-		if ( Global::speed_counter > 0 ){
-			double think = Global::speed_counter;
-			while ( think > 0 ){
-
-				if ( key[ Keyboard::Key_LEFT ] ){
-					current1 -= 1;
-					if ( current1 < all ){
-						current1 = end;
-					}
-				}
-
-				if ( key[ Keyboard::Key_RIGHT ] ){
-					current1 += 1;
-					if ( current1 > end ){
-						current1 = all;
-					}
-				}
-
-				if ( ch->testAnimation() ){
-					ch->testReset();
-				}
-
-				think--;
-			}
-
-			Global::speed_counter = 0;
-			draw = true;
-		}
-
-		if ( draw ){
-
-			Character copy( *ch );
-			copy.setX( 83 );
-			copy.setY( 0 );
-			copy.setZ( 240 );
-
-			background.Blit( work );
-			copy.draw( &work, 0 );
-			work.Stretch( *Bitmap::Screen );
-			draw = false;
-		}
-
-		while ( Global::speed_counter == 0 ){
-			key.poll();
-			Util::rest( 1 );
-		}
-	}
-
-	// Object * v = new Player( *(Character *)*current1 );
-	for ( unsigned int i = 0; i < sizeof( all ) / sizeof( Object * ); i++ ){
-		if ( current1 != &all[ i ] ){
-			delete all[ i ];
-		}
-	}
-
-	return *current1;
 }
 
 static const string selectLevelSet( const string & base ){

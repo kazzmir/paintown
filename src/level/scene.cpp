@@ -19,6 +19,10 @@ using namespace std;
 #define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
 #endif
 
+static const string dataPath( const string & str ){
+	return Util::getDataPath() + str;
+}
+
 Panel::Panel( Bitmap * _pic, Bitmap * _neon, Bitmap * _my_screen ){
 	pic = _pic;
 	neon = _neon;
@@ -62,7 +66,7 @@ blockNumber( 1 ){
 			} else if ( *tok == "background" ){
 				string n;
 				*tok >> n;
-				background = new Bitmap( n );
+				background = new Bitmap( dataPath( n ) );
 			} else if ( *tok == "z" ){
 				while ( tok->hasTokens() ){
 					Token * next;
@@ -86,7 +90,7 @@ blockNumber( 1 ){
 				Bitmap * x_neon = NULL;
 				Bitmap * x_screen = NULL;
 				if ( normal != "none" ){
-					x_normal = new Bitmap( normal );
+					x_normal = new Bitmap( dataPath( normal ) );
 				}
 				x_neon = new Bitmap();
 				x_screen = new Bitmap();
@@ -107,7 +111,7 @@ blockNumber( 1 ){
 			} else if ( *tok == "frontpanel" ){
 				string file;
 				*tok >> file;
-				Bitmap * front = new Bitmap( file );
+				Bitmap * front = new Bitmap( dataPath( file ) );
 				front_panels.push_back( front );
 			} else if ( *tok == "order" ){
 				// *tok >> order;

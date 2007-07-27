@@ -4,6 +4,11 @@
 #include "util/load_exception.h"
 #include "util/token_exception.h"
 #include "util/token.h"
+#include "util/funcs.h"
+
+static const string dataPath( const string & str ){
+	return Util::getDataPath() + str;
+}
 
 BlockObject::BlockObject( Token * tok ) throw ( LoadException ):
 type( -1 ),
@@ -42,7 +47,7 @@ stimulationValue( 0 ){
 			} else if ( *current == "path" ){
 				string n;
 				*current >> n;
-				setPath( n );
+				setPath( dataPath( n ) );
 			} else if ( *current == "aggression" ){
 				int a;
 				*current >> a;

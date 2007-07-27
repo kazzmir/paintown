@@ -31,6 +31,10 @@ using namespace std;
 #define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
 #endif
 
+static const string dataPath( const string & str ){
+	return Util::getDataPath() + str;
+}
+
 /* probably should never be run...
  */
 Character::Character( int alliance ):
@@ -96,8 +100,6 @@ toughness( 10 ){
 	name = "";
 
 	loadSelf( filename );
-
-	
 }
 
 Character::Character( const Character & chr ) throw( LoadException ):
@@ -172,7 +174,6 @@ landed_sound( NULL ){
 	}
 
 	animation_current = getMovement( "idle" );
-
 }
 
 void Character::loadSelf( const char * filename ) throw ( LoadException ){
@@ -249,15 +250,15 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 			} else if ( *n == "hit-sound" ){
 				string _snd;
 				*n >> _snd;
-				setHit( Sound( _snd ) );
+				setHit( Sound( dataPath( _snd ) ) );
 			} else if ( *n == "die-sound" ){
 				string _snd;
 				*n >> _snd;
-				die_sound = new Sound( _snd );
+				die_sound = new Sound( dataPath( _snd ) );
 			} else if ( *n == "landed" ){
 				string st;
 				*n >> st;
-				landed_sound = new Sound( st );
+				landed_sound = new Sound( dataPath( st ) );
 			} else if ( *n == "speed" ){
 				*n >> speed;
 			} else if ( *n == "type" ){
@@ -270,12 +271,12 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 				string icon_path;
 				*n >> icon_path;
 				// cout<<"Loading icon "<<icon_path<<endl;
-				icon = new Bitmap( icon_path );
+				icon = new Bitmap( dataPath( icon_path ) );
 			} else if ( *n == "remap" ){
 				string first;
 				string second;
 				*n >> first >> second;
-				remaps[ second ] = first;
+				remaps[ dataPath( second ) ] = dataPath( first );
 			} else {
 				cout<<"Unhandled character attribute: "<<endl;
 				n->print(" ");

@@ -12,6 +12,7 @@ music.cpp
 main.cpp
 init.cpp
 nameplacer.cpp
+select_player.cpp
 world.cpp
 """))
 
