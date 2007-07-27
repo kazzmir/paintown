@@ -587,7 +587,9 @@ static bool titleScreen(){
 			case MAIN_PLAY : {
 				try{
 					string level = selectLevelSet( Util::getDataPath() + "/levels" );
-					realGame( selectPlayer( isInvincible ), level );
+					Object * player = selectPlayer( isInvincible );
+					realGame( player, level );
+					delete player;
 				} catch ( const LoadException & le ){
 					cout << "Could not load player: " << le.getReason() << endl;
 				}
