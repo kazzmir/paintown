@@ -12,8 +12,8 @@ using namespace std;
 
 Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
-	// background.resize( GFX_X, GFX_Y );
 
+	/* hm, it would be nice to cache this I suppose */
 	vector< Player * > players;
 
 	vector< string > files = Util::getFiles( Util::getDataPath() + "/players/", "*" );
@@ -41,10 +41,10 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 
 	int current = 0;
 
-	key.setDelay( Keyboard::Key_RIGHT, 150 );
-	key.setDelay( Keyboard::Key_UP, 150 );
-	key.setDelay( Keyboard::Key_DOWN, 150 );
-	key.setDelay( Keyboard::Key_LEFT, 150 );
+	key.setDelay( Keyboard::Key_RIGHT, 300 );
+	key.setDelay( Keyboard::Key_UP, 300 );
+	key.setDelay( Keyboard::Key_DOWN, 300 );
+	key.setDelay( Keyboard::Key_LEFT, 300 );
 
 	Bitmap temp( 120, 120 );
 
