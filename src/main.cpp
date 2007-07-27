@@ -294,6 +294,16 @@ void realGame( Object * player, const string & levelFile ){
 
 		} catch ( const LoadException & le ){
 			cout << "Could not load " << *it << " because " << le.getReason() << endl;
+			/* if the level couldn't be loaded turn off
+			 * the loading screen
+			 */
+			if ( show_loading_screen ){
+				pthread_mutex_lock( &Global::loading_screen_mutex );
+				Global::done_loading = true;
+				pthread_mutex_unlock( &Global::loading_screen_mutex );
+
+				pthread_join( loading_screen_thread, NULL );
+			}
 		}
 
 		ObjectFactory::destroy();

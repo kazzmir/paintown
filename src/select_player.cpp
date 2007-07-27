@@ -22,7 +22,11 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 		cout << "Checking " << file << endl;
 		if ( Util::exists( file ) ){
 			cout << "Loading " << file << endl;
-			players.push_back( new Player( file ) );
+			try{
+				players.push_back( new Player( file ) );
+			} catch ( const LoadException & le ){
+				cout << "Could not load " << file << " because " << le.getReason() << endl;
+			}
 		}
 	}
 
@@ -43,6 +47,9 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	key.setDelay( Keyboard::Key_LEFT, 150 );
 
 	Bitmap temp( 120, 120 );
+
+	const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
+	const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
 
 	bool draw = true;
 	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
@@ -81,18 +88,19 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 			copy.setY( 0 );
 			copy.setZ( 210 );
 
-			background.Blit( work );
+			background.Stretch( work );
 			copy.draw( &work, 0 );
 
 			int startX = 150;
 			int x = startX, y = 20;
-			for ( unsigned int i = 0; i < 9; i++ ){
+			for ( unsigned int i = 0; i < 12; i++ ){
 				temp.clear();
 				if ( i < players.size() ){
 					Character small( *(players[ i ]) );
-					temp.rectangle( 0, 0, temp.getWidth() - 1, temp.getHeight() - 1, Bitmap::makeColor( 255, 0, 0 ) );
-					temp.rectangle( 1, 1, temp.getWidth() - 2, temp.getHeight() - 2, Bitmap::makeColor( 255, 0, 0 ) );
-					temp.rectangle( 2, 2, temp.getWidth() - 3, temp.getHeight() - 3, Bitmap::makeColor( 255, 0, 0 ) );
+					int color = i == (unsigned int) current ? selectedColor : unselectedColor;
+					temp.rectangle( 0, 0, temp.getWidth() - 1, temp.getHeight() - 1, color );
+					temp.rectangle( 1, 1, temp.getWidth() - 2, temp.getHeight() - 2, color );
+					temp.rectangle( 2, 2, temp.getWidth() - 3, temp.getHeight() - 3, color );
 					small.setX( temp.getWidth() / 2 );
 					small.setY( 0 );
 					small.setZ( temp.getHeight() );
