@@ -1,10 +1,10 @@
+#include "util/bitmap.h"
 #include "object/object.h"
 #include "util/load_exception.h"
 #include "util/funcs.h"
 #include "object/player.h"
 #include "init.h"
 #include "select_player.h"
-#include "util/bitmap.h"
 #include "factory/font_factory.h"
 #include "util/font.h"
 #include "world.h"
@@ -68,6 +68,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 
 	const int maxGradient = 50;
 	int gradient[ maxGradient ];	
+	/* fade from yellow to some reddish color */
 	Util::blend_palette( gradient, 25, Bitmap::makeColor( 255, 255, 0 ), Bitmap::makeColor( 0xff, 0x33, 0x11 ) );
 	Util::blend_palette( gradient + 25, 25, Bitmap::makeColor( 0xff, 0x33, 0x11 ), Bitmap::makeColor( 255, 255, 0 ) );
 
@@ -198,7 +199,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 		}
 	}
 
-	// Object * v = new Player( *(Character *)*current1 );
+	/* delete everything but the selected player */
 	for ( unsigned int i = 0; i < players.size(); i++ ){	
 		if ( i != (unsigned int) current ){
 			delete players[ i ];
