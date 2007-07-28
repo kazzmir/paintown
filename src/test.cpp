@@ -675,6 +675,11 @@ vector< string > findAvailableCharacters( string base ){
 	return chars;
 }
 
+template< class T >
+static void addAll( vector< T > & vec, const vector< T > & vec2 ){
+	vec.insert( vec.end(), vec2.begin(), vec2.end() );
+}
+
 string chooseCharacter(){
 	Bitmap work( GFX_X, GFX_Y );
 
@@ -684,6 +689,7 @@ string chooseCharacter(){
 
 	map< int, int > hold;
 	vector< string > characters = findAvailableCharacters( Util::getDataPath() + "/chars" );
+	addAll<string>( characters, findAvailableCharacters( Util::getDataPath() + "/players" ) );
 	typedef vector< string >::iterator iterator;
 
 	characters.insert( characters.begin(), "Quit" );
