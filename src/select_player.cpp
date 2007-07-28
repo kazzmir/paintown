@@ -156,7 +156,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 			unsigned int i;
 			for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
 				temp.clear();
-				Bitmap box = Bitmap( work, x, y, boxSize, boxSize );
+				Bitmap box( work, x, y, boxSize, boxSize );
 				int color = unselectedColor;
 				Character small( *(players[ i ]) );
 
