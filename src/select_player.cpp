@@ -158,16 +158,16 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 				temp.clear();
 				Bitmap box( work, x, y, boxSize, boxSize );
 				int color = unselectedColor;
-				Character small( *(players[ i ]) );
+				Character smaller( *(players[ i ]) );
 
 				color = i == (unsigned int) current ? selectedColor : unselectedColor;
 				/* draw a border */
 				box.border( 0, 3, color );
 
-				small.setX( temp.getWidth() / 2 );
-				small.setY( 0 );
-				small.setZ( temp.getHeight() );
-				small.draw( &temp, 0 );
+				smaller.setX( temp.getWidth() / 2 );
+				smaller.setY( 0 );
+				smaller.setZ( temp.getHeight() );
+				smaller.draw( &temp, 0 );
 				temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 				box.border( 0, 3, color );
 				x += boxSize + 10;
