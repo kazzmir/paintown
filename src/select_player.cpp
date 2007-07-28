@@ -5,6 +5,8 @@
 #include "init.h"
 #include "select_player.h"
 #include "util/bitmap.h"
+#include "factory/font_factory.h"
+#include "util/font.h"
 #include "world.h"
 #include <iostream>
 
@@ -110,8 +112,6 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 		if ( draw ){
 
 			// background.Stretch( work );
-			// background.drawStretched( backgroundX, 0, work.getWidth(), work.getHeight(), work );
-			// background.drawStretched( work.getWidth() + backgroundX, 0, work.getWidth(), work.getHeight(), work );
 			background.Blit( backgroundX, 0, work );
 			background.Blit( work.getWidth() + backgroundX, 0, work );
 
@@ -122,27 +122,26 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 			copy.setZ( preview.getHeight() - 20 );
 			preview.fill( Bitmap::MaskColor );
 
-			// preview.border( 0, 5, Bitmap::makeColor( 255, 255, 255 ) );
 			copy.draw( &preview, 0 );
 			preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
+			const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
+			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy.getName(), 0 );
 
 			int x = startX, y = 20;
-			for ( unsigned int i = 0; i < 12; i++ ){
+			for ( unsigned int i = 0; i < players.size(); i++ ){
 				temp.clear();
 				Bitmap box = Bitmap( work, x, y, boxSize, boxSize );
 				int color = unselectedColor;
-				if ( i < players.size() ){
-					Character small( *(players[ i ]) );
+				Character small( *(players[ i ]) );
 
-					color = i == (unsigned int) current ? selectedColor : unselectedColor;
-					/* draw a border */
-					box.border( 0, 3, color );
-					
-					small.setX( temp.getWidth() / 2 );
-					small.setY( 0 );
-					small.setZ( temp.getHeight() );
-					small.draw( &temp, 0 );
-				}
+				color = i == (unsigned int) current ? selectedColor : unselectedColor;
+				/* draw a border */
+				box.border( 0, 3, color );
+
+				small.setX( temp.getWidth() / 2 );
+				small.setY( 0 );
+				small.setZ( temp.getHeight() );
+				small.draw( &temp, 0 );
 				temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 				box.border( 0, 3, color );
 				x += boxSize + 10;

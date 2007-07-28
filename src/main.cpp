@@ -30,6 +30,7 @@
 #include "util/load_exception.h"
 #include "util/token.h"
 #include "util/token_exception.h"
+#include "util/font.h"
 #include "util/tokenreader.h"
 #include "util/timedifference.h"
 #include "select_player.h"
