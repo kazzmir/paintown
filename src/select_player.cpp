@@ -49,6 +49,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 
 	/* preview box for each character */
 	Bitmap temp( 120, 120 );
+	Bitmap preview( GFX_X / 2, GFX_Y / 2 );
 
 	const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
 	const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
@@ -56,7 +57,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	Global::speed_counter = 0;
 			
 	const int boxSize = 60;
-	const int startX = 150;
+	const int startX = 300;
 	const int boxesPerLine = (work.getWidth() - startX) / (boxSize + 10);
 	int backgroundX = 0;
 
@@ -116,27 +117,34 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 
 			ch->setFacing( Object::FACING_RIGHT );
 			Character copy( *ch );
-			copy.setX( 80 );
+			copy.setX( preview.getWidth() / 2 );
 			copy.setY( 0 );
-			copy.setZ( 210 );
+			copy.setZ( preview.getHeight() - 20 );
+			preview.fill( Bitmap::MaskColor );
 
-			copy.draw( &work, 0 );
+			// preview.border( 0, 5, Bitmap::makeColor( 255, 255, 255 ) );
+			copy.draw( &preview, 0 );
+			preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
 
 			int x = startX, y = 20;
 			for ( unsigned int i = 0; i < 12; i++ ){
 				temp.clear();
+				Bitmap box = Bitmap( work, x, y, boxSize, boxSize );
+				int color = unselectedColor;
 				if ( i < players.size() ){
 					Character small( *(players[ i ]) );
-					int color = i == (unsigned int) current ? selectedColor : unselectedColor;
+
+					color = i == (unsigned int) current ? selectedColor : unselectedColor;
 					/* draw a border */
-					temp.border( 0, 3, color );
+					box.border( 0, 3, color );
 					
 					small.setX( temp.getWidth() / 2 );
 					small.setY( 0 );
 					small.setZ( temp.getHeight() );
 					small.draw( &temp, 0 );
 				}
-				temp.drawStretched( x, y, boxSize, boxSize, work );
+				temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
+				box.border( 0, 3, color );
 				x += boxSize + 10;
 				if ( x + boxSize + 10 > work.getWidth() ){
 					x = startX;
