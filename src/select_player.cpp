@@ -58,10 +58,18 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	
 	Global::speed_counter = 0;
 			
-	const int boxSize = 60;
+	const int boxSize = 80;
 	const int startX = 300;
+	const int startY = 20;
 	const int boxesPerLine = (work.getWidth() - startX) / (boxSize + 10);
+	const int boxesPerColumn = (work.getHeight() - startY) / (boxSize + 10);
 	int backgroundX = 0;
+	int top = 0;
+
+	const int maxGradient = 50;
+	int gradient[ maxGradient ];	
+	Util::blend_palette( gradient, 25, Bitmap::makeColor( 255, 255, 0 ), Bitmap::makeColor( 0xff, 0x33, 0x11 ) );
+	Util::blend_palette( gradient + 25, 25, Bitmap::makeColor( 0xff, 0x33, 0x11 ), Bitmap::makeColor( 255, 255, 0 ) );
 
 	bool draw = true;
 	unsigned int clock = 0;
@@ -83,23 +91,39 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 				}
 
 				if ( key[ Keyboard::Key_LEFT ] ){
-					current = (current - 1 + players.size()) % players.size();
+					current = current - 1;
 				}
 
 				if ( key[ Keyboard::Key_RIGHT ] ){
-					current = (current + 1) % players.size();
+					current = current + 1;
 				}
 
 				if ( key[ Keyboard::Key_UP ] ){
-					current = (current - boxesPerLine + players.size()) % players.size();
+					current = current - boxesPerLine;
 				}
 
 				if ( key[ Keyboard::Key_DOWN ] ){
-					current = (current + boxesPerLine) % players.size();
+					current = current + boxesPerLine;
+				}
+
+				if ( current < 0 ){
+					current = 0;
+				}
+
+				if ( current >= (signed) players.size() ){
+					current = players.size() - 1;
 				}
 
 				if ( ch->testAnimation() ){
 					ch->testReset();
+				}
+
+				while ( current < top ){
+					top -= boxesPerLine;
+				}
+
+				while ( current >= top + boxesPerLine * boxesPerColumn ){
+					top += boxesPerLine;
 				}
 
 				think--;
@@ -127,8 +151,9 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 			const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
 			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy.getName(), 0 );
 
-			int x = startX, y = 20;
-			for ( unsigned int i = 0; i < players.size(); i++ ){
+			int x = startX, y = startY;
+			unsigned int i;
+			for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
 				temp.clear();
 				Bitmap box = Bitmap( work, x, y, boxSize, boxSize );
 				int color = unselectedColor;
@@ -151,8 +176,19 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 				}
 			}
 
+			if ( top > 0 ){
+				int x1 = 80;
+				int x2 = 140;
+				work.triangle( startX + x1, 8, startX + x2, 8, startX + (x1 + x2) / 2, 3, gradient[ clock % maxGradient ] );
+			}
+
+			if ( i < players.size() ){
+				int x1 = 80;
+				int x2 = 140;
+				work.triangle( startX + x1, GFX_Y - 8, startX + x2, GFX_Y - 8, startX + (x1 + x2) / 2, GFX_Y - 3, gradient[ clock % maxGradient ] );
+			}
+
 			work.Blit( *Bitmap::Screen );
-			// work.Stretch( *Bitmap::Screen );
 			draw = false;
 		}
 
