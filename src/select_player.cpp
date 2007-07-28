@@ -106,9 +106,13 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 				if ( i < players.size() ){
 					Character small( *(players[ i ]) );
 					int color = i == (unsigned int) current ? selectedColor : unselectedColor;
+					/* draw a border */
+					temp.border( 0, 3, color );
+					/*
 					for ( int box = 0; box < 3; box++ ){
 						temp.rectangle( box, box, temp.getWidth() - 1 - box, temp.getHeight() - 1 - box, color );
 					}
+					*/
 					small.setX( temp.getWidth() / 2 );
 					small.setY( 0 );
 					small.setZ( temp.getHeight() );
