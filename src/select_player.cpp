@@ -44,10 +44,13 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	/* currently selected character */
 	int current = 0;
 
+	int changeRemapKey = Keyboard::Key_TAB;
+
 	key.setDelay( Keyboard::Key_RIGHT, 300 );
 	key.setDelay( Keyboard::Key_UP, 300 );
 	key.setDelay( Keyboard::Key_DOWN, 300 );
 	key.setDelay( Keyboard::Key_LEFT, 300 );
+	key.setDelay( changeRemapKey, 200 );
 
 	/* preview box for each character */
 	Bitmap temp( 120, 120 );
@@ -105,6 +108,10 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 
 				if ( key[ Keyboard::Key_DOWN ] ){
 					current = current + boxesPerLine;
+				}
+
+				if ( key[ changeRemapKey ] ){
+					ch->nextMap();
 				}
 
 				if ( current < 0 ){

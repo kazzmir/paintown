@@ -72,29 +72,29 @@ int Configuration::getRight(){
 }
 
 int Configuration::getLeft(){
-	return right;
+	return left;
 }
 
 int Configuration::getUp(){
-	return right;
+	return up;
 }
 
 int Configuration::getDown(){
-	return right;
+	return down;
 }
 
 int Configuration::getAttack1(){
-	return right;
+	return attack1;
 }
 
 int Configuration::getAttack2(){
-	return right;
+	return attack2;
 }
 
 int Configuration::getAttack3(){
-	return right;
+	return attack3;
 }
 
 int Configuration::getJump(){
-	return right;
+	return jump;
 }

@@ -107,7 +107,7 @@ ObjectAttack(chr),
 death( 0 ),
 thrown_status( false ),
 moving( 0 ),
-current_map( 0 ),
+current_map( chr.current_map ),
 die_sound( NULL ),
 landed_sound( NULL ){
 	own_stuff = false;
@@ -130,8 +130,6 @@ landed_sound( NULL ){
 	setYVelocity( 0 );
 	setXVelocity( 0 );
 	setZVelocity( 0 );
-
-	current_map = 0;
 
 	setJumpingYVelocity( chr.getMaxJumpingVelocity() );
 	setShadow( chr.getShadow() );
@@ -335,6 +333,14 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
 	// animation_current = movements[ "idle" ];
 	animation_current = getMovement( "idle" );
+}
+
+void Character::nextMap(){
+	unsigned int next = current_map + 1;
+	if ( next >= mapper.size() ){
+		next = 0;
+	}
+	setMap( next );
 }
 	
 void Character::setMap( const unsigned int x ){

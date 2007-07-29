@@ -96,7 +96,6 @@ void Player::fillKeyCache(){
 
 	keyboard.poll();
 
-
 	if ( acts++ > GLOBAL_KEY_DELAY ){
 		key_cache.clear();
 		/*
@@ -667,6 +666,9 @@ void Player::act( vector< Object * > * others, World * world ){
 			nextTicket();
 			animation_current = final;
 			animation_current->reset();
+
+			
+
 			// if ( animation_current == movements["jump"] ) {
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;

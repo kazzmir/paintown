@@ -121,6 +121,7 @@ public:
 	}
 
 	virtual void setMap( const unsigned int x );
+	virtual void nextMap();
 
 	inline void setLink( Object * o ){
 		linked = o;

@@ -16,6 +16,7 @@
 #include "factory/font_render.h"
 #include "fonts.h"
 #include "globals.h"
+#include "configuration.h"
 #include "level/scene.h"
 #include "loading.h"
 #include "music.h"
@@ -436,6 +437,33 @@ static bool titleScreen(){
 				       };
 	const unsigned int moreMax = sizeof( moreOptions ) / sizeof( char* );
 
+	char keyLeft[ 128 ];
+	char keyRight[ 128 ];
+	char keyUp[ 128 ];
+	char keyDown[ 128 ];
+	char keyAttack1[ 128 ];
+	char keyAttack2[ 128 ];
+	char keyAttack3[ 128 ];
+	char keyJump[ 128 ];
+	sprintf( keyLeft, "Left: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	sprintf( keyRight, "Right: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	sprintf( keyUp, "Up: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	sprintf( keyDown, "Down: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	sprintf( keyAttack1, "Attack1: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	sprintf( keyAttack2, "Attack2: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	sprintf( keyAttack3, "Attack3: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	sprintf( keyJump, "Jump: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	const char * controlOptions[] = { keyLeft,
+				 	  keyRight,
+				 	  keyUp,
+				 	  keyDown,
+				 	  keyAttack1,
+				 	  keyAttack2,
+				 	  keyAttack3,
+				 	  keyJump,
+					  "Back" };
+	const unsigned int controlMax = sizeof( controlOptions ) / sizeof( char* );
+
 	// font.printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "foo" );
 	unsigned int choose = 0;
 	const char * const * options = mainOptions;
@@ -502,6 +530,10 @@ static bool titleScreen(){
 								break;
 							}
 							case MAIN_CHANGE_CONTROLS : {
+								options = controlOptions;
+								maxOptions = controlMax;
+								choose = 0;
+
 								break;
 							}
 							case MAIN_MORE_OPTIONS : {
