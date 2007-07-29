@@ -446,13 +446,13 @@ static bool titleScreen(){
 	char keyAttack3[ 128 ];
 	char keyJump[ 128 ];
 	sprintf( keyLeft, "Left: %s", Keyboard::keyToName( Configuration::getLeft() ) );
-	sprintf( keyRight, "Right: %s", Keyboard::keyToName( Configuration::getLeft() ) );
-	sprintf( keyUp, "Up: %s", Keyboard::keyToName( Configuration::getLeft() ) );
-	sprintf( keyDown, "Down: %s", Keyboard::keyToName( Configuration::getLeft() ) );
-	sprintf( keyAttack1, "Attack1: %s", Keyboard::keyToName( Configuration::getLeft() ) );
-	sprintf( keyAttack2, "Attack2: %s", Keyboard::keyToName( Configuration::getLeft() ) );
-	sprintf( keyAttack3, "Attack3: %s", Keyboard::keyToName( Configuration::getLeft() ) );
-	sprintf( keyJump, "Jump: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+	sprintf( keyRight, "Right: %s", Keyboard::keyToName( Configuration::getRight() ) );
+	sprintf( keyUp, "Up: %s", Keyboard::keyToName( Configuration::getUp() ) );
+	sprintf( keyDown, "Down: %s", Keyboard::keyToName( Configuration::getDown() ) );
+	sprintf( keyAttack1, "Attack1: %s", Keyboard::keyToName( Configuration::getAttack1() ) );
+	sprintf( keyAttack2, "Attack2: %s", Keyboard::keyToName( Configuration::getAttack2() ) );
+	sprintf( keyAttack3, "Attack3: %s", Keyboard::keyToName( Configuration::getAttack3() ) );
+	sprintf( keyJump, "Jump: %s", Keyboard::keyToName( Configuration::getJump() ) );
 	const char * controlOptions[] = { keyLeft,
 				 	  keyRight,
 				 	  keyUp,

@@ -17,7 +17,8 @@
 
 // how many ticks to wait before the key cache is cleared.
 // this can probably be user defined in the future
-static const int GLOBAL_KEY_DELAY = 13;
+static const int GLOBAL_KEY_DELAY = 15;
+static const unsigned int KEY_CACHE_SIZE = 20;
 static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 using namespace std;
@@ -139,7 +140,7 @@ void Player::fillKeyCache(){
 		// last_key = -1;
 	}
 
-	while ( key_cache.size() > 16 ){
+	while ( key_cache.size() > KEY_CACHE_SIZE ){
 		key_cache.pop_front();
 	}
 	// cout<<"Last key[ "<<83<<" ] = "<<last_key[83]<<endl;
@@ -271,27 +272,6 @@ bool Player::combo( Animation * ani ){
 
 int Player::getKey( int motion ){
 	return Configuration::getKey( motion, getFacing() );
-	/*
-	switch( x ){
-		case PAIN_KEY_FORWARD : {
-			if ( getFacing() == Object::FACING_LEFT ) 
-				return Keyboard::Key_LEFT;
-			else 	return Keyboard::Key_RIGHT;
-		}
-		case PAIN_KEY_BACK : {
-			if ( getFacing() == Object::FACING_LEFT )
-				return Keyboard::Key_RIGHT;
-			else	return Keyboard::Key_LEFT;
-		}
-		case PAIN_KEY_UP : return Keyboard::Key_UP;
-		case PAIN_KEY_DOWN : return Keyboard::Key_DOWN;
-		case PAIN_KEY_ATTACK1 : return Keyboard::Key_A;
-		case PAIN_KEY_ATTACK2 : return Keyboard::Key_S;
-		case PAIN_KEY_ATTACK3 : return Keyboard::Key_D;
-		case PAIN_KEY_JUMP : return Keyboard::Key_SPACE;
-		default : return -1;
-	}
-	*/
 }
 	
 Object * Player::copy(){
@@ -667,8 +647,12 @@ void Player::act( vector< Object * > * others, World * world ){
 			animation_current = final;
 			animation_current->reset();
 
+			/* remove the used keys from the key cache */
+			const vector< KeyPress > & keys = animation_current->getKeys();
+			for ( unsigned int i = 0; i < keys.size(); i++ ){
+				key_cache.pop_back();
+			}
 			
-
 			// if ( animation_current == movements["jump"] ) {
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;
