@@ -404,6 +404,25 @@ static const string selectLevelSet( const string & base ){
 	return "nothing-selected";
 }
 
+static int readKey( Keyboard & key ){
+	key.poll();
+	while ( key.keypressed() ){
+		key.poll();
+		Util::rest( 1 );
+	}
+	key.clear();
+
+	int k = key.readKey();
+	key.clear();
+	key.poll();
+	while ( key.keypressed() ){
+		key.poll();
+		Util::rest( 1 );
+	}
+
+	return k;
+}
+
 static bool titleScreen(){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	// Bitmap::Screen->Blit( background );
@@ -445,6 +464,16 @@ static bool titleScreen(){
 	char keyAttack2[ 128 ];
 	char keyAttack3[ 128 ];
 	char keyJump[ 128 ];
+	const unsigned int CONTROL_LEFT = 0;
+	const unsigned int CONTROL_RIGHT = 1;
+	const unsigned int CONTROL_UP = 2;
+	const unsigned int CONTROL_DOWN = 3;
+	const unsigned int CONTROL_ATTACK1 = 4;
+	const unsigned int CONTROL_ATTACK2 = 5;
+	const unsigned int CONTROL_ATTACK3 = 6;
+	const unsigned int CONTROL_JUMP = 7;
+	const unsigned int CONTROL_BACK = 8;
+
 	sprintf( keyLeft, "Left: %s", Keyboard::keyToName( Configuration::getLeft() ) );
 	sprintf( keyRight, "Right: %s", Keyboard::keyToName( Configuration::getRight() ) );
 	sprintf( keyUp, "Up: %s", Keyboard::keyToName( Configuration::getUp() ) );
@@ -557,6 +586,78 @@ static bool titleScreen(){
 								break;
 							}
 							case MORE_GAME_SPEED : {
+								break;
+							}
+						}
+					} else if ( options == controlOptions ){
+						switch ( choose ){
+							case CONTROL_LEFT : {
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'left'", 0 );
+								int newkey = readKey( key );
+								Configuration::setLeft( newkey );
+								sprintf( keyLeft, "Left: %s", Keyboard::keyToName( Configuration::getLeft() ) );
+								break;
+							}
+							case CONTROL_RIGHT : {
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'right'", 0 );
+								int newkey = readKey( key );
+								Configuration::setRight( newkey );
+								sprintf( keyRight, "Right: %s", Keyboard::keyToName( Configuration::getRight() ) );
+
+								break;
+							}
+							case CONTROL_UP : {
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'up'", 0 );
+								int newkey = readKey( key );
+								Configuration::setUp( newkey );
+								sprintf( keyUp, "Up: %s", Keyboard::keyToName( Configuration::getUp() ) );
+
+								break;
+							}
+							case CONTROL_DOWN : {
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'down'", 0 );
+								int newkey = readKey( key );
+								Configuration::setDown( newkey );
+								sprintf( keyDown, "Down: %s", Keyboard::keyToName( Configuration::getDown() ) );
+								break;
+							}
+							case CONTROL_ATTACK1 : {
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'attack1'", 0 );
+								int newkey = readKey( key );
+								Configuration::setAttack1( newkey );
+								sprintf( keyAttack1, "Attack1: %s", Keyboard::keyToName( Configuration::getAttack1() ) );
+
+								break;
+							}
+							case CONTROL_ATTACK2 : {
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'attack2'", 0 );
+								int newkey = readKey( key );
+								Configuration::setAttack2( newkey );
+								sprintf( keyAttack2, "Attack2: %s", Keyboard::keyToName( Configuration::getAttack2() ) );
+
+								break;
+							}
+							case CONTROL_ATTACK3 : {
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'attack3'", 0 );
+								int newkey = readKey( key );
+								Configuration::setAttack3( newkey );
+								sprintf( keyAttack3, "Attack3: %s", Keyboard::keyToName( Configuration::getAttack3() ) );
+
+								break;
+							}
+							case CONTROL_JUMP : {
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'jump'", 0 );
+								int newkey = readKey( key );
+								Configuration::setJump( newkey );
+								sprintf( keyJump, "Jump: %s", Keyboard::keyToName( Configuration::getJump() ) );
+
+								break;
+							}
+							case CONTROL_BACK : {
+								options = mainOptions;
+								maxOptions = mainMax;
+								choose = 0;
+
 								break;
 							}
 						}

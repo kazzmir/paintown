@@ -23,11 +23,6 @@ static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 using namespace std;
 
-/*
-#define MIN_PLAYER_Z 160
-#define MAX_PLAYER_Z 232
-*/
-
 #ifndef debug
 #define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
 // #define debug
@@ -41,7 +36,6 @@ acts(0),
 lives(DEFAULT_LIVES),
 invincible( false ){
 	
-	// if ( movements[ "grab" ] == NULL ){
 	if ( getMovement( "grab" ) == NULL ){
 		throw LoadException("No 'grab' movement");
 	}
@@ -50,7 +44,6 @@ invincible( false ){
 
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
-
 }
 	
 Player::Player( const string & filename ) throw( LoadException ):
@@ -373,8 +366,6 @@ void Player::act( vector< Object * > * others, World * world ){
 	*/
 	
 	/* Now the real meat */
-
-	// fillKeyCache();
 
 	/*
 	if ( !key_cache.empty() ){
