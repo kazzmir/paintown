@@ -7,6 +7,7 @@
 #include "util/funcs.h"
 #include "factory/font_factory.h"
 #include "factory/font_render.h"
+#include "configuration.h"
 #include "globals.h"
 #include "util/keyboard.h"
 #include "nameplacer.h"
@@ -269,7 +270,9 @@ bool Player::combo( Animation * ani ){
 	
 }
 
-int Player::getKey( int x ){
+int Player::getKey( int motion ){
+	return Configuration::getKey( motion, getFacing() );
+	/*
 	switch( x ){
 		case PAIN_KEY_FORWARD : {
 			if ( getFacing() == Object::FACING_LEFT ) 
@@ -289,6 +292,7 @@ int Player::getKey( int x ){
 		case PAIN_KEY_JUMP : return Keyboard::Key_SPACE;
 		default : return -1;
 	}
+	*/
 }
 	
 Object * Player::copy(){

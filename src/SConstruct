@@ -6,6 +6,7 @@ def addFiles( dir, files ):
 	obj_files.append( map( lambda x: dir + x, files ) )
 
 addFiles( './', Split( """
+configuration.cpp
 globals.cpp
 loading.cpp
 music.cpp
