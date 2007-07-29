@@ -3,6 +3,15 @@
 #include "object/animation.h"
 #include "object/object.h"
 
+static int right = Keyboard::Key_RIGHT;
+static int left = Keyboard::Key_LEFT;
+static int up = Keyboard::Key_UP;
+static int down = Keyboard::Key_DOWN;
+static int attack1 = Keyboard::Key_A;
+static int attack2 = Keyboard::Key_S;
+static int attack3 = Keyboard::Key_D;
+static int jump = Keyboard::Key_SPACE;
+
 int Configuration::getKey( int which, int facing ){
 	switch( which ){
 		case PAIN_KEY_FORWARD : {
@@ -25,11 +34,67 @@ int Configuration::getKey( int which, int facing ){
 	}
 }
 
-int Configuration::right = Keyboard::Key_RIGHT;
-int Configuration::left = Keyboard::Key_LEFT;
-int Configuration::up = Keyboard::Key_UP;
-int Configuration::down = Keyboard::Key_DOWN;
-int Configuration::attack1 = Keyboard::Key_A;
-int Configuration::attack2 = Keyboard::Key_S;
-int Configuration::attack3 = Keyboard::Key_D;
-int Configuration::jump = Keyboard::Key_SPACE;
+
+void Configuration::setRight( int i ){
+	right = i;
+}
+
+void Configuration::setLeft( int i ){
+	left = i;
+}
+
+void Configuration::setUp( int i ){
+	up = i;
+}
+
+void Configuration::setDown( int i ){
+	down = i;	
+}
+
+void Configuration::setAttack1( int i ){
+	attack1 = i;
+}
+
+void Configuration::setAttack2( int i ){
+	attack2 = i;
+}
+
+void Configuration::setAttack3( int i ){
+	attack3 = i;
+}
+
+void Configuration::setJump( int i ){
+	jump = i;
+}
+
+int Configuration::getRight(){
+	return right;
+}
+
+int Configuration::getLeft(){
+	return right;
+}
+
+int Configuration::getUp(){
+	return right;
+}
+
+int Configuration::getDown(){
+	return right;
+}
+
+int Configuration::getAttack1(){
+	return right;
+}
+
+int Configuration::getAttack2(){
+	return right;
+}
+
+int Configuration::getAttack3(){
+	return right;
+}
+
+int Configuration::getJump(){
+	return right;
+}

@@ -5,15 +5,25 @@ namespace Configuration{
 
 	/* return a Keyboard::Key_X based on some PAIN_KEY_X */
 	int getKey( int which, int facing );
+	
+	void setRight( int i );
+	void setLeft( int i );
+	void setUp( int i );
+	void setDown( int i );
+	void setAttack1( int i );
+	void setAttack2( int i );
+	void setAttack3( int i );
+	void setJump( int i );
 
-	extern int right;
-	extern int left;
-	extern int up;
-	extern int down;
-	extern int attack1;
-	extern int attack2;
-	extern int attack3;
-	extern int jump;
-}
+	int getRight();
+	int getLeft();
+	int getUp();
+	int getDown();
+	int getAttack1();
+	int getAttack2();
+	int getAttack3();
+	int getJump();
+
+	}
 
 #endif
