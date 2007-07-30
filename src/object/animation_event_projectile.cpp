@@ -68,7 +68,7 @@ void AnimationEventProjectile::Interact( Animation * animation ){
 	copy->setDX( getDX() );
 	copy->setDY( getDY() );
 	copy->setLife( getLife() );
-	animation->createProjectile( getX(), getY(), copy );
+	animation->createProjectile( getX(), -getY(), copy );
 }
 	
 AnimationEventProjectile::~AnimationEventProjectile(){

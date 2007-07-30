@@ -21,6 +21,7 @@ public:
 	virtual bool isAttacking();
 	virtual bool collision( ObjectAttack * obj );
 	virtual int getDamage() const;
+	virtual ECollide * getCollide() const;
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
 	virtual const int getWidth() const;
@@ -62,8 +63,6 @@ public:
 	virtual const int getHealth() const;
 
 protected:
-	std::string name;
-
 	Animation * main;
 	Animation * death;
 	Animation * currentAnimation;

@@ -144,10 +144,10 @@ void World::doLogic(){
 			// ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
 			ObjectAttack * o_good = (ObjectAttack *)good;
 			for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
-				if ( (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
-					// cout<<"Attacking"<<endl;
+				if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
+					// cout << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
 
-					// cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < MIN_RELATIVE_DISTANCE) << endl;
+					// cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
 					// cout << "Collision: " << (*fight)->collision( o_good ) << endl;
 					if ( good->ZDistance( *fight ) <= o_good->minZDistance() && (*fight)->collision( o_good ) ){ 
 

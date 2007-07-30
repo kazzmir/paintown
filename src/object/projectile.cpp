@@ -2,6 +2,8 @@
 #include "object_attack.h"
 #include "util/token.h"
 #include "util/token_exception.h"
+#include "util/ebox.h"
+#include "util/funcs.h"
 #include "globals.h"
 #include "animation.h"
 #include <iostream>
@@ -46,6 +48,8 @@ life( 0 ){
 	}
 	
 	currentAnimation = main;
+
+	nextTicket();
 }
 	
 Projectile::Projectile( const Projectile * const projectile ):
@@ -60,6 +64,8 @@ life( projectile->getLife() ){
 	}
 
 	currentAnimation = main;
+	
+	nextTicket();
 }
 	
 Projectile::~Projectile(){
@@ -106,13 +112,17 @@ void Projectile::grabbed( Object * obj ){
 
 void Projectile::unGrab(){
 }
+		
+ECollide * Projectile::getCollide() const {
+	return currentAnimation->getCollide( getFacing() );
+}
 
 Object * Projectile::copy(){
 	return new Projectile( this );
 }
 
 const std::string & Projectile::getAttackName(){
-	return name;
+	return currentAnimation->getName(); 
 }
 
 bool Projectile::isAttacking(){
@@ -124,7 +134,7 @@ bool Projectile::collision( ObjectAttack * obj ){
 }
 
 int Projectile::getDamage() const {
-	return 0;
+	return main->getDamage();
 }
 
 bool Projectile::isCollidable( Object * obj ){
@@ -136,19 +146,28 @@ bool Projectile::isGettable(){
 }
 
 const int Projectile::getWidth() const {
-	return 0;
+	return currentAnimation->getWidth();
 }
 
 const int Projectile::getHeight() const {
-	return 0;
+	return currentAnimation->getHeight();
 }
 
 void Projectile::getAttackCoords( int & x, int & y){
+	currentAnimation->getAttackCoords( x, y );
+	if ( getFacing() == FACING_LEFT ){
+		x = getRX() - x + getWidth() / 2;
+	} else {
+		x += getRX() - getWidth()/2;
+	}
+
+	y += getRY() - getHeight();
 }
 
 const double Projectile::minZDistance() const {
-	return 0;
+	return currentAnimation->getMinZDistance();
 }
 
 void Projectile::attacked( Object * something, vector< Object * > & objects ){
+	setLife( 0 );
 }

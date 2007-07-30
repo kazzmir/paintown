@@ -887,6 +887,7 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	last_collide = obj->getTicket();
 	*/
 
+	cout << this << " collided with " << obj << endl;
 	Object::collided( obj, objects );
 
 	collision_objects[ obj ] = obj->getTicket();
@@ -925,6 +926,7 @@ bool Character::realCollision( ObjectAttack * obj ){
 
 	ECollide * myCollide = this->getNormalCollide();
 	ECollide * hisCollide = obj->getCollide();
+	// cout << "Obj attacking with " << obj->getAttackName() << " my collide = " << myCollide << " his collide = " << hisCollide << endl;
 	if ( myCollide != 0 && hisCollide ){
 		bool my_xflip = false;
 		bool his_xflip = false;
@@ -968,8 +970,8 @@ bool Character::realCollision( ObjectAttack * obj ){
 		hisCollide->draw( *Bitmap::Screen, ax, ay, Bitmap::makeColor( 128, 255, 0 ), his_xflip );
 		*/
 
-		// cout<<"Mx: "<<mx<< " My: "<<my<<" Width: "<<me->getWidth()<<" Height: "<<me->getHeight()<<endl;
-		// cout<<"Ax: "<<ax<< " Ay: "<<ay<<" Width: "<<him->getWidth()<<" Height: "<<him->getHeight()<<endl;
+		// cout<<"Mx: "<<mx<< " My: "<<my<<" Width: "<<myCollide->getWidth()<<" Height: "<<myCollide->getHeight()<<endl;
+		// cout<<"Ax: "<<ax<< " Ay: "<<ay<<" Width: "<<hisCollide->getWidth()<<" Height: "<<hisCollide->getHeight()<<endl;
 
 		bool b = myCollide->Collision( hisCollide, mx, my, ax, ay, my_xflip, false, his_xflip, false );
 		if ( b && false ){
