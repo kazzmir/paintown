@@ -887,7 +887,7 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	last_collide = obj->getTicket();
 	*/
 
-	cout << this << " collided with " << obj << endl;
+	// cout << this << " collided with " << obj << endl;
 	Object::collided( obj, objects );
 
 	collision_objects[ obj ] = obj->getTicket();
