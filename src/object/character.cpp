@@ -670,6 +670,11 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 		invincibility--;
 	}
 
+	for ( vector< Object * >::iterator it = projectiles.begin(); it != projectiles.end(); it++ ){
+		Object * obj = *it;
+		obj->setAlliance( getAlliance() );
+		obj->setFacing( getFacing() );
+	}
 	add->insert( add->end(), projectiles.begin(), projectiles.end() );
 	projectiles.clear();
 

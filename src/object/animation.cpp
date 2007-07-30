@@ -484,13 +484,14 @@ commision( true ){
 	*/
 }
 
-void Animation::createProjectile( int x, int y, Projectile * p ){
+void Animation::createProjectile( int x, int y, Projectile * projectile ){
 	if ( parent ){
-		p->setX( parent->getX() + getOffsetX() + x );
-		p->setZ( parent->getZ() + getOffsetY() + y );
-		parent->createProjectile( p );
+		int direction = parent->getFacing() == Object::FACING_LEFT ? -1 : 1;
+		projectile->setX( parent->getX() + (getOffsetX() + x) * direction );
+		projectile->setZ( parent->getZ() + getOffsetY() + y );
+		parent->createProjectile( projectile );
 	} else {
-		delete p;
+		delete projectile;
 	}
 }
 	
