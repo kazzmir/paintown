@@ -166,7 +166,7 @@ public:
 	}
 
 	/* tell the owning object to create a projectile */
-	void createProjectile( Projectile * p );
+	void createProjectile( int x, int y, Projectile * p );
 
 	void addDecommision( const string & s );
 	void addCommision( const string & s );

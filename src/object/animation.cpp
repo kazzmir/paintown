@@ -106,7 +106,7 @@ contact( NULL ){
 	diff.startTime();
 	while ( tok->hasTokens() ){
 		
-		try { 
+		try {
 			*tok >> current;
 
 			if ( *current == "name" ){
@@ -138,8 +138,7 @@ contact( NULL ){
 				AnimationEventOffset * ani = new AnimationEventOffset( x, y );
 				events.push_back( ani );
 			} else if ( *current == "projectile" ){
-				Projectile * projectile = new Projectile( current );	
-				AnimationEventProjectile * ani = new AnimationEventProjectile( projectile );
+				AnimationEventProjectile * ani = new AnimationEventProjectile( current );
 				events.push_back( ani );
 			} else if ( *current == "move" ){
 				try{
@@ -485,8 +484,10 @@ commision( true ){
 	*/
 }
 
-void Animation::createProjectile( Projectile * p ){
+void Animation::createProjectile( int x, int y, Projectile * p ){
 	if ( parent ){
+		p->setX( parent->getX() + getOffsetX() + x );
+		p->setZ( parent->getZ() + getOffsetY() + y );
 		parent->createProjectile( p );
 	} else {
 		delete p;

@@ -291,7 +291,7 @@ public:
 	/* getHealth:
 	 * Returns the amount of health the object has left.
 	 */
-	inline const int getHealth() const{
+	inline virtual const int getHealth() const {
 		if ( health < 0 )
 			return 0;
 		return health;
@@ -305,10 +305,12 @@ public:
 	/* getLife:
 	 * alternate spelling for getHealth()
 	 */
+	/*
 	inline const int getLife() const {
 		return getHealth();
 		// return health;
 	}
+	*/
 
 	/* setHealth:
 	 * Sets the amount of health the object has

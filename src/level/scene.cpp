@@ -223,8 +223,8 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 void Scene::drawBack( int x, Bitmap * work ){
 	if ( background ){
 		int y = 0;
-		background->Blit( x % background->getWidth() - background->getWidth(), 0, 0, y, *work );
-		background->Blit( x % background->getWidth(), 0, 0, y, *work );
+		background->Blit( (x/5) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
+		background->Blit( (x/5) % background->getWidth(), 0, 0, y, *work );
 	}
 		
 	int fx = 0;

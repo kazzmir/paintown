@@ -31,11 +31,40 @@ public:
 
 	virtual ~Projectile();
 
+	inline void setDX( const double dx ){
+		this->dx = dx;
+	}
+
+	inline void setDY( const double dy ){
+		this->dy = dy;
+	}
+
+	inline const double getDX() const {
+		return dx;
+	}
+
+	inline const double getDY() const {
+		return dy;
+	}
+
+	inline void setLife( int life ){
+		this->life = life;
+	}
+
+	inline const int getLife() const {
+		return life;
+	}
+	
+	virtual const int getHealth() const;
+
 protected:
 	std::string name;
 
 	Animation * main;
 	Animation * death;
+
+	double dx, dy;
+	int life;
 };
 
 #endif
