@@ -820,10 +820,10 @@ void Player::act( vector< Object * > * others, World * world ){
 		}
 		*/
 
-		if ( keyboard[ Keyboard::Key_UP ] ){
+		if ( keyboard[ getKey( PAIN_KEY_UP ) ] ){
 			// setZ( getZ() - 1);
 			moveZ( -getSpeed() );
-		} else if ( keyboard[ Keyboard::Key_DOWN ] ){
+		} else if ( keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
 			// setZ( getZ() + 1 );
 			moveZ( getSpeed() );
 		}
