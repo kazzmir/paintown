@@ -84,6 +84,18 @@ const int Projectile::getHealth() const {
 	return getLife() <= 0 ? 0 : 1;
 }
 
+const int Projectile::getRX() const {
+	if ( getFacing() == FACING_LEFT ){
+		return Object::getRX() - currentAnimation->getOffsetX();
+	} else {
+		return Object::getRX() + currentAnimation->getOffsetX();
+	}
+}
+
+const int Projectile::getRY() const {
+	return Object::getRY() + currentAnimation->getOffsetY();
+}
+
 void Projectile::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	moveX( getDX() );
 	moveY( getDY() );
@@ -96,6 +108,8 @@ void Projectile::act( vector< Object * > * others, World * world, vector< Object
 	decreaseLife();
 	if ( getLife() <= 0 && death ){
 		currentAnimation = death;
+		setDX( 0 );
+		setDY( 0 );
 	}
 }
 

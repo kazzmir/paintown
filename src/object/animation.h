@@ -155,12 +155,15 @@ public:
 	inline void setOffsetX( const int x ){
 		offset_x = x;
 	}
+
 	inline void setOffsetY( const int y ){
 		offset_y = y;
 	}
+
 	inline const int getOffsetX(){
 		return offset_x;
 	}
+
 	inline const int getOffsetY(){
 		return offset_y;
 	}

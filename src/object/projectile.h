@@ -30,6 +30,9 @@ public:
 	virtual const double minZDistance() const;
 	virtual void attacked( Object * something, vector< Object * > & objects );
 
+	virtual const int getRY() const;
+	virtual const int getRX() const;
+
 	virtual ~Projectile();
 
 	inline void setDX( const double dx ){
