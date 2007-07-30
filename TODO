@@ -1,4 +1,4 @@
 * separate z planes for each block
-* use parallax - scroll background slower than the rest of the game
-* allow enemies to throw things like daggers and stars
+DONE * use parallax - scroll background slower than the rest of the game
+DONE * allow enemies to throw things like daggers and stars
 * networking, of course!
