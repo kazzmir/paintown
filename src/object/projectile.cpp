@@ -44,6 +44,8 @@ life( 0 ){
 	if ( main == NULL ){
 		throw LoadException( "No 'main' animation given" );
 	}
+	
+	currentAnimation = main;
 }
 	
 Projectile::Projectile( const Projectile * const projectile ):
@@ -56,6 +58,8 @@ life( projectile->getLife() ){
 	if ( projectile->death != NULL ){
 		death = new Animation( *projectile->death, NULL );
 	}
+
+	currentAnimation = main;
 }
 	
 Projectile::~Projectile(){
@@ -68,22 +72,32 @@ Projectile::~Projectile(){
 }
 	
 const int Projectile::getHealth() const {
-	return 1;
+	if ( death ){
+		return getLife() <= 0 && death->empty() ? 0 : 1;
+	}
+	return getLife() <= 0 ? 0 : 1;
 }
 
 void Projectile::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	moveX( getDX() );
 	moveY( getDY() );
-	if ( main->Act() ){
-		main->reset();
+	if ( currentAnimation->Act() ){
+		if ( currentAnimation != death ){
+			currentAnimation->reset();
+		}
+	}
+
+	decreaseLife();
+	if ( getLife() <= 0 && death ){
+		currentAnimation = death;
 	}
 }
 
 void Projectile::draw( Bitmap * work, int rel_x ){
 	if ( getFacing() == Object::FACING_RIGHT ){
-		main->Draw( getRX() - rel_x, getRY(), work );
+		currentAnimation->Draw( getRX() - rel_x, getRY(), work );
 	} else {
-		main->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+		currentAnimation->DrawFlipped( getRX() - rel_x, getRY(), work ); 
 	}
 }
 

@@ -54,6 +54,10 @@ public:
 	inline const int getLife() const {
 		return life;
 	}
+
+	inline void decreaseLife(){
+		life -= 1;
+	}
 	
 	virtual const int getHealth() const;
 
@@ -62,6 +66,7 @@ protected:
 
 	Animation * main;
 	Animation * death;
+	Animation * currentAnimation;
 
 	double dx, dy;
 	int life;
