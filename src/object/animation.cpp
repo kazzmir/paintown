@@ -13,6 +13,7 @@
 #include "animation_event_jump.h"
 #include "animation_event_move.h"
 #include "animation_event_nop.h"
+#include "animation_event_projectile.h"
 #include "animation_event_offset.h"
 #include "animation_event_status.h"
 #include "animation_event_sound.h"
@@ -25,6 +26,7 @@
 #include "util/funcs.h"
 #include "util/ebox.h"
 #include "globals.h"
+#include "projectile.h"
 #include "util/load_exception.h"
 #include "object.h"
 #include "util/sound.h"
@@ -134,6 +136,10 @@ contact( NULL ){
 				}
 				// cout<<"Read offset as "<<x<<" "<<y<<endl;
 				AnimationEventOffset * ani = new AnimationEventOffset( x, y );
+				events.push_back( ani );
+			} else if ( *current == "projectile" ){
+				Projectile * projectile = new Projectile( current );	
+				AnimationEventProjectile * ani = new AnimationEventProjectile( projectile );
 				events.push_back( ani );
 			} else if ( *current == "move" ){
 				try{
@@ -477,6 +483,14 @@ commision( true ){
 		current_frame = (*first).second;
 	}
 	*/
+}
+
+void Animation::createProjectile( Projectile * p ){
+	if ( parent ){
+		parent->createProjectile( p );
+	} else {
+		delete p;
+	}
 }
 	
 int Animation::getDamage() const{

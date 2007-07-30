@@ -31,7 +31,7 @@ public:
 	/* act:
 	 * Performs any logic the object wants to do
 	 */
-	virtual void act( vector< Object * > * others, World * world ) = 0;
+	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add ) = 0;
 
 	/* draw:
 	 * Draws the object onto the specified Bitmap

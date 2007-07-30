@@ -130,7 +130,7 @@ void World::doLogic(){
 	vector< Object * > added_effects;
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 		Object * good = *it;
-		good->act( &objects, this );
+		good->act( &objects, this, &added_effects );
 
 		if ( good->getZ() < getMinimumZ() ){
 			good->setZ( getMinimumZ() );

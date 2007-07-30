@@ -16,6 +16,7 @@ class ECollide;
 class Token;
 class Character;
 class Sound;
+class Projectile;
 
 const int PAIN_KEY_FORWARD = 0;
 const int PAIN_KEY_BACK = 1;
@@ -163,6 +164,9 @@ public:
 	inline const int getOffsetY(){
 		return offset_y;
 	}
+
+	/* tell the owning object to create a projectile */
+	void createProjectile( Projectile * p );
 
 	void addDecommision( const string & s );
 	void addCommision( const string & s );

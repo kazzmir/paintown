@@ -30,7 +30,7 @@ public:
 	
 	virtual Object * copy();
 	
-	virtual void act( vector< Object * > * others, World * world ); 
+	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	
 	virtual void takeDamage( ObjectAttack * obj, int x );
 	

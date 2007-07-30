@@ -13,6 +13,7 @@ class ObjectAttack;
 class Stimulation;
 class World;
 class Sound;
+class Projectile;
 
 using namespace std;
 
@@ -41,8 +42,10 @@ public:
 
 public:
 
+	virtual void createProjectile( Projectile * projectile );
+
 	/* logic */
-	virtual void act( vector< Object * > * others, World * world );
+	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 
 	/* drawing */
 	virtual void draw( Bitmap * work, int rel_x );
@@ -350,6 +353,7 @@ private:
 	unsigned int current_map;
 	/* map from id to map of animations */
 	map< int, map<string,Animation*> > mapper;
+	vector< Object * > projectiles;
 	
 	Sound * die_sound;
 	Sound * landed_sound;

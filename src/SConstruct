@@ -44,6 +44,7 @@ animation_event_frame.cpp
 animation_event_jump.cpp
 animation_event_move.cpp
 animation_event_nop.cpp
+animation_event_projectile.cpp
 animation_event_offset.cpp
 animation_event_shadow.cpp
 animation_event_sound.cpp
@@ -56,6 +57,7 @@ object.cpp
 object_attack.cpp
 object_nonattack.cpp
 player.cpp
+projectile.cpp
 attack.cpp
 stimulation.cpp
 health_stimulation.cpp

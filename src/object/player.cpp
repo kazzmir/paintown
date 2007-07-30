@@ -438,7 +438,7 @@ void Player::deathReset(){
 	loseLife();
 }
 
-void Player::act( vector< Object * > * others, World * world ){
+void Player::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	
 	/*
 	if ( getInvincibility() < 500 ){
@@ -450,7 +450,7 @@ void Player::act( vector< Object * > * others, World * world ){
 	}
 
 	/* Character handles jumping and possibly other things */
-	Character::act( others, world );
+	Character::act( others, world, add );
 
 	fillKeyCache();
 

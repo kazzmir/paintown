@@ -22,7 +22,7 @@ public:
 	
 	virtual Object * copy();
 	
-	virtual void act( vector< Object * > * others, World * world );
+	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	
 	virtual void draw( Bitmap * work, int rel_x );
 	

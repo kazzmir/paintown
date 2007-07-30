@@ -20,7 +20,7 @@ public:
 	Item( const string & filename, Stimulation * const stimulation ) throw( LoadException );
 	Item( const Item & item );
 	
-	virtual void act( vector< Object * > * others, World * world );
+	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual bool isCollidable( Object * obj );
 	virtual ECollide * getCollide() const;

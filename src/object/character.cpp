@@ -442,7 +442,8 @@ Animation * Character::getMovement( const unsigned int x ){
 bool Character::testAnimation(){
 	World w;
 	vector< Object * > others;
-	act( &others, &w );
+	vector< Object * > more;
+	act( &others, &w, &more );
 	return animation_current->Act();
 }
 
@@ -659,11 +660,18 @@ void Character::landed( World * world ){
 	}
 }
 
-void Character::act( vector< Object * > * others, World * world ){
+void Character::createProjectile( Projectile * projectile ){
+	projectiles.push_back( (Object *) projectile );
+}
+
+void Character::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 
 	if ( invincibility > 0 ){
 		invincibility--;
 	}
+
+	add->insert( add->end(), projectiles.begin(), projectiles.end() );
+	projectiles.clear();
 
 	reduceDamage();
 	// cout << getName() << " now has " << currentDamage() << endl;

@@ -115,7 +115,7 @@ const int Effect::getHeight() const{
 	return 0;
 }
 
-void Effect::act( vector< Object * > * others, World * world ){
+void Effect::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	if ( image ){
 		if ( image->Act() ){
 			setHealth( -1 );

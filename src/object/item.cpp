@@ -116,7 +116,7 @@ bool Item::collision( ObjectAttack * obj ){
 	return false;
 }
 
-void Item::act( vector< Object * > * others, World * world ){
+void Item::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	// cout << "tough actin tinactin: " << this << endl;
 }
 
