@@ -793,7 +793,7 @@ void Player::act( vector< Object * > * others, World * world ){
 		key_cache.clear();
 	*/
 
-	if ( getStatus() == Status_Ground ){
+	if ( getStatus() == Status_Ground && animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" ) ){
 		/*
 		if ( keyboard[ KEY_RIGHT ] ){
 			setFacing( Object::FACING_RIGHT );
@@ -807,6 +807,7 @@ void Player::act( vector< Object * > * others, World * world ){
 		if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
 			moveX( getSpeed() );
 		} else if ( keyboard[ getKey( PAIN_KEY_BACK ) ] ){
+			// cout << "Reverse facing" << endl;
 			setFacing( getOppositeFacing() );
 		}
 		/*

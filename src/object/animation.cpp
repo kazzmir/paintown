@@ -520,9 +520,7 @@ void Animation::playSound( const string & path ){
 void Animation::setFacing( const int direction ){
 	if ( parent ){
 		if ( direction == -1 ){
-			cout << "Facing of parent = " << parent->getFacing() << ". Reverse!" << endl;
 			parent->reverseFacing();
-			cout << "Facing of parent = " << parent->getFacing() << endl;
 		} else {
 			parent->setFacing( direction );
 		}
