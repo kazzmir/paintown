@@ -18,7 +18,7 @@
 // how many ticks to wait before the key cache is cleared.
 // this can probably be user defined in the future
 static const int GLOBAL_KEY_DELAY = 15;
-static const unsigned int KEY_CACHE_SIZE = 20;
+static const unsigned int KEY_CACHE_SIZE = 100;
 static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 using namespace std;
@@ -91,11 +91,15 @@ void Player::fillKeyCache(){
 	keyboard.poll();
 
 	if ( acts++ > GLOBAL_KEY_DELAY ){
-		key_cache.clear();
+		// key_cache.clear();
 		/*
 		if ( !key_cache.empty() )
 			key_cache.pop_front();
 		*/
+
+		if ( !key_cache.empty() )
+			key_cache.pop_front();
+
 		acts = 0;
 	}
 
@@ -108,7 +112,7 @@ void Player::fillKeyCache(){
 			int n = *it;
 			if ( ! last_key[ n ] ){
 				// cout<<"Last key[ "<<n<<" ] = "<<last_key[n]<<endl;
-				key_cache.push_back( n );
+				key_cache.push_back( keyState( n, getFacing() ) );
 				acts = 0;
 			}
 			new_last[ n ] = true;		
@@ -136,6 +140,9 @@ void Player::fillKeyCache(){
 	while ( key_cache.size() > KEY_CACHE_SIZE ){
 		key_cache.pop_front();
 	}
+
+	// cout << "Keys in cache: " << key_cache.size() << endl;
+
 	// cout<<"Last key[ "<<83<<" ] = "<<last_key[83]<<endl;
 
 	#if 0
@@ -234,9 +241,94 @@ void Player::draw( Bitmap * work, int rel_x ){
 	// work->rectangle( x1, y1, x1 + 100, y1 + nameHeight + 1, Bitmap::makeColor( 255, 255, 255 ) );
 }
 
-bool Player::combo( Animation * ani ){
-	deque<int>::reverse_iterator cache_cur_key = key_cache.rbegin();
+bool Player::combo( Animation * ani, deque< keyState >::iterator cache_cur_key, deque< keyState >::iterator end ){
+	int startFacing = (*cache_cur_key).facing;
 			
+	// cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
+	const vector< KeyPress > & keys = ani->getKeys();
+	if ( keys.empty() ){
+		return false;
+	}
+	for ( vector<KeyPress>::const_iterator k = keys.begin(); k != keys.end(); k++ ){
+		if ( cache_cur_key == end ){
+			return false;
+		}
+
+		const KeyPress & kp = *k;
+		bool all_pressed = false;
+		for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
+			int find_key = getKey( *cur_key, startFacing );
+			int key = (*cache_cur_key).key;
+			// if ( find_key == (*cache_cur_key) ){
+			if ( find_key == key ){
+				all_pressed = true;
+			}
+		}
+		if ( !all_pressed ){
+			return false;
+		}
+
+		cache_cur_key++;
+	}
+	return true;
+
+}
+
+bool Player::combo( Animation * ani ){
+
+	deque< keyState >::iterator cur = key_cache.begin();
+	for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
+		if ( combo( ani, cur, key_cache.end() ) ){
+			return true;
+		}
+	}
+	return false;
+
+	/*
+	deque< keyState >::iterator cache_cur_key = key_cache.begin();
+	if ( cache_cur_key == key_cache.end() ){
+		return false;
+	}
+	int startFacing = (*cache_cur_key).facing;
+			
+	// cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
+	const vector< KeyPress > & keys = ani->getKeys();
+	if ( keys.empty() )
+		return false;
+	for ( vector<KeyPress>::const_iterator k = keys.begin(); k != keys.end(); k++ ){
+		if ( cache_cur_key == key_cache.end() ){
+			return false;
+		}
+
+		const KeyPress & kp = *k;
+		bool all_pressed = false;
+		for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
+			int find_key = getKey( *cur_key, startFacing );
+			int key = (*cache_cur_key).key;
+			// if ( find_key == (*cache_cur_key) ){
+			if ( find_key == key ){
+				all_pressed = true;
+			}
+		}
+		if ( !all_pressed ){
+			return false;
+		}
+
+		cache_cur_key++;
+	}
+	return true;
+	*/
+}
+
+/*
+bool Player::combo( Animation * ani ){
+	deque< keyState >::reverse_iterator cache_cur_key = key_cache.rbegin();
+	if ( cache_cur_key == key_cache.rend() ){
+		return false;
+	}
+	int startFacing = (*cache_cur_key).facing;
+			
+	cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
 	const vector< KeyPress > & keys = ani->getKeys();
 	if ( keys.empty() )
 		return false;
@@ -248,8 +340,10 @@ bool Player::combo( Animation * ani ){
 		const KeyPress & kp = *k;
 		bool all_pressed = false;
 		for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
-			int find_key = getKey(*cur_key);
-			if ( find_key == (*cache_cur_key) ){
+			int find_key = getKey( *cur_key, startFacing );
+			int key = (*cache_cur_key).key;
+			// if ( find_key == (*cache_cur_key) ){
+			if ( find_key == key ){
 				all_pressed = true;
 			}
 		}
@@ -262,9 +356,14 @@ bool Player::combo( Animation * ani ){
 	return true;
 	
 }
+*/
 
-int Player::getKey( int motion ){
-	return Configuration::getKey( motion, getFacing() );
+int Player::getKey( int motion, int facing ){
+	return Configuration::getKey( motion, facing );
+}
+	
+int Player::getKey( int x ){
+	return this->getKey( x, getFacing() );
 }
 	
 Object * Player::copy(){
@@ -639,10 +738,13 @@ void Player::act( vector< Object * > * others, World * world ){
 			animation_current->reset();
 
 			/* remove the used keys from the key cache */
-			const vector< KeyPress > & keys = animation_current->getKeys();
+			// const vector< KeyPress > & keys = animation_current->getKeys();
+			/*
 			for ( unsigned int i = 0; i < keys.size(); i++ ){
-				key_cache.pop_back();
+				key_cache.pop_front();
 			}
+			*/
+			key_cache.clear();
 			
 			// if ( animation_current == movements["jump"] ) {
 			if ( animation_current == getMovement("jump") ) {

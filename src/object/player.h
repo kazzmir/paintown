@@ -11,6 +11,12 @@ class World;
 
 using namespace std;
 
+struct keyState{
+	keyState( int key, int facing ):key(key),facing(facing){}
+	int key;
+	int facing;
+};
+
 class Player: public Character{
 public:
 
@@ -51,6 +57,8 @@ public:
 protected:
 	void fillKeyCache();
 	bool combo( Animation * ani );
+	bool combo( Animation * ani, deque< keyState >::iterator cache_cur_key, deque< keyState >::iterator end );
+	int getKey( int x, int facing );
 	int getKey( int x );
 
 	bool canGrab( Object * enemy );
@@ -59,7 +67,7 @@ protected:
 protected:
 
 	/* store key presses in a stack with two ends*/
-	deque< int > key_cache;
+	deque< keyState > key_cache;
 	map< int, bool > last_key;
 	int acts;
 	Keyboard keyboard;

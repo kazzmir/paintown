@@ -233,6 +233,8 @@ public:
 
 	void playSound( const string & path );
 
+	void setFacing( const int direction );
+
 	ECollide * getCollide( int facing );
 	ECollide * getNormalCollide();
 	void Draw( int x, int y, Bitmap * work );

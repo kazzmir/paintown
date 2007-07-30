@@ -8,6 +8,7 @@
 #include "animation_event_bbox.h"
 #include "animation_event_coords.h"
 #include "animation_event_delay.h"
+#include "animation_event_face.h"
 #include "animation_event_frame.h"
 #include "animation_event_jump.h"
 #include "animation_event_move.h"
@@ -297,6 +298,19 @@ contact( NULL ){
 				string l;
 				*current >> l;
 				addCommision( l );
+			} else if ( *current == "face" ){
+				string way;
+				*current >> way;
+				int direction = Object::FACING_RIGHT;
+				if ( way == "right" ){
+					direction = Object::FACING_RIGHT;
+				} else if ( way == "left" ){
+					direction = Object::FACING_LEFT;
+				} else if ( way == "reverse" ){
+					direction = -1;
+				}
+				AnimationEvent * ani = new AnimationEventFace( direction );
+				events.push_back( ani );
 			} else if ( *current == "nop" ){
 				events.push_back( new AnimationEventNOP() );
 			} else if ( *current == "range" ){
@@ -500,6 +514,18 @@ void Animation::playSound( const string & path ){
 	if ( sounds.find( path ) != sounds.end() ){
 		Sound * s = sounds[ path ];
 		s->play();
+	}
+}
+	
+void Animation::setFacing( const int direction ){
+	if ( parent ){
+		if ( direction == -1 ){
+			cout << "Facing of parent = " << parent->getFacing() << ". Reverse!" << endl;
+			parent->reverseFacing();
+			cout << "Facing of parent = " << parent->getFacing() << endl;
+		} else {
+			parent->setFacing( direction );
+		}
 	}
 }
 	
