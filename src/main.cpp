@@ -18,6 +18,7 @@
 #include "globals.h"
 #include "configuration.h"
 #include "level/scene.h"
+#include "return_exception.h"
 #include "loading.h"
 #include "music.h"
 #include "object/character.h"
@@ -325,7 +326,7 @@ static bool isArg( const char * s1, const char * s2 ){
 	return strcasecmp( s1, s2 ) == 0;
 }
 
-static const string selectLevelSet( const string & base ){
+static const string selectLevelSet( const string & base ) throw( ReturnException ){
 	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
 	// Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	int fontY = 20;
@@ -381,6 +382,10 @@ static const string selectLevelSet( const string & base ){
 				if ( key[ Keyboard::Key_ENTER ] ){
 					return possible[ choose ];
 				}
+
+				if ( key[ Keyboard::Key_ESC ] ){
+					throw ReturnException();
+				}
 			}
 
 			Global::speed_counter = 0;
@@ -405,20 +410,27 @@ static const string selectLevelSet( const string & base ){
 }
 
 static int readKey( Keyboard & key ){
+	key.wait();
+	/*
 	key.poll();
 	while ( key.keypressed() ){
 		key.poll();
 		Util::rest( 1 );
 	}
+	key.clear();
+	*/
 	key.clear();
 
 	int k = key.readKey();
+	key.wait();
+	/*
 	key.clear();
 	key.poll();
 	while ( key.keypressed() ){
 		key.poll();
 		Util::rest( 1 );
 	}
+	*/
 
 	return k;
 }
@@ -719,13 +731,20 @@ static bool titleScreen(){
 				break;
 			}
 			case MAIN_PLAY : {
+				Object * player = NULL;
 				try{
 					string level = selectLevelSet( Util::getDataPath() + "/levels" );
-					Object * player = selectPlayer( isInvincible );
+					key.wait();
+					
+					player = selectPlayer( isInvincible );
 					realGame( player, level );
-					delete player;
 				} catch ( const LoadException & le ){
 					cout << "Could not load player: " << le.getReason() << endl;
+				} catch ( const ReturnException & r ){
+					key.wait();
+				}
+				if ( player != NULL ){
+					delete player;
 				}
 				return true;
 				break;
@@ -734,6 +753,8 @@ static bool titleScreen(){
 		}
 	}
 
+	key.clear();
+	key.poll();
 	while ( key.keypressed() ){
 		key.poll();
 		Util::rest( 1 );

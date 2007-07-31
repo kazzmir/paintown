@@ -9,6 +9,7 @@
 #include "factory/font_factory.h"
 #include "util/font.h"
 #include "world.h"
+#include "return_exception.h"
 #include <iostream>
 #include <vector>
 #include <map>
@@ -46,7 +47,7 @@ Key getNth( const map< Key, Value > & m, int i ){
 	return m.begin()->first;
 }
 
-Object * selectPlayer( bool invincibile ) throw( LoadException ){
+Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException ){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 
 	/* hm, it would be nice to cache this I suppose */
@@ -128,6 +129,14 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 
 				if ( key[ changeRemapKey ] ){
 					ch->nextMap();
+				}
+
+				if ( key[ Keyboard::Key_ESC ] ){
+					for ( PlayerMap::iterator it = players.begin(); it != players.end(); it++ ){
+						Object * o = it->first;
+						delete o;
+					}
+					throw ReturnException();
 				}
 
 				if ( current < 0 ){

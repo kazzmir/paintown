@@ -3,7 +3,8 @@
 
 #include "object/object.h"
 #include "util/load_exception.h"
+#include "return_exception.h"
 
-Object * selectPlayer( bool invincibile ) throw( LoadException );
+Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException );
 
 #endif
