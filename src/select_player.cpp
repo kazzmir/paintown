@@ -257,5 +257,6 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 	Player * player = new Player( players[ current ].path );
 	player->setInvincible( invincibile );
 	player->setMap( remap );
+	player->testAnimation();
 	return player;
 }
