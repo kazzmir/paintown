@@ -206,6 +206,7 @@ public:
 
 	virtual bool isGettable();
 	virtual Animation * getCurrentMovement();
+	virtual void setMovement( Animation * animation, const string & name );
 	virtual Animation * getMovement( const string & str );
 	virtual Animation * getMovement( const unsigned int x );
 	virtual const map<string,Animation*> & getMovements();

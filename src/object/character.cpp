@@ -35,10 +35,9 @@ static const string dataPath( const string & str ){
 	return Util::getDataPath() + str;
 }
 
-/* probably should never be run...
- */
 Character::Character( int alliance ):
 ObjectAttack( alliance ),
+icon( NULL ),
 x_velocity( 0 ),
 y_velocity( 0 ),
 z_velocity( 0 ),
@@ -409,6 +408,11 @@ bool Character::isGettable(){
 	
 Animation * Character::getCurrentMovement(){
 	return this->animation_current;
+}
+	
+void Character::setMovement( Animation * animation, const string & name ){
+	map< string, Animation * > & xmap = mapper[ current_map ];
+	xmap[ name ] = animation;
 }
 	
 Animation * Character::getMovement( const string & str ){

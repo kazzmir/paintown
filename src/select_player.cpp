@@ -3,17 +3,21 @@
 #include "util/load_exception.h"
 #include "util/funcs.h"
 #include "object/player.h"
+#include "object/display_character.h"
 #include "init.h"
 #include "select_player.h"
 #include "factory/font_factory.h"
 #include "util/font.h"
 #include "world.h"
 #include <iostream>
+#include <vector>
+#include <map>
 
 using namespace std;
 
-static vector< Player * > loadPlayers( const char * path ){
-	vector< Player * > players;
+typedef map<DisplayCharacter*,string> PlayerMap;
+static PlayerMap loadPlayers( const char * path ){
+	PlayerMap players;
 	vector< string > files = Util::getFiles( Util::getDataPath() + "/" + path, "*" );
 	for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
 		string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
@@ -21,7 +25,7 @@ static vector< Player * > loadPlayers( const char * path ){
 		if ( Util::exists( file ) ){
 			cout << "Loading " << file << endl;
 			try{
-				players.push_back( new Player( file ) );
+				players[ new DisplayCharacter( file ) ] = file;
 			} catch ( const LoadException & le ){
 				cout << "Could not load " << file << " because " << le.getReason() << endl;
 			}
@@ -30,11 +34,23 @@ static vector< Player * > loadPlayers( const char * path ){
 	return players;
 }
 
+template< class Key, class Value >
+Key getNth( const map< Key, Value > & m, int i ){
+	int count = 0;
+	for ( typename map<Key, Value>::const_iterator it = m.begin(); it != m.end(); it++ ){
+		if ( count == i ){
+			return it->first;
+		}
+		count += 1;
+	}
+	return m.begin()->first;
+}
+
 Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 
 	/* hm, it would be nice to cache this I suppose */
-	vector< Player * > players = loadPlayers( "players/" );
+	PlayerMap players = loadPlayers( "players/" );
 	
 	Keyboard key;
 
@@ -80,7 +96,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
 		key.poll();
 
-		Character * ch = (Character *) players[ current ];
+		Character * ch = (Character *) getNth<DisplayCharacter*,string>( players, current );
 
 		if ( Global::speed_counter > 0 ){
 			double think = Global::speed_counter;
@@ -165,7 +181,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 				temp.clear();
 				Bitmap box( work, x, y, boxSize, boxSize );
 				int color = unselectedColor;
-				Character smaller( *(players[ i ]) );
+				Character smaller( *getNth<DisplayCharacter*,string>( players, i ) );
 
 				color = i == (unsigned int) current ? selectedColor : unselectedColor;
 				/* draw a border */
@@ -206,14 +222,17 @@ Object * selectPlayer( bool invincibile ) throw( LoadException ){
 		}
 	}
 
-	/* delete everything but the selected player */
-	for ( unsigned int i = 0; i < players.size(); i++ ){	
-		if ( i != (unsigned int) current ){
-			delete players[ i ];
-		}
+	/* delete all the preview characters. its ok to delete them
+	 * before looking up the selected player in the map
+	 * because 'delete' doesn't affect the map, it just changes
+	 * memory around.
+	 */
+	for ( PlayerMap::iterator it = players.begin(); it != players.end(); it++ ){
+		Object * o = it->first;
+		delete o;
 	}
 
-	Player * player = players[ current ];
+	Player * player = new Player( players[ getNth<DisplayCharacter*,string>( players, current ) ] );
 	player->setInvincible( invincibile );
 	return player;
 }

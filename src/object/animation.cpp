@@ -488,7 +488,7 @@ void Animation::createProjectile( int x, int y, Projectile * projectile ){
 	if ( parent ){
 		int direction = parent->getFacing() == Object::FACING_LEFT ? -1 : 1;
 		projectile->setX( parent->getX() + (getOffsetX() + x) * direction );
-		projectile->setY( getOffsetY() + y );
+		projectile->setY( -getOffsetY() + y + parent->getY() );
 		projectile->setZ( parent->getZ() );
 		parent->createProjectile( projectile );
 	} else {
