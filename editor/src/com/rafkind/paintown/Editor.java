@@ -955,6 +955,25 @@ public class Editor extends JFrame {
 		final JSlider foregroundParallax = (JSlider) levelEngine.find( "foreground-parallax-slider" );
 		final JLabel foregroundAmount = (JLabel) levelEngine.find( "foreground-parallax-amount" );
 
+		foregroundAmount.setText( String.valueOf( level.getForegroundParallax() ) );
+		backgroundAmount.setText( String.valueOf( level.getBackgroundParallax() ) );
+		backgroundParallax.setValue( (int) level.getBackgroundParallax() );
+		foregroundParallax.setValue( (int) (level.getForegroundParallax() * 10) );
+
+		backgroundParallax.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				level.setBackgroundParallax( (double) backgroundParallax.getValue() );
+				backgroundAmount.setText( String.valueOf( level.getBackgroundParallax() ) );
+			}
+		});
+
+		foregroundParallax.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				level.setForegroundParallax( (double) foregroundParallax.getValue() / 10.0 );
+				foregroundAmount.setText( String.valueOf( level.getForegroundParallax() ) );
+			}
+		});
+
 		class BackPanelCombo implements ComboBoxModel {
 			private Object selected;
 			private Vector data;
