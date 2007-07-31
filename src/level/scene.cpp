@@ -250,12 +250,13 @@ void Scene::drawBack( int x, Bitmap * work ){
 
 /* draw the foreground */
 void Scene::drawFront( int x, Bitmap * work ){
-	int fx = 0;
+	double fx = 0;
+	const double parallax = 1.3;
 	if ( front_panels.size() > 0 ){
-		while ( fx < scene_length ){
+		while ( fx < scene_length * parallax ){
 			for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
 				Bitmap * b = *it;
-				b->draw( fx - x, 0, *work );
+				b->draw( (int)(fx - x * parallax), 0, *work );
 				fx += b->getWidth();
 			}
 		}
@@ -263,7 +264,7 @@ void Scene::drawFront( int x, Bitmap * work ){
 
 	if ( hearts.empty() && current_block->empty() && x < getLimit() - 320 ){
 		if ( arrow_blink++ > 5 ){
-			arrow->draw( 320 - ( arrow->getWidth() + 10 ), 50, *work );
+			arrow->draw( work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work );
 		}
 		if ( arrow_blink > 10 )
 			arrow_blink = 0;

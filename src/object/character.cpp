@@ -347,6 +347,9 @@ void Character::setMap( const unsigned int x ){
 	if ( current_map >= mapper.size() ){
 		current_map = mapper.size() - 1;
 	}
+	if ( current_map < 0 ){
+		current_map = 0;
+	}
 	animation_current = getMovement( animation_current->getName() );
 }
 

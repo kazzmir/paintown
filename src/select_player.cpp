@@ -243,6 +243,8 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 		}
 	}
 
+	int remap = players[ current ].guy->getCurrentMap();
+
 	/* delete all the preview characters. its ok to delete them
 	 * before looking up the selected player in the map
 	 * because 'delete' doesn't affect the map, it just changes
@@ -254,5 +256,6 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 
 	Player * player = new Player( players[ current ].path );
 	player->setInvincible( invincibile );
+	player->setMap( remap );
 	return player;
 }

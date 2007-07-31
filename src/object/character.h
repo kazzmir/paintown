@@ -230,6 +230,10 @@ public:
 		return speed;
 	}
 
+	inline const int getCurrentMap() const {
+		return current_map;
+	}
+
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
 	virtual const string & getAttackName();
