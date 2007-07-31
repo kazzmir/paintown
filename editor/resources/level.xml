@@ -20,6 +20,18 @@
 			<glue />
 		</hbox>
 		<hbox>
+			<label text="Background parallax" />
+			<slider id="background-parallax-slider" minimum="1" maximum="100" />
+			<label text="0" id="background-parallax-amount" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Foreground parallax" />
+			<slider id="foreground-parallax-slider" minimum="1" maximum="100" />
+			<label text="0" id="foreground-parallax-amount" />
+			<glue />
+		</hbox>
+		<hbox>
 			<label text="Background: " />
 			<textfield id="background" />
 			<button text="Change" id="change-background" />

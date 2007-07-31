@@ -137,6 +137,10 @@ public class Token{
 		return Integer.parseInt( readIndex( index ).toString() );
 	}
 
+	public double readDouble( int index ){
+		return Double.parseDouble( readIndex( index ).toString() );
+	}
+
 	public String readString( int index ){
 		return readIndex( index ).toString();
 	}

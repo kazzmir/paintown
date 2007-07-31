@@ -27,6 +27,8 @@ public class Level{
 	private List panelOrder;
 	private int minZ;
 	private int maxZ;
+	private double backgroundParallax;
+	private double foregroundParallax;
 	private double scale;
 	private File path;
 
@@ -57,6 +59,22 @@ public class Level{
 	public Level( File path ) throws LoadException {
 		this.path = path;
 		load( path );
+	}
+
+	public void setBackgroundParallax( double d ){
+		this.backgroundParallax = d;
+	}
+
+	public double getBackgroundParallax(){
+		return this.backgroundParallax;
+	}
+	
+	public void setForegroundParallax( double d ){
+		this.foregroundParallax = d;
+	}
+	
+	public double getForegroundParallax(){
+		return this.foregroundParallax;
 	}
 
 	public List getBlocks(){
@@ -307,6 +325,8 @@ public class Level{
 		this.minZ = 100;
 		this.maxZ = 200;
 		this.scale = 2;
+		this.backgroundParallax = 5;
+		this.foregroundParallax = 1.2;
 
 		this.width = 640;
 		this.frontPanels = new ArrayList();
@@ -333,6 +353,15 @@ public class Level{
 			if ( max != null ){
 				maxZ = max.readInt( 0 );
 			}
+		}
+
+		Token parallax = head.findToken( "background-parallax" );
+		if ( parallax != null ){
+			setBackgroundParallax( parallax.readDouble( 0 ) );
+		}
+		parallax = head.findToken( "foreground-parallax" );
+		if ( parallax != null ){
+			setForegroundParallax( parallax.readDouble( 0 ) );
 		}
 
 		loadBackground( head.findToken( "background" ) );
@@ -437,6 +466,8 @@ public class Level{
 		z.addToken( new Token( z, "z" ) );
 		z.addToken( new String[]{ "minimum", String.valueOf( getMinZ() ) } );
 		z.addToken( new String[]{ "maximum", String.valueOf( getMaxZ() ) } );
+		level.addToken( new String[]{ "background-parallax", String.valueOf( getBackgroundParallax() ) } );
+		level.addToken( new String[]{ "foreground-parallax", String.valueOf( getForegroundParallax() ) } );
 
 		if ( backgroundFile != null ){
 			level.addToken( new String[]{ "background", "\"" + backgroundFile.replaceAll( "\\\\", "/" ) + "\"" } );

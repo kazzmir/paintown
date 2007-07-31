@@ -935,6 +935,7 @@ public class Editor extends JFrame {
 		}
 
 		final SwingEngine levelEngine = new SwingEngine( "level.xml" );
+		// debugSwixml( levelEngine );
 		final JPanel levelPane = (JPanel) levelEngine.getRootComponent();
 		tabbed.add( "Level", levelPane );
 
@@ -949,6 +950,10 @@ public class Editor extends JFrame {
 		final JList backPanels = (JList) levelEngine.find( "back-panels" );
 		final JTextArea order = (JTextArea) levelEngine.find( "order" );
 		final JComboBox pickOrder = (JComboBox) levelEngine.find( "pick-order" );
+		final JSlider backgroundParallax = (JSlider) levelEngine.find( "background-parallax-slider" );
+		final JLabel backgroundAmount = (JLabel) levelEngine.find( "background-parallax-amount" );
+		final JSlider foregroundParallax = (JSlider) levelEngine.find( "foreground-parallax-slider" );
+		final JLabel foregroundAmount = (JLabel) levelEngine.find( "foreground-parallax-amount" );
 
 		class BackPanelCombo implements ComboBoxModel {
 			private Object selected;
@@ -1362,6 +1367,15 @@ public class Editor extends JFrame {
 		*/
 
 		return (JPanel) engine.getRootComponent();
+	}
+
+	private void debugSwixml( SwingEngine engine ){
+		Map all = engine.getIdMap();
+		System.out.println( "Debugging swixml" );
+		for ( Iterator it = all.entrySet().iterator(); it.hasNext(); ){
+			Map.Entry entry = (Map.Entry) it.next();
+			System.out.println( "Id: " + entry.getKey() + " = " + entry.getValue() );
+		}
 	}
 
 	private static void showError( String message ){
