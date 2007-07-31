@@ -41,7 +41,9 @@ block_length( 0 ),
 minimum_z( 0 ),
 maximum_z( 0 ),
 current_block( NULL ),
-blockNumber( 1 ){
+blockNumber( 1 ),
+backgroundParallax( 5 ),
+foregroundParallax( 1.2 ){
 
 	TokenReader tr( filename );
 
@@ -67,6 +69,14 @@ blockNumber( 1 ){
 				string n;
 				*tok >> n;
 				background = new Bitmap( dataPath( n ) );
+			} else if ( *tok == "background-parallax" ){
+				double d;
+				*tok >> d;
+				setBackgroundParallax( d );
+			} else if ( *tok == "foreground-parallax" ){
+				double d;
+				*tok >> d;
+				setForegroundParallax( d );
 			} else if ( *tok == "z" ){
 				while ( tok->hasTokens() ){
 					Token * next;
@@ -223,8 +233,8 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 void Scene::drawBack( int x, Bitmap * work ){
 	if ( background ){
 		int y = 0;
-		background->Blit( (x/5) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
-		background->Blit( (x/5) % background->getWidth(), 0, 0, y, *work );
+		background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
+		background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, *work );
 	}
 		
 	int fx = 0;
@@ -251,12 +261,11 @@ void Scene::drawBack( int x, Bitmap * work ){
 /* draw the foreground */
 void Scene::drawFront( int x, Bitmap * work ){
 	double fx = 0;
-	const double parallax = 1.3;
 	if ( front_panels.size() > 0 ){
-		while ( fx < scene_length * parallax ){
+		while ( fx < scene_length * getForegroundParallax() ){
 			for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
 				Bitmap * b = *it;
-				b->draw( (int)(fx - x * parallax), 0, *work );
+				b->draw( (int)(fx - x * getForegroundParallax()), 0, *work );
 				fx += b->getWidth();
 			}
 		}

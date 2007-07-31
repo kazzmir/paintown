@@ -47,6 +47,22 @@ public:
 
 protected:
 
+	inline const double getBackgroundParallax() const {
+		return backgroundParallax;
+	}
+
+	inline void setBackgroundParallax( double b ){
+		backgroundParallax = b;
+	}
+
+	inline const double getForegroundParallax() const {
+		return foregroundParallax;
+	}
+
+	inline void setForegroundParallax( double b ){
+		foregroundParallax = b;
+	}
+
 	inline void setMinimumZ( const int z ){
 		minimum_z = z;
 	}
@@ -88,6 +104,9 @@ protected:
 
 	/* count of how many blocks have gone by */
 	int blockNumber;
+
+	double backgroundParallax;
+	double foregroundParallax;
 
 };
 
