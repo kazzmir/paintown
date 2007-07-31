@@ -12,21 +12,32 @@
 #include "return_exception.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <map>
 
 using namespace std;
 
-typedef map<DisplayCharacter*,string> PlayerMap;
-static PlayerMap loadPlayers( const char * path ){
-	PlayerMap players;
+struct playerInfo{
+	Character * guy;
+	string path;
+	playerInfo( Character * guy, string path ):
+		guy( guy ),
+		path( path ){
+	}
+};
+
+typedef vector<playerInfo> PlayerVector;
+static PlayerVector loadPlayers( const char * path ){
+	PlayerVector players;
 	vector< string > files = Util::getFiles( Util::getDataPath() + "/" + path, "*" );
+	std::sort( files.begin(), files.end() );
 	for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
 		string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
 		cout << "Checking " << file << endl;
 		if ( Util::exists( file ) ){
 			cout << "Loading " << file << endl;
 			try{
-				players[ new DisplayCharacter( file ) ] = file;
+				players.push_back( playerInfo( new DisplayCharacter( file ), file ) );
 			} catch ( const LoadException & le ){
 				cout << "Could not load " << file << " because " << le.getReason() << endl;
 			}
@@ -35,6 +46,7 @@ static PlayerMap loadPlayers( const char * path ){
 	return players;
 }
 
+/*
 template< class Key, class Value >
 Key getNth( const map< Key, Value > & m, int i ){
 	int count = 0;
@@ -46,12 +58,13 @@ Key getNth( const map< Key, Value > & m, int i ){
 	}
 	return m.begin()->first;
 }
+*/
 
 Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException ){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 
 	/* hm, it would be nice to cache this I suppose */
-	PlayerMap players = loadPlayers( "players/" );
+	PlayerVector players = loadPlayers( "players/" );
 	
 	Keyboard key;
 
@@ -97,7 +110,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
 		key.poll();
 
-		Character * ch = (Character *) getNth<DisplayCharacter*,string>( players, current );
+		Character * ch = (Character *) players[ current ].guy;
 
 		if ( Global::speed_counter > 0 ){
 			double think = Global::speed_counter;
@@ -132,9 +145,8 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 				}
 
 				if ( key[ Keyboard::Key_ESC ] ){
-					for ( PlayerMap::iterator it = players.begin(); it != players.end(); it++ ){
-						Object * o = it->first;
-						delete o;
+					for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
+						delete it->guy;
 					}
 					throw ReturnException();
 				}
@@ -190,7 +202,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 				temp.clear();
 				Bitmap box( work, x, y, boxSize, boxSize );
 				int color = unselectedColor;
-				Character smaller( *getNth<DisplayCharacter*,string>( players, i ) );
+				Character smaller( *players[ i ].guy );
 
 				color = i == (unsigned int) current ? selectedColor : unselectedColor;
 				/* draw a border */
@@ -236,12 +248,11 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 	 * because 'delete' doesn't affect the map, it just changes
 	 * memory around.
 	 */
-	for ( PlayerMap::iterator it = players.begin(); it != players.end(); it++ ){
-		Object * o = it->first;
-		delete o;
+	for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
+		delete it->guy;
 	}
 
-	Player * player = new Player( players[ getNth<DisplayCharacter*,string>( players, current ) ] );
+	Player * player = new Player( players[ current ].path );
 	player->setInvincible( invincibile );
 	return player;
 }
