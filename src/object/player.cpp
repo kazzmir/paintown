@@ -519,8 +519,8 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		
 		// leave this line here, ill figure out why its important later
 		// if you need the animation_current->getName(), use current_name
+		// cout << "Set current animation to null" << endl;
 		animation_current = NULL;
-
 	}
 	// animation_current = NULL;
 
@@ -681,7 +681,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 
 			bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ];
 			// if ( animation_current != movements[ "jump" ] ){
-			if ( animation_current != getMovement( "jump" ) ){
+			if ( getMovement( "jump" ) == NULL || animation_current != getMovement( "jump" ) ){
 				if ( !moving ){
 					// animation_current = movements[ "idle" ];
 					animation_current = getMovement( "idle" );
@@ -830,7 +830,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	} else {
 	
 		// if ( animation_current == movements[ "throw" ] ){
-		if ( animation_current == getMovement( "throw" ) ){
+		if ( getMovement( "throw" ) != NULL && animation_current == getMovement( "throw" ) ){
 			if ( getLink() == NULL ){
 				cout<<"Link is null. This cant happen."<<endl;
 				exit( 1 );
@@ -840,15 +840,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		}
 	}
 
-	/*
-	if ( getZ() < MIN_WORLD_Z ){
-		setZ( MIN_WORLD_Z );
-	}
-	if ( getZ() > MAX_WORLD_Z ){
-		setZ( MAX_WORLD_Z );
-	}
-	*/
-
+	// cout << "Final animation = " << animation_current << endl;
 
 	// cout<<"Ultimate animation current = "<< animation_current->getName() <<endl;
 	// animation_current->Act();
