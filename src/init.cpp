@@ -1,5 +1,5 @@
 #include <allegro.h>
-#ifdef WINDOWS
+#ifdef ALLEGRO_WINDOWS
 #include <winalleg.h>
 #endif
 
@@ -9,7 +9,7 @@
 #include <iostream>
 #include <dumb.h>
 #include <aldumb.h>
-#include <loadpng.h>
+#include "loadpng/loadpng.h"
 #include "util/bitmap.h"
 
 using namespace std;

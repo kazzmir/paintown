@@ -1,11 +1,3 @@
-/*
-#include <allegro.h>
-
-#ifdef WINDOWS
-#include <winalleg.h>
-#endif
-*/
-
 #include "util/bitmap.h"
 #include <math.h>
 #include <iostream>

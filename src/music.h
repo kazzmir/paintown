@@ -4,15 +4,6 @@
 #include <string>
 #include <vector>
 
-/*
-#ifdef WINDOWS
-#include <allegro.h>
-#include <winalleg.h>
-#endif
-
-#include <pthread.h>
-*/
-
 using namespace std;
 
 struct AL_DUH_PLAYER;

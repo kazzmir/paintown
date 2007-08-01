@@ -16,14 +16,15 @@ def getDebug():
 
 debug = getDebug()
 
-flags = [ '-Wall', '-Werror', '-fno-rtti', '-Woverloaded-virtual' ];
+cflags = [ '-Wall', '-Werror' ]
+cppflags = [ '-fno-rtti', '-Woverloaded-virtual' ]
 
 if debug:
-	flags.append( '-g3' )
+	cflags.append( '-g3' )
 else:
-	flags.append( '-O2' )
+	cflags.append( '-O2' )
 
-env.Append( CCFLAGS = flags, CPPPATH = [ "." ] );
+env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ "." ] );
 
 if False:
 	env.Append( CCFLAGS = '-pg' )

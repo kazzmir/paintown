@@ -23,6 +23,10 @@ blockobject.cpp
 scene.cpp
 """))
 
+addFiles( "loadpng/", Split( """
+loadpng.c
+"""));
+
 addFiles( "factory/", Split( """
 font_factory.cpp
 heart_factory.cpp
