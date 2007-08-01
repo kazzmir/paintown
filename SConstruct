@@ -30,7 +30,7 @@ if False:
 	env.Append( CCFLAGS = '-pg' )
 	env.Append( LINKFLAGS = '-pg' )
 
-env.Append( LIBS = [ 'ldpng', 'aldmb', 'dumb' ] );
+env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 if isWindows():
 	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype' ] )
 	env.Append( CPPDEFINES = 'WINDOWS' )
