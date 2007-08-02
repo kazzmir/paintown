@@ -3,18 +3,18 @@
 
 ObjectAttack::ObjectAttack( int alliance ):
 Object( alliance ),
-attack_ticket( 0 ){
+attack_ticket( 1 ){
 }
 
 ObjectAttack::ObjectAttack( const int x, const int y, int alliance ):
 Object( x, y, alliance ),
-attack_ticket( 0 ){
+attack_ticket( 1 ){
 }
 
 
 ObjectAttack::ObjectAttack( const ObjectAttack & copy ):
 Object( copy ),
-attack_ticket( 0 ){
+attack_ticket( 1 ){
 }
 
 void ObjectAttack::nextTicket(){

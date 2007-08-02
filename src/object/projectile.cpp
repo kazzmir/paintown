@@ -49,7 +49,7 @@ life( 0 ){
 	
 	currentAnimation = main;
 
-	nextTicket();
+	// nextTicket();
 }
 	
 Projectile::Projectile( const Projectile * const projectile ):
