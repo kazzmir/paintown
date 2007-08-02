@@ -1,0 +1,48 @@
+<panel layout="GridBagLayout">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.HORIZONTAL"
+			/>
+		<hbox>				
+			<label text="Name:" />
+			<textfield size="20" id="name" />
+			<glue size="1" />
+		</hbox>
+		<hbox>
+			<label text="X: " />
+			<textfield size="3" id="x" />
+		</hbox>
+		<hbox>
+			<label text="Y: " />
+			<textfield size="3" id="y" />
+		</hbox>
+		<hbox>
+			<label text="Path: " />
+			<textfield size="15" id="path" />
+		</hbox>
+		<hbox>
+			<label text="Block: " />
+			<spinner id="block" />
+		</hbox>
+	</vbox>
+	<hbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="1"
+			weightx="1"
+			weighty="0.5"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.HORIZONTAL"
+			/>
+
+		<button id="save" text="Save" />
+		<button id="close" text="Close" />
+	</hbox>
+</panel>
