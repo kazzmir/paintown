@@ -167,48 +167,7 @@ public class CharacterEditor implements PropertyEditor {
 
 		character.addListener( update );
 
-		class MinMaxSpinnerModel implements SpinnerModel {
-			List listeners = new ArrayList();
-			int value;
-			int min;
-			int max;
-
-			public MinMaxSpinnerModel( int value, int min, int max ){
-				this.value = value;
-				this.min = min;
-				this.max = max;
-			}
-
-			public Object getNextValue(){
-				return max > value ? new Integer( value + 1 ) : null;
-			}
-
-			public void addChangeListener( ChangeListener l ){
-				listeners.add( l );
-			}
-
-			public void removeChangeListener( ChangeListener l ){
-				listeners.remove( l );
-			}
-
-			public Object getPreviousValue(){
-				return value > min ? new Integer( value - 1 ) : null;
-			}
-
-			public void setValue( Object o ){
-				value = ((Integer) o).intValue();
-				ChangeEvent event = new ChangeEvent( this );
-				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-					ChangeListener change = (ChangeListener) it.next();
-					change.stateChanged( event );
-				}
-			}
-
-			public Object getValue(){
-				return new Integer( value );
-			}
-		}
-
+		
 		block.setModel( new MinMaxSpinnerModel( findBlock( level ), 1, level.getBlocks().size() ) );
 		final JSpinner map = (JSpinner) engine.find( "map" );
 		map.setModel( new MinMaxSpinnerModel( character.getMap(), 0, character.getMaxMaps() ) );
