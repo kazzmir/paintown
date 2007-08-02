@@ -900,6 +900,7 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	collision_objects[ obj ] = obj->getTicket();
 
 	setFacing( obj->getOppositeFacing() );
+	moveX( -5 );
 }
 
 const int Character::getRX() const {
