@@ -85,22 +85,5 @@ ebox.cpp
 load_exception.cpp
 """))
 
-if False:
-	addFiles( "parser/", Split("""
-	parser.cpp
-	lex.yy.cpp
-	"""));
-
-# scale2x.cpp
-# scalebit.cpp
-
-# env = Environment( CCFLAGS = flags, CPPPATH = [ '.' ] );
-
-# env.Append( LIBS = [ 'ldpng', 'pthread' ] );
-# env.ParseConfig( 'libpng-config --libs' );
-# env.ParseConfig( 'allegro-config --libs' );
-
-# env.SConscript( 'parser/SConscript', exports = 'env' );
-
 env.Program( 'paintown', obj_files + ['xmain.cpp'] );
 env.Program( 'test', obj_files + ['test.cpp'] );
