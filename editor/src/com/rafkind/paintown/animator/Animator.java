@@ -1,8 +1,5 @@
 package com.rafkind.paintown.animator;
 
-// set tabstop=3
-// set shiftwidth=3
-
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
@@ -15,11 +12,6 @@ import java.util.List;
 
 import com.rafkind.paintown.exception.LoadException;
 
-import com.rafkind.paintown.level.Level;
-import com.rafkind.paintown.level.Block;
-import com.rafkind.paintown.level.Thing;
-import com.rafkind.paintown.level.Character;
-import com.rafkind.paintown.level.Item;
 import javax.swing.filechooser.FileFilter;
 
 import org.swixml.SwingEngine;
@@ -27,9 +19,16 @@ import org.swixml.SwingEngine;
 import java.awt.event.*;
 import javax.swing.*;
 
+import com.rafkind.paintown.*;
+
+import com.rafkind.paintown.animator.AnimationEditor;
+
+import com.rafkind.paintown.animator.IQueue;
+
 public class Animator extends JFrame {
 
 	private static File dataPath = new File( "data" );
+	private static int CURRENT_TAB = 0;
 
 	public Animator() throws Exception {
 		super( "Paintown Animator" );
@@ -42,36 +41,37 @@ public class Animator extends JFrame {
 		menuProgram.add( data );
 		menuProgram.add( quit );
 		menuBar.add( menuProgram );
-		JMenu menuLevel = new JMenu( "Animation" );
-		menuBar.add( menuLevel );
-		/*final Lambda0 closeHook = new Lambda0(){
+		JMenu menuAnimation = new JMenu( "Animation" );
+		menuBar.add( menuAnimation );
+		final Lambda0 closeHook = new Lambda0(){
 		  public Object invoke(){
 		  System.exit( 0 );
 		  return null;
 		  }
-		  };*/
-		JMenuItem newLevel = new JMenuItem( "New Animation" );
-		menuLevel.add( newLevel );
-		JMenuItem loadLevel = new JMenuItem( "Open Animation" );
-		menuLevel.add( loadLevel );
-		JMenuItem saveLevel = new JMenuItem( "Save Animation" );
-		menuLevel.add( saveLevel );
-		JMenuItem saveLevelAs = new JMenuItem( "Save Animation As" );
-		menuLevel.add( saveLevelAs );
-		JMenuItem closeLevel = new JMenuItem( "Close Animation" );
-		menuLevel.add( closeLevel );
+		  };
+		JMenuItem newAnimation = new JMenuItem( "New Animation" );
+		menuAnimation.add( newAnimation );
+		JMenuItem loadAnimation = new JMenuItem( "Open Animation" );
+		menuAnimation.add( loadAnimation );
+		JMenuItem saveAnimation = new JMenuItem( "Save Animation" );
+		menuAnimation.add( saveAnimation );
+		JMenuItem saveAnimationAs = new JMenuItem( "Save Animation As" );
+		menuAnimation.add( saveAnimationAs );
+		JMenuItem closeAnimation = new JMenuItem( "Close Animation" );
+		menuAnimation.add( closeAnimation );
 
 		menuProgram.setMnemonic( KeyEvent.VK_P );
 		data.setMnemonic( KeyEvent.VK_D );
 		quit.setMnemonic( KeyEvent.VK_Q );
-		newLevel.setMnemonic( KeyEvent.VK_N );
-		menuLevel.setMnemonic( KeyEvent.VK_L );
-		saveLevel.setMnemonic( KeyEvent.VK_S );
-		saveLevelAs.setMnemonic( KeyEvent.VK_A );
-		loadLevel.setMnemonic( KeyEvent.VK_O );
-		closeLevel.setMnemonic( KeyEvent.VK_C );
+		newAnimation.setMnemonic( KeyEvent.VK_N );
+		menuAnimation.setMnemonic( KeyEvent.VK_I );
+		saveAnimation.setMnemonic( KeyEvent.VK_S );
+		saveAnimationAs.setMnemonic( KeyEvent.VK_A );
+		loadAnimation.setMnemonic( KeyEvent.VK_O );
+		closeAnimation.setMnemonic( KeyEvent.VK_C );
 
 		this.setJMenuBar( menuBar );
+		this.addWindowListener( new CloseHook( closeHook ) );
 
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -133,6 +133,41 @@ public class Animator extends JFrame {
 				dialog.getContentPane().add( panel );
 				dialog.setSize( 300, 300 );
 				dialog.setVisible( true );
+			}
+		});
+		
+		// tabs
+		final JTabbedPane pane = new JTabbedPane();
+		getContentPane().add(pane);
+		
+		pane.addChangeListener( new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent changeEvent)
+			{
+				JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
+				int index = sourceTabbedPane.getSelectedIndex();
+				CURRENT_TAB = index;
+			}
+     		});
+		
+		newAnimation.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				
+				AnimationEditor newTab = new AnimationEditor();
+				
+				pane.add( Integer.toString(pane.getTabCount()), newTab );
+				
+				CURRENT_TAB = pane.getSelectedIndex();
+			}
+		});
+		
+		closeAnimation.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event)
+			{
+				pane.remove(CURRENT_TAB);
 			}
 		});
 	}
