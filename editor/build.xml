@@ -25,7 +25,7 @@
 		<unjar src="lib/ui.jar" dest="classes" />
 		<copy todir="classes">
 			<fileset dir="resources">
-				<include name="*.xml" />
+				<include name="**/*.xml" />
 				<include name="*.txt" />
 			</fileset>
 		</copy>
