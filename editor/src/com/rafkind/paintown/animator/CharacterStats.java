@@ -2,14 +2,14 @@ package com.rafkind.paintown.animator;
 
 import java.util.*;
 
-public interface CharacterStats
+public abstract class CharacterStats
 {
 	// Basic character info
 	public String name = "";
-	public int health = 0;
-	public double jumpVelocity = 0;
-	public double speed = 0;
-	public int shadow = 0;
+	public int health;
+	public double jumpVelocity;
+	public double speed;
+	public int shadow;
 	
 	// Sound data
 	public String dieSound = "";
@@ -24,5 +24,23 @@ public interface CharacterStats
 	// Vector of CharacterAnimations
 	public Vector animations = new Vector();
 	
-	public AnimationEditor getEditor();
+	abstract public AnimationEditor getEditor();
+	
+	public void saveData()
+	{
+	}
+	
+	public void loadData()
+	{
+	}
+	
+	public String getScript()
+	{
+		return new String();
+	}
+	
+	public CharacterStats()
+	{
+		// Nothing
+	}
 }

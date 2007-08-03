@@ -5,10 +5,10 @@ import java.util.*;
 public class BoundingBox
 {
 	// Basic character info
-	public int x;
-	public int y;
-	public int width;
-	public int height;
+	public int x1;
+	public int y1;
+	public int x2;
+	public int y2;
 	
 	public BoundingBox()
 	{
