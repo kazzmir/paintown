@@ -66,7 +66,7 @@ find_package(ZLIB)
 find_package(PNG)
 find_package(ALLEGRO)
 find_package(FREETYPE)
-find_package(THREADS)
+#find_package(THREADS)
 
 mark_as_advanced(CLEAR ZLIB_INCLUDE_DIR)
 mark_as_advanced(CLEAR ZLIB_LIBRARY)
@@ -108,10 +108,13 @@ if(MINGW)
 	# -------------------------------------------------------
 	add_definitions(-DWINDOWS)
 	set(WIN_LIB -lgdi32 -luser32)
-	if(NOT CMAKE_THREAD_LIBS_INIT)
+#if(NOT CMAKE_THREAD_LIBS_INIT)
 				 set(CMAKE_THREAD_LIBS_INIT -lpthreadGC2)
-  endif(NOT CMAKE_THREAD_LIBS_INIT)
+#endif(NOT CMAKE_THREAD_LIBS_INIT)
+else(MINGW)
+	 set(CMAKE_THREAD_LIBS_INIT -lpthread)
 endif(MINGW)
+
 
 if(APPLE)
 	# -------------------------------------------------------
