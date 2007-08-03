@@ -5,6 +5,9 @@ import com.rafkind.paintown.animator.BoundingBox;
 
 public class CharacterFrame
 {
+	// Private name of image for internal use
+	private String name = "";
+	
 	// Attack data
 	public boolean hasAttack;
 	public BoundingBox attackArea = new BoundingBox();
@@ -41,8 +44,14 @@ public class CharacterFrame
 	// Image
 	public String image;
 	
-	public CharacterFrame()
+	public CharacterFrame(String imageName)
 	{
+		name = imageName;
+	}
+	
+	public String getName()
+	{
+		return name;
 	}
 	
 	public String getScript()

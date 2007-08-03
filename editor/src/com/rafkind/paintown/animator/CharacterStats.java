@@ -26,18 +26,11 @@ public abstract class CharacterStats
 	
 	abstract public AnimationEditor getEditor();
 	
-	public void saveData()
-	{
-	}
+	abstract public void saveData();
 	
-	public void loadData()
-	{
-	}
+	abstract public void loadData();
 	
-	public String getScript()
-	{
-		return new String();
-	}
+	abstract public String getScript();
 	
 	public CharacterStats()
 	{
