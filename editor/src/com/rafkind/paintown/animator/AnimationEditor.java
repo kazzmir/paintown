@@ -19,7 +19,7 @@ import org.swixml.SwingEngine;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class AnimationEditor extends JPanel
+public class AnimationEditor extends Canvas
 {
 
 }
