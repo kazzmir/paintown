@@ -5,7 +5,6 @@
 #endif
 
 #include <iostream>
-#include <loadpng.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>

@@ -1,12 +1,27 @@
 import os;
 
-env = Environment( ENV = os.environ );
-config = env.Configure();
-
 def isWindows():
 	import re
 	import sys
 	return "win32" in sys.platform
+
+def useMingw():
+    try:
+	return "mingw" in ARGUMENTS[ 'env' ]
+    except KeyError:
+	return False
+
+def getEnvironment():
+    if useMingw():
+	return Environment( ENV = os.environ, tools = ['mingw'] )
+    else:
+	return Environment( ENV = os.environ )
+
+if isWindows():
+    print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"
+    
+env = getEnvironment()
+# config = env.Configure();
 
 def getDebug():
 	try:
@@ -32,7 +47,7 @@ if False:
 
 env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 if isWindows():
-	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype' ] )
+	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z' ] )
 	env.Append( CPPDEFINES = 'WINDOWS' )
 else:
 	env.Append( LIBS = [ 'pthread' ] )
