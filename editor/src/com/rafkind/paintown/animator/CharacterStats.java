@@ -24,7 +24,7 @@ public abstract class CharacterStats
 	// Vector of CharacterAnimations
 	public Vector animations = new Vector();
 	
-	abstract public AnimationEditor getEditor();
+	abstract public JPanel getEditor();
 	
 	abstract public void saveData();
 	

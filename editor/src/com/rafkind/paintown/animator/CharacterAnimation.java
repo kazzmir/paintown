@@ -142,6 +142,9 @@ public class CharacterAnimation
 		}
 		temp += "\n";
 		
+		// Debug
+		System.out.println(temp);
+		
 		return temp;
 	}
 	
