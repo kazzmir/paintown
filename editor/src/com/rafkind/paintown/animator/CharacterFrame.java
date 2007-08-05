@@ -75,8 +75,8 @@ public class CharacterFrame
 		if(zDistance != 0)text += "(z-distance " + Integer.toString(zDistance) + ")\n";
 		if(coordX != 0 || coordY != 0 || coordZ != 0)text += "(coords " + Integer.toString(coordX) + " " + Integer.toString(coordY) + " " + Integer.toString(coordZ) + ")\n";
 		if(shadowX != 0 || shadowY != 0)text += "(shadow " + Integer.toString(offsetX) + " " + Integer.toString(offsetY) + ")\n";
-		if(sound != "")text += "(sound " + sound + ")\n";
-		if(image != "")text += "(frame " + sound + ")\n";
+		if(sound.equals(""))text += "(sound " + sound + ")\n";
+		if(image.equals(""))text += "(frame " + sound + ")\n";
 		
 		// Debug
 		System.out.println(text);

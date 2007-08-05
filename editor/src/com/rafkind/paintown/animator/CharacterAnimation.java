@@ -103,7 +103,7 @@ public class CharacterAnimation
 		while(itor.hasNext())
 		{
 			CharacterFrame frame = (CharacterFrame)itor.next();
-			if(frame.getName() == name)
+			if(frame.getName().equals(name))
 			{
 				frames.removeElement(frame);
 				return true;
@@ -123,7 +123,7 @@ public class CharacterAnimation
 		
 		temp += "(anim \n" +
 			"   (name " + name + ") \n";
-		if(type!="")temp += "   (type " + type + ") \n";
+		if(type.equals(""))temp += "   (type " + type + ") \n";
 		temp +=	"   (keys ";
 		Iterator kItor = keys.iterator();
 		while(kItor.hasNext())
@@ -133,7 +133,7 @@ public class CharacterAnimation
 		}
 		temp += ") \n";
 		if(range!=0)temp += "   (range " + Integer.toString(range) + ") \n";
-		if(face!="")temp += "   (face " + face + ") \n";
+		if(face.equals(""))temp += "   (face " + face + ") \n";
 		Iterator fItor = frames.iterator();
 		while(fItor.hasNext())
 		{
