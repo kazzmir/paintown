@@ -21,7 +21,6 @@ import javax.swing.*;
 
 import com.rafkind.paintown.*;
 
-import com.rafkind.paintown.animator.AnimationEditor;
 import com.rafkind.paintown.animator.IQueue;
 import com.rafkind.paintown.animator.Player;
 
@@ -155,7 +154,7 @@ public class Animator extends JFrame {
 			public void actionPerformed( ActionEvent event )
 			{
 				
-				AnimationEditor newTab = new AnimationEditor();
+				JPanel newTab = new JPanel();
 				
 				Player tempPlayer = new Player();
 				

@@ -1,79 +1,8 @@
-<panel layout="GridBagLayout">
-	<!--
-	<panel id="view" border="MatteBorder(2,2,2,2,667A63)">
-		<gridbagconstraints
-			gridx="0"
-			gridy="0"
-			weightx="0.9"
-			weighty="1"
-			gridheight="3"
-			fill="GridBagConstraints.BOTH"
-			anchor="GridBagConstraints.NORTHWEST"
-			/>
+<?xml version="1.0" encoding="UTF-8"?>
+<panel background="000000" size="800,600">
+	<panel background="3399CC" border="MatteBorder(4,4,4,4,red)" constraints="BorderLayout.EAST" layout="GridBagLayout">
+		<button name="btn1" text="Test">
+			<gridbagconstraints id="gbc_1" insets="2,2,2,2" gridx="0" gridy="0" ipadx="15" ipady="15" weightx="1" weighty="1"/>
+		</button>
 	</panel>
-	-->
-	<!--
-	<scrollpane size="100,30">
-		<gridbagconstraints
-			gridx="1"
-			gridy="0"
-			weightx="0.1"
-			weighty="0.1"
-			gridheight="1"
-			fill="GridBagConstraints.HORIZONTAL"
-			anchor="GridBagConstraints.NORTHWEST"
-			/>
-		<list size="10,10" id="files" />
-	</scrollpane>
-	-->
-	<!--
-	<tabbedpane id="tabbed" border="MatteBorder(2,2,2,2,667A63)">
-		<gridbagconstraints
-			gridx="1"
-			gridy="0"
-			insets="1,1,1,1"
-			weightx="0.1"
-			weighty="0.9"
-			gridwidth="1"
-			fill="GridBagConstraints.BOTH"
-			anchor="GridBagConstraints.NORTH" />
-	</tabbedpane>
-	-->
-	<!--
-	<label id="file" text="Filename:">
-		<gridbagconstraints
-			gridx="1"
-			gridy="1"
-			weightx="0.1"
-			weighty="0.1"
-			gridheight="1"
-			fill="GridBagConstraints.HORIZONTAL"
-			anchor="GridBagConstraints.NORTHWEST"
-			/>
-	</label>
-	-->
-
-	<hbox>
-		<!--
-		<gridbagconstraints
-			gridx="1"
-			gridy="2"
-			weightx="0.1"
-			weighty="0.1"
-			gridheight="1"
-			fill="GridBagConstraints.HORIZONTAL"
-			anchor="GridBagConstraints.WEST"
-			/>
-		<glue size="1" />
-		<label text="Scale: 2" id="scale" />
-		<slider id="level-scale" minimum="1" maximum="20" />
-		-->
-		<!--
-		<panel id="scroll" />
-		-->
-		<!--
-		<button id="render" label="Render" />
-		-->
-		<glue />
-	</hbox>
 </panel>
