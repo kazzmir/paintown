@@ -22,8 +22,8 @@ import javax.swing.*;
 import com.rafkind.paintown.*;
 
 import com.rafkind.paintown.animator.AnimationEditor;
-
 import com.rafkind.paintown.animator.IQueue;
+import com.rafkind.paintown.animator.Player;
 
 public class Animator extends JFrame {
 
@@ -157,7 +157,13 @@ public class Animator extends JFrame {
 				
 				AnimationEditor newTab = new AnimationEditor();
 				
+				Player tempPlayer = new Player();
+				
+				newTab.add(tempPlayer.getEditor());
+				
 				pane.add( Integer.toString(pane.getTabCount()), newTab );
+				
+				pane.setSelectedIndex(pane.getTabCount()-1);
 				
 				CURRENT_TAB = pane.getSelectedIndex();
 			}
