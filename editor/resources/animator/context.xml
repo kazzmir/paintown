@@ -1,0 +1,82 @@
+<panel layout="GridBagLayout">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.BOTH"
+			/>
+		<hbox>
+			<label text="Name" />
+			<textfield id="name" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Health" />
+			<spinner id="health" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Jump Speed" />
+			<spinner id="jump-velocity" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Speed" />
+			<spinner id="speed" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Shadow" />
+			<spinner id="shadow" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Death Sound: " />
+			<textfield id="die-sound" />
+			<button text="Change" id="change-die-sound" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Landing Sound: " />
+			<textfield id="land-sound" />
+			<button text="Change" id="change-land-sound" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Icon: " />
+			<textfield id="icon" />
+			<button text="Change" id="change-icon" />
+			<glue />
+		</hbox>
+		<glue size="1" />
+		<vbox>
+			<label text="Remaps" />
+			<scrollpane>
+				<list id="remaps" />
+			</scrollpane>
+			<hbox>
+				<button text="Add" id="add-remap" />
+				<glue size="1" />
+				<button text="Remove" id="remove-remap" />
+				<glue size="1" />
+			</hbox>
+		</vbox>
+		<glue size="1" />
+		<vbox>
+			<label text="Animations" />
+			<scrollpane>
+				<list id="anims" />
+			</scrollpane>
+			<hbox>
+				<button text="Add" id="add-anim" />
+				<glue size="1" />
+				<button text="Remove" id="remove-anim" />
+				<glue size="1" />
+			</hbox>
+		</vbox>
+	</vbox>
+</panel>

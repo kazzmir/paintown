@@ -8,14 +8,21 @@ import javax.swing.*;
 import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.animator.CharacterStats;
+import com.rafkind.paintown.Token;
 
 public final class Player extends CharacterStats
 {
 	public JPanel getEditor()
 	{
-		final SwingEngine engine = new SwingEngine( "animator/player.xml" );
+		final SwingEngine playerEditor = new SwingEngine( "animator/player.xml" );
 		
-		return (JPanel) engine.getRootComponent();
+		final JPanel context = (JPanel) playerEditor.find( "context" );
+		
+		final SwingEngine contextEditor = new SwingEngine ( "animator/context.xml");
+		
+		context.add((JComponent)contextEditor.getRootComponent());
+		
+		return (JPanel) playerEditor.getRootComponent();
 	}
 	
 	public void saveData()
@@ -26,9 +33,9 @@ public final class Player extends CharacterStats
 	{
 	}
 	
-	public String getScript()
+	public Token getToken()
 	{
-		return new String();
+		return new Token();
 	}
 	
 	public Player()
@@ -42,13 +49,13 @@ public final class Player extends CharacterStats
 		anim.addKey("right");
 		anim.setFace("reverse");
 		anim.setRange(1);
+		String[] bleh = new String[]{"delay", "5"};
+		anim.addEvent(bleh);
+		anim.addEvent(new String[]{"frame", "someplace"});
 		
-		CharacterFrame frame = new CharacterFrame("bs");
-		frame.delay = 2;
-		frame.image = "someplace";
+		System.out.println( anim.getToken().toString() );
 		
-		anim.addFrame(frame);
-		
+		anim.removeEvent(bleh);
 		System.out.println( anim.getToken().toString() );
 	}
 }

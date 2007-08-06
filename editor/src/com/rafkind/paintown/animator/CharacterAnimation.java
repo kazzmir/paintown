@@ -1,10 +1,13 @@
 package com.rafkind.paintown.animator;
 
 import java.util.*;
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.*;
+
+import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.Token;
-
-import com.rafkind.paintown.animator.CharacterFrame;
 
 public class CharacterAnimation
 {
@@ -26,8 +29,8 @@ public class CharacterAnimation
 	// Base dir
 	private String baseDirectory = "";
 	
-	// Frames
-	private Vector frames = new Vector();
+	// Events
+	private Vector events = new Vector();
 	
 	public void setName(String n)
 	{
@@ -94,29 +97,19 @@ public class CharacterAnimation
 		return baseDirectory;
 	}
 	
-	public void addFrame(CharacterFrame frame)
+	public void addEvent(String[] event)
 	{
-		frames.addElement(frame);
+		events.addElement(event);
 	}
 	
-	public boolean removeFrame(String name)
+	public void removeEvent(String[] event)
 	{
-		Iterator itor = frames.iterator();
-		while(itor.hasNext())
-		{
-			CharacterFrame frame = (CharacterFrame)itor.next();
-			if(frame.getName().equals(name))
-			{
-				frames.removeElement(frame);
-				return true;
-			}
-		}
-		return false;
+		events.removeElement(event);
 	}
 	
-	public Vector getFrames()
+	public Vector getEvents()
 	{
-		return frames;
+		return events;
 	}
 	
 	public Token getToken()
@@ -127,6 +120,7 @@ public class CharacterAnimation
 		token.addToken(new String[]{"name", name});
 		if(type.equals("") == false)token.addToken(new String[]{"type", type});
 		Token keyToken = new Token( "keys" );
+		keyToken.addToken( new Token( "keys"));
 		Iterator kItor = keys.iterator();
 		while(kItor.hasNext())
 		{
@@ -136,44 +130,27 @@ public class CharacterAnimation
 		token.addToken(keyToken);
 		if(range!=0)token.addToken(new String[]{"range", Integer.toString(range)});
 		if(face.equals("") == false)token.addToken(new String[]{"face", face});
-		Iterator fItor = frames.iterator();
+		Iterator fItor = events.iterator();
 		while(fItor.hasNext())
 		{
-			CharacterFrame frame = (CharacterFrame)fItor.next();
-			token.addToken(frame.getToken());
+			String[] args = (String[])fItor.next();
+			token.addToken(args);
 		}
 		
 		return token;
+	}
+	
+	public JPanel getEditor()
+	{
+		final SwingEngine playerEditor = new SwingEngine( "animator/player.xml" );
 		
-		/*
-		String temp = "";
+		final JPanel context = (JPanel) playerEditor.find( "context" );
 		
-		temp += "(anim \n" +
-			"   (name " + name + ") \n";
-		if(type.equals(""))temp += "   (type " + type + ") \n";
-		temp +=	"   (keys ";
-		Iterator kItor = keys.iterator();
-		while(kItor.hasNext())
-		{
-			String key = (String)kItor.next();
-			temp += key + " ";
-		}
-		temp += ") \n";
-		if(range!=0)temp += "   (range " + Integer.toString(range) + ") \n";
-		if(face.equals(""))temp += "   (face " + face + ") \n";
-		Iterator fItor = frames.iterator();
-		while(fItor.hasNext())
-		{
-			CharacterFrame frame = (CharacterFrame)fItor.next();
-			temp += frame.getScript();
-		}
-		temp += "\n";
+		final SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
 		
-		// Debug
-		System.out.println(temp);
+		context.add((JComponent)contextEditor.getRootComponent());
 		
-		return temp;
-		*/
+		return (JPanel) playerEditor.getRootComponent();
 	}
 	
 	public CharacterAnimation()

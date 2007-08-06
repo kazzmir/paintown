@@ -3,6 +3,8 @@ package com.rafkind.paintown.animator;
 import java.util.*;
 import javax.swing.*;
 
+import com.rafkind.paintown.Token;
+
 public abstract class CharacterStats
 {
 	// Basic character info
@@ -151,7 +153,7 @@ public abstract class CharacterStats
 	
 	abstract public void loadData();
 	
-	abstract public String getScript();
+	abstract public Token getToken();
 	
 	public CharacterStats()
 	{

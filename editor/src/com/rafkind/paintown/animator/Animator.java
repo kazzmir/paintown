@@ -37,17 +37,27 @@ public class Animator extends JFrame {
 		JMenu menuProgram = new JMenu( "Program" );
 		JMenuItem quit = new JMenuItem( "Quit" );
 		JMenuItem data = new JMenuItem( "Data path" );
+		JMenuItem closeTab = new JMenuItem( "Close Tab" );
 		menuProgram.add( data );
+		menuProgram.add( closeTab );
 		menuProgram.add( quit );
 		menuBar.add( menuProgram );
+		
+		JMenu menuCharacter = new JMenu( "Character" );
+		menuBar.add( menuCharacter );
+		
+		JMenuItem newCharacter = new JMenuItem( "New Character" );
+		menuCharacter.add( newCharacter );
+		JMenuItem loadCharacter = new JMenuItem( "Open Character" );
+		menuCharacter.add( loadCharacter );
+		JMenuItem saveCharacter = new JMenuItem( "Save Character" );
+		menuCharacter.add( saveCharacter );
+		JMenuItem saveCharacterAs = new JMenuItem( "Save Character As" );
+		menuCharacter.add( saveCharacterAs );
+
 		JMenu menuAnimation = new JMenu( "Animation" );
 		menuBar.add( menuAnimation );
-		final Lambda0 closeHook = new Lambda0(){
-		  public Object invoke(){
-		  System.exit( 0 );
-		  return null;
-		  }
-		  };
+		
 		JMenuItem newAnimation = new JMenuItem( "New Animation" );
 		menuAnimation.add( newAnimation );
 		JMenuItem loadAnimation = new JMenuItem( "Open Animation" );
@@ -56,18 +66,26 @@ public class Animator extends JFrame {
 		menuAnimation.add( saveAnimation );
 		JMenuItem saveAnimationAs = new JMenuItem( "Save Animation As" );
 		menuAnimation.add( saveAnimationAs );
-		JMenuItem closeAnimation = new JMenuItem( "Close Animation" );
-		menuAnimation.add( closeAnimation );
+		
+		final Lambda0 closeHook = new Lambda0(){
+		  public Object invoke(){
+		  System.exit( 0 );
+		  return null;
+		  }
+		  };
 
 		menuProgram.setMnemonic( KeyEvent.VK_P );
 		data.setMnemonic( KeyEvent.VK_D );
+		closeTab.setMnemonic( KeyEvent.VK_C );
 		quit.setMnemonic( KeyEvent.VK_Q );
-		newAnimation.setMnemonic( KeyEvent.VK_N );
+		newCharacter.setMnemonic( KeyEvent.VK_N );
+		menuCharacter.setMnemonic( KeyEvent.VK_H );
+		saveCharacter.setMnemonic( KeyEvent.VK_S );
+		saveCharacterAs.setMnemonic( KeyEvent.VK_A );
+		loadCharacter.setMnemonic( KeyEvent.VK_O );
+		newAnimation.setMnemonic( KeyEvent.VK_M );
 		menuAnimation.setMnemonic( KeyEvent.VK_I );
-		saveAnimation.setMnemonic( KeyEvent.VK_S );
-		saveAnimationAs.setMnemonic( KeyEvent.VK_A );
-		loadAnimation.setMnemonic( KeyEvent.VK_O );
-		closeAnimation.setMnemonic( KeyEvent.VK_C );
+
 
 		this.setJMenuBar( menuBar );
 		this.addWindowListener( new CloseHook( closeHook ) );
@@ -139,6 +157,14 @@ public class Animator extends JFrame {
 		final JTabbedPane pane = new JTabbedPane();
 		getContentPane().add(pane);
 		
+		closeTab.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event)
+			{
+				pane.remove(CURRENT_TAB);
+			}
+		});
+		
 		pane.addChangeListener( new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent changeEvent)
@@ -149,18 +175,19 @@ public class Animator extends JFrame {
 			}
      		});
 		
-		newAnimation.addActionListener( new AbstractAction()
+		newCharacter.addActionListener( new AbstractAction()
 		{
 			public void actionPerformed( ActionEvent event )
 			{
 				
 				JPanel newTab = new JPanel();
 				
+				// This will need to change to a factory or something
 				Player tempPlayer = new Player();
 				
 				newTab.add(tempPlayer.getEditor());
 				
-				pane.add( Integer.toString(pane.getTabCount()), newTab );
+				pane.add( "NewChar" , newTab );
 				
 				pane.setSelectedIndex(pane.getTabCount()-1);
 				
@@ -168,11 +195,22 @@ public class Animator extends JFrame {
 			}
 		});
 		
-		closeAnimation.addActionListener( new AbstractAction()
+		newAnimation.addActionListener( new AbstractAction()
 		{
-			public void actionPerformed( ActionEvent event)
+			public void actionPerformed( ActionEvent event )
 			{
-				pane.remove(CURRENT_TAB);
+				
+				JPanel newTab = new JPanel();
+				
+				CharacterAnimation tempAnim = new CharacterAnimation();
+				
+				newTab.add(tempAnim.getEditor());
+				
+				pane.add( "NewAnim", newTab );
+				
+				pane.setSelectedIndex(pane.getTabCount()-1);
+				
+				CURRENT_TAB = pane.getSelectedIndex();
 			}
 		});
 	}
