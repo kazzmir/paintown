@@ -50,7 +50,7 @@ bool init( int gfx ){
 	cout<<"Install mouse: "<<install_mouse()<<endl;
 	loadpng_init();
 	set_color_depth( 16 );
-	cout<<"Set gfx mode: "<<set_gfx_mode( gfx, GFX_X, GFX_Y, 0, 0 )<<endl;
+	cout<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y ) <<endl;
 
 	LOCK_VARIABLE( speed_counter );
 	LOCK_VARIABLE( second_counter );
@@ -66,9 +66,11 @@ bool init( int gfx ){
 
 	cout<<"-- END init --"<<endl;
 
+	/*
 	Bitmap::Screen = new Bitmap( screen );
 	if ( ! Bitmap::Screen ){
 		return false;
 	}
+	*/
 	return true;
 }

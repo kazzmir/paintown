@@ -50,6 +50,7 @@
 
 static double startingGameSpeed = 1.0;
 static int LAZY_KEY_DELAY = 300;
+static int gfx = Global::WINDOWED;
 
 /* fade the screen and tell the player they lost */
 void fadeOut( const string & message ){
@@ -457,13 +458,17 @@ static bool titleScreen(){
 	bool isInvincible = false;
 	const unsigned int MORE_INVINCIBLE = 0;
 	const unsigned int MORE_GAME_SPEED = 1;
-	const unsigned int MORE_BACK = 2;
+	const unsigned int MORE_VIDEO_MODE = 2;
+	const unsigned int MORE_BACK = 3;
 	char invincible[ 128 ];
 	strcpy( invincible, "Invincible: No" );
 	char gameSpeed[ 128 ];
 	sprintf( gameSpeed, "Game speed: %0.2f", startingGameSpeed );
+	char videoMode[ 128 ];
+	sprintf( videoMode, gfx == Global::WINDOWED ? "Fullscreen" : "Windowed" );
 	const char * moreOptions[] = { invincible,
 				       gameSpeed,
+				       videoMode,
 				       "Back"
 				       };
 	const unsigned int moreMax = sizeof( moreOptions ) / sizeof( char* );
@@ -599,6 +604,11 @@ static bool titleScreen(){
 							}
 							case MORE_GAME_SPEED : {
 								break;
+							}
+							case MORE_VIDEO_MODE : {
+								gfx = (gfx == Global::WINDOWED ? Global::FULLSCREEN : Global::WINDOWED);
+								sprintf( videoMode, gfx == Global::WINDOWED ? "Fullscreen" : "Windowed" );
+								Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y );
 							}
 						}
 					} else if ( options == controlOptions ){
@@ -774,7 +784,6 @@ int paintown_main( int argc, char ** argv ){
 	
 	/* janitor cleans up some global stuff */
 	Collector janitor;
-	int gfx = Global::WINDOWED;
 
 	showOptions();
 	const char * WINDOWED_ARG = "-w";
