@@ -121,7 +121,8 @@ public class CharacterAnimation
 	
 	public Token getToken()
 	{
-		Token token = new Token( "anim" );
+		Token token = new Token();
+		token.addToken( new Token( "anim" ) );
 		
 		token.addToken(new String[]{"name", name});
 		if(type.equals("") == false)token.addToken(new String[]{"type", type});

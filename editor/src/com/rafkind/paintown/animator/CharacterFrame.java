@@ -60,6 +60,8 @@ public class CharacterFrame
 	public Token getToken()
 	{
 		Token token = new Token();
+
+		token.addToken( new Token( "anim" ) );
 		
 		if(hasAttack == true)
 		{
