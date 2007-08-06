@@ -2,27 +2,29 @@ package com.rafkind.paintown.animator;
 
 import java.util.*;
 
+import com.rafkind.paintown.Token;
+
 import com.rafkind.paintown.animator.CharacterFrame;
 
 public class CharacterAnimation
 {
 	// Name
-	private String name;
+	private String name = "";
 	
 	// Type if special
-	private String type;
+	private String type = "";
 	
 	// key sequence (String)
-	private Vector keys;
+	private Vector keys = new Vector();
 	
 	// Range
 	private int range;
 	
 	// Face
-	private String face;
+	private String face = "";
 	
 	// Base dir
-	private String baseDirectory;
+	private String baseDirectory = "";
 	
 	// Frames
 	private Vector frames = new Vector();
@@ -117,8 +119,32 @@ public class CharacterAnimation
 		return frames;
 	}
 	
-	public String getScript()
+	public Token getToken()
 	{
+		Token token = new Token( "anim" );
+		
+		token.addToken(new String[]{"name", name});
+		if(type.equals("") == false)token.addToken(new String[]{"type", type});
+		Token keyToken = new Token( "keys" );
+		Iterator kItor = keys.iterator();
+		while(kItor.hasNext())
+		{
+			String key = (String)kItor.next();
+			keyToken.addToken(new Token(key));
+		}
+		token.addToken(keyToken);
+		if(range!=0)token.addToken(new String[]{"range", Integer.toString(range)});
+		if(face.equals("") == false)token.addToken(new String[]{"face", face});
+		Iterator fItor = frames.iterator();
+		while(fItor.hasNext())
+		{
+			CharacterFrame frame = (CharacterFrame)fItor.next();
+			token.addToken(frame.getToken());
+		}
+		
+		return token;
+		
+		/*
 		String temp = "";
 		
 		temp += "(anim \n" +
@@ -146,6 +172,7 @@ public class CharacterAnimation
 		System.out.println(temp);
 		
 		return temp;
+		*/
 	}
 	
 	public CharacterAnimation()

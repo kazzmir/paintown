@@ -1,6 +1,9 @@
 package com.rafkind.paintown.animator;
 
 import java.util.*;
+
+import com.rafkind.paintown.Token;
+
 import com.rafkind.paintown.animator.BoundingBox;
 
 public class CharacterFrame
@@ -39,10 +42,10 @@ public class CharacterFrame
 	public int shadowY;
 	
 	// Sound
-	public String sound;
+	public String sound = "";
 	
 	// Image
-	public String image;
+	public String image = "";
 	
 	public CharacterFrame(String imageName)
 	{
@@ -54,8 +57,35 @@ public class CharacterFrame
 		return name;
 	}
 	
-	public String getScript()
+	public Token getToken()
 	{
+		Token token = new Token();
+		
+		if(hasAttack == true)
+		{
+			Token attackToken = new Token( "attack" );
+			attackToken.addToken(new String[]{"x1",Integer.toString(attackArea.x1)});
+			attackToken.addToken(new String[]{"y1",Integer.toString(attackArea.y1)});
+			attackToken.addToken(new String[]{"x2",Integer.toString(attackArea.x2)});
+			attackToken.addToken(new String[]{"y2",Integer.toString(attackArea.y2)});
+			attackToken.addToken(new String[]{"damage",Integer.toString(attackDamage)});
+			attackToken.addToken(new String[]{"force",Integer.toString(attackForce)});
+			
+			token.addToken(attackToken);
+		}
+		
+		if(delay != 0)token.addToken(new String[]{"delay",Integer.toString(delay)});
+		if(offsetX != 0 || offsetY != 0)token.addToken(new String[]{"offset", Integer.toString(offsetX),Integer.toString(offsetY)});
+		if(moveX != 0 || moveY != 0 || moveZ != 0)token.addToken(new String[]{"move", Integer.toString(moveX), Integer.toString(moveY), Integer.toString(moveZ)});
+		if(zDistance != 0)token.addToken(new String[]{"z-distance", Integer.toString(zDistance)});
+		if(coordX != 0 || coordY != 0 || coordZ != 0)token.addToken(new String[]{"coords", Integer.toString(coordX), Integer.toString(coordY), Integer.toString(coordZ)});
+		if(shadowX != 0 || shadowY != 0)token.addToken(new String[]{"shadow", Integer.toString(offsetX), Integer.toString(offsetY)});
+		if(sound.equals("") == false)token.addToken(new String[]{"sound", sound});
+		if(image.equals("") == false)token.addToken(new String[]{"frame",sound});
+		
+		return token;
+		
+		/*
 		String text = "";
 		
 		if(hasAttack)
@@ -82,5 +112,6 @@ public class CharacterFrame
 		System.out.println(text);
 		
 		return text;
+		*/
 	}
 }

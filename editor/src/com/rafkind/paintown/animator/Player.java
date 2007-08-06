@@ -34,5 +34,21 @@ public final class Player extends CharacterStats
 	public Player()
 	{
 		// Nothing
+		
+		CharacterAnimation anim = new CharacterAnimation();
+		anim.setName("dude");
+		anim.setType("fs");
+		anim.addKey("left");
+		anim.addKey("right");
+		anim.setFace("reverse");
+		anim.setRange(1);
+		
+		CharacterFrame frame = new CharacterFrame("bs");
+		frame.delay = 2;
+		frame.image = "someplace";
+		
+		anim.addFrame(frame);
+		
+		System.out.println( anim.getToken().toString() );
 	}
 }
