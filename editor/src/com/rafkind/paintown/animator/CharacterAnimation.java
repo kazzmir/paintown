@@ -142,7 +142,7 @@ public class CharacterAnimation
 	
 	public JPanel getEditor()
 	{
-		final SwingEngine playerEditor = new SwingEngine( "animator/player.xml" );
+		final SwingEngine playerEditor = new SwingEngine( "animator/base.xml" );
 		
 		final JPanel context = (JPanel) playerEditor.find( "context" );
 		
