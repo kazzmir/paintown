@@ -8,6 +8,7 @@ import javax.swing.*;
 import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.animator.CharacterStats;
+import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.Token;
 
 public final class Player extends CharacterStats
@@ -17,6 +18,12 @@ public final class Player extends CharacterStats
 		final SwingEngine playerEditor = new SwingEngine( "animator/base.xml" );
 		
 		final JPanel context = (JPanel) playerEditor.find( "context" );
+		
+		final JPanel drawArea = (JPanel) playerEditor.find( "canvas" );
+		
+		final DrawArea canvas = new DrawArea();
+		
+		drawArea.add(canvas);
 		
 		final SwingEngine contextEditor = new SwingEngine ( "animator/context.xml");
 		
