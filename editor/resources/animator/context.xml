@@ -21,12 +21,12 @@
 		</hbox>
 		<hbox>
 			<label text="Jump Speed" />
-			<spinner id="jump-velocity" />
+			<panel id="jump-velocity" />
 			<glue />
 		</hbox>
 		<hbox>
 			<label text="Speed" />
-			<spinner id="speed" />
+			<panel id="speed" />
 			<glue />
 		</hbox>
 		<hbox>

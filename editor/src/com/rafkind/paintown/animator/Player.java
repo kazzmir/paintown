@@ -4,6 +4,7 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.event.*;
 
 import org.swixml.SwingEngine;
 
@@ -13,21 +14,29 @@ import com.rafkind.paintown.Token;
 
 public final class Player extends CharacterStats
 {
+	private SwingEngine playerEditor;
+	private SwingEngine contextEditor;
+	private JPanel context;
+	private JPanel canvas;
+	private JTextField nameField;
+	private JSpinner healthSpinner;
+	private JPanel jumpSpinner;
+	private JPanel speedSpinner;
+	private JSpinner shadowSpinner;
+	private JTextField deathSoundField;
+	private JButton deathSoundButton;
+	private JTextField landingSoundField;
+	private JButton landingSoundButton;
+	private JTextField iconField;
+	private JButton iconButton;
+	
 	public JPanel getEditor()
-	{
-		final SwingEngine playerEditor = new SwingEngine( "animator/base.xml" );
+	{	
 		
-		final JPanel context = (JPanel) playerEditor.find( "context" );
+		final DrawArea area = new DrawArea();
 		
-		final JPanel drawArea = (JPanel) playerEditor.find( "canvas" );
+		canvas.add(area);
 		
-		final DrawArea canvas = new DrawArea();
-		
-		drawArea.add(canvas);
-		
-		final SwingEngine contextEditor = new SwingEngine ( "animator/context.xml");
-		
-		context.add((JComponent)contextEditor.getRootComponent());
 		
 		return (JPanel) playerEditor.getRootComponent();
 	}
@@ -47,22 +56,55 @@ public final class Player extends CharacterStats
 	
 	public Player()
 	{
-		// Nothing
 		
-		CharacterAnimation anim = new CharacterAnimation();
-		anim.setName("dude");
-		anim.setType("fs");
-		anim.addKey("left");
-		anim.addKey("right");
-		anim.setFace("reverse");
-		anim.setRange(1);
-		String[] bleh = new String[]{"delay", "5"};
-		anim.addEvent(bleh);
-		anim.addEvent(new String[]{"frame", "someplace"});
+		playerEditor = new SwingEngine( "animator/base.xml" );
 		
-		System.out.println( anim.getToken().toString() );
+		contextEditor = new SwingEngine ( "animator/context.xml");
 		
-		anim.removeEvent(bleh);
-		System.out.println( anim.getToken().toString() );
+		debugSwixml(playerEditor);
+		debugSwixml(contextEditor);
+		
+		context = (JPanel) playerEditor.find( "context" );
+		
+		canvas = (JPanel) playerEditor.find( "canvas" );
+		
+		nameField = (JTextField) contextEditor.find( "name" );
+		
+		healthSpinner = (JSpinner) contextEditor.find( "health" );
+		
+		jumpSpinner = (JPanel) contextEditor.find( "jump-velocity" );
+		
+		jumpSpinner.add(new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01)));
+		
+		speedSpinner = (JPanel) contextEditor.find( "speed" );
+		
+		speedSpinner.add(new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01)));
+		
+		shadowSpinner = (JSpinner) contextEditor.find( "shadow" );
+		
+		deathSoundField = (JTextField) contextEditor.find( "die-sound" );
+		
+		deathSoundButton = (JButton) contextEditor.find( "change-die-sound" );
+		
+		landingSoundField = (JTextField) contextEditor.find( "land-sound" );
+		
+		landingSoundButton = (JButton) contextEditor.find( "change-land-sound" );
+		
+		iconField = (JTextField) contextEditor.find( "icon" );
+		
+		iconButton = (JButton) contextEditor.find( "change-icon" );
+		
+		context.add((JComponent)contextEditor.getRootComponent());
+	}
+	
+	
+	
+	private void debugSwixml( SwingEngine engine ){
+		Map all = engine.getIdMap();
+		System.out.println( "Debugging swixml" );
+		for ( Iterator it = all.entrySet().iterator(); it.hasNext(); ){
+			Map.Entry entry = (Map.Entry) it.next();
+			System.out.println( "Id: " + entry.getKey() + " = " + entry.getValue() );
+		}
 	}
 }
