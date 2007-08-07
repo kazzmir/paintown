@@ -19,6 +19,7 @@ Section "Paintown (required)"
 	File "..\misc\freetype6.dll"
 	File "..\misc\zlib1.dll"
 	File "..\misc\libpng13.dll"
+	File "..\editor\editor.jar"
 	File /r /x .svn "..\data"
 	WriteUninstaller "uninstall.exe"
 SectionEnd
