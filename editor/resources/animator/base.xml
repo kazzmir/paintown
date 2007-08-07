@@ -22,4 +22,12 @@
 			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTH" />
 	</panel>
+	<panel id="other" border="MatteBorder(2,2,2,2,667A63)">
+		<gridbagconstraints
+			gridx="1"
+			gridy="1"
+			gridheight="10"
+			fill="GridBagConstraints.BOTH"
+			anchor="GridBagConstraints.CENTER" />
+	</panel>
 </panel>

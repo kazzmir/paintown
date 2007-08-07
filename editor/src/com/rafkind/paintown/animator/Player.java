@@ -6,12 +6,15 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import java.io.*;
 
 import org.swixml.SwingEngine;
+import javax.swing.filechooser.FileFilter;
 
 import com.rafkind.paintown.animator.CharacterStats;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.RelativeFileChooser;
 
 public final class Player extends CharacterStats
 {
@@ -31,22 +34,23 @@ public final class Player extends CharacterStats
 	private JTextField iconField;
 	private JButton iconButton;
 	
+	private JList remapList;
 	private JButton addRemapButton;
 	private JButton removeRemapButton;
 	
+	private JList animList;
 	private JButton addAnimButton;
 	private JButton editAnimButton;
 	private JButton removeAnimButton;
 	
-	public JPanel getEditor()
+	public SpecialPanel getEditor()
 	{	
 		
 		final DrawArea area = new DrawArea();
 		
 		canvas.add(area);
 		
-		
-		return (JPanel) playerEditor.getRootComponent();
+		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField);
 	}
 	
 	public void saveData()
@@ -79,6 +83,8 @@ public final class Player extends CharacterStats
 		
 		nameField = (JTextField) contextEditor.find( "name" );
 		
+		nameField.setText(name);
+		
 		healthSpinner = (JSpinner) contextEditor.find( "health" );
 		
 		jumpSpinner = (JPanel) contextEditor.find( "jump-velocity" );
@@ -103,9 +109,56 @@ public final class Player extends CharacterStats
 		
 		iconButton = (JButton) contextEditor.find( "change-icon" );
 		
+		remapList = (JList) contextEditor.find( "remaps" );
+		
 		addRemapButton = (JButton) contextEditor.find( "add-remap" );
 		
+		addRemapButton.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				RelativeFileChooser chooser = getNewFileChooser();
+				int ret = chooser.open();
+				if ( ret == RelativeFileChooser.OK ){
+					final String path = chooser.getPath();
+					remap.addElement( path );
+					remapList.setListData(remap);
+				}
+			}
+		});
+		
 		removeRemapButton = (JButton) contextEditor.find( "remove-remap" );
+		
+		removeRemapButton.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				String temp = (String)remap.elementAt(remapList.getSelectedIndex());
+				removeMap(temp);
+				remapList.setListData(remap);
+			}
+		});
+		
+		animList = (JList) contextEditor.find( "anims");
+		
+		animList.addMouseListener( new MouseAdapter()
+		{
+			public void mouseOver(MouseEvent event)
+			{
+				animList.setListData(animations);
+			}
+		});
+		
+		animList.setCellRenderer(new DefaultListCellRenderer() {
+			public Component getListCellRendererComponent(
+				JList list,
+				Object value,
+				int index,
+				boolean isSelected,
+				boolean cellHasFocus)
+			{
+				setText(((CharacterAnimation)value).getName());
+				setBackground(isSelected ? Color.gray : Color.white);
+				setForeground(isSelected ? Color.white : Color.black);
+				return this;
+			}
+			});
 		
 		addAnimButton = (JButton) contextEditor.find( "add-anim" );
 		
@@ -113,14 +166,31 @@ public final class Player extends CharacterStats
 		{
 			public void actionPerformed( ActionEvent event )
 			{
-				// This will need to change to a factory or something
 				createAnimation();
+				animList.setListData(animations);
 			}
 		});
 		
 		editAnimButton = (JButton) contextEditor.find( "edit-anim" );
 		
+		editAnimButton.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				editAnimation(animList.getSelectedIndex());
+			}
+		});
+		
 		removeAnimButton = (JButton) contextEditor.find( "remove-anim" );
+		
+		removeAnimButton.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				removeAnimation(animList.getSelectedIndex());
+				animList.setListData(animations);
+			}
+		});
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 	}

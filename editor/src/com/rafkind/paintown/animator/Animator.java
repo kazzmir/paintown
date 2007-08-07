@@ -23,6 +23,7 @@ import com.rafkind.paintown.*;
 
 import com.rafkind.paintown.animator.IQueue;
 import com.rafkind.paintown.animator.Player;
+import com.rafkind.paintown.animator.SpecialPanel;
 
 public class Animator extends JFrame {
 
@@ -33,7 +34,7 @@ public class Animator extends JFrame {
 
 	public Animator() throws Exception {
 		super( "Paintown Animator" );
-		this.setSize( 900, 500 );
+		this.setSize( 1100, 650 );
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuProgram = new JMenu( "Program" );
@@ -170,7 +171,7 @@ public class Animator extends JFrame {
 				// This will need to change to a factory or something
 				Player tempPlayer = new Player(Animator.this);
 				
-				addNewTab(tempPlayer.getEditor(), "NewChar");
+				addNewTab(tempPlayer.getEditor(), "New Character");
 			}
 		});
 	}
@@ -191,17 +192,36 @@ public class Animator extends JFrame {
 		dataPath = f;
 	}
 	
-	public static void addNewTab( JPanel panel , String name)
+	public RelativeFileChooser getNewFileChooser()
 	{
-		JPanel newTab = new JPanel();
-				
-		newTab.add(panel);
-		
-		pane.add( name , newTab );
+		return new RelativeFileChooser(this, getDataPath());
+	}
+	
+	public static void addNewTab( SpecialPanel panel , String name)
+	{
+		pane.add( name , panel );
 		
 		pane.setSelectedIndex(pane.getTabCount()-1);
 		
 		CURRENT_TAB = pane.getSelectedIndex();
+		
+		final SpecialPanel tempPanel = (SpecialPanel)pane.getComponentAt(CURRENT_TAB);
+		
+		panel.getTextBox().getDocument().addDocumentListener(new DocumentListener()
+		{
+			public void changedUpdate(DocumentEvent e)
+			{
+				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+			}
+			public void insertUpdate(DocumentEvent e)
+			{
+				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+			}
+			public void removeUpdate(DocumentEvent e)
+			{
+				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+			}
+		});
 	}
 
 	public static void main(String [] args) throws Exception {

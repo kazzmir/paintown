@@ -3,19 +3,22 @@ package com.rafkind.paintown.animator;
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.*;
+import javax.swing.event.*;
 
 import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.SpecialPanel;
 
 public class CharacterAnimation
 {
+	private DrawArea area;
 	private SwingEngine animEditor;
 	private SwingEngine contextEditor;
 	private JPanel context;
 	private JPanel canvas;
+	private JPanel other;
 	private JTextField nameField;
 	private JComboBox typeCombo;
 	private JSpinner rangeSpinner;
@@ -152,17 +155,15 @@ public class CharacterAnimation
 		return token;
 	}
 	
-	public JPanel getEditor()
+	public SpecialPanel getEditor()
 	{	
-		final DrawArea area = new DrawArea();
-		
-		canvas.add(area);
-		
-		return (JPanel) animEditor.getRootComponent();
+		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField);
 	}
 	
 	public CharacterAnimation()
 	{
+		name = "New Animation";
+		
 		animEditor = new SwingEngine( "animator/base.xml" );
 		
 		contextEditor = new SwingEngine ( "animator/animation.xml");
@@ -170,6 +171,25 @@ public class CharacterAnimation
 		context = (JPanel) animEditor.find( "context" );
 		
 		nameField = (JTextField) contextEditor.find( "name" );
+		
+		nameField.setText(name);
+		
+		nameField.getDocument().addDocumentListener(new DocumentListener()
+		{
+			public void changedUpdate(DocumentEvent e)
+			{
+				name = nameField.getText();
+			}
+			public void insertUpdate(DocumentEvent e)
+			{
+				name = nameField.getText();
+			}
+			public void removeUpdate(DocumentEvent e)
+			{
+				name = nameField.getText();
+			}
+		});
+		
 		typeCombo = (JComboBox) contextEditor.find( "type" );
 		rangeSpinner = (JSpinner) contextEditor.find( "range" );
 		faceCombo = (JComboBox) contextEditor.find( "face" );
@@ -177,6 +197,10 @@ public class CharacterAnimation
 		basedirButton = (JButton) contextEditor.find( "change-basedir" );
 		
 		canvas = (JPanel) animEditor.find( "canvas" );
+		area = new DrawArea();
+		canvas.add(area);
+		
+		other = (JPanel) animEditor.find( "other" );
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 	}

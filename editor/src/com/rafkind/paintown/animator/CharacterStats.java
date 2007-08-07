@@ -1,10 +1,12 @@
 package com.rafkind.paintown.animator;
 
 import java.util.*;
+import java.io.*;
 import javax.swing.*;
 
-import com.rafkind.paintown.Token;
+import com.rafkind.paintown.*;
 import com.rafkind.paintown.animator.Animator;
+import com.rafkind.paintown.animator.SpecialPanel;
 
 public abstract class CharacterStats
 {
@@ -116,6 +118,12 @@ public abstract class CharacterStats
 		remap.addElement(map);
 	}
 	
+	public boolean removeMap(int index)
+	{
+		String temp = (String)animations.elementAt(index);
+		return remap.removeElement(temp);
+	}
+	
 	public boolean removeMap(String map)
 	{
 		Iterator itor = remap.iterator();
@@ -134,8 +142,20 @@ public abstract class CharacterStats
 	public void createAnimation()
 	{
 		CharacterAnimation temp = new CharacterAnimation();
-		_animator.addNewTab(temp.getEditor(), "New Anim");
+		_animator.addNewTab(temp.getEditor(), temp.getName());
 		animations.addElement(temp);
+	}
+	
+	public void editAnimation(int index)
+	{
+		CharacterAnimation temp = (CharacterAnimation)animations.elementAt(index);
+		_animator.addNewTab(temp.getEditor(), temp.getName());
+	}
+	
+	public boolean removeAnimation(int index)
+	{
+		CharacterAnimation temp = (CharacterAnimation)animations.elementAt(index);
+		return animations.removeElement(temp);
 	}
 	
 	public boolean removeAnimation(CharacterAnimation anim)
@@ -154,7 +174,12 @@ public abstract class CharacterStats
 		_animator = anim;
 	}
 	
-	abstract public JPanel getEditor();
+	public RelativeFileChooser getNewFileChooser()
+	{
+		return _animator.getNewFileChooser();
+	}
+	
+	abstract public SpecialPanel getEditor();
 	
 	abstract public void saveData();
 	
@@ -165,5 +190,7 @@ public abstract class CharacterStats
 	public CharacterStats(Animator anim)
 	{
 		addAnimator(anim);
+		
+		name = "New Character";
 	}
 }
