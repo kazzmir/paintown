@@ -16,7 +16,7 @@
 		</hbox>
 		<hbox>
 			<label text="Type" />
-			<textfield id="type" />
+			<combobox id="type" />
 			<glue />
 		</hbox>
 		<glue size="1" />
@@ -44,7 +44,7 @@
 		</hbox>
 		<hbox>
 			<label text="face" />
-			<textfield id="face" />
+			<combobox id="face" />
 			<glue />
 		</hbox>
 		<hbox>

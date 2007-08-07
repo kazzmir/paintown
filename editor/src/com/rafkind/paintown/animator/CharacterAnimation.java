@@ -12,6 +12,17 @@ import com.rafkind.paintown.animator.DrawArea;
 
 public class CharacterAnimation
 {
+	private SwingEngine animEditor;
+	private SwingEngine contextEditor;
+	private JPanel context;
+	private JPanel canvas;
+	private JTextField nameField;
+	private JComboBox typeCombo;
+	private JSpinner rangeSpinner;
+	private JComboBox faceCombo;
+	private JTextField basedirField;
+	private JButton basedirButton;
+	
 	// Name
 	private String name = "";
 	
@@ -142,26 +153,31 @@ public class CharacterAnimation
 	}
 	
 	public JPanel getEditor()
-	{
-		final SwingEngine playerEditor = new SwingEngine( "animator/base.xml" );
+	{	
+		final DrawArea area = new DrawArea();
 		
-		final JPanel context = (JPanel) playerEditor.find( "context" );
+		canvas.add(area);
 		
-		final JPanel drawArea = (JPanel) playerEditor.find( "canvas" );
-		
-		final DrawArea canvas = new DrawArea();
-		
-		drawArea.add(canvas);
-		
-		final SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
-		
-		context.add((JComponent)contextEditor.getRootComponent());
-		
-		return (JPanel) playerEditor.getRootComponent();
+		return (JPanel) animEditor.getRootComponent();
 	}
 	
 	public CharacterAnimation()
 	{
-		// Nothing
+		animEditor = new SwingEngine( "animator/base.xml" );
+		
+		contextEditor = new SwingEngine ( "animator/animation.xml");
+		
+		context = (JPanel) animEditor.find( "context" );
+		
+		nameField = (JTextField) contextEditor.find( "name" );
+		typeCombo = (JComboBox) contextEditor.find( "type" );
+		rangeSpinner = (JSpinner) contextEditor.find( "range" );
+		faceCombo = (JComboBox) contextEditor.find( "face" );
+		basedirField = (JTextField) contextEditor.find( "basedir" );
+		basedirButton = (JButton) contextEditor.find( "change-basedir" );
+		
+		canvas = (JPanel) animEditor.find( "canvas" );
+		
+		context.add((JComponent)contextEditor.getRootComponent());
 	}
 }
