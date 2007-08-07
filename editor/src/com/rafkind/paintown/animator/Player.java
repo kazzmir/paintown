@@ -74,8 +74,8 @@ public final class Player extends CharacterStats
 		
 		contextEditor = new SwingEngine ( "animator/context.xml");
 		
-		debugSwixml(playerEditor);
-		debugSwixml(contextEditor);
+		//debugSwixml(playerEditor);
+		//debugSwixml(contextEditor);
 		
 		context = (JPanel) playerEditor.find( "context" );
 		

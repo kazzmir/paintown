@@ -38,6 +38,7 @@ public class Animator extends JFrame {
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuProgram = new JMenu( "Program" );
+		//menuProgram.setLightWeightEnabled(false);
 		JMenuItem quit = new JMenuItem( "Quit" );
 		JMenuItem data = new JMenuItem( "Data path" );
 		JMenuItem closeTab = new JMenuItem( "Close Tab" );
@@ -47,6 +48,7 @@ public class Animator extends JFrame {
 		menuBar.add( menuProgram );
 		
 		JMenu menuCharacter = new JMenu( "Character" );
+		//menuCharacter.setLightWeightEnabled(false);
 		menuBar.add( menuCharacter );
 		
 		JMenuItem newCharacter = new JMenuItem( "New Character" );
