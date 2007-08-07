@@ -24,6 +24,7 @@ import com.rafkind.paintown.*;
 import com.rafkind.paintown.animator.IQueue;
 import com.rafkind.paintown.animator.Player;
 import com.rafkind.paintown.animator.SpecialPanel;
+import com.rafkind.paintown.animator.DrawState;
 
 public class Animator extends JFrame {
 
@@ -37,8 +38,8 @@ public class Animator extends JFrame {
 		this.setSize( (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 50, (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 50 );
 
 		JMenuBar menuBar = new JMenuBar();
+		
 		JMenu menuProgram = new JMenu( "Program" );
-		//menuProgram.setLightWeightEnabled(false);
 		JMenuItem quit = new JMenuItem( "Quit" );
 		JMenuItem data = new JMenuItem( "Data path" );
 		JMenuItem closeTab = new JMenuItem( "Close Tab" );
@@ -48,7 +49,6 @@ public class Animator extends JFrame {
 		menuBar.add( menuProgram );
 		
 		JMenu menuCharacter = new JMenu( "Character" );
-		//menuCharacter.setLightWeightEnabled(false);
 		menuBar.add( menuCharacter );
 		
 		JMenuItem newCharacter = new JMenuItem( "New Character" );

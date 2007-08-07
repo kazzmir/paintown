@@ -139,7 +139,7 @@ public final class Player extends CharacterStats
 		
 		animList.addMouseListener( new MouseAdapter()
 		{
-			public void mouseOver(MouseEvent event)
+			public void mouseEntered(MouseEvent event)
 			{
 				animList.setListData(animations);
 			}
