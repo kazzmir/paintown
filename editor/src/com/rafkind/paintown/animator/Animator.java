@@ -28,6 +28,8 @@ public class Animator extends JFrame {
 
 	private static File dataPath = new File( "data" );
 	private static int CURRENT_TAB = 0;
+	
+	private static JTabbedPane pane = new JTabbedPane();
 
 	public Animator() throws Exception {
 		super( "Paintown Animator" );
@@ -54,18 +56,6 @@ public class Animator extends JFrame {
 		menuCharacter.add( saveCharacter );
 		JMenuItem saveCharacterAs = new JMenuItem( "Save Character As" );
 		menuCharacter.add( saveCharacterAs );
-
-		JMenu menuAnimation = new JMenu( "Animation" );
-		menuBar.add( menuAnimation );
-		
-		JMenuItem newAnimation = new JMenuItem( "New Animation" );
-		menuAnimation.add( newAnimation );
-		JMenuItem loadAnimation = new JMenuItem( "Open Animation" );
-		menuAnimation.add( loadAnimation );
-		JMenuItem saveAnimation = new JMenuItem( "Save Animation" );
-		menuAnimation.add( saveAnimation );
-		JMenuItem saveAnimationAs = new JMenuItem( "Save Animation As" );
-		menuAnimation.add( saveAnimationAs );
 		
 		final Lambda0 closeHook = new Lambda0(){
 		  public Object invoke(){
@@ -83,8 +73,6 @@ public class Animator extends JFrame {
 		saveCharacter.setMnemonic( KeyEvent.VK_S );
 		saveCharacterAs.setMnemonic( KeyEvent.VK_A );
 		loadCharacter.setMnemonic( KeyEvent.VK_O );
-		newAnimation.setMnemonic( KeyEvent.VK_M );
-		menuAnimation.setMnemonic( KeyEvent.VK_I );
 
 
 		this.setJMenuBar( menuBar );
@@ -153,8 +141,8 @@ public class Animator extends JFrame {
 			}
 		});
 		
-		// tabs
-		final JTabbedPane pane = new JTabbedPane();
+		// Lets add our tabbedPane and some actions
+		
 		getContentPane().add(pane);
 		
 		closeTab.addActionListener( new AbstractAction()
@@ -179,38 +167,10 @@ public class Animator extends JFrame {
 		{
 			public void actionPerformed( ActionEvent event )
 			{
-				
-				JPanel newTab = new JPanel();
-				
 				// This will need to change to a factory or something
-				Player tempPlayer = new Player();
+				Player tempPlayer = new Player(Animator.this);
 				
-				newTab.add(tempPlayer.getEditor());
-				
-				pane.add( "NewChar" , newTab );
-				
-				pane.setSelectedIndex(pane.getTabCount()-1);
-				
-				CURRENT_TAB = pane.getSelectedIndex();
-			}
-		});
-		
-		newAnimation.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
-				
-				JPanel newTab = new JPanel();
-				
-				CharacterAnimation tempAnim = new CharacterAnimation();
-				
-				newTab.add(tempAnim.getEditor());
-				
-				pane.add( "NewAnim", newTab );
-				
-				pane.setSelectedIndex(pane.getTabCount()-1);
-				
-				CURRENT_TAB = pane.getSelectedIndex();
+				addNewTab(tempPlayer.getEditor(), "NewChar");
 			}
 		});
 	}
@@ -229,6 +189,19 @@ public class Animator extends JFrame {
 
 	private static void setDataPath( File f ){
 		dataPath = f;
+	}
+	
+	public static void addNewTab( JPanel panel , String name)
+	{
+		JPanel newTab = new JPanel();
+				
+		newTab.add(panel);
+		
+		pane.add( name , newTab );
+		
+		pane.setSelectedIndex(pane.getTabCount()-1);
+		
+		CURRENT_TAB = pane.getSelectedIndex();
 	}
 
 	public static void main(String [] args) throws Exception {

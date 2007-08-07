@@ -3,6 +3,7 @@ package com.rafkind.paintown.animator;
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -30,6 +31,13 @@ public final class Player extends CharacterStats
 	private JTextField iconField;
 	private JButton iconButton;
 	
+	private JButton addRemapButton;
+	private JButton removeRemapButton;
+	
+	private JButton addAnimButton;
+	private JButton editAnimButton;
+	private JButton removeAnimButton;
+	
 	public JPanel getEditor()
 	{	
 		
@@ -54,8 +62,9 @@ public final class Player extends CharacterStats
 		return new Token();
 	}
 	
-	public Player()
+	public Player(Animator anim)
 	{
+		super( anim );
 		
 		playerEditor = new SwingEngine( "animator/base.xml" );
 		
@@ -93,6 +102,25 @@ public final class Player extends CharacterStats
 		iconField = (JTextField) contextEditor.find( "icon" );
 		
 		iconButton = (JButton) contextEditor.find( "change-icon" );
+		
+		addRemapButton = (JButton) contextEditor.find( "add-remap" );
+		
+		removeRemapButton = (JButton) contextEditor.find( "remove-remap" );
+		
+		addAnimButton = (JButton) contextEditor.find( "add-anim" );
+		
+		addAnimButton.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				// This will need to change to a factory or something
+				createAnimation();
+			}
+		});
+		
+		editAnimButton = (JButton) contextEditor.find( "edit-anim" );
+		
+		removeAnimButton = (JButton) contextEditor.find( "remove-anim" );
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 	}

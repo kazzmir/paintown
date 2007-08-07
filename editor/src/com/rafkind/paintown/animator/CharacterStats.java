@@ -4,9 +4,13 @@ import java.util.*;
 import javax.swing.*;
 
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.animator.Animator;
 
 public abstract class CharacterStats
 {
+	// Animator for stuff
+	private Animator _animator;
+	
 	// Basic character info
 	protected String name = "";
 	protected int health;
@@ -127,24 +131,27 @@ public abstract class CharacterStats
 		return false;
 	}
 	
-	public void addAnimation(CharacterAnimation anim)
+	public void createAnimation()
 	{
-		animations.addElement(anim);
+		CharacterAnimation temp = new CharacterAnimation();
+		_animator.addNewTab(temp.getEditor(), "New Anim");
+		animations.addElement(temp);
 	}
 	
-	public boolean removeAnimation(String anim)
+	public boolean removeAnimation(CharacterAnimation anim)
 	{
-		Iterator itor = animations.iterator();
-		while(itor.hasNext())
-		{
-			CharacterAnimation tempAnim = (CharacterAnimation)itor.next();
-			if(tempAnim.getName().equals(anim))
-			{
-				animations.removeElement(tempAnim);
-				return true;
-			}
-		}
-		return false;
+		return animations.removeElement(anim);
+	}
+	
+	public Vector getAnimations()
+	{
+		return animations;
+	}
+	
+	// This is so we can add tabs of animation editors to the main window
+	private void addAnimator(Animator anim)
+	{
+		_animator = anim;
 	}
 	
 	abstract public JPanel getEditor();
@@ -155,8 +162,8 @@ public abstract class CharacterStats
 	
 	abstract public Token getToken();
 	
-	public CharacterStats()
+	public CharacterStats(Animator anim)
 	{
-		// Nothing
+		addAnimator(anim);
 	}
 }

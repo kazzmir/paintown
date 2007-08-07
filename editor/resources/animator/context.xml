@@ -74,6 +74,8 @@
 			<hbox>
 				<button text="Add" id="add-anim" />
 				<glue size="1" />
+				<button text="Edit" id="edit-anim" />
+				<glue size="1" />
 				<button text="Remove" id="remove-anim" />
 				<glue size="1" />
 			</hbox>
