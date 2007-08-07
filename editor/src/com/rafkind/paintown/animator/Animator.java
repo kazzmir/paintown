@@ -34,7 +34,7 @@ public class Animator extends JFrame {
 
 	public Animator() throws Exception {
 		super( "Paintown Animator" );
-		this.setSize( 1100, 650 );
+		this.setSize( (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 50, (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 50 );
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuProgram = new JMenu( "Program" );
