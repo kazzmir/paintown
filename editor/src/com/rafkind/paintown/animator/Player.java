@@ -46,11 +46,9 @@ public final class Player extends CharacterStats
 	public SpecialPanel getEditor()
 	{	
 		
-		/*
 		final DrawArea area = new DrawArea();
 		
 		canvas.add(area);
-		*/
 		
 		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField);
 	}
