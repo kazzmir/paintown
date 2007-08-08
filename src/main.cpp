@@ -27,6 +27,7 @@
 #include "object/object.h"
 #include "object/object_attack.h"
 #include "object/player.h"
+#include "object/versus_player.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/load_exception.h"
@@ -255,10 +256,11 @@ static vector< string > readLevels( const string & filename ){
 }
 
 static void playVersusMode( Character * player, Character * enemy ){
+
 	player->setY( 0 );
 	enemy->setY( 0 );
 	player->setX( 0 );
-	enemy->setX( 300 );
+	enemy->setX( 400 );
 
 	VersusWorld world( player, enemy );
 
@@ -268,7 +270,7 @@ static void playVersusMode( Character * player, Character * enemy ){
 	double runCounter = 0;
 	double gameSpeed = startingGameSpeed;
 	
-	Bitmap work( 320, 240 );
+	Bitmap work( 640, 480 );
 	// Bitmap work( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 
@@ -944,10 +946,9 @@ static bool titleScreen(){
 					player = selectPlayer( false );
 					enemy = selectPlayer( false );
 					enemy->setAlliance( ALLIANCE_ENEMY );
-					Enemy en( *(Player *)enemy );
-					if ( true ){
-						playVersusMode( (Character *) player, &en );
-					}
+					Enemy en( *(Player *) enemy );
+					VersusPlayer pl( *(Player *) player );
+					playVersusMode( &pl, &en );
 				} catch ( const LoadException & le ){
 					cout << "Could not load player: " << le.getReason() << endl;
 				} catch ( const ReturnException & r ){

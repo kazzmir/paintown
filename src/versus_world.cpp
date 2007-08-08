@@ -21,7 +21,7 @@ player2( player2 ){
 }
 	
 int VersusWorld::getMaximumZ(){
-	return 150;
+	return 300;
 }
 
 int VersusWorld::getMinimumZ(){
@@ -33,6 +33,20 @@ void VersusWorld::act(){
 		quake_time--;
 	}
 		
+	if ( player1->getX() < 50 ){
+		player1->setX( 50 );
+	}
+	if ( player1->getX() > 600 ){
+		player1->setX( 600 );
+	}
+	
+	if ( player2->getX() < 50 ){
+		player2->setX( 50 );
+	}
+	if ( player2->getX() > 600 ){
+		player2->setX( 600 );
+	}
+
 	player1->setZ( getMinimumZ() );
 	player2->setZ( getMinimumZ() );
 
@@ -95,7 +109,13 @@ void VersusWorld::act(){
 			}
 		}
 
-		it++;
+		if ( *it != player1 && *it != player2 && (*it)->getHealth() <= 0 ){
+			(*it)->died( added_effects );
+			if ( *it != player ){
+				delete *it;
+			}
+			it = objects.erase( it );
+		} else ++it;
 	}
 
 	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
@@ -126,6 +146,9 @@ void VersusWorld::draw( Bitmap * work ){
 }
 
 VersusWorld::~VersusWorld(){
+	/* everything in 'objects' gets delete'd in the world destructor, so
+	 * remove the two objects that were created elsewhere
+	 */
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 		if ( *it == player1 || *it == player2 ){
 			it = objects.erase( it );

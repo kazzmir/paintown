@@ -211,6 +211,7 @@ src/object/object.cpp
 src/object/object_attack.cpp
 src/object/object_nonattack.cpp
 src/object/player.cpp
+src/object/versus_player.cpp
 src/object/projectile.cpp
 src/object/attack.cpp
 src/object/stimulation.cpp

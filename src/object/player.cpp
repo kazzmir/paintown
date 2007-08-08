@@ -74,6 +74,7 @@ invincible( false ){
 Player::Player( const Player & pl ) throw( LoadException ):
 Character( pl ),
 acts( 0 ),
+lives( pl.lives ),
 invincible( false ){
 	show_life = getHealth();
 }

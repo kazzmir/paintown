@@ -63,6 +63,7 @@ object.cpp
 object_attack.cpp
 object_nonattack.cpp
 player.cpp
+versus_player.cpp
 projectile.cpp
 attack.cpp
 stimulation.cpp

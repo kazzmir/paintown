@@ -254,6 +254,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 		delete it->guy;
 	}
 
+	cout << "Selected " << players[ current ].path << ". Loading.." << endl;
 	Player * player = new Player( players[ current ].path );
 	player->setInvincible( invincibile );
 	player->setMap( remap );
