@@ -4,7 +4,7 @@ import java.util.*;
 
 public class DrawState
 {
-	private static boolean drawingEnabled = true;;
+	private static boolean drawingEnabled = true;
 	public DrawState()
 	{
 		// Nothing
