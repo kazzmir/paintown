@@ -1014,7 +1014,11 @@ bool Character::collision( ObjectAttack * obj ){
 
 	return realCollision( obj );
 }
-
+	
+void Character::drawLifeBar( int x, int y, Bitmap * work ){
+	drawLifeBar( x, y, getHealth(), work );
+}
+	
 /* draw a nifty translucent life bar */
 void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
 	// set_trans_blender( 0, 0, 0, 128 );

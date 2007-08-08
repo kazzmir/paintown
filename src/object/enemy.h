@@ -24,6 +24,9 @@ public:
 	virtual Object * copy();
 	
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+
+	using Character::drawLifeBar;
+	virtual void drawLifeBar( int x, int y, Bitmap * work );
 	
 	virtual void draw( Bitmap * work, int rel_x );
 	

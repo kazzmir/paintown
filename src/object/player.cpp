@@ -197,6 +197,10 @@ void Player::fillKeyCache(){
 	*/
 }
 	
+void Player::drawLifeBar( int x, int y, Bitmap * work ){
+	drawLifeBar( x, y, show_life, work );
+}
+	
 void Player::draw( Bitmap * work, int rel_x ){
 
 	Character::draw( work, rel_x );
@@ -233,7 +237,7 @@ void Player::draw( Bitmap * work, int rel_x ){
 	// cout << "Draw name at " << y1 * 2 << endl;
 	// player_font.printf( (hasIcon + x1) * 2, y1, Bitmap::makeColor(255,255,255), *work, getName() );
 	// drawLifeBar( hasIcon + x1, y1 + player_font.getHeight() / 2, show_life, work );
-	drawLifeBar( hasIcon + x1, y1 + nameHeight, show_life, work );
+	drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
 	// cout << "Y1: " << y1 << " Height: " << player_font.getHeight() << " new y1: " << (y1 + player_font.getHeight() / 2) << endl;
 	// work->printf( hasIcon + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
 	int max = getMaxHealth() < 100 ? getMaxHealth() : 100;

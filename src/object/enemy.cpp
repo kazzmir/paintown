@@ -82,6 +82,10 @@ void Enemy::hurt( int x ){
 	Character::hurt( x );
 	show_name_time += 90;
 }
+	
+void Enemy::drawLifeBar( int x, int y, Bitmap * work ){
+	drawLifeBar( x, y, show_life, work );
+}
 
 void Enemy::draw( Bitmap * work, int rel_x ){
 	Character::draw( work, rel_x );
@@ -115,7 +119,7 @@ void Enemy::draw( Bitmap * work, int rel_x ){
 			show_life++;
 		}
 
-		drawLifeBar( icon_x + x + 1, y + height, show_life, work );
+		drawLifeBar( icon_x + x + 1, y + height, work );
 	}
 }
 

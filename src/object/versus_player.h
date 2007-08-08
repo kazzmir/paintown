@@ -7,6 +7,7 @@
 
 class World;
 class Object;
+class Bitmap;
 
 class VersusPlayer: public Player{
 public:
@@ -14,6 +15,8 @@ public:
 	VersusPlayer( const Player & player ) throw( LoadException );
 	
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	
+	virtual void draw( Bitmap * work, int rel_x );
 
 	virtual ~VersusPlayer();
 };

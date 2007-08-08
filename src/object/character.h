@@ -260,6 +260,8 @@ public:
 	inline const double getZVelocity() const {
 		return z_velocity;
 	}
+	
+	virtual void drawLifeBar( int x, int y, Bitmap * work );
 
 protected:
 	
@@ -275,7 +277,7 @@ protected:
 
 	virtual void fall( double x_vel, double y_vel );
 
-	void drawLifeBar( int x, int y, int he, Bitmap * work );
+	virtual void drawLifeBar( int x, int y, int he, Bitmap * work );
 	
 	virtual ECollide * getNormalCollide() const;
 

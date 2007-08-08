@@ -27,6 +27,9 @@ public:
 	
 	/* drawing */
 	virtual void draw( Bitmap * work, int rel_x );
+
+	using Character::drawLifeBar;
+	virtual void drawLifeBar( int x, int y, Bitmap * work );
 	
 	virtual Object * copy();
 	

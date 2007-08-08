@@ -255,14 +255,14 @@ static vector< string > readLevels( const string & filename ){
 	}
 }
 
-static void playVersusMode( Character * player, Character * enemy ){
+static void playVersusMode( Character * player1, Character * player2 ){
 
-	player->setY( 0 );
-	enemy->setY( 0 );
-	player->setX( 0 );
-	enemy->setX( 400 );
+	player1->setY( 0 );
+	player2->setY( 0 );
+	player1->setX( 0 );
+	player2->setX( 400 );
 
-	VersusWorld world( player, enemy );
+	VersusWorld world( player1, player2 );
 
 	Keyboard key;
 	bool done = false;
@@ -288,7 +288,7 @@ static void playVersusMode( Character * player, Character * enemy ){
 					world.act();
 					runCounter -= 1.0;
 
-					if ( player->getHealth() <= 0 || enemy->getHealth() <= 0 ){
+					if ( player1->getHealth() <= 0 || player2->getHealth() <= 0 ){
 						/* someone died */
 						return;
 					}
@@ -342,7 +342,34 @@ static void playVersusMode( Character * player, Character * enemy ){
 
 			// work.printf( 180, 1, Bitmap::makeColor(255,255,255), (FONT *)all_fonts[ JOHNHANDY_PCX ].dat, "%d", game_time );
 
-			work.Stretch( screen_buffer );
+			int min_x = (int)(player1->getX() < player2->getX() ? player1->getX() - 50 : player2->getX() - 50);
+			int max_x = (int)(player1->getX() > player2->getX() ? player1->getX() + 50 : player2->getX() + 50);
+			int min_y = 0;
+			int max_y = screen_buffer.getHeight();
+			if ( min_x > screen_buffer.getWidth() / 2 ){
+				min_x = screen_buffer.getWidth() / 2;
+			}
+			if ( min_x < 0 ){
+				min_x = 0;
+			}
+			if ( max_x < screen_buffer.getWidth() / 2 ){
+				max_x = screen_buffer.getWidth() / 2;
+			}
+			if ( max_x > screen_buffer.getWidth() ){
+				max_x = screen_buffer.getWidth();
+			}
+	
+			/* split is the number of pixels to show in the Y direction */
+			int split = screen_buffer.getHeight() * (max_x - min_x) / screen_buffer.getWidth();
+			/* cut the difference into two pieces, min_y and max_y */
+			min_y = (screen_buffer.getHeight() - split) / 2;
+			max_y -= (screen_buffer.getHeight() - split) / 2;
+
+			work.Stretch( screen_buffer, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
+
+			player1->drawLifeBar( 10, 10, &screen_buffer );
+			player2->drawLifeBar( 500, 10, &screen_buffer );
+
 			FontRender * render = FontRender::getInstance();
 			render->render( &screen_buffer );
 

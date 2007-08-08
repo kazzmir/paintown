@@ -16,8 +16,24 @@ Player( str ){
 VersusPlayer::VersusPlayer( const Player & player ) throw( LoadException ):
 Player( player ){
 }
+
+void VersusPlayer::draw( Bitmap * work, int rel_x ){
+
+	Character::draw( work, rel_x );
+}
 	
 void VersusPlayer::act( vector< Object * > * others, World * world, vector< Object * > * add ){
+
+	if ( show_life < getHealth() ){
+		show_life++;
+	} else if ( show_life > getHealth() ){
+		show_life--;
+	}
+
+	if ( show_life < 0 ){
+		show_life = 0;
+	}
+
 
 	if ( isInvincible() && getInvincibility() < 1 ){
 		setInvincibility( 100 );
