@@ -265,6 +265,9 @@ static void playVersusMode( Character * player1, Character * player2 ){
 	VersusWorld world( player1, player2 );
 
 	Keyboard key;
+
+	key.setDelay( Keyboard::Key_P, 100 );
+
 	bool done = false;
 	bool paused = false;
 	double runCounter = 0;
