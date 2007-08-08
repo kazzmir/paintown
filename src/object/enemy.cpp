@@ -48,6 +48,12 @@ aggression( chr.getAggression() ){
 	constructSelf();
 }
 
+Enemy::Enemy( const Character & chr ) throw( LoadException ):
+Character( chr ),
+aggression( NORMAL_AGRESSION ){
+	constructSelf();
+}
+
 void Enemy::constructSelf(){
 	// heart = new Heart();
 	heart = HeartFactory::createHeart();

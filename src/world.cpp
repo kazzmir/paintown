@@ -160,12 +160,14 @@ void World::doLogic(){
 							x = (*fight)->getX();
 							y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
 							
-							Object * addx = bang->copy();
-							addx->setX( x );
-							addx->setY( 0 );
-							addx->setZ( y+addx->getHeight()/2 );
-							addx->setHealth( 1 );
-							added_effects.push_back( addx );
+							if ( bang != NULL ){
+								Object * addx = bang->copy();
+								addx->setX( x );
+								addx->setY( 0 );
+								addx->setZ( y+addx->getHeight()/2 );
+								addx->setHealth( 1 );
+								added_effects.push_back( addx );
+							}
 
 							o_good->attacked( *fight, added_effects );
 							(*fight)->collided( o_good, added_effects );
@@ -187,15 +189,17 @@ void World::doLogic(){
 	}
 
 	/* special case for getting items */
-	Character * const cplayer = (Character *) player; 
-	if ( cplayer->getStatus() == Status_Get ){
-		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
-			Object * const o = *it;
-			if ( o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision( cplayer ) ){
-				o->touch( cplayer );
-				delete o;
-				it = objects.erase( it );
-			} else ++it;
+	if ( player != NULL ){
+		Character * const cplayer = (Character *) player; 
+		if ( cplayer->getStatus() == Status_Get ){
+			for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+				Object * const o = *it;
+				if ( o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision( cplayer ) ){
+					o->touch( cplayer );
+					delete o;
+					it = objects.erase( it );
+				} else ++it;
+			}
 		}
 	}
 

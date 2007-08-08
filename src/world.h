@@ -3,9 +3,12 @@
 
 class Object;
 class Scene;
+class Bitmap;
 
 #include <vector>
 #include <string>
+
+#include "util/load_exception.h"
 
 using namespace std;
 
@@ -14,7 +17,7 @@ public:
 	World();
 	World( Object * player, const string & path, int screen_size = 320 ) throw(  LoadException );
 
-	~World();
+	virtual ~World();
 
 	void Quake( int q );
 
@@ -22,26 +25,26 @@ public:
 		return quake_time;
 	}
 
-	void act();
-	void draw( Bitmap * work );
-	void addObject( Object * o );
+	virtual void act();
+	virtual void draw( Bitmap * work );
+	virtual void addObject( Object * o );
 
-	const bool finished() const;
+	virtual const bool finished() const;
 
-	void reloadLevel() throw( LoadException );
+	virtual void reloadLevel() throw( LoadException );
 
 	/* upper left hand corner of the screen */
-	int getX();
-	int getY();
+	virtual int getX();
+	virtual int getY();
 
-	int getMaximumZ();
-	int getMinimumZ();
+	virtual int getMaximumZ();
+	virtual int getMinimumZ();
 
 protected:
 	
 	void loadLevel( const string & path ) throw( LoadException );
 
-	void doLogic();
+	virtual void doLogic();
 
 protected:
 	Object * const player;

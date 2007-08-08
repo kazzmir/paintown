@@ -37,6 +37,7 @@
 #include "util/timedifference.h"
 #include "select_player.h"
 #include "world.h"
+#include "versus_world.h"
 
 #include <pthread.h>
 
@@ -253,7 +254,121 @@ static vector< string > readLevels( const string & filename ){
 	}
 }
 
-void realGame( Object * player, const string & levelFile ){
+static void playVersusMode( Character * player, Character * enemy ){
+	player->setY( 0 );
+	enemy->setY( 0 );
+	player->setX( 0 );
+	enemy->setX( 300 );
+
+	VersusWorld world( player, enemy );
+
+	Keyboard key;
+	bool done = false;
+	bool paused = false;
+	double runCounter = 0;
+	double gameSpeed = startingGameSpeed;
+	
+	Bitmap work( 320, 240 );
+	// Bitmap work( GFX_X, GFX_Y );
+	Bitmap screen_buffer( GFX_X, GFX_Y );
+
+	while ( ! done ){
+
+		bool draw = false;
+		key.poll();
+
+		if ( Global::speed_counter > 0 ){
+			if ( ! paused ){
+				runCounter += Global::speed_counter * gameSpeed;
+
+				while ( runCounter >= 1.0 ){
+					draw = true;
+					world.act();
+					runCounter -= 1.0;
+
+					if ( player->getHealth() <= 0 || enemy->getHealth() <= 0 ){
+						/* someone died */
+						return;
+					}
+				}
+			}
+
+			const double SPEED_INC = 0.02;
+			if ( key[ Keyboard::Key_MINUS_PAD ] ){
+				gameSpeed -= SPEED_INC;
+				if ( gameSpeed < SPEED_INC ){
+					gameSpeed = SPEED_INC;
+				}
+				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_P ] ){
+				paused = ! paused;
+				draw = true;
+			}
+
+			if ( key[ Keyboard::Key_PLUS_PAD ] ){
+				gameSpeed += SPEED_INC;
+				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_ENTER_PAD ] ){
+				gameSpeed = 1;
+				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_F1 ] ){
+				Global::invertDebug();
+			}
+
+			Global::speed_counter = 0;
+		} else {
+			Util::rest( 1 );
+		}
+		
+		/*
+		while ( Global::second_counter > 0 ){
+			game_time--;
+			Global::second_counter--;
+			if ( game_time < 0 )
+				game_time = 0;
+		}
+		*/
+	
+		if ( draw ){
+			world.draw( &work );
+
+			// work.printf( 180, 1, Bitmap::makeColor(255,255,255), (FONT *)all_fonts[ JOHNHANDY_PCX ].dat, "%d", game_time );
+
+			work.Stretch( screen_buffer );
+			FontRender * render = FontRender::getInstance();
+			render->render( &screen_buffer );
+
+			if ( paused ){
+				screen_buffer.transBlender( 0, 0, 0, 128 );
+				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
+				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
+				const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
+				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
+			}
+
+			/* getX/Y move when the world is quaking */
+			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
+
+			if ( key[ Keyboard::Key_F12 ] ){
+				cout << "Saved screenshot to scr.bmp" << endl;
+				work.save( "scr.bmp" );
+			}
+
+			work.clear();
+		}
+
+		done |= key[ Keyboard::Key_ESC ] || world.finished();
+	}
+}
+
+static void realGame( Object * player, const string & levelFile ){
 
 	vector< string > levels = readLevels( levelFile );
 
@@ -517,15 +632,19 @@ static bool titleScreen(){
 	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, fontY );
 
 	const int MAIN_PLAY = 0;
-	const int MAIN_CHANGE_CONTROLS = 1;
-	const int MAIN_MORE_OPTIONS = 2;
-	const int MAIN_CREDITS = 3;
-	const int MAIN_QUIT = 4;
-	const char * mainOptions[] = { "New game",
-	                               "Change controls",
-				       "More options",
-						 "Credits",
-				       "Quit" };
+	const int MAIN_VERSUS = 1;
+	const int MAIN_CHANGE_CONTROLS = 2;
+	const int MAIN_MORE_OPTIONS = 3;
+	const int MAIN_CREDITS = 4;
+	const int MAIN_QUIT = 5;
+	const char * mainOptions[] = {
+		"Adventure mode",
+		"Versus mode",
+		"Change controls",
+		"More options",
+		"Credits",
+		"Quit"
+	};
 	const unsigned int mainMax = sizeof( mainOptions ) / sizeof( char* );
 
 	bool isInvincible = false;
@@ -644,7 +763,8 @@ static bool titleScreen(){
 					if ( options == mainOptions ){
 						switch ( choose ){
 							case MAIN_QUIT :
-							case MAIN_PLAY : {
+							case MAIN_PLAY :
+							case MAIN_VERSUS : {
 								done = true;
 								break;
 							}
@@ -815,6 +935,31 @@ static bool titleScreen(){
 		switch ( choose ){
 			case MAIN_QUIT : {
 				return false;
+				break;
+			}
+			case MAIN_VERSUS : {
+				Object * player = NULL;
+				Object * enemy = NULL;
+				try{
+					player = selectPlayer( false );
+					enemy = selectPlayer( false );
+					enemy->setAlliance( ALLIANCE_ENEMY );
+					Enemy en( *(Player *)enemy );
+					if ( true ){
+						playVersusMode( (Character *) player, &en );
+					}
+				} catch ( const LoadException & le ){
+					cout << "Could not load player: " << le.getReason() << endl;
+				} catch ( const ReturnException & r ){
+					key.wait();
+				}
+				if ( player != NULL ){
+					delete player;
+				}
+				if ( enemy != NULL ){
+					delete enemy;
+				}
+				return true;
 				break;
 			}
 			case MAIN_PLAY : {

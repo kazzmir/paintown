@@ -19,6 +19,7 @@ public:
 	Enemy( const char * filename ) throw( LoadException );
 	Enemy( const string & filename ) throw( LoadException );
 	Enemy( const Enemy & chr ) throw( LoadException );
+	Enemy( const Character & chr ) throw( LoadException );
 	
 	virtual Object * copy();
 	

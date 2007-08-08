@@ -15,6 +15,7 @@ init.cpp
 nameplacer.cpp
 select_player.cpp
 world.cpp
+versus_world.cpp
 """))
 
 addFiles( "level/", Split( """
