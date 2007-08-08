@@ -46,10 +46,12 @@
 				<glue size="1" />
 				<button text="Delete" id="delete-front-panel" />
 				<glue size="1" />
+				<!--
 				<button text="Move Up" id="up-front-panel" />
 				<glue size="1" />
 				<button text="Move Down" id="down-front-panel" />
 				<glue size="1" />
+				-->
 			</hbox>
 		</vbox>
 		<glue size="1" />
@@ -63,10 +65,12 @@
 				<glue size="1" />
 				<button text="Delete" id="delete-back-panel" />
 				<glue size="1" />
+				<!--
 				<button text="Move Up" id="up-back-panel" />
 				<glue size="1" />
 				<button text="Move Down" id="down-back-panel" />
 				<glue size="1" />
+				-->
 			</hbox>
 		</vbox>
 		<glue size="1" />

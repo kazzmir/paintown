@@ -197,8 +197,8 @@ public class CharacterAnimation
 		basedirButton = (JButton) contextEditor.find( "change-basedir" );
 		
 		canvas = (JPanel) animEditor.find( "canvas" );
-		area = new DrawArea();
-		canvas.add(area);
+		// area = new DrawArea();
+		// canvas.add(area);
 		
 		other = (JPanel) animEditor.find( "other" );
 		

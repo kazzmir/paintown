@@ -436,6 +436,77 @@ static int readKey( Keyboard & key ){
 	return k;
 }
 
+static void showCredits( const Bitmap & background ){
+	Keyboard key;
+
+	const char * credits[] = {
+		"Paintown",
+		"",
+		"Programming",
+		"Jon Rafkind",
+		"",
+		"Contributions",
+		"Miguel Gadivia",
+		"",
+		"Level design",
+		"Jon Rafkind",
+		"Miguel Gadivia",
+		"",
+		"Music",
+		"aqua.s3m - Purple Motion",
+		"c_heaven.xm - One Man Project",
+		"elw-sick.xm - elwood",
+		"experience.xm - elwood",
+		"fall.xm - elwood",
+		"kajahtaa.xm - cube",
+		"kilimanz.mod - ???",
+		"",
+		"Email: jon@rafkind.com",
+		NULL
+	};
+
+	const int maxCredits = sizeof(credits) / sizeof(char*);
+
+	Global::speed_counter = 0;
+	int min_y = GFX_Y;
+	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, 20 );
+	Bitmap tmp( GFX_X, GFX_Y );
+	while ( ! key[ Keyboard::Key_ESC ] ){
+
+		key.poll();
+
+		bool draw = false;
+		if ( Global::speed_counter / 2 > 0 ){
+			double think = Global::speed_counter / 2;
+			draw = true;
+
+			while ( think > 0 ){
+				think--;
+				min_y -= 1;
+				if ( min_y < -(int)(maxCredits * font.getHeight() * 1.1) ){
+					min_y = GFX_Y;
+				}
+			}
+
+			Global::speed_counter = 0;
+		}
+
+		if ( draw ){
+			background.Blit( tmp );
+			int y = min_y;
+			int color = Bitmap::makeColor( 255, 255, 255 );
+			for ( const char ** current = credits; *current != 0; current++ ){
+				font.printf( 100, y, color, tmp, *current, 0 );	
+				y += font.getHeight() + 2;
+			}
+
+			tmp.BlitToScreen();
+		} else {
+			Util::rest( 1 );
+		}
+	}
+}
+
 static bool titleScreen(){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	// Bitmap::Screen->Blit( background );
@@ -446,12 +517,14 @@ static bool titleScreen(){
 	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, fontY );
 
 	const int MAIN_PLAY = 0;
-	const int MAIN_QUIT = 3;
 	const int MAIN_CHANGE_CONTROLS = 1;
 	const int MAIN_MORE_OPTIONS = 2;
+	const int MAIN_CREDITS = 3;
+	const int MAIN_QUIT = 4;
 	const char * mainOptions[] = { "New game",
 	                               "Change controls",
 				       "More options",
+						 "Credits",
 				       "Quit" };
 	const unsigned int mainMax = sizeof( mainOptions ) / sizeof( char* );
 
@@ -579,13 +652,17 @@ static bool titleScreen(){
 								options = controlOptions;
 								maxOptions = controlMax;
 								choose = 0;
-
 								break;
 							}
 							case MAIN_MORE_OPTIONS : {
 								options = moreOptions;
 								maxOptions = moreMax;
 								choose = 0;
+								break;
+							}
+							case MAIN_CREDITS : {
+								showCredits( background );
+								key.wait();
 								break;
 							}
 						}
