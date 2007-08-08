@@ -111,13 +111,6 @@ void Enemy::draw( Bitmap * work, int rel_x ){
 		const int height = 20 / 2;
 		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Bitmap::makeColor(255,255,255), -1, name );
 
-		if ( show_life > getHealth() ){
-			show_life--;
-		}
-
-		if ( show_life < getHealth() ){
-			show_life++;
-		}
 
 		drawLifeBar( icon_x + x + 1, y + height, work );
 	}
@@ -163,6 +156,14 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 	}
 
 	Character::act( others, world, add );
+
+	if ( show_life > getHealth() ){
+		show_life--;
+	}
+
+	if ( show_life < getHealth() ){
+		show_life++;
+	}
 
 	vector< Object * > enemies;
 	

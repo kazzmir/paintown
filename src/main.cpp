@@ -28,6 +28,7 @@
 #include "object/object_attack.h"
 #include "object/player.h"
 #include "object/versus_player.h"
+#include "object/versus_enemy.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/load_exception.h"
@@ -262,6 +263,11 @@ static void playVersusMode( Character * player1, Character * player2 ){
 	player1->setX( 0 );
 	player2->setX( 400 );
 
+	player1->setMaxHealth( 150 );
+	player2->setMaxHealth( 150 );
+	player1->setHealth( 150 );
+	player2->setHealth( 150 );
+
 	VersusWorld world( player1, player2 );
 
 	Keyboard key;
@@ -276,6 +282,11 @@ static void playVersusMode( Character * player1, Character * player2 ){
 	Bitmap work( 640, 480 );
 	// Bitmap work( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
+
+	Music::pause();
+	Music::fadeIn( 0.3 );
+	Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+	Music::play();
 
 	while ( ! done ){
 
@@ -292,7 +303,13 @@ static void playVersusMode( Character * player1, Character * player2 ){
 					runCounter -= 1.0;
 
 					if ( player1->getHealth() <= 0 || player2->getHealth() <= 0 ){
-						/* someone died */
+						if ( player1->getHealth() <= 0 && player2->getHealth() > 0 ){
+							fadeOut( "Player 2 wins!" );
+						} else if ( player1->getHealth() > 0 && player2->getHealth() <= 0 ){
+							fadeOut( "Player 1 wins!" );
+						} else {
+							fadeOut( "Draw!" );
+						}
 						return;
 					}
 				}
@@ -349,6 +366,12 @@ static void playVersusMode( Character * player1, Character * player2 ){
 			int max_x = (int)(player1->getX() > player2->getX() ? player1->getX() + 50 : player2->getX() + 50);
 			int min_y = 0;
 			int max_y = screen_buffer.getHeight();
+
+			while ( max_x - min_x < screen_buffer.getWidth() / 2 ){
+				max_x += 1;
+				min_x -= 1;
+			}
+
 			if ( min_x > screen_buffer.getWidth() / 2 ){
 				min_x = screen_buffer.getWidth() / 2;
 			}
@@ -371,7 +394,7 @@ static void playVersusMode( Character * player1, Character * player2 ){
 			work.Stretch( screen_buffer, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
 
 			player1->drawLifeBar( 10, 10, &screen_buffer );
-			player2->drawLifeBar( 500, 10, &screen_buffer );
+			player2->drawLifeBar( screen_buffer.getWidth() - 150, 10, &screen_buffer );
 
 			FontRender * render = FontRender::getInstance();
 			render->render( &screen_buffer );
@@ -976,7 +999,7 @@ static bool titleScreen(){
 					player = selectPlayer( false );
 					enemy = selectPlayer( false );
 					enemy->setAlliance( ALLIANCE_ENEMY );
-					Enemy en( *(Player *) enemy );
+					VersusEnemy en( *(Player *) enemy );
 					VersusPlayer pl( *(Player *) player );
 					playVersusMode( &pl, &en );
 				} catch ( const LoadException & le ){

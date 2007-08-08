@@ -34,7 +34,6 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 		show_life = 0;
 	}
 
-
 	if ( isInvincible() && getInvincibility() < 1 ){
 		setInvincibility( 100 );
 	}

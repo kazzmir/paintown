@@ -212,11 +212,7 @@ void Player::draw( Bitmap * work, int rel_x ){
 		icon->draw( x1, y1, *work );
 
 	int hasIcon = icon ? icon->getWidth() : 0;
-	if ( show_life < getHealth() ){
-		show_life++;
-	} else if ( show_life > getHealth() ){
-		show_life--;
-	}
+	
 
 	if ( show_life < 0 ){
 		show_life = 0;
@@ -444,6 +440,12 @@ void Player::deathReset(){
 }
 
 void Player::act( vector< Object * > * others, World * world, vector< Object * > * add ){
+
+	if ( show_life < getHealth() ){
+		show_life++;
+	} else if ( show_life > getHealth() ){
+		show_life--;
+	}
 	
 	/*
 	if ( getInvincibility() < 500 ){

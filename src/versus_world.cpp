@@ -133,8 +133,8 @@ void VersusWorld::draw( Bitmap * work ){
 		Object * n = *it;
 		object_z[ n->getRZ() ].push_back( n );
 	}
-	
-	// min_x = (int)min_x_virtual;
+
+	work->rectangleFill( 0, getMinimumZ(), work->getWidth(), work->getHeight(), Bitmap::makeColor( 32, 32, 32 ) );
 	
 	for ( map<int,vector<Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
 		vector<Object *> & xx = (*it).second;
