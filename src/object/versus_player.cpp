@@ -2,6 +2,7 @@
 #include "versus_player.h"
 #include "util/load_exception.h"
 #include "object/animation.h"
+#include "configuration.h"
 #include "util/funcs.h"
 #include "globals.h"
 #include <string>
@@ -10,16 +11,22 @@
 using namespace std;
 
 VersusPlayer::VersusPlayer( const std::string & str ) throw( LoadException ):
-Player( str ){
+Player( str ),
+config( 0 ){
 }
 	
-VersusPlayer::VersusPlayer( const Player & player ) throw( LoadException ):
-Player( player ){
+VersusPlayer::VersusPlayer( int config, const Player & player ) throw( LoadException ):
+Player( player ),
+config( config ){
 }
 
 void VersusPlayer::draw( Bitmap * work, int rel_x ){
 
 	Character::draw( work, rel_x );
+}
+
+int VersusPlayer::getKey( int motion, int facing ){
+	return Configuration::config( config ).getKey( motion, facing );
 }
 	
 void VersusPlayer::act( vector< Object * > * others, World * world, vector< Object * > * add ){

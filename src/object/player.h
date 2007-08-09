@@ -61,8 +61,8 @@ protected:
 	void fillKeyCache();
 	bool combo( Animation * ani );
 	bool combo( Animation * ani, deque< keyState >::iterator cache_cur_key, deque< keyState >::iterator end );
-	int getKey( int x, int facing );
-	int getKey( int x );
+	virtual int getKey( int x, int facing );
+	virtual int getKey( int x );
 
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );

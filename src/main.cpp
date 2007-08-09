@@ -1061,8 +1061,9 @@ static bool titleScreen(){
 					player = selectPlayer( false );
 					enemy = selectPlayer( false );
 					enemy->setAlliance( ALLIANCE_ENEMY );
-					VersusEnemy en( *(Player *) enemy );
-					VersusPlayer pl( *(Player *) player );
+					// VersusEnemy en( *(Player *) enemy );
+					VersusPlayer en( 1, *(Player *) enemy );
+					VersusPlayer pl( 0, *(Player *) player );
 					playVersusMode( &pl, &en );
 					key.wait();
 				} catch ( const LoadException & le ){

@@ -22,8 +22,8 @@ Configuration Configuration::defaultPlayer1Keys(){
 
 Configuration Configuration::defaultPlayer2Keys(){
 	Configuration config;
-	config.setRight( Keyboard::Key_J );
-	config.setLeft( Keyboard::Key_L );
+	config.setRight( Keyboard::Key_L );
+	config.setLeft( Keyboard::Key_J );
 	config.setUp( Keyboard::Key_I );
 	config.setDown( Keyboard::Key_COMMA );
 	config.setAttack1( Keyboard::Key_R );

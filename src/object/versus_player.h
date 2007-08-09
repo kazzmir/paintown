@@ -9,16 +9,22 @@ class World;
 class Object;
 class Bitmap;
 
-class VersusPlayer: public Player{
+class VersusPlayer: public Player {
 public:
 	VersusPlayer( const std::string & str ) throw( LoadException );
-	VersusPlayer( const Player & player ) throw( LoadException );
+	VersusPlayer( int config, const Player & player ) throw( LoadException );
 	
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	
 	virtual void draw( Bitmap * work, int rel_x );
 
 	virtual ~VersusPlayer();
+protected:
+
+	using Player::getKey;
+	virtual int getKey( int x, int facing );
+
+	int config;
 };
 
 #endif
