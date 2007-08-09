@@ -8,7 +8,7 @@
 #include "util/load_exception.h"
 #include "attack.h"
 
-using namespace std;
+// using namespace std;
 
 class AnimationEvent;
 class Bitmap;

@@ -360,7 +360,7 @@ bool Player::combo( Animation * ani ){
 */
 
 int Player::getKey( int motion, int facing ){
-	return Configuration::getKey( motion, facing );
+	return Configuration::config( 0 ).getKey( motion, facing );
 }
 	
 int Player::getKey( int x ){

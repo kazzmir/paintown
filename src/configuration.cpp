@@ -3,14 +3,88 @@
 #include "object/animation.h"
 #include "object/object.h"
 
-static int right = Keyboard::Key_RIGHT;
-static int left = Keyboard::Key_LEFT;
-static int up = Keyboard::Key_UP;
-static int down = Keyboard::Key_DOWN;
-static int attack1 = Keyboard::Key_A;
-static int attack2 = Keyboard::Key_S;
-static int attack3 = Keyboard::Key_D;
-static int jump = Keyboard::Key_SPACE;
+#include <map>
+
+using namespace std;
+
+Configuration Configuration::defaultPlayer1Keys(){
+	Configuration config;
+	config.setRight( Keyboard::Key_RIGHT );
+	config.setLeft( Keyboard::Key_LEFT );
+	config.setUp( Keyboard::Key_UP );
+	config.setDown( Keyboard::Key_DOWN );
+	config.setAttack1( Keyboard::Key_A );
+	config.setAttack2( Keyboard::Key_S );
+	config.setAttack3( Keyboard::Key_D );
+	config.setJump( Keyboard::Key_SPACE );
+	return config;
+}
+
+Configuration Configuration::defaultPlayer2Keys(){
+	Configuration config;
+	config.setRight( Keyboard::Key_J );
+	config.setLeft( Keyboard::Key_L );
+	config.setUp( Keyboard::Key_I );
+	config.setDown( Keyboard::Key_COMMA );
+	config.setAttack1( Keyboard::Key_R );
+	config.setAttack2( Keyboard::Key_T );
+	config.setAttack3( Keyboard::Key_Y );
+	config.setJump( Keyboard::Key_B );
+	return config;
+}
+
+static map< int, Configuration * > configs;
+
+Configuration & Configuration::config( int set ){
+	if ( configs[ set ] == NULL ){
+		configs[ set ] = new Configuration();
+		switch( set ){
+			case 0 : {
+				*configs[ set ] = defaultPlayer1Keys();
+				break;
+			}
+			case 1 : {
+				*configs[ set ] = defaultPlayer2Keys();
+				break;
+			}
+		}
+	}
+	return *configs[ set ];
+}
+
+Configuration::Configuration():
+right( 0 ),
+left( 0 ),
+up( 0 ),
+down( 0 ),
+attack1( 0 ),
+attack2( 0 ),
+attack3( 0 ),
+jump( 0 ){
+}
+
+Configuration::Configuration( const Configuration & config ):
+right( config.getRight() ),
+left( config.getLeft() ),
+up( config.getUp() ),
+down( config.getDown() ),
+attack1( config.getAttack1() ),
+attack2( config.getAttack2() ),
+attack3( config.getAttack3() ),
+jump( config.getJump() ){
+}
+	
+Configuration & Configuration::operator=( const Configuration & config ){
+	setRight( config.getRight() );
+	setLeft( config.getLeft() );
+	setUp( config.getUp() );
+	setDown( config.getDown() );
+	setAttack1( config.getAttack1() );
+	setAttack2( config.getAttack2() );
+	setAttack3( config.getAttack3() );
+	setJump( config.getJump() );
+	return *this;
+}
 
 int Configuration::getKey( int which, int facing ){
 	switch( which ){
@@ -33,7 +107,6 @@ int Configuration::getKey( int which, int facing ){
 		default : return -1;
 	}
 }
-
 
 void Configuration::setRight( int i ){
 	right = i;
@@ -67,34 +140,34 @@ void Configuration::setJump( int i ){
 	jump = i;
 }
 
-int Configuration::getRight(){
+int Configuration::getRight() const {
 	return right;
 }
 
-int Configuration::getLeft(){
+int Configuration::getLeft() const {
 	return left;
 }
 
-int Configuration::getUp(){
+int Configuration::getUp() const {
 	return up;
 }
 
-int Configuration::getDown(){
+int Configuration::getDown() const {
 	return down;
 }
 
-int Configuration::getAttack1(){
+int Configuration::getAttack1() const {
 	return attack1;
 }
 
-int Configuration::getAttack2(){
+int Configuration::getAttack2() const {
 	return attack2;
 }
 
-int Configuration::getAttack3(){
+int Configuration::getAttack3() const {
 	return attack3;
 }
 
-int Configuration::getJump(){
+int Configuration::getJump() const {
 	return jump;
 }
