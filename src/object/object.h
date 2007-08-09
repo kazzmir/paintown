@@ -265,7 +265,7 @@ public:
 	/* setFacing:
 	 * Sets the direction the object is facing, either left or right.
 	 */
-	inline void setFacing( const int _f ){
+	inline virtual void setFacing( const int _f ){
 		facing = _f;
 		if ( facing != FACING_RIGHT && facing != FACING_LEFT )
 			facing = FACING_RIGHT;

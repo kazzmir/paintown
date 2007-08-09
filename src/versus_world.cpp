@@ -5,10 +5,11 @@
 #include "util/funcs.h"
 #include "object/effect.h"
 
-VersusWorld::VersusWorld( Character * player1, Character * player2 ):
+VersusWorld::VersusWorld( int z, Character * player1, Character * player2 ):
 World(),
 player1( player1 ),
-player2( player2 ){
+player2( player2 ),
+z( z ){
 	this->addObject( player1 );
 	this->addObject( player2 );
 
@@ -21,7 +22,7 @@ player2( player2 ){
 }
 	
 int VersusWorld::getMaximumZ(){
-	return 300;
+	return z;
 }
 
 int VersusWorld::getMinimumZ(){
@@ -134,8 +135,6 @@ void VersusWorld::draw( Bitmap * work ){
 		object_z[ n->getRZ() ].push_back( n );
 	}
 
-	work->rectangleFill( 0, getMinimumZ(), work->getWidth(), work->getHeight(), Bitmap::makeColor( 32, 32, 32 ) );
-	
 	for ( map<int,vector<Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
 		vector<Object *> & xx = (*it).second;
 		for ( vector<Object *>::iterator mm = xx.begin(); mm != xx.end(); mm++ ){

@@ -66,6 +66,12 @@ public:
 	/* you have collided with obj */
 	virtual void collided( ObjectAttack * obj, vector< Object * > & objects );
 	
+	inline virtual void setFacing( const int f ){
+		if ( getStatus() == Status_Ground ){
+			Object::setFacing( f );
+		}
+	}
+	
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	

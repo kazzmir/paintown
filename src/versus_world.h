@@ -8,7 +8,7 @@ class Bitmap;
 
 class VersusWorld: public World {
 public:
-	VersusWorld( Character * player1, Character * player2 );
+	VersusWorld( int z, Character * player1, Character * player2 );
 	virtual ~VersusWorld();
 
 	virtual void draw( Bitmap * work );
@@ -23,6 +23,8 @@ public:
 protected:
 	Character * const player1;
 	Character * const player2;
+
+	int z;
 };
 
 #endif

@@ -256,6 +256,54 @@ static vector< string > readLevels( const string & filename ){
 	}
 }
 
+struct Background{
+	string path;
+	int z;
+
+	Background():z(0){}
+};
+
+static vector< Background > readBackgrounds( const string & path ){
+	vector< Background > backgrounds;
+
+	try{
+		TokenReader reader( path + "/bgs.txt" );
+		Token * head = reader.readToken();
+
+		if ( *head == "backgrounds" ){
+			while ( head->hasTokens() ){
+				Token * background;
+				*head >> background;
+				if ( *background == "background" ){
+					Token * next;
+					Background b;
+					for ( int i = 0; i < 2; i++ ){
+						*background >> next;
+						if ( *next == "path" ){
+							*next >> b.path;
+						} else if ( *next == "z" ){
+							*next >> b.z;
+						}
+					}
+					backgrounds.push_back( b );
+				}
+			}
+		}
+
+	} catch ( const TokenException & ex ){
+		cout << "Could not load " + path + "/bgs.txt because " << ex.getReason() << endl;
+	}
+
+	/*
+	Background b1;
+	b1.path = path + "/versus/bg1.png";
+	b1.z = 420;
+	backgrounds.push_back( b1 );
+	*/
+
+	return backgrounds;
+}
+
 static void playVersusMode( Character * player1, Character * player2 ){
 
 	player1->setY( 0 );
@@ -268,8 +316,6 @@ static void playVersusMode( Character * player1, Character * player2 ){
 	player1->setHealth( 150 );
 	player2->setHealth( 150 );
 
-	VersusWorld world( player1, player2 );
-
 	Keyboard key;
 
 	key.setDelay( Keyboard::Key_P, 100 );
@@ -278,6 +324,20 @@ static void playVersusMode( Character * player1, Character * player2 ){
 	bool paused = false;
 	double runCounter = 0;
 	double gameSpeed = startingGameSpeed;
+
+	vector< Background > backgrounds;
+	backgrounds = readBackgrounds( Util::getDataPath() + "/bgs/versus/" );
+
+	Bitmap background( 640, 480 );
+	int z = 400;
+	if ( backgrounds.size() != 0 ){
+		Background use = backgrounds[ Util::rnd( backgrounds.size() ) ];
+		Bitmap b( Util::getDataPath() + "/" + use.path );
+		b.Stretch( background );
+		z = use.z;
+	}
+	
+	VersusWorld world( z, player1, player2 );
 	
 	Bitmap work( 640, 480 );
 	// Bitmap work( GFX_X, GFX_Y );
@@ -358,6 +418,7 @@ static void playVersusMode( Character * player1, Character * player2 ){
 		*/
 	
 		if ( draw ){
+			background.Blit( work );
 			world.draw( &work );
 
 			// work.printf( 180, 1, Bitmap::makeColor(255,255,255), (FONT *)all_fonts[ JOHNHANDY_PCX ].dat, "%d", game_time );
@@ -365,7 +426,7 @@ static void playVersusMode( Character * player1, Character * player2 ){
 			int min_x = (int)(player1->getX() < player2->getX() ? player1->getX() - 50 : player2->getX() - 50);
 			int max_x = (int)(player1->getX() > player2->getX() ? player1->getX() + 50 : player2->getX() + 50);
 			int min_y = 0;
-			int max_y = screen_buffer.getHeight();
+			// int max_y = screen_buffer.getHeight();
 
 			while ( max_x - min_x < screen_buffer.getWidth() / 2 ){
 				max_x += 1;
@@ -388,10 +449,11 @@ static void playVersusMode( Character * player1, Character * player2 ){
 			/* split is the number of pixels to show in the Y direction */
 			int split = screen_buffer.getHeight() * (max_x - min_x) / screen_buffer.getWidth();
 			/* cut the difference into two pieces, min_y and max_y */
-			min_y = (screen_buffer.getHeight() - split) / 2;
-			max_y -= (screen_buffer.getHeight() - split) / 2;
+			min_y = (screen_buffer.getHeight() - split);
+			// max_y -= (screen_buffer.getHeight() - split) / 2;
 
-			work.Stretch( screen_buffer, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
+			// work.Stretch( screen_buffer, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
+			work.Blit( screen_buffer );
 
 			player1->drawLifeBar( 10, 10, &screen_buffer );
 			player2->drawLifeBar( screen_buffer.getWidth() - 150, 10, &screen_buffer );
