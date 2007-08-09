@@ -170,7 +170,9 @@ src/init.cpp
 src/nameplacer.cpp
 src/select_player.cpp
 src/world.cpp
-src/versus_world.cpp)
+src/versus_world.cpp
+versus_player.cpp
+versus_enemy.cpp)
 
 set(LEVEL_SRC
 src/level/block.cpp
