@@ -25,6 +25,7 @@
 			<scrollpane>
 				<list id="keys" />
 			</scrollpane>
+			<combobox id="key-select" />
 			<hbox>
 				<button text="Add" id="add-key" />
 				<glue size="1" />
@@ -40,11 +41,6 @@
 		<hbox>
 			<label text="Range" />
 			<spinner id="range" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="face" />
-			<combobox id="face" />
 			<glue />
 		</hbox>
 		<hbox>

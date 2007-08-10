@@ -154,7 +154,7 @@ public abstract class CharacterStats
 	
 	public void createAnimation()
 	{
-		CharacterAnimation temp = new CharacterAnimation();
+		CharacterAnimation temp = new CharacterAnimation(_animator);
 		_animator.addNewTab(temp.getEditor(), temp.getName());
 		animations.addElement(temp);
 	}

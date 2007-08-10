@@ -68,7 +68,7 @@ public final class Player extends CharacterStats
 	{
 		Token temp = new Token("Character");
 		temp.addToken(new Token("Character"));
-		temp.addToken(new String[]{"name", name});
+		temp.addToken(new String[]{"name", "\"" + name + "\""});
 		temp.addToken(new String[]{"health", Integer.toString(health)});
 		temp.addToken(new String[]{"jump-velocity", Double.toString(jumpVelocity)});
 		temp.addToken(new String[]{"speed", Double.toString(speed)});
@@ -82,6 +82,13 @@ public final class Player extends CharacterStats
 		{
 			String map = (String)mapItor.next();
 			temp.addToken(new String[]{"remap", origMap, map});
+		}
+		
+		Iterator animItor = animations.iterator();
+		while(animItor.hasNext())
+		{
+			CharacterAnimation anim = (CharacterAnimation)animItor.next();
+			temp.addToken(anim.getToken());
 		}
 		
 		return temp;

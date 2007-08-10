@@ -178,11 +178,11 @@ public class Animator extends JFrame {
 		});
 	}
 
-	public static File dataPath( File f ){
+	private static File dataPath( File f ){
 		return new File( getDataPath().getPath() + "/" + f.getPath() );
 	}
 
-	public static String dataPath( String s ){
+	private static String dataPath( String s ){
 		return getDataPath().getPath() + "/" + s;
 	}
 
@@ -199,7 +199,7 @@ public class Animator extends JFrame {
 		return new RelativeFileChooser(this, getDataPath());
 	}
 	
-	public static void addNewTab( SpecialPanel panel , String name)
+	public void addNewTab( SpecialPanel panel , String name)
 	{
 		pane.add( name , panel );
 		
