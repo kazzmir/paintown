@@ -34,6 +34,9 @@ public final class Player extends CharacterStats
 	private JTextField iconField;
 	private JButton iconButton;
 	
+	
+	private JTextField origMapField;
+	private JButton origMapButton;
 	private JList remapList;
 	private JButton addRemapButton;
 	private JButton removeRemapButton;
@@ -63,7 +66,25 @@ public final class Player extends CharacterStats
 	
 	public Token getToken()
 	{
-		return new Token();
+		Token temp = new Token("Character");
+		temp.addToken(new Token("Character"));
+		temp.addToken(new String[]{"name", name});
+		temp.addToken(new String[]{"health", Integer.toString(health)});
+		temp.addToken(new String[]{"jump-velocity", Double.toString(jumpVelocity)});
+		temp.addToken(new String[]{"speed", Double.toString(speed)});
+		temp.addToken(new String[]{"type", "Player"});
+		temp.addToken(new String[]{"shadow", Integer.toString(shadow)});
+		temp.addToken(new String[]{"die-sound", dieSound});
+		temp.addToken(new String[]{"landed", landed});
+		temp.addToken(new String[]{"icon", icon});
+		Iterator mapItor = remap.iterator();
+		while(mapItor.hasNext())
+		{
+			String map = (String)mapItor.next();
+			temp.addToken(new String[]{"remap", origMap, map});
+		}
+		
+		return temp;
 	}
 	
 	public Player(Animator anim)
@@ -196,6 +217,22 @@ public final class Player extends CharacterStats
 					}
 				}
 			});
+			
+		origMapField = (JTextField) contextEditor.find( "original-map" );
+		
+		origMapButton = (JButton) contextEditor.find( "change-origmap" );
+		
+		origMapButton.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					RelativeFileChooser chooser = getNewFileChooser();
+					int ret = chooser.open();
+					if ( ret == RelativeFileChooser.OK ){
+						final String path = chooser.getPath();
+						origMapField.setText( path );
+						origMap = path;
+					}
+				}
+			});
 		
 		remapList = (JList) contextEditor.find( "remaps" );
 		
@@ -256,6 +293,8 @@ public final class Player extends CharacterStats
 			{
 				createAnimation();
 				animList.setListData(animations);
+				
+				System.out.println(getToken().toString());
 			}
 		});
 		

@@ -27,6 +27,9 @@ public abstract class CharacterStats
 	// Bitmaps
 	protected String icon = "";
 	
+	// Original Map for remaps
+	protected String origMap = "";
+	
 	// Vector of strings containing filename locations
 	protected Vector remap = new Vector();
 	
@@ -111,6 +114,16 @@ public abstract class CharacterStats
 	public void setIcon(String i)
 	{
 		icon = i;
+	}
+	
+	public void setOrigMap(String map)
+	{
+		origMap = map;
+	}
+	
+	public String getOrigMap()
+	{
+		return origMap;
 	}
 	
 	public void addMap(String map)

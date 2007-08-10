@@ -53,6 +53,12 @@
 			<glue />
 		</hbox>
 		<glue size="1" />
+		<hbox>
+			<label text="Original Map: " />
+			<textfield id="original-map" />
+			<button text="Change" id="change-origmap" />
+			<glue />
+		</hbox>
 		<vbox>
 			<label text="Remaps" />
 			<scrollpane>
