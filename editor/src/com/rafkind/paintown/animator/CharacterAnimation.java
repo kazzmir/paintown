@@ -149,7 +149,7 @@ public class CharacterAnimation
 		token.addToken( new Token( "anim" ) );
 		
 		token.addToken(new String[]{"name", "\"" + name + "\""});
-		if(type.equals("") == false)token.addToken(new String[]{"type", type});
+		if(!type.equals("none"))token.addToken(new String[]{"type", type});
 		Token keyToken = new Token( "keys" );
 		keyToken.addToken( new Token( "keys"));
 		Iterator kItor = keys.iterator();
@@ -160,7 +160,7 @@ public class CharacterAnimation
 		}
 		token.addToken(keyToken);
 		if(range!=0)token.addToken(new String[]{"range", Integer.toString(range)});
-		if(baseDirectory.equals("")==false)token.addToken(new String[]{"basedir", baseDirectory});
+		if(!baseDirectory.equals(""))token.addToken(new String[]{"basedir", baseDirectory});
 		Iterator fItor = events.iterator();
 		while(fItor.hasNext())
 		{
@@ -181,6 +181,8 @@ public class CharacterAnimation
 		_animator = anim;
 		
 		name = "New Animation";
+		
+		type = "none";
 		
 		animEditor = new SwingEngine( "animator/base.xml" );
 		
@@ -209,7 +211,7 @@ public class CharacterAnimation
 		});
 		
 		typeCombo = (JComboBox) contextEditor.find( "type" );
-		typeCombo.addItem(new String("!none"));
+		typeCombo.addItem(new String("none"));
 		typeCombo.addItem(new String("attack"));
 		typeCombo.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
