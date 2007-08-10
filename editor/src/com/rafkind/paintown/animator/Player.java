@@ -85,29 +85,117 @@ public final class Player extends CharacterStats
 		
 		nameField.setText(name);
 		
+		nameField.getDocument().addDocumentListener(new DocumentListener()
+		{
+			public void changedUpdate(DocumentEvent e)
+			{
+				name = nameField.getText();
+			}
+			public void insertUpdate(DocumentEvent e)
+			{
+				name = nameField.getText();
+			}
+			public void removeUpdate(DocumentEvent e)
+			{
+				name = nameField.getText();
+			}
+		});
+		
 		healthSpinner = (JSpinner) contextEditor.find( "health" );
+		
+		healthSpinner.addChangeListener( new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent changeEvent)
+			{
+				health = ((Integer)healthSpinner.getValue()).intValue();
+			}
+		});
 		
 		jumpSpinner = (JPanel) contextEditor.find( "jump-velocity" );
 		
-		jumpSpinner.add(new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01)));
+		final JSpinner jumpSpinTemp = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
+		
+		jumpSpinTemp.addChangeListener( new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent changeEvent)
+			{
+				jumpVelocity = ((Double)jumpSpinTemp.getValue()).doubleValue();
+			}
+		});
+		
+		jumpSpinner.add(jumpSpinTemp);
 		
 		speedSpinner = (JPanel) contextEditor.find( "speed" );
 		
-		speedSpinner.add(new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01)));
+		final JSpinner speedSpinTemp = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
+		
+		speedSpinner.add(speedSpinTemp);
+		
+		speedSpinTemp.addChangeListener( new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent changeEvent)
+			{
+				speed = ((Double)speedSpinTemp.getValue()).doubleValue();
+			}
+		});
 		
 		shadowSpinner = (JSpinner) contextEditor.find( "shadow" );
+		
+		shadowSpinner.addChangeListener( new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent changeEvent)
+			{
+				shadow = ((Integer)shadowSpinner.getValue()).intValue();
+			}
+		});
 		
 		deathSoundField = (JTextField) contextEditor.find( "die-sound" );
 		
 		deathSoundButton = (JButton) contextEditor.find( "change-die-sound" );
 		
+		deathSoundButton.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					RelativeFileChooser chooser = getNewFileChooser();
+					int ret = chooser.open();
+					if ( ret == RelativeFileChooser.OK ){
+						final String path = chooser.getPath();
+						deathSoundField.setText( path );
+						dieSound = path;
+					}
+				}
+			});
+		
 		landingSoundField = (JTextField) contextEditor.find( "land-sound" );
 		
 		landingSoundButton = (JButton) contextEditor.find( "change-land-sound" );
 		
+		landingSoundButton.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					RelativeFileChooser chooser = getNewFileChooser();
+					int ret = chooser.open();
+					if ( ret == RelativeFileChooser.OK ){
+						final String path = chooser.getPath();
+						landingSoundField.setText( path );
+						landed = path;
+					}
+				}
+			});
+		
 		iconField = (JTextField) contextEditor.find( "icon" );
 		
 		iconButton = (JButton) contextEditor.find( "change-icon" );
+		
+		iconButton.addActionListener( new AbstractAction(){
+				public void actionPerformed( ActionEvent event ){
+					RelativeFileChooser chooser = getNewFileChooser();
+					int ret = chooser.open();
+					if ( ret == RelativeFileChooser.OK ){
+						final String path = chooser.getPath();
+						iconField.setText( path );
+						icon = path;
+					}
+				}
+			});
 		
 		remapList = (JList) contextEditor.find( "remaps" );
 		
