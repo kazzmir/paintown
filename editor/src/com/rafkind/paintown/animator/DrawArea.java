@@ -13,7 +13,7 @@ import com.rafkind.paintown.Token;
 
 public final class DrawArea extends Canvas
 {
-	private BufferedImage;
+	//private BufferedImage;
 	
 	public Dimension getPreferredSize()
 	{

@@ -74,9 +74,9 @@ public final class Player extends CharacterStats
 		temp.addToken(new String[]{"speed", Double.toString(speed)});
 		temp.addToken(new String[]{"type", "Player"});
 		temp.addToken(new String[]{"shadow", Integer.toString(shadow)});
-		temp.addToken(new String[]{"die-sound", dieSound});
-		temp.addToken(new String[]{"landed", landed});
-		temp.addToken(new String[]{"icon", icon});
+		if(!dieSound.equals(""))temp.addToken(new String[]{"die-sound", dieSound});
+		if(!landed.equals(""))temp.addToken(new String[]{"landed", landed});
+		if(!icon.equals(""))temp.addToken(new String[]{"icon", icon});
 		Iterator mapItor = remap.iterator();
 		while(mapItor.hasNext())
 		{
