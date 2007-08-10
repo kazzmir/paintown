@@ -111,24 +111,30 @@ void Player::fillKeyCache(){
 		map< int, bool > new_last;
 		for ( vector<int>::iterator it = all_keys.begin(); it != all_keys.end(); it++ ){
 			int n = *it;
-			if ( ! last_key[ n ] ){
-				// cout<<"Last key[ "<<n<<" ] = "<<last_key[n]<<endl;
-				key_cache.push_back( keyState( n, getFacing() ) );
-				acts = 0;
-			}
-			new_last[ n ] = true;		
-			// cout<<"Read "<<n<<" Last = "<<last_key<<" Acts = "<<acts<<endl;
-			/*
-			if ( n != last_key ){
-				key_cache.push_back( n );
-				last_key = n;
-			} else {
-				if ( acts > 2 ){
+			/* only process the key if this player could
+			 * possibly be worried about it
+			 */
+			if ( careAboutKey( n ) ){
+				if ( ! last_key[ n ] ){
+					// cout<<"Last key[ "<<n<<" ] = "<<last_key[n]<<endl;
+					key_cache.push_back( keyState( n, getFacing() ) );
 					acts = 0;
-					key_cache.clear();
 				}
+				new_last[ n ] = true;		
+				// cout<<"Read "<<n<<" Last = "<<last_key<<" Acts = "<<acts<<endl;
+				/*
+				   if ( n != last_key ){
+				   key_cache.push_back( n );
+				   last_key = n;
+				   } else {
+				   if ( acts > 2 ){
+				   acts = 0;
+				   key_cache.clear();
+				   }
+				   }
+				   */
+
 			}
-			*/
 		}
 		last_key = new_last;
 		// cout<<"Last key[ "<<83<<" ] = "<<last_key[83]<<endl;
@@ -361,6 +367,18 @@ bool Player::combo( Animation * ani ){
 
 int Player::getKey( int motion, int facing ){
 	return Configuration::config( 0 ).getKey( motion, facing );
+}
+
+bool Player::careAboutKey( int key ){
+	return getKey( PAIN_KEY_FORWARD ) == key ||
+		getKey( PAIN_KEY_BACK ) == key ||
+		getKey( PAIN_KEY_UP ) == key ||
+		getKey( PAIN_KEY_DOWN ) == key ||
+		getKey( PAIN_KEY_ATTACK1 ) == key ||
+		getKey( PAIN_KEY_ATTACK2 ) == key ||
+		getKey( PAIN_KEY_ATTACK3 ) == key ||
+		getKey( PAIN_KEY_JUMP ) == key ||
+		getKey( PAIN_KEY_GRAB ) == key;
 }
 	
 int Player::getKey( int x ){

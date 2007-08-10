@@ -119,7 +119,8 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 		}
 		
 		if ( final == NULL  && getStatus() != Status_Grab ){
-			bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ] || keyboard[ getKey( PAIN_KEY_BACK ) ];
+			// bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ] || keyboard[ getKey( PAIN_KEY_BACK ) ];
+			bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_BACK ) ];
 			if ( getMovement( "jump" ) == NULL || animation_current != getMovement( "jump" ) ){
 				if ( !moving ){
 					animation_current = getMovement( "idle" );

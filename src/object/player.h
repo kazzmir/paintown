@@ -64,6 +64,8 @@ protected:
 	virtual int getKey( int x, int facing );
 	virtual int getKey( int x );
 
+	virtual bool careAboutKey( int key );
+
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
 	
