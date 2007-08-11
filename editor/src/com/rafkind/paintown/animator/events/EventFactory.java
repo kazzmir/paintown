@@ -18,6 +18,9 @@ public class EventFactory
 		if(!inited)
 		{
 			_events.put( new String("move"), new Lambda0(){public Object invoke(){return new MoveEvent();}});
+			
+			
+			inited = true;
 		}
 	}
 	
