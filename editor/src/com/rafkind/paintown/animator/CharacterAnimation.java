@@ -320,6 +320,21 @@ public class CharacterAnimation
 		
 		eventList = (JList) contextEditor.find( "events");
 		
+		eventList.setCellRenderer(new DefaultListCellRenderer() {
+			public Component getListCellRendererComponent(
+				JList list,
+				Object value,
+				int index,
+				boolean isSelected,
+				boolean cellHasFocus)
+			{
+				setText(((AnimationEvent)value).getName());
+				setBackground(isSelected ? Color.gray : Color.white);
+				setForeground(isSelected ? Color.white : Color.black);
+				return this;
+			}
+			});
+		
 		// Need to add events to this combobox from event factory
 		eventSelect = (JComboBox) contextEditor.find( "event-select" );
 		Iterator eItor = EventFactory.getNames().iterator();
@@ -354,7 +369,7 @@ public class CharacterAnimation
 				if(events.isEmpty())return;
 				AnimationEvent temp = (AnimationEvent)events.elementAt(eventList.getSelectedIndex());
 				events.removeElement(temp);
-				keyList.setListData(events);
+				eventList.setListData(events);
 			}
 		});
 		

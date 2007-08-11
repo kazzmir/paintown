@@ -275,14 +275,6 @@ public final class Player extends CharacterStats
 		
 		animList = (JList) contextEditor.find( "anims");
 		
-		animList.addMouseListener( new MouseAdapter()
-		{
-			public void mouseEntered(MouseEvent event)
-			{
-				animList.setListData(animations);
-			}
-		});
-		
 		animList.setCellRenderer(new DefaultListCellRenderer() {
 			public Component getListCellRendererComponent(
 				JList list,
