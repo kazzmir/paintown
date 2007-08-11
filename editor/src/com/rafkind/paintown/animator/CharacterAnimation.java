@@ -179,6 +179,11 @@ public class CharacterAnimation
 		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField);
 	}
 	
+	public DrawArea getDrawArea()
+	{
+		return area;
+	}
+	
 	public CharacterAnimation(Animator anim)
 	{
 		_animator = anim;

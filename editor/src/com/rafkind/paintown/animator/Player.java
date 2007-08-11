@@ -46,14 +46,16 @@ public final class Player extends CharacterStats
 	private JButton editAnimButton;
 	private JButton removeAnimButton;
 	
+	private DrawArea _drawArea;
+	
 	public SpecialPanel getEditor()
 	{	
-		
-		final DrawArea area = new DrawArea();
-		
-		canvas.add(area);
-		
 		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField);
+	}
+	
+	public DrawArea getDrawArea()
+	{
+		return _drawArea;
 	}
 	
 	public void saveData()
@@ -108,6 +110,10 @@ public final class Player extends CharacterStats
 		context = (JPanel) playerEditor.find( "context" );
 		
 		canvas = (JPanel) playerEditor.find( "canvas" );
+		
+		_drawArea = new DrawArea();
+		
+		canvas.add(_drawArea);
 		
 		nameField = (JTextField) contextEditor.find( "name" );
 		

@@ -7,6 +7,7 @@ import javax.swing.*;
 import com.rafkind.paintown.*;
 import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.SpecialPanel;
+import com.rafkind.paintown.animator.DrawArea;
 
 public abstract class CharacterStats
 {
@@ -193,6 +194,8 @@ public abstract class CharacterStats
 	}
 	
 	abstract public SpecialPanel getEditor();
+	
+	abstract public DrawArea getDrawArea();
 	
 	abstract public void saveData();
 	
