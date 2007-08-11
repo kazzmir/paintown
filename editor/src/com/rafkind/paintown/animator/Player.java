@@ -275,6 +275,15 @@ public final class Player extends CharacterStats
 		
 		animList = (JList) contextEditor.find( "anims");
 		
+		animList.addMouseListener( new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent event)
+			{
+				//animList.setListData(animations);
+				_drawArea = ((CharacterAnimation)animList.getSelectedValue()).getDrawArea();
+			}
+		});
+		
 		animList.setCellRenderer(new DefaultListCellRenderer() {
 			public Component getListCellRendererComponent(
 				JList list,

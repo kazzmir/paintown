@@ -336,6 +336,7 @@ public class CharacterAnimation
 			});
 		
 		// Need to add events to this combobox from event factory
+		EventFactory.init();
 		eventSelect = (JComboBox) contextEditor.find( "event-select" );
 		Iterator eItor = EventFactory.getNames().iterator();
 		while(eItor.hasNext())
