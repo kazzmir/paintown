@@ -13,6 +13,8 @@ import com.rafkind.paintown.RelativeFileChooser;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.SpecialPanel;
 import com.rafkind.paintown.animator.Animator;
+import com.rafkind.paintown.animator.events.AnimationEvent;
+import com.rafkind.paintown.animator.events.EventFactory;
 
 public class CharacterAnimation
 {
@@ -37,7 +39,9 @@ public class CharacterAnimation
 	private JTextField basedirField;
 	private JButton basedirButton;
 	private JList eventList;
+	private JComboBox eventSelect;
 	private JButton eventAdd;
+	private JButton eventEdit;
 	private JButton eventRemove;
 	private JButton eventUp;
 	private JButton eventDown;
@@ -128,12 +132,12 @@ public class CharacterAnimation
 		return baseDirectory;
 	}
 	
-	public void addEvent(String[] event)
+	public void addEvent(AnimationEvent event)
 	{
 		events.addElement(event);
 	}
 	
-	public void removeEvent(String[] event)
+	public void removeEvent(AnimationEvent event)
 	{
 		events.removeElement(event);
 	}
@@ -167,8 +171,8 @@ public class CharacterAnimation
 		Iterator fItor = events.iterator();
 		while(fItor.hasNext())
 		{
-			String[] args = (String[])fItor.next();
-			token.addToken(args);
+			AnimationEvent event = (AnimationEvent)fItor.next();
+			token.addToken(event.getToken());
 		}
 		
 		return token;
@@ -256,7 +260,7 @@ public class CharacterAnimation
 		keyRemove = (JButton) contextEditor.find( "remove-key" );
 		keyRemove.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(keys.isEmpty()==true)return;
+				if(keys.isEmpty())return;
 				String temp = (String)keys.elementAt(keyList.getSelectedIndex());
 				keys.removeElement(temp);
 				keyList.setListData(keys);
@@ -265,7 +269,7 @@ public class CharacterAnimation
 		keyUp = (JButton) contextEditor.find( "up-key" );
 		keyUp.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(keys.isEmpty()==true)return;
+				if(keys.isEmpty())return;
 				int index1 = keyList.getSelectedIndex()-1 < 0 ? 0 : keyList.getSelectedIndex() - 1;
 				int index2 = keyList.getSelectedIndex();
 				String temp1 = (String)keys.elementAt(index1);
@@ -279,7 +283,7 @@ public class CharacterAnimation
 		keyDown = (JButton) contextEditor.find( "down-key" );
 		keyDown.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(keys.isEmpty()==true)return;
+				if(keys.isEmpty())return;
 				int index1 = keyList.getSelectedIndex()+1 > keys.size() ? keys.size() : keyList.getSelectedIndex() + 1;
 				int index2 = keyList.getSelectedIndex();
 				String temp1 = (String)keys.elementAt(index1);
@@ -315,10 +319,74 @@ public class CharacterAnimation
 			});
 		
 		eventList = (JList) contextEditor.find( "events");
+		
+		// Need to add events to this combobox from event factory
+		eventSelect = (JComboBox) contextEditor.find( "event-select" );
+		Iterator eItor = EventFactory.getNames().iterator();
+		while(eItor.hasNext())
+		{
+			String event = (String)eItor.next();
+			eventSelect.addItem(event);
+		}
+		
 		eventAdd = (JButton) contextEditor.find( "add-event" );
+		eventAdd.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
+				temp.getEditor().show();
+				events.addElement(temp);
+				eventList.setListData(events);
+			}
+		});
+		
+		eventEdit = (JButton) contextEditor.find( "edit-event" );
+		eventEdit.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if(events.isEmpty())return;
+				AnimationEvent temp = (AnimationEvent)events.elementAt(eventList.getSelectedIndex());
+				temp.getEditor().show();
+			}
+		});
+		
 		eventRemove = (JButton) contextEditor.find( "remove-event" );
+		eventRemove.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if(events.isEmpty())return;
+				AnimationEvent temp = (AnimationEvent)events.elementAt(eventList.getSelectedIndex());
+				events.removeElement(temp);
+				keyList.setListData(events);
+			}
+		});
+		
 		eventUp = (JButton) contextEditor.find( "up-event" );
+		eventUp.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if(events.isEmpty())return;
+				int index1 = eventList.getSelectedIndex()-1 < 0 ? 0 : eventList.getSelectedIndex() - 1;
+				int index2 = eventList.getSelectedIndex();
+				AnimationEvent temp1 = (AnimationEvent)events.elementAt(index1);
+				AnimationEvent temp2 = (AnimationEvent)events.elementAt(index2);
+				
+				events.setElementAt(temp1,index2);
+				events.setElementAt(temp2,index1);
+				eventList.setListData(events);
+			}
+		});
+		
 		eventDown = (JButton) contextEditor.find( "down-event" );
+		eventDown.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if(events.isEmpty())return;
+				int index1 = eventList.getSelectedIndex()+1 > events.size() ? events.size() : eventList.getSelectedIndex() + 1;
+				int index2 = eventList.getSelectedIndex();
+				AnimationEvent temp1 = (AnimationEvent)events.elementAt(index1);
+				AnimationEvent temp2 = (AnimationEvent)events.elementAt(index2);
+				
+				events.setElementAt(temp1,index2);
+				events.setElementAt(temp2,index1);
+				eventList.setListData(events);
+			}
+		});
 		
 		canvas = (JPanel) animEditor.find( "canvas" );
 		area = new DrawArea();

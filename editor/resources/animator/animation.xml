@@ -55,8 +55,11 @@
 			<scrollpane>
 				<list id="events" />
 			</scrollpane>
+			<combobox id="event-select" />
 			<hbox>
 				<button text="Add" id="add-event" />
+				<glue size="1" />
+				<button text="Edit" id="edit-event" />
 				<glue size="1" />
 				<button text="Remove" id="remove-event" />
 				<glue size="1" />
