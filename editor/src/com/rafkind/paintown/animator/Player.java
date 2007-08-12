@@ -308,7 +308,7 @@ public final class Player extends CharacterStats
 				createAnimation();
 				animList.setListData(animations);
 				
-				System.out.println(getToken().toString());
+				//System.out.println(getToken().toString());
 			}
 		});
 		
