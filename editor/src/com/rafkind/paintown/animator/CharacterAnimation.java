@@ -5,12 +5,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
+import java.io.*;
 
 import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.RelativeFileChooser;
 import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.DrawState;
 import com.rafkind.paintown.animator.SpecialPanel;
 import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.events.AnimationEvent;
@@ -314,6 +316,7 @@ public class CharacterAnimation
 						final String path = chooser.getPath();
 						basedirField.setText( path );
 						baseDirectory = path;
+						DrawState.setCurrentDirList(_animator.dataPath(baseDirectory));
 					}
 				}
 			});

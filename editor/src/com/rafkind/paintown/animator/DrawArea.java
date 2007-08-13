@@ -33,7 +33,7 @@ public final class DrawArea extends Canvas
 			g.drawLine(0,350,640,350);
 			if(img != null)g.drawImage( img, img_x, img_y, null );
 		}
-		else System.out.println( "No drawing!" );
+		//else System.out.println( "No drawing!" );
 	}
 	
 	public void setImage(BufferedImage i)

@@ -16,7 +16,7 @@ public class CoordsEvent implements AnimationEvent
 	private int _y;
 	private int _z;
 	
-	public void move(int x, int y, int z)
+	public void coords(int x, int y, int z)
 	{
 		_x = x;
 		_y = y;
@@ -36,7 +36,7 @@ public class CoordsEvent implements AnimationEvent
 	public JDialog getEditor()
 	{
 		SwingEngine engine = new SwingEngine( "animator/eventcoords.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,150);
+		((JDialog)engine.getRootComponent()).setSize(200,100);
 		
 		final JSpinner xspin = (JSpinner) engine.find( "x" );
 		xspin.setValue(new Integer(_x));

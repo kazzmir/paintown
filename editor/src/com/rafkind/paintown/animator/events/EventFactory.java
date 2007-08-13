@@ -22,6 +22,8 @@ public class EventFactory
 			_events.put( new String("bbox"), new Lambda0(){public Object invoke(){return new BBoxEvent();}});
 			_events.put( new String("coords"), new Lambda0(){public Object invoke(){return new CoordsEvent();}});
 			_events.put( new String("delay"), new Lambda0(){public Object invoke(){return new DelayEvent();}});
+			_events.put( new String("face"), new Lambda0(){public Object invoke(){return new FaceEvent();}});
+			_events.put( new String("frame"), new Lambda0(){public Object invoke(){return new FrameEvent();}});
 			
 			inited = true;
 		}

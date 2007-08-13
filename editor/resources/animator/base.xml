@@ -28,6 +28,6 @@
 			gridy="1"
 			gridheight="10"
 			fill="GridBagConstraints.BOTH"
-			anchor="GridBagConstraints.CENTER" />
+			anchor="GridBagConstraints.WEST" />
 	</panel>
 </panel>

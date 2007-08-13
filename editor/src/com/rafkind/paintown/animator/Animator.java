@@ -178,15 +178,15 @@ public class Animator extends JFrame {
 		});
 	}
 
-	private static File dataPath( File f ){
+	public static File dataPath( File f ){
 		return new File( getDataPath().getPath() + "/" + f.getPath() );
 	}
 
-	private static String dataPath( String s ){
+	public static String dataPath( String s ){
 		return getDataPath().getPath() + "/" + s;
 	}
 
-	private static File getDataPath(){
+	public static File getDataPath(){
 		return dataPath;
 	}
 

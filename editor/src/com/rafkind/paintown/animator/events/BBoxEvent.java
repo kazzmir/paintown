@@ -17,7 +17,7 @@ public class BBoxEvent implements AnimationEvent
 	private int _x2;
 	private int _y2;
 	
-	public void attack(int x1, int y1, int x2, int y2)
+	public void bbox(int x1, int y1, int x2, int y2)
 	{
 		_x1 = x1;
 		_y1 = y1;
