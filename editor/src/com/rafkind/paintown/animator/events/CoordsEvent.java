@@ -10,7 +10,7 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class MoveEvent implements AnimationEvent
+public class CoordsEvent implements AnimationEvent
 {
 	private int _x;
 	private int _y;
@@ -25,8 +25,7 @@ public class MoveEvent implements AnimationEvent
 	
 	public void interact(DrawArea area)
 	{
-		area.setImageX(_x);
-		area.setImageY(_y);
+		
 	}
 	
 	public String getName()
@@ -36,7 +35,7 @@ public class MoveEvent implements AnimationEvent
 	
 	public JDialog getEditor()
 	{
-		SwingEngine engine = new SwingEngine( "animator/eventmove.xml" );
+		SwingEngine engine = new SwingEngine( "animator/eventcoords.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,150);
 		
 		final JSpinner xspin = (JSpinner) engine.find( "x" );
@@ -71,8 +70,8 @@ public class MoveEvent implements AnimationEvent
 	
 	public Token getToken()
 	{
-		Token temp = new Token("move");
-		temp.addToken(new Token("move"));
+		Token temp = new Token("coords");
+		temp.addToken(new Token("coords"));
 		temp.addToken(new Token(Integer.toString(_x)));
 		temp.addToken(new Token(Integer.toString(_y)));
 		temp.addToken(new Token(Integer.toString(_z)));

@@ -19,6 +19,9 @@ public class EventFactory
 		{
 			_events.put( new String("move"), new Lambda0(){public Object invoke(){return new MoveEvent();}});
 			_events.put( new String("attack"), new Lambda0(){public Object invoke(){return new AttackEvent();}});
+			_events.put( new String("bbox"), new Lambda0(){public Object invoke(){return new BBoxEvent();}});
+			_events.put( new String("coords"), new Lambda0(){public Object invoke(){return new CoordsEvent();}});
+			_events.put( new String("delay"), new Lambda0(){public Object invoke(){return new DelayEvent();}});
 			
 			inited = true;
 		}

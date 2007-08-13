@@ -1,0 +1,33 @@
+<dialog layout="GridBagLayout" size="200">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.BOTH"
+			/>
+		<hbox>
+			<label text="Set X1" />
+			<spinner id="x1" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Set Y1" />
+			<spinner id="y1" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Set X2" />
+			<spinner id="x2" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Set Y2" />
+			<spinner id="y2" />
+			<glue />
+		</hbox>
+	</vbox>
+</dialog>
