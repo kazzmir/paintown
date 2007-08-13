@@ -109,6 +109,11 @@ public class CharacterAnimation
 		return range;
 	}
 	
+	public void fixBaseDirectory()
+	{
+		DrawState.setCurrentDirList(Animator.dataPath(baseDirectory));
+	}
+	
 	public void setBaseDirectory(String b)
 	{
 		baseDirectory = b;
@@ -476,6 +481,7 @@ public class CharacterAnimation
 		{
 			basedirField.setText(basedirToken.readString(0));
 			baseDirectory = basedirToken.readString(0);
+			DrawState.setCurrentDirList(Animator.dataPath(baseDirectory));
 		}
 		
 		for ( Iterator it = token.getTokens().iterator(); it.hasNext(); ){

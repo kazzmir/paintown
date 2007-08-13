@@ -16,11 +16,7 @@ public class ZDistanceEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token dToken = token.findToken( "z-distance" );
-		if(dToken != null)
-		{
-			_d = dToken.readInt(0);
-		}
+		_d = token.readInt(0);
 	}
 	
 	public void interact(DrawArea area)

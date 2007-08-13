@@ -23,27 +23,22 @@ public class ProjectileEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token projToken = token.findToken( "attack" );
-		if(projToken != null)
+		Token at = token.findToken("at");
+		if(at != null)
 		{
-			Token at = projToken.findToken("at");
-			if(at != null)
-			{
-				_at_x = at.readInt(0);
-				_at_y = at.readInt(1);
-			}
-			Token path = projToken.findToken("path");
-			if(path != null)_projectile = path.readString(0);
-			Token life = projToken.findToken("life");
-			if(life != null)_life = life.readInt(0);
-			Token y2 = projToken.findToken("y2");
-			Token speed = projToken.findToken("speed");
-			if(speed != null)
-			{
-				_speed_x = speed.readInt(0);
-				_speed_y = speed.readInt(1);
-			}
-			
+			_at_x = at.readInt(0);
+			_at_y = at.readInt(1);
+		}
+		Token path = token.findToken("path");
+		if(path != null)_projectile = path.readString(0);
+		Token life = token.findToken("life");
+		if(life != null)_life = life.readInt(0);
+		Token y2 = token.findToken("y2");
+		Token speed = token.findToken("speed");
+		if(speed != null)
+		{
+			_speed_x = speed.readDouble(0);
+			_speed_y = speed.readDouble(1);
 		}
 	}
 	

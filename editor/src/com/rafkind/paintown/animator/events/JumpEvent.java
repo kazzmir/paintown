@@ -18,13 +18,9 @@ public class JumpEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token jumpToken = token.findToken( "jump" );
-		if(jumpToken != null)
-		{
-			_x = jumpToken.readDouble(0);
-			_y = jumpToken.readDouble(1);
-			_z = jumpToken.readDouble(2);
-		}
+		_x = token.readDouble(0);
+		_y = token.readDouble(1);
+		_z = token.readDouble(2);
 	}
 	
 	public void interact(DrawArea area)

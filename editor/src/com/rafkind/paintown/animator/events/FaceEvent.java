@@ -16,11 +16,7 @@ public class FaceEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token faceToken = token.findToken( "face" );
-		if(faceToken != null)
-		{
-			_face = faceToken.readString(0);
-		}
+		_face = token.readString(0);
 	}
 	
 	public void interact(DrawArea area)

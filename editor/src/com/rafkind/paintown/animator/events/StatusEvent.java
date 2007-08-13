@@ -16,11 +16,7 @@ public class StatusEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token statusToken = token.findToken( "status" );
-		if(statusToken != null)
-		{
-			_status = statusToken.readString(0);
-		}
+		_status = token.readString(0);
 	}
 	
 	public void interact(DrawArea area)

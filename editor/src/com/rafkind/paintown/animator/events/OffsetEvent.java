@@ -17,12 +17,8 @@ public class OffsetEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token offsetToken = token.findToken( "offset" );
-		if(offsetToken != null)
-		{
-			_x = offsetToken.readInt(0);
-			_y = offsetToken.readInt(1);
-		}
+		_x = token.readInt(0);
+		_y = token.readInt(1);
 	}
 	
 	public void interact(DrawArea area)

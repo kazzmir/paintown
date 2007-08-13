@@ -18,11 +18,7 @@ public class SoundEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token soundToken = token.findToken( "sound" );
-		if(soundToken != null)
-		{
-			_sound = soundToken.readString(0);
-		}
+		_sound = token.readString(0);
 	}
 	
 	public void interact(DrawArea area)

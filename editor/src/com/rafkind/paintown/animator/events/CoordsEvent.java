@@ -18,13 +18,9 @@ public class CoordsEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token coordToken = token.findToken( "coords" );
-		if(coordToken != null)
-		{
-			_x = coordToken.readInt(0);
-			_y = coordToken.readInt(1);
-			_z = coordToken.readInt(2);
-		}
+		_x = token.readInt(0);
+		_y = token.readInt(1);
+		_z = token.readInt(2);
 	}
 	
 	public void interact(DrawArea area)

@@ -16,11 +16,7 @@ public class DelayEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token delayToken = token.findToken( "delay" );
-		if(delayToken != null)
-		{
-			_delay = delayToken.readInt(0);
-		}
+		_delay = token.readInt(0);
 	}
 	
 	public void interact(DrawArea area)

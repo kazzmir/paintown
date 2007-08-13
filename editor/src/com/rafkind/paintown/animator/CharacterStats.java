@@ -165,6 +165,7 @@ public abstract class CharacterStats
 	{
 		CharacterAnimation temp = (CharacterAnimation)animations.elementAt(index);
 		_animator.addNewTab(temp.getEditor(), temp.getName());
+		temp.fixBaseDirectory();
 	}
 	
 	public boolean removeAnimation(int index)

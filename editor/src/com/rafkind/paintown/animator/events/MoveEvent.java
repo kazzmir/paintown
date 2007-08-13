@@ -18,13 +18,9 @@ public class MoveEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token moveToken = token.findToken( "move" );
-		if(moveToken != null)
-		{
-			_x = moveToken.readInt(0);
-			_y = moveToken.readInt(1);
-			_z = moveToken.readInt(2);
-		}
+		_x = token.readInt(0);
+		_y = token.readInt(1);
+		_z = token.readInt(2);
 	}
 	
 	public void interact(DrawArea area)

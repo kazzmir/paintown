@@ -17,12 +17,8 @@ public class ShadowEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token shadowToken = token.findToken( "shadow" );
-		if(shadowToken != null)
-		{
-			_x = shadowToken.readInt(0);
-			_y = shadowToken.readInt(1);
-		}
+		_x = token.readInt(0);
+		_y = token.readInt(1);
 	}
 	
 	public void interact(DrawArea area)

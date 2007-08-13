@@ -13,15 +13,12 @@ import org.swixml.SwingEngine;
 
 public class FrameEvent implements AnimationEvent
 {
+	private String _basedir = "";
 	private String _frame = "";
 	
 	public void loadToken(Token token)
 	{
-		Token frameToken = token.findToken( "frame" );
-		if(frameToken != null)
-		{
-			_frame = frameToken.readString(0);
-		}
+		_frame = token.readString(0);
 	}
 	
 	public void interact(DrawArea area)

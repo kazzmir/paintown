@@ -19,14 +19,10 @@ public class BBoxEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-		Token bboxToken = token.findToken( "bbox" );
-		if(bboxToken != null)
-		{
-			_x1 = bboxToken.readInt(0);
-			_y1 = bboxToken.readInt(1);
-			_x2 = bboxToken.readInt(2);
-			_y2 = bboxToken.readInt(3);
-		}
+		_x1 = token.readInt(0);
+		_y1 = token.readInt(1);
+		_x2 = token.readInt(2);
+		_y2 = token.readInt(3);
 	}
 	
 	public void interact(DrawArea area)
