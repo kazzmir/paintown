@@ -13,19 +13,25 @@ import javax.swing.filechooser.FileFilter;
 
 import com.rafkind.paintown.animator.CharacterStats;
 import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.RelativeFileChooser;
 
 public final class Player extends CharacterStats
 {
 	private SwingEngine playerEditor;
 	private SwingEngine contextEditor;
+	private SwingEngine controlEditor;
 	private JPanel context;
 	private JPanel canvas;
+	private JPanel controls;
 	private JTextField nameField;
 	private JSpinner healthSpinner;
 	private JPanel jumpSpinner;
+	private JSpinner jumpSpinner2;
 	private JPanel speedSpinner;
+	private JSpinner speedSpinner2;
 	private JSpinner shadowSpinner;
 	private JTextField deathSoundField;
 	private JButton deathSoundButton;
@@ -48,6 +54,11 @@ public final class Player extends CharacterStats
 	
 	private DrawArea _drawArea;
 	
+	private JButton displayToken;
+	private JButton stopAnim;
+	private JButton playAnim;
+	private JSpinner speedAnim;
+	
 	public SpecialPanel getEditor()
 	{	
 		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField);
@@ -58,18 +69,97 @@ public final class Player extends CharacterStats
 		return _drawArea;
 	}
 	
-	public void saveData()
+	public void saveData(File f) throws LoadException
 	{
 	}
 	
-	public void loadData()
+	public void loadData(File f) throws LoadException
 	{
+		TokenReader reader = new TokenReader( f );
+		Token head = reader.nextToken();
+		
+		if ( ! head.getName().equals( "character" ) ){
+			throw new LoadException( "Starting token is not 'character'" );
+		}
+		
+		Token nameToken = head.findToken( "name" );
+		if ( nameToken != null )
+		{
+			nameField.setText(nameToken.readString(0));
+			name = nameToken.readString(0);
+		}
+		
+		Token healthToken = head.findToken( "health" );
+		if ( healthToken != null )
+		{
+			healthSpinner.setValue(new Integer(healthToken.readInt(0)));
+			health = healthToken.readInt(0);
+		}
+		
+		Token jumpToken = head.findToken( "jump-velocity" );
+		if ( jumpToken != null )
+		{
+			jumpSpinner2.setValue(new Double(jumpToken.readDouble(0)));
+			jumpVelocity = jumpToken.readDouble(0);
+		}
+		
+		Token speedToken = head.findToken( "speed" );
+		if ( speedToken != null )
+		{
+			speedSpinner2.setValue(new Double(speedToken.readDouble(0)));
+			speed = speedToken.readDouble(0);
+		}
+		
+		Token shadowToken = head.findToken( "shadow" );
+		if ( shadowToken != null )
+		{
+			shadowSpinner.setValue(new Integer(shadowToken.readInt(0)));
+			shadow = shadowToken.readInt(0);
+		}
+		
+		Token diesoundToken = head.findToken( "die-sound" );
+		if ( diesoundToken != null )
+		{
+			deathSoundField.setText(diesoundToken.readString(0));
+			dieSound = diesoundToken.readString(0);
+		}
+		
+		Token landedToken = head.findToken( "landed" );
+		if ( landedToken != null )
+		{
+			landingSoundField.setText(landedToken.readString(0));
+			landed = landedToken.readString(0);
+		}
+		
+		Token iconToken = head.findToken( "icon" );
+		if ( iconToken != null )
+		{
+			iconField.setText(iconToken.readString(0));
+			icon = iconToken.readString(0);
+		}
+		
+		for ( Iterator it = head.findTokens( "remap" ).iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			origMapField.setText(t.readString( 0 ));
+			origMap = t.readString(0);
+			remap.addElement(t.readString(1));
+		}
+		remapList.setListData(remap);
+		
+		for ( Iterator it = head.findTokens( "anim" ).iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			CharacterAnimation charanim = new CharacterAnimation();
+			charanim.loadData(t);
+			animations.addElement(charanim);
+		}
+		animList.setListData(animations);
+		
 	}
 	
 	public Token getToken()
 	{
-		Token temp = new Token("Character");
-		temp.addToken(new Token("Character"));
+		Token temp = new Token("character");
+		temp.addToken(new Token("character"));
 		temp.addToken(new String[]{"name", "\"" + name + "\""});
 		temp.addToken(new String[]{"health", Integer.toString(health)});
 		temp.addToken(new String[]{"jump-velocity", Double.toString(jumpVelocity)});
@@ -103,6 +193,8 @@ public final class Player extends CharacterStats
 		playerEditor = new SwingEngine( "animator/base.xml" );
 		
 		contextEditor = new SwingEngine ( "animator/context.xml");
+		
+		controlEditor = new SwingEngine( "animator/controls.xml" );
 		
 		//debugSwixml(playerEditor);
 		//debugSwixml(contextEditor);
@@ -147,29 +239,29 @@ public final class Player extends CharacterStats
 		
 		jumpSpinner = (JPanel) contextEditor.find( "jump-velocity" );
 		
-		final JSpinner jumpSpinTemp = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
+		jumpSpinner2 = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
 		
-		jumpSpinTemp.addChangeListener( new ChangeListener()
+		jumpSpinner2.addChangeListener( new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent changeEvent)
 			{
-				jumpVelocity = ((Double)jumpSpinTemp.getValue()).doubleValue();
+				jumpVelocity = ((Double)jumpSpinner2.getValue()).doubleValue();
 			}
 		});
 		
-		jumpSpinner.add(jumpSpinTemp);
+		jumpSpinner.add(jumpSpinner2);
 		
 		speedSpinner = (JPanel) contextEditor.find( "speed" );
 		
-		final JSpinner speedSpinTemp = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
+		speedSpinner2 = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
 		
-		speedSpinner.add(speedSpinTemp);
+		speedSpinner.add(speedSpinner2);
 		
-		speedSpinTemp.addChangeListener( new ChangeListener()
+		speedSpinner2.addChangeListener( new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent changeEvent)
 			{
-				speed = ((Double)speedSpinTemp.getValue()).doubleValue();
+				speed = ((Double)speedSpinner2.getValue()).doubleValue();
 			}
 		});
 		
@@ -189,7 +281,7 @@ public final class Player extends CharacterStats
 		
 		deathSoundButton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = getNewFileChooser();
+					RelativeFileChooser chooser = Animator.getNewFileChooser();
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
@@ -205,7 +297,7 @@ public final class Player extends CharacterStats
 		
 		landingSoundButton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = getNewFileChooser();
+					RelativeFileChooser chooser = Animator.getNewFileChooser();
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
@@ -221,7 +313,7 @@ public final class Player extends CharacterStats
 		
 		iconButton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = getNewFileChooser();
+					RelativeFileChooser chooser = Animator.getNewFileChooser();
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
@@ -237,7 +329,7 @@ public final class Player extends CharacterStats
 		
 		origMapButton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = getNewFileChooser();
+					RelativeFileChooser chooser = Animator.getNewFileChooser();
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
@@ -253,7 +345,7 @@ public final class Player extends CharacterStats
 		
 		addRemapButton.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				RelativeFileChooser chooser = getNewFileChooser();
+				RelativeFileChooser chooser = Animator.getNewFileChooser();
 				int ret = chooser.open();
 				if ( ret == RelativeFileChooser.OK ){
 					final String path = chooser.getPath();
@@ -333,7 +425,27 @@ public final class Player extends CharacterStats
 			}
 		});
 		
+		
+		controls = (JPanel) playerEditor.find( "controls" );
+		
+		displayToken = (JButton) controlEditor.find( "token" );
+		
+		displayToken.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				final JDialog tempDiag = new JDialog();
+				tempDiag.setSize(400,400);
+				final JEditorPane tempText = new JEditorPane();
+				tempDiag.add(tempText);
+				tempText.setText(getToken().toString());
+				tempDiag.show();
+			}
+		});
+		
 		context.add((JComponent)contextEditor.getRootComponent());
+		
+		controls.add((JComponent)controlEditor.getRootComponent());
 	}
 	
 	

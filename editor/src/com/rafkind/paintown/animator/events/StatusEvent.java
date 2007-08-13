@@ -10,16 +10,16 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class DelayEvent implements AnimationEvent
+public class StatusEvent implements AnimationEvent
 {
-	private int _delay;
+	private String _status = "ground";
 	
 	public void loadToken(Token token)
 	{
-		Token delayToken = token.findToken( "delay" );
-		if(delayToken != null)
+		Token statusToken = token.findToken( "status" );
+		if(statusToken != null)
 		{
-			_delay = delayToken.readInt(0);
+			_status = statusToken.readString(0);
 		}
 	}
 	
@@ -35,16 +35,18 @@ public class DelayEvent implements AnimationEvent
 	
 	public JDialog getEditor()
 	{
-		SwingEngine engine = new SwingEngine( "animator/eventdelay.xml" );
+		SwingEngine engine = new SwingEngine( "animator/eventstatus.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,50);
 		
-		final JSpinner delayspin = (JSpinner) engine.find( "delay" );
-		delayspin.setValue(new Integer(_delay));
-		delayspin.addChangeListener( new ChangeListener()
+		final JComboBox statusbox = (JComboBox) engine.find( "status" );
+		statusbox.addItem(new String("ground"));
+		statusbox.addItem(new String("jump"));
+		
+		statusbox.addActionListener( new ActionListener()
 		{
-			public void stateChanged(ChangeEvent changeEvent)
+			public void actionPerformed(ActionEvent actionEvent)
 			{
-				_delay = ((Integer)delayspin.getValue()).intValue();
+				_status = (String)statusbox.getSelectedItem();
 			}
 		});
 		return (JDialog)engine.getRootComponent();
@@ -52,9 +54,9 @@ public class DelayEvent implements AnimationEvent
 	
 	public Token getToken()
 	{
-		Token temp = new Token("delay");
-		temp.addToken(new Token("delay"));
-		temp.addToken(new Token(Integer.toString(_delay)));
+		Token temp = new Token("status");
+		temp.addToken(new Token("status"));
+		temp.addToken(new Token(_status));
 		
 		return temp;
 	}

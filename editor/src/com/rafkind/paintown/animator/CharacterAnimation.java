@@ -10,6 +10,7 @@ import java.io.*;
 import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.exception.*;
 import com.rafkind.paintown.RelativeFileChooser;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.DrawState;
@@ -20,9 +21,6 @@ import com.rafkind.paintown.animator.events.EventFactory;
 
 public class CharacterAnimation
 {
-	// Animator
-	private Animator _animator;
-	
 	private DrawArea area;
 	private SwingEngine animEditor;
 	private SwingEngine contextEditor;
@@ -59,9 +57,6 @@ public class CharacterAnimation
 	
 	// Range
 	private int range;
-	
-	// Face
-	private String face = "";
 	
 	// Base dir
 	private String baseDirectory = "";
@@ -102,16 +97,6 @@ public class CharacterAnimation
 	public void clearKeys()
 	{
 		keys.clear();
-	}
-	
-	public void setFace(String f)
-	{
-		face = f;
-	}
-	
-	public String getFace()
-	{
-		return face;
 	}
 	
 	public void setRange(int r)
@@ -190,10 +175,8 @@ public class CharacterAnimation
 		return area;
 	}
 	
-	public CharacterAnimation(Animator anim)
+	public CharacterAnimation()
 	{
-		_animator = anim;
-		
 		name = "New Animation";
 		
 		type = "none";
@@ -310,13 +293,13 @@ public class CharacterAnimation
 		basedirButton = (JButton) contextEditor.find( "change-basedir" );
 		basedirButton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = _animator.getNewFileChooser();
+					RelativeFileChooser chooser = Animator.getNewFileChooser();
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
 						basedirField.setText( path );
 						baseDirectory = path;
-						DrawState.setCurrentDirList(_animator.dataPath(baseDirectory));
+						DrawState.setCurrentDirList(Animator.dataPath(baseDirectory));
 					}
 				}
 			});
@@ -431,4 +414,80 @@ public class CharacterAnimation
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 	}
+	
+	public void loadData(Token token) throws LoadException
+	{
+		if ( ! token.getName().equals( "anim" ) ){
+			throw new LoadException( "Starting token is not 'anim'" );
+		}
+		
+		Token nameToken = token.findToken( "name" );
+		if ( nameToken != null )
+		{
+			nameField.setText(nameToken.readString(0));
+			name = nameToken.readString(0);
+		}
+		
+		Token typeToken = token.findToken( "type" );
+		if ( typeToken != null )
+		{
+			for(int i=0; i < typeCombo.getItemCount();++i)
+			{
+				if(((String)typeCombo.getItemAt(i)).equals(typeToken.readString(0)))
+				{
+					typeCombo.setSelectedIndex(i);
+					type = nameToken.readString(0);
+					break;
+				}
+			}
+			
+		}
+		
+		Token keyToken = token.findToken( "keys" );
+		if(keyToken != null)
+		{
+			try
+			{
+				for(int i = 0;;++i)
+				{
+					String temp = keyToken.readString(i);
+					if(temp != null)
+					{
+						keys.addElement(temp);
+					}
+					else break;
+				}
+			}
+			catch(Exception e)
+			{
+			}
+			keyList.setListData(keys);
+		}
+		
+		Token rangeToken = token.findToken( "range" );
+		if ( rangeToken != null )
+		{
+			rangeSpinner.setValue(new Integer(rangeToken.readInt(0)));
+			range = rangeToken.readInt(0);
+		}
+		
+		Token basedirToken = token.findToken( "basedir" );
+		if ( basedirToken != null )
+		{
+			basedirField.setText(basedirToken.readString(0));
+			baseDirectory = basedirToken.readString(0);
+		}
+		
+		for ( Iterator it = token.getTokens().iterator(); it.hasNext(); ){
+			Token t = (Token) it.next();
+			AnimationEvent ae = EventFactory.getEvent(t.getName());
+			if(ae != null)
+			{
+				ae.loadToken(t);
+				events.addElement(ae);
+			}
+		}
+		eventList.setListData(events);
+	}
+	
 }

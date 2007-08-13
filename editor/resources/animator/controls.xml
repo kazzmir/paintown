@@ -1,0 +1,27 @@
+<panel layout="GridBagLayout">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.BOTH"
+			/>
+		<hbox>
+			<label text="Speed" />
+			<spinner id="speed" />
+			<glue />
+		</hbox>
+		<hbox>
+			<button text="Stop" id="stop" />
+			<button text="Play" id="play" />
+			<glue />
+		</hbox>
+		<hbox>
+			<button text="Show Token" id="token" />
+			<glue />
+		</hbox>
+	</vbox>
+</panel>

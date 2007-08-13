@@ -10,27 +10,25 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class MoveEvent implements AnimationEvent
+public class ShadowEvent implements AnimationEvent
 {
 	private int _x;
 	private int _y;
-	private int _z;
 	
 	public void loadToken(Token token)
 	{
-		Token moveToken = token.findToken( "move" );
-		if(moveToken != null)
+		Token shadowToken = token.findToken( "shadow" );
+		if(shadowToken != null)
 		{
-			_x = moveToken.readInt(0);
-			_y = moveToken.readInt(1);
-			_z = moveToken.readInt(2);
+			_x = shadowToken.readInt(0);
+			_y = shadowToken.readInt(1);
 		}
 	}
 	
 	public void interact(DrawArea area)
 	{
-		area.setImageX(_x);
-		area.setImageY(_y);
+		//area.setImageX(_x);
+		//area.setImageY(_y);
 	}
 	
 	public String getName()
@@ -40,8 +38,8 @@ public class MoveEvent implements AnimationEvent
 	
 	public JDialog getEditor()
 	{
-		SwingEngine engine = new SwingEngine( "animator/eventmove.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,150);
+		SwingEngine engine = new SwingEngine( "animator/eventshadow.xml" );
+		((JDialog)engine.getRootComponent()).setSize(200,100);
 		
 		final JSpinner xspin = (JSpinner) engine.find( "x" );
 		xspin.setValue(new Integer(_x));
@@ -61,25 +59,15 @@ public class MoveEvent implements AnimationEvent
 				_y = ((Integer)yspin.getValue()).intValue();
 			}
 		});
-		final JSpinner zspin = (JSpinner) engine.find( "z" );
-		zspin.setValue(new Integer(_z));
-		zspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
-				_z = ((Integer)zspin.getValue()).intValue();
-			}
-		});
 		return (JDialog)engine.getRootComponent();
 	}
 	
 	public Token getToken()
 	{
-		Token temp = new Token("move");
-		temp.addToken(new Token("move"));
+		Token temp = new Token("shadow");
+		temp.addToken(new Token("shadow"));
 		temp.addToken(new Token(Integer.toString(_x)));
 		temp.addToken(new Token(Integer.toString(_y)));
-		temp.addToken(new Token(Integer.toString(_z)));
 		
 		return temp;
 	}

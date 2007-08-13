@@ -14,9 +14,13 @@ public class FaceEvent implements AnimationEvent
 {
 	private String _face = "reverse";
 	
-	public void face(String face)
+	public void loadToken(Token token)
 	{
-		_face = face;
+		Token faceToken = token.findToken( "face" );
+		if(faceToken != null)
+		{
+			_face = faceToken.readString(0);
+		}
 	}
 	
 	public void interact(DrawArea area)

@@ -16,11 +16,15 @@ public class CoordsEvent implements AnimationEvent
 	private int _y;
 	private int _z;
 	
-	public void coords(int x, int y, int z)
+	public void loadToken(Token token)
 	{
-		_x = x;
-		_y = y;
-		_z = z;
+		Token coordToken = token.findToken( "coords" );
+		if(coordToken != null)
+		{
+			_x = coordToken.readInt(0);
+			_y = coordToken.readInt(1);
+			_z = coordToken.readInt(2);
+		}
 	}
 	
 	public void interact(DrawArea area)

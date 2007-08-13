@@ -22,7 +22,7 @@
 			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTH" />
 	</panel>
-	<panel id="other" border="MatteBorder(2,2,2,2,667A63)">
+	<panel id="controls" border="MatteBorder(2,2,2,2,667A63)">
 		<gridbagconstraints
 			gridx="1"
 			gridy="1"

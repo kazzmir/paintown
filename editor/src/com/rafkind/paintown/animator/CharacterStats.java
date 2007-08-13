@@ -5,6 +5,7 @@ import java.io.*;
 import javax.swing.*;
 
 import com.rafkind.paintown.*;
+import com.rafkind.paintown.exception.*;
 import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.SpecialPanel;
 import com.rafkind.paintown.animator.DrawArea;
@@ -155,7 +156,7 @@ public abstract class CharacterStats
 	
 	public void createAnimation()
 	{
-		CharacterAnimation temp = new CharacterAnimation(_animator);
+		CharacterAnimation temp = new CharacterAnimation();
 		_animator.addNewTab(temp.getEditor(), temp.getName());
 		animations.addElement(temp);
 	}
@@ -188,18 +189,13 @@ public abstract class CharacterStats
 		_animator = anim;
 	}
 	
-	public RelativeFileChooser getNewFileChooser()
-	{
-		return _animator.getNewFileChooser();
-	}
-	
 	abstract public SpecialPanel getEditor();
 	
 	abstract public DrawArea getDrawArea();
 	
-	abstract public void saveData();
+	abstract public void saveData( File f ) throws LoadException;
 	
-	abstract public void loadData();
+	abstract public void loadData( File f ) throws LoadException;
 	
 	abstract public Token getToken();
 	

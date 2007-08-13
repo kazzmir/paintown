@@ -10,16 +10,16 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class DelayEvent implements AnimationEvent
+public class ZDistanceEvent implements AnimationEvent
 {
-	private int _delay;
+	private int _d;
 	
 	public void loadToken(Token token)
 	{
-		Token delayToken = token.findToken( "delay" );
-		if(delayToken != null)
+		Token dToken = token.findToken( "z-distance" );
+		if(dToken != null)
 		{
-			_delay = delayToken.readInt(0);
+			_d = dToken.readInt(0);
 		}
 	}
 	
@@ -35,16 +35,16 @@ public class DelayEvent implements AnimationEvent
 	
 	public JDialog getEditor()
 	{
-		SwingEngine engine = new SwingEngine( "animator/eventdelay.xml" );
+		SwingEngine engine = new SwingEngine( "animator/eventzdistance.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,50);
 		
-		final JSpinner delayspin = (JSpinner) engine.find( "delay" );
-		delayspin.setValue(new Integer(_delay));
-		delayspin.addChangeListener( new ChangeListener()
+		final JSpinner dspin = (JSpinner) engine.find( "zdistance" );
+		dspin.setValue(new Integer(_d));
+		dspin.addChangeListener( new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent changeEvent)
 			{
-				_delay = ((Integer)delayspin.getValue()).intValue();
+				_d = ((Integer)dspin.getValue()).intValue();
 			}
 		});
 		return (JDialog)engine.getRootComponent();
@@ -52,9 +52,9 @@ public class DelayEvent implements AnimationEvent
 	
 	public Token getToken()
 	{
-		Token temp = new Token("delay");
-		temp.addToken(new Token("delay"));
-		temp.addToken(new Token(Integer.toString(_delay)));
+		Token temp = new Token("z-distance");
+		temp.addToken(new Token("z-distance"));
+		temp.addToken(new Token(Integer.toString(_d)));
 		
 		return temp;
 	}

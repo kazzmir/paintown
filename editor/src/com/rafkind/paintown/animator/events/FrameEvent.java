@@ -15,9 +15,13 @@ public class FrameEvent implements AnimationEvent
 {
 	private String _frame = "";
 	
-	public void frame(String frame)
+	public void loadToken(Token token)
 	{
-		_frame = frame;
+		Token frameToken = token.findToken( "frame" );
+		if(frameToken != null)
+		{
+			_frame = frameToken.readString(0);
+		}
 	}
 	
 	public void interact(DrawArea area)

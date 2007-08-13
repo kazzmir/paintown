@@ -30,11 +30,13 @@ public class Animator extends JFrame {
 
 	private static File dataPath = new File( "data" );
 	private static int CURRENT_TAB = 0;
+	private static Animator _animator;
 	
 	private static JTabbedPane pane = new JTabbedPane();
 
 	public Animator() throws Exception {
 		super( "Paintown Animator" );
+		_animator = this;
 		this.setSize( (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 50, (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 50 );
 
 		JMenuBar menuBar = new JMenuBar();
@@ -176,6 +178,37 @@ public class Animator extends JFrame {
 				addNewTab(tempPlayer.getEditor(), "New Character");
 			}
 		});
+		
+		loadCharacter.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				JFileChooser chooser = new JFileChooser( new File( "." ) );	
+				chooser.setFileFilter( new FileFilter(){
+					public boolean accept( File f ){
+						return f.isDirectory() || f.getName().endsWith( ".txt" );
+					}
+
+					public String getDescription(){
+						return "Character files";
+					}
+				});
+
+				int returnVal = chooser.showOpenDialog( Animator.this );
+				if ( returnVal == JFileChooser.APPROVE_OPTION ){
+					final File f = chooser.getSelectedFile();
+					try{
+						Player tempPlayer = new Player(Animator.this);
+						tempPlayer.loadData(f);
+						addNewTab(tempPlayer.getEditor(), tempPlayer.getName());
+					} catch ( LoadException le ){
+						//showError( "Could not load " + f.getName() );
+						System.out.println( "Could not load " + f.getName() );
+						le.printStackTrace();
+					}
+				}	
+			}
+		});
 	}
 
 	public static File dataPath( File f ){
@@ -194,9 +227,9 @@ public class Animator extends JFrame {
 		dataPath = f;
 	}
 	
-	public RelativeFileChooser getNewFileChooser()
+	public static RelativeFileChooser getNewFileChooser()
 	{
-		return new RelativeFileChooser(this, getDataPath());
+		return new RelativeFileChooser(_animator, getDataPath());
 	}
 	
 	public void addNewTab( SpecialPanel panel , String name)

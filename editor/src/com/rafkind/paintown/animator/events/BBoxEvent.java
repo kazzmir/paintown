@@ -17,12 +17,16 @@ public class BBoxEvent implements AnimationEvent
 	private int _x2;
 	private int _y2;
 	
-	public void bbox(int x1, int y1, int x2, int y2)
+	public void loadToken(Token token)
 	{
-		_x1 = x1;
-		_y1 = y1;
-		_x2 = x2;
-		_y2 = y2;
+		Token bboxToken = token.findToken( "bbox" );
+		if(bboxToken != null)
+		{
+			_x1 = bboxToken.readInt(0);
+			_y1 = bboxToken.readInt(1);
+			_x2 = bboxToken.readInt(2);
+			_y2 = bboxToken.readInt(3);
+		}
 	}
 	
 	public void interact(DrawArea area)

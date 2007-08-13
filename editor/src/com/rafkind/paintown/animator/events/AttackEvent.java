@@ -19,14 +19,24 @@ public class AttackEvent implements AnimationEvent
 	private int _damage;
 	private int _force;
 	
-	public void attack(int x1, int y1, int x2, int y2, int force, int damage)
+	public void loadToken(Token token)
 	{
-		_x1 = x1;
-		_y1 = y1;
-		_x2 = x2;
-		_y2 = y2;
-		_force = force;
-		_damage = damage;
+		Token attackToken = token.findToken( "attack" );
+		if(attackToken != null)
+		{
+			Token x1 = attackToken.findToken("x1");
+			if(x1 != null)_x1 = x1.readInt(0);
+			Token y1 = attackToken.findToken("y1");
+			if(y1 != null)_y1 = y1.readInt(0);
+			Token x2 = attackToken.findToken("x2");
+			if(x2 != null)_x2 = x2.readInt(0);
+			Token y2 = attackToken.findToken("y2");
+			if(y2 != null)_y2 = y2.readInt(0);
+			Token damage = attackToken.findToken("damage");
+			if(damage != null)_damage = damage.readInt(0);
+			Token force = attackToken.findToken("force");
+			if(force != null)_force = force.readInt(0);
+		}
 	}
 	
 	public void interact(DrawArea area)

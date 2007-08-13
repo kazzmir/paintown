@@ -1,0 +1,44 @@
+<dialog layout="GridBagLayout" size="200">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.BOTH"
+			/>
+		<hbox>
+			<label text="Set at X" />
+			<spinner id="atx" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Set at Y" />
+			<spinner id="aty" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Set Projectile" />
+			<textfield id="projectile" />
+			<button text="Change" id="projectile-button" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Set Life" />
+			<spinner id="life" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Set speed X" />
+			<panel id="speedx" />
+			<glue />
+		</hbox>
+		<hbox>
+			<label text="Set speed Y" />
+			<panel id="speedy" />
+			<glue />
+		</hbox>
+	</vbox>
+</dialog>

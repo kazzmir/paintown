@@ -15,4 +15,6 @@ public interface AnimationEvent
 	public JDialog getEditor();
 	
 	public Token getToken();
+	
+	public void loadToken(Token token);
 }
