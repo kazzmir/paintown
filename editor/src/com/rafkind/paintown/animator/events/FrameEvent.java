@@ -7,23 +7,36 @@ import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.DrawState;
+import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
 public class FrameEvent implements AnimationEvent
 {
-	private String _basedir = "";
 	private String _frame = "";
 	
 	public void loadToken(Token token)
 	{
-		_frame = token.readString(0);
+    Token parent = token.getParent().getParent();
+    Token basedir = parent.findToken("basedir");
+    if(basedir != null)
+    {
+		 					 _frame = basedir.readString(0) + token.readString(0);
+    }
+    else _frame = token.readString(0);
 	}
 	
 	public void interact(DrawArea area)
 	{
-		
+				 try
+				 {
+				 			area.setImage(MaskedImage.load(_frame));
+				 }
+				 catch(Exception e)
+				 {
+				      System.out.println("Problem!");
+				 }
 	}
 	
 	public String getName()

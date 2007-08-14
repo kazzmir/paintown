@@ -33,7 +33,7 @@ public final class DrawArea extends Canvas
 			g.setColor( new Color( 255, 255, 0 ) );
 			g.drawLine(0,350,640,350);
 			if(img != null)g.drawImage( img, x + img_x, y + img_y, null );
-			if(!attackArea.empty())attackArea.render(g);
+			if(!attackArea.empty())attackArea.render(g, x + img_x, y + img_y);
 	}
 	
 	public void setImage(BufferedImage i)

@@ -27,8 +27,7 @@ public class BBoxEvent implements AnimationEvent
 	
 	public void interact(DrawArea area)
 	{
-		//area.setImageX(_x);
-		//area.setImageY(_y);
+	 			 //area.setAttack(new BoundingBox(_x1,_y1,_x2,_y2));
 	}
 	
 	public String getName()

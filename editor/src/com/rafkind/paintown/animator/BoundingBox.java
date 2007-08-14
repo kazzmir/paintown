@@ -18,12 +18,12 @@ public class BoundingBox
 	 			 return (x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0);
 	}
 	
-	public void render(Graphics g)
+	public void render(Graphics g, int x, int y)
 	{
 	 			 Color color = g.getColor();
 	 			 
 	 			 g.setColor(new Color(255,255,255));
-	 			 g.drawRect(x1,y1,x2-x1,y2-y1);
+	 			 g.drawRect(x + x1,y + y1,x2-x1,y2-y1);
 	 			 g.setColor(color);
 	}
 	
