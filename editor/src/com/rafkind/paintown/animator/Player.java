@@ -459,6 +459,31 @@ public final class Player extends CharacterStats
 			}
 		});
 		
+		 stopAnim = (JButton) controlEditor.find( "stop" );
+		 stopAnim.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				if(animList.getSelectedValue() != null)
+				{
+			          ((CharacterAnimation)animList.getSelectedValue()).stopAnimation();
+				}
+			}
+		});
+	   playAnim = (JButton) controlEditor.find( "play" );
+	   playAnim.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				if(animList.getSelectedValue() != null)
+				{
+			          ((CharacterAnimation)animList.getSelectedValue()).startAnimation(((Integer)speedAnim.getValue()).intValue());
+				}
+			}
+		});
+	   speedAnim = (JSpinner) controlEditor.find( "speed" );
+	   speedAnim.setValue(new Integer(300));
+		
 		context.add((JComponent)contextEditor.getRootComponent());
 		
 		controls.add((JComponent)controlEditor.getRootComponent());

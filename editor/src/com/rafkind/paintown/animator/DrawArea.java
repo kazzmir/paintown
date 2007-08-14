@@ -18,6 +18,8 @@ public final class DrawArea extends Canvas
 	private BufferedImage img;
 	private int img_x;
 	private int img_y;
+	private static int x=320;
+  private static int y=200;
 	
 	public Dimension getPreferredSize()
 	{
@@ -31,7 +33,7 @@ public final class DrawArea extends Canvas
 			g.fillRect( 0, 0, 640, 480 );
 			g.setColor( new Color( 255, 255, 0 ) );
 			g.drawLine(0,350,640,350);
-			if(img != null)g.drawImage( img, img_x, img_y, null );
+			if(img != null)g.drawImage( img, x + img_x, y + img_y, null );
 		//}
 		//else System.out.println( "No drawing!" );
 	}
