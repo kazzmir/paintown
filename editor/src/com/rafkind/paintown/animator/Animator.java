@@ -209,6 +209,61 @@ public class Animator extends JFrame {
 				}	
 			}
 		});
+		
+		saveCharacter.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( pane.getSelectedComponent() != null ){
+					Player player = ((SpecialPanel)pane.getSelectedComponent()).getPlayer();
+					if(player!= null)
+					{
+						File file = player.getPath();
+						if ( file == null ){
+							file = userSelectFile();
+						}
+						/* write the text to a file */
+						if ( file != null ){
+							try{
+								player.saveData(file);
+							} catch ( Exception e ){
+								e.printStackTrace();
+								//showError( "Could not save " + file + " because " + e.getMessage() );
+							}
+						}
+					}
+				}
+			}
+		});
+
+		saveCharacterAs.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( pane.getSelectedComponent() != null ){
+					Player player = ((SpecialPanel)pane.getSelectedComponent()).getPlayer();
+					if(player!=null)
+					{
+						File file = userSelectFile();
+						/* write the text to a file */
+						if ( file != null ){
+							try{
+								player.saveData(file);
+							} catch ( Exception e ){
+								e.printStackTrace();
+								//showError( "Could not save " + file + " because " + e.getMessage() );
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	private File userSelectFile(){
+		JFileChooser chooser = new JFileChooser( new File( "." ) );
+		int returnVal = chooser.showOpenDialog( Animator.this );
+		if ( returnVal == JFileChooser.APPROVE_OPTION ){
+			return chooser.getSelectedFile();
+		} else {
+			return null;
+		}
 	}
 
 	public static File dataPath( File f ){

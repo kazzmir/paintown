@@ -15,6 +15,9 @@ public abstract class CharacterStats
 	// Animator for stuff
 	private Animator _animator;
 	
+	// Path info
+	private File file;
+	
 	// Basic character info
 	protected String name = "";
 	protected int health;
@@ -37,6 +40,16 @@ public abstract class CharacterStats
 	
 	// Vector of CharacterAnimations
 	protected Vector animations = new Vector();
+	
+	public File getPath()
+	{
+		return file;
+	}
+	
+	public void setPath(File f)
+	{
+		file = f;
+	}
 	
 	public String getName()
 	{

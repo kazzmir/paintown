@@ -13,10 +13,8 @@ import javax.swing.filechooser.FileFilter;
 
 import com.rafkind.paintown.animator.CharacterStats;
 import com.rafkind.paintown.animator.DrawArea;
-import com.rafkind.paintown.exception.LoadException;
-import com.rafkind.paintown.Token;
-import com.rafkind.paintown.TokenReader;
-import com.rafkind.paintown.RelativeFileChooser;
+import com.rafkind.paintown.exception.*;
+import com.rafkind.paintown.*;
 
 public final class Player extends CharacterStats
 {
@@ -61,7 +59,7 @@ public final class Player extends CharacterStats
 	
 	public SpecialPanel getEditor()
 	{	
-		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField);
+		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField,this);
 	}
 	
 	public DrawArea getDrawArea()
@@ -71,6 +69,18 @@ public final class Player extends CharacterStats
 	
 	public void saveData(File f) throws LoadException
 	{
+		setPath(f);
+		try
+		{
+			FileOutputStream out = new FileOutputStream( f );
+			new PrintStream( out ).print( getToken().toString() );
+			out.close();
+			System.out.println( getToken().toString() );
+		}
+		catch(Exception e)
+		{
+			throw new LoadException( "Couldn't save!" );
+		}
 	}
 	
 	public void loadData(File f) throws LoadException
@@ -81,6 +91,8 @@ public final class Player extends CharacterStats
 		if ( ! head.getName().equals( "character" ) ){
 			throw new LoadException( "Starting token is not 'character'" );
 		}
+		
+		setPath(f);
 		
 		Token nameToken = head.findToken( "name" );
 		if ( nameToken != null )
@@ -436,8 +448,9 @@ public final class Player extends CharacterStats
 			{
 				final JDialog tempDiag = new JDialog();
 				tempDiag.setSize(400,400);
-				final JEditorPane tempText = new JEditorPane();
-				tempDiag.add(tempText);
+				final JTextArea tempText = new JTextArea();
+				final JScrollPane tempPane = new JScrollPane(tempText);
+				tempDiag.add(tempPane);
 				tempText.setText(getToken().toString());
 				tempDiag.show();
 			}
