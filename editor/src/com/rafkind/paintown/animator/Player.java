@@ -482,7 +482,7 @@ public final class Player extends CharacterStats
 			}
 		});
 	   speedAnim = (JSpinner) controlEditor.find( "speed" );
-	   speedAnim.setValue(new Integer(300));
+	   speedAnim.setValue(new Integer(180));
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 		

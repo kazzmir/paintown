@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.DrawState;
 import com.rafkind.paintown.MaskedImage;
@@ -18,25 +19,25 @@ public class FrameEvent implements AnimationEvent
 	
 	public void loadToken(Token token)
 	{
-    Token parent = token.getParent().getParent();
-    Token basedir = parent.findToken("basedir");
-    if(basedir != null)
-    {
-		 					 _frame = basedir.readString(0) + token.readString(0);
-    }
-    else _frame = token.readString(0);
+		Token parent = token.getParent();
+		Token basedir = parent.findToken("basedir");
+		if(basedir != null)
+		{
+			_frame = basedir.readString(0) + token.readString(0);
+		}
+		else _frame = token.readString(0);
 	}
 	
 	public void interact(DrawArea area)
 	{
-				 try
-				 {
-				 			area.setImage(MaskedImage.load(_frame));
-				 }
-				 catch(Exception e)
-				 {
-				      System.out.println("Problem!");
-				 }
+		try
+		{
+			area.setImage(MaskedImage.load(Animator.getDataPath() + "/" + _frame));
+		}
+		catch(Exception e)
+		{
+			System.out.println("Problem! --> " + Animator.getDataPath() + "/" + _frame);
+		}
 	}
 	
 	public String getName()

@@ -144,40 +144,40 @@ public class CharacterAnimation
 	
 	public void startAnimation(int msecs)
 	{
-	 			 if(timer.isRunning())stopAnimation();
-	 			 Action doAnim = new AbstractAction() {
-				   Iterator itor = events.iterator();
-					 public void actionPerformed(ActionEvent e) {	
-	  			 
-	  			 				try
-	  			 				{
-				  			 				AnimationEvent anim = (AnimationEvent)itor.next();
-				  			 				anim.interact(area);
-				  			 				area.repaint();
-	  			 				}
-						      catch(Exception bleh)
-									{
-									 								itor = events.iterator();
- 								  }
-           }
-				 };
-			
-				 timer.setDelay(msecs);
-				 timer.addActionListener(doAnim);
-				 timer.start();
+		if(timer.isRunning())stopAnimation();
+		Action doAnim = new AbstractAction() {
+			Iterator itor = events.iterator();
+			public void actionPerformed(ActionEvent e) {	
+				try
+				{
+					AnimationEvent anim = (AnimationEvent)itor.next();
+					anim.interact(area);
+					//area.repaint();
+				}
+				catch(Exception bleh)
+				{
+					itor = events.iterator();
+					area.resetData();
+				}
+			}
+		};
+	
+		timer.setDelay(msecs);
+		timer.addActionListener(doAnim);
+		timer.start();
 	}
 	
 	public void stopAnimation()
 	{
-	 			 timer.stop();
-	 			 Vector temp = new Vector();
-	 			 temp.copyInto(timer.getActionListeners());
-	 			 Iterator tItor = temp.iterator();
-	       while(tItor.hasNext())
-					{
-						   Action a = (Action)tItor.next();
-						   timer.removeActionListener(a);
-					}
+		timer.stop();
+		Vector temp = new Vector();
+		temp.copyInto(timer.getActionListeners());
+		Iterator tItor = temp.iterator();
+		while(tItor.hasNext())
+		{
+			Action a = (Action)tItor.next();
+			timer.removeActionListener(a);
+		}
 	}
 	
 	public Token getToken()

@@ -6,6 +6,9 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.image.*;
 import java.awt.geom.*;
+import java.awt.event.*;
+import javax.swing.Timer;
+import javax.swing.event.*;
 
 import org.swixml.SwingEngine;
 
@@ -18,8 +21,8 @@ public final class DrawArea extends Canvas
 	private int img_x;
 	private int img_y;
 	private static int x=320;
-  private static int y=200;
-  private BoundingBox attackArea = new BoundingBox(0,0,0,0);
+	private static int y=200;
+	private BoundingBox attackArea = new BoundingBox(0,0,0,0);
 	
 	public Dimension getPreferredSize()
 	{
@@ -48,12 +51,12 @@ public final class DrawArea extends Canvas
 	
 	public void setImageX(int x)
 	{
-		img_x = x;
+		img_x += x;
 	}
 	
 	public void setImageY(int y)
 	{
-		img_y = y;
+		img_y += y;
 	}
 	
 	public int getImageX()
@@ -68,13 +71,24 @@ public final class DrawArea extends Canvas
 	
 	public void setAttack(BoundingBox at)
 	{
-	 			 attackArea = at;
+		attackArea = at;
+	}
+	
+	public void resetData()
+	{
+		img_x = img_y = 0;
+		attackArea = new BoundingBox(0,0,0,0);
 	}
 	
 	public DrawArea()
 	{
-		// Nothing
-		//img = new BufferedImage(60,60,BufferedImage.TYPE_INT_ARGB);
 		img = null;
+		Action doAnim = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {	
+				repaint();
+			}
+		};
+	
+		new Timer(1000/60,doAnim).start();
 	}
 }
