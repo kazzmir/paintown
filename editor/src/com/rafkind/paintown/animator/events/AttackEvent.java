@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.BoundingBox;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
@@ -37,8 +38,7 @@ public class AttackEvent implements AnimationEvent
 	
 	public void interact(DrawArea area)
 	{
-		//area.setImageX(_x);
-		//area.setImageY(_y);
+	 			 area.setAttack(new BoundingBox(_x1,_y1,_x2,_y2));
 	}
 	
 	public String getName()

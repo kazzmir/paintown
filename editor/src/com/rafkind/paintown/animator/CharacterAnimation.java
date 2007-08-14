@@ -153,6 +153,7 @@ public class CharacterAnimation
 	  			 				{
 				  			 				AnimationEvent anim = (AnimationEvent)itor.next();
 				  			 				anim.interact(area);
+				  			 				area.repaint();
 	  			 				}
 						      catch(Exception bleh)
 									{
