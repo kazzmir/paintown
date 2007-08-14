@@ -341,14 +341,17 @@ public class CharacterAnimation
 			public void actionPerformed( ActionEvent event ){
 				AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
 				JDialog dialog = temp.getEditor();
-				dialog.addWindowStateListener(new WindowStateListener()
+				if(dialog != null)
 				{
-					public void windowStateChanged(WindowEvent e)
-					{
-						eventList.setListData(events);
-					}
-				});
-				dialog.show();
+						dialog.addWindowStateListener(new WindowStateListener()
+						{
+							public void windowStateChanged(WindowEvent e)
+							{
+								eventList.setListData(events);
+							}
+						});
+						dialog.show();
+				}
 				events.addElement(temp);
 				eventList.setListData(events);
 			}
@@ -360,14 +363,17 @@ public class CharacterAnimation
 				if(events.isEmpty())return;
 				AnimationEvent temp = (AnimationEvent)events.elementAt(eventList.getSelectedIndex());
 				JDialog dialog = temp.getEditor();
-				dialog.addWindowStateListener(new WindowStateListener()
+				if(dialog != null)
 				{
-					public void windowStateChanged(WindowEvent e)
-					{
-						eventList.setListData(events);
-					}
-				});
-				dialog.show();
+						dialog.addWindowStateListener(new WindowStateListener()
+						{
+							public void windowStateChanged(WindowEvent e)
+							{
+								eventList.setListData(events);
+							}
+						});
+						dialog.show();
+				}
 			}
 		});
 		

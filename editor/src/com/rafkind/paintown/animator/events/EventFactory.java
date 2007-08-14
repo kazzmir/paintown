@@ -25,6 +25,7 @@ public class EventFactory
 			_events.put( new String("frame"), new Lambda0(){public Object invoke(){return new FrameEvent();}});
 			_events.put( new String("jump"), new Lambda0(){public Object invoke(){return new JumpEvent();}});
 			_events.put( new String("move"), new Lambda0(){public Object invoke(){return new MoveEvent();}});
+			_events.put( new String("nop"), new Lambda0(){public Object invoke(){return new NopEvent();}});
 			_events.put( new String("offset"), new Lambda0(){public Object invoke(){return new OffsetEvent();}});
 			_events.put( new String("projectile"), new Lambda0(){public Object invoke(){return new ProjectileEvent();}});
 			_events.put( new String("shadow"), new Lambda0(){public Object invoke(){return new ShadowEvent();}});
