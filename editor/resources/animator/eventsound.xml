@@ -1,0 +1,19 @@
+<dialog layout="GridBagLayout" size="200">
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.BOTH"
+			/>
+		<hbox>
+			<label text="Set Sound" />
+			<textfield id="sound" />
+			<button text="Change" id="sound-button" />
+			<glue />
+		</hbox>
+	</vbox>
+</dialog>
