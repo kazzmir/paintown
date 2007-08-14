@@ -384,7 +384,10 @@ public final class Player extends CharacterStats
 			public void mouseClicked(MouseEvent event)
 			{
 				//animList.setListData(animations);
-				_drawArea = ((CharacterAnimation)animList.getSelectedValue()).getDrawArea();
+				if(!animations.isEmpty())
+				{
+					_drawArea = ((CharacterAnimation)animList.getSelectedValue()).getDrawArea();
+				}
 			}
 		});
 		
