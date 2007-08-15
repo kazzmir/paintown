@@ -10,11 +10,6 @@
 			fill="GridBagConstraints.BOTH"
 			/>
 		<hbox>
-			<label text="Speed" />
-			<spinner id="speed" />
-			<glue />
-		</hbox>
-		<hbox>
 			<button text="Stop" id="stop" />
 			<button text="Play" id="play" />
 			<glue />

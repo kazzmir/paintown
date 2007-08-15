@@ -377,7 +377,7 @@ public final class Player extends CharacterStats
 		});
 		
 		animList = (JList) contextEditor.find( "anims");
-		
+		/*
 		animList.addMouseListener( new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent event)
@@ -389,6 +389,7 @@ public final class Player extends CharacterStats
 				}
 			}
 		});
+		*/
 		
 		animList.setCellRenderer(new DefaultListCellRenderer() {
 			public Component getListCellRendererComponent(
@@ -458,25 +459,25 @@ public final class Player extends CharacterStats
 			}
 		});
 		
-		 stopAnim = (JButton) controlEditor.find( "stop" );
-		 stopAnim.addActionListener( new AbstractAction()
+		stopAnim = (JButton) controlEditor.find( "stop" );
+		stopAnim.addActionListener( new AbstractAction()
 		{
 			public void actionPerformed( ActionEvent event )
 			{
 				if(animList.getSelectedValue() != null)
 				{
-			          ((CharacterAnimation)animList.getSelectedValue()).stopAnimation();
+			          ((CharacterAnimation)animList.getSelectedValue()).stopAnim();
 				}
 			}
 		});
-	   playAnim = (JButton) controlEditor.find( "play" );
-	   playAnim.addActionListener( new AbstractAction()
+		playAnim = (JButton) controlEditor.find( "play" );
+		playAnim.addActionListener( new AbstractAction()
 		{
 			public void actionPerformed( ActionEvent event )
 			{
 				if(animList.getSelectedValue() != null)
 				{
-			          ((CharacterAnimation)animList.getSelectedValue()).startAnimation();
+			          ((CharacterAnimation)animList.getSelectedValue()).startAnim(_drawArea);
 				}
 			}
 		});

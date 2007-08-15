@@ -24,7 +24,7 @@ public final class DrawArea extends Canvas
 	private int offset_y;
 	private static int x=320;
 	private static int y=200;
-	private static int _delay=16;
+	private static int _delay=160;
 	private int delay;
 	private boolean _delayChanged;
 	private BoundingBox attackArea = new BoundingBox(0,0,0,0);
@@ -87,7 +87,7 @@ public final class DrawArea extends Canvas
 	
 	public void setDelay(int d)
 	{
-		delay = d;
+		delay = d * 100;
 		_delayChanged=true;
 	}
 	

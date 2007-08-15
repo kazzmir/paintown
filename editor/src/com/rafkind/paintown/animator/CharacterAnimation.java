@@ -23,6 +23,7 @@ import com.rafkind.paintown.animator.events.EventFactory;
 public class CharacterAnimation
 {
 	private DrawArea area;
+	private DrawArea externalArea;
 	private SwingEngine animEditor;
 	private SwingEngine contextEditor;
 	private JPanel context;
@@ -66,6 +67,7 @@ public class CharacterAnimation
 	private Vector events = new Vector();
 	
 	private Timer timer;
+	private Timer externalTimer;
 	
 	public void setName(String n)
 	{
@@ -142,7 +144,7 @@ public class CharacterAnimation
 		return events;
 	}
 	
-	public void startAnimation()
+	private void startAnimation()
 	{
 		if(timer.isRunning())stopAnimation();
 		Action doAnim = new AbstractAction() {
@@ -171,7 +173,7 @@ public class CharacterAnimation
 		timer.start();
 	}
 	
-	public void stopAnimation()
+	private void stopAnimation()
 	{
 		timer.stop();
 		Vector temp = new Vector();
@@ -181,6 +183,49 @@ public class CharacterAnimation
 		{
 			Action a = (Action)tItor.next();
 			timer.removeActionListener(a);
+		}
+	}
+	
+	public void startAnim(DrawArea drawarea)
+	{
+		externalArea = drawarea;
+		if(externalTimer.isRunning())stopAnimation();
+		Action doAnim = new AbstractAction() {
+			Iterator itor = events.iterator();
+			public void actionPerformed(ActionEvent e) {	
+				try
+				{
+					AnimationEvent anim = (AnimationEvent)itor.next();
+					anim.interact(externalArea);
+					externalArea.repaint();
+					if(externalArea.delayChanged())
+					{
+						externalTimer.setDelay(externalArea.getDelay());
+					}
+				}
+				catch(Exception bleh)
+				{
+					itor = events.iterator();
+					externalArea.resetData();
+				}
+			}
+		};
+		externalArea.resetDelay();
+		externalTimer.setDelay(externalArea.getDelay());
+		externalTimer.addActionListener(doAnim);
+		externalTimer.start();
+	}
+	
+	public void stopAnim()
+	{
+		externalTimer.stop();
+		Vector temp = new Vector();
+		temp.copyInto(externalTimer.getActionListeners());
+		Iterator tItor = temp.iterator();
+		while(tItor.hasNext())
+		{
+			Action a = (Action)tItor.next();
+			externalTimer.removeActionListener(a);
 		}
 	}
 	
@@ -471,6 +516,7 @@ public class CharacterAnimation
 		context.add((JComponent)contextEditor.getRootComponent());
 		
 		timer = new Timer(0,null);
+		externalTimer = new Timer(0,null);
 	}
 	
 	public void loadData(Token token) throws LoadException
