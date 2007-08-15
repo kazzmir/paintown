@@ -410,6 +410,18 @@ public class CharacterAnimation
 		
 		eventList = (JList) contextEditor.find( "events");
 		
+		eventList.addListSelectionListener(new ListSelectionListener()
+		{
+			public void valueChanged(ListSelectionEvent e)
+			{
+				if(!events.isEmpty() && !timer.isRunning())
+				{
+					((AnimationEvent)eventList.getSelectedValue()).interact(area);
+					area.repaint();
+				}
+			}
+		});
+		
 		eventList.setCellRenderer(new DefaultListCellRenderer() {
 			public Component getListCellRendererComponent(
 				JList list,
