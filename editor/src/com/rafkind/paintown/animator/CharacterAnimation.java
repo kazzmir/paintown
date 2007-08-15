@@ -159,6 +159,7 @@ public class CharacterAnimation
 				try
 				{
 					AnimationEvent anim = (AnimationEvent)itor.next();
+					eventList.setSelectedValue(anim,true);
 					anim.interact(area);
 					area.repaint();
 					if(area.delayChanged())
