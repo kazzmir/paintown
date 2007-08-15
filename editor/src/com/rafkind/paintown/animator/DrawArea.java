@@ -26,7 +26,7 @@ public final class DrawArea extends JComponent
 	private static int x=320;
 	private static int y=200;
 	private BoundingBox attackArea;
-	private Date time;
+	private long delayTime;
 	private long endTime;
 	private Vector registeredEvents;
 	private Iterator eventItor;
@@ -92,16 +92,18 @@ public final class DrawArea extends JComponent
 	
 	public void setDelay(int d)
 	{
-		if(d != 0)
-		{
-			endTime = time.getTime() + (10000000/d);
-		}
-		else endTime = time.getTime();
+		if(d != 0)d = 1;
+		else delayTime = 9000000/d;
+	}
+	
+	private void startDelay()
+	{
+		endTime = Calendar.getInstance().getTimeInMillis() + delayTime;
 	}
 	
 	public boolean checkDelay()
 	{
-		return (time.getTime() > endTime);
+		return (Calendar.getInstance().getTimeInMillis() > endTime);
 	}
 	
 	public void registerEvents(Vector events)
@@ -135,12 +137,17 @@ public final class DrawArea extends JComponent
 					currentEvent = (AnimationEvent)eventItor.next();
 					currentEvent.interact(this);
 					repaint();
+					if(currentEvent.getToken().getName().equals("frame") && eventItor.hasNext())startDelay();
 				}
 				else
 				{
 					eventItor = registeredEvents.iterator();
 					resetData();
 				}
+			}
+			else
+			{
+				System.out.println(Long.toString(Calendar.getInstance().getTimeInMillis()) + " < " + Long.toString(endTime));
 			}
 		}
 	}
@@ -149,7 +156,8 @@ public final class DrawArea extends JComponent
 	{
 		img = null;
 		attackArea = new BoundingBox(0,0,0,0);
-		time = new Date();
+		delayTime = 1;
+		endTime = 1;
 		new Timer(1, new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {	
 				update();
