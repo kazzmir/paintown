@@ -167,15 +167,17 @@ public class CharacterAnimation
 						anim.interact(area);
 						area.repaint();
 						eventList.setSelectedValue(anim,true);
-						try
+						if(anim.getToken().getName().equals("frame"))
 						{
-							FrameEvent a = (FrameEvent)anim;
-							locked = true;
-							Thread.sleep(100 / area.getDelay());
-							locked = false;
-						}
-						catch(Exception ex)
-						{
+							try
+							{
+								locked = true;
+								Thread.sleep(100 / area.getDelay());
+								locked = false;
+							}
+							catch(Exception ex)
+							{
+							}
 						}
 					}
 					else
@@ -203,6 +205,8 @@ public class CharacterAnimation
 			Action a = (Action)tItor.next();
 			timer.removeActionListener(a);
 		}
+		
+		timer = new Timer(0,null);
 	}
 	
 	public void startAnim(DrawArea drawarea)
@@ -220,15 +224,17 @@ public class CharacterAnimation
 						AnimationEvent anim = (AnimationEvent)itor.next();
 						anim.interact(externalArea);
 						externalArea.repaint();
-						try
+						if(anim.getToken().getName().equals("frame"))
 						{
-							FrameEvent a = (FrameEvent)anim;
-							locked = true;
-							Thread.sleep(100 / externalArea.getDelay());
-							locked = false;
-						}
-						catch(Exception ex)
-						{
+							try
+							{
+								locked = true;
+								Thread.sleep(100 / externalArea.getDelay());
+								locked = false;
+							}
+							catch(Exception ex)
+							{
+							}
 						}
 					}
 					else
@@ -256,6 +262,8 @@ public class CharacterAnimation
 			Action a = (Action)tItor.next();
 			externalTimer.removeActionListener(a);
 		}
+		
+		externalTimer = new Timer(0,null);
 	}
 	
 	public Token getToken()
