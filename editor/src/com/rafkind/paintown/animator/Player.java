@@ -482,9 +482,9 @@ public final class Player extends CharacterStats
 			}
 		});
 		
-		context.add((JComponent)contextEditor.getRootComponent());
-		
 		controls.add((JComponent)controlEditor.getRootComponent());
+		
+		context.add((JComponent)contextEditor.getRootComponent());
 	}
 	
 	

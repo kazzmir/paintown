@@ -26,9 +26,11 @@ public class CharacterAnimation
 	private DrawArea externalArea;
 	private SwingEngine animEditor;
 	private SwingEngine contextEditor;
+	private SwingEngine controlEditor;
 	private JPanel context;
 	private JPanel canvas;
 	private JPanel other;
+	private JPanel controls;
 	private JTextField nameField;
 	private JComboBox typeCombo;
 	private JList keyList;
@@ -47,6 +49,10 @@ public class CharacterAnimation
 	private JButton eventRemove;
 	private JButton eventUp;
 	private JButton eventDown;
+	
+	private JButton displayToken;
+	private JButton stopAnim;
+	private JButton playAnim;
 	
 	// Name
 	private String name = "";
@@ -280,6 +286,8 @@ public class CharacterAnimation
 		
 		contextEditor = new SwingEngine ( "animator/animation.xml");
 		
+		controlEditor = new SwingEngine( "animator/controls.xml" );
+		
 		context = (JPanel) animEditor.find( "context" );
 		
 		nameField = (JTextField) contextEditor.find( "name" );
@@ -506,6 +514,43 @@ public class CharacterAnimation
 				eventList.setListData(events);
 			}
 		});
+		
+		controls = (JPanel) animEditor.find( "controls" );
+		
+		displayToken = (JButton) controlEditor.find( "token" );
+		
+		displayToken.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				final JDialog tempDiag = new JDialog();
+				tempDiag.setSize(400,400);
+				final JTextArea tempText = new JTextArea();
+				final JScrollPane tempPane = new JScrollPane(tempText);
+				tempDiag.add(tempPane);
+				tempText.setText(getToken().toString());
+				tempDiag.show();
+			}
+		});
+		
+		stopAnim = (JButton) controlEditor.find( "stop" );
+		stopAnim.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				stopAnimation();
+			}
+		});
+		playAnim = (JButton) controlEditor.find( "play" );
+		playAnim.addActionListener( new AbstractAction()
+		{
+			public void actionPerformed( ActionEvent event )
+			{
+				startAnimation();
+			}
+		});
+		
+		controls.add((JComponent)controlEditor.getRootComponent());
 		
 		canvas = (JPanel) animEditor.find( "canvas" );
 		area = new DrawArea();
