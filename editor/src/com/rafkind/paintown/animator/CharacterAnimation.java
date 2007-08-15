@@ -142,7 +142,7 @@ public class CharacterAnimation
 		return events;
 	}
 	
-	public void startAnimation(int msecs)
+	public void startAnimation()
 	{
 		if(timer.isRunning())stopAnimation();
 		Action doAnim = new AbstractAction() {
@@ -152,7 +152,11 @@ public class CharacterAnimation
 				{
 					AnimationEvent anim = (AnimationEvent)itor.next();
 					anim.interact(area);
-					//area.repaint();
+					area.repaint();
+					if(area.delayChanged())
+					{
+						timer.setDelay(area.getDelay());
+					}
 				}
 				catch(Exception bleh)
 				{
@@ -161,8 +165,8 @@ public class CharacterAnimation
 				}
 			}
 		};
-	
-		timer.setDelay(msecs);
+		area.resetDelay();
+		timer.setDelay(area.getDelay());
 		timer.addActionListener(doAnim);
 		timer.start();
 	}

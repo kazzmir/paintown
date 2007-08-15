@@ -55,7 +55,6 @@ public final class Player extends CharacterStats
 	private JButton displayToken;
 	private JButton stopAnim;
 	private JButton playAnim;
-	private JSpinner speedAnim;
 	
 	public SpecialPanel getEditor()
 	{	
@@ -477,12 +476,10 @@ public final class Player extends CharacterStats
 			{
 				if(animList.getSelectedValue() != null)
 				{
-			          ((CharacterAnimation)animList.getSelectedValue()).startAnimation(((Integer)speedAnim.getValue()).intValue());
+			          ((CharacterAnimation)animList.getSelectedValue()).startAnimation();
 				}
 			}
 		});
-	   speedAnim = (JSpinner) controlEditor.find( "speed" );
-	   speedAnim.setValue(new Integer(180));
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 		

@@ -20,8 +20,13 @@ public final class DrawArea extends Canvas
 	private BufferedImage img;
 	private int img_x;
 	private int img_y;
+	private int offset_x;
+	private int offset_y;
 	private static int x=320;
 	private static int y=200;
+	private static int _delay=16;
+	private int delay;
+	private boolean _delayChanged;
 	private BoundingBox attackArea = new BoundingBox(0,0,0,0);
 	
 	public Dimension getPreferredSize()
@@ -35,8 +40,8 @@ public final class DrawArea extends Canvas
 			g.fillRect( 0, 0, 640, 480 );
 			g.setColor( new Color( 255, 255, 0 ) );
 			g.drawLine(0,350,640,350);
-			if(img != null)g.drawImage( img, x + img_x, y + img_y, null );
-			if(!attackArea.empty())attackArea.render(g, x + img_x, y + img_y);
+			if(img != null)g.drawImage( img, x + img_x + offset_x, y + img_y + offset_y, null );
+			if(!attackArea.empty())attackArea.render(g, x + img_x + offset_x, y + img_y + offset_y);
 	}
 	
 	public void setImage(BufferedImage i)
@@ -59,14 +64,14 @@ public final class DrawArea extends Canvas
 		img_y += y;
 	}
 	
-	public int getImageX()
+	public void setOffsetX(int x)
 	{
-		return img_x;
+		offset_x = x;
 	}
 	
-	public int getImageY()
+	public void setOffsetY(int y)
 	{
-		return img_y;
+		offset_y = y;
 	}
 	
 	public void setAttack(BoundingBox at)
@@ -76,13 +81,42 @@ public final class DrawArea extends Canvas
 	
 	public void resetData()
 	{
-		img_x = img_y = 0;
+		img_x = img_y = offset_x = offset_y = 0;
 		attackArea = new BoundingBox(0,0,0,0);
+	}
+	
+	public void setDelay(int d)
+	{
+		delay = d;
+		_delayChanged=true;
+	}
+	
+	public int getDelay()
+	{
+		return delay;
+	}
+	
+	public void resetDelay()
+	{
+		delay = _delay;
+		_delayChanged = true;
+	}
+	
+	public boolean delayChanged()
+	{
+		if(_delayChanged)
+		{
+			_delayChanged=false;
+			return true;
+		}
+		return _delayChanged;
 	}
 	
 	public DrawArea()
 	{
-		img = null;
+		img = null; 
+		_delayChanged = false;
+		/*
 		Action doAnim = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {	
 				repaint();
@@ -90,5 +124,6 @@ public final class DrawArea extends Canvas
 		};
 	
 		new Timer(1000/60,doAnim).start();
+		*/
 	}
 }

@@ -23,8 +23,8 @@ public class OffsetEvent implements AnimationEvent
 	
 	public void interact(DrawArea area)
 	{
-		//area.setImageX(_x);
-		//area.setImageY(_y);
+		area.setOffsetX(_x);
+		area.setOffsetY(_y);
 	}
 	
 	public String getName()
