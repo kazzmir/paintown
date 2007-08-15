@@ -75,7 +75,6 @@ public class CharacterAnimation
 	private Vector events = new Vector();
 	
 	private Timer timer;
-	private Timer externalTimer;
 	
 	public void setName(String n)
 	{
@@ -154,116 +153,25 @@ public class CharacterAnimation
 	
 	private void startAnimation()
 	{
-		if(timer.isRunning())stopAnimation();
-		Action doAnim = new AbstractAction() {
-			Iterator itor = events.iterator();
-			boolean locked = false;
-			public void actionPerformed(ActionEvent e) {	
-				if(!locked)
-				{
-					if(itor.hasNext())
-					{
-						AnimationEvent anim = (AnimationEvent)itor.next();
-						anim.interact(area);
-						area.repaint();
-						eventList.setSelectedValue(anim,true);
-						if(anim.getToken().getName().equals("frame"))
-						{
-							try
-							{
-								locked = true;
-								Thread.sleep(100 / area.getDelay());
-								locked = false;
-							}
-							catch(Exception ex)
-							{
-							}
-						}
-					}
-					else
-					{
-						itor = events.iterator();
-						area.resetData();
-					}
-				}
-			}
-		};
-		area.resetDelay();
-		timer.setDelay(1);
-		timer.addActionListener(doAnim);
+		area.registerEvents(events);
 		timer.start();
 	}
 	
 	private void stopAnimation()
 	{
+		area.resetEvents();
 		timer.stop();
-		Vector temp = new Vector();
-		temp.copyInto(timer.getActionListeners());
-		Iterator tItor = temp.iterator();
-		while(tItor.hasNext())
-		{
-			Action a = (Action)tItor.next();
-			timer.removeActionListener(a);
-		}
-		
-		timer = new Timer(0,null);
 	}
 	
 	public void startAnim(DrawArea drawarea)
 	{
 		externalArea = drawarea;
-		if(externalTimer.isRunning())stopAnimation();
-		Action doAnim = new AbstractAction() {
-			Iterator itor = events.iterator();
-			boolean locked = false;
-			public void actionPerformed(ActionEvent e) {
-				if(!locked)
-				{
-					if(itor.hasNext())
-					{
-						AnimationEvent anim = (AnimationEvent)itor.next();
-						anim.interact(externalArea);
-						externalArea.repaint();
-						if(anim.getToken().getName().equals("frame"))
-						{
-							try
-							{
-								locked = true;
-								Thread.sleep(100 / externalArea.getDelay());
-								locked = false;
-							}
-							catch(Exception ex)
-							{
-							}
-						}
-					}
-					else
-					{
-						itor = events.iterator();
-						externalArea.resetData();
-					}
-				}
-			}
-		};
-		externalArea.resetDelay();
-		externalTimer.setDelay(1);
-		externalTimer.addActionListener(doAnim);
-		externalTimer.start();
+		externalArea.registerEvents(events);
 	}
 	
 	public void stopAnim()
 	{
-		externalTimer.stop();
-		Vector temp = new Vector();
-		temp.copyInto(externalTimer.getActionListeners());
-		Iterator tItor = temp.iterator();
-		while(tItor.hasNext())
-		{
-			Action a = (Action)tItor.next();
-			externalTimer.removeActionListener(a);
-		}
-		
-		externalTimer = new Timer(0,null);
+		externalArea.resetEvents();
 	}
 	
 	public Token getToken()
@@ -624,8 +532,11 @@ public class CharacterAnimation
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 		
-		timer = new Timer(0,null);
-		externalTimer = new Timer(0,null);
+		timer = new Timer(1,new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {	
+				eventList.setSelectedValue(area.getCurrentEvent(),true);
+			}
+		});
 	}
 	
 	public void loadData(Token token) throws LoadException

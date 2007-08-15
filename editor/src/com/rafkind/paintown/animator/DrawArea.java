@@ -13,6 +13,7 @@ import javax.swing.event.*;
 import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.animator.*;
+import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.*;
 
 public final class DrawArea extends JComponent
@@ -24,9 +25,12 @@ public final class DrawArea extends JComponent
 	private int offset_y;
 	private static int x=320;
 	private static int y=200;
-	private static int _delay=1;
-	private int delay;
-	private BoundingBox attackArea = new BoundingBox(0,0,0,0);
+	private BoundingBox attackArea;
+	private Date time;
+	private long endTime;
+	private Vector registeredEvents;
+	private Iterator eventItor;
+	private AnimationEvent currentEvent;
 
 	public Dimension getPreferredSize()
 	{
@@ -88,21 +92,68 @@ public final class DrawArea extends JComponent
 	
 	public void setDelay(int d)
 	{
-		delay = d;
+		if(d != 0)
+		{
+			endTime = time.getTime() + (10000000/d);
+		}
+		else endTime = time.getTime();
 	}
 	
-	public int getDelay()
+	public boolean checkDelay()
 	{
-		return delay;
+		return (time.getTime() > endTime);
 	}
 	
-	public void resetDelay()
+	public void registerEvents(Vector events)
 	{
-		delay = _delay;
+		registeredEvents = events;
+		if(registeredEvents != null)
+			eventItor = registeredEvents.iterator();
+		else resetEvents();
+	}
+	
+	public void resetEvents()
+	{
+		registeredEvents = null;
+		eventItor = null;
+		currentEvent = null;
+	}
+	
+	public AnimationEvent getCurrentEvent()
+	{
+		return currentEvent;
+	}
+	
+	private void update()
+	{
+		if(registeredEvents!=null)
+		{
+			if(checkDelay())
+			{
+				if(eventItor.hasNext())
+				{
+					currentEvent = (AnimationEvent)eventItor.next();
+					currentEvent.interact(this);
+					repaint();
+				}
+				else
+				{
+					eventItor = registeredEvents.iterator();
+					resetData();
+				}
+			}
+		}
 	}
 	
 	public DrawArea()
 	{
-		img = null; 
+		img = null;
+		attackArea = new BoundingBox(0,0,0,0);
+		time = new Date();
+		new Timer(1, new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {	
+				update();
+			}
+		}).start();
 	}
 }
