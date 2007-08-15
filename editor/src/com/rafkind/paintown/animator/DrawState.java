@@ -33,7 +33,8 @@ public class DrawState
 			File[] all = file.listFiles();
 			//files.add( new File( ".." ) );
 			for ( int i = 0; i < all.length; i++ ){
-				currentDirectoryList.addElement( dir + all[ i ].getName() );
+				if(all[i].getName().equals(".svn"))continue;
+				currentDirectoryList.addElement( dir.replaceAll("data/","") + all[ i ].getName().replaceAll("^./","") );
 			}
 		}
 	}
