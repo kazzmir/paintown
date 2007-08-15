@@ -24,9 +24,8 @@ public final class DrawArea extends JComponent
 	private int offset_y;
 	private static int x=320;
 	private static int y=200;
-	private static int _delay=160;
+	private static int _delay=1;
 	private int delay;
-	private boolean _delayChanged;
 	private BoundingBox attackArea = new BoundingBox(0,0,0,0);
 
 	public Dimension getPreferredSize()
@@ -89,8 +88,7 @@ public final class DrawArea extends JComponent
 	
 	public void setDelay(int d)
 	{
-		delay = d * 100;
-		_delayChanged=true;
+		delay = d;
 	}
 	
 	public int getDelay()
@@ -101,31 +99,10 @@ public final class DrawArea extends JComponent
 	public void resetDelay()
 	{
 		delay = _delay;
-		_delayChanged = true;
-	}
-	
-	public boolean delayChanged()
-	{
-		if(_delayChanged)
-		{
-			_delayChanged=false;
-			return true;
-		}
-		return _delayChanged;
 	}
 	
 	public DrawArea()
 	{
 		img = null; 
-		_delayChanged = false;
-		/*
-		Action doAnim = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {	
-				repaint();
-			}
-		};
-	
-		new Timer(1000/60,doAnim).start();
-		*/
 	}
 }

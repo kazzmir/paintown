@@ -19,6 +19,8 @@ import com.rafkind.paintown.animator.SpecialPanel;
 import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.animator.events.EventFactory;
+import com.rafkind.paintown.animator.events.FrameEvent;
+
 
 public class CharacterAnimation
 {
@@ -155,27 +157,37 @@ public class CharacterAnimation
 		if(timer.isRunning())stopAnimation();
 		Action doAnim = new AbstractAction() {
 			Iterator itor = events.iterator();
+			boolean locked = false;
 			public void actionPerformed(ActionEvent e) {	
-				try
+				if(!locked)
 				{
-					AnimationEvent anim = (AnimationEvent)itor.next();
-					eventList.setSelectedValue(anim,true);
-					anim.interact(area);
-					area.repaint();
-					if(area.delayChanged())
+					if(itor.hasNext())
 					{
-						timer.setDelay(area.getDelay());
+						AnimationEvent anim = (AnimationEvent)itor.next();
+						anim.interact(area);
+						area.repaint();
+						eventList.setSelectedValue(anim,true);
+						try
+						{
+							FrameEvent a = (FrameEvent)anim;
+							locked = true;
+							Thread.sleep(100 / area.getDelay());
+							locked = false;
+						}
+						catch(Exception ex)
+						{
+						}
 					}
-				}
-				catch(Exception bleh)
-				{
-					itor = events.iterator();
-					area.resetData();
+					else
+					{
+						itor = events.iterator();
+						area.resetData();
+					}
 				}
 			}
 		};
 		area.resetDelay();
-		timer.setDelay(area.getDelay());
+		timer.setDelay(1);
 		timer.addActionListener(doAnim);
 		timer.start();
 	}
@@ -199,26 +211,36 @@ public class CharacterAnimation
 		if(externalTimer.isRunning())stopAnimation();
 		Action doAnim = new AbstractAction() {
 			Iterator itor = events.iterator();
-			public void actionPerformed(ActionEvent e) {	
-				try
+			boolean locked = false;
+			public void actionPerformed(ActionEvent e) {
+				if(!locked)
 				{
-					AnimationEvent anim = (AnimationEvent)itor.next();
-					anim.interact(externalArea);
-					externalArea.repaint();
-					if(externalArea.delayChanged())
+					if(itor.hasNext())
 					{
-						externalTimer.setDelay(externalArea.getDelay());
+						AnimationEvent anim = (AnimationEvent)itor.next();
+						anim.interact(externalArea);
+						externalArea.repaint();
+						try
+						{
+							FrameEvent a = (FrameEvent)anim;
+							locked = true;
+							Thread.sleep(100 / externalArea.getDelay());
+							locked = false;
+						}
+						catch(Exception ex)
+						{
+						}
 					}
-				}
-				catch(Exception bleh)
-				{
-					itor = events.iterator();
-					externalArea.resetData();
+					else
+					{
+						itor = events.iterator();
+						externalArea.resetData();
+					}
 				}
 			}
 		};
 		externalArea.resetDelay();
-		externalTimer.setDelay(externalArea.getDelay());
+		externalTimer.setDelay(1);
 		externalTimer.addActionListener(doAnim);
 		externalTimer.start();
 	}

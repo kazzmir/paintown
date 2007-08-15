@@ -19,7 +19,7 @@ public class NopEvent implements AnimationEvent
 	
 	public void interact(DrawArea area)
 	{
-		
+		area.resetDelay();
 	}
 	
 	public String getName()
