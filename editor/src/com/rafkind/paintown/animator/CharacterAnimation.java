@@ -422,6 +422,27 @@ public class CharacterAnimation
 			}
 		});
 		
+		eventList.addMouseListener( new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int index = eventList.locationToIndex(e.getPoint());
+					AnimationEvent temp = (AnimationEvent)events.elementAt(index);
+					JDialog dialog = temp.getEditor();
+					if(dialog != null)
+					{
+							dialog.addWindowStateListener(new WindowStateListener()
+							{
+								public void windowStateChanged(WindowEvent e)
+								{
+									eventList.setListData(events);
+								}
+							});
+							dialog.show();
+					}
+				}
+			}
+		});
+		
 		eventList.setCellRenderer(new DefaultListCellRenderer() {
 			public Component getListCellRendererComponent(
 				JList list,

@@ -377,19 +377,15 @@ public final class Player extends CharacterStats
 		});
 		
 		animList = (JList) contextEditor.find( "anims");
-		/*
-		animList.addMouseListener( new MouseAdapter()
-		{
-			public void mouseClicked(MouseEvent event)
-			{
-				//animList.setListData(animations);
-				if(!animations.isEmpty())
-				{
-					_drawArea = ((CharacterAnimation)animList.getSelectedValue()).getDrawArea();
+		
+		animList.addMouseListener( new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int index = animList.locationToIndex(e.getPoint());
+					editAnimation(index);
 				}
 			}
 		});
-		*/
 		
 		animList.setCellRenderer(new DefaultListCellRenderer() {
 			public Component getListCellRendererComponent(
