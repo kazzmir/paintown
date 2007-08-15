@@ -50,10 +50,30 @@
 #define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
 // #define debug
 #endif
+	
+static bool show_loading_screen = true;
 
 static double startingGameSpeed = 1.0;
 static int LAZY_KEY_DELAY = 300;
 static int gfx = Global::WINDOWED;
+
+static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+
+static void stopLoading( pthread_t thread ){
+	if ( show_loading_screen ){
+		pthread_mutex_lock( &Global::loading_screen_mutex );
+		Global::done_loading = true;
+		pthread_mutex_unlock( &Global::loading_screen_mutex );
+
+		pthread_join( thread, NULL );
+	}
+}
+
+static void startLoading( pthread_t * thread ){
+	if ( show_loading_screen ){
+		pthread_create( thread, NULL, loadingScreen, NULL );
+	}
+}
 
 /* fade the screen and tell the player they lost */
 void fadeOut( const string & message ){
@@ -87,7 +107,7 @@ void fadeOut( const string & message ){
 	Util::rest( 1000 );
 }
 
-static bool playLevel( World & world, Player * player ){
+static bool playLevel( World & world, Player * player, int helpTime ){
 	Keyboard key;
 	
 	key.setDelay( Keyboard::Key_F1, 100 );
@@ -110,6 +130,9 @@ static bool playLevel( World & world, Player * player ){
 	Global::second_counter = 0;
 	int game_time = 100;
 	bool done = false;
+
+	int helpColors[ 100 ];
+	Util::blend_palette( helpColors, 100, Bitmap::makeColor( 110, 110, 110 ), Bitmap::makeColor( 255, 255, 255 ) );
 	
 	double gameSpeed = startingGameSpeed;
 	
@@ -137,6 +160,10 @@ static bool playLevel( World & world, Player * player ){
 						}
 						world.addObject( player );
 					}
+
+					if ( helpTime > 0 ){
+						helpTime -= 1;
+					}
 				}
 			}
 
@@ -147,6 +174,10 @@ static bool playLevel( World & world, Player * player ){
 					gameSpeed = SPEED_INC;
 				}
 				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_F1 ] ){
+				helpTime = helpTime < 150 ? 150 : helpTime;
 			}
 
 			if ( key[ Keyboard::Key_P ] ){
@@ -190,18 +221,42 @@ static bool playLevel( World & world, Player * player ){
 		if ( draw ){
 			world.draw( &work );
 
-			// work.printf( 180, 1, Bitmap::makeColor(255,255,255), (FONT *)all_fonts[ JOHNHANDY_PCX ].dat, "%d", game_time );
-
 			work.Stretch( screen_buffer );
 			FontRender * render = FontRender::getInstance();
 			render->render( &screen_buffer );
+	
+			const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+
+			if ( helpTime > 0 ){
+				int x = 100;
+				int y = screen_buffer.getHeight() / 5;
+				int color = helpColors[ helpTime >= 100 ? 99 : helpTime ];
+				font.printf( x, y, color, screen_buffer, "Controls", 0 );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Up: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Down: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getDown() ) );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Left: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getLeft() ) );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Right: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getRight() ) );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Jump: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getJump() ) );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Attack1: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack1() ) );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Attack2: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack2() ) );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Attack3: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack3() ) );
+				y += font.getHeight() + 1;
+				font.printf( x, y, color, screen_buffer, "Press F1 to view this help", 0 );
+			}
 
 			if ( paused ){
 				screen_buffer.transBlender( 0, 0, 0, 128 );
 				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
 				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
 				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
-				const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
 
@@ -490,21 +545,15 @@ static void realGame( Object * player, const string & levelFile ){
 	vector< string > levels = readLevels( levelFile );
 
 	// global_debug = true;
-	bool show_loading_screen = true;
 
-	if ( show_loading_screen ){
-		pthread_mutex_init( &Global::loading_screen_mutex, NULL );
-	}
-
+	int showHelp = 300;
 	for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
 		Global::done_loading = false;
 		pthread_t loading_screen_thread;
 
-		if ( show_loading_screen ){
-			pthread_create( &loading_screen_thread, NULL, loadingScreen, NULL );
-		}
+		startLoading( &loading_screen_thread );
 
-		bool b = false;
+		bool gameState = false;
 		try {
 			World world( player, *it );
 
@@ -518,34 +567,24 @@ static void realGame( Object * player, const string & levelFile ){
 			playerX->setMoving( true );
 			playerX->setStatus( Status_Falling );
 
-			if ( show_loading_screen ){
-				pthread_mutex_lock( &Global::loading_screen_mutex );
-				Global::done_loading = true;
-				pthread_mutex_unlock( &Global::loading_screen_mutex );
+			stopLoading( loading_screen_thread );
+			
 
-				pthread_join( loading_screen_thread, NULL );
-			}
-
-			b = playLevel( world, playerX );
+			gameState = playLevel( world, playerX, showHelp );
+			showHelp = 0;
 
 		} catch ( const LoadException & le ){
 			cout << "Could not load " << *it << " because " << le.getReason() << endl;
 			/* if the level couldn't be loaded turn off
 			 * the loading screen
 			 */
-			if ( show_loading_screen ){
-				pthread_mutex_lock( &Global::loading_screen_mutex );
-				Global::done_loading = true;
-				pthread_mutex_unlock( &Global::loading_screen_mutex );
-
-				pthread_join( loading_screen_thread, NULL );
-			}
+			stopLoading( loading_screen_thread );
 		}
 
 		ObjectFactory::destroy();
 		HeartFactory::destroy();
 
-		if ( ! b ){
+		if ( ! gameState ){
 			return;
 		}
 
@@ -1152,6 +1191,10 @@ int paintown_main( int argc, char ** argv ){
 	 * factory crap, just create one here
 	 */
 	Music m;
+
+	if ( show_loading_screen ){
+		pthread_mutex_init( &Global::loading_screen_mutex, NULL );
+	}
 
 	while ( titleScreen() != false );
 
