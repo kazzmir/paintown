@@ -368,16 +368,11 @@ public class CharacterAnimation
 
 		eventList.setListData( animation.getEvents() );
 		
-		eventList.addListSelectionListener(new ListSelectionListener()
-		{
+		eventList.addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent e){
-				// TODO: fixme
-				/*
-				if(!events.isEmpty() && !timer.isRunning()){
-					((AnimationEvent)eventList.getSelectedValue()).interact(area);
-					area.repaint();
-				}
-				*/
+				AnimationEvent event = (AnimationEvent) eventList.getSelectedValue();
+				animation.stopRunning();
+				animation.nextEvent( event );
 			}
 		});
 		

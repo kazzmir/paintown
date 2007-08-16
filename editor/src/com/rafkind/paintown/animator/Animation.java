@@ -281,6 +281,14 @@ public class Animation implements Runnable {
 		}
 	}
 
+	public void nextEvent( AnimationEvent event ){
+		synchronized( events ){
+			while ( (AnimationEvent) events.get( eventIndex ) != event ){
+				nextEvent();
+			}
+		}
+	}
+
 	public void setDelay( int delay ){
 		this.delay = delay;
 	}
