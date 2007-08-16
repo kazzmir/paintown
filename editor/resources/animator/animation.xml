@@ -47,6 +47,7 @@
 			<label text="Base Directory" />
 			<textfield id="basedir" />
 			<button text="Change" id="change-basedir" />
+			<button text="Clear" id="clear-basedir" />
 			<glue />
 		</hbox>
 		<glue size="1" />
