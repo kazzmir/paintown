@@ -1,10 +1,9 @@
 package com.rafkind.paintown.animator.events;
 
-import java.util.*;
-import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import java.io.File;
 import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.DrawState;
@@ -12,6 +11,10 @@ import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class FrameEvent implements AnimationEvent
 {
@@ -42,15 +45,13 @@ public class FrameEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor(){
+	public JDialog getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventframe.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,50);
 		
 		final JComboBox framebox = (JComboBox) engine.find( "frame" );
-		Iterator eItor = DrawState.getCurrentDirList().iterator();
-		while(eItor.hasNext())
-		{
-			String frame = (String)eItor.next();
+		for ( Iterator it = getFiles( animation.getBaseDirectory() ).iterator(); it.hasNext(); ){
+			String frame = (String) it.next();
 			framebox.addItem(frame);
 		}
 		
@@ -60,6 +61,21 @@ public class FrameEvent implements AnimationEvent
 			}
 		});
 		return (JDialog)engine.getRootComponent();
+	}
+
+	private List getFiles( String path ){
+		File dir = Animator.dataPath( new File( path ) );
+		List files = new ArrayList();
+		if ( dir.isDirectory() ){
+			File[] all = dir.listFiles();
+			for ( int i = 0; i < all.length; i++ ){
+				if ( all[ i ].getName().endsWith( ".png" ) ||
+				     all[ i ].getName().endsWith( ".bmp" ) ){
+					files.add( path.replaceAll("data/","") + all[ i ].getName().replaceAll("^./","") );
+				}
+			}
+		}
+		return files;
 	}
 	
 	public Token getToken(){

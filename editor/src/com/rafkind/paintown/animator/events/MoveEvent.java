@@ -33,8 +33,7 @@ public class MoveEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor()
-	{
+	public JDialog getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventmove.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,150);
 		

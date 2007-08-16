@@ -44,8 +44,7 @@ public class AttackEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor()
-	{
+	public JDialog getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventattack.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,150);
 		

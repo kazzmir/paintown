@@ -45,7 +45,7 @@ public class Animation implements Runnable {
 		image = null;
 		attackArea = new BoundingBox( 0, 0, 0, 0 );
 		keys = new Vector();
-		baseDirectory = "";
+		baseDirectory = ".";
 		type = "none";
 	}
 
@@ -175,6 +175,14 @@ public class Animation implements Runnable {
 		synchronized( events ){
 			events.remove( i );
 		}
+	}
+
+	public String getBaseDirectory(){
+		return baseDirectory;
+	}
+	
+	public void setBaseDirectory( String b ){
+		baseDirectory = b;
 	}
 
 	public synchronized void draw( Graphics g, int x, int y ){

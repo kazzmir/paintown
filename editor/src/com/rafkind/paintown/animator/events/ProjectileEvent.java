@@ -51,8 +51,7 @@ public class ProjectileEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor()
-	{
+	public JDialog getEditor( Animation animation ){
 		final SwingEngine engine = new SwingEngine( "animator/eventprojectile.xml" );
 		((JDialog)engine.getRootComponent()).setSize(250,250);
 		

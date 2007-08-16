@@ -27,8 +27,7 @@ public class FaceEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor()
-	{
+	public JDialog getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventface.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,50);
 		

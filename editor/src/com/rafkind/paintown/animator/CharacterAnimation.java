@@ -67,7 +67,7 @@ public class CharacterAnimation
 	// private int range;
 	
 	// Base dir
-	private String baseDirectory = "";
+	// private String baseDirectory = "";
 	
 	// Events
 	// private Vector events = new Vector();
@@ -127,6 +127,7 @@ public class CharacterAnimation
 	}
 	*/
 	
+	/*
 	public void fixBaseDirectory()
 	{
 		DrawState.setCurrentDirList(Animator.dataPath(baseDirectory));
@@ -141,6 +142,7 @@ public class CharacterAnimation
 	{
 		return baseDirectory;
 	}
+	*/
 	
 	/*
 	public void addEvent(AnimationEvent event)
@@ -347,6 +349,7 @@ public class CharacterAnimation
 		});
 		
 		basedirField = (JTextField) contextEditor.find( "basedir" );
+		basedirField.setText( animation.getBaseDirectory() );
 		basedirButton = (JButton) contextEditor.find( "change-basedir" );
 		basedirButton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
@@ -355,8 +358,7 @@ public class CharacterAnimation
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
 						basedirField.setText( path );
-						baseDirectory = path;
-						DrawState.setCurrentDirList(Animator.dataPath(baseDirectory));
+						animation.setBaseDirectory( path );
 					}
 				}
 			});
@@ -383,7 +385,7 @@ public class CharacterAnimation
 				if (e.getClickCount() == 2) {
 					int index = eventList.locationToIndex(e.getPoint());
 					AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt(index);
-					JDialog dialog = temp.getEditor();
+					JDialog dialog = temp.getEditor( animation );
 					if(dialog != null){
 						dialog.addWindowStateListener(new WindowStateListener(){
 							public void windowStateChanged(WindowEvent e){
@@ -424,7 +426,7 @@ public class CharacterAnimation
 		eventAdd.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
-				JDialog dialog = temp.getEditor();
+				JDialog dialog = temp.getEditor( animation );
 				if ( dialog != null ){
 					dialog.addWindowStateListener(new WindowStateListener(){
 						public void windowStateChanged(WindowEvent e){
@@ -443,7 +445,7 @@ public class CharacterAnimation
 			public void actionPerformed( ActionEvent event ){
 				if( ! animation.getEvents().isEmpty()){
 					AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt( eventList.getSelectedIndex() );
-					JDialog dialog = temp.getEditor();
+					JDialog dialog = temp.getEditor( animation );
 					if ( dialog != null ){
 						dialog.addWindowStateListener(new WindowStateListener(){
 							public void windowStateChanged(WindowEvent e){

@@ -24,7 +24,7 @@ public class NopEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor(){
+	public JDialog getEditor( Animation animation ){
 		// Not necessary
 		return null;
 	}
