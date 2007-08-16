@@ -194,7 +194,7 @@ public final class Player extends CharacterStats
 		Iterator animItor = animations.iterator();
 		while(animItor.hasNext())
 		{
-			CharacterAnimation anim = (CharacterAnimation)animItor.next();
+			Animation anim = (Animation)animItor.next();
 			temp.addToken(anim.getToken());
 		}
 		
