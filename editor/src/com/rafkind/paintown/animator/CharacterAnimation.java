@@ -58,7 +58,7 @@ public class CharacterAnimation
 	// private String name = "";
 	
 	// Type if special
-	private String type = "";
+	// private String type = "";
 	
 	// key sequence (String)
 	// private Vector keys = new Vector();
@@ -88,6 +88,7 @@ public class CharacterAnimation
 	}
 	*/
 	
+	/*
 	public void setType(String t)
 	{
 		type = t;
@@ -97,6 +98,7 @@ public class CharacterAnimation
 	{
 		return type;
 	}
+	*/
 	
 	/*
 	public void addKey(String key)
@@ -231,8 +233,6 @@ public class CharacterAnimation
 	}
 	
 	public CharacterAnimation( final Animation animation ){
-		type = "none";
-		
 		animEditor = new SwingEngine( "animator/base.xml" );
 		
 		contextEditor = new SwingEngine ( "animator/animation.xml");
@@ -264,9 +264,10 @@ public class CharacterAnimation
 		typeCombo.addItem(new String("attack"));
 		typeCombo.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				type = (String)typeCombo.getSelectedItem();
+				animation.setType( (String) typeCombo.getSelectedItem() );
 			}
 		});
+		typeCombo.setSelectedItem( animation.getType() );
 		
 		keyList = (JList) contextEditor.find( "keys");
 		keySelect = (JComboBox) contextEditor.find( "key-select" );

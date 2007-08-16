@@ -55,6 +55,14 @@ public class Animation implements Runnable {
 		this.events = events;
 	}
 
+	public void setType( String s ){
+		type = s;
+	}
+
+	public String getType(){
+		return type;
+	}
+
 	public void setRange( int r ){
 		range = r;
 	}
@@ -320,21 +328,10 @@ public class Animation implements Runnable {
 			setName( nameToken.readString(0) );
 		}
 		
-		/*
 		Token typeToken = token.findToken( "type" );
 		if ( typeToken != null ){
-			for(int i=0; i < typeCombo.getItemCount();++i)
-			{
-				if(((String)typeCombo.getItemAt(i)).equals(typeToken.readString(0)))
-				{
-					typeCombo.setSelectedIndex(i);
-					type = nameToken.readString(0);
-					break;
-				}
-			}
-			
+			setType( typeToken.readString( 0 ) );
 		}
-		*/
 		
 		Token keyToken = token.findToken( "keys" );
 		if ( keyToken != null ){
@@ -357,15 +354,10 @@ public class Animation implements Runnable {
 			range = rangeToken.readInt(0);
 		}
 		
-		/*
 		Token basedirToken = token.findToken( "basedir" );
-		if ( basedirToken != null )
-		{
-			basedirField.setText(basedirToken.readString(0));
-			baseDirectory = basedirToken.readString(0);
-			DrawState.setCurrentDirList(Animator.dataPath(baseDirectory));
+		if ( basedirToken != null ){
+			setBaseDirectory( basedirToken.readString( 0 ) );
 		}
-		*/
 		
 		events.clear();
 		for ( Iterator it = token.getTokens().iterator(); it.hasNext(); ){
