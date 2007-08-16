@@ -10,6 +10,7 @@ import java.io.*;
 
 import org.swixml.SwingEngine;
 
+import com.rafkind.paintown.Lambda1;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.exception.*;
 import com.rafkind.paintown.RelativeFileChooser;
@@ -367,12 +368,29 @@ public class CharacterAnimation
 		eventList = (JList) contextEditor.find( "events");
 
 		eventList.setListData( animation.getEvents() );
+
+		class ObjectBox{
+			public ObjectBox(){}
+			public synchronized void set( Object x ){ obj = x; }
+			public synchronized Object get(){ return obj; }
+			private Object obj;
+		}
+		final ObjectBox currentEvent = new ObjectBox();
+
+		animation.addEventNotifier( new Lambda1(){
+			public Object invoke( Object a ){
+				currentEvent.set( a );
+				eventList.repaint();
+				return null;
+			}
+		});
 		
 		eventList.addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent e){
 				AnimationEvent event = (AnimationEvent) eventList.getSelectedValue();
 				animation.stopRunning();
 				animation.nextEvent( event );
+				currentEvent.set( event );
 			}
 		});
 		
@@ -405,7 +423,11 @@ public class CharacterAnimation
 
 				setText(((AnimationEvent)value).getName());
 				setBackground(isSelected ? Color.gray : Color.white);
-				setForeground(isSelected ? Color.white : Color.black);
+				if ( currentEvent.get() == value ){
+					setForeground( Color.blue );
+				} else {
+					setForeground(isSelected ? Color.white : Color.black);
+				}
 				return this;
 			}
 		});

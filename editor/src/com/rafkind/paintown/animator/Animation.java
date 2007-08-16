@@ -9,6 +9,7 @@ import com.rafkind.paintown.animator.events.*;
 
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.exception.*;
+import com.rafkind.paintown.Lambda1;
 
 import java.awt.image.*;
 
@@ -21,6 +22,7 @@ public class Animation implements Runnable {
 	private boolean alive = true;
 	private boolean running;
 	private List drawables;
+	private List notifiers;
 	private Vector events;
 	private BufferedImage image;
 	private BoundingBox attackArea;
@@ -42,6 +44,7 @@ public class Animation implements Runnable {
 		events = new Vector();
 		/* give the animation something so it rests a little bit */
 		events.add( new NopEvent() );
+		notifiers = new ArrayList();
 		image = null;
 		attackArea = new BoundingBox( 0, 0, 0, 0 );
 		keys = new Vector();
@@ -101,6 +104,14 @@ public class Animation implements Runnable {
 
 	public String getName(){
 		return name;
+	}
+	
+	public void addEventNotifier( Lambda1 lambda ){
+		notifiers.add( lambda );
+	}
+	
+	public void removeEventNotifier( Lambda1 lambda ){
+		notifiers.remove( lambda );
 	}
 
 	public synchronized void setImage( BufferedImage image ){
@@ -259,6 +270,10 @@ public class Animation implements Runnable {
 
 	private void updateEvent( AnimationEvent event ){
 		event.interact( this );
+		for ( Iterator it = notifiers.iterator(); it.hasNext(); ){
+			Lambda1 lambda = (Lambda1) it.next();
+			lambda.invoke_( event );
+		}
 	}
 
 	/* can be called to step backward through the animation */
@@ -283,8 +298,10 @@ public class Animation implements Runnable {
 
 	public void nextEvent( AnimationEvent event ){
 		synchronized( events ){
-			while ( (AnimationEvent) events.get( eventIndex ) != event ){
-				nextEvent();
+			if ( events.contains( event ) ){
+				while ( (AnimationEvent) events.get( eventIndex ) != event ){
+					nextEvent();
+				}
 			}
 		}
 	}
