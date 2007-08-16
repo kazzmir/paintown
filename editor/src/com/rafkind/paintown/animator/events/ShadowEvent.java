@@ -5,13 +5,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class ShadowEvent implements AnimationEvent
-{
+public class ShadowEvent implements AnimationEvent {
 	private int _x;
 	private int _y;
 	
@@ -21,7 +20,7 @@ public class ShadowEvent implements AnimationEvent
 		_y = token.readInt(1);
 	}
 	
-	public void interact(DrawArea area)
+	public void interact( Animation animation )
 	{
 		//area.setImageX(_x);
 		//area.setImageY(_y);

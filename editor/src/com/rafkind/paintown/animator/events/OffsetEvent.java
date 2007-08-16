@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
@@ -15,20 +15,17 @@ public class OffsetEvent implements AnimationEvent
 	private int _x;
 	private int _y;
 	
-	public void loadToken(Token token)
-	{
+	public void loadToken(Token token){
 		_x = token.readInt(0);
 		_y = token.readInt(1);
 	}
 	
-	public void interact(DrawArea area)
-	{
-		area.setOffsetX(_x);
-		area.setOffsetY(_y);
+	public void interact( Animation animation ){
+		animation.setOffsetX(_x);
+		animation.setOffsetY(_y);
 	}
 	
-	public String getName()
-	{
+	public String getName(){
 		return getToken().toString();
 	}
 	
@@ -58,12 +55,9 @@ public class OffsetEvent implements AnimationEvent
 		return (JDialog)engine.getRootComponent();
 	}
 	
-	public Token getToken()
-	{
+	public Token getToken(){
 		Token temp = new Token("offset");
-		temp.addToken(new Token("offset"));
-		temp.addToken(new Token(Integer.toString(_x)));
-		temp.addToken(new Token(Integer.toString(_y)));
+		temp.addToken( new String[]{ "offset", Integer.toString( _x ), Integer.toString( _y ) } );
 		
 		return temp;
 	}

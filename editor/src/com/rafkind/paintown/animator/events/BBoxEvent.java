@@ -5,13 +5,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class BBoxEvent implements AnimationEvent
-{
+public class BBoxEvent implements AnimationEvent {
 	private int _x1;
 	private int _y1;
 	private int _x2;
@@ -25,9 +24,8 @@ public class BBoxEvent implements AnimationEvent
 		_y2 = token.readInt(3);
 	}
 	
-	public void interact(DrawArea area)
-	{
-	 			 //area.setAttack(new BoundingBox(_x1,_y1,_x2,_y2));
+	public void interact( Animation animation ){
+		//area.setAttack(new BoundingBox(_x1,_y1,_x2,_y2));
 	}
 	
 	public String getName()

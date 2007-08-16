@@ -5,13 +5,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class StatusEvent implements AnimationEvent
-{
+public class StatusEvent implements AnimationEvent {
 	private String _status = "ground";
 	
 	public void loadToken(Token token)
@@ -19,13 +18,11 @@ public class StatusEvent implements AnimationEvent
 		_status = token.readString(0);
 	}
 	
-	public void interact(DrawArea area)
-	{
+	public void interact( Animation animation ){
 		
 	}
 	
-	public String getName()
-	{
+	public String getName(){
 		return getToken().toString();
 	}
 	

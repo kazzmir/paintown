@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
@@ -23,9 +23,7 @@ public class JumpEvent implements AnimationEvent
 		_z = token.readDouble(2);
 	}
 	
-	public void interact(DrawArea area)
-	{
-		
+	public void interact( Animation animation ){
 	}
 	
 	public String getName()

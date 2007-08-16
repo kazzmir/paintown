@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.RelativeFileChooser;
 import com.rafkind.paintown.animator.Animator;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
@@ -21,13 +21,10 @@ public class SoundEvent implements AnimationEvent
 		_sound = token.readString(0);
 	}
 	
-	public void interact(DrawArea area)
-	{
-		
+	public void interact( Animation animation ){
 	}
 	
-	public String getName()
-	{
+	public String getName(){
 		return getToken().toString();
 	}
 	

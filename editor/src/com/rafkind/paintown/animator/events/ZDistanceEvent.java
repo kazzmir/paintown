@@ -5,22 +5,19 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class ZDistanceEvent implements AnimationEvent
-{
+public class ZDistanceEvent implements AnimationEvent {
 	private int _d;
 	
-	public void loadToken(Token token)
-	{
+	public void loadToken(Token token){
 		_d = token.readInt(0);
 	}
 	
-	public void interact(DrawArea area)
-	{
+	public void interact( Animation animation ){
 		
 	}
 	

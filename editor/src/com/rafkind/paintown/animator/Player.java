@@ -37,6 +37,9 @@ public final class Player extends CharacterStats
 	private JButton landingSoundButton;
 	private JTextField iconField;
 	private JButton iconButton;
+
+	private Animation currentAnimation;
+	private Thread currentThread;
 	
 	
 	private JTextField origMapField;
@@ -159,7 +162,7 @@ public final class Player extends CharacterStats
 		
 		for ( Iterator it = head.findTokens( "anim" ).iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
-			CharacterAnimation charanim = new CharacterAnimation();
+			Animation charanim = new Animation();
 			charanim.loadData(t);
 			animations.addElement(charanim);
 		}
@@ -395,7 +398,7 @@ public final class Player extends CharacterStats
 				boolean isSelected,
 				boolean cellHasFocus)
 			{
-				setText(((CharacterAnimation)value).getName());
+				setText(((Animation)value).getName());
 				setBackground(isSelected ? Color.gray : Color.white);
 				setForeground(isSelected ? Color.white : Color.black);
 				return this;
@@ -456,24 +459,35 @@ public final class Player extends CharacterStats
 		});
 		
 		stopAnim = (JButton) controlEditor.find( "stop" );
-		stopAnim.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
-				if(animList.getSelectedValue() != null)
-				{
-			          ((CharacterAnimation)animList.getSelectedValue()).stopAnim();
+		stopAnim.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				_drawArea.unanimate();
+				if ( currentThread != null ){
+					currentAnimation.stopRunning();
+					try{
+						currentThread.join();
+					} catch ( Exception e ){
+					}
 				}
 			}
 		});
+
 		playAnim = (JButton) controlEditor.find( "play" );
-		playAnim.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
-				if(animList.getSelectedValue() != null)
-				{
-			          ((CharacterAnimation)animList.getSelectedValue()).startAnim(_drawArea);
+		playAnim.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if( animList.getSelectedValue() != null ){
+					if ( currentThread != null ){
+						currentAnimation.stopRunning();
+						try{
+							currentThread.join();
+						} catch ( Exception e ){
+						}
+					}
+					currentAnimation = (Animation) animList.getSelectedValue();
+					_drawArea.animate( currentAnimation );
+					currentAnimation.startRunning();
+					currentThread = new Thread( currentAnimation );
+					currentThread.start();
 				}
 			}
 		});

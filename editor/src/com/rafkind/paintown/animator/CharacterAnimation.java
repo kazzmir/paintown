@@ -25,7 +25,7 @@ import com.rafkind.paintown.animator.events.FrameEvent;
 public class CharacterAnimation
 {
 	private DrawArea area;
-	private DrawArea externalArea;
+	// private DrawArea externalArea;
 	private SwingEngine animEditor;
 	private SwingEngine contextEditor;
 	private SwingEngine controlEditor;
@@ -53,8 +53,6 @@ public class CharacterAnimation
 	private JButton eventDown;
 	
 	private JButton displayToken;
-	private JButton stopAnim;
-	private JButton playAnim;
 	
 	// Name
 	private String name = "";
@@ -151,28 +149,32 @@ public class CharacterAnimation
 		return events;
 	}
 	
-	private void startAnimation()
-	{
+	private void startAnimation(){
+		/*
 		area.registerEvents(events);
 		timer.start();
+		*/
 	}
 	
-	private void stopAnimation()
-	{
+	private void stopAnimation(){
+		/*
 		area.resetEvents();
 		timer.stop();
+		*/
 	}
 	
-	public void startAnim(DrawArea drawarea)
-	{
+	/*
+	public void startAnim(DrawArea drawarea){
 		externalArea = drawarea;
 		externalArea.registerEvents(events);
 	}
+	*/
 	
-	public void stopAnim()
-	{
+	/*
+	public void stopAnim(){
 		externalArea.resetEvents();
 	}
+	*/
 	
 	public Token getToken()
 	{
@@ -215,8 +217,7 @@ public class CharacterAnimation
 		return area;
 	}
 	
-	public CharacterAnimation()
-	{
+	public CharacterAnimation( final Animation animation ){
 		name = "New Animation";
 		
 		type = "none";
@@ -350,13 +351,14 @@ public class CharacterAnimation
 		
 		eventList.addListSelectionListener(new ListSelectionListener()
 		{
-			public void valueChanged(ListSelectionEvent e)
-			{
-				if(!events.isEmpty() && !timer.isRunning())
-				{
+			public void valueChanged(ListSelectionEvent e){
+				// TODO: fixme
+				/*
+				if(!events.isEmpty() && !timer.isRunning()){
 					((AnimationEvent)eventList.getSelectedValue()).interact(area);
 					area.repaint();
 				}
+				*/
 			}
 		});
 		
@@ -397,7 +399,7 @@ public class CharacterAnimation
 			});
 		
 		// Need to add events to this combobox from event factory
-		EventFactory.init();
+		// EventFactory.init();
 		eventSelect = (JComboBox) contextEditor.find( "event-select" );
 		Iterator eItor = EventFactory.getNames().iterator();
 		while(eItor.hasNext())
@@ -505,19 +507,16 @@ public class CharacterAnimation
 			}
 		});
 		
-		stopAnim = (JButton) controlEditor.find( "stop" );
-		stopAnim.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
+		JButton stopAnim = (JButton) controlEditor.find( "stop" );
+		stopAnim.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
 				stopAnimation();
 			}
 		});
-		playAnim = (JButton) controlEditor.find( "play" );
-		playAnim.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
+
+		JButton playAnim = (JButton) controlEditor.find( "play" );
+		playAnim.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
 				startAnimation();
 			}
 		});
@@ -568,29 +567,25 @@ public class CharacterAnimation
 		}
 		
 		Token keyToken = token.findToken( "keys" );
-		if(keyToken != null)
-		{
-			try
-			{
-				for(int i = 0;;++i)
-				{
+		if ( keyToken != null ){
+			try{
+				for(int i = 0; ; i += 1 ){
 					String temp = keyToken.readString(i);
-					if(temp != null)
-					{
+					if(temp != null){
 						keys.addElement(temp);
+					} else {
+						break;
 					}
-					else break;
 				}
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
-			catch(Exception e)
-			{
-			}
-			keyList.setListData(keys);
+
+			keyList.setListData( keys );
 		}
 		
 		Token rangeToken = token.findToken( "range" );
-		if ( rangeToken != null )
-		{
+		if ( rangeToken != null ){
 			rangeSpinner.setValue(new Integer(rangeToken.readInt(0)));
 			range = rangeToken.readInt(0);
 		}

@@ -5,13 +5,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class FaceEvent implements AnimationEvent
-{
+public class FaceEvent implements AnimationEvent {
 	private String _face = "reverse";
 	
 	public void loadToken(Token token)
@@ -19,8 +18,7 @@ public class FaceEvent implements AnimationEvent
 		_face = token.readString(0);
 	}
 	
-	public void interact(DrawArea area)
-	{
+	public void interact( Animation area ){
 		
 	}
 	

@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.animator.Animator;
-import com.rafkind.paintown.animator.DrawArea;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.DrawState;
 import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.Token;
@@ -15,28 +15,26 @@ import org.swixml.SwingEngine;
 
 public class FrameEvent implements AnimationEvent
 {
-	private String _frame = "";
+	private String frame = "";
 	
 	public void loadToken(Token token)
 	{
 		Token parent = token.getParent();
 		Token basedir = parent.findToken("basedir");
-		if(basedir != null)
-		{
-			_frame = basedir.readString(0) + token.readString(0);
+		if(basedir != null){
+			frame = basedir.readString(0) + token.readString(0);
+		} else {
+			frame = token.readString(0);
 		}
-		else _frame = token.readString(0);
 	}
 	
-	public void interact(DrawArea area)
-	{
-		try
-		{
-			area.setImage(MaskedImage.load(Animator.getDataPath() + "/" + _frame));
-		}
-		catch(Exception e)
-		{
-			System.out.println("Problem! --> " + Animator.getDataPath() + "/" + _frame);
+	public void interact( Animation animation ){
+		try{
+			animation.setImage(MaskedImage.load(Animator.getDataPath() + "/" + frame));
+			animation.delay();
+		} catch ( Exception e ){
+			e.printStackTrace();
+			System.out.println("Problem! --> " + Animator.getDataPath() + "/" + frame);
 		}
 	}
 	
@@ -62,7 +60,7 @@ public class FrameEvent implements AnimationEvent
 		{
 			public void actionPerformed(ActionEvent actionEvent)
 			{
-				_frame = (String)framebox.getSelectedItem();
+				frame = (String)framebox.getSelectedItem();
 			}
 		});
 		return (JDialog)engine.getRootComponent();
@@ -71,9 +69,7 @@ public class FrameEvent implements AnimationEvent
 	public Token getToken()
 	{
 		Token temp = new Token("frame");
-		temp.addToken(new Token("frame"));
-		temp.addToken(new Token(_frame));
-		
+		temp.addToken( new String[]{ "frame", frame } );
 		return temp;
 	}
 }

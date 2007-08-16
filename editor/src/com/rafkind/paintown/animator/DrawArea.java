@@ -23,17 +23,33 @@ public final class DrawArea extends JComponent
 	private int img_y;
 	private int offset_x;
 	private int offset_y;
-	private static int x=320;
-	private static int y=200;
+	private static int x = 320;
+	private static int y = 200;
 	private BoundingBox attackArea;
 	private long delayTime;
 	private long endTime;
-	private Vector registeredEvents;
+	// private Vector registeredEvents;
 	private Iterator eventItor;
 	private AnimationEvent currentEvent;
+	private Animation currentAnimation;
 
-	public Dimension getPreferredSize()
-	{
+	public DrawArea(){
+		/*
+		img = null;
+		attackArea = new BoundingBox(0,0,0,0);
+		delayTime = 1;
+		endTime = 1;
+		new Timer(1, new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {	
+				update();
+			}
+		}).start();
+		*/
+		currentAnimation = null;
+	}
+
+
+	public Dimension getPreferredSize(){
 		return new Dimension(640,480);
 	}
 
@@ -43,10 +59,29 @@ public final class DrawArea extends JComponent
 		g.fillRect( 0, 0, 640, 480 );
 		g.setColor( new Color( 255, 255, 0 ) );
 		g.drawLine(0,350,640,350);
+
+		if ( currentAnimation != null ){
+			currentAnimation.draw( g, x, y );
+		}
+
+		/*
 		if(img != null)
 			g.drawImage( img, x + img_x + offset_x, y + img_y + offset_y, null );
 		if(!attackArea.empty())
 			attackArea.render(g, x + img_x + offset_x, y + img_y + offset_y);
+		*/
+	}
+
+	public void animate( Animation animation ){
+		unanimate();
+		currentAnimation = animation;
+		currentAnimation.addDrawable( this );
+	}
+
+	public void unanimate(){
+		if ( currentAnimation != null ){
+			currentAnimation.removeDrawable( this );
+		}
 	}
 	
 	public void setImage(BufferedImage i)
@@ -106,6 +141,7 @@ public final class DrawArea extends JComponent
 		return (Calendar.getInstance().getTimeInMillis() > endTime);
 	}
 	
+	/*
 	public void registerEvents(Vector events)
 	{
 		registeredEvents = events;
@@ -113,19 +149,23 @@ public final class DrawArea extends JComponent
 			eventItor = registeredEvents.iterator();
 		else resetEvents();
 	}
+	*/
 	
+	/*
 	public void resetEvents()
 	{
 		registeredEvents = null;
 		eventItor = null;
 		currentEvent = null;
 	}
+	*/
 	
 	public AnimationEvent getCurrentEvent()
 	{
 		return currentEvent;
 	}
 	
+	/*
 	private void update()
 	{
 		if(registeredEvents!=null)
@@ -151,17 +191,5 @@ public final class DrawArea extends JComponent
 			}
 		}
 	}
-	
-	public DrawArea()
-	{
-		img = null;
-		attackArea = new BoundingBox(0,0,0,0);
-		delayTime = 1;
-		endTime = 1;
-		new Timer(1, new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {	
-				update();
-			}
-		}).start();
-	}
+	*/
 }
