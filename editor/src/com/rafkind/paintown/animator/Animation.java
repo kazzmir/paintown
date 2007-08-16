@@ -47,6 +47,7 @@ public class Animation implements Runnable {
 		keys = new Vector();
 		baseDirectory = ".";
 		type = "none";
+		name = "New Animation";
 	}
 
 	public Animation( Vector events ){

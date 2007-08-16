@@ -180,7 +180,7 @@ public abstract class CharacterStats
 		Animation temp = (Animation) animations.elementAt( index );
 		CharacterAnimation edit = new CharacterAnimation( temp );
 		_animator.addNewTab( edit.getEditor(), temp.getName());
-		edit.fixBaseDirectory();
+		// edit.fixBaseDirectory();
 	}
 	
 	public boolean removeAnimation(int index)
