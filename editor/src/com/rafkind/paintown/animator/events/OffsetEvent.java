@@ -29,26 +29,27 @@ public class OffsetEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JDialog getEditor( final Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventoffset.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,100);
 		
 		final JSpinner xspin = (JSpinner) engine.find( "x" );
 		xspin.setValue(new Integer(_x));
-		xspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		xspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_x = ((Integer)xspin.getValue()).intValue();
+				interact( animation );
+				animation.forceRedraw();
 			}
 		});
+
 		final JSpinner yspin = (JSpinner) engine.find( "y" );
 		yspin.setValue(new Integer(_y));
-		yspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		yspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_y = ((Integer)yspin.getValue()).intValue();
+				interact( animation );
+				animation.forceRedraw();
 			}
 		});
 		return (JDialog)engine.getRootComponent();
