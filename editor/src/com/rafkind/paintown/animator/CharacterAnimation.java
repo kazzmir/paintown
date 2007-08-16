@@ -368,16 +368,13 @@ public class CharacterAnimation
 					int index = eventList.locationToIndex(e.getPoint());
 					AnimationEvent temp = (AnimationEvent)events.elementAt(index);
 					JDialog dialog = temp.getEditor();
-					if(dialog != null)
-					{
-							dialog.addWindowStateListener(new WindowStateListener()
-							{
-								public void windowStateChanged(WindowEvent e)
-								{
-									eventList.setListData(events);
-								}
-							});
-							dialog.show();
+					if(dialog != null){
+						dialog.addWindowStateListener(new WindowStateListener(){
+							public void windowStateChanged(WindowEvent e){
+								eventList.setListData(events);
+							}
+						});
+						dialog.show();
 					}
 				}
 			}
@@ -510,14 +507,14 @@ public class CharacterAnimation
 		JButton stopAnim = (JButton) controlEditor.find( "stop" );
 		stopAnim.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				stopAnimation();
+				animation.stopRunning();
 			}
 		});
 
 		JButton playAnim = (JButton) controlEditor.find( "play" );
 		playAnim.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				startAnimation();
+				animation.startRunning();
 			}
 		});
 		
@@ -526,6 +523,8 @@ public class CharacterAnimation
 		canvas = (JPanel) animEditor.find( "canvas" );
 		area = new DrawArea();
 		canvas.add(area);
+
+		area.animate( animation );
 		
 		other = (JPanel) animEditor.find( "other" );
 		
@@ -538,8 +537,8 @@ public class CharacterAnimation
 		});
 	}
 	
-	public void loadData(Token token) throws LoadException
-	{
+	/*
+	public void loadData(Token token) throws LoadException{
 		if ( ! token.getName().equals( "anim" ) ){
 			throw new LoadException( "Starting token is not 'anim'" );
 		}
@@ -609,5 +608,5 @@ public class CharacterAnimation
 		}
 		eventList.setListData(events);
 	}
-	
+	*/
 }

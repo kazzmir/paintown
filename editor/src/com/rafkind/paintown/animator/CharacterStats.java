@@ -172,6 +172,7 @@ public abstract class CharacterStats
 		CharacterAnimation temp = new CharacterAnimation( ani );
 		_animator.addNewTab( temp.getEditor(), ani.getName() );
 		animations.addElement( ani );
+		new Thread( ani ).start();
 	}
 	
 	public void editAnimation(int index)

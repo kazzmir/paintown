@@ -165,6 +165,7 @@ public final class Player extends CharacterStats
 			Animation charanim = new Animation();
 			charanim.loadData(t);
 			animations.addElement(charanim);
+			new Thread( charanim ).start();
 		}
 		animList.setListData(animations);
 		
@@ -444,10 +445,8 @@ public final class Player extends CharacterStats
 		
 		displayToken = (JButton) controlEditor.find( "token" );
 		
-		displayToken.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
+		displayToken.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
 				final JDialog tempDiag = new JDialog();
 				tempDiag.setSize(400,400);
 				final JTextArea tempText = new JTextArea();
@@ -462,12 +461,8 @@ public final class Player extends CharacterStats
 		stopAnim.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				_drawArea.unanimate();
-				if ( currentThread != null ){
+				if ( currentAnimation != null ){
 					currentAnimation.stopRunning();
-					try{
-						currentThread.join();
-					} catch ( Exception e ){
-					}
 				}
 			}
 		});
@@ -476,18 +471,12 @@ public final class Player extends CharacterStats
 		playAnim.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if( animList.getSelectedValue() != null ){
-					if ( currentThread != null ){
+					if ( currentAnimation != null ){
 						currentAnimation.stopRunning();
-						try{
-							currentThread.join();
-						} catch ( Exception e ){
-						}
 					}
 					currentAnimation = (Animation) animList.getSelectedValue();
 					_drawArea.animate( currentAnimation );
 					currentAnimation.startRunning();
-					currentThread = new Thread( currentAnimation );
-					currentThread.start();
 				}
 			}
 		});

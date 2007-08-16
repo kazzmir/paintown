@@ -17,7 +17,8 @@ import javax.swing.JComponent;
 public class Animation implements Runnable {
 	
 	private String name;
-	private boolean running = true;
+	private boolean alive = true;
+	private boolean running;
 	private List drawables;
 	private List events;
 	private BufferedImage image;
@@ -83,6 +84,14 @@ public class Animation implements Runnable {
 				draw.repaint();
 			}
 		}
+	}
+
+	public synchronized void kill(){
+		alive = false;
+	}
+
+	private synchronized boolean isAlive(){
+		return alive;
 	}
 
 	private synchronized boolean isRunning(){
@@ -237,8 +246,8 @@ public class Animation implements Runnable {
 	 * thread will just chew up cpu time
 	 */
 	public void run(){
-		while ( isRunning() ){
-			if ( ! events.isEmpty() ){
+		while ( isAlive() ){
+			if ( isRunning() && ! events.isEmpty() ){
 				nextEvent();
 				if ( getDelayTime() != 0 ){
 					rest( (int)(getDelayTime() * 1000.0 / 90.0) );

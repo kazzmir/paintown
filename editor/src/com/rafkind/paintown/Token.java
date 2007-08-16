@@ -76,7 +76,7 @@ public class Token{
 
 	public String getName(){
 		if ( tokens.isEmpty() ){
-			return ":(";
+			return "no name";
 		}
 		return ((Token) tokens.get( 0 )).getData();
 	}
