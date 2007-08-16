@@ -72,16 +72,28 @@ public class Animator extends JFrame {
 		menuProgram.setMnemonic( KeyEvent.VK_P );
 		data.setMnemonic( KeyEvent.VK_D );
 		closeTab.setMnemonic( KeyEvent.VK_C );
+		closeTab.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_W, Event.CTRL_MASK));
 		quit.setMnemonic( KeyEvent.VK_Q );
+		quit.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_Q, Event.CTRL_MASK));
 		newCharacter.setMnemonic( KeyEvent.VK_N );
+		newCharacter.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_N, Event.CTRL_MASK));
 		menuCharacter.setMnemonic( KeyEvent.VK_H );
 		saveCharacter.setMnemonic( KeyEvent.VK_S );
+		saveCharacter.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_S, Event.CTRL_MASK));
 		saveCharacterAs.setMnemonic( KeyEvent.VK_A );
+		saveCharacterAs.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_A, Event.CTRL_MASK));
 		loadCharacter.setMnemonic( KeyEvent.VK_O );
+		loadCharacter.setAccelerator(KeyStroke.getKeyStroke(
+                            KeyEvent.VK_O, Event.CTRL_MASK));
 
 
 		this.setJMenuBar( menuBar );
-		this.addWindowListener( new CloseHook( closeHook ) );
+		this.addWindowListener( new CloseHook( closeHook ) );		
 
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
