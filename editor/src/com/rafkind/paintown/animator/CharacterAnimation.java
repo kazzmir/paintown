@@ -61,7 +61,7 @@ public class CharacterAnimation
 	private String type = "";
 	
 	// key sequence (String)
-	private Vector keys = new Vector();
+	// private Vector keys = new Vector();
 	
 	// Range
 	private int range;
@@ -94,6 +94,7 @@ public class CharacterAnimation
 		return type;
 	}
 	
+	/*
 	public void addKey(String key)
 	{
 		keys.addElement(key);
@@ -108,6 +109,7 @@ public class CharacterAnimation
 	{
 		keys.clear();
 	}
+	*/
 	
 	public void setRange(int r)
 	{
@@ -176,8 +178,8 @@ public class CharacterAnimation
 	}
 	*/
 	
-	public Token getToken()
-	{
+	/*
+	public Token getToken(){
 		Token token = new Token();
 		token.addToken( new Token( "anim" ) );
 		
@@ -206,6 +208,7 @@ public class CharacterAnimation
 		
 		return token;
 	}
+	*/
 	
 	public SpecialPanel getEditor()
 	{	
@@ -261,6 +264,7 @@ public class CharacterAnimation
 		
 		keyList = (JList) contextEditor.find( "keys");
 		keySelect = (JComboBox) contextEditor.find( "key-select" );
+
 		keySelect.addItem(new String("key_idle"));
 		keySelect.addItem(new String("key_up"));
 		keySelect.addItem(new String("key_down"));
@@ -278,56 +282,61 @@ public class CharacterAnimation
 		keySelect.addItem(new String("key_attack4"));
 		keySelect.addItem(new String("key_attack5"));
 		keySelect.addItem(new String("key_attack6"));
+
+		keyList.setListData( animation.getKeys() );
+
 		keyAdd = (JButton) contextEditor.find( "add-key" );
 		keyAdd.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				keys.addElement((String)keySelect.getSelectedItem());
-				keyList.setListData(keys);
+				animation.addKey( (String) keySelect.getSelectedItem() );
+				keyList.setListData( animation.getKeys() );
 			}
 		});
 		keyRemove = (JButton) contextEditor.find( "remove-key" );
 		keyRemove.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(keys.isEmpty())return;
-				String temp = (String)keys.elementAt(keyList.getSelectedIndex());
-				keys.removeElement(temp);
-				keyList.setListData(keys);
+				if ( ! animation.getKeys().isEmpty() ){
+					animation.removeKey( keyList.getSelectedIndex() );
+					keyList.setListData( animation.getKeys() );
+				}
 			}
 		});
 		keyUp = (JButton) contextEditor.find( "up-key" );
 		keyUp.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(keys.isEmpty())return;
-				int index1 = keyList.getSelectedIndex()-1 < 0 ? 0 : keyList.getSelectedIndex() - 1;
-				int index2 = keyList.getSelectedIndex();
-				String temp1 = (String)keys.elementAt(index1);
-				String temp2 = (String)keys.elementAt(index2);
-				
-				keys.setElementAt(temp1,index2);
-				keys.setElementAt(temp2,index1);
-				keyList.setListData(keys);
+				if ( ! animation.getKeys().isEmpty() ){
+					int index1 = keyList.getSelectedIndex()-1 < 0 ? 0 : keyList.getSelectedIndex() - 1;
+					int index2 = keyList.getSelectedIndex();
+					String temp1 = (String) animation.getKeys().elementAt( index1 );
+					String temp2 = (String) animation.getKeys().elementAt( index2 );
+					
+					animation.getKeys().setElementAt(temp1,index2);
+					animation.getKeys().setElementAt(temp2,index1);
+					keyList.setListData( animation.getKeys() );
+					keyList.setSelectedIndex( index1 );
+				}
 			}
 		});
 		keyDown = (JButton) contextEditor.find( "down-key" );
 		keyDown.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(keys.isEmpty())return;
-				int index1 = keyList.getSelectedIndex()+1 > keys.size() ? keys.size() : keyList.getSelectedIndex() + 1;
-				int index2 = keyList.getSelectedIndex();
-				String temp1 = (String)keys.elementAt(index1);
-				String temp2 = (String)keys.elementAt(index2);
-				
-				keys.setElementAt(temp1,index2);
-				keys.setElementAt(temp2,index1);
-				keyList.setListData(keys);
+				if ( ! animation.getKeys().isEmpty() ){
+					int index1 = keyList.getSelectedIndex()+1 > animation.getKeys().size() ? animation.getKeys().size() : keyList.getSelectedIndex() + 1;
+					int index2 = keyList.getSelectedIndex();
+					String temp1 = (String) animation.getKeys().elementAt( index1 );
+					String temp2 = (String) animation.getKeys().elementAt( index2 );
+					
+					animation.getKeys().setElementAt(temp1,index2);
+					animation.getKeys().setElementAt(temp2,index1);
+					keyList.setListData( animation.getKeys() );
+					keyList.setSelectedIndex( index1 );
+				}
 			}
 		});
 		
 		rangeSpinner = (JSpinner) contextEditor.find( "range" );
-		rangeSpinner.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		rangeSpinner.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				range = ((Integer)rangeSpinner.getValue()).intValue();
 			}
 		});
@@ -499,7 +508,7 @@ public class CharacterAnimation
 				final JTextArea tempText = new JTextArea();
 				final JScrollPane tempPane = new JScrollPane(tempText);
 				tempDiag.add(tempPane);
-				tempText.setText(getToken().toString());
+				tempText.setText( animation.getToken().toString());
 				tempDiag.show();
 			}
 		});

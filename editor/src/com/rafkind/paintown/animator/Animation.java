@@ -3,6 +3,7 @@ package com.rafkind.paintown.animator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Vector;
 
 import com.rafkind.paintown.animator.events.*;
 
@@ -30,6 +31,8 @@ public class Animation implements Runnable {
 	private int y;
 	private int offsetX;
 	private int offsetY;
+	
+	private Vector keys;
 
 	public Animation(){
 		drawables = new ArrayList();
@@ -38,14 +41,24 @@ public class Animation implements Runnable {
 		events.add( new NopEvent() );
 		image = null;
 		attackArea = new BoundingBox( 0, 0, 0, 0 );
+		keys = new Vector();
 	}
 
 	public Animation( List events ){
-		drawables = new ArrayList();
-		events = new ArrayList();
-		image = null;
+		this();
 		this.events = events;
-		attackArea = new BoundingBox( 0, 0, 0, 0 );
+	}
+
+	public void addKey( String key ){
+		keys.add( key );
+	}
+
+	public void removeKey( int index ){
+		keys.remove( index );
+	}
+
+	public Vector getKeys(){
+		return keys;
 	}
 
 	public String toString(){
@@ -285,14 +298,13 @@ public class Animation implements Runnable {
 		}
 		*/
 		
-		/*
 		Token keyToken = token.findToken( "keys" );
 		if ( keyToken != null ){
 			try{
 				for(int i = 0; ; i += 1 ){
 					String temp = keyToken.readString(i);
-					if(temp != null){
-						keys.addElement(temp);
+					if ( temp != null ){
+						keys.add( temp );
 					} else {
 						break;
 					}
@@ -300,10 +312,7 @@ public class Animation implements Runnable {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-
-			keyList.setListData( keys );
 		}
-		*/
 		
 		/*
 		Token rangeToken = token.findToken( "range" );
@@ -332,5 +341,35 @@ public class Animation implements Runnable {
 				events.add( ae );
 			}
 		}
+	}
+
+	public Token getToken(){
+		Token token = new Token();
+		token.addToken( new Token( "anim" ) );
+		
+		token.addToken(new String[]{"name", "\"" + name + "\""});
+		// if(!type.equals("none"))token.addToken(new String[]{"type", type});
+		if(!keys.isEmpty())
+		{
+			Token keyToken = new Token( "keys" );
+			keyToken.addToken( new Token( "keys"));
+			Iterator kItor = keys.iterator();
+			while(kItor.hasNext())
+			{
+				String key = (String)kItor.next();
+				keyToken.addToken(new Token(key));
+			}
+			token.addToken(keyToken);
+		}
+		// if(range!=0)token.addToken(new String[]{"range", Integer.toString(range)});
+		// if(!baseDirectory.equals(""))token.addToken(new String[]{"basedir", baseDirectory});
+		Iterator fItor = events.iterator();
+		while(fItor.hasNext())
+		{
+			AnimationEvent event = (AnimationEvent)fItor.next();
+			token.addToken(event.getToken());
+		}
+		
+		return token;
 	}
 }
