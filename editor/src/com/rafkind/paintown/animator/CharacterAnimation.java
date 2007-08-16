@@ -490,8 +490,12 @@ public class CharacterAnimation
 		eventUp.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( ! animation.getEvents().isEmpty() ){
-					animation.swapEvents( eventList.getSelectedIndex()-1 < 0 ? 0 : eventList.getSelectedIndex() - 1, eventList.getSelectedIndex() );
+					int index1 = eventList.getSelectedIndex()-1 < 0 ? 0 : eventList.getSelectedIndex() - 1;
+					int index2 = eventList.getSelectedIndex();
+					animation.swapEvents( index1, index2 );
 					eventList.setListData( animation.getEvents() );
+					eventList.setSelectedIndex( index1 );
+					eventList.ensureIndexIsVisible( index1 );
 				}
 			}
 		});
@@ -500,8 +504,12 @@ public class CharacterAnimation
 		eventDown.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( ! animation.getEvents().isEmpty() ){
-					animation.swapEvents( eventList.getSelectedIndex()+1 > animation.getEvents().size() ? animation.getEvents().size() : eventList.getSelectedIndex() + 1, eventList.getSelectedIndex() );
+					int index1 = eventList.getSelectedIndex()+1 > animation.getEvents().size() ? animation.getEvents().size() : eventList.getSelectedIndex() + 1;
+					int index2 = eventList.getSelectedIndex();
+					animation.swapEvents( index1, index2 );
 					eventList.setListData( animation.getEvents() );
+					eventList.setSelectedIndex( index1 );
+					eventList.ensureIndexIsVisible( index1 );
 				}
 			}
 		});
