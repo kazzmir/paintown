@@ -44,61 +44,57 @@ public class AttackEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JDialog getEditor( final Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventattack.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,150);
 		
 		final JSpinner x1spin = (JSpinner) engine.find( "x1" );
 		x1spin.setValue(new Integer(_x1));
-		x1spin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		x1spin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_x1 = ((Integer)x1spin.getValue()).intValue();
+				interact( animation );
+				animation.forceRedraw();
 			}
 		});
 		final JSpinner y1spin = (JSpinner) engine.find( "y1" );
 		y1spin.setValue(new Integer(_y1));
-		y1spin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		y1spin.addChangeListener( new ChangeListener() {
+			public void stateChanged(ChangeEvent changeEvent){
 				_y1 = ((Integer)y1spin.getValue()).intValue();
+				interact( animation );
+				animation.forceRedraw();
 			}
 		});
 		final JSpinner x2spin = (JSpinner) engine.find( "x2" );
 		x2spin.setValue(new Integer(_x2));
-		x2spin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		x2spin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_x2 = ((Integer)x2spin.getValue()).intValue();
+				interact( animation );
+				animation.forceRedraw();
 			}
 		});
 		final JSpinner y2spin = (JSpinner) engine.find( "y2" );
 		y2spin.setValue(new Integer(_y2));
-		y2spin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		y2spin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_y2 = ((Integer)y2spin.getValue()).intValue();
+				interact( animation );
+				animation.forceRedraw();
 			}
 		});
 		final JSpinner forcespin = (JSpinner) engine.find( "force" );
 		forcespin.setValue(new Integer(_force));
-		forcespin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		forcespin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_force = ((Integer)forcespin.getValue()).intValue();
 			}
 		});
 		final JSpinner damagespin = (JSpinner) engine.find( "damage" );
 		damagespin.setValue(new Integer(_damage));
-		damagespin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		damagespin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_damage = ((Integer)damagespin.getValue()).intValue();
 			}
 		});
@@ -110,12 +106,9 @@ public class AttackEvent implements AnimationEvent {
 	public Token getToken()
 	{
 		Token temp = new Token("attack");
-		if(_x1 == 0 && _y1 == 0 && _x2 == 0 && _y2 == 0 && _force == 0 && _damage == 0)
-		{
+		if(_x1 == 0 && _y1 == 0 && _x2 == 0 && _y2 == 0 && _force == 0 && _damage == 0) {
 			temp.addToken(new Token("attack"));
-		}
-		else
-		{
+		} else {
 			temp.addToken(new Token("attack"));
 			temp.addToken(new String[]{"x1",Integer.toString(_x1)});
 			temp.addToken(new String[]{"y1",Integer.toString(_y1)});

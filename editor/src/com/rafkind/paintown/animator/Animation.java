@@ -119,6 +119,10 @@ public class Animation implements Runnable {
 		updateDrawables();
 	}
 
+	public void forceRedraw(){
+		updateDrawables();
+	}
+
 	/* tell the components that know about this animation that its time
 	 * to redraw the canvas.
 	 * for things like updating the current frame or the attack box
