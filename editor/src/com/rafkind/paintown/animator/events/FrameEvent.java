@@ -38,13 +38,11 @@ public class FrameEvent implements AnimationEvent
 		}
 	}
 	
-	public String getName()
-	{
+	public String getName(){
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor()
-	{
+	public JDialog getEditor(){
 		SwingEngine engine = new SwingEngine( "animator/eventframe.xml" );
 		((JDialog)engine.getRootComponent()).setSize(200,50);
 		
@@ -56,20 +54,18 @@ public class FrameEvent implements AnimationEvent
 			framebox.addItem(frame);
 		}
 		
-		framebox.addActionListener( new ActionListener()
-		{
-			public void actionPerformed(ActionEvent actionEvent)
-			{
+		framebox.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent actionEvent){
 				frame = (String)framebox.getSelectedItem();
 			}
 		});
 		return (JDialog)engine.getRootComponent();
 	}
 	
-	public Token getToken()
-	{
+	public Token getToken(){
 		Token temp = new Token("frame");
-		temp.addToken( new String[]{ "frame", frame } );
+		temp.addToken( new Token( "frame" ) );
+		temp.addToken( new Token( frame ) );
 		return temp;
 	}
 }

@@ -64,7 +64,8 @@ public class EventFactory
 	}
 	
 	public static Vector getNames(){
-		return new Vector( events.keySet());
+		init();
+		return new Vector( events.keySet() );
 	}
 	
 }

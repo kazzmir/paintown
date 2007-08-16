@@ -21,7 +21,7 @@ public class Animation implements Runnable {
 	private boolean alive = true;
 	private boolean running;
 	private List drawables;
-	private List events;
+	private Vector events;
 	private BufferedImage image;
 	private BoundingBox attackArea;
 	private int eventIndex;
@@ -31,22 +31,35 @@ public class Animation implements Runnable {
 	private int y;
 	private int offsetX;
 	private int offsetY;
+	private String baseDirectory;
+	private int range;
+	private String type;
 	
 	private Vector keys;
 
 	public Animation(){
 		drawables = new ArrayList();
-		events = new ArrayList();
+		events = new Vector();
 		/* give the animation something so it rests a little bit */
 		events.add( new NopEvent() );
 		image = null;
 		attackArea = new BoundingBox( 0, 0, 0, 0 );
 		keys = new Vector();
+		baseDirectory = "";
+		type = "none";
 	}
 
-	public Animation( List events ){
+	public Animation( Vector events ){
 		this();
 		this.events = events;
+	}
+
+	public void setRange( int r ){
+		range = r;
+	}
+
+	public int getRange(){
+		return range;
 	}
 
 	public void addKey( String key ){
@@ -131,13 +144,24 @@ public class Animation implements Runnable {
 		}
 	}
 
+	/* swap position of e1 and e2 within event structure */
+	public void swapEvents( int e1, int e2 ){
+		synchronized( events ){
+			Object a1 = events.get( e1 );
+			Object a2 = events.get( e2 );
+			events.set( e1, a2 );
+			events.set( e2, a1 );
+		}
+		
+	}
+
 	/* return a new list that contains the current events
 	 * do not edit the returned list, to add new events use
 	 * addEvent/removeEvent
 	 */ 
-	public List getEvents(){
+	public Vector getEvents(){
 		synchronized( events ){
-			return new ArrayList( events );
+			return new Vector( events );
 		}
 	}
 
@@ -147,6 +171,11 @@ public class Animation implements Runnable {
 		}
 	}
 
+	public void removeEvent( int i ){
+		synchronized( events ){
+			events.remove( i );
+		}
+	}
 
 	public synchronized void draw( Graphics g, int x, int y ){
 		int trueX = x + this.x + this.offsetX;
@@ -314,13 +343,10 @@ public class Animation implements Runnable {
 			}
 		}
 		
-		/*
 		Token rangeToken = token.findToken( "range" );
 		if ( rangeToken != null ){
-			rangeSpinner.setValue(new Integer(rangeToken.readInt(0)));
 			range = rangeToken.readInt(0);
 		}
-		*/
 		
 		/*
 		Token basedirToken = token.findToken( "basedir" );
@@ -348,26 +374,31 @@ public class Animation implements Runnable {
 		token.addToken( new Token( "anim" ) );
 		
 		token.addToken(new String[]{"name", "\"" + name + "\""});
-		// if(!type.equals("none"))token.addToken(new String[]{"type", type});
-		if(!keys.isEmpty())
-		{
+		if ( ! type.equals("none") ){
+			token.addToken(new String[]{"type", type});
+		}
+
+		if ( ! keys.isEmpty() ){
 			Token keyToken = new Token( "keys" );
 			keyToken.addToken( new Token( "keys"));
-			Iterator kItor = keys.iterator();
-			while(kItor.hasNext())
-			{
-				String key = (String)kItor.next();
-				keyToken.addToken(new Token(key));
+			for ( Iterator it = keys.iterator(); it.hasNext(); ){
+				String key = (String) it.next();
+				keyToken.addToken( new Token( key ) );
 			}
-			token.addToken(keyToken);
+			token.addToken( keyToken );
 		}
-		// if(range!=0)token.addToken(new String[]{"range", Integer.toString(range)});
-		// if(!baseDirectory.equals(""))token.addToken(new String[]{"basedir", baseDirectory});
-		Iterator fItor = events.iterator();
-		while(fItor.hasNext())
-		{
-			AnimationEvent event = (AnimationEvent)fItor.next();
-			token.addToken(event.getToken());
+
+		if ( range != 0 ){
+			token.addToken(new String[]{"range", Integer.toString(range)});
+		}
+
+		if( ! baseDirectory.equals( "" ) ){
+			token.addToken(new String[]{"basedir", baseDirectory});
+		}
+
+		for ( Iterator it = events.iterator(); it.hasNext(); ){
+			AnimationEvent event = (AnimationEvent) it.next();
+			token.addToken( event.getToken() );
 		}
 		
 		return token;

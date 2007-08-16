@@ -57,7 +57,9 @@ public class OffsetEvent implements AnimationEvent
 	
 	public Token getToken(){
 		Token temp = new Token("offset");
-		temp.addToken( new String[]{ "offset", Integer.toString( _x ), Integer.toString( _y ) } );
+		temp.addToken( new Token( "offset" ) );
+		temp.addToken( new Token( String.valueOf( _x ) ) );
+		temp.addToken( new Token( String.valueOf( _y ) ) );
 		
 		return temp;
 	}

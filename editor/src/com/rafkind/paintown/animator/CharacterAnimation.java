@@ -55,7 +55,7 @@ public class CharacterAnimation
 	private JButton displayToken;
 	
 	// Name
-	private String name = "";
+	// private String name = "";
 	
 	// Type if special
 	private String type = "";
@@ -64,25 +64,29 @@ public class CharacterAnimation
 	// private Vector keys = new Vector();
 	
 	// Range
-	private int range;
+	// private int range;
 	
 	// Base dir
 	private String baseDirectory = "";
 	
 	// Events
-	private Vector events = new Vector();
+	// private Vector events = new Vector();
 	
 	private Timer timer;
 	
+	/*
 	public void setName(String n)
 	{
 		name = n;
 	}
+	*/
 	
+	/*
 	public String getName()
 	{
 		return name;
 	}
+	*/
 	
 	public void setType(String t)
 	{
@@ -111,6 +115,7 @@ public class CharacterAnimation
 	}
 	*/
 	
+	/*
 	public void setRange(int r)
 	{
 		range = r;
@@ -120,6 +125,7 @@ public class CharacterAnimation
 	{
 		return range;
 	}
+	*/
 	
 	public void fixBaseDirectory()
 	{
@@ -136,6 +142,7 @@ public class CharacterAnimation
 		return baseDirectory;
 	}
 	
+	/*
 	public void addEvent(AnimationEvent event)
 	{
 		events.addElement(event);
@@ -150,6 +157,7 @@ public class CharacterAnimation
 	{
 		return events;
 	}
+	*/
 	
 	private void startAnimation(){
 		/*
@@ -221,8 +229,6 @@ public class CharacterAnimation
 	}
 	
 	public CharacterAnimation( final Animation animation ){
-		name = "New Animation";
-		
 		type = "none";
 		
 		animEditor = new SwingEngine( "animator/base.xml" );
@@ -235,21 +241,19 @@ public class CharacterAnimation
 		
 		nameField = (JTextField) contextEditor.find( "name" );
 		
-		nameField.setText(name);
+		nameField.setText( animation.getName() );
 		
-		nameField.getDocument().addDocumentListener(new DocumentListener()
-		{
-			public void changedUpdate(DocumentEvent e)
-			{
-				name = nameField.getText();
+		nameField.getDocument().addDocumentListener(new DocumentListener(){
+			public void changedUpdate(DocumentEvent e){
+				animation.setName( nameField.getText() );
 			}
-			public void insertUpdate(DocumentEvent e)
-			{
-				name = nameField.getText();
+
+			public void insertUpdate(DocumentEvent e){
+				animation.setName( nameField.getText() );
 			}
-			public void removeUpdate(DocumentEvent e)
-			{
-				name = nameField.getText();
+
+			public void removeUpdate(DocumentEvent e){
+				animation.setName( nameField.getText() );
 			}
 		});
 		
@@ -335,9 +339,10 @@ public class CharacterAnimation
 		});
 		
 		rangeSpinner = (JSpinner) contextEditor.find( "range" );
+		rangeSpinner.setValue( new Integer( animation.getRange() ) );
 		rangeSpinner.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
-				range = ((Integer)rangeSpinner.getValue()).intValue();
+				animation.setRange( ((Integer)rangeSpinner.getValue()).intValue() );
 			}
 		});
 		
@@ -357,6 +362,8 @@ public class CharacterAnimation
 			});
 		
 		eventList = (JList) contextEditor.find( "events");
+
+		eventList.setListData( animation.getEvents() );
 		
 		eventList.addListSelectionListener(new ListSelectionListener()
 		{
@@ -375,12 +382,13 @@ public class CharacterAnimation
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					int index = eventList.locationToIndex(e.getPoint());
-					AnimationEvent temp = (AnimationEvent)events.elementAt(index);
+					AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt(index);
 					JDialog dialog = temp.getEditor();
 					if(dialog != null){
 						dialog.addWindowStateListener(new WindowStateListener(){
 							public void windowStateChanged(WindowEvent e){
-								eventList.setListData(events);
+								/* should use a list update event here */
+								eventList.setListData( animation.getEvents() );
 							}
 						});
 						dialog.show();
@@ -395,23 +403,21 @@ public class CharacterAnimation
 				Object value,
 				int index,
 				boolean isSelected,
-				boolean cellHasFocus)
-			{
+				boolean cellHasFocus){
+
 				setText(((AnimationEvent)value).getName());
 				setBackground(isSelected ? Color.gray : Color.white);
 				setForeground(isSelected ? Color.white : Color.black);
 				return this;
 			}
-			});
+		});
 		
 		// Need to add events to this combobox from event factory
 		// EventFactory.init();
 		eventSelect = (JComboBox) contextEditor.find( "event-select" );
-		Iterator eItor = EventFactory.getNames().iterator();
-		while(eItor.hasNext())
-		{
-			String event = (String)eItor.next();
-			eventSelect.addItem(event);
+		for ( Iterator it = EventFactory.getNames().iterator(); it.hasNext(); ){
+			String event = (String) it.next();
+			eventSelect.addItem( event );
 		}
 		
 		eventAdd = (JButton) contextEditor.find( "add-event" );
@@ -419,38 +425,33 @@ public class CharacterAnimation
 			public void actionPerformed( ActionEvent event ){
 				AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
 				JDialog dialog = temp.getEditor();
-				if(dialog != null)
-				{
-						dialog.addWindowStateListener(new WindowStateListener()
-						{
-							public void windowStateChanged(WindowEvent e)
-							{
-								eventList.setListData(events);
-							}
-						});
-						dialog.show();
+				if ( dialog != null ){
+					dialog.addWindowStateListener(new WindowStateListener(){
+						public void windowStateChanged(WindowEvent e){
+							eventList.setListData( animation.getEvents() );
+						}
+					});
+					dialog.show();
 				}
-				events.addElement(temp);
-				eventList.setListData(events);
+				animation.addEvent( temp );
+				eventList.setListData( animation.getEvents() );
 			}
 		});
 		
 		eventEdit = (JButton) contextEditor.find( "edit-event" );
 		eventEdit.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(events.isEmpty())return;
-				AnimationEvent temp = (AnimationEvent)events.elementAt(eventList.getSelectedIndex());
-				JDialog dialog = temp.getEditor();
-				if(dialog != null)
-				{
-						dialog.addWindowStateListener(new WindowStateListener()
-						{
-							public void windowStateChanged(WindowEvent e)
-							{
-								eventList.setListData(events);
+				if( ! animation.getEvents().isEmpty()){
+					AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt( eventList.getSelectedIndex() );
+					JDialog dialog = temp.getEditor();
+					if ( dialog != null ){
+						dialog.addWindowStateListener(new WindowStateListener(){
+							public void windowStateChanged(WindowEvent e){
+								eventList.setListData( animation.getEvents() );
 							}
 						});
 						dialog.show();
+					}
 				}
 			}
 		});
@@ -458,40 +459,30 @@ public class CharacterAnimation
 		eventRemove = (JButton) contextEditor.find( "remove-event" );
 		eventRemove.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(events.isEmpty())return;
-				AnimationEvent temp = (AnimationEvent)events.elementAt(eventList.getSelectedIndex());
-				events.removeElement(temp);
-				eventList.setListData(events);
+				if ( ! animation.getEvents().isEmpty() ){
+					animation.removeEvent( eventList.getSelectedIndex() );
+					eventList.setListData( animation.getEvents() );
+				}
 			}
 		});
 		
 		eventUp = (JButton) contextEditor.find( "up-event" );
 		eventUp.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(events.isEmpty())return;
-				int index1 = eventList.getSelectedIndex()-1 < 0 ? 0 : eventList.getSelectedIndex() - 1;
-				int index2 = eventList.getSelectedIndex();
-				AnimationEvent temp1 = (AnimationEvent)events.elementAt(index1);
-				AnimationEvent temp2 = (AnimationEvent)events.elementAt(index2);
-				
-				events.setElementAt(temp1,index2);
-				events.setElementAt(temp2,index1);
-				eventList.setListData(events);
+				if ( ! animation.getEvents().isEmpty() ){
+					animation.swapEvents( eventList.getSelectedIndex()-1 < 0 ? 0 : eventList.getSelectedIndex() - 1, eventList.getSelectedIndex() );
+					eventList.setListData( animation.getEvents() );
+				}
 			}
 		});
 		
 		eventDown = (JButton) contextEditor.find( "down-event" );
 		eventDown.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				if(events.isEmpty())return;
-				int index1 = eventList.getSelectedIndex()+1 > events.size() ? events.size() : eventList.getSelectedIndex() + 1;
-				int index2 = eventList.getSelectedIndex();
-				AnimationEvent temp1 = (AnimationEvent)events.elementAt(index1);
-				AnimationEvent temp2 = (AnimationEvent)events.elementAt(index2);
-				
-				events.setElementAt(temp1,index2);
-				events.setElementAt(temp2,index1);
-				eventList.setListData(events);
+				if ( ! animation.getEvents().isEmpty() ){
+					animation.swapEvents( eventList.getSelectedIndex()+1 > animation.getEvents().size() ? animation.getEvents().size() : eventList.getSelectedIndex() + 1, eventList.getSelectedIndex() );
+					eventList.setListData( animation.getEvents() );
+				}
 			}
 		});
 		
