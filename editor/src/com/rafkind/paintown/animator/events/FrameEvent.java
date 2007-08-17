@@ -77,9 +77,13 @@ public class FrameEvent implements AnimationEvent
 		canvas.add(area);
 		
 		final JComboBox framebox = (JComboBox) engine.find( "frame" );
+		int index = 0;
+		int count = -1;
 		for ( Iterator it = getFiles( animation.getBaseDirectory() ).iterator(); it.hasNext(); ){
-			String frame = (String) it.next();
-			framebox.addItem(frame);
+			count++;
+			String _frame = (String) it.next();
+			framebox.addItem(_frame);
+			if(_frame.equals(frame))index = count;
 		}
 		
 		framebox.addActionListener( new ActionListener(){
@@ -95,7 +99,7 @@ public class FrameEvent implements AnimationEvent
 			}
 		});
 		
-		framebox.setSelectedIndex( 0 );
+		framebox.setSelectedIndex( index );
 		
 		return (JDialog)engine.getRootComponent();
 	}
