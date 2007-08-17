@@ -30,6 +30,10 @@ public class CharacterAnimation{
 	public SpecialPanel getEditor(){	
 		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField);
 	}
+
+	private boolean rightClick( MouseEvent event ){
+		return event.getButton() == MouseEvent.BUTTON3;
+	}
 	
 	public CharacterAnimation( final Animation animation ){
 		animEditor = new SwingEngine( "animator/base.xml" );
@@ -195,11 +199,11 @@ public class CharacterAnimation{
 		
 		eventList.addMouseListener( new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
+				if ( rightClick( e ) || e.getClickCount() == 2 ){
 					int index = eventList.locationToIndex(e.getPoint());
-					AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt(index);
-					JDialog dialog = temp.getEditor( animation );
-					if(dialog != null){
+					AnimationEvent event = (AnimationEvent) animation.getEvents().elementAt(index);
+					JDialog dialog = event.getEditor( animation );
+					if ( dialog != null ){
 						dialog.addWindowStateListener(new WindowStateListener(){
 							public void windowStateChanged(WindowEvent e){
 								/* should use a list update event here */
@@ -340,6 +344,17 @@ public class CharacterAnimation{
 		playAnim.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				animation.startRunning();
+			}
+		});
+
+		final JLabel animationSpeed = (JLabel) contextEditor.find( "speed-num" );
+		animationSpeed.setText( "Animation speed: " + animation.getAnimationSpeed() );
+		final JSlider speed = (JSlider) contextEditor.find( "speed" );
+		speed.setValue( (int) (20 / animation.getAnimationSpeed()) );
+		speed.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				animation.setAnimationSpeed( 20.0 / speed.getValue() );
+				animationSpeed.setText( "Animation speed: " + speed.getValue() / 20.0 );
 			}
 		});
 		

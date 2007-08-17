@@ -36,6 +36,7 @@ public class Animation implements Runnable {
 	private String baseDirectory;
 	private int range;
 	private String type;
+	private double animationSpeed;
 	
 	private Vector keys;
 
@@ -46,6 +47,7 @@ public class Animation implements Runnable {
 		events.add( new NopEvent() );
 		notifiers = new ArrayList();
 		image = null;
+		animationSpeed = 1.0;
 		attackArea = new BoundingBox( 0, 0, 0, 0 );
 		keys = new Vector();
 		baseDirectory = ".";
@@ -209,6 +211,14 @@ public class Animation implements Runnable {
 		baseDirectory = b;
 	}
 
+	public void setAnimationSpeed( double n ){
+		animationSpeed = n;
+	}
+
+	public double getAnimationSpeed(){
+		return animationSpeed;
+	}
+
 	public synchronized void draw( Graphics g, int x, int y ){
 		int trueX = x + this.x + this.offsetX;
 		int trueY = y + this.y + this.offsetY;
@@ -327,7 +337,7 @@ public class Animation implements Runnable {
 	}
 
 	public void delay(){
-		delayTime = getDelay();
+		delayTime = (int)(getDelay() * getAnimationSpeed());
 	}
 
 	/* if the animation doesnt contain something that will cause delay this

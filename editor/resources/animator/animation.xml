@@ -71,5 +71,11 @@
 			</hbox>
 		</vbox>
 		<glue size="1" />
+		<hbox>
+			<label id="speed-num" />
+			<glue />
+		</hbox>
+		<slider id="speed" minimum="1" maximum="50" />
+		<glue size="1" />
 	</vbox>
 </panel>
