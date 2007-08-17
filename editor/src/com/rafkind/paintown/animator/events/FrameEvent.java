@@ -38,11 +38,11 @@ public class FrameEvent implements AnimationEvent
 	
 	public void interact( Animation animation ){
 		try{
-			animation.setImage(MaskedImage.load(Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame));
+			animation.setImage(MaskedImage.load(Animator.getDataPath() + "/" + frame));
 			animation.delay();
 		} catch ( Exception e ){
 			e.printStackTrace();
-			System.out.println("Problem! --> " + Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame);
+			System.out.println("Problem! --> " + Animator.getDataPath() + "/" + frame);
 		}
 	}
 	
