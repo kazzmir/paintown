@@ -54,24 +54,25 @@ public class FrameEvent implements AnimationEvent
 		JPanel canvas = (JPanel)engine.find("canvas");
 		canvas.setSize(350,200);
 		
-		class drawArea extends Canvas
-		{
+		class drawArea extends JComponent {
 			private BufferedImage img = null;
-			public void paint( Graphics g )
-			{
+			public void paint( Graphics g ){
 				g.setColor( new Color( 0, 0, 0 ) );
 				g.fillRect( 0, 0, 640, 480 );
-				if(img != null)
+				if ( img != null ){
 					g.drawImage( img, 125 - (img.getTileWidth()/2), 100 - (img.getTileHeight()/2), null );
+				}
 			}
 			
-			public void setImage(BufferedImage i)
-			{
+			public void setImage(BufferedImage i){
 				img = i;
 			}
 		};
+
 		final drawArea area = new drawArea();
+
 		area.setSize(350,200);
+		area.setPreferredSize( new Dimension( 350,200 ) );
 		
 		canvas.add(area);
 		
@@ -84,19 +85,17 @@ public class FrameEvent implements AnimationEvent
 		framebox.addActionListener( new ActionListener(){
 			public void actionPerformed(ActionEvent actionEvent){
 				frame = (String)framebox.getSelectedItem();
-				try
-				{
+				try{
 					area.setImage(MaskedImage.load(Animator.getDataPath() + "/" + frame));
-				}
-				catch(Exception e)
-				{
-					System.out.println("Couldn't load file!");
+				} catch ( Exception e ){
+					System.out.println("Couldn't load file: " + Animator.getDataPath() + "/" + frame );
+					e.printStackTrace();
 				}
 				area.repaint();
 			}
 		});
 		
-		framebox.setSelectedIndex(0);
+		framebox.setSelectedIndex( 0 );
 		
 		return (JDialog)engine.getRootComponent();
 	}
