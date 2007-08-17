@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 public class FrameEvent implements AnimationEvent
 {
+	private String _basedir = "";
 	private String frame = "";
 	
 	public void loadToken(Token token)
@@ -28,6 +29,7 @@ public class FrameEvent implements AnimationEvent
 		Token parent = token.getParent();
 		Token basedir = parent.findToken("basedir");
 		if(basedir != null){
+			//frame = token.readString(0).replace(basedir.readString(0),"");
 			frame = basedir.readString(0) + token.readString(0);
 		} else {
 			frame = token.readString(0);
@@ -49,6 +51,7 @@ public class FrameEvent implements AnimationEvent
 	}
 	
 	public JDialog getEditor( Animation animation ){
+		_basedir = animation.getBaseDirectory();
 		SwingEngine engine = new SwingEngine( "animator/eventframe.xml" );
 		((JDialog)engine.getRootComponent()).setSize(350,270);
 		JPanel canvas = (JPanel)engine.find("canvas");
@@ -122,7 +125,7 @@ public class FrameEvent implements AnimationEvent
 	public Token getToken(){
 		Token temp = new Token("frame");
 		temp.addToken( new Token( "frame" ) );
-		temp.addToken( new Token( frame ) );
+		temp.addToken( new Token( frame.replaceAll(_basedir,"") ) );
 		return temp;
 	}
 }
