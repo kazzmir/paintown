@@ -29,8 +29,8 @@ public class FrameEvent implements AnimationEvent
 		Token parent = token.getParent();
 		Token basedir = parent.findToken("basedir");
 		if(basedir != null){
-			//frame = token.readString(0).replace(basedir.readString(0),"");
-			frame = basedir.readString(0) + token.readString(0);
+			frame = token.readString(0).replace(basedir.readString(0),"");
+			//frame = basedir.readString(0) + token.readString(0);
 		} else {
 			frame = token.readString(0);
 		}
@@ -38,11 +38,11 @@ public class FrameEvent implements AnimationEvent
 	
 	public void interact( Animation animation ){
 		try{
-			animation.setImage(MaskedImage.load(Animator.getDataPath() + "/" + frame));
+			animation.setImage(MaskedImage.load(Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame));
 			animation.delay();
 		} catch ( Exception e ){
 			e.printStackTrace();
-			System.out.println("Problem! --> " + Animator.getDataPath() + "/" + frame);
+			System.out.println("Problem! --> " + Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame);
 		}
 	}
 	
