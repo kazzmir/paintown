@@ -23,48 +23,13 @@ import com.rafkind.paintown.animator.events.EventFactory;
 import com.rafkind.paintown.animator.events.FrameEvent;
 
 public class CharacterAnimation{
-	/*
-	private DrawArea area;
-	private SwingEngine contextEditor;
-	private SwingEngine controlEditor;
-	private JPanel context;
-	private JPanel canvas;
-	private JPanel other;
-	private JPanel controls;
-	private JTextField nameField;
-	private JComboBox typeCombo;
-	private JList keyList;
-	private JComboBox keySelect;
-	private JButton keyAdd;
-	private JButton keyRemove;
-	private JButton keyUp;
-	private JButton keyDown;
-	private JSpinner rangeSpinner;
-	private JTextField basedirField;
-	private JButton basedirButton;
-	private JList eventList;
-	private JComboBox eventSelect;
-	private JButton eventAdd;
-	private JButton eventEdit;
-	private JButton eventRemove;
-	private JButton eventUp;
-	private JButton eventDown;
 	
-	private JButton displayToken;
-	*/
-
 	private SwingEngine animEditor;
 	private JTextField nameField;
 	
 	public SpecialPanel getEditor(){	
 		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField);
 	}
-	
-	/*
-	public DrawArea getDrawArea(){
-		return area;
-	}
-	*/
 	
 	public CharacterAnimation( final Animation animation ){
 		animEditor = new SwingEngine( "animator/base.xml" );
