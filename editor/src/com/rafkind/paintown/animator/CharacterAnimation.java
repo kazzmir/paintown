@@ -22,12 +22,9 @@ import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.animator.events.EventFactory;
 import com.rafkind.paintown.animator.events.FrameEvent;
 
-
-public class CharacterAnimation
-{
+public class CharacterAnimation{
+	/*
 	private DrawArea area;
-	// private DrawArea externalArea;
-	private SwingEngine animEditor;
 	private SwingEngine contextEditor;
 	private SwingEngine controlEditor;
 	private JPanel context;
@@ -54,193 +51,29 @@ public class CharacterAnimation
 	private JButton eventDown;
 	
 	private JButton displayToken;
-	
-	// Name
-	// private String name = "";
-	
-	// Type if special
-	// private String type = "";
-	
-	// key sequence (String)
-	// private Vector keys = new Vector();
-	
-	// Range
-	// private int range;
-	
-	// Base dir
-	// private String baseDirectory = "";
-	
-	// Events
-	// private Vector events = new Vector();
-	
-	private Timer timer;
-	
-	/*
-	public void setName(String n)
-	{
-		name = n;
-	}
 	*/
+
+	private SwingEngine animEditor;
+	private JTextField nameField;
 	
-	/*
-	public String getName()
-	{
-		return name;
-	}
-	*/
-	
-	/*
-	public void setType(String t)
-	{
-		type = t;
-	}
-	
-	public String getType()
-	{
-		return type;
-	}
-	*/
-	
-	/*
-	public void addKey(String key)
-	{
-		keys.addElement(key);
-	}
-	
-	public Vector getKeys()
-	{
-		return keys;
-	}
-	
-	public void clearKeys()
-	{
-		keys.clear();
-	}
-	*/
-	
-	/*
-	public void setRange(int r)
-	{
-		range = r;
-	}
-	
-	public int getRange()
-	{
-		return range;
-	}
-	*/
-	
-	/*
-	public void fixBaseDirectory()
-	{
-		DrawState.setCurrentDirList(Animator.dataPath(baseDirectory));
-	}
-	
-	public void setBaseDirectory(String b)
-	{
-		baseDirectory = b;
-	}
-	
-	public String getBaseDirectory()
-	{
-		return baseDirectory;
-	}
-	*/
-	
-	/*
-	public void addEvent(AnimationEvent event)
-	{
-		events.addElement(event);
-	}
-	
-	public void removeEvent(AnimationEvent event)
-	{
-		events.removeElement(event);
-	}
-	
-	public Vector getEvents()
-	{
-		return events;
-	}
-	*/
-	
-	private void startAnimation(){
-		/*
-		area.registerEvents(events);
-		timer.start();
-		*/
-	}
-	
-	private void stopAnimation(){
-		/*
-		area.resetEvents();
-		timer.stop();
-		*/
-	}
-	
-	/*
-	public void startAnim(DrawArea drawarea){
-		externalArea = drawarea;
-		externalArea.registerEvents(events);
-	}
-	*/
-	
-	/*
-	public void stopAnim(){
-		externalArea.resetEvents();
-	}
-	*/
-	
-	/*
-	public Token getToken(){
-		Token token = new Token();
-		token.addToken( new Token( "anim" ) );
-		
-		token.addToken(new String[]{"name", "\"" + name + "\""});
-		if(!type.equals("none"))token.addToken(new String[]{"type", type});
-		if(!keys.isEmpty())
-		{
-			Token keyToken = new Token( "keys" );
-			keyToken.addToken( new Token( "keys"));
-			Iterator kItor = keys.iterator();
-			while(kItor.hasNext())
-			{
-				String key = (String)kItor.next();
-				keyToken.addToken(new Token(key));
-			}
-			token.addToken(keyToken);
-		}
-		if(range!=0)token.addToken(new String[]{"range", Integer.toString(range)});
-		if(!baseDirectory.equals(""))token.addToken(new String[]{"basedir", baseDirectory});
-		Iterator fItor = events.iterator();
-		while(fItor.hasNext())
-		{
-			AnimationEvent event = (AnimationEvent)fItor.next();
-			token.addToken(event.getToken());
-		}
-		
-		return token;
-	}
-	*/
-	
-	public SpecialPanel getEditor()
-	{	
+	public SpecialPanel getEditor(){	
 		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField);
 	}
 	
-	public DrawArea getDrawArea()
-	{
+	/*
+	public DrawArea getDrawArea(){
 		return area;
 	}
+	*/
 	
 	public CharacterAnimation( final Animation animation ){
 		animEditor = new SwingEngine( "animator/base.xml" );
 		
-		contextEditor = new SwingEngine ( "animator/animation.xml");
+		SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
 		
-		controlEditor = new SwingEngine( "animator/controls.xml" );
+		SwingEngine controlEditor = new SwingEngine( "animator/controls.xml" );
 		
-		context = (JPanel) animEditor.find( "context" );
+		JPanel context = (JPanel) animEditor.find( "context" );
 		
 		nameField = (JTextField) contextEditor.find( "name" );
 		
@@ -260,7 +93,7 @@ public class CharacterAnimation
 			}
 		});
 		
-		typeCombo = (JComboBox) contextEditor.find( "type" );
+		final JComboBox typeCombo = (JComboBox) contextEditor.find( "type" );
 		typeCombo.addItem(new String("none"));
 		typeCombo.addItem(new String("attack"));
 		typeCombo.addActionListener( new AbstractAction(){
@@ -270,8 +103,8 @@ public class CharacterAnimation
 		});
 		typeCombo.setSelectedItem( animation.getType() );
 		
-		keyList = (JList) contextEditor.find( "keys");
-		keySelect = (JComboBox) contextEditor.find( "key-select" );
+		final JList keyList = (JList) contextEditor.find( "keys");
+		final JComboBox keySelect = (JComboBox) contextEditor.find( "key-select" );
 
 		keySelect.addItem(new String("key_idle"));
 		keySelect.addItem(new String("key_up"));
@@ -293,14 +126,14 @@ public class CharacterAnimation
 
 		keyList.setListData( animation.getKeys() );
 
-		keyAdd = (JButton) contextEditor.find( "add-key" );
+		JButton keyAdd = (JButton) contextEditor.find( "add-key" );
 		keyAdd.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				animation.addKey( (String) keySelect.getSelectedItem() );
 				keyList.setListData( animation.getKeys() );
 			}
 		});
-		keyRemove = (JButton) contextEditor.find( "remove-key" );
+		JButton keyRemove = (JButton) contextEditor.find( "remove-key" );
 		keyRemove.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( ! animation.getKeys().isEmpty() ){
@@ -309,7 +142,7 @@ public class CharacterAnimation
 				}
 			}
 		});
-		keyUp = (JButton) contextEditor.find( "up-key" );
+		JButton keyUp = (JButton) contextEditor.find( "up-key" );
 		keyUp.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( ! animation.getKeys().isEmpty() ){
@@ -325,7 +158,8 @@ public class CharacterAnimation
 				}
 			}
 		});
-		keyDown = (JButton) contextEditor.find( "down-key" );
+
+		JButton keyDown = (JButton) contextEditor.find( "down-key" );
 		keyDown.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( ! animation.getKeys().isEmpty() ){
@@ -342,7 +176,7 @@ public class CharacterAnimation
 			}
 		});
 		
-		rangeSpinner = (JSpinner) contextEditor.find( "range" );
+		final JSpinner rangeSpinner = (JSpinner) contextEditor.find( "range" );
 		rangeSpinner.setValue( new Integer( animation.getRange() ) );
 		rangeSpinner.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
@@ -350,9 +184,9 @@ public class CharacterAnimation
 			}
 		});
 		
-		basedirField = (JTextField) contextEditor.find( "basedir" );
+		final JTextField basedirField = (JTextField) contextEditor.find( "basedir" );
 		basedirField.setText( animation.getBaseDirectory() );
-		basedirButton = (JButton) contextEditor.find( "change-basedir" );
+		JButton basedirButton = (JButton) contextEditor.find( "change-basedir" );
 		basedirButton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
 					RelativeFileChooser chooser = Animator.getNewFileChooser();
@@ -365,7 +199,7 @@ public class CharacterAnimation
 				}
 			});
 		
-		eventList = (JList) contextEditor.find( "events");
+		final JList eventList = (JList) contextEditor.find( "events");
 
 		eventList.setListData( animation.getEvents() );
 
@@ -434,13 +268,13 @@ public class CharacterAnimation
 		
 		// Need to add events to this combobox from event factory
 		// EventFactory.init();
-		eventSelect = (JComboBox) contextEditor.find( "event-select" );
+		final JComboBox eventSelect = (JComboBox) contextEditor.find( "event-select" );
 		for ( Iterator it = EventFactory.getNames().iterator(); it.hasNext(); ){
 			String event = (String) it.next();
 			eventSelect.addItem( event );
 		}
 		
-		eventAdd = (JButton) contextEditor.find( "add-event" );
+		JButton eventAdd = (JButton) contextEditor.find( "add-event" );
 		eventAdd.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
@@ -458,7 +292,7 @@ public class CharacterAnimation
 			}
 		});
 		
-		eventEdit = (JButton) contextEditor.find( "edit-event" );
+		JButton eventEdit = (JButton) contextEditor.find( "edit-event" );
 		eventEdit.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if( ! animation.getEvents().isEmpty()){
@@ -476,7 +310,7 @@ public class CharacterAnimation
 			}
 		});
 		
-		eventRemove = (JButton) contextEditor.find( "remove-event" );
+		JButton eventRemove = (JButton) contextEditor.find( "remove-event" );
 		eventRemove.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( ! animation.getEvents().isEmpty() ){
@@ -486,7 +320,7 @@ public class CharacterAnimation
 			}
 		});
 		
-		eventUp = (JButton) contextEditor.find( "up-event" );
+		JButton eventUp = (JButton) contextEditor.find( "up-event" );
 		eventUp.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( ! animation.getEvents().isEmpty() ){
@@ -500,7 +334,7 @@ public class CharacterAnimation
 			}
 		});
 		
-		eventDown = (JButton) contextEditor.find( "down-event" );
+		JButton eventDown = (JButton) contextEditor.find( "down-event" );
 		eventDown.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( ! animation.getEvents().isEmpty() ){
@@ -514,14 +348,12 @@ public class CharacterAnimation
 			}
 		});
 		
-		controls = (JPanel) animEditor.find( "controls" );
+		JPanel controls = (JPanel) animEditor.find( "controls" );
 		
-		displayToken = (JButton) controlEditor.find( "token" );
+		JButton displayToken = (JButton) controlEditor.find( "token" );
 		
-		displayToken.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
+		displayToken.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
 				final JDialog tempDiag = new JDialog();
 				tempDiag.setSize(400,400);
 				final JTextArea tempText = new JTextArea();
@@ -548,93 +380,14 @@ public class CharacterAnimation
 		
 		controls.add((JComponent)controlEditor.getRootComponent());
 		
-		canvas = (JPanel) animEditor.find( "canvas" );
-		area = new DrawArea();
+		JPanel canvas = (JPanel) animEditor.find( "canvas" );
+		DrawArea area = new DrawArea();
 		canvas.add(area);
 
 		area.animate( animation );
 		
-		other = (JPanel) animEditor.find( "other" );
+		JPanel other = (JPanel) animEditor.find( "other" );
 		
 		context.add((JComponent)contextEditor.getRootComponent());
-		
-		timer = new Timer(1,new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {	
-				eventList.setSelectedValue(area.getCurrentEvent(),true);
-			}
-		});
 	}
-	
-	/*
-	public void loadData(Token token) throws LoadException{
-		if ( ! token.getName().equals( "anim" ) ){
-			throw new LoadException( "Starting token is not 'anim'" );
-		}
-		
-		Token nameToken = token.findToken( "name" );
-		if ( nameToken != null )
-		{
-			nameField.setText(nameToken.readString(0));
-			name = nameToken.readString(0);
-		}
-		
-		Token typeToken = token.findToken( "type" );
-		if ( typeToken != null )
-		{
-			for(int i=0; i < typeCombo.getItemCount();++i)
-			{
-				if(((String)typeCombo.getItemAt(i)).equals(typeToken.readString(0)))
-				{
-					typeCombo.setSelectedIndex(i);
-					type = nameToken.readString(0);
-					break;
-				}
-			}
-			
-		}
-		
-		Token keyToken = token.findToken( "keys" );
-		if ( keyToken != null ){
-			try{
-				for(int i = 0; ; i += 1 ){
-					String temp = keyToken.readString(i);
-					if(temp != null){
-						keys.addElement(temp);
-					} else {
-						break;
-					}
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-
-			keyList.setListData( keys );
-		}
-		
-		Token rangeToken = token.findToken( "range" );
-		if ( rangeToken != null ){
-			rangeSpinner.setValue(new Integer(rangeToken.readInt(0)));
-			range = rangeToken.readInt(0);
-		}
-		
-		Token basedirToken = token.findToken( "basedir" );
-		if ( basedirToken != null )
-		{
-			basedirField.setText(basedirToken.readString(0));
-			baseDirectory = basedirToken.readString(0);
-			DrawState.setCurrentDirList(Animator.dataPath(baseDirectory));
-		}
-		
-		for ( Iterator it = token.getTokens().iterator(); it.hasNext(); ){
-			Token t = (Token) it.next();
-			AnimationEvent ae = EventFactory.getEvent(t.getName());
-			if(ae != null)
-			{
-				ae.loadToken(t);
-				events.addElement(ae);
-			}
-		}
-		eventList.setListData(events);
-	}
-	*/
 }
