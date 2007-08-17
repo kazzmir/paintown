@@ -7,6 +7,7 @@ import javax.swing.*;
 import com.rafkind.paintown.*;
 import com.rafkind.paintown.exception.*;
 import com.rafkind.paintown.animator.Animator;
+import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.SpecialPanel;
 import com.rafkind.paintown.animator.DrawArea;
 
@@ -185,11 +186,11 @@ public abstract class CharacterStats
 	
 	public boolean removeAnimation(int index)
 	{
-		CharacterAnimation temp = (CharacterAnimation)animations.elementAt(index);
+		Animation temp = (Animation)animations.elementAt(index);
 		return animations.removeElement(temp);
 	}
 	
-	public boolean removeAnimation(CharacterAnimation anim)
+	public boolean removeAnimation(Animation anim)
 	{
 		return animations.removeElement(anim);
 	}
