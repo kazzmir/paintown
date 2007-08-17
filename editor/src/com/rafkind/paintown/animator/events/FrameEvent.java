@@ -1,12 +1,15 @@
 package com.rafkind.paintown.animator.events;
 
+import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.io.File;
 import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.DrawState;
+import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
@@ -47,7 +50,30 @@ public class FrameEvent implements AnimationEvent
 	
 	public JDialog getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventframe.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,50);
+		((JDialog)engine.getRootComponent()).setSize(350,270);
+		JPanel canvas = (JPanel)engine.find("canvas");
+		canvas.setSize(350,200);
+		
+		class drawArea extends Canvas
+		{
+			private BufferedImage img = null;
+			public void paint( Graphics g )
+			{
+				g.setColor( new Color( 0, 0, 0 ) );
+				g.fillRect( 0, 0, 640, 480 );
+				if(img != null)
+					g.drawImage( img, 125 - (img.getTileWidth()/2), 100 - (img.getTileHeight()/2), null );
+			}
+			
+			public void setImage(BufferedImage i)
+			{
+				img = i;
+			}
+		};
+		final drawArea area = new drawArea();
+		area.setSize(350,200);
+		
+		canvas.add(area);
 		
 		final JComboBox framebox = (JComboBox) engine.find( "frame" );
 		for ( Iterator it = getFiles( animation.getBaseDirectory() ).iterator(); it.hasNext(); ){
@@ -58,8 +84,20 @@ public class FrameEvent implements AnimationEvent
 		framebox.addActionListener( new ActionListener(){
 			public void actionPerformed(ActionEvent actionEvent){
 				frame = (String)framebox.getSelectedItem();
+				try
+				{
+					area.setImage(MaskedImage.load(Animator.getDataPath() + "/" + frame));
+				}
+				catch(Exception e)
+				{
+					System.out.println("Couldn't load file!");
+				}
+				area.repaint();
 			}
 		});
+		
+		framebox.setSelectedIndex(0);
+		
 		return (JDialog)engine.getRootComponent();
 	}
 

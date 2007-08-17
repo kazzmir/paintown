@@ -10,6 +10,9 @@
 			fill="GridBagConstraints.BOTH"
 			/>
 		<hbox>
+			<panel id="canvas" />
+		</hbox>
+		<hbox>
 			<label text="Set Frame" />
 			<combobox id="frame" />
 			<glue />
