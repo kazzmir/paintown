@@ -12,6 +12,7 @@ import com.rafkind.paintown.exception.*;
 import com.rafkind.paintown.Lambda1;
 
 import java.awt.image.*;
+import java.awt.Color;
 
 import java.awt.Graphics;
 import javax.swing.JComponent;
@@ -272,10 +273,17 @@ public class Animation implements Runnable {
 	}
 
 	public synchronized void draw( Graphics g, int x, int y ){
-		int trueX = x + this.x + this.offsetX;
+		int trueX = x + this.x + this.offsetX - getWidth() / 2;
 		int trueY = y + this.y + this.offsetY;
 		if ( currentImage() != null ){
 			g.drawImage( currentImage(), trueX, trueY, null );
+		}
+
+		if ( getRange() != 0 ){
+			Color old = g.getColor();
+			g.setColor( new Color( 255, 255, 255 ) );
+			g.fillRect( trueX + getWidth() / 2, trueY + getHeight(), getRange(), 5 );
+			g.setColor( old );
 		}
 
 		if ( ! attackArea.empty() ){

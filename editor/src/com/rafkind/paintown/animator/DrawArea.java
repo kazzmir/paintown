@@ -62,6 +62,7 @@ public final class DrawArea extends JComponent {
 		g.fillRect( 0, 0, 640, 480 );
 		g.setColor( new Color( 255, 255, 0 ) );
 		g.drawLine( 0, y, 640, y );
+		g.drawLine( x, 0, x, 480 );
 
 		if ( currentAnimation != null ){
 			currentAnimation.draw( g, x, y - currentAnimation.getHeight() );
