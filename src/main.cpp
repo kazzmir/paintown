@@ -379,7 +379,7 @@ static vector< Background > readBackgrounds( const string & path ){
 	return backgrounds;
 }
 
-static void playVersusMode( Character * player1, Character * player2 ){
+static void playVersusMode( Character * player1, Character * player2, int round ) throw( ReturnException ){
 
 	player1->setY( 0 );
 	player2->setY( 0 );
@@ -423,6 +423,11 @@ static void playVersusMode( Character * player1, Character * player2 ){
 	Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
 	Music::play();
 
+	int roundColors[ 120 ];
+	int showRound = sizeof( roundColors ) / sizeof(int) - 1;
+	Util::blend_palette( roundColors, 60, Bitmap::makeColor( 96, 0, 0 ), Bitmap::makeColor( 200, 0, 0 ) );
+	Util::blend_palette( roundColors + 60, 60, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 96, 0, 0 ) );
+
 	while ( ! done ){
 
 		bool draw = false;
@@ -457,6 +462,10 @@ static void playVersusMode( Character * player1, Character * player2 ){
 					gameSpeed = SPEED_INC;
 				}
 				cout << "Game speed " << gameSpeed << endl;
+			}
+
+			if ( key[ Keyboard::Key_ESC ] ){
+				throw ReturnException();
 			}
 
 			if ( key[ Keyboard::Key_P ] ){
@@ -530,6 +539,12 @@ static void playVersusMode( Character * player1, Character * player2 ){
 			// work.Stretch( screen_buffer, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
 			work.Blit( screen_buffer );
 
+			if ( showRound > 0 ){
+				const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
+				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, roundColors[ showRound ], screen_buffer, "Round %d", 0, round );
+				showRound -= 1;
+			}
+
 			player1->drawLifeBar( 10, 10, &screen_buffer );
 			player2->drawLifeBar( screen_buffer.getWidth() - 150, 10, &screen_buffer );
 
@@ -556,7 +571,8 @@ static void playVersusMode( Character * player1, Character * player2 ){
 			work.clear();
 		}
 
-		done |= key[ Keyboard::Key_ESC ] || world.finished();
+		// done |= key[ Keyboard::Key_ESC ] || world.finished();
+		done = world.finished();
 	}
 }
 
@@ -1121,9 +1137,11 @@ static bool titleScreen(){
 					enemy = selectPlayer( false );
 					enemy->setAlliance( ALLIANCE_ENEMY );
 					// VersusEnemy en( *(Player *) enemy );
-					VersusPlayer en( 1, *(Player *) enemy );
-					VersusPlayer pl( 0, *(Player *) player );
-					playVersusMode( &pl, &en );
+					for ( int i = 0; i < 3; i += 1 ){
+						VersusPlayer en( 1, *(Player *) enemy );
+						VersusPlayer pl( 0, *(Player *) player );
+						playVersusMode( &pl, &en, i + 1 );
+					}
 					key.wait();
 				} catch ( const LoadException & le ){
 					cout << "Could not load player: " << le.getReason() << endl;
