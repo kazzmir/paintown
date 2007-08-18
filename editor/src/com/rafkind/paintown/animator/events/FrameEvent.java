@@ -19,30 +19,21 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class FrameEvent implements AnimationEvent
-{
-	private String _basedir = "";
+public class FrameEvent implements AnimationEvent {
 	private String frame = "";
 	
-	public void loadToken(Token token)
-	{
-		Token parent = token.getParent();
-		Token basedir = parent.findToken("basedir");
-		if(basedir != null){
-			frame = token.readString(0).replace(basedir.readString(0),"");
-			//frame = basedir.readString(0) + token.readString(0);
-		} else {
-			frame = token.readString(0);
-		}
+	public void loadToken(Token token){
+		frame = token.readString(0);
 	}
 	
 	public void interact( Animation animation ){
+		String path = Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame;
 		try{
-			animation.setImage(MaskedImage.load(Animator.getDataPath() + "/" + frame));
+			animation.setImage( MaskedImage.load( path ) );
 			animation.delay();
 		} catch ( Exception e ){
 			e.printStackTrace();
-			System.out.println("Problem! --> " + Animator.getDataPath() + "/" + frame);
+			System.out.println( "Could not load " + path );
 		}
 	}
 	
@@ -50,8 +41,7 @@ public class FrameEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
-		_basedir = animation.getBaseDirectory();
+	public JDialog getEditor( final Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventframe.xml" );
 		((JDialog)engine.getRootComponent()).setSize(350,270);
 		JPanel canvas = (JPanel)engine.find("canvas");
@@ -86,19 +76,21 @@ public class FrameEvent implements AnimationEvent
 			count++;
 			String _frame = (String) it.next();
 			framebox.addItem(_frame);
-			if(_frame.equals(frame))index = count;
+			if ( _frame.endsWith( frame ) ){
+				index = count;
+			}
 		}
 		
 		framebox.addActionListener( new ActionListener(){
 			public void actionPerformed(ActionEvent actionEvent){
 				frame = (String)framebox.getSelectedItem();
 				try{
-					area.setImage(MaskedImage.load(Animator.getDataPath() + "/" + frame));
+					area.setImage( MaskedImage.load( Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame ) );
+					area.repaint();
 				} catch ( Exception e ){
-					System.out.println("Couldn't load file: " + Animator.getDataPath() + "/" + frame );
+					System.out.println("Couldn't load file: " + frame );
 					e.printStackTrace();
 				}
-				area.repaint();
 			}
 		});
 		
@@ -115,7 +107,8 @@ public class FrameEvent implements AnimationEvent
 			for ( int i = 0; i < all.length; i++ ){
 				if ( all[ i ].getName().endsWith( ".png" ) ||
 				     all[ i ].getName().endsWith( ".bmp" ) ){
-					files.add( path.replaceAll("data/","") + all[ i ].getName().replaceAll("^./","") );
+				     	files.add( all[ i ].getName() );
+					// files.add( path.replaceAll("data/","") + all[ i ].getName().replaceAll("^./","") );
 				}
 			}
 		}
@@ -125,7 +118,7 @@ public class FrameEvent implements AnimationEvent
 	public Token getToken(){
 		Token temp = new Token("frame");
 		temp.addToken( new Token( "frame" ) );
-		temp.addToken( new Token( frame.replaceAll(_basedir,"") ) );
+		temp.addToken( new Token( frame ) );
 		return temp;
 	}
 }
