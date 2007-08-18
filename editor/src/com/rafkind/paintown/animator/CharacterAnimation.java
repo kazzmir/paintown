@@ -35,7 +35,7 @@ public class CharacterAnimation{
 		return event.getButton() == MouseEvent.BUTTON3;
 	}
 	
-	public CharacterAnimation( final Animation animation ){
+	public CharacterAnimation( final CharacterStats character, final Animation animation ){
 		animEditor = new SwingEngine( "animator/base.xml" );
 		
 		SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
@@ -152,6 +152,24 @@ public class CharacterAnimation{
 				animation.setRange( ((Integer)rangeSpinner.getValue()).intValue() );
 			}
 		});
+
+		/* 'sequence' should do a whole thing with listeners to know when animations
+		 * are changed/added/removed.
+		 */
+		final JComboBox sequence = (JComboBox) contextEditor.find( "sequence" );
+		sequence.addItem( "none" );
+		for ( Iterator it = character.getAnimations().iterator(); it.hasNext(); ){
+			Animation ani = (Animation) it.next();
+			if ( ! ani.getName().equals( animation.getName() ) ){
+				sequence.addItem( ani.getName() );
+			}
+		}
+		sequence.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				animation.setSequence( (String) sequence.getSelectedItem() );
+			}
+		});
+		sequence.setSelectedItem( animation.getSequence() );
 		
 		final JTextField basedirField = (JTextField) contextEditor.find( "basedir" );
 		basedirField.setText( animation.getBaseDirectory() );

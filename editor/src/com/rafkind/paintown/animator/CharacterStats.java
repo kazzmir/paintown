@@ -170,16 +170,18 @@ public abstract class CharacterStats
 	
 	public void createAnimation(){
 		Animation ani = new Animation();
-		CharacterAnimation temp = new CharacterAnimation( ani );
-		_animator.addNewTab( temp.getEditor(), ani.getName() );
-		animations.addElement( ani );
 		new Thread( ani ).start();
+		animations.addElement( ani );
+		editAnimation( animations.size() - 1 );
+		/*
+		CharacterAnimation temp = new CharacterAnimation( this, ani );
+		_animator.addNewTab( temp.getEditor(), ani.getName() );
+		*/
 	}
 	
-	public void editAnimation(int index)
-	{
+	public void editAnimation(int index){
 		Animation temp = (Animation) animations.elementAt( index );
-		CharacterAnimation edit = new CharacterAnimation( temp );
+		CharacterAnimation edit = new CharacterAnimation( this, temp );
 		_animator.addNewTab( edit.getEditor(), temp.getName());
 		// edit.fixBaseDirectory();
 	}
@@ -195,8 +197,7 @@ public abstract class CharacterStats
 		return animations.removeElement(anim);
 	}
 	
-	public Vector getAnimations()
-	{
+	public Vector getAnimations(){
 		return animations;
 	}
 	

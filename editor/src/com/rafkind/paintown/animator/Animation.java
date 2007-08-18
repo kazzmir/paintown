@@ -24,6 +24,7 @@ public class Animation implements Runnable {
 	private List drawables;
 	private List notifiers;
 	private Vector events;
+	private String sequence;
 	private BufferedImage image;
 	private BoundingBox attackArea;
 	private int eventIndex;
@@ -48,6 +49,7 @@ public class Animation implements Runnable {
 		notifiers = new ArrayList();
 		image = null;
 		animationSpeed = 1.0;
+		sequence = "none";
 		attackArea = new BoundingBox( 0, 0, 0, 0 );
 		keys = new Vector();
 		baseDirectory = ".";
@@ -78,6 +80,14 @@ public class Animation implements Runnable {
 
 	public void addKey( String key ){
 		keys.add( key );
+	}
+
+	public void setSequence( String s ){
+		sequence = s;
+	}
+
+	public String getSequence(){
+		return sequence;
 	}
 
 	public void removeKey( int index ){
@@ -366,6 +376,11 @@ public class Animation implements Runnable {
 		if ( nameToken != null ){
 			setName( nameToken.readString(0) );
 		}
+
+		Token sequenceToken = token.findToken( "sequence" );
+		if ( sequenceToken != null ){
+			setSequence( sequenceToken.readString( 0 ) );
+		}
 		
 		Token typeToken = token.findToken( "type" );
 		if ( typeToken != null ){
@@ -416,6 +431,10 @@ public class Animation implements Runnable {
 		token.addToken(new String[]{"name", "\"" + name + "\""});
 		if ( ! type.equals("none") ){
 			token.addToken(new String[]{"type", type});
+		}
+
+		if ( ! sequence.equals( "none" ) ){
+			token.addToken( new String[]{ "sequence", sequence, "junk" } );
 		}
 
 		if ( ! keys.isEmpty() ){

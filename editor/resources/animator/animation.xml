@@ -50,6 +50,10 @@
 			<button text="Clear" id="clear-basedir" />
 			<glue />
 		</hbox>
+		<hbox>
+			<label text="Previous sequence" />
+			<combobox id="sequence" />
+		</hbox>
 		<glue size="1" />
 		<vbox>
 			<label text="Events" />
