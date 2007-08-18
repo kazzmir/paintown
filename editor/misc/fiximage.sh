@@ -5,7 +5,7 @@ for f in `ls ./`;do
 		# bleh not directories
 		echo "skipping directory"
 	else
-		convert -fill "rgb(255,0,255)" -opaque transparent -draw "color 0,0 floodfill" -trim $f new-$f 1>x
+		convert -fill "rgb(255,0,255)" -opaque transparent -draw "color 0,0 floodfill" -trim $f new-$f
 		echo "Converted $f to new-$f"
 	fi
 done
