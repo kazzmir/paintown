@@ -16,8 +16,7 @@ import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.exception.*;
 import com.rafkind.paintown.*;
 
-public final class Player extends CharacterStats
-{
+public final class Player extends CharacterStats {
 	private SwingEngine playerEditor;
 	private SwingEngine contextEditor;
 	private SwingEngine controlEditor;
@@ -59,34 +58,27 @@ public final class Player extends CharacterStats
 	private JButton stopAnim;
 	private JButton playAnim;
 	
-	public SpecialPanel getEditor()
-	{	
+	public SpecialPanel getEditor(){	
 		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField,this);
 	}
 	
-	public DrawArea getDrawArea()
-	{
+	public DrawArea getDrawArea(){
 		return _drawArea;
 	}
 	
-	public void saveData(File f) throws LoadException
-	{
+	public void saveData(File f) throws LoadException {
 		setPath(f);
-		try
-		{
+		try{
 			FileOutputStream out = new FileOutputStream( f );
 			new PrintStream( out ).print( getToken().toString() );
 			out.close();
 			System.out.println( getToken().toString() );
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			throw new LoadException( "Couldn't save!" );
 		}
 	}
 	
-	public void loadData(File f) throws LoadException
-	{
+	public void loadData(File f) throws LoadException {
 		TokenReader reader = new TokenReader( f );
 		Token head = reader.nextToken();
 		
@@ -171,8 +163,7 @@ public final class Player extends CharacterStats
 		
 	}
 	
-	public Token getToken()
-	{
+	public Token getToken(){
 		Token temp = new Token("character");
 		temp.addToken(new Token("character"));
 		temp.addToken(new String[]{"name", "\"" + name + "\""});
@@ -185,8 +176,7 @@ public final class Player extends CharacterStats
 		if(!landed.equals(""))temp.addToken(new String[]{"landed", landed});
 		if(!icon.equals(""))temp.addToken(new String[]{"icon", icon});
 		Iterator mapItor = remap.iterator();
-		while(mapItor.hasNext())
-		{
+		while(mapItor.hasNext()){
 			String map = (String)mapItor.next();
 			temp.addToken(new String[]{"remap", origMap, map});
 		}
@@ -201,8 +191,7 @@ public final class Player extends CharacterStats
 		return temp;
 	}
 	
-	public Player(Animator anim)
-	{
+	public Player(Animator anim){
 		super( anim );
 		
 		playerEditor = new SwingEngine( "animator/base.xml" );
@@ -226,28 +215,24 @@ public final class Player extends CharacterStats
 		
 		nameField.setText(name);
 		
-		nameField.getDocument().addDocumentListener(new DocumentListener()
-		{
-			public void changedUpdate(DocumentEvent e)
-			{
+		nameField.getDocument().addDocumentListener(new DocumentListener(){
+			public void changedUpdate(DocumentEvent e){
 				name = nameField.getText();
 			}
-			public void insertUpdate(DocumentEvent e)
-			{
+
+			public void insertUpdate(DocumentEvent e){
 				name = nameField.getText();
 			}
-			public void removeUpdate(DocumentEvent e)
-			{
+
+			public void removeUpdate(DocumentEvent e){
 				name = nameField.getText();
 			}
 		});
 		
 		healthSpinner = (JSpinner) contextEditor.find( "health" );
 		
-		healthSpinner.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		healthSpinner.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				health = ((Integer)healthSpinner.getValue()).intValue();
 			}
 		});
@@ -256,10 +241,8 @@ public final class Player extends CharacterStats
 		
 		jumpSpinner2 = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
 		
-		jumpSpinner2.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		jumpSpinner2.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				jumpVelocity = ((Double)jumpSpinner2.getValue()).doubleValue();
 			}
 		});
@@ -272,20 +255,16 @@ public final class Player extends CharacterStats
 		
 		speedSpinner.add(speedSpinner2);
 		
-		speedSpinner2.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		speedSpinner2.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				speed = ((Double)speedSpinner2.getValue()).doubleValue();
 			}
 		});
 		
 		shadowSpinner = (JSpinner) contextEditor.find( "shadow" );
 		
-		shadowSpinner.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		shadowSpinner.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				shadow = ((Integer)shadowSpinner.getValue()).intValue();
 			}
 		});
@@ -397,8 +376,8 @@ public final class Player extends CharacterStats
 				Object value,
 				int index,
 				boolean isSelected,
-				boolean cellHasFocus)
-			{
+				boolean cellHasFocus){
+
 				setText(((Animation)value).getName());
 				setBackground(isSelected ? Color.gray : Color.white);
 				setForeground(isSelected ? Color.white : Color.black);
@@ -408,10 +387,8 @@ public final class Player extends CharacterStats
 		
 		addAnimButton = (JButton) contextEditor.find( "add-anim" );
 		
-		addAnimButton.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
+		addAnimButton.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
 				createAnimation();
 				animList.setListData(animations);
 				
@@ -421,10 +398,8 @@ public final class Player extends CharacterStats
 		
 		editAnimButton = (JButton) contextEditor.find( "edit-anim" );
 		
-		editAnimButton.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
+		editAnimButton.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
 				editAnimation(animList.getSelectedIndex());
 			}
 		});
@@ -483,8 +458,6 @@ public final class Player extends CharacterStats
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 	}
-	
-	
 	
 	private void debugSwixml( SwingEngine engine ){
 		Map all = engine.getIdMap();
