@@ -839,6 +839,16 @@ static bool titleScreen(){
 	};
 	const unsigned int mainMax = sizeof( mainOptions ) / sizeof( char* );
 
+	const int VERSUS_PLAYER = 0;
+	const int VERSUS_COMPUTER = 1;
+	const int VERSUS_BACK = 2;
+	const char * versusOptions[] = {
+		"Player vs Player",
+		"Player vs Computer",
+		"Back"
+	};
+	const unsigned int versusMax = sizeof( versusOptions ) / sizeof( char* );
+
 	bool isInvincible = false;
 	const unsigned int MORE_INVINCIBLE = 0;
 	const unsigned int MORE_GAME_SPEED = 1;
@@ -955,9 +965,14 @@ static bool titleScreen(){
 					if ( options == mainOptions ){
 						switch ( choose ){
 							case MAIN_QUIT :
-							case MAIN_PLAY :
-							case MAIN_VERSUS : {
+							case MAIN_PLAY : {
 								done = true;
+								break;
+							}
+							case MAIN_VERSUS : {
+								options = versusOptions;
+								maxOptions = versusMax;
+								choose = 0;
 								break;
 							}
 							case MAIN_CHANGE_CONTROLS : {
@@ -975,6 +990,20 @@ static bool titleScreen(){
 							case MAIN_CREDITS : {
 								showCredits( background );
 								key.wait();
+								break;
+							}
+						}
+					} else if ( options == versusOptions ){
+						switch ( choose ){
+							case VERSUS_PLAYER :
+							case VERSUS_COMPUTER : {
+								done = true;
+								break;
+							}
+							case VERSUS_BACK : {
+								options = mainOptions;
+								maxOptions = mainMax;
+								choose = 0;
 								break;
 							}
 						}
@@ -1129,34 +1158,7 @@ static bool titleScreen(){
 				return false;
 				break;
 			}
-			case MAIN_VERSUS : {
-				Object * player = NULL;
-				Object * enemy = NULL;
-				try{
-					player = selectPlayer( false );
-					enemy = selectPlayer( false );
-					enemy->setAlliance( ALLIANCE_ENEMY );
-					// VersusEnemy en( *(Player *) enemy );
-					for ( int i = 0; i < 3; i += 1 ){
-						VersusPlayer en( 1, *(Player *) enemy );
-						VersusPlayer pl( 0, *(Player *) player );
-						playVersusMode( &pl, &en, i + 1 );
-					}
-					key.wait();
-				} catch ( const LoadException & le ){
-					cout << "Could not load player: " << le.getReason() << endl;
-				} catch ( const ReturnException & r ){
-					key.wait();
-				}
-				if ( player != NULL ){
-					delete player;
-				}
-				if ( enemy != NULL ){
-					delete enemy;
-				}
-				return true;
-				break;
-			}
+			
 			case MAIN_PLAY : {
 				Object * player = NULL;
 				try{
@@ -1178,6 +1180,44 @@ static bool titleScreen(){
 			}
 			default : return true;
 		}
+	} else if ( options == versusOptions ){
+		Object * player = NULL;
+		Object * enemy = NULL;
+		try{
+			player = selectPlayer( false );
+			enemy = selectPlayer( false );
+			enemy->setAlliance( ALLIANCE_ENEMY );
+			switch ( choose ){
+				case VERSUS_PLAYER : {
+					for ( int i = 0; i < 3; i += 1 ){
+						VersusPlayer en( 1, *(Player *) enemy );
+						VersusPlayer pl( 0, *(Player *) player );
+						playVersusMode( &pl, &en, i + 1 );
+					}
+					break;
+				}
+				case VERSUS_COMPUTER : {
+				       for ( int i = 0; i < 3; i += 1 ){
+						VersusEnemy en( *(Player *) enemy );
+						VersusPlayer pl( 0, *(Player *) player );
+						playVersusMode( &pl, &en, i + 1 );
+					}
+					break;
+				}
+			}
+			key.wait();
+		} catch ( const LoadException & le ){
+			cout << "Could not load player: " << le.getReason() << endl;
+		} catch ( const ReturnException & r ){
+			key.wait();
+		}
+		if ( player != NULL ){
+			delete player;
+		}
+		if ( enemy != NULL ){
+			delete enemy;
+		}
+		return true;
 	}
 
 	key.clear();

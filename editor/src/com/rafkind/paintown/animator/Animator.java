@@ -298,9 +298,8 @@ public class Animator extends JFrame {
 		return new RelativeFileChooser(_animator, getDataPath());
 	}
 	
-	public void addNewTab( SpecialPanel panel , String name)
-	{
-		pane.add( name , panel );
+	public void addNewTab( SpecialPanel panel, String name ){
+		pane.add( name, panel);
 		
 		pane.setSelectedIndex(pane.getTabCount()-1);
 		
@@ -308,18 +307,16 @@ public class Animator extends JFrame {
 		
 		final SpecialPanel tempPanel = (SpecialPanel)pane.getComponentAt(CURRENT_TAB);
 		
-		panel.getTextBox().getDocument().addDocumentListener(new DocumentListener()
-		{
-			public void changedUpdate(DocumentEvent e)
-			{
+		panel.getTextBox().getDocument().addDocumentListener(new DocumentListener(){
+			public void changedUpdate(DocumentEvent e){
 				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
 			}
-			public void insertUpdate(DocumentEvent e)
-			{
+
+			public void insertUpdate(DocumentEvent e){
 				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
 			}
-			public void removeUpdate(DocumentEvent e)
-			{
+
+			public void removeUpdate(DocumentEvent e){
 				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
 			}
 		});
