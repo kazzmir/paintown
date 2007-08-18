@@ -1,6 +1,5 @@
 package com.rafkind.paintown.animator;
 
-import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -21,6 +20,10 @@ import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.animator.events.EventFactory;
 import com.rafkind.paintown.animator.events.FrameEvent;
+
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 public class CharacterAnimation{
 	
@@ -153,10 +156,119 @@ public class CharacterAnimation{
 			}
 		});
 
-		/* 'sequence' should do a whole thing with listeners to know when animations
-		 * are changed/added/removed.
-		 */
+		class SequenceModel implements ComboBoxModel {
+			private List updates;
+			private List animations;
+			private Object selected;
+
+			public SequenceModel(){
+				updates = new ArrayList();
+				animations = getAnimations( character );
+				selected = null;
+
+				character.addAnimationUpdate( new Lambda1(){
+					public Object invoke( Object o ){
+						CharacterStats who = (CharacterStats) o;
+						animations = new ArrayList();
+						animations = getAnimations( who );
+						
+						updateAll();
+						return null;
+					}
+				});
+			}
+
+			private List getAnimations( CharacterStats who ){
+				List all = new ArrayList();
+				Animation none = new Animation();
+				none.setName( "none" );
+				all.add( none );
+				all.addAll( who.getAnimations() );
+				for ( Iterator it = all.iterator(); it.hasNext(); ){
+					Animation updateAnimation = (Animation) it.next();
+					updateAnimation.addChangeUpdate( new Lambda1(){
+						public Object invoke( Object a ){
+							Animation ani = (Animation) a;
+							int index = animations.indexOf( ani );
+							if ( index != -1 ){
+								ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, index, index );
+								for ( Iterator it = updates.iterator(); it.hasNext(); ){
+									ListDataListener l = (ListDataListener) it.next();
+									l.contentsChanged( event );
+								}
+							}
+							return null;
+						}
+					});
+				}
+				return all;
+			}
+
+			public void setSelectedItem( Object item ){
+				selected = item;
+				updateAll();
+			}
+
+			public Object getSelectedItem(){
+				return selected;
+			}
+
+			/* something changed.. notify listeners */
+			private void updateAll(){
+				ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 999999 );
+				for ( Iterator it = updates.iterator(); it.hasNext(); ){
+					ListDataListener l = (ListDataListener) it.next();
+					l.contentsChanged( event );
+				}
+			}
+
+			public void addListDataListener( ListDataListener l ){
+				updates.add( l );
+			}
+
+			public void removeListDataListener( ListDataListener l ){
+				updates.remove( l );
+			}
+
+			public Object getElementAt( int index ){
+				return ((Animation) animations.get( index )).getName();
+			}
+
+			public int getSize(){
+				return animations.size();
+			}
+		}
 		final JComboBox sequence = (JComboBox) contextEditor.find( "sequence" );
+		sequence.setModel( new SequenceModel() );
+		/*
+		sequence.getModel().addListDataListener( new ListDataListener(){
+			public void contentsChanged( ListDataEvent e ){
+				int i = sequence.getSelectedIndex();
+
+				if ( i > sequence.getModel().getSize() ){
+					i = sequence.getModel().getSize() - 1;
+				}
+
+				if ( i <= 0 ){
+					i = 0;
+				}
+
+				System.out.println( "Check " + i + " " + sequence.getItemAt( i ) + " vs " + animation.getSequence() );
+				if ( ! sequence.getItemAt( i ).equals( animation.getSequence() ) ){
+					animation.setSequence( (String) sequence.getItemAt( i ) );
+				}
+
+				sequence.setSelectedItem( animation.getSequence() );
+			}
+
+			public void intervalAdded( ListDataEvent e ){
+			}
+			
+			public void intervalRemoved( ListDataEvent e ){
+			}
+		});
+		*/
+		/*
 		sequence.addItem( "none" );
 		for ( Iterator it = character.getAnimations().iterator(); it.hasNext(); ){
 			Animation ani = (Animation) it.next();
@@ -164,6 +276,7 @@ public class CharacterAnimation{
 				sequence.addItem( ani.getName() );
 			}
 		}
+		*/
 		sequence.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				animation.setSequence( (String) sequence.getSelectedItem() );

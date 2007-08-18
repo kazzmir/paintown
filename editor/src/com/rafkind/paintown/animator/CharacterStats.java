@@ -11,10 +11,9 @@ import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.SpecialPanel;
 import com.rafkind.paintown.animator.DrawArea;
 
-public abstract class CharacterStats
-{
+public abstract class CharacterStats{
 	// Animator for stuff
-	private Animator _animator;
+	private Animator animator;
 	
 	// Path info
 	private File file;
@@ -25,6 +24,8 @@ public abstract class CharacterStats
 	protected double jumpVelocity;
 	protected double speed;
 	protected int shadow;
+
+	private List updates;
 	
 	// Sound data
 	protected String dieSound = "";
@@ -41,120 +42,111 @@ public abstract class CharacterStats
 	
 	// Vector of CharacterAnimations
 	protected Vector animations = new Vector();
+
+	public CharacterStats( Animator anim ){
+		addAnimator(anim);
+		name = "New Character";
+		updates = new ArrayList();
+	}
 	
-	public File getPath()
-	{
+	public File getPath(){
 		return file;
 	}
 	
-	public void setPath(File f)
-	{
+	public void setPath(File f){
 		file = f;
 	}
 	
-	public String getName()
-	{
+	public String getName(){
 		return name;
 	}
 	
-	public void setName(String n)
-	{
+	public void setName(String n){
 		name = n;
 	}
 	
-	public int getHealth()
-	{
+	public int getHealth(){
 		return health;
 	}
 	
-	public void setHealth(int h)
-	{
+	public void setHealth(int h){
 		health = h;
 	}
 	
-	public double getJumpVelocity()
-	{
+	public double getJumpVelocity(){
 		return jumpVelocity;
 	}
 	
-	public void setJumpVelocity(int j)
-	{
+	public void setJumpVelocity(int j){
 		jumpVelocity = j;
 	}
 	
-	public double getSpeed()
-	{
+	public double getSpeed(){
 		return speed;
 	}
 	
-	public void setSpeed(int s)
-	{
+	public void setSpeed(int s){
 		speed = s;
 	}
 	
-	public int getShadow()
-	{
+	public int getShadow(){
 		return shadow;
 	}
 	
-	public void setShadow(int s)
-	{
+	public void setShadow(int s){
 		shadow = s;
 	}
 	
-	public String getDieSound()
-	{
+	public String getDieSound(){
 		return dieSound;
 	}
 	
-	public void setDieSound(String d)
-	{
+	public void setDieSound(String d){
 		dieSound = d;
 	}
 	
-	public String getLanded()
-	{
+	public String getLanded(){
 		return landed;
 	}
 	
-	public void setLanded(String l)
-	{
+	public void setLanded(String l){
 		landed = l;
 	}
 	
-	public String getIcon()
-	{
+	public String getIcon(){
 		return icon;
 	}
 	
-	public void setIcon(String i)
-	{
+	public void setIcon(String i){
 		icon = i;
 	}
 	
-	public void setOrigMap(String map)
-	{
+	public void setOrigMap(String map){
 		origMap = map;
 	}
 	
-	public String getOrigMap()
-	{
+	public String getOrigMap(){
 		return origMap;
 	}
+
+	public void addAnimationUpdate( Lambda1 update ){
+		updates.add( update );
+	}
 	
-	public void addMap(String map)
-	{
+	public void removeAnimationUpdate( Lambda1 update ){
+		updates.remove( update );
+	}
+	
+	public void addMap(String map){
 		remap.addElement(map);
 	}
 	
-	public boolean removeMap(int index)
-	{
+	public boolean removeMap(int index){
 		String temp = (String)animations.elementAt(index);
 		return remap.removeElement(temp);
 	}
 	
-	public boolean removeMap(String map)
-	{
+	public boolean removeMap(String map){
 		Iterator itor = remap.iterator();
 		while(itor.hasNext())
 		{
@@ -173,6 +165,7 @@ public abstract class CharacterStats
 		new Thread( ani ).start();
 		animations.addElement( ani );
 		editAnimation( animations.size() - 1 );
+		updateAnimationListeners();
 		/*
 		CharacterAnimation temp = new CharacterAnimation( this, ani );
 		_animator.addNewTab( temp.getEditor(), ani.getName() );
@@ -182,19 +175,30 @@ public abstract class CharacterStats
 	public void editAnimation(int index){
 		Animation temp = (Animation) animations.elementAt( index );
 		CharacterAnimation edit = new CharacterAnimation( this, temp );
-		_animator.addNewTab( edit.getEditor(), temp.getName());
+		animator.addNewTab( edit.getEditor(), temp.getName());
 		// edit.fixBaseDirectory();
 	}
-	
-	public boolean removeAnimation(int index)
-	{
-		Animation temp = (Animation)animations.elementAt(index);
-		return animations.removeElement(temp);
+
+	private void updateAnimationListeners(){
+		for ( Iterator it = updates.iterator(); it.hasNext(); ){
+			Lambda1 update = (Lambda1) it.next();
+			try{
+				update.invoke( this );
+			} catch ( Exception e ){
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	public boolean removeAnimation(Animation anim)
-	{
-		return animations.removeElement(anim);
+	public void removeAnimation( int index ){
+		Animation temp = (Animation)animations.elementAt(index);
+		animations.removeElement(temp);
+		updateAnimationListeners();
+
+	}
+	
+	public void removeAnimation(Animation anim){
+		removeAnimation( animations.indexOf( anim ) );
 	}
 	
 	public Vector getAnimations(){
@@ -202,9 +206,8 @@ public abstract class CharacterStats
 	}
 	
 	// This is so we can add tabs of animation editors to the main window
-	private void addAnimator(Animator anim)
-	{
-		_animator = anim;
+	private void addAnimator(Animator anim){
+		animator = anim;
 	}
 	
 	abstract public SpecialPanel getEditor();
@@ -217,10 +220,4 @@ public abstract class CharacterStats
 	
 	abstract public Token getToken();
 	
-	public CharacterStats(Animator anim)
-	{
-		addAnimator(anim);
-		
-		name = "New Character";
-	}
 }

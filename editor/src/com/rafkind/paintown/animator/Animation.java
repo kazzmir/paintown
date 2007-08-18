@@ -38,6 +38,8 @@ public class Animation implements Runnable {
 	private int range;
 	private String type;
 	private double animationSpeed;
+	/* when something is changed in the animation 'listeners' are notified */
+	private List listeners;
 	
 	private Vector keys;
 
@@ -47,6 +49,7 @@ public class Animation implements Runnable {
 		/* give the animation something so it rests a little bit */
 		events.add( new NopEvent() );
 		notifiers = new ArrayList();
+		listeners = new ArrayList();
 		image = null;
 		animationSpeed = 1.0;
 		sequence = "none";
@@ -64,6 +67,8 @@ public class Animation implements Runnable {
 
 	public void setType( String s ){
 		type = s;
+
+		updateAll();
 	}
 
 	public String getType(){
@@ -72,6 +77,8 @@ public class Animation implements Runnable {
 
 	public void setRange( int r ){
 		range = r;
+
+		updateAll();
 	}
 
 	public int getRange(){
@@ -80,10 +87,12 @@ public class Animation implements Runnable {
 
 	public void addKey( String key ){
 		keys.add( key );
+		updateAll();
 	}
 
 	public void setSequence( String s ){
 		sequence = s;
+		updateAll();
 	}
 
 	public String getSequence(){
@@ -92,6 +101,7 @@ public class Animation implements Runnable {
 
 	public void removeKey( int index ){
 		keys.remove( index );
+		updateAll();
 	}
 
 	public Vector getKeys(){
@@ -104,6 +114,7 @@ public class Animation implements Runnable {
 
 	public void setAttack( BoundingBox attack ){
 		attackArea = attack;
+		updateAll();
 	}
 
 	private BufferedImage currentImage(){
@@ -112,6 +123,7 @@ public class Animation implements Runnable {
 
 	public void setName( String s ){
 		this.name = s;
+		updateAll();
 	}
 
 	public String getName(){
@@ -129,10 +141,26 @@ public class Animation implements Runnable {
 	public synchronized void setImage( BufferedImage image ){
 		this.image = image;
 		updateDrawables();
+		updateAll();
 	}
 
 	public void forceRedraw(){
 		updateDrawables();
+	}
+
+	public void addChangeUpdate( Lambda1 update ){
+		listeners.add( update );
+	}
+
+	public void removeChangeUpdate( Lambda1 update ){
+		listeners.remove( update );
+	}
+
+	private void updateAll(){
+		for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+			Lambda1 update = (Lambda1) it.next();
+			update.invoke_( this );
+		}
 	}
 
 	/* tell the components that know about this animation that its time

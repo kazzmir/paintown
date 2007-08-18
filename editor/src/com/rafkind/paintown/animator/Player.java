@@ -431,10 +431,8 @@ public final class Player extends CharacterStats
 		
 		removeAnimButton = (JButton) contextEditor.find( "remove-anim" );
 		
-		removeAnimButton.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
+		removeAnimButton.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
 				removeAnimation(animList.getSelectedIndex());
 				animList.setListData(animations);
 			}
