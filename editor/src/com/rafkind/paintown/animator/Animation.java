@@ -282,7 +282,7 @@ public class Animation implements Runnable {
 		if ( getRange() != 0 ){
 			Color old = g.getColor();
 			g.setColor( new Color( 255, 255, 255 ) );
-			g.fillRect( trueX + getWidth() / 2, trueY + getHeight(), getRange(), 5 );
+			g.fillRect( trueX - offsetX + getWidth() / 2, trueY + getHeight(), getRange(), 5 );
 			g.setColor( old );
 		}
 

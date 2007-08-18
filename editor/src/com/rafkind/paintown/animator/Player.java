@@ -70,7 +70,9 @@ public final class Player extends CharacterStats {
 		setPath(f);
 		try{
 			FileOutputStream out = new FileOutputStream( f );
-			new PrintStream( out ).print( getToken().toString() );
+			PrintStream printer = new PrintStream( out );
+			printer.print( getToken().toString() );
+			printer.print( "\n" );
 			out.close();
 			System.out.println( getToken().toString() );
 		} catch ( Exception e ){
