@@ -11,14 +11,6 @@ public class SpecialPanel extends JPanel
 	protected JPanel child;
 	protected JTextField text;
 
-	/*
-	public SpecialPanel(JPanel c, JTextField t){
-		child = c;
-		text = t;
-		add(child);
-	}
-	*/
-
 	public SpecialPanel(JPanel c, JTextField t, CharacterStats character ){
 		child = c;
 		text = t;

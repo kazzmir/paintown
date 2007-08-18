@@ -107,6 +107,25 @@ void fadeOut( const string & message ){
 	Util::rest( 1000 );
 }
 
+/* if given blah.txt and that file exists return blah1.txt
+ * returns <file>#.<ext> where # is incremented until the entire
+ * filename is unique
+ */
+static string findNextFile( const char * name ){
+	char buf[ 128 ];
+	char * extension = strchr( name, '.' );
+	char first[ 128 ];
+	strncpy( first, name, extension - name );
+	first[ extension - name ] = '\0';
+	int num = 0;
+	sprintf( buf, "%s%d%s", first, num, extension );
+	do{
+		num += 1;
+		sprintf( buf, "%s%d%s", first, num, extension );
+	} while ( Util::exists( buf ) );
+	return string( buf );
+}
+
 static bool playLevel( World & world, Player * player, int helpTime ){
 	Keyboard key;
 	
@@ -264,8 +283,9 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
 
 			if ( key[ Keyboard::Key_F12 ] ){
-				cout << "Saved screenshot to scr.bmp" << endl;
-				work.save( "scr.bmp" );
+				string file = findNextFile( "scr.bmp" );
+				cout << "Saved screenshot to " << file << endl;
+				work.save( file );
 			}
 
 			work.clear();
