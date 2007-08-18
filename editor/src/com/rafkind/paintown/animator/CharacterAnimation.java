@@ -29,9 +29,10 @@ public class CharacterAnimation{
 	
 	private SwingEngine animEditor;
 	private JTextField nameField;
+	private CharacterStats saveCharacter;
 	
 	public SpecialPanel getEditor(){	
-		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField);
+		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField, saveCharacter );
 	}
 
 	private boolean rightClick( MouseEvent event ){
@@ -40,6 +41,8 @@ public class CharacterAnimation{
 	
 	public CharacterAnimation( final CharacterStats character, final Animation animation ){
 		animEditor = new SwingEngine( "animator/base.xml" );
+
+		this.saveCharacter = character;
 		
 		SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
 		

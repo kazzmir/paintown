@@ -225,7 +225,7 @@ public class Animator extends JFrame {
 		saveCharacter.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( pane.getSelectedComponent() != null ){
-					Player player = ((SpecialPanel)pane.getSelectedComponent()).getPlayer();
+					CharacterStats player = ((SpecialPanel)pane.getSelectedComponent()).getPlayer();
 					if(player!= null)
 					{
 						File file = player.getPath();
@@ -249,9 +249,8 @@ public class Animator extends JFrame {
 		saveCharacterAs.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( pane.getSelectedComponent() != null ){
-					Player player = ((SpecialPanel)pane.getSelectedComponent()).getPlayer();
-					if(player!=null)
-					{
+					CharacterStats player = ((SpecialPanel)pane.getSelectedComponent()).getPlayer();
+					if ( player!=null ){
 						File file = userSelectFile();
 						/* write the text to a file */
 						if ( file != null ){

@@ -73,7 +73,7 @@ public final class Player extends CharacterStats {
 			new PrintStream( out ).print( getToken().toString() );
 			out.close();
 			System.out.println( getToken().toString() );
-		} catch(Exception e) {
+		} catch ( Exception e ){
 			throw new LoadException( "Couldn't save!" );
 		}
 	}
