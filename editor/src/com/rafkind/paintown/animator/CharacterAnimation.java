@@ -156,6 +156,7 @@ public class CharacterAnimation{
 		rangeSpinner.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
 				animation.setRange( ((Integer)rangeSpinner.getValue()).intValue() );
+				animation.forceRedraw();
 			}
 		});
 
