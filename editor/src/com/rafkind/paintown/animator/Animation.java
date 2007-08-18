@@ -74,6 +74,20 @@ public class Animation implements Runnable {
 	public String getType(){
 		return type;
 	}
+	
+	public int getHeight(){
+		if ( image != null ){
+			return image.getHeight( null );
+		}
+		return 0;
+	}
+	
+	public int getWidth(){
+		if ( image != null ){
+			return image.getWidth( null );
+		}
+		return 0;
+	}
 
 	public void setRange( int r ){
 		range = r;

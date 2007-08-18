@@ -16,20 +16,23 @@ import com.rafkind.paintown.animator.*;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.*;
 
-public final class DrawArea extends JComponent
-{
-	private BufferedImage img;
-	private int img_x;
-	private int img_y;
-	private int offset_x;
-	private int offset_y;
+public final class DrawArea extends JComponent {
+	// private BufferedImage img;
+
+	// private int img_x;
+	// private int img_y;
+	// private int offset_x;
+	// private int offset_y;
+	
 	private static int x = 320;
-	private static int y = 200;
+	private static int y = 300;
+	/*
 	private BoundingBox attackArea;
 	private long delayTime;
 	private long endTime;
+	*/
 	// private Vector registeredEvents;
-	private Iterator eventItor;
+	// private Iterator eventItor;
 	private AnimationEvent currentEvent;
 	private Animation currentAnimation;
 
@@ -58,10 +61,10 @@ public final class DrawArea extends JComponent
 		g.setColor( new Color( 0, 0, 0 ) );
 		g.fillRect( 0, 0, 640, 480 );
 		g.setColor( new Color( 255, 255, 0 ) );
-		g.drawLine(0,350,640,350);
+		g.drawLine( 0, y, 640, y );
 
 		if ( currentAnimation != null ){
-			currentAnimation.draw( g, x, y );
+			currentAnimation.draw( g, x, y - currentAnimation.getHeight() );
 		}
 
 		/*
@@ -84,11 +87,14 @@ public final class DrawArea extends JComponent
 		}
 	}
 	
+	/*
 	public void setImage(BufferedImage i)
 	{
 		img = i;
 	}
+	*/
 	
+	/*
 	public BufferedImage getImage()
 	{
 		return img;
@@ -118,13 +124,17 @@ public final class DrawArea extends JComponent
 	{
 		attackArea = at;
 	}
+	*/
 	
+	/*
 	public void resetData()
 	{
 		img_x = img_y = offset_x = offset_y = 0;
 		attackArea = new BoundingBox(0,0,0,0);
 	}
+	*/
 	
+	/*
 	public void setDelay(int d)
 	{
 		if(d != 0)d = 1;
@@ -135,11 +145,14 @@ public final class DrawArea extends JComponent
 	{
 		endTime = Calendar.getInstance().getTimeInMillis() + delayTime;
 	}
+	*/
 	
+	/*
 	public boolean checkDelay()
 	{
 		return (Calendar.getInstance().getTimeInMillis() > endTime);
 	}
+	*/
 	
 	/*
 	public void registerEvents(Vector events)
