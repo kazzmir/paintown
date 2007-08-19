@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+## Use to change the size of a picture by a factor of 'amount'
+## $ enlarge 1.2 image1.png image2.png
+## Would make both pictures larger by 120%
+
 amount = (ARGV.shift.to_f * 100).to_i
 
 ARGV.each{ |file|
