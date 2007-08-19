@@ -496,8 +496,19 @@ public class CharacterAnimation{
 		controls.add((JComponent)controlEditor.getRootComponent());
 		
 		JPanel canvas = (JPanel) animEditor.find( "canvas" );
-		DrawArea area = new DrawArea();
+		final DrawArea area = new DrawArea();
 		canvas.add(area);
+
+		final JLabel scaleNum = (JLabel) animEditor.find( "scale-num" );
+		scaleNum.setText( "Scale: " + area.getScale() );
+		final JSlider scale = (JSlider) animEditor.find( "scale" );
+		scale.setValue( (int)(area.getScale() * 5.0) );
+		scale.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				area.setScale( scale.getValue() / 5.0 );
+				scaleNum.setText( "Scale: " + area.getScale() );
+			}
+		});
 
 		area.animate( animation );
 		

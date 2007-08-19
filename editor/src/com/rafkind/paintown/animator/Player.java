@@ -210,6 +210,17 @@ public final class Player extends CharacterStats {
 		canvas = (JPanel) playerEditor.find( "canvas" );
 		
 		_drawArea = new DrawArea();
+
+		final JLabel scaleNum = (JLabel) playerEditor.find( "scale-num" );
+		scaleNum.setText( "Scale: " + _drawArea.getScale() );
+		final JSlider scale = (JSlider) playerEditor.find( "scale" );
+		scale.setValue( (int)(_drawArea.getScale() * 5.0) );
+		scale.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				_drawArea.setScale( scale.getValue() / 5.0 );
+				scaleNum.setText( "Scale: " + _drawArea.getScale() );
+			}
+		});
 		
 		canvas.add(_drawArea);
 		

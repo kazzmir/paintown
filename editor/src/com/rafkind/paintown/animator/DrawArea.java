@@ -17,38 +17,17 @@ import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.*;
 
 public final class DrawArea extends JComponent {
-	// private BufferedImage img;
-
-	// private int img_x;
-	// private int img_y;
-	// private int offset_x;
-	// private int offset_y;
+	private int x = 150;
+	private int y = 100;
+	private double scale;
 	
-	private static int x = 150;
-	private static int y = 100;
-	/*
-	private BoundingBox attackArea;
-	private long delayTime;
-	private long endTime;
-	*/
-	// private Vector registeredEvents;
-	// private Iterator eventItor;
 	private AnimationEvent currentEvent;
 	private Animation currentAnimation;
 
 	public DrawArea(){
-		/*
-		img = null;
-		attackArea = new BoundingBox(0,0,0,0);
-		delayTime = 1;
-		endTime = 1;
-		new Timer(1, new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {	
-				update();
-			}
-		}).start();
-		*/
 		currentAnimation = null;
+
+		scale = 1.0;
 
 		this.addMouseMotionListener( new MouseMotionAdapter(){
 			public void mouseDragged( MouseEvent event ){
@@ -60,7 +39,12 @@ public final class DrawArea extends JComponent {
 	}
 
 	public double getScale(){
-		return 2.0;
+		return scale;
+	}
+
+	public void setScale( double x ){
+		scale = x;
+		repaint();
 	}
 
 	public Dimension getPreferredSize(){
@@ -81,13 +65,6 @@ public final class DrawArea extends JComponent {
 		if ( currentAnimation != null ){
 			currentAnimation.draw( g, x, y - currentAnimation.getHeight() );
 		}
-
-		/*
-		if(img != null)
-			g.drawImage( img, x + img_x + offset_x, y + img_y + offset_y, null );
-		if(!attackArea.empty())
-			attackArea.render(g, x + img_x + offset_x, y + img_y + offset_y);
-		*/
 	}
 
 	public void animate( Animation animation ){
@@ -102,122 +79,7 @@ public final class DrawArea extends JComponent {
 		}
 	}
 	
-	/*
-	public void setImage(BufferedImage i)
-	{
-		img = i;
-	}
-	*/
-	
-	/*
-	public BufferedImage getImage()
-	{
-		return img;
-	}
-	
-	public void setImageX(int x)
-	{
-		img_x += x;
-	}
-	
-	public void setImageY(int y)
-	{
-		img_y += y;
-	}
-	
-	public void setOffsetX(int x)
-	{
-		offset_x = x;
-	}
-	
-	public void setOffsetY(int y)
-	{
-		offset_y = y;
-	}
-	
-	public void setAttack(BoundingBox at)
-	{
-		attackArea = at;
-	}
-	*/
-	
-	/*
-	public void resetData()
-	{
-		img_x = img_y = offset_x = offset_y = 0;
-		attackArea = new BoundingBox(0,0,0,0);
-	}
-	*/
-	
-	/*
-	public void setDelay(int d)
-	{
-		if(d != 0)d = 1;
-		else delayTime = 9000000/d;
-	}
-	
-	private void startDelay()
-	{
-		endTime = Calendar.getInstance().getTimeInMillis() + delayTime;
-	}
-	*/
-	
-	/*
-	public boolean checkDelay()
-	{
-		return (Calendar.getInstance().getTimeInMillis() > endTime);
-	}
-	*/
-	
-	/*
-	public void registerEvents(Vector events)
-	{
-		registeredEvents = events;
-		if(registeredEvents != null)
-			eventItor = registeredEvents.iterator();
-		else resetEvents();
-	}
-	*/
-	
-	/*
-	public void resetEvents()
-	{
-		registeredEvents = null;
-		eventItor = null;
-		currentEvent = null;
-	}
-	*/
-	
-	public AnimationEvent getCurrentEvent()
-	{
+	public AnimationEvent getCurrentEvent(){
 		return currentEvent;
 	}
-	
-	/*
-	private void update()
-	{
-		if(registeredEvents!=null)
-		{
-			if(checkDelay())
-			{
-				if(eventItor.hasNext())
-				{
-					currentEvent = (AnimationEvent)eventItor.next();
-					currentEvent.interact(this);
-					repaint();
-					if(currentEvent.getToken().getName().equals("frame") && eventItor.hasNext())startDelay();
-				}
-				else
-				{
-					eventItor = registeredEvents.iterator();
-					resetData();
-				}
-			}
-			else
-			{
-				System.out.println(Long.toString(Calendar.getInstance().getTimeInMillis()) + " < " + Long.toString(endTime));
-			}
-		}
-	}
-	*/
 }

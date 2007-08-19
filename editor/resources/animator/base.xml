@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel layout="GridBagLayout">
-	<panel id="canvas" border="MatteBorder(2,2,2,2,667A63)">
-		<gridbagconstraints
-			gridx="0"
-			gridy="0"
-			weightx="0.9"
-			weighty="1"
-			gridheight="3"
-			fill="GridBagConstraints.BOTH"
-			anchor="GridBagConstraints.NORTHWEST"
-			/>
-	</panel>
+	<vbox>
+		<panel id="canvas" border="MatteBorder(2,2,2,2,667A63)">
+			<gridbagconstraints
+				gridx="0"
+				gridy="0"
+				weightx="0.9"
+				weighty="1"
+				gridheight="3"
+				fill="GridBagConstraints.BOTH"
+				anchor="GridBagConstraints.NORTHWEST"
+				/>
+		</panel>
+		<label id="scale-num" />
+		<slider id="scale" minimum="1" maximum="20" />
+	</vbox>
 	<panel id="context" border="MatteBorder(2,2,2,2,667A63)">
 		<gridbagconstraints
 			gridx="1"
