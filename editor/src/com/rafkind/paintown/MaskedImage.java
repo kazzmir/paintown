@@ -14,6 +14,10 @@ public class MaskedImage extends BufferedImage {
 		super( w, h, BufferedImage.TYPE_INT_ARGB );
 	}
 
+	public static void clearCache(){
+		images.clear();
+	}
+
 	public static MaskedImage load( String s ) throws IOException {
 		if ( images.get( s ) != null ){
 			return (MaskedImage) images.get( s );

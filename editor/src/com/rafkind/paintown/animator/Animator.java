@@ -43,6 +43,7 @@ public class Animator extends JFrame {
 		
 		JMenu menuProgram = new JMenu( "Program" );
 		JMenuItem quit = new JMenuItem( "Quit" );
+		JMenuItem clearCache = new JMenuItem( "Clear image cache" );
 		JMenuItem data = new JMenuItem( "Data path" );
 		JMenuItem closeTab = new JMenuItem( "Close Tab" );
 		menuProgram.add( data );
@@ -64,10 +65,10 @@ public class Animator extends JFrame {
 		
 		final Lambda0 closeHook = new Lambda0(){
 		  public Object invoke(){
-		  System.exit( 0 );
-		  return null;
+		  	System.exit( 0 );
+		  	return null;
 		  }
-		  };
+		};
 
 		menuProgram.setMnemonic( KeyEvent.VK_P );
 		data.setMnemonic( KeyEvent.VK_D );
@@ -98,6 +99,12 @@ public class Animator extends JFrame {
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				System.exit(0);
+			}
+		});
+
+		clearCache.addActionListener( new ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				MaskedImage.clearCache();
 			}
 		});
 
