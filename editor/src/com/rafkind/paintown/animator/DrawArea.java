@@ -24,8 +24,8 @@ public final class DrawArea extends JComponent {
 	// private int offset_x;
 	// private int offset_y;
 	
-	private static int x = 320;
-	private static int y = 300;
+	private static int x = 150;
+	private static int y = 100;
 	/*
 	private BoundingBox attackArea;
 	private long delayTime;
@@ -49,14 +49,28 @@ public final class DrawArea extends JComponent {
 		}).start();
 		*/
 		currentAnimation = null;
+
+		this.addMouseMotionListener( new MouseMotionAdapter(){
+			public void mouseDragged( MouseEvent event ){
+				x = (int)(event.getX() / getScale());
+				y = (int)(event.getY() / getScale());
+				DrawArea.this.repaint();
+			}
+		});
 	}
 
+	public double getScale(){
+		return 2.0;
+	}
 
 	public Dimension getPreferredSize(){
 		return new Dimension(640,480);
 	}
 
 	public void paintComponent( Graphics g ){
+		
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.scale( getScale(), getScale() );
 
 		g.setColor( new Color( 0, 0, 0 ) );
 		g.fillRect( 0, 0, 640, 480 );
