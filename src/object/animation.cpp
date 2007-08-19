@@ -429,13 +429,13 @@ commision( true ){
 	attack_y2 = animation.attack_y2;
 	*/
 	delay = animation.delay;
-	delay_counter = 0;
+	delay_counter = animation.delay_counter;
 	// offset_x = animation.offset_x;
 	// offset_y = animation.offset_y;
-	offset_x = 0;
-	offset_y = 0;
-	shadowX = 0;
-	shadowY = 0;
+	offset_x = animation.offset_x;
+	offset_y = animation.offset_y;
+	shadowX = animation.shadowX;
+	shadowY = animation.shadowY;
 	is_attack = animation.isAttack();
 	status = animation.getStatus();
 	damage = animation.getDamage();
