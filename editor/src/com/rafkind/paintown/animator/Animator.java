@@ -47,6 +47,7 @@ public class Animator extends JFrame {
 		JMenuItem data = new JMenuItem( "Data path" );
 		JMenuItem closeTab = new JMenuItem( "Close Tab" );
 		menuProgram.add( data );
+		menuProgram.add( clearCache );
 		menuProgram.add( closeTab );
 		menuProgram.add( quit );
 		menuBar.add( menuProgram );
