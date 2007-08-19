@@ -1,27 +1,9 @@
 #!/usr/bin/env ruby
 
-def getSize( file )
-	IO.popen( "convert #{file} -identify" ){ |out|
-		out.readlines.each{ |line|
-			if /^\s*Geometry:\s*(\d+)x(\d+)/ === line
-				return [$1.to_i,$2.to_i]
-			end
-		}
-	}
-
-	raise "Fuck it"
-end
-
-amount = ARGV.shift.to_f
-
-puts amount
+amount = (ARGV.shift.to_f * 100).to_i
 
 ARGV.each{ |file|
 
-	x,y = getSize( file )
-	puts "Size of #{file} = #{x}x#{y}"
-	puts $! if not Kernel.system( "convert -scale #{(x*amount).to_i}x#{(y*amount).to_i} #{file} #{file}" )
-	x,y = getSize( file )	
-	puts "Enlarged #{file} to = #{x}x#{y}"
+	puts $! if not Kernel.system( "convert -sample #{amount}x#{amount}%  #{file} #{file}" )
 
 }
