@@ -129,7 +129,7 @@ static string findNextFile( const char * name ){
 static bool playLevel( World & world, Player * player, int helpTime ){
 	Keyboard key;
 	
-	key.setDelay( Keyboard::Key_F1, 100 );
+	key.setDelay( Keyboard::Key_F2, 100 );
 	key.setDelay( Keyboard::Key_F12, 50 );
 
 	key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
@@ -196,7 +196,7 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 			}
 
 			if ( key[ Keyboard::Key_F1 ] ){
-				helpTime = helpTime < 150 ? 150 : helpTime;
+				helpTime = helpTime < 110 ? 110 : helpTime;
 			}
 
 			if ( key[ Keyboard::Key_P ] ){
@@ -214,7 +214,7 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 				cout << "Game speed " << gameSpeed << endl;
 			}
 
-			if ( key[ Keyboard::Key_F1 ] ){
+			if ( key[ Keyboard::Key_F2 ] ){
 				Global::invertDebug();
 			}
 
