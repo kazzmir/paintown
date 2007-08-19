@@ -24,8 +24,8 @@ public class MoveEvent implements AnimationEvent
 	}
 	
 	public void interact( Animation animation ){
-		animation.setImageX( _x );
-		animation.setImageY( _y );
+		animation.moveX( _x );
+		animation.moveY( _y );
 	}
 	
 	public String getName()

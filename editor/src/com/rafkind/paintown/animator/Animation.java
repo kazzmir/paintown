@@ -298,6 +298,14 @@ public class Animation implements Runnable {
 	public synchronized void setImageY( int y ){
 		this.y = y;
 	}
+
+	public synchronized void moveX( int x ){
+		this.x += x;
+	}
+	
+	public synchronized void moveY( int y ){
+		this.y += y;
+	}
 	
 	public synchronized void setOffsetX( int x ){
 		this.offsetX = x;
@@ -355,6 +363,10 @@ public class Animation implements Runnable {
 		synchronized( events ){
 			if ( ! events.isEmpty() ){
 				eventIndex = previous( eventIndex, events.size() );
+				if ( eventIndex == 0 ){
+					setImageX( 0 );
+					setImageY( 0 );
+				}
 				updateEvent( (AnimationEvent) events.get( eventIndex ) );
 			}
 		}
@@ -365,6 +377,10 @@ public class Animation implements Runnable {
 		synchronized( events ){
 			if ( ! events.isEmpty() ){
 				eventIndex = next( eventIndex, events.size() );
+				if ( eventIndex == 0 ){
+					setImageX( 0 );
+					setImageY( 0 );
+				}
 				updateEvent( (AnimationEvent) events.get( eventIndex ) );
 			}
 		}
