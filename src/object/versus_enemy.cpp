@@ -18,6 +18,10 @@ what_to_do( DO_NOTHING ){
 VersusEnemy::~VersusEnemy(){
 }
 	
+void VersusEnemy::hurt( int x ){
+	Character::hurt( x );
+}
+	
 void VersusEnemy::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	Character::act( others, world, add );
 

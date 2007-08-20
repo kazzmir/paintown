@@ -13,6 +13,8 @@ public:
 	VersusEnemy( const Character & chr ) throw( LoadException );
 	
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	
+	virtual void hurt( int x );
 
 	virtual ~VersusEnemy();
 
