@@ -41,6 +41,12 @@
 			<glue />
 		</hbox>
 		<hbox>
+			<label text="Hit Sound: " />
+			<textfield id="hit-sound" />
+			<button text="Change" id="change-hit-sound" />
+			<glue />
+		</hbox>
+		<hbox>
 			<label text="Landing Sound: " />
 			<textfield id="land-sound" />
 			<button text="Change" id="change-land-sound" />

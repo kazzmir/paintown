@@ -29,6 +29,7 @@ public abstract class CharacterStats{
 	
 	// Sound data
 	protected String dieSound = "";
+	protected String hitSound = "";
 	protected String landed = "";
 	
 	// Bitmaps
@@ -103,6 +104,14 @@ public abstract class CharacterStats{
 	
 	public void setDieSound(String d){
 		dieSound = d;
+	}
+
+	public String getHitSound(){
+		return hitSound;
+	}
+
+	public void setHitSound( String s ){
+		hitSound = s;
 	}
 	
 	public String getLanded(){

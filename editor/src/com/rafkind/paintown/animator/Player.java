@@ -31,6 +31,7 @@ public final class Player extends CharacterStats {
 	private JSpinner speedSpinner2;
 	private JSpinner shadowSpinner;
 	private JTextField deathSoundField;
+	private JTextField hitSoundField;
 	private JButton deathSoundButton;
 	private JTextField landingSoundField;
 	private JButton landingSoundButton;
@@ -126,10 +127,16 @@ public final class Player extends CharacterStats {
 		}
 		
 		Token diesoundToken = head.findToken( "die-sound" );
-		if ( diesoundToken != null )
-		{
+		if ( diesoundToken != null ){
 			deathSoundField.setText(diesoundToken.readString(0));
-			dieSound = diesoundToken.readString(0);
+			setDieSound( diesoundToken.readString(0) );
+		}
+
+		Token hitsoundToken = head.findToken( "hit-sound" );
+		if ( hitsoundToken != null ){
+			String path = hitsoundToken.readString( 0 );
+			hitSoundField.setText( path );
+			setHitSound( path );
 		}
 		
 		Token landedToken = head.findToken( "landed" );
@@ -174,7 +181,14 @@ public final class Player extends CharacterStats {
 		temp.addToken(new String[]{"speed", Double.toString(speed)});
 		temp.addToken(new String[]{"type", "Player"});
 		temp.addToken(new String[]{"shadow", Integer.toString(shadow)});
-		if(!dieSound.equals(""))temp.addToken(new String[]{"die-sound", dieSound});
+		if ( ! getDieSound().equals( "" ) ){
+			temp.addToken(new String[]{"die-sound", getDieSound() });
+		}
+
+		if ( ! getHitSound().equals( "" ) ){
+			temp.addToken(new String[]{"hit-sound", getHitSound() });
+		}
+
 		if(!landed.equals(""))temp.addToken(new String[]{"landed", landed});
 		if(!icon.equals(""))temp.addToken(new String[]{"icon", icon});
 		Iterator mapItor = remap.iterator();
@@ -293,10 +307,24 @@ public final class Player extends CharacterStats {
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
 						deathSoundField.setText( path );
-						dieSound = path;
+						setDieSound( path );
 					}
 				}
 			});
+
+		hitSoundField = (JTextField) contextEditor.find( "hit-sound" );
+		JButton hitSoundButton = (JButton) contextEditor.find( "change-hit-sound" );
+		hitSoundButton.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				RelativeFileChooser chooser = Animator.getNewFileChooser();
+				int ret = chooser.open();
+				if ( ret == RelativeFileChooser.OK ){
+					final String path = chooser.getPath();
+					hitSoundField.setText( path );
+					setHitSound( path );
+				}
+			}
+		});
 		
 		landingSoundField = (JTextField) contextEditor.find( "land-sound" );
 		
