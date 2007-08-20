@@ -54,6 +54,10 @@ public:
 		return this->invincible;
 	}
 
+	inline void setLives( const int x ){
+		lives = x;
+	}
+
 	/* reset some stuff when the player dies */
 	void deathReset();
 	

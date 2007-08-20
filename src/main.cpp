@@ -59,6 +59,8 @@ static int gfx = Global::WINDOWED;
 
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
+static int startingLives = 4;
+
 static void stopLoading( pthread_t thread ){
 	if ( show_loading_screen ){
 		pthread_mutex_lock( &Global::loading_screen_mutex );
@@ -856,16 +858,20 @@ static bool titleScreen(){
 	const unsigned int MORE_INVINCIBLE = 0;
 	const unsigned int MORE_GAME_SPEED = 1;
 	const unsigned int MORE_VIDEO_MODE = 2;
-	const unsigned int MORE_BACK = 3;
+	const unsigned int MORE_LIVES = 3;
+	const unsigned int MORE_BACK = 4;
 	char invincible[ 128 ];
 	strcpy( invincible, "Invincible: No" );
 	char gameSpeed[ 128 ];
 	sprintf( gameSpeed, "Game speed: %0.2f", startingGameSpeed );
 	char videoMode[ 128 ];
 	sprintf( videoMode, gfx == Global::WINDOWED ? "Fullscreen" : "Windowed" );
+	char lives[ 128 ];
+	sprintf( lives, "Lives: %d", startingLives );
 	const char * moreOptions[] = { invincible,
 				       gameSpeed,
 				       videoMode,
+				       lives,
 				       "Back"
 				       };
 	const unsigned int moreMax = sizeof( moreOptions ) / sizeof( char* );
@@ -923,8 +929,8 @@ static bool titleScreen(){
 
 	key.setDelay( Keyboard::Key_UP, LAZY_KEY_DELAY );
 	key.setDelay( Keyboard::Key_DOWN, LAZY_KEY_DELAY );
-	key.setDelay( Keyboard::Key_LEFT, 30 );
-	key.setDelay( Keyboard::Key_RIGHT, 30 );
+	key.setDelay( Keyboard::Key_LEFT, 50 );
+	key.setDelay( Keyboard::Key_RIGHT, 50 );
 
 	bool done = false;
 	while ( ! done ){
@@ -961,6 +967,22 @@ static bool titleScreen(){
 						}
 					}
 					sprintf( gameSpeed, "Game speed: %0.2f", startingGameSpeed );
+				} else if ( options == moreOptions && choose == MORE_LIVES ){
+					if ( key[ Keyboard::Key_RIGHT ] ){
+						draw = true;
+						startingLives += 1;
+					}
+					if ( key[ Keyboard::Key_LEFT ] ){
+						draw = true;
+						startingLives -= 1;
+					}
+					if ( startingLives > 10 ){
+						startingLives = 10;
+					}
+					if ( startingLives < 1 ){
+						startingLives = 1;
+					}
+					sprintf( lives, "Lives: %d", startingLives );
 				}
 
 				if ( enter ){
@@ -1015,6 +1037,9 @@ static bool titleScreen(){
 							case MORE_INVINCIBLE : {
 								isInvincible = ! isInvincible;
 								sprintf( invincible, "Invincible: %s", isInvincible ? "Yes" : "No" );
+								break;
+							}
+							case MORE_LIVES : {
 								break;
 							}
 							case MORE_BACK : {
@@ -1169,6 +1194,7 @@ static bool titleScreen(){
 					key.wait();
 					
 					player = selectPlayer( isInvincible );
+					((Player *)player)->setLives( startingLives );
 					realGame( player, level );
 				} catch ( const LoadException & le ){
 					cout << "Could not load player: " << le.getReason() << endl;
