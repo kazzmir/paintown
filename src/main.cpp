@@ -82,7 +82,7 @@ void fadeOut( const string & message ){
 	Global::speed_counter = 0;
 	Bitmap::transBlender( 0, 0, 0, 10 );
 	int fade = 0;
-	const Font & f = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 50, 50 );
+	const Font & f = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 50, 50 );
 	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, message, 0 );
 	while ( fade < 100 ){
 		fade++;
@@ -502,6 +502,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 		*/
 	
 		if ( draw ){
+			const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT );
 			background.Blit( work );
 			world.draw( &work );
 
@@ -540,13 +541,15 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 			work.Blit( screen_buffer );
 
 			if ( showRound > 0 ){
-				const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, roundColors[ showRound ], screen_buffer, "Round %d", 0, round );
 				showRound -= 1;
 			}
 
-			player1->drawLifeBar( 10, 10, &screen_buffer );
-			player2->drawLifeBar( screen_buffer.getWidth() - 150, 10, &screen_buffer );
+			
+			font.printf( 10, 0, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player1->getName().c_str() );
+			player1->drawLifeBar( 10, font.getHeight(), &screen_buffer );
+			font.printf( screen_buffer.getWidth() - 200, 0, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player2->getName().c_str() );
+			player2->drawLifeBar( screen_buffer.getWidth() - 200, font.getHeight(), &screen_buffer );
 
 			FontRender * render = FontRender::getInstance();
 			render->render( &screen_buffer );
@@ -556,7 +559,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
 				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
 				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
-				const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
+				const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT );
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
 
@@ -638,7 +641,7 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
 	// Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	int fontY = 20;
-	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, fontY );
+	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, fontY );
 	vector< string > possible = Util::getFiles( base + "/", "*.txt" );
 	if ( possible.size() == 0 ){
 		return "no-files!!!";
@@ -776,7 +779,7 @@ static void showCredits( const Bitmap & background ){
 
 	Global::speed_counter = 0;
 	int min_y = GFX_Y;
-	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, 20 );
+	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
 	Bitmap tmp( GFX_X, GFX_Y );
 	while ( ! key[ Keyboard::Key_ESC ] ){
 
@@ -821,7 +824,7 @@ static bool titleScreen(){
 	Music::loadSong( Util::getDataPath() + "/music/aqua.s3m" );
 
 	const int fontY = 20;
-	const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 20, fontY );
+	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, fontY );
 
 	const int MAIN_PLAY = 0;
 	const int MAIN_VERSUS = 1;

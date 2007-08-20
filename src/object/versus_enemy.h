@@ -8,7 +8,7 @@
 class Object;
 class World;
 
-class VersusEnemy: public Enemy{
+class VersusEnemy: public Enemy {
 public:
 	VersusEnemy( const Character & chr ) throw( LoadException );
 	
