@@ -21,7 +21,6 @@ if isWindows():
     print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"
     
 env = getEnvironment()
-# config = env.Configure();
 
 def getDebug():
 	try:
@@ -51,10 +50,29 @@ if isWindows():
 	env.Append( CPPDEFINES = 'WINDOWS' )
 else:
 	env.Append( LIBS = [ 'pthread' ] )
-	env.ParseConfig( 'libpng-config --libs --cflags' );
-	env.ParseConfig( 'allegro-config --libs --cflags' );
-	env.ParseConfig( 'freetype-config --libs --cflags' );
+	
+	config = env.Configure()
+	config.env.ParseConfig( 'allegro-config --libs --cflags' )
+	config.env.ParseConfig( 'libpng-config --libs --cflags' )
+	config.env.ParseConfig( 'freetype-config --libs --cflags' )
 
+	if not config.CheckHeader( 'allegro.h' ):
+		print "You need the header files for Allegro. Get it from http://alleg.sf.net"
+		Exit( 1 )
+	if not config.CheckHeader( 'dumb.h' ):
+		print "You need to install DUMB. Get it from http://dumb.sf.net"
+		Exit( 1 )
+	if not config.CheckHeader( 'aldumb.h' ):
+		print "You need to configure DUMB for Allegro support. Reinstall DUMB"
+		Exit( 1 )
+	if not config.CheckHeader( 'ft2build.h' ):
+		print "You need freetype. Install X11"
+		Exit( 1 )
+	if not config.CheckHeader( 'png.h' ):
+		print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
+		Exit( 1 )
+	env = config.Finish()
+	
 SConscript( 'src/SConstruct', build_dir='build', exports = 'env' );
 if isWindows():
 	env.Install( '.', 'build/paintown.exe' )
@@ -62,12 +80,3 @@ if isWindows():
 else:
 	env.Install( '.', 'build/paintown' )
 	env.Install( '.', 'build/test' )
-
-# editorEnv = Environment()
-# 
-# editorEnv.BuildDir( 'build-editor', 'src' )
-# editorEnv.Append( CPPPATH = ['saggui/include'] )
-# editorEnv.ParseConfig( 'allegro-config --libs' )
-# editorEnv.Append( LIBS = ['saggui-alleg','saggui'] )
-# editorEnv.Append( LIBPATH = 'saggui/lib' )
-# editorEnv.Program( 'level-editor', 'build-editor/editor/editor.cpp' )
