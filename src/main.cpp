@@ -605,7 +605,11 @@ static void realGame( Object * player, const string & levelFile ){
 
 			Player * playerX = (Player *) player;
 			playerX->setY( 200 );
+			/* setMoving(false) sets all velocities to 0 */
+			playerX->setMoving( false );
+			/* but the player is falling so set it back to true */
 			playerX->setMoving( true );
+
 			playerX->setStatus( Status_Falling );
 
 			stopLoading( loading_screen_thread );
@@ -819,6 +823,63 @@ static void showCredits( const Bitmap & background ){
 	}
 }
 
+struct controls{
+	struct key{
+		char name[ 64 ];
+		char description[ 32 ];
+		void (Configuration::*set)(int);
+		int (Configuration::*get)() const;
+	} keys[ 10 ];
+	int config;
+};
+
+static void setupControls( controls * player, int left, int right, int up, int down, int jump, int attack1, int attack2, int attack3 ){
+	player->keys[ left ].get = &Configuration::getLeft;
+	player->keys[ left ].set = &Configuration::setLeft;
+	sprintf( player->keys[ left ].description, "Left" );
+	
+	player->keys[ right ].get = &Configuration::getRight;
+	player->keys[ right ].set = &Configuration::setRight;
+	sprintf( player->keys[ right ].description, "Right" );
+	
+	player->keys[ up ].get = &Configuration::getUp;
+	player->keys[ up ].set = &Configuration::setUp;
+	sprintf( player->keys[ up ].description, "Up" );
+	
+	player->keys[ down ].get = &Configuration::getDown;
+	player->keys[ down ].set = &Configuration::setDown;
+	sprintf( player->keys[ down ].description, "Down" );
+	
+	player->keys[ jump ].get = &Configuration::getJump;
+	player->keys[ jump ].set = &Configuration::setJump;
+	sprintf( player->keys[ jump ].description, "Jump" );
+	
+	player->keys[ attack1 ].get = &Configuration::getAttack1;
+	player->keys[ attack1 ].set = &Configuration::setAttack1;
+	sprintf( player->keys[ attack1 ].description, "Attack1" );
+	
+	player->keys[ attack2 ].get = &Configuration::getAttack2;
+	player->keys[ attack2 ].set = &Configuration::setAttack2;
+	sprintf( player->keys[ attack2 ].description, "Attack2" );
+	
+	player->keys[ attack3 ].get = &Configuration::getAttack3;
+	player->keys[ attack3 ].set = &Configuration::setAttack3;
+	sprintf( player->keys[ attack3 ].description, "Attack3" );
+
+	int all[ 10 ];
+	all[ 0 ] = left;
+	all[ 1 ] = right;
+	all[ 2 ] = up;
+	all[ 3 ] = down;
+	all[ 4 ] = jump;
+	all[ 5 ] = attack1;
+	all[ 6 ] = attack2;
+	all[ 7 ] = attack3;
+	for ( int i = 0; i < 8; i++ ){
+		sprintf( player->keys[ i ].name, "%s: %s", player->keys[ i ].description, Keyboard::keyToName( (Configuration::config( player->config ).*(player->keys[ i ].get))() ) );
+	}
+}
+
 static bool titleScreen(){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	// Bitmap::Screen->Blit( background );
@@ -876,14 +937,6 @@ static bool titleScreen(){
 				       };
 	const unsigned int moreMax = sizeof( moreOptions ) / sizeof( char* );
 
-	char keyLeft[ 128 ];
-	char keyRight[ 128 ];
-	char keyUp[ 128 ];
-	char keyDown[ 128 ];
-	char keyAttack1[ 128 ];
-	char keyAttack2[ 128 ];
-	char keyAttack3[ 128 ];
-	char keyJump[ 128 ];
 	const unsigned int CONTROL_LEFT = 0;
 	const unsigned int CONTROL_RIGHT = 1;
 	const unsigned int CONTROL_UP = 2;
@@ -894,24 +947,22 @@ static bool titleScreen(){
 	const unsigned int CONTROL_JUMP = 7;
 	const unsigned int CONTROL_BACK = 8;
 
-	sprintf( keyLeft, "Left: %s", Keyboard::keyToName( Configuration::config( 0 ).getLeft() ) );
-	sprintf( keyRight, "Right: %s", Keyboard::keyToName( Configuration::config( 0 ).getRight() ) );
-	sprintf( keyUp, "Up: %s", Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
-	sprintf( keyDown, "Down: %s", Keyboard::keyToName( Configuration::config( 0 ).getDown() ) );
-	sprintf( keyAttack1, "Attack1: %s", Keyboard::keyToName( Configuration::config( 0 ).getAttack1() ) );
-	sprintf( keyAttack2, "Attack2: %s", Keyboard::keyToName( Configuration::config( 0 ).getAttack2() ) );
-	sprintf( keyAttack3, "Attack3: %s", Keyboard::keyToName( Configuration::config( 0 ).getAttack3() ) );
-	sprintf( keyJump, "Jump: %s", Keyboard::keyToName( Configuration::config( 0 ).getJump() ) );
-	const char * controlOptions[] = { keyLeft,
-				 	  keyRight,
-				 	  keyUp,
-				 	  keyDown,
-				 	  keyAttack1,
-				 	  keyAttack2,
-				 	  keyAttack3,
-				 	  keyJump,
-					  "Back" };
-	const unsigned int controlMax = sizeof( controlOptions ) / sizeof( char* );
+	controls player1;
+
+	player1.config = 0;
+	setupControls( &player1, CONTROL_LEFT, CONTROL_RIGHT, CONTROL_UP, CONTROL_DOWN, CONTROL_JUMP, CONTROL_ATTACK1, CONTROL_ATTACK2, CONTROL_ATTACK3 );
+	
+	const char * controlOptions1[] = { player1.keys[ CONTROL_LEFT ].name,
+			                   player1.keys[ CONTROL_RIGHT ].name,
+			                   player1.keys[ CONTROL_UP ].name,
+			                   player1.keys[ CONTROL_DOWN ].name,
+			                   player1.keys[ CONTROL_JUMP ].name,
+			                   player1.keys[ CONTROL_ATTACK1 ].name,
+			                   player1.keys[ CONTROL_ATTACK2 ].name,
+			                   player1.keys[ CONTROL_ATTACK3 ].name,
+					   "Back" };
+
+	const unsigned int controlMax = sizeof( controlOptions1 ) / sizeof( char* );
 
 	// font.printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "foo" );
 	unsigned int choose = 0;
@@ -1001,7 +1052,7 @@ static bool titleScreen(){
 								break;
 							}
 							case MAIN_CHANGE_CONTROLS : {
-								options = controlOptions;
+								options = controlOptions1;
 								maxOptions = controlMax;
 								choose = 0;
 								break;
@@ -1057,68 +1108,21 @@ static bool titleScreen(){
 								Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y );
 							}
 						}
-					} else if ( options == controlOptions ){
+					} else if ( options == controlOptions1 ){
 						switch ( choose ){
-							case CONTROL_LEFT : {
-								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'left'", 0 );
-								int newkey = readKey( key );
-								Configuration::config( 0 ).setLeft( newkey );
-								sprintf( keyLeft, "Left: %s", Keyboard::keyToName( Configuration::config( 0 ).getLeft() ) );
-								break;
-							}
-							case CONTROL_RIGHT : {
-								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'right'", 0 );
-								int newkey = readKey( key );
-								Configuration::config( 0 ).setRight( newkey );
-								sprintf( keyRight, "Right: %s", Keyboard::keyToName( Configuration::config( 0 ).getRight() ) );
-
-								break;
-							}
-							case CONTROL_UP : {
-								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'up'", 0 );
-								int newkey = readKey( key );
-								Configuration::config( 0 ).setUp( newkey );
-								sprintf( keyUp, "Up: %s", Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
-
-								break;
-							}
-							case CONTROL_DOWN : {
-								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'down'", 0 );
-								int newkey = readKey( key );
-								Configuration::config( 0 ).setDown( newkey );
-								sprintf( keyDown, "Down: %s", Keyboard::keyToName( Configuration::config( 0 ).getDown() ) );
-								break;
-							}
-							case CONTROL_ATTACK1 : {
-								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'attack1'", 0 );
-								int newkey = readKey( key );
-								Configuration::config( 0 ).setAttack1( newkey );
-								sprintf( keyAttack1, "Attack1: %s", Keyboard::keyToName( Configuration::config( 0 ).getAttack1() ) );
-
-								break;
-							}
-							case CONTROL_ATTACK2 : {
-								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'attack2'", 0 );
-								int newkey = readKey( key );
-								Configuration::config( 0 ).setAttack2( newkey );
-								sprintf( keyAttack2, "Attack2: %s", Keyboard::keyToName( Configuration::config( 0 ).getAttack2() ) );
-
-								break;
-							}
+							case CONTROL_LEFT :
+							case CONTROL_RIGHT :
+							case CONTROL_UP :
+							case CONTROL_DOWN :
+							case CONTROL_JUMP :
+							case CONTROL_ATTACK1 :
+							case CONTROL_ATTACK2 :
 							case CONTROL_ATTACK3 : {
-								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'attack3'", 0 );
-								int newkey = readKey( key );
-								Configuration::config( 0 ).setAttack3( newkey );
-								sprintf( keyAttack3, "Attack3: %s", Keyboard::keyToName( Configuration::config( 0 ).getAttack3() ) );
 
-								break;
-							}
-							case CONTROL_JUMP : {
-								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for 'jump'", 0 );
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for '%s'", 0, player1.keys[ choose ].description );
 								int newkey = readKey( key );
-								Configuration::config( 0 ).setJump( newkey );
-								sprintf( keyJump, "Jump: %s", Keyboard::keyToName( Configuration::config( 0 ).getJump() ) );
-
+								(Configuration::config( player1.config ).*(player1.keys[ choose ].set))( newkey );
+								sprintf( player1.keys[ choose ].name, "%s: %s", player1.keys[ choose ].description, Keyboard::keyToName( (Configuration::config( player1.config ).*(player1.keys[ choose ].get))() ) );
 								break;
 							}
 							case CONTROL_BACK : {
