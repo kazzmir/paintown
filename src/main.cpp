@@ -891,14 +891,16 @@ static bool titleScreen(){
 
 	const int MAIN_PLAY = 0;
 	const int MAIN_VERSUS = 1;
-	const int MAIN_CHANGE_CONTROLS = 2;
-	const int MAIN_MORE_OPTIONS = 3;
-	const int MAIN_CREDITS = 4;
-	const int MAIN_QUIT = 5;
+	const int MAIN_CHANGE_CONTROLS1 = 2;
+	const int MAIN_CHANGE_CONTROLS2 = 3;
+	const int MAIN_MORE_OPTIONS = 4;
+	const int MAIN_CREDITS = 5;
+	const int MAIN_QUIT = 6;
 	const char * mainOptions[] = {
 		"Adventure mode",
 		"Versus mode",
-		"Change controls",
+		"Player 1 controls",
+		"Player 2 controls",
 		"More options",
 		"Credits",
 		"Quit"
@@ -948,9 +950,13 @@ static bool titleScreen(){
 	const unsigned int CONTROL_BACK = 8;
 
 	controls player1;
+	controls player2;
 
 	player1.config = 0;
 	setupControls( &player1, CONTROL_LEFT, CONTROL_RIGHT, CONTROL_UP, CONTROL_DOWN, CONTROL_JUMP, CONTROL_ATTACK1, CONTROL_ATTACK2, CONTROL_ATTACK3 );
+
+	player2.config = 1;
+	setupControls( &player2, CONTROL_LEFT, CONTROL_RIGHT, CONTROL_UP, CONTROL_DOWN, CONTROL_JUMP, CONTROL_ATTACK1, CONTROL_ATTACK2, CONTROL_ATTACK3 );
 	
 	const char * controlOptions1[] = { player1.keys[ CONTROL_LEFT ].name,
 			                   player1.keys[ CONTROL_RIGHT ].name,
@@ -962,7 +968,20 @@ static bool titleScreen(){
 			                   player1.keys[ CONTROL_ATTACK3 ].name,
 					   "Back" };
 
-	const unsigned int controlMax = sizeof( controlOptions1 ) / sizeof( char* );
+	const unsigned int controlMax1 = sizeof( controlOptions1 ) / sizeof( char* );
+
+	const char * controlOptions2[] = { player2.keys[ CONTROL_LEFT ].name,
+			                   player2.keys[ CONTROL_RIGHT ].name,
+			                   player2.keys[ CONTROL_UP ].name,
+			                   player2.keys[ CONTROL_DOWN ].name,
+			                   player2.keys[ CONTROL_JUMP ].name,
+			                   player2.keys[ CONTROL_ATTACK1 ].name,
+			                   player2.keys[ CONTROL_ATTACK2 ].name,
+			                   player2.keys[ CONTROL_ATTACK3 ].name,
+					   "Back" };
+
+	const unsigned int controlMax2 = sizeof( controlOptions2 ) / sizeof( char* );
+
 
 	// font.printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "foo" );
 	unsigned int choose = 0;
@@ -1051,9 +1070,15 @@ static bool titleScreen(){
 								choose = 0;
 								break;
 							}
-							case MAIN_CHANGE_CONTROLS : {
+							case MAIN_CHANGE_CONTROLS1 : {
 								options = controlOptions1;
-								maxOptions = controlMax;
+								maxOptions = controlMax1;
+								choose = 0;
+								break;
+							}
+							case MAIN_CHANGE_CONTROLS2 : {
+								options = controlOptions2;
+								maxOptions = controlMax2;
 								choose = 0;
 								break;
 							}
@@ -1123,6 +1148,31 @@ static bool titleScreen(){
 								int newkey = readKey( key );
 								(Configuration::config( player1.config ).*(player1.keys[ choose ].set))( newkey );
 								sprintf( player1.keys[ choose ].name, "%s: %s", player1.keys[ choose ].description, Keyboard::keyToName( (Configuration::config( player1.config ).*(player1.keys[ choose ].get))() ) );
+								break;
+							}
+							case CONTROL_BACK : {
+								options = mainOptions;
+								maxOptions = mainMax;
+								choose = 0;
+
+								break;
+							}
+						}
+					} else if ( options == controlOptions2 ){
+						switch ( choose ){
+							case CONTROL_LEFT :
+							case CONTROL_RIGHT :
+							case CONTROL_UP :
+							case CONTROL_DOWN :
+							case CONTROL_JUMP :
+							case CONTROL_ATTACK1 :
+							case CONTROL_ATTACK2 :
+							case CONTROL_ATTACK3 : {
+
+								font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press key for '%s'", 0, player2.keys[ choose ].description );
+								int newkey = readKey( key );
+								(Configuration::config( player2.config ).*(player2.keys[ choose ].set))( newkey );
+								sprintf( player2.keys[ choose ].name, "%s: %s", player2.keys[ choose ].description, Keyboard::keyToName( (Configuration::config( player2.config ).*(player2.keys[ choose ].get))() ) );
 								break;
 							}
 							case CONTROL_BACK : {
