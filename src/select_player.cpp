@@ -281,11 +281,10 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	vector<int>remapOrig;
 	vector<int>remap1;
 	vector<int>remap2;
-	for(unsigned int i = 0; i < players.size();++i)
-	{
-		remapOrig.push_back(((Character *) players[ i ].guy)->getCurrentMap());
-		remap1.push_back(((Character *) players[ i ].guy)->getCurrentMap());
-		remap2.push_back(((Character *) players[ i ].guy)->getCurrentMap());
+	for( unsigned int i = 0; i < players.size();++i){
+		remapOrig.push_back(players[ i ].guy->getCurrentMap());
+		remap1.push_back(players[ i ].guy->getCurrentMap());
+		remap2.push_back(players[ i ].guy->getCurrentMap());
 	}
 
 	key.setDelay( Configuration::config(0).getRight(), 300 );
@@ -340,11 +339,10 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	while ( !ok ){
 		key.poll();
 
-		Character * ch1 = (Character *) players[ current1 ].guy;
-		Character * ch2 = (Character *) players[ current2 ].guy;	
+		Character * ch1 = players[ current1 ].guy;
+		Character * ch2 = players[ current2 ].guy;	
 		/*
-		for(unsigned int i = 0; i < players.size();++i)
-		{
+		for(unsigned int i = 0; i < players.size();++i){
 			((Character *) players[ i ].guy)->setMap(remapOrig[i]);
 		}
 		*/
@@ -352,6 +350,15 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 			double think = Global::speed_counter;
 			while ( think > 0 ){
 				clock += 1;
+
+				for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
+					Character * c = it->guy;
+					if ( c == ch1 || c == ch2 ){
+						if ( c->testAnimation() ){
+							c->testReset();
+						}
+					}
+				}
 			
 				if ( clock % 5 == 0 ){
 					backgroundX -= 1;
@@ -360,8 +367,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					}
 				}
 				
-				if(!player1Ready)
-				{
+				if( ! player1Ready ){
 					if ( key[ Configuration::config(0).getLeft() ] ){
 						current1 = current1 - 1;
 					}
@@ -396,9 +402,11 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 						current1 = players.size() - 1;
 					}
 	
+					/*
 					if ( ch1->testAnimation() ){
 						ch1->testReset();
 					}
+					*/
 	
 					while ( current1 < top ){
 						top -= boxesPerLine;
@@ -409,8 +417,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					}
 				}
 				
-				if(!player2Ready)
-				{
+				if ( ! player2Ready ){
 					if ( key[ Configuration::config(1).getLeft() ] ){
 						current2 = current2 - 1;
 					}
@@ -445,9 +452,11 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 						current2 = players.size() - 1;
 					}
 	
+					/*
 					if ( ch2->testAnimation() ){
 						ch2->testReset();
 					}
+					*/
 	
 					while ( current2 < top ){
 						top -= boxesPerLine;
@@ -468,7 +477,9 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 				think--;
 			}
 			
-			if(player1Ready && player2Ready)ok = true;
+			if ( player1Ready && player2Ready ){
+				ok = true;
+			}
 
 			Global::speed_counter = 0;
 			draw = true;
@@ -515,20 +526,30 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 				
 				color = unselectedColor;
 				
-				if( (i == unsigned(current1)) && (i == unsigned(current2)) )
-				{
+				if( (i == unsigned(current1)) && (i == unsigned(current2)) ) {
+					/*
+					for ( int corner = 0; corner < 3; corner++ ){
+						box.hLine(corner,corner,boxSize-1-corner,selectedColor1);
+						box.vLine(corner,corner,boxSize,selectedColor1);
+						
+						box.hLine(corner+1,boxSize-1-corner,boxSize,selectedColor2);
+						box.vLine(corner,boxSize-1-corner,boxSize,selectedColor2);
+					}
+					*/
+					/*
 					box.hLine(0,0,boxSize-1,selectedColor1);
 					box.hLine(1,boxSize-1,boxSize,selectedColor2);
-					box.vLine(0,0,boxSize,selectedColor1);
-					box.vLine(0,boxSize-1,boxSize,selectedColor2);
 					box.hLine(1,1,boxSize-2,selectedColor1);
 					box.hLine(2,boxSize-2,boxSize,selectedColor2);
-					box.vLine(1,1,boxSize-1,selectedColor1);
-					box.vLine(1,boxSize-2,boxSize-1,selectedColor2);
 					box.hLine(2,2,boxSize-3,selectedColor1);
 					box.hLine(3,boxSize-3,boxSize,selectedColor2);
+					box.vLine(0,0,boxSize,selectedColor1);
+					box.vLine(0,boxSize-1,boxSize,selectedColor2);
+					box.vLine(1,1,boxSize-1,selectedColor1);
+					box.vLine(1,boxSize-2,boxSize-1,selectedColor2);
 					box.vLine(2,2,boxSize-2,selectedColor1);
 					box.vLine(2,boxSize-3,boxSize-2,selectedColor2);
+					*/
 					
 					smaller.setX( temp.getWidth() / 2 );
 					smaller.setY( 0 );
@@ -536,6 +557,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					smaller.draw( &temp, 0 );
 					temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 					
+					/*
 					box.hLine(0,0,boxSize-1,selectedColor1);
 					box.hLine(1,boxSize-1,boxSize,selectedColor2);
 					box.vLine(0,0,boxSize,selectedColor1);
@@ -548,13 +570,22 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					box.hLine(3,boxSize-3,boxSize,selectedColor2);
 					box.vLine(2,2,boxSize-2,selectedColor1);
 					box.vLine(2,boxSize-3,boxSize-2,selectedColor2);
+					*/
+
+					for ( int corner = 0; corner < 3; corner++ ){
+						box.hLine(corner,corner,boxSize-1-corner,selectedColor1);
+						box.vLine(corner,corner,boxSize,selectedColor1);
+						
+						box.hLine(corner+1,boxSize-1-corner,boxSize,selectedColor2);
+						box.vLine(corner,boxSize-1-corner,boxSize,selectedColor2);
+					}
 					
+					/*
 					font.printf( 5, 5, selectedColor1, box, "1", 0 );
 					font.printf( (boxSize / 2) + 10, 5, selectedColor2, box, "2", 0 );
+					*/
 					
-				}
-				else if(i == unsigned(current1))
-				{
+				} else if(i == unsigned(current1)) {
 					//color = i == (unsigned int) current1 ? selectedColor : unselectedColor;
 					/* draw a border */
 					box.border( 0, 3, selectedColor1 );
@@ -565,10 +596,8 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					smaller.draw( &temp, 0 );
 					temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 					box.border( 0, 3, selectedColor1 );
-					font.printf( 5, 5, selectedColor1, box, "1", 0 );
-				}
-				else if(i == unsigned(current2))
-				{
+					// font.printf( 5, 5, selectedColor1, box, "1", 0 );
+				} else if(i == unsigned(current2)) {
 					box.border( 0, 3, selectedColor2 );
 					
 					smaller.setX( temp.getWidth() / 2 );
@@ -577,10 +606,8 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					smaller.draw( &temp, 0 );
 					temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 					box.border( 0, 3, selectedColor2 );
-					font.printf( 5, 5, selectedColor2, box, "2", 0 );
-				}
-				else
-				{
+					// font.printf( 5, 5, selectedColor2, box, "2", 0 );
+				} else {
 					box.border( 0, 3, color );
 					
 					smaller.setX( temp.getWidth() / 2 );
