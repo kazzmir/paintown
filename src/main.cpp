@@ -1267,11 +1267,13 @@ static bool titleScreen(){
 		Object * player = NULL;
 		Object * enemy = NULL;
 		try{
-			player = selectPlayer( false );
-			enemy = selectPlayer( false );
-			enemy->setAlliance( ALLIANCE_ENEMY );
 			switch ( choose ){
 				case VERSUS_PLAYER : {
+					//versusSelect( player, enemy );
+					player = selectPlayer( false );
+					enemy = selectPlayer( false );
+					enemy->setAlliance( ALLIANCE_ENEMY );
+					
 					for ( int i = 0; i < 3; i += 1 ){
 						VersusPlayer en( 1, *(Player *) enemy );
 						VersusPlayer pl( 0, *(Player *) player );
@@ -1280,6 +1282,10 @@ static bool titleScreen(){
 					break;
 				}
 				case VERSUS_COMPUTER : {
+					player = selectPlayer( false );
+					enemy = selectPlayer( false );
+					enemy->setAlliance( ALLIANCE_ENEMY );
+					
 				       for ( int i = 0; i < 3; i += 1 ){
 						VersusEnemy en( *(Player *) enemy );
 						VersusPlayer pl( 0, *(Player *) player );
