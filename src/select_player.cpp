@@ -353,7 +353,29 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 
 				for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
 					Character * c = it->guy;
-					if ( c == ch1 || c == ch2 ){
+					if ( c == ch1 && c == ch2 ){
+						if ( remap1[ current1 ] == remap2[ current2 ] ){
+							c->setMap( remap1[ current1 ] );
+							if ( c->testAnimation() ){
+								c->testReset();
+							}
+						} else {
+							c->setMap( remap1[ current1 ] );
+							if ( c->testAnimation() ){
+								c->testReset();
+							}
+							c->setMap( remap2[ current2 ] );
+							if ( c->testAnimation() ){
+								c->testReset();
+							}
+						}
+					} else if ( c == ch1 ){
+						c->setMap( remap1[ current1 ] );
+						if ( c->testAnimation() ){
+							c->testReset();
+						}
+					} else {
+						c->setMap( remap2[ current2 ] );
 						if ( c->testAnimation() ){
 							c->testReset();
 						}
@@ -385,8 +407,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					}
 	
 					if ( key[ Configuration::config(0).getJump() ] ){
-						ch1->nextMap();
-						remap1[current1] = ch1->getCurrentMap();
+						remap1[current1] = ch1->getNextMap( remap1[ current1 ] );
 						//ch1->setMap(remapOrig1[current1]);
 					}
 					
@@ -435,8 +456,9 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					}
 	
 					if ( key[ Configuration::config(1).getJump() ] ){
-						ch2->nextMap();
-						remap2[current2] = ch2->getCurrentMap();
+						// ch2->nextMap( remap2[ current2 ] );
+						remap2[current2] = ch2->getNextMap( remap2[ current2 ] );
+						// remap2[current2] = ch2->getCurrentMap();
 						//ch2->setMap(remapOrig2[current2]);
 					}
 					
@@ -506,6 +528,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 			
 			ch2->setMap(remap2[current2]);
 			ch2->setFacing( Object::FACING_LEFT );
+
 			Character copy2( *ch2 );
 			copy2.setX( preview2.getWidth() / 2 );
 			copy2.setY( 0 );

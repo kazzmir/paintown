@@ -131,6 +131,9 @@ public:
 
 	virtual void setMap( const unsigned int x );
 	virtual void nextMap();
+	virtual void nextMap( int x );
+	virtual const int getNextMap() const;
+	virtual const int getNextMap( unsigned int x ) const;
 
 	inline void setLink( Object * o ){
 		linked = o;

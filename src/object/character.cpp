@@ -171,6 +171,8 @@ landed_sound( NULL ){
 	}
 
 	animation_current = getMovement( "idle" );
+	
+	setMap( chr.getCurrentMap() );
 }
 
 void Character::loadSelf( const char * filename ) throw ( LoadException ){
@@ -335,11 +337,26 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 }
 
 void Character::nextMap(){
-	unsigned int next = current_map + 1;
+	nextMap( getCurrentMap() );
+}
+
+void Character::nextMap( int x ){
+	unsigned int next = x + 1;
 	if ( next >= mapper.size() ){
 		next = 0;
 	}
 	setMap( next );
+}
+
+const int Character::getNextMap() const {
+	return getNextMap( current_map );
+}
+
+const int Character::getNextMap( unsigned int x ) const {
+	if ( x + 1 >= mapper.size() ){
+		return 0;
+	}
+	return x + 1;
 }
 	
 void Character::setMap( const unsigned int x ){
