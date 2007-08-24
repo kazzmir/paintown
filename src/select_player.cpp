@@ -315,7 +315,8 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	const int boxSize = 80;
 	const int startX = 180;
 	const int startY = 20;
-	const int boxesPerLine = (work.getWidth() - startX) / (boxSize + 10);
+	const int maxSize = 520;
+	const int boxesPerLine = (maxSize - startX) / (boxSize + 10);
 	const int boxesPerColumn = (work.getHeight() - startY) / (boxSize + 10);
 	int backgroundX = 0;
 	int top = 0;
@@ -575,7 +576,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 				}
 				
 				x += boxSize + 10;
-				if ( x + boxSize + 10 > 520 ){
+				if ( x + boxSize + 10 > maxSize ){
 					x = startX;
 					y += (boxSize + 10);
 				}
