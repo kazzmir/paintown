@@ -278,10 +278,15 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	/* currently selected character */
 	int current1 = 0;
 	int current2 = 0;
-
-	int changeRemapKey1 = Configuration::config(0).getJump();
-	int changeRemapKey2 = Configuration::config(1).getJump();
-
+	vector<int>remapOrig;
+	vector<int>remap1;
+	vector<int>remap2;
+	for(unsigned int i = 0; i < players.size();++i)
+	{
+		remapOrig.push_back(((Character *) players[ i ].guy)->getCurrentMap());
+		remap1.push_back(((Character *) players[ i ].guy)->getCurrentMap());
+		remap2.push_back(((Character *) players[ i ].guy)->getCurrentMap());
+	}
 
 	key.setDelay( Configuration::config(0).getRight(), 300 );
 	key.setDelay( Configuration::config(0).getUp(), 300 );
@@ -290,7 +295,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	key.setDelay( Configuration::config(0).getAttack1(), 300 );
 	key.setDelay( Configuration::config(0).getAttack2(), 300 );
 	key.setDelay( Configuration::config(0).getAttack3(), 300 );
-	key.setDelay( changeRemapKey1, 200 );
+	key.setDelay( Configuration::config(0).getJump(), 200 );
 	
 	key.setDelay( Configuration::config(1).getRight(), 300 );
 	key.setDelay( Configuration::config(1).getUp(), 300 );
@@ -299,7 +304,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	key.setDelay( Configuration::config(1).getAttack1(), 300 );
 	key.setDelay( Configuration::config(1).getAttack2(), 300 );
 	key.setDelay( Configuration::config(1).getAttack3(), 300 );
-	key.setDelay( changeRemapKey2, 200 );
+	key.setDelay( Configuration::config(1).getJump(), 200 );
 
 	/* preview box for each character */
 	Bitmap temp( 120, 120 );
@@ -336,8 +341,13 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 		key.poll();
 
 		Character * ch1 = (Character *) players[ current1 ].guy;
-		Character * ch2 = (Character *) players[ current2 ].guy;
-
+		Character * ch2 = (Character *) players[ current2 ].guy;	
+		/*
+		for(unsigned int i = 0; i < players.size();++i)
+		{
+			((Character *) players[ i ].guy)->setMap(remapOrig[i]);
+		}
+		*/
 		if ( Global::speed_counter > 0 ){
 			double think = Global::speed_counter;
 			while ( think > 0 ){
@@ -370,6 +380,8 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	
 					if ( key[ Configuration::config(0).getJump() ] ){
 						ch1->nextMap();
+						remap1[current1] = ch1->getCurrentMap();
+						//ch1->setMap(remapOrig1[current1]);
 					}
 					
 					if ( key[ Configuration::config(0).getAttack1() ] || key[ Configuration::config(0).getAttack2() ] || key[ Configuration::config(0).getAttack3() ] ){
@@ -417,6 +429,8 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	
 					if ( key[ Configuration::config(1).getJump() ] ){
 						ch2->nextMap();
+						remap2[current2] = ch2->getCurrentMap();
+						//ch2->setMap(remapOrig2[current2]);
 					}
 					
 					if ( key[ Configuration::config(1).getAttack1() ] || key[ Configuration::config(1).getAttack2() ] || key[ Configuration::config(1).getAttack3() ] ){
@@ -466,6 +480,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 			background.Blit( backgroundX, 0, work );
 			background.Blit( work.getWidth() + backgroundX, 0, work );
 
+			ch1->setMap(remap1[current1]);
 			ch1->setFacing( Object::FACING_RIGHT );
 			Character copy1( *ch1 );
 			copy1.setX( preview1.getWidth() / 2 );
@@ -478,17 +493,18 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 			const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
 			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy1.getName(), 0 );
 			
+			ch2->setMap(remap2[current2]);
 			ch2->setFacing( Object::FACING_LEFT );
 			Character copy2( *ch2 );
 			copy2.setX( preview2.getWidth() / 2 );
 			copy2.setY( 0 );
 			copy2.setZ( preview2.getHeight() - 20 );
 			preview2.fill( Bitmap::MaskColor );
-
+			
 			copy2.draw( &preview2, 0 );
 			preview2.drawStretched( 200, 0, GFX_X, GFX_Y, work );
 			font.printf( GFX_Y - 30, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy2.getName(), 0 );
-
+			
 			int x = startX, y = startY;
 			unsigned int i;
 			for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
@@ -604,8 +620,8 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 		}
 	}
 
-	int remap1 = players[ current1 ].guy->getCurrentMap();
-	int remap2 = players[ current2 ].guy->getCurrentMap();
+	//int remap1 = players[ current1 ].guy->getCurrentMap();
+	//int remap2 = players[ current2 ].guy->getCurrentMap();
 
 	/* delete all the preview characters. its ok to delete them
 	 * before looking up the selected player in the map
@@ -620,14 +636,14 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 	
 	cout << "Selected " << players[ current1 ].path << ". Loading.." << endl;
 	Player * temp1 = new Player( players[ current1 ].path );
-	temp1->setMap( remap1 );
+	temp1->setMap( remap1[current1] );
 	temp1->testAnimation();
 	temp1->setInvincible( invincible );
 	tempVec.push_back(temp1);
 	
 	cout << "Selected " << players[ current2 ].path << ". Loading.." << endl;
 	Player * temp2 = new Player( players[ current2 ].path );
-	temp2->setMap( remap2 );
+	temp2->setMap( remap2[current2] );
 	temp2->testAnimation();
 	temp2->setInvincible( invincible );
 	tempVec.push_back(temp2);
