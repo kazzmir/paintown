@@ -1272,7 +1272,7 @@ static bool titleScreen(){
 					vector<Object *>temp = versusSelect( false );
 					player = temp[0];
 					enemy = temp[1];
-					if(!player || !enemy)throw LoadException();
+					if(!player || !enemy)throw LoadException("Null player");
 					//player = selectPlayer( false );
 					//enemy = selectPlayer( false );
 					enemy->setAlliance( ALLIANCE_ENEMY );
