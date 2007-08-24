@@ -374,7 +374,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 						if ( c->testAnimation() ){
 							c->testReset();
 						}
-					} else {
+					} else if ( c == ch2 ){
 						c->setMap( remap2[ current2 ] );
 						if ( c->testAnimation() ){
 							c->testReset();
