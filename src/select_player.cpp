@@ -546,6 +546,7 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 				Bitmap box( work, x, y, boxSize, boxSize );
 				int color = unselectedColor;
 				Character smaller( *players[ i ].guy );
+				smaller.setFacing( Object::FACING_RIGHT );
 				
 				color = unselectedColor;
 				
@@ -634,7 +635,6 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 					box.border( 0, 3, color );
 					
 					smaller.setMap( 0 );
-					smaller.setFacing( Object::FACING_RIGHT );
 					smaller.setX( temp.getWidth() / 2 );
 					smaller.setY( 0 );
 					smaller.setZ( temp.getHeight() );
