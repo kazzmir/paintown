@@ -633,6 +633,8 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 				} else {
 					box.border( 0, 3, color );
 					
+					smaller.setMap( 0 );
+					smaller.setFacing( Object::FACING_RIGHT );
 					smaller.setX( temp.getWidth() / 2 );
 					smaller.setY( 0 );
 					smaller.setZ( temp.getHeight() );
