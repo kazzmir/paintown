@@ -7,6 +7,6 @@
 
 Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException );
 
-void versusSelect( Object *player1, Object *player2 ) throw( LoadException, ReturnException );
+vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnException );
 
 #endif

@@ -1269,9 +1269,12 @@ static bool titleScreen(){
 		try{
 			switch ( choose ){
 				case VERSUS_PLAYER : {
-					//versusSelect( player, enemy );
-					player = selectPlayer( false );
-					enemy = selectPlayer( false );
+					vector<Object *>temp = versusSelect( false );
+					player = temp[0];
+					enemy = temp[1];
+					if(!player || !enemy)throw LoadException();
+					//player = selectPlayer( false );
+					//enemy = selectPlayer( false );
 					enemy->setAlliance( ALLIANCE_ENEMY );
 					
 					for ( int i = 0; i < 3; i += 1 ){

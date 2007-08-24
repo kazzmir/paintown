@@ -264,7 +264,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 	return player;
 }
 
-void versusSelect( Object *player1, Object *player2 ) throw( LoadException, ReturnException ){
+vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnException ){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 
 	/* hm, it would be nice to cache this I suppose */
@@ -330,7 +330,8 @@ void versusSelect( Object *player1, Object *player2 ) throw( LoadException, Retu
 	unsigned int clock = 0;
 	bool player1Ready = false;
 	bool player2Ready = false;
-	while ( !player1Ready && !player2Ready ){
+	bool ok = false;
+	while ( !ok ){
 		key.poll();
 
 		Character * ch1 = (Character *) players[ current1 ].guy;
@@ -451,6 +452,8 @@ void versusSelect( Object *player1, Object *player2 ) throw( LoadException, Retu
 
 				think--;
 			}
+			
+			if(player1Ready && player2Ready)ok = true;
 
 			Global::speed_counter = 0;
 			draw = true;
@@ -612,17 +615,21 @@ void versusSelect( Object *player1, Object *player2 ) throw( LoadException, Retu
 		delete it->guy;
 	}
 
+	vector<Object *> tempVec;
+	
 	cout << "Selected " << players[ current1 ].path << ". Loading.." << endl;
 	Player * temp1 = new Player( players[ current1 ].path );
 	temp1->setMap( remap1 );
 	temp1->testAnimation();
-	temp1->setInvincible( false );
-	player1 = temp1;
+	temp1->setInvincible( invincible );
+	tempVec.push_back(temp1);
 	
 	cout << "Selected " << players[ current2 ].path << ". Loading.." << endl;
 	Player * temp2 = new Player( players[ current2 ].path );
 	temp2->setMap( remap2 );
 	temp2->testAnimation();
-	temp2->setInvincible( false );
-	player2 = temp2;
+	temp2->setInvincible( invincible );
+	tempVec.push_back(temp2);
+	
+	return tempVec;
 }
