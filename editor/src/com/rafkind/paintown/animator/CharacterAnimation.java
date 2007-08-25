@@ -391,8 +391,14 @@ public class CharacterAnimation{
 					});
 					dialog.show();
 				}
-				animation.addEvent( temp );
+				int index = 0;
+				if ( eventList.getSelectedIndex() != -1 ){
+					index = animation.addEvent( temp, eventList.getSelectedIndex() + 1 );
+				} else {
+					index = animation.addEvent( temp );
+				}
 				eventList.setListData( animation.getEvents() );
+				eventList.setSelectedIndex( index );
 			}
 		});
 		

@@ -211,9 +211,16 @@ public class Animation implements Runnable {
 		running = true;
 	}
 
-	public void addEvent( AnimationEvent e ){
+	public int addEvent( AnimationEvent e, int index ){
 		synchronized( events ){
-			events.add( e );
+			events.add( index, e );
+			return index;
+		}
+	}
+
+	public int addEvent( AnimationEvent e ){
+		synchronized( events ){
+			return addEvent( e, events.size() );
 		}
 	}
 
