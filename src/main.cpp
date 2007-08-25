@@ -962,10 +962,10 @@ static bool titleScreen(){
 			                   player1.keys[ CONTROL_RIGHT ].name,
 			                   player1.keys[ CONTROL_UP ].name,
 			                   player1.keys[ CONTROL_DOWN ].name,
-			                   player1.keys[ CONTROL_JUMP ].name,
 			                   player1.keys[ CONTROL_ATTACK1 ].name,
 			                   player1.keys[ CONTROL_ATTACK2 ].name,
 			                   player1.keys[ CONTROL_ATTACK3 ].name,
+			                   player1.keys[ CONTROL_JUMP ].name,
 					   "Back" };
 
 	const unsigned int controlMax1 = sizeof( controlOptions1 ) / sizeof( char* );
@@ -974,10 +974,10 @@ static bool titleScreen(){
 			                   player2.keys[ CONTROL_RIGHT ].name,
 			                   player2.keys[ CONTROL_UP ].name,
 			                   player2.keys[ CONTROL_DOWN ].name,
-			                   player2.keys[ CONTROL_JUMP ].name,
 			                   player2.keys[ CONTROL_ATTACK1 ].name,
 			                   player2.keys[ CONTROL_ATTACK2 ].name,
 			                   player2.keys[ CONTROL_ATTACK3 ].name,
+			                   player2.keys[ CONTROL_JUMP ].name,
 					   "Back" };
 
 	const unsigned int controlMax2 = sizeof( controlOptions2 ) / sizeof( char* );
