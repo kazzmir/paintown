@@ -88,16 +88,30 @@ public class RelativeFileChooser extends JDialog {
 		final JList files = (JList) engine.find( "files" );
 		files.setModel( list );
 
+		files.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "select" );
+
+		files.getActionMap().put( "select", new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				File file = (File) files.getSelectedValue();
+				paths.add( file );
+				list.setFile( file );
+				path.setText( getPath() );
+				if ( ! file.isDirectory() ){
+					RelativeFileChooser.this.setVisible( false );
+				}
+
+				if ( list.getSize() > 0 ){
+					files.setSelectedIndex( 0 );
+					files.ensureIndexIsVisible( 0 );
+				}
+			}
+		});
+
 		files.addMouseListener( new MouseAdapter() {
 			public void mouseClicked( MouseEvent clicked ){
 				if ( clicked.getClickCount() == 2 ){
-					File file = (File) files.getSelectedValue();
-					paths.add( file );
-					list.setFile( file );
-					path.setText( getPath() );
-					if ( ! file.isDirectory() ){
-						RelativeFileChooser.this.setVisible( false );
-					}
+					Action action = files.getActionMap().get( "select" );
+					action.actionPerformed( new ActionEvent( this, 0, "select" ) );
 				}
 			}
 		});
