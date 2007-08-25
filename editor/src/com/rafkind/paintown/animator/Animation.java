@@ -507,7 +507,7 @@ public class Animation implements Runnable {
 		}
 
 		if ( ! sequence.equals( "none" ) ){
-			token.addToken( new String[]{ "sequence", sequence, "junk" } );
+			token.addToken( new String[]{ "sequence", "\"" + sequence + "\"", "junk" } );
 		}
 
 		if ( ! keys.isEmpty() ){
