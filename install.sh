@@ -1,5 +1,22 @@
 #!/bin/sh
 
+## Paintown install script
+
+## ./install.sh -d <data> -b <bin>
+## Copy the 'data' directory into <data> and put a script to run the game
+## in <bin>.
+
+## Example:
+## ./install.sh -d ~/my-data -b ~/bin
+## Will put the game in the users home directory under my-data and put a script
+## in the users bin directory.
+
+## You will probably need to use 'sudo' to install into /usr anywhere
+## sudo ./install.sh -d /usr/games -b /usr/bin
+
+## Default data directory is /usr/share/games
+## Default bin directory is /usr/games
+
 data(){
 	dir=$1
 
