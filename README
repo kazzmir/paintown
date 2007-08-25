@@ -31,6 +31,16 @@ Compilation:
 
 	The executable will end up in bin/paintown.exe
 
+Install:
+	$ ./install.sh -d <data> -b <bin>
+
+	Copy the data directory to <data> and put a script in <bin>.
+	Default <data> directory is /usr/share/games/paintown
+	Default <bin> directory is /usr/games
+
+	The script will prompt you to input these directories if you do not
+	give -d and/or -b.
+
 Requirements:
 
 	You need the following things to compile Paintown:
