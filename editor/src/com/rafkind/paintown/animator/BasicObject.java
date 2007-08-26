@@ -8,9 +8,10 @@ public abstract class BasicObject{
 	
 	private File path;
 
-	protected String name = "";
+	private String name = "";
 
-	public BasicObject(){
+	public BasicObject( String name ){
+		this.name = name;
 	}
 
 	public void setPath( File f ){

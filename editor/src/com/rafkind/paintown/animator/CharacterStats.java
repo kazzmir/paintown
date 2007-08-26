@@ -7,14 +7,12 @@ import javax.swing.*;
 import com.rafkind.paintown.*;
 import com.rafkind.paintown.exception.*;
 
-public class CharacterStats extends BasicObject {
+public class CharacterStats extends AnimatedObject {
 	protected int health;
 	protected double jumpVelocity;
 	protected double speed;
 	protected int shadow;
 
-	private List updates;
-	
 	// Sound data
 	protected String dieSound = "";
 	protected String hitSound = "";
@@ -29,12 +27,8 @@ public class CharacterStats extends BasicObject {
 	// Vector of strings containing filename locations
 	protected Vector remap = new Vector();
 	
-	// Vector of CharacterAnimations
-	protected Vector animations = new Vector();
-
 	public CharacterStats( String name ){
-		this.name = name;
-		updates = new ArrayList();
+		super( name );
 	}
 
 	public CharacterStats( String name, File f ) throws LoadException {
@@ -114,14 +108,6 @@ public class CharacterStats extends BasicObject {
 		return origMap;
 	}
 
-	public void addAnimationUpdate( Lambda1 update ){
-		updates.add( update );
-	}
-	
-	public void removeAnimationUpdate( Lambda1 update ){
-		updates.remove( update );
-	}
-
 	public Vector getRemaps(){
 		return remap;
 	}
@@ -150,63 +136,12 @@ public class CharacterStats extends BasicObject {
 		return false;
 	}
 	
-	/*
-	public void createAnimation(){
-		Animation ani = new Animation();
-		new Thread( ani ).start();
-		animations.addElement( ani );
-		editAnimation( animations.size() - 1 );
-		updateAnimationListeners();
-	}
-	*/
 	
-	/*
-	public void editAnimation(int index){
-		Animation temp = (Animation) animations.elementAt( index );
-		CharacterAnimation edit = new CharacterAnimation( this, temp );
-		animator.addNewTab( edit.getEditor(), temp.getName());
-		// edit.fixBaseDirectory();
-	}
-	*/
-
-	public void updateAnimationListeners(){
-		for ( Iterator it = updates.iterator(); it.hasNext(); ){
-			Lambda1 update = (Lambda1) it.next();
-			try{
-				update.invoke( this );
-			} catch ( Exception e ){
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void removeAnimation( int index ){
-		Animation temp = (Animation)animations.elementAt(index);
-		animations.removeElement(temp);
-		updateAnimationListeners();
-
-	}
-	
-	public void removeAnimation(Animation anim){
-		removeAnimation( animations.indexOf( anim ) );
-	}
-
-	public void addAnimation( Animation a ){
-		animations.add( a );
-	}
-
-	public Vector getAnimations(){
-		return animations;
-	}
-
-	public Animation getAnimation( int i ){
-		return (Animation) getAnimations().get( i );
-	}
 	
 	public Token getToken(){
 		Token temp = new Token("character");
 		temp.addToken(new Token("character"));
-		temp.addToken(new String[]{"name", "\"" + name + "\""});
+		temp.addToken(new String[]{"name", "\"" + getName() + "\""});
 		temp.addToken(new String[]{"health", Integer.toString(health)});
 		temp.addToken(new String[]{"jump-velocity", Double.toString(jumpVelocity)});
 		temp.addToken(new String[]{"speed", Double.toString(speed)});
@@ -228,7 +163,7 @@ public class CharacterStats extends BasicObject {
 			temp.addToken(new String[]{"remap", origMap, map});
 		}
 		
-		Iterator animItor = animations.iterator();
+		Iterator animItor = getAnimations().iterator();
 		while(animItor.hasNext()){
 			Animation anim = (Animation)animItor.next();
 			temp.addToken(anim.getToken());
@@ -262,7 +197,7 @@ public class CharacterStats extends BasicObject {
 		
 		Token nameToken = head.findToken( "name" );
 		if ( nameToken != null ){
-			name = nameToken.readString(0);
+			setName( nameToken.readString(0) );
 		}
 		
 		Token healthToken = head.findToken( "health" );

@@ -29,20 +29,20 @@ public class CharacterAnimation{
 	
 	private SwingEngine animEditor;
 	private JTextField nameField;
-	private CharacterStats saveCharacter;
+	private BasicObject save;
 	
 	public SpecialPanel getEditor(){	
-		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField, saveCharacter );
+		return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField, save );
 	}
 
 	private boolean rightClick( MouseEvent event ){
 		return event.getButton() == MouseEvent.BUTTON3;
 	}
 	
-	public CharacterAnimation( final CharacterStats character, final Animation animation ){
+	public CharacterAnimation( final AnimatedObject object, final Animation animation ){
 		animEditor = new SwingEngine( "animator/base.xml" );
 
-		this.saveCharacter = character;
+		this.save = object;
 		
 		SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
 		
@@ -167,10 +167,10 @@ public class CharacterAnimation{
 
 			public SequenceModel(){
 				updates = new ArrayList();
-				animations = getAnimations( character );
+				animations = getAnimations( object );
 				selected = null;
 
-				character.addAnimationUpdate( new Lambda1(){
+				object.addAnimationUpdate( new Lambda1(){
 					public Object invoke( Object o ){
 						CharacterStats who = (CharacterStats) o;
 						animations = new ArrayList();
@@ -182,7 +182,7 @@ public class CharacterAnimation{
 				});
 			}
 
-			private List getAnimations( CharacterStats who ){
+			private List getAnimations( AnimatedObject who ){
 				List all = new ArrayList();
 				Animation none = new Animation();
 				none.setName( "none" );
