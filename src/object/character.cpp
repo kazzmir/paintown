@@ -417,8 +417,13 @@ bool Character::isCollidable( Object * obj ){
 	}
 
 	// if ( getStatus() == Status_Fell || getStatus() == Status_Hurt )
+	if ( getStatus() == Status_Rise ){
+		return false;
+	}
+	/*
 	if ( getStatus() == Status_Fell || getStatus() == Status_Rise )
 		return false;
+	*/
 	return obj->getAlliance() != getAlliance();
 	// return true;
 }
