@@ -549,8 +549,16 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 				smaller.setFacing( Object::FACING_RIGHT );
 				
 				color = unselectedColor;
+
+				if ( i == (unsigned)current1 && player1Ready ){
+					temp.fill( Bitmap::darken( selectedColor1, 2.6 ) );
+				}
 				
-				if( (i == unsigned(current1)) && (i == unsigned(current2)) ) {
+				if ( i == (unsigned)current2 && player2Ready ){
+					temp.fill( Bitmap::darken( selectedColor2, 2.6 ) );
+				}
+				
+				if( (i == (unsigned)current1) && (i == (unsigned)current2) ) {
 					/*
 					for ( int corner = 0; corner < 3; corner++ ){
 						box.hLine(corner,corner,boxSize-1-corner,selectedColor1);
