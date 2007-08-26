@@ -505,8 +505,11 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 	
 		if ( draw ){
 			const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT );
+
 			background.Blit( work );
 			world.draw( &work );
+			
+			/*
 
 			// work.printf( 180, 1, Bitmap::makeColor(255,255,255), (FONT *)all_fonts[ JOHNHANDY_PCX ].dat, "%d", game_time );
 
@@ -533,14 +536,104 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 				max_x = screen_buffer.getWidth();
 			}
 	
-			/* split is the number of pixels to show in the Y direction */
+			/ * split is the number of pixels to show in the Y direction * /
 			int split = screen_buffer.getHeight() * (max_x - min_x) / screen_buffer.getWidth();
-			/* cut the difference into two pieces, min_y and max_y */
+			/ * cut the difference into two pieces, min_y and max_y * /
 			min_y = (screen_buffer.getHeight() - split);
 			// max_y -= (screen_buffer.getHeight() - split) / 2;
 
 			// work.Stretch( screen_buffer, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
-			work.Blit( screen_buffer );
+			
+			*/
+
+			// work.Blit( screen_buffer );
+			const double divider = 5;
+			const double x_distance = screen_buffer.getWidth() / divider;
+			double min_x_1 = player1->getX() - x_distance;
+			double max_x_1 = player1->getX() + x_distance;
+			double min_x_2 = player2->getX() - x_distance;
+			double max_x_2 = player2->getX() + x_distance;
+
+			if ( min_x_1 < 0 ){
+				max_x_1 += 0 - min_x_1;
+				min_x_1 = 0;
+			}
+			if ( max_x_1 > screen_buffer.getWidth() ){
+				min_x_1 -= max_x_1 - screen_buffer.getWidth();
+				max_x_1 = screen_buffer.getWidth();
+			}
+			
+			if ( min_x_2 < 0 ){
+				max_x_2 += 0 - min_x_2;
+				min_x_2 = 0;
+			}
+			if ( max_x_2 > screen_buffer.getWidth() ){
+				min_x_2 -= max_x_2 - screen_buffer.getWidth();
+				max_x_2 = screen_buffer.getWidth();
+			}
+
+			if ( (min_x_1 < min_x_2 && max_x_1 > min_x_2) ||
+			     (min_x_2 < min_x_1 && max_x_2 > min_x_1) ||
+			     (min_x_1 == min_x_2) ){
+			     /* the players are close enough together to show
+			      * them in the same screen
+			      */
+
+				double space = x_distance * 4 - fabs( player1->getX() - player2->getX() );
+				double p1 = player1->getX() < player2->getX() ? player1->getX() : player2->getX();
+				double p2 = player1->getX() >= player2->getX() ? player1->getX() : player2->getX();
+				double x1 = p1 - space / 2;
+				double x2 = p2 + space / 2;
+
+				if ( x2 > screen_buffer.getWidth() ){
+					x1 -= x2 - screen_buffer.getWidth();
+					x2 = screen_buffer.getWidth();
+				} else if ( x1 < 0 ){
+					x2 += 0 - x1;
+					x1 = 0;
+				}
+				
+
+				/*
+				int y1 = (int)(distance / 2 - screen_buffer.getHeight() / divider);
+				int y2 = plane + screen_buffer.getHeight();
+				*/
+				double visible = screen_buffer.getHeight() * (divider - 1) / divider;
+				double y1 = world.getMinimumZ() - visible / 2;
+				double y2 = world.getMinimumZ() + visible / 2;
+				if ( y1 < 0 ){
+					y2 += - y1;
+					y1 = 0;
+				} else if ( y2 > screen_buffer.getHeight() ){
+					y1 -= y2 - screen_buffer.getHeight();
+					y2 = screen_buffer.getHeight();
+				}
+
+				work.Stretch( screen_buffer, (int)x1, (int)y1, (int)(x2 - x1), (int)(y2 - y1), 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
+
+			} else {
+				/* split screen */
+
+				/*
+				int y1 = (int)(screen_buffer.getHeight() / divider);
+				int y2 = screen_buffer.getHeight();
+				*/
+
+				double visible = screen_buffer.getHeight() * (divider - 1) / divider;
+				double y1 = world.getMinimumZ() - visible / 2;
+				double y2 = world.getMinimumZ() + visible / 2;
+				if ( y1 < 0 ){
+					y2 += - y1;
+					y1 = 0;
+				} else if ( y2 > screen_buffer.getHeight() ){
+					y1 -= y2 - screen_buffer.getHeight();
+					y2 = screen_buffer.getHeight();
+				}
+				int p = player1->getX() < player2->getX() ? 0 : screen_buffer.getWidth() / 2;
+				work.Stretch( screen_buffer, (int)min_x_1, (int)y1, (int)(max_x_1 - min_x_1), (int)(y2 - y1), p, 0, screen_buffer.getWidth() / 2, screen_buffer.getHeight() );
+				work.Stretch( screen_buffer, (int)min_x_2, (int)y1, (int)(max_x_2 - min_x_2), (int)(y2 - y1), screen_buffer.getWidth() / 2 - p, 0, screen_buffer.getWidth() / 2, screen_buffer.getHeight() );
+			}
+			     
 
 			if ( showRound > 0 ){
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, roundColors[ showRound ], screen_buffer, "Round %d", 0, round );
@@ -1185,10 +1278,13 @@ static bool titleScreen(){
 						}
 					}
 
+					/*
 					while ( key[ Keyboard::Key_ENTER ] ){
 						Util::rest( 1 );
 						key.poll();
 					}
+					*/
+					key.wait();
 				}
 
 				// done = key[ Keyboard::Key_ENTER ] || key[ Keyboard::Key_SPACE ] || key[ Keyboard::Key_ESC ];
@@ -1200,6 +1296,7 @@ static bool titleScreen(){
 					} else {
 						options = mainOptions;
 						maxOptions = mainMax;
+						key.wait();
 					}
 				}
 				/*
