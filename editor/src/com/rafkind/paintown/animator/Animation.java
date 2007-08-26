@@ -66,6 +66,11 @@ public class Animation implements Runnable {
 		this.events = events;
 	}
 
+	public Animation( Token data ) throws LoadException {
+		this();
+		loadData( data );
+	}
+
 	public void setType( String s ){
 		type = s;
 

@@ -30,14 +30,15 @@ public class Animator extends JFrame {
 
 	private static File dataPath = new File( "data" );
 	private static int CURRENT_TAB = 0;
-	private static Animator _animator;
+	private static Animator animator;
 	
 	private static JTabbedPane pane = new JTabbedPane();
 
 	public Animator() throws Exception {
 		super( "Paintown Animator" );
-		_animator = this;
 		this.setSize( (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 50, (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 50 );
+
+		animator = this;
 
 		JMenuBar menuBar = new JMenuBar();
 		
@@ -172,39 +173,31 @@ public class Animator extends JFrame {
 		
 		getContentPane().add(pane);
 		
-		closeTab.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event)
-			{
+		closeTab.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event){
 				pane.remove(CURRENT_TAB);
 			}
 		});
 		
-		pane.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		pane.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
 				int index = sourceTabbedPane.getSelectedIndex();
 				CURRENT_TAB = index;
 			}
      		});
 		
-		newCharacter.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
-				// This will need to change to a factory or something
-				Player tempPlayer = new Player(Animator.this);
+		newCharacter.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				CharacterStats character = new CharacterStats( "New Character" );
+				Player pane = new Player( Animator.this, character );
 				
-				addNewTab(tempPlayer.getEditor(), "New Character");
+				addNewTab( pane.getEditor(), "New Character" );
 			}
 		});
 		
-		loadCharacter.addActionListener( new AbstractAction()
-		{
-			public void actionPerformed( ActionEvent event )
-			{
+		loadCharacter.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
 				JFileChooser chooser = new JFileChooser( new File( "." ) );	
 				chooser.setFileFilter( new FileFilter(){
 					public boolean accept( File f ){
@@ -220,9 +213,9 @@ public class Animator extends JFrame {
 				if ( returnVal == JFileChooser.APPROVE_OPTION ){
 					final File f = chooser.getSelectedFile();
 					try{
-						Player tempPlayer = new Player(Animator.this);
-						tempPlayer.loadData(f);
-						addNewTab(tempPlayer.getEditor(), tempPlayer.getName());
+						CharacterStats character = new CharacterStats( "New Character", f );
+						Player tempPlayer = new Player( Animator.this, character );
+						addNewTab( tempPlayer.getEditor(), character.getName() );
 					} catch ( LoadException le ){
 						//showError( "Could not load " + f.getName() );
 						System.out.println( "Could not load " + f.getName() );
@@ -231,25 +224,36 @@ public class Animator extends JFrame {
 				}	
 			}
 		});
+
+		final Lambda2 saveObject = new Lambda2(){
+			public Object invoke( Object obj, Object path_ ){
+				BasicObject object = (BasicObject) obj;
+				File path = (File) path_;
+
+				object.setPath( path );
+				try{
+					object.saveData();
+				} catch ( Exception e ){
+					e.printStackTrace();
+				}
+				return null;
+			}
+		};
 		
 		saveCharacter.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( pane.getSelectedComponent() != null ){
-					CharacterStats player = ((SpecialPanel)pane.getSelectedComponent()).getPlayer();
-					if(player!= null)
-					{
-						File file = player.getPath();
+					BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
+					if ( object != null ){
+
+						File file = object.getPath();
 						if ( file == null ){
 							file = userSelectFile();
 						}
+
 						/* write the text to a file */
 						if ( file != null ){
-							try{
-								player.saveData(file);
-							} catch ( Exception e ){
-								e.printStackTrace();
-								//showError( "Could not save " + file + " because " + e.getMessage() );
-							}
+							saveObject.invoke_( object, file );
 						}
 					}
 				}
@@ -259,17 +263,12 @@ public class Animator extends JFrame {
 		saveCharacterAs.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				if ( pane.getSelectedComponent() != null ){
-					CharacterStats player = ((SpecialPanel)pane.getSelectedComponent()).getPlayer();
-					if ( player!=null ){
+					BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
+					if ( object != null ){
 						File file = userSelectFile();
 						/* write the text to a file */
 						if ( file != null ){
-							try{
-								player.saveData(file);
-							} catch ( Exception e ){
-								e.printStackTrace();
-								//showError( "Could not save " + file + " because " + e.getMessage() );
-							}
+							saveObject.invoke_( object, file );
 						}
 					}
 				}
@@ -303,33 +302,34 @@ public class Animator extends JFrame {
 		dataPath = f;
 	}
 	
-	public static RelativeFileChooser getNewFileChooser()
-	{
-		return new RelativeFileChooser(_animator, getDataPath());
+	public static RelativeFileChooser getNewFileChooser(){
+		return new RelativeFileChooser( animator, getDataPath() );
 	}
 	
 	public void addNewTab( SpecialPanel panel, String name ){
-		pane.add( name, panel);
+		pane.add( name, panel );
 		
 		pane.setSelectedIndex(pane.getTabCount()-1);
 		
 		CURRENT_TAB = pane.getSelectedIndex();
 		
 		final SpecialPanel tempPanel = (SpecialPanel)pane.getComponentAt(CURRENT_TAB);
+		if ( tempPanel.getTextBox() != null ){
 		
-		panel.getTextBox().getDocument().addDocumentListener(new DocumentListener(){
-			public void changedUpdate(DocumentEvent e){
-				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
-			}
+			panel.getTextBox().getDocument().addDocumentListener(new DocumentListener(){
+				public void changedUpdate(DocumentEvent e){
+					pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+				}
 
-			public void insertUpdate(DocumentEvent e){
-				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
-			}
+				public void insertUpdate(DocumentEvent e){
+					pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+				}
 
-			public void removeUpdate(DocumentEvent e){
-				pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
-			}
-		});
+				public void removeUpdate(DocumentEvent e){
+					pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+				}
+			});
+		}
 	}
 
 	public static void main(String [] args) throws Exception {

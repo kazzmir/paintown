@@ -16,7 +16,7 @@ import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.exception.*;
 import com.rafkind.paintown.*;
 
-public final class Player extends CharacterStats {
+public final class Player{
 	private SwingEngine playerEditor;
 	private SwingEngine contextEditor;
 	private SwingEngine controlEditor;
@@ -53,162 +53,26 @@ public final class Player extends CharacterStats {
 	private JButton editAnimButton;
 	private JButton removeAnimButton;
 	
-	private DrawArea _drawArea;
 	
 	private JButton displayToken;
 	private JButton stopAnim;
 	private JButton playAnim;
+
+	private CharacterStats character;
 	
-	public SpecialPanel getEditor(){	
-		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField,this);
+	public SpecialPanel getEditor(){
+		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField, character );
 	}
 	
+	/*
 	public DrawArea getDrawArea(){
 		return _drawArea;
 	}
+	*/
 	
-	public void saveData(File f) throws LoadException {
-		setPath(f);
-		try{
-			FileOutputStream out = new FileOutputStream( f );
-			PrintStream printer = new PrintStream( out );
-			printer.print( getToken().toString() );
-			printer.print( "\n" );
-			out.close();
-			System.out.println( getToken().toString() );
-		} catch ( Exception e ){
-			throw new LoadException( "Couldn't save!" );
-		}
-	}
-	
-	public void loadData(File f) throws LoadException {
-		TokenReader reader = new TokenReader( f );
-		Token head = reader.nextToken();
-		
-		if ( ! head.getName().equals( "character" ) ){
-			throw new LoadException( "Starting token is not 'character'" );
-		}
-		
-		setPath(f);
-		
-		Token nameToken = head.findToken( "name" );
-		if ( nameToken != null )
-		{
-			nameField.setText(nameToken.readString(0));
-			name = nameToken.readString(0);
-		}
-		
-		Token healthToken = head.findToken( "health" );
-		if ( healthToken != null )
-		{
-			healthSpinner.setValue(new Integer(healthToken.readInt(0)));
-			health = healthToken.readInt(0);
-		}
-		
-		Token jumpToken = head.findToken( "jump-velocity" );
-		if ( jumpToken != null )
-		{
-			jumpSpinner2.setValue(new Double(jumpToken.readDouble(0)));
-			jumpVelocity = jumpToken.readDouble(0);
-		}
-		
-		Token speedToken = head.findToken( "speed" );
-		if ( speedToken != null )
-		{
-			speedSpinner2.setValue(new Double(speedToken.readDouble(0)));
-			speed = speedToken.readDouble(0);
-		}
-		
-		Token shadowToken = head.findToken( "shadow" );
-		if ( shadowToken != null )
-		{
-			shadowSpinner.setValue(new Integer(shadowToken.readInt(0)));
-			shadow = shadowToken.readInt(0);
-		}
-		
-		Token diesoundToken = head.findToken( "die-sound" );
-		if ( diesoundToken != null ){
-			deathSoundField.setText(diesoundToken.readString(0));
-			setDieSound( diesoundToken.readString(0) );
-		}
+	public Player( final Animator animator, final CharacterStats character ){
 
-		Token hitsoundToken = head.findToken( "hit-sound" );
-		if ( hitsoundToken != null ){
-			String path = hitsoundToken.readString( 0 );
-			hitSoundField.setText( path );
-			setHitSound( path );
-		}
-		
-		Token landedToken = head.findToken( "landed" );
-		if ( landedToken != null )
-		{
-			landingSoundField.setText(landedToken.readString(0));
-			landed = landedToken.readString(0);
-		}
-		
-		Token iconToken = head.findToken( "icon" );
-		if ( iconToken != null )
-		{
-			iconField.setText(iconToken.readString(0));
-			icon = iconToken.readString(0);
-		}
-		
-		for ( Iterator it = head.findTokens( "remap" ).iterator(); it.hasNext(); ){
-			Token t = (Token) it.next();
-			origMapField.setText(t.readString( 0 ));
-			origMap = t.readString(0);
-			remap.addElement(t.readString(1));
-		}
-		remapList.setListData(remap);
-		
-		for ( Iterator it = head.findTokens( "anim" ).iterator(); it.hasNext(); ){
-			Token t = (Token) it.next();
-			Animation charanim = new Animation();
-			charanim.loadData(t);
-			animations.addElement(charanim);
-			new Thread( charanim ).start();
-		}
-		animList.setListData(animations);
-		
-	}
-	
-	public Token getToken(){
-		Token temp = new Token("character");
-		temp.addToken(new Token("character"));
-		temp.addToken(new String[]{"name", "\"" + name + "\""});
-		temp.addToken(new String[]{"health", Integer.toString(health)});
-		temp.addToken(new String[]{"jump-velocity", Double.toString(jumpVelocity)});
-		temp.addToken(new String[]{"speed", Double.toString(speed)});
-		temp.addToken(new String[]{"type", "Player"});
-		temp.addToken(new String[]{"shadow", Integer.toString(shadow)});
-		if ( ! getDieSound().equals( "" ) ){
-			temp.addToken(new String[]{"die-sound", getDieSound() });
-		}
-
-		if ( ! getHitSound().equals( "" ) ){
-			temp.addToken(new String[]{"hit-sound", getHitSound() });
-		}
-
-		if(!landed.equals(""))temp.addToken(new String[]{"landed", landed});
-		if(!icon.equals(""))temp.addToken(new String[]{"icon", icon});
-		Iterator mapItor = remap.iterator();
-		while(mapItor.hasNext()){
-			String map = (String)mapItor.next();
-			temp.addToken(new String[]{"remap", origMap, map});
-		}
-		
-		Iterator animItor = animations.iterator();
-		while(animItor.hasNext())
-		{
-			Animation anim = (Animation)animItor.next();
-			temp.addToken(anim.getToken());
-		}
-		
-		return temp;
-	}
-	
-	public Player(Animator anim){
-		super( anim );
+		this.character = character;
 		
 		playerEditor = new SwingEngine( "animator/base.xml" );
 		
@@ -223,7 +87,7 @@ public final class Player extends CharacterStats {
 		
 		canvas = (JPanel) playerEditor.find( "canvas" );
 		
-		_drawArea = new DrawArea();
+		final DrawArea _drawArea = new DrawArea();
 
 		final JLabel scaleNum = (JLabel) playerEditor.find( "scale-num" );
 		scaleNum.setText( "Scale: " + _drawArea.getScale() );
@@ -240,37 +104,39 @@ public final class Player extends CharacterStats {
 		
 		nameField = (JTextField) contextEditor.find( "name" );
 		
-		nameField.setText(name);
+		nameField.setText( character.getName() );
 		
 		nameField.getDocument().addDocumentListener(new DocumentListener(){
 			public void changedUpdate(DocumentEvent e){
-				name = nameField.getText();
+				character.setName( nameField.getText() );
 			}
 
 			public void insertUpdate(DocumentEvent e){
-				name = nameField.getText();
+				character.setName( nameField.getText() );
 			}
 
 			public void removeUpdate(DocumentEvent e){
-				name = nameField.getText();
+				character.setName( nameField.getText() );
 			}
 		});
 		
 		healthSpinner = (JSpinner) contextEditor.find( "health" );
+		healthSpinner.setValue( new Integer( character.getHealth() ) );
 		
 		healthSpinner.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
-				health = ((Integer)healthSpinner.getValue()).intValue();
+				character.setHealth( ((Integer)healthSpinner.getValue()).intValue() );
 			}
 		});
 		
 		jumpSpinner = (JPanel) contextEditor.find( "jump-velocity" );
 		
-		jumpSpinner2 = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
+		jumpSpinner2 = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, 0.1));
+		jumpSpinner2.setValue( new Double( character.getJumpVelocity() ) );
 		
 		jumpSpinner2.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
-				jumpVelocity = ((Double)jumpSpinner2.getValue()).doubleValue();
+				character.setJumpVelocity( ((Double)jumpSpinner2.getValue()).doubleValue() );
 			}
 		});
 		
@@ -278,25 +144,28 @@ public final class Player extends CharacterStats {
 		
 		speedSpinner = (JPanel) contextEditor.find( "speed" );
 		
-		speedSpinner2 = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
+		speedSpinner2 = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, 0.1));
+		speedSpinner2.setValue( new Double( character.getSpeed() ) );
 		
 		speedSpinner.add(speedSpinner2);
 		
 		speedSpinner2.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
-				speed = ((Double)speedSpinner2.getValue()).doubleValue();
+				character.setSpeed( ((Double)speedSpinner2.getValue()).doubleValue() );
 			}
 		});
 		
 		shadowSpinner = (JSpinner) contextEditor.find( "shadow" );
+		shadowSpinner.setValue( new Integer( character.getShadow() ) );
 		
 		shadowSpinner.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
-				shadow = ((Integer)shadowSpinner.getValue()).intValue();
+				character.setShadow( ((Integer)shadowSpinner.getValue()).intValue() );
 			}
 		});
 		
 		deathSoundField = (JTextField) contextEditor.find( "die-sound" );
+		deathSoundField.setText( character.getDieSound() );
 		
 		deathSoundButton = (JButton) contextEditor.find( "change-die-sound" );
 		
@@ -307,12 +176,13 @@ public final class Player extends CharacterStats {
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
 						deathSoundField.setText( path );
-						setDieSound( path );
+						character.setDieSound( path );
 					}
 				}
 			});
 
 		hitSoundField = (JTextField) contextEditor.find( "hit-sound" );
+		hitSoundField.setText( character.getHitSound() );
 		JButton hitSoundButton = (JButton) contextEditor.find( "change-hit-sound" );
 		hitSoundButton.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
@@ -321,12 +191,13 @@ public final class Player extends CharacterStats {
 				if ( ret == RelativeFileChooser.OK ){
 					final String path = chooser.getPath();
 					hitSoundField.setText( path );
-					setHitSound( path );
+					character.setHitSound( path );
 				}
 			}
 		});
 		
 		landingSoundField = (JTextField) contextEditor.find( "land-sound" );
+		landingSoundField.setText( character.getLanded() );
 		
 		landingSoundButton = (JButton) contextEditor.find( "change-land-sound" );
 		
@@ -337,12 +208,13 @@ public final class Player extends CharacterStats {
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
 						landingSoundField.setText( path );
-						landed = path;
+						character.setLanded( path );
 					}
 				}
 			});
 		
 		iconField = (JTextField) contextEditor.find( "icon" );
+		iconField.setText( character.getIcon() );
 		
 		iconButton = (JButton) contextEditor.find( "change-icon" );
 		
@@ -353,12 +225,13 @@ public final class Player extends CharacterStats {
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
 						iconField.setText( path );
-						icon = path;
+						character.setIcon( path );
 					}
 				}
 			});
 			
 		origMapField = (JTextField) contextEditor.find( "original-map" );
+		origMapField.setText( character.getOriginalMap() );
 		
 		origMapButton = (JButton) contextEditor.find( "change-origmap" );
 		
@@ -369,12 +242,13 @@ public final class Player extends CharacterStats {
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
 						origMapField.setText( path );
-						origMap = path;
+						character.setOriginalMap( path );
 					}
 				}
 			});
 		
 		remapList = (JList) contextEditor.find( "remaps" );
+		remapList.setListData( character.getRemaps() );
 		
 		addRemapButton = (JButton) contextEditor.find( "add-remap" );
 		
@@ -384,8 +258,8 @@ public final class Player extends CharacterStats {
 				int ret = chooser.open();
 				if ( ret == RelativeFileChooser.OK ){
 					final String path = chooser.getPath();
-					remap.addElement( path );
-					remapList.setListData(remap);
+					character.addMap( path );
+					remapList.setListData( character.getRemaps() );
 				}
 			}
 		});
@@ -394,19 +268,30 @@ public final class Player extends CharacterStats {
 		
 		removeRemapButton.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				String temp = (String)remap.elementAt(remapList.getSelectedIndex());
-				removeMap(temp);
-				remapList.setListData(remap);
+				String temp = character.getMap( remapList.getSelectedIndex() );
+				character.removeMap( temp );
+				remapList.setListData( character.getRemaps() );
 			}
 		});
+
+		final Lambda1 editAnimation = new Lambda1(){
+			public Object invoke( Object i ){
+				int index = ((Integer) i).intValue();
+				Animation temp = character.getAnimation( index );
+				CharacterAnimation edit = new CharacterAnimation( character, temp );
+				animator.addNewTab( edit.getEditor(), temp.getName());
+				return null;
+			}
+		};
 		
 		animList = (JList) contextEditor.find( "anims");
+		animList.setListData( character.getAnimations() );
 		
 		animList.addMouseListener( new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					int index = animList.locationToIndex(e.getPoint());
-					editAnimation(index);
+					editAnimation.invoke_( new Integer( index ) );
 				}
 			}
 		});
@@ -430,8 +315,14 @@ public final class Player extends CharacterStats {
 		
 		addAnimButton.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				createAnimation();
-				animList.setListData(animations);
+				Animation ani = new Animation();
+				new Thread( ani ).start();
+				character.addAnimation( ani );
+				editAnimation.invoke_( new Integer( character.getAnimations().size() - 1 ) );
+
+				character.updateAnimationListeners();
+
+				animList.setListData( character.getAnimations() );
 				
 				//System.out.println(getToken().toString());
 			}
@@ -441,7 +332,7 @@ public final class Player extends CharacterStats {
 		
 		editAnimButton.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				editAnimation(animList.getSelectedIndex());
+				editAnimation.invoke_( new Integer( animList.getSelectedIndex() ) );
 			}
 		});
 		
@@ -449,8 +340,8 @@ public final class Player extends CharacterStats {
 		
 		removeAnimButton.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
-				removeAnimation(animList.getSelectedIndex());
-				animList.setListData(animations);
+				character.removeAnimation( animList.getSelectedIndex() );
+				animList.setListData( character.getAnimations() );
 			}
 		});
 		
@@ -466,7 +357,7 @@ public final class Player extends CharacterStats {
 				final JTextArea tempText = new JTextArea();
 				final JScrollPane tempPane = new JScrollPane(tempText);
 				tempDiag.add(tempPane);
-				tempText.setText(getToken().toString());
+				tempText.setText( character.getToken().toString() );
 				tempDiag.show();
 			}
 		});
@@ -499,7 +390,7 @@ public final class Player extends CharacterStats {
 		
 		context.add((JComponent)contextEditor.getRootComponent());
 	}
-	
+
 	private void debugSwixml( SwingEngine engine ){
 		Map all = engine.getIdMap();
 		System.out.println( "Debugging swixml" );
