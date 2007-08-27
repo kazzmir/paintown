@@ -32,7 +32,7 @@ public class CharacterStats extends AnimatedObject {
 	}
 
 	public CharacterStats( String name, File f ) throws LoadException {
-		this( name );
+		super( name );
 		loadData( f );
 	}
 	

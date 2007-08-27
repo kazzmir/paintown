@@ -1,9 +1,13 @@
 package com.rafkind.paintown.animator;
 
+import java.io.File;
+
 import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import com.rafkind.paintown.exception.LoadException;
 
 import com.rafkind.paintown.Lambda1;
 
