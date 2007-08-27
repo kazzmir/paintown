@@ -25,13 +25,20 @@
 			gridwidth="1"
 			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTH" />
-	</panel>
-	<panel id="controls" border="MatteBorder(2,2,2,2,667A63)">
-		<gridbagconstraints
-			gridx="1"
-			gridy="1"
-			gridheight="10"
-			fill="GridBagConstraints.BOTH"
-			anchor="GridBagConstraints.WEST" />
+
+		<vbox>
+			<hbox>
+				<label text="Name" />
+				<textfield id="name" />
+			</hbox>
+			<scrollpane>
+				<list id="animations" />
+			</scrollpane>
+			<hbox>
+				<button id="start" text="Play" />
+				<button id="stop" text="Stop" />
+				<button id="edit" text="Edit" />
+			</hbox>
+		</vbox>
 	</panel>
 </panel>

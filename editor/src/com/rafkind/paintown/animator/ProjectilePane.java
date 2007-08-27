@@ -15,6 +15,20 @@ public class ProjectilePane {
 
 		SwingEngine engine = new SwingEngine( "animator/projectile.xml" );
 		
+		final DrawArea drawArea = new DrawArea();
+		JPanel canvas = (JPanel) engine.find( "canvas" );
+		canvas.add( drawArea );
+
+		nameField = (JTextField) engine.find( "name" );
+
+		nameField.setText( projectile.getName() );
+
+		final JButton start = (JButton) engine.find( "start" );
+		final JButton stop = (JButton) engine.find( "stop" );
+		final JButton edit = (JButton) engine.find( "edit" );
+
+		final JList animations = (JList) engine.find( "animations" );
+		
 		mainPanel = (JPanel) engine.getRootComponent();
 	}
 
