@@ -4,7 +4,6 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
 import javax.swing.event.*;
 import java.io.*;
 
@@ -39,8 +38,6 @@ public final class Player{
 	private JButton iconButton;
 
 	private Animation currentAnimation;
-	private Thread currentThread;
-	
 	
 	private JTextField origMapField;
 	private JButton origMapButton;
