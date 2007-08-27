@@ -62,6 +62,8 @@ public class Animator extends JFrame {
 		menuProjectile.add( newProjectile );
 		JMenuItem openProjectile = new JMenuItem( "Open Projectile" );
 		menuProjectile.add( openProjectile );
+		JMenuItem saveProjectile = new JMenuItem( "Save Projectile" );
+		menuProjectile.add( saveProjectile );
 		
 		JMenu menuCharacter = new JMenu( "Character" );
 		menuBar.add( menuCharacter );
@@ -221,7 +223,8 @@ public class Animator extends JFrame {
 				if ( returnVal == JFileChooser.APPROVE_OPTION ){
 					final File f = chooser.getSelectedFile();
 					try{
-						Projectile projectile = new Projectile( "New Projectile", f );
+						Projectile projectile = new Projectile( f.getName(), f );
+						projectile.setPath( f );
 						ProjectilePane pane = new ProjectilePane( Animator.this, projectile );
 						addNewTab( pane.getEditor(), projectile.getName() );
 					} catch ( LoadException le ){
@@ -277,6 +280,26 @@ public class Animator extends JFrame {
 				return null;
 			}
 		};
+
+		saveProjectile.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( pane.getSelectedComponent() != null ){
+					BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
+					if ( object != null ){
+
+						File file = object.getPath();
+						if ( file == null ){
+							file = userSelectFile();
+						}
+
+						/* write the text to a file */
+						if ( file != null ){
+							saveObject.invoke_( object, file );
+						}
+					}
+				}
+			}
+		});
 		
 		saveCharacter.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){

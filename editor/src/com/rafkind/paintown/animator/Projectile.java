@@ -1,6 +1,8 @@
 package com.rafkind.paintown.animator;
 
 import java.io.File;
+import java.io.PrintStream;
+import java.io.FileOutputStream;
 
 import java.util.Iterator;
 
@@ -31,15 +33,25 @@ public class Projectile extends AnimatedObject {
 		loadData( f );
 	}
 	
-	public void saveData() throws LoadException {
-	}
-
 	public Animation getMain(){
 		return main;
 	}
 
 	public Animation getDeath(){
 		return death;
+	}
+	
+	public void saveData() throws LoadException {
+		try{
+			FileOutputStream out = new FileOutputStream( getPath() );
+			PrintStream printer = new PrintStream( out );
+			printer.print( getToken().toString() );
+			printer.print( "\n" );
+			out.close();
+			System.out.println( getToken().toString() );
+		} catch ( Exception e ){
+			throw new LoadException( "Couldn't save!" );
+		}
 	}
 
 	public void loadData( File f ) throws LoadException {
@@ -48,11 +60,6 @@ public class Projectile extends AnimatedObject {
 		
 		if ( ! head.getName().equals( "projectile" ) ){
 			throw new LoadException( "Starting token is not 'projectile'" );
-		}
-
-		Token nameToken = head.findToken( "name" );
-		if ( nameToken != null ){
-			setName( nameToken.readString(0) );
 		}
 
 		for ( Iterator it = head.findTokens( "anim" ).iterator(); it.hasNext(); ){
@@ -73,5 +80,18 @@ public class Projectile extends AnimatedObject {
 				}
 			}
 		}
+	}
+
+	public Token getToken(){
+		Token temp = new Token("projectile");
+		temp.addToken(new Token("projectile"));
+		
+		Iterator animItor = getAnimations().iterator();
+		while(animItor.hasNext()){
+			Animation anim = (Animation)animItor.next();
+			temp.addToken(anim.getToken());
+		}
+		
+		return temp;
 	}
 }

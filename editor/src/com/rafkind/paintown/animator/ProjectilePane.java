@@ -11,7 +11,6 @@ import org.swixml.SwingEngine;
 public class ProjectilePane {
 
 	private JPanel mainPanel;
-	private JTextField nameField;
 	private Projectile projectile;
 	
 	private Animation currentAnimation;
@@ -24,23 +23,6 @@ public class ProjectilePane {
 		final DrawArea drawArea = new DrawArea();
 		JPanel canvas = (JPanel) engine.find( "canvas" );
 		canvas.add( drawArea );
-
-		nameField = (JTextField) engine.find( "name" );
-
-		nameField.setText( projectile.getName() );
-		nameField.getDocument().addDocumentListener(new DocumentListener(){
-			public void changedUpdate(DocumentEvent e){
-				projectile.setName( nameField.getText() );
-			}
-
-			public void insertUpdate(DocumentEvent e){
-				projectile.setName( nameField.getText() );
-			}
-
-			public void removeUpdate(DocumentEvent e){
-				projectile.setName( nameField.getText() );
-			}
-		});
 
 		final JButton start = (JButton) engine.find( "start" );
 		final JButton stop = (JButton) engine.find( "stop" );
@@ -112,6 +94,6 @@ public class ProjectilePane {
 	}
 
 	public SpecialPanel getEditor(){
-		return new SpecialPanel( mainPanel, nameField, projectile );
+		return new SpecialPanel( mainPanel, null, projectile );
 	}
 }

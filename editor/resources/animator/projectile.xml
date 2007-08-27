@@ -27,10 +27,6 @@
 			anchor="GridBagConstraints.NORTH" />
 
 		<vbox>
-			<hbox>
-				<label text="Name" />
-				<textfield id="name" />
-			</hbox>
 			<scrollpane>
 				<list id="animations" />
 			</scrollpane>
