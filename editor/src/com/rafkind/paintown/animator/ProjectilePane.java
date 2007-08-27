@@ -97,6 +97,17 @@ public class ProjectilePane {
 			}
 		});
 
+		final JLabel scaleNum = (JLabel) engine.find( "scale-num" );
+		scaleNum.setText( "Scale: " + drawArea.getScale() );
+		final JSlider scale = (JSlider) engine.find( "scale" );
+		scale.setValue( (int)(drawArea.getScale() * 5.0) );
+		scale.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				drawArea.setScale( scale.getValue() / 5.0 );
+				scaleNum.setText( "Scale: " + drawArea.getScale() );
+			}
+		});
+
 		mainPanel = (JPanel) engine.getRootComponent();
 	}
 
