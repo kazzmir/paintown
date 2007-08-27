@@ -54,6 +54,14 @@ public class Animator extends JFrame {
 		menuProgram.add( closeTab );
 		menuProgram.add( quit );
 		menuBar.add( menuProgram );
+
+		JMenu menuProjectile = new JMenu( "Projectile" );
+		menuBar.add( menuProjectile );
+
+		JMenuItem newProjectile = new JMenuItem( "New Projectile" );
+		menuProjectile.add( newProjectile );
+		JMenuItem openProjectile = new JMenuItem( "Open Projectile" );
+		menuProjectile.add( openProjectile );
 		
 		JMenu menuCharacter = new JMenu( "Character" );
 		menuBar.add( menuCharacter );
@@ -194,6 +202,36 @@ public class Animator extends JFrame {
 				
 				addNewTab( pane.getEditor(), "New Character" );
 			}
+		});
+
+		openProjectile.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				JFileChooser chooser = new JFileChooser( new File( "." ) );	
+				chooser.setFileFilter( new FileFilter(){
+					public boolean accept( File f ){
+						return f.isDirectory() || f.getName().endsWith( ".txt" );
+					}
+
+					public String getDescription(){
+						return "Projectile files";
+					}
+				});
+
+				int returnVal = chooser.showOpenDialog( Animator.this );
+				if ( returnVal == JFileChooser.APPROVE_OPTION ){
+					final File f = chooser.getSelectedFile();
+					try{
+						Projectile projectile = new Projectile( "New Projectile", f );
+						ProjectilePane pane = new ProjectilePane( Animator.this, projectile );
+						addNewTab( pane.getEditor(), projectile.getName() );
+					} catch ( LoadException le ){
+						//showError( "Could not load " + f.getName() );
+						System.out.println( "Could not load " + f.getName() );
+						le.printStackTrace();
+					}
+				}	
+			}
+
 		});
 		
 		loadCharacter.addActionListener( new AbstractAction(){
