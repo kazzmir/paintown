@@ -61,6 +61,11 @@ public class Animation implements Runnable {
 		name = "New Animation";
 	}
 
+	public Animation( String name ){
+		this();
+		this.name = name;
+	}
+
 	public Animation( Vector events ){
 		this();
 		this.events = events;

@@ -197,6 +197,14 @@ public class Animator extends JFrame {
 			}
      		});
 		
+		newProjectile.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event){
+				Projectile projectile = new Projectile( "new projectile" );
+				ProjectilePane pane = new ProjectilePane( Animator.this, projectile );
+				addNewTab( pane.getEditor(), projectile.getName() );
+			}
+		});
+		
 		newCharacter.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				CharacterStats character = new CharacterStats( "New Character" );

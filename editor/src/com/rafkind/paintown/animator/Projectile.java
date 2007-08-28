@@ -19,9 +19,9 @@ public class Projectile extends AnimatedObject {
 	public Projectile( String name ){
 		super( name );
 
-		main = new Animation();
+		main = new Animation( "main" );
 		new Thread( main ).start();
-		death = new Animation();
+		death = new Animation( "death" );
 		new Thread( death ).start();
 
 		addAnimation( main );
