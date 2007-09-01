@@ -821,27 +821,9 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 
 static int readKey( Keyboard & key ){
 	key.wait();
-	/*
-	key.poll();
-	while ( key.keypressed() ){
-		key.poll();
-		Util::rest( 1 );
-	}
 	key.clear();
-	*/
-	key.clear();
-
 	int k = key.readKey();
 	key.wait();
-	/*
-	key.clear();
-	key.poll();
-	while ( key.keypressed() ){
-		key.poll();
-		Util::rest( 1 );
-	}
-	*/
-
 	return k;
 }
 
@@ -975,6 +957,7 @@ static void setupControls( controls * player, int left, int right, int up, int d
 
 static bool titleScreen(){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
+	Bitmap temp( GFX_X, GFX_Y );
 	// Bitmap::Screen->Blit( background );
 	background.BlitToScreen();
 	Music::loadSong( Util::getDataPath() + "/music/aqua.s3m" );
@@ -1310,14 +1293,17 @@ static bool titleScreen(){
 
 		if ( draw ){
 			// Bitmap::Screen->Blit( background );
-			background.BlitToScreen();
+			// background.BlitToScreen();
+			background.Blit( temp );
 			// Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
 			for ( unsigned int i = 0; i < maxOptions; i++ ){
 				int yellow = Bitmap::makeColor( 255, 255, 0 );
 				int white = Bitmap::makeColor( 255, 255, 255 );
 				unsigned int color = i == choose ? yellow : white;
-				font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, options[ i ], 0 );
+				font.printf( 200, (int)(200 + i * fontY * 1.2), color, temp, options[ i ], 0 );
 			}
+
+			temp.BlitToScreen();
 		}
 		
 		while ( Global::speed_counter == 0 ){
