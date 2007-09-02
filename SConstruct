@@ -11,6 +11,9 @@ def useMingw():
     except KeyError:
 	return False
 
+def readExec( program ):
+	return os.popen( program ).readline().replace("\n",'')
+
 def getEnvironment():
     if useMingw():
 	return Environment( ENV = os.environ, tools = ['mingw'] )
@@ -45,16 +48,33 @@ if False:
 	env.Append( LINKFLAGS = '-pg' )
 
 env.Append( LIBS = [ 'aldmb', 'dumb' ] );
+
+staticEnv = env.Copy()
+
 if isWindows():
 	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z' ] )
 	env.Append( CPPDEFINES = 'WINDOWS' )
+	staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z' ] )
+	staticEnv.Append( CPPDEFINES = 'WINDOWS' )
 else:
 	env.Append( LIBS = [ 'pthread' ] )
+	staticEnv.Append( LIBS = [ 'pthread' ] )
 	
 	config = env.Configure()
 	config.env.ParseConfig( 'allegro-config --libs --cflags' )
 	config.env.ParseConfig( 'libpng-config --libs --cflags' )
 	config.env.ParseConfig( 'freetype-config --libs --cflags' )
+	
+	staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
+	staticEnv.ParseConfig( 'freetype-config --cflags' )
+	staticEnv.ParseConfig( 'libpng-config --cflags' )
+
+	## This is a hack. Copy the static libraries to misc and then link
+	## those in, otherwise gcc will try to pick the .so's from /usr/lib
+	png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
+	freetype = staticEnv.Install( 'misc', readExec( 'freetype-config --prefix' ) + '/lib/libfreetype.a' )
+	staticEnv.Append( LIBS = [png,'z','m'] )
+	staticEnv.Append( LIBS = freetype )
 
 	if not config.CheckHeader( 'allegro.h' ):
 		print "You need the header files for Allegro. Get it from http://alleg.sf.net"
@@ -73,10 +93,22 @@ else:
 		Exit( 1 )
 	env = config.Finish()
 	
-SConscript( 'src/SConstruct', build_dir='build', exports = 'env' );
-if isWindows():
-	env.Install( '.', 'build/paintown.exe' )
-	env.Install( '.', 'build/test.exe' )
-else:
-	env.Install( '.', 'build/paintown' )
-	env.Install( '.', 'build/test' )
+use = env
+shared = SConscript( 'src/SConstruct', build_dir='build', exports = 'use' );
+
+use = staticEnv
+static = SConscript( 'src/SConstruct', build_dir='build-static', exports = 'use' )
+
+for i in shared:
+	Default(env.Install( '.', i ))
+
+for i in static:
+	Alias('static',env.InstallAs( i[0].name + '-static', i ))
+
+# if False:
+# 	if isWindows():
+# 		env.Install( '.', 'build/paintown.exe' )
+# 		env.Install( '.', 'build/test.exe' )
+# 	else:
+# 		env.Install( '.', 'build/paintown' )
+# 		env.Install( '.', 'build/test' )

@@ -1,4 +1,4 @@
-Import( 'env' );
+Import( 'use' );
 
 obj_files = []
 
@@ -88,5 +88,8 @@ ebox.cpp
 load_exception.cpp
 """))
 
-env.Program( 'paintown', obj_files + ['xmain.cpp'] );
-env.Program( 'test', obj_files + ['test.cpp'] );
+x = []
+x.append( use.Program( 'paintown', obj_files + ['xmain.cpp'] ) )
+x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
+
+Return( 'x' )
