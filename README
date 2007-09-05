@@ -31,6 +31,9 @@ Compilation:
 
 	The executable will end up in bin/paintown.exe
 
+	To build a statically linked binary give the 'static' target
+	$ scons static
+
 Install:
 	$ ./install.sh -d <data> -b <bin>
 
