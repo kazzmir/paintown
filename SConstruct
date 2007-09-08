@@ -5,6 +5,11 @@ def isWindows():
 	import sys
 	return "win32" in sys.platform
 
+def isOSX():
+	import re
+	import sys
+	return "darwin" in sys.platform
+
 def useMingw():
     try:
 	return "mingw" in ARGUMENTS[ 'env' ]
@@ -49,6 +54,7 @@ if False:
 
 env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 
+
 staticEnv = env.Copy()
 
 if isWindows():
@@ -59,6 +65,11 @@ if isWindows():
 else:
 	env.Append( LIBS = [ 'pthread' ] )
 	staticEnv.Append( LIBS = [ 'pthread' ] )
+
+
+	if isOSX():
+		staticEnv[ 'CXX' ] = 'misc/g++'
+		staticEnv[ 'CC' ] = 'misc/gcc'
 	
 	config = env.Configure()
 	config.env.ParseConfig( 'allegro-config --libs --cflags' )
@@ -92,7 +103,7 @@ else:
 		print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
 		Exit( 1 )
 	env = config.Finish()
-	
+
 use = env
 shared = SConscript( 'src/SConstruct', build_dir='build', exports = 'use' );
 
