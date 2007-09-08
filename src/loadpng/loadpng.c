@@ -251,10 +251,17 @@ static BITMAP *really_load_png(png_structp png_ptr, png_infop info_ptr, RGB *pal
 	for (y = 0; y < bmp->h; y++) {
 	    for (x = 0; x < bmp->w; x++) {
 		c = getpixel(bmp, x, y);
+#ifdef ALLEGRO_BIG_ENDIAN
+		putpixel(bmp, x, y, makeacol32((c>>24) & 0xff,
+					       (c>>16) & 0xff,
+					       (c>>8) & 0xff,
+					       (c) & 0xff));
+#else
 		putpixel(bmp, x, y, makeacol32(c & 0xff,
 					       (c>>8) & 0xff,
 					       (c>>16) & 0xff,
 					       (c>>24) & 0xff));
+#endif
 	    }
 	}
     }
@@ -268,11 +275,29 @@ static BITMAP *really_load_png(png_structp png_ptr, png_infop info_ptr, RGB *pal
 	for (y = 0; y < bmp->h; y++) {
 	    for (x = 0; x < bmp->w; x++) {
 		c = getpixel(bmp, x, y);
+#ifdef ALLEGRO_BIG_ENDIAN
+		putpixel(bmp, x, y, makecol24((c>>16) & 0xff,
+					      (c>>8) & 0xff,
+					      (c) & 0xff));
+#else
 		putpixel(bmp, x, y, makecol24(c & 0xff,
 					      (c>>8) & 0xff,
 					      (c>>16) & 0xff));
+#endif
 	    }
 	}
+    } else if ( bitmap_color_depth(bmp) == 16 ){
+#ifdef ALLEGRO_BIG_ENDIAN
+	int x, y, c;
+	for (y = 0; y < bmp->h; y++) {
+	    for (x = 0; x < bmp->w; x++) {
+		c = getpixel(bmp, x, y);
+		putpixel(bmp, x, y, makecol16( (c>>16) & 0xff,
+					      (c>>8) & 0xff,
+					      (c) & 0xff));
+	    }
+	}
+#endif
     }
 
     if (dest_bpp != bpp)

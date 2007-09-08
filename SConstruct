@@ -54,7 +54,6 @@ if False:
 
 env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 
-
 staticEnv = env.Copy()
 
 if isWindows():
