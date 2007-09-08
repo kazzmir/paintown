@@ -18,7 +18,7 @@ class MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame = *(new bool(false)))=0;
+		virtual void run(bool &endGame)=0;
 		
 		enum state
 		{
