@@ -84,7 +84,7 @@ void Enemy::hurt( int x ){
 }
 	
 void Enemy::drawLifeBar( int x, int y, Bitmap * work ){
-	drawLifeBar( x, y, show_life, work );
+	drawLifeBar( x, y, getDeath() == 0 ? show_life : 0, work );
 }
 
 void Enemy::draw( Bitmap * work, int rel_x ){

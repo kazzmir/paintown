@@ -316,7 +316,13 @@ public:
 	 * Sets the amount of health the object has
 	 */
 	inline void setHealth( int h ){
-		health = MID_( 0, h, getMaxHealth() );
+		if ( h < 0 ){
+			health = 0;
+		} else if ( h > getMaxHealth() ){
+			health = getMaxHealth();
+		} else {
+			health = h;	
+		}
 	}
 
 	virtual inline void setMaxHealth( int h ){

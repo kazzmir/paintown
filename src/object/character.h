@@ -235,6 +235,10 @@ public:
 		death = i;
 	}
 
+	inline const int getDeath() const {
+		return death;
+	}
+
 	inline const double getSpeed() const {
 		return speed;
 	}

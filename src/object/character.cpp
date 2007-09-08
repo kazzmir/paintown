@@ -1041,14 +1041,11 @@ void Character::drawLifeBar( int x, int y, Bitmap * work ){
 	
 /* draw a nifty translucent life bar */
 void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
-	// set_trans_blender( 0, 0, 0, 128 );
 	Bitmap::drawingMode( Bitmap::MODE_TRANS );
 	Bitmap::transBlender( 0, 0, 0, 128 );
-	// drawing_mode( DRAW_MODE_TRANS, NULL, 0, 0 );
 	const int health_height = 7;
 	int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
 	work->rectangleFill( x, y, x + max, y + health_height, Bitmap::makeColor( 192, 32, 32 ) );
-	// set_trans_blender( 0, 0, 0, 64 );
 	Bitmap::transBlender( 0, 0, 0, 64 );
 
 	int colors[ 5 ] = { Bitmap::makeColor( 16, 162, 246 ),
@@ -1069,15 +1066,7 @@ void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
 		}
 	}
 
-	/*
-	for ( int y1 = y; y1 <= y+health_height; y1++ ){
-		work->rectangleFill( x, y, x + health, y1, Bitmap::makeColor( 16, 162, 246 ) );
-	}
-	*/
-	// drawing_mode( DRAW_MODE_SOLID, NULL, 0, 0 );
 	Bitmap::drawingMode( Bitmap::MODE_SOLID );
-
-	// work->rectangleFill( x, y, x + getHealth(), y + 10, Bitmap::makeColor( 255, 255, 255 ) );
 }
 
 const int Character::getShadowX(){
