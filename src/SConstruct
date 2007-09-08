@@ -26,6 +26,8 @@ scene.cpp
 
 addFiles( "loadpng/", Split( """
 loadpng.c
+regpng.c
+savepng.c
 """));
 
 addFiles( "factory/", Split( """

@@ -40,15 +40,15 @@ bool init( int gfx ){
 	cout << "-- BEGIN init --" << endl;
 	cout << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
 	cout<<"Allegro init: "<<allegro_init()<<endl;
-	cout<<"Loadpng init: "<<loadpng_init()<<endl;
 	cout<<"Install timer: "<<install_timer()<<endl;
 	
 	set_volume_per_voice( 0 );
 	cout<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
+	
+	register_png_file_type();
 
 	cout<<"Install keyboard: "<<install_keyboard()<<endl;
 	cout<<"Install mouse: "<<install_mouse()<<endl;
-	loadpng_init();
 	set_color_depth( 16 );
 	cout<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y ) <<endl;
 
