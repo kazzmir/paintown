@@ -29,11 +29,19 @@ class Menu
 		
 		static void setBitmap(Bitmap *bmp);
 		
+		enum style
+		{
+			List=0,
+			Spinner,
+			Radical
+		};
+		
 	protected:
 		// Our current bitmap to draw to, defaults to screen
 		static Bitmap *work;
 		std::string music;
 		MenuOption *background;
+		style display;
 		
 	private:
 		std::vector <MenuOption *> menuOptions;

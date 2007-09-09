@@ -46,9 +46,27 @@ void Menu::load(Token *token)throw( LoadException )
 				
 				backgrounds.push(background);
 			}
+			else if ( *tok == "style" )
+			{
+				// Sets the displayable style of the menu ie spinner scroller etc
+			} 
 			else if ( *tok == "menu" )
 			{
 				// Create a menu option ie options, controller config, adventure, versus, credits, etc
+				
+				//menuOptions.push_back();
+			}
+			else if ( *tok == "key" )
+			{
+				// key edit
+				
+				//menuOptions.push_back();
+			}
+			else if ( *tok == "back" || *tok == "quit" )
+			{
+				// Create a menu option ie options, controller config, adventure, versus, credits, etc
+				
+				//menuOptions.push_back();
 			}
 			else 
 			{
@@ -151,6 +169,8 @@ void Menu::run() throw(ReturnException)
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
 				for(;b!=e;++b)
 				{
+					/* There more than likely won't be any need to draw, but hey maybe sometime in the future
+					   the need might arise */
 					(*b)->draw(work);
 				}
 			}

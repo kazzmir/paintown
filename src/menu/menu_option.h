@@ -1,6 +1,8 @@
 #ifndef _paintown_menu_option_h
 #define _paintown_menu_option_h
 
+#include <string>
+
 class Bitmap;
 
 class MenuOption
@@ -36,6 +38,8 @@ class MenuOption
 	private:
 		state currentState;
 		type mType;
+		std::string text;
+		Bitmap *bmp;
 	public:
 		
 		inline void setState(const state s) { currentState = s; }
@@ -45,6 +49,14 @@ class MenuOption
 		inline void setType(const type t) { mType = t; }
 		
 		inline type getType() const { return mType; }
+		
+		inline void setText(const std::string &t) { text = t; }
+		
+		inline std::string getText() const { return text; }
+		
+		inline void setBitmap(Bitmap *b) { bmp = b; }
+		
+		inline Bitmap *getBitmap() const { return bmp; }
 };
 
 #endif
