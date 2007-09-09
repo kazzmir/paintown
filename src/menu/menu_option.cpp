@@ -1,9 +1,9 @@
 #include "menu/menu_option.h"
 #include "util/bitmap.h"
 
-MenuOption::MenuOption()
+MenuOption::MenuOption(const type t)
 {
-	// Nothing
+	setType(t);
 }
 
 MenuOption::~MenuOption()

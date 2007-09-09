@@ -6,10 +6,6 @@ class Bitmap;
 class MenuOption
 {
 	public:
-		MenuOption();
-	
-		virtual ~MenuOption();
-		
 		// Do logic before run part
 		virtual void logic()=0;
 	
@@ -26,13 +22,29 @@ class MenuOption
 			Deselected,
 			Run
 		};
+		
+		enum type
+		{
+			event = 0,
+			option
+		};
+		
+		MenuOption(const type t = option);
+	
+		virtual ~MenuOption();
+		
 	private:
 		state currentState;
+		type mType;
 	public:
 		
-		inline void setState(state s) { currentState = s; }
+		inline void setState(const state s) { currentState = s; }
 		
-		inline state getState() { return currentState; }
+		inline state getState() const { return currentState; }
+		
+		inline void setType(const type t) { mType = t; }
+		
+		inline type getType() const { return mType; }
 };
 
 #endif
