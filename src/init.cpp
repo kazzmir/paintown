@@ -45,7 +45,7 @@ bool init( int gfx ){
 	set_volume_per_voice( 0 );
 	cout<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
 	
-	register_png_file_type();
+	loadpng_init();
 
 	cout<<"Install keyboard: "<<install_keyboard()<<endl;
 	cout<<"Install mouse: "<<install_mouse()<<endl;
