@@ -122,6 +122,8 @@ void Menu::run() throw(ReturnException)
 				// Keys
 				
 				// Logic
+				background->logic();
+				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
 				for(;b!=e;++b)
@@ -143,6 +145,8 @@ void Menu::run() throw(ReturnException)
 			if ( draw )
 			{
 				// Draw
+				background->draw(work);
+				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
 				for(;b!=e;++b)
@@ -190,6 +194,12 @@ Menu::~Menu()
 	for(;b!=e;++b)
 	{
 		if((*b))delete (*b);
+	}
+	
+	while(!backgrounds.empty())
+	{
+		delete backgrounds.front();
+		backgrounds.pop();
 	}
 }
 
