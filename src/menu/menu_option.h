@@ -40,6 +40,12 @@ class MenuOption
 		type mType;
 		std::string text;
 		Bitmap *bmp;
+		
+		// Stuff we don't need to be concerned with
+		friend class Menu;
+		int ID;
+		inline void setID(int id){ ID = id; }
+		inline int getID(){ return ID; }
 	public:
 		
 		inline void setState(const state s) { currentState = s; }

@@ -18,20 +18,19 @@ static std::string lastPlayed = "";
 
 static std::queue<MenuOption *> backgrounds;
 
-Menu::Menu() : music("")
+Menu::Menu() : music(""), background(0), display(List), posX(0), posY(0), vFont(0)
 {
 }
 
 void Menu::load(Token *token)throw( LoadException )
 {
-	try 
+	if ( *token != "menu" )
+		throw LoadException("Not a menu");
+	
+	while ( token->hasTokens() )
 	{
-		if ( *token != "menu" )
-			throw LoadException("Not a menu");
-
-		while ( token->hasTokens() )
+		try 
 		{
-
 			Token * tok;
 			*token >> tok;
 			if ( *tok == "music" )
@@ -45,10 +44,32 @@ void Menu::load(Token *token)throw( LoadException )
 				//background = new obj() <-- D:
 				
 				backgrounds.push(background);
+			} 
+			else if ( *tok == "position" )
+			{
+				*tok >> posX >> posY;
+			} 
+			else if ( *tok == "font" )
+			{
+				std::string temp;
+				int width;
+				int height;
+				*tok >> temp >> width >> height;
+				vFont = new ftalleg::freetype(temp, width, height);
 			}
 			else if ( *tok == "style" )
 			{
 				// Sets the displayable style of the menu ie spinner scroller etc
+				std::string temp;
+				*tok >> temp;
+				if(temp.compare("list")==0)
+				{
+					display = List;
+				}
+				else if(temp.compare("spinner")==0)
+				{
+					display = Spinner;
+				}
 			} 
 			else if ( *tok == "menu" )
 			{
@@ -73,23 +94,34 @@ void Menu::load(Token *token)throw( LoadException )
 				cout<<"Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
+		} 
+		catch ( const TokenException & ex )
+		{
+			// delete current;
+			string m( "Menu parse error: " );
+			m += ex.getReason();
+			throw LoadException( m );
+		} 
+		catch ( const LoadException & ex )
+		{
+			// delete current;
+			throw ex;
 		}
-
-	} 
-	catch ( const TokenException & ex )
-	{
-		// delete current;
-		string m( "Menu parse error: " );
-		m += ex.getReason();
-		throw LoadException( m );
-	} 
-	catch ( const LoadException & ex )
-	{
-		// delete current;
-		throw ex;
 	}
 	
 	if(backgrounds.empty())throw LoadException("There should be at least one background in the entire menu!");
+	
+	if(!vFont)
+	{
+		std::string f = Util::getDataPath() + "/fonts/arial.ttf";
+		vFont = new ftalleg::freetype(f,32,32);
+	}
+	
+	// Finally lets assign list order numering
+	for(unsigned int i = 0; i < menuOptions.size();++i)
+	{
+		menuOptions[i]->setID(i);
+	}
 	
 }
 
@@ -172,6 +204,20 @@ void Menu::run() throw(ReturnException)
 					/* There more than likely won't be any need to draw, but hey maybe sometime in the future
 					   the need might arise */
 					(*b)->draw(work);
+					
+					/* Here is where we got our main list, could be tricky ::) */
+					switch(display)
+					{
+						case Spinner:
+						{
+							break;
+						}
+						case List:
+						default:
+						{
+							break;
+						}
+					}
 				}
 			}
 	
@@ -221,5 +267,6 @@ Menu::~Menu()
 		delete backgrounds.front();
 		backgrounds.pop();
 	}
+	if(vFont)delete vFont;
 }
 

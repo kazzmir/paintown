@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "util/ftalleg.h"
 #include "util/load_exception.h"
 #include "return_exception.h"
 
@@ -32,8 +33,7 @@ class Menu
 		enum style
 		{
 			List=0,
-			Spinner,
-			Radical
+			Spinner
 		};
 		
 	protected:
@@ -42,6 +42,9 @@ class Menu
 		std::string music;
 		MenuOption *background;
 		style display;
+		int posX;
+		int posY;
+		ftalleg::freetype *vFont;
 		
 	private:
 		std::vector <MenuOption *> menuOptions;
