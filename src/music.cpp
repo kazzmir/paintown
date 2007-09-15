@@ -352,6 +352,16 @@ void Music::resume(){
 }
 */
 
+static const char * typeToExtension( int i ){
+	switch ( i ){
+		case 0 : return ".xm";
+		case 1 : return ".s3m";
+		case 2 : return ".it";
+		case 3 : return ".mod";
+		default : return "";
+	}
+}
+
 bool Music::internal_loadSong( const char * path ){
 
 	// cout << "Trying to load '" << path << "'" << endl;
@@ -397,7 +407,7 @@ bool Music::internal_loadSong( const char * path ){
 			}
 		}
 		if ( music_file != NULL ){
-			cout << "Loaded " << path << " type " << i << endl;
+			cout << "Loaded " << path << " type " << typeToExtension( i ) << "( " << i << " )" << endl;
 			break;
 		}
 	}
