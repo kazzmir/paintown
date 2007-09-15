@@ -332,6 +332,7 @@ Music::~Music(){
 		}
 
 		alive = false;
+		playing = false;
 	}
 	UNLOCK;
 
