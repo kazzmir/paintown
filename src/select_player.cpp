@@ -78,10 +78,15 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 
 	int changeRemapKey = Keyboard::Key_TAB;
 
-	key.setDelay( Keyboard::Key_RIGHT, 300 );
-	key.setDelay( Keyboard::Key_UP, 300 );
-	key.setDelay( Keyboard::Key_DOWN, 300 );
-	key.setDelay( Keyboard::Key_LEFT, 300 );
+	const int keyRight = Configuration::config( 0 ).getRight();
+	const int keyUp = Configuration::config( 0 ).getUp();
+	const int keyDown = Configuration::config( 0 ).getDown();
+	const int keyLeft = Configuration::config( 0 ).getLeft();
+
+	key.setDelay( keyRight, 300 );
+	key.setDelay( keyUp, 300 );
+	key.setDelay( keyDown, 300 );
+	key.setDelay( keyLeft, 300 );
 	key.setDelay( changeRemapKey, 200 );
 
 	/* preview box for each character */
@@ -126,19 +131,19 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 					}
 				}
 
-				if ( key[ Keyboard::Key_LEFT ] ){
+				if ( key[ keyLeft ] ){
 					current = current - 1;
 				}
 
-				if ( key[ Keyboard::Key_RIGHT ] ){
+				if ( key[ keyRight ] ){
 					current = current + 1;
 				}
 
-				if ( key[ Keyboard::Key_UP ] ){
+				if ( key[ keyUp ] ){
 					current = current - boxesPerLine;
 				}
 
-				if ( key[ Keyboard::Key_DOWN ] ){
+				if ( key[ keyDown ] ){
 					current = current + boxesPerLine;
 				}
 
