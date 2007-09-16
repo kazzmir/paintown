@@ -37,6 +37,7 @@ static const string dataPath( const string & str ){
 
 Character::Character( int alliance ):
 ObjectAttack( alliance ),
+shadow( 0 ),
 icon( NULL ),
 x_velocity( 0 ),
 y_velocity( 0 ),
