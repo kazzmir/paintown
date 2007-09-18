@@ -235,9 +235,16 @@ src/util/ebox.cpp
 src/util/load_exception.cpp)
 
 set(LOADPNG_SRC
-src/loadpng/loadpng.c)
+src/loadpng/loadpng.c
+src/loadpng/regpng.c
+src/loadpng/savepng.c)
 
-set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC} ${LOADPNG_SRC})
+set(MENU_SRC
+src/menu/menu.cpp
+src/menu/menu_option.cpp
+)
+
+set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC} ${LOADPNG_SRC} ${MENU_SRC})
 
 # -------------------------------------------------------
 # Include directory
