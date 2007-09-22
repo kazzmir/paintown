@@ -55,7 +55,7 @@ public class MaskedImage extends BufferedImage {
 	}
 
 	public static MaskedImage load( String s, HashMap remap ) throws IOException {
-		String full = s + "-" + String.valueOf( remap.hashCode() );
+		String full = s + "\n" + String.valueOf( remap.hashCode() );
 		synchronized( images ){
 			if ( images.containsKey( full ) ){
 				return (MaskedImage) images.get( full );

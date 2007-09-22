@@ -118,10 +118,58 @@ public final class Player{
 		});
 
 		final JSpinner remap = (JSpinner) contextEditor.find( "remap" );
-		remap.setValue( new Integer( -1 ) );
+		
+		class RemapSpinnerModel implements SpinnerModel {
+			private java.util.List listeners;
+			int index;
+
+			public RemapSpinnerModel(){
+				listeners = new ArrayList();
+				index = 0;
+			}
+
+			public void addChangeListener( ChangeListener l ){
+				listeners.add( l );
+			}
+
+			public Object getNextValue(){
+				if ( index < character.getMaxMaps() ){
+					return new Integer( index + 1 );
+				}
+				return new Integer( index );
+			}
+
+			public Object getPreviousValue(){
+				if ( index > 0 ){
+					return new Integer( index - 1 );
+				}
+				return new Integer( index );
+			}
+
+			public Object getValue(){
+				return new Integer( index );
+			}
+
+			public void removeChangeListener( ChangeListener l ){
+				listeners.remove( l );
+			}
+
+			public void setValue( Object value ){
+				index = ((Integer) value).intValue();
+				ChangeEvent event = new ChangeEvent( this );
+				for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+					ChangeListener change = (ChangeListener) it.next();
+					change.stateChanged( event );
+				}
+			}
+		}
+
+		remap.setModel( new RemapSpinnerModel() );
+
+		remap.setValue( new Integer( 0 ) );
 		remap.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
-				character.setMap( ((Integer) remap.getValue()).intValue() );
+				character.setMap( ((Integer) remap.getValue()).intValue() - 1 );
 			}
 		});
 		

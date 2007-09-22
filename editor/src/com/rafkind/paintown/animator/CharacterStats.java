@@ -160,7 +160,13 @@ public class CharacterStats extends AnimatedObject {
 
 	public void setMap( int map ){
 		if ( map == -1 ){
-			Lambda1.foreach_( new ArrayList( getAnimations() ), null );
+			Lambda1.foreach_( new ArrayList( getAnimations() ), new Lambda1(){
+					public Object invoke( Object a ){
+						Animation ani = (Animation) a;
+						ani.setMap( null );
+						return null;
+					}
+			});
 		} else {
 			try{
 				final HashMap hash = createRemap( map );
