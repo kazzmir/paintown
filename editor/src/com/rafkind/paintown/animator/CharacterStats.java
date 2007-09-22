@@ -111,6 +111,10 @@ public class CharacterStats extends AnimatedObject {
 	public Vector getRemaps(){
 		return remap;
 	}
+
+	public int getMaxMaps(){
+		return getRemaps().size();
+	}
 	
 	public void addMap(String map){
 		remap.addElement(map);
@@ -135,8 +139,44 @@ public class CharacterStats extends AnimatedObject {
 		}
 		return false;
 	}
-	
-	
+
+	private HashMap createRemap( int index ) throws IOException {
+		HashMap map = new HashMap();
+		if ( index >= 0 && index < getMaxMaps() ){
+			MaskedImage original = MaskedImage.load( Animator.getDataPath() + "/" + getOriginalMap() );
+			MaskedImage alt = MaskedImage.load( Animator.getDataPath() + "/" + getMap( index ) );
+			for ( int x = 0; x < original.getWidth(); x++ ){
+				for ( int y = 0; y < original.getHeight(); y++ ){
+					int pixel1 = original.getRGB( x, y );
+					int pixel2 = alt.getRGB( x, y );
+					if ( pixel1 != pixel2 ){
+						map.put( new Integer( pixel1 ), new Integer( pixel2 ) );
+					}
+				}
+			}
+		}
+		return map;
+	}
+
+	public void setMap( int map ){
+		if ( map == -1 ){
+			Lambda1.foreach_( new ArrayList( getAnimations() ), null );
+		} else {
+			try{
+				final HashMap hash = createRemap( map );
+				final Lambda1 remap = new Lambda1(){
+					public Object invoke( Object a ){
+						Animation ani = (Animation) a;
+						ani.setMap( hash );
+						return null;
+					}
+				};
+				Lambda1.foreach_( new ArrayList( getAnimations() ), remap );
+			} catch ( IOException e ){
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public Token getToken(){
 		Token temp = new Token("character");

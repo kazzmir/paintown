@@ -60,6 +60,11 @@
 		</hbox>
 		<glue size="1" />
 		<hbox>
+			<label text="Map" />
+			<spinner id="remap" />
+			<glue />
+		</hbox>
+		<hbox>
 			<label text="Original Map: " />
 			<textfield id="original-map" />
 			<button text="Change" id="change-origmap" />

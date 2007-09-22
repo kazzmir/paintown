@@ -5,7 +5,9 @@ import java.io.PrintStream;
 import java.io.FileOutputStream;
 
 import java.util.Iterator;
+import java.util.ArrayList;
 
+import com.rafkind.paintown.Lambda1;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.TokenReader;
 
@@ -35,6 +37,16 @@ public class Projectile extends AnimatedObject {
 	
 	public Animation getMain(){
 		return main;
+	}
+
+	public void setMap( int map ){
+		Lambda1.foreach_( new ArrayList( getAnimations() ), new Lambda1(){
+			public Object invoke( Object a ){
+				Animation ani = (Animation) a;
+				ani.setMap( null );
+				return null;
+			}
+		});
 	}
 
 	public Animation getDeath(){

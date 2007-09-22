@@ -29,7 +29,14 @@ public class FrameEvent implements AnimationEvent {
 	public void interact( Animation animation ){
 		String path = Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame;
 		try{
+			/*
 			animation.setImage( MaskedImage.load( path ) );
+			*/
+			if ( animation.getMap() != null ){
+				animation.setImage( MaskedImage.load( path, animation.getMap() ) );
+			} else {
+				animation.setImage( MaskedImage.load( path ) );
+			}
 			animation.delay();
 		} catch ( Exception e ){
 			e.printStackTrace();

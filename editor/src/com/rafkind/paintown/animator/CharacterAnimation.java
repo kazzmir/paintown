@@ -69,8 +69,8 @@ public class CharacterAnimation{
 		});
 		
 		final JComboBox typeCombo = (JComboBox) contextEditor.find( "type" );
-		typeCombo.addItem(new String("none"));
-		typeCombo.addItem(new String("attack"));
+		typeCombo.addItem("none");
+		typeCombo.addItem("attack");
 		typeCombo.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				animation.setType( (String) typeCombo.getSelectedItem() );
@@ -81,23 +81,23 @@ public class CharacterAnimation{
 		final JList keyList = (JList) contextEditor.find( "keys");
 		final JComboBox keySelect = (JComboBox) contextEditor.find( "key-select" );
 
-		keySelect.addItem(new String("key_idle"));
-		keySelect.addItem(new String("key_up"));
-		keySelect.addItem(new String("key_down"));
-		keySelect.addItem(new String("key_back"));
-		keySelect.addItem(new String("key_forward"));
-		keySelect.addItem(new String("key_upperback"));
-		keySelect.addItem(new String("key_upperforward"));
-		keySelect.addItem(new String("key_downback"));
-		keySelect.addItem(new String("key_downforward"));
-		keySelect.addItem(new String("key_jump"));
-		keySelect.addItem(new String("key_block"));
-		keySelect.addItem(new String("key_attack1"));
-		keySelect.addItem(new String("key_attack2"));
-		keySelect.addItem(new String("key_attack3"));
-		keySelect.addItem(new String("key_attack4"));
-		keySelect.addItem(new String("key_attack5"));
-		keySelect.addItem(new String("key_attack6"));
+		keySelect.addItem("key_idle");
+		keySelect.addItem("key_up");
+		keySelect.addItem("key_down");
+		keySelect.addItem("key_back");
+		keySelect.addItem("key_forward");
+		keySelect.addItem("key_upperback");
+		keySelect.addItem("key_upperforward");
+		keySelect.addItem("key_downback");
+		keySelect.addItem("key_downforward");
+		keySelect.addItem("key_jump");
+		keySelect.addItem("key_block");
+		keySelect.addItem("key_attack1");
+		keySelect.addItem("key_attack2");
+		keySelect.addItem("key_attack3");
+		keySelect.addItem("key_attack4");
+		keySelect.addItem("key_attack5");
+		keySelect.addItem("key_attack6");
 
 		keyList.setListData( animation.getKeys() );
 

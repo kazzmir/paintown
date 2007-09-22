@@ -11,6 +11,13 @@ public abstract class Lambda1{
 			lambda.invoke( iterator.next() );
 		}
 	}
+	
+	public static void foreach_( List list, Lambda1 lambda ){
+		try{
+			foreach( list, lambda );
+		} catch ( Exception e ){
+		}
+	}
 
 	public Object invoke_( Object x ){
 		try{

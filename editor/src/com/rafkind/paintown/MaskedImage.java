@@ -14,13 +14,27 @@ public class MaskedImage extends BufferedImage {
 		super( w, h, BufferedImage.TYPE_INT_ARGB );
 	}
 
+	public MaskedImage( BufferedImage image ){
+		this( image.getWidth(), image.getHeight() );
+		for ( int x = 0; x < image.getWidth(); x++ ){
+			for ( int y = 0; y < image.getHeight(); y++ ){
+				int pixel = image.getRGB( x, y );
+				this.setRGB( x, y, pixel );
+			}
+		}
+	}
+
 	public static void clearCache(){
-		images.clear();
+		synchronized( images ){
+			images.clear();
+		}
 	}
 
 	public static MaskedImage load( String s ) throws IOException {
-		if ( images.get( s ) != null ){
-			return (MaskedImage) images.get( s );
+		synchronized( images ){
+			if ( images.get( s ) != null ){
+				return (MaskedImage) images.get( s );
+			}
 		}
 		BufferedImage temp = ImageIO.read( new File( s ) );
 		MaskedImage image = new MaskedImage( temp.getWidth(), temp.getHeight() );
@@ -34,7 +48,35 @@ public class MaskedImage extends BufferedImage {
 				image.setRGB( x, y, pixel );
 			}
 		}
-		images.put( s, image );
+		synchronized( images ){
+			images.put( s, image );
+		}
+		return image;
+	}
+
+	public static MaskedImage load( String s, HashMap remap ) throws IOException {
+		String full = s + "-" + String.valueOf( remap.hashCode() );
+		synchronized( images ){
+			if ( images.containsKey( full ) ){
+				return (MaskedImage) images.get( full );
+			}
+		}
+
+		MaskedImage image = new MaskedImage( load( s ) );
+		for ( int x = 0; x < image.getWidth(); x++ ){
+			for ( int y = 0; y < image.getHeight(); y++ ){
+				int pixel = image.getRGB( x, y );
+				if ( remap.containsKey( new Integer( pixel ) ) ){
+					Integer mapped = (Integer) remap.get( new Integer( pixel ) );
+					image.setRGB( x, y, mapped.intValue() );
+				}
+			}
+		}
+
+		synchronized( images ){
+			images.put( full, image );
+		}
+
 		return image;
 	}
 }

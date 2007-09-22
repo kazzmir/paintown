@@ -46,6 +46,8 @@ public abstract class AnimatedObject extends BasicObject {
 		}
 	}
 
+	abstract public void setMap( int map );
+
 	public void removeAnimation(Animation anim){
 		removeAnimation( animations.indexOf( anim ) );
 	}

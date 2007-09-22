@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.HashMap;
 
 import com.rafkind.paintown.animator.events.*;
 
@@ -43,6 +44,7 @@ public class Animation implements Runnable {
 	private List listeners;
 	
 	private Vector keys;
+	private HashMap remapData;
 
 	public Animation(){
 		drawables = new ArrayList();
@@ -113,6 +115,14 @@ public class Animation implements Runnable {
 	public void addKey( String key ){
 		keys.add( key );
 		updateAll();
+	}
+
+	public void setMap( HashMap remap ){
+		this.remapData = remap;
+	}
+
+	public HashMap getMap(){
+		return this.remapData;
 	}
 
 	public void setSequence( String s ){

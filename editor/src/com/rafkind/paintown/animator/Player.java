@@ -116,6 +116,14 @@ public final class Player{
 				character.setName( nameField.getText() );
 			}
 		});
+
+		final JSpinner remap = (JSpinner) contextEditor.find( "remap" );
+		remap.setValue( new Integer( -1 ) );
+		remap.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
+				character.setMap( ((Integer) remap.getValue()).intValue() );
+			}
+		});
 		
 		healthSpinner = (JSpinner) contextEditor.find( "health" );
 		healthSpinner.setValue( new Integer( character.getHealth() ) );
