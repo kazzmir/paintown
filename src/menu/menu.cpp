@@ -18,7 +18,7 @@ static std::string lastPlayed = "";
 
 static std::queue<MenuOption *> backgrounds;
 
-Menu::Menu() : music(""), background(0), display(List), posX(0), posY(0), vFont(0)
+Menu::Menu() : music(""), background(0), posX(0), posY(0), vFont(0)
 {
 }
 
@@ -57,20 +57,6 @@ void Menu::load(Token *token)throw( LoadException )
 				*tok >> temp >> width >> height;
 				vFont = new ftalleg::freetype(temp, width, height);
 			}
-			else if ( *tok == "style" )
-			{
-				// Sets the displayable style of the menu ie spinner scroller etc
-				std::string temp;
-				*tok >> temp;
-				if(temp.compare("list")==0)
-				{
-					display = List;
-				}
-				else if(temp.compare("spinner")==0)
-				{
-					display = Spinner;
-				}
-			} 
 			else if ( *tok == "menu" )
 			{
 				// Create a menu option ie options, controller config, adventure, versus, credits, etc
@@ -204,20 +190,6 @@ void Menu::run() throw(ReturnException)
 					/* There more than likely won't be any need to draw, but hey maybe sometime in the future
 					   the need might arise */
 					(*b)->draw(work);
-					
-					/* Here is where we got our main list, could be tricky ::) */
-					switch(display)
-					{
-						case Spinner:
-						{
-							break;
-						}
-						case List:
-						default:
-						{
-							break;
-						}
-					}
 				}
 			}
 	

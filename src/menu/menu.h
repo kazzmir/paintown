@@ -30,18 +30,11 @@ class Menu
 		
 		static void setBitmap(Bitmap *bmp);
 		
-		enum style
-		{
-			List=0,
-			Spinner
-		};
-		
 	protected:
 		// Our current bitmap to draw to, defaults to screen
 		static Bitmap *work;
 		std::string music;
 		MenuOption *background;
-		style display;
 		int posX;
 		int posY;
 		ftalleg::freetype *vFont;
