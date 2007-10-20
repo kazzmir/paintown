@@ -49,13 +49,16 @@ else:
 # env.Append( CCFLAGS = '-m32' )
 # env.Append( LINKFLAGS = '-m32' )
 
-env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ "." ] );
+env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ "." ] )
+
+dumb = SConscript( "src/dumb/SConscript", build_dir = 'build/dumb' )
 
 if False:
 	env.Append( CCFLAGS = '-pg' )
 	env.Append( LINKFLAGS = '-pg' )
 
-env.Append( LIBS = [ 'aldmb', 'dumb' ] );
+# env.Append( LIBS = [ 'aldmb', 'dumb' ] );
+env.Append( LIBS = dumb )
 
 staticEnv = env.Copy()
 
@@ -92,12 +95,13 @@ else:
 	if not config.CheckHeader( 'allegro.h' ):
 		print "You need the header files for Allegro. Get it from http://alleg.sf.net"
 		Exit( 1 )
-	if not config.CheckHeader( 'dumb.h' ):
-		print "You need to install DUMB. Get it from http://dumb.sf.net"
-		Exit( 1 )
-	if not config.CheckHeader( 'aldumb.h' ):
-		print "You need to configure DUMB for Allegro support. Reinstall DUMB"
-		Exit( 1 )
+	if False:
+		if not config.CheckHeader( 'dumb.h' ):
+			print "You need to install DUMB. Get it from http://dumb.sf.net"
+			Exit( 1 )
+		if not config.CheckHeader( 'aldumb.h' ):
+			print "You need to configure DUMB for Allegro support. Reinstall DUMB"
+			Exit( 1 )
 	if not config.CheckHeader( 'ft2build.h' ):
 		print "You need freetype. Install X11"
 		Exit( 1 )
