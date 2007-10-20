@@ -46,6 +46,9 @@ if debug:
 else:
 	cflags.append( '-O2' )
 
+# env.Append( CCFLAGS = '-m32' )
+# env.Append( LINKFLAGS = '-m32' )
+
 env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ "." ] );
 
 if False:
