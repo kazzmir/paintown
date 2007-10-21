@@ -1,6 +1,7 @@
 #ifndef _global_things_h
 #define _global_things_h
 
+#include <ostream>
 
 /*
 extern const int MIN_WORLD_Z;
@@ -21,6 +22,10 @@ bool globalDebug();
 void invertDebug();
 void disableDebug();
 void enableDebug();
+
+void setDebug( int i );
+
+std::ostream & debug( int i ); 
 
 }
 

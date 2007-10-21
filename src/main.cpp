@@ -46,10 +46,12 @@
 /* Global effect for copying */
 // static Object * bang = NULL;
 
+/*
 #ifndef debug
 #define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
 // #define debug
 #endif
+*/
 	
 static bool show_loading_screen = true;
 
@@ -1420,6 +1422,8 @@ int paintown_main( int argc, char ** argv ){
 	showOptions();
 	const char * WINDOWED_ARG = "-w";
 	const char * DATAPATH_ARG = "-d";
+
+	Global::setDebug( 5 );
 	
 	for ( int q = 1; q < argc; q++ ){
 		if ( isArg( argv[ q ], WINDOWED_ARG ) ){
@@ -1431,7 +1435,7 @@ int paintown_main( int argc, char ** argv ){
 			}
 		}
 	}
-	
+
 	TimeDifference diff;
 	diff.startTime();
 	if ( ! init( gfx ) ){
