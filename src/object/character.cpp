@@ -1129,7 +1129,7 @@ void Character::draw( Bitmap * work, int rel_x ){
 		}
 
 
-		if ( Global::globalDebug() ){
+		if ( Global::getDebug() > 5 ){
 			int x = (int)(getX() - rel_x);
 			int y = (int) getRY();
 			int x2 = x + animation_current->getRange();

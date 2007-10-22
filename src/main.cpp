@@ -6,6 +6,7 @@
 
 #include "main.h"
 #include "init.h"
+#include <sstream>
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -196,7 +197,7 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 				if ( gameSpeed < SPEED_INC ){
 					gameSpeed = SPEED_INC;
 				}
-				cout << "Game speed " << gameSpeed << endl;
+				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
 			}
 
 			if ( key[ Keyboard::Key_F1 ] ){
@@ -210,16 +211,12 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 
 			if ( key[ Keyboard::Key_PLUS_PAD ] ){
 				gameSpeed += SPEED_INC;
-				cout << "Game speed " << gameSpeed << endl;
+				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
 			}
 
 			if ( key[ Keyboard::Key_ENTER_PAD ] ){
 				gameSpeed = 1;
-				cout << "Game speed " << gameSpeed << endl;
-			}
-
-			if ( key[ Keyboard::Key_F2 ] ){
-				Global::invertDebug();
+				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
 			}
 
 			if ( key[ Keyboard::Key_F4 ] ){
@@ -227,7 +224,7 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 					world.reloadLevel();
 					draw = true;
 				} catch ( const LoadException & le ){
-					cout << "Could not reload world: " << le.getReason() << endl;
+					Global::debug( 0 ) << "Could not reload world: " << le.getReason() << endl;
 				}
 			}
 
@@ -288,7 +285,7 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 
 			if ( key[ Keyboard::Key_F12 ] ){
 				string file = findNextFile( "scr.bmp" );
-				cout << "Saved screenshot to " << file << endl;
+				Global::debug( 2 ) << "Saved screenshot to " << file << endl;
 				work.save( file );
 			}
 
@@ -330,7 +327,7 @@ static vector< string > readLevels( const string & filename ){
 
 		return levels;
 	} catch ( const TokenException & lex ){
-		cout << "Could not load " << filename << ". Reason: " << lex.getReason() << endl;
+		Global::debug( 0 ) << "Could not load " << filename << ". Reason: " << lex.getReason() << endl;
 		return vector< string >();
 	}
 }
@@ -370,7 +367,7 @@ static vector< Background > readBackgrounds( const string & path ){
 		}
 
 	} catch ( const TokenException & ex ){
-		cout << "Could not load " + path + "/bgs.txt because " << ex.getReason() << endl;
+		Global::debug( 0 ) << "Could not load " + path + "/bgs.txt because " << ex.getReason() << endl;
 	}
 
 	/*
@@ -465,7 +462,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 				if ( gameSpeed < SPEED_INC ){
 					gameSpeed = SPEED_INC;
 				}
-				cout << "Game speed " << gameSpeed << endl;
+				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
 			}
 
 			if ( key[ Keyboard::Key_ESC ] ){
@@ -479,16 +476,12 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 
 			if ( key[ Keyboard::Key_PLUS_PAD ] ){
 				gameSpeed += SPEED_INC;
-				cout << "Game speed " << gameSpeed << endl;
+				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
 			}
 
 			if ( key[ Keyboard::Key_ENTER_PAD ] ){
 				gameSpeed = 1;
-				cout << "Game speed " << gameSpeed << endl;
-			}
-
-			if ( key[ Keyboard::Key_F1 ] ){
-				Global::invertDebug();
+				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
 			}
 
 			Global::speed_counter = 0;
@@ -664,7 +657,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
 
 			if ( key[ Keyboard::Key_F12 ] ){
-				cout << "Saved screenshot to scr.bmp" << endl;
+				Global::debug( 2 ) << "Saved screenshot to scr.bmp" << endl;
 				work.save( "scr.bmp" );
 			}
 
@@ -714,7 +707,7 @@ static void realGame( Object * player, const string & levelFile ){
 			showHelp = 0;
 
 		} catch ( const LoadException & le ){
-			cout << "Could not load " << *it << " because " << le.getReason() << endl;
+			Global::debug( 0 ) << "Could not load " << *it << " because " << le.getReason() << endl;
 			/* if the level couldn't be loaded turn off
 			 * the loading screen
 			 */
@@ -1336,7 +1329,7 @@ static bool titleScreen(){
 					((Player *)player)->setLives( startingLives );
 					realGame( player, level );
 				} catch ( const LoadException & le ){
-					cout << "Could not load player: " << le.getReason() << endl;
+					Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 				} catch ( const ReturnException & r ){
 					key.wait();
 				}
@@ -1384,7 +1377,7 @@ static bool titleScreen(){
 			}
 			key.wait();
 		} catch ( const LoadException & le ){
-			cout << "Could not load player: " << le.getReason() << endl;
+			Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 		} catch ( const ReturnException & r ){
 			key.wait();
 		}
@@ -1411,6 +1404,7 @@ static void showOptions(){
 	cout << "Paintown by Jon Rafkind" << endl;
 	cout << "-w : Fullscreen mode" << endl;
 	cout << "-d <path> : Use data path of <path>. Default is ./data/" << endl;
+	cout << "-l # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
 	cout << endl;
 }
 
@@ -1422,8 +1416,9 @@ int paintown_main( int argc, char ** argv ){
 	showOptions();
 	const char * WINDOWED_ARG = "-w";
 	const char * DATAPATH_ARG = "-d";
+	const char * DEBUG_ARG = "-l";
 
-	Global::setDebug( 5 );
+	Global::setDebug( 0 );
 	
 	for ( int q = 1; q < argc; q++ ){
 		if ( isArg( argv[ q ], WINDOWED_ARG ) ){
@@ -1433,13 +1428,21 @@ int paintown_main( int argc, char ** argv ){
 			if ( q < argc ){
 				Util::setDataPath( argv[ q ] );
 			}
+		} else if ( isArg( argv[ q ], DEBUG_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				istringstream i( argv[ q ] );
+				int f;
+				i >> f;
+				Global::setDebug( f );
+			}
 		}
 	}
 
 	TimeDifference diff;
 	diff.startTime();
 	if ( ! init( gfx ) ){
-		cout << "Could not initialize system" << endl;
+		Global::debug( 0 ) << "Could not initialize system" << endl;
 	}
 	diff.endTime();
 	diff.printTime( "Init:" );
@@ -1455,7 +1458,7 @@ int paintown_main( int argc, char ** argv ){
 
 	while ( titleScreen() != false );
 
-	cout<<"Exiting normally"<<endl;
+	Global::debug( 0 ) << "Exiting normally" <<endl;
 
 	return 0;
 }

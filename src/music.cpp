@@ -1,7 +1,8 @@
 #include "music.h"
+#include "dumb/include/aldumb.h"
 #include <string>
-#include <aldumb.h>
 #include <iostream>
+#include "globals.h"
 // #include "defs.h"
 
 #ifdef WINDOWS
@@ -65,7 +66,7 @@ static bool isAlive(){
 static void * playMusic( void * _music ){
 	Music * music = (Music *) _music;
 
-	cout << "Playing music" << endl;
+	Global::debug( 1 ) << "Playing music" << endl;
 
 	/*
 	unsigned int tick = 0;
@@ -223,7 +224,7 @@ void Music::loadSong( const vector< string > & Songs ){
 	*/
 
 	for ( vector< string >::iterator it = songs.begin(); it != songs.end(); it++ ){
-		cout << "Trying to load song " << *it << endl;
+		Global::debug( 1 ) << "Trying to load song " << *it << endl;
 		if ( loadSong( *it ) ){
 			break;
 		}
@@ -336,7 +337,7 @@ Music::~Music(){
 	}
 	UNLOCK;
 
-	cout << "Waiting for music thread to die" << endl;
+	Global::debug( 1 ) << "Waiting for music thread to die" << endl;
 	pthread_join( musicThread, NULL );
 
 }
@@ -408,7 +409,7 @@ bool Music::internal_loadSong( const char * path ){
 			}
 		}
 		if ( music_file != NULL ){
-			cout << "Loaded " << path << " type " << typeToExtension( i ) << "( " << i << " )" << endl;
+			Global::debug( 0 ) << "Loaded " << path << " type " << typeToExtension( i ) << "( " << i << " )" << endl;
 			break;
 		}
 	}
@@ -427,7 +428,7 @@ bool Music::internal_loadSong( const char * path ){
 
 		playing = true;
 	} else {
-		cout<<"Could not load "<<path<<endl;
+		Global::debug( 0 )<<"Could not load "<<path<<endl;
 		return false;
 	}
 	return true;

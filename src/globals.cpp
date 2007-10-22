@@ -17,7 +17,7 @@ const int MIN_RELATIVE_DISTANCE = 10;
 
 const char * NAME_FONT = "CENTURYGOTHIC_PCX";
 
-static bool global_debug = false;
+// static bool global_debug = false;
 static int global_debug_level = 0;
 
 class nullstreambuf_t: public std::streambuf {
@@ -47,22 +47,6 @@ void Global::setDebug( int i ){
 	global_debug_level = i;
 }
 
-bool Global::globalDebug(){
-	return global_debug;
+const int Global::getDebug(){
+	return global_debug_level;
 }
-
-void Global::invertDebug(){
-	global_debug = ! global_debug;
-	cout << "Debug set to " << global_debug << endl;
-}
-
-void Global::disableDebug(){
-	global_debug = false;
-	cout << "Debugging disabled" << endl;
-}
-
-void Global::enableDebug(){
-	global_debug = true;
-	cout << "Debugging enabled" << endl;
-}
-

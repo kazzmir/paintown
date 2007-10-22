@@ -15,10 +15,6 @@
 
 using namespace std;
 
-#ifndef debug
-#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
-#endif
-
 static const string dataPath( const string & str ){
 	return Util::getDataPath() + str;
 }
@@ -131,7 +127,7 @@ foregroundParallax( 1.2 ){
 					order.push_back( x );
 				}
 			} else {
-				cout<<"Unhandled scene attribute: "<<endl;
+				Global::debug( 0 ) <<"Unhandled scene attribute: "<<endl;
 				tok->print(" ");
 			}
 		}
@@ -157,7 +153,7 @@ foregroundParallax( 1.2 ){
 
 	// delete current;
 
-	cout<<"Loaded level "<< filename << endl;
+	Global::debug( 1 ) <<"Loaded level "<< filename << endl;
 
 	calculateLength();
 
@@ -165,7 +161,7 @@ foregroundParallax( 1.2 ){
 	for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
 		blength += (*it)->getLength();
 	}
-	cout<<"Scene length = "<<scene_length<<". Length used = "<<blength<<endl;
+	Global::debug( 1 ) <<"Scene length = "<<scene_length<<". Length used = "<<blength<<endl;
 
 }
 
@@ -219,9 +215,7 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 			current_block = level_blocks.front();
 			level_blocks.pop_front();
 			blockNumber += 1;
-			if ( Global::globalDebug() ){
-				cout << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
-			}
+			Global::debug( 3 ) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
 		}
 	}
 

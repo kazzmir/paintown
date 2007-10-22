@@ -23,11 +23,6 @@ static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 using namespace std;
 
-#ifndef debug
-#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
-// #define debug
-#endif
-
 #define DEFAULT_LIVES 4
 
 Player::Player( const char * filename ) throw( LoadException ): 
@@ -678,9 +673,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 				for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
 					int & cur = (*mit).second;
 					Animation * blah = (*mit).first;
-					if ( Global::globalDebug() ){
-						cout<< blah->getName() << "? ";
-					}
+					Global::debug( 3 ) << blah->getName() << "? ";
 					// if ( cur > max || blah->getPreviousSequence() == current_name ){
 					// cout<<"Testing "<<blah->getName()<<endl;
 					if ( blah->hasSequence( current_name ) ){
@@ -692,9 +685,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 						max = cur;
 					}
 				}
-				if ( Global::globalDebug() ){
-					cout<<endl;
-				}
+				Global::debug( 3 ) << endl;
 			}
 		}
 		// cout<< final->getName() << endl;

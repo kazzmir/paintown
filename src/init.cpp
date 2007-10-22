@@ -3,12 +3,13 @@
 #include <winalleg.h>
 #endif
 
+#include "globals.h"
 #include "init.h"
 #include <pthread.h>
 
-#include <iostream>
-#include <dumb.h>
-#include <aldumb.h>
+#include <ostream>
+#include "dumb/include/dumb.h"
+#include "dumb/include/aldumb.h"
 #include "loadpng/loadpng.h"
 #include "util/bitmap.h"
 
@@ -37,34 +38,35 @@ END_OF_FUNCTION( inc_second_counter );
 
 bool init( int gfx ){
 
-	cout << "-- BEGIN init --" << endl;
-	cout << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
-	cout<<"Allegro init: "<<allegro_init()<<endl;
-	cout<<"Install timer: "<<install_timer()<<endl;
+	ostream & out = Global::debug( 0 );
+	out << "-- BEGIN init --" << endl;
+	out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
+	out <<"Allegro init: "<<allegro_init()<<endl;
+	out <<"Install timer: "<<install_timer()<<endl;
 	
 	set_volume_per_voice( 0 );
-	cout<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
+	out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
 	
 	loadpng_init();
 
-	cout<<"Install keyboard: "<<install_keyboard()<<endl;
-	cout<<"Install mouse: "<<install_mouse()<<endl;
+	out<<"Install keyboard: "<<install_keyboard()<<endl;
+	out<<"Install mouse: "<<install_mouse()<<endl;
 	set_color_depth( 16 );
-	cout<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y ) <<endl;
+	out<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y ) <<endl;
 
 	LOCK_VARIABLE( speed_counter );
 	LOCK_VARIABLE( second_counter );
 	LOCK_FUNCTION( (void *)inc_speed_counter );
 	LOCK_FUNCTION( (void *)inc_second_counter );
-	cout<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
-	cout<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
+	out<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
+	out<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
 	srand( time( NULL ) );
 	set_display_switch_mode( SWITCH_BACKGROUND );
 	
 	atexit( &dumb_exit );
 	dumb_register_packfiles();
 
-	cout<<"-- END init --"<<endl;
+	out<<"-- END init --"<<endl;
 
 	/*
 	Bitmap::Screen = new Bitmap( screen );

@@ -13,11 +13,6 @@
 
 using namespace std;
 
-#ifndef debug
-#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
-// #define debug
-#endif
-
 ObjectFactory * ObjectFactory::factory = NULL;
 Object * ObjectFactory::createObject( BlockObject * block ){
 	if ( factory == NULL ){
@@ -82,12 +77,12 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 			try{
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
-					cout << "Cached " << block->getPath() << endl;
+					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
 				}
 				
 				return makeItem( (Item *) cached[ block->getPath() ]->copy(), block );
 			} catch ( const LoadException & le ){
-				cout << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
+				Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
 			}
 			break;
 		}
@@ -96,17 +91,17 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 			try{
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Enemy( block->getPath() );
-					cout << "Cached " << block->getPath() << endl;
+					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
 				}
 
 				return makeEnemy( (Enemy *) cached[ block->getPath() ]->copy(), block );
 			} catch ( const LoadException & le ){
-				cout << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
+				Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
 			}
 			break;
 		}
 		default : {
-			cout<<__FILE__<<": No type given for: "<<block->getPath()<<endl;
+			Global::debug( 0 ) <<__FILE__<<": No type given for: "<<block->getPath()<<endl;
 			return NULL;
 
 			break;

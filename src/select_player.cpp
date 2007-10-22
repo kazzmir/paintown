@@ -3,6 +3,7 @@
 #include "util/load_exception.h"
 #include "util/funcs.h"
 #include "object/player.h"
+#include "globals.h"
 #include "object/display_character.h"
 #include "init.h"
 #include "select_player.h"
@@ -35,13 +36,13 @@ static PlayerVector loadPlayers( const char * path ){
 	std::sort( files.begin(), files.end() );
 	for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
 		string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
-		cout << "Checking " << file << endl;
+		Global::debug( 1 ) << "Checking " << file << endl;
 		if ( Util::exists( file ) ){
-			cout << "Loading " << file << endl;
+			Global::debug( 0 ) << "Loading " << file << endl;
 			try{
 				players.push_back( playerInfo( new DisplayCharacter( file ), file ) );
 			} catch ( const LoadException & le ){
-				cout << "Could not load " << file << " because " << le.getReason() << endl;
+				Global::debug( 0 ) << "Could not load " << file << " because " << le.getReason() << endl;
 			}
 		}
 	}
@@ -261,7 +262,7 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 		delete it->guy;
 	}
 
-	cout << "Selected " << players[ current ].path << ". Loading.." << endl;
+	Global::debug( 1 ) << "Selected " << players[ current ].path << ". Loading.." << endl;
 	Player * player = new Player( players[ current ].path );
 	player->setInvincible( invincibile );
 	player->setMap( remap );
@@ -699,14 +700,14 @@ vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnExc
 
 	vector<Object *> tempVec;
 	
-	cout << "Selected " << players[ current1 ].path << ". Loading.." << endl;
+	Global::debug( 1 ) << "Selected " << players[ current1 ].path << ". Loading.." << endl;
 	Player * temp1 = new Player( players[ current1 ].path );
 	temp1->setMap( remap1[current1] );
 	temp1->testAnimation();
 	temp1->setInvincible( invincible );
 	tempVec.push_back(temp1);
 	
-	cout << "Selected " << players[ current2 ].path << ". Loading.." << endl;
+	Global::debug( 1 ) << "Selected " << players[ current2 ].path << ". Loading.." << endl;
 	Player * temp2 = new Player( players[ current2 ].path );
 	temp2->setMap( remap2[current2] );
 	temp2->testAnimation();

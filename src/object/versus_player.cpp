@@ -102,9 +102,7 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 				for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
 					int & cur = (*mit).second;
 					Animation * blah = (*mit).first;
-					if ( Global::globalDebug() ){
-						cout<< blah->getName() << "? ";
-					}
+					Global::debug( 3 ) << blah->getName() << "? ";
 					if ( blah->hasSequence( current_name ) ){
 					}
 					if ( cur > max || blah->hasSequence( current_name ) ){
@@ -112,9 +110,7 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 						max = cur;
 					}
 				}
-				if ( Global::globalDebug() ){
-					cout<<endl;
-				}
+				Global::debug( 3 ) << endl;
 			}
 		}
 		

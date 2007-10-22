@@ -3,11 +3,6 @@
 
 #include <ostream>
 
-/*
-extern const int MIN_WORLD_Z;
-extern const int MAX_WORLD_Z;
-*/
-
 extern const int ALLIANCE_NONE;
 extern const int ALLIANCE_PLAYER;
 extern const int ALLIANCE_ENEMY;
@@ -18,13 +13,8 @@ extern const char * NAME_FONT;
 
 namespace Global{
 
-bool globalDebug();
-void invertDebug();
-void disableDebug();
-void enableDebug();
-
 void setDebug( int i );
-
+const int getDebug();
 std::ostream & debug( int i ); 
 
 }

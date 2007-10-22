@@ -36,10 +36,6 @@
 
 using namespace std;
 
-#ifndef debug
-#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
-#endif
-
 static const string dataPath( const string & str ){
 	return Util::getDataPath() + str;
 }
@@ -364,9 +360,7 @@ contact( NULL ){
 
 	string xls = "Animation ";
 	xls += getName();
-	if ( Global::globalDebug() ){
-		diff.printTime( xls );
-	}
+	Global::debug( 4 ) << diff.printTime( xls ) << endl;
 
 	if ( frames.empty() ){
 		cout<<"No frames given"<<endl;
@@ -749,7 +743,7 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
 	// cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
 
 	// work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
-	if ( Global::globalDebug() ){
+	if ( Global::getDebug() > 5 ){
 		work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
 		work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
 		// current_collide->draw( *work, x-w, y-h );
@@ -815,7 +809,7 @@ void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work
 
 	// work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
 	// work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
-	if ( Global::globalDebug() ){
+	if ( Global::getDebug() > 5 ){
 		work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
 		work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
 		// current_collide->draw( *work, x-w, y-h, true );
