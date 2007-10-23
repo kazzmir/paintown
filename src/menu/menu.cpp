@@ -10,6 +10,9 @@
 #include "init.h"
 #include "music.h"
 
+// Options :O
+#include "menu/option_background.h"
+
 #include <queue>
 
 Bitmap *Menu::work = Bitmap::Screen;
@@ -18,7 +21,24 @@ static std::string lastPlayed = "";
 
 static std::queue<MenuOption *> backgrounds;
 
-Menu::Menu() : music(""), background(0), posX(0), posY(0), vFont(0)
+RectArea::RectArea() : x(0), y(0), width(0), height(0)
+{
+}
+
+RectArea::RectArea(int x, int y, int w, int h)
+{
+	this->x  = x;
+	this->y  = y;
+	this->width  = width;
+	this->height  = height;
+}
+
+bool RectArea::empty()
+{
+	return (x==0 && y==0 && width==0 && height==0);
+}
+
+Menu::Menu() : music(""), background(0), position(), vFont(0)
 {
 }
 
@@ -41,13 +61,13 @@ void Menu::load(Token *token)throw( LoadException )
 			else if ( *tok == "background" )
 			{
 				// Create new background and push onto the stack
-				//background = new obj() <-- D:
+				background = new OptionBg(tok);
 				
 				backgrounds.push(background);
 			} 
 			else if ( *tok == "position" )
 			{
-				*tok >> posX >> posY;
+				*tok >> position.x >> position.y >> position.width >> position.height;
 			} 
 			else if ( *tok == "font" )
 			{
@@ -60,12 +80,6 @@ void Menu::load(Token *token)throw( LoadException )
 			else if ( *tok == "menu" )
 			{
 				// Create a menu option ie options, controller config, adventure, versus, credits, etc
-				
-				//menuOptions.push_back();
-			}
-			else if ( *tok == "key" )
-			{
-				// key edit
 				
 				//menuOptions.push_back();
 			}
@@ -96,6 +110,7 @@ void Menu::load(Token *token)throw( LoadException )
 	}
 	
 	if(backgrounds.empty())throw LoadException("There should be at least one background in the entire menu!");
+	if(position.empty())throw LoadException("The position for the menu list must be set!");
 	
 	if(!vFont)
 	{

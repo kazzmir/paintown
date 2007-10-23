@@ -12,6 +12,18 @@ class Bitmap;
 class MenuOption;
 class Token;
 
+class RectArea
+{
+	public:
+		RectArea();
+		RectArea(int x, int y, int w, int h); bool empty();
+		int x;
+		int y;
+		int width; // Really not necessary but is there in case of later need
+		int height;
+};
+		
+
 class Menu
 {
 	public:
@@ -31,12 +43,15 @@ class Menu
 		static void setBitmap(Bitmap *bmp);
 		
 	protected:
-		// Our current bitmap to draw to, defaults to screen
+		//! Our current bitmap to draw to, defaults to screen
 		static Bitmap *work;
+		//! Current music
 		std::string music;
+		//! background of current
 		MenuOption *background;
-		int posX;
-		int posY;
+		//! Area for placement of option list
+		RectArea position;
+		//! Font for this menu
 		ftalleg::freetype *vFont;
 		
 	private:
