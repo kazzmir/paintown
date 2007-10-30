@@ -12,6 +12,8 @@
 
 // Options :O
 #include "menu/option_background.h"
+#include "menu/option_menu.h"
+#include "menu/option_key.h"
 
 #include <queue>
 
@@ -38,7 +40,7 @@ bool RectArea::empty()
 	return (x==0 && y==0 && width==0 && height==0);
 }
 
-Menu::Menu() : music(""), background(0), position(), vFont(0)
+Menu::Menu() : music(""), background(0), position(), vFont(0), _name("")
 {
 }
 
@@ -53,7 +55,12 @@ void Menu::load(Token *token)throw( LoadException )
 		{
 			Token * tok;
 			*token >> tok;
-			if ( *tok == "music" )
+			if ( *tok == "name" )
+			{
+				// Set menu name
+				*tok >> _name;
+			}
+			else if ( *tok == "music" )
 			{
 				// Set music
 				*tok >> music;
@@ -67,6 +74,7 @@ void Menu::load(Token *token)throw( LoadException )
 			} 
 			else if ( *tok == "position" )
 			{
+				// This handles the placement of the menu list
 				*tok >> position.x >> position.y >> position.width >> position.height;
 			} 
 			else if ( *tok == "font" )
@@ -79,9 +87,15 @@ void Menu::load(Token *token)throw( LoadException )
 			}
 			else if ( *tok == "menu" )
 			{
-				// Create a menu option ie options, controller config, adventure, versus, credits, etc
-				
-				//menuOptions.push_back();
+				// Create a sub menu
+				OptionMenu *temp = new OptionMenu(tok);
+				menuOptions.push_back(temp);
+			}
+			else if ( *tok == "key" )
+			{
+				// Reconfigure a given key
+				OptionKey *temp = new OptionKey(tok);
+				menuOptions.push_back(temp);
 			}
 			else if ( *tok == "back" || *tok == "quit" )
 			{
@@ -109,6 +123,7 @@ void Menu::load(Token *token)throw( LoadException )
 		}
 	}
 	
+	if(_name.empty())throw LoadException("No name set, the menu should have a name!");
 	if(backgrounds.empty())throw LoadException("There should be at least one background in the entire menu!");
 	if(position.empty())throw LoadException("The position for the menu list must be set!");
 	
@@ -232,6 +247,12 @@ void Menu::run() throw(ReturnException)
 			}
 		}
 	}
+}
+
+
+const std::string &Menu::getName()
+{
+	return _name;
 }
 
 void Menu::setBitmap(Bitmap *bmp)

@@ -40,6 +40,10 @@ class Menu
 		/*! do logic, draw whatever */
 		virtual void run()throw( ReturnException );
 		
+		/*! get menu name */
+		const std::string &getName();
+		
+		/*! set the bitmap */
 		static void setBitmap(Bitmap *bmp);
 		
 	protected:
@@ -57,6 +61,7 @@ class Menu
 	private:
 		std::vector <MenuOption *> menuOptions;
 		std::vector <MenuOption *>::iterator selectedOption;
+		std::string _name;
 		
 };
 #endif

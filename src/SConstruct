@@ -94,6 +94,8 @@ addFiles( "menu/", Split("""
 menu.cpp
 menu_option.cpp
 option_background.cpp
+option_menu.cpp
+option_key.cpp
 """))
 
 x = []

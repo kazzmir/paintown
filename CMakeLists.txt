@@ -243,6 +243,8 @@ set(MENU_SRC
 src/menu/menu.cpp
 src/menu/menu_option.cpp
 src/menu/option_background.cpp
+src/menu/option_menu.cpp
+src/menu/option_key.cpp
 )
 
 set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC} ${LOADPNG_SRC} ${MENU_SRC})
