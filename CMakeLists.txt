@@ -150,8 +150,7 @@ endif(MSVC)
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(DUMB_LIBRARY -laldmb -ldumb)
-set(REQUIRED_LIBS  ${DUMB_LIBRARY} ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIB})
+set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIB})
 
 # -------------------------------------------------------
 # Create the necessary header file for the library
@@ -160,6 +159,7 @@ set(REQUIRED_LIBS  ${DUMB_LIBRARY} ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INI
 # -------------------------------------------------------
 # Source directories containing all the necessary .cpp files
 # -------------------------------------------------------
+
 set(BASE_SRC 
 src/configuration.cpp
 src/globals.cpp
@@ -259,8 +259,14 @@ include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${
 # -------------------------------------------------------
 add_library (main_module ${ALL_SRC})
 
+#Dumb
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
+
 add_executable (paintown src/xmain.cpp)
-target_link_libraries(paintown main_module ${REQUIRED_LIBS})
+target_link_libraries(paintown main_module dumb_module ${REQUIRED_LIBS})
 
 add_executable (test src/test.cpp)
-target_link_libraries(test main_module ${REQUIRED_LIBS})
+target_link_libraries(test main_module dumb_module ${REQUIRED_LIBS})
+
+add_executable (menutest src/menu/menutest.cpp)
+target_link_libraries(menutest main_module dumb_module ${REQUIRED_LIBS})
