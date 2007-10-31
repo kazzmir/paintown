@@ -2,7 +2,7 @@
 #include "menu/menu.h"
 #include "util/token.h"
 
-OptionMenu::OptionMenu(Token *token) : MenuOption(event), _menu(0)
+OptionMenu::OptionMenu(Token *token)throw( LoadException ) : MenuOption(event), _menu(0)
 {
 	_menu = new Menu();
 	_menu->load(token);

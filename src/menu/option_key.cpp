@@ -1,7 +1,7 @@
 #include "menu/option_key.h"
 #include "util/token.h"
 
-OptionKey::OptionKey(Token *token) : MenuOption(event)
+OptionKey::OptionKey(Token *token)throw( LoadException ) : MenuOption(event)
 {
 }
 

@@ -1,7 +1,7 @@
 #include "menu/option_adventure.h"
 #include "util/token.h"
 
-OptionAdventure::OptionAdventure(Token *token) : MenuOption(event)
+OptionAdventure::OptionAdventure(Token *token)throw( LoadException ) : MenuOption(event)
 {
 }
 

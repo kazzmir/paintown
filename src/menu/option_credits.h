@@ -2,6 +2,7 @@
 #define _paintown_option_credits_h
 
 #include "menu_option.h"
+#include "util/load_exception.h"
 class Token;
 
 /*! Handles key reconfiguration */
@@ -18,7 +19,7 @@ class OptionCredits : public MenuOption
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame);
 		
-		OptionCredits(Token *token);
+		OptionCredits(Token *token)throw( LoadException );
 	
 		virtual ~OptionCredits();
 };

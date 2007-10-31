@@ -1,7 +1,7 @@
 #include "menu/option_versus.h"
 #include "util/token.h"
 
-OptionVersus::OptionVersus(Token *token) : MenuOption(event)
+OptionVersus::OptionVersus(Token *token)throw( LoadException ) : MenuOption(event)
 {
 }
 

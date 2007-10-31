@@ -2,6 +2,7 @@
 #define _paintown_option_menu_h
 
 #include "menu_option.h"
+#include "util/load_exception.h"
 class Token;
 class Menu;
 
@@ -19,7 +20,7 @@ class OptionMenu : public MenuOption
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame);
 		
-		OptionMenu(Token *token);
+		OptionMenu(Token *token)throw( LoadException );
 	
 		virtual ~OptionMenu();
 		

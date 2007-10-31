@@ -1,7 +1,7 @@
 #include "menu/option_credits.h"
 #include "util/token.h"
 
-OptionCredits::OptionCredits(Token *token) : MenuOption(event)
+OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(event)
 {
 }
 

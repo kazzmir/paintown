@@ -45,7 +45,7 @@ bool RectArea::empty()
 
 Menu::Menu() : music(""), background(0), position(), vFont(0), _name("")
 {
-	work = Bitmap::Screen;
+	if(!work)work = Bitmap::Screen;
 }
 
 void Menu::load(Token *token)throw( LoadException )
