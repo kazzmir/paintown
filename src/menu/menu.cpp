@@ -11,9 +11,12 @@
 #include "music.h"
 
 // Options :O
+#include "menu/option_adventure.h"
 #include "menu/option_background.h"
-#include "menu/option_menu.h"
+#include "menu/option_credits.h"
 #include "menu/option_key.h"
+#include "menu/option_menu.h"
+#include "menu/option_versus.h"
 
 #include <queue>
 
@@ -97,6 +100,24 @@ void Menu::load(Token *token)throw( LoadException )
 				OptionKey *temp = new OptionKey(tok);
 				menuOptions.push_back(temp);
 			}
+			else if ( *tok == "adventure" )
+			{
+				// Adventure mode
+				OptionAdventure *temp = new OptionAdventure(tok);
+				menuOptions.push_back(temp);
+			}
+			else if ( *tok == "versus" )
+			{
+				// Versus mode
+				OptionVersus *temp = new OptionVersus(tok);
+				menuOptions.push_back(temp);
+			}
+			else if ( *tok == "credits" )
+			{
+				// Credits mode
+				OptionCredits *temp = new OptionCredits(tok);
+				menuOptions.push_back(temp);
+			}
 			else if ( *tok == "back" || *tok == "quit" )
 			{
 				// Create a menu option ie options, controller config, adventure, versus, credits, etc
@@ -171,10 +192,10 @@ void Menu::run() throw(ReturnException)
 		
 		if(music != "" && music != lastPlayed)
 		{
-			Music::pause();
-			Music::fadeIn( 0.3 );
-			Music::loadSong( Util::getDataPath() + music );
-			Music::play();
+			//Music::pause();
+			//Music::fadeIn( 0.3 );
+			//Music::loadSong( Util::getDataPath() + music );
+			//Music::play();
 			lastPlayed = music;
 		}
 		while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
@@ -229,9 +250,9 @@ void Menu::run() throw(ReturnException)
 				key.poll();
 			}
 	
-			done |= key[ Keyboard::Key_ESC ];
+			endGame = done |= key[ Keyboard::Key_ESC ];
 		}
-		
+		if(endGame)continue;
 		// do we got an option to run, lets do it
 		if((*selectedOption)->getState() == MenuOption::Run)
 		{

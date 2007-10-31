@@ -93,9 +93,12 @@ load_exception.cpp
 addFiles( "menu/", Split("""
 menu.cpp
 menu_option.cpp
+option_adventure.cpp
 option_background.cpp
-option_menu.cpp
+option_credits.cpp
 option_key.cpp
+option_menu.cpp
+option_versus.cpp
 """))
 
 x = []
