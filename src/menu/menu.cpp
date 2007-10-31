@@ -20,9 +20,9 @@
 
 #include <queue>
 
-Bitmap *Menu::work = Bitmap::Screen;
+Bitmap *Menu::work = 0;
 
-static std::string lastPlayed = "";
+static std::queue<std::string> lastPlayed;
 
 static std::queue<MenuOption *> backgrounds;
 
@@ -45,6 +45,7 @@ bool RectArea::empty()
 
 Menu::Menu() : music(""), background(0), position(), vFont(0), _name("")
 {
+	work = Bitmap::Screen;
 }
 
 void Menu::load(Token *token)throw( LoadException )
@@ -65,8 +66,10 @@ void Menu::load(Token *token)throw( LoadException )
 			}
 			else if ( *tok == "music" )
 			{
-				// Set music
+				// Set music and push onto the stack
 				*tok >> music;
+				
+				lastPlayed.push(music);
 			} 
 			else if ( *tok == "background" )
 			{
@@ -190,13 +193,12 @@ void Menu::run() throw(ReturnException)
 		Global::second_counter = 0;
 		int game_time = 100;
 		
-		if(music != "" && music != lastPlayed)
+		if(music != "" && music != lastPlayed.front())
 		{
 			//Music::pause();
 			//Music::fadeIn( 0.3 );
 			//Music::loadSong( Util::getDataPath() + music );
 			//Music::play();
-			lastPlayed = music;
 		}
 		while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 	
@@ -252,19 +254,31 @@ void Menu::run() throw(ReturnException)
 	
 			endGame = done |= key[ Keyboard::Key_ESC ];
 		}
-		if(endGame)continue;
+		
 		// do we got an option to run, lets do it
 		if((*selectedOption)->getState() == MenuOption::Run)
 		{
 			(*selectedOption)->run(endGame);
 			// Reset it's state
 			(*selectedOption)->setState(MenuOption::Selected);
+		}
+		if(endGame)
+		{
 			//  pop out any backgrounds pushed onto the stack reseting it to the old one if applicable
 			if(backgrounds.size() >= 2)
 			{
 				delete backgrounds.front();
 				backgrounds.pop();
 				background = backgrounds.front();
+			}
+			if(!lastPlayed.empty())
+			{
+				backgrounds.pop();
+				//Music::pause();
+				//Music::fadeIn( 0.3 );
+				//Music::loadSong( Util::getDataPath() + backgrounds.front() );
+				//Music::play();
+				
 			}
 		}
 	}
