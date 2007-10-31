@@ -45,7 +45,7 @@ int main(){
 	Menu game;
 	try
 	{
-		game.load("mainconfig.txt");
+		game.load( Util::getDataPath() + "menu/main.txt");
 	}
 	catch ( const TokenException & ex )
 	{
