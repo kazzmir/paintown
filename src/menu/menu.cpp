@@ -26,6 +26,9 @@ static std::queue<std::string> lastPlayed;
 
 static std::queue<MenuOption *> backgrounds;
 
+const int yellow = Bitmap::makeColor( 255, 255, 0 );
+const int white = Bitmap::makeColor( 255, 255, 255 );
+
 RectArea::RectArea() : x(0), y(0), width(0), height(0)
 {
 }
@@ -43,9 +46,9 @@ bool RectArea::empty()
 	return (x==0 && y==0 && width==0 && height==0);
 }
 
-Menu::Menu() : music(""), background(0), position(), vFont(0), _name("")
+Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(32), fontHeight(32), _name("")
 {
-	if(!work)work = Bitmap::Screen;
+	if(!work)work = new Bitmap(Bitmap::Screen->getWidth(), Bitmap::Screen->getHeight()); //Bitmap::Screen;
 }
 
 void Menu::load(Token *token)throw( LoadException )
@@ -86,10 +89,9 @@ void Menu::load(Token *token)throw( LoadException )
 			else if ( *tok == "font" )
 			{
 				std::string temp;
-				int width;
-				int height;
-				*tok >> temp >> width >> height;
-				vFont = new ftalleg::freetype(temp, width, height);
+				*tok >> temp >> fontWidth >> fontHeight;
+				vFont = new FreeTypeFont(temp);
+				vFont->setSize(fontWidth,fontHeight);
 			}
 			else if ( *tok == "menu" )
 			{
@@ -154,7 +156,8 @@ void Menu::load(Token *token)throw( LoadException )
 	if(!vFont)
 	{
 		std::string f = Util::getDataPath() + "/fonts/arial.ttf";
-		vFont = new ftalleg::freetype(f,32,32);
+		vFont = new FreeTypeFont(f);
+		vFont->setSize(fontWidth,fontHeight);
 	}
 	
 	// Finally lets assign list order numering
@@ -180,12 +183,18 @@ void Menu::run() throw(ReturnException)
 	
 	Keyboard key;
 	
+	key.setDelay( Keyboard::Key_UP, 300 );
+	key.setDelay( Keyboard::Key_DOWN, 300 );
+	key.setDelay( Keyboard::Key_LEFT, 50 );
+	key.setDelay( Keyboard::Key_RIGHT, 50 );
+	
 	Bitmap screen_buffer( 320, 240 );
 	bool done = false;
 	bool endGame = false;
 	
 	if(menuOptions.empty())throw ReturnException();
 	selectedOption = menuOptions.begin();
+	menuOptions.front()->setState(MenuOption::Selected);
 	
 	while( !endGame )
 	{
@@ -209,6 +218,20 @@ void Menu::run() throw(ReturnException)
 			{
 				draw = true;
 				// Keys
+				
+				if ( key[ Keyboard::Key_UP ] )
+				{
+					(*selectedOption)->setState(MenuOption::Deselected);
+					if(selectedOption > menuOptions.begin())selectedOption--;
+					(*selectedOption)->setState(MenuOption::Selected);	
+				}
+
+				if ( key[ Keyboard::Key_DOWN ] )
+				{
+					(*selectedOption)->setState(MenuOption::Deselected);
+					if(selectedOption < menuOptions.begin()+menuOptions.size()-1)selectedOption++;
+					(*selectedOption)->setState(MenuOption::Selected);
+				}
 				
 				// Logic
 				background->logic();
@@ -238,12 +261,19 @@ void Menu::run() throw(ReturnException)
 				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
-				for(;b!=e;++b)
+				for(int i=0;b!=e;++b,++i)
 				{
 					/* There more than likely won't be any need to draw, but hey maybe sometime in the future
 					   the need might arise */
 					(*b)->draw(work);
+					
+					// These menus are temporary, they will need to be changed
+					const unsigned int color = ((*b)->getState() == MenuOption::Selected) ? yellow : white;
+					vFont->printf( position.x, int(position.y + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
 				}
+				
+				// Finally render to screen
+				work->BlitToScreen();
 			}
 	
 			while ( Global::speed_counter < 1 )

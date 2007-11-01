@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "util/ftalleg.h"
+#include "util/font.h"
 #include "util/load_exception.h"
 #include "return_exception.h"
 
@@ -56,7 +56,11 @@ class Menu
 		//! Area for placement of option list
 		RectArea position;
 		//! Font for this menu
-		ftalleg::freetype *vFont;
+		FreeTypeFont *vFont;
+		//! Font width
+		int fontWidth;
+		//! Font height
+		int fontHeight;
 		
 	private:
 		std::vector <MenuOption *> menuOptions;
