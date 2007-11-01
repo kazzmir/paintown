@@ -185,6 +185,7 @@ void Menu::run() throw(ReturnException)
 	
 	key.setDelay( Keyboard::Key_UP, 300 );
 	key.setDelay( Keyboard::Key_DOWN, 300 );
+	key.setDelay( Keyboard::Key_ENTER, 300 );
 	key.setDelay( Keyboard::Key_LEFT, 50 );
 	key.setDelay( Keyboard::Key_RIGHT, 50 );
 	
@@ -233,8 +234,13 @@ void Menu::run() throw(ReturnException)
 					(*selectedOption)->setState(MenuOption::Selected);
 				}
 				
+				if( key[ Keyboard::Key_ENTER ] )
+				{
+					(*selectedOption)->setState(MenuOption::Run);
+				}
+				
 				// Logic
-				background->logic();
+				if(backgrounds.front())backgrounds.front()->logic();
 				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
@@ -257,7 +263,7 @@ void Menu::run() throw(ReturnException)
 			if ( draw )
 			{
 				// Draw
-				background->draw(work);
+				if(backgrounds.front())backgrounds.front()->draw(work);
 				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
@@ -301,12 +307,12 @@ void Menu::run() throw(ReturnException)
 				backgrounds.pop();
 				background = backgrounds.front();
 			}
-			if(!lastPlayed.empty())
+			if(lastPlayed.back() == music)
 			{
-				backgrounds.pop();
+				lastPlayed.pop();
 				//Music::pause();
 				//Music::fadeIn( 0.3 );
-				//Music::loadSong( Util::getDataPath() + backgrounds.front() );
+				//Music::loadSong( Util::getDataPath() + lastPlayed.front() );
 				//Music::play();
 				
 			}
@@ -340,6 +346,7 @@ Menu::~Menu()
 		delete backgrounds.front();
 		backgrounds.pop();
 	}
+	//if(background)delete background;
 	if(vFont)delete vFont;
 }
 

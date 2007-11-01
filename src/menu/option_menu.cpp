@@ -1,6 +1,7 @@
 #include "menu/option_menu.h"
 #include "menu/menu.h"
 #include "util/token.h"
+#include "return_exception.h"
 
 OptionMenu::OptionMenu(Token *token)throw( LoadException ) : MenuOption(event), _menu(0)
 {
