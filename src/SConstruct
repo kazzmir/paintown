@@ -27,6 +27,7 @@ scene.cpp
 addFiles( "environment/", Split( """
 atmosphere.cpp
 rain_atmosphere.cpp
+snow_atmosphere.cpp
 """
 ))
 
