@@ -29,6 +29,7 @@ atmosphere.cpp
 rain_atmosphere.cpp
 snow_atmosphere.cpp
 night_atmosphere.cpp
+fog_atmosphere.cpp
 """
 ))
 
