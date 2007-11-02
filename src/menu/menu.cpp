@@ -291,6 +291,8 @@ void Menu::run() throw(ReturnException)
 			endGame = done |= key[ Keyboard::Key_ESC ];
 		}
 		
+		// Stupid keyboard
+		key.wait();
 		// do we got an option to run, lets do it
 		if((*selectedOption)->getState() == MenuOption::Run)
 		{
