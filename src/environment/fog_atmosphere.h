@@ -4,6 +4,13 @@
 class Bitmap;
 
 #include "atmosphere.h"
+#include <vector>
+
+struct Fog{
+	Fog( int x, int y, unsigned int ang ):x(x),y(y),ang(ang){}
+	int x, y;
+	unsigned int ang;
+};
 
 class FogAtmosphere: public Atmosphere {
 public:
@@ -16,6 +23,7 @@ public:
 
 protected:
 	Bitmap * fog;
+	std::vector< Fog * > fogs;
 };
 
 #endif
