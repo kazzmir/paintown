@@ -2,3 +2,7 @@
 DONE * use parallax - scroll background slower than the rest of the game
 DONE * allow enemies to throw things like daggers and stars
 * networking, of course!
+* better menus - being done by juvinious
+* level effects like snow and rain
+* level lighting. lamps/objects can make the level brighter as the user gets close to them
+* better "you win"/"you lose" screen
