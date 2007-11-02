@@ -24,6 +24,7 @@
 #include "object/object.h"
 #include "object/object_attack.h"
 #include "object/player.h"
+#include "music.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/font.h"
@@ -87,10 +88,13 @@ int main( int argc, char ** argv ){
 		Global::debug( 0 ) << "Could not initialize system" << endl;
 	}
 	
-	Menu game;
+	Music music;
+	music.loadSong( Util::getDataPath() + "/music/aqua.s3m" );
 	try
 	{
+		Menu game;
 		game.load( Util::getDataPath() + "menu/main.txt");
+		game.run();
 	}
 	catch ( const TokenException & ex )
 	{
@@ -104,7 +108,6 @@ int main( int argc, char ** argv ){
 		cout << "There was a problem loading the main menu. Error was:\n" << ex.getReason() << "\n";
 		return 0;
 	}
-	game.run();
 	
 	return 0;
 }
