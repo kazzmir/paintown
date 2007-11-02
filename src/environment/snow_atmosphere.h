@@ -6,8 +6,15 @@ class Bitmap;
 #include "atmosphere.h"
 
 struct Flake{
-	Flake( int x, int y, int type ):x(x),y(y),type(type),dir(0){}
+	Flake( int x, int y, int type ):
+		x(x),
+		y(y),
+		dx(x),
+		dy(y),
+		type(type),
+		dir(0){}
 	int x, y;
+	double dx, dy;
 	int type;
 	int dir;
 };
