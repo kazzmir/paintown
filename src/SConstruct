@@ -24,6 +24,11 @@ blockobject.cpp
 scene.cpp
 """))
 
+addFiles( "environment/", Split( """
+atmosphere.cpp
+"""
+))
+
 addFiles( "loadpng/", Split( """
 loadpng.c
 regpng.c

@@ -40,7 +40,7 @@ path( path ){
 	loadLevel( path );
 
 	for ( int i = 0; i < 100; i++ ){
-		Drop * d = new Drop( Util::rnd( screen_size ), - Util::rnd( 30 ), Util::rnd( 4 ) + 3 );
+		Drop * d = new Drop( Util::rnd( screen_size ), Util::rnd( 240 ), Util::rnd( 4 ) + 3 );
 		rain_drops.push_back( d );
 	}
 
@@ -268,7 +268,7 @@ void World::act(){
 
 	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
 		Drop * d = *it;
-		d->y += 3;
+		d->y += 8;
 		if ( d->y > 240 ){
 			d->y = -Util::rnd( 100 ) - 20;
 		}
