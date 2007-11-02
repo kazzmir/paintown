@@ -4,6 +4,7 @@
 class Bitmap;
 
 #include "atmosphere.h"
+#include "util/sound.h"
 
 struct Drop{
 	Drop( int x, int y, int length, int color ):x(x),y(y),length(length),color(color){}
@@ -23,6 +24,8 @@ public:
 	
 protected:
 	vector< Drop * > rain_drops;
+	Sound rain_sound;
+	bool playing;
 };
 
 #endif

@@ -11,7 +11,10 @@ static int screenY(){
 }
 
 RainAtmosphere::RainAtmosphere():
-Atmosphere(){
+Atmosphere(),
+playing( false ){
+
+	rain_sound = Sound( Util::getDataPath() + "sounds/rain.wav" );
 
 	int colors[ 2 ];
 	colors[ 0 ] = Bitmap::makeColor( 0x22, 0x66, 0x66 );
@@ -36,6 +39,11 @@ void RainAtmosphere::draw( Bitmap * work ){
 }
 
 void RainAtmosphere::act(){
+
+	if ( ! playing ){
+		rain_sound.playLoop();
+		playing = true;
+	}
 
 	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
 		Drop * d = *it;
