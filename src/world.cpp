@@ -32,17 +32,12 @@ World::World( Object * _player, const string & path, int _screen_size ) throw( L
 player( _player ),
 quake_time( 0 ),
 min_x( 0 ),
-path( path ){ 
+path( path ){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
 
 	loadLevel( path );
-
-	for ( int i = 0; i < 100; i++ ){
-		Drop * d = new Drop( Util::rnd( screen_size ), Util::rnd( 240 ), Util::rnd( 4 ) + 3 );
-		rain_drops.push_back( d );
-	}
 
 	/*
 	if ( player != NULL ){
@@ -53,17 +48,18 @@ path( path ){
 
 World::~World(){
 
-	if ( bang )
+	if ( bang ){
 		delete bang;
+	}
 
-	if ( scene )
+	if ( scene ){
 		delete scene;
+	}
 	
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		if ( *it != player )
 			delete *it;
 	}
-
 }
 
 void World::reloadLevel() throw( LoadException ){
@@ -265,26 +261,10 @@ void World::act(){
 	}
 
 	scene->act( min_x, min_x + screen_size, &objects );
-
-	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
-		Drop * d = *it;
-		d->y += 8;
-		if ( d->y > 240 ){
-			d->y = -Util::rnd( 100 ) - 20;
-		}
-	}
 }
 
 void World::addObject( Object * o ){
 	objects.push_back( o );
-}
-	
-void World::drawRain( Bitmap * work ){
-	int color = Bitmap::makeColor( 0, 0, 250 );
-	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
-		Drop * d = *it;
-		work->vLine( d->y, d->x, d->y + d->length, color );
-	}
 }
 
 void World::draw( Bitmap * work ){
@@ -307,8 +287,6 @@ void World::draw( Bitmap * work ){
 		}
 	}
 	scene->drawFront( min_x, work );
-
-	drawRain( work );
 }
 	
 int World::getX(){

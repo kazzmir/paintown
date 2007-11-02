@@ -12,6 +12,7 @@
 #include "globals.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
+#include "environment/atmosphere.h"
 
 using namespace std;
 
@@ -39,7 +40,8 @@ maximum_z( 0 ),
 current_block( NULL ),
 blockNumber( 1 ),
 backgroundParallax( 5 ),
-foregroundParallax( 1.2 ){
+foregroundParallax( 1.2 ),
+atmosphere( NULL ){
 
 	TokenReader tr( filename );
 
@@ -73,6 +75,10 @@ foregroundParallax( 1.2 ){
 				double d;
 				*tok >> d;
 				setForegroundParallax( d );
+			} else if ( *tok == "atmosphere" ){
+				string s;
+				*tok >> s;
+				atmosphere = Atmosphere::createAtmosphere( s );
 			} else if ( *tok == "z" ){
 				while ( tok->hasTokens() ){
 					Token * next;
@@ -221,6 +227,10 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 
 	vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
 	hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
+
+	if ( atmosphere ){
+		atmosphere->act();
+	}
 }
 
 /* draw the background */
@@ -273,6 +283,10 @@ void Scene::drawFront( int x, Bitmap * work ){
 			arrow_blink = 0;
 	}
 
+	if ( atmosphere ){
+		atmosphere->draw( work );
+	}
+
 	/*
 	for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
 		Bitmap * b = *it;
@@ -322,6 +336,9 @@ Scene::~Scene(){
 	}
 	for ( map< int, Panel * >::iterator it = panels.begin(); it != panels.end(); it++ ){
 		delete (*it).second;
+	}
+	if ( atmosphere ){
+		delete atmosphere;
 	}
 	
 	/*

@@ -12,6 +12,7 @@ class Bitmap;
 class Block;
 class Heart;
 class Object;
+class Atmosphere;
 
 struct Panel{
 	Bitmap * pic;
@@ -108,6 +109,7 @@ protected:
 	double backgroundParallax;
 	double foregroundParallax;
 
+	Atmosphere * atmosphere;
 };
 
 #endif
