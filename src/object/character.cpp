@@ -39,6 +39,7 @@ Character::Character( int alliance ):
 ObjectAttack( alliance ),
 shadow( 0 ),
 icon( NULL ),
+own_stuff( false ),
 x_velocity( 0 ),
 y_velocity( 0 ),
 z_velocity( 0 ),
@@ -60,6 +61,7 @@ ObjectAttack( 0, 0, alliance ),
 type( 0 ),
 shadow( 0 ),
 icon( NULL ),
+own_stuff( false ),
 x_velocity( 0 ),
 y_velocity( 0 ),
 z_velocity( 0 ),
@@ -84,6 +86,7 @@ ObjectAttack( 0, 0, alliance ),
 type( 0 ),
 shadow( 0 ),
 icon( NULL ),
+own_stuff( false ),
 x_velocity( 0 ),
 y_velocity( 0 ),
 z_velocity( 0 ),
@@ -105,13 +108,13 @@ toughness( 10 ){
 
 Character::Character( const Character & chr ) throw( LoadException ):
 ObjectAttack(chr),
+own_stuff( false ),
 death( 0 ),
 thrown_status( false ),
 moving( 0 ),
 current_map( chr.current_map ),
 die_sound( NULL ),
 landed_sound( NULL ){
-	own_stuff = false;
 
 	/* these are set in object.cpp */
 	// setHealth( chr.getHealth() );
@@ -271,6 +274,7 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 			} else if ( *n == "icon" ){
 				string icon_path;
 				*n >> icon_path;
+				own_stuff = true;
 				// cout<<"Loading icon "<<icon_path<<endl;
 				icon = new Bitmap( dataPath( icon_path ) );
 			} else if ( *n == "remap" ){

@@ -85,6 +85,9 @@ Configuration & Configuration::operator=( const Configuration & config ){
 	setJump( config.getJump() );
 	return *this;
 }
+	
+Configuration::~Configuration(){
+}
 
 int Configuration::getKey( int which, int facing ){
 	switch( which ){

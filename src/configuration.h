@@ -30,6 +30,7 @@ public:
 protected:
 	Configuration();
 	Configuration( const Configuration & config );
+	~Configuration();
 
 	Configuration & operator=( const Configuration & config );
 
