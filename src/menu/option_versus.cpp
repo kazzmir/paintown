@@ -1,5 +1,6 @@
 #include "menu/option_versus.h"
 #include "util/token.h"
+#include "globals.h"
 
 #include <iostream>
 
@@ -25,7 +26,7 @@ OptionVersus::OptionVersus(Token *token)throw( LoadException ) : MenuOption(even
 			}
 			else 
 			{
-				cout<<"Unhandled menu attribute: "<<endl;
+				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
 		} 

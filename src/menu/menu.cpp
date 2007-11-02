@@ -131,7 +131,7 @@ void Menu::load(Token *token)throw( LoadException )
 			}
 			else 
 			{
-				cout<<"Unhandled menu attribute: "<<endl;
+				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
 		} 

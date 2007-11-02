@@ -475,7 +475,7 @@ OptionAdventure::OptionAdventure(Token *token)throw( LoadException ) : MenuOptio
 			}
 			else 
 			{
-				cout<<"Unhandled menu attribute: "<<endl;
+				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
 		} 

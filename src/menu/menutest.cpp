@@ -5,6 +5,7 @@
 #endif
 
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
@@ -39,8 +40,52 @@
 
 using namespace std;
 
-int main(){
-	init( GFX_AUTODETECT_WINDOWED );
+
+static int gfx = Global::WINDOWED;
+
+static bool isArg( const char * s1, const char * s2 ){
+	return strcasecmp( s1, s2 ) == 0;
+}
+
+static void showOptions(){
+	cout << "Paintown by Jon Rafkind" << endl;
+	cout << "-w : Fullscreen mode" << endl;
+	cout << "-d <path> : Use data path of <path>. Default is ./data/" << endl;
+	cout << "-l # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
+	cout << endl;
+}
+
+int main( int argc, char ** argv ){
+	
+	showOptions();
+	const char * WINDOWED_ARG = "-w";
+	const char * DATAPATH_ARG = "-d";
+	const char * DEBUG_ARG = "-l";
+
+	Global::setDebug( 0 );
+	
+	for ( int q = 1; q < argc; q++ ){
+		if ( isArg( argv[ q ], WINDOWED_ARG ) ){
+			gfx = Global::FULLSCREEN;
+		} else if ( isArg( argv[ q ], DATAPATH_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				Util::setDataPath( argv[ q ] );
+			}
+		} else if ( isArg( argv[ q ], DEBUG_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				istringstream i( argv[ q ] );
+				int f;
+				i >> f;
+				Global::setDebug( f );
+			}
+		}
+	}
+	
+	if ( ! init( gfx ) ){
+		Global::debug( 0 ) << "Could not initialize system" << endl;
+	}
 	
 	Menu game;
 	try

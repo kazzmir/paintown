@@ -30,7 +30,7 @@ OptionBg::OptionBg(Token *token)throw( LoadException ) : MenuOption(event) , ani
 			}
 			else 
 			{
-				cout<<"Unhandled menu attribute: "<<endl;
+				Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
 		} 

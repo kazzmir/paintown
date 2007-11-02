@@ -1,5 +1,6 @@
 #include "menu/option_credits.h"
 #include "util/token.h"
+#include "globals.h"
 
 #include <iostream>
 
@@ -25,7 +26,7 @@ OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(ev
 			}
 			else 
 			{
-				cout<<"Unhandled menu attribute: "<<endl;
+				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
 		} 
