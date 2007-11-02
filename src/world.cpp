@@ -1,4 +1,5 @@
 #include "util/funcs.h"
+#include "util/bitmap.h"
 #include "object/object.h"
 #include "object/object_attack.h"
 #include "object/character.h"
@@ -37,6 +38,11 @@ path( path ){
 	screen_size = _screen_size;
 
 	loadLevel( path );
+
+	for ( int i = 0; i < 100; i++ ){
+		Drop * d = new Drop( Util::rnd( screen_size ), - Util::rnd( 30 ), Util::rnd( 4 ) + 3 );
+		rain_drops.push_back( d );
+	}
 
 	/*
 	if ( player != NULL ){
@@ -260,10 +266,25 @@ void World::act(){
 
 	scene->act( min_x, min_x + screen_size, &objects );
 
+	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
+		Drop * d = *it;
+		d->y += 3;
+		if ( d->y > 240 ){
+			d->y = -Util::rnd( 100 ) - 20;
+		}
+	}
 }
 
 void World::addObject( Object * o ){
 	objects.push_back( o );
+}
+	
+void World::drawRain( Bitmap * work ){
+	int color = Bitmap::makeColor( 0, 0, 250 );
+	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
+		Drop * d = *it;
+		work->vLine( d->y, d->x, d->y + d->length, color );
+	}
 }
 
 void World::draw( Bitmap * work ){
@@ -287,6 +308,7 @@ void World::draw( Bitmap * work ){
 	}
 	scene->drawFront( min_x, work );
 
+	drawRain( work );
 }
 	
 int World::getX(){

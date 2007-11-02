@@ -12,6 +12,12 @@ class Bitmap;
 
 using namespace std;
 
+struct Drop{
+	Drop( int x, int y, int length ):x(x),y(y),length(length){}
+	int x, y;
+	int length;
+};
+
 class World{
 public:
 	World();
@@ -41,6 +47,8 @@ public:
 	virtual int getMinimumZ();
 
 protected:
+
+	virtual void drawRain( Bitmap * work );
 	
 	void loadLevel( const string & path ) throw( LoadException );
 
@@ -59,6 +67,7 @@ protected:
 	int screen_size;
 	string path;
 
+	vector< Drop * > rain_drops;
 };
 
 #endif
