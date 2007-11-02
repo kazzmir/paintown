@@ -13,8 +13,11 @@ static int screenY(){
 RainAtmosphere::RainAtmosphere():
 Atmosphere(){
 
+	int colors[ 2 ];
+	colors[ 0 ] = Bitmap::makeColor( 0x22, 0x66, 0x66 );
+	colors[ 1 ] = Bitmap::makeColor( 0x11, 0x44, 0x77 );
 	for ( int i = 0; i < 100; i++ ){
-		Drop * d = new Drop( Util::rnd( screenX() * 2 ) - screenX() / 2, Util::rnd( screenY() ), Util::rnd( 4 ) + 3 );
+		Drop * d = new Drop( Util::rnd( screenX() * 2 ) - screenX() / 2, Util::rnd( screenY() ), Util::rnd( 4 ) + 3, colors[ Util::rnd( 2 ) ] );
 		rain_drops.push_back( d );
 	}
 }
@@ -26,11 +29,9 @@ RainAtmosphere::~RainAtmosphere(){
 }
 
 void RainAtmosphere::draw( Bitmap * work ){
-	int color = Bitmap::makeColor( 0, 0, 250 );
 	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
 		Drop * d = *it;
-		work->line( d->x, d->y, d->x + d->length, d->y + d->length, color );
-		// work->vLine( d->y, d->x, d->y + d->length, color );
+		work->line( d->x, d->y, d->x + d->length * 2 / 3, d->y + d->length, d->color );
 	}
 }
 

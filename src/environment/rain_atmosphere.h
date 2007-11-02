@@ -6,9 +6,10 @@ class Bitmap;
 #include "atmosphere.h"
 
 struct Drop{
-	Drop( int x, int y, int length ):x(x),y(y),length(length){}
+	Drop( int x, int y, int length, int color ):x(x),y(y),length(length),color(color){}
 	int x, y;
 	int length;
+	int color;
 };
 
 class RainAtmosphere: public Atmosphere {
