@@ -2,11 +2,22 @@
 #include "menu/menu.h"
 #include "util/token.h"
 #include "return_exception.h"
+#include "util/token_exception.h"
+#include "util/funcs.h"
 
 OptionMenu::OptionMenu(Token *token)throw( LoadException ) : MenuOption(event), _menu(0)
 {
 	_menu = new Menu();
-	_menu->load(token);
+	// Lets try loading from a file
+	std::string temp;
+	// Filename
+	*token >> temp;
+	if(temp=="name")
+	{
+		token->resetToken();
+		_menu->load(token);
+	}
+	else _menu->load(Util::getDataPath() + temp);
 	this->setText(_menu->getName());
 }
 
