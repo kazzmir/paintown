@@ -26,6 +26,9 @@ Atmosphere(){
 
 FogAtmosphere::~FogAtmosphere(){
 	delete fog;
+	for ( vector< Fog * >::iterator it = fogs.begin(); it != fogs.end(); it++ ){
+		delete *it;
+	}
 }
 
 void FogAtmosphere::draw( Bitmap * work ){
