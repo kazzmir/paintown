@@ -3,7 +3,11 @@
 
 #include "menu_option.h"
 #include "util/load_exception.h"
+
+#include <vector>
+
 class Token;
+class Bitmap;
 
 /*! Handles key reconfiguration */
 class OptionCredits : public MenuOption
@@ -22,6 +26,9 @@ class OptionCredits : public MenuOption
 		OptionCredits(Token *token)throw( LoadException );
 	
 		virtual ~OptionCredits();
+	private:
+		Bitmap *background;
+		std::vector<std::string> credits;
 };
 
 #endif

@@ -123,12 +123,6 @@ void Menu::load(Token *token)throw( LoadException )
 				OptionCredits *temp = new OptionCredits(tok);
 				menuOptions.push_back(temp);
 			}
-			else if ( *tok == "back" || *tok == "quit" )
-			{
-				// Create a menu option ie options, controller config, adventure, versus, credits, etc
-				
-				//menuOptions.push_back();
-			}
 			else 
 			{
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
