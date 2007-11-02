@@ -89,7 +89,7 @@ int main( int argc, char ** argv ){
 	}
 	
 	Music music;
-	music.loadSong( Util::getDataPath() + "/music/aqua.s3m" );
+	music.loadSong( "" );
 	try
 	{
 		Menu game;

@@ -34,6 +34,7 @@
 #include "select_player.h"
 #include "world.h"
 #include "versus_world.h"
+#include "menu/menu.h"
 
 #include <pthread.h>
 
@@ -43,7 +44,7 @@ using namespace std;
 
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
-OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(event), background(0)
+OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(event), background(0), music("")
 {
 	/* Always */
 	credits.push_back("Paintown");
@@ -86,6 +87,11 @@ OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(ev
 				*tok >> temp;
 				this->setText(temp);
 			} 
+			else if ( *tok == "music" )
+			{
+				// Set music for credits
+				*tok >> music;
+			}
 			else if ( *tok == "background" )
 			{
 				// Create an image and push it back on to vector
@@ -149,6 +155,7 @@ void OptionCredits::run(bool &endGame)
 	int min_y = GFX_Y;
 	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
 	Bitmap tmp( GFX_X, GFX_Y );
+	if(!music.empty())Menu::setMusic(music);
 	while ( ! key[ Keyboard::Key_ESC ] ){
 
 		key.poll();

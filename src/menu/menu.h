@@ -46,6 +46,9 @@ class Menu
 		/*! set the bitmap */
 		static void setBitmap(Bitmap *bmp);
 		
+		/*! set the music */
+		static void setMusic(const std::string &file);
+		
 	protected:
 		//! Our current bitmap to draw to, defaults to screen
 		static Bitmap *work;

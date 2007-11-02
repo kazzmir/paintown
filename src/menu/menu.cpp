@@ -22,7 +22,7 @@
 
 Bitmap *Menu::work = 0;
 
-static std::queue<std::string> lastPlayed;
+static std::priority_queue<std::string> lastPlayed;
 
 static std::queue<MenuOption *> backgrounds;
 
@@ -71,8 +71,7 @@ void Menu::load(Token *token)throw( LoadException )
 			{
 				// Set music and push onto the stack
 				*tok >> music;
-				
-				lastPlayed.push(music);
+				//lastPlayed.push(music);
 			} 
 			else if ( *tok == "background" )
 			{
@@ -191,19 +190,17 @@ void Menu::run() throw(ReturnException)
 	selectedOption = menuOptions.begin();
 	menuOptions.front()->setState(MenuOption::Selected);
 	
+	if(!music.empty())
+	{
+		setMusic(music);
+	}
+	
 	while( !endGame )
 	{
 		Global::speed_counter = 0;
 		Global::second_counter = 0;
 		int game_time = 100;
 		
-		if(music != "" && music != lastPlayed.front())
-		{
-			//Music::pause();
-			//Music::fadeIn( 0.3 );
-			//Music::loadSong( Util::getDataPath() + music );
-			//Music::play();
-		}
 		while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 	
 			bool draw = false;
@@ -294,6 +291,16 @@ void Menu::run() throw(ReturnException)
 			// Reset it's state
 			(*selectedOption)->setState(MenuOption::Selected);
 		}
+		if(!music.empty() && !lastPlayed.empty())
+		{
+			if(lastPlayed.top() != music)
+			{
+				lastPlayed.pop();
+				Music::pause();
+				Music::loadSong( Util::getDataPath() + lastPlayed.top() );
+				Music::play();
+			}
+		}
 		if(endGame)
 		{
 			//  pop out any backgrounds pushed onto the stack reseting it to the old one if applicable
@@ -302,15 +309,6 @@ void Menu::run() throw(ReturnException)
 				delete backgrounds.front();
 				backgrounds.pop();
 				background = backgrounds.front();
-			}
-			if(lastPlayed.back() == music)
-			{
-				lastPlayed.pop();
-				//Music::pause();
-				//Music::fadeIn( 0.3 );
-				//Music::loadSong( Util::getDataPath() + lastPlayed.front() );
-				//Music::play();
-				
 			}
 		}
 	}
@@ -325,6 +323,16 @@ const std::string &Menu::getName()
 void Menu::setBitmap(Bitmap *bmp)
 {
 	work = bmp;
+}
+
+void Menu::setMusic(const std::string &file)
+{
+	lastPlayed.push(file);
+	if(Music::loadSong( Util::getDataPath() + file ))
+	{
+		Music::pause();
+		Music::play();
+	}
 }
 
 Menu::~Menu()

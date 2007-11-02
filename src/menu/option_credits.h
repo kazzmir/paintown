@@ -29,6 +29,7 @@ class OptionCredits : public MenuOption
 	private:
 		Bitmap *background;
 		std::vector<std::string> credits;
+		std::string music;
 };
 
 #endif
