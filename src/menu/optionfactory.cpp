@@ -1,3 +1,4 @@
+#include "menu/optionfactory.h"
 #include "util/token.h"
 #include "menu/menu_option.h"
 #include "menu/option_adventure.h"
