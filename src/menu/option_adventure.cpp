@@ -331,10 +331,10 @@ static void realGame( Object * player, const string & levelFile ){
 		try {
 			World world( player, *it );
 
-			//Music::pause();
-			//Music::fadeIn( 0.3 );
-			//Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
-			//Music::play();
+			Music::pause();
+			Music::fadeIn( 0.3 );
+			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+			Music::play();
 
 			Player * playerX = (Player *) player;
 			playerX->setY( 200 );

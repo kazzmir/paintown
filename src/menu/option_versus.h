@@ -22,6 +22,9 @@ class OptionVersus : public MenuOption
 		OptionVersus(Token *token)throw( LoadException );
 	
 		virtual ~OptionVersus();
+		
+	private:
+		bool human;
 };
 
 #endif
