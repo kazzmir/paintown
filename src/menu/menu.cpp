@@ -10,14 +10,8 @@
 #include "init.h"
 #include "music.h"
 
-// Options :O
-#include "menu/option_adventure.h"
+#include "menu/optionfactory.h"
 #include "menu/option_background.h"
-#include "menu/option_credits.h"
-#include "menu/option_key.h"
-#include "menu/option_menu.h"
-#include "menu/option_versus.h"
-#include "menu/option_speed.h"
 
 #include <queue>
 
@@ -95,42 +89,6 @@ void Menu::load(Token *token)throw( LoadException )
 				vFont = new FreeTypeFont(Util::getDataPath() + temp);
 				vFont->setSize(fontWidth,fontHeight);
 			}
-			else if ( *tok == "menu" )
-			{
-				// Create a sub menu
-				OptionMenu *temp = new OptionMenu(tok);
-				menuOptions.push_back(temp);
-			}
-			else if ( *tok == "key" )
-			{
-				// Reconfigure a given key
-				OptionKey *temp = new OptionKey(tok);
-				menuOptions.push_back(temp);
-			}
-			else if ( *tok == "adventure" )
-			{
-				// Adventure mode
-				OptionAdventure *temp = new OptionAdventure(tok);
-				menuOptions.push_back(temp);
-			}
-			else if ( *tok == "versus" )
-			{
-				// Versus mode
-				OptionVersus *temp = new OptionVersus(tok);
-				menuOptions.push_back(temp);
-			}
-			else if ( *tok == "credits" )
-			{
-				// Credits mode
-				OptionCredits *temp = new OptionCredits(tok);
-				menuOptions.push_back(temp);
-			}
-			else if ( *tok == "speed" )
-			{
-				// Speed
-				OptionSpeed *temp = new OptionSpeed(tok);
-				menuOptions.push_back(temp);
-			}
 			else if ( *tok == "fixedspeed" )
 			{
 				// Speed
@@ -138,6 +96,11 @@ void Menu::load(Token *token)throw( LoadException )
 				*tok >> temp;
 				if(temp < 0.1)temp = 0.1;
 				setGameSpeed(temp);
+			}
+			else if( *tok == "option" )
+			{
+				MenuOption *temp = getOption(tok);
+				if(temp)menuOptions.push_back(temp);
 			}
 			else 
 			{
