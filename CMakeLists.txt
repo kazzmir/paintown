@@ -248,6 +248,7 @@ src/menu/option_credits.cpp
 src/menu/option_key.cpp
 src/menu/option_menu.cpp
 src/menu/option_versus.cpp
+src/menu/option_speed.cpp
 )
 
 set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC} ${LOADPNG_SRC} ${MENU_SRC})

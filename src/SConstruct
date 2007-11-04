@@ -108,6 +108,7 @@ option_credits.cpp
 option_key.cpp
 option_menu.cpp
 option_versus.cpp
+option_speed.cpp
 """))
 
 x = []

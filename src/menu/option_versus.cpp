@@ -1,6 +1,7 @@
 #include "menu/option_versus.h"
 #include "util/token.h"
 #include "globals.h"
+#include "menu/menu.h"
 
 #include "init.h"
 
@@ -40,9 +41,6 @@
 #include <iostream>
 
 using namespace std;
-
-
-static double startingGameSpeed = 1.0;
 
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
@@ -146,7 +144,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 	bool done = false;
 	bool paused = false;
 	double runCounter = 0;
-	double gameSpeed = startingGameSpeed;
+	double gameSpeed = Menu::getGameSpeed();
 
 	vector< Background > backgrounds;
 	backgrounds = readBackgrounds( Util::getDataPath() + "/bgs/versus/" );

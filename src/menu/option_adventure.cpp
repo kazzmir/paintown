@@ -1,5 +1,6 @@
 #include "menu/option_adventure.h"
 #include "util/token.h"
+#include "menu/menu.h"
 
 #include "init.h"
 
@@ -44,7 +45,6 @@ static int LAZY_KEY_DELAY = 300;
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
 static bool show_loading_screen = true;
-static double startingGameSpeed = 1.0;
 
 /* fade the screen and tell the player they lost */
 void FadeOut( const string & message ){
@@ -124,7 +124,7 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 	int helpColors[ 100 ];
 	Util::blend_palette( helpColors, 100, Bitmap::makeColor( 110, 110, 110 ), Bitmap::makeColor( 255, 255, 255 ) );
 	
-	double gameSpeed = startingGameSpeed;
+	double gameSpeed = Menu::getGameSpeed();
 	
 	double runCounter = 0;
 	bool paused = false;

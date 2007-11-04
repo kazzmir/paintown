@@ -17,10 +17,13 @@
 #include "menu/option_key.h"
 #include "menu/option_menu.h"
 #include "menu/option_versus.h"
+#include "menu/option_speed.h"
 
 #include <queue>
 
 Bitmap *Menu::work = 0;
+
+double Menu::gamespeed = 1.0;
 
 static std::priority_queue<std::string> lastPlayed;
 
@@ -46,7 +49,7 @@ bool RectArea::empty()
 	return (x==0 && y==0 && width==0 && height==0);
 }
 
-Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(32), fontHeight(32), _name("")
+Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(24), fontHeight(24), _name("")
 {
 	if(!work)work = new Bitmap(Bitmap::Screen->getWidth(), Bitmap::Screen->getHeight()); //Bitmap::Screen;
 }
@@ -89,7 +92,7 @@ void Menu::load(Token *token)throw( LoadException )
 			{
 				std::string temp;
 				*tok >> temp >> fontWidth >> fontHeight;
-				vFont = new FreeTypeFont(temp);
+				vFont = new FreeTypeFont(Util::getDataPath() + temp);
 				vFont->setSize(fontWidth,fontHeight);
 			}
 			else if ( *tok == "menu" )
@@ -121,6 +124,20 @@ void Menu::load(Token *token)throw( LoadException )
 				// Credits mode
 				OptionCredits *temp = new OptionCredits(tok);
 				menuOptions.push_back(temp);
+			}
+			else if ( *tok == "speed" )
+			{
+				// Speed
+				OptionSpeed *temp = new OptionSpeed(tok);
+				menuOptions.push_back(temp);
+			}
+			else if ( *tok == "fixedspeed" )
+			{
+				// Speed
+				double temp;
+				*tok >> temp;
+				if(temp < 0.1)temp = 0.1;
+				setGameSpeed(temp);
 			}
 			else 
 			{
@@ -223,6 +240,16 @@ void Menu::run() throw(ReturnException)
 					(*selectedOption)->setState(MenuOption::Deselected);
 					if(selectedOption < menuOptions.begin()+menuOptions.size()-1)selectedOption++;
 					(*selectedOption)->setState(MenuOption::Selected);
+				}
+				
+				if ( key[ Keyboard::Key_LEFT ] )
+				{
+					(*selectedOption)->leftKey();
+				}
+				
+				if ( key[ Keyboard::Key_RIGHT ] )
+				{
+					(*selectedOption)->rightKey();
 				}
 				
 				if( key[ Keyboard::Key_ENTER ] )
@@ -333,6 +360,18 @@ void Menu::setMusic(const std::string &file)
 		Music::pause();
 		Music::play();
 	}
+}
+
+/*! game speed */
+double Menu::getGameSpeed()
+{
+	return gamespeed;
+}
+
+/*! set speed */
+void Menu::setGameSpeed(double s)
+{
+	gamespeed = s;
 }
 
 Menu::~Menu()

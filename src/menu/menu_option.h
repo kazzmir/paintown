@@ -18,6 +18,10 @@ class MenuOption
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame)=0;
 		
+		// This is to pass paramaters to an option ie a bar or something
+		virtual void leftKey();
+		virtual void rightKey();
+		
 		enum state
 		{
 			Selected = 0,

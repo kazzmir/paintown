@@ -1,16 +1,12 @@
-#ifndef _paintown_option_credits_h
-#define _paintown_option_credits_h
+#ifndef _paintown_option_speed_h
+#define _paintown_option_speed_h
 
 #include "menu_option.h"
 #include "util/load_exception.h"
-
-#include <vector>
-
 class Token;
-class Bitmap;
 
 /*! Handles key reconfiguration */
-class OptionCredits : public MenuOption
+class OptionSpeed : public MenuOption
 {
 	public:
 		// Do logic before run part
@@ -23,15 +19,16 @@ class OptionCredits : public MenuOption
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame);
 		
-		OptionCredits(Token *token)throw( LoadException );
+		// This is to pass paramaters to an option ie a bar or something
+		virtual void leftKey();
+		virtual void rightKey();
+		
+		OptionSpeed(Token *token)throw( LoadException );
 	
-		virtual ~OptionCredits();
-	private:
-		Bitmap *background;
-		std::vector<std::string> credits;
-		std::string music;
-		int red, blue, green;
-		int titlered, titleblue, titlegreen;
+		virtual ~OptionSpeed();
+	public:
+		// name
+		std::string name;
 };
 
 #endif

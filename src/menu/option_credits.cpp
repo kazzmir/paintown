@@ -44,7 +44,7 @@ using namespace std;
 
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
-OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(event), background(0), music("")
+OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(event), background(0), music(""), red(255), blue(255), green(255), titlered(0), titleblue(255), titlegreen(255)
 {
 	/* Always */
 	credits.push_back("Paintown");
@@ -102,11 +102,21 @@ OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(ev
 			}
 			else if ( *tok == "additional" )
 			{
-				std::string temp1,temp2;
-				*tok >> temp1 >> temp2;
-				credits.push_back(temp1);
-				credits.push_back(temp2);
+				std::string str;
+				while(tok->hasTokens())
+				{
+					*tok >> str;
+					credits.push_back(str);
+				}
 				credits.push_back("");
+			}
+			else if( *tok == "titlecolor" )
+			{
+				*tok >> titlered >> titlegreen >> titleblue;
+			}
+			else if( *tok == "color" )
+			{
+				*tok >> red >> green >> blue;
 			}
 			else 
 			{
@@ -180,13 +190,21 @@ void OptionCredits::run(bool &endGame)
 			if(background)background->Blit( tmp );
 			else tmp.fill(Bitmap::makeColor(0,0,0));
 			int y = min_y;
-			int color = Bitmap::makeColor( 255, 255, 255 );
+			int color = Bitmap::makeColor( red, blue, green );
+			int title = Bitmap::makeColor( titlered, titleblue, titlegreen );
 			vector<std::string>::iterator b = credits.begin();
 			vector<std::string>::iterator e = credits.end();
+			bool isTitle = true;
 			for(;b!=e;++b)
 			{
-				font.printf( 100, y, color, tmp, (*b), 0 );	
+				if(isTitle)
+				{
+					font.printf( 100, y, title, tmp, (*b), 0 );
+					isTitle = false;
+				}
+				else font.printf( 100, y, color, tmp, (*b), 0 );
 				y += font.getHeight() + 2;
+				if((*b).empty())isTitle=true;
 			}
 
 			tmp.BlitToScreen();

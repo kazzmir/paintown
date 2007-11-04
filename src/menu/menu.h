@@ -49,6 +49,12 @@ class Menu
 		/*! set the music */
 		static void setMusic(const std::string &file);
 		
+		/*! game speed */
+		static double getGameSpeed();
+		
+		/*! set speed */
+		static void setGameSpeed(double s);
+		
 	protected:
 		//! Our current bitmap to draw to, defaults to screen
 		static Bitmap *work;
@@ -69,6 +75,7 @@ class Menu
 		std::vector <MenuOption *> menuOptions;
 		std::vector <MenuOption *>::iterator selectedOption;
 		std::string _name;
+		static double gamespeed;
 		
 };
 #endif
