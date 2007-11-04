@@ -23,8 +23,8 @@ data(){
 	echo "Copying data to $dir"
 	mkdir -p $dir
 
-	find data -type d ! -regex '.*\.svn.*' | xargs -i mkdir -p $dir/\{}
-	find data -type f ! -regex '.*\.svn.*' | xargs -i cp \{} $dir/\{}
+	find data/ -type d ! -regex '.*\.svn.*' | xargs -i mkdir -p $dir/\{}
+	find data/ -type f ! -regex '.*\.svn.*' | xargs -i cp \{} $dir/\{}
 	cp paintown $dir/paintown-bin
 }
 

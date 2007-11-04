@@ -6,10 +6,10 @@ Jon Rafkind
 Get Source:
 
 	If you are reading this you might already have the source. If not get it from here
-	Game engine: https://paintown.svn.sourceforge.net/svnroot/paintown/trunk
-	Data: https://paintown.svn.sourceforge.net/svnroot/paintown/data
+	Game engine: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/trunk
+	Data: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/data
 
-	Put the data directory inside the trunk directory, trunk/data.
+	You need the svn program, which is part of subversion, http://subversion.tigris.org/. Put the data directory inside the trunk directory, trunk/data.
 
 Compilation:
 
@@ -55,8 +55,8 @@ Requirements:
 	* zlib - http://www.zlib.net/
 	* libpng - http://www.libpng.org/pub/png/libpng.html
 	* pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
-	* DUMB - http://dumb.sf.net
 	* freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
 
 Thanks:
 	Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	
+	DUMB - http://dumb.sf.net
