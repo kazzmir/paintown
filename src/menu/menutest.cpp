@@ -89,7 +89,6 @@ int main( int argc, char ** argv ){
 	}
 	
 	Music music;
-	music.loadSong( "" );
 	try
 	{
 		Menu game;
