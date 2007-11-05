@@ -69,6 +69,7 @@ animation_event_zdistance.cpp
 display_character.cpp
 effect.cpp
 enemy.cpp
+gib.cpp
 item.cpp
 object.cpp
 object_attack.cpp

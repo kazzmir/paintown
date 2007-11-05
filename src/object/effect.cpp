@@ -15,7 +15,7 @@
 using namespace std;
 
 Effect::Effect( int alliance ):
-ObjectNonAttack( alliance ),
+ObjectNonAttack( 0, 0, alliance ),
 image( NULL ){
 	image = NULL;
 }
@@ -26,7 +26,7 @@ ObjectNonAttack( ef ){
 }
 
 Effect::Effect( const char * _filename, int alliance ) throw( LoadException ):
-ObjectNonAttack( alliance ),
+ObjectNonAttack( 0, 0, alliance ),
 image( NULL ){
 
 	TokenReader tr( _filename );

@@ -83,6 +83,8 @@ public:
 	/* make the character jump! */
 	virtual void jump();
 
+	virtual void died( vector< Object * > & objects );
+
 public:
 	/* debug methods */
 
@@ -379,6 +381,7 @@ private:
 	Sound * landed_sound;
 	int invincibility;
 	int toughness;
+	bool explode;
 };
 
 #endif

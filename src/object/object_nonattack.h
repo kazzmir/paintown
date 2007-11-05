@@ -14,7 +14,7 @@ class ObjectAttack;
 class ObjectNonAttack : public Object {
 public:
 
-	ObjectNonAttack( int alliance = ALLIANCE_NONE );
+	ObjectNonAttack( const int x, const int y, int alliance = ALLIANCE_NONE );
 	ObjectNonAttack( const ObjectNonAttack & obj );
 	
 	virtual bool collision( ObjectAttack * obj );

@@ -4,8 +4,8 @@
 #include "object_nonattack.h"
 #include <string>
 
-ObjectNonAttack::ObjectNonAttack( int alliance ):
-Object( alliance ){
+ObjectNonAttack::ObjectNonAttack( const int x, const int y, int alliance ):
+Object( x, y, alliance ){
 	no_name = "";
 }
 	

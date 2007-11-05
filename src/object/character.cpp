@@ -11,6 +11,7 @@
 #include "object.h"
 #include "object_attack.h"
 #include "stimulation.h"
+#include "gib.h"
 
 #include "factory/shadow.h"
 #include "util/funcs.h"
@@ -26,10 +27,6 @@
 #include "world.h"
 
 using namespace std;
-
-#ifndef debug
-#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
-#endif
 
 static const string dataPath( const string & str ){
 	return Util::getDataPath() + str;
@@ -53,7 +50,8 @@ current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
 invincibility( 0 ),
-toughness( 10 ){
+toughness( 10 ),
+explode( false ){
 }
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
@@ -75,7 +73,8 @@ current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
 invincibility( 0 ),
-toughness( 10 ){
+toughness( 10 ),
+explode( false ){
 	name = "";
 
 	loadSelf( filename.c_str() );
@@ -100,7 +99,8 @@ current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
 invincibility( 0 ),
-toughness( 10 ){
+toughness( 10 ),
+explode( false ){
 	name = "";
 
 	loadSelf( filename );
@@ -114,7 +114,8 @@ thrown_status( false ),
 moving( 0 ),
 current_map( chr.current_map ),
 die_sound( NULL ),
-landed_sound( NULL ){
+landed_sound( NULL ),
+explode( false ){
 
 	/* these are set in object.cpp */
 	// setHealth( chr.getHealth() );
@@ -574,6 +575,13 @@ void Character::takeDamage( ObjectAttack * obj, int damage ){
 	
 	// cout << getName() << " has " << currentDamage() << " damage" << endl;
 	if ( (currentDamage() > getToughness() || getHealth() <= 0 || getStatus() == Status_Jumping) && getStatus() != Status_Fell ){
+
+		if ( (currentDamage() > getToughness() && getHealth() <= 0) ||
+		     getHealth() < -10 ||
+		     getHealth() <= 0 ){
+			explode = true;
+		}
+
 		reduceDamage( currentDamage() );
 		/*
 		animation_current = movements[ "fall" ];
@@ -596,7 +604,7 @@ void Character::takeDamage( ObjectAttack * obj, int damage ){
 	// if ( animation_current->empty() )
 		animation_current->reset();
 
-	if ( getHealth() <= 0 && death == 0 ){
+	if ( ! explode && getHealth() <= 0 && death == 0 ){
 		death = 1;
 		setHealth( 1 );
 
@@ -605,6 +613,20 @@ void Character::takeDamage( ObjectAttack * obj, int damage ){
 		}
 		// cout<<getName()<<" died from regular damage"<<endl;
 		// setStatus( Status_Dead );
+	}
+}
+	
+void Character::died( vector< Object * > & objects ){
+	if ( explode ){
+		for ( int i = 0; i < 20 + Util::rnd( 10 ); i++ ){
+			int x = (int) getX();
+			int y = (int) (getY() - Util::rnd( getHeight() ));
+			// int y = (int) (getY() - 50);
+
+			double dx = (Util::rnd( 11 ) - 5) / 3.5;
+			double dy = (Util::rnd( 10 ) + 4) / 3.0;
+			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy ) );
+		}
 	}
 }
 
