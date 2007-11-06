@@ -177,6 +177,13 @@ src/level/block.cpp
 src/level/blockobject.cpp
 src/level/scene.cpp)
 
+set(ENV_SRC
+src/environment/atmosphere.cpp
+src/environment/rain_atmosphere.cpp
+src/environment/snow_atmosphere.cpp
+src/environment/night_atmosphere.cpp
+src/environment/fog_atmosphere.cpp)
+
 set(FACTORY_SRC
 src/factory/font_factory.cpp
 src/factory/heart_factory.cpp
@@ -206,6 +213,7 @@ src/object/animation_event_zdistance.cpp
 src/object/display_character.cpp
 src/object/effect.cpp
 src/object/enemy.cpp
+src/object/gib.cpp
 src/object/item.cpp
 src/object/object.cpp
 src/object/object_attack.cpp
@@ -252,7 +260,7 @@ src/menu/option_speed.cpp
 src/menu/optionfactory.cpp
 )
 
-set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC} ${LOADPNG_SRC} ${MENU_SRC})
+set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC} ${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC})
 
 # -------------------------------------------------------
 # Include directory
