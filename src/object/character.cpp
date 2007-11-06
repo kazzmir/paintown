@@ -619,8 +619,9 @@ void Character::takeDamage( ObjectAttack * obj, int damage ){
 void Character::died( vector< Object * > & objects ){
 	if ( explode ){
 		for ( int i = 0; i < 20 + Util::rnd( 10 ); i++ ){
+		// for ( int i = 0; i < 1; i++ ){
 			int x = (int) getX();
-			int y = (int) (getY() - Util::rnd( getHeight() ));
+			int y = (int) (getY() + Util::rnd( getHeight() ));
 			// int y = (int) (getY() - 50);
 
 			double dx = (Util::rnd( 11 ) - 5) / 3.5;

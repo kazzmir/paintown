@@ -1,3 +1,4 @@
+#include <iostream>
 #include "object_nonattack.h"
 #include "gib.h"
 #include "util/bitmap.h"
@@ -18,6 +19,7 @@ ObjectNonAttack( g ){
 }
 
 void Gib::draw( Bitmap * work, int rel_x ){
+	// Global::debug( 0 ) << "gib z " << getZ() << " y " << getY() << " ry " << getRY() << std::endl;
 	work->circleFill( getRX() - rel_x, getRY(), 2, Bitmap::makeColor( 255, 0, 0 ) );
 }
 	

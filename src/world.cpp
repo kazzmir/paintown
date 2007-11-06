@@ -208,6 +208,16 @@ void World::doLogic(){
 	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 }
 
+void World::killAllHumans( Object * player ){
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+		Object * o = *it;
+		if ( o != player ){
+			// o->takeDamage( o->getMaxHealth() * 2 );
+			o->takeDamage( NULL, 999999 );
+		}
+	}
+}
+
 int World::getMinimumZ(){
 	return scene->getMinimumZ();
 	/*

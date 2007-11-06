@@ -142,6 +142,8 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 	key.setDelay( Keyboard::Key_P, 100 );
 
 	key.setDelay( Keyboard::Key_F4, 200 );
+
+	key.setDelay( Keyboard::Key_F8, 300 );
 	
 	/* the game graphics are meant for 320x240 and will be stretched
 	 * to fit the screen
@@ -207,6 +209,10 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 			if ( key[ Keyboard::Key_P ] ){
 				paused = ! paused;
 				draw = true;
+			}
+			
+			if ( key[ Keyboard::Key_F8 ] ){
+				world.killAllHumans( player );
 			}
 
 			if ( key[ Keyboard::Key_PLUS_PAD ] ){

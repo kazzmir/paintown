@@ -39,6 +39,8 @@ public:
 
 	virtual int getMaximumZ();
 	virtual int getMinimumZ();
+				
+	void killAllHumans( Object * player );
 
 protected:
 
