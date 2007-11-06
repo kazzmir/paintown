@@ -21,13 +21,14 @@ ObjectNonAttack( g ){
 }
 
 void Gib::draw( Bitmap * work, int rel_x ){
-	int red = Bitmap::makeColor( 255, 0, 0 );
 	for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
 		const Point & p = *it;
+		int l = 200 + p.life * 15;
+		int red = Bitmap::makeColor( l > 255 ? 255 : l, 0, 0 );
 		work->circleFill( p.x - rel_x, p.y, 1, red );
 		// work->putPixel( p.x - rel_x, p.y, red );
 	}
-	image->draw( getRX() - rel_x, getRY(), *work );
+	image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
 }
 	
 Object * Gib::copy(){
@@ -66,7 +67,7 @@ void Gib::act( vector< Object * > * others, World * world, vector< Object * > * 
 	for ( int i = 0; i < 3; i++ ){
 		int x = getRX() + Util::rnd( 5 ) - 2;
 		int y = getRY() + Util::rnd( 5 ) - 2;
-		blood.push_back( Point( x, y, 5 ) );
+		blood.push_back( Point( x, y, 10 ) );
 	}
 
 	for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); ){

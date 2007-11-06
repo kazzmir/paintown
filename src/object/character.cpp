@@ -346,6 +346,18 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
 	body_parts = getBodyParts( getMovement( "idle" ) );
 }
+
+static int nonMaskingPixels( Bitmap * bitmap ){
+	int total = 0;
+	for ( int x = 0; x < bitmap->getWidth(); x++ ){
+		for ( int y = 0; y < bitmap->getHeight(); y++ ){
+			if ( bitmap->getPixel( x, y ) != Bitmap::MaskColor ){
+				total += 1;
+			}
+		}
+	}
+	return total;
+}
 	
 vector< BodyPart > Character::getBodyParts( Animation * animation ){
 	vector< BodyPart > parts;
@@ -359,7 +371,11 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
 	for ( int x = 0; x < bitmap->getWidth(); x += gib_size ){
 		for ( int y = 0; y < bitmap->getHeight(); y += gib_size ){
 			Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
-			parts.push_back( BodyPart( x - getWidth() / 2, getHeight() - y, sub ) );
+			if ( 100.0 * (double) nonMaskingPixels( sub ) / (double) (sub->getWidth() * sub->getHeight()) < 10.0 ){
+				delete sub;
+			} else {
+				parts.push_back( BodyPart( x - getWidth() / 2, getHeight() - y, sub ) );
+			}
 		}
 	}
 
@@ -646,8 +662,8 @@ void Character::died( vector< Object * > & objects ){
 			
 			int x = (int) getX() + part.x;
 			int y = (int) getY() + part.y;
-			double dx = (Util::rnd( 11 ) - 5) / 4.5;
-			double dy = (Util::rnd( 10 ) + 4) / 4.0;
+			double dx = (Util::rnd( 11 ) - 5) / 4.2;
+			double dy = (Util::rnd( 10 ) + 4) / 3.5;
 			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy, part.image ) );
 		}
 		/*
