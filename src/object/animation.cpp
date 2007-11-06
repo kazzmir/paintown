@@ -697,6 +697,19 @@ bool Animation::hasSequence( const string & seq ){
 	*/
 	return false;
 }
+
+Bitmap * Animation::getFrame( int x ){
+	int i = 0;
+	map< string, Frame * >::iterator it;
+	for ( it = frames.begin(); it != frames.end() && i < x; it++, i++ );
+
+	if ( it == frames.end() ){
+		return NULL;
+	}
+
+	Frame * frame = (*it).second;
+	return frame->pic;
+}
 	
 const int Animation::getWidth() const{
 	if ( current_frame )

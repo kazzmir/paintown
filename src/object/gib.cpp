@@ -5,10 +5,11 @@
 #include "globals.h"
 #include <math.h>
 
-Gib::Gib( const int x, const int y, const int z, double dx, double dy ):
+Gib::Gib( const int x, const int y, const int z, double dx, double dy, Bitmap * image ):
 ObjectNonAttack( x, z ),
 dx( dx ),
-dy( dy ){
+dy( dy ),
+image( image ){
 	setY( y );
 	setMaxHealth( 1 );
 	setHealth( 1 );
@@ -20,7 +21,8 @@ ObjectNonAttack( g ){
 
 void Gib::draw( Bitmap * work, int rel_x ){
 	// Global::debug( 0 ) << "gib z " << getZ() << " y " << getY() << " ry " << getRY() << std::endl;
-	work->circleFill( getRX() - rel_x, getRY(), 2, Bitmap::makeColor( 255, 0, 0 ) );
+	// work->circleFill( getRX() - rel_x, getRY(), 2, Bitmap::makeColor( 255, 0, 0 ) );
+	image->draw( getRX() - rel_x, getRY(), *work );
 }
 	
 Object * Gib::copy(){

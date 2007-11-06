@@ -136,6 +136,8 @@ explode( false ){
 	setXVelocity( 0 );
 	setZVelocity( 0 );
 
+	body_parts = chr.body_parts;
+
 	setJumpingYVelocity( chr.getMaxJumpingVelocity() );
 	setShadow( chr.getShadow() );
 	status = chr.getStatus();
@@ -341,6 +343,26 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
 	// animation_current = movements[ "idle" ];
 	animation_current = getMovement( "idle" );
+
+	body_parts = getBodyParts( getMovement( "idle" ) );
+}
+	
+vector< BodyPart > Character::getBodyParts( Animation * animation ){
+	vector< BodyPart > parts;
+
+	Bitmap * bitmap = animation->getFrame( 0 );
+	if ( bitmap == NULL ){
+		return parts;	
+	}
+
+	for ( int x = 0; x < bitmap->getWidth(); x += 10 ){
+		for ( int y = 0; y < bitmap->getHeight(); y += 10 ){
+			Bitmap * sub = new Bitmap( *bitmap, x, y, 10, 10 );
+			parts.push_back( BodyPart( x - getWidth() / 2, getHeight() - y, sub ) );
+		}
+	}
+
+	return parts;
 }
 
 void Character::nextMap(){
@@ -618,6 +640,16 @@ void Character::takeDamage( ObjectAttack * obj, int damage ){
 	
 void Character::died( vector< Object * > & objects ){
 	if ( explode ){
+		for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
+			const BodyPart & part = *it;
+			
+			int x = (int) getX() + part.x;
+			int y = (int) getY() + part.y;
+			double dx = (Util::rnd( 11 ) - 5) / 3.5;
+			double dy = (Util::rnd( 10 ) + 4) / 3.0;
+			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy, part.image ) );
+		}
+		/*
 		for ( int i = 0; i < 20 + Util::rnd( 10 ); i++ ){
 		// for ( int i = 0; i < 1; i++ ){
 			int x = (int) getX();
@@ -628,6 +660,7 @@ void Character::died( vector< Object * > & objects ){
 			double dy = (Util::rnd( 10 ) + 4) / 3.0;
 			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy ) );
 		}
+		*/
 	}
 }
 
@@ -1238,6 +1271,11 @@ void Character::print() const{
 Character::~Character(){
 	if ( own_stuff ){
 		if ( icon ) delete icon;
+
+		for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
+			BodyPart & b = *it;
+			delete b.image;
+		}
 	}
 
 	for ( map< int, map<string,Animation*> >::iterator it = mapper.begin(); it != mapper.end(); it++ ){

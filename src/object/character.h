@@ -17,6 +17,14 @@ class Projectile;
 
 using namespace std;
 
+/* used for gibs */
+struct BodyPart{
+	BodyPart( int x, int y, Bitmap * image ):x(x), y(y), image(image){}
+	/* relative to getX()/getY() */
+	int x, y;
+	Bitmap * image;
+};
+
 /* these should be self explanatory.. */
 const int Status_Ground = 0; /* normal status, on the ground */
 const int Status_Jumping = 1; /* jumping */
@@ -287,6 +295,8 @@ protected:
 	virtual void reMap( const string & from, const string & to, int id );
 	void loadSelf( const char * filename ) throw ( LoadException );
 	bool realCollision( ObjectAttack * obj );
+	
+	vector< BodyPart > getBodyParts( Animation * animation );
 
 	virtual void landed( World * world );
 
@@ -376,6 +386,7 @@ private:
 	/* map from id to map of animations */
 	map< int, map<string,Animation*> > mapper;
 	vector< Object * > projectiles;
+	vector< BodyPart > body_parts;
 	
 	Sound * die_sound;
 	Sound * landed_sound;
