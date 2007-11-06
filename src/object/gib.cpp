@@ -10,6 +10,7 @@ Gib::Gib( const int x, const int y, const int z, double dx, double dy, Bitmap * 
 ObjectNonAttack( x, z ),
 dx( dx ),
 dy( dy ),
+angle( 0 ),
 image( image ){
 	setY( y );
 	setMaxHealth( 1 );
@@ -28,7 +29,8 @@ void Gib::draw( Bitmap * work, int rel_x ){
 		work->circleFill( p.x - rel_x, p.y, 1, red );
 		// work->putPixel( p.x - rel_x, p.y, red );
 	}
-	image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
+	// image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
+	image->drawRotate( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, angle, *work );
 }
 	
 Object * Gib::copy(){
@@ -79,6 +81,8 @@ void Gib::act( vector< Object * > * others, World * world, vector< Object * > * 
 			it++;
 		}
 	}
+
+	angle += (int) sqrt( dx * dx + dy * dy ) * 3;
 }
 
 Gib::~Gib(){

@@ -15,11 +15,6 @@
 
 using namespace std;
 
-#ifndef debug
-#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
-// #define debug
-#endif
-
 World::World():
 player( NULL ),
 quake_time( 0 ),
@@ -130,7 +125,7 @@ const bool World::finished() const {
 void World::doLogic(){
 
 	vector< Object * > added_effects;
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * good = *it;
 		good->act( &objects, this, &added_effects );
 
@@ -179,7 +174,10 @@ void World::doLogic(){
 				}
 			}
 		}
+	}
 
+
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 		if ( (*it)->getHealth() <= 0 ){
 			(*it)->died( added_effects );
 			if ( *it != player ){
@@ -187,7 +185,6 @@ void World::doLogic(){
 			}
 			it = objects.erase( it );
 		} else ++it;
-		// it++;
 	}
 
 	/* special case for getting items */

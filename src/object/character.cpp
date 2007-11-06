@@ -615,9 +615,7 @@ void Character::takeDamage( ObjectAttack * obj, int damage ){
 	// cout << getName() << " has " << currentDamage() << " damage" << endl;
 	if ( (currentDamage() > getToughness() || getHealth() <= 0 || getStatus() == Status_Jumping) && getStatus() != Status_Fell ){
 
-		if ( (currentDamage() > getToughness() && getHealth() <= 0) ||
-		     getHealth() < -10 ||
-		     getHealth() <= 0 ){
+		if ( currentDamage() > getToughness() && getHealth() <= 0 ){
 			explode = true;
 		}
 
