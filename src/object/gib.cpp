@@ -2,6 +2,7 @@
 #include "object_nonattack.h"
 #include "gib.h"
 #include "util/bitmap.h"
+#include "util/funcs.h"
 #include "globals.h"
 #include <math.h>
 
@@ -20,8 +21,12 @@ ObjectNonAttack( g ){
 }
 
 void Gib::draw( Bitmap * work, int rel_x ){
-	// Global::debug( 0 ) << "gib z " << getZ() << " y " << getY() << " ry " << getRY() << std::endl;
-	// work->circleFill( getRX() - rel_x, getRY(), 2, Bitmap::makeColor( 255, 0, 0 ) );
+	int red = Bitmap::makeColor( 255, 0, 0 );
+	for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
+		const Point & p = *it;
+		work->circleFill( p.x - rel_x, p.y, 1, red );
+		// work->putPixel( p.x - rel_x, p.y, red );
+	}
 	image->draw( getRX() - rel_x, getRY(), *work );
 }
 	
@@ -55,6 +60,22 @@ void Gib::act( vector< Object * > * others, World * world, vector< Object * > * 
 		dx = dx / 2;
 		if ( fabs( dy ) < 0.1 ){
 			setHealth( -1 );
+		}
+	}
+
+	for ( int i = 0; i < 3; i++ ){
+		int x = getRX() + Util::rnd( 5 ) - 2;
+		int y = getRY() + Util::rnd( 5 ) - 2;
+		blood.push_back( Point( x, y, 5 ) );
+	}
+
+	for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); ){
+		Point & p = *it;
+		p.life -= 1;
+		if ( p.life <= 0 ){
+			it = blood.erase( it );
+		} else {
+			it++;
 		}
 	}
 }

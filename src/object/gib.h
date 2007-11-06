@@ -3,6 +3,12 @@
 
 #include "object_nonattack.h"
 
+struct Point{
+	Point( int x, int y, int life ):x(x), y(y), life(life){}
+	int x, y;
+	int life;
+};
+
 class Gib: public ObjectNonAttack{
 public:
 	Gib( const int x, const int y, const int z, double dx, double dy, Bitmap * image );
@@ -23,7 +29,7 @@ public:
 protected:
 	double dx, dy;
 	Bitmap * image;
-
+	vector< Point > blood;
 };
 
 #endif
