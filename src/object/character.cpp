@@ -49,6 +49,7 @@ moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
+squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
 explode( false ){
@@ -72,6 +73,7 @@ moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
+squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
 explode( false ){
@@ -98,6 +100,7 @@ moving( 0 ),
 current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
+squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
 explode( false ){
@@ -115,6 +118,7 @@ moving( 0 ),
 current_map( chr.current_map ),
 die_sound( NULL ),
 landed_sound( NULL ),
+squish_sound( NULL ),
 explode( false ){
 
 	/* these are set in object.cpp */
@@ -149,6 +153,10 @@ explode( false ){
 
 	if ( chr.landed_sound != NULL ){
 		landed_sound = new Sound( *(chr.landed_sound) );
+	}
+
+	if ( chr.squish_sound != NULL ){
+		squish_sound = new Sound( *(chr.squish_sound) );
 	}
 
 	/*
@@ -310,6 +318,8 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	map< string, Animation * > & movements = mapper[ current_map ];
 	movements = mapper[ current_map ];
 	*/
+
+	squish_sound = new Sound( dataPath( "sounds/squish.wav" ) );
 
 	for ( map<string,string>::iterator it = remaps.begin(); it != remaps.end(); it++ ){
 		const string & x1 = (*it).first;
@@ -683,6 +693,9 @@ void Character::died( vector< Object * > & objects ){
 			double dx = (Util::rnd( 11 ) - 5) / 4.2;
 			double dy = (Util::rnd( 10 ) + 4) / 3.5;
 			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy, part.image ) );
+		}
+		if ( squish_sound != NULL ){
+			squish_sound->play();
 		}
 		/*
 		for ( int i = 0; i < 20 + Util::rnd( 10 ); i++ ){
@@ -1325,6 +1338,7 @@ Character::~Character(){
 
 	delete die_sound;
 	delete landed_sound;
+	delete squish_sound;
 
 	/*
 	for ( map<string,Animation*>::iterator it = movements.begin(); it != movements.end(); it++ ){

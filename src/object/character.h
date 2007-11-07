@@ -390,6 +390,7 @@ private:
 	
 	Sound * die_sound;
 	Sound * landed_sound;
+	Sound * squish_sound;
 	int invincibility;
 	int toughness;
 	bool explode;
