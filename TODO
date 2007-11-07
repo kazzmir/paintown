@@ -6,4 +6,4 @@ DONE * allow enemies to throw things like daggers and stars
 * level effects like snow and rain
 * level lighting. lamps/objects can make the level brighter as the user gets close to them
 * better "you win"/"you lose" screen
-* be able to gib characters - meaning they explode sometimes when they die
+DONE * be able to gib characters - meaning they explode sometimes when they die
