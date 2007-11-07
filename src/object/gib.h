@@ -29,6 +29,7 @@ public:
 protected:
 	double dx, dy;
 	int angle;
+	int fade;
 	Bitmap * image;
 	vector< Point > blood;
 };

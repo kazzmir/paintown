@@ -11,6 +11,7 @@ ObjectNonAttack( x, z ),
 dx( dx ),
 dy( dy ),
 angle( 0 ),
+fade( 0 ),
 image( image ){
 	setY( y );
 	setMaxHealth( 1 );
@@ -22,15 +23,21 @@ ObjectNonAttack( g ){
 }
 
 void Gib::draw( Bitmap * work, int rel_x ){
-	for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
-		const Point & p = *it;
-		int l = 200 + p.life * 15;
-		int red = Bitmap::makeColor( l > 255 ? 255 : l, 0, 0 );
-		work->circleFill( p.x - rel_x, p.y, 1, red );
-		// work->putPixel( p.x - rel_x, p.y, red );
+	if ( fade > 0 ){
+		// Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
+		Bitmap::transBlender( 0, 0, 0, 255 - fade );
+		image->drawTrans( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
+	} else {
+		for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
+			const Point & p = *it;
+			int l = 200 + p.life * 15;
+			int red = Bitmap::makeColor( l > 255 ? 255 : l, 0, 0 );
+			work->circleFill( p.x - rel_x, p.y, 1, red );
+			// work->putPixel( p.x - rel_x, p.y, red );
+		}
+		// image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
+		image->drawRotate( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, angle, *work );
 	}
-	// image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
-	image->drawRotate( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, angle, *work );
 }
 	
 Object * Gib::copy(){
@@ -54,35 +61,49 @@ const int Gib::getHeight() const {
 }
 	
 void Gib::act( vector< Object * > * others, World * world, vector< Object * > * add ){
-	moveX( dx );
-	moveY( dy );
-	
-	dy -= 0.1;
-	if ( getY() <= 0 ){
-		dy = -dy / 2;
-		dx = dx / 2;
-		if ( fabs( dy ) < 0.1 ){
+	if ( fade > 0 ){
+		fade += 2;
+		if ( fade > 255 ){
 			setHealth( -1 );
 		}
-	}
+	} else {
 
-	for ( int i = 0; i < 3; i++ ){
-		int x = getRX() + Util::rnd( 5 ) - 2;
-		int y = getRY() + Util::rnd( 5 ) - 2;
-		blood.push_back( Point( x, y, 10 ) );
-	}
+		moveX( dx );
+		moveY( dy );
 
-	for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); ){
-		Point & p = *it;
-		p.life -= 1;
-		if ( p.life <= 0 ){
-			it = blood.erase( it );
-		} else {
-			it++;
+		dy -= 0.1;
+		if ( getY() <= 0 ){
+			dy = -dy / 2;
+			dx = dx / 2;
+			if ( fade == 0 && fabs( dy ) < 0.1 ){
+				fade = 1;
+			}
+
+			/*
+			   if ( fabs( dy ) < 0.1 ){
+			   setHealth( -1 );
+			   }
+			   */
 		}
-	}
 
-	angle += (int) sqrt( dx * dx + dy * dy ) * 3;
+		for ( int i = 0; i < 3; i++ ){
+			int x = getRX() + Util::rnd( 5 ) - 2;
+			int y = getRY() + Util::rnd( 5 ) - 2;
+			blood.push_back( Point( x, y, 10 ) );
+		}
+
+		for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); ){
+			Point & p = *it;
+			p.life -= 1;
+			if ( p.life <= 0 ){
+				it = blood.erase( it );
+			} else {
+				it++;
+			}
+		}
+
+		angle += (int) sqrt( dx * dx + dy * dy ) * 3;
+	}
 }
 
 Gib::~Gib(){
