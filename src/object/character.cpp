@@ -358,6 +358,12 @@ static int nonMaskingPixels( Bitmap * bitmap ){
 	}
 	return total;
 }
+
+static void replacePart( vector< BodyPart > & parts, Bitmap * bitmap ){
+	int i = Util::rnd( parts.size() );
+	delete parts[ i ].image;
+	parts[ i ].image = bitmap;
+}
 	
 vector< BodyPart > Character::getBodyParts( Animation * animation ){
 	vector< BodyPart > parts;
@@ -377,6 +383,20 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
 				parts.push_back( BodyPart( x - getWidth() / 2, getHeight() - y, sub ) );
 			}
 		}
+	}
+
+	const char * more[] = { "/misc/body/arm.png",
+				"/misc/body/bone.png",
+				"/misc/body/hand.png",
+				"/misc/body/intestines.png",
+				"/misc/body/leg.png",
+				"/misc/body/ribcage.png",
+				"/misc/body/skull.png",
+				"/misc/body/spine.png",
+				"/misc/body/torso.png" };
+
+	for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i++ ){
+		replacePart( parts, new Bitmap( dataPath( more[ i ] ) ) );	
 	}
 
 	return parts;
