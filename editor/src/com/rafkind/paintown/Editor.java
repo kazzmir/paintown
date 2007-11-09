@@ -941,6 +941,7 @@ public class Editor extends JFrame {
 
 		final JSpinner levelMinZ = (JSpinner) levelEngine.find( "min-z" );
 		final JSpinner levelMaxZ = (JSpinner) levelEngine.find( "max-z" );
+		final JComboBox atmosphere = (JComboBox) levelEngine.find( "atmosphere" );
 		final JTextField levelBackground = (JTextField) levelEngine.find( "background" );
 		final JButton levelChangeBackground = (JButton) levelEngine.find( "change-background" );
 		final Vector frontPanelsData = new Vector();
@@ -973,6 +974,22 @@ public class Editor extends JFrame {
 				foregroundAmount.setText( String.valueOf( level.getForegroundParallax() ) );
 			}
 		});
+
+		atmosphere.addItem( null );
+		atmosphere.addItem( "rain" );
+		atmosphere.addItem( "snow" );
+		atmosphere.addItem( "night" );
+		atmosphere.addItem( "fog" );
+		
+		atmosphere.setSelectedItem( level.getAtmosphere() );
+
+		atmosphere.addActionListener( new ActionListener(){
+				public void actionPerformed( ActionEvent e ){
+					level.setAtmosphere( (String) atmosphere.getSelectedItem() );
+				}
+		});
+
+		atmosphere.setEditable( false );
 
 		class BackPanelCombo implements ComboBoxModel {
 			private Object selected;

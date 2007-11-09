@@ -20,6 +20,11 @@
 			<glue />
 		</hbox>
 		<hbox>
+			<label text="Atmosphere" />
+			<combobox id="atmosphere" />
+			<glue />
+		</hbox>
+		<hbox>
 			<label text="Background parallax" />
 			<slider id="background-parallax-slider" minimum="1" maximum="20" />
 			<label text="0" id="background-parallax-amount" />

@@ -31,6 +31,7 @@ public class Level{
 	private double foregroundParallax;
 	private double scale;
 	private File path;
+	private String atmosphere;
 
 	private List blocks;
 
@@ -59,6 +60,14 @@ public class Level{
 	public Level( File path ) throws LoadException {
 		this.path = path;
 		load( path );
+	}
+
+	public void setAtmosphere( String s ){
+		this.atmosphere = s;
+	}
+
+	public String getAtmosphere(){
+		return this.atmosphere;
 	}
 
 	public void setBackgroundParallax( double d ){
@@ -327,6 +336,7 @@ public class Level{
 		this.scale = 2;
 		this.backgroundParallax = 5;
 		this.foregroundParallax = 1.2;
+		this.atmosphere = null;
 
 		this.width = 640;
 		this.frontPanels = new ArrayList();
@@ -353,6 +363,11 @@ public class Level{
 			if ( max != null ){
 				maxZ = max.readInt( 0 );
 			}
+		}
+
+		Token atm = head.findToken( "atmosphere" );
+		if ( atm != null ){
+			setAtmosphere( atm.readString( 0 ) );
 		}
 
 		Token parallax = head.findToken( "background-parallax" );
@@ -466,6 +481,9 @@ public class Level{
 		z.addToken( new Token( z, "z" ) );
 		z.addToken( new String[]{ "minimum", String.valueOf( getMinZ() ) } );
 		z.addToken( new String[]{ "maximum", String.valueOf( getMaxZ() ) } );
+		if ( getAtmosphere() != null ){
+			level.addToken( new String[]{ "atmosphere", getAtmosphere() } );
+		}
 		level.addToken( new String[]{ "background-parallax", String.valueOf( getBackgroundParallax() ) } );
 		level.addToken( new String[]{ "foreground-parallax", String.valueOf( getForegroundParallax() ) } );
 
