@@ -250,6 +250,10 @@ void Scene::drawBack( int x, Bitmap * work ){
 		Bitmap * normal = cur->pic;
 		normal->draw( fx-x, 0, *work );
 		
+		/* This stuff is from beats of rage, but I probably
+		 * wont use it anymore
+		 */
+		/*
 		Bitmap * xscreen = cur->screen_overlay;
 		if ( xscreen )
 			xscreen->draw( fx-x, 0, *work );
@@ -257,6 +261,7 @@ void Scene::drawBack( int x, Bitmap * work ){
 		Bitmap * neon = cur->neon;
 		if ( neon )
 			neon->draw( fx-x, 0, *work );
+		*/
 
 		fx += normal->getWidth();
 	}
