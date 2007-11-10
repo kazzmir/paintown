@@ -30,6 +30,19 @@
 			<label text="Block: " />
 			<spinner id="block" />
 		</hbox>
+		<buttongroup>
+
+			<hbox>
+				<radiobutton id="none" selected="true" HorizontalAlignment="SwingConstants.LEFT" text="None" />
+				<glue />
+			</hbox>
+			<hbox>
+				<radiobutton id="health" HorizontalAlignment="SwingConstants.LEFT" text="Health" />
+				<label enabled="false" text="0" />
+				<spinner enabled="false" id="health-spinner" />
+				<glue />
+			</hbox>
+		</buttongroup>
 	</vbox>
 	<hbox>
 		<gridbagconstraints
@@ -43,6 +56,8 @@
 			/>
 
 		<button id="save" text="Save" />
+		<glue size="1" />
 		<button id="close" text="Close" />
+		<glue />
 	</hbox>
 </panel>

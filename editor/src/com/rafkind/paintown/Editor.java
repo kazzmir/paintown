@@ -63,12 +63,19 @@ public class Editor extends JFrame {
 		menuProgram.setMnemonic( KeyEvent.VK_P );
 		data.setMnemonic( KeyEvent.VK_D );
 		quit.setMnemonic( KeyEvent.VK_Q );
+		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
 		newLevel.setMnemonic( KeyEvent.VK_N );
+		newLevel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK));
 		menuLevel.setMnemonic( KeyEvent.VK_L );
 		saveLevel.setMnemonic( KeyEvent.VK_S );
+
+		saveLevel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
 		saveLevelAs.setMnemonic( KeyEvent.VK_A );
+		saveLevelAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK));
 		loadLevel.setMnemonic( KeyEvent.VK_O );
+		loadLevel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
 		closeLevel.setMnemonic( KeyEvent.VK_C );
+		closeLevel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Event.CTRL_MASK));
 
 		final JTabbedPane tabbed = new JTabbedPane();
 		this.getContentPane().add( tabbed );
@@ -142,7 +149,7 @@ public class Editor extends JFrame {
 				final Level level = (Level) level_;
 				final File file = (File) file_;
 				FileOutputStream out = new FileOutputStream( file );
-				new PrintStream( out ).print( level.toToken().toString() );
+				new PrintStream( out ).print( level.toToken().toString() + "\n" );
 				out.close();
 				System.out.println( level.toToken().toString() );
 				return null;
