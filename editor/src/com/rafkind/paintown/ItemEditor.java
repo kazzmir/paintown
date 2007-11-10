@@ -2,12 +2,14 @@ package com.rafkind.paintown;
 
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 
 import java.util.Iterator;
 
 import com.rafkind.paintown.level.Item;
 import com.rafkind.paintown.level.Level;
 import com.rafkind.paintown.level.Block;
+import com.rafkind.paintown.level.Stimulation;
 
 import org.swixml.SwingEngine;
 
@@ -51,6 +53,36 @@ public class ItemEditor implements PropertyEditor {
 		final JTextField path = (JTextField) engine.find( "path" );
 		path.setText( item.getPath() );
 		path.setEditable( false );
+
+		final JLabel healthLabel = (JLabel) engine.find( "health-label" );
+		final JSpinner healthSpinner = (JSpinner) engine.find( "health-spinner" );
+		final JRadioButton healthRadio = (JRadioButton) engine.find( "health" );
+
+		final Stimulation.HealthStimulation healthStimulation = item.getStimulation() != null && item.getStimulation() instanceof Stimulation.HealthStimulation ? new Stimulation.HealthStimulation( item.getStimulation() ) : new Stimulation.HealthStimulation();
+
+		healthRadio.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				healthLabel.setEnabled( true );
+				healthSpinner.setEnabled( true );
+			}
+		});
+
+		healthSpinner.setValue( new Integer( healthStimulation.getHealth() ) );
+		healthSpinner.addChangeListener( new ChangeListener(){
+			public void stateChanged( ChangeEvent e ){
+				JSpinner spinner = healthSpinner;
+				Integer i = (Integer) spinner.getValue();
+				healthStimulation.setHealth( i.intValue() );
+			}
+		});
+
+		final JRadioButton noneRadio = (JRadioButton) engine.find( "none" );
+		noneRadio.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				healthLabel.setEnabled( false );
+				healthSpinner.setEnabled( false );
+			}
+		});
 		
 		block.setModel( new MinMaxSpinnerModel( findBlock( level ), 1, level.getBlocks().size() ) );
 
@@ -81,6 +113,12 @@ public class ItemEditor implements PropertyEditor {
 
 				item.removeListener( update );
 				closeProc.invoke_();
+
+				if ( noneRadio.isSelected() ){
+					item.setStimulation( null );
+				} else if ( healthRadio.isSelected() ){
+					item.setStimulation( healthStimulation );
+				}
 			}
 		});
 

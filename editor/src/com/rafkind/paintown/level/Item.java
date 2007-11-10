@@ -16,7 +16,7 @@ import com.rafkind.paintown.Editor;
 
 public class Item extends Thing {
 
-	private Token stimulation;
+	private Stimulation stimulation;
 
 	public Item( Token token ) throws LoadException {
 		super( token );
@@ -24,12 +24,25 @@ public class Item extends Thing {
 		if ( name != null ){
 			setName( name.readString( 0 ) );
 		}
-		stimulation = token.findToken( "stimulation" );
+		Token stim = token.findToken( "stimulation" );
+		if ( stim != null ){
+			stimulation = Stimulation.load( stim );
+		}
 	}
 
 	public Item( Item copy ){
 		super( copy );
-		stimulation = copy.stimulation;
+		if ( copy.stimulation != null ){
+			stimulation = copy.stimulation.copy();
+		}
+	}
+
+	public Stimulation getStimulation(){
+		return stimulation;
+	}
+
+	public void setStimulation( Stimulation s ){
+		stimulation = s;
 	}
 
 	protected BufferedImage readIdleImage( String file ) throws LoadException {
@@ -75,7 +88,7 @@ public class Item extends Thing {
 		thing.addToken( new String[]{ "path", getPath() } );
 		thing.addToken( new String[]{ "coords", String.valueOf( getX() ), String.valueOf( getY() ) } );
 		if ( stimulation != null ){
-			thing.addToken( stimulation );
+			thing.addToken( stimulation.toToken() );
 		}
 
 		return thing;

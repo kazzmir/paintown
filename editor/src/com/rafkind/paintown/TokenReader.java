@@ -27,6 +27,7 @@ public class TokenReader{
 				if ( inString ){
 					if ( c == '"' ){
 						inString = false;
+						current.addData( '"' );
 					} else {
 						if ( current != null ){
 							current.addData( c );
@@ -51,6 +52,7 @@ public class TokenReader{
 					}
 					case '"' : {
 						inString = true;
+						current.addData( '"' );
 						break;
 					}
 					case '	' :

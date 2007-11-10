@@ -65,7 +65,12 @@ public class Token{
 	public void endData(){
 		if ( ! currentData.equals( "" ) ){
 			// System.out.println( "Added " + currentData );
-			this.tokens.add( new Token( this, currentData ) );
+			String stripped = currentData;
+			if ( stripped.matches( "^\".*\"$" ) ){
+				stripped = stripped.substring( 1, stripped.length() - 1 );
+			}
+			// this.tokens.add( new Token( this, currentData ) );
+			this.tokens.add( new Token( this, stripped ) );
 			currentData = "";
 		}
 	}

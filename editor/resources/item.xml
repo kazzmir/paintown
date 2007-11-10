@@ -38,7 +38,7 @@
 			</hbox>
 			<hbox>
 				<radiobutton id="health" HorizontalAlignment="SwingConstants.LEFT" text="Health" />
-				<label enabled="false" text="0" />
+				<label id="health-label" enabled="false" text="0" />
 				<spinner enabled="false" id="health-spinner" />
 				<glue />
 			</hbox>
