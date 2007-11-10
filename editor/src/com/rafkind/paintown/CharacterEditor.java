@@ -167,7 +167,6 @@ public class CharacterEditor implements PropertyEditor {
 
 		character.addListener( update );
 
-		
 		block.setModel( new MinMaxSpinnerModel( findBlock( level ), 1, level.getBlocks().size() ) );
 		final JSpinner map = (JSpinner) engine.find( "map" );
 		map.setModel( new MinMaxSpinnerModel( character.getMap(), 0, character.getMaxMaps() ) );

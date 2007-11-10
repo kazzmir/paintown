@@ -60,6 +60,12 @@ public class ItemEditor implements PropertyEditor {
 
 		final Stimulation.HealthStimulation healthStimulation = item.getStimulation() != null && item.getStimulation() instanceof Stimulation.HealthStimulation ? new Stimulation.HealthStimulation( item.getStimulation() ) : new Stimulation.HealthStimulation();
 
+		if ( item.getStimulation() instanceof Stimulation.HealthStimulation ){
+			healthRadio.setSelected( true );
+			healthLabel.setEnabled( true );
+			healthSpinner.setEnabled( true );
+		}
+
 		healthRadio.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				healthLabel.setEnabled( true );
