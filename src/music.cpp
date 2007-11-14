@@ -392,19 +392,19 @@ bool Music::internal_loadSong( const char * path ){
 	for ( int i = 0; i < 4; i++ ){
 		switch ( i ){
 			case 0 : {
-				music_file = dumb_load_xm( path );
+				music_file = dumb_load_xm_quick( path );
 				break;
 			}
 			case 1 : {
-				music_file = dumb_load_s3m( path );
+				music_file = dumb_load_s3m_quick( path );
 				break;
 			}
 			case 2 : {
-				music_file = dumb_load_it( path );
+				music_file = dumb_load_it_quick( path );
 				break;
 			}
 			case 3 : {
-				music_file = dumb_load_mod( path );
+				music_file = dumb_load_mod_quick( path );
 				break;
 			}
 		}
