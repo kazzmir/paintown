@@ -48,8 +48,9 @@ Requirements:
 
 	You need the following things to compile Paintown:
 	* gcc - http://www.gnu.org/software/gcc/
-	* python - http://www.python.org
 	Either * scons - http://www.scons.org
+	       * python - http://www.python.org
+        Or
 	       * cmake - http://www.cmake.org
 	* Allegro - 4.1 or higher. http://alleg.sf.net
 	* zlib - http://www.zlib.net/
@@ -60,3 +61,4 @@ Requirements:
 Thanks:
 	Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	
 	DUMB - http://dumb.sf.net
+	loadpng - http://tjaden.strangesoft.net/loadpng/
