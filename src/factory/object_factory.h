@@ -3,6 +3,7 @@
 
 class Object;
 class BlockObject;
+class Actor;
 class Heart;
 class Item;
 class Enemy;
@@ -24,6 +25,7 @@ private:
 
 	Object * makeItem( Item * item, BlockObject * block );
 	Object * makeEnemy( Enemy * enemy, BlockObject * block );
+	Object * makeActor( Actor * ret, BlockObject * block );
 
 	~ObjectFactory();
 

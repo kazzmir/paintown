@@ -4,10 +4,11 @@
 #include "object_nonattack.h"
 
 class Bitmap;
+class Animation;
 
 class Actor: public ObjectNonAttack {
 public:
-	Actor( const string & filename, Stimulation * const stimulation ) throw( LoadException );
+	Actor( const string & filename ) throw( LoadException );
 	Actor( const Actor & item );
 	
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
@@ -20,6 +21,9 @@ public:
 	virtual Object * copy();
 	
 	virtual ~Actor();
+
+protected:
+	Animation * animation;
 };
 
 #endif

@@ -24,30 +24,29 @@ stimulation( stimulation ){
 	setMaxHealth( 1 );
 	setHealth( 1 );
 
-	Token * head;
 	try{
+		Token * head;
 		head = tr.readToken();
+
+		if ( *head != "item" ){
+			throw new LoadException( "Item does not begin with 'item'" );
+		}
+
+		while ( head->hasTokens() ){
+			Token * next = head->readToken();
+			if ( *next == "frame" ){
+				string file;
+				*next >> file;
+				picture.load( dataPath( file ) );
+			} else if ( *next == "sound" ){
+				string path;
+				*next >> path;
+				sound = Sound( dataPath( path ) );
+			}
+		}
 	} catch( const TokenException & ex ){
 		cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
-		// delete head;
-		throw LoadException("Could not open character file");
-	}
-
-	if ( *head != "item" ){
-		throw new LoadException( "Item does not begin with 'item'" );
-	}
-
-	while ( head->hasTokens() ){
-		Token * next = head->readToken();
-		if ( *next == "frame" ){
-			string file;
-			*next >> file;
-			picture.load( dataPath( file ) );
-		} else if ( *next == "sound" ){
-			string path;
-			*next >> path;
-			sound = Sound( dataPath( path ) );
-		}
+		throw LoadException("Could not open item file");
 	}
 
 	collide = new ECollide( picture );

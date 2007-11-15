@@ -31,6 +31,8 @@ stimulationValue( 0 ){
 					type = OBJECT_ITEM;
 				} else if ( k == "enemy" ){
 					type = OBJECT_ENEMY;
+				} else if ( k == "actor" ){
+					type = OBJECT_ACTOR;
 				} else {
 					tok->print(" ");
 					throw LoadException("Not a valid type");

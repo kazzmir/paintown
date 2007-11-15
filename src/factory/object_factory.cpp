@@ -5,6 +5,7 @@
 #include "object/stimulation.h"
 #include "level/blockobject.h"
 #include "object/enemy.h"
+#include "object/actor.h"
 #include "object/heart.h"
 #include "object/item.h"
 #include "util/load_exception.h"
@@ -49,6 +50,15 @@ Object * ObjectFactory::makeItem( Item * item, BlockObject * block ){
 
 }
 
+Object * ObjectFactory::makeActor( Actor * ret, BlockObject * block ){
+	int x, z;
+	block->getCoords( x, z );
+	ret->setX( x );
+	ret->setZ( z );
+
+	return ret;
+}
+
 Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 
 	int x, z;
@@ -81,6 +91,19 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				}
 				
 				return makeItem( (Item *) cached[ block->getPath() ]->copy(), block );
+			} catch ( const LoadException & le ){
+				Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
+			}
+			break;
+		}
+		case OBJECT_ACTOR : {
+			try{
+				if ( cached[ block->getPath() ] == NULL ){
+					cached[ block->getPath() ] = new Actor( block->getPath() );
+					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+				}
+
+				return makeActor( (Actor *) cached[ block->getPath() ]->copy(), block );
 			} catch ( const LoadException & le ){
 				Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
 			}

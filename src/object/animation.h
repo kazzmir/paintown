@@ -126,6 +126,7 @@ public:
 	void setZ( const int x );
 
 	Bitmap * getFrame( int x );
+	const Bitmap * getCurrentFrame() const;
 
 	/* makes the owner jump with velocity x,y,z */
 	void jump( double vx, double vy, double vz );

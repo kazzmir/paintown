@@ -89,7 +89,7 @@ contact( NULL ){
 	prev_sequence = "none";
 	next_sequence = "none";
 
-	if ( *tok != "anim" ){
+	if ( *tok != "anim" && *tok != "animation" ){
 		cout<<"Not an animation"<<endl;
 		throw LoadException("Not an animation");
 	}
@@ -723,6 +723,10 @@ const int Animation::getHeight() const{
 		return current_frame->getHeight();
 	return 0;
 }
+	
+const Bitmap * Animation::getCurrentFrame() const {
+	return current_frame;
+}
 
 const string Animation::getCurrentFramePath() const {
 	return current_frame->getPath();
@@ -1033,6 +1037,7 @@ const bool Animation::empty(){
 Animation::~Animation(){
 	// cout<<"Animation destructor "<<getName()<<":"<<this<<endl;
 	if ( own_events ){
+		// Global::debug( 1 ) << "Destroy animation events" << endl;
 		for ( vector< AnimationEvent * >::iterator it = events.begin(); it != events.end(); it++ )
 			delete *it;
 
@@ -1043,6 +1048,7 @@ Animation::~Animation(){
 		delete contact;
 	}
 	if ( own_bitmaps ){
+		// Global::debug( 1 ) << "Destroy animation bitmaps" << endl;
 		for ( map< string, Frame * >::iterator it = frames.begin(); it != frames.end(); it++ ){
 			Frame * x = (*it).second;
 			// cout<<"Deleting frame "<<x<<" path = "<<x->pic->getPath()<<endl;
