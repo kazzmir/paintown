@@ -14,6 +14,7 @@
 #include "menu/option_background.h"
 
 #include <queue>
+#include <map>
 
 Bitmap *Menu::work = 0;
 
@@ -25,6 +26,18 @@ static std::queue<MenuOption *> backgrounds;
 
 const int yellow = Bitmap::makeColor( 255, 255, 0 );
 const int white = Bitmap::makeColor( 255, 255, 255 );
+
+static std::map<std::string, Menu *> _menus;
+
+static void addMenu(Menu *m) throw( LoadException )
+{
+	std::map<std::string, Menu *>::iterator i = _menus.find(m->getName());
+	if(i==_menus.end())
+	{
+		_menus[m->getName()] = m;
+	}
+	else throw LoadException("A menu by the name of \""+m->getName()+"\" already exists!"); 
+}
 
 RectArea::RectArea() : x(0), y(0), width(0), height(0)
 {
@@ -43,7 +56,7 @@ bool RectArea::empty()
 	return (x==0 && y==0 && width==0 && height==0);
 }
 
-Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(24), fontHeight(24), _name("")
+Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(24), fontHeight(24), _menuflags(0), _name("")
 {
 	if(!work)work = new Bitmap(Bitmap::Screen->getWidth(), Bitmap::Screen->getHeight()); //Bitmap::Screen;
 }
@@ -125,6 +138,7 @@ void Menu::load(Token *token)throw( LoadException )
 	if(_name.empty())throw LoadException("No name set, the menu should have a name!");
 	if(backgrounds.empty())throw LoadException("There should be at least one background in the entire menu!");
 	if(position.empty())throw LoadException("The position for the menu list must be set!");
+	addMenu(this);
 	
 	if(!vFont)
 	{
@@ -151,7 +165,7 @@ void Menu::load(const std::string &filename)throw( LoadException )
 	load(token);
 }
 
-void Menu::run() throw(ReturnException)
+useflags Menu::run()
 {
 	
 	Keyboard key;
@@ -166,7 +180,7 @@ void Menu::run() throw(ReturnException)
 	bool done = false;
 	bool endGame = false;
 	
-	if(menuOptions.empty())throw ReturnException();
+	if(menuOptions.empty())return _menuflags;
 	selectedOption = menuOptions.begin();
 	menuOptions.front()->setState(MenuOption::Selected);
 	
@@ -302,8 +316,17 @@ void Menu::run() throw(ReturnException)
 			}
 		}
 	}
+	
+	return _menuflags;
 }
 
+
+Menu *Menu::getMenu(const std::string &name)
+{
+	std::map<std::string, Menu *>::iterator i = _menus.find(name);
+	if(i!=_menus.end())return i->second;
+	return 0;
+}
 
 const std::string &Menu::getName()
 {
