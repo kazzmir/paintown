@@ -49,6 +49,7 @@ shadow.cpp
 """))
 
 addFiles( "object/", Split("""
+actor.cpp
 animation.cpp
 animation_event.cpp
 animation_event_attack.cpp
