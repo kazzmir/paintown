@@ -23,7 +23,7 @@ state( IDLE1 ){
 		Token * head;
 		head = tr.readToken();
 		if ( *head != "cat" ){
-			throw new LoadException( "File does not begin with 'Cat'" );
+			throw LoadException( "File does not begin with 'Cat'" );
 		}
 
 		while ( head->hasTokens() ){
@@ -34,7 +34,7 @@ state( IDLE1 ){
 			}
 		}
 		if ( animations.size() == 0 ){
-			throw new LoadException( "No animation given" );
+			throw LoadException( "No animation given" );
 		}
 	} catch( const TokenException & ex ){
 		cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
