@@ -7,8 +7,6 @@
 #include "object.h"
 #include "globals.h"
 
-using namespace std;
-
 class ObjectAttack;
 
 class ObjectNonAttack : public Object {
@@ -28,8 +26,7 @@ public:
 	virtual const std::string & getAttackName();
 
 protected:
-	string no_name;
-
+	std::string no_name;
 };
 
 #endif
