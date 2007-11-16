@@ -29,7 +29,7 @@ stimulation( stimulation ){
 		head = tr.readToken();
 
 		if ( *head != "item" ){
-			throw new LoadException( "Item does not begin with 'item'" );
+			throw LoadException( "Item does not begin with 'item'" );
 		}
 
 		while ( head->hasTokens() ){

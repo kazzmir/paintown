@@ -17,7 +17,7 @@ ObjectNonAttack( 0, 0 ){
 		Token * head;
 		head = tr.readToken();
 		if ( *head != "actor" ){
-			throw new LoadException( "File does not begin with 'actor'" );
+			throw LoadException( "File does not begin with 'actor'" );
 		}
 
 		while ( head->hasTokens() ){
@@ -28,7 +28,7 @@ ObjectNonAttack( 0, 0 ){
 			}
 		}
 		if ( animations.size() == 0 ){
-			throw new LoadException( "No animation given" );
+			throw LoadException( "No animation given" );
 		}
 	} catch( const TokenException & ex ){
 		cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
