@@ -6,6 +6,7 @@
 #include "animation.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
+#include <math.h>
 #include "cat.h"
 
 using namespace std;
@@ -217,6 +218,10 @@ void Cat::draw( Bitmap * work, int rel_x ){
 		current_animation->Draw( getRX() - rel_x, getRY(), work );
 	} else {
 		current_animation->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+	}
+
+	if ( Util::rnd( 2000 ) == 0 ){
+		meow.play( (int)(255 - fabs(getRX() - rel_x) / 50), 128 + (getRX() - rel_x) / 50 );
 	}
 }
 
