@@ -23,7 +23,8 @@ public:
 	virtual ~Actor();
 
 protected:
-	Animation * animation;
+	vector< Animation * > animations;
+	Animation * current_animation;
 };
 
 #endif

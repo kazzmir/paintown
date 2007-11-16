@@ -44,38 +44,24 @@ finished( -1 ){
 				*current >> f;
 				setFinished( f );
 			} else if ( *current == "object" ){
-				BlockObject * so;
 				try{ 
-					so = new BlockObject( current );
+					BlockObject * so = new BlockObject( current );
+
+					/* cache the object in the factory */
+					Object * tmp = ObjectFactory::createObject( so );
+					if ( tmp == NULL ){
+						current->print(" ");
+						delete so;
+						throw LoadException( "Could not cache object" );
+					} else {
+						/* clean up! */
+
+						delete tmp;
+						objects.push_back( so );
+					}
+
 				} catch ( const LoadException & le ){
 					throw le;
-				}
-
-				// cout<<"Caching object. Type: "<<so->getType()<<endl;
-				// current->print(" ");
-
-				/* cache the object in the factory */
-				Object * tmp = ObjectFactory::createObject( so );
-				if ( tmp == NULL ){
-					current->print(" ");
-					delete so;
-					throw LoadException( "Could not cache object" );
-				} else {
-					/* clean up! */
-
-					/*
-					Heart * old_heart = NULL;
-
-					if ( so->getType() == OBJECT_ENEMY )
-						Heart * old_heart = ((Enemy *)tmp)->getHeart();
-					*/
-					delete tmp;
-					/*
-					if ( old_heart )
-						delete old_heart;
-					*/
-
-					objects.push_back( so );
 				}
 			}
 		} catch( const TokenException & te ){
@@ -115,7 +101,7 @@ vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, 
 			}
 
 			/* does this violate some OOP principle? oh wel */
-			if ( obj->getType() == OBJECT_ENEMY ){
+			if ( obj->getType() == ObjectFactory::OBJECT_ENEMY ){
 				Heart * h = ((Enemy *)newobj)->getHeart();
 				hearts.push_back( h );
 			}

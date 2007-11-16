@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "blockobject.h"
+#include "factory/object_factory.h"
 #include "util/load_exception.h"
 #include "util/token_exception.h"
 #include "util/token.h"
@@ -28,11 +29,13 @@ stimulationValue( 0 ){
 				string k;
 				*current >> k;
 				if ( k == "item" ){
-					type = OBJECT_ITEM;
+					type = ObjectFactory::OBJECT_ITEM;
 				} else if ( k == "enemy" ){
-					type = OBJECT_ENEMY;
+					type = ObjectFactory::OBJECT_ENEMY;
 				} else if ( k == "actor" ){
-					type = OBJECT_ACTOR;
+					type = ObjectFactory::OBJECT_ACTOR;
+				} else if ( k == "cat" ){
+					type = ObjectFactory::OBJECT_CAT;
 				} else {
 					tok->print(" ");
 					throw LoadException("Not a valid type");

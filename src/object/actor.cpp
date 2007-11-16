@@ -7,8 +7,7 @@
 #include "actor.h"
 
 Actor::Actor( const string & filename ) throw( LoadException ):
-ObjectNonAttack( 0, 0 ),
-animation( 0 ){
+ObjectNonAttack( 0, 0 ){
 
 	setMaxHealth( 1 );
 	setHealth( 1 );
@@ -24,37 +23,42 @@ animation( 0 ){
 		while ( head->hasTokens() ){
 			Token * next = head->readToken();
 			if ( *next == "animation" ){
-				animation = new Animation( next, 0 );
-				animation->reset();
-				Global::debug( 1 ) << "Created animation " << animation << " bitmap = " << animation->getCurrentFrame()->getBitmap() << endl;
+				Animation * animation = new Animation( next, 0 );
+				animations.push_back( animation );
 			}
 		}
-		if ( animation == NULL ){
+		if ( animations.size() == 0 ){
 			throw new LoadException( "No animation given" );
 		}
 	} catch( const TokenException & ex ){
 		cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
 		throw LoadException( "Could not open file" );
 	}
+	current_animation = animations[ 0 ];
 }
 
 Actor::Actor( const Actor & actor ):
-ObjectNonAttack( actor ),
-animation( 0 ){
+ObjectNonAttack( actor ){
 	setMaxHealth( actor.getMaxHealth() );
 	setHealth( actor.getHealth() );
+	/*
 	animation = new Animation( *actor.animation, 0 );
 	animation->reset();
+	*/
+	for ( vector< Animation * >::const_iterator it = actor.animations.begin(); it != actor.animations.end(); it++ ){
+		animations.push_back( new Animation( **it, 0 ) );
+	}
+	current_animation = animations[ 0 ];
 }
 	
 void Actor::act( vector< Object * > * others, World * world, vector< Object * > * add ){
-	if ( animation->Act() ){
-		animation->reset();
+	if ( current_animation->Act() ){
+		current_animation->reset();
 	}
 }
 
 void Actor::draw( Bitmap * work, int rel_x ){
-	animation->Draw( getRX() - rel_x, getRY(), work );
+	current_animation->Draw( getRX() - rel_x, getRY(), work );
 }
 
 bool Actor::isCollidable( Object * obj ){
@@ -78,6 +82,8 @@ Object * Actor::copy(){
 }
 
 Actor::~Actor(){
-	delete animation;
+	for ( vector< Animation * >::iterator it = animations.begin(); it != animations.end(); it++ ){
+		delete *it;
+	}
 }
 

@@ -4,6 +4,7 @@
 class Object;
 class BlockObject;
 class Actor;
+class Cat;
 class Heart;
 class Item;
 class Enemy;
@@ -19,6 +20,12 @@ public:
 	static Object * createObject( BlockObject * block );
 	static void destroy();
 
+public:
+	static const int OBJECT_ITEM = 1;
+	static const int OBJECT_ENEMY = 2;
+	static const int OBJECT_ACTOR = 3;
+	static const int OBJECT_CAT = 4;
+
 private:
 	ObjectFactory();
 	Object * makeObject( BlockObject * block );
@@ -26,6 +33,7 @@ private:
 	Object * makeItem( Item * item, BlockObject * block );
 	Object * makeEnemy( Enemy * enemy, BlockObject * block );
 	Object * makeActor( Actor * ret, BlockObject * block );
+	Object * makeCat( Cat * ret, BlockObject * block );
 
 	~ObjectFactory();
 

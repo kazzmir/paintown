@@ -6,6 +6,7 @@
 #include "level/blockobject.h"
 #include "object/enemy.h"
 #include "object/actor.h"
+#include "object/cat.h"
 #include "object/heart.h"
 #include "object/item.h"
 #include "util/load_exception.h"
@@ -59,6 +60,15 @@ Object * ObjectFactory::makeActor( Actor * ret, BlockObject * block ){
 	return ret;
 }
 
+Object * ObjectFactory::makeCat( Cat * ret, BlockObject * block ){
+	int x, z;
+	block->getCoords( x, z );
+	ret->setX( x );
+	ret->setZ( z );
+
+	return ret;
+}
+
 Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 
 	int x, z;
@@ -80,64 +90,55 @@ Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 }
 
 Object * ObjectFactory::makeObject( BlockObject * block ){
-	// Object * ret = NULL;
 	
-	switch( block->getType() ){
-		case OBJECT_ITEM : {
-			try{
+	try{
+		switch( block->getType() ){
+			case OBJECT_ITEM : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
 				}
-				
+
 				return makeItem( (Item *) cached[ block->getPath() ]->copy(), block );
-			} catch ( const LoadException & le ){
-				Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
+
+				break;
 			}
-			break;
-		}
-		case OBJECT_ACTOR : {
-			try{
+			case OBJECT_ACTOR : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Actor( block->getPath() );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
 				}
 
 				return makeActor( (Actor *) cached[ block->getPath() ]->copy(), block );
-			} catch ( const LoadException & le ){
-				Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
+				break;
 			}
-			break;
-		}
-		case OBJECT_ENEMY : {
-		
-			try{
+			case OBJECT_ENEMY : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Enemy( block->getPath() );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
 				}
 
 				return makeEnemy( (Enemy *) cached[ block->getPath() ]->copy(), block );
-			} catch ( const LoadException & le ){
-				Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
+				break;
 			}
-			break;
-		}
-		default : {
-			Global::debug( 0 ) <<__FILE__<<": No type given for: "<<block->getPath()<<endl;
-			return NULL;
+			case OBJECT_CAT : {
+				if ( cached[ block->getPath() ] == NULL ){
+					cached[ block->getPath() ] = new Cat( block->getPath() );
+					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+				}
 
-			break;
+				return makeCat( (Cat *) cached[ block->getPath() ]->copy(), block );
+				break;
+			}
+			default : {
+				Global::debug( 0 ) <<__FILE__<<": No type given for: "<<block->getPath()<<endl;
+				break;
+			}
 		}
+	} catch ( const LoadException & le ){
+		Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
 	}
 
-	/* we keep the original becuase only the original stores the animations
-	 * and other special memory things 
-	 */
-	// cout<<"Adding cached object to factory"<<endl;
-	// cached[ block->getName() ] = ret;
-	// cout<<"Object factory has "<<cached.size()<<" elements"<<endl;
-	// return ret->copy();
 	return NULL;
 }
 
