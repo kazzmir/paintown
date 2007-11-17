@@ -40,6 +40,8 @@ public class Block{
 					objects.add( new Character( t ) );
 				} else if ( str.equals( "item" ) ){
 					objects.add( new Item( t ) );
+				} else if ( str.equals( "cat" ) ){
+					objects.add( new Cat( t ) );
 				} else {
 					System.out.println( "Warning: ignoring object of type '" + str + "' at line " + type.getLine() );
 				}

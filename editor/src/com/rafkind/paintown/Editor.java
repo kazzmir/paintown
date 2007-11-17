@@ -324,6 +324,7 @@ public class Editor extends JFrame {
 		data.add( new File( "misc/apple/apple.txt" ) );
 		data.add( new File( "misc/cake/cake.txt" ) );
 		data.add( new File( "misc/chicken/chicken.txt" ) );
+		data.add( new File( "misc/cat/cat.txt" ) );
 		return data;
 	}
 
@@ -549,6 +550,12 @@ public class Editor extends JFrame {
 					temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
 					temp.addToken( new String[]{ "path", path } );
 					// System.out.println( "Make item from " + temp.toString() );
+					return new Item( temp );
+				} else if ( head.getName().equals( "cat" ) ){
+					Token temp = new Token();
+					temp.addToken( new Token( "item" ) );
+					temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
+					temp.addToken( new String[]{ "path", path } );
 					return new Item( temp );
 				}
 				throw new LoadException( "Unknown type: " + head.getName() );
