@@ -319,6 +319,14 @@ protected:
 		invincibility = x;
 	}
 
+	virtual inline void setExplode( bool b ){
+		explode = b;
+	}
+
+	virtual bool getExplode(){
+		return explode;
+	}
+
 protected:
 	string name;
 	// int speed;

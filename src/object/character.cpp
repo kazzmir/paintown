@@ -638,15 +638,13 @@ void Character::fall( double x_vel, double y_vel ){
 }
 	
 void Character::takeDamage( ObjectAttack * obj, int damage ){
-	// if ( getStatus() == Status_Dead ) return;
-	// cout<<this<<" "<<getName()<<" taking "<<x<<" damage"<<endl;
 	Object::takeDamage( obj, damage );
 	
-	// cout << getName() << " has " << currentDamage() << " damage" << endl;
+	Global::debug( 2 ) << getName() << " has " << currentDamage() << " damage" << endl;
 	if ( (currentDamage() > getToughness() || getHealth() <= 0 || getStatus() == Status_Jumping) && getStatus() != Status_Fell ){
 
 		if ( currentDamage() > getToughness() && getHealth() <= 0 ){
-			explode = true;
+			setExplode( true );
 		}
 
 		reduceDamage( currentDamage() );
@@ -656,35 +654,27 @@ void Character::takeDamage( ObjectAttack * obj, int damage ){
 		if ( getLink() != NULL ){
 			getLink()->unGrab();
 		}
-
-		/ * fall backwards * /
-		setXVelocity( -1.7 );
-		setYVelocity( 4.9 );
 		*/
+
 		fall( -1.7, 4.4 );
-		// cout<<getName()<<" falling. death = "<<death<<" health = "<<getHealth()<<" status = "<<getStatus()<<endl;
 	} else	{
 		animation_current = getMovement( "pain" );
-		// animation_current = movements[ "pain" ];
 		setStatus( Status_Hurt );
 	}
-	// if ( animation_current->empty() )
-		animation_current->reset();
+	animation_current->reset();
 
-	if ( ! explode && getHealth() <= 0 && death == 0 ){
+	if ( ! getExplode() && getHealth() <= 0 && death == 0 ){
 		death = 1;
 		setHealth( 1 );
 
 		if ( die_sound ){
 			die_sound->play();
 		}
-		// cout<<getName()<<" died from regular damage"<<endl;
-		// setStatus( Status_Dead );
 	}
 }
 	
 void Character::died( vector< Object * > & objects ){
-	if ( explode ){
+	if ( getExplode() ){
 		for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
 			const BodyPart & part = *it;
 			

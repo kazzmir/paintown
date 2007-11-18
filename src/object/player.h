@@ -39,6 +39,14 @@ public:
 	
 	virtual void hurt( int x );
 
+	virtual inline void setExplode( bool b ){
+		/* */
+	}
+
+	virtual bool getExplode(){
+		return false;
+	}
+
 	virtual void loseLife( int l = 1 );
 	virtual void gainLife( int l = 1 );
 
