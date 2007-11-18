@@ -44,6 +44,10 @@
 
 #include <pthread.h>
 
+#include "sockets/SocketHandler.h"
+#include "sockets/ListenSocket.h"
+#include "sockets/TcpSocket.h"
+
 /* Global effect for copying */
 // static Object * bang = NULL;
 
@@ -707,7 +711,6 @@ static void realGame( Object * player, const string & levelFile ){
 			playerX->setStatus( Status_Falling );
 
 			stopLoading( loading_screen_thread );
-			
 
 			gameState = playLevel( world, playerX, showHelp );
 			showHelp = 0;
@@ -1042,6 +1045,11 @@ static void networkServer(){
 
 	Object * player = NULL;
 	try{
+		SocketHandler handler;
+		ListenSocket< TcpSocket > listen( handler );
+		listen.Bind( port );
+		handler.Add( &listen );
+		// NetworkWorld world( port );
 		string level = selectLevelSet( Util::getDataPath() + "/levels" );
 		key.wait();
 
@@ -1051,7 +1059,7 @@ static void networkServer(){
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 	} catch ( const ReturnException & r ){
-		key.wait();
+		// key.wait();
 	}
 	if ( player != NULL ){
 		delete player;

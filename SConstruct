@@ -49,7 +49,7 @@ else:
 # env.Append( CCFLAGS = '-m32' )
 # env.Append( LINKFLAGS = '-m32' )
 
-env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ "." ] )
+env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
 
 dumb = SConscript( "src/dumb/SConscript", build_dir = 'build/dumb' )
 sockets = SConscript( "src/sockets/SConscript", build_dir = 'build/sockets' )
