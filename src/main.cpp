@@ -956,6 +956,108 @@ static void setupControls( controls * player, int left, int right, int up, int d
 	}
 }
 
+static int getServerPort(){
+	const int drawY = 160;
+	{
+		Bitmap background( Util::getDataPath() + "/paintown-title.png" );
+		background.BlitToScreen();
+		const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+		font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port:", 0 );
+	}
+
+	Keyboard key;
+	key.setAllDelay( 90 );
+	key.setDelay( Keyboard::Key_BACKSPACE, 30 );
+	key.setDelay( Keyboard::Key_ESC, 0 );
+
+	Bitmap work( 200, 25 );
+
+	char buffer[ 10 ];
+	unsigned int index = 0;
+	Global::speed_counter = 0;
+	bool done = false;
+	vector< int > pressed;
+	pressed.push_back( Keyboard::Key_7 );
+	pressed.push_back( Keyboard::Key_8 );
+	pressed.push_back( Keyboard::Key_8 );
+	pressed.push_back( Keyboard::Key_7 );
+	while ( ! done ){
+
+		while ( Global::speed_counter > 0 ){
+			Global::speed_counter -= 1;
+			key.readKeys( pressed );
+			if ( key[ Keyboard::Key_ESC ] ){
+				throw ReturnException();
+			}
+		}
+
+		if ( pressed.size() > 0 ){
+			for ( vector< int >::iterator it = pressed.begin(); it != pressed.end(); it++ ){
+				int xkey = *it;
+				// Global::debug( 0 ) << "Pressed " << Keyboard::keyToName( key ) << endl;
+				if ( xkey == Keyboard::Key_BACKSPACE ){
+					if ( index > 0 ){
+						index -= 1;
+					}
+					buffer[ index ] = 0;
+			   } else if ( xkey == Keyboard::Key_ENTER ){
+					done = true;
+					key.wait();
+				} else if ( Keyboard::isNumber( xkey ) ){
+					const char * name = Keyboard::keyToName( xkey );
+					buffer[ index ] = name[ 0 ];
+					index += 1;
+					if ( index > sizeof(buffer) / sizeof(char) - 1 ){
+						index = sizeof(buffer) / sizeof(char) - 1;
+					}
+					buffer[ index ] = 0;
+				}
+			}
+			pressed.clear();
+			work.clear();
+			const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+			font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
+			work.Blit( 100, drawY, *Bitmap::Screen );
+		}
+
+		while ( Global::speed_counter == 0 ){
+			Util::rest( 1 );
+			key.poll();
+		}
+	}
+
+   istringstream str( buffer );
+	int i;
+	str >> i;
+	return i;
+}
+
+static void networkServer(){
+
+	int port = getServerPort();
+
+	Keyboard key;
+
+	Global::debug( 0 ) << "Port " << port << endl;
+
+	Object * player = NULL;
+	try{
+		string level = selectLevelSet( Util::getDataPath() + "/levels" );
+		key.wait();
+
+		player = selectPlayer( false );
+		((Player *)player)->setLives( startingLives );
+		realGame( player, level );
+	} catch ( const LoadException & le ){
+		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
+	} catch ( const ReturnException & r ){
+		key.wait();
+	}
+	if ( player != NULL ){
+		delete player;
+	}
+}
+
 static bool titleScreen(){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	Bitmap temp( GFX_X, GFX_Y );
@@ -968,14 +1070,18 @@ static bool titleScreen(){
 
 	const int MAIN_PLAY = 0;
 	const int MAIN_VERSUS = 1;
-	const int MAIN_CHANGE_CONTROLS1 = 2;
-	const int MAIN_CHANGE_CONTROLS2 = 3;
-	const int MAIN_MORE_OPTIONS = 4;
-	const int MAIN_CREDITS = 5;
-	const int MAIN_QUIT = 6;
+	const int MAIN_NETWORK_SERVER = 2;
+	const int MAIN_NETWORK_CLIENT = 3;
+	const int MAIN_CHANGE_CONTROLS1 = 4;
+	const int MAIN_CHANGE_CONTROLS2 = 5;
+	const int MAIN_MORE_OPTIONS = 6;
+	const int MAIN_CREDITS = 7;
+	const int MAIN_QUIT = 8;
 	const char * mainOptions[] = {
 		"Adventure mode",
 		"Versus mode",
+		"Network - host",
+		"Network - join",
 		"Player 1 controls",
 		"Player 2 controls",
 		"More options",
@@ -1145,6 +1251,13 @@ static bool titleScreen(){
 								options = versusOptions;
 								maxOptions = versusMax;
 								choose = 0;
+								break;
+							}
+							case MAIN_NETWORK_SERVER : {
+								done = true;
+								break;
+							}
+							case MAIN_NETWORK_CLIENT : {
 								break;
 							}
 							case MAIN_CHANGE_CONTROLS1 : {
@@ -1322,6 +1435,16 @@ static bool titleScreen(){
 		switch ( choose ){
 			case MAIN_QUIT : {
 				return false;
+				break;
+			}
+
+			case MAIN_NETWORK_SERVER : {
+				try{
+					networkServer();
+				} catch ( const ReturnException & e ){
+					key.wait();
+				}
+				return true;
 				break;
 			}
 			

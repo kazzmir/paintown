@@ -52,13 +52,14 @@ else:
 env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ "." ] )
 
 dumb = SConscript( "src/dumb/SConscript", build_dir = 'build/dumb' )
+sockets = SConscript( "src/sockets/SConscript", build_dir = 'build/sockets' )
 
 if False:
 	env.Append( CCFLAGS = '-pg' )
 	env.Append( LINKFLAGS = '-pg' )
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
-env.Append( LIBS = dumb )
+env.Append( LIBS = [dumb,sockets] )
 
 staticEnv = env.Copy()
 
@@ -70,7 +71,6 @@ if isWindows():
 else:
 	env.Append( LIBS = [ 'pthread' ] )
 	staticEnv.Append( LIBS = [ 'pthread' ] )
-
 
 	if isOSX():
 		staticEnv[ 'CXX' ] = 'misc/g++'

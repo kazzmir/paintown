@@ -1,0 +1,54 @@
+import os
+
+env = Environment( ENV = os.environ )
+
+env.BuildDir('build','src')
+
+source = map( lambda x: 'build/%s' % x, Split("""
+Base64.cpp
+Debug.cpp
+Event.cpp
+EventHandler.cpp
+EventTime.cpp
+Exception.cpp
+File.cpp
+HTTPSocket.cpp
+HttpClientSocket.cpp
+HttpDebugSocket.cpp
+HttpGetSocket.cpp
+HttpPostSocket.cpp
+HttpPutSocket.cpp
+HttpdCookies.cpp
+HttpdForm.cpp
+HttpdSocket.cpp
+IEventOwner.cpp
+Ipv4Address.cpp
+Ipv6Address.cpp
+Lock.cpp
+MemFile.cpp
+Mutex.cpp
+Parse.cpp
+RandomNumber.cpp
+ResolvServer.cpp
+ResolvSocket.cpp
+SSLInitializer.cpp
+SctpSocket.cpp
+Semaphore.cpp
+SmtpdSocket.cpp
+Socket.cpp
+SocketHandler.cpp
+Sockets-config.cpp
+StdoutLog.cpp
+StreamSocket.cpp
+TcpSocket.cpp
+Thread.cpp
+UdpSocket.cpp
+Utility.cpp
+socket_include.cpp
+"""));
+
+env.Append( CPPPATH = 'sockets' )
+env.Append( CPPDEFINES = ['LINUX','_VERSION=1'] )
+env.Append( CCFLAGS = '-O2' )
+sockets = env.StaticLibrary( 'sockets-cpp', source )
+Return( 'sockets' )
