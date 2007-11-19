@@ -112,9 +112,7 @@ void VersusWorld::act(){
 
 		if ( *it != player1 && *it != player2 && (*it)->getHealth() <= 0 ){
 			(*it)->died( added_effects );
-			if ( *it != player ){
-				delete *it;
-			}
+			delete *it;
 			it = objects.erase( it );
 		} else ++it;
 	}
@@ -139,7 +137,7 @@ void VersusWorld::draw( Bitmap * work ){
 		vector<Object *> & xx = (*it).second;
 		for ( vector<Object *>::iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 
-			(*mm)->draw( work, min_x );
+			(*mm)->draw( work, 0 );
 		}
 	}
 }

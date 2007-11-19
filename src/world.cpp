@@ -16,21 +16,25 @@
 using namespace std;
 
 World::World():
-player( NULL ),
-quake_time( 0 ),
-min_x( 0 ){
+quake_time( 0 ){
 	scene = NULL;
 	bang = NULL;
 }
 
-World::World( Object * _player, const string & path, int _screen_size ) throw( LoadException ):
-player( _player ),
+World::World( const vector< Object * > & players, const string & path, int _screen_size ) throw( LoadException ):
 quake_time( 0 ),
-min_x( 0 ),
 path( path ){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
+
+	for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+		PlayerTracker t;
+		t.min_x = 0;
+		t.player = *it;
+		// this->players.push_back( (PlayerTracker) { .min_x = 0, .player = *it } );
+		this->players.push_back( t );
+	}
 
 	loadLevel( path );
 
@@ -50,15 +54,14 @@ World::~World(){
 	if ( scene ){
 		delete scene;
 	}
-	
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		if ( *it != player )
-			delete *it;
-	}
+
+	deleteObjects( &objects );
 }
 
 void World::reloadLevel() throw( LoadException ){
-	min_x = 0;
+	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+		it->min_x = 0;
+	}
 	loadLevel( path );
 }
 	
@@ -87,19 +90,28 @@ void World::loadLevel( const string & path ) throw( LoadException ){
 	}
 	bang = effect;
 		
-	if ( player != NULL ){
+	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+		Object * const player = it->player;	
 		player->setX( 140 );
 		player->setZ( (getMinimumZ() + getMaximumZ()) / 2 );
 		player->setY( 0 );
 	}
 
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		if ( *it != player )
-			delete *it;
-	}
+	deleteObjects( &objects );
+	
 	objects.clear();
-	if ( player != NULL ){
-		objects.push_back( player );
+	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+		objects.push_back( it->player );
+	}
+
+}
+	
+void World::deleteObjects( vector< Object * > * objects ){
+
+	for ( vector< Object * >::iterator it = objects->begin(); it != objects->end(); it++ ){
+		if ( ! isPlayer( *it ) ){
+			delete *it;
+		}
 	}
 
 }
@@ -110,16 +122,27 @@ void World::Quake( int q ){
 
 /* true if the player has crossed the finish line */
 const bool World::finished() const {
-	if ( player != NULL ){
-		int f = scene->getFinished();
-		if ( f != -1 ){
-			return player->getX() >= f;
-		} else {
-			return false;
+	int f = scene->getFinished();
+	if ( players.size() > 0 ){
+		for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
+			Object * const player = it->player;
+			if ( f != -1 && player->getX() >= f ){
+				return player->getX() >= f;
+			}
 		}
+		return false;
 	} else {
 		return true;
 	}
+}
+	
+const bool World::isPlayer( Object * o ) const {
+		for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
+			if ( it->player == o ){
+				return true;
+			}
+		}
+		return false;
 }
 
 void World::doLogic(){
@@ -180,7 +203,7 @@ void World::doLogic(){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 		if ( (*it)->getHealth() <= 0 ){
 			(*it)->died( added_effects );
-			if ( *it != player ){
+			if ( ! isPlayer( *it ) ){
 				delete *it;
 			}
 			it = objects.erase( it );
@@ -188,8 +211,8 @@ void World::doLogic(){
 	}
 
 	/* special case for getting items */
-	if ( player != NULL ){
-		Character * const cplayer = (Character *) player; 
+	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+		Character * const cplayer = (Character *) it->player; 
 		if ( cplayer->getStatus() == Status_Get ){
 			for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 				Object * const o = *it;
@@ -237,24 +260,26 @@ void World::act(){
 		
 	doLogic();
 	
-	if ( player != NULL ){
+	double lowest = 9999999;
+	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+		Object * player = it->player;
 		double mx = player->getX() - screen_size / 2;
-		// double mx = ch->getX() - work.getWidth() / 2;
-		if ( min_x < mx ){
-			min_x++;
-			// min_x_virtual += 1.2;
+		if ( it->min_x < mx ){
+			it->min_x++;
 		}
-		if ( min_x + screen_size >= scene->getLimit() ){
-			min_x = scene->getLimit() - screen_size;
+	
+		if ( it->min_x + screen_size >= scene->getLimit() ){
+			it->min_x = scene->getLimit() - screen_size;
 		}
-		/*
-		if ( min_x >= scene->getLimit() ){
-			min_x = scene->getLimit();
+
+		if ( it->min_x < lowest ){
+			lowest = it->min_x;
 		}
-		*/
-		if ( player->getX() < min_x ){
-			player->setX( min_x );
+		
+		if ( player->getX() < it->min_x ){
+			player->setX( it->min_x );
 		}
+
 		if ( player->getX() > scene->getLimit() ){
 			player->setX( scene->getLimit() );
 		}
@@ -264,10 +289,10 @@ void World::act(){
 		if ( player->getZ() > getMaximumZ() ){
 			player->setZ( getMaximumZ() );
 		}
-
 	}
 
-	scene->act( min_x, min_x + screen_size, &objects );
+	// scene->act( min_x, min_x + screen_size, &objects );
+	scene->act( (int) lowest, (int)(lowest + screen_size), &objects );
 }
 
 void World::addObject( Object * o ){
@@ -285,6 +310,10 @@ void World::draw( Bitmap * work ){
 	
 	// min_x = (int)min_x_virtual;
 	
+	int min_x = 0;
+	if ( players.size() > 0 ){
+		min_x = (int) players[ 0 ].min_x;
+	}
 	scene->drawBack( min_x, work );
 	for ( map<int,vector<Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
 		vector<Object *> & xx = (*it).second;

@@ -329,7 +329,9 @@ static void realGame( Object * player, const string & levelFile ){
 
 		bool gameState = false;
 		try {
-			World world( player, *it );
+			vector< Object * > players;
+			players.push_back( player );
+			World world( players, *it );
 
 			Music::pause();
 			Music::fadeIn( 0.3 );

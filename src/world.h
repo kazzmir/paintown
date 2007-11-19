@@ -12,10 +12,15 @@ class Bitmap;
 
 using namespace std;
 
+struct PlayerTracker{
+	double min_x;
+	Object * player;
+};
+
 class World{
 public:
 	World();
-	World( Object * player, const string & path, int screen_size = 320 ) throw ( LoadException );
+	World( const vector< Object * > & players, const string & path, int screen_size = 320 ) throw ( LoadException );
 
 	virtual ~World();
 
@@ -46,10 +51,14 @@ protected:
 
 	void loadLevel( const string & path ) throw( LoadException );
 
+	virtual void deleteObjects( vector< Object * > * objects );
+
 	virtual void doLogic();
 
+	virtual const bool isPlayer( Object * o ) const;
+
 protected:
-	Object * const player;
+	vector< PlayerTracker > players;
 	Object * bang;
 	
 	vector< Object * > objects;
@@ -57,7 +66,7 @@ protected:
 	Scene * scene;
 
 	int quake_time;
-	int min_x;
+	// int min_x;
 	int screen_size;
 	string path;
 

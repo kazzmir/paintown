@@ -679,7 +679,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 	}
 }
 
-static void realGame( Object * player, const string & levelFile ){
+static void realGame( Object * const player, const string & levelFile ){
 
 	vector< string > levels = readLevels( levelFile );
 
@@ -694,7 +694,9 @@ static void realGame( Object * player, const string & levelFile ){
 
 		bool gameState = false;
 		try {
-			World world( player, *it );
+			vector< Object * > players;
+			players.push_back( player );
+			World world( players, *it );
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
