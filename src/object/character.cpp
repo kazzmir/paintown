@@ -135,6 +135,8 @@ explode( false ){
 	icon = chr.icon;
 	setSpeed( chr.getSpeed() );
 
+	path = chr.getPath();
+
 	linked = NULL;
 	setYVelocity( 0 );
 	setXVelocity( 0 );
@@ -355,6 +357,8 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	animation_current = getMovement( "idle" );
 
 	body_parts = getBodyParts( getMovement( "idle" ) );
+
+	path = filename;
 }
 
 static int nonMaskingPixels( Bitmap * bitmap ){

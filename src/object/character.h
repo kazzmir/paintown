@@ -285,6 +285,10 @@ public:
 	}
 	
 	virtual void drawLifeBar( int x, int y, Bitmap * work );
+	
+	virtual inline const string getPath() const {
+		return path;
+	}
 
 protected:
 	
@@ -402,6 +406,8 @@ private:
 	int invincibility;
 	int toughness;
 	bool explode;
+
+	string path;
 };
 
 #endif

@@ -39,7 +39,8 @@ def getDebug():
 debug = getDebug()
 
 cflags = [ '-Wall', '-Werror' ]
-cppflags = [ '-fno-rtti', '-Woverloaded-virtual' ]
+# cppflags = [ '-fno-rtti', '-Woverloaded-virtual' ]
+cppflags = [ '-Woverloaded-virtual' ]
 
 if debug:
 	cflags.append( '-g3' )
@@ -49,17 +50,19 @@ else:
 # env.Append( CCFLAGS = '-m32' )
 # env.Append( LINKFLAGS = '-m32' )
 
-env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
+# env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
+env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'hawknl' ] )
 
 dumb = SConscript( "src/dumb/SConscript", build_dir = 'build/dumb' )
-sockets = SConscript( "src/sockets/SConscript", build_dir = 'build/sockets' )
+# sockets = SConscript( "src/sockets/SConscript", build_dir = 'build/sockets' )
+hawknl = SConscript( "src/hawknl/SConscript", build_dir = 'build/hawknl' )
 
 if False:
 	env.Append( CCFLAGS = '-pg' )
 	env.Append( LINKFLAGS = '-pg' )
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
-env.Append( LIBS = [dumb,sockets] )
+env.Append( LIBS = [dumb,hawknl] )
 
 staticEnv = env.Copy()
 

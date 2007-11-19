@@ -44,9 +44,13 @@
 
 #include <pthread.h>
 
+#include "hawknl/nl.h"
+
+/*
 #include "sockets/SocketHandler.h"
 #include "sockets/ListenSocket.h"
 #include "sockets/TcpSocket.h"
+*/
 
 /* Global effect for copying */
 // static Object * bang = NULL;
@@ -135,7 +139,7 @@ static string findNextFile( const char * name ){
 	return string( buf );
 }
 
-static bool playLevel( World & world, Player * player, int helpTime ){
+static bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
 	Keyboard key;
 	
 	key.setDelay( Keyboard::Key_F2, 100 );
@@ -182,13 +186,16 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 					world.act();
 					runCounter -= 1.0;
 
-					if ( player->getHealth() <= 0 ){
-						player->deathReset();
-						if ( player->getLives() == 0 ){
-							fadeOut( "You lose" );
-							return false;
+					for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+						Player * player = (Player *) *it;
+						if ( player->getHealth() <= 0 ){
+							player->deathReset();
+							if ( player->getLives() == 0 ){
+								fadeOut( "You lose" );
+								return false;
+							}
+							world.addObject( player );
 						}
-						world.addObject( player );
 					}
 
 					if ( helpTime > 0 ){
@@ -215,9 +222,11 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 				draw = true;
 			}
 			
+			/*
 			if ( key[ Keyboard::Key_F8 ] ){
 				world.killAllHumans( player );
 			}
+			*/
 
 			if ( key[ Keyboard::Key_PLUS_PAD ] ){
 				gameSpeed += SPEED_INC;
@@ -679,7 +688,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 	}
 }
 
-static void realGame( Object * const player, const string & levelFile ){
+static void realGame( const vector< Object * > & players, const string & levelFile ){
 
 	vector< string > levels = readLevels( levelFile );
 
@@ -694,8 +703,8 @@ static void realGame( Object * const player, const string & levelFile ){
 
 		bool gameState = false;
 		try {
-			vector< Object * > players;
-			players.push_back( player );
+			// vector< Object * > players;
+			// players.push_back( player );
 			World world( players, *it );
 
 			Music::pause();
@@ -703,18 +712,20 @@ static void realGame( Object * const player, const string & levelFile ){
 			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
 			Music::play();
 
-			Player * playerX = (Player *) player;
-			playerX->setY( 200 );
-			/* setMoving(false) sets all velocities to 0 */
-			playerX->setMoving( false );
-			/* but the player is falling so set it back to true */
-			playerX->setMoving( true );
+			for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+				Player * playerX = (Player *) *it;
+				playerX->setY( 200 );
+				/* setMoving(false) sets all velocities to 0 */
+				playerX->setMoving( false );
+				/* but the player is falling so set it back to true */
+				playerX->setMoving( true );
 
-			playerX->setStatus( Status_Falling );
+				playerX->setStatus( Status_Falling );
+			}
 
 			stopLoading( loading_screen_thread );
 
-			gameState = playLevel( world, playerX, showHelp );
+			gameState = playLevel( world, players, showHelp );
 			showHelp = 0;
 
 		} catch ( const LoadException & le ){
@@ -1031,11 +1042,80 @@ static int getServerPort(){
 		}
 	}
 
-   istringstream str( buffer );
+	istringstream str( buffer );
 	int i;
 	str >> i;
 	return i;
 }
+
+/*
+class PaintownSocketHandler: public SocketHandler{
+public:
+	PaintownSocketHandler():
+	SocketHandler( 0 ){
+	}
+
+	bool OkToAccept( Socket * p ){
+		return clients.size() < 2;
+	}
+
+	void addClient( Socket * p ){
+		clients.push_back( p );
+	}
+
+	int numClients(){
+		return clients.size();
+	}
+
+	~PaintownSocketHandler(){
+	}
+
+protected:
+	vector< Socket * > clients;
+};
+
+class PaintownServerSocket: public TcpSocket {
+public:
+	PaintownServerSocket( ISocketHandler & handler ):
+	TcpSocket( handler ){
+		dynamic_cast<PaintownSocketHandler &>(handler).addClient( this );
+	}
+
+	virtual void OnAccept(){
+		Global::debug( 0 ) << "Added client " << endl;
+	}
+
+	virtual void OnRead(){
+		TcpSocket::OnRead();
+		size_t n = ibuf.GetLength();
+		if (n > 0){
+			char tmp[128];
+			ibuf.Read(tmp,n);
+			printf("Read %d bytes:\n", (int) n );
+			for (size_t i = 0; i < n; i++)
+			{
+				printf("%c",isprint(tmp[i]) ? tmp[i] : '.');
+			}
+			printf("\n");
+		}
+	}
+};
+
+class PaintownClientSocket: public TcpSocket {
+public:
+	PaintownClientSocket( ISocketHandler & handler ):
+	TcpSocket( handler ){
+	}
+
+	virtual void OnConnect(){
+		Global::debug( 0 ) << "Client connected to server" << endl;
+	}
+
+	void sendPath( const string & path ){
+		Send( path );
+	}
+};
+*/
 
 static void networkServer(){
 
@@ -1047,17 +1127,49 @@ static void networkServer(){
 
 	Object * player = NULL;
 	try{
-		SocketHandler handler;
-		ListenSocket< TcpSocket > listen( handler );
-		listen.Bind( port );
-		handler.Add( &listen );
+		Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
+
+		const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+		font.printf( 100, 200, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Waiting for a connection", 0 );
+		nlEnable( NL_BLOCKING_IO );
+		NLsocket server = nlOpen( port, NL_RELIABLE );
+		if ( server == NL_INVALID ){
+			Global::debug( 0 ) << "hawknl error: " << nlGetErrorStr( nlGetError() ) << endl;
+		}
+		nlListen( server );
+		NLsocket client = nlAcceptConnection( server );
+		while ( client == NL_INVALID ){
+			Util::rest( 1 );
+			client = nlAcceptConnection( server );
+		}
+		NLint group;
+		group = nlGroupCreate();
+		nlGroupAddSocket( group, client );
+
+		// NLsocket polled;
+		// nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
+		char buffer[ 1024 ];
+		int read = nlRead( client, buffer, 1024 );
+		Global::debug( 0 ) << "Read " << read << " bytes" << endl;
+		int length = *(uint32_t *) buffer;
+		Global::debug( 0 ) << "Length " << length << endl;
+		// nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
+		// nlRead( polled, buffer, 1024 );
+		nlRead( client, buffer, 1024 );
+		buffer[ length ] = 0;
+		Global::debug( 0 ) << "Client is " << buffer << endl;
+
 		// NetworkWorld world( port );
 		string level = selectLevelSet( Util::getDataPath() + "/levels" );
 		key.wait();
 
 		player = selectPlayer( false );
 		((Player *)player)->setLives( startingLives );
-		realGame( player, level );
+		vector< Object * > players;
+		players.push_back( player );
+		realGame( players, level );
+
+		nlClose( server );
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 	} catch ( const ReturnException & r ){
@@ -1065,6 +1177,37 @@ static void networkServer(){
 	}
 	if ( player != NULL ){
 		delete player;
+	}
+}
+
+static void networkClient(){
+	nlEnable( NL_BLOCKING_IO );
+	NLaddress address;
+	nlGetAddrFromName( "localhost", &address );
+	nlSetAddrPort( &address, 7887 );
+	NLsocket socket = nlOpen( 0, NL_RELIABLE );
+	nlConnect( socket, &address );
+	/*
+	SocketHandler handler;
+	PaintownClientSocket socket( handler );
+	socket.Open( "localhost", 7887 );
+	handler.Add( &socket );
+	handler.Select( 1, 0 );
+	*/
+		
+	try{
+		char buffer[ 1024 ];
+		Character * player = (Character *) selectPlayer( false );
+		string path = player->getPath();
+		path.erase( 0, Util::getDataPath().length() );
+		*(uint32_t *)buffer = (uint32_t) path.length() + 1;
+		nlWrite( socket, buffer, sizeof(uint32_t) );
+		strcpy( buffer, path.c_str() );
+		Global::debug( 0 ) << "sending " << buffer << endl;
+		nlWrite( socket, buffer, strlen( buffer ) + 1 );
+		delete player;
+	} catch ( const LoadException & le ){
+		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 	}
 }
 
@@ -1268,6 +1411,7 @@ static bool titleScreen(){
 								break;
 							}
 							case MAIN_NETWORK_CLIENT : {
+								done = true;
 								break;
 							}
 							case MAIN_CHANGE_CONTROLS1 : {
@@ -1457,6 +1601,15 @@ static bool titleScreen(){
 				return true;
 				break;
 			}
+
+			case MAIN_NETWORK_CLIENT : {
+				try{
+					networkClient();
+				} catch ( const ReturnException & e ){
+					key.wait();
+				}
+				break;
+			}
 			
 			case MAIN_PLAY : {
 				Object * player = NULL;
@@ -1466,7 +1619,9 @@ static bool titleScreen(){
 					
 					player = selectPlayer( isInvincible );
 					((Player *)player)->setLives( startingLives );
-					realGame( player, level );
+					vector< Object * > players;
+					players.push_back( player );
+					realGame( players, level );
 				} catch ( const LoadException & le ){
 					Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 				} catch ( const ReturnException & r ){
@@ -1590,6 +1745,9 @@ int paintown_main( int argc, char ** argv ){
 	 * factory crap, just create one here
 	 */
 	Music m;
+
+	nlInit();
+	nlSelectNetwork( NL_IP );
 
 	if ( show_loading_screen ){
 		pthread_mutex_init( &Global::loading_screen_mutex, NULL );

@@ -1,0 +1,23 @@
+import os
+
+env = Environment( ENV = os.environ )
+
+source = Split("""
+src/crc.c
+src/err.c
+src/errorstr.c
+src/group.c
+src/htcondition.c
+src/hthread.c
+src/htmutex.c
+src/ipx.c
+src/loopback.c
+src/nl.c
+src/nltime.c
+src/sock.c
+""");
+
+env.Append( CPPPATH = 'hawknl' )
+
+x = env.StaticLibrary( 'hawknl', source )
+Return( 'x' )

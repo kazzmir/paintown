@@ -5,6 +5,7 @@
 #include "loading.h"
 #include "util/font.h"
 #include "util/funcs.h"
+#include "globals.h"
 #include <vector>
 #include <pthread.h>
 #include "init.h"
@@ -23,6 +24,8 @@ void * loadingScreen( void * arg ){
 	const char * the_string = "Loading Paintown";
 	int load_width = myFont.textLength( the_string );
 	int load_height = myFont.getHeight( the_string );
+
+	Global::debug( 0 ) << "loading screen" << endl;
 
 	Bitmap work( load_width, load_height );
 	Bitmap letters( load_width, load_height );

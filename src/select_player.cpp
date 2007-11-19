@@ -38,7 +38,7 @@ static PlayerVector loadPlayers( const char * path ){
 		string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
 		Global::debug( 1 ) << "Checking " << file << endl;
 		if ( Util::exists( file ) ){
-			Global::debug( 0 ) << "Loading " << file << endl;
+			Global::debug( 1 ) << "Loading " << file << endl;
 			try{
 				players.push_back( playerInfo( new DisplayCharacter( file ), file ) );
 			} catch ( const LoadException & le ){
