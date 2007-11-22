@@ -749,6 +749,80 @@ static void realGame( const vector< Object * > & players, const string & levelFi
 	fadeOut( "You win!" );
 }
 
+static void networkSendLevel( const vector< NLsocket > & sockets, string level ){
+	char buf[ 10 ];
+	level.erase( 0, Util::getDataPath().length() );
+	*(uint16_t *) buf = level.length();
+	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+		NLsocket socket = *it;
+		nlWrite( socket, buf, sizeof(uint16_t) );
+		nlWrite( socket, level.c_str(), level.length() + 1 );
+	}
+}
+
+static void networkGame( const vector< Object * > & players, const string & levelFile, const vector< NLsocket > & sockets ){
+
+	vector< string > levels = readLevels( levelFile );
+
+	// global_debug = true;
+
+	int showHelp = 300;
+	for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
+		Global::done_loading = false;
+		pthread_t loading_screen_thread;
+
+		startLoading( &loading_screen_thread );
+
+		networkSendLevel( sockets, *it );
+
+		bool gameState = false;
+		try {
+			// vector< Object * > players;
+			// players.push_back( player );
+			World world( players, *it );
+
+			Music::pause();
+			Music::fadeIn( 0.3 );
+			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+			Music::play();
+
+			for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+				Player * playerX = (Player *) *it;
+				playerX->setY( 200 );
+				/* setMoving(false) sets all velocities to 0 */
+				playerX->setMoving( false );
+				/* but the player is falling so set it back to true */
+				playerX->setMoving( true );
+
+				playerX->setStatus( Status_Falling );
+			}
+
+			stopLoading( loading_screen_thread );
+
+			gameState = playLevel( world, players, showHelp );
+			showHelp = 0;
+
+		} catch ( const LoadException & le ){
+			Global::debug( 0 ) << "Could not load " << *it << " because " << le.getReason() << endl;
+			/* if the level couldn't be loaded turn off
+			 * the loading screen
+			 */
+			stopLoading( loading_screen_thread );
+		}
+
+		ObjectFactory::destroy();
+		HeartFactory::destroy();
+
+		if ( ! gameState ){
+			return;
+		}
+
+		fadeOut( "Next level" );
+	}
+
+	fadeOut( "You win!" );
+}
+
 static bool isArg( const char * s1, const char * s2 ){
 	return strcasecmp( s1, s2 ) == 0;
 }
@@ -1048,75 +1122,6 @@ static int getServerPort(){
 	return i;
 }
 
-/*
-class PaintownSocketHandler: public SocketHandler{
-public:
-	PaintownSocketHandler():
-	SocketHandler( 0 ){
-	}
-
-	bool OkToAccept( Socket * p ){
-		return clients.size() < 2;
-	}
-
-	void addClient( Socket * p ){
-		clients.push_back( p );
-	}
-
-	int numClients(){
-		return clients.size();
-	}
-
-	~PaintownSocketHandler(){
-	}
-
-protected:
-	vector< Socket * > clients;
-};
-
-class PaintownServerSocket: public TcpSocket {
-public:
-	PaintownServerSocket( ISocketHandler & handler ):
-	TcpSocket( handler ){
-		dynamic_cast<PaintownSocketHandler &>(handler).addClient( this );
-	}
-
-	virtual void OnAccept(){
-		Global::debug( 0 ) << "Added client " << endl;
-	}
-
-	virtual void OnRead(){
-		TcpSocket::OnRead();
-		size_t n = ibuf.GetLength();
-		if (n > 0){
-			char tmp[128];
-			ibuf.Read(tmp,n);
-			printf("Read %d bytes:\n", (int) n );
-			for (size_t i = 0; i < n; i++)
-			{
-				printf("%c",isprint(tmp[i]) ? tmp[i] : '.');
-			}
-			printf("\n");
-		}
-	}
-};
-
-class PaintownClientSocket: public TcpSocket {
-public:
-	PaintownClientSocket( ISocketHandler & handler ):
-	TcpSocket( handler ){
-	}
-
-	virtual void OnConnect(){
-		Global::debug( 0 ) << "Client connected to server" << endl;
-	}
-
-	void sendPath( const string & path ){
-		Send( path );
-	}
-};
-*/
-
 static void networkServer(){
 
 	int port = getServerPort();
@@ -1151,23 +1156,28 @@ static void networkServer(){
 		char buffer[ 1024 ];
 		int read = nlRead( client, buffer, 1024 );
 		Global::debug( 0 ) << "Read " << read << " bytes" << endl;
-		int length = *(uint32_t *) buffer;
+		int length = *(uint16_t *) buffer;
 		Global::debug( 0 ) << "Length " << length << endl;
 		// nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
 		// nlRead( polled, buffer, 1024 );
 		nlRead( client, buffer, 1024 );
 		buffer[ length ] = 0;
 		Global::debug( 0 ) << "Client is " << buffer << endl;
+		string clientPath( buffer );
 
 		// NetworkWorld world( port );
 		string level = selectLevelSet( Util::getDataPath() + "/levels" );
 		key.wait();
 
+		vector< NLsocket > sockets;
+		sockets.push_back( client );
+
 		player = selectPlayer( false );
 		((Player *)player)->setLives( startingLives );
 		vector< Object * > players;
 		players.push_back( player );
-		realGame( players, level );
+		players.push_back( new Character( Util::getDataPath() + clientPath, ALLIANCE_PLAYER ) );
+		networkGame( players, level, sockets );
 
 		nlClose( server );
 	} catch ( const LoadException & le ){
@@ -1178,6 +1188,25 @@ static void networkServer(){
 	if ( player != NULL ){
 		delete player;
 	}
+}
+
+namespace Network{
+
+static uint16_t read16( NLsocket socket ){
+	char buf[ 10 ];
+	nlRead( socket, buf, 10 );
+	return *(uint16_t *) buf;
+}
+
+static string readStr( NLsocket socket, uint16_t length ){
+
+	char buffer[ 1024 ];
+	NLint bytes = nlRead( socket, buffer, 1024 );
+	bytes += 1;
+	return string( buffer );
+
+}
+
 }
 
 static void networkClient(){
@@ -1200,11 +1229,24 @@ static void networkClient(){
 		Character * player = (Character *) selectPlayer( false );
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );
-		*(uint32_t *)buffer = (uint32_t) path.length() + 1;
-		nlWrite( socket, buffer, sizeof(uint32_t) );
+		*(uint16_t *)buffer = (uint16_t) path.length() + 1;
+		nlWrite( socket, buffer, sizeof(uint16_t) );
 		strcpy( buffer, path.c_str() );
 		Global::debug( 0 ) << "sending " << buffer << endl;
+		/* send the name of the player */
 		nlWrite( socket, buffer, strlen( buffer ) + 1 );
+
+		uint16_t length = Network::read16( socket );
+		string level = Util::getDataPath() + Network::readStr( socket, length );
+
+		/* read the next level */
+		// nlRead( socket, buffer, 1024 );
+		Global::debug( 0 ) << "Client read buffer '" << level << "'" << endl;
+		vector< Object * > players;
+		players.push_back( player );
+		World world( players, level );
+		playLevel( world, players, 100 );
+
 		delete player;
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
@@ -1720,7 +1762,7 @@ int paintown_main( int argc, char ** argv ){
 		} else if ( isArg( argv[ q ], DATAPATH_ARG ) ){
 			q += 1;
 			if ( q < argc ){
-				Util::setDataPath( argv[ q ] );
+				Util::setDataPath( string( argv[ q ] ) + "/" );
 			}
 		} else if ( isArg( argv[ q ], DEBUG_ARG ) ){
 			q += 1;

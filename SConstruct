@@ -39,8 +39,8 @@ def getDebug():
 debug = getDebug()
 
 cflags = [ '-Wall', '-Werror' ]
-# cppflags = [ '-fno-rtti', '-Woverloaded-virtual' ]
-cppflags = [ '-Woverloaded-virtual' ]
+cppflags = [ '-fno-rtti', '-Woverloaded-virtual' ]
+# cppflags = [ '-Woverloaded-virtual' ]
 
 if debug:
 	cflags.append( '-g3' )
