@@ -40,6 +40,7 @@ debug = getDebug()
 
 cflags = [ '-Wall', '-Werror' ]
 cppflags = [ '-fno-rtti', '-Woverloaded-virtual' ]
+cdefines = []
 # cppflags = [ '-Woverloaded-virtual' ]
 
 if debug:
@@ -51,7 +52,7 @@ else:
 # env.Append( LINKFLAGS = '-m32' )
 
 # env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
-env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'hawknl' ] )
+env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'hawknl' ], CPPDEFINES = cdefines )
 
 dumb = SConscript( "src/dumb/SConscript", build_dir = 'build/dumb' )
 # sockets = SConscript( "src/sockets/SConscript", build_dir = 'build/sockets' )

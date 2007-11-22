@@ -139,6 +139,28 @@ static string findNextFile( const char * name ){
 	return string( buf );
 }
 
+static void drawHelp( const Font & font, int x, int y, int color, Bitmap & buffer ){
+	font.printf( x, y, color, buffer, "Controls", 0 );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Up: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Down: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getDown() ) );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Left: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getLeft() ) );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Right: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getRight() ) );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Jump: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getJump() ) );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Attack1: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack1() ) );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Attack2: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack2() ) );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Attack3: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack3() ) );
+	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Press F1 to view this help", 0 );
+}
+
 static bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
 	Keyboard key;
 	
@@ -165,9 +187,6 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 	int game_time = 100;
 	bool done = false;
 
-	int helpColors[ 100 ];
-	Util::blend_palette( helpColors, 100, Bitmap::makeColor( 110, 110, 110 ), Bitmap::makeColor( 255, 255, 255 ) );
-	
 	double gameSpeed = startingGameSpeed;
 	
 	double runCounter = 0;
@@ -199,7 +218,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 					}
 
 					if ( helpTime > 0 ){
-						helpTime -= 1;
+						helpTime -= 2;
 					}
 				}
 			}
@@ -214,7 +233,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 			}
 
 			if ( key[ Keyboard::Key_F1 ] ){
-				helpTime = helpTime < 110 ? 110 : helpTime;
+				helpTime = helpTime < 260 ? 260 : helpTime;
 			}
 
 			if ( key[ Keyboard::Key_P ] ){
@@ -269,26 +288,11 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 			if ( helpTime > 0 ){
 				int x = 100;
 				int y = screen_buffer.getHeight() / 5;
-				int color = helpColors[ helpTime >= 100 ? 99 : helpTime ];
-				font.printf( x, y, color, screen_buffer, "Controls", 0 );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Up: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Down: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getDown() ) );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Left: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getLeft() ) );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Right: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getRight() ) );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Jump: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getJump() ) );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Attack1: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack1() ) );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Attack2: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack2() ) );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Attack3: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack3() ) );
-				y += font.getHeight() + 1;
-				font.printf( x, y, color, screen_buffer, "Press F1 to view this help", 0 );
+				int color = Bitmap::makeColor( 255, 255, 255 );
+				Bitmap::transBlender( 0, 0, 0, helpTime > 255 ? 255 : helpTime  );
+				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
+				drawHelp( font, x, y, color, screen_buffer );
+				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
 			}
 
 			if ( paused ){
@@ -694,7 +698,7 @@ static void realGame( const vector< Object * > & players, const string & levelFi
 
 	// global_debug = true;
 
-	int showHelp = 300;
+	int showHelp = 450;
 	for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
 		Global::done_loading = false;
 		pthread_t loading_screen_thread;
@@ -1139,7 +1143,7 @@ static void networkServer(){
 		nlEnable( NL_BLOCKING_IO );
 		NLsocket server = nlOpen( port, NL_RELIABLE );
 		if ( server == NL_INVALID ){
-			Global::debug( 0 ) << "hawknl error: " << nlGetErrorStr( nlGetError() ) << endl;
+			Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
 		}
 		nlListen( server );
 		NLsocket client = nlAcceptConnection( server );
@@ -1211,11 +1215,6 @@ static string readStr( NLsocket socket, uint16_t length ){
 
 static void networkClient(){
 	nlEnable( NL_BLOCKING_IO );
-	NLaddress address;
-	nlGetAddrFromName( "localhost", &address );
-	nlSetAddrPort( &address, 7887 );
-	NLsocket socket = nlOpen( 0, NL_RELIABLE );
-	nlConnect( socket, &address );
 	/*
 	SocketHandler handler;
 	PaintownClientSocket socket( handler );
@@ -1229,12 +1228,26 @@ static void networkClient(){
 		Character * player = (Character *) selectPlayer( false );
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );
+		
+		pthread_t loading_screen_thread;
+		startLoading( &loading_screen_thread );
+
+		NLaddress address;
+		nlGetAddrFromName( "localhost", &address );
+		nlSetAddrPort( &address, 7887 );
+		NLsocket socket = nlOpen( 0, NL_RELIABLE );
+		while ( nlConnect( socket, &address ) == NL_FALSE ){
+			Global::debug( 0 ) << "Could not connect: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
+			Util::rest( 1 );
+		}
+
 		*(uint16_t *)buffer = (uint16_t) path.length() + 1;
 		nlWrite( socket, buffer, sizeof(uint16_t) );
 		strcpy( buffer, path.c_str() );
 		Global::debug( 0 ) << "sending " << buffer << endl;
 		/* send the name of the player */
 		nlWrite( socket, buffer, strlen( buffer ) + 1 );
+		Global::debug( 0 ) << "sent " << buffer << endl;
 
 		uint16_t length = Network::read16( socket );
 		string level = Util::getDataPath() + Network::readStr( socket, length );
@@ -1245,11 +1258,14 @@ static void networkClient(){
 		vector< Object * > players;
 		players.push_back( player );
 		World world( players, level );
+
+		stopLoading( loading_screen_thread );
+
 		playLevel( world, players, 100 );
 
 		delete player;
 	} catch ( const LoadException & le ){
-		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
+		Global::debug( 0 ) << "Could not load data: " << le.getReason() << endl;
 	}
 }
 
