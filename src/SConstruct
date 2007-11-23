@@ -16,6 +16,7 @@ init.cpp
 nameplacer.cpp
 select_player.cpp
 network_world.cpp
+network_world_client.cpp
 world.cpp
 versus_world.cpp
 """))

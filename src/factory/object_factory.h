@@ -25,6 +25,7 @@ public:
 	static const int OBJECT_ENEMY = 2;
 	static const int OBJECT_ACTOR = 3;
 	static const int OBJECT_CAT = 4;
+	static const int OBJECT_NETWORK_CHARACTER = 5;
 
 private:
 	ObjectFactory();

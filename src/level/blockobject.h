@@ -11,6 +11,7 @@ class Token;
 
 class BlockObject{
 public:
+	BlockObject();
 	BlockObject( Token * tok ) throw ( LoadException );
 
 /* getters */

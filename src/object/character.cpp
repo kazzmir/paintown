@@ -200,7 +200,9 @@ Network::Message Character::getCreateMessage(){
 	message << Network::CREATE_OBJECT;
 	message << getAlliance();
 	message << getId();
-	message << getPath().c_str();
+	string path = getPath();
+	path.erase( 0, Util::getDataPath().length() );
+	message << path.c_str();
 
 	return message;
 }

@@ -103,6 +103,14 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 
 				break;
 			}
+			case OBJECT_NETWORK_CHARACTER : {
+				if ( cached[ block->getPath() ] == NULL ){
+					cached[ block->getPath() ] = new Character( block->getPath(), 0 );
+					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+				}
+				return cached[ block->getPath() ]->copy();
+				break;
+			}
 			case OBJECT_ACTOR : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Actor( block->getPath() );

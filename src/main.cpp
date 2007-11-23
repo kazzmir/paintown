@@ -40,6 +40,7 @@
 #include "util/timedifference.h"
 #include "select_player.h"
 #include "network_world.h"
+#include "network_world_client.h"
 #include "world.h"
 #include "versus_world.h"
 
@@ -808,7 +809,9 @@ static void networkGame( const vector< Object * > & players, const string & leve
 
 			stopLoading( loading_screen_thread );
 
+			nlDisable( NL_BLOCKING_IO );
 			gameState = playLevel( world, players, showHelp );
+			nlEnable( NL_BLOCKING_IO );
 			showHelp = 0;
 
 		} catch ( const LoadException & le ){
@@ -1245,11 +1248,15 @@ static void networkClient(){
 		vector< Object * > players;
 		player->setId( id );
 		players.push_back( player );
-		World world( players, level );
+		NLint server = nlGroupCreate();
+		nlGroupAddSocket( server, socket );
+		NetworkWorldClient world( socket, players, level );
 
 		stopLoading( loading_screen_thread );
 
+		// nlDisable( NL_BLOCKING_IO );
 		playLevel( world, players, 100 );
+		// nlEnable( NL_BLOCKING_IO );
 
 		delete player;
 	} catch ( const LoadException & le ){

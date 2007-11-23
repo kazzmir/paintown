@@ -11,6 +11,17 @@ static const string dataPath( const string & str ){
 	return Util::getDataPath() + str;
 }
 
+BlockObject::BlockObject():
+type( -1 ),
+aggression( -1 ),
+map( 0 ),
+health( 1 ),
+coords_x( 0 ),
+coords_z( 0 ),
+stimulationType( "none" ),
+stimulationValue( 0 ){
+}
+
 BlockObject::BlockObject( Token * tok ) throw ( LoadException ):
 type( -1 ),
 aggression( -1 ),
