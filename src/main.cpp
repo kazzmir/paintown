@@ -39,6 +39,7 @@
 #include "util/tokenreader.h"
 #include "util/timedifference.h"
 #include "select_player.h"
+#include "network_world.h"
 #include "world.h"
 #include "versus_world.h"
 
@@ -787,7 +788,7 @@ static void networkGame( const vector< Object * > & players, const string & leve
 		try {
 			// vector< Object * > players;
 			// players.push_back( player );
-			World world( players, *it );
+			NetworkWorld world( sockets, players, *it );
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
@@ -1167,17 +1168,8 @@ static void networkServer(){
 
 		// NLsocket polled;
 		// nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
-		char buffer[ 1024 ];
-		int read = nlRead( client, buffer, sizeof(uint16_t) );
-		Global::debug( 0 ) << "Read " << read << " bytes" << endl;
-		int length = *(uint16_t *) buffer;
-		Global::debug( 0 ) << "Length " << length << endl;
-		// nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
-		// nlRead( polled, buffer, 1024 );
-		nlRead( client, buffer, length );
-		buffer[ length ] = 0;
-		Global::debug( 0 ) << "Client is " << buffer << endl;
-		string clientPath( buffer );
+		int length = Network::read16( client );
+		string clientPath = Network::readStr( client, length );
 
 		// NetworkWorld world( port );
 		string level = selectLevelSet( Util::getDataPath() + "/levels" );
@@ -1187,10 +1179,14 @@ static void networkServer(){
 		sockets.push_back( client );
 
 		player = selectPlayer( false );
+		player->setId( 1 );
 		((Player *)player)->setLives( startingLives );
 		vector< Object * > players;
 		players.push_back( player );
-		players.push_back( new Character( Util::getDataPath() + clientPath, ALLIANCE_PLAYER ) );
+		Character * client_character = new Character( Util::getDataPath() + clientPath, ALLIANCE_PLAYER );
+		client_character->setId( 2 );
+		Network::send16( client, 2 );
+		players.push_back( client_character );
 		networkGame( players, level, sockets );
 
 		nlClose( server );
@@ -1238,6 +1234,8 @@ static void networkClient(){
 		/* send the name of the player */
 		Network::sendStr( socket, path );
 
+		int id = Network::read16( socket );
+
 		uint16_t length = Network::read16( socket );
 		string level = Util::getDataPath() + Network::readStr( socket, length );
 
@@ -1245,6 +1243,7 @@ static void networkClient(){
 		// nlRead( socket, buffer, 1024 );
 		Global::debug( 0 ) << "Client read buffer '" << level << "'" << endl;
 		vector< Object * > players;
+		player->setId( id );
 		players.push_back( player );
 		World world( players, level );
 

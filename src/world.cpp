@@ -8,6 +8,7 @@
 #include "object/effect.h"
 #include "level/scene.h"
 #include "world.h"
+#include "network.h"
 
 #include <iostream>
 #include <string>
@@ -93,7 +94,7 @@ void World::loadLevel( const string & path ) throw( LoadException ){
 	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
 		Object * const player = it->player;	
 		player->setX( 100 + Util::rnd( 50 ) );
-		player->setZ( (getMinimumZ() + getMaximumZ()) / 2 );
+		player->setZ( getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
 		player->setY( 0 );
 	}
 
@@ -143,6 +144,10 @@ const bool World::isPlayer( Object * o ) const {
 			}
 		}
 		return false;
+}
+
+void World::addMessage( Network::Message m ){
+	/* nothing */
 }
 
 void World::doLogic(){

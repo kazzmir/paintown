@@ -3,6 +3,7 @@
 
 #include "object_attack.h"
 #include "util/load_exception.h"
+#include "network.h"
 
 class Token;
 class Animation;
@@ -29,6 +30,7 @@ public:
 	virtual void getAttackCoords( int & x, int & y);
 	virtual const double minZDistance() const;
 	virtual void attacked( Object * something, vector< Object * > & objects );
+	virtual Network::Message getCreateMessage();
 
 	virtual const int getRY() const;
 	virtual const int getRX() const;

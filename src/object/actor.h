@@ -2,6 +2,7 @@
 #define _paintown_actor_h
 
 #include "object_nonattack.h"
+#include "network.h"
 
 class Bitmap;
 class Animation;
@@ -17,6 +18,8 @@ public:
 	virtual bool isGettable();
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
+
+	virtual Network::Message getCreateMessage();
 	
 	virtual Object * copy();
 	

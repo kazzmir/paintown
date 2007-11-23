@@ -111,91 +111,20 @@ void Player::fillKeyCache(){
 			 */
 			if ( careAboutKey( n ) ){
 				if ( ! last_key[ n ] ){
-					// cout<<"Last key[ "<<n<<" ] = "<<last_key[n]<<endl;
 					key_cache.push_back( keyState( n, getFacing() ) );
 					acts = 0;
 				}
 				new_last[ n ] = true;		
-				// cout<<"Read "<<n<<" Last = "<<last_key<<" Acts = "<<acts<<endl;
-				/*
-				   if ( n != last_key ){
-				   key_cache.push_back( n );
-				   last_key = n;
-				   } else {
-				   if ( acts > 2 ){
-				   acts = 0;
-				   key_cache.clear();
-				   }
-				   }
-				   */
-
 			}
 		}
 		last_key = new_last;
-		// cout<<"Last key[ "<<83<<" ] = "<<last_key[83]<<endl;
-		// cout<<endl;
 	} else {
 		last_key.clear();
-		// last_key = -1;
 	}
 
 	while ( key_cache.size() > KEY_CACHE_SIZE ){
 		key_cache.pop_front();
 	}
-
-	// cout << "Keys in cache: " << key_cache.size() << endl;
-
-	// cout<<"Last key[ "<<83<<" ] = "<<last_key[83]<<endl;
-
-	#if 0
-	if ( keyboard.keypressed() ){
-
-		vector< int > all_keys;
-		keyboard.readKeys( all_keys );
-		// cout<<"Add ";
-		for ( vector<int>::iterator it = all_keys.begin(); it != all_keys.end(); it++ ){
-			int n = *it;
-			/*
-			if ( key_cache.size() >= 16 )
-				key_cache.pop_front();
-			*/
-
-			// cout<< n <<" ";
-			if ( key_cache.back() != n )
-				key_cache.push_back( n );
-		}
-		// cout<<endl;
-	} else {
-		/*
-		if ( key_cache.size() >= 16 )
-			key_cache.pop_front();
-		*/
-		if ( key_cache.back() != -99 )
-			key_cache.push_back( -99 );
-
-		/*
-		if ( key_cache.size() >= 16 ){
-			key_cache.pop_front();
-			key_cache.pop_front();
-		}
-
-		// -2345 is a very important number to someone, somewhere
-		key_cache.push_back( -2345 );
-		key_cache.push_back( -2345 );
-		key_cache.push_back( -2345 );
-		*/
-
-	}
-	#endif
-		
-
-	/*
-	if ( acts++ > 1 ){
-		if ( !key_cache.empty() )
-			key_cache.pop_front();
-		acts = 0;
-	}
-	*/
 }
 	
 void Player::drawLifeBar( int x, int y, Bitmap * work ){

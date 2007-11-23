@@ -134,6 +134,12 @@ ECollide * Projectile::getCollide() const {
 Object * Projectile::copy(){
 	return new Projectile( this );
 }
+	
+Network::Message Projectile::getCreateMessage(){
+	Network::Message m;
+
+	return m;
+}
 
 const std::string & Projectile::getAttackName(){
 	return currentAnimation->getName(); 

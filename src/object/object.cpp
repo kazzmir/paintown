@@ -28,7 +28,8 @@ health( 0 ),
 max_health( 0 ),
 damage( 0 ),
 facing( FACING_RIGHT ),
-alliance( alliance ){
+alliance( alliance ),
+id( 0 ){
 }
 
 Object::Object( const int x, const int y, int _alliance ):
@@ -42,7 +43,8 @@ health( 0 ),
 max_health( 0 ),
 damage( 0 ),
 facing( FACING_RIGHT ),
-alliance( _alliance ){
+alliance( _alliance ),
+id( 0 ){
 }
 
 Object::Object( const Object & copy ):
@@ -56,6 +58,7 @@ damage( 0 ){
 	facing = copy.facing;
 	health = copy.health;
 	hit = copy.hit;
+	id = copy.id;
 	setMaxHealth( copy.getMaxHealth() );
 	setAlliance( copy.getAlliance() );
 }

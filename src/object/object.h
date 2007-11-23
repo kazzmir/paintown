@@ -8,6 +8,7 @@ class World;
 class Stimulation;
 
 #include "util/sound.h"
+#include "network.h"
 #include <string>
 #include <vector>
 
@@ -138,6 +139,16 @@ public:
 
 	virtual inline const int getRZ() const {
 		return (int) getZ();
+	}
+
+	virtual Network::Message getCreateMessage() = 0;
+
+	virtual inline void setId( unsigned int id ){
+		this->id = id;
+	}
+
+	virtual inline unsigned const int getId() const {
+		return this->id;
 	}
 
 	/* getRY:
@@ -362,6 +373,7 @@ private:
 	/* the sound played when this object gets hit */
 	Sound hit;
 
+	unsigned int id;
 };
 
 #endif

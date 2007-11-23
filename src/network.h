@@ -3,39 +3,32 @@
 
 #include <stdint.h>
 #include "hawknl/nl.h"
-
-struct Message{
-	uint8_t id;
-	uint8_t data[ 16 ];
-};
+#include <string>
 
 namespace Network{
 
-static uint16_t read16( NLsocket socket ){
-	char buf[ 10 ];
-	nlRead( socket, buf, 10 );
-	return *(uint16_t *) buf;
-}
+enum{
+	CREATE_OBJECT,
+};
 
-static void send16( NLsocket socket, uint16_t length ){
-	char buf[ 4 ];
-	*(uint16_t *) buf = length;
-	nlWrite( socket, buf, sizeof(uint16_t) );
-}
+const int DATA_SIZE = 16;
 
-static string readStr( NLsocket socket, uint16_t length ){
+struct Message{
+	Message();
+	uint8_t id;
+	uint8_t data[ DATA_SIZE ];
+	uint8_t * position;
 
-	char buffer[ length + 1 ];
-	NLint bytes = nlRead( socket, buffer, length );
-	buffer[ length ] = 0;
-	bytes += 1;
-	return string( buffer );
+	Message & operator<<( int x );
+	Message & operator<<( const char * p );
 
-}
+	const char * path;
+};
 
-static void sendStr( NLsocket socket, const string & str ){
-	nlWrite( socket, str.c_str(), str.length() + 1 );
-}
+uint16_t read16( NLsocket socket );
+void send16( NLsocket socket, uint16_t length );
+std::string readStr( NLsocket socket, uint16_t length );
+void sendStr( NLsocket socket, const std::string & str );
 
 }
 

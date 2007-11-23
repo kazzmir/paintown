@@ -1,5 +1,5 @@
-#ifndef _world_h
-#define _world_h
+#ifndef _paintown_world_h
+#define _paintown_world_h
 
 class Object;
 class Scene;
@@ -9,8 +9,7 @@ class Bitmap;
 #include <string>
 
 #include "util/load_exception.h"
-
-using namespace std;
+#include "network.h"
 
 struct PlayerTracker{
 	double min_x;
@@ -20,7 +19,7 @@ struct PlayerTracker{
 class World{
 public:
 	World();
-	World( const vector< Object * > & players, const string & path, int screen_size = 320 ) throw ( LoadException );
+	World( const std::vector< Object * > & players, const std::string & path, int screen_size = 320 ) throw ( LoadException );
 
 	virtual ~World();
 
@@ -47,28 +46,30 @@ public:
 				
 	void killAllHumans( Object * player );
 
+	virtual void addMessage( Network::Message m );
+
 protected:
 
-	void loadLevel( const string & path ) throw( LoadException );
+	void loadLevel( const std::string & path ) throw( LoadException );
 
-	virtual void deleteObjects( vector< Object * > * objects );
+	virtual void deleteObjects( std::vector< Object * > * objects );
 
 	virtual void doLogic();
 
 	virtual const bool isPlayer( Object * o ) const;
 
 protected:
-	vector< PlayerTracker > players;
+	std::vector< PlayerTracker > players;
 	Object * bang;
 	
-	vector< Object * > objects;
+	std::vector< Object * > objects;
 
 	Scene * scene;
 
 	int quake_time;
 	// int min_x;
 	int screen_size;
-	string path;
+	std::string path;
 
 };
 

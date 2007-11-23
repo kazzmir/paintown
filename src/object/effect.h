@@ -5,6 +5,7 @@
 
 #include <string>
 #include "util/load_exception.h"
+#include "network.h"
 
 using namespace std;
 
@@ -27,6 +28,8 @@ public:
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual Object * copy();
+	
+	virtual Network::Message getCreateMessage();
 
 	virtual ~Effect();
 

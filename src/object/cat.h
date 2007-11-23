@@ -4,6 +4,7 @@
 #include <map>
 #include "object_nonattack.h"
 #include "util/sound.h"
+#include "network.h"
 
 class Bitmap;
 class Animation;
@@ -19,6 +20,7 @@ public:
 	virtual bool isGettable();
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
+	virtual Network::Message getCreateMessage();
 	
 	virtual Object * copy();
 

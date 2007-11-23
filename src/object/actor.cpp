@@ -76,6 +76,12 @@ const int Actor::getWidth() const {
 const int Actor::getHeight() const {
 	return 0;
 }
+	
+Network::Message Actor::getCreateMessage(){
+	Network::Message m;
+
+	return m;
+}
 
 Object * Actor::copy(){
 	return new Actor( *this );

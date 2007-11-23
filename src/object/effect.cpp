@@ -99,6 +99,12 @@ bool Effect::isGettable(){
 	return false;
 }
 	
+Network::Message Effect::getCreateMessage(){
+	Network::Message m;
+
+	return m;
+}
+	
 const int Effect::getWidth() const{
 	if ( image )
 		return image->getWidth();

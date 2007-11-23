@@ -224,6 +224,12 @@ void Cat::draw( Bitmap * work, int rel_x ){
 		meow.play( (int)(255 - fabs(getRX() - rel_x) / 50), 128 + (getRX() - rel_x) / 50 );
 	}
 }
+	
+Network::Message Cat::getCreateMessage(){
+	Network::Message m;
+
+	return m;
+}
 
 bool Cat::isCollidable( Object * obj ){
 	return false;

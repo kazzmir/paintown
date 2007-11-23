@@ -192,6 +192,18 @@ explode( false ){
 	
 	setMap( chr.getCurrentMap() );
 }
+	
+Network::Message Character::getCreateMessage(){
+	Network::Message message;
+
+	message.id = 0;
+	message << Network::CREATE_OBJECT;
+	message << getAlliance();
+	message << getId();
+	message << getPath().c_str();
+
+	return message;
+}
 
 void Character::loadSelf( const char * filename ) throw ( LoadException ){
 

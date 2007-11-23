@@ -128,6 +128,12 @@ void Item::draw( Bitmap * work, int rel_x ){
 		work->circleFill( getRX() - rel_x, (int) getZ(), 5, Bitmap::makeColor( 255, 255, 255 ) );
 	}
 }
+	
+Network::Message Item::getCreateMessage(){
+	Network::Message m;
+
+	return m;
+}
 
 bool Item::isCollidable( Object * obj ){
 	return false;

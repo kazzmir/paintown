@@ -60,6 +60,12 @@ const int Gib::getHeight() const {
 	return 1;
 }
 	
+Network::Message Gib::getCreateMessage(){
+	Network::Message m;
+
+	return m;
+}
+	
 void Gib::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	if ( fade > 0 ){
 		fade += 2;

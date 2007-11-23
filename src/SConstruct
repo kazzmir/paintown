@@ -11,9 +11,11 @@ globals.cpp
 loading.cpp
 music.cpp
 main.cpp
+network.cpp
 init.cpp
 nameplacer.cpp
 select_player.cpp
+network_world.cpp
 world.cpp
 versus_world.cpp
 """))

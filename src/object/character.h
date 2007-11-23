@@ -6,6 +6,7 @@
 #include <map>
 #include "object_attack.h"
 #include "util/load_exception.h"
+#include "network.h"
 
 class Bitmap;
 class Animation;
@@ -289,6 +290,8 @@ public:
 	virtual inline const string getPath() const {
 		return path;
 	}
+	
+	virtual Network::Message getCreateMessage();
 
 protected:
 	

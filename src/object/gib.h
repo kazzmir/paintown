@@ -2,6 +2,7 @@
 #define _paintown_gib_h
 
 #include "object_nonattack.h"
+#include "network.h"
 
 struct Point{
 	Point( int x, int y, int life ):x(x), y(y), life(life){}
@@ -21,6 +22,7 @@ public:
 	virtual bool isGettable();
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
+	virtual Network::Message getCreateMessage();
 	
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 

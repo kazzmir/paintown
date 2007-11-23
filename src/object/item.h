@@ -5,6 +5,7 @@
 #include "object/object_nonattack.h"
 #include "util/sound.h"
 #include "util/bitmap.h"
+#include "network.h"
 
 #include <string>
 #include <vector>
@@ -29,6 +30,7 @@ public:
 	virtual void touch( Object * obj );
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
+	virtual Network::Message getCreateMessage();
 	
 	virtual Object * copy();
 	
