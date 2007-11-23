@@ -1810,6 +1810,8 @@ int paintown_main( int argc, char ** argv ){
 
 	while ( titleScreen() != false );
 
+	nlShutdown();
+
 	Global::debug( 0 ) << "Exiting normally" <<endl;
 
 	return 0;

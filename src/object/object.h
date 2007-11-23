@@ -143,6 +143,8 @@ public:
 
 	virtual Network::Message getCreateMessage() = 0;
 
+	virtual void interpretMessage( Network::Message & m );
+
 	virtual inline void setId( unsigned int id ){
 		this->id = id;
 	}

@@ -12,6 +12,7 @@
 #include "util/keyboard.h"
 #include "nameplacer.h"
 #include "util/load_exception.h"
+#include "world.h"
 #include "object.h"
 #include "player.h"
 
@@ -630,6 +631,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 				if ( !moving ){
 					// animation_current = movements[ "idle" ];
 					animation_current = getMovement( "idle" );
+					world->addMessage( animationMessage() );
 				} else	{
 					vector< Object * > my_enemies;
 					filterEnemies( my_enemies, others );
@@ -643,6 +645,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 							setZ( guy->getZ()+1 );
 							// animation_current = movements[ "grab" ];
 							animation_current = getMovement( "grab" );
+							world->addMessage( animationMessage() );
 							setStatus( Status_Grab );
 							// cout<<"Grabbed"<<endl;
 						}
@@ -652,6 +655,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 					if ( !cy ){
 						// animation_current = movements[ "walk" ];
 						animation_current = getMovement( "walk" );
+						world->addMessage( animationMessage() );
 					}
 				}
 			}
@@ -673,6 +677,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			if ( final->getName() == "special" ){
 				if ( getHealth() <= 10 ){
 					animation_current = getMovement( "idle" );
+					world->addMessage( animationMessage() );
 					return;
 				} else {
 					hurt( 10 );
@@ -681,6 +686,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			nextTicket();
 			animation_current = final;
 			animation_current->reset();
+			world->addMessage( animationMessage() );
 
 			/* remove the used keys from the key cache */
 			// const vector< KeyPress > & keys = animation_current->getKeys();
@@ -724,57 +730,31 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	if ( getStatus() == Status_Grab && animation_current == NULL ){
 		// animation_current = movements[ "grab" ];
 		animation_current = getMovement( "grab" );
+		world->addMessage( animationMessage() );
 	}
-
 	
-
-	// cout<<"Animation ticket = "<<getTicket()<<endl;
-
-	/*
-	key_cache.clear();
-	*/
-	/*
-	if ( animation_current != movements[ "walk" ] )
-		key_cache.clear();
-	*/
-
 	if ( getStatus() == Status_Ground && animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" ) ){
-		/*
-		if ( keyboard[ KEY_RIGHT ] ){
-			setFacing( Object::FACING_RIGHT );
-		} else if ( keyboard[ KEY_LEFT ] ) {
-			setFacing( Object::FACING_LEFT ); 
-		}
-		*/
 
-
-		// if ( keyboard[ KEY_RIGHT ] || keyboard[ KEY_LEFT ] ){
+		bool moved = false;
 		if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
 			moveX( getSpeed() );
+			moved = true;
 		} else if ( keyboard[ getKey( PAIN_KEY_BACK ) ] ){
-			// cout << "Reverse facing" << endl;
 			setFacing( getOppositeFacing() );
+			moved = true;
 		}
-		/*
-		if ( keyboard[ KEY_RIGHT ] ){
-			// setX( getX() + 1 );
-			moveX( 1.2 );
-		} else if ( keyboard[ KEY_LEFT ] ){
-			// setX( getX() - 1 );
-			moveX( -1.2 );
-		}
-		*/
 
 		if ( keyboard[ getKey( PAIN_KEY_UP ) ] ){
-			// setZ( getZ() - 1);
 			moveZ( -getSpeed() );
+			moved = true;
 		} else if ( keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
-			// setZ( getZ() + 1 );
 			moveZ( getSpeed() );
+			moved = true;
 		}
+
+		world->addMessage( movedMessage() );
 	} else {
 	
-		// if ( animation_current == movements[ "throw" ] ){
 		if ( getMovement( "throw" ) != NULL && animation_current == getMovement( "throw" ) ){
 			if ( getLink() == NULL ){
 				cout<<"Link is null. This cant happen."<<endl;
@@ -784,10 +764,4 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			getLink()->fall( 3.2, 5.0 );
 		}
 	}
-
-	// cout << "Final animation = " << animation_current << endl;
-
-	// cout<<"Ultimate animation current = "<< animation_current->getName() <<endl;
-	// animation_current->Act();
-
 }

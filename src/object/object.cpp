@@ -161,6 +161,9 @@ void Object::moveZ( double z ){
 void Object::print() const{
 }
 	
+void Object::interpretMessage( Network::Message & m ){
+}
+	
 void Object::fall( double x_vel, double y_vel ){
 }
 	

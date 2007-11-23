@@ -292,8 +292,13 @@ public:
 	}
 	
 	virtual Network::Message getCreateMessage();
+	
+	virtual void interpretMessage( Network::Message & m );
 
 protected:
+
+	virtual Network::Message movedMessage();
+	virtual Network::Message animationMessage();
 	
 	const int getShadowX();
 	const int getShadowY();

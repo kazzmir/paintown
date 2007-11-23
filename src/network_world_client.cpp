@@ -20,7 +20,7 @@ static void * handleMessages( void * arg ){
 		Network::Message m( socket );
 		// pthread_mutex_lock( lock );
 		world->addIncomingMessage( m );
-		Global::debug( 0 ) << "Received path '" << m.path << "'" << endl;
+		Global::debug( 1 ) << "Received path '" << m.path << "'" << endl;
 		// pthread_mutex_unlock( lock );
 	}
 }
@@ -76,7 +76,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 					Global::debug( 0 ) << "Could not create character!" << endl;
 					break;
 				}
-				Global::debug( 0 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
+				Global::debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
 				character->setId( id );
 				character->setAlliance( alliance );
 				character->setX( 200 );
@@ -114,6 +114,12 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 			}
 		}
 	} else {
+		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+			Object * o = *it;
+			if ( o->getId() == message.id ){
+				o->interpretMessage( message );
+			}
+		}
 	}
 }
 	

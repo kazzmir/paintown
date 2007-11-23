@@ -26,6 +26,11 @@
 #include "util/tokenreader.h"
 #include "world.h"
 
+enum{
+	CHARACTER_MOVED,
+	CHARACTER_ANIMATION,
+};
+
 using namespace std;
 
 static const string dataPath( const string & str ){
@@ -1198,6 +1203,49 @@ const int Character::getShadowY(){
 		return animation_current->getShadowY();
 	}
 	return 0;
+}
+	
+void Character::interpretMessage( Network::Message & message ){
+	int type;
+	message >> type;
+	switch ( type ){
+		case CHARACTER_MOVED : {
+			int x, y, z, facing;
+			message >> x >> y >> z >> facing;
+			setX( x );
+			setY( y );
+			setZ( z );
+			setFacing( facing );
+			break;
+		}
+		case CHARACTER_ANIMATION : {
+			animation_current = getMovement( message.path );
+			break;
+		}
+	}
+}
+	
+Network::Message Character::movedMessage(){
+	Network::Message m;
+
+	m.id = getId();
+	m << CHARACTER_MOVED;
+	m << (int) getX();
+	m << (int) getY();
+	m << (int) getZ();
+	m << getFacing();
+
+	return m;
+}
+	
+Network::Message Character::animationMessage(){
+	Network::Message m;
+
+	m.id = getId();
+	m << CHARACTER_ANIMATION;
+	m.path = getCurrentMovement()->getName();
+
+	return m;
 }
 
 void Character::draw( Bitmap * work, int rel_x ){	
