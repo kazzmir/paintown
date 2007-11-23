@@ -87,6 +87,7 @@ attack.cpp
 stimulation.cpp
 health_stimulation.cpp
 character.cpp
+network_character.cpp
 heart.cpp
 """))
 

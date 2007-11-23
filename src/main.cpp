@@ -23,6 +23,7 @@
 #include "loading.h"
 #include "music.h"
 #include "object/character.h"
+#include "object/network_character.h"
 #include "object/effect.h"
 #include "object/enemy.h"
 #include "object/object.h"
@@ -1185,7 +1186,7 @@ static void networkServer(){
 		((Player *)player)->setLives( startingLives );
 		vector< Object * > players;
 		players.push_back( player );
-		Character * client_character = new Character( Util::getDataPath() + clientPath, ALLIANCE_PLAYER );
+		Character * client_character = new NetworkCharacter( Util::getDataPath() + clientPath, ALLIANCE_PLAYER );
 		client_character->setId( 2 );
 		Network::send16( client, 2 );
 		players.push_back( client_character );

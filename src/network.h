@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "hawknl/nl.h"
 #include <string>
+#include <exception>
 
 namespace Network{
 
@@ -13,6 +14,11 @@ enum{
 };
 
 const int DATA_SIZE = 16;
+
+class NetworkException: public std::exception{
+public:
+	NetworkException():std::exception(){}
+};
 
 struct Message{
 	Message();

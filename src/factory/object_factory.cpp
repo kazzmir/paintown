@@ -5,6 +5,7 @@
 #include "object/stimulation.h"
 #include "level/blockobject.h"
 #include "object/enemy.h"
+#include "object/network_character.h"
 #include "object/actor.h"
 #include "object/cat.h"
 #include "object/heart.h"
@@ -105,7 +106,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 			}
 			case OBJECT_NETWORK_CHARACTER : {
 				if ( cached[ block->getPath() ] == NULL ){
-					cached[ block->getPath() ] = new Character( block->getPath(), 0 );
+					cached[ block->getPath() ] = new NetworkCharacter( block->getPath(), 0 );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
 				}
 				return cached[ block->getPath() ]->copy();
