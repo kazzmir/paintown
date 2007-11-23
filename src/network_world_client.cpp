@@ -1,5 +1,6 @@
 #include "network_world_client.h"
 #include "network.h"
+#include "level/scene.h"
 #include "globals.h"
 #include "level/blockobject.h"
 #include "util/funcs.h"
@@ -115,26 +116,62 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 	} else {
 	}
 }
+	
+void NetworkWorldClient::doScene( int min_x, int max_x ){
+	vector< Object * > objs;
+	scene->act( min_x, max_x, &objs );
+}
 
 void NetworkWorldClient::act(){
-	World::act();
+
+	vector< Object * > added_effects;
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+		Object * o = *it;
+		o->act( &objects, this, &added_effects );
+		if ( o->getZ() < getMinimumZ() ){
+			o->setZ( getMinimumZ() );
+		}
+		if ( o->getZ() > getMaximumZ() ){
+			o->setZ( getMaximumZ() );
+		}
+	}
+	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
+
+	double lowest = 9999999;
+	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+		Object * player = it->player;
+		double mx = player->getX() - screen_size / 2;
+		if ( it->min_x < mx ){
+			it->min_x++;
+		}
+	
+		if ( it->min_x + screen_size >= scene->getLimit() ){
+			it->min_x = scene->getLimit() - screen_size;
+		}
+
+		if ( it->min_x < lowest ){
+			lowest = it->min_x;
+		}
+		
+		if ( player->getX() < it->min_x ){
+			player->setX( it->min_x );
+		}
+
+		if ( player->getX() > scene->getLimit() ){
+			player->setX( scene->getLimit() );
+		}
+		if ( player->getZ() < getMinimumZ() ){
+			player->setZ( getMinimumZ() );
+		}
+		if ( player->getZ() > getMaximumZ() ){
+			player->setZ( getMaximumZ() );
+		}
+	}
+
+	doScene( 0, 0 );
 
 	vector< Network::Message > messages = getIncomingMessages();
 	for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
 		handleMessage( *it );
 	}
-
-	/*
-	int ready = 0;
-	while ( ready != NL_INVALID ){
-		NLsocket read;
-		ready = nlPollGroup( server, NL_READ_STATUS, &read, 1, 0 );
-		if ( ready == 1 ){
-			char buf[ 1024 ];
-			Global::debug( 0 ) << "Receiving message from server " << read << endl;
-			Network::Message message( read, buf );
-			Global::debug( 0 ) << "Received message: " << message.id << endl;
-		}
-	}
-	*/
 }

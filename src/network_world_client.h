@@ -22,6 +22,8 @@ public:
 	inline pthread_mutex_t * getLock(){
 		return &message_mutex;
 	}
+	
+	virtual void doScene( int min_x, int max_x );
 
 protected:
 
