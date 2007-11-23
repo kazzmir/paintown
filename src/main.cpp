@@ -1155,16 +1155,21 @@ static void networkServer(){
 		group = nlGroupCreate();
 		nlGroupAddSocket( group, client );
 
+		NLaddress client_addr;
+		nlGetRemoteAddr( client, &client_addr );
+
+		Global::debug( 0 ) << "client is " << client << " port " << nlGetPortFromAddr( &client_addr ) << endl;
+
 		// NLsocket polled;
 		// nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
 		char buffer[ 1024 ];
-		int read = nlRead( client, buffer, 1024 );
+		int read = nlRead( client, buffer, sizeof(uint16_t) );
 		Global::debug( 0 ) << "Read " << read << " bytes" << endl;
 		int length = *(uint16_t *) buffer;
 		Global::debug( 0 ) << "Length " << length << endl;
 		// nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
 		// nlRead( polled, buffer, 1024 );
-		nlRead( client, buffer, 1024 );
+		nlRead( client, buffer, length );
 		buffer[ length ] = 0;
 		Global::debug( 0 ) << "Client is " << buffer << endl;
 		string clientPath( buffer );
@@ -1204,8 +1209,9 @@ static uint16_t read16( NLsocket socket ){
 
 static string readStr( NLsocket socket, uint16_t length ){
 
-	char buffer[ 1024 ];
-	NLint bytes = nlRead( socket, buffer, 1024 );
+	char buffer[ length + 1 ];
+	NLint bytes = nlRead( socket, buffer, length );
+	buffer[ length ] = 0;
 	bytes += 1;
 	return string( buffer );
 
