@@ -44,7 +44,7 @@
 
 #include <pthread.h>
 
-#include "hawknl/nl.h"
+#include "network.h"
 
 /*
 #include "sockets/SocketHandler.h"
@@ -759,8 +759,12 @@ static void networkSendLevel( const vector< NLsocket > & sockets, string level )
 	*(uint16_t *) buf = level.length();
 	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 		NLsocket socket = *it;
+		Network::send16( socket, level.length() + 1 );
+		Network::sendStr( socket, level );
+		/*
 		nlWrite( socket, buf, sizeof(uint16_t) );
 		nlWrite( socket, level.c_str(), level.length() + 1 );
+		*/
 	}
 }
 
@@ -1144,6 +1148,7 @@ static void networkServer(){
 		NLsocket server = nlOpen( port, NL_RELIABLE );
 		if ( server == NL_INVALID ){
 			Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
+			throw ReturnException();
 		}
 		nlListen( server );
 		NLsocket client = nlAcceptConnection( server );
@@ -1199,25 +1204,7 @@ static void networkServer(){
 	}
 }
 
-namespace Network{
 
-static uint16_t read16( NLsocket socket ){
-	char buf[ 10 ];
-	nlRead( socket, buf, 10 );
-	return *(uint16_t *) buf;
-}
-
-static string readStr( NLsocket socket, uint16_t length ){
-
-	char buffer[ length + 1 ];
-	NLint bytes = nlRead( socket, buffer, length );
-	buffer[ length ] = 0;
-	bytes += 1;
-	return string( buffer );
-
-}
-
-}
 
 static void networkClient(){
 	nlEnable( NL_BLOCKING_IO );
@@ -1230,7 +1217,6 @@ static void networkClient(){
 	*/
 		
 	try{
-		char buffer[ 1024 ];
 		Character * player = (Character *) selectPlayer( false );
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );
@@ -1247,13 +1233,10 @@ static void networkClient(){
 			Util::rest( 1 );
 		}
 
-		*(uint16_t *)buffer = (uint16_t) path.length() + 1;
-		nlWrite( socket, buffer, sizeof(uint16_t) );
-		strcpy( buffer, path.c_str() );
-		Global::debug( 0 ) << "sending " << buffer << endl;
+		Network::send16( socket, path.length() + 1 );
+		
 		/* send the name of the player */
-		nlWrite( socket, buffer, strlen( buffer ) + 1 );
-		Global::debug( 0 ) << "sent " << buffer << endl;
+		Network::sendStr( socket, path );
 
 		uint16_t length = Network::read16( socket );
 		string level = Util::getDataPath() + Network::readStr( socket, length );
