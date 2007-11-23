@@ -34,6 +34,8 @@ protected:
 
 	Sound meow;
 
+	string path;
+
 	enum State{
 		IDLE1,
 		IDLE2,

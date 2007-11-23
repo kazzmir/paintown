@@ -41,6 +41,8 @@ public:
 	virtual int getX();
 	virtual int getY();
 
+	virtual void doScene( int min_x, int max_x );
+
 	virtual int getMaximumZ();
 	virtual int getMinimumZ();
 				

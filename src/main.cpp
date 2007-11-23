@@ -1237,6 +1237,7 @@ static void networkClient(){
 		Network::sendStr( socket, path );
 
 		int id = Network::read16( socket );
+		Global::debug( 0 ) << "Client id " << id << endl;
 
 		uint16_t length = Network::read16( socket );
 		Global::debug( 0 ) << "Read " << length << " bytes for level" << endl;

@@ -2,11 +2,13 @@
 #include "network.h"
 #include "globals.h"
 #include "level/blockobject.h"
-#include "object/character.h"
 #include "util/funcs.h"
 #include "factory/object_factory.h"
 #include <pthread.h>
 #include <string.h>
+
+#include "object/character.h"
+#include "object/cat.h"
 
 static void * handleMessages( void * arg ){
 	NetworkWorldClient * world = (NetworkWorldClient *) arg;
@@ -43,13 +45,23 @@ vector< Network::Message > NetworkWorldClient::getIncomingMessages(){
 	pthread_mutex_unlock( &message_mutex );
 	return m;
 }
+
+bool NetworkWorldClient::uniqueObject( Object * object ){
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+		Object * o = *it;
+		if ( o->getId() == object->getId() ){
+			return false;
+		}
+	}
+	return true;
+}
 	
 void NetworkWorldClient::handleMessage( Network::Message & message ){
 	if ( message.id == 0 ){
 		int type;
 		message >> type;
 		switch ( type ){
-			case Network::CREATE_OBJECT : {
+			case Network::CREATE_CHARACTER : {
 				int alliance;
 				int id;
 				string path = Util::getDataPath() + "/" + message.path;
@@ -63,12 +75,40 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 					Global::debug( 0 ) << "Could not create character!" << endl;
 					break;
 				}
+				Global::debug( 0 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
 				character->setId( id );
 				character->setAlliance( alliance );
 				character->setX( 200 );
 				character->setY( 0 );
 				character->setZ( 150 );
-				addObject( character );
+				if ( uniqueObject( character ) ){
+					addObject( character );
+				} else {
+					delete character;
+				}
+				break;
+			}
+			case Network::CREATE_CAT : {
+				int id;
+				message >> id;
+				string path = Util::getDataPath() + "/" + message.path;
+				BlockObject block;
+				block.setType( ObjectFactory::OBJECT_CAT );
+				block.setPath( path );
+				block.setCoords( 200, 150 );
+				Cat * cat = (Cat *) ObjectFactory::createObject( &block );
+				if ( cat == NULL ){
+					Global::debug( 0 ) << "Could not create cat" << endl;
+					break;
+				}
+
+				cat->setY( 0 );
+				if ( uniqueObject( cat ) ){
+					addObject( cat );
+				} else {
+					delete cat;
+				}
+
 				break;
 			}
 		}

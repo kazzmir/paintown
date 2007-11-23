@@ -197,9 +197,10 @@ Network::Message Character::getCreateMessage(){
 	Network::Message message;
 
 	message.id = 0;
-	message << Network::CREATE_OBJECT;
+	message << Network::CREATE_CHARACTER;
 	message << getAlliance();
 	message << getId();
+	Global::debug( 1 ) << "Character create id " << getId() << endl;
 	string path = getPath();
 	Global::debug( 1 ) << "Character create path: '" << path << "'" << endl;
 	path.erase( 0, Util::getDataPath().length() );

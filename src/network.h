@@ -8,16 +8,18 @@
 namespace Network{
 
 enum{
-	CREATE_OBJECT,
+	CREATE_CHARACTER,
+	CREATE_CAT,
 };
 
 const int DATA_SIZE = 16;
 
 struct Message{
 	Message();
+	Message( const Message & m );
 	Message( NLsocket socket );
 
-	uint8_t id;
+	uint16_t id;
 	uint8_t data[ DATA_SIZE ];
 	uint8_t * position;
 

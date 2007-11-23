@@ -15,6 +15,8 @@ Cat::Cat( const string & filename ) throw( LoadException ):
 ObjectNonAttack( 0, 0 ),
 state( IDLE1 ){
 
+	path = filename;
+
 	setMaxHealth( 1 );
 	setHealth( 1 );
 	
@@ -50,6 +52,7 @@ ObjectNonAttack( cat ),
 state( IDLE1 ){
 	setMaxHealth( cat.getMaxHealth() );
 	setHealth( cat.getHealth() );
+	path = cat.path;
 	/*
 	animation = new Animation( *Cat.animation, 0 );
 	animation->reset();
@@ -226,9 +229,17 @@ void Cat::draw( Bitmap * work, int rel_x ){
 }
 	
 Network::Message Cat::getCreateMessage(){
-	Network::Message m;
+	Network::Message message;
+	
+	message.id = 0;
+	message << Network::CREATE_CAT;
+	message << getId();
 
-	return m;
+	string mypath = path;
+	mypath.erase( 0, Util::getDataPath().length() );
+	message << mypath;
+
+	return message;
 }
 
 bool Cat::isCollidable( Object * obj ){

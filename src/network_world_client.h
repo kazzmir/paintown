@@ -25,6 +25,7 @@ public:
 
 protected:
 
+	bool uniqueObject( Object * object );
 	void handleMessage( Network::Message & message );
 	vector< Network::Message > getIncomingMessages();
 

@@ -296,8 +296,12 @@ void World::act(){
 		}
 	}
 
+	doScene( (int) lowest, (int)(lowest + screen_size) );
 	// scene->act( min_x, min_x + screen_size, &objects );
-	scene->act( (int) lowest, (int)(lowest + screen_size), &objects );
+}
+	
+void World::doScene( int min_x, int max_x ){
+	scene->act( min_x, max_x, &objects );
 }
 
 void World::addObject( Object * o ){

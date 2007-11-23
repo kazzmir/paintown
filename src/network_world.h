@@ -12,13 +12,21 @@ public:
 	
 	virtual void addMessage( Network::Message m );
 	virtual void act();
+	virtual void doScene( int min_x, int max_x );
 
 protected:
 	void sendMessage( const Network::Message & message, NLsocket socket );
 
+	inline unsigned int nextId(){
+		unsigned int i = id;
+		id += 1;
+		return i;
+	}
+
 private:
 	std::vector< NLsocket > sockets;
 	std::vector< Network::Message > messages;
+	unsigned int id;
 
 };
 
