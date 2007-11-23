@@ -201,8 +201,10 @@ Network::Message Character::getCreateMessage(){
 	message << getAlliance();
 	message << getId();
 	string path = getPath();
+	Global::debug( 1 ) << "Character create path: '" << path << "'" << endl;
 	path.erase( 0, Util::getDataPath().length() );
-	message << path.c_str();
+	Global::debug( 1 ) << "Character create sending: '" << path << "'" << endl;
+	message << path;
 
 	return message;
 }
@@ -330,11 +332,6 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
 	// delete head;
 
-	/*
-	map< string, Animation * > & movements = mapper[ current_map ];
-	movements = mapper[ current_map ];
-	*/
-
 	squish_sound = new Sound( dataPath( "sounds/squish.wav" ) );
 
 	for ( map<string,string>::iterator it = remaps.begin(); it != remaps.end(); it++ ){
@@ -343,12 +340,10 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 		reMap( alter, x1, getMapper().size() );
 	}
 
-	// if ( movements[ "idle" ] == NULL ){
 	if ( getMovement( "idle" ) == NULL ){
 		throw LoadException("No 'idle' movement");
 	}
 
-	// if ( movements[ "pain" ] == NULL ){
 	if ( getMovement( "pain" ) == NULL ){
 		throw LoadException("No 'pain' movement");
 	}
@@ -362,7 +357,6 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	}
 	*/
 
-	// if ( movements[ "fall" ] == NULL ){
 	if ( getMovement( "fall" ) == NULL ){
 		throw LoadException("No 'fall' movement");
 	}

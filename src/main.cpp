@@ -756,9 +756,7 @@ static void realGame( const vector< Object * > & players, const string & levelFi
 }
 
 static void networkSendLevel( const vector< NLsocket > & sockets, string level ){
-	char buf[ 10 ];
 	level.erase( 0, Util::getDataPath().length() );
-	*(uint16_t *) buf = level.length();
 	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 		NLsocket socket = *it;
 		Network::send16( socket, level.length() + 1 );
@@ -1182,6 +1180,7 @@ static void networkServer(){
 		sockets.push_back( client );
 
 		player = selectPlayer( false );
+		Global::debug( 0 ) << "Player path '" << ((Character *)player)->getPath() << "'" << endl;
 		player->setId( 1 );
 		((Player *)player)->setLives( startingLives );
 		vector< Object * > players;
@@ -1240,6 +1239,7 @@ static void networkClient(){
 		int id = Network::read16( socket );
 
 		uint16_t length = Network::read16( socket );
+		Global::debug( 0 ) << "Read " << length << " bytes for level" << endl;
 		string level = Util::getDataPath() + Network::readStr( socket, length );
 
 		/* read the next level */

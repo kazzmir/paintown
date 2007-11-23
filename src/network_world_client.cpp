@@ -14,12 +14,10 @@ static void * handleMessages( void * arg ){
 	// pthread_mutex_t * lock = world->getLock();
 	
 	while ( 1 ){
-		char * buffer = new char[ 1024 ];
-		memset( buffer, 0, 1024 );
-		Network::Message m( socket, buffer );
+		Network::Message m( socket );
 		// pthread_mutex_lock( lock );
 		world->addIncomingMessage( m );
-		Global::debug( 0 ) << "Received path '" << buffer << "'" << endl;
+		Global::debug( 0 ) << "Received path '" << m.path << "'" << endl;
 		// pthread_mutex_unlock( lock );
 	}
 }
@@ -76,8 +74,6 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 		}
 	} else {
 	}
-
-	delete[] message.path;
 }
 
 void NetworkWorldClient::act(){
