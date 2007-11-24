@@ -17,7 +17,7 @@ static void * handleMessages( void * arg ){
 	NetworkWorld * world = s->world;
 	
 	try{
-		while ( 1 ){
+		while ( world->isRunning() ){
 			Network::Message m( socket );
 			// pthread_mutex_lock( lock );
 			world->addIncomingMessage( m );
@@ -35,13 +35,15 @@ static void * handleMessages( void * arg ){
 NetworkWorld::NetworkWorld( const vector< NLsocket > & sockets, const vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
 World( players, path, screen_size ),
 sockets( sockets ),
-id( 3 ){
+id( 3 ),
+running( true ){
 	for ( vector< PlayerTracker >::iterator it = this->players.begin(); it != this->players.end(); it++ ){
 		Object * object = it->player;
 		addMessage( object->getCreateMessage() );
 	}
 
 	pthread_mutex_init( &message_mutex, NULL );
+	pthread_mutex_init( &running_mutex, NULL );
 
 	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 		Stuff * s = new Stuff;
@@ -53,6 +55,15 @@ id( 3 ){
 	}
 }
 	
+NetworkWorld::~NetworkWorld(){
+	stopRunning();
+
+	for ( vector< pthread_t >::iterator it = threads.begin(); it != threads.end(); it++ ){
+		const pthread_t & thread = *it;
+		pthread_join( thread, NULL );
+	}
+}
+	
 void NetworkWorld::addMessage( Network::Message m ){
 	outgoing.push_back( m );
 }
@@ -61,6 +72,19 @@ void NetworkWorld::addIncomingMessage( const Network::Message & message ){
 	pthread_mutex_lock( &message_mutex );
 	incoming.push_back( message );
 	pthread_mutex_unlock( &message_mutex );
+}
+	
+void NetworkWorld::stopRunning(){
+	pthread_mutex_lock( &running_mutex );
+	running = false;
+	pthread_mutex_unlock( &running_mutex );
+}
+
+bool NetworkWorld::isRunning(){
+	pthread_mutex_lock( &running_mutex );
+	bool b = running;
+	pthread_mutex_unlock( &running_mutex );
+	return b;
 }
 
 void NetworkWorld::sendMessage( const Network::Message & message, NLsocket socket ){

@@ -17,12 +17,18 @@ public:
 	
 	void addIncomingMessage( const Network::Message & message );
 
+	bool isRunning();
+
+	virtual ~NetworkWorld();
+
 protected:
 	void sendMessage( const Network::Message & message, NLsocket socket );
 	vector< Network::Message > getIncomingMessages();
 	void handleMessage( Network::Message & message );
 
 	Network::Message nextBlockMessage( int block );
+
+	void stopRunning();
 
 	inline unsigned int nextId(){
 		unsigned int i = id;
@@ -38,6 +44,8 @@ private:
 	unsigned int id;
 
 	pthread_mutex_t message_mutex;
+	pthread_mutex_t running_mutex;
+	bool running;
 };
 
 #endif

@@ -1142,18 +1142,19 @@ static void networkServer(){
 
 	Global::debug( 0 ) << "Port " << port << endl;
 
+	nlEnable( NL_BLOCKING_IO );
+	NLsocket server = nlOpen( port, NL_RELIABLE );
+	if ( server == NL_INVALID ){
+		Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
+		throw ReturnException();
+	}
+
 	Object * player = NULL;
 	try{
 		Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
 
 		const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
 		font.printf( 100, 200, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Waiting for a connection", 0 );
-		nlEnable( NL_BLOCKING_IO );
-		NLsocket server = nlOpen( port, NL_RELIABLE );
-		if ( server == NL_INVALID ){
-			Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
-			throw ReturnException();
-		}
 		nlListen( server );
 		NLsocket client = nlAcceptConnection( server );
 		while ( client == NL_INVALID ){
@@ -1193,16 +1194,17 @@ static void networkServer(){
 		players.push_back( client_character );
 		networkGame( players, level, sockets );
 
-		nlClose( server );
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 	} catch ( const ReturnException & r ){
 		// key.wait();
 	} catch ( const Network::NetworkException & e ){
 	}
+
 	if ( player != NULL ){
 		delete player;
 	}
+	nlClose( server );
 }
 
 static void networkClient(){
@@ -1652,8 +1654,8 @@ static bool titleScreen(){
 				try{
 					networkServer();
 				} catch ( const ReturnException & e ){
-					key.wait();
 				}
+				key.wait();
 				return true;
 				break;
 			}
