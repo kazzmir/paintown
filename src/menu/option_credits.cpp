@@ -1,3 +1,9 @@
+#ifdef WINDOWS
+#define BITMAP dummyBITMAP
+#include <windows.h>
+#undef BITMAP
+#endif
+
 #include "menu/option_credits.h"
 #include "util/token.h"
 #include "globals.h"

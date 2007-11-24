@@ -68,9 +68,9 @@ env.Append( LIBS = [dumb,hawknl] )
 staticEnv = env.Copy()
 
 if isWindows():
-	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z' ] )
+	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
 	env.Append( CPPDEFINES = 'WINDOWS' )
-	staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z' ] )
+	staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
 	staticEnv.Append( CPPDEFINES = 'WINDOWS' )
 else:
 	env.Append( LIBS = [ 'pthread' ] )

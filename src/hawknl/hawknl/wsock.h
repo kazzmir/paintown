@@ -20,10 +20,10 @@
   Or go to http://www.gnu.org/copyleft/lgpl.html
 */
 
-#ifndef WSOCK_H
-#define WSOCK_H
+#ifndef _hawknl_WSOCK_H
+#define _hawknl_WSOCK_H
 
-#include "../include/nl.h"
+#include "nl.h"
 
 /* Windows systems */
 #ifdef _MSC_VER
@@ -138,6 +138,13 @@ typedef struct sockaddr_ipx
 #undef FD_CLR
 #define FD_CLR      nlFD_CLR
 
+#undef FD_SET
+#define FD_SET      nlFD_SET
+
+#undef FD_ISSET
+#define FD_ISSET(fd, set)      nlWSAFDIsSet((SOCKET)(fd), set)
+
+#if 0
 HL_INLINE void nlFD_CLR(SOCKET fd, fd_set *set)
 {
     u_int i;
@@ -157,8 +164,6 @@ HL_INLINE void nlFD_CLR(SOCKET fd, fd_set *set)
     }
 }
 
-#undef FD_SET
-#define FD_SET      nlFD_SET
 
 HL_INLINE void nlFD_SET(SOCKET fd, /*@out@*/ fd_set *set)
 {
@@ -168,8 +173,6 @@ HL_INLINE void nlFD_SET(SOCKET fd, /*@out@*/ fd_set *set)
 
 /* This function is inlined for speed over the Winsock function */
 
-#undef FD_ISSET
-#define FD_ISSET(fd, set)      nlWSAFDIsSet((SOCKET)(fd), set)
 
 HL_INLINE int nlWSAFDIsSet(SOCKET fd, fd_set *set)
 {
@@ -182,6 +185,7 @@ HL_INLINE int nlWSAFDIsSet(SOCKET fd, fd_set *set)
     }
     return 0;
 }
+#endif
 
 #endif /* WSOCK_H */
 

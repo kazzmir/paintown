@@ -214,6 +214,48 @@ static int sock_connect(SOCKET socket, const struct sockaddr* a, int len )
     return connect(socket, a, len);
 }
 
+
+void nlFD_CLR(SOCKET fd, fd_set *set)
+{
+    u_int i;
+
+    for(i=0;i<set->fd_count;i++)
+    {
+        if(set->fd_array[i] == fd)
+        {
+            while(i < set->fd_count-1)
+            {
+                set->fd_array[i] = set->fd_array[i+1];
+                i++;
+            }
+            set->fd_count--;
+            break;
+        }
+    }
+}
+
+
+void nlFD_SET(SOCKET fd, /*@out@*/ fd_set *set)
+{
+    if(set->fd_count < FD_SETSIZE)
+        set->fd_array[set->fd_count++]=fd;
+}
+
+/* This function is inlined for speed over the Winsock function */
+
+
+int nlWSAFDIsSet(SOCKET fd, fd_set *set)
+{
+    int i = (int)set->fd_count;
+
+    while(i-- != 0)
+    {
+        if (set->fd_array[i] == fd)
+            return 1;
+    }
+    return 0;
+}
+
 #else
 #define sock_bind bind
 #define sock_connect connect
@@ -2653,3 +2695,4 @@ NLint sock_GetSocketOpt(NLsocket socket, NLenum name)
         return NL_INVALID;
     }
 }
+
