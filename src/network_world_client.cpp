@@ -204,6 +204,16 @@ void NetworkWorldClient::act(){
 		handleMessage( *it );
 	}
 
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+		if ( (*it)->getHealth() <= 0 ){
+			(*it)->died( added_effects );
+			if ( ! isPlayer( *it ) ){
+				delete *it;
+			}
+			it = objects.erase( it );
+		} else ++it;
+	}
+
 	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
 		Network::Message & m = *it;
 		sendMessage( m, getServer() );

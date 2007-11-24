@@ -268,6 +268,7 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 
 			// animation_current = movements[ "walk" ];
 			animation_current = getMovement( "walk" );
+			world->addMessage( animationMessage() );
 			if ( want_x != getX() ){
 				int dir = 1;
 				if ( getFacing() == Object::FACING_LEFT ){

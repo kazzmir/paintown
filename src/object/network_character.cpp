@@ -33,8 +33,12 @@ Object * NetworkCharacter::copy(){
 void NetworkCharacter::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	Character::act( others, world, add );
 	if ( (getStatus() == Status_Ground ||
-	      getCurrentMovement()->getName() == "jump") && animation_current->Act() ){
-		animation_current = getMovement( "idle" );
+	      getStatus() == Status_Jumping) && animation_current->Act() ){
+	      	// Global::debug( 0 ) << "Reset animation" << endl;
+		if ( animation_current->getName() != "idle" &&
+		     animation_current->getName() != "walk" ){
+			animation_current = getMovement( "idle" );
+		}
 		animation_current->reset();
 	}
 }

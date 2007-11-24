@@ -1246,7 +1246,9 @@ void Character::interpretMessage( Network::Message & message ){
 		}
 		case CHARACTER_ANIMATION : {
 			animation_current = getMovement( message.path );
-			animation_current->reset();
+			if ( message.path != "walk" && message.path != "idle" ){
+				animation_current->reset();
+			}
 			break;
 		}
 	}
