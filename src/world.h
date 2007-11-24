@@ -83,6 +83,7 @@ public:
 		CREATE_ITEM,
 		CREATE_PROJECTILE,
 		NEXT_BLOCK,
+		FINISH,
 	};
 
 };

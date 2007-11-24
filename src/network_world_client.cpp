@@ -18,7 +18,7 @@ static void * handleMessages( void * arg ){
 	unsigned int received = 0;
 	
 	try{
-		while ( 1 ){
+		while ( world->isRunning() ){
 			received += 1;
 			Global::debug( 1 ) << "Receiving message " << received << endl;
 			Network::Message m( socket );
@@ -36,13 +36,30 @@ static void * handleMessages( void * arg ){
 	
 NetworkWorldClient::NetworkWorldClient( NLsocket server, const std::vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
 World( players, path, screen_size ),
-server( server ){
+server( server ),
+world_finished( false ){
 	pthread_mutex_init( &message_mutex, NULL );
+	pthread_mutex_init( &running_mutex, NULL );
 	pthread_create( &message_thread, NULL, handleMessages, this );
 }
 	
 NetworkWorldClient::~NetworkWorldClient(){
 	Global::debug( 1 ) << "Destroy client world" << endl;
+	stopRunning();
+	pthread_join( message_thread, NULL );
+}
+	
+bool NetworkWorldClient::isRunning(){
+	pthread_mutex_lock( &running_mutex );
+	bool b = running;
+	pthread_mutex_unlock( &running_mutex );
+	return b;
+}
+
+void NetworkWorldClient::stopRunning(){
+	pthread_mutex_lock( &running_mutex );
+	running = false;
+	pthread_mutex_unlock( &running_mutex );
 }
 	
 void NetworkWorldClient::addIncomingMessage( const Network::Message & message ){
@@ -60,14 +77,76 @@ vector< Network::Message > NetworkWorldClient::getIncomingMessages(){
 	return m;
 }
 
-bool NetworkWorldClient::uniqueObject( Object * object ){
+bool NetworkWorldClient::uniqueObject( unsigned int id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
-		if ( o->getId() == object->getId() ){
+		if ( o->getId() == id ){
 			return false;
 		}
 	}
 	return true;
+}
+
+void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
+	int alliance;
+	int id;
+	int map;
+	string path = Util::getDataPath() + "/" + message.path;
+	message >> alliance >> id >> map;
+	if ( uniqueObject( id ) ){
+		BlockObject block;
+		block.setType( ObjectFactory::OBJECT_NETWORK_CHARACTER );
+		block.setMap( map );
+		block.setPath( path );
+		Character * character = (Character *) ObjectFactory::createObject( &block );
+		if ( character == NULL ){
+			Global::debug( 0 ) << "Could not create character!" << endl;
+			return;
+		}
+		Global::debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
+		character->setId( id );
+		character->setAlliance( alliance );
+		character->setX( 200 );
+		character->setY( 0 );
+		character->setZ( 150 );
+		addObject( character );
+	}
+}
+
+void NetworkWorldClient::handleCreateCat( Network::Message & message ){
+	int id;
+	message >> id;
+	if ( uniqueObject( id ) ){
+		string path = Util::getDataPath() + "/" + message.path;
+		BlockObject block;
+		block.setType( ObjectFactory::OBJECT_CAT );
+		block.setPath( path );
+		block.setCoords( 200, 150 );
+		Cat * cat = (Cat *) ObjectFactory::createObject( &block );
+		if ( cat == NULL ){
+			Global::debug( 0 ) << "Could not create cat" << endl;
+			return;
+		}
+
+		cat->setY( 0 );
+		addObject( cat );
+	}
+}
+	
+const bool NetworkWorldClient::finished() const {
+	return world_finished;
+}
+
+void NetworkWorldClient::handleCreateBang( Network::Message & message ){
+	int x, y, z;
+	message >> x >> y >> z;
+	Object * addx = bang->copy();
+	addx->setX( x );
+	addx->setY( 0 );
+	addx->setZ( y+addx->getHeight()/2 );
+	addx->setHealth( 1 );
+	addx->setId( (unsigned int) -1 );
+	addObject( addx );
 }
 	
 void NetworkWorldClient::handleMessage( Network::Message & message ){
@@ -76,66 +155,15 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 		message >> type;
 		switch ( type ){
 			case CREATE_CHARACTER : {
-				int alliance;
-				int id;
-				int map;
-				string path = Util::getDataPath() + "/" + message.path;
-				message >> alliance >> id >> map;
-				BlockObject block;
-				block.setType( ObjectFactory::OBJECT_NETWORK_CHARACTER );
-				block.setMap( map );
-				block.setPath( path );
-				Character * character = (Character *) ObjectFactory::createObject( &block );
-				if ( character == NULL ){
-					Global::debug( 0 ) << "Could not create character!" << endl;
-					break;
-				}
-				Global::debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
-				character->setId( id );
-				character->setAlliance( alliance );
-				character->setX( 200 );
-				character->setY( 0 );
-				character->setZ( 150 );
-				if ( uniqueObject( character ) ){
-					addObject( character );
-				} else {
-					delete character;
-				}
+				handleCreateCharacter( message );
 				break;
 			}
 			case CREATE_CAT : {
-				int id;
-				message >> id;
-				string path = Util::getDataPath() + "/" + message.path;
-				BlockObject block;
-				block.setType( ObjectFactory::OBJECT_CAT );
-				block.setPath( path );
-				block.setCoords( 200, 150 );
-				Cat * cat = (Cat *) ObjectFactory::createObject( &block );
-				if ( cat == NULL ){
-					Global::debug( 0 ) << "Could not create cat" << endl;
-					break;
-				}
-
-				cat->setY( 0 );
-				if ( uniqueObject( cat ) ){
-					addObject( cat );
-				} else {
-					delete cat;
-				}
-
+				handleCreateCat( message );	
 				break;
 			}
 			case CREATE_BANG : {
-				int x, y, z;
-				message >> x >> y >> z;
-				Object * addx = bang->copy();
-				addx->setX( x );
-				addx->setY( 0 );
-				addx->setZ( y+addx->getHeight()/2 );
-				addx->setHealth( 1 );
-				addx->setId( (unsigned int) -1 );
-				addObject( addx );
+				handleCreateBang( message );
 				break;
 			}
 			case NEXT_BLOCK : {
@@ -144,10 +172,14 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				scene->advanceBlocks( block );
 				break;
 			}
+			case FINISH : {
+				world_finished = true;
+				break;
+			}
 			case NOTHING : {
 				Global::debug( 0 ) << "Invalid message. Data dump" << endl;
 				for ( int i = 0; i < Network::DATA_SIZE; i++ ){
-					Global::debug( 0 ) << (int) message.data[ i ];
+					Global::debug( 0 ) << (int) message.data[ i ] << " ";
 				}
 				Global::debug( 0 ) << endl;
 				break;
@@ -207,7 +239,6 @@ void NetworkWorldClient::act(){
 			o->setZ( getMaximumZ() );
 		}
 	}
-	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 
 	double lowest = 9999999;
 	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
@@ -263,9 +294,10 @@ void NetworkWorldClient::act(){
 	}
 	outgoing.clear();
 	
-	for ( vector< Object * >::iterator it = added_effects.begin(); it != added_effects.end(); it++ ){
+	for ( vector< Object * >::iterator it = added_effects.begin(); it != added_effects.end(); ){
 		Object * o = *it;
 		o->setId( (unsigned int) -1 );
+		it++;
 	}
 	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 }

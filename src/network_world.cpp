@@ -105,6 +105,14 @@ void NetworkWorld::sendMessage( const Network::Message & message, NLsocket socke
 		Network::send16( socket, -1 );
 	}
 }
+	
+Network::Message NetworkWorld::finishMessage(){
+	Network::Message message;
+
+	message << FINISH;
+
+	return message;
+}
 
 Network::Message NetworkWorld::nextBlockMessage( int block ){
 	Network::Message message;
@@ -151,15 +159,8 @@ vector< Network::Message > NetworkWorld::getIncomingMessages(){
 	pthread_mutex_unlock( &message_mutex );
 	return m;
 }
-	
-void NetworkWorld::act(){
-	World::act();
 
-	vector< Network::Message > messages = getIncomingMessages();
-	for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
-		handleMessage( *it );
-	}
-
+void NetworkWorld::flushOutgoing(){
 	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
 		Network::Message & m = *it;
 		sent_messages += 1;
@@ -174,4 +175,15 @@ void NetworkWorld::act(){
 		}
 	}
 	outgoing.clear();
+}
+	
+void NetworkWorld::act(){
+	World::act();
+
+	vector< Network::Message > messages = getIncomingMessages();
+	for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
+		handleMessage( *it );
+	}
+
+	flushOutgoing();
 }

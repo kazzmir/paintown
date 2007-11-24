@@ -28,11 +28,20 @@ public:
 
 	virtual ~NetworkWorldClient();
 
+	bool isRunning();
+	void stopRunning();
+	
+	virtual const bool finished() const;
+
 protected:
+
+	void handleCreateCharacter( Network::Message & message );
+	void handleCreateCat( Network::Message & message );
+	void handleCreateBang( Network::Message & message );
 
 	void sendMessage( const Network::Message & message, NLsocket socket );
 
-	bool uniqueObject( Object * object );
+	bool uniqueObject( unsigned int id );
 	void handleMessage( Network::Message & message );
 	vector< Network::Message > getIncomingMessages();
 
@@ -41,7 +50,12 @@ private:
 	std::vector< Network::Message > incoming;
 	std::vector< Network::Message > outgoing;
 	pthread_mutex_t message_mutex;
+	pthread_mutex_t running_mutex;
 	pthread_t message_thread;
+
+	bool world_finished;
+
+	bool running;
 };
 
 #endif

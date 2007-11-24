@@ -217,6 +217,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 								return false;
 							}
 							world.addObject( player );
+							world.addMessage( player->getCreateMessage() );
 						}
 					}
 
@@ -791,6 +792,8 @@ static void networkGame( const vector< Object * > & players, const string & leve
 			NetworkWorld world( sockets, players, *it );
 
 			Music::pause();
+			Music::fadeOut( 0.3 );
+			Util::rest( 100 );
 			Music::fadeIn( 0.3 );
 			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
 			Music::play();
@@ -814,6 +817,9 @@ static void networkGame( const vector< Object * > & players, const string & leve
 			// nlEnable( NL_BLOCKING_IO );
 			showHelp = 0;
 
+			world.addMessage( world.finishMessage() );
+			world.flushOutgoing();
+
 		} catch ( const LoadException & le ){
 			Global::debug( 0 ) << "Could not load " << *it << " because " << le.getReason() << endl;
 			/* if the level couldn't be loaded turn off
@@ -830,6 +836,11 @@ static void networkGame( const vector< Object * > & players, const string & leve
 		}
 
 		fadeOut( "Next level" );
+	}
+
+	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+		NLsocket s = *it;
+		Network::send16( s, -1 );
 	}
 
 	fadeOut( "You win!" );
@@ -1210,13 +1221,6 @@ static void networkServer(){
 
 static void networkClient(){
 	nlEnable( NL_BLOCKING_IO );
-	/*
-	SocketHandler handler;
-	PaintownClientSocket socket( handler );
-	socket.Open( "localhost", 7887 );
-	handler.Add( &socket );
-	handler.Select( 1, 0 );
-	*/
 		
 	try{
 		Character * player = (Character *) selectPlayer( false );
@@ -1242,26 +1246,36 @@ static void networkClient(){
 
 		int id = Network::read16( socket );
 		Global::debug( 0 ) << "Client id " << id << endl;
-
-		uint16_t length = Network::read16( socket );
-		Global::debug( 0 ) << "Read " << length << " bytes for level" << endl;
-		string level = Util::getDataPath() + Network::readStr( socket, length );
-
-		/* read the next level */
-		// nlRead( socket, buffer, 1024 );
-		Global::debug( 0 ) << "Client read buffer '" << level << "'" << endl;
-		vector< Object * > players;
-		player->setId( id );
-		players.push_back( player );
+			
+		/*
 		NLint server = nlGroupCreate();
 		nlGroupAddSocket( server, socket );
-		NetworkWorldClient world( socket, players, level );
+		*/
 
-		stopLoading( loading_screen_thread );
+		while ( 1 ){
+			int16_t length = Network::read16( socket );
+			if ( length == -1 ){
+				stopLoading( loading_screen_thread );
+				break;
+			}
+			Global::debug( 0 ) << "Read " << length << " bytes for level" << endl;
+			string level = Util::getDataPath() + Network::readStr( socket, length );
 
-		// nlDisable( NL_BLOCKING_IO );
-		playLevel( world, players, 100 );
-		// nlEnable( NL_BLOCKING_IO );
+			/* read the next level */
+			// nlRead( socket, buffer, 1024 );
+			Global::debug( 0 ) << "Client read buffer '" << level << "'" << endl;
+			vector< Object * > players;
+			player->setId( id );
+			players.push_back( player );
+			NetworkWorldClient world( socket, players, level );
+
+			stopLoading( loading_screen_thread );
+
+			// nlDisable( NL_BLOCKING_IO );
+			playLevel( world, players, 100 );
+			// nlEnable( NL_BLOCKING_IO );
+			startLoading( &loading_screen_thread );
+		}
 
 		delete player;
 	} catch ( const LoadException & le ){

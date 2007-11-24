@@ -17,7 +17,11 @@ public:
 	
 	void addIncomingMessage( const Network::Message & message );
 
+	Network::Message finishMessage();
+
 	bool isRunning();
+
+	void flushOutgoing();
 
 	virtual ~NetworkWorld();
 
