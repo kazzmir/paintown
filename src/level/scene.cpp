@@ -208,21 +208,26 @@ void Scene::clearHearts(){
 	}
 }
 
+void Scene::advanceBlocks( int n ){
+	while ( blockNumber < n ){
+		if ( level_blocks.empty() ){
+			break;
+		}
+
+		block_length += current_block->getLength();
+		delete current_block;
+		current_block = level_blocks.front();
+		level_blocks.pop_front();
+		blockNumber += 1;
+	}
+}
+
 void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 	clearHearts();
 
-	// cout<<"Min_x = "<<min_x<<" block_length = "<<block_length<<endl;
 	if ( hearts.empty() && current_block->empty() && min_x >= getLimit() - 320 ){
-		if ( ! level_blocks.empty() ){
-
-			// cout<<"Next block"<<endl;
-			block_length += current_block->getLength();
-			delete current_block;
-			current_block = level_blocks.front();
-			level_blocks.pop_front();
-			blockNumber += 1;
-			Global::debug( 3 ) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
-		}
+		advanceBlocks( blockNumber + 1 );
+		Global::debug( 3 ) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
 	}
 
 	vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );

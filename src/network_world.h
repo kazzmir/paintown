@@ -21,6 +21,8 @@ protected:
 	vector< Network::Message > getIncomingMessages();
 	void handleMessage( Network::Message & message );
 
+	Network::Message nextBlockMessage( int block );
+
 	inline unsigned int nextId(){
 		unsigned int i = id;
 		id += 1;

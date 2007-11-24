@@ -4,6 +4,7 @@
 #include "util/funcs.h"
 #include "globals.h"
 #include "animation.h"
+#include "world.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include <math.h>
@@ -232,7 +233,7 @@ Network::Message Cat::getCreateMessage(){
 	Network::Message message;
 	
 	message.id = 0;
-	message << Network::CREATE_CAT;
+	message << World::CREATE_CAT;
 	message << getId();
 
 	string mypath = path;

@@ -62,14 +62,15 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 		int type;
 		message >> type;
 		switch ( type ){
-			case Network::CREATE_CHARACTER : {
+			case CREATE_CHARACTER : {
 				int alliance;
 				int id;
+				int map;
 				string path = Util::getDataPath() + "/" + message.path;
-				message >> alliance;
-				message >> id;
+				message >> alliance >> id >> map;
 				BlockObject block;
 				block.setType( ObjectFactory::OBJECT_NETWORK_CHARACTER );
+				block.setMap( map );
 				block.setPath( path );
 				Character * character = (Character *) ObjectFactory::createObject( &block );
 				if ( character == NULL ){
@@ -89,7 +90,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				}
 				break;
 			}
-			case Network::CREATE_CAT : {
+			case CREATE_CAT : {
 				int id;
 				message >> id;
 				string path = Util::getDataPath() + "/" + message.path;
@@ -112,6 +113,12 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 
 				break;
 			}
+			case NEXT_BLOCK : {
+				int block;
+				message >> block;
+				scene->advanceBlocks( block );
+				break;
+			}
 		}
 	} else {
 		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
@@ -130,6 +137,9 @@ void NetworkWorldClient::addMessage( Network::Message m ){
 void NetworkWorldClient::doScene( int min_x, int max_x ){
 	vector< Object * > objs;
 	scene->act( min_x, max_x, &objs );
+	for ( vector< Object * >::iterator it = objs.begin(); it != objs.end(); it++ ){
+		delete *it;
+	}
 }
 
 void NetworkWorldClient::sendMessage( const Network::Message & message, NLsocket socket ){

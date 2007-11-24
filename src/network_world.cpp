@@ -72,10 +72,24 @@ void NetworkWorld::sendMessage( const Network::Message & message, NLsocket socke
 		Network::send16( socket, -1 );
 	}
 }
-	
+
+Network::Message NetworkWorld::nextBlockMessage( int block ){
+	Network::Message message;
+
+	message.id = 0;
+	message << NEXT_BLOCK;
+	message << block;
+
+	return message;
+}
+
 void NetworkWorld::doScene( int min_x, int max_x ){
 	vector< Object * > obj;
+	int block = scene->getBlock();
 	scene->act( min_x, max_x, &obj );
+	if ( scene->getBlock() != block ){
+		addMessage( nextBlockMessage( scene->getBlock() ) );
+	}
 
 	for ( vector< Object * >::iterator it = obj.begin(); it != obj.end(); it++ ){
 		Object * m = *it;

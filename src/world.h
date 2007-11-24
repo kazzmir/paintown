@@ -73,6 +73,13 @@ protected:
 	int screen_size;
 	std::string path;
 
+public:
+	enum{
+		CREATE_CHARACTER,
+		CREATE_CAT,
+		NEXT_BLOCK,
+	};
+
 };
 
 #endif

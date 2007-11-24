@@ -8,11 +8,6 @@
 
 namespace Network{
 
-enum{
-	CREATE_CHARACTER,
-	CREATE_CAT,
-};
-
 const int DATA_SIZE = 16;
 
 class NetworkException: public std::exception{

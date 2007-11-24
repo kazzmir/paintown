@@ -70,6 +70,13 @@ Object * ObjectFactory::makeCat( Cat * ret, BlockObject * block ){
 	return ret;
 }
 
+Object * ObjectFactory::makeNetworkCharacter( NetworkCharacter * guy, BlockObject * block ){
+
+	guy->setMap( block->getMap() );
+
+	return guy;
+}
+
 Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 
 	int x, z;
@@ -109,7 +116,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 					cached[ block->getPath() ] = new NetworkCharacter( block->getPath(), 0 );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
 				}
-				return cached[ block->getPath() ]->copy();
+				return makeNetworkCharacter( (NetworkCharacter *) cached[ block->getPath() ]->copy(), block );
 				break;
 			}
 			case OBJECT_ACTOR : {

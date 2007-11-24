@@ -41,6 +41,12 @@ public:
 		return maximum_z;
 	}
 
+	inline const int getBlock() const {
+		return blockNumber;
+	}
+
+	void advanceBlocks( int n );
+
 	int getLimit();
 	void act( int min_x, int max_x, vector< Object * > * objects );
 

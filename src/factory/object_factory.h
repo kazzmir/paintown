@@ -8,6 +8,7 @@ class Cat;
 class Heart;
 class Item;
 class Enemy;
+class NetworkCharacter;
 
 #include <map>
 #include <vector>
@@ -35,6 +36,7 @@ private:
 	Object * makeEnemy( Enemy * enemy, BlockObject * block );
 	Object * makeActor( Actor * ret, BlockObject * block );
 	Object * makeCat( Cat * ret, BlockObject * block );
+	Object * makeNetworkCharacter( NetworkCharacter * guy, BlockObject * block );
 
 	~ObjectFactory();
 
