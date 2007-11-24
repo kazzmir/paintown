@@ -1303,6 +1303,10 @@ void Character::interpretMessage( Network::Message & message ){
 		}
 		case CHARACTER_ANIMATION : {
 			animation_current = getMovement( message.path );
+			if ( animation_current == NULL ){
+				Global::debug( 1 ) << "Could not find animation for '" << message.path << "'" << endl;
+				animation_current = getMovement( "idle" );
+			}
 			if ( message.path != "walk" && message.path != "idle" ){
 				animation_current->reset();
 				nextTicket();
