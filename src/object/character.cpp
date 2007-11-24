@@ -1146,7 +1146,7 @@ bool Character::collision( ObjectAttack * obj ){
 
 	if ( collision_objects[ obj ] == obj->getTicket() ){
 		// if ( last_obj == obj && last_collide == obj->getTicket() )
-		// cout << this << " already collided with " << obj << endl;
+		Global::debug( 2 ) << this << " already collided with " << obj << endl;
 		return false;
 	}
 
@@ -1249,6 +1249,7 @@ void Character::interpretMessage( Network::Message & message ){
 			animation_current = getMovement( message.path );
 			if ( message.path != "walk" && message.path != "idle" ){
 				animation_current->reset();
+				nextTicket();
 			}
 			break;
 		}

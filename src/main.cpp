@@ -1198,13 +1198,12 @@ static void networkServer(){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 	} catch ( const ReturnException & r ){
 		// key.wait();
+	} catch ( const Network::NetworkException & e ){
 	}
 	if ( player != NULL ){
 		delete player;
 	}
 }
-
-
 
 static void networkClient(){
 	nlEnable( NL_BLOCKING_IO );

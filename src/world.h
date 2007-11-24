@@ -49,6 +49,7 @@ public:
 	void killAllHumans( Object * player );
 
 	virtual void addMessage( Network::Message m );
+	Network::Message createBangMessage( int x, int y, int z );
 
 protected:
 
@@ -77,6 +78,7 @@ public:
 	enum{
 		CREATE_CHARACTER,
 		CREATE_CAT,
+		CREATE_BANG,
 		NEXT_BLOCK,
 	};
 

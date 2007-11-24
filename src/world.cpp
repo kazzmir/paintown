@@ -149,6 +149,16 @@ const bool World::isPlayer( Object * o ) const {
 void World::addMessage( Network::Message m ){
 	/* nothing */
 }
+	
+Network::Message World::createBangMessage( int x, int y, int z ){
+	Network::Message message;
+
+	message.id = 0;
+	message << CREATE_BANG;
+	message << x << y << z;
+
+	return message;
+}
 
 void World::doLogic(){
 
@@ -170,7 +180,7 @@ void World::doLogic(){
 			ObjectAttack * o_good = (ObjectAttack *)good;
 			for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
 				if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
-					// cout << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
+					Global::debug( 1 ) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
 
 					// cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
 					// cout << "Collision: " << (*fight)->collision( o_good ) << endl;
@@ -192,6 +202,7 @@ void World::doLogic(){
 								addx->setZ( y+addx->getHeight()/2 );
 								addx->setHealth( 1 );
 								added_effects.push_back( addx );
+								addMessage( createBangMessage( (int) x, 0, (int) y + addx->getHeight() / 2 ) );
 							}
 
 							o_good->attacked( *fight, added_effects );

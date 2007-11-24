@@ -16,13 +16,19 @@ static void * handleMessages( void * arg ){
 	NLsocket socket = world->getServer();
 	// pthread_mutex_t * lock = world->getLock();
 	
-	while ( 1 ){
-		Network::Message m( socket );
-		// pthread_mutex_lock( lock );
-		world->addIncomingMessage( m );
-		Global::debug( 1 ) << "Received path '" << m.path << "'" << endl;
-		// pthread_mutex_unlock( lock );
+	try{
+		while ( 1 ){
+			Network::Message m( socket );
+			// pthread_mutex_lock( lock );
+			world->addIncomingMessage( m );
+			Global::debug( 1 ) << "Received path '" << m.path << "'" << endl;
+			// pthread_mutex_unlock( lock );
+		}
+	} catch ( const Network::NetworkException & n ){
+		Global::debug( 0 ) << "Network exception" << endl;
 	}
+
+	return NULL;
 }
 	
 NetworkWorldClient::NetworkWorldClient( NLsocket server, const std::vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
@@ -111,6 +117,18 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 					delete cat;
 				}
 
+				break;
+			}
+			case CREATE_BANG : {
+				int x, y, z;
+				message >> x >> y >> z;
+				Object * addx = bang->copy();
+				addx->setX( x );
+				addx->setY( 0 );
+				addx->setZ( y+addx->getHeight()/2 );
+				addx->setHealth( 1 );
+				addx->setId( -1 );
+				addObject( addx );
 				break;
 			}
 			case NEXT_BLOCK : {
