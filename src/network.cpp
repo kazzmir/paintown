@@ -58,18 +58,25 @@ Message & Message::operator<<( string p ){
 	return *this;
 }
 
+static string getHawkError(){
+	return string(" HawkNL error: '") +
+	       string( nlGetErrorStr( nlGetError() ) ) +
+	       string( "' HawkNL system error: '" ) +
+	       string( nlGetSystemErrorStr( nlGetSystemError() ) );
+}
+
 int16_t read16( NLsocket socket ){
 	uint16_t b;
 	int read = nlRead( socket, &b, sizeof(int16_t) );
 	if ( read != sizeof(int16_t) ){
-		throw NetworkException( "Could not read 16 bits" );
+		throw NetworkException( string("Could not read 16 bits.") + getHawkError() );
 	}
 	return b;
 }
 
 void send16( NLsocket socket, int16_t length ){
 	if ( nlWrite( socket, &length, sizeof(int16_t) ) != sizeof(int16_t) ){
-		throw NetworkException( "Could not send 16 bits" );
+		throw NetworkException( string("Could not send 16 bits.") + getHawkError() );
 	}
 }
 
@@ -78,7 +85,7 @@ string readStr( NLsocket socket, const uint16_t length ){
 	char buffer[ length + 1 ];
 	NLint bytes = nlRead( socket, buffer, length );
 	if ( bytes == NL_INVALID ){
-		throw NetworkException( "Could not read string" );
+		throw NetworkException( string("Could not read string.") + getHawkError() );
 	}
 	buffer[ length ] = 0;
 	bytes += 1;
@@ -88,7 +95,7 @@ string readStr( NLsocket socket, const uint16_t length ){
 
 void sendStr( NLsocket socket, const string & str ){
 	if ( nlWrite( socket, str.c_str(), str.length() + 1 ) != (signed)(str.length() + 1) ){
-		throw NetworkException( "Could not write string" );
+		throw NetworkException( string("Could not write string.") + getHawkError() );
 	}
 }
 
@@ -98,7 +105,7 @@ void sendBytes( NLsocket socket, const uint8_t * data, int length ){
 	while ( written < length ){
 		int bytes = nlWrite( socket, position, length - written );
 		if ( bytes == NL_INVALID ){
-			throw NetworkException( "Could not send bytes" );
+			throw NetworkException( string("Could not send bytes.") + getHawkError() );
 		}
 		written += bytes;
 		position += bytes;
@@ -111,7 +118,7 @@ void readBytes( NLsocket socket, uint8_t * data, int length ){
 	while ( read < length ){
 		int bytes = nlRead( socket, position, length - read );
 		if ( bytes == NL_INVALID ){
-			throw NetworkException( "Could not read bytes" );
+			throw NetworkException( string("Could not read bytes.") + getHawkError() );
 		}
 		read += bytes;
 		position += bytes;
