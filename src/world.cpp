@@ -180,7 +180,7 @@ void World::doLogic(){
 			ObjectAttack * o_good = (ObjectAttack *)good;
 			for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
 				if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
-					Global::debug( 1 ) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
+					Global::debug( 2 ) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
 
 					// cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
 					// cout << "Collision: " << (*fight)->collision( o_good ) << endl;

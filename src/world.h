@@ -76,6 +76,7 @@ protected:
 
 public:
 	enum{
+		NOTHING,
 		CREATE_CHARACTER,
 		CREATE_CAT,
 		CREATE_BANG,

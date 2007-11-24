@@ -25,6 +25,7 @@ static void * handleMessages( void * arg ){
 			// pthread_mutex_unlock( lock );
 		}
 	} catch ( const Network::NetworkException & ne ){
+		Global::debug( 0 ) << "Network exception" << endl;
 	}
 
 	delete s;
