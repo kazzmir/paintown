@@ -247,4 +247,10 @@ void NetworkWorldClient::act(){
 		sendMessage( m, getServer() );
 	}
 	outgoing.clear();
+	
+	for ( vector< Object * >::iterator it = added_effects.begin(); it != added_effects.end(); it++ ){
+		Object * o = *it;
+		o->setId( (unsigned int) -1 );
+	}
+	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 }

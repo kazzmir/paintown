@@ -870,6 +870,7 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 		// cout<<getName()<<" Death is "<<death<<endl;
 		if ( ++death > 60 ){
 			setHealth( 0 );
+			world->addMessage( healthMessage() );
 		}
 	}
 
