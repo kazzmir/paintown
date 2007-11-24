@@ -35,7 +35,7 @@ public:
 	
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	
-	virtual void takeDamage( ObjectAttack * obj, int x );
+	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
 	
 	virtual void hurt( int x );
 

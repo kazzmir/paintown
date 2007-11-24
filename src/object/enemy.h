@@ -30,8 +30,6 @@ public:
 	
 	virtual void draw( Bitmap * work, int rel_x );
 	
-	// virtual void takeDamage( ObjectAttack * obj, int x );
-
 	virtual void hurt( int x );
 
 	virtual inline void setMaxHealth( int h ){

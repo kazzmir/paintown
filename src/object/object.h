@@ -97,7 +97,7 @@ public:
 	/* takeDamage
 	 * Take some damage and do other things
 	 */
-	virtual void takeDamage( ObjectAttack * obj, int x );
+	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
 
 	/* getDamage:
 	 * Gets the current amount of damage the object can do

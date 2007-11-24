@@ -207,7 +207,7 @@ void World::doLogic(){
 
 							o_good->attacked( *fight, added_effects );
 							(*fight)->collided( o_good, added_effects );
-							(*fight)->takeDamage( o_good, o_good->getDamage() );
+							(*fight)->takeDamage( this, o_good, o_good->getDamage() );
 						// }
 					}
 				}
@@ -249,7 +249,7 @@ void World::killAllHumans( Object * player ){
 		Object * o = *it;
 		if ( o != player ){
 			// o->takeDamage( o->getMaxHealth() * 2 );
-			o->takeDamage( NULL, 999999 );
+			o->takeDamage( this, NULL, 999999 );
 		}
 	}
 }

@@ -87,7 +87,7 @@ public:
 	virtual void attacked( Object * something, vector< Object * > & objects );
 
 	/* obj hurt you, take some damage */
-	virtual void takeDamage( ObjectAttack * obj, int x );
+	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
 
 	/* make the character jump! */
 	virtual void jump();
@@ -293,6 +293,8 @@ public:
 	
 	virtual Network::Message getCreateMessage();
 	virtual Network::Message movedMessage();
+	virtual Network::Message explodeMessage();
+	virtual Network::Message healthMessage();
 	
 	virtual void interpretMessage( Network::Message & m );
 

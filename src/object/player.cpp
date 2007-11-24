@@ -320,13 +320,13 @@ void Player::hurt( int x ){
 	}
 }
 
-void Player::takeDamage( ObjectAttack * obj, int x ){
+void Player::takeDamage( World * world, ObjectAttack * obj, int x ){
 	if ( getLink() != NULL ){
 		getLink()->unGrab();
 		unGrab();
 	}
 
-	Character::takeDamage( obj, x );
+	Character::takeDamage( world, obj, x );
 
 	// cout<<"Player taking "<<x<<" damage"<<endl;
 }

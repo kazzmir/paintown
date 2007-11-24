@@ -28,6 +28,8 @@
 
 const int CHARACTER_ANIMATION = 20;
 const int CHARACTER_JUMP = 21;
+const int CHARACTER_EXPLODE = 22;
+const int CHARACTER_HEALTH = 23;
 
 using namespace std;
 
@@ -655,14 +657,15 @@ void Character::fall( double x_vel, double y_vel ){
 
 }
 	
-void Character::takeDamage( ObjectAttack * obj, int damage ){
-	Object::takeDamage( obj, damage );
+void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
+	Object::takeDamage( world, obj, damage );
 	
 	Global::debug( 2 ) << getName() << " has " << currentDamage() << " damage" << endl;
 	if ( (currentDamage() > getToughness() || getHealth() <= 0 || getStatus() == Status_Jumping) && getStatus() != Status_Fell ){
 
 		if ( currentDamage() > getToughness() && getHealth() <= 0 ){
 			setExplode( true );
+			world->addMessage( explodeMessage() );
 		}
 
 		reduceDamage( currentDamage() );
@@ -689,6 +692,9 @@ void Character::takeDamage( ObjectAttack * obj, int damage ){
 			die_sound->play();
 		}
 	}
+
+	world->addMessage( animationMessage() );
+	world->addMessage( healthMessage() );
 }
 	
 void Character::died( vector< Object * > & objects ){
@@ -772,7 +778,7 @@ void Character::landed( World * world ){
 		
 			double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
 			// cout<<getName()<<" taking "<<cur<<" from falling. Health = "<<getHealth()<<endl;
-			Object::takeDamage( NULL, (int)cur );
+			Object::takeDamage( world, NULL, (int)cur );
 
 			world->Quake( (int)fabs(getYVelocity()) );
 
@@ -1211,6 +1217,25 @@ Network::Message Character::movedMessage(){
 	message << isMoving();
 	return message;
 }
+	
+Network::Message Character::explodeMessage(){
+	Network::Message message;
+
+	message.id = getId();
+	message << CHARACTER_EXPLODE;
+
+	return message;
+}
+	
+Network::Message Character::healthMessage(){
+	Network::Message message;
+
+	message.id = getId();
+	message << CHARACTER_HEALTH;
+	message << getHealth();
+
+	return message;
+}
 
 Network::Message Character::jumpMessage( double x, double z ){
 	Network::Message message;
@@ -1243,6 +1268,17 @@ void Character::interpretMessage( Network::Message & message ){
 			message >> x >> z;
 			doJump( x / 100.0, z / 100.0 );
 			animation_current = getMovement( "jump" );
+			break;
+		}
+		case CHARACTER_HEALTH : {
+			int health;
+			message >> health;
+			setHealth( health );
+			Global::debug( 0 ) << "Health for " << getId() << " is " << getHealth() << endl;
+			break;
+		}
+		case CHARACTER_EXPLODE : {
+			setExplode( true );
 			break;
 		}
 		case CHARACTER_ANIMATION : {

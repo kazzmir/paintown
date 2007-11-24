@@ -163,8 +163,6 @@ void testAnimation( ){
 	// int zoom = 20;
 	int zoom = 0;
 
-	World world;
-
 	while ( !key[ KEY_ESC ] ){
 
 		bool draw = false;
@@ -471,6 +469,8 @@ void showAnimations( string person, int xmap = 0 ){
 
 	const int baseZ = 170;
 
+	World world;
+
 	Enemy enemy( Util::getDataPath() + "/chars/shermie/shermie.txt" );
 
 	enemy.setX( 320 / 2 + 100 );
@@ -610,7 +610,7 @@ void showAnimations( string person, int xmap = 0 ){
 
 			if ( key[ KEY_B ] ){
 				// ch->hurt( 1 );
-				ch->takeDamage( NULL, 1 );
+				ch->takeDamage( &world, NULL, 1 );
 				waitOnKey( KEY_B );
 			}
 

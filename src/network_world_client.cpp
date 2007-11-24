@@ -21,7 +21,7 @@ static void * handleMessages( void * arg ){
 			Network::Message m( socket );
 			// pthread_mutex_lock( lock );
 			world->addIncomingMessage( m );
-			Global::debug( 1 ) << "Received path '" << m.path << "'" << endl;
+			Global::debug( 2 ) << "Received path '" << m.path << "'" << endl;
 			// pthread_mutex_unlock( lock );
 		}
 	} catch ( const Network::NetworkException & n ){
@@ -161,14 +161,14 @@ void NetworkWorldClient::doScene( int min_x, int max_x ){
 }
 
 void NetworkWorldClient::sendMessage( const Network::Message & message, NLsocket socket ){
-	Global::debug( 1 ) << "Sending message to client" << endl;
+	Global::debug( 2 ) << "Sending message to client" << endl;
 	Network::send16( socket, message.id );
-	Global::debug( 1 ) << "Sent message id " << message.id << endl;
+	Global::debug( 2 ) << "Sent message id " << message.id << endl;
 	Network::sendBytes( socket, message.data, Network::DATA_SIZE );
 	if ( message.path != "" ){
-		Global::debug( 1 ) << "Send message length " << message.path.length() << endl;
+		Global::debug( 2 ) << "Send message length " << message.path.length() << endl;
 		Network::send16( socket, message.path.length() + 1 );
-		Global::debug( 1 ) << "Send path '" << message.path << "'" << endl;
+		Global::debug( 2 ) << "Send path '" << message.path << "'" << endl;
 		Network::sendStr( socket, message.path );
 	} else {
 		Network::send16( socket, -1 );

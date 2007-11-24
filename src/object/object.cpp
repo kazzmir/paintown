@@ -204,7 +204,7 @@ void Object::reduceDamage( const double much ){
 	}
 }
 	
-void Object::takeDamage( ObjectAttack * obj, int x ){
+void Object::takeDamage( World * world, ObjectAttack * obj, int x ){
 	this->hurt( x );
 	damage += x;
 	// health -= x;
