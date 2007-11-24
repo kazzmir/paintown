@@ -30,6 +30,7 @@ const int CHARACTER_ANIMATION = 20;
 const int CHARACTER_JUMP = 21;
 const int CHARACTER_EXPLODE = 22;
 const int CHARACTER_HEALTH = 23;
+const int CHARACTER_FALL = 24;
 
 using namespace std;
 
@@ -678,6 +679,7 @@ void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
 		*/
 
 		fall( -1.7, 4.4 );
+		world->addMessage( fallMessage( -1.7, 4.4 ) );
 	} else	{
 		animation_current = getMovement( "pain" );
 		setStatus( Status_Hurt );
@@ -1228,6 +1230,17 @@ Network::Message Character::explodeMessage(){
 	return message;
 }
 	
+Network::Message Character::fallMessage( double x, double y ){
+	Network::Message message;
+
+	message.id = getId();
+	message << CHARACTER_FALL;
+	message << (int)(x * 100);
+	message << (int)(y * 100);
+
+	return message;
+}
+	
 Network::Message Character::healthMessage(){
 	Network::Message message;
 
@@ -1280,6 +1293,12 @@ void Character::interpretMessage( Network::Message & message ){
 		}
 		case CHARACTER_EXPLODE : {
 			setExplode( true );
+			break;
+		}
+		case CHARACTER_FALL : {
+			int x, y;
+			message >> x >> y;
+			fall( x / 100.0, y / 100.0 );
 			break;
 		}
 		case CHARACTER_ANIMATION : {

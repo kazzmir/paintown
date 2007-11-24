@@ -295,6 +295,7 @@ public:
 	virtual Network::Message movedMessage();
 	virtual Network::Message explodeMessage();
 	virtual Network::Message healthMessage();
+	virtual Network::Message fallMessage( double x, double y );
 	
 	virtual void interpretMessage( Network::Message & m );
 
