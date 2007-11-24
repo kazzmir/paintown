@@ -24,8 +24,11 @@ public:
 	}
 	
 	virtual void doScene( int min_x, int max_x );
+	virtual void addMessage( Network::Message m );
 
 protected:
+
+	void sendMessage( const Network::Message & message, NLsocket socket );
 
 	bool uniqueObject( Object * object );
 	void handleMessage( Network::Message & message );
@@ -34,6 +37,7 @@ protected:
 private:
 	NLsocket server;
 	std::vector< Network::Message > incoming;
+	std::vector< Network::Message > outgoing;
 	pthread_mutex_t message_mutex;
 	pthread_t message_thread;
 };

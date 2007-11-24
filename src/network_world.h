@@ -13,9 +13,13 @@ public:
 	virtual void addMessage( Network::Message m );
 	virtual void act();
 	virtual void doScene( int min_x, int max_x );
+	
+	void addIncomingMessage( const Network::Message & message );
 
 protected:
 	void sendMessage( const Network::Message & message, NLsocket socket );
+	vector< Network::Message > getIncomingMessages();
+	void handleMessage( Network::Message & message );
 
 	inline unsigned int nextId(){
 		unsigned int i = id;
@@ -25,9 +29,12 @@ protected:
 
 private:
 	std::vector< NLsocket > sockets;
-	std::vector< Network::Message > messages;
+	std::vector< Network::Message > outgoing;
+	std::vector< Network::Message > incoming;
+	std::vector< pthread_t > threads;
 	unsigned int id;
 
+	pthread_mutex_t message_mutex;
 };
 
 #endif

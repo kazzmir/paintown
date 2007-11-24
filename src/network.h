@@ -33,6 +33,8 @@ struct Message{
 	Message & operator<<( std::string p );
 	Message & operator>>( int & x );
 
+	void reset();
+
 	std::string path;
 };
 

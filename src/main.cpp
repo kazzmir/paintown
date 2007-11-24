@@ -804,13 +804,14 @@ static void networkGame( const vector< Object * > & players, const string & leve
 				playerX->setMoving( true );
 
 				playerX->setStatus( Status_Falling );
+				world.addMessage( playerX->movedMessage() );
 			}
 
 			stopLoading( loading_screen_thread );
 
-			nlDisable( NL_BLOCKING_IO );
+			// nlDisable( NL_BLOCKING_IO );
 			gameState = playLevel( world, players, showHelp );
-			nlEnable( NL_BLOCKING_IO );
+			// nlEnable( NL_BLOCKING_IO );
 			showHelp = 0;
 
 		} catch ( const LoadException & le ){
@@ -1263,6 +1264,7 @@ static void networkClient(){
 		delete player;
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load data: " << le.getReason() << endl;
+	} catch ( const Network::NetworkException & ne ){
 	}
 }
 

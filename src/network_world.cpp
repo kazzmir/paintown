@@ -6,6 +6,27 @@
 
 using namespace std;
 
+struct Stuff{
+	NLsocket socket;
+	NetworkWorld * world;
+};
+
+static void * handleMessages( void * arg ){
+	Stuff * s = (Stuff *) arg;
+	NLsocket socket = s->socket;
+	NetworkWorld * world = s->world;
+	
+	while ( 1 ){
+		Network::Message m( socket );
+		// pthread_mutex_lock( lock );
+		world->addIncomingMessage( m );
+		Global::debug( 1 ) << "Received path '" << m.path << "'" << endl;
+		// pthread_mutex_unlock( lock );
+	}
+
+	delete s;
+}
+
 NetworkWorld::NetworkWorld( const vector< NLsocket > & sockets, const vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
 World( players, path, screen_size ),
 sockets( sockets ),
@@ -14,10 +35,27 @@ id( 3 ){
 		Object * object = it->player;
 		addMessage( object->getCreateMessage() );
 	}
+
+	pthread_mutex_init( &message_mutex, NULL );
+
+	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+		Stuff * s = new Stuff;
+		s->socket = *it;
+		s->world = this;
+		pthread_t thread;
+		pthread_create( &thread, NULL, handleMessages, s );
+		threads.push_back( thread );
+	}
 }
 	
 void NetworkWorld::addMessage( Network::Message m ){
-	messages.push_back( m );
+	outgoing.push_back( m );
+}
+
+void NetworkWorld::addIncomingMessage( const Network::Message & message ){
+	pthread_mutex_lock( &message_mutex );
+	incoming.push_back( message );
+	pthread_mutex_unlock( &message_mutex );
 }
 
 void NetworkWorld::sendMessage( const Network::Message & message, NLsocket socket ){
@@ -43,18 +81,43 @@ void NetworkWorld::doScene( int min_x, int max_x ){
 		Object * m = *it;
 		m->setId( nextId() );
 		addMessage( m->getCreateMessage() );
+		addMessage( m->movedMessage() );
 	}
 
 	objects.insert( objects.end(), obj.begin(), obj.end() );
 }
 	
+void NetworkWorld::handleMessage( Network::Message & message ){
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+		Object * o = *it;
+		if ( o->getId() == message.id ){
+			o->interpretMessage( message );
+		}
+	}
+}
+
+vector< Network::Message > NetworkWorld::getIncomingMessages(){
+	vector< Network::Message > m;
+	pthread_mutex_lock( &message_mutex );
+	m = incoming;
+	incoming.clear();
+	pthread_mutex_unlock( &message_mutex );
+	return m;
+}
+	
 void NetworkWorld::act(){
 	World::act();
+
+	vector< Network::Message > messages = getIncomingMessages();
 	for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
+		handleMessage( *it );
+	}
+
+	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
 		Network::Message & m = *it;
 		for ( vector< NLsocket >::iterator socket = sockets.begin(); socket != sockets.end(); socket++ ){
 			sendMessage( m, *socket );
 		}
 	}
-	messages.clear();
+	outgoing.clear();
 }

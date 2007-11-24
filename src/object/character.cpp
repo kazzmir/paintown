@@ -26,10 +26,7 @@
 #include "util/tokenreader.h"
 #include "world.h"
 
-enum{
-	CHARACTER_MOVED,
-	CHARACTER_ANIMATION,
-};
+const int CHARACTER_ANIMATION = 20;
 
 using namespace std;
 
@@ -1205,37 +1202,36 @@ const int Character::getShadowY(){
 	return 0;
 }
 	
+Network::Message Character::movedMessage(){
+	Network::Message message = Object::movedMessage();
+	message << getStatus();
+	message << isMoving();
+	return message;
+}
+	
 void Character::interpretMessage( Network::Message & message ){
 	int type;
 	message >> type;
+	message.reset();
+	Object::interpretMessage( message );
 	switch ( type ){
-		case CHARACTER_MOVED : {
-			int x, y, z, facing;
-			message >> x >> y >> z >> facing;
-			setX( x );
-			setY( y );
-			setZ( z );
-			setFacing( facing );
+		case OBJECT_MOVED : {
+			int status;
+			int moving;
+			message >> status;
+			message >> moving;
+			setStatus( status );
+			setMoving( moving );
 			break;
 		}
 		case CHARACTER_ANIMATION : {
 			animation_current = getMovement( message.path );
+			if ( message.path != "walk" && message.path != "idle" ){
+				animation_current->reset();
+			}
 			break;
 		}
 	}
-}
-	
-Network::Message Character::movedMessage(){
-	Network::Message m;
-
-	m.id = getId();
-	m << CHARACTER_MOVED;
-	m << (int) getX();
-	m << (int) getY();
-	m << (int) getZ();
-	m << getFacing();
-
-	return m;
 }
 	
 Network::Message Character::animationMessage(){

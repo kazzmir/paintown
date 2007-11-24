@@ -161,7 +161,33 @@ void Object::moveZ( double z ){
 void Object::print() const{
 }
 	
-void Object::interpretMessage( Network::Message & m ){
+void Object::interpretMessage( Network::Message & message ){
+	int type;
+	message >> type;
+	switch ( type ){
+		case OBJECT_MOVED : {
+			int x, y, z, facing;
+			message >> x >> y >> z >> facing;
+			setX( x );
+			setY( y );
+			setZ( z );
+			setFacing( facing );
+			break;
+		}
+	}
+}
+
+Network::Message Object::movedMessage(){
+	Network::Message m;
+
+	m.id = getId();
+	m << OBJECT_MOVED;
+	m << (int) getX();
+	m << (int) getY();
+	m << (int) getZ();
+	m << getFacing();
+
+	return m;
 }
 	
 void Object::fall( double x_vel, double y_vel ){

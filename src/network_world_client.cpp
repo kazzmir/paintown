@@ -122,13 +122,36 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 		}
 	}
 }
+
+void NetworkWorldClient::addMessage( Network::Message m ){
+	outgoing.push_back( m );
+}
 	
 void NetworkWorldClient::doScene( int min_x, int max_x ){
 	vector< Object * > objs;
 	scene->act( min_x, max_x, &objs );
 }
 
+void NetworkWorldClient::sendMessage( const Network::Message & message, NLsocket socket ){
+	Global::debug( 1 ) << "Sending message to client" << endl;
+	Network::send16( socket, message.id );
+	Global::debug( 1 ) << "Sent message id " << message.id << endl;
+	Network::sendBytes( socket, message.data, Network::DATA_SIZE );
+	if ( message.path != "" ){
+		Global::debug( 1 ) << "Send message length " << message.path.length() << endl;
+		Network::send16( socket, message.path.length() + 1 );
+		Global::debug( 1 ) << "Send path '" << message.path << "'" << endl;
+		Network::sendStr( socket, message.path );
+	} else {
+		Network::send16( socket, -1 );
+	}
+}
+
 void NetworkWorldClient::act(){
+	
+	if ( quake_time > 0 ){
+		quake_time--;
+	}
 
 	vector< Object * > added_effects;
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
@@ -180,4 +203,10 @@ void NetworkWorldClient::act(){
 	for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
 		handleMessage( *it );
 	}
+
+	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
+		Network::Message & m = *it;
+		sendMessage( m, getServer() );
+	}
+	outgoing.clear();
 }

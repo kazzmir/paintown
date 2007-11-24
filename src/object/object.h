@@ -16,6 +16,8 @@ class Stimulation;
 #define MAX_(a,b) ((a) > (b) ? (a) : (b))
 #define MID_(a,b,c) MAX_(a,MIN_(b,c))
 
+const int OBJECT_MOVED = 0;
+
 // using namespace std;
 
 /* generic game object
@@ -144,6 +146,8 @@ public:
 	virtual Network::Message getCreateMessage() = 0;
 
 	virtual void interpretMessage( Network::Message & m );
+
+	virtual Network::Message movedMessage();
 
 	virtual inline void setId( unsigned int id ){
 		this->id = id;

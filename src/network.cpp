@@ -14,6 +14,7 @@ Message::Message(){
 Message::Message( const Message & m ){
 	memcpy( data, m.data, sizeof(uint8_t) * DATA_SIZE );
 	position = data;
+	position += m.position - m.data;
 	path = m.path;
 	id = m.id;
 }
@@ -29,6 +30,10 @@ Message::Message( NLsocket socket ){
 		buf[ str ] = 0;
 		this->path = buf;
 	}
+}
+	
+void Message::reset(){
+	position = data;
 }
 
 Message & Message::operator<<( int x ){
