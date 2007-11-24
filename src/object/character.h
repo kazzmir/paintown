@@ -299,6 +299,7 @@ public:
 protected:
 
 	virtual Network::Message animationMessage();
+	virtual Network::Message jumpMessage( double x, double y );
 	
 	const int getShadowX();
 	const int getShadowY();

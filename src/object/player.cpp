@@ -712,6 +712,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 				}
 
 				doJump( x, y );
+				world->addMessage( jumpMessage( x, y ) );
 				/*
 				int x = 0;
 				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){

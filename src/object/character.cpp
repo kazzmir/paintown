@@ -27,6 +27,7 @@
 #include "world.h"
 
 const int CHARACTER_ANIMATION = 20;
+const int CHARACTER_JUMP = 21;
 
 using namespace std;
 
@@ -622,6 +623,7 @@ void Character::doJump( double vx, double vz ){
 	// cout<<"Jumping velocity: "<<getMaxJumpingVelocity()<<endl;
 	// cout<<"Do jump: "<<getJumpingYVelocity()<<endl;
 }
+	
 
 /** TODO **/
 void Character::jump(){
@@ -1208,6 +1210,17 @@ Network::Message Character::movedMessage(){
 	message << isMoving();
 	return message;
 }
+
+Network::Message Character::jumpMessage( double x, double z ){
+	Network::Message message;
+	message.id = getId();
+
+	message << CHARACTER_JUMP;
+	message << (int)(x * 100);
+	message << (int)(z * 100);
+
+	return message;
+}
 	
 void Character::interpretMessage( Network::Message & message ){
 	int type;
@@ -1224,11 +1237,16 @@ void Character::interpretMessage( Network::Message & message ){
 			setMoving( moving );
 			break;
 		}
+		case CHARACTER_JUMP : {
+			int x, z;
+			message >> x >> z;
+			doJump( x / 100.0, z / 100.0 );
+			animation_current = getMovement( "jump" );
+			break;
+		}
 		case CHARACTER_ANIMATION : {
 			animation_current = getMovement( message.path );
-			if ( message.path != "walk" && message.path != "idle" ){
-				animation_current->reset();
-			}
+			animation_current->reset();
 			break;
 		}
 	}

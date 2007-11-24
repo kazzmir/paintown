@@ -242,6 +242,7 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 				if ( !attacks.empty() ){
 					// Animation * choose = attacks[ rnd( attacks.size() ) ];
 					animation_current = attacks[ Util::rnd( attacks.size() ) ];
+					world->addMessage( animationMessage() );
 					// cout<<getName()<<" chose "<<animation_current->getName()<<endl;
 					nextTicket();
 					animation_current->reset();
@@ -263,6 +264,8 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 				want_path = false;
 			}
 
+			bool moved = false;
+
 			// animation_current = movements[ "walk" ];
 			animation_current = getMovement( "walk" );
 			if ( want_x != getX() ){
@@ -276,6 +279,7 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 					// moveX( want_x > getX() ? getSpeed() : -getSpeed() );
 				}
 				moveX( dir * velocity( getX(), want_x, getSpeed() ) );
+				moved = true;
 			}
 
 			if ( want_z != getZ() ){
@@ -285,6 +289,11 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 				}
 				*/
 				moveZ( velocity( getZ(), want_z, getSpeed() ) );
+				moved = true;
+			}
+
+			if ( moved ){
+				world->addMessage( movedMessage() );
 			}
 
 		}
