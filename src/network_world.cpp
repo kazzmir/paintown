@@ -1,6 +1,7 @@
 #include "object/object.h"
 #include "network_world.h"
 #include "network.h"
+#include "util/funcs.h"
 #include "level/scene.h"
 #include "globals.h"
 
@@ -159,8 +160,13 @@ void NetworkWorld::act(){
 
 	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
 		Network::Message & m = *it;
-		for ( vector< NLsocket >::iterator socket = sockets.begin(); socket != sockets.end(); socket++ ){
-			sendMessage( m, *socket );
+		for ( vector< NLsocket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
+			try{
+				sendMessage( m, *socket );
+				socket++;
+			} catch ( const Network::NetworkException & ne ){
+				socket = sockets.erase( socket );
+			}
 		}
 	}
 	outgoing.clear();

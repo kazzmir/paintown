@@ -26,6 +26,8 @@ public:
 	virtual void doScene( int min_x, int max_x );
 	virtual void addMessage( Network::Message m );
 
+	virtual ~NetworkWorldClient();
+
 protected:
 
 	void sendMessage( const Network::Message & message, NLsocket socket );

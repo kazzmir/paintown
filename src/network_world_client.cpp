@@ -38,6 +38,10 @@ server( server ){
 	pthread_create( &message_thread, NULL, handleMessages, this );
 }
 	
+NetworkWorldClient::~NetworkWorldClient(){
+	Global::debug( 1 ) << "Destroy client world" << endl;
+}
+	
 void NetworkWorldClient::addIncomingMessage( const Network::Message & message ){
 	pthread_mutex_lock( &message_mutex );
 	incoming.push_back( message );
