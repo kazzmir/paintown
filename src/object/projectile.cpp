@@ -4,6 +4,7 @@
 #include "util/token_exception.h"
 #include "util/ebox.h"
 #include "util/funcs.h"
+#include "world.h"
 #include "globals.h"
 #include "animation.h"
 #include <iostream>
@@ -136,9 +137,12 @@ Object * Projectile::copy(){
 }
 	
 Network::Message Projectile::getCreateMessage(){
-	Network::Message m;
+	Network::Message message;
 
-	return m;
+	message.id = 0;
+	message << World::CREATE_PROJECTILE;
+
+	return message;
 }
 
 const std::string & Projectile::getAttackName(){

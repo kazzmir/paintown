@@ -38,6 +38,7 @@ NetworkWorld::NetworkWorld( const vector< NLsocket > & sockets, const vector< Ob
 World( players, path, screen_size ),
 sockets( sockets ),
 id( 3 ),
+sent_messages( 0 ),
 running( true ){
 	for ( vector< PlayerTracker >::iterator it = this->players.begin(); it != this->players.end(); it++ ){
 		Object * object = it->player;
@@ -90,6 +91,7 @@ bool NetworkWorld::isRunning(){
 }
 
 void NetworkWorld::sendMessage( const Network::Message & message, NLsocket socket ){
+	Global::debug( 1 ) << "Sending message " << sent_messages << endl;
 	Global::debug( 2 ) << "Sending message to client" << endl;
 	Network::send16( socket, message.id );
 	Global::debug( 2 ) << "Sent message id " << message.id << endl;
@@ -160,6 +162,7 @@ void NetworkWorld::act(){
 
 	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
 		Network::Message & m = *it;
+		sent_messages += 1;
 		for ( vector< NLsocket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
 			try{
 				sendMessage( m, *socket );

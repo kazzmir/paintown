@@ -93,14 +93,28 @@ void sendStr( NLsocket socket, const string & str ){
 }
 
 void sendBytes( NLsocket socket, const uint8_t * data, int length ){
-	if ( nlWrite( socket, data, length ) != length ){
-		throw NetworkException( "Could not send bytes" );
+	const uint8_t * position = data;
+	int written = 0;
+	while ( written < length ){
+		int bytes = nlWrite( socket, position, length - written );
+		if ( bytes == NL_INVALID ){
+			throw NetworkException( "Could not send bytes" );
+		}
+		written += bytes;
+		position += bytes;
 	}
 }
 
 void readBytes( NLsocket socket, uint8_t * data, int length ){
-	if ( nlRead( socket, data, length ) == NL_INVALID ){
-		throw NetworkException( "Could not read bytes" );
+	uint8_t * position = data;
+	int read = 0;
+	while ( read < length ){
+		int bytes = nlRead( socket, position, length - read );
+		if ( bytes == NL_INVALID ){
+			throw NetworkException( "Could not read bytes" );
+		}
+		read += bytes;
+		position += bytes;
 	}
 }
 

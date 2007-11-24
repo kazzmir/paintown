@@ -43,6 +43,8 @@ private:
 	std::vector< pthread_t > threads;
 	unsigned int id;
 
+	unsigned int sent_messages;
+
 	pthread_mutex_t message_mutex;
 	pthread_mutex_t running_mutex;
 	bool running;

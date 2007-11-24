@@ -630,8 +630,10 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			if ( getMovement( "jump" ) == NULL || animation_current != getMovement( "jump" ) ){
 				if ( !moving ){
 					// animation_current = movements[ "idle" ];
-					animation_current = getMovement( "idle" );
-					world->addMessage( animationMessage() );
+					if ( animation_current != getMovement( "idle" ) ){
+						animation_current = getMovement( "idle" );
+						world->addMessage( animationMessage() );
+					}
 				} else	{
 					vector< Object * > my_enemies;
 					filterEnemies( my_enemies, others );
@@ -753,7 +755,9 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			moved = true;
 		}
 
-		world->addMessage( movedMessage() );
+		if ( moved ){
+			world->addMessage( movedMessage() );
+		}
 	} else {
 	
 		if ( getMovement( "throw" ) != NULL && animation_current == getMovement( "throw" ) ){

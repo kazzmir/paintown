@@ -15,9 +15,12 @@ static void * handleMessages( void * arg ){
 	NetworkWorldClient * world = (NetworkWorldClient *) arg;
 	NLsocket socket = world->getServer();
 	// pthread_mutex_t * lock = world->getLock();
+	unsigned int received = 0;
 	
 	try{
 		while ( 1 ){
+			received += 1;
+			Global::debug( 1 ) << "Receiving message " << received << endl;
 			Network::Message m( socket );
 			// pthread_mutex_lock( lock );
 			world->addIncomingMessage( m );
