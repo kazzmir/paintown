@@ -12,7 +12,15 @@ const int DATA_SIZE = 16;
 
 class NetworkException: public std::exception{
 public:
-	NetworkException():std::exception(){}
+	NetworkException( const std::string & message = "" ):std::exception(),message(message){}
+
+	inline const std::string getMessage() const {
+		return message;
+	}
+
+	std::string message;
+
+	~NetworkException() throw();
 };
 
 struct Message{

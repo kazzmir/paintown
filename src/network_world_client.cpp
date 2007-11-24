@@ -25,7 +25,7 @@ static void * handleMessages( void * arg ){
 			// pthread_mutex_unlock( lock );
 		}
 	} catch ( const Network::NetworkException & n ){
-		Global::debug( 0 ) << "Network exception" << endl;
+		Global::debug( 0 ) << "Network exception: " << n.getMessage() << endl;
 	}
 
 	return NULL;

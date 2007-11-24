@@ -26,7 +26,7 @@ static void * handleMessages( void * arg ){
 			// pthread_mutex_unlock( lock );
 		}
 	} catch ( const Network::NetworkException & ne ){
-		Global::debug( 0 ) << "Network exception" << endl;
+		Global::debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
 	}
 
 	delete s;
@@ -166,6 +166,7 @@ void NetworkWorld::act(){
 				socket++;
 			} catch ( const Network::NetworkException & ne ){
 				socket = sockets.erase( socket );
+				Global::debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
 			}
 		}
 	}

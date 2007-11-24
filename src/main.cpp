@@ -1199,6 +1199,7 @@ static void networkServer(){
 	} catch ( const ReturnException & r ){
 		// key.wait();
 	} catch ( const Network::NetworkException & e ){
+		Global::debug( 0 ) << "Network exception: " << e.getMessage() << endl;
 	}
 
 	if ( player != NULL ){
@@ -1266,6 +1267,7 @@ static void networkClient(){
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load data: " << le.getReason() << endl;
 	} catch ( const Network::NetworkException & ne ){
+		Global::debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
 	}
 }
 

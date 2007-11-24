@@ -6,6 +6,9 @@ using namespace std;
 
 namespace Network{
 
+NetworkException::~NetworkException() throw (){
+}
+
 Message::Message(){
 	memset( data, 0, sizeof(uint8_t) * DATA_SIZE );
 	position = data;
@@ -58,20 +61,25 @@ Message & Message::operator<<( string p ){
 int16_t read16( NLsocket socket ){
 	uint16_t b;
 	int read = nlRead( socket, &b, sizeof(int16_t) );
-	if ( read == NL_INVALID ){
-		throw NetworkException();
+	if ( read != sizeof(int16_t) ){
+		throw NetworkException( "Could not read 16 bits" );
 	}
 	return b;
 }
 
 void send16( NLsocket socket, int16_t length ){
-	nlWrite( socket, &length, sizeof(int16_t) );
+	if ( nlWrite( socket, &length, sizeof(int16_t) ) != sizeof(int16_t) ){
+		throw NetworkException( "Could not send 16 bits" );
+	}
 }
 
 string readStr( NLsocket socket, const uint16_t length ){
 
 	char buffer[ length + 1 ];
 	NLint bytes = nlRead( socket, buffer, length );
+	if ( bytes == NL_INVALID ){
+		throw NetworkException( "Could not read string" );
+	}
 	buffer[ length ] = 0;
 	bytes += 1;
 	return string( buffer );
@@ -79,15 +87,21 @@ string readStr( NLsocket socket, const uint16_t length ){
 }
 
 void sendStr( NLsocket socket, const string & str ){
-	nlWrite( socket, str.c_str(), str.length() + 1 );
+	if ( nlWrite( socket, str.c_str(), str.length() + 1 ) != (signed)(str.length() + 1) ){
+		throw NetworkException( "Could not write string" );
+	}
 }
 
 void sendBytes( NLsocket socket, const uint8_t * data, int length ){
-	nlWrite( socket, data, length );
+	if ( nlWrite( socket, data, length ) != length ){
+		throw NetworkException( "Could not send bytes" );
+	}
 }
 
 void readBytes( NLsocket socket, uint8_t * data, int length ){
-	nlRead( socket, data, length );
+	if ( nlRead( socket, data, length ) == NL_INVALID ){
+		throw NetworkException( "Could not read bytes" );
+	}
 }
 
 }
