@@ -127,7 +127,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				addx->setY( 0 );
 				addx->setZ( y+addx->getHeight()/2 );
 				addx->setHealth( 1 );
-				addx->setId( -1 );
+				addx->setId( (unsigned int) -1 );
 				addObject( addx );
 				break;
 			}

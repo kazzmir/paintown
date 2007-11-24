@@ -4,6 +4,7 @@
 #include "network.h"
 #include "world.h"
 #include "util/load_exception.h"
+#include <pthread.h>
 #include <vector>
 
 class NetworkWorld: public World{
