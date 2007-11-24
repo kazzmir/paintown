@@ -14,14 +14,12 @@ class Stimulation;
 class Object;
 class World;
 
-using namespace std;
-
 class Item: public ObjectNonAttack {
 public:
-	Item( const string & filename, Stimulation * const stimulation ) throw( LoadException );
+	Item( const std::string & filename, Stimulation * const stimulation ) throw( LoadException );
 	Item( const Item & item );
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual bool isCollidable( Object * obj );
 	virtual ECollide * getCollide() const;
@@ -39,6 +37,10 @@ public:
 protected:
 	Stimulation * const copyStimulation() const;
 
+	inline const std::string getPath() const {
+		return path;
+	}
+
 	inline Stimulation * const getStimulation() const {
 		return stimulation;
 	}
@@ -47,6 +49,7 @@ protected:
 	ECollide * collide;
 	Stimulation * const stimulation;
 	Sound sound;
+	std::string path;
 };
 
 #endif

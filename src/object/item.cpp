@@ -4,6 +4,7 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/bitmap.h"
+#include "world.h"
 #include "util/ebox.h"
 #include "util/funcs.h"
 #include <iostream>
@@ -50,6 +51,7 @@ stimulation( stimulation ){
 	}
 
 	collide = new ECollide( picture );
+	path = filename;
 }
 
 Item::Item( const Item & item ):
@@ -60,6 +62,7 @@ stimulation( item.copyStimulation() ){
 	collide = new ECollide( this->picture );
 	setHealth( item.getHealth() );
 	sound = item.sound;
+	path = item.getPath();
 	setX( item.getX() );
 	setY( item.getY() );
 	setZ( item.getZ() );
@@ -130,9 +133,13 @@ void Item::draw( Bitmap * work, int rel_x ){
 }
 	
 Network::Message Item::getCreateMessage(){
-	Network::Message m;
+	Network::Message message;
 
-	return m;
+	message.id = 0;
+	message << World::CREATE_ITEM;
+	message << getPath();
+
+	return message;
 }
 
 bool Item::isCollidable( Object * obj ){

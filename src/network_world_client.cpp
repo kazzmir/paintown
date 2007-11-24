@@ -141,6 +141,14 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				scene->advanceBlocks( block );
 				break;
 			}
+			case NOTHING : {
+				Global::debug( 0 ) << "Invalid message. Data dump" << endl;
+				for ( int i = 0; i < Network::DATA_SIZE; i++ ){
+					Global::debug( 0 ) << (int) message.data[ i ];
+				}
+				Global::debug( 0 ) << endl;
+				break;
+			}
 		}
 	} else {
 		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
