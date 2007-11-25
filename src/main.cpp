@@ -164,6 +164,16 @@ static void drawHelp( const Font & font, int x, int y, int color, Bitmap & buffe
 	font.printf( x, y, color, buffer, "Press F1 to view this help", 0 );
 }
 
+static Network::Message removeMessage( int id ){
+	Network::Message message;
+
+	message.id = 0;
+	message << World::REMOVE;
+	message << id;
+
+	return message;
+}
+
 static bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
 	Keyboard key;
 	
@@ -209,13 +219,14 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 					runCounter -= 1.0;
 
 					for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-						Player * player = (Player *) *it;
+						Character * player = (Character *) *it;
 						if ( player->getHealth() <= 0 ){
 							player->deathReset();
 							if ( player->getLives() == 0 ){
 								fadeOut( "You lose" );
 								return false;
 							}
+							world.addMessage( removeMessage( player->getId() ) );
 							world.addObject( player );
 							world.addMessage( player->getCreateMessage() );
 							world.addMessage( player->movedMessage() );
@@ -1269,7 +1280,7 @@ static void networkClient(){
 			vector< Object * > players;
 			player->setId( id );
 			players.push_back( player );
-			NetworkWorldClient world( socket, players, level );
+			NetworkWorldClient world( socket, players, level, id );
 
 			stopLoading( loading_screen_thread );
 

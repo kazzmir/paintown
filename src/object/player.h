@@ -50,7 +50,7 @@ public:
 	virtual void loseLife( int l = 1 );
 	virtual void gainLife( int l = 1 );
 
-	inline const int getLives(){
+	virtual inline const int getLives(){
 		return lives;
 	}
 
@@ -67,7 +67,7 @@ public:
 	}
 
 	/* reset some stuff when the player dies */
-	void deathReset();
+	virtual void deathReset();
 	
 protected:
 	void fillKeyCache();

@@ -9,7 +9,7 @@
 class NetworkWorldClient: public World{
 public:
 
-	NetworkWorldClient( NLsocket server, const std::vector< Object * > & players, const string & path, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorldClient( NLsocket server, const std::vector< Object * > & players, const string & path, unsigned int id, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void act();
 
@@ -38,6 +38,7 @@ protected:
 	void handleCreateCharacter( Network::Message & message );
 	void handleCreateCat( Network::Message & message );
 	void handleCreateBang( Network::Message & message );
+	void removeObject( unsigned int id );
 
 	void sendMessage( const Network::Message & message, NLsocket socket );
 
@@ -54,6 +55,7 @@ private:
 	pthread_t message_thread;
 
 	bool world_finished;
+	unsigned int id;
 
 	bool running;
 };

@@ -1008,6 +1008,9 @@ void Character::filterEnemies( vector< Object * > & mine, vector< Object * > * a
 	}
 }
 	
+void Character::deathReset(){
+}
+	
 bool Character::isAttacking(){	
 	/*
 	if ( getStatus() == Status_Fell && isMoving() )

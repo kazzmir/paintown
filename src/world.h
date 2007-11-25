@@ -84,6 +84,7 @@ public:
 		CREATE_PROJECTILE,
 		NEXT_BLOCK,
 		FINISH,
+		REMOVE,
 	};
 
 };

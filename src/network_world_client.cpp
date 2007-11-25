@@ -34,10 +34,11 @@ static void * handleMessages( void * arg ){
 	return NULL;
 }
 	
-NetworkWorldClient::NetworkWorldClient( NLsocket server, const std::vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
+NetworkWorldClient::NetworkWorldClient( NLsocket server, const std::vector< Object * > & players, const string & path, unsigned int id, int screen_size ) throw ( LoadException ):
 World( players, path, screen_size ),
 server( server ),
-world_finished( false ){
+world_finished( false ),
+id( id ){
 	pthread_mutex_init( &message_mutex, NULL );
 	pthread_mutex_init( &running_mutex, NULL );
 	pthread_create( &message_thread, NULL, handleMessages, this );
@@ -110,6 +111,8 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 		character->setY( 0 );
 		character->setZ( 150 );
 		addObject( character );
+	} else {
+		Global::debug( 1 ) << id << " is not unique" << endl;
 	}
 }
 
@@ -135,6 +138,17 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
 	
 const bool NetworkWorldClient::finished() const {
 	return world_finished;
+}
+
+void NetworkWorldClient::removeObject( unsigned int id ){
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+		Object * o = *it;
+		if ( o->getId() == id ){
+			it = objects.erase( it );
+		} else {
+			it++;
+		}
+	}
 }
 
 void NetworkWorldClient::handleCreateBang( Network::Message & message ){
@@ -172,6 +186,12 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				scene->advanceBlocks( block );
 				break;
 			}
+			case REMOVE : {
+				int id;
+				message >> id;
+				removeObject( id );
+				break;
+			}
 			case FINISH : {
 				world_finished = true;
 				break;
@@ -196,7 +216,9 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 }
 
 void NetworkWorldClient::addMessage( Network::Message m ){
-	outgoing.push_back( m );
+	if ( m.id == id ){
+		outgoing.push_back( m );
+	}
 }
 	
 void NetworkWorldClient::doScene( int min_x, int max_x ){
