@@ -91,7 +91,7 @@ bool NetworkWorld::isRunning(){
 }
 
 void NetworkWorld::sendMessage( const Network::Message & message, NLsocket socket ){
-	Global::debug( 1 ) << "Sending message " << sent_messages << endl;
+	Global::debug( 2 ) << "Sending message " << sent_messages << endl;
 	Global::debug( 2 ) << "Sending message to client" << endl;
 	Network::send16( socket, message.id );
 	Global::debug( 2 ) << "Sent message id " << message.id << endl;

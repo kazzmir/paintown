@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "world.h"
 #include <vector>
+#include <math.h>
 
 using namespace std;
 
@@ -41,4 +42,23 @@ void NetworkCharacter::act( vector< Object * > * others, World * world, vector< 
 		}
 		animation_current->reset();
 	}
+}
+	
+void NetworkCharacter::landed( World * world ){
+	switch( getStatus() ){
+		case Status_Falling : {
+			if ( landed_sound ){
+				landed_sound->play();
+			}
+
+			world->Quake( (int)fabs(getYVelocity()) );
+
+			break;
+		}
+		case Status_Fell : {
+			world->Quake( (int)fabs(getYVelocity()) );
+			break;
+		}
+	}
+
 }

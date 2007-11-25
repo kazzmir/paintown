@@ -215,7 +215,6 @@ void World::doLogic(){
 		}
 	}
 
-
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 		if ( (*it)->getHealth() <= 0 ){
 			(*it)->died( added_effects );

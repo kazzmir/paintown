@@ -686,9 +686,11 @@ void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
 	}
 	animation_current->reset();
 
+	Global::debug( 1 ) << this << " explode " << getExplode() << " health " << getHealth() << " death " << death << endl;
 	if ( ! getExplode() && getHealth() <= 0 && death == 0 ){
 		death = 1;
 		setHealth( 1 );
+		Global::debug( 1 ) << this << " set death to 1. Health " << getHealth() << endl;
 
 		if ( die_sound ){
 			die_sound->play();
@@ -770,6 +772,8 @@ void Character::landed( World * world ){
 			setStatus( Status_Ground );
 			animation_current = getMovement( "idle" );
 			animation_current->reset();
+			world->addMessage( movedMessage() );
+			world->addMessage( animationMessage() );
 			break;
 		}
 		case Status_Fell : {
@@ -797,6 +801,10 @@ void Character::landed( World * world ){
 				animation_current->reset();
 			}
 
+			world->addMessage( healthMessage() );
+			world->addMessage( movedMessage() );
+			world->addMessage( animationMessage() );
+
 			// cout<<getName()<<" landed: death = "<<death<<endl;
 
 			break;
@@ -807,6 +815,9 @@ void Character::landed( World * world ){
 			// animation_current = movements["idle"];
 			animation_current = getMovement( "idle" );
 			animation_current->reset();
+			
+			world->addMessage( movedMessage() );
+			world->addMessage( animationMessage() );
 
 			break;
 		}
@@ -871,6 +882,7 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 	if ( death >= 2 ){
 		// cout<<getName()<<" Death is "<<death<<endl;
 		if ( ++death > 60 ){
+			Global::debug( 1 ) << this << " dying" << endl;
 			setHealth( 0 );
 			world->addMessage( healthMessage() );
 		}
@@ -1288,7 +1300,7 @@ void Character::interpretMessage( Network::Message & message ){
 			int health;
 			message >> health;
 			setHealth( health );
-			Global::debug( 0 ) << "Health for " << getId() << " is " << getHealth() << endl;
+			Global::debug( 1 ) << "Health for " << getId() << " is " << getHealth() << endl;
 			break;
 		}
 		case CHARACTER_EXPLODE : {

@@ -295,13 +295,13 @@ public:
 	virtual Network::Message movedMessage();
 	virtual Network::Message explodeMessage();
 	virtual Network::Message healthMessage();
+	virtual Network::Message animationMessage();
 	virtual Network::Message fallMessage( double x, double y );
 	
 	virtual void interpretMessage( Network::Message & m );
 
 protected:
 
-	virtual Network::Message animationMessage();
 	virtual Network::Message jumpMessage( double x, double y );
 	
 	const int getShadowX();
@@ -368,7 +368,7 @@ protected:
 	bool own_stuff;
 
 /* specific to character */
-private:
+protected:
 	
 	int max_jump_height;
 	double x_velocity;

@@ -218,6 +218,8 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 							}
 							world.addObject( player );
 							world.addMessage( player->getCreateMessage() );
+							world.addMessage( player->movedMessage() );
+							world.addMessage( player->animationMessage() );
 						}
 					}
 
