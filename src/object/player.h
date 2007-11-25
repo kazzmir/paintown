@@ -50,10 +50,6 @@ public:
 	virtual void loseLife( int l = 1 );
 	virtual void gainLife( int l = 1 );
 
-	virtual inline const int getLives(){
-		return lives;
-	}
-
 	inline const void setInvincible( const bool b ){
 		this->invincible = b;
 	}
@@ -62,9 +58,6 @@ public:
 		return this->invincible;
 	}
 
-	inline void setLives( const int x ){
-		lives = x;
-	}
 
 	/* reset some stuff when the player dies */
 	virtual void deathReset();
@@ -89,7 +82,6 @@ protected:
 	int acts;
 	Keyboard keyboard;
 	int show_life;
-	int lives;
 
 	int name_id;
 

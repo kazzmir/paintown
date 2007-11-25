@@ -294,7 +294,11 @@ public:
 	virtual void deathReset();
 
 	virtual inline const int getLives(){
-		return 0;
+		return lives;
+	}
+
+	inline void setLives( const int x ){
+		lives = x;
 	}
 	
 	virtual Network::Message getCreateMessage();
@@ -425,6 +429,7 @@ protected:
 	int invincibility;
 	int toughness;
 	bool explode;
+	int lives;
 
 	string path;
 };

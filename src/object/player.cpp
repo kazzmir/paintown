@@ -29,8 +29,8 @@ using namespace std;
 Player::Player( const char * filename ) throw( LoadException ): 
 Character( filename, ALLIANCE_PLAYER ),
 acts(0),
-lives(DEFAULT_LIVES),
 invincible( false ){
+	lives = DEFAULT_LIVES;
 	
 	if ( getMovement( "grab" ) == NULL ){
 		throw LoadException("No 'grab' movement");
@@ -45,8 +45,9 @@ invincible( false ){
 Player::Player( const string & filename ) throw( LoadException ):
 Character( filename, ALLIANCE_PLAYER ),
 acts(0),
-lives(DEFAULT_LIVES),
 invincible( false ){
+
+	lives = DEFAULT_LIVES;
 	
 	// if ( movements[ "grab" ] == NULL ){
 	if ( getMovement( "grab" ) == NULL ){
@@ -62,15 +63,14 @@ invincible( false ){
 Player::Player( const Character & chr ) throw( LoadException ):
 Character( chr ),
 acts(0),
-lives(DEFAULT_LIVES),
 invincible( false ){
 	show_life = getHealth();
+	lives = DEFAULT_LIVES;
 }
 
 Player::Player( const Player & pl ) throw( LoadException ):
 Character( pl ),
 acts( 0 ),
-lives( pl.lives ),
 invincible( false ){
 	show_life = getHealth();
 }

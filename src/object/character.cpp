@@ -58,7 +58,8 @@ landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
-explode( false ){
+explode( false ),
+lives( 0 ){
 }
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
@@ -82,7 +83,8 @@ landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
-explode( false ){
+explode( false ),
+lives( 0 ){
 	name = "";
 
 	loadSelf( filename.c_str() );
@@ -109,7 +111,8 @@ landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
-explode( false ){
+explode( false ),
+lives( 0 ){
 	name = "";
 
 	loadSelf( filename );
@@ -136,6 +139,7 @@ explode( false ){
 	// setZ( chr.getZ() );
 
 	name = chr.getName();
+	lives = chr.lives;
 	type = chr.type;
 	shadow = chr.shadow;
 	icon = chr.icon;

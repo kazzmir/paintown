@@ -25,6 +25,7 @@ public:
 	/* logic */
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	virtual void landed( World * world );
+	virtual void deathReset();
 };
 
 #endif

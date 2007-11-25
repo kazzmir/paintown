@@ -1209,10 +1209,11 @@ static void networkServer(){
 		player = selectPlayer( false );
 		Global::debug( 0 ) << "Player path '" << ((Character *)player)->getPath() << "'" << endl;
 		player->setId( 1 );
-		((Player *)player)->setLives( startingLives );
+		((Character *)player)->setLives( startingLives );
 		vector< Object * > players;
 		players.push_back( player );
 		Character * client_character = new NetworkCharacter( Util::getDataPath() + clientPath, ALLIANCE_PLAYER );
+		client_character->setLives( startingLives );
 		client_character->setId( 2 );
 		Network::send16( client, 2 );
 		players.push_back( client_character );

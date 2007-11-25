@@ -143,6 +143,7 @@ const Object * Enemy::findClosest( const vector< Object * > & enemies ){
 		double distance = fabs( current->getX() - getX() );
 		if ( e == NULL || distance < max ){
 			e = current;
+			max = distance;
 		}
 	}
 

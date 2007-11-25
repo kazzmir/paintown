@@ -62,3 +62,14 @@ void NetworkCharacter::landed( World * world ){
 	}
 
 }
+	
+void NetworkCharacter::deathReset(){
+	setY( 200 );
+	setMoving( true );
+	setStatus( Status_Falling );
+	setHealth( getMaxHealth() );
+	setInvincibility( 400 );
+	setDeath( 0 );
+	animation_current = getMovement( "idle" );
+
+}

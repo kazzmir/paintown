@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "level/blockobject.h"
 #include "util/funcs.h"
+#include "object/player.h"
 #include "factory/object_factory.h"
 #include <pthread.h>
 #include <string.h>
@@ -39,6 +40,7 @@ World( players, path, screen_size ),
 server( server ),
 world_finished( false ),
 id( id ){
+	objects.clear();
 	pthread_mutex_init( &message_mutex, NULL );
 	pthread_mutex_init( &running_mutex, NULL );
 	pthread_create( &message_thread, NULL, handleMessages, this );
@@ -95,22 +97,28 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 	string path = Util::getDataPath() + "/" + message.path;
 	message >> alliance >> id >> map;
 	if ( uniqueObject( id ) ){
-		BlockObject block;
-		block.setType( ObjectFactory::OBJECT_NETWORK_CHARACTER );
-		block.setMap( map );
-		block.setPath( path );
-		Character * character = (Character *) ObjectFactory::createObject( &block );
-		if ( character == NULL ){
-			Global::debug( 0 ) << "Could not create character!" << endl;
-			return;
+		if ( (unsigned int) id == this->id ){
+			Player * p = (Player *) players[ 0 ].player;
+			p->deathReset();
+			addObject( p );
+		} else {
+			BlockObject block;
+			block.setType( ObjectFactory::OBJECT_NETWORK_CHARACTER );
+			block.setMap( map );
+			block.setPath( path );
+			Character * character = (Character *) ObjectFactory::createObject( &block );
+			if ( character == NULL ){
+				Global::debug( 0 ) << "Could not create character!" << endl;
+				return;
+			}
+			Global::debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
+			character->setId( id );
+			character->setAlliance( alliance );
+			character->setX( 200 );
+			character->setY( 0 );
+			character->setZ( 150 );
+			addObject( character );
 		}
-		Global::debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
-		character->setId( id );
-		character->setAlliance( alliance );
-		character->setX( 200 );
-		character->setY( 0 );
-		character->setZ( 150 );
-		addObject( character );
 	} else {
 		Global::debug( 1 ) << id << " is not unique" << endl;
 	}
