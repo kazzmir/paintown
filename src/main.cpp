@@ -1167,7 +1167,7 @@ static void networkServer(){
 	Global::debug( 0 ) << "Port " << port << endl;
 
 	nlEnable( NL_BLOCKING_IO );
-	NLsocket server = nlOpen( port, NL_RELIABLE );
+	NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 	if ( server == NL_INVALID ){
 		Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
 		throw ReturnException();
@@ -1247,7 +1247,7 @@ static void networkClient(){
 		NLaddress address;
 		nlGetAddrFromName( "localhost", &address );
 		nlSetAddrPort( &address, 7887 );
-		NLsocket socket = nlOpen( 0, NL_RELIABLE );
+		NLsocket socket = nlOpen( 0, NL_RELIABLE_PACKETS );
 		while ( nlConnect( socket, &address ) == NL_FALSE ){
 			Global::debug( 0 ) << "Could not connect: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
 			Util::rest( 1 );
