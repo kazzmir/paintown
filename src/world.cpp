@@ -282,6 +282,14 @@ void World::act(){
 		if ( it->min_x < mx ){
 			it->min_x++;
 		}
+
+		if ( it->min_x > mx ){
+			it->min_x = mx;
+		}
+
+		if ( it->min_x < 0 ){
+			it->min_x = 0;
+		}
 	
 		if ( it->min_x + screen_size >= scene->getLimit() ){
 			it->min_x = scene->getLimit() - screen_size;
@@ -291,9 +299,11 @@ void World::act(){
 			lowest = it->min_x;
 		}
 		
+		/*
 		if ( player->getX() < it->min_x ){
 			player->setX( it->min_x );
 		}
+		*/
 
 		if ( player->getX() > scene->getLimit() ){
 			player->setX( scene->getLimit() );
@@ -332,7 +342,18 @@ void World::draw( Bitmap * work ){
 	int min_x = 0;
 	if ( players.size() > 0 ){
 		min_x = (int) players[ 0 ].min_x;
+
+		int max_x = (int)(players[ 0 ].player->getX() + screen_size / 2 > scene->getLimit() ? scene->getLimit() : players[ 0 ].player->getX() + screen_size / 2);
+		min_x = (int)(max_x - screen_size);
+		if ( min_x < 0 ){
+			min_x = 0;
+		}
+
+		if ( min_x > players[ 0 ].min_x ){
+			min_x = (int) players[ 0 ].min_x;
+		}
 	}
+
 	scene->drawBack( min_x, work );
 	for ( map<int,vector<Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
 		vector<Object *> & xx = (*it).second;
