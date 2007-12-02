@@ -32,9 +32,11 @@ acts(0),
 invincible( false ){
 	lives = DEFAULT_LIVES;
 	
+	/*
 	if ( getMovement( "grab" ) == NULL ){
 		throw LoadException("No 'grab' movement");
 	}
+	*/
 
 	show_life = getHealth();
 
@@ -50,9 +52,11 @@ invincible( false ){
 	lives = DEFAULT_LIVES;
 	
 	// if ( movements[ "grab" ] == NULL ){
+	/*
 	if ( getMovement( "grab" ) == NULL ){
 		throw LoadException("No 'grab' movement");
 	}
+	*/
 
 	show_life = getHealth();
 
@@ -333,9 +337,14 @@ void Player::takeDamage( World * world, ObjectAttack * obj, int x ){
 
 /* check to see if the player is close enough to an enemy */
 bool Player::canGrab( Object * enemy ){
-	return false;
+	// return false;
 	if ( !enemy->isCollidable( this ) )
 		return false;
+
+	if ( getMovement( "grab" ) == NULL ){
+		return false;
+	}
+
 	/*
 	bool d = ZDistance( enemy ) < MIN_RELATIVE_DISTANCE;
 	bool c = realCollision( enemy );
@@ -445,7 +454,9 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	// bool status = animation_current->getStatus();
 
 	if ( reset ){
-		animation_current->reset();
+		if ( getStatus() != Status_Grab ){
+			animation_current->reset();
+		}
 
 		const vector<string> & allow = animation_current->getCommisions();
 		for ( vector<string>::const_iterator it = allow.begin(); it != allow.end(); it++ ){
@@ -647,6 +658,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 							setZ( guy->getZ()+1 );
 							// animation_current = movements[ "grab" ];
 							animation_current = getMovement( "grab" );
+							animation_current->reset();
 							world->addMessage( animationMessage() );
 							setStatus( Status_Grab );
 							// cout<<"Grabbed"<<endl;
@@ -762,11 +774,13 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	
 		if ( getMovement( "throw" ) != NULL && animation_current == getMovement( "throw" ) ){
 			if ( getLink() == NULL ){
-				cout<<"Link is null. This cant happen."<<endl;
+				Global::debug( 0 ) << "Link is null. This cant happen." <<endl;
 				exit( 1 );
 			}
+			getLink()->setFacing( getOppositeFacing() );
 			getLink()->thrown();
 			getLink()->fall( 3.2, 5.0 );
+			setStatus( Status_Ground );
 		}
 	}
 }

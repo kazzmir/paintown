@@ -36,7 +36,11 @@ static void * playMusic( void * );
 #define UNLOCK
 */
 
-Music::Music():
+static void * bogus_thread( void * x){
+	return NULL;
+}
+
+Music::Music( bool on ):
 playing( false ),
 fading( 0 ),
 player( NULL ),
@@ -50,7 +54,11 @@ music_file( NULL ){
 	instance = this;
 
 	pthread_mutex_init( &musicMutex, NULL );
-	pthread_create( &musicThread, NULL, playMusic, (void *)instance );
+	if ( on ){
+		pthread_create( &musicThread, NULL, playMusic, (void *)instance );
+	} else {
+		pthread_create( &musicThread, NULL, bogus_thread, NULL );
+	}
 }
 
 /*

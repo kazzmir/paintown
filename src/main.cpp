@@ -1783,11 +1783,12 @@ static bool titleScreen(){
 }
 
 static void showOptions(){
-	cout << "Paintown by Jon Rafkind" << endl;
-	cout << "-w : Fullscreen mode" << endl;
-	cout << "-d <path> : Use data path of <path>. Default is ./data/" << endl;
-	cout << "-l # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
-	cout << endl;
+	Global::debug( 0 ) << "Paintown by Jon Rafkind" << endl;
+	Global::debug( 0 ) << "-w : Fullscreen mode" << endl;
+	Global::debug( 0 ) << "-d <path> : Use data path of <path>. Default is ./data/" << endl;
+	Global::debug( 0 ) << "-l # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
+	Global::debug( 0 ) << "-m : Turn off music" << endl;
+	Global::debug( 0 ) << endl;
 }
 
 int paintown_main( int argc, char ** argv ){
@@ -1795,10 +1796,12 @@ int paintown_main( int argc, char ** argv ){
 	/* janitor cleans up some global stuff */
 	Collector janitor;
 
+	bool music_on = true;
 	showOptions();
 	const char * WINDOWED_ARG = "-w";
 	const char * DATAPATH_ARG = "-d";
 	const char * DEBUG_ARG = "-l";
+	const char * MUSIC_ARG = "-m";
 
 	Global::setDebug( 0 );
 	
@@ -1810,6 +1813,8 @@ int paintown_main( int argc, char ** argv ){
 			if ( q < argc ){
 				Util::setDataPath( string( argv[ q ] ) + "/" );
 			}
+		} else if ( isArg( argv[ q ], MUSIC_ARG ) ){
+			music_on = false;
 		} else if ( isArg( argv[ q ], DEBUG_ARG ) ){
 			q += 1;
 			if ( q < argc ){
@@ -1832,7 +1837,7 @@ int paintown_main( int argc, char ** argv ){
 	/* there can be only one music object. forget stupid
 	 * factory crap, just create one here
 	 */
-	Music m;
+	Music m( music_on );
 
 	nlInit();
 	nlSelectNetwork( NL_IP );

@@ -686,7 +686,9 @@ void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
 		world->addMessage( fallMessage( -1.7, 4.4 ) );
 	} else	{
 		animation_current = getMovement( "pain" );
-		setStatus( Status_Hurt );
+		if ( getStatus() != Status_Grabbed ){
+			setStatus( Status_Hurt );
+		}
 	}
 	animation_current->reset();
 
@@ -1066,7 +1068,9 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	collision_objects[ obj ] = obj->getTicket();
 
 	setFacing( obj->getOppositeFacing() );
-	moveX( -5 );
+	if ( getStatus() != Status_Grabbed ){
+		moveX( -5 );
+	}
 }
 
 const int Character::getRX() const {

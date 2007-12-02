@@ -13,7 +13,7 @@ struct DUH;
  */
 class Music{
 public:
-	Music();
+	Music( bool on );
 
 	~Music();
 

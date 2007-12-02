@@ -33,6 +33,7 @@ public class StatusEvent implements AnimationEvent {
 		final JComboBox statusbox = (JComboBox) engine.find( "status" );
 		statusbox.addItem(new String("ground"));
 		statusbox.addItem(new String("jump"));
+		statusbox.addItem(new String("grab"));
 		
 		statusbox.addActionListener( new ActionListener()
 		{

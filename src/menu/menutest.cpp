@@ -88,7 +88,7 @@ int main( int argc, char ** argv ){
 		Global::debug( 0 ) << "Could not initialize system" << endl;
 	}
 	
-	Music music;
+	Music music( true );
 	try
 	{
 		Menu game;
