@@ -140,6 +140,7 @@ const Object * Enemy::findClosest( const vector< Object * > & enemies ){
 	double max = 0;
 	for ( vector< Object * >::const_iterator it = enemies.begin(); it != enemies.end(); it++ ){
 		Object * current = *it;
+		/* should probably see if current is a character.. */
 		double distance = fabs( current->getX() - getX() );
 		if ( e == NULL || distance < max ){
 			e = current;
