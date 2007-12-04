@@ -4,6 +4,8 @@
 #include "nameplacer.h"
 #include "animation.h"
 #include "util/font.h"
+#include "world.h"
+#include "globals.h"
 #include "util/funcs.h"
 #include "buddy_player.h"
 #include "factory/font_render.h"
@@ -11,7 +13,9 @@
 static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 BuddyPlayer::BuddyPlayer( const Character & chr ) throw( LoadException ):
-Character( chr ){
+Character( chr ),
+want_x( -1 ),
+want_z( -1 ){
 	show_life = getHealth();
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
@@ -52,7 +56,35 @@ void BuddyPlayer::drawLifeBar( int x, int y, Bitmap * work ){
 Object * BuddyPlayer::copy(){
 	return new BuddyPlayer( *this );
 }
-	
+
+static int furthestFriend( vector< Object * > * others, int alliance ){
+	double x = -1;
+	for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
+		Object * o = *it;
+		if ( o->getAlliance() == alliance && o->getX() > x ){
+			x = o->getX();
+		}
+	}
+
+	return (int) x;
+}
+
+const Object * BuddyPlayer::findClosest( const vector< Object * > & enemies ){
+	Object * e = NULL;
+	double max = 0;
+	for ( vector< Object * >::const_iterator it = enemies.begin(); it != enemies.end(); it++ ){
+		Object * current = *it;
+		/* should probably see if current is a character.. */
+		double distance = fabs( current->getX() - getX() );
+		if ( e == NULL || distance < max ){
+			e = current;
+			max = distance;
+		}
+	}
+
+	return e;
+}
+
 void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	Character::act( others, world, add );
 
@@ -69,6 +101,47 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 		// animation_current = movements[ "idle" ];
 		animation_current = getMovement( "idle" );
 		animation_current->reset();
+	}
+
+	if ( enemies.empty() && want_x == -1 && want_z == -1 && Util::rnd( 10 ) == 0 ){
+		want_x = Util::rnd( 80 ) - 40 + furthestFriend( others, getAlliance() );
+		want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
+	} else if ( ! enemies.empty() ){
+		const Object * enemy = findClosest( enemies );
+		want_x = (int)(Util::rnd( 30 ) - 15 + enemy->getX());
+		want_z = (int)(Util::rnd( 3 ) - 1 + enemy->getZ());
+	}
+
+	if ( want_x != -1 && want_z != -1 ){
+		bool walk = false;
+		if ( getX() - want_x < -2 ){
+			moveX( getSpeed() );
+			setFacing( FACING_RIGHT );
+			walk = true;
+		} else if ( getX() - want_x > 2 ){
+			setFacing( FACING_LEFT );
+			moveX( getSpeed() );
+			walk = true;
+		}
+		
+		if ( getZ() < want_z ){
+			moveZ( getSpeed() );
+			walk = true;
+		} else if ( getZ() > want_z ){
+			moveZ( -getSpeed() );
+			walk = true;
+		}
+			
+		if ( walk ){
+			animation_current = getMovement( "walk" );
+		}
+
+		if ( fabs(getX() - want_x) <= 2 &&
+		     fabs(getZ() - want_z) <= 2 ){
+			want_x = -1;
+			want_z = -1;
+			animation_current = getMovement( "idle" );
+		}
 	}
 }
 	

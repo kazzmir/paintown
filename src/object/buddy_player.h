@@ -49,6 +49,8 @@ public:
 protected:
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
+
+	const Object * findClosest( const vector< Object * > & enemies );
 	
 protected:
 
@@ -57,6 +59,7 @@ protected:
 	int show_life;
 	int name_id;
 	bool invincible;
+	int want_x, want_z;
 };
 
 #endif
