@@ -76,7 +76,7 @@ public:
 	virtual void collided( ObjectAttack * obj, vector< Object * > & objects );
 	
 	inline virtual void setFacing( const int f ){
-		if ( getStatus() == Status_Ground ){
+		if ( getStatus() == Status_Ground || getStatus() == Status_Grabbed ){
 			Object::setFacing( f );
 		}
 	}
