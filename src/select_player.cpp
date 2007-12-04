@@ -63,7 +63,7 @@ Key getNth( const map< Key, Value > & m, int i ){
 }
 */
 
-Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException ){
+Object * selectPlayer( bool invincibile, const string & message ) throw( LoadException, ReturnException ){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 
 	/* hm, it would be nice to cache this I suppose */
@@ -202,7 +202,8 @@ Object * selectPlayer( bool invincibile ) throw( LoadException, ReturnException 
 			copy.draw( &preview, 0 );
 			preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
 			const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
-			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy.getName(), 0 );
+			font.printf( 10, font.getHeight() + 5, Bitmap::makeColor( 255, 255, 255 ), work, copy.getName(), 0 );
+			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
 
 			int x = startX, y = startY;
 			unsigned int i;

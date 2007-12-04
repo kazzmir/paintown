@@ -22,6 +22,7 @@
 #include "return_exception.h"
 #include "loading.h"
 #include "music.h"
+#include "object/buddy_player.h"
 #include "object/character.h"
 #include "object/network_character.h"
 #include "object/effect.h"
@@ -1206,7 +1207,7 @@ static void networkServer(){
 		vector< NLsocket > sockets;
 		sockets.push_back( client );
 
-		player = selectPlayer( false );
+		player = selectPlayer( false, "Pick a player" );
 		Global::debug( 0 ) << "Player path '" << ((Character *)player)->getPath() << "'" << endl;
 		player->setId( 1 );
 		((Character *)player)->setLives( startingLives );
@@ -1237,7 +1238,7 @@ static void networkClient(){
 	nlEnable( NL_BLOCKING_IO );
 		
 	try{
-		Character * player = (Character *) selectPlayer( false );
+		Character * player = (Character *) selectPlayer( false, "Pick a player" );
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );
 		
@@ -1310,16 +1311,18 @@ static bool titleScreen(){
 	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, fontY );
 
 	const int MAIN_PLAY = 0;
-	const int MAIN_VERSUS = 1;
-	const int MAIN_NETWORK_SERVER = 2;
-	const int MAIN_NETWORK_CLIENT = 3;
-	const int MAIN_CHANGE_CONTROLS1 = 4;
-	const int MAIN_CHANGE_CONTROLS2 = 5;
-	const int MAIN_MORE_OPTIONS = 6;
-	const int MAIN_CREDITS = 7;
-	const int MAIN_QUIT = 8;
+	const int MAIN_PLAY_BUDDY = 1;
+	const int MAIN_VERSUS = 2;
+	const int MAIN_NETWORK_SERVER = 3;
+	const int MAIN_NETWORK_CLIENT = 4;
+	const int MAIN_CHANGE_CONTROLS1 = 5;
+	const int MAIN_CHANGE_CONTROLS2 = 6;
+	const int MAIN_MORE_OPTIONS = 7;
+	const int MAIN_CREDITS = 8;
+	const int MAIN_QUIT = 9;
 	const char * mainOptions[] = {
 		"Adventure mode",
+		"Adventure mode with the computer",
 		"Versus mode",
 		"Network - host",
 		"Network - join",
@@ -1484,6 +1487,7 @@ static bool titleScreen(){
 					if ( options == mainOptions ){
 						switch ( choose ){
 							case MAIN_QUIT :
+							case MAIN_PLAY_BUDDY :
 							case MAIN_PLAY : {
 								done = true;
 								break;
@@ -1698,6 +1702,36 @@ static bool titleScreen(){
 				}
 				break;
 			}
+
+			case MAIN_PLAY_BUDDY : {
+				Object * player = NULL;
+				Object * buddy = NULL;
+				try{
+					string level = selectLevelSet( Util::getDataPath() + "/levels" );
+					key.wait();
+					
+					player = selectPlayer( isInvincible, "Pick a player" );
+					buddy = selectPlayer( isInvincible, "Pick a buddy" );
+					BuddyPlayer bplayer( *(Character *)buddy );
+					((Player *)player)->setLives( startingLives );
+					vector< Object * > players;
+					players.push_back( player );
+					players.push_back( &bplayer );
+					realGame( players, level );
+				} catch ( const LoadException & le ){
+					Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
+				} catch ( const ReturnException & r ){
+					key.wait();
+				}
+				if ( player != NULL ){
+					delete player;
+				}
+				if ( buddy != NULL ){
+					delete buddy;
+				}
+				return true;
+				break;
+			}
 			
 			case MAIN_PLAY : {
 				Object * player = NULL;
@@ -1705,7 +1739,7 @@ static bool titleScreen(){
 					string level = selectLevelSet( Util::getDataPath() + "/levels" );
 					key.wait();
 					
-					player = selectPlayer( isInvincible );
+					player = selectPlayer( isInvincible, "Pick a player" );
 					((Player *)player)->setLives( startingLives );
 					vector< Object * > players;
 					players.push_back( player );
@@ -1745,8 +1779,8 @@ static bool titleScreen(){
 					break;
 				}
 				case VERSUS_COMPUTER : {
-					player = selectPlayer( false );
-					enemy = selectPlayer( false );
+					player = selectPlayer( false, "Pick your player" );
+					enemy = selectPlayer( false, "Pick enemy" );
 					enemy->setAlliance( ALLIANCE_ENEMY );
 					
 				       for ( int i = 0; i < 3; i += 1 ){

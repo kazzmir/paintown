@@ -70,6 +70,7 @@ animation_event_shadow.cpp
 animation_event_sound.cpp
 animation_event_status.cpp
 animation_event_zdistance.cpp
+buddy_player.cpp
 cat.cpp
 display_character.cpp
 effect.cpp
