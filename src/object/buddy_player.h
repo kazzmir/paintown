@@ -38,6 +38,8 @@ public:
 		return false;
 	}
 
+	virtual void deathReset();
+
 	inline const void setInvincible( const bool b ){
 		this->invincible = b;
 	}

@@ -14,6 +14,7 @@ static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 BuddyPlayer::BuddyPlayer( const Character & chr ) throw( LoadException ):
 Character( chr ),
+invincible( false ),
 want_x( -1 ),
 want_z( -1 ){
 	show_life = getHealth();
@@ -88,6 +89,14 @@ const Object * BuddyPlayer::findClosest( const vector< Object * > & enemies ){
 void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	Character::act( others, world, add );
 
+	if ( show_life > getHealth() ){
+		show_life--;
+	}
+
+	if ( show_life < getHealth() ){
+		show_life++;
+	}
+
 	vector< Object * > enemies;
 	
 	if ( getStatus() != Status_Ground && getStatus() != Status_Jumping )
@@ -103,46 +112,92 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 		animation_current->reset();
 	}
 
-	if ( enemies.empty() && want_x == -1 && want_z == -1 && Util::rnd( 10 ) == 0 ){
-		want_x = Util::rnd( 80 ) - 40 + furthestFriend( others, getAlliance() );
-		want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
-	} else if ( ! enemies.empty() ){
-		const Object * enemy = findClosest( enemies );
-		want_x = (int)(Util::rnd( 30 ) - 15 + enemy->getX());
-		want_z = (int)(Util::rnd( 3 ) - 1 + enemy->getZ());
-	}
+	if ( animation_current == getMovement( "idle" ) ||
+	     animation_current == getMovement( "walk" ) ){
+		if ( enemies.empty() && want_x == -1 && want_z == -1 && Util::rnd( 10 ) == 0 ){
+			want_x = Util::rnd( 80 ) - 40 + furthestFriend( others, getAlliance() );
+			want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
+		} else if ( ! enemies.empty() ){
+			const Object * main_enemy = findClosest( enemies );
+			if ( main_enemy->getX() > getX() ){
+				want_x = (int)(main_enemy->getX() - 20 - Util::rnd( 20 ));
+			} else {
+				want_x = (int)(main_enemy->getX() + 20 + Util::rnd( 20 ));
+			}
+			want_z = (int)(Util::rnd( 3 ) - 1 + main_enemy->getZ());
+			faceObject( main_enemy );
 
-	if ( want_x != -1 && want_z != -1 ){
-		bool walk = false;
-		if ( getX() - want_x < -2 ){
-			moveX( getSpeed() );
-			setFacing( FACING_RIGHT );
-			walk = true;
-		} else if ( getX() - want_x > 2 ){
-			setFacing( FACING_LEFT );
-			moveX( getSpeed() );
-			walk = true;
-		}
-		
-		if ( getZ() < want_z ){
-			moveZ( getSpeed() );
-			walk = true;
-		} else if ( getZ() > want_z ){
-			moveZ( -getSpeed() );
-			walk = true;
-		}
-			
-		if ( walk ){
-			animation_current = getMovement( "walk" );
+			if ( Util::rnd( 40 ) == 0 ){
+				vector< Animation * > attacks;
+				for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
+					Animation * maybe = (*it).second;
+					if ( maybe->isAttack() && maybe->getStatus() == Status_Ground && maybe->getName() != "special" )
+						attacks.push_back( maybe );
+				}
+
+				double attack_range = fabs( getX() - main_enemy->getX() );
+				double zdistance = ZDistance( main_enemy );
+				for ( vector< Animation * >::iterator it = attacks.begin(); it != attacks.end(); ){
+					Animation * maybe = *it;
+					if ( attack_range > maybe->getRange() || zdistance > maybe->getMinZDistance() ){
+						it = attacks.erase( it );
+					} else {
+						it++;
+					}
+				}
+
+				if ( !attacks.empty() ){
+					animation_current = attacks[ Util::rnd( attacks.size() ) ];
+					world->addMessage( animationMessage() );
+					nextTicket();
+					animation_current->reset();
+					return;
+				} else {
+				}
+			}
 		}
 
-		if ( fabs(getX() - want_x) <= 2 &&
-		     fabs(getZ() - want_z) <= 2 ){
-			want_x = -1;
-			want_z = -1;
-			animation_current = getMovement( "idle" );
+		if ( want_x != -1 && want_z != -1 ){
+			bool walk = false;
+			if ( getX() - want_x < -2 ){
+				moveX( getSpeed() );
+				setFacing( FACING_RIGHT );
+				walk = true;
+			} else if ( getX() - want_x > 2 ){
+				setFacing( FACING_LEFT );
+				moveX( getSpeed() );
+				walk = true;
+			}
+
+			if ( getZ() < want_z ){
+				moveZ( getSpeed() );
+				walk = true;
+			} else if ( getZ() > want_z ){
+				moveZ( -getSpeed() );
+				walk = true;
+			}
+
+			if ( walk ){
+				animation_current = getMovement( "walk" );
+			}
+
+			if ( fabs(getX() - want_x) <= 2 &&
+					fabs(getZ() - want_z) <= 2 ){
+				want_x = -1;
+				want_z = -1;
+				animation_current = getMovement( "idle" );
+			}
 		}
 	}
+}
+
+void BuddyPlayer::deathReset(){
+	setY( 200 );
+	setMoving( true );
+	setStatus( Status_Falling );
+	setHealth( getMaxHealth() );
+	setDeath( 0 );
+	animation_current = getMovement( "idle" );
 }
 	
 void BuddyPlayer::takeDamage( World * world, ObjectAttack * obj, int x ){
