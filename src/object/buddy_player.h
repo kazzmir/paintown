@@ -37,6 +37,8 @@ public:
 	virtual bool getExplode(){
 		return false;
 	}
+	
+	virtual int spawnTime();
 
 	virtual void deathReset();
 
@@ -62,6 +64,7 @@ protected:
 	int name_id;
 	bool invincible;
 	int want_x, want_z;
+	int spawn_time;
 };
 
 #endif

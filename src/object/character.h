@@ -290,6 +290,10 @@ public:
 	virtual inline const string getPath() const {
 		return path;
 	}
+
+	virtual int spawnTime(){
+		return 0;
+	}
 	
 	virtual void deathReset();
 

@@ -12,11 +12,14 @@
 
 static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
+static const int SPAWN_TIME = 1500;
+
 BuddyPlayer::BuddyPlayer( const Character & chr ) throw( LoadException ):
 Character( chr ),
 invincible( false ),
 want_x( -1 ),
-want_z( -1 ){
+want_z( -1 ),
+spawn_time( SPAWN_TIME ){
 	show_life = getHealth();
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
@@ -190,9 +193,15 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 		}
 	}
 }
+	
+int BuddyPlayer::spawnTime(){
+	spawn_time -= 1;
+	return spawn_time;
+}
 
 void BuddyPlayer::deathReset(){
 	setY( 200 );
+	spawn_time = SPAWN_TIME;
 	setMoving( true );
 	setStatus( Status_Falling );
 	setHealth( getMaxHealth() );

@@ -222,16 +222,18 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 					for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
 						Character * player = (Character *) *it;
 						if ( player->getHealth() <= 0 ){
-							player->deathReset();
-							if ( player->getLives() == 0 ){
-								fadeOut( "You lose" );
-								return false;
+							if ( player->spawnTime() == 0 ){
+								player->deathReset();
+								if ( player->getLives() == 0 ){
+									fadeOut( "You lose" );
+									return false;
+								}
+								world.addMessage( removeMessage( player->getId() ) );
+								world.addObject( player );
+								world.addMessage( player->getCreateMessage() );
+								world.addMessage( player->movedMessage() );
+								world.addMessage( player->animationMessage() );
 							}
-							world.addMessage( removeMessage( player->getId() ) );
-							world.addObject( player );
-							world.addMessage( player->getCreateMessage() );
-							world.addMessage( player->movedMessage() );
-							world.addMessage( player->animationMessage() );
 						}
 					}
 
