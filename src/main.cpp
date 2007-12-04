@@ -1707,18 +1707,24 @@ static bool titleScreen(){
 
 			case MAIN_PLAY_BUDDY : {
 				Object * player = NULL;
-				Object * buddy = NULL;
+				vector< Object * > buddies;
+				int max_buddies = 1;
 				try{
 					string level = selectLevelSet( Util::getDataPath() + "/levels" );
 					key.wait();
 					
 					player = selectPlayer( isInvincible, "Pick a player" );
-					buddy = selectPlayer( isInvincible, "Pick a buddy" );
-					BuddyPlayer bplayer( *(Character *)buddy );
 					((Player *)player)->setLives( startingLives );
 					vector< Object * > players;
 					players.push_back( player );
-					players.push_back( &bplayer );
+
+					for ( int i = 0; i < max_buddies; i++ ){
+						Object * b = selectPlayer( isInvincible, "Pick a buddy" );
+						buddies.push_back( b );
+						Object * buddy = new BuddyPlayer( *(Character *) b );
+						buddies.push_back( buddy );
+						players.push_back( buddy );
+					}
 					realGame( players, level );
 				} catch ( const LoadException & le ){
 					Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
@@ -1728,8 +1734,8 @@ static bool titleScreen(){
 				if ( player != NULL ){
 					delete player;
 				}
-				if ( buddy != NULL ){
-					delete buddy;
+				for ( vector< Object * >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
+					delete *it;
 				}
 				return true;
 				break;

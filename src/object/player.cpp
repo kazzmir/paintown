@@ -29,6 +29,7 @@ using namespace std;
 Player::Player( const char * filename ) throw( LoadException ): 
 Character( filename, ALLIANCE_PLAYER ),
 acts(0),
+name_id(-1),
 invincible( false ){
 	lives = DEFAULT_LIVES;
 	
@@ -47,6 +48,7 @@ invincible( false ){
 Player::Player( const string & filename ) throw( LoadException ):
 Character( filename, ALLIANCE_PLAYER ),
 acts(0),
+name_id(-1),
 invincible( false ){
 
 	lives = DEFAULT_LIVES;
@@ -67,6 +69,7 @@ invincible( false ){
 Player::Player( const Character & chr ) throw( LoadException ):
 Character( chr ),
 acts(0),
+name_id(-1),
 invincible( false ){
 	show_life = getHealth();
 	lives = DEFAULT_LIVES;
@@ -75,6 +78,7 @@ invincible( false ){
 Player::Player( const Player & pl ) throw( LoadException ):
 Character( pl ),
 acts( 0 ),
+name_id(-1),
 invincible( false ){
 	show_life = getHealth();
 }

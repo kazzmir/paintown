@@ -16,6 +16,7 @@ static const int SPAWN_TIME = 1500;
 
 BuddyPlayer::BuddyPlayer( const Character & chr ) throw( LoadException ):
 Character( chr ),
+name_id(-1),
 invincible( false ),
 want_x( -1 ),
 want_z( -1 ),

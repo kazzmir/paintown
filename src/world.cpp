@@ -278,41 +278,43 @@ void World::act(){
 	double lowest = 9999999;
 	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
 		Object * player = it->player;
-		double mx = player->getX() - screen_size / 2;
-		if ( it->min_x < mx ){
-			it->min_x++;
-		}
+		if ( player->getHealth() > 0 ){
+			double mx = player->getX() - screen_size / 2;
+			if ( it->min_x < mx ){
+				it->min_x++;
+			}
 
-		if ( it->min_x > mx ){
-			it->min_x = mx;
-		}
+			if ( it->min_x > mx ){
+				it->min_x = mx;
+			}
 
-		if ( it->min_x < 0 ){
-			it->min_x = 0;
-		}
-	
-		if ( it->min_x + screen_size >= scene->getLimit() ){
-			it->min_x = scene->getLimit() - screen_size;
-		}
-
-		if ( it->min_x < lowest ){
-			lowest = it->min_x;
-		}
+			if ( it->min_x < 0 ){
+				it->min_x = 0;
+			}
 		
-		/*
-		if ( player->getX() < it->min_x ){
-			player->setX( it->min_x );
-		}
-		*/
+			if ( it->min_x + screen_size >= scene->getLimit() ){
+				it->min_x = scene->getLimit() - screen_size;
+			}
 
-		if ( player->getX() > scene->getLimit() ){
-			player->setX( scene->getLimit() );
-		}
-		if ( player->getZ() < getMinimumZ() ){
-			player->setZ( getMinimumZ() );
-		}
-		if ( player->getZ() > getMaximumZ() ){
-			player->setZ( getMaximumZ() );
+			if ( it->min_x < lowest ){
+				lowest = it->min_x;
+			}
+			
+			/*
+			if ( player->getX() < it->min_x ){
+				player->setX( it->min_x );
+			}
+			*/
+
+			if ( player->getX() > scene->getLimit() ){
+				player->setX( scene->getLimit() );
+			}
+			if ( player->getZ() < getMinimumZ() ){
+				player->setZ( getMinimumZ() );
+			}
+			if ( player->getZ() > getMaximumZ() ){
+				player->setZ( getMaximumZ() );
+			}
 		}
 	}
 
