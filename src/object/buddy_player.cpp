@@ -118,8 +118,8 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 
 	if ( animation_current == getMovement( "idle" ) ||
 	     animation_current == getMovement( "walk" ) ){
-		if ( enemies.empty() && want_x == -1 && want_z == -1 && Util::rnd( 10 ) == 0 ){
-			want_x = Util::rnd( 80 ) - 40 + furthestFriend( others, getAlliance() );
+		if ( enemies.empty() && want_x == -1 && want_z == -1 && Util::rnd( 15 ) == 0 ){
+			want_x = Util::rnd( 100 ) - 50 + furthestFriend( others, getAlliance() );
 			want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
 		} else if ( ! enemies.empty() ){
 			const Object * main_enemy = findClosest( enemies );
@@ -131,7 +131,7 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 			want_z = (int)(Util::rnd( 3 ) - 1 + main_enemy->getZ());
 			faceObject( main_enemy );
 
-			if ( Util::rnd( 40 ) == 0 ){
+			if ( Util::rnd( 35 ) == 0 ){
 				vector< Animation * > attacks;
 				for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
 					Animation * maybe = (*it).second;
