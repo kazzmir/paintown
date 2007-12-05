@@ -7,4 +7,4 @@ DONE * level effects like snow and rain
 * level lighting. lamps/objects can make the level brighter as the user gets close to them
 * better "you win"/"you lose" screen
 DONE * be able to gib characters - meaning they explode sometimes when they die
-* computer assisted adventure mode?
+DONE * computer assisted adventure mode?
