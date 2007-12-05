@@ -2,6 +2,7 @@
 #include "util/token.h"
 #include "globals.h"
 #include "menu/menu.h"
+#include "menu/menu_global.h"
 
 #include "init.h"
 
@@ -144,7 +145,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 	bool done = false;
 	bool paused = false;
 	double runCounter = 0;
-	double gameSpeed = Menu::getGameSpeed();
+	double gameSpeed = MenuGlobals::getGameSpeed();
 
 	vector< Background > backgrounds;
 	backgrounds = readBackgrounds( Util::getDataPath() + "/bgs/versus/" );

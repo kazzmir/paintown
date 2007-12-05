@@ -1,4 +1,5 @@
 #include "menu/menu.h"
+#include "menu/menu_global.h"
 #include "menu/menu_option.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
@@ -13,12 +14,12 @@
 #include "menu/optionfactory.h"
 #include "menu/option_background.h"
 
+#include "menu/itemfactory.h"
+
 #include <queue>
 #include <map>
 
 Bitmap *Menu::work = 0;
-
-double Menu::gamespeed = 1.0;
 
 static std::priority_queue<std::string> lastPlayed;
 
@@ -102,18 +103,14 @@ void Menu::load(Token *token)throw( LoadException )
 				vFont = new FreeTypeFont(Util::getDataPath() + temp);
 				vFont->setSize(fontWidth,fontHeight);
 			}
-			else if ( *tok == "fixedspeed" )
-			{
-				// Speed
-				double temp;
-				*tok >> temp;
-				if(temp < 0.1)temp = 0.1;
-				setGameSpeed(temp);
-			}
 			else if( *tok == "option" )
 			{
 				MenuOption *temp = getOption(tok);
 				if(temp)menuOptions.push_back(temp);
+			}
+			else if( *tok == "item" )
+			{
+				ItemAct(tok);
 			}
 			else 
 			{
@@ -346,18 +343,6 @@ void Menu::setMusic(const std::string &file)
 		Music::pause();
 		Music::play();
 	}
-}
-
-/*! game speed */
-double Menu::getGameSpeed()
-{
-	return gamespeed;
-}
-
-/*! set speed */
-void Menu::setGameSpeed(double s)
-{
-	gamespeed = s;
 }
 
 Menu::~Menu()

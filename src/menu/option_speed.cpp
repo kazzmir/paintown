@@ -1,6 +1,7 @@
 #include "menu/option_speed.h"
 #include "util/token.h"
 #include "menu/menu.h"
+#include "menu/menu_global.h"
 #include "globals.h"
 
 OptionSpeed::OptionSpeed(Token *token)throw( LoadException ) : MenuOption(event), name("")
@@ -50,7 +51,7 @@ void OptionSpeed::logic()
 {
 	//ostringstream temp;
 	char temp[255];
-	sprintf( temp, "%s: %0.2f", name.c_str(), Menu::getGameSpeed() );
+	sprintf( temp, "%s: %0.2f", name.c_str(), MenuGlobals::getGameSpeed() );
 	setText(std::string(temp));
 }
 
@@ -64,11 +65,11 @@ void OptionSpeed::run(bool &endGame)
 
 void OptionSpeed::leftKey()
 {
-	Menu::setGameSpeed(Menu::getGameSpeed() - 0.05);
-	if( Menu::getGameSpeed() < 0.1 )Menu::setGameSpeed(0.1);
+	MenuGlobals::setGameSpeed(MenuGlobals::getGameSpeed() - 0.05);
+	if( MenuGlobals::getGameSpeed() < 0.1 )MenuGlobals::setGameSpeed(0.1);
 }
 void OptionSpeed::rightKey()
 {
-	Menu::setGameSpeed(Menu::getGameSpeed() + 0.05);
+	MenuGlobals::setGameSpeed(MenuGlobals::getGameSpeed() + 0.05);
 }
 

@@ -71,12 +71,6 @@ class Menu
 		
 		/*! set the music */
 		static void setMusic(const std::string &file);
-		
-		/*! game speed */
-		static double getGameSpeed();
-		
-		/*! set speed */
-		static void setGameSpeed(double s);
 
 		//! Get menu by name
 		static Menu *getMenu(const std::string &name);
@@ -109,7 +103,6 @@ class Menu
 		std::vector <MenuOption *> menuOptions;
 		std::vector <MenuOption *>::iterator selectedOption;
 		std::string _name;
-		static double gamespeed;
 		
 };
 #endif

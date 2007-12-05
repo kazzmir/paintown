@@ -1,7 +1,6 @@
 #ifndef _paintown_menu_globals_h
 #define _paintown_menu_globals_h
 
-#include <vector>
 #include <string>		
 
 class MenuGlobals

@@ -1,6 +1,7 @@
 #include "menu/option_adventure.h"
 #include "util/token.h"
 #include "menu/menu.h"
+#include "menu/menu_global.h"
 
 #include "init.h"
 
@@ -124,7 +125,7 @@ static bool playLevel( World & world, Player * player, int helpTime ){
 	int helpColors[ 100 ];
 	Util::blend_palette( helpColors, 100, Bitmap::makeColor( 110, 110, 110 ), Bitmap::makeColor( 255, 255, 255 ) );
 	
-	double gameSpeed = Menu::getGameSpeed();
+	double gameSpeed = MenuGlobals::getGameSpeed();
 	
 	double runCounter = 0;
 	bool paused = false;

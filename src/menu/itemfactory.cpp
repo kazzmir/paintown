@@ -1,6 +1,8 @@
 #include "menu/itemfactory.h"
 #include "util/token.h"
 
+#include "menu/item_speed.h"
+
 void ItemAct(Token *token)
 {
 	Token * tok;
@@ -13,6 +15,8 @@ void ItemAct(Token *token)
 	}
 	else if ( *tok == "fixedspeed" )
 	{
+		ItemSpeed temp(tok);
+		temp.act();
 	}
 }
 

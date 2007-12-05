@@ -98,8 +98,11 @@ src/loadpng/regpng.c
 src/loadpng/savepng.c)
 
 set(MENU_SRC
+src/menu/itemfactory.cpp
+src/menu/item_speed.cpp
 src/menu/menu.cpp
 src/menu/menu_global.cpp
+src/menu/menu_item.cpp
 src/menu/menu_option.cpp
 src/menu/option_adventure.cpp
 src/menu/option_background.cpp
