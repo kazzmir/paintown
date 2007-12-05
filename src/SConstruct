@@ -109,6 +109,7 @@ load_exception.cpp
 
 addFiles( "menu/", Split("""
 menu.cpp
+menu_global.cpp
 menu_option.cpp
 option_adventure.cpp
 option_background.cpp

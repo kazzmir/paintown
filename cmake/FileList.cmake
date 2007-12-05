@@ -99,6 +99,7 @@ src/loadpng/savepng.c)
 
 set(MENU_SRC
 src/menu/menu.cpp
+src/menu/menu_global.cpp
 src/menu/menu_option.cpp
 src/menu/option_adventure.cpp
 src/menu/option_background.cpp
