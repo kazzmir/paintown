@@ -990,6 +990,7 @@ void Character::grabbed( Object * obj ){
 	setX( obj->getX() );
 	// moveX( obj->getFacing(), obj->getWidth() / 4 );
 	moveX( obj->getFacing(), 36 );
+	setZ( obj->getZ() + 1 );
 	setFacing( obj->getOppositeFacing() );
 	setLink( obj );
 	grab_time = 0;

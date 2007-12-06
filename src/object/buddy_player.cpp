@@ -49,8 +49,8 @@ void BuddyPlayer::draw( Bitmap * work, int rel_x ){
 	FontRender * render = FontRender::getInstance();
 	render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
 	drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
-	int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
-	render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
+	// int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
+	// render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
 
 }
 	
@@ -62,11 +62,11 @@ Object * BuddyPlayer::copy(){
 	return new BuddyPlayer( *this );
 }
 
-static int furthestFriend( vector< Object * > * others, int alliance ){
+static int furthestFriend( vector< Object * > * others, int alliance, Object * me ){
 	double x = -1;
 	for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
 		Object * o = *it;
-		if ( o->getAlliance() == alliance && o->getX() > x ){
+		if ( o != me && o->getAlliance() == alliance && o->getX() > x ){
 			x = o->getX();
 		}
 	}
@@ -119,7 +119,7 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 	if ( animation_current == getMovement( "idle" ) ||
 	     animation_current == getMovement( "walk" ) ){
 		if ( enemies.empty() && want_x == -1 && want_z == -1 && Util::rnd( 15 ) == 0 ){
-			want_x = Util::rnd( 100 ) - 50 + furthestFriend( others, getAlliance() );
+			want_x = Util::rnd( 100 ) - 50 + furthestFriend( others, getAlliance(), this );
 			want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
 		} else if ( ! enemies.empty() ){
 			const Object * main_enemy = findClosest( enemies );
