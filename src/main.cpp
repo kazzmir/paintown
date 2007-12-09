@@ -1413,6 +1413,12 @@ static bool titleScreen(){
 
 
 	// font.printf( 1, 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "foo" );
+	Bitmap::transBlender( 0, 0, 0, 128 );
+	Bitmap::Screen->drawingMode( Bitmap::MODE_TRANS );
+	Bitmap::Screen->rectangleFill( 20, 190, temp.getWidth() - 20, temp.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+	Bitmap::Screen->drawingMode( Bitmap::MODE_SOLID );
+	Bitmap::Screen->rectangle( 20, 190, temp.getWidth() - 20, temp.getHeight() - 1, Bitmap::makeColor( 200, 200, 200 ) );
+
 	unsigned int choose = 0;
 	const char * const * options = mainOptions;
 	unsigned int maxOptions = mainMax;
@@ -1658,6 +1664,11 @@ static bool titleScreen(){
 			// background.BlitToScreen();
 			background.Blit( temp );
 			// Bitmap::Screen->Blit( string( "data/paintown-title.png" ) );
+			Bitmap::transBlender( 0, 0, 0, 128 );
+			temp.drawingMode( Bitmap::MODE_TRANS );
+			temp.rectangleFill( 20, 190, temp.getWidth() - 20, temp.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+			temp.drawingMode( Bitmap::MODE_SOLID );
+			temp.rectangle( 20, 190, temp.getWidth() - 20, temp.getHeight() - 1, Bitmap::makeColor( 200, 200, 200 ) );
 			for ( unsigned int i = 0; i < maxOptions; i++ ){
 				int yellow = Bitmap::makeColor( 255, 255, 0 );
 				int white = Bitmap::makeColor( 255, 255, 255 );
