@@ -1732,7 +1732,7 @@ static bool titleScreen(){
 					for ( int i = 0; i < max_buddies; i++ ){
 						Object * b = selectPlayer( isInvincible, "Pick a buddy" );
 						buddies.push_back( b );
-						Object * buddy = new BuddyPlayer( *(Character *) b );
+						Object * buddy = new BuddyPlayer( (Character *) player, *(Character *) b );
 						buddies.push_back( buddy );
 						players.push_back( buddy );
 					}

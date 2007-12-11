@@ -14,13 +14,14 @@ static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 static const int SPAWN_TIME = 1500;
 
-BuddyPlayer::BuddyPlayer( const Character & chr ) throw( LoadException ):
+BuddyPlayer::BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException ):
 Character( chr ),
 name_id(-1),
 invincible( false ),
 want_x( -1 ),
 want_z( -1 ),
-spawn_time( SPAWN_TIME ){
+spawn_time( SPAWN_TIME ),
+leader( leader ){
 	show_life = getHealth();
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
@@ -62,6 +63,7 @@ Object * BuddyPlayer::copy(){
 	return new BuddyPlayer( *this );
 }
 
+/*
 static int furthestFriend( vector< Object * > * others, int alliance, Object * me ){
 	double x = -1;
 	for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
@@ -73,6 +75,7 @@ static int furthestFriend( vector< Object * > * others, int alliance, Object * m
 
 	return (int) x;
 }
+*/
 
 const Object * BuddyPlayer::findClosest( const vector< Object * > & enemies ){
 	Object * e = NULL;
@@ -119,7 +122,8 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 	if ( animation_current == getMovement( "idle" ) ||
 	     animation_current == getMovement( "walk" ) ){
 		if ( enemies.empty() && want_x == -1 && want_z == -1 && Util::rnd( 15 ) == 0 ){
-			want_x = Util::rnd( 100 ) - 50 + furthestFriend( others, getAlliance(), this );
+			// want_x = Util::rnd( 100 ) - 50 + furthestFriend( others, getAlliance(), this );
+			want_x = Util::rnd( 100 ) - 50 + (int) leader->getX();
 			want_z = Util::rnd( world->getMinimumZ(), world->getMaximumZ() );
 		} else if ( ! enemies.empty() ){
 			const Object * main_enemy = findClosest( enemies );

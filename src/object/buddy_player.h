@@ -14,7 +14,7 @@ using namespace std;
 class BuddyPlayer: public Character{
 public:
 
-	BuddyPlayer( const Character & chr ) throw( LoadException );
+	BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException );
 	
 	/* drawing */
 	virtual void draw( Bitmap * work, int rel_x );
@@ -65,6 +65,7 @@ protected:
 	bool invincible;
 	int want_x, want_z;
 	int spawn_time;
+	const Character * leader;
 };
 
 #endif
