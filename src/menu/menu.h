@@ -105,6 +105,8 @@ class Menu
 		int fontHeight;
 		//! menu flags
 		useflags _menuflags;
+		//! longest menu text
+		int longestTextLength;
 		
 	private:
 		std::vector <MenuOption *> menuOptions;

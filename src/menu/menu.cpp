@@ -57,7 +57,7 @@ bool RectArea::empty()
 	return (x==0 && y==0 && width==0 && height==0);
 }
 
-Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(24), fontHeight(24), _menuflags(0), _name("")
+Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(24), fontHeight(24), _menuflags(0),longestTextLength(0), _name("")
 {
 	if(!work)work = new Bitmap(Bitmap::Screen->getWidth(), Bitmap::Screen->getHeight()); //Bitmap::Screen;
 }
@@ -158,10 +158,16 @@ void Menu::load(Token *token)throw( LoadException )
 		vFont->setSize(fontWidth,fontHeight);
 	}
 	
-	// Finally lets assign list order numering
+	// Finally lets assign list order numering and some other stuff
+	// First length
+	longestTextLength = vFont->textLength(menuOptions[0]->getText().c_str());
 	for(unsigned int i = 0; i < menuOptions.size();++i)
 	{
 		menuOptions[i]->setID(i);
+		
+		// Set longest text length
+		int len = vFont->textLength(menuOptions[0]->getText().c_str());
+		if(len > longestTextLength)longestTextLength = len;
 	}
 	
 }
@@ -297,7 +303,7 @@ useflags Menu::run()
 				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
-				const int startx = (position.width/2)-(vFont->textLength((*b)->getText().c_str())/2);
+				const int startx = (position.width/2)-(longestTextLength/2);
 				const int starty = (position.height/2)-((vFont->getHeight()*(menuOptions.size()-1))/2);
 				for(int i=0;b!=e;++b,++i)
 				{
