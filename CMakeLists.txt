@@ -3,7 +3,6 @@
 # based systems and/or
 # project files for a given environment like MSVC.
 #
-#
 # Written by: juvinious
 # -------------------------------------------------------
 
