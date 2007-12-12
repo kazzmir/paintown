@@ -3,8 +3,6 @@
 # based systems and/or
 # project files for a given environment like MSVC.
 #
-# TODO:
-#	* Create CYGWIN TARGET
 #
 # Written by: juvinious
 # -------------------------------------------------------
