@@ -1,8 +1,3 @@
-# -------------------------------------------------------
-# File list for paintown
-#
-# -------------------------------------------------------
-
 set(BASE_SRC 
 src/configuration.cpp
 src/globals.cpp

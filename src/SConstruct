@@ -2,127 +2,19 @@ Import( 'use' );
 
 obj_files = []
 
-def addFiles( dir, files ):
-	obj_files.append( map( lambda x: dir + x, files ) )
+def addFiles( files ):
+	obj_files.append( map( lambda x: x.replace('src/', ''), files ) )
 
-addFiles( './', Split( """
-configuration.cpp
-globals.cpp
-loading.cpp
-music.cpp
-main.cpp
-network.cpp
-init.cpp
-nameplacer.cpp
-select_player.cpp
-network_world.cpp
-network_world_client.cpp
-world.cpp
-versus_world.cpp
-"""))
+import sys
+sys.path.append("../scons")
+import helpers
 
-addFiles( "level/", Split( """
-block.cpp
-blockobject.cpp
-scene.cpp
-"""))
+obj_files = []
 
-addFiles( "environment/", Split( """
-atmosphere.cpp
-rain_atmosphere.cpp
-snow_atmosphere.cpp
-night_atmosphere.cpp
-fog_atmosphere.cpp
-"""
-))
+filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
 
-addFiles( "loadpng/", Split( """
-loadpng.c
-regpng.c
-savepng.c
-"""));
-
-addFiles( "factory/", Split( """
-font_factory.cpp
-heart_factory.cpp
-object_factory.cpp
-font_render.cpp
-collector.cpp
-shadow.cpp
-"""))
-
-addFiles( "object/", Split("""
-actor.cpp
-animation.cpp
-animation_event.cpp
-animation_event_attack.cpp
-animation_event_bbox.cpp
-animation_event_coords.cpp
-animation_event_delay.cpp
-animation_event_face.cpp
-animation_event_frame.cpp
-animation_event_jump.cpp
-animation_event_move.cpp
-animation_event_nop.cpp
-animation_event_projectile.cpp
-animation_event_offset.cpp
-animation_event_shadow.cpp
-animation_event_sound.cpp
-animation_event_status.cpp
-animation_event_zdistance.cpp
-buddy_player.cpp
-cat.cpp
-display_character.cpp
-effect.cpp
-enemy.cpp
-gib.cpp
-item.cpp
-object.cpp
-object_attack.cpp
-object_nonattack.cpp
-player.cpp
-versus_player.cpp
-versus_enemy.cpp
-projectile.cpp
-attack.cpp
-stimulation.cpp
-health_stimulation.cpp
-character.cpp
-network_character.cpp
-heart.cpp
-"""))
-
-addFiles( "util/", Split("""
-token.cpp
-token_exception.cpp
-tokenreader.cpp
-timedifference.cpp
-sound.cpp
-keyboard.cpp
-bitmap.cpp
-font.cpp
-ftalleg.cpp
-funcs.cpp
-ebox.cpp
-load_exception.cpp
-"""))
-
-addFiles( "menu/", Split("""
-actionfactory.cpp
-action_speed.cpp
-menu.cpp
-menu_action.cpp
-menu_global.cpp
-menu_option.cpp
-option_adventure.cpp
-option_background.cpp
-option_credits.cpp
-option_key.cpp
-option_menu.cpp
-option_versus.cpp
-option_speed.cpp
-optionfactory.cpp
-"""))
+for i in filelist:
+	addFiles( filelist[i] )
 
 x = []
 x.append( use.Program( 'paintown', obj_files + ['xmain.cpp'] ) )
