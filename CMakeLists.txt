@@ -112,10 +112,8 @@ if(MINGW)
 	# Take those user options and set the necessary compile time preprocessors
 	# -------------------------------------------------------
 	add_definitions(-DWINDOWS)
-	set(WIN_LIB -lgdi32 -luser32)
-#if(NOT CMAKE_THREAD_LIBS_INIT)
-				 set(CMAKE_THREAD_LIBS_INIT -lpthreadGC2)
-#endif(NOT CMAKE_THREAD_LIBS_INIT)
+	set(WIN_LIB -lgdi32 -luser32 -lwsock32)
+	 set(CMAKE_THREAD_LIBS_INIT -lpthreadGC2)
 else(MINGW)
 	 set(CMAKE_THREAD_LIBS_INIT -lpthread)
 endif(MINGW)
@@ -155,7 +153,7 @@ endif(MSVC)
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIB})
+set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIB} ${WINSOCK})
 
 set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC} ${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC})
 
