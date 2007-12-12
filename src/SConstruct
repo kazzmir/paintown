@@ -108,10 +108,10 @@ load_exception.cpp
 """))
 
 addFiles( "menu/", Split("""
-itemfactory.cpp
-item_speed.cpp
+actionfactory.cpp
+action_speed.cpp
 menu.cpp
-menu_item.cpp
+menu_action.cpp
 menu_global.cpp
 menu_option.cpp
 option_adventure.cpp

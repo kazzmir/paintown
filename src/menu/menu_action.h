@@ -1,15 +1,15 @@
-#ifndef _paintown_menu_item_h
-#define _paintown_menu_item_h
+#ifndef _paintown_menu_action_h
+#define _paintown_menu_action_h
 
-class MenuItem
+class MenuAction
 {
 	public:
 		// Do whatever is needed for the requested item
 		virtual void act()=0;
 
-		MenuItem();
+		MenuAction();
 	
-		virtual ~MenuItem();
+		virtual ~MenuAction();
 		
 	private:
 		// Nothing

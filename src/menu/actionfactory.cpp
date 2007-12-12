@@ -1,9 +1,9 @@
-#include "menu/itemfactory.h"
+#include "menu/actionfactory.h"
 #include "util/token.h"
 
-#include "menu/item_speed.h"
+#include "menu/action_speed.h"
 
-void ItemAct(Token *token)
+void ActionAct(Token *token)
 {
 	Token * tok;
 	*token >> tok;
@@ -15,7 +15,7 @@ void ItemAct(Token *token)
 	}
 	else if ( *tok == "fixedspeed" )
 	{
-		ItemSpeed temp(tok);
+		ActionSpeed temp(tok);
 		temp.act();
 	}
 }

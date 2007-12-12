@@ -14,7 +14,7 @@
 #include "menu/optionfactory.h"
 #include "menu/option_background.h"
 
-#include "menu/itemfactory.h"
+#include "menu/actionfactory.h"
 
 #include <queue>
 #include <map>
@@ -108,9 +108,9 @@ void Menu::load(Token *token)throw( LoadException )
 				MenuOption *temp = getOption(tok);
 				if(temp)menuOptions.push_back(temp);
 			}
-			else if( *tok == "item" )
+			else if( *tok == "action" )
 			{
-				ItemAct(tok);
+				ActionAct(tok);
 			}
 			else 
 			{
