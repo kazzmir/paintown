@@ -40,7 +40,7 @@ static void addMenu(Menu *m) throw( LoadException )
 	else throw LoadException("A menu by the name of \""+m->getName()+"\" already exists!"); 
 }
 
-RectArea::RectArea() : x(0), y(0), width(0), height(0)
+RectArea::RectArea() : x(0), y(0), width(0), height(0), body(0), bodyAlpha(0), border(0), borderAlpha(0)
 {
 }
 
@@ -93,8 +93,22 @@ void Menu::load(Token *token)throw( LoadException )
 			} 
 			else if ( *tok == "position" )
 			{
-				// This handles the placement of the menu list
+				// This handles the placement of the menu list and surrounding box
 				*tok >> position.x >> position.y >> position.width >> position.height;
+			} 
+			else if ( *tok == "position-body" )
+			{
+				// This handles the body color of the menu box
+				int r,g,b;
+				*tok >> r >> g >> b >> position.bodyAlpha;
+				position.body = Bitmap::makeColor(r,g,b);
+			} 
+			else if ( *tok == "position-border" )
+			{
+				// This handles the border color of the menu box
+				int r,g,b;
+				*tok >> r >> g >> b >> position.borderAlpha;
+				position.border = Bitmap::makeColor(r,g,b);
 			} 
 			else if ( *tok == "font" )
 			{
@@ -257,8 +271,34 @@ useflags Menu::run()
 				// Draw
 				if(backgrounds.front())backgrounds.front()->draw(work);
 				
+				if(position.bodyAlpha < 255)
+				{
+					Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
+					work->drawingMode( Bitmap::MODE_TRANS );
+					work->rectangleFill( position.x, position.y, position.getX2(), position.getY2(), position.body );
+				}
+				else 
+				{
+					work->drawingMode( Bitmap::MODE_SOLID );
+					work->rectangleFill( position.x, position.y, position.getX2(), position.getY2(), position.body );
+				}
+				if(position.borderAlpha < 255)
+				{
+					Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
+					work->drawingMode( Bitmap::MODE_TRANS );
+					work->rectangle(  position.x, position.y, position.getX2(), position.getY2(), position.border );
+				}
+				else
+				{
+					work->drawingMode( Bitmap::MODE_SOLID );
+					work->rectangle(  position.x, position.y, position.getX2(), position.getY2(), position.border );
+				}
+				work->drawingMode( Bitmap::MODE_SOLID );
+				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
+				const int startx = (position.width/2)-(vFont->textLength((*b)->getText().c_str())/2);
+				const int starty = (position.height/2)-((vFont->getHeight()*(menuOptions.size()-1))/2);
 				for(int i=0;b!=e;++b,++i)
 				{
 					/* There more than likely won't be any need to draw, but hey maybe sometime in the future
@@ -267,7 +307,7 @@ useflags Menu::run()
 					
 					// These menus are temporary, they will need to be changed
 					const unsigned int color = ((*b)->getState() == MenuOption::Selected) ? yellow : white;
-					vFont->printf( position.x, int(position.y + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
+					vFont->printf( position.x + startx, int((position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
 				}
 				
 				// Finally render to screen
