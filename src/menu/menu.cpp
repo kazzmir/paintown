@@ -314,15 +314,23 @@ useflags Menu::run()
 					
 					// These menus are temporary, they will need to be changed
 					const unsigned int color = ((*b)->getState() == MenuOption::Selected) ? yellow : white;
-					switch((*b)->getType())
-					{
-						case MenuOption::adjustableOption:
-							{
+					switch((*b)->getType()) {
+						case MenuOption::adjustableOption : {
 								//Change into triangles later
+								/*
 								work->circleFill((position.x+startx)-15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getLeftAdjustColor());
-								work->circleFill((position.x+startx + vFont->textLength((*b)->getText().c_str()))+15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getRightAdjustColor());
-							}
+								*/
+								const int triangleSize = 10;
+								int cx = (position.x + startx) - 15;
+								int cy = (int)(position.y + starty + i * fontHeight * 1.2 + fontHeight / 2 + 2);
+								work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*b)->getLeftAdjustColor() );
+								
+								cx = (position.x+startx + vFont->textLength((*b)->getText().c_str()))+15;
+								work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*b)->getRightAdjustColor() );
+
+								// work->circleFill((position.x+startx + vFont->textLength((*b)->getText().c_str()))+15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getRightAdjustColor());
 							break;
+						}
 						case MenuOption::option:
 						default:
 							break;
