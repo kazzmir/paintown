@@ -1,7 +1,7 @@
 #include "menu/menu_option.h"
 #include "util/bitmap.h"
 
-MenuOption::MenuOption(const type t) : text(""), ID(0)
+MenuOption::MenuOption(const type t) : currentState(Deselected), text(""), bmp(0), adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )), adjustRightColor(Bitmap::makeColor( 255, 255, 255 )), ID(0)
 {
 	setType(t);
 }

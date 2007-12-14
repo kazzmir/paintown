@@ -26,9 +26,12 @@ class OptionSpeed : public MenuOption
 		OptionSpeed(Token *token)throw( LoadException );
 	
 		virtual ~OptionSpeed();
-	public:
+	private:
 		// name
 		std::string name;
+		
+		int lblue, lgreen;
+		int rblue, rgreen;
 };
 
 #endif

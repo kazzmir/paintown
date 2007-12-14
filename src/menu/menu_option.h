@@ -32,7 +32,8 @@ class MenuOption
 		enum type
 		{
 			event = 0,
-			option
+			option,
+			adjustableOption
 		};
 		
 		MenuOption(const type t = option);
@@ -44,6 +45,8 @@ class MenuOption
 		type mType;
 		std::string text;
 		Bitmap *bmp;
+		int adjustLeftColor;
+		int adjustRightColor;
 		
 		// Stuff we don't need to be concerned with
 		friend class Menu;
@@ -67,6 +70,14 @@ class MenuOption
 		inline void setBitmap(Bitmap *b) { bmp = b; }
 		
 		inline Bitmap *getBitmap() const { return bmp; }
+		
+		inline void setLeftAdjustColor(int c) { adjustLeftColor = c; }
+		
+		inline int getLeftAdjustColor() const { return adjustLeftColor; }
+		
+		inline void setRightAdjustColor(int c) { adjustRightColor = c; }
+		
+		inline int getRightAdjustColor() const { return adjustRightColor; }
 };
 
 #endif

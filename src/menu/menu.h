@@ -113,5 +113,8 @@ class Menu
 		std::vector <MenuOption *>::iterator selectedOption;
 		std::string _name;
 		
+		//! Set longest length
+		void checkTextLength(MenuOption *opt);
+		
 };
 #endif

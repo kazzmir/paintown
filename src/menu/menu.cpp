@@ -165,9 +165,7 @@ void Menu::load(Token *token)throw( LoadException )
 	{
 		menuOptions[i]->setID(i);
 		
-		// Set longest text length
-		int len = vFont->textLength(menuOptions[0]->getText().c_str());
-		if(len > longestTextLength)longestTextLength = len;
+		checkTextLength(menuOptions[i]);
 	}
 	
 }
@@ -259,6 +257,9 @@ useflags Menu::run()
 				for(;b!=e;++b)
 				{
 					(*b)->logic();
+					
+					// Recalculate placement
+					checkTextLength((*b));
 				}
 				
 				Global::speed_counter = 0;
@@ -313,6 +314,19 @@ useflags Menu::run()
 					
 					// These menus are temporary, they will need to be changed
 					const unsigned int color = ((*b)->getState() == MenuOption::Selected) ? yellow : white;
+					switch((*b)->getType())
+					{
+						case MenuOption::adjustableOption:
+							{
+								//Change into triangles later
+								work->circleFill((position.x+startx)-15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getLeftAdjustColor());
+								work->circleFill((position.x+startx + vFont->textLength((*b)->getText().c_str()))+15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getRightAdjustColor());
+							}
+							break;
+						case MenuOption::option:
+						default:
+							break;
+					}
 					vFont->printf( position.x + startx, int((position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
 				}
 				
@@ -357,6 +371,9 @@ useflags Menu::run()
 				backgrounds.pop();
 				background = backgrounds.front();
 			}
+			
+			// Deselect selected entry
+			(*selectedOption)->setState(MenuOption::Deselected);
 		}
 	}
 	
@@ -388,6 +405,28 @@ void Menu::setMusic(const std::string &file)
 	{
 		Music::pause();
 		Music::play();
+	}
+}
+
+//! Set longest length
+void Menu::checkTextLength(MenuOption *opt)
+{
+	// Set longest text length depending on type
+	switch(opt->getType())
+	{
+		case MenuOption::adjustableOption:
+			{
+				int len = vFont->textLength(opt->getText().c_str()) + 10;
+				if(len > longestTextLength)longestTextLength = len;
+			}
+			break;
+		case MenuOption::option:
+		default:
+			{
+				int len = vFont->textLength(opt->getText().c_str());
+				if(len > longestTextLength)longestTextLength = len;
+			}
+			break;
 	}
 }
 
