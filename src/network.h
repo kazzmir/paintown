@@ -47,6 +47,10 @@ std::string readStr( NLsocket socket, const uint16_t length );
 void sendStr( NLsocket socket, const std::string & str );
 void sendBytes( NLsocket socket, const uint8_t * data, int length );
 void readBytes( NLsocket socket, uint8_t * data, int length );
+void init();
+void shutdown();
+
+void networkServer();
 
 }
 

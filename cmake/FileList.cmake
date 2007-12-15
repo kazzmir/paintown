@@ -16,7 +16,8 @@ src/versus_world.cpp)
 set(LEVEL_SRC
 src/level/block.cpp
 src/level/blockobject.cpp
-src/level/scene.cpp)
+src/level/scene.cpp
+src/level/utils.cpp)
 
 set(ENV_SRC
 src/environment/atmosphere.cpp
