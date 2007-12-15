@@ -42,14 +42,14 @@
 #include "util/timedifference.h"
 #include "level/utils.h"
 #include "select_player.h"
-#include "network_world.h"
-#include "network_world_client.h"
+#include "network/network_world.h"
+#include "network/network_world_client.h"
 #include "world.h"
 #include "versus_world.h"
 
 #include <pthread.h>
 
-#include "network.h"
+#include "network/network.h"
 
 /*
 #include "sockets/SocketHandler.h"

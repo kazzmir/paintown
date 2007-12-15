@@ -8,7 +8,7 @@ class World;
 class Stimulation;
 
 #include "util/sound.h"
-#include "network.h"
+#include "network/network.h"
 #include <string>
 #include <vector>
 

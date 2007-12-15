@@ -9,7 +9,7 @@ class Bitmap;
 #include <string>
 
 #include "util/load_exception.h"
-#include "network.h"
+#include "network/network.h"
 
 struct PlayerTracker{
 	double min_x;

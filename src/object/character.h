@@ -6,7 +6,7 @@
 #include <map>
 #include "object_attack.h"
 #include "util/load_exception.h"
-#include "network.h"
+#include "network/network.h"
 
 class Bitmap;
 class Animation;

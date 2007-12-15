@@ -8,7 +8,7 @@
 #include "object/effect.h"
 #include "level/scene.h"
 #include "world.h"
-#include "network.h"
+#include "network/network.h"
 
 #include <iostream>
 #include <string>

@@ -2,7 +2,7 @@
 #define _paintown_gib_h
 
 #include "object_nonattack.h"
-#include "network.h"
+#include "network/network.h"
 
 struct Point{
 	Point( int x, int y, int life ):x(x), y(y), life(life){}

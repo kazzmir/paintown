@@ -4,7 +4,7 @@
 #include <map>
 #include "object_nonattack.h"
 #include "util/sound.h"
-#include "network.h"
+#include "network/network.h"
 
 class Bitmap;
 class Animation;

@@ -6,9 +6,6 @@ src/music.cpp
 src/main.cpp
 src/init.cpp
 src/nameplacer.cpp
-src/network.cpp
-src/network_world.cpp
-src/network_world_client.cpp
 src/select_player.cpp
 src/world.cpp
 src/versus_world.cpp)
@@ -18,6 +15,11 @@ src/level/block.cpp
 src/level/blockobject.cpp
 src/level/scene.cpp
 src/level/utils.cpp)
+
+set(NETWORK_SRC
+src/network/network.cpp
+src/network/network_world.cpp
+src/network/network_world_client.cpp)
 
 set(ENV_SRC
 src/environment/atmosphere.cpp

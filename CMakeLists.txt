@@ -152,7 +152,8 @@ endif(MSVC)
 # -------------------------------------------------------
 set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIB} ${WINSOCK})
 
-set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC} ${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC})
+set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
+${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC})
 
 # -------------------------------------------------------
 # Include directory

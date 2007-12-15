@@ -5,7 +5,7 @@
 
 #include <string>
 #include "util/load_exception.h"
-#include "network.h"
+#include "network/network.h"
 
 using namespace std;
 
