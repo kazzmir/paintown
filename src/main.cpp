@@ -95,31 +95,60 @@ static void startLoading( pthread_t * thread ){
 /* fade the screen and tell the player they lost */
 void fadeOut( const string & message ){
 	Bitmap dark( GFX_X, GFX_Y );
-	dark.fill( Bitmap::makeColor( 0, 0, 0 ) );
+	Bitmap copy( *Bitmap::Screen );
+	Bitmap work( GFX_X, GFX_Y );
+	// dark.fill( Bitmap::makeColor( 32, 32, 32 ) );
 	Global::speed_counter = 0;
-	Bitmap::transBlender( 0, 0, 0, 10 );
 	int fade = 0;
+	int colors[ 100 ];
+	Util::blend_palette( colors, 100, Bitmap::makeColor( 26, 24, 24 ), Bitmap::makeColor( 97, 90, 91 ) );
+	for ( int y = 0; y < GFX_Y; y++ ){
+			  int color = colors[ (GFX_Y - y) / 5 ];
+			  // dark.line( 0, y, GFX_X, y, Bitmap::makeColor( (GFX_Y - y) / 6, (GFX_Y - y) / 4, (GFX_Y - y) / 5 ) );
+			  dark.line( 0, y, GFX_X, y, color );
+	}
 	const Font & f = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 50, 50 );
 	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, message, 0 );
-	while ( fade < 100 ){
-		fade++;
-	
-		Bitmap::transBlender( 0, 0, 0, fade / 2 );
+	/*
+	for ( int y = 0; y < GFX_Y; y += 6 ){
+
+			  if ( Global::speed_counter >= 1 ){
+						 dark.Blit( 0, y, GFX_X, 6, 0, y, *Bitmap::Screen );
+						 Global::speed_counter = 0;
+			  }
+
+			  while ( Global::speed_counter < 1 ){
+						 Util::rest( 1 );
+			  }
+	}
+	*/
+	while ( fade < 64 ){
 
 		bool draw = false;
 		if ( Global::speed_counter > 0 ){
+			fade += Global::speed_counter;
 			draw = true;
 			Global::speed_counter = 0;
 		}
 
 		if ( draw ){
-			dark.drawTrans( 0, 0, *Bitmap::Screen );
+			// Bitmap::transBlender( 0, 0, 0, 255 - fade );
+			// copy.drawTrans( 0, 0, work );
+			dark.Blit( work );
+			Bitmap::transBlender( 0, 0, 0, 255 - fade * fade / 8 );
+			copy.drawTrans( 0, 0, work );
+			work.BlitToScreen();
+			// work.clear();
+			// dark.drawTrans( 0, 0, *Bitmap::Screen );
+			// dark.drawTrans( 0, 0, copy );
+			// copy.BlitToScreen();
 		}
 		
 		while ( Global::speed_counter == 0 ){
 			Util::rest( 1 );
 		}
 	}
+	dark.Blit( *Bitmap::Screen );
 
 	Util::rest( 1000 );
 }
