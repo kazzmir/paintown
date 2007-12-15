@@ -663,6 +663,7 @@ void Character::fall( double x_vel, double y_vel ){
 }
 	
 void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
+	/* I think if death >= 1 here I should just return */
 	Object::takeDamage( world, obj, damage );
 	
 	Global::debug( 2 ) << getName() << " has " << currentDamage() << " damage" << endl;
@@ -797,6 +798,7 @@ void Character::landed( World * world ){
 			// setStatus( Status_Hurt );
 			
 			if ( (getHealth() <= 0 && death == 0) || death == 1 ){
+				Global::debug( 2 ) << this << " died from fall" << endl;
 				death = 2;
 				setHealth( 1 );
 			} else {
@@ -1174,6 +1176,10 @@ const double Character::minZDistance() const {
 bool Character::collision( ObjectAttack * obj ){
 
 	if ( getInvincibility() > 0 ){
+		return false;
+	}
+
+	if ( getThrown() ){
 		return false;
 	}
 
