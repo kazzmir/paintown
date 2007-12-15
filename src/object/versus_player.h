@@ -17,6 +17,7 @@ public:
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	
 	virtual void draw( Bitmap * work, int rel_x );
+	virtual bool canGrab( Object * enemy );
 
 	virtual ~VersusPlayer();
 protected:

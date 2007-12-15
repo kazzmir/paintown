@@ -29,6 +29,10 @@ int VersusPlayer::getKey( int motion, int facing ){
 	return Configuration::config( config ).getKey( motion, facing );
 }
 	
+bool VersusPlayer::canGrab( Object * enemy ){
+		  return false;
+}
+	
 void VersusPlayer::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 
 	if ( show_life < getHealth() ){
