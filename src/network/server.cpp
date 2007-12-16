@@ -7,6 +7,7 @@
 #include "object/character.h"
 #include "object/player.h"
 #include "init.h"
+#include "chat_server.h"
 #include "music.h"
 #include "network_world.h"
 #include "object/network_character.h"
@@ -225,6 +226,9 @@ void networkServer(){
 		Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
 		throw ReturnException();
 	}
+
+	ChatServer chat( server );
+	chat.run();
 
 	Object * player = NULL;
 	try{

@@ -8,6 +8,8 @@
 
 namespace Network{
 
+typedef NLsocket Socket;
+
 const int DATA_SIZE = 16;
 
 class NetworkException: public std::exception{
