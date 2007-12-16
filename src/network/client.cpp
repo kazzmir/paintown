@@ -10,7 +10,7 @@ using namespace std;
 
 namespace Network{
 
-void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
+static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
 	copy.Blit( area );
 	area.drawingMode( Bitmap::MODE_TRANS );
 	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
@@ -23,6 +23,39 @@ void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, cons
 	font.printf( 1, 0, Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
 }
 
+static char lowerCase( const char * x ){
+	if ( x[0] >= 'A' && x[0] <= 'Z' ){
+		return x[0] - 'A' + 'a';
+	}
+	return x[0];
+}
+
+static void handleHostInput( string & str, const vector< int > & keys ){
+	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
+		const int & key = *it;
+		if ( Keyboard::isAlpha( key ) || key == Keyboard::Key_STOP ){
+			str += lowerCase( Keyboard::keyToName( key ) );
+		} else if ( key == Keyboard::Key_BACKSPACE ){
+			if ( str != "" ){
+				str = str.substr( 0, str.length() - 1 );
+			}
+		}
+	}
+}
+
+static void handlePortInput( string & str, const vector< int > & keys ){
+	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
+		const int & key = *it;
+		if ( Keyboard::isNumber( key ) || key == Keyboard::Key_STOP ){
+			str += Keyboard::keyToName( key );
+		} else if ( key == Keyboard::Key_BACKSPACE ){
+			if ( str != "" ){
+				str = str.substr( 0, str.length() - 1 );
+			}
+		}
+	}
+}
+
 void networkClient(){
 	Global::showTitleScreen();
 	Global::speed_counter = 0;
@@ -30,21 +63,22 @@ void networkClient(){
 	keyboard.setAllDelay( 200 );
 
 	string host = "localhost";
-	string port = "127.0.0.1";
+	string port = "7887";
 
 	enum Focus{
 		HOST, PORT, CONNECT, BACK
 	};
 
 	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+	const int inputBoxLength = font.textLength( "a" ) * 30;
 	
 	font.printf( 20, 100 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
-	Bitmap hostBox( *Bitmap::Screen, 20, 100, 200, font.getHeight() );
+	Bitmap hostBox( *Bitmap::Screen, 20, 100, inputBoxLength, font.getHeight() );
 	Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
 	hostBox.Blit( copyHostBox );
 
 	font.printf( 20, 100 + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
-	Bitmap portBox( *Bitmap::Screen, 20, 100 + font.getHeight() * 2, 200, font.getHeight() );
+	Bitmap portBox( *Bitmap::Screen, 20, 100 + font.getHeight() * 2, inputBoxLength, font.getHeight() );
 	Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
 	portBox.Blit( copyPortBox );
 			
@@ -79,6 +113,24 @@ void networkClient(){
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
 				if ( focus == BACK ){
 					done = true;
+				}
+			}
+
+			vector< int > keys;
+			keyboard.readKeys( keys );
+			switch ( focus ){
+				case HOST : {
+					draw = true;
+					handleHostInput( host, keys );
+					break;
+				}
+				case PORT : {
+					draw = true;
+					handlePortInput( port, keys );
+					break;
+				}
+				default : {
+					break;
 				}
 			}
 		}
