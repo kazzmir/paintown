@@ -13,9 +13,13 @@ extern const char * NAME_FONT;
 
 namespace Global{
 
+extern const char * DEFAULT_FONT;
+
 void setDebug( int i );
 const int getDebug();
 std::ostream & debug( int i ); 
+
+void showTitleScreen();
 
 }
 

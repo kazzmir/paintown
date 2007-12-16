@@ -23,9 +23,11 @@ namespace Network{
 
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
+/*
 static void showTitleScreen(){
 	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
 }
+*/
 
 static void fadeOut( const string & str ){
 	/* fill in */
@@ -233,7 +235,7 @@ void networkServer(){
 
 	Object * player = NULL;
 	try{
-		showTitleScreen();
+		Global::showTitleScreen();
 
 		const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
 		font.printf( 100, 200, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Waiting for a connection", 0 );

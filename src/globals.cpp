@@ -1,5 +1,7 @@
 #include "globals.h"
 #include <streambuf>
+#include "util/funcs.h"
+#include "util/bitmap.h"
 #include <iostream>
 
 using namespace std;
@@ -19,6 +21,8 @@ const char * NAME_FONT = "CENTURYGOTHIC_PCX";
 
 // static bool global_debug = false;
 static int global_debug_level = 0;
+
+const char * Global::DEFAULT_FONT = "/fonts/arial.ttf";
 
 class nullstreambuf_t: public std::streambuf {
 public:
@@ -49,4 +53,8 @@ void Global::setDebug( int i ){
 
 const int Global::getDebug(){
 	return global_debug_level;
+}
+
+void Global::showTitleScreen(){
+	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
 }

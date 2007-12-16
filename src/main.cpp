@@ -1485,6 +1485,7 @@ static bool titleScreen(){
 			case MAIN_NETWORK_CLIENT : {
 				try{
 					networkClient();
+					key.wait();
 				} catch ( const ReturnException & e ){
 					key.wait();
 				}
