@@ -8,10 +8,7 @@ void ActionAct(Token *token)
 {
 	Token * tok;
 	*token >> tok;
-	if ( *tok == "music" )
-	{
-	}
-	else if ( *tok == "background" )
+	if ( *tok == "background" )
 	{
 	}
 	else if ( *tok == "fixedspeed" )

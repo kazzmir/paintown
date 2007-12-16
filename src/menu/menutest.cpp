@@ -36,6 +36,7 @@
 #include "init.h"
 
 #include "menu/menu.h"
+#include "menu/menu_global.h"
 #include "util/token_exception.h"
 #include "util/load_exception.h"
 
@@ -87,6 +88,7 @@ int main( int argc, char ** argv ){
 	if ( ! init( gfx ) ){
 		Global::debug( 0 ) << "Could not initialize system" << endl;
 	}
+	else MenuGlobals::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
 	
 	Music music( true );
 	try

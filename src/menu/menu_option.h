@@ -19,8 +19,9 @@ class MenuOption
 		virtual void run(bool &endGame)=0;
 		
 		// This is to pass paramaters to an option ie a bar or something
-		virtual void leftKey();
-		virtual void rightKey();
+		// return true to pause key input
+		virtual bool leftKey();
+		virtual bool rightKey();
 		
 		enum state
 		{

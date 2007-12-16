@@ -1,12 +1,12 @@
-#ifndef _paintown_option_speed_h
-#define _paintown_option_speed_h
+#ifndef _paintown_option_fullscreen_h
+#define _paintown_option_fullscreen_h
 
 #include "menu_option.h"
 #include "util/load_exception.h"
 class Token;
 
 /*! Handles key reconfiguration */
-class OptionSpeed : public MenuOption
+class OptionFullscreen : public MenuOption
 {
 	public:
 		// Do logic before run part
@@ -23,9 +23,9 @@ class OptionSpeed : public MenuOption
 		virtual bool leftKey();
 		virtual bool rightKey();
 		
-		OptionSpeed(Token *token)throw( LoadException );
+		OptionFullscreen(Token *token)throw( LoadException );
 	
-		virtual ~OptionSpeed();
+		virtual ~OptionFullscreen();
 	private:
 		// name
 		std::string name;

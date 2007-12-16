@@ -71,17 +71,19 @@ void OptionSpeed::run(bool &endGame)
 {
 }
 
-void OptionSpeed::leftKey()
+bool OptionSpeed::leftKey()
 {
 	MenuGlobals::setGameSpeed(MenuGlobals::getGameSpeed() - 0.05);
 	if( MenuGlobals::getGameSpeed() < 0.1 )MenuGlobals::setGameSpeed(0.1);
 	
 	lblue = lgreen = 0;
+	return false;
 }
-void OptionSpeed::rightKey()
+bool OptionSpeed::rightKey()
 {
 	MenuGlobals::setGameSpeed(MenuGlobals::getGameSpeed() + 0.05);
 	
 	rblue = rgreen = 0;
+	return false;
 }
 

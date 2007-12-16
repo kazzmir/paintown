@@ -9,6 +9,8 @@
 #include "menu/option_menu.h"
 #include "menu/option_versus.h"
 #include "menu/option_speed.h"
+#include "menu/option_fullscreen.h"
+#include "menu/option_lives.h"
 #include "globals.h"
 
 MenuOption *getOption(Token *token)
@@ -49,6 +51,16 @@ MenuOption *getOption(Token *token)
 	{
 		// Invincible
 		return new OptionInvincible(tok);
+	}
+	else if ( *tok == "fullscreen" )
+	{
+		// Invincible
+		return new OptionFullscreen(tok);
+	}
+	else if ( *tok == "lives" )
+	{
+		// Invincible
+		return new OptionLives(tok);
 	}
 	else 
 	{

@@ -1,13 +1,13 @@
-#include "menu/option_invincible.h"
+#include "menu/option_lives.h"
 #include "util/token.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "globals.h"
 
-OptionInvincible::OptionInvincible(Token *token)throw( LoadException ) : MenuOption(adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
+OptionLives::OptionLives(Token *token)throw( LoadException ) : MenuOption(adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
-	if ( *token != "invincible" )
-		throw LoadException("Not invincible option");
+	if ( *token != "lives" )
+		throw LoadException("Not lives option");
 	
 	while ( token->hasTokens() )
 	{
@@ -42,14 +42,17 @@ OptionInvincible::OptionInvincible(Token *token)throw( LoadException ) : MenuOpt
 	if(name.empty())throw LoadException("No name set, this option should have a name!");
 }
 
-OptionInvincible::~OptionInvincible()
+OptionLives::~OptionLives()
 {
 	// Nothing
 }
 
-void OptionInvincible::logic()
+void OptionLives::logic()
 {
-	setText(name + (MenuGlobals::getInvincible() ? ": Yes" : ": No"));
+	//ostringstream temp;
+	char temp[255];
+	sprintf( temp, "%s: %d", name.c_str(), MenuGlobals::getLives() );
+	setText(std::string(temp));
 	
 	if(lblue < 255)lblue+=5;
 	if(rblue < 255)rblue+=5;
@@ -60,24 +63,27 @@ void OptionInvincible::logic()
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionInvincible::draw(Bitmap *work)
+void OptionLives::draw(Bitmap *work)
 {
 }
 
-void OptionInvincible::run(bool &endGame)
+void OptionLives::run(bool &endGame)
 {
 }
 
-bool OptionInvincible::leftKey()
+bool OptionLives::leftKey()
 {
-	MenuGlobals::setInvincible(!MenuGlobals::getInvincible());
+	MenuGlobals::setLives(MenuGlobals::getLives() - 1);
+	if( MenuGlobals::getLives() < 1 )MenuGlobals::setLives(1);
+	
 	lblue = lgreen = 0;
-	return true;
+	return false;
 }
-bool OptionInvincible::rightKey()
+bool OptionLives::rightKey()
 {
-	MenuGlobals::setInvincible(!MenuGlobals::getInvincible());
+	MenuGlobals::setLives(MenuGlobals::getLives() + 1);
+	
 	rblue = rgreen = 0;
-	return true;
+	return false;
 }
 

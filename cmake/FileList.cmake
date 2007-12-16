@@ -108,8 +108,10 @@ src/menu/menu_option.cpp
 src/menu/option_adventure.cpp
 src/menu/option_background.cpp
 src/menu/option_credits.cpp
+src/menu/option_fullscreen.cpp
 src/menu/option_invincible.cpp
 src/menu/option_key.cpp
+src/menu/option_lives.cpp
 src/menu/option_menu.cpp
 src/menu/option_versus.cpp
 src/menu/option_speed.cpp

@@ -20,8 +20,8 @@ class OptionInvincible : public MenuOption
 		virtual void run(bool &endGame);
 		
 		// This is to pass paramaters to an option ie a bar or something
-		virtual void leftKey();
-		virtual void rightKey();
+		virtual bool leftKey();
+		virtual bool rightKey();
 		
 		OptionInvincible(Token *token)throw( LoadException );
 	

@@ -13,12 +13,12 @@ MenuOption::~MenuOption()
 
 
 // This is to pass paramaters to an option ie a bar or something
-void MenuOption::leftKey()
+bool MenuOption::leftKey()
 {
-	// Nothing
+	return false;
 }
-void MenuOption::rightKey()
+bool MenuOption::rightKey()
 {
-	// Nothing
+	return false;
 }
 

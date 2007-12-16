@@ -1,13 +1,14 @@
-#include "menu/option_invincible.h"
+#include "menu/option_fullscreen.h"
 #include "util/token.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "globals.h"
+#include "init.h"
 
-OptionInvincible::OptionInvincible(Token *token)throw( LoadException ) : MenuOption(adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
+OptionFullscreen::OptionFullscreen(Token *token)throw( LoadException ) : MenuOption(adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
-	if ( *token != "invincible" )
-		throw LoadException("Not invincible option");
+	if ( *token != "fullscreen" )
+		throw LoadException("Not fullscreen option");
 	
 	while ( token->hasTokens() )
 	{
@@ -42,14 +43,15 @@ OptionInvincible::OptionInvincible(Token *token)throw( LoadException ) : MenuOpt
 	if(name.empty())throw LoadException("No name set, this option should have a name!");
 }
 
-OptionInvincible::~OptionInvincible()
+OptionFullscreen::~OptionFullscreen()
 {
 	// Nothing
 }
 
-void OptionInvincible::logic()
+void OptionFullscreen::logic()
 {
-	setText(name + (MenuGlobals::getInvincible() ? ": Yes" : ": No"));
+	//ostringstream temp;
+	setText(name + (MenuGlobals::getFullscreen() ? ": Yes" : ": No"));
 	
 	if(lblue < 255)lblue+=5;
 	if(rblue < 255)rblue+=5;
@@ -60,24 +62,28 @@ void OptionInvincible::logic()
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionInvincible::draw(Bitmap *work)
+void OptionFullscreen::draw(Bitmap *work)
 {
 }
 
-void OptionInvincible::run(bool &endGame)
+void OptionFullscreen::run(bool &endGame)
 {
 }
 
-bool OptionInvincible::leftKey()
+bool OptionFullscreen::leftKey()
 {
-	MenuGlobals::setInvincible(!MenuGlobals::getInvincible());
+	MenuGlobals::setFullscreen(!MenuGlobals::getFullscreen());
 	lblue = lgreen = 0;
+	int gfx = (MenuGlobals::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
+	Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y );
 	return true;
 }
-bool OptionInvincible::rightKey()
+bool OptionFullscreen::rightKey()
 {
-	MenuGlobals::setInvincible(!MenuGlobals::getInvincible());
+	MenuGlobals::setFullscreen(!MenuGlobals::getFullscreen());
 	rblue = rgreen = 0;
+	int gfx = (MenuGlobals::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
+	Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y );
 	return true;
 }
 

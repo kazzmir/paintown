@@ -235,12 +235,12 @@ useflags Menu::run()
 				
 				if ( key[ Keyboard::Key_LEFT ] )
 				{
-					(*selectedOption)->leftKey();
+					if((*selectedOption)->leftKey())key.wait();
 				}
 				
 				if ( key[ Keyboard::Key_RIGHT ] )
 				{
-					(*selectedOption)->rightKey();
+					if((*selectedOption)->rightKey())key.wait();
 				}
 				
 				if( key[ Keyboard::Key_ENTER ] )
