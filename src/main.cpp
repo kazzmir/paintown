@@ -42,6 +42,7 @@
 #include "util/timedifference.h"
 #include "level/utils.h"
 #include "select_player.h"
+#include "network/client.h"
 #include "network/network_world.h"
 #include "network/network_world_client.h"
 #include "world.h"
@@ -1006,9 +1007,11 @@ static void setupControls( controls * player, int left, int right, int up, int d
 	}
 }
 
-
-
 static void networkClient(){
+	
+	Network::networkClient();
+	return;
+
 	nlEnable( NL_BLOCKING_IO );
 		
 	try{

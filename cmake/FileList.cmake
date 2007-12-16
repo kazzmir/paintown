@@ -17,6 +17,7 @@ src/level/scene.cpp
 src/level/utils.cpp)
 
 set(NETWORK_SRC
+src/network/client.cpp
 src/network/chat_server.cpp
 src/network/messages.cpp
 src/network/network.cpp
