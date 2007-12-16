@@ -130,6 +130,7 @@ OptionKey::OptionKey(Token *token)throw( LoadException ) : MenuOption(event), na
 			else if ( *tok == "player" )
 			{
 				*tok >> player;
+				player -= 1;
 			}
 			else if ( *tok == "type" )
 			{
