@@ -147,6 +147,18 @@ Socket open( int port ){
 	return server;
 }
 
+Socket connect( string server, int port ) throw ( NetworkException ) {
+	NLaddress address;
+	nlGetAddrFromName( server.c_str(), &address );
+	nlSetAddrPort( &address, port );
+	Socket socket = open( 0 );
+	if ( nlConnect( socket, &address ) == NL_FALSE ){
+		close( socket );
+		throw NetworkException( "Could not connect" );
+	}
+	return socket;
+}
+
 void close( Socket s ){
 	for ( vector< Socket >::iterator it = open_sockets.begin(); it != open_sockets.end(); ){
 		if ( *it == s ){

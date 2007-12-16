@@ -4,7 +4,10 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "util/font.h"
+#include "return_exception.h"
+#include "network.h"
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -54,6 +57,17 @@ static void handlePortInput( string & str, const vector< int > & keys ){
 			}
 		}
 	}
+}
+
+static void popup( const Font & font, const string & message ){
+	int length = font.textLength( message.c_str() ) + 20; 
+	Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+	area.drawingMode( Bitmap::MODE_TRANS );
+	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
+	area.drawingMode( Bitmap::MODE_SOLID );
+	int color = Bitmap::makeColor( 255, 255, 255 );
+	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
+	font.printf( 10, area.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
 }
 
 void networkClient(){
@@ -107,12 +121,37 @@ void networkClient(){
 			}
 
 			if ( keyboard[ Keyboard::Key_ESC ] ){
-				done = true;
+				throw ReturnException();
 			}
 
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
-				if ( focus == BACK ){
-					done = true;
+				switch ( focus ){
+					case HOST :
+					case PORT : break;
+					case CONNECT : {
+						done = true;
+						try{
+							istringstream is( port );
+							int porti;
+							is >> porti;
+							Network::Socket socket = Network::connect( host, porti );
+							Network::close( socket );
+							// ChatClient chat( socket );
+						} catch ( const NetworkException & e ){
+							popup( font, e.getMessage() );
+							keyboard.wait();
+							keyboard.readKey();
+							Global::showTitleScreen();
+							font.printf( 20, 100 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
+							font.printf( 20, 100 + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
+							font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
+							done = false;
+							draw = true;
+							think = 0;
+						}
+						break;
+					}
+					case BACK : done = true; break;
 				}
 			}
 

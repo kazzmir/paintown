@@ -65,6 +65,7 @@ void listen( Socket s );
 Socket accept( Socket s ) throw( NetworkException );
 
 Socket open( int port );
+Socket connect( std::string server, int port ) throw ( NetworkException );
 void close( Socket );
 void closeAll();
 
