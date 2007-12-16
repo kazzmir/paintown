@@ -229,6 +229,7 @@ void networkServer(){
 
 	ChatServer chat( server );
 	chat.run();
+	return;
 
 	Object * player = NULL;
 	try{

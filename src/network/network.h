@@ -26,10 +26,17 @@ public:
 	~NetworkException() throw();
 };
 
+class NoConnectionsPendingException: public NetworkException{
+public:
+	NoConnectionsPendingException( const std::string & message = "" ):
+		NetworkException( message ){
+	}
+};
+
 struct Message{
 	Message();
 	Message( const Message & m );
-	Message( NLsocket socket );
+	Message( Socket socket );
 
 	uint16_t id;
 	uint8_t data[ DATA_SIZE ];
@@ -39,6 +46,7 @@ struct Message{
 	Message & operator<<( std::string p );
 	Message & operator>>( int & x );
 
+	void send( Socket socket );
 	void reset();
 
 	std::string path;
@@ -52,6 +60,9 @@ void sendBytes( NLsocket socket, const uint8_t * data, int length );
 void readBytes( NLsocket socket, uint8_t * data, int length );
 void init();
 void shutdown();
+
+void listen( Socket s );
+Socket accept( Socket s ) throw( NetworkException );
 
 Socket open( int port );
 void close( Socket );

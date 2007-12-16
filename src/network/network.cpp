@@ -23,16 +23,28 @@ Message::Message( const Message & m ){
 	id = m.id;
 }
 	
-Message::Message( NLsocket socket ){
+Message::Message( Socket socket ){
 	position = data;
 	id = read16( socket );
 	readBytes( socket, data, DATA_SIZE );
 	int str = read16( socket );
 	if ( str != -1 ){
 		char buf[ 1024 ];
+		str = (signed)(sizeof( buf ) - 1) > str ? (signed)(sizeof(buf) - 1) : str;
 		readBytes( socket, (uint8_t *) buf, str );
 		buf[ str ] = 0;
 		this->path = buf;
+	}
+}
+
+void Message::send( Socket socket ){
+	send16( socket, id );
+	sendBytes( socket, data, DATA_SIZE );
+	if ( path != "" ){
+		send16( socket, path.length() + 1 );
+		sendStr( socket, path );
+	} else {
+		send16( socket, -1 );
 	}
 }
 	
@@ -158,6 +170,18 @@ void init(){
 	nlInit();
 	nlSelectNetwork( NL_IP );
 	nlEnable( NL_BLOCKING_IO );
+}
+
+void listen( Socket s ){
+		  nlListen( s );
+}
+
+Socket accept( Socket s ) throw( NetworkException ){
+		  Socket connection = nlAcceptConnection( s );
+		  if ( connection == NL_INVALID ){
+					 throw NetworkException("Could not accept connection");
+		  }
+		  return connection;
 }
 
 void shutdown(){
