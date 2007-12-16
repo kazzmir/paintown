@@ -1,7 +1,8 @@
 #ifndef _paintown_menu_globals_h
 #define _paintown_menu_globals_h
 
-#include <string>		
+#include <string>
+#include <queue>
 
 class MenuGlobals
 {
@@ -13,6 +14,12 @@ class MenuGlobals
 		/*! set the music */
 		static void setMusic(const std::string &file);
 		
+		/*! get current music */
+		static const std::string currentMusic();
+		
+		/*! pop music */
+		static void popMusic();
+		
 		/*! game speed */
 		static double getGameSpeed();
 		
@@ -20,11 +27,10 @@ class MenuGlobals
 		static void setGameSpeed(double s);
 		
 	private:
-		//! Current music
-		std::string music;
-		
 		//! Game speed
 		static double gamespeed;
+		
+		static std::priority_queue<std::string> lastPlayed;
 		
 };
 #endif

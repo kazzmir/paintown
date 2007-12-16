@@ -16,12 +16,12 @@
 
 #include "menu/actionfactory.h"
 
+#include "menu/menu_global.h"
+
 #include <queue>
 #include <map>
 
 Bitmap *Menu::work = 0;
-
-static std::priority_queue<std::string> lastPlayed;
 
 static std::queue<MenuOption *> backgrounds;
 
@@ -82,7 +82,6 @@ void Menu::load(Token *token)throw( LoadException )
 			{
 				// Set music and push onto the stack
 				*tok >> music;
-				//lastPlayed.push(music);
 			} 
 			else if ( *tok == "background" )
 			{
@@ -201,7 +200,7 @@ useflags Menu::run()
 	
 	if(!music.empty())
 	{
-		setMusic(music);
+		MenuGlobals::setMusic(music);
 	}
 	
 	while( !endGame )
@@ -360,14 +359,11 @@ useflags Menu::run()
 			// Reset it's state
 			(*selectedOption)->setState(MenuOption::Selected);
 		}
-		if(!music.empty() && !lastPlayed.empty())
+		if(!music.empty())
 		{
-			if(lastPlayed.top() != music)
+			if(MenuGlobals::currentMusic() != music)
 			{
-				lastPlayed.pop();
-				Music::pause();
-				Music::loadSong( Util::getDataPath() + lastPlayed.top() );
-				Music::play();
+				MenuGlobals::popMusic();
 			}
 		}
 		if(endGame)
@@ -404,16 +400,6 @@ const std::string &Menu::getName()
 void Menu::setBitmap(Bitmap *bmp)
 {
 	work = bmp;
-}
-
-void Menu::setMusic(const std::string &file)
-{
-	lastPlayed.push(file);
-	if(Music::loadSong( Util::getDataPath() + file ))
-	{
-		Music::pause();
-		Music::play();
-	}
 }
 
 //! Set longest length

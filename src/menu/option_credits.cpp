@@ -5,6 +5,7 @@
 #endif
 
 #include "menu/option_credits.h"
+#include "menu/menu_global.h"
 #include "util/token.h"
 #include "globals.h"
 
@@ -175,7 +176,7 @@ void OptionCredits::run(bool &endGame)
 	int min_y = GFX_Y;
 	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
 	Bitmap tmp( GFX_X, GFX_Y );
-	if(!music.empty())Menu::setMusic(music);
+	if(!music.empty())MenuGlobals::setMusic(music);
 	while ( ! key[ Keyboard::Key_ESC ] ){
 
 		key.poll();

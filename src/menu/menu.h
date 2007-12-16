@@ -75,9 +75,6 @@ class Menu
 		
 		/*! set the bitmap */
 		static void setBitmap(Bitmap *bmp);
-		
-		/*! set the music */
-		static void setMusic(const std::string &file);
 
 		//! Get menu by name
 		static Menu *getMenu(const std::string &name);

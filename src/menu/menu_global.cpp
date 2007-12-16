@@ -1,8 +1,21 @@
 #include "menu/menu_global.h"
 
+#include "menu/menu.h"
+#include "menu/menu_global.h"
+#include "menu/menu_option.h"
+#include "util/bitmap.h"
+#include "util/funcs.h"
+#include "util/keyboard.h"
+#include "util/sound.h"
+#include "util/token.h"
+#include "util/tokenreader.h"
+#include "globals.h"
+#include "init.h"
+#include "music.h"
+
 double MenuGlobals::gamespeed = 1.0;
 
-//static std::priority_queue<std::string> lastPlayed;
+std::priority_queue<std::string> MenuGlobals::lastPlayed;
 
 //static std::queue<MenuOption *> backgrounds;
 
@@ -16,6 +29,32 @@ MenuGlobals::~MenuGlobals()
 
 void MenuGlobals::setMusic(const std::string &file)
 {
+	lastPlayed.push(file);
+	if(Music::loadSong( Util::getDataPath() + file ))
+	{
+		Music::pause();
+		Music::play();
+	}
+}
+
+const std::string MenuGlobals::currentMusic()
+{
+	if(!lastPlayed.empty())
+	{
+		return lastPlayed.top();
+	}
+	else return std::string();
+}
+
+void MenuGlobals::popMusic()
+{
+	if(!lastPlayed.empty())
+	{
+		lastPlayed.pop();
+		Music::pause();
+		Music::loadSong( Util::getDataPath() + lastPlayed.top() );
+		Music::play();
+	}
 }
 
 /*! game speed */
