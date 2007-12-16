@@ -4,10 +4,12 @@
 #include "menu/option_adventure.h"
 #include "menu/option_background.h"
 #include "menu/option_credits.h"
+#include "menu/option_invincible.h"
 #include "menu/option_key.h"
 #include "menu/option_menu.h"
 #include "menu/option_versus.h"
 #include "menu/option_speed.h"
+#include "globals.h"
 
 MenuOption *getOption(Token *token)
 {
@@ -42,6 +44,16 @@ MenuOption *getOption(Token *token)
 	{
 		// Speed
 		return new OptionSpeed(tok);
+	}
+	else if ( *tok == "invincible" )
+	{
+		// Invincible
+		return new OptionInvincible(tok);
+	}
+	else 
+	{
+		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+		tok->print(" ");
 	}
 	return 0;
 }

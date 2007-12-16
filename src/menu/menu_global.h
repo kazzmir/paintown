@@ -26,9 +26,36 @@ class MenuGlobals
 		/*! set speed */
 		static void setGameSpeed(double s);
 		
+		/*! invincible */
+		static bool getInvincible();
+		
+		/*! set invincible */
+		static void setInvincible(bool i);
+		
+		/*! game fullscreen */
+		static bool getFullscreen();
+		
+		/*! set speed */
+		static void setFullscreen(bool f);
+		
+		/*! game lives */
+		static int getLives();
+		
+		/*! set lives */
+		static void setLives(int l);
+		
 	private:
 		//! Game speed
 		static double gamespeed;
+		
+		//! Invincibility
+		static bool invincible;
+		
+		//! Fullscreen
+		static bool fullscreen;
+		
+		//! Lives
+		static int lives;
 		
 		static std::priority_queue<std::string> lastPlayed;
 		

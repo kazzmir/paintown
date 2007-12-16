@@ -14,6 +14,9 @@
 #include "music.h"
 
 double MenuGlobals::gamespeed = 1.0;
+bool MenuGlobals::invincible = false;
+bool MenuGlobals::fullscreen = false;
+int MenuGlobals::lives = 4;
 
 std::priority_queue<std::string> MenuGlobals::lastPlayed;
 
@@ -69,5 +72,39 @@ void MenuGlobals::setGameSpeed(double s)
 	gamespeed = s;
 }
 
+/*! invincible */
+bool MenuGlobals::getInvincible()
+{
+	return invincible;
+}
 
+/*! set invincible */
+void MenuGlobals::setInvincible(bool i)
+{
+	invincible = i;
+}
+
+/*! game fullscreen */
+bool MenuGlobals::getFullscreen()
+{
+	return fullscreen;
+}
+
+/*! set speed */
+void MenuGlobals::setFullscreen(bool f)
+{
+	fullscreen = f;
+}
+
+/*! game lives */
+int MenuGlobals::getLives()
+{
+	return lives;
+}
+
+/*! set lives */
+void MenuGlobals::setLives(int l)
+{
+	lives = l;
+}
 
