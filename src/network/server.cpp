@@ -220,8 +220,8 @@ void networkServer(){
 
 	Global::debug( 0 ) << "Port " << port << endl;
 
-	nlEnable( NL_BLOCKING_IO );
-	NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
+	Network::Socket server = Network::open( port );
+	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 	if ( server == NL_INVALID ){
 		Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
 		throw ReturnException();

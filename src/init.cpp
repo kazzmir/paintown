@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "init.h"
 #include <pthread.h>
+#include "network/network.h"
 
 #include <ostream>
 #include "dumb/include/dumb.h"
@@ -64,6 +65,7 @@ bool init( int gfx ){
 	set_display_switch_mode( SWITCH_BACKGROUND );
 	
 	atexit( &dumb_exit );
+	atexit( Network::closeAll );
 	dumb_register_packfiles();
 
 	out<<"-- END init --"<<endl;

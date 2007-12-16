@@ -1,5 +1,6 @@
 #include "hawknl/nl.h"
 #include "network.h"
+#include "globals.h"
 #include <string>
 
 using namespace std;
@@ -125,9 +126,38 @@ void readBytes( NLsocket socket, uint8_t * data, int length ){
 	}
 }
 
+Socket open( int port ){
+	NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
+	if ( server == NL_INVALID ){
+		throw NetworkException();
+	}
+	open_sockets.push_back( server );
+	return server;
+}
+
+void close( Socket s ){
+	for ( vector< Socket >::iterator it = open_sockets.begin(); it != open_sockets.end(); ){
+		if ( *it == s ){
+			nlClose( *it );
+			it = open_sockets.erase( it );
+		} else {
+			it++;
+		}
+	}
+}
+
+void closeAll(){
+	Global::debug( 0 ) << "Closing all sockets" << std::endl;
+	for ( vector< Socket >::iterator it = open_sockets.begin(); it != open_sockets.end(); it++ ){
+		nlClose( *it );
+	}
+	open_sockets.clear();
+}
+
 void init(){
 	nlInit();
 	nlSelectNetwork( NL_IP );
+	nlEnable( NL_BLOCKING_IO );
 }
 
 void shutdown(){

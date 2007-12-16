@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "hawknl/nl.h"
 #include <string>
+#include <vector>
 #include <exception>
 
 namespace Network{
@@ -52,6 +53,11 @@ void readBytes( NLsocket socket, uint8_t * data, int length );
 void init();
 void shutdown();
 
+Socket open( int port );
+void close( Socket );
+void closeAll();
+
+static std::vector< Socket > open_sockets;
 
 }
 
