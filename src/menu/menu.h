@@ -78,6 +78,9 @@ class Menu
 
 		//! Get menu by name
 		static Menu *getMenu(const std::string &name);
+		
+		//! get font
+		static FreeTypeFont *getFont();
 
 		//! Set flag(s)
 		inline void setFlags(useflags f, bool tf){ if(tf){_menuflags |= f;}else{_menuflags &= ~f;}}

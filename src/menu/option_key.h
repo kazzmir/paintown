@@ -3,7 +3,11 @@
 
 #include "menu_option.h"
 #include "util/load_exception.h"
+
+#include <string>
+
 class Token;
+class Configuration;
 
 /*! Handles key reconfiguration */
 class OptionKey : public MenuOption
@@ -22,6 +26,31 @@ class OptionKey : public MenuOption
 		OptionKey(Token *token)throw( LoadException );
 	
 		virtual ~OptionKey();
+		
+		//! keys
+		enum keyType
+		{
+			up=0,
+			down,
+			left,
+			right,
+			jump,
+			attack1,
+			attack2,
+			attack3,
+			attack4,
+			attack5,
+			attack6,
+   			invalidkey
+		};
+	
+	private:
+		//! name
+		std::string name;
+		int player;
+		
+		keyType type;
+		int keyCode;
 };
 
 #endif

@@ -25,6 +25,8 @@ Bitmap *Menu::work = 0;
 
 static std::queue<MenuOption *> backgrounds;
 
+static FreeTypeFont *font;
+
 const int yellow = Bitmap::makeColor( 255, 255, 0 );
 const int white = Bitmap::makeColor( 255, 255, 255 );
 
@@ -207,7 +209,8 @@ useflags Menu::run()
 	{
 		Global::speed_counter = 0;
 		Global::second_counter = 0;
-		int game_time = 100;
+		int game_time = 100;		
+		font = vFont;
 		
 		while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 	
@@ -400,6 +403,11 @@ const std::string &Menu::getName()
 void Menu::setBitmap(Bitmap *bmp)
 {
 	work = bmp;
+}
+
+FreeTypeFont *Menu::getFont()
+{
+	return font;
 }
 
 //! Set longest length
