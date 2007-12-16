@@ -93,7 +93,7 @@ void World::loadLevel( const string & path ) throw( LoadException ){
 		
 	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
 		Object * const player = it->player;	
-		player->setX( 100 + Util::rnd( 50 ) );
+		player->setX( 100 + Util::rnd( 75 ) );
 		player->setZ( getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
 		player->setY( 0 );
 	}

@@ -50,6 +50,7 @@
 #include <pthread.h>
 
 #include "network/network.h"
+#include "network/server.h"
 
 /*
 #include "sockets/SocketHandler.h"

@@ -50,7 +50,6 @@ void readBytes( NLsocket socket, uint8_t * data, int length );
 void init();
 void shutdown();
 
-void networkServer();
 
 }
 

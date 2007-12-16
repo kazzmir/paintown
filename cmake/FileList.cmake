@@ -19,7 +19,8 @@ src/level/utils.cpp)
 set(NETWORK_SRC
 src/network/network.cpp
 src/network/network_world.cpp
-src/network/network_world_client.cpp)
+src/network/network_world_client.cpp
+src/network/server.cpp)
 
 set(ENV_SRC
 src/environment/atmosphere.cpp
