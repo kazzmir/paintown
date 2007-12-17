@@ -155,6 +155,14 @@ void ChatClient::draw( const Bitmap & work ){
 	drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
 	need_update = false;
 }
+	
+void ChatClient::killInputThread(){
+	Global::debug( 0 ) << "Killing input socket" << endl;
+	Network::close( getSocket() );
+	Global::debug( 0 ) << "Waiting for input thread to die" << endl;
+	pthread_join( inputThread, NULL );
+	Global::debug( 0 ) << "Input thread killed" << endl;
+}
 
 void ChatClient::run(){
 	Global::speed_counter = 0;
@@ -166,6 +174,7 @@ void ChatClient::run(){
 	keyboard.setDelay( Keyboard::Key_ESC, 0 );
 
 	bool done = false;
+	bool kill = false;
 	while ( ! done ){
 		int think = Global::speed_counter;
 		while ( think > 0 ){
@@ -173,7 +182,10 @@ void ChatClient::run(){
 			logic( keyboard );
 			think -= 1;
 			Global::speed_counter = 0;
-			done = keyboard[ Keyboard::Key_ESC ];
+			if ( keyboard[ Keyboard::Key_ESC ] ){
+				kill = true;
+				done = true;
+			}
 		}
 
 		if ( needToDraw() ){
@@ -186,6 +198,10 @@ void ChatClient::run(){
 			Util::rest( 1 );
 			keyboard.poll();
 		}
+	}
+
+	if ( kill ){
+		killInputThread();
 	}
 }
 

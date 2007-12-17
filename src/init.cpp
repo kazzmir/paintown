@@ -45,6 +45,12 @@ END_OF_FUNCTION( inc_second_counter );
 #ifndef ALLEGRO_WINDOWS
 static void handleSigPipe( int i, siginfo_t * sig, void * data ){
 }
+
+/*
+static void handleSigUsr1( int i, siginfo_t * sig, void * data ){
+	pthread_exit( NULL );
+}
+*/
 #endif
 
 static void registerSignals(){
@@ -53,6 +59,10 @@ static void registerSignals(){
 	memset( &action, 0, sizeof(struct sigaction) );
 	action.sa_sigaction = handleSigPipe;
 	sigaction( SIGPIPE, &action, NULL );
+	/*
+	action.sa_sigaction = handleSigUsr1;
+	sigaction( SIGUSR1, &action, NULL );
+	*/
 #endif
 }
 

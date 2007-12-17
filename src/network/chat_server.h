@@ -32,6 +32,17 @@ public:
 		return server;
 	}
 
+	inline pthread_t getInputThread(){
+		return inputThread;
+	}
+
+	inline pthread_t getOutputThread(){
+		return outputThread;
+	}
+
+	void kill();
+	bool isAlive();
+
 	std::string getName();
 	void setName( const std::string & s );
 	
@@ -46,6 +57,7 @@ private:
 	Network::Socket socket;
 	ChatServer * server;
 	unsigned int id;
+	bool alive;
 	std::string name;
 	pthread_t inputThread;
 	pthread_t outputThread;
@@ -65,6 +77,8 @@ public:
 		return socket;
 	}
 
+	void killClient( Client * c );
+
 	void addMessage( const std::string & s, unsigned int id );
 	
 	void needUpdate();
@@ -77,6 +91,7 @@ protected:
 	void draw( const Bitmap & work );
 	
 	void drawInputBox( int x, int y, const Bitmap & work );
+	void drawBuddyList( int x, int y, const Bitmap & work, const Font & font );
 	Focus nextFocus( Focus f );
 	void handleInput( Keyboard & keyboard );
 

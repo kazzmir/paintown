@@ -1334,7 +1334,7 @@ void sock_Close(NLsocket socket)
     }
     if((sock->type == NL_RELIABLE_PACKETS || sock->type == NL_RELIABLE) && sock->listen == NL_FALSE)
     {
-        struct linger l = {1, 10};
+        struct linger l = {1, 1};
 
         (void)setsockopt((SOCKET)sock->realsocket, SOL_SOCKET, SO_LINGER, (const char *)&l, (int)sizeof(l));
         (void)shutdown((SOCKET)sock->realsocket, SD_RECEIVE);

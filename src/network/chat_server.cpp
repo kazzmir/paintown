@@ -9,6 +9,8 @@
 #include "init.h"
 #include <iostream>
 
+#include <signal.h>
+
 using namespace std;
 
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
@@ -16,7 +18,8 @@ static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 Client::Client( Network::Socket socket, ChatServer * server, unsigned int id ):
 socket( socket ),
 server( server ),
-id( id ){
+id( id ),
+alive( true ){
 	pthread_mutex_init( &lock, NULL );
 }
 	
@@ -29,6 +32,20 @@ string Client::getName(){
 	s = name;
 	pthread_mutex_unlock( &lock );
 	return s;
+}
+
+void Client::kill(){
+	pthread_mutex_lock( &lock );
+	alive = false;
+	pthread_mutex_unlock( &lock );
+}
+
+bool Client::isAlive(){
+	bool b;
+	pthread_mutex_lock( &lock );
+	b = alive;
+	pthread_mutex_unlock( &lock );
+	return b;
 }
 
 void Client::setName( const std::string & s ){
@@ -57,10 +74,15 @@ static void * clientInput( void * client_ ){
 					break;
 				}
 			}
+			done = ! client->isAlive();
 		} catch ( const Network::NetworkException & e ){
 			Global::debug( 0 ) << "Client input " << client->getId() << " died" << endl;
 			done = true;
 		}
+	}
+	
+	if ( client->isAlive() ){
+		client->getServer()->killClient( client );
 	}
 
 	return NULL;
@@ -71,7 +93,9 @@ static void * clientOutput( void * client_ ){
 	bool done = false;
 	while ( ! done ){
 		string message;
+		done = ! client->isAlive();
 		if ( client->getOutgoing( message ) != false ){
+			Global::debug( 0 ) << "Sending a message to " << client->getId() << endl;
 			try{
 				Network::Message net;
 				net.path = message;
@@ -83,6 +107,10 @@ static void * clientOutput( void * client_ ){
 		} else {
 			Util::rest( 1 );
 		}
+	}
+
+	if ( client->isAlive() ){
+		client->getServer()->killClient( client );
 	}
 
 	return NULL;
@@ -195,6 +223,29 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 		}
 	}
 }
+	
+void ChatServer::killClient( Client * c ){
+	pthread_mutex_lock( &lock );
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
+		Client * client = *it;
+		if ( client == c ){
+			Global::debug( 0 ) << "Killing socket" << endl;
+			c->kill();
+			Network::close( c->getSocket() );
+			Global::debug( 0 ) << "Waiting for input thread to die" << endl;
+			pthread_join( c->getInputThread(), NULL );
+			Global::debug( 0 ) << "Waiting for output thread to die" << endl;
+			pthread_join( c->getOutputThread(), NULL );
+			Global::debug( 0 ) << "Deleting client" << endl;
+			delete client;
+			it = clients.erase( it );
+		} else {
+			it++;
+		}
+	}
+	needUpdate();
+	pthread_mutex_unlock( &lock );
+}
 
 void ChatServer::logic( Keyboard & keyboard ){
 	if ( keyboard[ Keyboard::Key_TAB ] ){
@@ -247,6 +298,22 @@ void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
 
 }
 
+void ChatServer::drawBuddyList( int x, int y, const Bitmap & work, const Font & font ){
+	Bitmap buddyList( work, x, y, GFX_X - x - 5, 200 );
+	buddyList.drawingMode( Bitmap::MODE_TRANS );
+	Bitmap::transBlender( 0, 0, 0, 128 );
+	buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+	buddyList.drawingMode( Bitmap::MODE_SOLID );
+	buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
+	int fy = 1;
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * client = *it;
+		const string & name = client->getName();
+		font.printf( 1, fy, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
+		fy += font.getHeight();
+	}
+}
+
 void ChatServer::draw( const Bitmap & work ){
 	int start_x = 20;
 	int start_y = 20;
@@ -256,20 +323,9 @@ void ChatServer::draw( const Bitmap & work ){
 		
 	drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
 
-	need_update = false;
+	drawBuddyList( start_x + messages.getWidth() + 10, start_y, work, font );
 
-	Bitmap buddyList( work, start_x + messages.getWidth() + 10, start_y, GFX_X - (start_x + messages.getWidth() + 10) - 5, 200 );
-	buddyList.drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::transBlender( 0, 0, 0, 128 );
-	buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-	buddyList.drawingMode( Bitmap::MODE_SOLID );
-	buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
-	int y = 1;
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * client = *it;
-		const string & name = client->getName();
-		font.printf( 1, y, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
-	}
+	need_update = false;
 }
 	
 void ChatServer::run(){

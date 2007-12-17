@@ -807,14 +807,16 @@ HL_EXP NLboolean HL_APIENTRY nlClose(NLsocket socket)
                 nlSetError(NL_SYSTEM_ERROR);
                 return NL_FALSE;
             }
+	    /*
             if(nlLockSocket(socket, NL_BOTH) == NL_FALSE)
             {
                 return NL_FALSE;
             }
+	    */
             driver->Close(socket);
             /* return the socket for reuse */
             nlReturnSocket(socket);
-            nlUnlockSocket(socket, NL_BOTH);
+            // nlUnlockSocket(socket, NL_BOTH);
             if(htMutexUnlock(&socklock) != 0)
             {
                 nlSetError(NL_SYSTEM_ERROR);

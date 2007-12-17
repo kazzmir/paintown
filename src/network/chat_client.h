@@ -29,6 +29,7 @@ public:
 	void addMessage( const std::string & s, unsigned int id );
 
 protected:
+	void killInputThread();
 	void logic( Keyboard & keyboard );
 	Focus nextFocus( Focus f );
 	bool needToDraw();
