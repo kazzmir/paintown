@@ -1,5 +1,6 @@
 #include "network.h"
 #include "chat_client.h"
+#include "chat.h"
 #include "util/bitmap.h"
 #include "init.h"
 #include "globals.h"
@@ -23,7 +24,7 @@ static void * serverInput( void * client_ ){
 	return NULL;
 }
 
-ChatClient::ChatClient( Network::Socket socket ):
+ChatClient::ChatClient( Network::Socket socket, const string & name ):
 need_update( true ),
 messages( 400, 300 ),
 socket( socket ),
@@ -32,6 +33,15 @@ focus( INPUT_BOX ){
 	pthread_mutex_init( &lock, NULL );
 
 	pthread_create( &inputThread, NULL, serverInput, this );
+
+	try{
+		Network::Message nameMessage;
+		nameMessage.path = name;
+		nameMessage << CHANGE_NAME;
+		nameMessage.send( socket );
+	} catch ( const Network::NetworkException & n ){
+		Global::debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
+	}
 }
 
 bool ChatClient::needToDraw(){
@@ -63,6 +73,7 @@ static char lowerCase( const char * x ){
 void ChatClient::sendMessage( const string & message ){
 	try{
 		Network::Message net;
+		net << ADD_MESSAGE;
 		net.path = message;
 		net.send( socket );
 	} catch ( const Network::NetworkException & e ){

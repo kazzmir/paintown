@@ -34,6 +34,19 @@ static char lowerCase( const char * x ){
 	return x[0];
 }
 
+static void handleNameInput( string & str, const vector< int > & keys ){
+	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
+		const int & key = *it;
+		if ( str.length() < 16 && Keyboard::isAlpha( key ) ){
+			str += lowerCase( Keyboard::keyToName( key ) );
+		} else if ( key == Keyboard::Key_BACKSPACE ){
+			if ( str != "" ){
+				str = str.substr( 0, str.length() - 1 );
+			}
+		}
+	}
+}
+
 static void handleHostInput( string & str, const vector< int > & keys ){
 	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
 		const int & key = *it;
@@ -71,35 +84,58 @@ static void popup( const Font & font, const string & message ){
 	font.printf( 10, area.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
 }
 
+static const char * getANumber(){
+	switch( Util::rnd( 10 ) ){
+		case 0 : return "0";
+		case 1 : return "1";
+		case 2 : return "2";
+		case 3 : return "3";
+		case 4 : return "4";
+		case 5 : return "5";
+		case 6 : return "6";
+		case 7 : return "7";
+		case 8 : return "8";
+		case 9 : return "9";
+		default : return "0";
+	}
+}
+
 void networkClient(){
 	Global::showTitleScreen();
 	Global::speed_counter = 0;
 	Keyboard keyboard;
 	keyboard.setAllDelay( 200 );
 
+	string name = string("player") + getANumber() + getANumber();
 	string host = "localhost";
 	string port = "7887";
 
 	enum Focus{
-		HOST, PORT, CONNECT, BACK
+		NAME, HOST, PORT, CONNECT, BACK
 	};
 
 	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 	const int inputBoxLength = font.textLength( "a" ) * 30;
+	const int min_y = 140;
+
+	font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
+	Bitmap nameBox( *Bitmap::Screen, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
+	Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
+	nameBox.Blit( copyNameBox );
 	
-	font.printf( 20, 100 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
-	Bitmap hostBox( *Bitmap::Screen, 20, 100, inputBoxLength, font.getHeight() );
+	font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
+	Bitmap hostBox( *Bitmap::Screen, 20, min_y, inputBoxLength, font.getHeight() );
 	Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
 	hostBox.Blit( copyHostBox );
 
-	font.printf( 20, 100 + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
-	Bitmap portBox( *Bitmap::Screen, 20, 100 + font.getHeight() * 2, inputBoxLength, font.getHeight() );
+	font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
+	Bitmap portBox( *Bitmap::Screen, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight() );
 	Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
 	portBox.Blit( copyPortBox );
 			
 	font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
 
-	Focus focus = HOST;
+	Focus focus = NAME;
 
 	bool done = false;
 	bool draw = true;
@@ -112,10 +148,11 @@ void networkClient(){
 			if ( keyboard[ Keyboard::Key_TAB ] ){
 				draw = true;
 				switch ( focus ){
+					case NAME : focus = HOST; break;
 					case HOST : focus = PORT; break;
 					case PORT : focus = CONNECT; break;
 					case CONNECT : focus = BACK; break;
-					case BACK : focus = HOST; break;
+					case BACK : focus = NAME; break;
 					default : focus = HOST;
 				}
 			}
@@ -126,6 +163,7 @@ void networkClient(){
 
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
 				switch ( focus ){
+					case NAME :
 					case HOST :
 					case PORT : break;
 					case CONNECT : {
@@ -135,7 +173,7 @@ void networkClient(){
 							int porti;
 							is >> porti;
 							Network::Socket socket = Network::connect( host, porti );
-							ChatClient chat( socket );
+							ChatClient chat( socket, name );
 							chat.run();
 							Network::close( socket );
 						} catch ( const NetworkException & e ){
@@ -143,8 +181,9 @@ void networkClient(){
 							keyboard.wait();
 							keyboard.readKey();
 							Global::showTitleScreen();
-							font.printf( 20, 100 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
-							font.printf( 20, 100 + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
+							font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
+							font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
+							font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
 							font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
 							done = false;
 							draw = true;
@@ -169,6 +208,11 @@ void networkClient(){
 					handlePortInput( port, keys );
 					break;
 				}
+				case NAME : {
+					draw = true;
+					handleNameInput( name, keys );
+					break;
+				}
 				default : {
 					break;
 				}
@@ -182,10 +226,11 @@ void networkClient(){
 			int focusColor = Bitmap::makeColor( 255, 255, 0 );
 			int unFocusColor = Bitmap::makeColor( 255, 255, 255 );
 
+			drawBox( nameBox, copyNameBox, name, font, focus == NAME );
 			drawBox( hostBox, copyHostBox, host, font, focus == HOST );
 			drawBox( portBox, copyPortBox, port, font, focus == PORT );
-			font.printf( 20, 100 + font.getHeight() * 5, focus == CONNECT ? focusColor : unFocusColor, *Bitmap::Screen, "Connect", 0 );
-			font.printf( 20, 100 + font.getHeight() * 6 + 5, focus == BACK ? focusColor : unFocusColor, *Bitmap::Screen, "Back", 0 );
+			font.printf( 20, min_y + font.getHeight() * 5, focus == CONNECT ? focusColor : unFocusColor, *Bitmap::Screen, "Connect", 0 );
+			font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == BACK ? focusColor : unFocusColor, *Bitmap::Screen, "Back", 0 );
 		}
 
 		while ( Global::speed_counter == 0 ){

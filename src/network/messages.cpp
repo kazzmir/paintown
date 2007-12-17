@@ -17,8 +17,8 @@ void Messages::draw( int x, int y, const Bitmap & work, const Font & font ){
 	work.drawingMode( Bitmap::MODE_TRANS );
 	Bitmap::transBlender( 0, 0, 0, 128 );
 	work.rectangleFill( x, y, x + width, y + height, Bitmap::makeColor( 0, 0, 0 ) );
-	work.rectangle( x, y, x + width, y + height, Bitmap::makeColor( 255, 255, 255 ) );
 	work.drawingMode( Bitmap::MODE_SOLID );
+	work.rectangle( x, y, x + width, y + height, Bitmap::makeColor( 255, 255, 255 ) );
 
 	Bitmap area( work, x, y, width, height );
 	int current_y = height - font.getHeight() - 1;

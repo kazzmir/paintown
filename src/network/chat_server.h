@@ -31,6 +31,9 @@ public:
 	inline ChatServer * getServer(){
 		return server;
 	}
+
+	std::string getName();
+	void setName( const std::string & s );
 	
 	bool getOutgoing( std::string & s );
 
@@ -43,6 +46,7 @@ private:
 	Network::Socket socket;
 	ChatServer * server;
 	unsigned int id;
+	std::string name;
 	pthread_t inputThread;
 	pthread_t outputThread;
 	pthread_mutex_t lock;
@@ -62,13 +66,14 @@ public:
 	}
 
 	void addMessage( const std::string & s, unsigned int id );
+	
+	void needUpdate();
 
 	virtual ~ChatServer();
 
 protected:
 	void logic( Keyboard & keyboard );
 	bool needToDraw();
-	void needUpdate();
 	void draw( const Bitmap & work );
 	
 	void drawInputBox( int x, int y, const Bitmap & work );

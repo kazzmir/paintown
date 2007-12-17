@@ -16,7 +16,7 @@ enum Focus{
 
 class ChatClient{
 public:
-	ChatClient( Network::Socket socket );
+	ChatClient( Network::Socket socket, const std::string & name );
 
 	void run();
 

@@ -1,5 +1,6 @@
 #include "network.h"
 #include "chat_server.h"
+#include "chat.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/keyboard.h"
@@ -21,6 +22,20 @@ id( id ){
 	
 Client::~Client(){
 }
+	
+string Client::getName(){
+	string s;
+	pthread_mutex_lock( &lock );
+	s = name;
+	pthread_mutex_unlock( &lock );
+	return s;
+}
+
+void Client::setName( const std::string & s ){
+	pthread_mutex_lock( &lock );
+	name = s;
+	pthread_mutex_unlock( &lock );
+}
 
 static void * clientInput( void * client_ ){
 	Client * client = (Client *) client_;
@@ -28,8 +43,20 @@ static void * clientInput( void * client_ ){
 	while ( ! done ){
 		try{
 			Network::Message message( client->getSocket() );
-			Global::debug( 0 ) << "Got a message: '" << message.path << "'" << endl;
-			client->getServer()->addMessage( message.path, client->getId() );
+			Global::debug( 1 ) << "Got a message: '" << message.path << "'" << endl;
+			int type;
+			message >> type;
+			switch ( type ){
+				case CHANGE_NAME : {
+					client->setName( message.path );
+					client->getServer()->needUpdate();
+					break;
+				}
+				case ADD_MESSAGE : {
+					client->getServer()->addMessage( client->getName() + ":" + message.path, client->getId() );
+					break;
+				}
+			}
 		} catch ( const Network::NetworkException & e ){
 			Global::debug( 0 ) << "Client input " << client->getId() << " died" << endl;
 			done = true;
@@ -162,7 +189,7 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 			input += " ";
 			needUpdate();
 		} else if ( key == Keyboard::Key_ENTER ){
-			addMessage( "You: " + input, 0 );
+			addMessage( "Server: " + input, 0 );
 			input = "";
 			needUpdate();
 		}
@@ -230,6 +257,19 @@ void ChatServer::draw( const Bitmap & work ){
 	drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
 
 	need_update = false;
+
+	Bitmap buddyList( work, start_x + messages.getWidth() + 10, start_y, GFX_X - (start_x + messages.getWidth() + 10) - 5, 200 );
+	buddyList.drawingMode( Bitmap::MODE_TRANS );
+	Bitmap::transBlender( 0, 0, 0, 128 );
+	buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+	buddyList.drawingMode( Bitmap::MODE_SOLID );
+	buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
+	int y = 1;
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * client = *it;
+		const string & name = client->getName();
+		font.printf( 1, y, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
+	}
 }
 	
 void ChatServer::run(){
