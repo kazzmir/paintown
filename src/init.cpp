@@ -3,6 +3,11 @@
 #include <winalleg.h>
 #endif
 
+#ifndef ALLEGRO_WINDOWS
+#include <signal.h>
+#include <string.h>
+#endif
+
 #include "globals.h"
 #include "init.h"
 #include <pthread.h>
@@ -37,6 +42,20 @@ void inc_second_counter() {
 }
 END_OF_FUNCTION( inc_second_counter );
 
+#ifndef ALLEGRO_WINDOWS
+static void handleSigPipe( int i, siginfo_t * sig, void * data ){
+}
+#endif
+
+static void registerSignals(){
+#ifndef ALLEGRO_WINDOWS
+	struct sigaction action;
+	memset( &action, 0, sizeof(struct sigaction) );
+	action.sa_sigaction = handleSigPipe;
+	sigaction( SIGPIPE, &action, NULL );
+#endif
+}
+
 bool init( int gfx ){
 
 	ostream & out = Global::debug( 0 );
@@ -69,6 +88,8 @@ bool init( int gfx ){
 	dumb_register_packfiles();
 
 	out<<"-- END init --"<<endl;
+
+	registerSignals();
 
 	/*
 	Bitmap::Screen = new Bitmap( screen );

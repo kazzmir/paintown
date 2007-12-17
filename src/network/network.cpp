@@ -139,7 +139,8 @@ void readBytes( NLsocket socket, uint8_t * data, int length ){
 }
 
 Socket open( int port ){
-	NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
+	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
+	NLsocket server = nlOpen( port, NL_RELIABLE );
 	if ( server == NL_INVALID ){
 		throw NetworkException();
 	}

@@ -5,6 +5,7 @@
 #include "util/funcs.h"
 #include "util/font.h"
 #include "return_exception.h"
+#include "chat_client.h"
 #include "network.h"
 #include <string>
 #include <sstream>
@@ -135,8 +136,9 @@ void networkClient(){
 							int porti;
 							is >> porti;
 							Network::Socket socket = Network::connect( host, porti );
+							ChatClient chat( socket );
+							chat.run();
 							Network::close( socket );
-							// ChatClient chat( socket );
 						} catch ( const NetworkException & e ){
 							popup( font, e.getMessage() );
 							keyboard.wait();

@@ -1766,7 +1766,6 @@ static NLint sock_WritePacket(NLsocket socket, const NLvoid *buffer, NLint nbyte
     NLbyte      temp[NL_HEADER_LEN];
     NLint       c = 0;
     
-    
     /* allocate memory for outbuf */
     if(sock->outbuf == NULL)
     {
@@ -1780,7 +1779,7 @@ static NLint sock_WritePacket(NLsocket socket, const NLvoid *buffer, NLint nbyte
         /* send any unsent data from last packet */
         sock_WritePacketCheckPending(socket);
     }
-    
+
     /* check to see if we already have some pending data */
     if(sock->sendlen > 0)
     {

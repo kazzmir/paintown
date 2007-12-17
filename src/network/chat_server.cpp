@@ -30,7 +30,7 @@ static void * clientInput( void * client_ ){
 								Network::Message message( client->getSocket() );
 								client->getServer()->addMessage( message.path, client->getId() );
 					 } catch ( const Network::NetworkException & e ){
-								Global::debug( 0 ) << "Client " << client->getId() << " died" << endl;
+								Global::debug( 0 ) << "Client input " << client->getId() << " died" << endl;
 								done = true;
 					 }
 		  }
@@ -49,7 +49,7 @@ static void * clientOutput( void * client_ ){
 										  net.path = message;
 										  net.send( client->getSocket() );
 								} catch ( const Network::NetworkException & e ){
-										  Global::debug( 0 ) << "Client " << client->getId() << " died" << endl;
+										  Global::debug( 0 ) << "Client output " << client->getId() << " died" << endl;
 										  done = true;
 								}
 					 } else {
@@ -169,7 +169,6 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 
 void ChatServer::logic( Keyboard & keyboard ){
 	if ( keyboard[ Keyboard::Key_TAB ] ){
-		Global::debug( 0 ) << "tab" << endl;
 		focus = nextFocus( focus );
 		needUpdate();
 	}
