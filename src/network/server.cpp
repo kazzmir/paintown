@@ -29,6 +29,7 @@ static void showTitleScreen(){
 }
 */
 
+#if 0
 static void fadeOut( const string & str ){
 	/* fill in */
 }
@@ -56,10 +57,13 @@ static void networkSendLevel( const vector< NLsocket > & sockets, string level )
 		*/
 	}
 }
+#endif
 
+/*
 static const string selectLevelSet( const string & base ) throw( ReturnException ){
 	return "";
 }
+*/
 
 static int getServerPort(){
 	const int drawY = 160;
@@ -137,6 +141,7 @@ static int getServerPort(){
 	return i;
 }
 
+#if 0
 static void networkGame( const vector< Object * > & players, const string & levelFile, const vector< NLsocket > & sockets ){
 
 	vector< string > levels = Level::readLevels( levelFile );
@@ -212,27 +217,33 @@ static void networkGame( const vector< Object * > & players, const string & leve
 
 	fadeOut( "You win!" );
 }
+#endif
 
 void networkServer(){
 
-	const int startingLives = 4;
+	// const int startingLives = 4;
 	int port = getServerPort();
 
 	Keyboard key;
 
 	Global::debug( 0 ) << "Port " << port << endl;
 
-	Network::Socket server = Network::open( port );
-	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
-	if ( server == NL_INVALID ){
-		Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
-		throw ReturnException();
-	}
+	try{
+		Network::Socket server = Network::open( port );
+		// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
+		if ( server == NL_INVALID ){
+			Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
+			throw ReturnException();
+		}
 
-	ChatServer chat( server );
-	chat.run();
+		ChatServer chat( server );
+		chat.run();
+	} catch ( const NetworkException & ne ){
+		Global::debug( 0 ) << "Network error: " << ne.getMessage() << endl;
+	}
 	return;
 
+#if 0
 	Object * player = NULL;
 	try{
 		Global::showTitleScreen();
@@ -291,6 +302,7 @@ void networkServer(){
 		delete player;
 	}
 	nlClose( server );
+#endif
 }
 
 }
