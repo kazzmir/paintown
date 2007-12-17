@@ -107,7 +107,6 @@ void networkClient(){
 		int think = Global::speed_counter;
 		while ( think > 0 ){
 			think -= 1;
-			Global::speed_counter = 0;
 			keyboard.poll();
 
 			if ( keyboard[ Keyboard::Key_TAB ] ){
@@ -174,6 +173,8 @@ void networkClient(){
 					break;
 				}
 			}
+			
+			Global::speed_counter = 0;
 		}
 
 		if ( draw ){

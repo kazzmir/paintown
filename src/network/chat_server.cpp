@@ -16,89 +16,90 @@ Client::Client( Network::Socket socket, ChatServer * server, unsigned int id ):
 socket( socket ),
 server( server ),
 id( id ){
-		  pthread_mutex_init( &lock, NULL );
+	pthread_mutex_init( &lock, NULL );
 }
 	
 Client::~Client(){
 }
 
 static void * clientInput( void * client_ ){
-		  Client * client = (Client *) client_;
-		  bool done = false;
-		  while ( ! done ){
-					 try{
-								Network::Message message( client->getSocket() );
-								client->getServer()->addMessage( message.path, client->getId() );
-					 } catch ( const Network::NetworkException & e ){
-								Global::debug( 0 ) << "Client input " << client->getId() << " died" << endl;
-								done = true;
-					 }
-		  }
+	Client * client = (Client *) client_;
+	bool done = false;
+	while ( ! done ){
+		try{
+			Network::Message message( client->getSocket() );
+			Global::debug( 0 ) << "Got a message: '" << message.path << "'" << endl;
+			client->getServer()->addMessage( message.path, client->getId() );
+		} catch ( const Network::NetworkException & e ){
+			Global::debug( 0 ) << "Client input " << client->getId() << " died" << endl;
+			done = true;
+		}
+	}
 
-		  return NULL;
+	return NULL;
 }
 
 static void * clientOutput( void * client_ ){
-		  Client * client = (Client *) client_;
-		  bool done = false;
-		  while ( ! done ){
-					 string message;
-					 if ( client->getOutgoing( message ) != false ){
-								try{
-										  Network::Message net;
-										  net.path = message;
-										  net.send( client->getSocket() );
-								} catch ( const Network::NetworkException & e ){
-										  Global::debug( 0 ) << "Client output " << client->getId() << " died" << endl;
-										  done = true;
-								}
-					 } else {
-								Util::rest( 1 );
-					 }
-		  }
+	Client * client = (Client *) client_;
+	bool done = false;
+	while ( ! done ){
+		string message;
+		if ( client->getOutgoing( message ) != false ){
+			try{
+				Network::Message net;
+				net.path = message;
+				net.send( client->getSocket() );
+			} catch ( const Network::NetworkException & e ){
+				Global::debug( 0 ) << "Client output " << client->getId() << " died" << endl;
+				done = true;
+			}
+		} else {
+			Util::rest( 1 );
+		}
+	}
 
-		  return NULL;
+	return NULL;
 }
 	
 bool Client::getOutgoing( string & s ){
-		  string message;
-		  bool has;
-		  pthread_mutex_lock( &lock );
-		  has = ! outgoing.empty();
-		  if ( has ){
-					 s = outgoing.front();
-					 outgoing.erase( outgoing.begin() );
-		  }
-		  pthread_mutex_unlock( &lock );
-		  return has;
+	string message;
+	bool has;
+	pthread_mutex_lock( &lock );
+	has = ! outgoing.empty();
+	if ( has ){
+		s = outgoing.front();
+		outgoing.erase( outgoing.begin() );
+	}
+	pthread_mutex_unlock( &lock );
+	return has;
 }
 
 void Client::addOutputMessage( const std::string & s ){
-		  pthread_mutex_lock( &lock );
-		  outgoing.push_back( s );
-		  pthread_mutex_unlock( &lock );
+	pthread_mutex_lock( &lock );
+	outgoing.push_back( s );
+	pthread_mutex_unlock( &lock );
 }
 
 void Client::startThreads(){
-		  pthread_create( &inputThread, NULL, clientInput, this );
-		  pthread_create( &outputThread, NULL, clientOutput, this );
+	pthread_create( &inputThread, NULL, clientInput, this );
+	pthread_create( &outputThread, NULL, clientOutput, this );
 }
 
 static void * acceptConnections( void * server_ ){
-		  bool done = false;
-		  ChatServer * server = (ChatServer *) server_;
-		  Network::Socket socket = server->getSocket();
-		  while ( ! done ){
-					 try{
-								server->addConnection( Network::accept( socket ) );
-					 } catch ( const Network::NoConnectionsPendingException & e ){
-					 } catch ( const Network::NetworkException & e ){
-								Global::debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
-					 }
-					 Util::rest( 1 );
-		  }
+	bool done = false;
+	ChatServer * server = (ChatServer *) server_;
+	Network::Socket socket = server->getSocket();
+	while ( ! done ){
+		try{
+			server->addConnection( Network::accept( socket ) );
+		} catch ( const Network::NoConnectionsPendingException & e ){
+		} catch ( const Network::NetworkException & e ){
+			Global::debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
+		}
+		Util::rest( 1 );
+	}
 
-		  return NULL;
+	return NULL;
 }
 
 ChatServer::ChatServer( Network::Socket socket ):
@@ -131,15 +132,16 @@ static char lowerCase( const char * x ){
 }
 
 void ChatServer::addMessage( const string & s, unsigned int id ){
-		  pthread_mutex_lock( &lock );
-		  messages.addMessage( s );
-		  for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-					 Client * c = *it;
-					 if ( c->getId() != id ){
-								c->addOutputMessage( s );
-					 }
-		  }
-		  pthread_mutex_unlock( &lock );
+	pthread_mutex_lock( &lock );
+	messages.addMessage( s );
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * c = *it;
+		if ( c->getId() != id ){
+			c->addOutputMessage( s );
+		}
+	}
+	needUpdate();
+	pthread_mutex_unlock( &lock );
 }
 
 void ChatServer::handleInput( Keyboard & keyboard ){

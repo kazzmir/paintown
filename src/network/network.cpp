@@ -30,7 +30,7 @@ Message::Message( Socket socket ){
 	int str = read16( socket );
 	if ( str != -1 ){
 		char buf[ 1024 ];
-		str = (signed)(sizeof( buf ) - 1) > str ? (signed)(sizeof(buf) - 1) : str;
+		str = (signed)(sizeof( buf ) - 1) < str ? (signed)(sizeof(buf) - 1) : str;
 		readBytes( socket, (uint8_t *) buf, str );
 		buf[ str ] = 0;
 		this->path = buf;
