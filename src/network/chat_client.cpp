@@ -70,15 +70,33 @@ static char lowerCase( const char * x ){
 	return x[0];
 }
 
-void ChatClient::sendMessage( const string & message ){
+bool ChatClient::sendMessage( const string & message ){
 	try{
 		Network::Message net;
 		net << ADD_MESSAGE;
 		net.path = message;
 		net.send( socket );
+		return true;
 	} catch ( const Network::NetworkException & e ){
 		Global::debug( 0 ) << "Client could not send message" << endl;
 	}
+	return false;
+}
+	
+void ChatClient::popup( Keyboard & key, const std::string & str ){
+	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+	int length = font.textLength( str.c_str() ) + 20;
+	int height = font.getHeight() * 2;
+	Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, GFX_Y / 2, length, height );
+	area.drawingMode( Bitmap::MODE_TRANS );
+	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
+	area.drawingMode( Bitmap::MODE_SOLID );
+	int color = Bitmap::makeColor( 255, 255, 255 );
+	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
+	font.printf( 10, area.getHeight() / 3, Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
+
+	key.wait();
+	key.readKey();
 }
 
 void ChatClient::handleInput( Keyboard & keyboard ){
@@ -100,7 +118,9 @@ void ChatClient::handleInput( Keyboard & keyboard ){
 			needUpdate();
 		} else if ( key == Keyboard::Key_ENTER ){
 			addMessage( "You: " + input, 0 );
-			sendMessage( input );
+			if ( ! sendMessage( input ) ){
+				popup( keyboard, "Could not send message" );
+			}
 			input = "";
 			needUpdate();
 		}

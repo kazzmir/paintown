@@ -37,7 +37,8 @@ protected:
 	void needUpdate();
 	void handleInput( Keyboard & keyboard );
 	void drawInputBox( int x, int y, const Bitmap & work );
-	void sendMessage( const std::string & message );
+	bool sendMessage( const std::string & message );
+	void popup( Keyboard & key, const std::string & str );
 
 private:
 	Bitmap * background;
