@@ -34,43 +34,55 @@ static char lowerCase( const char * x ){
 	return x[0];
 }
 
-static void handleNameInput( string & str, const vector< int > & keys ){
+static bool handleNameInput( string & str, const vector< int > & keys ){
+	bool cy = false;
 	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
 		const int & key = *it;
 		if ( str.length() < 16 && Keyboard::isAlpha( key ) ){
 			str += lowerCase( Keyboard::keyToName( key ) );
+			cy = true;
 		} else if ( key == Keyboard::Key_BACKSPACE ){
 			if ( str != "" ){
 				str = str.substr( 0, str.length() - 1 );
+				cy = true;
 			}
 		}
 	}
+	return cy;
 }
 
-static void handleHostInput( string & str, const vector< int > & keys ){
+static bool handleHostInput( string & str, const vector< int > & keys ){
+	bool cy = false;
 	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
 		const int & key = *it;
 		if ( Keyboard::isAlpha( key ) || key == Keyboard::Key_STOP ){
 			str += lowerCase( Keyboard::keyToName( key ) );
+			cy = true;
 		} else if ( key == Keyboard::Key_BACKSPACE ){
 			if ( str != "" ){
 				str = str.substr( 0, str.length() - 1 );
+				cy = true;
 			}
 		}
 	}
+	return cy;
 }
 
-static void handlePortInput( string & str, const vector< int > & keys ){
+static bool handlePortInput( string & str, const vector< int > & keys ){
+	bool cy = false;
 	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
 		const int & key = *it;
 		if ( Keyboard::isNumber( key ) || key == Keyboard::Key_STOP ){
 			str += Keyboard::keyToName( key );
+			cy = true;
 		} else if ( key == Keyboard::Key_BACKSPACE ){
 			if ( str != "" ){
 				str = str.substr( 0, str.length() - 1 );
+			cy = true;
 			}
 		}
 	}
+	return cy;
 }
 
 static void popup( const Font & font, const string & message ){
@@ -199,18 +211,15 @@ void networkClient(){
 			keyboard.readKeys( keys );
 			switch ( focus ){
 				case HOST : {
-					draw = true;
-					handleHostInput( host, keys );
+					draw = draw || handleHostInput( host, keys );
 					break;
 				}
 				case PORT : {
-					draw = true;
-					handlePortInput( port, keys );
+					draw = draw || handlePortInput( port, keys );
 					break;
 				}
 				case NAME : {
-					draw = true;
-					handleNameInput( name, keys );
+					draw = draw || handleNameInput( name, keys );
 					break;
 				}
 				default : {
