@@ -92,14 +92,17 @@ static void * clientOutput( void * client_ ){
 	Client * client = (Client *) client_;
 	bool done = false;
 	while ( ! done ){
-		string message;
+		Network::Message message;
 		done = ! client->isAlive();
 		if ( client->getOutgoing( message ) != false ){
 			Global::debug( 0 ) << "Sending a message to " << client->getId() << endl;
 			try{
+				/*
 				Network::Message net;
 				net.path = message;
 				net.send( client->getSocket() );
+				*/
+				message.send( client->getSocket() );
 			} catch ( const Network::NetworkException & e ){
 				Global::debug( 0 ) << "Client output " << client->getId() << " died" << endl;
 				done = true;
@@ -116,20 +119,19 @@ static void * clientOutput( void * client_ ){
 	return NULL;
 }
 	
-bool Client::getOutgoing( string & s ){
-	string message;
+bool Client::getOutgoing( Network::Message & m ){
 	bool has;
 	pthread_mutex_lock( &lock );
 	has = ! outgoing.empty();
 	if ( has ){
-		s = outgoing.front();
+		m = outgoing.front();
 		outgoing.erase( outgoing.begin() );
 	}
 	pthread_mutex_unlock( &lock );
 	return has;
 }
 
-void Client::addOutputMessage( const std::string & s ){
+void Client::addOutputMessage( const Network::Message & s ){
 	pthread_mutex_lock( &lock );
 	outgoing.push_back( s );
 	pthread_mutex_unlock( &lock );
@@ -193,13 +195,16 @@ void ChatServer::sendMessage( const Network::Message & message ){
 }
 
 void ChatServer::addMessage( const string & s, unsigned int id ){
+	Network::Message message;
+	message << ADD_MESSAGE;
+	message.path = s;
 	pthread_mutex_lock( &lock );
 	messages.addMessage( s );
 	needUpdate();
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		Client * c = *it;
 		if ( c->getId() != id ){
-			c->addOutputMessage( s );
+			c->addOutputMessage( message );
 		}
 	}
 	pthread_mutex_unlock( &lock );

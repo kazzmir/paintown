@@ -11,18 +11,29 @@ NetworkException::~NetworkException() throw (){
 }
 
 Message::Message(){
-	memset( data, 0, sizeof(uint8_t) * DATA_SIZE );
+	memset( data, 0, sizeof(data) );
 	position = data;
 }
 	
 Message::Message( const Message & m ){
-	memcpy( data, m.data, sizeof(uint8_t) * DATA_SIZE );
+	memcpy( data, m.data, sizeof(data) );
 	position = data;
 	position += m.position - m.data;
 	path = m.path;
 	id = m.id;
 }
 	
+Message & Message::operator=( const Message & m ){
+
+	memcpy( data, m.data, sizeof(data) );
+	position = data;
+	position += m.position - m.data;
+	path = m.path;
+	id = m.id;
+
+	return *this;
+}
+
 Message::Message( Socket socket ){
 	position = data;
 	id = read16( socket );

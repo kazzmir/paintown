@@ -42,6 +42,7 @@ struct Message{
 	uint8_t data[ DATA_SIZE ];
 	uint8_t * position;
 
+	Message & operator=( const Message & m );
 	Message & operator<<( int x );
 	Message & operator<<( std::string p );
 	Message & operator>>( int & x );

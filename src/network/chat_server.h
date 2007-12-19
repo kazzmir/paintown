@@ -46,9 +46,9 @@ public:
 	std::string getName();
 	void setName( const std::string & s );
 	
-	bool getOutgoing( std::string & s );
+	bool getOutgoing( Network::Message & m );
 
-	void addOutputMessage( const std::string & s );
+	void addOutputMessage( const Network::Message & s );
 
 	void startThreads();
 
@@ -62,7 +62,7 @@ private:
 	pthread_t inputThread;
 	pthread_t outputThread;
 	pthread_mutex_t lock;
-	std::vector< std::string > outgoing;
+	std::vector< Network::Message > outgoing;
 };
 
 class ChatServer{
