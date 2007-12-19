@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "client.h"
 #include "util/keyboard.h"
 #include "init.h"
