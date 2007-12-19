@@ -46,7 +46,7 @@ struct Message{
 	Message & operator<<( std::string p );
 	Message & operator>>( int & x );
 
-	void send( Socket socket );
+	void send( Socket socket ) const;
 	void reset();
 
 	std::string path;

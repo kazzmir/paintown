@@ -157,12 +157,13 @@ static void * acceptConnections( void * server_ ){
 	return NULL;
 }
 
-ChatServer::ChatServer( Network::Socket socket ):
+ChatServer::ChatServer( const string & name, Network::Socket socket ):
 need_update( true ),
 socket( socket ),
 messages( 400, 350 ),
 focus( INPUT_BOX ),
-client_id( 1 ){
+client_id( 1 ),
+name( name ){
 	background = new Bitmap( Util::getDataPath() + "/paintown-title.png" );
 
 	Network::listen( socket );
@@ -186,16 +187,21 @@ static char lowerCase( const char * x ){
 	return x[0];
 }
 
+void ChatServer::sendMessage( const Network::Message & message ){
+	pthread_mutex_lock( &lock );
+	pthread_mutex_unlock( &lock );
+}
+
 void ChatServer::addMessage( const string & s, unsigned int id ){
 	pthread_mutex_lock( &lock );
 	messages.addMessage( s );
+	needUpdate();
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		Client * c = *it;
 		if ( c->getId() != id ){
 			c->addOutputMessage( s );
 		}
 	}
-	needUpdate();
 	pthread_mutex_unlock( &lock );
 }
 
@@ -217,14 +223,16 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 			input += " ";
 			needUpdate();
 		} else if ( key == Keyboard::Key_ENTER ){
-			addMessage( "Server: " + input, 0 );
+			addMessage( name + ": " + input, 0 );
 			input = "";
 			needUpdate();
 		}
 	}
 }
-	
+
 void ChatServer::killClient( Client * c ){
+	int id = c->getId();
+	string name = c->getName();
 	pthread_mutex_lock( &lock );
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
 		Client * client = *it;
@@ -245,6 +253,11 @@ void ChatServer::killClient( Client * c ){
 	}
 	needUpdate();
 	pthread_mutex_unlock( &lock );
+	addMessage( "** " + name + " quit", 0 );
+	Network::Message remove;
+	remove << REMOVE_BUDDY;
+	remove << id;
+	sendMessage( remove );
 }
 
 void ChatServer::logic( Keyboard & keyboard ){

@@ -37,7 +37,7 @@ Message::Message( Socket socket ){
 	}
 }
 
-void Message::send( Socket socket ){
+void Message::send( Socket socket ) const {
 	send16( socket, id );
 	sendBytes( socket, data, DATA_SIZE );
 	if ( path != "" ){

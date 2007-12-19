@@ -236,7 +236,7 @@ void networkServer(){
 			throw ReturnException();
 		}
 
-		ChatServer chat( server );
+		ChatServer chat( "server", server );
 		chat.run();
 	} catch ( const NetworkException & ne ){
 		Global::debug( 0 ) << "Network error: " << ne.getMessage() << endl;

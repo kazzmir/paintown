@@ -67,7 +67,7 @@ private:
 
 class ChatServer{
 public:
-	ChatServer( Network::Socket socket );
+	ChatServer( const std::string & name, Network::Socket socket );
 
 	virtual void run();
 
@@ -80,6 +80,7 @@ public:
 	void killClient( Client * c );
 
 	void addMessage( const std::string & s, unsigned int id );
+	void sendMessage( const Network::Message & message );
 	
 	void needUpdate();
 
@@ -110,6 +111,7 @@ protected:
 	pthread_mutex_t lock;
 	pthread_t acceptThread;
 	std::vector< Client * > clients;
+	std::string name;
 };
 
 #endif
