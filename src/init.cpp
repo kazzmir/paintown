@@ -66,7 +66,7 @@ static void registerSignals(){
 #endif
 }
 
-bool init( int gfx ){
+bool Global::init( int gfx ){
 
 	ostream & out = Global::debug( 0 );
 	out << "-- BEGIN init --" << endl;

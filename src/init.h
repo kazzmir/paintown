@@ -4,7 +4,6 @@
 // #include <allegro.h>
 #include <pthread.h>
 
-bool init( int gfx );
 
 /* global vars */
 
@@ -19,6 +18,8 @@ namespace Global{
 	
 	extern const int WINDOWED;
 	extern const int FULLSCREEN;
+
+	bool init( int gfx );
 }
 
 #define GFX_X 640

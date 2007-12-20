@@ -1658,7 +1658,7 @@ int paintown_main( int argc, char ** argv ){
 
 	TimeDifference diff;
 	diff.startTime();
-	if ( ! init( gfx ) ){
+	if ( ! Global::init( gfx ) ){
 		Global::debug( 0 ) << "Could not initialize system" << endl;
 	}
 	diff.endTime();

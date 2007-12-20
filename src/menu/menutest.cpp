@@ -85,7 +85,7 @@ int main( int argc, char ** argv ){
 		}
 	}
 	
-	if ( ! init( gfx ) ){
+	if ( ! Global::init( gfx ) ){
 		Global::debug( 0 ) << "Could not initialize system" << endl;
 	}
 	else MenuGlobals::setFullscreen((gfx == Global::FULLSCREEN ? true : false));

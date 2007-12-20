@@ -80,9 +80,13 @@ public:
 	void killClient( Client * c );
 
 	void addMessage( const std::string & s, unsigned int id );
-	void sendMessage( const Network::Message & message );
+	void sendMessage( const Network::Message & message, unsigned int id );
 	
 	void needUpdate();
+
+	inline const std::string getName() const {
+		return name;
+	}
 
 	virtual ~ChatServer();
 

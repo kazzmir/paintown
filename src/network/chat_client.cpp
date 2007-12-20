@@ -15,7 +15,38 @@ static void * serverInput( void * client_ ){
 	while ( ! done ){
 		try{
 			Network::Message message( client->getSocket() );
-			client->addMessage( message.path, 0 );
+			int x;
+			ChatType kind;
+			message >> x;
+			kind = (ChatType) x;
+			switch ( kind ){
+				case ADD_MESSAGE : {
+					client->addMessage( message.path, 0 );
+					break;
+				}
+				case CHANGE_NAME : {
+					int id;
+					string name;
+					message >> id;
+					name = message.path;
+					client->changeName( id, name );
+					break;
+				}
+				case REMOVE_BUDDY : {
+					int id;
+					message >> id;
+					client->removeBuddy( id );
+					break;
+				}
+				case ADD_BUDDY : {
+					int id;
+					string name;
+					message >> id;
+					name = message.path;
+					client->addBuddy( id, name );
+					break;
+				}
+			}
 		} catch ( const Network::NetworkException & e ){
 			Global::debug( 0 ) << "Input thread died" << endl;
 			done = true;
@@ -55,6 +86,42 @@ Focus ChatClient::nextFocus( Focus f ){
 		case QUIT : return INPUT_BOX;
 		default : return INPUT_BOX;
 	}
+}
+	
+void ChatClient::addBuddy( int id, const std::string & s ){
+	Buddy b;
+	b.id = id;
+	b.name = s;
+	pthread_mutex_lock( &lock );
+	buddies.push_back( b );
+	needUpdate();
+	pthread_mutex_unlock( &lock );
+}
+	
+void ChatClient::changeName( int id, const std::string & s ){
+	pthread_mutex_lock( &lock );
+	for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
+		Buddy & b = *it;
+		if ( b.id == id ){
+			b.name = s;
+		}
+	}
+	needUpdate();
+	pthread_mutex_unlock( &lock );
+}
+
+void ChatClient::removeBuddy( int id ){
+	pthread_mutex_lock( &lock );
+	for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); ){
+		const Buddy & b = *it;
+		if ( b.id == id ){
+			it = buddies.erase( it );
+		} else {
+			it ++;
+		}
+	}
+	needUpdate();
+	pthread_mutex_unlock( &lock );
 }
 
 void ChatClient::addMessage( const string & s, unsigned int id ){
@@ -166,6 +233,22 @@ void ChatClient::drawInputBox( int x, int y, const Bitmap & work ){
 	font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
 
 }
+
+void ChatClient::drawBuddies( const Bitmap & area, int x, int y, const Font & font ){
+	Bitmap buddyList( area, x, y, GFX_X - x - 5, 200 );
+	buddyList.drawingMode( Bitmap::MODE_TRANS );
+	Bitmap::transBlender( 0, 0, 0, 128 );
+	buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+	buddyList.drawingMode( Bitmap::MODE_SOLID );
+	buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
+	int fy = 1;
+	for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
+		Buddy & buddy = *it;
+		const string & name = buddy.name;
+		font.printf( 1, fy, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
+		fy += font.getHeight();
+	}
+}
 	
 void ChatClient::draw( const Bitmap & work ){
 	int start_x = 20;
@@ -174,6 +257,7 @@ void ChatClient::draw( const Bitmap & work ){
 	background->Blit( work );
 	messages.draw( start_x, start_y, work, font );
 	drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
+	drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
 	need_update = false;
 }
 	

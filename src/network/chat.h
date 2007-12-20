@@ -1,8 +1,11 @@
 #ifndef _paintown_chat_stuff_h
 #define _paintown_chat_stuff_h
 
-#define CHANGE_NAME 1
-#define ADD_MESSAGE 2
-#define REMOVE_BUDDY 3
+enum ChatType{
+	CHANGE_NAME = 1,
+	ADD_MESSAGE,
+	REMOVE_BUDDY,
+	ADD_BUDDY,
+};
 
 #endif

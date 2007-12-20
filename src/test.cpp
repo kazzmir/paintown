@@ -773,7 +773,7 @@ string chooseCharacter(){
 }
 
 int main(){
-	init( GFX_AUTODETECT_WINDOWED );
+	Global::init( GFX_AUTODETECT_WINDOWED );
 
 	string next = chooseCharacter();
 	cout << "Next = " << next << endl;

@@ -66,6 +66,8 @@ static void * clientInput( void * client_ ){
 			message >> type;
 			switch ( type ){
 				case CHANGE_NAME : {
+					message << client->getId();
+					client->getServer()->sendMessage( message, client->getId() );
 					client->setName( message.path );
 					client->getServer()->needUpdate();
 					break;
@@ -96,7 +98,7 @@ static void * clientOutput( void * client_ ){
 		Network::Message message;
 		done = ! client->isAlive();
 		if ( client->getOutgoing( message ) != false ){
-			Global::debug( 0 ) << "Sending a message to " << client->getId() << endl;
+			Global::debug( 1 ) << "Sending a message to " << client->getId() << endl;
 			try{
 				/*
 				Network::Message net;
@@ -175,9 +177,35 @@ name( name ){
 }
 
 void ChatServer::addConnection( Network::Socket s ){
-	pthread_mutex_lock( &lock );
 	Client * client = new Client( s, this, clientId() );
-	Global::debug( 0 ) << "Adding client " << client->getId() << endl;
+
+	{
+		Network::Message message;
+		message << ADD_BUDDY;
+		message << 0;
+		message.path = getName();
+		client->addOutputMessage( message );
+	}
+
+	pthread_mutex_lock( &lock );
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * c = *it;
+		Network::Message message;
+		message << ADD_BUDDY;
+		message << c->getId();
+		message.path = c->getName();
+		client->addOutputMessage( message );
+	}
+	pthread_mutex_unlock( &lock );
+
+	Global::debug( 1 ) << "Adding client " << client->getId() << endl;
+
+	Network::Message message;
+	message << ADD_BUDDY;
+	message << client->getId();
+	sendMessage( message, 0 );
+
+	pthread_mutex_lock( &lock );
 	clients.push_back( client );
 	pthread_mutex_unlock( &lock );
 	client->startThreads();
@@ -190,8 +218,14 @@ static char lowerCase( const char * x ){
 	return x[0];
 }
 
-void ChatServer::sendMessage( const Network::Message & message ){
+void ChatServer::sendMessage( const Network::Message & message, unsigned int id ){
 	pthread_mutex_lock( &lock );
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * c = *it;
+		if ( c->getId() != id ){
+			c->addOutputMessage( message );
+		}
+	}
 	pthread_mutex_unlock( &lock );
 }
 
@@ -202,13 +236,17 @@ void ChatServer::addMessage( const string & s, unsigned int id ){
 	pthread_mutex_lock( &lock );
 	messages.addMessage( s );
 	needUpdate();
+	pthread_mutex_unlock( &lock );
+
+	sendMessage( message, id );
+	/*
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		Client * c = *it;
 		if ( c->getId() != id ){
 			c->addOutputMessage( message );
 		}
 	}
-	pthread_mutex_unlock( &lock );
+	*/
 }
 
 void ChatServer::handleInput( Keyboard & keyboard ){
@@ -263,7 +301,7 @@ void ChatServer::killClient( Client * c ){
 	Network::Message remove;
 	remove << REMOVE_BUDDY;
 	remove << id;
-	sendMessage( remove );
+	sendMessage( remove, 0 );
 }
 
 void ChatServer::logic( Keyboard & keyboard ){
