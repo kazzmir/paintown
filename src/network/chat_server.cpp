@@ -84,7 +84,9 @@ static void * clientInput( void * client_ ){
 		}
 	}
 	
+	/* this is not thread safe with the output client thread */
 	if ( client->isAlive() ){
+		Global::debug( 0 ) << "Input thread killing client" << endl;
 		client->getServer()->killClient( client );
 	}
 
@@ -115,7 +117,9 @@ static void * clientOutput( void * client_ ){
 		}
 	}
 
+	/* this is not thread safe with the input client thread */
 	if ( client->isAlive() ){
+		Global::debug( 0 ) << "Output thread killing client" << endl;
 		client->getServer()->killClient( client );
 	}
 
@@ -284,7 +288,10 @@ void ChatServer::killClient( Client * c ){
 			Global::debug( 0 ) << "Killing socket" << endl;
 			c->kill();
 			Network::close( c->getSocket() );
-			Global::debug( 0 ) << "Waiting for input thread to die" << endl;
+			/* the client thread that called killClient will wait for
+			 * itself to die, but pthreads won't deadlock on join
+			 */
+			Global::debug( 0 ) << "Waiting for input thread to die " << c->getInputThread() << endl;
 			pthread_join( c->getInputThread(), NULL );
 			Global::debug( 0 ) << "Waiting for output thread to die" << endl;
 			pthread_join( c->getOutputThread(), NULL );
