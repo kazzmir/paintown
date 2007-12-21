@@ -1007,6 +1007,7 @@ static void setupControls( controls * player, int left, int right, int up, int d
 	}
 }
 
+#if 0
 static void networkClient(){
 	
 	Network::networkClient();
@@ -1076,6 +1077,7 @@ static void networkClient(){
 		Global::debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
 	}
 }
+#endif
 
 static bool titleScreen(){
 	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
@@ -1484,7 +1486,7 @@ static bool titleScreen(){
 
 			case MAIN_NETWORK_CLIENT : {
 				try{
-					networkClient();
+					Network::networkClient();
 					key.wait();
 				} catch ( const ReturnException & e ){
 					key.wait();

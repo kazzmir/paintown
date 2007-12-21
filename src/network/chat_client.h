@@ -36,9 +36,9 @@ public:
 	void changeName( int id, const std::string & s );
 	void addBuddy( int id, const std::string & s );
 	void finish();
+	bool isFinished();
 
 protected:
-	bool isFinished();
 	void killInputThread();
 	void logic( Keyboard & keyboard );
 	Focus nextFocus( Focus f );

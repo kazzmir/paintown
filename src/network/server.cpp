@@ -59,11 +59,88 @@ static void networkSendLevel( const vector< NLsocket > & sockets, string level )
 }
 #endif
 
-/*
 static const string selectLevelSet( const string & base ) throw( ReturnException ){
-	return "";
+	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
+	int fontY = 20;
+	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, fontY );
+	vector< string > possible = Util::getFiles( base + "/", "*.txt" );
+	if ( possible.size() == 0 ){
+		return "no-files!!!";
+	}
+
+	/*
+	for ( vector< string >::iterator it = possible.begin(); it != possible.end(); it++ ){
+		string & s = *it;
+		s.insert( 0, base + "/" );
+	}
+	*/
+	int choose = 0;
+
+	font.printf( 180, (int)(200 - fontY * 1.2), Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Select a set of levels to play", 0 );
+	for ( unsigned int i = 0; i < possible.size(); i++ ){
+		int yellow = Bitmap::makeColor( 255, 255, 0 );
+		int white = Bitmap::makeColor( 255, 255, 255 );
+		unsigned int color = i == (unsigned) choose ? yellow : white;
+		font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, possible[ i ], 0 );
+	}
+
+	Keyboard key;
+	bool done = false;
+
+	int LAZY_KEY_DELAY = 200;
+	key.setDelay( Keyboard::Key_UP, LAZY_KEY_DELAY );
+	key.setDelay( Keyboard::Key_DOWN, LAZY_KEY_DELAY );
+	Global::speed_counter = 0;
+
+	while ( ! done ){
+		
+		key.poll();
+		bool draw = false;
+		if ( Global::speed_counter > 0 ){
+			double think = Global::speed_counter;
+
+			while ( think > 0 ){
+				think--;
+
+				if ( key[ Keyboard::Key_UP ] ){
+					draw = true;
+					choose = (choose - 1 + possible.size()) % possible.size();
+				}
+
+				if ( key[ Keyboard::Key_DOWN ] ){
+					draw = true;
+					choose = (choose + 1 + possible.size()) % possible.size();
+				}
+
+				if ( key[ Keyboard::Key_ENTER ] ){
+					return possible[ choose ];
+				}
+
+				if ( key[ Keyboard::Key_ESC ] ){
+					throw ReturnException();
+				}
+			}
+
+			Global::speed_counter = 0;
+		}
+
+		if ( draw ){
+			for ( unsigned int i = 0; i < possible.size(); i++ ){
+				int yellow = Bitmap::makeColor( 255, 255, 0 );
+				int white = Bitmap::makeColor( 255, 255, 255 );
+				unsigned int color = i == (unsigned) choose ? yellow : white;
+				font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, possible[ i ], 0 );
+			}		
+		}
+		
+		while ( Global::speed_counter == 0 ){
+			Util::rest( 1 );
+			key.poll();
+		}
+	}
+
+	return "nothing-selected";
 }
-*/
 
 static int getServerPort(){
 	const int drawY = 160;
@@ -220,6 +297,43 @@ static void networkGame( const vector< Object * > & players, const string & leve
 #endif
 
 static void playGame( const vector< Network::Socket > & sockets ){
+	vector< Object * > players;
+	try{
+		Object * player = selectPlayer( false, "Pick a player" );
+		players.push_back( player );
+		string level = selectLevelSet( Util::getDataPath() + "/levels" );
+
+		int id = 1;
+		player->setId( id );
+		id += 1;
+		for ( vector< Network::Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+			const Network::Socket & socket = *it;
+			Network::Message message( socket );
+			int type;
+			message >> type;
+			if ( type == World::CREATE_CHARACTER ){
+				Character * client_character = new NetworkCharacter( Util::getDataPath() + message.path, ALLIANCE_PLAYER );
+				client_character->setLives( 1 );
+				client_character->setId( id );
+				Network::Message clientId;
+				clientId << World::SET_ID;
+				clientId << id;
+				clientId.send( socket );
+				id += 1;
+			} else {
+				Global::debug( 0 ) << "[server] Got a bogus message: " << type << endl;
+			}
+		}
+
+	} catch ( const LoadException & le ){
+		Global::debug( 0 ) << "[server] Load exception: " + le.getReason() << endl;
+	} catch ( const ReturnException & re ){
+	} catch ( const NetworkException & ne ){
+		Global::debug( 0 ) << "[server] Network excetion: " + ne.getMessage() << endl;
+	}
+	for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+		delete *it;
+	}
 }
 
 void networkServer(){

@@ -5,6 +5,9 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "util/font.h"
+#include "world.h"
+#include "object/character.h"
+#include "select_player.h"
 #include "return_exception.h"
 #include "chat_client.h"
 #include "network.h"
@@ -14,6 +17,31 @@
 using namespace std;
 
 namespace Network{
+
+static void playGame( Socket socket ){
+	Character * player = (Character *) selectPlayer( false, "Pick a player" );
+	string path = player->getPath();
+	path.erase( 0, Util::getDataPath().length() );
+
+	/* send the path of the chosen player */
+	Network::Message create;
+	create << World::CREATE_CHARACTER;
+	create.path = path;
+	create.send( socket );
+
+	/* get the id from the server */
+	Network::Message myid( socket );
+	int type;
+	myid >> type;
+	if ( type == World::SET_ID ){
+		int id;
+		myid >> id;
+		player->setId( id );
+		Global::debug( 0 ) << "Client id is " << id << endl;
+	} else {
+		Global::debug( 0 ) << "Bogus message, expected SET_ID: " << type << endl;
+	}
+}
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
 	copy.Blit( area );
@@ -113,6 +141,7 @@ static const char * getANumber(){
 	}
 }
 
+
 void networkClient(){
 	Global::showTitleScreen();
 	Global::speed_counter = 0;
@@ -188,6 +217,9 @@ void networkClient(){
 							Network::Socket socket = Network::connect( host, porti );
 							ChatClient chat( socket, name );
 							chat.run();
+							if ( chat.isFinished() ){
+								playGame( socket );
+							}
 							Network::close( socket );
 						} catch ( const NetworkException & e ){
 							popup( font, e.getMessage() );

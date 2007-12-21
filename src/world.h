@@ -85,6 +85,8 @@ public:
 		NEXT_BLOCK,
 		FINISH,
 		REMOVE,
+		SET_ID,
+		LOAD_LEVEL,
 	};
 
 };
