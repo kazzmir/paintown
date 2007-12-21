@@ -38,6 +38,10 @@ static void * serverInput( void * client_ ){
 					client->removeBuddy( id );
 					break;
 				}
+				case START_THE_GAME : {
+					/* shut down threads and prepare to play */
+					break;
+				}
 				case ADD_BUDDY : {
 					int id;
 					string name;

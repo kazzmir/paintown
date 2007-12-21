@@ -6,6 +6,7 @@ enum ChatType{
 	ADD_MESSAGE,
 	REMOVE_BUDDY,
 	ADD_BUDDY,
+	START_THE_GAME,
 };
 
 #endif

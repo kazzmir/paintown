@@ -14,8 +14,6 @@
 
 using namespace std;
 
-static const char * DEFAULT_FONT = "/fonts/arial.ttf";
-
 Client::Client( Network::Socket socket, ChatServer * server, unsigned int id ):
 socket( socket ),
 server( server ),
@@ -84,8 +82,7 @@ static void * clientInput( void * client_ ){
 		}
 	}
 	
-	/* this is not thread safe with the output client thread */
-	if ( client->isAlive() ){
+	if ( client->canKill() ){
 		Global::debug( 0 ) << "Input thread killing client" << endl;
 		client->getServer()->killClient( client );
 	}
@@ -117,8 +114,7 @@ static void * clientOutput( void * client_ ){
 		}
 	}
 
-	/* this is not thread safe with the input client thread */
-	if ( client->isAlive() ){
+	if ( client->canKill() ){
 		Global::debug( 0 ) << "Output thread killing client" << endl;
 		client->getServer()->killClient( client );
 	}
@@ -126,6 +122,15 @@ static void * clientOutput( void * client_ ){
 	return NULL;
 }
 	
+bool Client::canKill(){
+	bool f;
+	pthread_mutex_lock( &lock );
+	f = alive;
+	alive = false;
+	pthread_mutex_unlock( &lock );
+	return f;
+}
+
 bool Client::getOutgoing( Network::Message & m ){
 	bool has;
 	pthread_mutex_lock( &lock );
@@ -159,6 +164,7 @@ static void * acceptConnections( void * server_ ){
 		} catch ( const Network::NoConnectionsPendingException & e ){
 		} catch ( const Network::NetworkException & e ){
 			Global::debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
+			done = true;
 		}
 		Util::rest( 1 );
 	}
@@ -191,6 +197,7 @@ void ChatServer::addConnection( Network::Socket s ){
 		client->addOutputMessage( message );
 	}
 
+	/*
 	pthread_mutex_lock( &lock );
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		Client * c = *it;
@@ -201,8 +208,11 @@ void ChatServer::addConnection( Network::Socket s ){
 		client->addOutputMessage( message );
 	}
 	pthread_mutex_unlock( &lock );
+	*/
 
 	Global::debug( 1 ) << "Adding client " << client->getId() << endl;
+
+	addMessage( "** A client joined", 0 );
 
 	Network::Message message;
 	message << ADD_BUDDY;
@@ -288,14 +298,18 @@ void ChatServer::killClient( Client * c ){
 			Global::debug( 0 ) << "Killing socket" << endl;
 			c->kill();
 			Network::close( c->getSocket() );
-			/* the client thread that called killClient will wait for
-			 * itself to die, but pthreads won't deadlock on join
+			/* It looks like the client that called killClient is waiting
+			 * for itself to exit but pthread_join won't block if the
+			 * argument is the same as the calling thread, so its ok.
 			 */
 			Global::debug( 0 ) << "Waiting for input thread to die " << c->getInputThread() << endl;
 			pthread_join( c->getInputThread(), NULL );
 			Global::debug( 0 ) << "Waiting for output thread to die" << endl;
 			pthread_join( c->getOutputThread(), NULL );
 			Global::debug( 0 ) << "Deleting client" << endl;
+			/* delete can be moved to the input/output thread exit part
+			 * if need be.
+			 */
 			delete client;
 			it = clients.erase( it );
 		} else {
@@ -322,6 +336,9 @@ void ChatServer::logic( Keyboard & keyboard ){
 			handleInput( keyboard );
 			break;
 		}
+		case START_GAME : {
+			break;
+		}
 		case QUIT : {
 			break;
 		}
@@ -334,7 +351,8 @@ void ChatServer::needUpdate(){
 	
 Focus ChatServer::nextFocus( Focus f ){
 	switch ( f ){
-		case INPUT_BOX : return QUIT;
+		case INPUT_BOX : return START_GAME;
+		case START_GAME : return QUIT;
 		case QUIT : return INPUT_BOX;
 		default : return INPUT_BOX;
 	}
@@ -345,7 +363,7 @@ bool ChatServer::needToDraw(){
 }
 
 void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
-	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 
 	work.drawingMode( Bitmap::MODE_TRANS );
 	Bitmap::transBlender( 0, 0, 0, 128 );
@@ -377,17 +395,27 @@ void ChatServer::drawBuddyList( int x, int y, const Bitmap & work, const Font & 
 		fy += font.getHeight();
 	}
 }
+	
+int ChatServer::focusColor( Focus f ){
+	if ( f == focus ){
+		return Bitmap::makeColor( 255, 255, 0 );
+	}
+	return Bitmap::makeColor( 255, 255, 255 );
+}
 
 void ChatServer::draw( const Bitmap & work ){
 	int start_x = 20;
 	int start_y = 20;
-	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 	background->Blit( work );
 	messages.draw( start_x, start_y, work, font );
 		
 	drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
 
 	drawBuddyList( start_x + messages.getWidth() + 10, start_y, work, font );
+
+	font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( START_GAME ), work, "Start the game", 0 );
+	font.printf( start_x + font.textLength( "Start the game" ) + 20, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( QUIT ), work, "Quit", 0 );
 
 	need_update = false;
 }

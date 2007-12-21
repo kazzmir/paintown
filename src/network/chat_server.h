@@ -11,6 +11,7 @@ class Keyboard;
 
 enum Focus{
 	INPUT_BOX,
+	START_GAME,
 	QUIT,
 };
 
@@ -42,6 +43,7 @@ public:
 
 	void kill();
 	bool isAlive();
+	bool canKill();
 
 	std::string getName();
 	void setName( const std::string & s );
@@ -99,6 +101,7 @@ protected:
 	void drawBuddyList( int x, int y, const Bitmap & work, const Font & font );
 	Focus nextFocus( Focus f );
 	void handleInput( Keyboard & keyboard );
+	int focusColor( Focus f );
 
 	inline const int clientId(){
 		return client_id++;

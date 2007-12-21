@@ -9,10 +9,6 @@ Messages::Messages( int width, int height ):
 width( width ),
 height( height ){
 }
-	
-void Messages::addMessage( const std::string & s ){
-	messages.push_back( s );
-}
 
 static vector< string > wrapStrings( const string & left, const string & right, const Font & font, int max, vector< string > accum ){
 	if ( left == "" ){
@@ -50,6 +46,10 @@ static int wrapPrint( const Bitmap & area, int y, int top, const Font & font, co
 	}
 }
 */
+
+void Messages::addMessage( const std::string & s ){
+	messages.push_back( s );
+}
 	
 void Messages::draw( int x, int y, const Bitmap & work, const Font & font ){
 	work.drawingMode( Bitmap::MODE_TRANS );
