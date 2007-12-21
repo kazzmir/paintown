@@ -35,8 +35,10 @@ public:
 	void removeBuddy( int id );
 	void changeName( int id, const std::string & s );
 	void addBuddy( int id, const std::string & s );
+	void finish();
 
 protected:
+	bool isFinished();
 	void killInputThread();
 	void logic( Keyboard & keyboard );
 	Focus nextFocus( Focus f );
@@ -59,6 +61,7 @@ private:
 	pthread_mutex_t lock;
 	pthread_t inputThread;
 	std::vector< Buddy > buddies;
+	bool finished;
 };
 
 #endif

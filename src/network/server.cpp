@@ -219,6 +219,9 @@ static void networkGame( const vector< Object * > & players, const string & leve
 }
 #endif
 
+static void playGame( const vector< Network::Socket > & sockets ){
+}
+
 void networkServer(){
 
 	// const int startingLives = 4;
@@ -238,6 +241,11 @@ void networkServer(){
 
 		ChatServer chat( "server", server );
 		chat.run();
+		vector< Network::Socket > sockets = chat.getConnectedClients();
+		if ( ! sockets.empty() ){
+			playGame( sockets );
+		}
+		Network::close( server );
 	} catch ( const NetworkException & ne ){
 		Global::debug( 0 ) << "Network error: " << ne.getMessage() << endl;
 	}

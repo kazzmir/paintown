@@ -75,6 +75,10 @@ static void * clientInput( void * client_ ){
 					client->getServer()->addMessage( client->getName() + ":" + message.path, client->getId() );
 					break;
 				}
+				case OK_TO_START : {
+					client->setOk();
+					break;
+				}
 			}
 			done = ! client->isAlive();
 		} catch ( const Network::NetworkException & e ){
@@ -332,6 +336,19 @@ void ChatServer::shutdownClientThreads(){
 		Global::debug( 0 ) << "Client " << c->getId() << " is done" << endl;
 	}
 }
+	
+vector< Network::Socket > ChatServer::getConnectedClients(){
+	vector< Network::Socket > sockets;
+
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * c = *it;
+		if ( c->isOk() ){
+			sockets.push_back( c->getSocket() );
+		}
+	}
+
+	return sockets;
+}
 
 void ChatServer::killAllClients(){
 	vector< Client * > all;
@@ -528,4 +545,7 @@ void ChatServer::run(){
 	
 ChatServer::~ChatServer(){
 	delete background;
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		delete *it;
+	}
 }

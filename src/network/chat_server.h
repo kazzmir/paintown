@@ -41,6 +41,14 @@ public:
 		return outputThread;
 	}
 
+	inline void setOk(){
+		ok = true;
+	}
+
+	inline bool isOk(){
+		return ok;
+	}
+
 	void kill();
 	bool isAlive();
 	bool canKill();
@@ -60,6 +68,8 @@ private:
 	ChatServer * server;
 	unsigned int id;
 	bool alive;
+	/* ok to use this client */
+	bool ok;
 	std::string name;
 	pthread_t inputThread;
 	pthread_t outputThread;
@@ -87,6 +97,8 @@ public:
 	void needUpdate();
 		
 	bool isAccepting();
+
+	vector< Network::Socket > getConnectedClients();
 
 	inline const std::string getName() const {
 		return name;

@@ -39,8 +39,13 @@ static void * serverInput( void * client_ ){
 					client->removeBuddy( id );
 					break;
 				}
+				case OK_TO_START : {
+					break;
+				}
 				case START_THE_GAME : {
 					/* shut down threads and prepare to play */
+					done = true;
+					client->finish();
 					break;
 				}
 				case ADD_BUDDY : {
@@ -65,7 +70,8 @@ ChatClient::ChatClient( Network::Socket socket, const string & name ):
 need_update( true ),
 messages( 400, 300 ),
 socket( socket ),
-focus( INPUT_BOX ){
+focus( INPUT_BOX ),
+finished( false ){
 	background = new Bitmap( Util::getDataPath() + "/paintown-title.png" );
 	pthread_mutex_init( &lock, NULL );
 
@@ -265,6 +271,20 @@ void ChatClient::draw( const Bitmap & work ){
 	drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
 	need_update = false;
 }
+			
+bool ChatClient::isFinished(){
+	bool b;
+	pthread_mutex_lock( &lock );
+	b = finished;
+	pthread_mutex_unlock( &lock );
+	return b;
+}
+
+void ChatClient::finish(){
+	pthread_mutex_lock( &lock );
+	finished = true;
+	pthread_mutex_unlock( &lock );
+}
 	
 void ChatClient::killInputThread(){
 	Global::debug( 0 ) << "Killing input socket" << endl;
@@ -292,6 +312,7 @@ void ChatClient::run(){
 			logic( keyboard );
 			think -= 1;
 			Global::speed_counter = 0;
+			done = isFinished();
 			if ( keyboard[ Keyboard::Key_ESC ] ){
 				kill = true;
 				done = true;
@@ -312,6 +333,10 @@ void ChatClient::run(){
 
 	if ( kill ){
 		killInputThread();
+	} else {
+		Network::Message message;
+		message << OK_TO_START;
+		message.send( getSocket() );
 	}
 }
 
