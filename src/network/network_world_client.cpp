@@ -35,11 +35,12 @@ static void * handleMessages( void * arg ){
 	return NULL;
 }
 	
-NetworkWorldClient::NetworkWorldClient( NLsocket server, const std::vector< Object * > & players, const string & path, unsigned int id, int screen_size ) throw ( LoadException ):
+NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, unsigned int id, int screen_size ) throw ( LoadException ):
 World( players, path, screen_size ),
 server( server ),
 world_finished( false ),
-id( id ){
+id( id ),
+running( true ){
 	objects.clear();
 	pthread_mutex_init( &message_mutex, NULL );
 	pthread_mutex_init( &running_mutex, NULL );

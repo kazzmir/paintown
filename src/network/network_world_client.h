@@ -9,7 +9,7 @@
 class NetworkWorldClient: public World{
 public:
 
-	NetworkWorldClient( NLsocket server, const std::vector< Object * > & players, const string & path, unsigned int id, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, unsigned int id, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void act();
 

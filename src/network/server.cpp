@@ -3,6 +3,7 @@
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "globals.h"
+#include "factory/font_render.h"
 #include "object/object.h"
 #include "object/character.h"
 #include "object/player.h"
@@ -21,7 +22,7 @@
 
 namespace Network{
 
-static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+// static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
 /*
 static void showTitleScreen(){
@@ -147,7 +148,7 @@ static int getServerPort(){
 	{
 		Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 		background.BlitToScreen();
-		const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+		const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 		font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port:", 0 );
 	}
 
@@ -201,7 +202,7 @@ static int getServerPort(){
 			}
 			pressed.clear();
 			work.clear();
-			const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+			const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 			font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
 			work.Blit( 100, drawY, *Bitmap::Screen );
 		}
@@ -296,26 +297,153 @@ static void networkGame( const vector< Object * > & players, const string & leve
 }
 #endif
 
-static void playGame( const vector< Network::Socket > & sockets ){
+static void sendToAll( const vector< Socket > & sockets, const Message & message ){
+	for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+		const Socket & socket = *it;
+		message.send( socket );
+	}
+}
+
+static Network::Message removeMessage( int id ){
+	Network::Message message;
+
+	message.id = 0;
+	message << World::REMOVE;
+	message << id;
+
+	return message;
+}
+
+static void playLevel( World & world, const vector< Object * > & players ){
+	Keyboard key;
+	
+	key.setDelay( Keyboard::Key_F2, 100 );
+	key.setDelay( Keyboard::Key_F12, 50 );
+
+	key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
+	key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
+	key.setDelay( Keyboard::Key_P, 100 );
+
+	key.setDelay( Keyboard::Key_F4, 200 );
+
+	key.setDelay( Keyboard::Key_F8, 300 );
+	
+	/* the game graphics are meant for 320x240 and will be stretched
+	 * to fit the screen
+	 */
+	Bitmap work( 320, 240 );
+	// Bitmap work( GFX_X, GFX_Y );
+	Bitmap screen_buffer( GFX_X, GFX_Y );
+
+	Global::speed_counter = 0;
+	Global::second_counter = 0;
+	int game_time = 100;
+	bool done = false;
+
+	double gameSpeed = 1.0;
+	
+	double runCounter = 0;
+	bool paused = false;
+	while ( ! done ){
+
+		bool draw = false;
+		key.poll();
+
+		if ( Global::speed_counter > 0 ){
+			if ( ! paused ){
+				runCounter += Global::speed_counter * gameSpeed;
+
+				while ( runCounter >= 1.0 ){
+					draw = true;
+					world.act();
+					runCounter -= 1.0;
+
+					for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+						Character * player = (Character *) *it;
+						if ( player->getHealth() <= 0 ){
+							if ( player->spawnTime() == 0 ){
+								player->deathReset();
+								world.addMessage( removeMessage( player->getId() ) );
+								world.addObject( player );
+								world.addMessage( player->getCreateMessage() );
+								world.addMessage( player->movedMessage() );
+								world.addMessage( player->animationMessage() );
+							}
+						}
+					}
+				}
+			}
+
+			Global::speed_counter = 0;
+		}
+		
+		while ( Global::second_counter > 0 ){
+			game_time--;
+			Global::second_counter--;
+			if ( game_time < 0 )
+				game_time = 0;
+		}
+	
+		if ( draw ){
+			world.draw( &work );
+
+			work.Stretch( screen_buffer );
+			FontRender * render = FontRender::getInstance();
+			render->render( &screen_buffer );
+	
+			// const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+
+			/* getX/Y move when the world is quaking */
+			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
+
+			/*
+			if ( key[ Keyboard::Key_F12 ] ){
+				string file = findNextFile( "scr.bmp" );
+				Global::debug( 2 ) << "Saved screenshot to " << file << endl;
+				work.save( file );
+			}
+			*/
+
+			work.clear();
+		}
+
+		while ( Global::speed_counter < 1 ){
+			Util::rest( 1 );
+			key.poll();
+		}
+
+		done |= key[ Keyboard::Key_ESC ] || world.finished();
+	}
+
+	if ( key[ Keyboard::Key_ESC ] ){
+		while ( key[ Keyboard::Key_ESC ] ){
+			key.poll();
+			Util::rest( 1 );
+		}
+	}
+}
+
+static void playGame( const vector< Socket > & sockets ){
 	vector< Object * > players;
 	try{
 		Object * player = selectPlayer( false, "Pick a player" );
 		players.push_back( player );
-		string level = selectLevelSet( Util::getDataPath() + "/levels" );
+		string levelSet = selectLevelSet( Util::getDataPath() + "/levels" );
 
 		int id = 1;
 		player->setId( id );
 		id += 1;
-		for ( vector< Network::Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-			const Network::Socket & socket = *it;
-			Network::Message message( socket );
+		for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+			const Socket & socket = *it;
+			Message message( socket );
 			int type;
 			message >> type;
 			if ( type == World::CREATE_CHARACTER ){
 				Character * client_character = new NetworkCharacter( Util::getDataPath() + message.path, ALLIANCE_PLAYER );
+				players.push_back( client_character );
 				client_character->setLives( 1 );
 				client_character->setId( id );
-				Network::Message clientId;
+				Message clientId;
 				clientId << World::SET_ID;
 				clientId << id;
 				clientId.send( socket );
@@ -323,6 +451,40 @@ static void playGame( const vector< Network::Socket > & sockets ){
 			} else {
 				Global::debug( 0 ) << "[server] Got a bogus message: " << type << endl;
 			}
+		}
+
+		for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+			Character * c = (Character *) *it;
+			string path = c->getPath();
+			path.erase( 0, Util::getDataPath().length() );
+			Message add;
+			add << World::CREATE_CHARACTER;
+			add << c->getId();
+			add.path = path;
+			sendToAll( sockets, add );
+		}
+
+		vector< string > levels = Level::readLevels( levelSet );
+		for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
+			string level = *it;
+			Message loadLevel;
+			loadLevel << World::LOAD_LEVEL;
+			loadLevel.path = level;
+			sendToAll( sockets, loadLevel );
+
+			for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+				Player * playerX = (Player *) *it;
+				playerX->setY( 200 );
+				/* setMoving(false) sets all velocities to 0 */
+				playerX->setMoving( false );
+				/* but the player is falling so set it back to true */
+				playerX->setMoving( true );
+
+				playerX->setStatus( Status_Falling );
+			}
+
+			NetworkWorld world( sockets, players, level );
+			playLevel( world, players );
 		}
 
 	} catch ( const LoadException & le ){

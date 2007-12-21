@@ -5,8 +5,11 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "util/font.h"
+#include "factory/font_render.h"
 #include "world.h"
 #include "object/character.h"
+#include "object/network_character.h"
+#include "network_world_client.h"
 #include "select_player.h"
 #include "return_exception.h"
 #include "chat_client.h"
@@ -18,28 +21,142 @@ using namespace std;
 
 namespace Network{
 
+static void playLevel( World & world, const vector< Object * > & players ){
+	Keyboard key;
+	/* the game graphics are meant for 320x240 and will be stretched
+	 * to fit the screen
+	 */
+	Bitmap work( 320, 240 );
+	// Bitmap work( GFX_X, GFX_Y );
+	Bitmap screen_buffer( GFX_X, GFX_Y );
+
+	Global::speed_counter = 0;
+	Global::second_counter = 0;
+	int game_time = 100;
+	bool done = false;
+
+	double gameSpeed = 1.0;
+	
+	double runCounter = 0;
+	bool paused = false;
+	while ( ! done ){
+
+		bool draw = false;
+		key.poll();
+
+		if ( Global::speed_counter > 0 ){
+			if ( ! paused ){
+				runCounter += Global::speed_counter * gameSpeed;
+
+				while ( runCounter >= 1.0 ){
+					draw = true;
+					world.act();
+					runCounter -= 1.0;
+				}
+			}
+
+			Global::speed_counter = 0;
+		}
+		
+		while ( Global::second_counter > 0 ){
+			game_time--;
+			Global::second_counter--;
+			if ( game_time < 0 )
+				game_time = 0;
+		}
+	
+		if ( draw ){
+			world.draw( &work );
+
+			work.Stretch( screen_buffer );
+			FontRender * render = FontRender::getInstance();
+			render->render( &screen_buffer );
+	
+			/* getX/Y move when the world is quaking */
+			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
+			work.clear();
+		}
+
+		while ( Global::speed_counter < 1 ){
+			Util::rest( 1 );
+			key.poll();
+		}
+
+		done |= key[ Keyboard::Key_ESC ] || world.finished();
+	}
+
+	if ( key[ Keyboard::Key_ESC ] ){
+		while ( key[ Keyboard::Key_ESC ] ){
+			key.poll();
+			Util::rest( 1 );
+		}
+	}
+}
+
+static bool uniqueId( const vector< Object * > & objs, unsigned int id ){
+	for ( vector< Object * >::const_iterator it = objs.begin(); it != objs.end(); it++ ){
+		Object * o = *it;
+		if ( o->getId() == id ){
+			return true;
+		}
+	}
+	return false;
+}
+
 static void playGame( Socket socket ){
-	Character * player = (Character *) selectPlayer( false, "Pick a player" );
-	string path = player->getPath();
-	path.erase( 0, Util::getDataPath().length() );
+	try{
+		Character * player = (Character *) selectPlayer( false, "Pick a player" );
+		string path = player->getPath();
+		path.erase( 0, Util::getDataPath().length() );
 
-	/* send the path of the chosen player */
-	Network::Message create;
-	create << World::CREATE_CHARACTER;
-	create.path = path;
-	create.send( socket );
+		/* send the path of the chosen player */
+		Message create;
+		create << World::CREATE_CHARACTER;
+		create.path = path;
+		create.send( socket );
 
-	/* get the id from the server */
-	Network::Message myid( socket );
-	int type;
-	myid >> type;
-	if ( type == World::SET_ID ){
-		int id;
-		myid >> id;
-		player->setId( id );
-		Global::debug( 0 ) << "Client id is " << id << endl;
-	} else {
-		Global::debug( 0 ) << "Bogus message, expected SET_ID: " << type << endl;
+		/* get the id from the server */
+		Message myid( socket );
+		int type;
+		myid >> type;
+		int client_id = -1;
+		if ( type == World::SET_ID ){
+			myid >> client_id;
+			player->setId( client_id );
+			Global::debug( 0 ) << "Client id is " << client_id << endl;
+		} else {
+			Global::debug( 0 ) << "Bogus message, expected SET_ID: " << type << endl;
+		}
+
+		vector< Object * > players;
+		players.push_back( player );
+
+		bool done = false;
+		while ( ! done ){
+			Message next( socket );
+			int type;
+			next >> type;
+			switch ( type ){
+				case World::CREATE_CHARACTER : {
+					int id;
+					next >> id;
+					if ( uniqueId( players, id ) ){
+						Character * c = new NetworkCharacter( Util::getDataPath() + next.path, ALLIANCE_PLAYER );
+						c->setId( id );
+						players.push_back( c );
+					}
+					break;
+				}
+				case World::LOAD_LEVEL : {
+					string level = next.path;
+					NetworkWorldClient world( socket, players, level, client_id );
+					playLevel( world, players );
+					break;
+				}
+			}
+		}
+	} catch ( const LoadException & le ){
+		Global::debug( 0 ) << "[client] Load exception: " + le.getReason();
 	}
 }
 
