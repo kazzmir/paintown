@@ -19,6 +19,7 @@ static void * serverInput( void * client_ ){
 			ChatType kind;
 			message >> x;
 			kind = (ChatType) x;
+			Global::debug( 1 ) << "Received message type " << kind << endl;
 			switch ( kind ){
 				case ADD_MESSAGE : {
 					client->addMessage( message.path, 0 );

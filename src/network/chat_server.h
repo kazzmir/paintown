@@ -85,6 +85,8 @@ public:
 	void sendMessage( const Network::Message & message, unsigned int id );
 	
 	void needUpdate();
+		
+	bool isAccepting();
 
 	inline const std::string getName() const {
 		return name;
@@ -93,7 +95,9 @@ public:
 	virtual ~ChatServer();
 
 protected:
-	void logic( Keyboard & keyboard );
+	void killAllClients();
+	void shutdownClientThreads();
+	bool logic( Keyboard & keyboard );
 	bool needToDraw();
 	void draw( const Bitmap & work );
 	
@@ -102,6 +106,7 @@ protected:
 	Focus nextFocus( Focus f );
 	void handleInput( Keyboard & keyboard );
 	int focusColor( Focus f );
+	void stopAccepting();
 
 	inline const int clientId(){
 		return client_id++;
@@ -119,6 +124,7 @@ protected:
 	pthread_t acceptThread;
 	std::vector< Client * > clients;
 	std::string name;
+	bool accepting;
 };
 
 #endif

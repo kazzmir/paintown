@@ -196,18 +196,23 @@ void init(){
 	nlInit();
 	nlSelectNetwork( NL_IP );
 	nlEnable( NL_BLOCKING_IO );
+	// nlDisable( NL_BLOCKING_IO );
 }
 
 void listen( Socket s ){
-		  nlListen( s );
+	nlListen( s );
 }
 
 Socket accept( Socket s ) throw( NetworkException ){
-		  Socket connection = nlAcceptConnection( s );
-		  if ( connection == NL_INVALID ){
-					 throw NetworkException("Could not accept connection");
-		  }
-		  return connection;
+	Socket connection = nlAcceptConnection( s );
+	if ( connection == NL_INVALID ){
+		if ( nlGetError() == NL_NO_PENDING ){
+			throw NoConnectionsPendingException();
+		}
+		throw NetworkException("Could not accept connection");
+	}
+	open_sockets.push_back( connection );
+	return connection;
 }
 
 void shutdown(){

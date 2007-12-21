@@ -58,8 +58,9 @@ static void * clientInput( void * client_ ){
 	bool done = false;
 	while ( ! done ){
 		try{
+			Global::debug( 1 ) << "Client " << client->getId() << " waiting for message" << endl;
 			Network::Message message( client->getSocket() );
-			Global::debug( 1 ) << "Got a message: '" << message.path << "'" << endl;
+			Global::debug( 1 ) << client->getId() << " Got a message: '" << message.path << "'" << endl;
 			int type;
 			message >> type;
 			switch ( type ){
@@ -81,6 +82,8 @@ static void * clientInput( void * client_ ){
 			done = true;
 		}
 	}
+
+	Global::debug( 1 ) << client->getId() << " is done" << endl;
 	
 	if ( client->canKill() ){
 		Global::debug( 0 ) << "Input thread killing client" << endl;
@@ -159,6 +162,8 @@ static void * acceptConnections( void * server_ ){
 	ChatServer * server = (ChatServer *) server_;
 	Network::Socket socket = server->getSocket();
 	while ( ! done ){
+		Global::debug( 0 ) << "Accept more connections" << endl;
+		done = ! server->isAccepting();
 		try{
 			server->addConnection( Network::accept( socket ) );
 		} catch ( const Network::NoConnectionsPendingException & e ){
@@ -178,12 +183,32 @@ socket( socket ),
 messages( 400, 350 ),
 focus( INPUT_BOX ),
 client_id( 1 ),
-name( name ){
+name( name ),
+accepting( true ){
 	background = new Bitmap( Util::getDataPath() + "/paintown-title.png" );
 
 	Network::listen( socket );
 	pthread_mutex_init( &lock, NULL );
 	pthread_create( &acceptThread, NULL, acceptConnections, this );
+}
+	
+bool ChatServer::isAccepting(){
+	bool f;
+	pthread_mutex_lock( &lock );
+	f = accepting;	
+	pthread_mutex_unlock( &lock );
+	return f;
+}
+
+void ChatServer::stopAccepting(){
+	Global::debug( 0 ) << "Stop accepting" << endl;
+	pthread_mutex_lock( &lock );
+	Network::close( getSocket() );
+	accepting = false;
+	pthread_mutex_unlock( &lock );
+	Global::debug( 0 ) << "Waiting for accepting thread to stop" << endl;
+	pthread_join( acceptThread, NULL );
+	Global::debug( 0 ) << "Not accepting any connections" << endl;
 }
 
 void ChatServer::addConnection( Network::Socket s ){
@@ -287,6 +312,36 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 		}
 	}
 }
+	
+void ChatServer::shutdownClientThreads(){
+	pthread_mutex_lock( &lock );
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * c = *it;
+		c->kill();
+	}
+	pthread_mutex_unlock( &lock );
+	Network::Message message;
+	message << START_THE_GAME;
+	sendMessage( message, 0 );
+
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * c = *it;
+		Global::debug( 0 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
+		pthread_join( c->getInputThread(), NULL );
+		pthread_join( c->getOutputThread(), NULL );
+		Global::debug( 0 ) << "Client " << c->getId() << " is done" << endl;
+	}
+}
+
+void ChatServer::killAllClients(){
+	vector< Client * > all;
+	pthread_mutex_lock( &lock );
+	all = clients;
+	pthread_mutex_unlock( &lock );
+	for ( vector< Client * >::iterator it = all.begin(); it != all.end(); it++ ){
+		killClient( *it );
+	}
+}
 
 void ChatServer::killClient( Client * c ){
 	int id = c->getId();
@@ -295,18 +350,19 @@ void ChatServer::killClient( Client * c ){
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
 		Client * client = *it;
 		if ( client == c ){
-			Global::debug( 0 ) << "Killing socket" << endl;
+			Global::debug( 1 ) << "Killing client " << c->getId() << endl;
 			c->kill();
+			Global::debug( 1 ) << "Closing client socket " << c->getSocket() << endl;
 			Network::close( c->getSocket() );
 			/* It looks like the client that called killClient is waiting
 			 * for itself to exit but pthread_join won't block if the
 			 * argument is the same as the calling thread, so its ok.
 			 */
-			Global::debug( 0 ) << "Waiting for input thread to die " << c->getInputThread() << endl;
+			Global::debug( 1 ) << "Waiting for input thread to die" << endl;
 			pthread_join( c->getInputThread(), NULL );
-			Global::debug( 0 ) << "Waiting for output thread to die" << endl;
+			Global::debug( 1 ) << "Waiting for output thread to die" << endl;
 			pthread_join( c->getOutputThread(), NULL );
-			Global::debug( 0 ) << "Deleting client" << endl;
+			Global::debug( 1 ) << "Deleting client" << endl;
 			/* delete can be moved to the input/output thread exit part
 			 * if need be.
 			 */
@@ -325,7 +381,7 @@ void ChatServer::killClient( Client * c ){
 	sendMessage( remove, 0 );
 }
 
-void ChatServer::logic( Keyboard & keyboard ){
+bool ChatServer::logic( Keyboard & keyboard ){
 	if ( keyboard[ Keyboard::Key_TAB ] ){
 		focus = nextFocus( focus );
 		needUpdate();
@@ -337,12 +393,20 @@ void ChatServer::logic( Keyboard & keyboard ){
 			break;
 		}
 		case START_GAME : {
+			if ( keyboard[ Keyboard::Key_ENTER ] ){
+				return true;
+			}
 			break;
 		}
 		case QUIT : {
+			if ( keyboard[ Keyboard::Key_ENTER ] ){
+				return true;
+			}
 			break;
 		}
 	}
+
+	return false;
 }
 	
 void ChatServer::needUpdate(){
@@ -434,10 +498,19 @@ void ChatServer::run(){
 		int think = Global::speed_counter;
 		while ( think > 0 ){
 			keyboard.poll();
-			logic( keyboard );
+			done = logic( keyboard );
 			think -= 1;
 			Global::speed_counter = 0;
-			done = keyboard[ Keyboard::Key_ESC ];
+			if ( keyboard[ Keyboard::Key_ESC ] || done && focus == QUIT ){
+				addMessage( "** Server quit", 0 );
+				stopAccepting();
+				killAllClients();
+				done = true;
+			} else if ( done && focus == START_GAME ){
+				stopAccepting();
+				shutdownClientThreads();
+				done = true;
+			}
 		}
 
 		if ( needToDraw() ){
