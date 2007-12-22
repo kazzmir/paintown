@@ -90,18 +90,26 @@ static string getHawkError(){
 }
 
 int16_t read16( NLsocket socket ){
+	uint8_t data[ sizeof(uint16_t) ];
+	readBytes( socket, data, sizeof(uint16_t) ); 
+	return *(uint16_t *)data;
+	/*
 	uint16_t b;
 	int read = nlRead( socket, &b, sizeof(int16_t) );
 	if ( read != sizeof(int16_t) ){
 		throw NetworkException( string("Could not read 16 bits.") + getHawkError() );
 	}
 	return b;
+	*/
 }
 
-void send16( NLsocket socket, int16_t length ){
+void send16( NLsocket socket, int16_t bytes ){
+	/*
 	if ( nlWrite( socket, &length, sizeof(int16_t) ) != sizeof(int16_t) ){
 		throw NetworkException( string("Could not send 16 bits.") + getHawkError() );
 	}
+	*/
+	sendBytes( socket, (uint8_t *) &bytes, sizeof(bytes) );
 }
 
 string readStr( NLsocket socket, const uint16_t length ){
