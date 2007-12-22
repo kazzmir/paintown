@@ -167,8 +167,9 @@ void Object::interpretMessage( Network::Message & message ){
 	switch ( type ){
 		case OBJECT_MOVED : {
 			int x, y, z, facing;
-			message >> x >> y >> z >> facing;
-			setX( x );
+			int xfrac;
+			message >> x >> xfrac >> y >> z >> facing;
+			setX( x + xfrac / 100.0 );
 			setY( y );
 			setZ( z );
 			setFacing( facing );
@@ -183,6 +184,8 @@ Network::Message Object::movedMessage(){
 	m.id = getId();
 	m << OBJECT_MOVED;
 	m << (int) getX();
+	/* include the decimal part of x */
+	m << (int) ((getX() - (int) getX()) * 100);
 	m << (int) getY();
 	m << (int) getZ();
 	m << getFacing();
