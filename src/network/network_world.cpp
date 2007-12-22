@@ -37,13 +37,17 @@ static void * handleMessages( void * arg ){
 NetworkWorld::NetworkWorld( const vector< NLsocket > & sockets, const vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
 World( players, path, screen_size ),
 sockets( sockets ),
-id( 3 ),
 sent_messages( 0 ),
 running( true ){
+	unsigned int max_id = 0;
 	for ( vector< PlayerTracker >::iterator it = this->players.begin(); it != this->players.end(); it++ ){
 		Object * object = it->player;
 		addMessage( object->getCreateMessage() );
+		if ( object->getId() > max_id ){
+			max_id = object->getId();
+		}
 	}
+	this->id = max_id + 1;
 
 	pthread_mutex_init( &message_mutex, NULL );
 	pthread_mutex_init( &running_mutex, NULL );
