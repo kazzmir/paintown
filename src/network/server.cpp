@@ -7,6 +7,7 @@
 #include "object/object.h"
 #include "object/character.h"
 #include "object/player.h"
+#include "loading.h"
 #include "init.h"
 #include "chat_server.h"
 #include "music.h"
@@ -30,16 +31,21 @@ static void showTitleScreen(){
 }
 */
 
+static void stopLoading( pthread_t thread ){
+	pthread_mutex_lock( &Global::loading_screen_mutex );
+	Global::done_loading = true;
+	pthread_mutex_unlock( &Global::loading_screen_mutex );
+
+	pthread_join( thread, NULL );
+}
+
+static void startLoading( pthread_t * thread ){
+	pthread_create( thread, NULL, loadingScreen, NULL );
+}
+
 #if 0
 static void fadeOut( const string & str ){
 	/* fill in */
-}
-
-static void startLoading( pthread_t * p ){
-	/* fill in */
-}
-
-static void stopLoading( pthread_t p ){
 }
 
 static int playLevel( const World & w, vector< Object * > players, int time ){
@@ -426,10 +432,14 @@ static void playLevel( World & world, const vector< Object * > & players ){
 
 static void playGame( const vector< Socket > & sockets ){
 	vector< Object * > players;
+	pthread_t loading_screen_thread;
 	try{
 		Object * player = selectPlayer( false, "Pick a player" );
 		players.push_back( player );
 		string levelSet = selectLevelSet( Util::getDataPath() + "/levels" );
+		
+
+		startLoading( &loading_screen_thread );
 
 		int id = 1;
 		player->setId( id );
@@ -486,6 +496,7 @@ static void playGame( const vector< Socket > & sockets ){
 
 			NetworkWorld world( sockets, players, level );
 			try{
+				stopLoading( loading_screen_thread );
 				playLevel( world, players );
 				world.stopRunning();
 				Message finish;
@@ -516,6 +527,7 @@ static void playGame( const vector< Socket > & sockets ){
 					Network::close( *it );
 				}
 			}
+			startLoading( &loading_screen_thread );
 		}
 
 	} catch ( const LoadException & le ){
@@ -527,6 +539,7 @@ static void playGame( const vector< Socket > & sockets ){
 	for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
 		delete *it;
 	}
+	stopLoading( loading_screen_thread );
 }
 
 void networkServer(){

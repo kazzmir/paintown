@@ -12,6 +12,7 @@
 #include "network_world_client.h"
 #include "select_player.h"
 #include "return_exception.h"
+#include "loading.h"
 #include "chat_client.h"
 #include "network.h"
 #include <string>
@@ -20,6 +21,18 @@
 using namespace std;
 
 namespace Network{
+
+static void stopLoading( pthread_t thread ){
+	pthread_mutex_lock( &Global::loading_screen_mutex );
+	Global::done_loading = true;
+	pthread_mutex_unlock( &Global::loading_screen_mutex );
+
+	pthread_join( thread, NULL );
+}
+
+static void startLoading( pthread_t * thread ){
+	pthread_create( thread, NULL, loadingScreen, NULL );
+}
 
 static void playLevel( World & world, const vector< Object * > & players ){
 	Keyboard key;
@@ -110,10 +123,13 @@ static bool uniqueId( const vector< Object * > & objs, unsigned int id ){
 }
 
 static void playGame( Socket socket ){
+	pthread_t loadingThread;
 	try{
 		Character * player = (Character *) selectPlayer( false, "Pick a player" );
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );
+	
+		startLoading( &loadingThread );
 
 		/* send the path of the chosen player */
 		Message create;
@@ -156,8 +172,10 @@ static void playGame( Socket socket ){
 				case World::LOAD_LEVEL : {
 					string level = next.path;
 					NetworkWorldClient world( socket, players, level, client_id );
+					stopLoading( loadingThread );
 					try{
 						playLevel( world, players );
+						startLoading( &loadingThread );
 						world.stopRunning();
 						Message ok;
 						ok << World::OK;
@@ -175,6 +193,8 @@ static void playGame( Socket socket ){
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "[client] Load exception: " + le.getReason();
 	}
+
+	stopLoading( loadingThread );
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
