@@ -61,20 +61,25 @@ running( true ){
 NetworkWorld::~NetworkWorld(){
 	stopRunning();
 
+	/*
 	for ( vector< pthread_t >::iterator it = threads.begin(); it != threads.end(); it++ ){
 		const pthread_t & thread = *it;
 		pthread_join( thread, NULL );
 	}
+	*/
 }
 	
 void NetworkWorld::addMessage( Network::Message m ){
+	pthread_mutex_lock( &message_mutex );
 	outgoing.push_back( m );
+	pthread_mutex_unlock( &message_mutex );
 }
 
 void NetworkWorld::addIncomingMessage( const Network::Message & message ){
 	pthread_mutex_lock( &message_mutex );
 	incoming.push_back( message );
 	pthread_mutex_unlock( &message_mutex );
+	addMessage( message );
 }
 	
 void NetworkWorld::stopRunning(){
@@ -90,7 +95,9 @@ bool NetworkWorld::isRunning(){
 	return b;
 }
 
-void NetworkWorld::sendMessage( const Network::Message & message, NLsocket socket ){
+void NetworkWorld::sendMessage( const Network::Message & message, Network::Socket socket ){
+	message.send( socket );
+	/*
 	Global::debug( 2 ) << "Sending message " << sent_messages << endl;
 	Global::debug( 2 ) << "Sending message to client" << endl;
 	Network::send16( socket, message.id );
@@ -104,6 +111,7 @@ void NetworkWorld::sendMessage( const Network::Message & message, NLsocket socke
 	} else {
 		Network::send16( socket, -1 );
 	}
+	*/
 }
 	
 Network::Message NetworkWorld::finishMessage(){
