@@ -226,7 +226,6 @@ void ChatServer::addConnection( Network::Socket s ){
 		client->addOutputMessage( message );
 	}
 
-	/*
 	pthread_mutex_lock( &lock );
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		Client * c = *it;
@@ -237,7 +236,6 @@ void ChatServer::addConnection( Network::Socket s ){
 		client->addOutputMessage( message );
 	}
 	pthread_mutex_unlock( &lock );
-	*/
 
 	Global::debug( 1 ) << "Adding client " << client->getId() << endl;
 
