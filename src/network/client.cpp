@@ -54,6 +54,9 @@ static void playLevel( World & world, const vector< Object * > & players ){
 					if ( world.finished() ){
 						return;
 					}
+					if ( key[ Keyboard::Key_ESC ] ){
+						throw ReturnException();
+					}
 					runCounter -= 1.0;
 				}
 			}
@@ -85,7 +88,7 @@ static void playLevel( World & world, const vector< Object * > & players ){
 			key.poll();
 		}
 
-		done |= key[ Keyboard::Key_ESC ] || world.finished();
+		done |= world.finished();
 	}
 
 	if ( key[ Keyboard::Key_ESC ] ){
