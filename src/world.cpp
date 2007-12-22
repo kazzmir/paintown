@@ -146,7 +146,7 @@ const bool World::isPlayer( Object * o ) const {
 		return false;
 }
 
-void World::addMessage( Network::Message m ){
+void World::addMessage( Network::Message m, Network::Socket from ){
 	/* nothing */
 }
 	

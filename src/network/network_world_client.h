@@ -24,7 +24,7 @@ public:
 	}
 	
 	virtual void doScene( int min_x, int max_x );
-	virtual void addMessage( Network::Message m );
+	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
 
 	virtual ~NetworkWorldClient();
 

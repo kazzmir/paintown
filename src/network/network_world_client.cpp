@@ -224,7 +224,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 	}
 }
 
-void NetworkWorldClient::addMessage( Network::Message m ){
+void NetworkWorldClient::addMessage( Network::Message m, Network::Socket from ){
 	if ( m.id == id ){
 		outgoing.push_back( m );
 	}

@@ -7,15 +7,21 @@
 #include <pthread.h>
 #include <vector>
 
+struct Packet{
+	Packet( const Network::Message & m, Network::Socket s ):message(m),socket(s){}
+	Network::Message message;
+	Network::Socket socket;
+};
+
 class NetworkWorld: public World{
 public:
 	NetworkWorld( const std::vector< NLsocket > & sockets, const std::vector< Object * > & players, const string & path, int screen_size = 320 ) throw ( LoadException );
 	
-	virtual void addMessage( Network::Message m );
+	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
 	virtual void act();
 	virtual void doScene( int min_x, int max_x );
 	
-	void addIncomingMessage( const Network::Message & message );
+	void addIncomingMessage( const Network::Message & message, Network::Socket from );
 
 	Network::Message finishMessage();
 
@@ -42,7 +48,7 @@ protected:
 
 private:
 	std::vector< NLsocket > sockets;
-	std::vector< Network::Message > outgoing;
+	std::vector< Packet > outgoing;
 	std::vector< Network::Message > incoming;
 	std::vector< pthread_t > threads;
 	unsigned int id;

@@ -21,7 +21,7 @@ static void * handleMessages( void * arg ){
 		while ( world->isRunning() ){
 			Network::Message m( socket );
 			// pthread_mutex_lock( lock );
-			world->addIncomingMessage( m );
+			world->addIncomingMessage( m, socket );
 			Global::debug( 2 ) << "Received path '" << m.path << "'" << endl;
 			// pthread_mutex_unlock( lock );
 		}
@@ -69,17 +69,18 @@ NetworkWorld::~NetworkWorld(){
 	*/
 }
 	
-void NetworkWorld::addMessage( Network::Message m ){
+void NetworkWorld::addMessage( Network::Message m, Network::Socket from ){
 	pthread_mutex_lock( &message_mutex );
-	outgoing.push_back( m );
+	Packet p( m, from );
+	outgoing.push_back( p );
 	pthread_mutex_unlock( &message_mutex );
 }
 
-void NetworkWorld::addIncomingMessage( const Network::Message & message ){
+void NetworkWorld::addIncomingMessage( const Network::Message & message, Network::Socket from ){
 	pthread_mutex_lock( &message_mutex );
 	incoming.push_back( message );
 	pthread_mutex_unlock( &message_mutex );
-	addMessage( message );
+	addMessage( message, from );
 }
 	
 void NetworkWorld::stopRunning(){
@@ -169,12 +170,15 @@ vector< Network::Message > NetworkWorld::getIncomingMessages(){
 }
 
 void NetworkWorld::flushOutgoing(){
-	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
-		Network::Message & m = *it;
+	for ( vector< Packet >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
+		Network::Message & m = (*it).message;
+		Network::Socket from = (*it).socket;
 		sent_messages += 1;
 		for ( vector< NLsocket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
 			try{
-				sendMessage( m, *socket );
+				if ( from != *socket ){
+					sendMessage( m, *socket );
+				}
 				socket++;
 			} catch ( const Network::NetworkException & ne ){
 				socket = sockets.erase( socket );
