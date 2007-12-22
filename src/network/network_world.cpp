@@ -155,14 +155,22 @@ vector< Network::Message > NetworkWorld::getIncomingMessages(){
 }
 
 void NetworkWorld::flushOutgoing(){
-	for ( vector< Packet >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
+	vector< Packet > packets;
+	pthread_mutex_lock( &message_mutex );
+	packets = outgoing;
+	outgoing.clear();
+	pthread_mutex_unlock( &message_mutex );
+
+	for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
 		Network::Message & m = (*it).message;
 		Network::Socket from = (*it).socket;
 		sent_messages += 1;
 		for ( vector< NLsocket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
 			try{
 				if ( from != *socket ){
+					Global::debug( 1 ) << "Send message " << sent_messages << " to " << *socket << endl;
 					sendMessage( m, *socket );
+					Global::debug( 1 ) << "Sent message" << endl;
 				}
 				socket++;
 			} catch ( const Network::NetworkException & ne ){
@@ -171,7 +179,6 @@ void NetworkWorld::flushOutgoing(){
 			}
 		}
 	}
-	outgoing.clear();
 }
 	
 void NetworkWorld::act(){

@@ -781,9 +781,12 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 				Global::debug( 0 ) << "Link is null. This cant happen." <<endl;
 				exit( 1 );
 			}
-			getLink()->setFacing( getOppositeFacing() );
-			getLink()->thrown();
-			getLink()->fall( 3.2, 5.0 );
+			Object * link = getLink();
+			link->setFacing( getOppositeFacing() );
+			link->thrown();
+			world->addMessage( link->movedMessage() );
+			world->addMessage( ((Character *)link)->fallMessage( 3.2, 5.0 ) );
+			link->fall( 3.2, 5.0 );
 			setStatus( Status_Ground );
 		}
 	}
