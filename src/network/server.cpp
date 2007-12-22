@@ -343,32 +343,33 @@ static void playLevel( World & world, const vector< Object * > & players ){
 	double gameSpeed = 1.0;
 	
 	double runCounter = 0;
-	bool paused = false;
 	while ( ! done ){
 
 		bool draw = false;
 		key.poll();
 
 		if ( Global::speed_counter > 0 ){
-			if ( ! paused ){
-				runCounter += Global::speed_counter * gameSpeed;
+			runCounter += Global::speed_counter * gameSpeed;
 
-				while ( runCounter >= 1.0 ){
-					draw = true;
-					world.act();
-					runCounter -= 1.0;
+			while ( runCounter >= 1.0 ){
+				draw = true;
+				world.act();
+				runCounter -= 1.0;
 
-					for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-						Character * player = (Character *) *it;
-						if ( player->getHealth() <= 0 ){
-							if ( player->spawnTime() == 0 ){
-								player->deathReset();
-								world.addMessage( removeMessage( player->getId() ) );
-								world.addObject( player );
-								world.addMessage( player->getCreateMessage() );
-								world.addMessage( player->movedMessage() );
-								world.addMessage( player->animationMessage() );
-							}
+				if ( key[ Keyboard::Key_ESC ] ){
+					throw ReturnException();
+				}
+
+				for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+					Character * player = (Character *) *it;
+					if ( player->getHealth() <= 0 ){
+						if ( player->spawnTime() == 0 ){
+							player->deathReset();
+							world.addMessage( removeMessage( player->getId() ) );
+							world.addObject( player );
+							world.addMessage( player->getCreateMessage() );
+							world.addMessage( player->movedMessage() );
+							world.addMessage( player->animationMessage() );
 						}
 					}
 				}
@@ -484,7 +485,37 @@ static void playGame( const vector< Socket > & sockets ){
 			}
 
 			NetworkWorld world( sockets, players, level );
-			playLevel( world, players );
+			try{
+				playLevel( world, players );
+				world.stopRunning();
+				Message finish;
+				finish << World::FINISH;
+				finish.id = 0;
+				Global::debug( 0 ) << "Sending finish" << endl;
+				sendToAll( sockets, finish );
+				Global::debug( 0 ) << "Sent finish" << endl;
+				
+				for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+					Socket s = *it;
+					bool done = false;
+					while ( ! done ){
+						Message ok( s );
+						int type;
+						ok >> type;
+						if ( type == World::OK ){
+							done = true;
+						}
+					}
+
+					Message ok;
+					ok << World::OK;
+					ok.send( s );
+				}
+			} catch ( const ReturnException & e ){
+				for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+					Network::close( *it );
+				}
+			}
 		}
 
 	} catch ( const LoadException & le ){

@@ -98,21 +98,6 @@ bool NetworkWorld::isRunning(){
 
 void NetworkWorld::sendMessage( const Network::Message & message, Network::Socket socket ){
 	message.send( socket );
-	/*
-	Global::debug( 2 ) << "Sending message " << sent_messages << endl;
-	Global::debug( 2 ) << "Sending message to client" << endl;
-	Network::send16( socket, message.id );
-	Global::debug( 2 ) << "Sent message id " << message.id << endl;
-	Network::sendBytes( socket, message.data, Network::DATA_SIZE );
-	if ( message.path != "" ){
-		Global::debug( 2 ) << "Send message length " << message.path.length() << endl;
-		Network::send16( socket, message.path.length() + 1 );
-		Global::debug( 2 ) << "Send path '" << message.path << "'" << endl;
-		Network::sendStr( socket, message.path );
-	} else {
-		Network::send16( socket, -1 );
-	}
-	*/
 }
 	
 Network::Message NetworkWorld::finishMessage(){

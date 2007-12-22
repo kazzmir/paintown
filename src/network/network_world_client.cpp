@@ -32,6 +32,8 @@ static void * handleMessages( void * arg ){
 		Global::debug( 0 ) << "Network exception: " << n.getMessage() << endl;
 	}
 
+	Global::debug( 0 ) << "Client input stopped" << endl;
+
 	return NULL;
 }
 	
@@ -202,6 +204,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				break;
 			}
 			case FINISH : {
+				Global::debug( 0 ) << "Received finish message" << endl;
 				world_finished = true;
 				break;
 			}
@@ -239,18 +242,7 @@ void NetworkWorldClient::doScene( int min_x, int max_x ){
 }
 
 void NetworkWorldClient::sendMessage( const Network::Message & message, NLsocket socket ){
-	Global::debug( 2 ) << "Sending message to client" << endl;
-	Network::send16( socket, message.id );
-	Global::debug( 2 ) << "Sent message id " << message.id << endl;
-	Network::sendBytes( socket, message.data, Network::DATA_SIZE );
-	if ( message.path != "" ){
-		Global::debug( 2 ) << "Send message length " << message.path.length() << endl;
-		Network::send16( socket, message.path.length() + 1 );
-		Global::debug( 2 ) << "Send path '" << message.path << "'" << endl;
-		Network::sendStr( socket, message.path );
-	} else {
-		Network::send16( socket, -1 );
-	}
+	message.send( socket );
 }
 
 void NetworkWorldClient::act(){
@@ -287,8 +279,13 @@ void NetworkWorldClient::act(){
 			lowest = it->min_x;
 		}
 		
+		/*
 		if ( player->getX() < it->min_x ){
 			player->setX( it->min_x );
+		}
+		*/
+		if ( player->getX() < 0 ){
+			player->setX( 0 );
 		}
 
 		if ( player->getX() > scene->getLimit() ){

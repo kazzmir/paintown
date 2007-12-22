@@ -51,6 +51,9 @@ static void playLevel( World & world, const vector< Object * > & players ){
 				while ( runCounter >= 1.0 ){
 					draw = true;
 					world.act();
+					if ( world.finished() ){
+						return;
+					}
 					runCounter -= 1.0;
 				}
 			}
@@ -150,7 +153,18 @@ static void playGame( Socket socket ){
 				case World::LOAD_LEVEL : {
 					string level = next.path;
 					NetworkWorldClient world( socket, players, level, client_id );
-					playLevel( world, players );
+					try{
+						playLevel( world, players );
+						world.stopRunning();
+						Message ok;
+						ok << World::OK;
+						/* yes, send it twice! */
+						ok.send( socket );
+						ok.send( socket );
+						Global::debug( 0 ) << "Sent ok" << endl;
+					} catch ( const ReturnException & e ){
+						Network::close( socket );
+					}
 					break;
 				}
 			}

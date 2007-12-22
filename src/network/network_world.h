@@ -28,6 +28,8 @@ public:
 	bool isRunning();
 
 	void flushOutgoing();
+	
+	void stopRunning();
 
 	virtual ~NetworkWorld();
 
@@ -38,7 +40,6 @@ protected:
 
 	Network::Message nextBlockMessage( int block );
 
-	void stopRunning();
 
 	inline unsigned int nextId(){
 		unsigned int i = id;

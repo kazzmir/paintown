@@ -86,6 +86,7 @@ public:
 		FINISH,
 		REMOVE,
 		SET_ID,
+		OK,
 		LOAD_LEVEL,
 	};
 

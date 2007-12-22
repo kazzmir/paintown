@@ -300,6 +300,9 @@ void World::act(){
 				lowest = it->min_x;
 			}
 			
+			if ( player->getX() < 0 ){
+				player->setX( 0 );
+			}
 			/*
 			if ( player->getX() < it->min_x ){
 				player->setX( it->min_x );
