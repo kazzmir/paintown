@@ -89,7 +89,7 @@ public:
 		SET_ID,
 		OK,
 		LOAD_LEVEL,
-		DELETE, /* remove object and delete it */
+		DELETE_OBJ, /* remove object and delete it */
 	};
 
 };

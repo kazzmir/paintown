@@ -234,7 +234,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				scene->advanceBlocks( block );
 				break;
 			}
-			case DELETE : {
+			case DELETE_OBJ : {
 				int id;
 				message >> id;
 				Object * o = removeObject( id );

@@ -163,7 +163,7 @@ Network::Message World::createBangMessage( int x, int y, int z ){
 Network::Message World::deleteMessage( unsigned int id ){
 	Network::Message message;
 	message.id = 0;
-	message << REMOVE;
+	message << DELETE_OBJ;
 	message << id;
 
 	return message;
