@@ -1,6 +1,6 @@
 Name "Paintown"
 
-OutFile "paintown-win32-2.1.exe"
+OutFile "paintown-win32-2.2.exe"
 
 InstallDir $PROGRAMFILES\Paintown
 
