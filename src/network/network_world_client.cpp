@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "network_world_client.h"
 #include "network.h"
 #include "level/scene.h"
