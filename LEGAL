@@ -14,7 +14,7 @@ data/music/experience.xm - elwood
 data/music/fall.xm - elwood
 data/music/kajahtaa.xm - cube
 data/music/kilimanz.mod - ???
-data/blanka/spark.wav - http://freesound.iua.upf.edu/samplesViewSingle.php?id=30933
+data/players/blanka/spark.wav - http://freesound.iua.upf.edu/samplesViewSingle.php?id=30933
 
 ** Creative Commons License ** ripped from http://freesound.iua.upf.edu/legal.php
 
