@@ -53,6 +53,7 @@ public:
 
 protected:
 
+	Network::Message deleteMessage( unsigned int id );
 	void loadLevel( const std::string & path ) throw( LoadException );
 
 	virtual void deleteObjects( std::vector< Object * > * objects );
@@ -84,10 +85,11 @@ public:
 		CREATE_PROJECTILE,
 		NEXT_BLOCK,
 		FINISH,
-		REMOVE,
+		REMOVE, /* remove object from world */
 		SET_ID,
 		OK,
 		LOAD_LEVEL,
+		DELETE, /* remove object and delete it */
 	};
 
 };

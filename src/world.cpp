@@ -159,6 +159,15 @@ Network::Message World::createBangMessage( int x, int y, int z ){
 
 	return message;
 }
+	
+Network::Message World::deleteMessage( unsigned int id ){
+	Network::Message message;
+	message.id = 0;
+	message << REMOVE;
+	message << id;
+
+	return message;
+}
 
 void World::doLogic(){
 
@@ -233,6 +242,9 @@ void World::doLogic(){
 				Object * const o = *it;
 				if ( o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision( cplayer ) ){
 					o->touch( cplayer );
+					addMessage( deleteMessage( o->getId() ) );
+					/* hack */
+					addMessage( cplayer->healthMessage() );
 					delete o;
 					it = objects.erase( it );
 				} else ++it;

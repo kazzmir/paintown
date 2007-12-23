@@ -39,7 +39,7 @@ protected:
 	void handleCreateCat( Network::Message & message );
 	void handleCreateBang( Network::Message & message );
 	void handleCreateItem( Network::Message & message );
-	void removeObject( unsigned int id );
+	Object * removeObject( unsigned int id );
 
 	void sendMessage( const Network::Message & message, NLsocket socket );
 

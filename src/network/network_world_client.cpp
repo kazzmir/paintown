@@ -146,6 +146,7 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
 		}
 
 		cat->setY( 0 );
+		cat->setId( (unsigned int) -1 );
 		addObject( cat );
 	}
 }
@@ -154,21 +155,22 @@ const bool NetworkWorldClient::finished() const {
 	return world_finished;
 }
 
-void NetworkWorldClient::removeObject( unsigned int id ){
+Object * NetworkWorldClient::removeObject( unsigned int id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 		Object * o = *it;
 		if ( o->getId() == id ){
 			it = objects.erase( it );
+			return o;
 		} else {
 			it++;
 		}
 	}
+	return NULL;
 }
 
 void NetworkWorldClient::handleCreateItem( Network::Message & message ){
 	int id;
 	message >> id;
-	Global::debug( 0 ) << "Create item " << id << endl;
 	if ( uniqueObject( id ) ){
 		int x, z;
 		int value;
@@ -188,7 +190,7 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
 		}
 
 		item->setY( 0 );
-		Global::debug( 0 ) << "Adding item at " << x << " " << z << endl;
+		item->setId( id );
 		addObject( item );
 	}
 }
@@ -232,6 +234,15 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				scene->advanceBlocks( block );
 				break;
 			}
+			case DELETE : {
+				int id;
+				message >> id;
+				Object * o = removeObject( id );
+				if ( o != NULL ){
+					delete o;
+				}
+				break;
+			}
 			case REMOVE : {
 				int id;
 				message >> id;
@@ -239,7 +250,8 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				break;
 			}
 			case FINISH : {
-				Global::debug( 0 ) << "Received finish message" << endl;
+
+				Global::debug( 1 ) << "Received finish message" << endl;
 				world_finished = true;
 				break;
 			}

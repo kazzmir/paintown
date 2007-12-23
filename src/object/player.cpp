@@ -608,6 +608,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 					if ( o->isGettable() && fabs((double)(o->getRX() - getRX())) < 25 && ZDistance( o ) <= get->getMinZDistance() ){
 						final = get;
 						setStatus( Status_Get );
+						world->addMessage( movedMessage() );
 					}
 				}
 				possible_animations.erase( get );
