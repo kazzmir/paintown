@@ -42,23 +42,6 @@ static void addMenu(Menu *m) throw( LoadException )
 	else throw LoadException("A menu by the name of \""+m->getName()+"\" already exists!"); 
 }
 
-RectArea::RectArea() : x(0), y(0), width(0), height(0), body(0), bodyAlpha(0), border(0), borderAlpha(0)
-{
-}
-
-RectArea::RectArea(int x, int y, int w, int h)
-{
-	this->x  = x;
-	this->y  = y;
-	this->width  = width;
-	this->height  = height;
-}
-
-bool RectArea::empty()
-{
-	return (x==0 && y==0 && width==0 && height==0);
-}
-
 Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(24), fontHeight(24), _menuflags(0),longestTextLength(0), _name("")
 {
 	if(!work)work = new Bitmap(Bitmap::Screen->getWidth(), Bitmap::Screen->getHeight()); //Bitmap::Screen;

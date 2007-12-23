@@ -7,6 +7,7 @@
 #include "util/font.h"
 #include "util/load_exception.h"
 #include "return_exception.h"
+#include "gui/rectarea.h"
 
 #ifdef _MSC_VER
 #ifndef uint32_t
@@ -20,26 +21,7 @@ typedef uint32_t useflags;
 class Bitmap;
 class MenuOption;
 class Token;
-
-class RectArea
-{
-	public:
-		RectArea();
-		RectArea(int x, int y, int w, int h); 
-		bool empty();
-		int x;
-		int y;
-		int width; // Really not necessary but is there in case of later need
-		int height;
-		int body;
-		int bodyAlpha;
-		int border;
-		int borderAlpha;
-		inline int getX2() { return x + width; }
-		inline int getY2() { return y + height; }
-};
 		
-
 class Menu
 {
 	public:

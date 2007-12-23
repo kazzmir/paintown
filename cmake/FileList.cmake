@@ -120,3 +120,7 @@ src/menu/option_speed.cpp
 src/menu/optionfactory.cpp
 )
 
+set(GUI_SRC
+src/gui/rectarea.cpp
+src/gui/widget.cpp
+)
