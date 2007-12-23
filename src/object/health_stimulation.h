@@ -4,6 +4,7 @@
 #include "stimulation.h"
 
 class Character;
+class Network::Message;
 
 class HealthStimulation : public Stimulation {
 public:
@@ -13,6 +14,7 @@ public:
 	virtual void stimulate( Object & o ) const;
 	virtual void stimulate( Character & c ) const;
 	virtual Stimulation * copy() const;
+	virtual void createMessage( Network::Message & message ) const;
 
 protected:
 	int value;

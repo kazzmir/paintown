@@ -137,7 +137,14 @@ Network::Message Item::getCreateMessage(){
 
 	message.id = 0;
 	message << World::CREATE_ITEM;
-	message << getPath();
+	message << getId();
+	message << (int) getX();
+	message << (int) getZ();
+	this->stimulation->createMessage( message );
+
+	string mypath = path;
+	mypath.erase( 0, Util::getDataPath().length() );
+	message << mypath;
 
 	return message;
 }

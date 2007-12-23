@@ -11,6 +11,7 @@
 
 #include "object/character.h"
 #include "object/cat.h"
+#include "object/item.h"
 
 static void * handleMessages( void * arg ){
 	NetworkWorldClient * world = (NetworkWorldClient *) arg;
@@ -117,6 +118,7 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 			Global::debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
 			character->setId( id );
 			character->setAlliance( alliance );
+			/* TODO: should these values be hard-coded? */
 			character->setX( 200 );
 			character->setY( 0 );
 			character->setZ( 150 );
@@ -135,6 +137,7 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
 		BlockObject block;
 		block.setType( ObjectFactory::OBJECT_CAT );
 		block.setPath( path );
+		/* TODO: should these values be hard-coded? */
 		block.setCoords( 200, 150 );
 		Cat * cat = (Cat *) ObjectFactory::createObject( &block );
 		if ( cat == NULL ){
@@ -159,6 +162,34 @@ void NetworkWorldClient::removeObject( unsigned int id ){
 		} else {
 			it++;
 		}
+	}
+}
+
+void NetworkWorldClient::handleCreateItem( Network::Message & message ){
+	int id;
+	message >> id;
+	Global::debug( 0 ) << "Create item " << id << endl;
+	if ( uniqueObject( id ) ){
+		int x, z;
+		int value;
+		message >> x >> z >> value;
+		string path = Util::getDataPath() + "/" + message.path;
+		BlockObject block;
+		block.setType( ObjectFactory::OBJECT_ITEM );
+		block.setPath( path );
+		/* TODO: dont hard-code this */
+		block.setStimulationType( "health" );
+		block.setStimulationValue( value );
+		block.setCoords( x, z );
+		Item * item = (Item *) ObjectFactory::createObject( &block );
+		if ( item == NULL ){
+			Global::debug( 0 ) << "Could not create item" << endl;
+			return;
+		}
+
+		item->setY( 0 );
+		Global::debug( 0 ) << "Adding item at " << x << " " << z << endl;
+		addObject( item );
 	}
 }
 
@@ -189,6 +220,10 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 			}
 			case CREATE_BANG : {
 				handleCreateBang( message );
+				break;
+			}
+			case CREATE_ITEM : {
+				handleCreateItem( message );
 				break;
 			}
 			case NEXT_BLOCK : {

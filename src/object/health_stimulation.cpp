@@ -18,6 +18,10 @@ void HealthStimulation::stimulate( Character & c ) const {
 	c.hurt( - value );
 }
 
+void HealthStimulation::createMessage( Network::Message & message ) const {
+	message << value;
+}
+
 Stimulation * HealthStimulation::copy() const {
 	return new HealthStimulation( *this );
 }

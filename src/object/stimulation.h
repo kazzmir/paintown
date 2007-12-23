@@ -4,6 +4,10 @@
 class Object;
 class Character;
 
+namespace Network{
+	class Message;
+}
+
 class Stimulation{
 public:
 	Stimulation();
@@ -12,6 +16,7 @@ public:
 	virtual void stimulate( Object & o ) const;
 	virtual void stimulate( Character & c ) const;
 	virtual Stimulation * copy() const;
+	virtual void createMessage( Network::Message & message ) const;
 
 	virtual ~Stimulation();
 };

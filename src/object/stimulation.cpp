@@ -14,7 +14,10 @@ void Stimulation::stimulate( Character & obj ) const {
 }
 	
 Stimulation * Stimulation::copy() const {
-	return new Stimulation( *this );
+	return new Stimulation(*this);
+}
+
+void Stimulation::createMessage( Network::Message & message ) const {
 }
 
 Stimulation::~Stimulation(){
