@@ -132,6 +132,9 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 			} else {
 				want_x = (int)(main_enemy->getX() + 20 + Util::rnd( 20 ));
 			}
+			if ( want_x < 1 ){
+				want_x = Util::rnd( 100 ) - 50 + (int) leader->getX();
+			}
 			want_z = (int)(Util::rnd( 3 ) - 1 + main_enemy->getZ());
 			faceObject( main_enemy );
 
