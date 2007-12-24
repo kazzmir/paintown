@@ -30,6 +30,7 @@ public class EventFactory
 			events.put( "jump", new Lambda0(){public Object invoke(){return new JumpEvent();}});
 			events.put( "move", new Lambda0(){public Object invoke(){return new MoveEvent();}});
 			events.put( "nop", new Lambda0(){public Object invoke(){return new NopEvent();}});
+			events.put( "next-ticket", new Lambda0(){public Object invoke(){return new TicketEvent();}});
 			events.put( "offset", new Lambda0(){public Object invoke(){return new OffsetEvent();}});
 			events.put( "projectile", new Lambda0(){public Object invoke(){return new ProjectileEvent();}});
 			events.put( "shadow", new Lambda0(){public Object invoke(){return new ShadowEvent();}});
