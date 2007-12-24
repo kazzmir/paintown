@@ -403,11 +403,14 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		show_life--;
 	}
 	
+	/* cheat */
 	/*
 	if ( getInvincibility() < 500 ){
 		setInvincibility( 1000 );
 	}
 	*/
+
+	/* isInvincible is a cheat so always set invinciblility to a positive value */
 	if ( isInvincible() && getInvincibility() < 1 ){
 		setInvincibility( 100 );
 	}
@@ -482,8 +485,9 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			}
 		}
 		
-		// leave this line here, ill figure out why its important later
-		// if you need the animation_current->getName(), use current_name
+		/* leave this line here, ill figure out why its important later
+		 * if you need the animation_current->getName(), use current_name
+		 */
 		// cout << "Set current animation to null" << endl;
 		animation_current = NULL;
 	}
@@ -634,18 +638,11 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 				Global::debug( 3 ) << endl;
 			}
 		}
-		// cout<< final->getName() << endl;
 		
 		if ( final == NULL /* && animation_current == NULL ){ */ && getStatus() != Status_Grab ){
-			// cout<<"Going to walk or idle"<<endl;
-
-			// cout<<"Grabbing,walking,idling"<<endl;
-
 			bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ];
-			// if ( animation_current != movements[ "jump" ] ){
 			if ( getMovement( "jump" ) == NULL || animation_current != getMovement( "jump" ) ){
 				if ( !moving ){
-					// animation_current = movements[ "idle" ];
 					if ( animation_current != getMovement( "idle" ) ){
 						animation_current = getMovement( "idle" );
 						world->addMessage( animationMessage() );
@@ -661,38 +658,21 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 							cy = true;
 							grabEnemy( guy );
 							setZ( guy->getZ()+1 );
-							// animation_current = movements[ "grab" ];
 							animation_current = getMovement( "grab" );
 							animation_current->reset();
 							world->addMessage( animationMessage() );
 							setStatus( Status_Grab );
-							// cout<<"Grabbed"<<endl;
 						}
 						if ( cy )
 							break;
 					}
 					if ( !cy ){
-						// animation_current = movements[ "walk" ];
 						animation_current = getMovement( "walk" );
 						world->addMessage( animationMessage() );
 					}
 				}
 			}
-			
-			// cout<<"Animation is "<<animation_current<<endl;
-
-			/*
-			if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
-				animation_current = movements[ "walk" ];
-				// animation_current->reset();
-			} else if ( animation_current != movements[ "jump" ] ){
-				// nextTicket();
-				animation_current = movements[ "idle" ];
-				animation_current->reset();
-			}
-			*/
 		} else if ( final != NULL && animation_current != final ){
-			// cout<<"Final animation = "<<final->getName()<<endl;
 			if ( final->getName() == "special" ){
 				if ( getHealth() <= 10 ){
 					animation_current = getMovement( "idle" );
@@ -707,16 +687,8 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			animation_current->reset();
 			world->addMessage( animationMessage() );
 
-			/* remove the used keys from the key cache */
-			// const vector< KeyPress > & keys = animation_current->getKeys();
-			/*
-			for ( unsigned int i = 0; i < keys.size(); i++ ){
-				key_cache.pop_front();
-			}
-			*/
 			key_cache.clear();
 			
-			// if ( animation_current == movements["jump"] ) {
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;
 				double y = 0;
@@ -732,23 +704,11 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 
 				doJump( x, y );
 				world->addMessage( jumpMessage( x, y ) );
-				/*
-				int x = 0;
-				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
-					if ( keyboard[ KEY_RIGHT ] ){
-						x = 1;
-					} else	x = -1;
-				}
-				doJump( x );
-				*/
 			}
 		}
-		
-		// key_cache.clear();
 	}
 
 	if ( getStatus() == Status_Grab && animation_current == NULL ){
-		// animation_current = movements[ "grab" ];
 		animation_current = getMovement( "grab" );
 		world->addMessage( animationMessage() );
 	}
@@ -779,13 +739,16 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	
 		if ( getMovement( "throw" ) != NULL && animation_current == getMovement( "throw" ) ){
 			if ( getLink() == NULL ){
-				Global::debug( 0 ) << "Link is null. This cant happen." <<endl;
-				exit( 1 );
+				Global::debug( 0 ) << "*BUG* Link is null. This can't happen." <<endl;
+				return;
 			}
 			Object * link = getLink();
 			link->setFacing( getOppositeFacing() );
 			link->thrown();
 			world->addMessage( link->movedMessage() );
+			/* TODO: the fall distance could be defined in the player
+			 * file instead of hard-coded.
+			 */
 			world->addMessage( ((Character *)link)->fallMessage( 3.2, 5.0 ) );
 			link->fall( 3.2, 5.0 );
 			setStatus( Status_Ground );

@@ -90,7 +90,7 @@ contact( NULL ){
 	next_sequence = "none";
 
 	if ( *tok != "anim" && *tok != "animation" ){
-		cout<<"Not an animation"<<endl;
+		Global::debug( 0 ) <<"Not an animation"<<endl;
 		throw LoadException("Not an animation");
 	}
 
@@ -145,7 +145,7 @@ contact( NULL ){
 					AnimationEventMove * em = new AnimationEventMove( x, y, z );
 					events.push_back( em );
 				} catch( const TokenException & te ){
-					cout << "Could not read move event: " << te.getReason() << endl;
+					Global::debug( 0 ) << "Could not read move event: " << te.getReason() << endl;
 					/* ignore token exceptions here */
 				}
 			} else if ( *current == "blast" ){
@@ -173,7 +173,7 @@ contact( NULL ){
 						string key_name = nm->getName();
 						int actualKey = convertKeyPress( key_name );
 						if ( actualKey == -2 ){
-							cout<<"*WARNING*: "<<key_name<<" is not valid"<<endl;
+							Global::debug( 0 ) << "*WARNING*: "<<key_name<<" is not valid"<<endl;
 						}
 						// cout<<"Convert "<<key_name<<" to "<<actualKey<<endl;
 						press.combo.push_back(actualKey);
@@ -184,7 +184,7 @@ contact( NULL ){
 							*nm >> key_name;
 							int actualKey = convertKeyPress( key_name );
 							if ( actualKey == -2 ){
-								cout<<"*WARNING*: "<<key_name<<" is not valid"<<endl;
+								Global::debug( 0 ) <<"*WARNING*: "<<key_name<<" is not valid"<<endl;
 							}
 							press.combo.push_back(actualKey);
 						}
@@ -203,7 +203,7 @@ contact( NULL ){
 				} else if ( st == "grab" ){
 					status = Status_Grab;
 				} else {
-					cout<<"Unhandled status "<<st<<endl;
+					Global::debug( 0 ) <<"Unhandled status "<<st<<endl;
 				}
 			} else if ( *current == "shadow" ){
 				int x, y;
@@ -335,14 +335,14 @@ contact( NULL ){
 					Frame * f = new Frame( pic, collide );
 					frames[ path ] = f;
 					if ( pic->getError() ){
-						cout<<"Pic error"<<endl;
+						Global::debug( 0 ) <<"Pic error"<<endl;
 						throw LoadException("Could not load picture");
 					}
 				}
 				AnimationEvent * ani = new AnimationEventFrame( path );
 				events.push_back( ani );
 			} else {
-				cout << tok->getFileName() << " Unhandled animation attribute: "<<endl;
+				Global::debug( 0 ) << tok->getFileName() << " Unhandled animation attribute: "<<endl;
 				current->print(" ");
 			}
 
@@ -363,7 +363,7 @@ contact( NULL ){
 	Global::debug( 4 ) << diff.printTime( xls ) << endl;
 
 	if ( frames.empty() ){
-		cout<<"No frames given"<<endl;
+		Global::debug( 0 )<<"No frames given"<<endl;
 		// throw exception();
 		throw LoadException("No frames given");
 	}
@@ -606,7 +606,7 @@ void Animation::getAttackCoords( int & x, int & y ){
 	// y = (attack_y1+attack_y2)/2;
 	x = (attack.getX1() + attack.getX2() ) / 2;
 	y = (attack.getY1() + attack.getY2() ) / 2;
-	cout<<getName()<<"[ "<<attack.getX1()<<","<<attack.getY1()<<","<<attack.getX2()<<","<<attack.getY2()<<"]"<<endl;
+	Global::debug( 0 ) << getName()<<"[ "<<attack.getX1()<<","<<attack.getY1()<<","<<attack.getX2()<<","<<attack.getY2()<<"]"<<endl;
 }
 	
 ECollide * Animation::getNormalCollide(){
@@ -944,7 +944,7 @@ void Animation::setFrame( const string & path ){
 		current_frame = x->pic;
 		current_collide = x->collide;
 	} else {
-		cout<<"No frame "<<path<<endl;
+		Global::debug( 0 ) <<"No frame "<<path<<endl;
 	}
 }
 
@@ -954,7 +954,7 @@ void Animation::setFrame( const int fr ){
 	for ( it = frames.begin(); it != frames.end() && i < fr; it++, i++ );
 
 	if ( it == frames.end() ){
-		cout<<"No frame "<<fr<<endl;
+		Global::debug( 0 ) <<"No frame "<<fr<<endl;
 	}
 
 	Frame * x = (*it).second;
