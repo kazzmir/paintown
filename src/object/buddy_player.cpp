@@ -170,6 +170,15 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 
 		if ( want_x != -1 && want_z != -1 ){
 			bool walk = false;
+			if ( want_x < 1 ){
+				want_x = 1;
+			}
+			if ( want_z < world->getMinimumZ() ){
+				want_z = world->getMinimumZ() + 1;
+			}
+			if ( want_z >= world->getMaximumZ() ){
+				want_z = world->getMaximumZ() - 1;
+			}
 			if ( getX() - want_x < -2 ){
 				moveX( getSpeed() );
 				setFacing( FACING_RIGHT );
