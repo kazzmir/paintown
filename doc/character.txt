@@ -1,0 +1,114 @@
+This document describes the syntax and definition of a character file as found
+in data/players/* and data/chars/*.
+
+Character files use s-expressions for pieces of data where an s-expression is
+<s-expr> := ( <atom> <s-expr>* ) | <atom>
+<atom> := string-of-characters-except-(-and-) | " string-of-characters "
+
+So in the syntax:
+(hello)
+
+'(hello)' is an s-expression and 'hello' is an atom. The first atom in an
+s-expression names the s-expression, so (hello) is the 'hello' s-expression
+and (foo bar baz) is the 'foo' s-expression.
+
+I will use the following tokens as shorthand for some specific atom.
+<float> = <atom> treated as a floating point number. Ex. 5.2
+<int> = <atom> treated as an integer. Ex. 3
+<string> = <atom> treated as a string
+
+Character files start with the 'character' s-expression followed by some
+predefined s-expression types.
+
+(character ...)
+
+character s-expression types:
+(name <string>) : The name of the character. Ex. (name Bob)
+(health <int>) : Maximum health of character.  Ex. (health 100)
+(jump-velocity <float>) : Starting velocity the character jumps with. 
+A velocity of 5.0 can jump about 3/4ths to
+the cieling. Ex. (jump-velocity 5.0).
+(speed <float>) : Movement speed of the character. 1.0 is usually a good value.
+Ex. (speed 1.0)
+(type <string>) : Doesnt matter.
+(shadow <int>) : Set the size of the shadow beneath the character. Values can be
+between 1 and 6.
+(die-sound <string>) : Path to the sound to play when the character dies.
+(hit-sound <string>) : Path to the sound to play when the character hits
+something.
+(landed <string>) : Path to the sound to play when the character lands on the
+ground.
+(icon <string>) : Path to the icon to show next to the name of the character.
+(remap <string> <string>) : The first string is the path to the original sprite
+in the same palette that all the other sprites for the character are in.
+The second string is the path to the same sprite but in a differente palette.
+Ex. (remap players/guy/idle/1.png players/guy/alt1.png)
+
+(anim <s-expr>*) or
+(animation <s-expr>*) : Defines an animation for this character.
+
+animation s-expression types:
+
+(name <string>) : The name of the animation. Ex. (name "idle")
+(keys <string>*) : A list of keys that must be pressed to execute this
+animation. The <string> can be any one of
+key_idle
+key_jump
+key_forward
+key_back
+key_grab
+key_down
+key_up
+key_attack1
+key_attack2
+key_attack3
+
+Ex. (keys key_up key_up key_attack1) would require the user to press UP UP
+ATTACK1 in that order.
+
+(basedir <string>) : Path to some directory that frames will be loaded
+relative to. Ex. (basedir players/guy)
+(delay <int>) : Time to delay between frames.
+(sequence <string> <string>) : This animation can only be executed after the
+first <string> is executed. The second <string> is ignored.
+(range <int>) : The distance from the center of the sprite that this attack
+can reach. The computer player needs this information to know which attack to
+choose.
+(contact <string>) : Path to sound to play if this character gets hit.
+(z-distance <int>) : Distance in the z dimension that the attack can reach.
+The default z distance for attacks is 10.
+(shadow <int> <int>) : The first <int> is the x-offset and the second <int> is
+the y-offset. This offsets the shadow by x-offset,y-offset.
+(sound <string>) : Path to a sound to play.
+(nop) : Delays an amount of time set by (delay ...).
+(face <string>) : Set the character to face a certain direction. <string> can
+be
+
+left - Face left
+right - Face right
+reverse - Switch directions
+
+(offset <int> <int>) : The first <int> is the x-offset and the second <int> is
+the y-offset. The offsets will be added to the sprites position before being
+displayed. Use this to fix up sprites so they are centered properly.
+(frame <string>) : Path to an image file relative to the basedir.
+(type <string>) : Defines the type of this animation. Basically this is just
+for telling if the animation is an attack or not. <string> can be
+
+none
+attack
+
+(status <string>) : The animation will only execute if the character is in the
+given status. <string> can be any of the following
+
+ground
+jump
+grab
+
+(attack (x1 <int>) (y1 <int>) (x2 <int>) (y2 <int>) (force <int>) (damage
+<int>)) : Defines the attack box for the animation. x1,y1 is the upper left
+hand corner of the box and x2,y2 is the lower right hand corner. force is not
+used. damage is the amount of damage the character will inflict if he hits
+another character.
+(attack) is shorthand for (attack (x1 0) (y1 0) (x2 0) (y2 0) (force 0)
+(damage 0))
