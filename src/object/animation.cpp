@@ -18,6 +18,7 @@
 #include "animation_event_status.h"
 #include "animation_event_sound.h"
 #include "animation_event_shadow.h"
+#include "animation_event_ticket.h"
 #include "animation_event_zdistance.h"
 #include "attack.h"
 #include "util/bitmap.h"
@@ -314,6 +315,8 @@ contact( NULL ){
 				events.push_back( ani );
 			} else if ( *current == "nop" ){
 				events.push_back( new AnimationEventNOP() );
+			} else if ( *current == "next-ticket" ){
+				events.push_back( new AnimationEventTicket() );
 			} else if ( *current == "range" ){
 				int r;
 				*current >> r;
@@ -487,6 +490,12 @@ void Animation::createProjectile( int x, int y, Projectile * projectile ){
 		parent->createProjectile( projectile );
 	} else {
 		delete projectile;
+	}
+}
+	
+void Animation::nextTicket(){
+	if ( parent ){
+		parent->nextTicket();
 	}
 }
 	

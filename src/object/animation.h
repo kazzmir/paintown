@@ -258,6 +258,7 @@ public:
 	void setBBox( int x1, int y1, int x2, int y2 );
 	// void setAttack( int x1, int y1, int x2, int y2 );
 	void Delay();
+	void nextTicket();
 
 	int getDamage() const;
 	void setDamage( const int d );

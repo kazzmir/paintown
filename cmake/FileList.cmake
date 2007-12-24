@@ -59,6 +59,7 @@ src/object/animation_event_offset.cpp
 src/object/animation_event_shadow.cpp
 src/object/animation_event_sound.cpp
 src/object/animation_event_status.cpp
+src/object/animation_event_ticket.cpp
 src/object/animation_event_zdistance.cpp
 src/object/buddy_player.cpp
 src/object/cat.cpp
