@@ -34,7 +34,7 @@ Object * NetworkCharacter::copy(){
 Network::Message NetworkCharacter::grabMessage( unsigned int from, unsigned int who ){
 	Network::Message message;
 	message.id = 0;
-	message << World::NOTHING;
+	message << World::IGNORE;
 	return message;
 }
 
