@@ -31,6 +31,7 @@ const int CHARACTER_JUMP = 21;
 const int CHARACTER_EXPLODE = 22;
 const int CHARACTER_HEALTH = 23;
 const int CHARACTER_FALL = 24;
+const int CHARACTER_UNGRAB = 25;
 
 using namespace std;
 
@@ -659,7 +660,6 @@ void Character::fall( double x_vel, double y_vel ){
 	/* fall backwards */
 	setXVelocity( x_vel );
 	setYVelocity( y_vel );
-
 }
 	
 void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
@@ -835,6 +835,16 @@ void Character::landed( World * world ){
 void Character::createProjectile( Projectile * projectile ){
 	projectiles.push_back( (Object *) projectile );
 }
+	
+Network::Message Character::grabMessage( unsigned int from, unsigned int who ){
+	Network::Message message;
+	message.id = 0;
+	message << World::GRAB;
+	message << from;
+	message << who;
+
+	return message;
+}
 
 void Character::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 
@@ -954,8 +964,15 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 	} else if ( getStatus() == Status_Grabbed ){
 		if ( ++grab_time > 120 ){
 			setStatus( Status_Ground );
-			if ( getLink() )
+			if ( getLink() ){
 				getLink()->unGrab();
+				setLink( NULL );
+			}
+			world->addMessage( ungrabMessage() );
+		} else {
+			if ( getLink() ){
+				world->addMessage( grabMessage( getLink()->getId(), getId() ) );
+			}
 		}
 	}
 
@@ -1271,6 +1288,15 @@ Network::Message Character::fallMessage( double x, double y ){
 	return message;
 }
 	
+Network::Message Character::ungrabMessage(){
+	Network::Message message;
+
+	message.id = getId();
+	message << CHARACTER_UNGRAB;
+
+	return message;
+}
+	
 Network::Message Character::healthMessage(){
 	Network::Message message;
 
@@ -1329,6 +1355,14 @@ void Character::interpretMessage( Network::Message & message ){
 			int x, y;
 			message >> x >> y;
 			fall( x / 100.0, y / 100.0 );
+			break;
+		}
+		case CHARACTER_UNGRAB : {
+			setStatus( Status_Ground );
+			if ( getLink() ){
+				getLink()->unGrab();
+				setLink( NULL );
+			}
 			break;
 		}
 		case CHARACTER_ANIMATION : {

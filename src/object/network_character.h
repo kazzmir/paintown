@@ -21,6 +21,7 @@ public:
 	virtual Object * copy();
 
 public:
+	virtual Network::Message grabMessage( unsigned int from, unsigned int who );
 
 	/* logic */
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );

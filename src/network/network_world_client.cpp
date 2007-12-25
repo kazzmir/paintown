@@ -207,6 +207,16 @@ void NetworkWorldClient::handleCreateBang( Network::Message & message ){
 	addx->setId( (unsigned int) -1 );
 	addObject( addx );
 }
+
+Object * NetworkWorldClient::findObject( unsigned int id ){
+	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+		Object * o = *it;
+		if ( o->getId() == id ){
+			return o;
+		}
+	}
+	return NULL;
+}
 	
 void NetworkWorldClient::handleMessage( Network::Message & message ){
 	if ( message.id == 0 ){
@@ -233,6 +243,19 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				int block;
 				message >> block;
 				scene->advanceBlocks( block );
+				break;
+			}
+			case GRAB : {
+				int grabbing;
+				int grabbed;
+				message >> grabbing;
+				message >> grabbed;
+				Character * c_grabbing = (Character *) findObject( grabbing );
+				Character * c_grabbed = (Character *) findObject( grabbed );
+				if ( c_grabbing != NULL && c_grabbed != NULL ){
+					c_grabbed->grabbed( c_grabbing );
+					c_grabbing->setLink( c_grabbed );
+				}
 				break;
 			}
 			case DELETE_OBJ : {
@@ -276,7 +299,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 }
 
 void NetworkWorldClient::addMessage( Network::Message m, Network::Socket from ){
-	if ( m.id == id ){
+	if ( m.id == id || m.id == 0 ){
 		outgoing.push_back( m );
 	}
 }

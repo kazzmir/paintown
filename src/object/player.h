@@ -1,10 +1,11 @@
-#ifndef _player_h
-#define _player_h
+#ifndef _paintown_player_h
+#define _paintown_player_h
 
 #include "character.h" 
 #include "util/keyboard.h"
 #include <deque>
 #include "util/load_exception.h"
+#include "network/network.h"
 
 class Animation;
 class World;
@@ -73,6 +74,8 @@ protected:
 
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
+			
+	Network::Message thrownMessage( unsigned int id );
 	
 protected:
 

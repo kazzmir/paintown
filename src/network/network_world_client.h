@@ -35,6 +35,7 @@ public:
 
 protected:
 
+	Object * findObject( unsigned int id );
 	void handleCreateCharacter( Network::Message & message );
 	void handleCreateCat( Network::Message & message );
 	void handleCreateBang( Network::Message & message );

@@ -1,4 +1,5 @@
 #include "object/object.h"
+#include "object/character.h"
 #include "network_world.h"
 #include "network.h"
 #include "util/funcs.h"
@@ -139,13 +140,61 @@ void NetworkWorld::doScene( int min_x, int max_x ){
 
 	objects.insert( objects.end(), obj.begin(), obj.end() );
 }
-	
-void NetworkWorld::handleMessage( Network::Message & message ){
+
+Object * NetworkWorld::findObject( unsigned int id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
-		if ( o->getId() == message.id ){
+		if ( o->getId() == id ){
+			return o;
+		}
+	}
+	return NULL;
+}
+	
+void NetworkWorld::handleMessage( Network::Message & message ){
+	if ( message.id == 0 ){
+		int type;
+		message >> type;
+		switch ( type ){
+			case GRAB : {
+				int grabbing;
+				int grabbed;
+				message >> grabbing;
+				message >> grabbed;
+				Character * c_grabbing = (Character *) findObject( grabbing );
+				Character * c_grabbed = (Character *) findObject( grabbed );
+				if ( c_grabbing != NULL && c_grabbed != NULL ){
+					c_grabbed->grabbed( c_grabbing );
+					c_grabbing->setLink( c_grabbed );
+				}
+				break;
+			}
+			case THROWN : {
+			        int grabbing;
+				int grabbed;
+				message >> grabbing;
+				message >> grabbed;
+				Character * c_grabbing = (Character *) findObject( grabbing );
+				Character * c_grabbed = (Character *) findObject( grabbed );
+				if ( c_grabbed != NULL && c_grabbing != NULL ){
+					Global::debug( 2 ) << grabbing << " threw " << grabbed << endl;
+					c_grabbed->setFacing( c_grabbing->getOppositeFacing() );
+					c_grabbed->thrown();
+					addMessage( c_grabbed->movedMessage() );
+					addMessage( c_grabbed->fallMessage( 3.2, 5.0 ) );
+					c_grabbed->fall( 3.2, 5.0 );
+					c_grabbing->setStatus( Status_Ground );
+					Global::debug( 2 ) << grabbed << " status is " << c_grabbed->getStatus() << endl;
+				}
+				break;
+			}
+		}
+	} else {
+		Object * o = findObject( message.id );
+		if ( o != NULL ){
 			o->interpretMessage( message );
 		}
+		
 	}
 }
 
@@ -165,6 +214,7 @@ void NetworkWorld::flushOutgoing(){
 	outgoing.clear();
 	pthread_mutex_unlock( &message_mutex );
 
+	/* TODO: combine packets together into one big bundle to save TCP ack's */
 	for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
 		Network::Message & m = (*it).message;
 		Network::Socket from = (*it).socket;

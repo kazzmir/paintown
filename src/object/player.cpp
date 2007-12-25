@@ -394,6 +394,17 @@ void Player::deathReset(){
 	animation_current = getMovement( "idle" );
 	loseLife();
 }
+	
+Network::Message Player::thrownMessage( unsigned int id ){
+	Network::Message message;
+
+	message.id = 0;
+	message << World::THROWN;
+	message << getId();
+	message << id;
+
+	return message;
+}
 
 void Player::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 
@@ -656,7 +667,9 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 
 						if ( canGrab( guy ) ){
 							cy = true;
+							Global::debug( 2 ) << getId() << " grabbing " << guy->getId() << endl;
 							grabEnemy( guy );
+							world->addMessage( grabMessage( getId(), guy->getId() ) );
 							setZ( guy->getZ()+1 );
 							animation_current = getMovement( "grab" );
 							animation_current->reset();
@@ -750,8 +763,10 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			 * file instead of hard-coded.
 			 */
 			world->addMessage( ((Character *)link)->fallMessage( 3.2, 5.0 ) );
+			world->addMessage( thrownMessage( link->getId() ) );
 			link->fall( 3.2, 5.0 );
 			setStatus( Status_Ground );
+			world->addMessage( movedMessage() );
 		}
 	}
 }

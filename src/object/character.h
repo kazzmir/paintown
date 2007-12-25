@@ -309,10 +309,14 @@ public:
 	virtual Network::Message movedMessage();
 	virtual Network::Message explodeMessage();
 	virtual Network::Message healthMessage();
+	virtual Network::Message ungrabMessage();
 	virtual Network::Message animationMessage();
 	virtual Network::Message fallMessage( double x, double y );
+	virtual Network::Message grabMessage( unsigned int from, unsigned int who );
 	
 	virtual void interpretMessage( Network::Message & m );
+	
+	virtual void fall( double x_vel, double y_vel );
 
 protected:
 
@@ -330,7 +334,6 @@ protected:
 
 	virtual void landed( World * world );
 
-	virtual void fall( double x_vel, double y_vel );
 
 	virtual void drawLifeBar( int x, int y, int he, Bitmap * work );
 	

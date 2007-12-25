@@ -30,8 +30,16 @@ NetworkCharacter::~NetworkCharacter(){
 Object * NetworkCharacter::copy(){
 	return new NetworkCharacter( *this );
 }
+	
+Network::Message NetworkCharacter::grabMessage( unsigned int from, unsigned int who ){
+	Network::Message message;
+	message.id = 0;
+	message << World::NOTHING;
+	return message;
+}
 
 void NetworkCharacter::act( vector< Object * > * others, World * world, vector< Object * > * add ){
+	Global::debug( 2 ) << getId() << " status is " << getStatus() << endl;
 	Character::act( others, world, add );
 	if ( (getStatus() == Status_Ground ||
 	      getStatus() == Status_Jumping) && animation_current->Act() ){
@@ -45,6 +53,7 @@ void NetworkCharacter::act( vector< Object * > * others, World * world, vector< 
 }
 	
 void NetworkCharacter::landed( World * world ){
+	setThrown( false );
 	switch( getStatus() ){
 		case Status_Falling : {
 			if ( landed_sound ){

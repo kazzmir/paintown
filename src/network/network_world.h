@@ -34,6 +34,7 @@ public:
 	virtual ~NetworkWorld();
 
 protected:
+	Object * findObject( unsigned int id );
 	void sendMessage( const Network::Message & message, NLsocket socket );
 	vector< Network::Message > getIncomingMessages();
 	void handleMessage( Network::Message & message );
