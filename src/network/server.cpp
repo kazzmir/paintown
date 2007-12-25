@@ -502,9 +502,7 @@ static void playGame( const vector< Socket > & sockets ){
 				Message finish;
 				finish << World::FINISH;
 				finish.id = 0;
-				Global::debug( 0 ) << "Sending finish" << endl;
 				sendToAll( sockets, finish );
-				Global::debug( 0 ) << "Sent finish" << endl;
 				
 				for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 					Socket s = *it;

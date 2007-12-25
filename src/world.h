@@ -92,7 +92,7 @@ public:
 		DELETE_OBJ, /* remove object and delete it */
 		GRAB,
 		THROWN,
-		IGNORE,
+		IGNORE_MESSAGE,
 	};
 
 };

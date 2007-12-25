@@ -267,7 +267,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				}
 				break;
 			}
-			case IGNORE : {
+			case IGNORE_MESSAGE : {
 				break;
 			}
 			case REMOVE : {
