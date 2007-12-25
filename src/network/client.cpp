@@ -7,6 +7,7 @@
 #include "util/font.h"
 #include "factory/font_render.h"
 #include "world.h"
+#include "music.h"
 #include "object/character.h"
 #include "object/network_character.h"
 #include "network_world_client.h"
@@ -172,6 +173,11 @@ static void playGame( Socket socket ){
 				case World::LOAD_LEVEL : {
 					string level = next.path;
 					NetworkWorldClient world( socket, players, level, client_id );
+					Music::pause();
+					Music::fadeIn( 0.3 );
+					Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+					Music::play();
+
 					stopLoading( loadingThread );
 					try{
 						playLevel( world, players );
