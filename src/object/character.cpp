@@ -1366,6 +1366,9 @@ void Character::interpretMessage( Network::Message & message ){
 			break;
 		}
 		case CHARACTER_ANIMATION : {
+			int map;
+			message >> map;
+			setMap( map );
 			animation_current = getMovement( message.path );
 			if ( animation_current == NULL ){
 				Global::debug( 1 ) << "Could not find animation for '" << message.path << "'" << endl;
@@ -1385,6 +1388,7 @@ Network::Message Character::animationMessage(){
 
 	m.id = getId();
 	m << CHARACTER_ANIMATION;
+	m << getCurrentMap();
 	m.path = getCurrentMovement()->getName();
 
 	return m;
