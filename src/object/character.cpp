@@ -26,12 +26,6 @@
 #include "util/tokenreader.h"
 #include "world.h"
 
-const int CHARACTER_ANIMATION = 20;
-const int CHARACTER_JUMP = 21;
-const int CHARACTER_EXPLODE = 22;
-const int CHARACTER_HEALTH = 23;
-const int CHARACTER_FALL = 24;
-const int CHARACTER_UNGRAB = 25;
 
 using namespace std;
 
@@ -1293,6 +1287,15 @@ Network::Message Character::ungrabMessage(){
 
 	message.id = getId();
 	message << CHARACTER_UNGRAB;
+
+	return message;
+}
+	
+Network::Message Character::showNameMessage( int amount ){
+	Network::Message message;
+	message.id = getId();
+	message << CHARACTER_SHOW_NAME;
+	message << amount;
 
 	return message;
 }

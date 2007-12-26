@@ -157,6 +157,10 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 
 	Character::act( others, world, add );
 
+	if ( show_name_time % 10 == 0 ){
+		world->addMessage( showNameMessage( show_name_time ) );
+	}
+
 	if ( show_life > getHealth() ){
 		show_life--;
 	}

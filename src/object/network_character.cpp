@@ -52,6 +52,24 @@ Network::Message NetworkCharacter::grabMessage( unsigned int from, unsigned int 
 	message << World::IGNORE_MESSAGE;
 	return message;
 }
+
+void NetworkCharacter::interpretMessage( Network::Message & message ){
+	int type;
+	message >> type;
+	switch ( type ){
+		case CHARACTER_SHOW_NAME : {
+			int amount;
+			message >> amount;
+			setNameTime( amount );
+			break;
+		}
+		default : {
+			message.reset();
+			Character::interpretMessage( message );
+			break;
+		}
+	}
+}
 	
 void NetworkCharacter::setNameTime( int d ){
 	show_name_time = d;

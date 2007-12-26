@@ -26,6 +26,7 @@ public:
 
 	virtual void setNameTime( int d );
 	virtual void alwaysShowName();
+	virtual void interpretMessage( Network::Message & m );
 
 	/* logic */
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
