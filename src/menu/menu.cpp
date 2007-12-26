@@ -42,9 +42,10 @@ static void addMenu(Menu *m) throw( LoadException )
 	else throw LoadException("A menu by the name of \""+m->getName()+"\" already exists!"); 
 }
 
-Menu::Menu() : music(""), background(0), position(), vFont(0), fontWidth(24), fontHeight(24), _menuflags(0),longestTextLength(0), _name("")
+Menu::Menu() : music(""), background(0), vFont(0), fontWidth(24), fontHeight(24), _menuflags(0),longestTextLength(0), _name("")
 {
 	if(!work)work = new Bitmap(Bitmap::Screen->getWidth(), Bitmap::Screen->getHeight()); //Bitmap::Screen;
+	backboard.position.radius = 15;
 }
 
 void Menu::load(Token *token)throw( LoadException )
@@ -78,21 +79,21 @@ void Menu::load(Token *token)throw( LoadException )
 			else if ( *tok == "position" )
 			{
 				// This handles the placement of the menu list and surrounding box
-				*tok >> position.x >> position.y >> position.width >> position.height;
+				*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
 			} 
 			else if ( *tok == "position-body" )
 			{
 				// This handles the body color of the menu box
 				int r,g,b;
-				*tok >> r >> g >> b >> position.bodyAlpha;
-				position.body = Bitmap::makeColor(r,g,b);
+				*tok >> r >> g >> b >> backboard.position.bodyAlpha;
+				backboard.position.body = Bitmap::makeColor(r,g,b);
 			} 
 			else if ( *tok == "position-border" )
 			{
 				// This handles the border color of the menu box
 				int r,g,b;
-				*tok >> r >> g >> b >> position.borderAlpha;
-				position.border = Bitmap::makeColor(r,g,b);
+				*tok >> r >> g >> b >> backboard.position.borderAlpha;
+				backboard.position.border = Bitmap::makeColor(r,g,b);
 			} 
 			else if ( *tok == "font" )
 			{
@@ -132,7 +133,7 @@ void Menu::load(Token *token)throw( LoadException )
 	
 	if(_name.empty())throw LoadException("No name set, the menu should have a name!");
 	if(backgrounds.empty())throw LoadException("There should be at least one background in the entire menu!");
-	if(position.empty())throw LoadException("The position for the menu list must be set!");
+	if(backboard.position.empty())throw LoadException("The position for the menu list must be set!");
 	addMenu(this);
 	
 	if(!vFont)
@@ -262,35 +263,12 @@ useflags Menu::run()
 			{
 				// Draw
 				if(backgrounds.front())backgrounds.front()->draw(work);
-				
-				if(position.bodyAlpha < 255)
-				{
-					Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
-					work->drawingMode( Bitmap::MODE_TRANS );
-					work->rectangleFill( position.x, position.y, position.getX2(), position.getY2(), position.body );
-				}
-				else 
-				{
-					work->drawingMode( Bitmap::MODE_SOLID );
-					work->rectangleFill( position.x, position.y, position.getX2(), position.getY2(), position.body );
-				}
-				if(position.borderAlpha < 255)
-				{
-					Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
-					work->drawingMode( Bitmap::MODE_TRANS );
-					work->rectangle(  position.x, position.y, position.getX2(), position.getY2(), position.border );
-				}
-				else
-				{
-					work->drawingMode( Bitmap::MODE_SOLID );
-					work->rectangle(  position.x, position.y, position.getX2(), position.getY2(), position.border );
-				}
-				work->drawingMode( Bitmap::MODE_SOLID );
-				
+				// Our box widget
+				backboard.render(work);
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
 				std::vector <MenuOption *>::iterator e = menuOptions.end();
-				const int startx = (position.width/2)-(longestTextLength/2);
-				const int starty = (position.height/2)-((vFont->getHeight()*(menuOptions.size()-1))/2);
+				const int startx = (backboard.position.width/2)-(longestTextLength/2);
+				const int starty = (backboard.position.height/2)-((vFont->getHeight()*(menuOptions.size()-1))/2);
 				for(int i=0;b!=e;++b,++i)
 				{
 					/* There more than likely won't be any need to draw, but hey maybe sometime in the future
@@ -306,11 +284,11 @@ useflags Menu::run()
 								work->circleFill((position.x+startx)-15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getLeftAdjustColor());
 								*/
 								const int triangleSize = 10;
-								int cx = (position.x + startx) - 15;
-								int cy = (int)(position.y + starty + i * fontHeight * 1.2 + fontHeight / 2 + 2);
+								int cx = (backboard.position.x + startx) - 15;
+								int cy = (int)(backboard.position.y + starty + i * fontHeight * 1.2 + fontHeight / 2 + 2);
 								work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*b)->getLeftAdjustColor() );
 								
-								cx = (position.x+startx + vFont->textLength((*b)->getText().c_str()))+15;
+								cx = (backboard.position.x+startx + vFont->textLength((*b)->getText().c_str()))+15;
 								work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*b)->getRightAdjustColor() );
 
 								// work->circleFill((position.x+startx + vFont->textLength((*b)->getText().c_str()))+15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getRightAdjustColor());
@@ -320,7 +298,7 @@ useflags Menu::run()
 						default:
 							break;
 					}
-					vFont->printf( position.x + startx, int((position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
+					vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
 				}
 				
 				// Finally render to screen

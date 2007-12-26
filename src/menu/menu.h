@@ -7,7 +7,7 @@
 #include "util/font.h"
 #include "util/load_exception.h"
 #include "return_exception.h"
-#include "gui/rectarea.h"
+#include "gui/box.h"
 
 #ifdef _MSC_VER
 #ifndef uint32_t
@@ -78,7 +78,7 @@ class Menu
 		//! background of current
 		MenuOption *background;
 		//! Area for placement of option list
-		RectArea position;
+		Box backboard;
 		//! Font for this menu
 		FreeTypeFont *vFont;
 		//! Font width

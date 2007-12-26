@@ -8,6 +8,8 @@
 #include "util/keyboard.h"
 #include "util/bitmap.h"
 
+#include "gui/box.h"
+
 OptionKey::keyType convertToKey(const std::string &k)
 {
 	std::string temp = k;
@@ -180,17 +182,19 @@ void OptionKey::draw(Bitmap *work)
 
 void OptionKey::run(bool &endGame)
 {
-	int x, y, width, height;
-	width = Menu::getFont()->textLength("Press a Key!") + 10;
-	height = Menu::getFont()->getHeight() + 10;
-	x = 320 - (width/2);
-	y = 240 - (height/2);
-	Bitmap::transBlender( 0, 0, 0, 200 );
-	Bitmap::Screen->drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::Screen->rectangleFill( x, y, x+width, y+height, Bitmap::makeColor(0,0,0) );
-	Bitmap::Screen->drawingMode( Bitmap::MODE_SOLID );
-	Bitmap::Screen->rectangle( x, y, x+width, y+height, Bitmap::makeColor(255,255,255) );
-	Menu::getFont()->printf( x+5, y+5, Bitmap::makeColor(255,255,255), *Bitmap::Screen, "Press a Key!", -1);
+	//int x, y, width, height;
+	Box dialog;
+	dialog.position.width = Menu::getFont()->textLength("Press a Key!") + 10;
+	dialog.position.height = Menu::getFont()->getHeight() + 10;
+	dialog.position.x = 320 - (dialog.position.width/2);
+	dialog.position.y = 240 - (dialog.position.height/2);
+	dialog.position.radius = 10;
+	dialog.position.body = Bitmap::makeColor(0,0,0);
+	dialog.position.bodyAlpha = 200;
+	dialog.position.border = Bitmap::makeColor(255,255,255);
+	dialog.position.borderAlpha = 255;
+	dialog.render(Bitmap::Screen);
+	Menu::getFont()->printf( dialog.position.x+5, dialog.position.y+5, Bitmap::makeColor(255,255,255), *Bitmap::Screen, "Press a Key!", -1);
 	Keyboard key;
 	keyCode = readKey( key );
 	setKey(player,type, keyCode);

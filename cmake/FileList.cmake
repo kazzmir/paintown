@@ -122,6 +122,7 @@ src/menu/optionfactory.cpp
 )
 
 set(GUI_SRC
+src/gui/box.cpp
 src/gui/container.cpp
 src/gui/rectarea.cpp
 src/gui/widget.cpp
