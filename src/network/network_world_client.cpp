@@ -102,11 +102,18 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 	string path = Util::getDataPath() + "/" + message.path;
 	message >> alliance >> id >> map;
 	if ( uniqueObject( id ) ){
-		if ( (unsigned int) id == this->id ){
-			Player * p = (Player *) players[ 0 ].player;
-			p->deathReset();
-			addObject( p );
-		} else {
+		bool found = false;
+		for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+			Character * character = (Character *) it->player;
+			if ( character->getId() == (unsigned int) id ){
+				character->deathReset();
+				addObject( character );
+				found = true;
+				break;
+			}
+
+		}
+		if ( ! found ){
 			BlockObject block;
 			block.setType( ObjectFactory::OBJECT_NETWORK_CHARACTER );
 			block.setMap( map );

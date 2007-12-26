@@ -1,6 +1,12 @@
+#include "util/bitmap.h"
 #include "network_character.h"
 #include "object.h"
 #include "animation.h"
+#include "util/font.h"
+#include "util/funcs.h"
+#include "factory/font_factory.h"
+#include "factory/font_render.h"
+#include "nameplacer.h"
 #include "globals.h"
 #include "world.h"
 #include <vector>
@@ -9,19 +15,27 @@
 using namespace std;
 
 NetworkCharacter::NetworkCharacter( int alliance ):
-Character( alliance ){
+Character( alliance ),
+name_id(-1),
+show_name_time(0){
 }
 
 NetworkCharacter::NetworkCharacter( const char * filename, int alliance ) throw( LoadException ):
-Character( filename, alliance ){
+Character( filename, alliance ),
+name_id(-1),
+show_name_time(0){
 }
 
 NetworkCharacter::NetworkCharacter( const string & filename, int alliance ) throw ( LoadException ):
-Character( filename, alliance ){
+Character( filename, alliance ),
+name_id(-1),
+show_name_time(0){
 }
 
 NetworkCharacter::NetworkCharacter( const Character & chr ) throw( LoadException ):
-Character( chr ){
+Character( chr ),
+name_id(-1),
+show_name_time(0){
 }
 	
 NetworkCharacter::~NetworkCharacter(){
@@ -30,14 +44,53 @@ NetworkCharacter::~NetworkCharacter(){
 Object * NetworkCharacter::copy(){
 	return new NetworkCharacter( *this );
 }
-	
+
+/* player will send a grab message, network character should send a bogus message */
 Network::Message NetworkCharacter::grabMessage( unsigned int from, unsigned int who ){
 	Network::Message message;
 	message.id = 0;
 	message << World::IGNORE_MESSAGE;
 	return message;
 }
+	
+void NetworkCharacter::setNameTime( int d ){
+	show_name_time = d;
+}
+	
+void NetworkCharacter::alwaysShowName(){
+	setNameTime( -1 );
+	Global::debug( 0 ) << getId() << " name time is " << show_name_time << endl;
+}
 
+void NetworkCharacter::draw( Bitmap * work, int rel_x ){
+
+	Character::draw( work, rel_x );
+
+	if ( show_name_time > 0 || show_name_time == -1 ){
+		int x1, y1;
+		NamePlacer::getPlacement( x1, y1, name_id );
+
+		if ( icon )
+			icon->draw( x1, y1, *work );
+
+		int hasIcon = icon ? icon->getWidth() : 0;
+
+		const Font & player_font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+		const string & name = getName();
+		int nameHeight = player_font.getHeight( name ) / 2;
+		nameHeight = 20 / 2;
+		FontRender * render = FontRender::getInstance();
+		render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
+		drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
+		if ( show_name_time > 0 ){
+			show_name_time -= 1;
+		}
+	} else {
+		Global::debug( 1 ) << "Show name time for " << getId() << " is " << show_name_time << endl;
+	}
+}
+
+/* just performs the current animation */
 void NetworkCharacter::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 	Global::debug( 2 ) << getId() << " status is " << getStatus() << endl;
 	Character::act( others, world, add );

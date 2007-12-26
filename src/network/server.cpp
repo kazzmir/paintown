@@ -451,6 +451,7 @@ static void playGame( const vector< Socket > & sockets ){
 			message >> type;
 			if ( type == World::CREATE_CHARACTER ){
 				Character * client_character = new NetworkCharacter( Util::getDataPath() + message.path, ALLIANCE_PLAYER );
+				((NetworkCharacter *)client_character)->alwaysShowName();
 				players.push_back( client_character );
 				client_character->setLives( 1 );
 				client_character->setId( id );
@@ -475,6 +476,12 @@ static void playGame( const vector< Socket > & sockets ){
 			sendToAll( sockets, add );
 		}
 
+		Message addServer;
+		addServer << World::CREATE_CHARACTER;
+		addServer << player->getId();
+		addServer << ((Character *)player)->getPath().substr( Util::getDataPath().length() );
+		sendToAll( sockets, addServer );
+
 		vector< string > levels = Level::readLevels( levelSet );
 		for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
 			string level = *it;
@@ -495,38 +502,36 @@ static void playGame( const vector< Socket > & sockets ){
 			}
 
 			NetworkWorld world( sockets, players, level );
-			try{
-				stopLoading( loading_screen_thread );
-				playLevel( world, players );
-				world.stopRunning();
-				Message finish;
-				finish << World::FINISH;
-				finish.id = 0;
-				sendToAll( sockets, finish );
-				
-				for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-					Socket s = *it;
-					bool done = false;
-					while ( ! done ){
-						Message ok( s );
-						int type;
-						ok >> type;
-						if ( type == World::OK ){
-							done = true;
-						}
-					}
+			stopLoading( loading_screen_thread );
+			playLevel( world, players );
+			world.stopRunning();
+			Message finish;
+			finish << World::FINISH;
+			finish.id = 0;
+			sendToAll( sockets, finish );
 
-					Message ok;
-					ok << World::OK;
-					ok.send( s );
+			for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+				Socket s = *it;
+				bool done = false;
+				while ( ! done ){
+					Message ok( s );
+					int type;
+					ok >> type;
+					if ( type == World::OK ){
+						done = true;
+					}
 				}
-			} catch ( const ReturnException & e ){
-				for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-					Network::close( *it );
-				}
+
+				Message ok;
+				ok << World::OK;
+				ok.send( s );
 			}
 			startLoading( &loading_screen_thread );
 		}
+		Network::Message gameOver;
+		gameOver.id = 0;
+		gameOver << World::GAME_OVER;
+		sendToAll( sockets, gameOver );
 
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "[server] Load exception: " + le.getReason() << endl;
@@ -534,9 +539,15 @@ static void playGame( const vector< Socket > & sockets ){
 	} catch ( const NetworkException & ne ){
 		Global::debug( 0 ) << "[server] Network excetion: " + ne.getMessage() << endl;
 	}
+
 	for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
 		delete *it;
 	}
+
+	for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+		Network::close( *it );
+	}
+
 	stopLoading( loading_screen_thread );
 }
 

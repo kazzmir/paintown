@@ -117,10 +117,10 @@ static bool uniqueId( const vector< Object * > & objs, unsigned int id ){
 	for ( vector< Object * >::const_iterator it = objs.begin(); it != objs.end(); it++ ){
 		Object * o = *it;
 		if ( o->getId() == id ){
-			return true;
+			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
 static void playGame( Socket socket ){
@@ -146,7 +146,7 @@ static void playGame( Socket socket ){
 		if ( type == World::SET_ID ){
 			myid >> client_id;
 			player->setId( client_id );
-			Global::debug( 0 ) << "Client id is " << client_id << endl;
+			Global::debug( 1 ) << "Client id is " << client_id << endl;
 		} else {
 			Global::debug( 0 ) << "Bogus message, expected SET_ID: " << type << endl;
 		}
@@ -166,6 +166,7 @@ static void playGame( Socket socket ){
 					if ( uniqueId( players, id ) ){
 						Character * c = new NetworkCharacter( Util::getDataPath() + next.path, ALLIANCE_PLAYER );
 						c->setId( id );
+						((NetworkCharacter *)c)->alwaysShowName();
 						players.push_back( c );
 					}
 					break;
@@ -192,6 +193,10 @@ static void playGame( Socket socket ){
 					} catch ( const ReturnException & e ){
 						Network::close( socket );
 					}
+					break;
+				}
+				/* thats all folks! */
+				case World::GAME_OVER : {
 					break;
 				}
 			}

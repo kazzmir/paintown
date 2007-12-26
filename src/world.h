@@ -93,6 +93,7 @@ public:
 		GRAB,
 		THROWN,
 		IGNORE_MESSAGE,
+		GAME_OVER,
 	};
 
 };

@@ -15,7 +15,7 @@ struct Stuff{
 
 static void * handleMessages( void * arg ){
 	Stuff * s = (Stuff *) arg;
-	NLsocket socket = s->socket;
+	Network::Socket socket = s->socket;
 	NetworkWorld * world = s->world;
 	
 	try{

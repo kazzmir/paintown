@@ -693,6 +693,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 					return;
 				} else {
 					hurt( 10 );
+					world->addMessage( healthMessage() );
 				}
 			}
 			nextTicket();
