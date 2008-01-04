@@ -15,7 +15,6 @@ class Bitmap;
 struct PlayerTracker{
 	double min_x;
 	Object * player;
-	Bitmap * map;
 };
 
 class World{
@@ -78,7 +77,8 @@ protected:
 	// int min_x;
 	int screen_size;
 	std::string path;
-
+	
+	Bitmap * mini_map;
 public:
 	enum{
 		NOTHING,

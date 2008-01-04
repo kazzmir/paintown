@@ -17,14 +17,16 @@
 using namespace std;
 
 World::World():
-quake_time( 0 ){
+quake_time( 0 ),
+mini_map( NULL ){
 	scene = NULL;
 	bang = NULL;
 }
 
 World::World( const vector< Object * > & players, const string & path, int _screen_size ) throw( LoadException ):
 quake_time( 0 ),
-path( path ){
+path( path ),
+mini_map( NULL ){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -33,12 +35,13 @@ path( path ){
 		PlayerTracker t;
 		t.min_x = 0;
 		t.player = *it;
-		t.map = new Bitmap( screen_size, (int)((double)screen_size / 1.333) );
 		// this->players.push_back( (PlayerTracker) { .min_x = 0, .player = *it } );
 		this->players.push_back( t );
 	}
 
 	loadLevel( path );
+
+	mini_map = new Bitmap( screen_size, (int)((double) screen_size / 1.3333) );
 
 	/*
 	if ( player != NULL ){
@@ -57,8 +60,8 @@ World::~World(){
 		delete scene;
 	}
 	
-	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		delete it->map;
+	if ( mini_map ){
+		delete mini_map;
 	}
 
 	deleteObjects( &objects );
@@ -384,11 +387,15 @@ void World::draw( Bitmap * work ){
 		Object * n = *it;
 		object_z[ n->getRZ() ].push_back( n );
 	}
+
+	Global::debug( 1 ) << "World draw" << endl;
 	
 	// min_x = (int)min_x_virtual;
-	Bitmap mini( 64, (int)( 64.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
+	Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
+	int mini_position_x = work->getWidth() - mini.getWidth() - 1;
+	int mini_position_y = work->getHeight() - mini.getHeight() - 1;
 	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		Bitmap * on = it->map;
+		Bitmap * on = mini_map;
 		if ( it == players.begin() ){
 			on = work;
 		}
@@ -398,7 +405,12 @@ void World::draw( Bitmap * work ){
 			on->Stretch( mini );
 			Bitmap::transBlender( 0, 0, 0, 128 );
 			mini.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
-			mini.drawTrans( work->getWidth() - mini.getWidth() - 1, work->getHeight() - mini.getHeight() - 1, *work );
+			mini.drawTrans( mini_position_x, mini_position_y, *work );
+			mini_position_x -= mini.getWidth() - 2;
+			if ( mini_position_x <= 0 ){
+				mini_position_y -= mini.getHeight() - 2;
+				mini_position_x = work->getWidth() - mini.getWidth() - 1;
+			}
 		}
 	}
 	

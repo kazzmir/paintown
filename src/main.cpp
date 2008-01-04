@@ -1498,7 +1498,7 @@ static bool titleScreen(){
 			case MAIN_PLAY_BUDDY : {
 				Object * player = NULL;
 				vector< Object * > buddies;
-				int max_buddies = 1;
+				int max_buddies = 2;
 				try{
 					string level = selectLevelSet( Util::getDataPath() + "/levels" );
 					key.wait();
