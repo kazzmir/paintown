@@ -33,6 +33,7 @@ path( path ){
 		PlayerTracker t;
 		t.min_x = 0;
 		t.player = *it;
+		t.map = new Bitmap( screen_size, (int)((double)screen_size / 1.333) );
 		// this->players.push_back( (PlayerTracker) { .min_x = 0, .player = *it } );
 		this->players.push_back( t );
 	}
@@ -54,6 +55,10 @@ World::~World(){
 
 	if ( scene ){
 		delete scene;
+	}
+	
+	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+		delete it->map;
 	}
 
 	deleteObjects( &objects );
@@ -345,6 +350,32 @@ void World::addObject( Object * o ){
 	objects.push_back( o );
 }
 
+void World::drawWorld( const PlayerTracker & tracker, Bitmap * where, const map< int, vector< Object * > > & object_z ){
+	int min_x = 0;
+
+	min_x = (int) tracker.min_x;
+
+	int max_x = (int)(tracker.player->getX() + screen_size / 2 > scene->getLimit() ? scene->getLimit() : tracker.player->getX() + screen_size / 2);
+	min_x = (int)(max_x - screen_size);
+	if ( min_x < 0 ){
+		min_x = 0;
+	}
+
+	if ( min_x > tracker.min_x ){
+		min_x = (int) tracker.min_x;
+	}
+
+	scene->drawBack( min_x, where );
+	for ( map<int,vector<Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
+		const vector<Object *> & xx = (*it).second;
+		for ( vector<Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+
+			(*mm)->draw( where, min_x );
+		}
+	}
+	scene->drawFront( min_x, where );
+}
+
 void World::draw( Bitmap * work ){
 
 	map< int, vector<Object*> > object_z;
@@ -355,7 +386,23 @@ void World::draw( Bitmap * work ){
 	}
 	
 	// min_x = (int)min_x_virtual;
+	Bitmap mini( 64, (int)( 64.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
+	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+		Bitmap * on = it->map;
+		if ( it == players.begin() ){
+			on = work;
+		}
+
+		drawWorld( *it, on, object_z );
+		if ( on != work ){
+			on->Stretch( mini );
+			Bitmap::transBlender( 0, 0, 0, 128 );
+			mini.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
+			mini.drawTrans( work->getWidth() - mini.getWidth() - 1, work->getHeight() - mini.getHeight() - 1, *work );
+		}
+	}
 	
+	/*
 	int min_x = 0;
 	if ( players.size() > 0 ){
 		min_x = (int) players[ 0 ].min_x;
@@ -380,6 +427,7 @@ void World::draw( Bitmap * work ){
 		}
 	}
 	scene->drawFront( min_x, work );
+	*/
 }
 	
 int World::getX(){

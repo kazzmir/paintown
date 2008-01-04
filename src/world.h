@@ -6,6 +6,7 @@ class Scene;
 class Bitmap;
 
 #include <vector>
+#include <map>
 #include <string>
 
 #include "util/load_exception.h"
@@ -14,6 +15,7 @@ class Bitmap;
 struct PlayerTracker{
 	double min_x;
 	Object * player;
+	Bitmap * map;
 };
 
 class World{
@@ -55,6 +57,8 @@ protected:
 
 	Network::Message deleteMessage( unsigned int id );
 	void loadLevel( const std::string & path ) throw( LoadException );
+
+	void drawWorld( const PlayerTracker & tracker, Bitmap * where, const std::map< int, std::vector< Object * > > & object_z );
 
 	virtual void deleteObjects( std::vector< Object * > * objects );
 
