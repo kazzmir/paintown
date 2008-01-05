@@ -74,8 +74,8 @@ public class Editor extends JFrame {
 		saveLevelAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK));
 		loadLevel.setMnemonic( KeyEvent.VK_O );
 		loadLevel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
-		closeLevel.setMnemonic( KeyEvent.VK_C );
-		closeLevel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Event.CTRL_MASK));
+		closeLevel.setMnemonic( KeyEvent.VK_W );
+		closeLevel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
 
 		final JTabbedPane tabbed = new JTabbedPane();
 		this.getContentPane().add( tabbed );
