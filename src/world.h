@@ -46,6 +46,9 @@ public:
 
 	virtual int getMaximumZ();
 	virtual int getMinimumZ();
+
+	virtual void drawMiniMaps( bool b );
+	virtual bool shouldDrawMiniMaps();
 				
 	void killAllHumans( Object * player );
 
@@ -77,6 +80,8 @@ protected:
 	// int min_x;
 	int screen_size;
 	std::string path;
+
+	bool draw_minimaps;
 	
 	Bitmap * mini_map;
 public:

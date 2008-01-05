@@ -220,6 +220,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 	key.setDelay( Keyboard::Key_F4, 200 );
 
 	key.setDelay( Keyboard::Key_F8, 300 );
+	key.setDelay( Keyboard::Key_TAB, 300 );
 	
 	/* the game graphics are meant for 320x240 and will be stretched
 	 * to fit the screen
@@ -291,6 +292,10 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 			if ( key[ Keyboard::Key_P ] ){
 				paused = ! paused;
 				draw = true;
+			}
+
+			if ( key[ Keyboard::Key_TAB ] ){
+				world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
 			}
 			
 			/*

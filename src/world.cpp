@@ -18,6 +18,7 @@ using namespace std;
 
 World::World():
 quake_time( 0 ),
+draw_minimaps( true ),
 mini_map( NULL ){
 	scene = NULL;
 	bang = NULL;
@@ -26,6 +27,7 @@ mini_map( NULL ){
 World::World( const vector< Object * > & players, const string & path, int _screen_size ) throw( LoadException ):
 quake_time( 0 ),
 path( path ),
+draw_minimaps( true ),
 mini_map( NULL ){
 	scene = NULL;
 	bang = NULL;
@@ -378,6 +380,14 @@ void World::drawWorld( const PlayerTracker & tracker, Bitmap * where, const map<
 	}
 	scene->drawFront( min_x, where );
 }
+	
+void World::drawMiniMaps( bool b ){
+	draw_minimaps = b;
+}
+
+bool World::shouldDrawMiniMaps(){
+	return draw_minimaps;
+}
 
 void World::draw( Bitmap * work ){
 
@@ -411,6 +421,8 @@ void World::draw( Bitmap * work ){
 				mini_position_y -= mini.getHeight() - 2;
 				mini_position_x = work->getWidth() - mini.getWidth() - 1;
 			}
+		} else if ( ! shouldDrawMiniMaps() ){
+			break;
 		}
 	}
 	

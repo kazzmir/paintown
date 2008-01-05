@@ -37,6 +37,8 @@ static void startLoading( pthread_t * thread ){
 
 static void playLevel( World & world, const vector< Object * > & players ){
 	Keyboard key;
+
+	key.setDelay( Keyboard::Key_TAB, 300 );
 	/* the game graphics are meant for 320x240 and will be stretched
 	 * to fit the screen
 	 */
@@ -73,6 +75,10 @@ static void playLevel( World & world, const vector< Object * > & players ){
 					}
 					runCounter -= 1.0;
 				}
+			}
+			
+			if ( key[ Keyboard::Key_TAB ] ){
+				world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
 			}
 
 			Global::speed_counter = 0;
