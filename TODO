@@ -10,3 +10,10 @@ DONE * be able to gib characters - meaning they explode sometimes when they die
 DONE * computer assisted adventure mode?
 * infinite enemy mode like in super smash brothers
 DONE * show translucent mini-map of friends
+
+Things to do for the 3.0 release
+* finish level 11
+* add more widgets to network host screen
+* debug network code a bit
+* add widget to select number of buddy npc's
+* make network client screen not flicker
