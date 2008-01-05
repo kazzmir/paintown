@@ -92,7 +92,8 @@
 #endif
 
 /* SGI and MacOS X do not include socklen_t */
-#if defined __sgi || defined MACOSX
+// #if defined __sgi || defined MACOSX
+#if defined __sgi
 typedef int socklen_t;
 #endif
 

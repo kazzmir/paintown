@@ -1,6 +1,9 @@
 import os
+Import( 'hawkEnv' )
 
-env = Environment( ENV = os.environ )
+env = hawkEnv
+
+# env = Environment( ENV = os.environ )
 
 source = Split("""
 src/crc.c

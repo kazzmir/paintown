@@ -55,8 +55,10 @@ else:
 env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'hawknl' ], CPPDEFINES = cdefines )
 
 dumb = SConscript( "src/dumb/SConscript", build_dir = 'build/dumb' )
-# sockets = SConscript( "src/sockets/SConscript", build_dir = 'build/sockets' )
-hawknl = SConscript( "src/hawknl/SConscript", build_dir = 'build/hawknl' )
+hawkEnv = Environment( ENV = os.environ )
+if isOSX():
+	hawkEnv.Append( CPPDEFINES = 'MACOSX' )
+hawknl = SConscript( "src/hawknl/SConscript", build_dir = 'build/hawknl', exports = 'hawkEnv' )
 
 if False:
 	env.Append( CCFLAGS = '-pg' )
