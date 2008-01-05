@@ -194,6 +194,8 @@ static void drawHelp( const Font & font, int x, int y, int color, Bitmap & buffe
 	y += font.getHeight() + 1;
 	font.printf( x, y, color, buffer, "Attack3: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack3() ) );
 	y += font.getHeight() + 1;
+	font.printf( x, y, color, buffer, "Tab to hide/show minimap", 0 );
+	y += font.getHeight() + 1;
 	font.printf( x, y, color, buffer, "Press F1 to view this help", 0 );
 }
 
@@ -1128,12 +1130,16 @@ static bool titleScreen(){
 	};
 	const unsigned int versusMax = sizeof( versusOptions ) / sizeof( char* );
 
+	int max_buddies = 1;
 	bool isInvincible = false;
 	const unsigned int MORE_INVINCIBLE = 0;
 	const unsigned int MORE_GAME_SPEED = 1;
 	const unsigned int MORE_VIDEO_MODE = 2;
 	const unsigned int MORE_LIVES = 3;
-	const unsigned int MORE_BACK = 4;
+	const unsigned int MORE_BUDDIES = 4;
+	const unsigned int MORE_BACK = 5;
+	char buddies[ 128 ];
+	sprintf( buddies, "NPC Buddies: %d", max_buddies );
 	char invincible[ 128 ];
 	strcpy( invincible, "Invincible: No" );
 	char gameSpeed[ 128 ];
@@ -1146,6 +1152,7 @@ static bool titleScreen(){
 				       gameSpeed,
 				       videoMode,
 				       lives,
+				       buddies,
 				       "Back"
 				       };
 	const unsigned int moreMax = sizeof( moreOptions ) / sizeof( char* );
@@ -1270,6 +1277,21 @@ static bool titleScreen(){
 						startingLives = 1;
 					}
 					sprintf( lives, "Lives: %d", startingLives );
+				} else if ( options == moreOptions && choose == MORE_BUDDIES ){
+					if ( key[ Keyboard::Key_RIGHT ] ){
+						draw = true;
+						max_buddies += 1;
+					}
+					
+					if ( key[ Keyboard::Key_LEFT ] ){
+						draw = true;
+						max_buddies -= 1;
+						if ( max_buddies < 1 ){
+							max_buddies = 1;
+						}
+					}
+					
+					sprintf( buddies, "NPC Buddies: %d", max_buddies );
 				}
 
 				if ( enter ){
@@ -1503,7 +1525,6 @@ static bool titleScreen(){
 			case MAIN_PLAY_BUDDY : {
 				Object * player = NULL;
 				vector< Object * > buddies;
-				int max_buddies = 2;
 				try{
 					string level = selectLevelSet( Util::getDataPath() + "/levels" );
 					key.wait();
