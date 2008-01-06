@@ -48,7 +48,22 @@ Message::Message( Socket socket ){
 	}
 }
 
+void Message::dump( uint8_t * buffer ) const {
+	*(uint16_t *) buffer = id;
+	buffer += sizeof(uint16_t);
+	memcpy( buffer, data, DATA_SIZE );
+	buffer += DATA_SIZE;
+	if ( path != "" ){
+		*(uint16_t *) buffer = path.length() + 1;
+		buffer += sizeof(uint16_t);
+		memcpy( buffer, path.c_str(), path.length() + 1 );
+	} else {
+		*(uint16_t *) buffer = -1;
+	}
+}
+
 void Message::send( Socket socket ) const {
+	/*
 	send16( socket, id );
 	sendBytes( socket, data, DATA_SIZE );
 	if ( path != "" ){
@@ -57,6 +72,11 @@ void Message::send( Socket socket ) const {
 	} else {
 		send16( socket, -1 );
 	}
+	*/
+	uint8_t * buffer = new uint8_t[ size() ];
+	dump( buffer );
+	sendBytes( socket, buffer, size() );
+	delete[] buffer;
 }
 	
 void Message::reset(){
@@ -80,6 +100,12 @@ Message & Message::operator>>( int & x ){
 Message & Message::operator<<( string p ){
 	path = p;
 	return *this;
+}
+	
+int Message::size() const {
+	return sizeof( uint16_t ) + DATA_SIZE + 
+		(path != "" ? sizeof( uint16_t ) + path.length() + 1 :
+		sizeof( uint16_t ));
 }
 
 static string getHawkError(){

@@ -47,6 +47,9 @@ struct Message{
 	Message & operator<<( std::string p );
 	Message & operator>>( int & x );
 
+	int size() const;
+	void dump( uint8_t * buffer ) const;
+
 	void send( Socket socket ) const;
 	void reset();
 

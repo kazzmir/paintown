@@ -102,7 +102,7 @@ bool NetworkWorld::isRunning(){
 }
 
 void NetworkWorld::sendMessage( const Network::Message & message, Network::Socket socket ){
-	message.send( socket );
+	// message.send( socket );
 }
 	
 Network::Message NetworkWorld::finishMessage(){
@@ -219,11 +219,11 @@ void NetworkWorld::flushOutgoing(){
 		Network::Message & m = (*it).message;
 		Network::Socket from = (*it).socket;
 		sent_messages += 1;
-		for ( vector< NLsocket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
+		for ( vector< Network::Socket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
 			try{
 				if ( from != *socket ){
 					Global::debug( 1 ) << "Send message " << sent_messages << " to " << *socket << endl;
-					sendMessage( m, *socket );
+					m.send( *socket );
 					Global::debug( 1 ) << "Sent message" << endl;
 				}
 				socket++;
