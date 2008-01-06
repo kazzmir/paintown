@@ -16,4 +16,4 @@ DONE * finish level 11
 DONE * add more widgets to network host screen
 * debug network code a bit
 DONE * add widget to select number of buddy npc's
-* make network client screen not flicker
+DONE * make network client screen not flicker
