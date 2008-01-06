@@ -135,6 +135,7 @@ void sendBytes( NLsocket socket, const uint8_t * data, int length ){
 	const uint8_t * position = data;
 	int written = 0;
 	while ( written < length ){
+		/* put htons here for endianess compatibility */
 		int bytes = nlWrite( socket, position, length - written );
 		if ( bytes == NL_INVALID ){
 			throw NetworkException( string("Could not send bytes.") + getHawkError() );
@@ -148,6 +149,7 @@ void readBytes( NLsocket socket, uint8_t * data, int length ){
 	uint8_t * position = data;
 	int read = 0;
 	while ( read < length ){
+		/* put htons here for endianess compatibility */
 		int bytes = nlRead( socket, position, length - read );
 		if ( bytes == NL_INVALID ){
 			throw NetworkException( string("Could not read bytes.") + getHawkError() );

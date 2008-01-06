@@ -156,6 +156,7 @@ static int getServerPort(){
 		background.BlitToScreen();
 		const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 		font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port:", 0 );
+		font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Enter to start. ESC to quit", 0 );
 	}
 
 	Keyboard key;

@@ -56,5 +56,9 @@ const int Global::getDebug(){
 }
 
 void Global::showTitleScreen(){
-	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
+	Bitmap::Screen->Blit( Global::titleScreen() );
+}
+
+const std::string Global::titleScreen(){
+	return Util::getDataPath() + "/paintown-title.png";
 }

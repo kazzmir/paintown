@@ -2,6 +2,9 @@
 #define _global_things_h
 
 #include <ostream>
+#include <string>
+
+class Bitmap;
 
 extern const int ALLIANCE_NONE;
 extern const int ALLIANCE_PLAYER;
@@ -20,6 +23,7 @@ const int getDebug();
 std::ostream & debug( int i ); 
 
 void showTitleScreen();
+const std::string titleScreen();
 
 }
 
