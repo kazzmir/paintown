@@ -508,6 +508,12 @@ static void playGame( const vector< Socket > & sockets ){
 			}
 
 			NetworkWorld world( sockets, players, level );
+
+			Music::pause();
+			Music::fadeIn( 0.3 );
+			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+			Music::play();
+
 			stopLoading( loading_screen_thread );
 			playLevel( world, players );
 			world.stopRunning();

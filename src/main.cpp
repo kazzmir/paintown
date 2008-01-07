@@ -95,8 +95,21 @@ static void startLoading( pthread_t * thread ){
 	}
 }
 
-/* fade the screen and tell the player they lost */
 void fadeOut( const string & message ){
+	Bitmap dark( GFX_X, GFX_Y );
+	dark.clear();
+	Bitmap::transBlender( 0, 0, 0, 128 );
+
+	dark.drawTrans( 0, 0, *Bitmap::Screen );
+	
+	const Font & f = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 50, 50 );
+	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), *Bitmap::Screen, message, 0 );
+
+	Util::rest( 2000 );
+}
+
+/* fade the screen and tell the player they lost */
+void fadeOut2( const string & message ){
 	Bitmap dark( GFX_X, GFX_Y );
 	Bitmap copy( *Bitmap::Screen );
 	Bitmap work( GFX_X, GFX_Y );
@@ -106,9 +119,9 @@ void fadeOut( const string & message ){
 	int colors[ 100 ];
 	Util::blend_palette( colors, 100, Bitmap::makeColor( 26, 24, 24 ), Bitmap::makeColor( 97, 90, 91 ) );
 	for ( int y = 0; y < GFX_Y; y++ ){
-			  int color = colors[ (GFX_Y - y) / 5 ];
-			  // dark.line( 0, y, GFX_X, y, Bitmap::makeColor( (GFX_Y - y) / 6, (GFX_Y - y) / 4, (GFX_Y - y) / 5 ) );
-			  dark.line( 0, y, GFX_X, y, color );
+		int color = colors[ (GFX_Y - y) / 5 ];
+		// dark.line( 0, y, GFX_X, y, Bitmap::makeColor( (GFX_Y - y) / 6, (GFX_Y - y) / 4, (GFX_Y - y) / 5 ) );
+		dark.line( 0, y, GFX_X, y, color );
 	}
 	const Font & f = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 50, 50 );
 	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), dark, message, 0 );
