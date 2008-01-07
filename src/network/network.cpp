@@ -58,7 +58,7 @@ void Message::dump( uint8_t * buffer ) const {
 		buffer += sizeof(uint16_t);
 		memcpy( buffer, path.c_str(), path.length() + 1 );
 	} else {
-		*(uint16_t *) buffer = -1;
+		*(uint16_t *) buffer = (uint16_t) -1;
 	}
 }
 
