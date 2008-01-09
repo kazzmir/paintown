@@ -18,7 +18,8 @@ Client::Client( Network::Socket socket, ChatServer * server, unsigned int id ):
 socket( socket ),
 server( server ),
 id( id ),
-alive( true ){
+alive( true ),
+started( false ){
 	pthread_mutex_init( &lock, NULL );
 }
 	
@@ -157,8 +158,13 @@ void Client::addOutputMessage( const Network::Message & s ){
 }
 
 void Client::startThreads(){
-	pthread_create( &inputThread, NULL, clientInput, this );
-	pthread_create( &outputThread, NULL, clientOutput, this );
+	pthread_mutex_lock( &lock );
+	if ( ! started ){
+		pthread_create( &inputThread, NULL, clientInput, this );
+		pthread_create( &outputThread, NULL, clientOutput, this );
+		started = true;
+	}
+	pthread_mutex_unlock( &lock );
 }
 
 static void * acceptConnections( void * server_ ){
@@ -249,7 +255,6 @@ void ChatServer::addConnection( Network::Socket s ){
 	pthread_mutex_lock( &lock );
 	clients.push_back( client );
 	pthread_mutex_unlock( &lock );
-	client->startThreads();
 }
 
 static char lowerCase( const char * x ){
@@ -498,6 +503,15 @@ void ChatServer::draw( const Bitmap & work ){
 
 	need_update = false;
 }
+
+void ChatServer::startThreadsHack(){
+	pthread_mutex_lock( &lock );
+	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+		Client * c = *it;
+		c->startThreads();
+	}
+	pthread_mutex_unlock( &lock );
+}
 	
 void ChatServer::run(){
 	Global::speed_counter = 0;
@@ -512,6 +526,7 @@ void ChatServer::run(){
 	while ( ! done ){
 		int think = Global::speed_counter;
 		while ( think > 0 ){
+			startThreadsHack();
 			keyboard.poll();
 			done = logic( keyboard );
 			think -= 1;

@@ -70,6 +70,7 @@ private:
 	bool alive;
 	/* ok to use this client */
 	bool ok;
+	bool started;
 	std::string name;
 	pthread_t inputThread;
 	pthread_t outputThread;
@@ -119,6 +120,8 @@ protected:
 	void handleInput( Keyboard & keyboard );
 	int focusColor( Focus f );
 	void stopAccepting();
+
+	void startThreadsHack();
 
 	inline const int clientId(){
 		return client_id++;
