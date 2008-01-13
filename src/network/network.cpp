@@ -235,8 +235,18 @@ void init(){
 	// nlDisable( NL_BLOCKING_IO );
 }
 
+void blocking( bool b ){
+	if ( b ){
+		nlEnable( NL_BLOCKING_IO );
+	} else {
+		nlDisable( NL_BLOCKING_IO );
+	}
+}
+
 void listen( Socket s ){
-	nlListen( s );
+	if ( nlListen( s ) == NL_FALSE ){
+		Global::debug( 0 ) << "Could not listen on socket " << s << ": " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
+	}
 }
 
 Socket accept( Socket s ) throw( NetworkException ){

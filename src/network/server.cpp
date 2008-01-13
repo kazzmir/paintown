@@ -573,6 +573,7 @@ void networkServer(){
 	Global::debug( 0 ) << "Port " << port << endl;
 
 	try{
+		Network::blocking( false );
 		Network::Socket server = Network::open( port );
 		// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 		if ( server == NL_INVALID ){
@@ -582,6 +583,7 @@ void networkServer(){
 
 		ChatServer chat( "server", server );
 		chat.run();
+		Network::blocking( true );
 		vector< Network::Socket > sockets = chat.getConnectedClients();
 		if ( ! sockets.empty() ){
 			playGame( sockets );

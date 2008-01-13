@@ -82,6 +82,7 @@ static void * clientInput( void * client_ ){
 				}
 			}
 			done = ! client->isAlive();
+			Util::rest( 1 );
 		} catch ( const Network::NetworkException & e ){
 			Global::debug( 0 ) << "Client input " << client->getId() << " died" << endl;
 			done = true;
@@ -172,7 +173,7 @@ static void * acceptConnections( void * server_ ){
 	ChatServer * server = (ChatServer *) server_;
 	Network::Socket socket = server->getSocket();
 	while ( ! done ){
-		Global::debug( 0 ) << "Accept more connections" << endl;
+		Global::debug( 1 ) << "Accept more connections" << endl;
 		done = ! server->isAccepting();
 		try{
 			server->addConnection( Network::accept( socket ) );
@@ -183,6 +184,8 @@ static void * acceptConnections( void * server_ ){
 		}
 		Util::rest( 1 );
 	}
+	
+	Network::close( socket );
 
 	return NULL;
 }
@@ -213,7 +216,6 @@ bool ChatServer::isAccepting(){
 void ChatServer::stopAccepting(){
 	Global::debug( 0 ) << "Stop accepting" << endl;
 	pthread_mutex_lock( &lock );
-	Network::close( getSocket() );
 	accepting = false;
 	pthread_mutex_unlock( &lock );
 	Global::debug( 0 ) << "Waiting for accepting thread to stop" << endl;

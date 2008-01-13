@@ -64,6 +64,7 @@ void sendBytes( NLsocket socket, const uint8_t * data, int length );
 void readBytes( NLsocket socket, uint8_t * data, int length );
 void init();
 void shutdown();
+void blocking( bool b );
 
 void listen( Socket s );
 Socket accept( Socket s ) throw( NetworkException );
