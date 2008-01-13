@@ -11,6 +11,9 @@ namespace Network{
 
 typedef NLsocket Socket;
 
+const int NO_CONNECTIONS_PENDING = 1;
+const int NETWORK_ERROR = 2;
+
 const int DATA_SIZE = 16;
 
 class NetworkException: public std::exception{
@@ -67,7 +70,7 @@ void shutdown();
 void blocking( bool b );
 
 void listen( Socket s );
-Socket accept( Socket s ) throw( NetworkException );
+Socket accept( Socket s, int & error ) throw( NetworkException );
 
 Socket open( int port );
 Socket connect( std::string server, int port ) throw ( NetworkException );

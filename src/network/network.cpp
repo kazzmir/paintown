@@ -249,13 +249,21 @@ void listen( Socket s ){
 	}
 }
 
-Socket accept( Socket s ) throw( NetworkException ){
+Socket accept( Socket s, int & error ) throw( NetworkException ){
 	Socket connection = nlAcceptConnection( s );
 	if ( connection == NL_INVALID ){
+		if ( nlGetError() == NL_NO_PENDING ){
+			error = NO_CONNECTIONS_PENDING;
+		} else {
+			error = NETWORK_ERROR;
+		}
+		return s;
+		/*
 		if ( nlGetError() == NL_NO_PENDING ){
 			throw NoConnectionsPendingException();
 		}
 		throw NetworkException("Could not accept connection");
+		*/
 	}
 	open_sockets.push_back( connection );
 	return connection;

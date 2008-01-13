@@ -573,19 +573,24 @@ void networkServer(){
 	Global::debug( 0 ) << "Port " << port << endl;
 
 	try{
+		Global::debug( 0 ) << "[server] Set non blocking" << endl;
 		Network::blocking( false );
+		Global::debug( 0 ) << "[server] Get socket" << endl;
 		Network::Socket server = Network::open( port );
 		// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 		if ( server == NL_INVALID ){
 			Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
 			throw ReturnException();
 		}
+		
+		Global::debug( 0 ) << "[server] Run chat server" << endl;
 
 		ChatServer chat( "server", server );
 		chat.run();
 		Network::blocking( true );
 		vector< Network::Socket > sockets = chat.getConnectedClients();
 		if ( ! sockets.empty() ){
+			Global::debug( 0 ) << "[server] Start game with " << sockets.size() << " clients" << endl;
 			playGame( sockets );
 		}
 		Network::close( server );

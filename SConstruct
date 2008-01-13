@@ -44,7 +44,7 @@ cdefines = []
 # cppflags = [ '-Woverloaded-virtual' ]
 
 if debug:
-	cflags.append( '-g3' )
+	cflags.append( ['-g3','-ggdb'] )
 else:
 	cflags.append( '-O2' )
 

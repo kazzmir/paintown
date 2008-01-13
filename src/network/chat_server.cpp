@@ -172,20 +172,41 @@ static void * acceptConnections( void * server_ ){
 	bool done = false;
 	ChatServer * server = (ChatServer *) server_;
 	Network::Socket socket = server->getSocket();
+	Global::debug( 1 ) << "Accepting connections" << endl;
 	while ( ! done ){
-		Global::debug( 1 ) << "Accept more connections" << endl;
 		done = ! server->isAccepting();
+		int myerror = 0;
+		Network::Socket s = Network::accept( socket, myerror );
+		if ( myerror != 0 ){
+			switch ( myerror ){
+				case Network::NO_CONNECTIONS_PENDING : {
+					break;
+				}
+				case Network::NETWORK_ERROR : {
+					done = true;
+					break;
+				}
+			}
+		} else {
+			Global::debug( 1 ) << "Adding connection" << endl;
+			server->addConnection( s );
+		}
+		/*
 		try{
-			server->addConnection( Network::accept( socket ) );
+			Network::accept( socket );
+			// server->addConnection( Network::accept( socket ) );
 		} catch ( const Network::NoConnectionsPendingException & e ){
 		} catch ( const Network::NetworkException & e ){
 			Global::debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
 			done = true;
 		}
+		*/
 		Util::rest( 1 );
 	}
 	
 	Network::close( socket );
+
+	Global::debug( 1 )  << "Accept connection thread is done" << endl;
 
 	return NULL;
 }
@@ -198,11 +219,13 @@ focus( INPUT_BOX ),
 client_id( 1 ),
 name( name ),
 accepting( true ){
+	Global::debug( 0 ) << "[chat-server] Constructor" << endl;
 	background = new Bitmap( Util::getDataPath() + "/paintown-title.png" );
 
+	Global::debug( 0 ) << "[chat-server] Listen on socket" << endl;
 	Network::listen( socket );
 	pthread_mutex_init( &lock, NULL );
-	pthread_create( &acceptThread, NULL, acceptConnections, this );
+	Global::debug( 0 ) << "[chat-server] Start accepting connections" << endl;
 }
 	
 bool ChatServer::isAccepting(){
@@ -337,9 +360,13 @@ void ChatServer::shutdownClientThreads(){
 		Client * c = *it;
 		Global::debug( 0 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
 		pthread_join( c->getInputThread(), NULL );
+		Global::debug( 0 ) << "Input thread done for " << c->getId() << endl;
 		pthread_join( c->getOutputThread(), NULL );
+		Global::debug( 0 ) << "Output thread done for " << c->getId() << endl;
 		Global::debug( 0 ) << "Client " << c->getId() << " is done" << endl;
 	}
+
+	Global::debug( 1 ) << "[chat-server] Shut down all clients" << endl;
 }
 	
 vector< Network::Socket > ChatServer::getConnectedClients(){
@@ -523,6 +550,8 @@ void ChatServer::run(){
 	keyboard.setAllDelay( 200 );
 	keyboard.setDelay( Keyboard::Key_TAB, 200 );
 	keyboard.setDelay( Keyboard::Key_ESC, 0 );
+	
+	pthread_create( &acceptThread, NULL, acceptConnections, this );
 
 	bool done = false;
 	while ( ! done ){
@@ -540,8 +569,12 @@ void ChatServer::run(){
 				done = true;
 			} else if ( done && focus == START_GAME ){
 				stopAccepting();
+				Global::debug( 1 ) << "[chat-server] Shut down client threads" << endl;
 				shutdownClientThreads();
+				Global::debug( 1 ) << "[chat-server] Finished shutting things down. Done is " << done << endl;
 				done = true;
+				Global::debug( 1 ) << "[chat-server] Done is " << done << endl;
+				break;
 			}
 		}
 
@@ -556,6 +589,8 @@ void ChatServer::run(){
 			keyboard.poll();
 		}
 	}
+
+	Global::debug( 1 ) << "[chat-server] Chat server done" << endl;
 }
 	
 ChatServer::~ChatServer(){
