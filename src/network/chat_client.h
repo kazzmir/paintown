@@ -40,7 +40,7 @@ public:
 
 protected:
 	void killInputThread();
-	void logic( Keyboard & keyboard );
+	bool logic( Keyboard & keyboard );
 	Focus nextFocus( Focus f );
 	bool needToDraw();
 	void draw( const Bitmap & bitmap );

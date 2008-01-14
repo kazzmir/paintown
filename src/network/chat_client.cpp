@@ -210,7 +210,7 @@ void ChatClient::needUpdate(){
 	need_update = true;
 }
 	
-void ChatClient::logic( Keyboard & keyboard ){
+bool ChatClient::logic( Keyboard & keyboard ){
 	if ( keyboard[ Keyboard::Key_TAB ] ){
 		focus = nextFocus( focus );
 		needUpdate();
@@ -219,12 +219,17 @@ void ChatClient::logic( Keyboard & keyboard ){
 	switch ( focus ){
 		case INPUT_BOX : {
 			handleInput( keyboard );
+			return false;
 			break;
 		}
 		case QUIT : {
+			if ( keyboard[ Keyboard::Key_ENTER ] ){
+				return true;
+			}
 			break;
 		}
 	}
+	return false;
 }
 
 void ChatClient::drawInputBox( int x, int y, const Bitmap & work ){
@@ -269,6 +274,13 @@ void ChatClient::draw( const Bitmap & work ){
 	messages.draw( start_x, start_y, work, font );
 	drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
 	drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
+
+	int color = Bitmap::makeColor( 255, 255, 255 );
+	if ( focus == QUIT ){
+		color = Bitmap::makeColor( 255, 255, 0 );
+	}
+	font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() + 20, color, work, "Back", 0 );
+
 	need_update = false;
 }
 			
@@ -309,13 +321,18 @@ void ChatClient::run(){
 		int think = Global::speed_counter;
 		while ( think > 0 ){
 			keyboard.poll();
-			logic( keyboard );
+			if ( logic( keyboard ) ){
+				kill = true;
+				done = true;
+				break;
+			}
 			think -= 1;
 			Global::speed_counter = 0;
 			done = isFinished();
 			if ( keyboard[ Keyboard::Key_ESC ] ){
 				kill = true;
 				done = true;
+				break;
 			}
 		}
 
