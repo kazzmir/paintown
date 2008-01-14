@@ -77,7 +77,7 @@ void NetworkCharacter::setNameTime( int d ){
 	
 void NetworkCharacter::alwaysShowName(){
 	setNameTime( -1 );
-	Global::debug( 0 ) << getId() << " name time is " << show_name_time << endl;
+	Global::debug( 1 ) << getId() << " name time is " << show_name_time << endl;
 }
 
 void NetworkCharacter::draw( Bitmap * work, int rel_x ){

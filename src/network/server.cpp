@@ -452,6 +452,7 @@ static void playGame( const vector< Socket > & sockets ){
 		id += 1;
 		for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 			const Socket & socket = *it;
+			Global::debug( 1 ) << "[server] Read character path from " << id << endl;
 			Message message( socket );
 			int type;
 			message >> type;
@@ -491,6 +492,7 @@ static void playGame( const vector< Socket > & sockets ){
 		vector< string > levels = Level::readLevels( levelSet );
 		for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
 			string level = *it;
+			Global::debug( 1 ) << "[server] Sending level '" << level << "'" << endl;
 			Message loadLevel;
 			loadLevel << World::LOAD_LEVEL;
 			loadLevel.path = level;
@@ -507,7 +509,10 @@ static void playGame( const vector< Socket > & sockets ){
 				playerX->setStatus( Status_Falling );
 			}
 
+			Global::debug( 1 ) << "[server] Create network world" << endl;
 			NetworkWorld world( sockets, players, level );
+
+			Global::debug( 1 ) << "[server] Load music" << endl;
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
@@ -570,12 +575,11 @@ void networkServer(){
 
 	Keyboard key;
 
-	Global::debug( 0 ) << "Port " << port << endl;
+	Global::debug( 1 ) << "Port " << port << endl;
 
 	try{
-		Global::debug( 0 ) << "[server] Set non blocking" << endl;
 		Network::blocking( false );
-		Global::debug( 0 ) << "[server] Get socket" << endl;
+		Global::debug( 1 ) << "[server] Get socket" << endl;
 		Network::Socket server = Network::open( port );
 		// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 		if ( server == NL_INVALID ){
@@ -583,14 +587,14 @@ void networkServer(){
 			throw ReturnException();
 		}
 		
-		Global::debug( 0 ) << "[server] Run chat server" << endl;
+		Global::debug( 1 ) << "[server] Run chat server" << endl;
 
 		ChatServer chat( "server", server );
 		chat.run();
 		Network::blocking( true );
 		vector< Network::Socket > sockets = chat.getConnectedClients();
 		if ( ! sockets.empty() ){
-			Global::debug( 0 ) << "[server] Start game with " << sockets.size() << " clients" << endl;
+			Global::debug( 1 ) << "[server] Start game with " << sockets.size() << " clients" << endl;
 			playGame( sockets );
 		}
 		Network::close( server );

@@ -92,7 +92,7 @@ static void * clientInput( void * client_ ){
 	Global::debug( 1 ) << client->getId() << " is done" << endl;
 	
 	if ( client->canKill() ){
-		Global::debug( 0 ) << "Input thread killing client" << endl;
+		Global::debug( 1 ) << "Input thread killing client" << endl;
 		client->getServer()->killClient( client );
 	}
 
@@ -124,7 +124,7 @@ static void * clientOutput( void * client_ ){
 	}
 
 	if ( client->canKill() ){
-		Global::debug( 0 ) << "Output thread killing client" << endl;
+		Global::debug( 1 ) << "Output thread killing client" << endl;
 		client->getServer()->killClient( client );
 	}
 
@@ -219,13 +219,13 @@ focus( INPUT_BOX ),
 client_id( 1 ),
 name( name ),
 accepting( true ){
-	Global::debug( 0 ) << "[chat-server] Constructor" << endl;
+	Global::debug( 1 ) << "[chat-server] Constructor" << endl;
 	background = new Bitmap( Util::getDataPath() + "/paintown-title.png" );
 
-	Global::debug( 0 ) << "[chat-server] Listen on socket" << endl;
+	Global::debug( 1 ) << "[chat-server] Listen on socket" << endl;
 	Network::listen( socket );
 	pthread_mutex_init( &lock, NULL );
-	Global::debug( 0 ) << "[chat-server] Start accepting connections" << endl;
+	Global::debug( 1 ) << "[chat-server] Start accepting connections" << endl;
 }
 	
 bool ChatServer::isAccepting(){
@@ -237,13 +237,13 @@ bool ChatServer::isAccepting(){
 }
 
 void ChatServer::stopAccepting(){
-	Global::debug( 0 ) << "Stop accepting" << endl;
+	Global::debug( 1 ) << "Stop accepting" << endl;
 	pthread_mutex_lock( &lock );
 	accepting = false;
 	pthread_mutex_unlock( &lock );
-	Global::debug( 0 ) << "Waiting for accepting thread to stop" << endl;
+	Global::debug( 1 ) << "Waiting for accepting thread to stop" << endl;
 	pthread_join( acceptThread, NULL );
-	Global::debug( 0 ) << "Not accepting any connections" << endl;
+	Global::debug( 1 ) << "Not accepting any connections" << endl;
 }
 
 void ChatServer::addConnection( Network::Socket s ){
@@ -358,12 +358,12 @@ void ChatServer::shutdownClientThreads(){
 
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		Client * c = *it;
-		Global::debug( 0 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
+		Global::debug( 1 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
 		pthread_join( c->getInputThread(), NULL );
-		Global::debug( 0 ) << "Input thread done for " << c->getId() << endl;
+		Global::debug( 1 ) << "Input thread done for " << c->getId() << endl;
 		pthread_join( c->getOutputThread(), NULL );
-		Global::debug( 0 ) << "Output thread done for " << c->getId() << endl;
-		Global::debug( 0 ) << "Client " << c->getId() << " is done" << endl;
+		Global::debug( 1 ) << "Output thread done for " << c->getId() << endl;
+		Global::debug( 1 ) << "Client " << c->getId() << " is done" << endl;
 	}
 
 	Global::debug( 1 ) << "[chat-server] Shut down all clients" << endl;

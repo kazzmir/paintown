@@ -41,6 +41,10 @@ sockets( sockets ),
 sent_messages( 0 ),
 running( true ){
 	unsigned int max_id = 0;
+
+	pthread_mutex_init( &message_mutex, NULL );
+	pthread_mutex_init( &running_mutex, NULL );
+
 	for ( vector< PlayerTracker >::iterator it = this->players.begin(); it != this->players.end(); it++ ){
 		Object * object = it->player;
 		addMessage( object->getCreateMessage() );
@@ -50,8 +54,6 @@ running( true ){
 	}
 	this->id = max_id + 1;
 
-	pthread_mutex_init( &message_mutex, NULL );
-	pthread_mutex_init( &running_mutex, NULL );
 
 	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 		Stuff * s = new Stuff;

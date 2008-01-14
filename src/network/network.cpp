@@ -210,9 +210,9 @@ Socket connect( string server, int port ) throw ( NetworkException ) {
 void close( Socket s ){
 	for ( vector< Socket >::iterator it = open_sockets.begin(); it != open_sockets.end(); ){
 		if ( *it == s ){
-			Global::debug( 0 ) << "Closing socket " << s << endl;
+			Global::debug( 1 ) << "Closing socket " << s << endl;
 			nlClose( *it );
-			Global::debug( 0 ) << "Closed" << endl;
+			Global::debug( 1 ) << "Closed" << endl;
 			it = open_sockets.erase( it );
 		} else {
 			it++;
