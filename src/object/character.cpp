@@ -1079,9 +1079,11 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	// cout << this << " collided with " << obj << endl;
 	Object::collided( obj, objects );
 
-	collision_objects[ obj ] = obj->getTicket();
+	if ( obj != NULL ){
+		collision_objects[ obj ] = obj->getTicket();
+		setFacing( obj->getOppositeFacing() );
+	}
 
-	setFacing( obj->getOppositeFacing() );
 	if ( getStatus() != Status_Grabbed ){
 		moveX( -5 );
 	}

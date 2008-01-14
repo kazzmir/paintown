@@ -226,6 +226,7 @@ void World::doLogic(){
 
 							o_good->attacked( *fight, added_effects );
 							(*fight)->collided( o_good, added_effects );
+							addMessage( (*fight)->collidedMessage() );
 							(*fight)->takeDamage( this, o_good, o_good->getDamage() );
 						// }
 					}

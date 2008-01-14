@@ -17,6 +17,7 @@ class Stimulation;
 #define MID_(a,b,c) MAX_(a,MIN_(b,c))
 
 const int OBJECT_MOVED = 0;
+const int OBJECT_COLLIDED = 1;
 
 // using namespace std;
 
@@ -148,6 +149,7 @@ public:
 	virtual void interpretMessage( Network::Message & m );
 
 	virtual Network::Message movedMessage();
+	virtual Network::Message collidedMessage();
 
 	virtual inline void setId( unsigned int id ){
 		this->id = id;

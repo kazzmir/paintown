@@ -175,7 +175,22 @@ void Object::interpretMessage( Network::Message & message ){
 			setFacing( facing );
 			break;
 		}
+		case OBJECT_COLLIDED : {
+			vector< Object * > objects;
+			/* TODO: get the real object that collided instead of NULL */
+			collided( NULL, objects );
+			break;
+		}
 	}
+}
+	
+Network::Message Object::collidedMessage(){
+	Network::Message m;
+
+	m.id = getId();
+	m << OBJECT_COLLIDED;
+
+	return m;
 }
 
 Network::Message Object::movedMessage(){
