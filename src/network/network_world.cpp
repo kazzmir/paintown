@@ -76,6 +76,19 @@ NetworkWorld::~NetworkWorld(){
 	*/
 }
 	
+void NetworkWorld::addObject( Object * o ){
+	if ( o->getId() != (unsigned int) -1 ){
+		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+			Object * obj = *it;
+			if ( obj->getId() == o->getId() ){
+				return;
+			}
+		}
+	}
+
+	World::addObject( o );
+}
+	
 void NetworkWorld::addMessage( Network::Message m, Network::Socket from ){
 	pthread_mutex_lock( &message_mutex );
 	Packet p( m, from );

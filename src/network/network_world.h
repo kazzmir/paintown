@@ -30,6 +30,8 @@ public:
 	void flushOutgoing();
 	
 	void stopRunning();
+	
+	virtual void addObject( Object * o );
 
 	virtual ~NetworkWorld();
 

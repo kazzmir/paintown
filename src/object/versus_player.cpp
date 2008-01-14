@@ -95,15 +95,16 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 		int max = -1;
 		if ( ! possible_animations.empty() ){
 
+			map< Animation *, int > possible2;
 			for ( map<Animation *, int>::iterator ani = possible_animations.begin(); ani != possible_animations.end(); ani++ ){
-				if ( ani->first->getName() == "get" ){
-					possible_animations.erase( ani );
+				if ( ani->first->getName() != "get" ){
+					possible2[ ani->first ] = ani->second;
 				}
 			}
 
 			if ( getStatus() != Status_Get ){
 
-				for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
+				for ( map<Animation *, int>::iterator mit = possible2.begin(); mit != possible2.end(); mit++ ){
 					int & cur = (*mit).second;
 					Animation * blah = (*mit).first;
 					Global::debug( 3 ) << blah->getName() << "? ";
