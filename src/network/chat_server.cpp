@@ -204,7 +204,9 @@ static void * acceptConnections( void * server_ ){
 		Util::rest( 1 );
 	}
 	
+#ifdef WINDOWS
 	Network::close( socket );
+#endif
 
 	Global::debug( 1 )  << "Accept connection thread is done" << endl;
 
@@ -241,6 +243,9 @@ void ChatServer::stopAccepting(){
 	pthread_mutex_lock( &lock );
 	accepting = false;
 	pthread_mutex_unlock( &lock );
+#ifndef WINDOWS
+	Network::close( socket );
+#endif
 	Global::debug( 1 ) << "Waiting for accepting thread to stop" << endl;
 	pthread_join( acceptThread, NULL );
 	Global::debug( 1 ) << "Not accepting any connections" << endl;

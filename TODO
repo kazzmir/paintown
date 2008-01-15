@@ -17,3 +17,4 @@ DONE * add more widgets to network host screen
 * debug network code a bit
 DONE * add widget to select number of buddy npc's
 DONE * make network client screen not flicker
+* fix races in grabbing

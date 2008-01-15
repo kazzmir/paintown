@@ -578,7 +578,9 @@ void networkServer(){
 	Global::debug( 1 ) << "Port " << port << endl;
 
 	try{
+#ifdef WINDOWS
 		Network::blocking( false );
+#endif
 		Global::debug( 1 ) << "[server] Get socket" << endl;
 		Network::Socket server = Network::open( port );
 		// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
@@ -591,7 +593,9 @@ void networkServer(){
 
 		ChatServer chat( "server", server );
 		chat.run();
+#ifdef WINDOWS
 		Network::blocking( true );
+#endif
 		vector< Network::Socket > sockets = chat.getConnectedClients();
 		if ( ! sockets.empty() ){
 			Global::debug( 1 ) << "[server] Start game with " << sockets.size() << " clients" << endl;
