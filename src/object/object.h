@@ -51,6 +51,7 @@ public:
 	virtual void grabbed( Object * obj ) = 0;
 	/* stop grabbing */
 	virtual void unGrab() = 0;
+	virtual bool isGrabbed() = 0;
 
 	/* copy:
 	 * Return an exact copy of this object

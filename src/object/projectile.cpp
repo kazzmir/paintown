@@ -124,6 +124,10 @@ void Projectile::draw( Bitmap * work, int rel_x ){
 
 void Projectile::grabbed( Object * obj ){
 }
+	
+bool Projectile::isGrabbed(){
+	return false;
+}
 
 void Projectile::unGrab(){
 }

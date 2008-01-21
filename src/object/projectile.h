@@ -17,6 +17,7 @@ public:
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
+	virtual bool isGrabbed();
 	virtual Object * copy();
 	virtual const std::string & getAttackName();
 	virtual bool isAttacking();

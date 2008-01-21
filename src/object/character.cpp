@@ -995,6 +995,10 @@ void Character::unGrab(){
 	setLink( NULL );
 }
 	
+bool Character::isGrabbed(){
+	return getStatus() == Status_Grabbed;
+}
+
 void Character::grabbed( Object * obj ){
 	setStatus( Status_Grabbed );
 

@@ -90,6 +90,8 @@ public:
 		}
 	}
 	
+	virtual bool isGrabbed();
+
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	

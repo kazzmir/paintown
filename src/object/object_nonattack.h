@@ -19,6 +19,7 @@ public:
 	
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
+	virtual bool isGrabbed();
 	
 	virtual int getDamage() const;
 	
