@@ -32,6 +32,8 @@ const int white = Bitmap::makeColor( 255, 255, 255 );
 
 static std::map<std::string, Menu *> _menus;
 
+int Menu::fadeSpeed = 12;
+
 Box fadeBox;
 
 int fadeAlpha=0;
@@ -98,6 +100,11 @@ void Menu::load(Token *token)throw( LoadException )
 				int r,g,b;
 				*tok >> r >> g >> b >> backboard.position.borderAlpha;
 				backboard.position.border = Bitmap::makeColor(r,g,b);
+			} 
+			else if ( *tok == "fade-speed" )
+			{
+				// Menu fade in speed
+				*tok >> fadeSpeed;
 			} 
 			else if ( *tok == "font" )
 			{
@@ -259,18 +266,18 @@ useflags Menu::run()
 				switch(currentDrawState)
 				{
 					case FadeIn:
-						if(fadeBox.position.x>backboard.position.x)fadeBox.position.x-=6;
+						if(fadeBox.position.x>backboard.position.x)fadeBox.position.x-=fadeSpeed;
 						else if(fadeBox.position.x<backboard.position.x)fadeBox.position.x=backboard.position.x;
-						if(fadeBox.position.y>backboard.position.y)fadeBox.position.y-=6;
+						if(fadeBox.position.y>backboard.position.y)fadeBox.position.y-=fadeSpeed;
 						else if(fadeBox.position.y<backboard.position.y)fadeBox.position.y=backboard.position.y;
-						if(fadeBox.position.width<backboard.position.width)fadeBox.position.width+=12;
+						if(fadeBox.position.width<backboard.position.width)fadeBox.position.width+=(fadeSpeed*2);
 						else if(fadeBox.position.width>backboard.position.width)fadeBox.position.width=backboard.position.width;
-						if(fadeBox.position.height<backboard.position.height)fadeBox.position.height+=12;
+						if(fadeBox.position.height<backboard.position.height)fadeBox.position.height+=(fadeSpeed*2);
 						else if(fadeBox.position.height>backboard.position.height)fadeBox.position.height=backboard.position.height;
 						if(fadeBox.position == backboard.position)currentDrawState = FadeInText;
 						break;
 					case FadeInText:
-						if(fadeAlpha<255)fadeAlpha+=5;
+						if(fadeAlpha<255)fadeAlpha+=(fadeSpeed+2);
 						else if(fadeAlpha>=255){fadeAlpha=255; currentDrawState = NoFade;}
 						break;
 					case NoFade:

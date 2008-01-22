@@ -117,5 +117,8 @@ class Menu
 		
 		//! Enum containing the draw state so we can do some effects
 		menuDrawState currentDrawState;
+		
+		//! Fade speed
+		static int fadeSpeed;
 };
 #endif
