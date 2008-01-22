@@ -32,6 +32,10 @@ const int white = Bitmap::makeColor( 255, 255, 255 );
 
 static std::map<std::string, Menu *> _menus;
 
+Box fadeBox;
+
+int fadeAlpha=0;
+
 static void addMenu(Menu *m) throw( LoadException )
 {
 	std::map<std::string, Menu *>::iterator i = _menus.find(m->getName());
@@ -42,9 +46,9 @@ static void addMenu(Menu *m) throw( LoadException )
 	else throw LoadException("A menu by the name of \""+m->getName()+"\" already exists!"); 
 }
 
-Menu::Menu() : music(""), background(0), vFont(0), fontWidth(24), fontHeight(24), _menuflags(0),longestTextLength(0), _name("")
+Menu::Menu() : music(""), background(0), vFont(0), fontWidth(24), fontHeight(24), _menuflags(0),longestTextLength(0), _name(""),currentDrawState(FadeIn)
 {
-	if(!work)work = new Bitmap(Bitmap::Screen->getWidth(), Bitmap::Screen->getHeight()); //Bitmap::Screen;
+	if(!work)work = new Bitmap(GFX_X, GFX_Y); //Bitmap::Screen;
 	backboard.position.radius = 15;
 }
 
@@ -196,6 +200,9 @@ useflags Menu::run()
 		int game_time = 100;		
 		font = vFont;
 		
+		// Reset fade stuff
+		resetFadeInfo();
+		
 		while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 	
 			bool draw = false;
@@ -248,6 +255,29 @@ useflags Menu::run()
 					checkTextLength((*b));
 				}
 				
+				// Lets do some logic for the box with text
+				switch(currentDrawState)
+				{
+					case FadeIn:
+						if(fadeBox.position.x>backboard.position.x)fadeBox.position.x-=6;
+						else if(fadeBox.position.x<backboard.position.x)fadeBox.position.x=backboard.position.x;
+						if(fadeBox.position.y>backboard.position.y)fadeBox.position.y-=6;
+						else if(fadeBox.position.y<backboard.position.y)fadeBox.position.y=backboard.position.y;
+						if(fadeBox.position.width<backboard.position.width)fadeBox.position.width+=12;
+						else if(fadeBox.position.width>backboard.position.width)fadeBox.position.width=backboard.position.width;
+						if(fadeBox.position.height<backboard.position.height)fadeBox.position.height+=12;
+						else if(fadeBox.position.height>backboard.position.height)fadeBox.position.height=backboard.position.height;
+						if(fadeBox.position == backboard.position)currentDrawState = FadeInText;
+						break;
+					case FadeInText:
+						if(fadeAlpha<255)fadeAlpha+=5;
+						else if(fadeAlpha>=255){fadeAlpha=255; currentDrawState = NoFade;}
+						break;
+					case NoFade:
+					default:
+						break;
+				}
+				
 				Global::speed_counter = 0;
 			}
 			
@@ -261,46 +291,13 @@ useflags Menu::run()
 		
 			if ( draw )
 			{
+				work->clear();
 				// Draw
 				if(backgrounds.front())backgrounds.front()->draw(work);
-				// Our box widget
-				backboard.render(work);
-				std::vector <MenuOption *>::iterator b = menuOptions.begin();
-				std::vector <MenuOption *>::iterator e = menuOptions.end();
-				const int startx = (backboard.position.width/2)-(longestTextLength/2);
-				const int starty = (backboard.position.height/2)-((vFont->getHeight()*(menuOptions.size()-1))/2);
-				for(int i=0;b!=e;++b,++i)
-				{
-					/* There more than likely won't be any need to draw, but hey maybe sometime in the future
-					   the need might arise */
-					(*b)->draw(work);
-					
-					// These menus are temporary, they will need to be changed
-					const unsigned int color = ((*b)->getState() == MenuOption::Selected) ? yellow : white;
-					switch((*b)->getType()) {
-						case MenuOption::adjustableOption : {
-								//Change into triangles later
-								/*
-								work->circleFill((position.x+startx)-15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getLeftAdjustColor());
-								*/
-								const int triangleSize = 10;
-								int cx = (backboard.position.x + startx) - 15;
-								int cy = (int)(backboard.position.y + starty + i * fontHeight * 1.2 + fontHeight / 2 + 2);
-								work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*b)->getLeftAdjustColor() );
-								
-								cx = (backboard.position.x+startx + vFont->textLength((*b)->getText().c_str()))+15;
-								work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*b)->getRightAdjustColor() );
-
-								// work->circleFill((position.x+startx + vFont->textLength((*b)->getText().c_str()))+15, int((position.y + starty) + i * fontHeight *1.2) + (fontHeight/2) + 2,fontHeight/3,(*b)->getRightAdjustColor());
-							break;
-						}
-						case MenuOption::option:
-						default:
-							break;
-					}
-					vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
-				}
-				
+				// Draw text board
+				drawTextBoard(work);
+				// Draw text
+				drawText(work);
 				// Finally render to screen
 				work->BlitToScreen();
 			}
@@ -390,6 +387,100 @@ void Menu::checkTextLength(MenuOption *opt)
 				if(len > longestTextLength)longestTextLength = len;
 			}
 			break;
+	}
+}
+
+//! Reset fade info
+void Menu::resetFadeInfo()
+{
+	// Set the fade stuff
+	currentDrawState = FadeIn;
+	fadeBox.position = backboard.position;
+	fadeBox.position.width = fadeBox.position.height = 0;
+	fadeBox.position.x = backboard.position.x+(backboard.position.width/2);
+	fadeBox.position.y = backboard.position.y+(backboard.position.height/2);
+	fadeAlpha = 0;
+}
+
+//! Draw board
+void Menu::drawTextBoard(Bitmap *work)
+{
+	switch(currentDrawState)
+	{
+		case FadeIn:
+			fadeBox.render(work);
+			break;
+		case FadeInText:
+		case NoFade:
+		default:
+			// Our box widget
+			backboard.render(work);
+			break;
+	}
+}
+
+//! Draw text
+void Menu::drawText(Bitmap *work)
+{
+	std::vector <MenuOption *>::iterator b = menuOptions.begin();
+	std::vector <MenuOption *>::iterator e = menuOptions.end();
+	const int startx = (backboard.position.width/2)-(longestTextLength/2);
+	const int starty = (backboard.position.height/2)-((vFont->getHeight()*(menuOptions.size()-1))/2);
+	for(int i=0;b!=e;++b,++i)
+	{
+		/* There more than likely won't be any need to draw, but hey maybe sometime in the future
+		the need might arise */
+		(*b)->draw(work);
+		switch(currentDrawState)
+		{
+			case FadeIn:
+				break;
+			case FadeInText:
+			{
+				const unsigned int color = ((*b)->getState() == MenuOption::Selected) ? yellow : white;
+				Bitmap::transBlender( 0, 0, 0, fadeAlpha );
+				work->drawingMode( Bitmap::MODE_TRANS );
+				switch((*b)->getType()) {
+					case MenuOption::adjustableOption : {
+						const int triangleSize = 10;
+						int cx = (backboard.position.x + startx) - 15;
+						int cy = (int)(backboard.position.y + starty + i * fontHeight * 1.2 + fontHeight / 2 + 2);
+						work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*b)->getLeftAdjustColor() );
+								
+						cx = (backboard.position.x+startx + vFont->textLength((*b)->getText().c_str()))+15;
+						work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*b)->getRightAdjustColor() );
+						break;
+					}
+					case MenuOption::option:
+					default:
+						break;
+				}
+				vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
+				work->drawingMode( Bitmap::MODE_SOLID );
+				break;
+			}
+			case NoFade:
+			default:
+				// These menus are temporary, they will need to be changed
+				const unsigned int color = ((*b)->getState() == MenuOption::Selected) ? yellow : white;
+				switch((*b)->getType()) {
+					case MenuOption::adjustableOption : {
+						const int triangleSize = 10;
+						int cx = (backboard.position.x + startx) - 15;
+						int cy = (int)(backboard.position.y + starty + i * fontHeight * 1.2 + fontHeight / 2 + 2);
+						work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*b)->getLeftAdjustColor() );
+								
+						cx = (backboard.position.x+startx + vFont->textLength((*b)->getText().c_str()))+15;
+						work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*b)->getRightAdjustColor() );
+						break;
+					}
+					case MenuOption::option:
+					default:
+						break;
+				}
+				vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
+				break;
+		}
 	}
 }
 

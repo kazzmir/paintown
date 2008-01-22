@@ -17,6 +17,7 @@ struct RectArea
 	int radius;
 	inline int getX2() { return x + width; }
 	inline int getY2() { return y + height; }
+	bool operator==( const RectArea &);
 };
 
 #endif

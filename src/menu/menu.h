@@ -98,5 +98,24 @@ class Menu
 		//! Set longest length
 		void checkTextLength(MenuOption *opt);
 		
+		//! Draw board
+		void drawTextBoard(Bitmap *work);
+		
+		//! Draw text
+		void drawText(Bitmap *work);
+		
+		//! Draw states
+		enum menuDrawState
+		{
+			FadeIn = 0,
+   			FadeInText,
+      			NoFade
+		};
+		
+		//! Reset fade data
+		void resetFadeInfo();
+		
+		//! Enum containing the draw state so we can do some effects
+		menuDrawState currentDrawState;
 };
 #endif

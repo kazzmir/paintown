@@ -17,3 +17,11 @@ bool RectArea::empty()
 	return (x==0 && y==0 && width==0 && height==0);
 }
 
+bool RectArea::operator==( const RectArea &rect)
+{
+	return ( (x == rect.x) &&
+			(y == rect.y) &&
+			(width == rect.width) &&
+			(height == rect.height));
+}
+

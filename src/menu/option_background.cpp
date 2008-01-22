@@ -3,6 +3,7 @@
 #include "util/token.h"
 #include "util/funcs.h"
 #include "globals.h"
+#include "init.h"
 
 OptionBg::OptionBg(Token *token)throw( LoadException ) : MenuOption(event) , animDelay(5)
 {
@@ -69,6 +70,10 @@ void OptionBg::draw(Bitmap *work)
 	if(!images.empty())
 	{
 		images[0]->draw(0,0,*work);
+		if(images[0]->getWidth() < GFX_X || images[0]->getHeight() < GFX_Y)
+		{
+			work->rectangle(images[0]->getWidth(),images[0]->getHeight(),GFX_X,GFX_Y,Bitmap::makeColor(0,0,0));
+		}
 	}
 }
 
