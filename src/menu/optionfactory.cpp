@@ -13,60 +13,39 @@
 #include "menu/option_lives.h"
 #include "globals.h"
 
-MenuOption *getOption(Token *token)
-{
+MenuOption *getOption(Token *token){
 	Token * tok;
 	*token >> tok;
-	if ( *tok == "menu" )
-	{
+	if ( *tok == "menu" ){
 		// Create a sub menu
 		return new OptionMenu(tok);
-	}
-	else if ( *tok == "key" )
-	{
+	} else if ( *tok == "key" ){
 		// Reconfigure a given key
 		return new OptionKey(tok);
-	}
-	else if ( *tok == "adventure" )
-	{
+	} else if ( *tok == "adventure" ){
 		// Adventure mode
 		return new OptionAdventure(tok);
-	}
-	else if ( *tok == "versus" )
-	{
+	} else if ( *tok == "versus" ){
 		// Versus mode
 		return new OptionVersus(tok);
-	}
-	else if ( *tok == "credits" )
-	{
+	} else if ( *tok == "credits" ){
 		// Credits mode
 		return new OptionCredits(tok);
-	}
-	else if ( *tok == "speed" )
-	{
+	} else if ( *tok == "speed" ){
 		// Speed
 		return new OptionSpeed(tok);
-	}
-	else if ( *tok == "invincible" )
-	{
+	} else if ( *tok == "invincible" ){
 		// Invincible
 		return new OptionInvincible(tok);
-	}
-	else if ( *tok == "fullscreen" )
-	{
+	} else if ( *tok == "fullscreen" ){
 		// Invincible
 		return new OptionFullscreen(tok);
-	}
-	else if ( *tok == "lives" )
-	{
+	} else if ( *tok == "lives" ){
 		// Invincible
 		return new OptionLives(tok);
-	}
-	else 
-	{
+	} else {
 		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 		tok->print(" ");
 	}
 	return 0;
 }
-
