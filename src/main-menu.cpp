@@ -68,16 +68,19 @@ static void showOptions(){
 	Global::debug( 0 ) << "-w : Fullscreen mode" << endl;
 	Global::debug( 0 ) << "-d <path> : Use data path of <path>. Default is ./data/" << endl;
 	Global::debug( 0 ) << "-l # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
+	Global::debug( 0 ) << "-m : Turn off music" << endl;
 	Global::debug( 0 ) << endl;
 }
 
 int paintown_main( int argc, char ** argv ){
 	
+	bool music_on = true;
 	Collector janitor;
 	showOptions();
 	const char * WINDOWED_ARG = "-w";
 	const char * DATAPATH_ARG = "-d";
 	const char * DEBUG_ARG = "-l";
+	const char * MUSIC_ARG = "-m";
 
 	Global::setDebug( 0 );
 	
@@ -89,6 +92,8 @@ int paintown_main( int argc, char ** argv ){
 			if ( q < argc ){
 				Util::setDataPath( argv[ q ] );
 			}
+		} else if ( isArg( argv[ q ], MUSIC_ARG ) ){
+			music_on = false;
 		} else if ( isArg( argv[ q ], DEBUG_ARG ) ){
 			q += 1;
 			if ( q < argc ){
@@ -113,7 +118,7 @@ int paintown_main( int argc, char ** argv ){
 	
 	Network::init();
 	
-	Music music( true );
+	Music music( music_on );
 	try{
 		Menu game;
 		game.load( Util::getDataPath() + "menu/main.txt");

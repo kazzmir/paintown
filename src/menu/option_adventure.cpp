@@ -376,7 +376,7 @@ static void realGame( Object * player, const string & levelFile ){
 }
 
 static const string selectLevelSet( const string & base ) throw( ReturnException ){
-	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
+	Bitmap::Screen->Blit( Global::titleScreen() );
 	// Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	int fontY = 20;
 	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, fontY );

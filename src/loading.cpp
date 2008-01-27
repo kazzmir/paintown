@@ -58,7 +58,7 @@ void * loadingScreen( void * arg ){
 
 	Global::speed_counter = 0;
 
-	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
+	Bitmap::Screen->Blit( Global::titleScreen() );
 	Bitmap::Screen->Blit( load_x, load_y, load_width, load_height, 0, 0, work );
 	Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), *Bitmap::Screen, "Made by Jon Rafkind", 0 );
 	bool quit = false;

@@ -60,5 +60,5 @@ void Global::showTitleScreen(){
 }
 
 const std::string Global::titleScreen(){
-	return Util::getDataPath() + "/paintown-title.png";
+	return Util::getDataPath() + "/menu/paintown.png";
 }

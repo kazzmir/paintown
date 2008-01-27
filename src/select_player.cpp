@@ -64,7 +64,7 @@ Key getNth( const map< Key, Value > & m, int i ){
 */
 
 Object * selectPlayer( bool invincibile, const string & message ) throw( LoadException, ReturnException ){
-	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
+	Bitmap background( Global::titleScreen() );
 
 	/* hm, it would be nice to cache this I suppose */
 	PlayerVector players = loadPlayers( "players/" );
@@ -272,7 +272,7 @@ Object * selectPlayer( bool invincibile, const string & message ) throw( LoadExc
 }
 
 vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnException ){
-	Bitmap background( Util::getDataPath() + "/paintown-title.png" );
+	Bitmap background( Global::titleScreen() );
 
 	/* hm, it would be nice to cache this I suppose */
 	PlayerVector players = loadPlayers( "players/" );
