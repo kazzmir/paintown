@@ -57,6 +57,9 @@ class Menu
 		
 		/*! set the bitmap */
 		static void setBitmap(Bitmap *bmp);
+		
+		/*! Get current background in Bitmap */
+		static Bitmap *getBackground();
 
 		//! Get menu by name
 		static Menu *getMenu(const std::string &name);

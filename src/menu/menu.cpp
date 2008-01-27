@@ -369,6 +369,12 @@ void Menu::setBitmap(Bitmap *bmp){
 	work = bmp;
 }
 
+/*! Get current background in Bitmap */
+Bitmap *Menu::getBackground()
+{
+	return dynamic_cast<OptionBg *>(backgrounds.front())->getCurrentBackground();
+}
+
 FreeTypeFont *Menu::getFont(){
 	return font;
 }
@@ -456,8 +462,8 @@ void Menu::drawText(Bitmap *work){
 				}
 				vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
 				work->drawingMode( Bitmap::MODE_SOLID );
-				break;
 			}
+				break;
 			case NoFade:
 			default:
 				// These menus are temporary, they will need to be changed

@@ -22,6 +22,9 @@ class OptionBg : public MenuOption
 		virtual void run(bool &endGame);
 		
 		OptionBg(Token *token)throw( LoadException );
+		
+		// get current background
+		Bitmap *getCurrentBackground();
 	
 		virtual ~OptionBg();
 	private:

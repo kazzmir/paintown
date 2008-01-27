@@ -81,3 +81,9 @@ void OptionBg::run(bool &endGame)
 {
 }
 
+
+Bitmap *OptionBg::getCurrentBackground()
+{
+	// Fix later! For now lets just give the first background
+	return images.front();
+}
