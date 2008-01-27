@@ -3,7 +3,7 @@ src/configuration.cpp
 src/globals.cpp
 src/loading.cpp
 src/music.cpp
-src/main.cpp
+src/main-menu.cpp
 src/init.cpp
 src/nameplacer.cpp
 src/select_player.cpp

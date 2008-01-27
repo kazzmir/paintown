@@ -18,7 +18,7 @@ for i in filelist:
 
 x = []
 x.append( use.Program( 'paintown', obj_files + ['xmain.cpp'] ) )
-x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
-x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
+#x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
+#x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
 
 Return( 'x' )
