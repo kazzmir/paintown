@@ -384,8 +384,8 @@ void Menu::checkTextLength(MenuOption *opt){
 	// Set longest text length depending on type
 	switch(opt->getType()){
 		case MenuOption::adjustableOption : {
-				int len = vFont->textLength(opt->getText().c_str()) + 10;
-				if(len > longestTextLength)longestTextLength = len;
+			int len = vFont->textLength(opt->getText().c_str()) + 10;
+			if(len > longestTextLength)longestTextLength = len;
 			break;
 		}
 		case MenuOption::option:
@@ -503,6 +503,6 @@ Menu::~Menu(){
 	}
 	//if(background)delete background;
 	if ( vFont ){
-			  delete vFont;
+		delete vFont;
 	}
 }

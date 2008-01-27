@@ -1,5 +1,5 @@
-#include "menu/optionfactory.h"
 #include "util/token.h"
+#include "menu/optionfactory.h"
 #include "menu/menu_option.h"
 #include "menu/option_adventure.h"
 #include "menu/option_adventure_cpu.h"
@@ -12,6 +12,7 @@
 #include "menu/option_speed.h"
 #include "menu/option_fullscreen.h"
 #include "menu/option_lives.h"
+#include "menu/option_quit.h"
 #include "globals.h"
 
 MenuOption *getOption(Token *token){
@@ -43,6 +44,8 @@ MenuOption *getOption(Token *token){
 	} else if ( *tok == "fullscreen" ){
 		// Invincible
 		return new OptionFullscreen(tok);
+	} else if ( *tok == "quit" ){
+		return new OptionQuit(tok);
 	} else if ( *tok == "lives" ){
 		// Invincible
 		return new OptionLives(tok);
