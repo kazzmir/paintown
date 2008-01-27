@@ -337,7 +337,7 @@ void realGame( const vector< Object * > & players, const string & levelFile ){
 
 	// global_debug = true;
 
-	int showHelp = 450;
+	int showHelp = 800;
 	for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
 		Global::done_loading = false;
 		pthread_t loading_screen_thread;

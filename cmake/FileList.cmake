@@ -117,6 +117,7 @@ src/menu/option_fullscreen.cpp
 src/menu/option_invincible.cpp
 src/menu/option_key.cpp
 src/menu/option_lives.cpp
+src/menu/option_npc_buddies.cpp
 src/menu/option_menu.cpp
 src/menu/option_quit.cpp
 src/menu/option_versus.cpp

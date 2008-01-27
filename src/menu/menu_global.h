@@ -43,6 +43,9 @@ class MenuGlobals
 		
 		/*! set lives */
 		static void setLives(int l);
+
+		static int getNpcBuddies();
+		static void setNpcBuddies( int i );
 		
 	private:
 		//! Game speed
@@ -56,6 +59,8 @@ class MenuGlobals
 		
 		//! Lives
 		static int lives;
+
+		static int npc_buddies;
 		
 		static std::priority_queue<std::string> lastPlayed;
 		

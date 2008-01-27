@@ -56,7 +56,7 @@ void OptionAdventureCpu::draw(Bitmap *work){
 void OptionAdventureCpu::run(bool &endGame){
 	bool isInvincible = false;
 	int startingLives = 4;
-	int max_buddies = 1;
+	int max_buddies = MenuGlobals::getNpcBuddies();
 
 	Keyboard key;
 	Object * player = NULL;

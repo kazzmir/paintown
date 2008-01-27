@@ -17,6 +17,7 @@ double MenuGlobals::gamespeed = 1.0;
 bool MenuGlobals::invincible = false;
 bool MenuGlobals::fullscreen = false;
 int MenuGlobals::lives = 4;
+int MenuGlobals::npc_buddies = 1;
 
 std::priority_queue<std::string> MenuGlobals::lastPlayed;
 
@@ -108,3 +109,10 @@ void MenuGlobals::setLives(int l)
 	lives = l;
 }
 
+int MenuGlobals::getNpcBuddies(){
+	return npc_buddies;
+}
+
+void MenuGlobals::setNpcBuddies( int i ){
+	npc_buddies = i;
+}

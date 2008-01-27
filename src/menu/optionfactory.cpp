@@ -12,6 +12,7 @@
 #include "menu/option_speed.h"
 #include "menu/option_fullscreen.h"
 #include "menu/option_lives.h"
+#include "menu/option_npc_buddies.h"
 #include "menu/option_quit.h"
 #include "globals.h"
 
@@ -32,6 +33,8 @@ MenuOption *getOption(Token *token){
 	} else if ( *tok == "versus" ){
 		// Versus mode
 		return new OptionVersus(tok);
+	} else if ( *tok == "npc" ){
+		return new OptionNpcBuddies(tok);
 	} else if ( *tok == "credits" ){
 		// Credits mode
 		return new OptionCredits(tok);
