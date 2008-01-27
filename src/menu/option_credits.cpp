@@ -1,3 +1,4 @@
+/*
 #ifdef WINDOWS
 #define BITMAP dummyBITMAP
 #include <windows.h>
@@ -46,13 +47,29 @@
 #include <pthread.h>
 
 #include <iostream>
+*/
+
+#include "util/bitmap.h"
+#include "menu/option_credits.h"
+#include "menu/menu_global.h"
+#include "globals.h"
+#include "init.h"
+#include "util/funcs.h"
+#include "util/keyboard.h"
+#include "util/token.h"
+#include "util/token_exception.h"
+#include "util/font.h"
 
 using namespace std;
 
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
-OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(event), background(0), music(""), color(Bitmap::makeColor(255,255,255)), title(Bitmap::makeColor(0,255,255))
-{
+OptionCredits::OptionCredits( Token * token ) throw( LoadException ):
+MenuOption(event),
+background(0),
+music(""),
+color(Bitmap::makeColor(255,255,255)),
+title(Bitmap::makeColor(0,255,255)){
 	/* Always */
 	credits.push_back("Paintown");
 	credits.push_back("");
@@ -81,93 +98,75 @@ OptionCredits::OptionCredits(Token *token)throw( LoadException ) : MenuOption(ev
 	if ( *token != "credits" )
 		throw LoadException("Not a credit menu");
 	
-	while ( token->hasTokens() )
-	{
-		try 
-		{
+	while ( token->hasTokens() ){
+		try{
 			Token * tok;
 			*token >> tok;
-			if ( *tok == "name" )
-			{
-				// Create an image and push it back on to vector
+			if ( *tok == "name" ){
+				/* Create an image and push it back on to vector */
 				std::string temp;
 				*tok >> temp;
 				this->setText(temp);
-			} 
-			else if ( *tok == "music" )
-			{
-				// Set music for credits
+			} else if ( *tok == "music" ) {
+				/* Set music for credits */
 				*tok >> music;
-			}
-			else if ( *tok == "background" )
-			{
-				// Create an image and push it back on to vector
+			} else if ( *tok == "background" ) {
+				/* Create an image and push it back on to vector */
 				std::string temp;
 				*tok >> temp;
+				if ( background ){
+					delete background;
+				}
 				background = new Bitmap(Util::getDataPath() +temp);
-				if(background->getError())delete background;
-			}
-			else if ( *tok == "additional" )
-			{
+				if ( background->getError() ){
+					delete background;
+					background = NULL;
+				}
+			} else if ( *tok == "additional" ) {
 				std::string str;
-				while(tok->hasTokens())
-				{
+				while ( tok->hasTokens() ){
 					*tok >> str;
 					credits.push_back(str);
 				}
-				credits.push_back("");
-			}
-			else if( *tok == "titlecolor" )
-			{
+			} else if ( *tok == "titlecolor" ) {
 				int r,b,g;
 				*tok >> r >> g >> b;
 				title = Bitmap::makeColor( r, b, g );
-			}
-			else if( *tok == "color" )
-			{
+			} else if ( *tok == "color" ) {
 				int r,b,g;
 				*tok >> r >> g >> b;
 				color = Bitmap::makeColor( r, b, g );
-			}
-			else 
-			{
+			} else {
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
-		} 
-		catch ( const TokenException & ex )
-		{
-			// delete current;
+		} catch ( const TokenException & ex ) {
 			string m( "Menu parse error: " );
 			m += ex.getReason();
 			throw LoadException( m );
-		} 
-		catch ( const LoadException & ex )
-		{
-			// delete current;
+		} catch ( const LoadException & ex ) {
 			throw ex;
 		}
 	}
 	
-	if(getText().empty())throw LoadException("No name set, this option should have a name!");
+	if ( getText().empty() ){
+		throw LoadException("No name set, this option should have a name!");
+	}
 }
 
-OptionCredits::~OptionCredits()
-{
-	// Nothing
-	if(background)delete background;
+OptionCredits::~OptionCredits(){
+	if ( background ){
+		delete background;
+	}
 }
 
-void OptionCredits::logic()
-{
+void OptionCredits::logic(){
 }
 
-void OptionCredits::draw(Bitmap *work)
-{
+void OptionCredits::draw(Bitmap *work){
 }
 
-void OptionCredits::run(bool &endGame)
-{
+void OptionCredits::run( bool &endGame ){
 	Keyboard key;
 
 	const int maxCredits = credits.size();
@@ -176,7 +175,10 @@ void OptionCredits::run(bool &endGame)
 	int min_y = GFX_Y;
 	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
 	Bitmap tmp( GFX_X, GFX_Y );
-	if(!music.empty())MenuGlobals::setMusic(music);
+	if ( ! music.empty() ){
+		MenuGlobals::setMusic( music );
+	}
+
 	while ( ! key[ Keyboard::Key_ESC ] ){
 
 		key.poll();
@@ -198,22 +200,28 @@ void OptionCredits::run(bool &endGame)
 		}
 
 		if ( draw ){
-			if(background)background->Blit( tmp );
-			else tmp.fill(Bitmap::makeColor(0,0,0));
+			if ( background ){
+				background->Blit( tmp );
+			} else {
+				tmp.fill( Bitmap::makeColor(0,0,0) );
+			}
+
 			int y = min_y;
 			vector<std::string>::iterator b = credits.begin();
 			vector<std::string>::iterator e = credits.end();
 			bool isTitle = true;
-			for(;b!=e;++b)
-			{
-				if(isTitle)
-				{
+			for ( /**/ ; b != e; b++ ){
+				if ( isTitle ){
 					font.printf( 100, y, title, tmp, (*b), 0 );
 					isTitle = false;
+				} else {
+					font.printf( 100, y, color, tmp, (*b), 0 );
 				}
-				else font.printf( 100, y, color, tmp, (*b), 0 );
 				y += font.getHeight() + 2;
-				if((*b).empty())isTitle=true;
+
+				if ( (*b).empty() ){
+					isTitle = true;
+				}
 			}
 
 			tmp.BlitToScreen();
@@ -223,4 +231,3 @@ void OptionCredits::run(bool &endGame)
 	}
 	key.wait();
 }
-
