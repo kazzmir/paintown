@@ -15,7 +15,7 @@
 #include "object/network_character.h"
 #include "level/utils.h"
 #include "util/font.h"
-#include "select_player.h"
+#include "game.h"
 #include "factory/heart_factory.h"
 #include "factory/object_factory.h"
 #include "return_exception.h"
@@ -66,6 +66,7 @@ static void networkSendLevel( const vector< NLsocket > & sockets, string level )
 }
 #endif
 
+#if 0
 static const string selectLevelSet( const string & base ) throw( ReturnException ){
 	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
 	int fontY = 20;
@@ -148,6 +149,7 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 
 	return "nothing-selected";
 }
+#endif
 
 static int getServerPort(){
 	const int drawY = 160;
@@ -440,9 +442,9 @@ static void playGame( const vector< Socket > & sockets ){
 	vector< Object * > players;
 	pthread_t loading_screen_thread;
 	try{
-		Object * player = selectPlayer( false, "Pick a player" );
+		Object * player = Game::selectPlayer( false, "Pick a player" );
 		players.push_back( player );
-		string levelSet = selectLevelSet( Util::getDataPath() + "/levels" );
+		string levelSet = Game::selectLevelSet( Util::getDataPath() + "/levels" );
 		
 
 		startLoading( &loading_screen_thread );

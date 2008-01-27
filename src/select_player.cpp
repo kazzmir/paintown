@@ -6,7 +6,8 @@
 #include "globals.h"
 #include "object/display_character.h"
 #include "init.h"
-#include "select_player.h"
+// #include "select_player.h"
+#include "game.h"
 #include "factory/font_factory.h"
 #include "util/font.h"
 #include "world.h"
@@ -63,7 +64,7 @@ Key getNth( const map< Key, Value > & m, int i ){
 }
 */
 
-Object * selectPlayer( bool invincibile, const string & message ) throw( LoadException, ReturnException ){
+Object * Game::selectPlayer( bool invincibile, const string & message ) throw( LoadException, ReturnException ){
 	Bitmap background( Global::titleScreen() );
 
 	/* hm, it would be nice to cache this I suppose */
@@ -271,7 +272,7 @@ Object * selectPlayer( bool invincibile, const string & message ) throw( LoadExc
 	return player;
 }
 
-vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnException ){
+vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, ReturnException ){
 	Bitmap background( Global::titleScreen() );
 
 	/* hm, it would be nice to cache this I suppose */

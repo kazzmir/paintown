@@ -6,8 +6,8 @@
 #include "return_exception.h"
 #include <string>
 
-Object * selectPlayer( bool invincibile, const std::string & message = "" ) throw( LoadException, ReturnException );
+namespace Game{
 
-vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnException );
+}
 
 #endif

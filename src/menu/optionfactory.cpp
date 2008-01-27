@@ -2,6 +2,7 @@
 #include "util/token.h"
 #include "menu/menu_option.h"
 #include "menu/option_adventure.h"
+#include "menu/option_adventure_cpu.h"
 #include "menu/option_background.h"
 #include "menu/option_credits.h"
 #include "menu/option_invincible.h"
@@ -25,6 +26,8 @@ MenuOption *getOption(Token *token){
 	} else if ( *tok == "adventure" ){
 		// Adventure mode
 		return new OptionAdventure(tok);
+	} else if ( *tok == "adventure-cpu" ){
+		return new OptionAdventureCpu(tok);
 	} else if ( *tok == "versus" ){
 		// Versus mode
 		return new OptionVersus(tok);

@@ -1,5 +1,6 @@
 set(BASE_SRC 
 src/configuration.cpp
+src/game.cpp
 src/globals.cpp
 src/loading.cpp
 src/music.cpp
@@ -109,6 +110,7 @@ src/menu/menu_global.cpp
 src/menu/menu_action.cpp
 src/menu/menu_option.cpp
 src/menu/option_adventure.cpp
+src/menu/option_adventure_cpu.cpp
 src/menu/option_background.cpp
 src/menu/option_credits.cpp
 src/menu/option_fullscreen.cpp

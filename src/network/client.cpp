@@ -11,7 +11,7 @@
 #include "object/character.h"
 #include "object/network_character.h"
 #include "network_world_client.h"
-#include "select_player.h"
+#include "game.h"
 #include "return_exception.h"
 #include "loading.h"
 #include "chat_client.h"
@@ -132,7 +132,7 @@ static bool uniqueId( const vector< Object * > & objs, unsigned int id ){
 static void playGame( Socket socket ){
 	pthread_t loadingThread;
 	try{
-		Character * player = (Character *) selectPlayer( false, "Pick a player" );
+		Character * player = (Character *) Game::selectPlayer( false, "Pick a player" );
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );
 	
