@@ -21,57 +21,21 @@ void Box::logic()
 // Render
 void Box::render(Bitmap *work)		
 {
+	checkWorkArea();
 	// Check if we are using a rounded box
 	if(position.radius>0)
 	{
-		if(position.bodyAlpha < 255)
-		{
-			Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
-			work->drawingMode( Bitmap::MODE_TRANS );
-			roundRectFill( work, position.radius, position.x, position.y, position.getX2(), position.getY2(), position.body );
-		}
-		else 
-		{
-			work->drawingMode( Bitmap::MODE_SOLID );
-			roundRectFill( work, position.radius, position.x, position.y, position.getX2(), position.getY2(), position.body );
-		}
-		if(position.borderAlpha < 255)
-		{
-			Bitmap::transBlender( 0, 0, 0, position.borderAlpha );
-			work->drawingMode( Bitmap::MODE_TRANS );
-			roundRect( work, position.radius, position.x, position.y, position.getX2(), position.getY2(), position.border );
-		}
-		else 
-		{
-			work->drawingMode( Bitmap::MODE_SOLID );
-			roundRect( work, position.radius, position.x, position.y, position.getX2(), position.getY2(), position.border );
-		}
+		roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.body );
+		roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.border );
 	}
 	else
 	{
-		if(position.bodyAlpha < 255)
-		{
-			Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
-			work->drawingMode( Bitmap::MODE_TRANS );
-			work->rectangleFill( position.x, position.y, position.getX2(), position.getY2(), position.body );
-		}
-		else 
-		{
-			work->drawingMode( Bitmap::MODE_SOLID );
-			work->rectangleFill( position.x, position.y, position.getX2(), position.getY2(), position.body );
-		}
-		if(position.borderAlpha < 255)
-		{
-			Bitmap::transBlender( 0, 0, 0, position.borderAlpha );
-			work->drawingMode( Bitmap::MODE_TRANS );
-			work->rectangle( position.x, position.y, position.getX2(), position.getY2(), position.border );
-		}
-		else 
-		{
-			work->drawingMode( Bitmap::MODE_SOLID );
-			work->rectangle( position.x, position.y, position.getX2(), position.getY2(), position.border );
-		}
+		workArea->rectangleFill( 0, 0, position.width-1, position.height-1, position.body );
+		workArea->rectangle( 0, 0, position.width-1, position.height-1, position.border );
 	}
+	Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
+	workArea->drawingMode( Bitmap::MODE_TRANS );
+	workArea->drawTrans(position.x,position.y,*work);
 	work->drawingMode( Bitmap::MODE_SOLID );
 }
 

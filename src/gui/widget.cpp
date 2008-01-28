@@ -21,14 +21,14 @@ static inline int Max(int x, int y){ return (((x) > (y)) ? (x) : (y)); }
 //! mid (borrowed from allegro)
 static inline int Mid(int x,int y,int z){ return (Max((x), Min((y), (z)))); }
 
-Widget::Widget()
+Widget::Widget() : workArea(0)
 {
 	// Nothing yet
 }
 
 Widget::~Widget()
 {
-	// Nothing yet
+	if(workArea)delete workArea;
 }
 
 void Widget::arc( Bitmap *work, int x, int y, double startAngle, int radius, int color )
@@ -135,5 +135,24 @@ void Widget::roundRectFill( Bitmap *work, int radius, int x1, int y1, int x2, in
 	work->rectangleFill( x1+radius, y1, x2-radius, y1+radius, color);
 	work->rectangleFill( x1, y1+radius, x2, y2-radius, color);
 	work->rectangleFill( x1+radius, y2-radius, x2-radius, y2, color);
+}
+
+void Widget::checkWorkArea()
+{
+	if(!workArea)
+	{
+		workArea = new Bitmap(position.width,position.height);
+	}
+	else if(position.width < workArea->getWidth() || position.height < workArea->getHeight())
+	{
+		delete workArea;
+		workArea = new Bitmap(position.width,position.height);
+	}
+	else if(position.width > workArea->getWidth() || position.height > workArea->getHeight())
+	{
+		delete workArea;
+		workArea = new Bitmap(position.width,position.height);
+	}
+	workArea->fill(Bitmap::makeColor(255,0,255));
 }
 

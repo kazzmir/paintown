@@ -24,6 +24,10 @@ class Widget
 		void arc( Bitmap *work, int x, int y, double startAngle, int radius, int color );
 		void roundRect( Bitmap *work, int radius, int x1, int y1, int x2, int y2, int color );
 		void roundRectFill( Bitmap *work, int radius, int x1, int y1, int x2, int y2, int color );
+		
+		void checkWorkArea();
+		
+		Bitmap *workArea;
 };
 
 #endif
