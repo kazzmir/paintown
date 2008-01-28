@@ -275,8 +275,14 @@ useflags Menu::run(){
 						break;
 					}
 					case FadeInText : {
-						if(fadeAlpha<255)fadeAlpha+=(fadeSpeed+2);
-						else if(fadeAlpha>=255){fadeAlpha=255; currentDrawState = NoFade;}
+						if ( fadeAlpha<255 ){
+							fadeAlpha+=(fadeSpeed+2);
+						}
+
+						if ( fadeAlpha >= 255 ){
+							fadeAlpha=255;
+							currentDrawState = NoFade;
+						}
 						break;
 					}
 					case NoFade : {
