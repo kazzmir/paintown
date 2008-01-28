@@ -123,5 +123,7 @@ class Menu
 		
 		//! Fade speed
 		static int fadeSpeed;
+
+		Box fadeBox;
 };
 #endif

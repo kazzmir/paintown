@@ -48,4 +48,3 @@ void Container::render(Bitmap *work)
 	}
 	work->setClipRect(0,0,work->getWidth(),work->getHeight());
 }
-

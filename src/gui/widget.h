@@ -9,6 +9,7 @@ class Widget
 {
 	public:
 		Widget();
+		Widget( const Widget & w );
 		virtual ~Widget();
 		
 		// position info

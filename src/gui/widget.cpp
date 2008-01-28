@@ -1,6 +1,7 @@
 #include "gui/widget.h"
 #include <math.h>
 #include "util/bitmap.h"
+#include "globals.h"
 
 
 static const double S_PI = 3.14159265358979323846;
@@ -25,10 +26,14 @@ Widget::Widget() : workArea(0)
 {
 	// Nothing yet
 }
+		
+Widget::Widget( const Widget & w ){
+}
 
-Widget::~Widget()
-{
-	if(workArea)delete workArea;
+Widget::~Widget(){
+	if ( workArea ){
+		delete workArea;
+	}
 }
 
 void Widget::arc( Bitmap *work, int x, int y, double startAngle, int radius, int color )
@@ -139,20 +144,16 @@ void Widget::roundRectFill( Bitmap *work, int radius, int x1, int y1, int x2, in
 
 void Widget::checkWorkArea()
 {
-	if(!workArea)
-	{
+	if ( ! workArea ){
 		workArea = new Bitmap(position.width,position.height);
-	}
-	else if(position.width < workArea->getWidth() || position.height < workArea->getHeight())
-	{
+	} else if(position.width < workArea->getWidth() || position.height < workArea->getHeight()) {
+		delete workArea;
+		workArea = new Bitmap(position.width,position.height);
+	} else if(position.width > workArea->getWidth() || position.height > workArea->getHeight()) {
 		delete workArea;
 		workArea = new Bitmap(position.width,position.height);
 	}
-	else if(position.width > workArea->getWidth() || position.height > workArea->getHeight())
-	{
-		delete workArea;
-		workArea = new Bitmap(position.width,position.height);
+	if ( workArea ){
+		workArea->fill(Bitmap::makeColor(255,0,255));
 	}
-	workArea->fill(Bitmap::makeColor(255,0,255));
 }
-

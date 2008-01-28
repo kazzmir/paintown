@@ -34,7 +34,6 @@ static std::map<std::string, Menu *> menus;
 
 int Menu::fadeSpeed = 12;
 
-Box fadeBox;
 
 int fadeAlpha=0;
 
