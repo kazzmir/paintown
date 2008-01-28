@@ -1,47 +1,3 @@
-/*
-#include <allegro.h>
-
-#ifdef WINDOWS
-#include <winalleg.h>
-#endif
-
-#include <iostream>
-#include <sstream>
-#include <stdlib.h>
-#include <pthread.h>
-#include <time.h>
-#include <vector>
-#include <map>
-
-#include "factory/collector.h"
-#include "factory/font_render.h"
-#include "fonts.h"
-#include "globals.h"
-#include "level/scene.h"
-#include "loading.h"
-#include "object/character.h"
-#include "object/effect.h"
-#include "object/enemy.h"
-#include "object/object.h"
-#include "object/object_attack.h"
-#include "object/player.h"
-#include "music.h"
-#include "util/bitmap.h"
-#include "util/funcs.h"
-#include "util/font.h"
-#include "util/load_exception.h"
-#include "util/timedifference.h"
-#include "object/animation.h"
-#include "world.h"
-
-#include "init.h"
-
-#include "menu/menu.h"
-#include "menu/menu_global.h"
-#include "util/token_exception.h"
-#include "util/load_exception.h"
-*/
-
 #include <sstream>
 
 #include "factory/collector.h"
@@ -117,6 +73,8 @@ int paintown_main( int argc, char ** argv ){
 	diff.printTime( "Init:" );
 	
 	Network::init();
+		
+	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
 	
 	Music music( music_on );
 	try{
