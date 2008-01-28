@@ -216,6 +216,7 @@ static void playGame( Socket socket ){
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
 	copy.Blit( area );
+	Bitmap::transBlender( 0, 0, 0, 192 );
 	area.drawingMode( Bitmap::MODE_TRANS );
 	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
 	area.drawingMode( Bitmap::MODE_SOLID );
@@ -288,6 +289,7 @@ static bool handlePortInput( string & str, const vector< int > & keys ){
 static void popup( const Font & font, const string & message ){
 	int length = font.textLength( message.c_str() ) + 20; 
 	Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+	Bitmap::transBlender( 0, 0, 0, 128 );
 	area.drawingMode( Bitmap::MODE_TRANS );
 	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
 	area.drawingMode( Bitmap::MODE_SOLID );
@@ -341,7 +343,7 @@ void networkClient(){
 			think -= 1;
 			keyboard.poll();
 
-			if ( keyboard[ Keyboard::Key_TAB ] ){
+			if ( keyboard[ Keyboard::Key_TAB ] || keyboard[ Keyboard::Key_DOWN ] ){
 				draw = true;
 				switch ( focus ){
 					case NAME : focus = HOST; break;

@@ -152,11 +152,16 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 #endif
 
 static int getServerPort(){
-	const int drawY = 160;
+	const int drawY = 250;
 	{
 		Bitmap background( Global::titleScreen() );
 		background.BlitToScreen();
 		const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+		Bitmap black( 300, font.getHeight() * 4 );
+		black.clear();
+		black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
+		Bitmap::transBlender( 0, 0, 0, 92 );
+		black.drawTrans( 20, drawY - font.getHeight() - 20, *Bitmap::Screen );
 		font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port:", 0 );
 		font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Enter to start. ESC to quit", 0 );
 	}
