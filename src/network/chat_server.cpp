@@ -6,6 +6,7 @@
 #include "util/funcs.h"
 #include "util/keyboard.h"
 #include "util/font.h"
+#include "return_exception.h"
 #include "globals.h"
 #include "init.h"
 #include <iostream>
@@ -572,6 +573,7 @@ void ChatServer::run(){
 				stopAccepting();
 				killAllClients();
 				done = true;
+				throw ReturnException();
 			} else if ( done && focus == START_GAME ){
 				stopAccepting();
 				Global::debug( 1 ) << "[chat-server] Shut down client threads" << endl;

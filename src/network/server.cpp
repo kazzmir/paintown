@@ -575,6 +575,18 @@ static void playGame( const vector< Socket > & sockets ){
 	stopLoading( loading_screen_thread );
 }
 
+static void popup( const Font & font, const string & message ){
+	int length = font.textLength( message.c_str() ) + 20; 
+	Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+	Bitmap::transBlender( 0, 0, 0, 128 );
+	area.drawingMode( Bitmap::MODE_TRANS );
+	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
+	area.drawingMode( Bitmap::MODE_SOLID );
+	int color = Bitmap::makeColor( 255, 255, 255 );
+	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
+	font.printf( 10, area.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
+}
+
 void networkServer(){
 
 	// const int startingLives = 4;
@@ -584,6 +596,7 @@ void networkServer(){
 
 	Global::debug( 1 ) << "Port " << port << endl;
 
+	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 	try{
 #ifdef WINDOWS
 		Network::blocking( false );
@@ -607,10 +620,19 @@ void networkServer(){
 		if ( ! sockets.empty() ){
 			Global::debug( 1 ) << "[server] Start game with " << sockets.size() << " clients" << endl;
 			playGame( sockets );
+		} else {
+			key.poll();
+			popup( font, "No clients connected" );
+			key.wait();
+			key.readKey();
 		}
 		Network::close( server );
 	} catch ( const NetworkException & ne ){
 		Global::debug( 0 ) << "Network error: " << ne.getMessage() << endl;
+		key.poll();
+		popup( font, "Network error: " + ne.getMessage() );
+		key.wait();
+		key.readKey();
 	}
 	return;
 

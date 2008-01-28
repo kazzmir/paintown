@@ -189,7 +189,7 @@ Socket open( int port ){
 	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 	NLsocket server = nlOpen( port, NL_RELIABLE );
 	if ( server == NL_INVALID ){
-		throw NetworkException();
+		throw NetworkException( "Invalid port" );
 	}
 	open_sockets.push_back( server );
 	return server;
