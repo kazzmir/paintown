@@ -18,7 +18,7 @@ typedef struct pair{
 
 void * loadingScreen( void * arg ){
 	int load_x = 80;
-	int load_y = 120;
+	int load_y = 220;
 	string name = Util::getDataPath() + "/fonts/arial.ttf";
 	const Font & myFont = Font::getFont( name, 24, 24 );
 	const char * the_string = "Loading Paintown";

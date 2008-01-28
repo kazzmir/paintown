@@ -332,6 +332,9 @@ useflags Menu::run(){
 			}
 			// Reset it's state
 			(*selectedOption)->setState(MenuOption::Selected);
+			if ( !music.empty() ){
+				MenuGlobals::setMusic(music);
+			}
 		}
 
 		if(!music.empty()){
