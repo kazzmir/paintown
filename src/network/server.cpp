@@ -154,7 +154,7 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 static int getServerPort(){
 	const int drawY = 160;
 	{
-		Bitmap background( Util::getDataPath() + "/paintown-title.png" );
+		Bitmap background( Global::titleScreen() );
 		background.BlitToScreen();
 		const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 		font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port:", 0 );

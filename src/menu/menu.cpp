@@ -302,7 +302,7 @@ useflags Menu::run(){
 				work->clear();
 				// Draw
 				if ( backgrounds.front() ){
-						  backgrounds.front()->draw(work);
+					backgrounds.front()->draw(work);
 				}
 
 				// Draw text board
@@ -325,7 +325,11 @@ useflags Menu::run(){
 		key.wait();
 		// do we got an option to run, lets do it
 		if((*selectedOption)->getState() == MenuOption::Run){
-			(*selectedOption)->run(endGame);
+			try{
+				(*selectedOption)->run(endGame);
+			} catch ( const ReturnException & re ){
+				key.wait();
+			}
 			// Reset it's state
 			(*selectedOption)->setState(MenuOption::Selected);
 		}

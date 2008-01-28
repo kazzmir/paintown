@@ -8,6 +8,8 @@
 #include "menu/option_invincible.h"
 #include "menu/option_key.h"
 #include "menu/option_menu.h"
+#include "menu/option_network_host.h"
+#include "menu/option_network_join.h"
 #include "menu/option_versus.h"
 #include "menu/option_speed.h"
 #include "menu/option_fullscreen.h"
@@ -33,6 +35,10 @@ MenuOption *getOption(Token *token){
 	} else if ( *tok == "versus" ){
 		// Versus mode
 		return new OptionVersus(tok);
+	} else if ( *tok == "network-host" ){
+		return new OptionNetworkHost(tok);
+	} else if ( *tok == "network-join" ){
+		return new OptionNetworkJoin(tok);
 	} else if ( *tok == "npc" ){
 		return new OptionNpcBuddies(tok);
 	} else if ( *tok == "credits" ){

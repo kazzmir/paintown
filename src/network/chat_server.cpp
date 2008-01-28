@@ -222,7 +222,7 @@ client_id( 1 ),
 name( name ),
 accepting( true ){
 	Global::debug( 1 ) << "[chat-server] Constructor" << endl;
-	background = new Bitmap( Util::getDataPath() + "/paintown-title.png" );
+	background = new Bitmap( Global::titleScreen() );
 
 	Global::debug( 1 ) << "[chat-server] Listen on socket" << endl;
 	Network::listen( socket );

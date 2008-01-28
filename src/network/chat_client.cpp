@@ -72,7 +72,7 @@ messages( 400, 300 ),
 socket( socket ),
 focus( INPUT_BOX ),
 finished( false ){
-	background = new Bitmap( Util::getDataPath() + "/paintown-title.png" );
+	background = new Bitmap( Global::titleScreen() );
 	pthread_mutex_init( &lock, NULL );
 
 	pthread_create( &inputThread, NULL, serverInput, this );
