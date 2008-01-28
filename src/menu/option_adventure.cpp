@@ -1,4 +1,5 @@
 #include "menu/option_adventure.h"
+#include "menu/menu_global.h"
 #include "util/keyboard.h"
 #include "util/load_exception.h"
 #include "util/token.h"
@@ -61,8 +62,8 @@ void OptionAdventure::run(bool &endGame){
 		string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
 		key.wait();
 		
-		player = Game::selectPlayer( false );
-		((Player *)player)->setLives( 10 );
+		player = Game::selectPlayer( MenuGlobals::getInvincible() );
+		((Player *)player)->setLives( MenuGlobals::getLives() );
 		vector< Object * > players;
 		players.push_back( player );
 		Game::realGame( players, level );
