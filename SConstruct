@@ -72,6 +72,8 @@ staticEnv = env.Copy()
 if isWindows():
 	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
 	env.Append( CPPDEFINES = 'WINDOWS' )
+	env.Append( CCFLAGS = '-mwindows' )
+	env.Append( LINKFLAGS = '-mwindows' )
 	staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
 	staticEnv.Append( CPPDEFINES = 'WINDOWS' )
 else:
