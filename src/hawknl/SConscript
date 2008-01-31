@@ -1,7 +1,5 @@
 import os
-Import( 'hawkEnv' )
-
-env = hawkEnv
+Import( 'env' )
 
 # env = Environment( ENV = os.environ )
 

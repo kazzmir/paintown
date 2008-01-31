@@ -225,7 +225,7 @@ void Cat::draw( Bitmap * work, int rel_x ){
 	}
 
 	if ( Util::rnd( 2000 ) == 0 ){
-		meow.play( (int)(255 - fabs(getRX() - rel_x) / 50), 128 + (getRX() - rel_x) / 50 );
+		meow.play( (int)(255 - fabs((double)getRX() - rel_x) / 50), 128 + (getRX() - rel_x) / 50 );
 	}
 }
 	

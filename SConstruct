@@ -54,20 +54,40 @@ else:
 # env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
 env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'hawknl' ], CPPDEFINES = cdefines )
 
-dumb = SConscript( "src/dumb/SConscript", build_dir = 'build/dumb' )
+def buildDumb(where, env):
+	return SConscript( "src/dumb/SConscript", build_dir = '%s/dumb' % where, exports = 'env' )
+
+def buildHawknl(where, env):
+	return SConscript( "src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env' )
+
+dumbEnv = Environment( ENV = os.environ )
 hawkEnv = Environment( ENV = os.environ )
+dumbStaticEnv = Environment( ENV = os.environ )
+hawkStaticEnv = Environment( ENV = os.environ )
+
 if isOSX():
+	dumbStaticEnv[ 'CXX' ] = 'misc/g++'
+	dumbStaticEnv[ 'CC' ] = 'misc/gcc'
+	hawkStaticEnv[ 'CXX' ] = 'misc/g++'
+	hawkStaticEnv[ 'CC' ] = 'misc/gcc'
+	hawkStaticEnv.Append( CPPDEFINES = 'MACOSX' )
 	hawkEnv.Append( CPPDEFINES = 'MACOSX' )
-hawknl = SConscript( "src/hawknl/SConscript", build_dir = 'build/hawknl', exports = 'hawkEnv' )
+
+hawknl = buildHawknl('build', hawkEnv)
+dumb = buildDumb( 'build', dumbEnv )
+
+hawknl_static = buildHawknl('build-static', hawkStaticEnv)
+dumb_static = buildDumb('build-static', dumbStaticEnv)
 
 if False:
 	env.Append( CCFLAGS = '-pg' )
 	env.Append( LINKFLAGS = '-pg' )
 
+staticEnv = env.Copy()
+
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 env.Append( LIBS = [dumb,hawknl] )
 
-staticEnv = env.Copy()
 
 if isWindows():
 	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
@@ -79,6 +99,10 @@ if isWindows():
 else:
 	env.Append( LIBS = [ 'pthread' ] )
 	staticEnv.Append( LIBS = [ 'pthread' ] )
+
+	staticEnv.Append( LIBS = [ hawknl_static, dumb_static ] )
+
+	dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
 
 	if isOSX():
 		staticEnv[ 'CXX' ] = 'misc/g++'
