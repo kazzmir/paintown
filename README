@@ -62,3 +62,18 @@ Thanks:
 	Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	
 	DUMB - http://dumb.sf.net
 	loadpng - http://tjaden.strangesoft.net/loadpng/
+
+How to build a .dmg file of paintown:
+
+My .dmg files don't autostart, they are basically just container files for the binary and data. But no matter, to make the .dmg my way first compile paintown statically.
+
+$ scons static
+
+Which should produce 'paintown-static'. Then create a folder for paintown to put the binary and the data.
+
+$ mkdir paintown-x.x # x is the version
+$ cp paintown-static paintown-x.x/paintown # rename it just to 'paintown'
+$ cd paintown-x.x
+$ svn export https://paintown.svn.sf.net/svnroot/paintown/data # get a fresh checkout of the data
+
+Now just make the directory into a .dmg file. I used 'QuickDmg', http://tomkox.net. Drag and drop the folder onto QuickDmg and it will produce a .dmg file.
