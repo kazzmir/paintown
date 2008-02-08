@@ -2,7 +2,7 @@
 DONE * use parallax - scroll background slower than the rest of the game
 DONE * allow enemies to throw things like daggers and stars
 DONE * networking, of course!
-* better menus - being done by juvinious
+DONE * better menus - being done by juvinious
 DONE * level effects like snow and rain
 * level lighting. lamps/objects can make the level brighter as the user gets close to them
 DONE * better "you win"/"you lose" screen
@@ -11,11 +11,12 @@ DONE * computer assisted adventure mode?
 * infinite enemy mode like in super smash brothers
 DONE * show translucent mini-map of friends
 
-Things to do for the 3.0 release
 DONE * finish level 11
 DONE * add more widgets to network host screen
-50% * debug network code a bit
+DONE * debug network code a bit
 DONE * add widget to select number of buddy npc's
 DONE * make network client screen not flicker
 DONE * fix races in grabbing
-* use new menuing system
+DONE * use new menuing system
+
+* network versus play
