@@ -54,8 +54,6 @@ void OptionAdventureCpu::draw(Bitmap *work){
 }
 
 void OptionAdventureCpu::run(bool &endGame){
-	bool isInvincible = false;
-	int startingLives = 4;
 	int max_buddies = MenuGlobals::getNpcBuddies();
 
 	Keyboard key;
@@ -64,14 +62,13 @@ void OptionAdventureCpu::run(bool &endGame){
 	try{
 		string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
 		key.wait();
-
-		player = Game::selectPlayer( isInvincible, "Pick a player" );
-		((Player *)player)->setLives( startingLives );
+		player = Game::selectPlayer( MenuGlobals::getInvincible(), "Pick a player" );
+		((Player *)player)->setLives( MenuGlobals::getLives() );
 		vector< Object * > players;
 		players.push_back( player );
 
 		for ( int i = 0; i < max_buddies; i++ ){
-			Object * b = Game::selectPlayer( isInvincible, "Pick a buddy" );
+			Object * b = Game::selectPlayer( false, "Pick a buddy" );
 			buddies.push_back( b );
 			Object * buddy = new BuddyPlayer( (Character *) player, *(Character *) b );
 			buddies.push_back( buddy );
