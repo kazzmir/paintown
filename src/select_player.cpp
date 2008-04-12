@@ -116,6 +116,7 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 
 	bool draw = true;
 	unsigned int clock = 0;
+	Sound beep( Util::getDataPath() + "/sounds/beep1.wav" );
 	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
 		key.poll();
 
@@ -135,18 +136,22 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 
 				if ( key[ keyLeft ] ){
 					current = current - 1;
+					beep.play();
 				}
 
 				if ( key[ keyRight ] ){
 					current = current + 1;
+					beep.play();
 				}
 
 				if ( key[ keyUp ] ){
 					current = current - boxesPerLine;
+					beep.play();
 				}
 
 				if ( key[ keyDown ] ){
 					current = current + boxesPerLine;
+					beep.play();
 				}
 
 				if ( key[ changeRemapKey ] ){
