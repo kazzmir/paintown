@@ -22,3 +22,5 @@ DONE * use new menuing system
 * separate z planes for each block
 * level lighting. lamps/objects can make the level brighter as the user gets close to them
 * infinite enemy mode like in super smash brothers
+* breakable inanimate objects like boxes and trash cans
+* better key input in network chat
