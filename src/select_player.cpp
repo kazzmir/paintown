@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/lit_bitmap.h"
 #include "object/object.h"
 #include "util/load_exception.h"
 #include "util/funcs.h"
@@ -94,6 +95,7 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 	/* preview box for each character */
 	Bitmap temp( 120, 120 );
 	Bitmap preview( GFX_X / 2, GFX_Y / 2 );
+	Bitmap reflection( GFX_X / 2, GFX_Y / 2 );
 
 	// const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
 	// const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
@@ -208,16 +210,35 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 			background.Blit( backgroundX, 0, work );
 			background.Blit( work.getWidth() + backgroundX, 0, work );
 
+			const int stand = 50;
 			ch->setFacing( Object::FACING_RIGHT );
 			Character copy( *ch );
 			copy.setDrawShadow( false );
 			copy.setX( preview.getWidth() / 2 );
 			copy.setY( 0 );
-			copy.setZ( preview.getHeight() - 20 );
+			copy.setZ( preview.getHeight() - stand );
 			preview.fill( Bitmap::MaskColor );
+			reflection.fill( Bitmap::MaskColor );
+			// preview.fill( 0 );
+			// reflection.fill( 0 );
 
 			copy.draw( &preview, 0 );
+			preview.drawVFlip( 0, 0, reflection );
+
+			Bitmap::transBlender( 0, 0, 0, 255 );
+			LitBitmap s2( reflection );
+			s2.draw( 0, preview.getHeight() - stand - stand, preview );
+			Bitmap::transBlender( 0, 0, 0, 128 );
+			reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
+			copy.draw( &preview, 0 );
+
+			// reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
+			// preview.floodfill( 0, 0, Bitmap::MaskColor );
+			// preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
+
+			// preview.draw( 60, 0, work );
 			preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
+
 			const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
 			font.printf( 10, font.getHeight() + 5, Bitmap::makeColor( 255, 255, 255 ), work, copy.getName(), 0 );
 			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
