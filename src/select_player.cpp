@@ -95,8 +95,18 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 	Bitmap temp( 120, 120 );
 	Bitmap preview( GFX_X / 2, GFX_Y / 2 );
 
-	const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
-	const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
+	// const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
+	// const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
+	
+	const int maxColor = 40;
+	int selectedGradient[ maxColor ];
+	int unselectedGradient[ maxColor ];
+	
+	Util::blend_palette( unselectedGradient, maxColor / 2, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 255, 0, 0 ) );
+	Util::blend_palette( unselectedGradient + maxColor / 2, maxColor / 2, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 255, 0, 0 ) );
+	
+	Util::blend_palette( selectedGradient, maxColor / 2, Bitmap::makeColor( 0, 128, 0 ), Bitmap::makeColor( 0, 255, 0 ) );
+	Util::blend_palette( selectedGradient + maxColor / 2, maxColor / 2, Bitmap::makeColor( 0, 255, 0 ), Bitmap::makeColor( 0, 128, 0 ) );
 	
 	Global::speed_counter = 0;
 			
@@ -216,19 +226,20 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 			for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
 				temp.clear();
 				Bitmap box( work, x, y, boxSize, boxSize );
-				int color = unselectedColor;
+				// int color = unselectedColor;
+				int * color = 0;
 				Character smaller( *players[ i ].guy );
 
-				color = i == (unsigned int) current ? selectedColor : unselectedColor;
+				color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
 				/* draw a border */
-				box.border( 0, 3, color );
+				// box.border( 0, 3, color[ clock % maxColor ] );
 
 				smaller.setX( temp.getWidth() / 2 );
 				smaller.setY( 0 );
 				smaller.setZ( temp.getHeight() );
 				smaller.draw( &temp, 0 );
 				temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
-				box.border( 0, 3, color );
+				box.border( 0, 3, color[ clock % maxColor ] );
 				x += boxSize + 10;
 				if ( x + boxSize + 10 > work.getWidth() ){
 					x = startX;
