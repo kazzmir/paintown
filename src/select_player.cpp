@@ -210,6 +210,7 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 
 			ch->setFacing( Object::FACING_RIGHT );
 			Character copy( *ch );
+			copy.setDrawShadow( false );
 			copy.setX( preview.getWidth() / 2 );
 			copy.setY( 0 );
 			copy.setZ( preview.getHeight() - 20 );

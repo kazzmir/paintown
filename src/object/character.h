@@ -315,6 +315,14 @@ public:
 	inline void setLives( const int x ){
 		lives = x;
 	}
+
+	virtual inline const bool drawShadow() const {
+		return draw_shadow;
+	}
+
+	virtual inline void setDrawShadow( bool b ){
+		draw_shadow = b;
+	}
 	
 	virtual Network::Message getCreateMessage();
 	virtual Network::Message movedMessage();
@@ -449,6 +457,8 @@ protected:
 	int toughness;
 	bool explode;
 	int lives;
+
+	bool draw_shadow;
 
 	string path;
 };

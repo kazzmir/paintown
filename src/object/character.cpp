@@ -54,7 +54,8 @@ squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
 explode( false ),
-lives( 0 ){
+lives( 0 ),
+draw_shadow( true ){
 }
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
@@ -79,7 +80,8 @@ squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
 explode( false ),
-lives( 0 ){
+lives( 0 ),
+draw_shadow( true ){
 	name = "";
 
 	loadSelf( filename.c_str() );
@@ -107,7 +109,8 @@ squish_sound( NULL ),
 invincibility( 0 ),
 toughness( 10 ),
 explode( false ),
-lives( 0 ){
+lives( 0 ),
+draw_shadow( true ){
 	name = "";
 
 	loadSelf( filename );
@@ -123,7 +126,8 @@ current_map( chr.current_map ),
 die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
-explode( false ){
+explode( false ),
+draw_shadow( true ){
 
 	/* these are set in object.cpp */
 	// setHealth( chr.getHealth() );
@@ -1412,10 +1416,12 @@ void Character::draw( Bitmap * work, int rel_x ){
 	}
 
 	if ( animation_current ){
-		Bitmap const * shadow = Shadow::getShadow( getShadow() );
-		// set_multiply_blender( 0, 0, 0, 164 );
-		Bitmap::multiplyBlender( 0, 0, 0, 164 );
-		shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
+		if ( drawShadow() ){
+			Bitmap const * shadow = Shadow::getShadow( getShadow() );
+			// set_multiply_blender( 0, 0, 0, 164 );
+			Bitmap::multiplyBlender( 0, 0, 0, 164 );
+			shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
+		}
 
 
 		// printf( "invincibility = %d\n", invincibility );
