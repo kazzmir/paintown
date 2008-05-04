@@ -1,5 +1,8 @@
 #include "configuration.h"
 #include "util/keyboard.h"
+#include "util/tokenreader.h"
+#include "util/token.h"
+#include "globals.h"
 #include "object/animation.h"
 #include "object/object.h"
 
@@ -173,4 +176,26 @@ int Configuration::getAttack3() const {
 
 int Configuration::getJump() const {
 	return jump;
+}
+
+static string configFile(){
+	return "paintownrc";
+}
+
+void Configuration::loadConfigurations(){
+	try{
+		string file = configFile();
+		TokenReader tr( file );
+		Token * head = tr.readToken();
+		if ( *head != "configuration" ){
+			Global::debug( 0 ) << "Config file " << configFile() << " does not use the configuration format" << endl;
+		}
+	} catch ( const LoadException & le ){
+		Global::debug( 0 ) << "Could not load configuration file " << configFile() << ": " << le.getReason() << endl;
+	} catch ( const TokenException & t ){
+		Global::debug( 0 ) << "Error loading configuration file '" << configFile() << "': " << t.getReason() << endl;
+	}
+}
+
+void Configuration::saveConfiguration(){
 }

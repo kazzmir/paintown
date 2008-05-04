@@ -18,6 +18,7 @@
 #include "dumb/include/aldumb.h"
 #include "loadpng/loadpng.h"
 #include "util/bitmap.h"
+#include "configuration.h"
 
 using namespace std;
 
@@ -97,9 +98,15 @@ bool Global::init( int gfx ){
 	atexit( Network::closeAll );
 	dumb_register_packfiles();
 
-	out<<"-- END init --"<<endl;
-
 	registerSignals();
+	
+	Network::init();
+
+	Configuration::loadConfigurations();
+	
+	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
+	
+	out<<"-- END init --"<<endl;
 
 	/*
 	Bitmap::Screen = new Bitmap( screen );

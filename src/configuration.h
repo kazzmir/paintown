@@ -5,6 +5,8 @@ class Configuration{
 public:
 
 	static Configuration & config( int x );
+	static void loadConfigurations();
+	static void saveConfiguration();
 
 	/* return a Keyboard::Key_X based on some PAIN_KEY_X */
 	int getKey( int which, int facing );

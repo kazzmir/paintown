@@ -72,10 +72,6 @@ int paintown_main( int argc, char ** argv ){
 	diff.endTime();
 	diff.printTime( "Init:" );
 	
-	Network::init();
-		
-	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
-	
 	Music music( music_on );
 	try{
 		Menu game;
