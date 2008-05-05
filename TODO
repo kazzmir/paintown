@@ -14,6 +14,7 @@ DONE * add widget to select number of buddy npc's
 DONE * make network client screen not flicker
 DONE * fix races in grabbing
 DONE * use new menuing system
+DONE * continuous levels
 
 * network versus play
 * fix threading in windows, use -mthread
@@ -24,4 +25,3 @@ DONE * use new menuing system
 * infinite enemy mode like in super smash brothers
 * breakable inanimate objects like boxes and trash cans
 * better key input in network chat
-* continuous levels
