@@ -19,6 +19,11 @@
 			<label text="Finish:" />
 			<textfield size="4" id="finish" />
 		</hbox>
+		<hbox>
+			<checkbox id="is-continuous" />
+			<label text="Continuous" />
+			<glue />
+		</hbox>
 	</vbox>
 	<hbox>
 		<gridbagconstraints

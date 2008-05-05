@@ -17,6 +17,7 @@ public class Block{
 	private List objects;
 	private boolean enabled = true;
 	private boolean highlight = false;
+	private boolean continuous = false;
 	private int finish = 0;
 
 	public Block( Token token ) throws LoadException {
@@ -28,6 +29,11 @@ public class Block{
 		Token f = token.findToken( "finish" );
 		if ( f != null ){
 			finish = f.readInt( 0 );
+		}
+
+		Token b = token.findToken( "continuous" );
+		if ( b != null ){
+			continuous = true;
 		}
 
 		objects = new ArrayList();
@@ -62,6 +68,14 @@ public class Block{
 
 	public boolean isFinish(){
 		return finish > 0;
+	}
+
+	public boolean isContinuous(){
+		return continuous;
+	}
+
+	public void setContinuous( boolean b ){
+		this.continuous = b;
 	}
 
 	public int getFinish(){
@@ -146,6 +160,10 @@ public class Block{
 		block.addToken( new Token( "block" ) );
 		// block.addToken( new Token().addToken( new Token( "length" ) ).addToken( new Token( String.valueOf( getLength() ) ) ) );
 		block.addToken( new String[]{ "length", String.valueOf( getLength() ) } );
+		if ( isContinuous() ){
+			block.addToken( new String[]{ "continuous" } );
+		}
+
 		if ( isFinish() ){
 			block.addToken( new String[]{ "finish", String.valueOf( getFinish() ) } );
 		}

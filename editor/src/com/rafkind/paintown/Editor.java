@@ -1241,14 +1241,15 @@ public class Editor extends JFrame {
 				final JTextField length = (JTextField) engine.find( "length" );
 				final JTextField finish = (JTextField) engine.find( "finish" );
 				final JCheckBox isFinish = (JCheckBox) engine.find( "is-finish" );
+				final JCheckBox isContinuous = (JCheckBox) engine.find( "is-continuous" );
 				final JButton save = (JButton) engine.find( "save" );
 				final JButton close = (JButton) engine.find( "close" );
 
 				length.setText( String.valueOf( block.getLength() ) );
+				isContinuous.setSelected( block.isContinuous() );
 				isFinish.setSelected( block.isFinish() );
 				finish.setEnabled( block.isFinish() );
 				finish.setText( String.valueOf( block.getFinish() ) );
-
 				isFinish.addActionListener( new AbstractAction(){
 					public void actionPerformed( ActionEvent event ){
 						finish.setEnabled( isFinish.isSelected() );
@@ -1263,6 +1264,7 @@ public class Editor extends JFrame {
 						} else {
 							block.setFinish( 0 );
 						}
+						block.setContinuous( isContinuous.isSelected() );
 						done.invoke_();
 						dialog.setVisible( false );
 					}
