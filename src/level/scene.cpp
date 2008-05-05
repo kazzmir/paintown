@@ -222,10 +222,15 @@ void Scene::advanceBlocks( int n ){
 	}
 }
 
+bool Scene::canContinue( int x ){
+	return (current_block->isContinuous() && x >= getLimit() - 320) || (hearts.empty() && current_block->empty() && x >= getLimit() - 320);
+}
+
+
 void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 	clearHearts();
 
-	if ( hearts.empty() && current_block->empty() && min_x >= getLimit() - 320 ){
+	if ( canContinue( min_x ) ){
 		advanceBlocks( blockNumber + 1 );
 		Global::debug( 3 ) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
 	}

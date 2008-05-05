@@ -22,7 +22,8 @@ static const string dataPath( const string & str ){
 */
 	
 Block::Block( Token * tok ) throw ( LoadException ):
-finished( -1 ){
+finished( -1 ),
+continuous( false ){
 
 	if ( *tok != "block" ){
 		throw LoadException("Not a scene block");
@@ -39,6 +40,8 @@ finished( -1 ){
 				setLength( l );
 			} else if ( *current == "wait" ){
 				*current >> wait;
+			} else if ( *current == "continuous" ){
+				setContinuous( true );
 			} else if ( *current == "finish" ){
 				int f;
 				*current >> f;

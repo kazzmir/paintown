@@ -54,6 +54,9 @@ public:
 
 protected:
 
+	/* true if the scene the next block is ready */
+	bool canContinue( int x );
+
 	inline const double getBackgroundParallax() const {
 		return backgroundParallax;
 	}

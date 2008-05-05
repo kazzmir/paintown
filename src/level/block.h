@@ -21,6 +21,14 @@ public:
 		return length;
 	}
 
+	inline const bool isContinuous() const {
+		return continuous;
+	}
+
+	inline void setContinuous( const bool b ){
+		continuous = b;
+	}
+
 	/* finished is the length the player has to walk
 	 * to complete the level
 	 */
@@ -44,6 +52,7 @@ protected:
 
 	vector< BlockObject * > objects;
 	int finished;
+	bool continuous;
 };
 
 #endif
