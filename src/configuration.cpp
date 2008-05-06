@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "object/animation.h"
 #include "object/object.h"
+#include <sstream>
 
 #include <map>
 
@@ -178,9 +179,14 @@ int Configuration::getJump() const {
 	return jump;
 }
 
+#ifdef WINDOWS
+#else
 static string configFile(){
-	return "paintownrc";
+	ostringstream str;
+	str << getenv( "HOME" ) << "/.paintownrc";
+	return str.str();
 }
+#endif
 
 void Configuration::loadConfigurations(){
 	try{
@@ -198,4 +204,6 @@ void Configuration::loadConfigurations(){
 }
 
 void Configuration::saveConfiguration(){
+	Token head( "configuration", false );
+	head.toString( Global::debug( 0 ), string("") );
 }

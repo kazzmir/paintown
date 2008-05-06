@@ -9,6 +9,7 @@
 #include "util/timedifference.h"
 #include "util/funcs.h"
 #include "globals.h"
+#include "configuration.h"
 #include "init.h"
 
 using namespace std;
@@ -84,6 +85,8 @@ int paintown_main( int argc, char ** argv ){
 		Global::debug( 0 ) << "There was a problem loading the main menu. Error was:\n" << ex.getReason() << endl;
 		return -1;
 	}
+
+	Configuration::saveConfiguration();
 	
 	return 0;
 }
