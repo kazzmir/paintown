@@ -203,7 +203,45 @@ void Configuration::loadConfigurations(){
 	}
 }
 
+typedef int (Configuration::*get_func)() const;
+Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
+	Token * config = new Token();
+
+	config->addToken( new Token( "keyboard-configuration", false ) );
+	Token * number = new Token();
+	*number << "number";
+	config->addToken( number );
+	*number << num;
+
+	char * func_names[] = {"left","right","up","down","attack1","attack2","attack3","jump"};
+	get_func funcs[] = {&Configuration::getLeft,
+	                    &Configuration::getRight,
+	                    &Configuration::getUp,
+	                    &Configuration::getDown,
+			    &Configuration::getAttack1,
+			    &Configuration::getAttack2,
+			    &Configuration::getAttack3,
+			    &Configuration::getJump,
+	                   };
+
+	for ( unsigned int i = 0; i < sizeof(func_names)/sizeof(char*); i++ ){
+		Token * button = new Token();
+		*button << func_names[ i ];
+		*button << (configuration->*(funcs[i]))();
+		config->addToken( button );
+	}
+
+	return config;
+}
+
 void Configuration::saveConfiguration(){
-	Token head( "configuration", false );
+	Token head;
+	head << "configuration";
+	for ( map< int, Configuration * >::iterator it = configs.begin(); it != configs.end(); it++ ){
+		int num = it->first;
+		Configuration * configuration = it->second;
+		head.addToken( saveKeyboard( num, configuration ) );
+	}
 	head.toString( Global::debug( 0 ), string("") );
+	Global::debug( 0 ) << endl;
 }

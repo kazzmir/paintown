@@ -1,6 +1,8 @@
 #ifndef _paintown_configuration_h
 #define _paintown_configuration_h
 
+class Token;
+
 class Configuration{
 public:
 
@@ -38,6 +40,8 @@ protected:
 
 	static Configuration defaultPlayer1Keys();
 	static Configuration defaultPlayer2Keys();
+
+	static Token * saveKeyboard( int num, Configuration * configuration );
 
 private:
 	int right;
