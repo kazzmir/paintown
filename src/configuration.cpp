@@ -6,6 +6,7 @@
 #include "object/animation.h"
 #include "object/object.h"
 #include <sstream>
+#include <fstream>
 
 #include <map>
 
@@ -226,8 +227,7 @@ Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
 
 	for ( unsigned int i = 0; i < sizeof(func_names)/sizeof(char*); i++ ){
 		Token * button = new Token();
-		*button << func_names[ i ];
-		*button << (configuration->*(funcs[i]))();
+		*button << func_names[ i ] << (configuration->*(funcs[i]))();
 		config->addToken( button );
 	}
 
@@ -242,8 +242,32 @@ void Configuration::saveConfiguration(){
 		Configuration * configuration = it->second;
 		head.addToken( saveKeyboard( num, configuration ) );
 	}
-	head.toString( Global::debug( 0 ), string("") );
-	Global::debug( 0 ) << endl;
+
+	Token * speed = new Token();
+	*speed << "game-speed" << Configuration::getGameSpeed();
+	head.addToken( speed );
+
+	Token * invincible = new Token();
+	*invincible << "invincible" << Configuration::getInvincible();
+	head.addToken( invincible );
+
+	Token * fullscreen = new Token();
+	*fullscreen << "fullscreen" << Configuration::getFullscreen();
+	head.addToken( fullscreen );
+
+	Token * lives = new Token();
+	*lives << "lives" << Configuration::getLives();
+	head.addToken( lives );
+
+	Token * npc = new Token();
+	*npc << "npc-buddies" << Configuration::getNpcBuddies();
+	head.addToken( npc );
+
+	ofstream out( configFile().c_str(), ios::trunc | ios::out );
+	if ( ! out.bad() ){
+		head.toString( out, string("") );
+		out.close();
+	}
 }
 
 double Configuration::gamespeed = 1.0;
