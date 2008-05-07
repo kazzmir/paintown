@@ -31,6 +31,18 @@ public:
 	int getAttack3() const;
 	int getJump() const;
 
+public:
+	static double getGameSpeed();
+	static void setGameSpeed(double s);
+	static bool getInvincible();
+	static void setInvincible(bool i);
+	static bool getFullscreen();
+	static void setFullscreen(bool f);
+	static int getLives();
+	static void setLives(int l);
+	static int getNpcBuddies();
+	static void setNpcBuddies( int i );
+
 protected:
 	Configuration();
 	Configuration( const Configuration & config );
@@ -52,6 +64,21 @@ private:
 	int attack2;
 	int attack3;
 	int jump;
+
+private:
+	//! Game speed
+	static double gamespeed;
+	
+	//! Invincibility
+	static bool invincible;
+	
+	//! Fullscreen
+	static bool fullscreen;
+	
+	//! Lives
+	static int lives;
+
+	static int npc_buddies;
 };
 
 #endif

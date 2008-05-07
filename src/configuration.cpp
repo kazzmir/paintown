@@ -245,3 +245,49 @@ void Configuration::saveConfiguration(){
 	head.toString( Global::debug( 0 ), string("") );
 	Global::debug( 0 ) << endl;
 }
+
+double Configuration::gamespeed = 1.0;
+bool Configuration::invincible = false;
+bool Configuration::fullscreen = false;
+int Configuration::lives = 4;
+int Configuration::npc_buddies = 1;
+
+double Configuration::getGameSpeed(){
+	return gamespeed;
+}
+
+void Configuration::setGameSpeed(double s){
+	gamespeed = s;
+}
+
+bool Configuration::getInvincible(){
+	return invincible;
+}
+
+void Configuration::setInvincible(bool i){
+	invincible = i;
+}
+
+bool Configuration::getFullscreen(){
+	return fullscreen;
+}
+
+void Configuration::setFullscreen(bool f){
+	fullscreen = f;
+}
+
+int Configuration::getLives(){
+	return lives;
+}
+
+void Configuration::setLives(int l){
+	lives = l;
+}
+	
+int Configuration::getNpcBuddies(){
+	return npc_buddies;
+}
+
+void Configuration::setNpcBuddies( int i ){
+	npc_buddies = i;
+}

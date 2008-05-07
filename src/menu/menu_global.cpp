@@ -11,49 +11,36 @@
 #include "util/tokenreader.h"
 #include "globals.h"
 #include "init.h"
+#include "configuration.h"
 #include "music.h"
-
-double MenuGlobals::gamespeed = 1.0;
-bool MenuGlobals::invincible = false;
-bool MenuGlobals::fullscreen = false;
-int MenuGlobals::lives = 4;
-int MenuGlobals::npc_buddies = 1;
 
 std::priority_queue<std::string> MenuGlobals::lastPlayed;
 
 //static std::queue<MenuOption *> backgrounds;
 
-MenuGlobals::MenuGlobals()
-{
+MenuGlobals::MenuGlobals(){
 }
 
-MenuGlobals::~MenuGlobals()
-{
+MenuGlobals::~MenuGlobals(){
 }
 
-void MenuGlobals::setMusic(const std::string &file)
-{
+void MenuGlobals::setMusic(const std::string &file){
 	lastPlayed.push(file);
-	if(Music::loadSong( Util::getDataPath() + file ))
-	{
+	if(Music::loadSong( Util::getDataPath() + file )){
 		Music::pause();
 		Music::play();
 	}
 }
 
-const std::string MenuGlobals::currentMusic()
-{
-	if(!lastPlayed.empty())
-	{
+const std::string MenuGlobals::currentMusic(){
+	if(!lastPlayed.empty()){
 		return lastPlayed.top();
 	}
 	else return std::string();
 }
 
-void MenuGlobals::popMusic()
-{
-	if(!lastPlayed.empty())
-	{
+void MenuGlobals::popMusic(){
+	if(!lastPlayed.empty()){
 		lastPlayed.pop();
 		Music::pause();
 		Music::loadSong( Util::getDataPath() + lastPlayed.top() );
@@ -62,57 +49,49 @@ void MenuGlobals::popMusic()
 }
 
 /*! game speed */
-double MenuGlobals::getGameSpeed()
-{
-	return gamespeed;
+double MenuGlobals::getGameSpeed(){
+	return Configuration::getGameSpeed();
 }
 
 /*! set speed */
-void MenuGlobals::setGameSpeed(double s)
-{
-	gamespeed = s;
+void MenuGlobals::setGameSpeed(double s){
+	Configuration::setGameSpeed( s );
 }
 
 /*! invincible */
-bool MenuGlobals::getInvincible()
-{
-	return invincible;
+bool MenuGlobals::getInvincible(){
+	return Configuration::getInvincible();
 }
 
 /*! set invincible */
-void MenuGlobals::setInvincible(bool i)
-{
-	invincible = i;
+void MenuGlobals::setInvincible(bool i){
+	Configuration::setInvincible( i );
 }
 
 /*! game fullscreen */
-bool MenuGlobals::getFullscreen()
-{
-	return fullscreen;
+bool MenuGlobals::getFullscreen(){
+	return Configuration::getFullscreen();
 }
 
 /*! set speed */
-void MenuGlobals::setFullscreen(bool f)
-{
-	fullscreen = f;
+void MenuGlobals::setFullscreen(bool f){
+	Configuration::setFullscreen( f );
 }
 
 /*! game lives */
-int MenuGlobals::getLives()
-{
-	return lives;
+int MenuGlobals::getLives(){
+	return Configuration::getLives();
 }
 
 /*! set lives */
-void MenuGlobals::setLives(int l)
-{
-	lives = l;
+void MenuGlobals::setLives(int l){
+	Configuration::setLives( l );
 }
 
 int MenuGlobals::getNpcBuddies(){
-	return npc_buddies;
+	return Configuration::getNpcBuddies();
 }
 
 void MenuGlobals::setNpcBuddies( int i ){
-	npc_buddies = i;
+	Configuration::setNpcBuddies( i );
 }
