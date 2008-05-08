@@ -79,6 +79,17 @@ attack3( config.getAttack3() ),
 jump( config.getJump() ){
 }
 	
+Configuration::Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump ):
+right( right ),
+left( left ),
+up( up ),
+down( down ),
+attack1( attack1 ),
+attack2( attack2 ),
+attack3( attack3 ),
+jump( jump ){
+}
+	
 Configuration & Configuration::operator=( const Configuration & config ){
 	setRight( config.getRight() );
 	setLeft( config.getLeft() );
@@ -118,34 +129,42 @@ int Configuration::getKey( int which, int facing ){
 
 void Configuration::setRight( int i ){
 	right = i;
+	saveConfiguration();
 }
 
 void Configuration::setLeft( int i ){
 	left = i;
+	saveConfiguration();
 }
 
 void Configuration::setUp( int i ){
 	up = i;
+	saveConfiguration();
 }
 
 void Configuration::setDown( int i ){
 	down = i;	
+	saveConfiguration();
 }
 
 void Configuration::setAttack1( int i ){
 	attack1 = i;
+	saveConfiguration();
 }
 
 void Configuration::setAttack2( int i ){
 	attack2 = i;
+	saveConfiguration();
 }
 
 void Configuration::setAttack3( int i ){
 	attack3 = i;
+	saveConfiguration();
 }
 
 void Configuration::setJump( int i ){
 	jump = i;
+	saveConfiguration();
 }
 
 int Configuration::getRight() const {
@@ -195,7 +214,57 @@ void Configuration::loadConfigurations(){
 		TokenReader tr( file );
 		Token * head = tr.readToken();
 		if ( *head != "configuration" ){
-			Global::debug( 0 ) << "Config file " << configFile() << " does not use the configuration format" << endl;
+			throw LoadException( string("Config file ") + configFile() + " does not use the configuration format" );
+		}
+		while ( head->hasTokens() ){
+			Token * n;
+			*head >> n;
+			/* these operate on the global vars directly
+			 * to avoid calling saveConfiguration
+			 * if setFoo() was called
+			 */
+			if ( *n == "keyboard-configuration" ){
+				int number = -1;
+				int right = 0, left = 0, down = 0, up = 0;
+				int attack1 = 0, attack2 = 0, attack3 = 0, jump = 0;
+				while ( n->hasTokens() ){
+					Token * thing;
+					*n >> thing;
+					if ( *thing == "number" ){
+						*thing >> number;
+					} else if ( *thing == "left" ){
+						*thing >> left;
+					} else if ( *thing == "right" ){
+						*thing >> right;
+					} else if ( *thing == "down" ){
+						*thing >> down;
+					} else if ( *thing == "up" ){
+						*thing >> up;
+					} else if ( *thing == "attack1" ){
+						*thing >> attack1;
+					} else if ( *thing == "attack2" ){
+						*thing >> attack2;
+					} else if ( *thing == "attack3" ){
+						*thing >> attack3;
+					} else if ( *thing == "jump" ){
+						*thing >> jump;
+					}
+				}
+				if ( number == -1 ){
+					throw LoadException( string("Config file ") + configFile() + " does not specifiy (number #) for a keyboard-configuration" );
+				}
+				configs[ number ] = new Configuration( right, left, up, down, attack1, attack2, attack3, jump );
+			} else if ( *n == "game-speed" ){
+				*n >> gamespeed;
+			} else if ( *n == "invincible" ){
+				*n >> invincible;
+			} else if ( *n == "fullscreen" ){
+				*n >> fullscreen;
+			} else if ( *n == "lives" ){
+				*n >> lives;
+			} else if ( *n == "npc-buddies" ){
+				*n >> npc_buddies;
+			}
 		}
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load configuration file " << configFile() << ": " << le.getReason() << endl;
@@ -282,6 +351,7 @@ double Configuration::getGameSpeed(){
 
 void Configuration::setGameSpeed(double s){
 	gamespeed = s;
+	saveConfiguration();
 }
 
 bool Configuration::getInvincible(){
@@ -290,6 +360,7 @@ bool Configuration::getInvincible(){
 
 void Configuration::setInvincible(bool i){
 	invincible = i;
+	saveConfiguration();
 }
 
 bool Configuration::getFullscreen(){
@@ -298,6 +369,7 @@ bool Configuration::getFullscreen(){
 
 void Configuration::setFullscreen(bool f){
 	fullscreen = f;
+	saveConfiguration();
 }
 
 int Configuration::getLives(){
@@ -306,6 +378,7 @@ int Configuration::getLives(){
 
 void Configuration::setLives(int l){
 	lives = l;
+	saveConfiguration();
 }
 	
 int Configuration::getNpcBuddies(){
@@ -314,4 +387,5 @@ int Configuration::getNpcBuddies(){
 
 void Configuration::setNpcBuddies( int i ){
 	npc_buddies = i;
+	saveConfiguration();
 }

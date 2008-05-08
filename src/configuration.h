@@ -46,6 +46,8 @@ public:
 protected:
 	Configuration();
 	Configuration( const Configuration & config );
+	Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump );
+
 	~Configuration();
 
 	Configuration & operator=( const Configuration & config );
