@@ -10,6 +10,11 @@
 
 #include <map>
 
+#ifdef WINDOWS
+#define _WIN32_IE 0x400
+#include <shlobj.h>
+#endif
+
 using namespace std;
 
 Configuration Configuration::defaultPlayer1Keys(){
@@ -200,6 +205,13 @@ int Configuration::getJump() const {
 }
 
 #ifdef WINDOWS
+static string configFile(){
+	ostringstream str;
+	char path[ MAX_PATH ];
+	SHGetSpecialFolderPathA( 0, path, CSIDL_APPDATA, false );
+	str << path << "/paintown_configuration.txt";
+	return str.str();
+}
 #else
 static string configFile(){
 	ostringstream str;

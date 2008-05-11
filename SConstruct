@@ -92,8 +92,8 @@ env.Append( LIBS = [dumb,hawknl] )
 if isWindows():
 	env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
 	env.Append( CPPDEFINES = 'WINDOWS' )
-	env.Append( CCFLAGS = '-mwindows' )
-	env.Append( LINKFLAGS = '-mwindows' )
+	env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
+	env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
 	staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
 	staticEnv.Append( CPPDEFINES = 'WINDOWS' )
 else:
