@@ -328,7 +328,7 @@ public class Editor extends JFrame {
 		return data;
 	}
 
-	private JPanel createEditPanel( final Level level ){
+	private JSplitPane createEditPanel( final Level level ){
 		final SwingEngine engine = new SwingEngine( "main.xml" );
 		
 		final JPanel viewContainer = (JPanel) engine.find( "view" );
@@ -580,13 +580,10 @@ public class Editor extends JFrame {
 				if ( currentPopup != null ){
 					currentPopup.setVisible( false );
 				}
-				// Point px = viewContainer.getLocationOnScreen();
-				// final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, event.getX() - viewScroll.getHorizontalScrollBar().getValue(), event.getY() );
 				final JDialog dialog = new JDialog( Editor.this, "Add" );
 				dialog.getContentPane().add( panel );
 				dialog.setSize( 220, 250 );
 				dialog.setLocation( event.getX() - viewScroll.getHorizontalScrollBar().getValue(), event.getY() );
-				// final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, 100, 100 );
 				close.addActionListener( new AbstractAction(){
 					public void actionPerformed( ActionEvent event ){
 						dialog.setVisible( false );
@@ -1422,7 +1419,7 @@ public class Editor extends JFrame {
 		});
 		*/
 
-		return (JPanel) engine.getRootComponent();
+		return (JSplitPane) engine.getRootComponent();
 	}
 
 	private void debugSwixml( SwingEngine engine ){

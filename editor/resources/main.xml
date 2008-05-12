@@ -1,4 +1,4 @@
-<panel layout="GridBagLayout">
+<splitpane>
 
 	<panel id="view" border="MatteBorder(2,2,2,2,667A63)">
 		<gridbagconstraints
@@ -27,6 +27,7 @@
 	</scrollpane>
 	-->
 
+	<vbox>
 	<tabbedpane id="tabbed" border="MatteBorder(2,2,2,2,667A63)">
 		<gridbagconstraints
 			gridx="1"
@@ -74,4 +75,5 @@
 		-->
 		<glue />
 	</hbox>
-</panel>
+	</vbox>
+</splitpane>
