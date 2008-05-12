@@ -435,7 +435,7 @@ public class Editor extends JFrame {
 			Thing selected = null;
 			double dx, dy;
 			double sx, sy;
-			Popup currentPopup;
+			JDialog currentPopup;
 
 			public Thing getSelected(){
 				return selected;
@@ -578,18 +578,22 @@ public class Editor extends JFrame {
 				buttons.add( close );
 				panel.add( buttons );
 				if ( currentPopup != null ){
-					currentPopup.hide();
+					currentPopup.setVisible( false );
 				}
 				// Point px = viewContainer.getLocationOnScreen();
-				final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, event.getX() - viewScroll.getHorizontalScrollBar().getValue(), event.getY() );
+				// final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, event.getX() - viewScroll.getHorizontalScrollBar().getValue(), event.getY() );
+				final JDialog dialog = new JDialog( Editor.this, "Add" );
+				dialog.getContentPane().add( panel );
+				dialog.setSize( 220, 250 );
+				dialog.setLocation( event.getX() - viewScroll.getHorizontalScrollBar().getValue(), event.getY() );
 				// final Popup p = PopupFactory.getSharedInstance().getPopup( Editor.this, panel, 100, 100 );
 				close.addActionListener( new AbstractAction(){
 					public void actionPerformed( ActionEvent event ){
-						p.hide();
+						dialog.setVisible( false );
 					}
 				});
-				currentPopup = p;
-				p.show();
+				currentPopup = dialog;
+				dialog.setVisible( true );
 
 				final Lambda1 addThing = new Lambda1(){
 					private int mid( int a, int b, int c ){
@@ -639,7 +643,7 @@ public class Editor extends JFrame {
 							int index = all.locationToIndex( clicked.getPoint() );
 							File f = (File) files.get( index );
 							addThing.invoke_( f );
-							p.hide();
+							dialog.setVisible( false );
 						}
 					}
 				});
@@ -650,7 +654,7 @@ public class Editor extends JFrame {
 						if ( index != -1 ){
 							File f = (File) files.get( index );
 							addThing.invoke_( f );
-							p.hide();
+							dialog.setVisible( false );
 						}
 					}
 				});
