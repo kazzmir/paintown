@@ -565,6 +565,20 @@ public class Editor extends JFrame {
 				return new Vector( objectsModel.getAll() );
 			}
 
+			public void showAddObject( final Block block ) throws EditorException {
+				int x = -1;
+				for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
+					Block b1 = (Block) it.next();
+					if ( b1 == block ){
+						break;
+					}
+					if ( b1.isEnabled() ){
+						x += b1.getLength();
+					}
+				}
+				showAddObjectPopup( new MouseEvent( Editor.this, -1, 0, 0, (int)(x * level.getScale()), 50, 1, false ) );
+			}
+
 			private void showAddObjectPopup( final MouseEvent event ){
 				// JPanel panel = new JPanel();
 				final Vector files = collectCharFiles();
@@ -717,6 +731,7 @@ public class Editor extends JFrame {
 			private List listeners;
 			private List things;
 			private Lambda1 update;
+			private Block current;
 			public ObjectList(){
 				listeners = new ArrayList();
 				things = new ArrayList();
@@ -736,6 +751,7 @@ public class Editor extends JFrame {
 			}
 
 			public void setBlock( Block b ){
+				current = b;
 				if ( b == null ){
 					this.things = new ArrayList();
 				} else {
@@ -766,6 +782,10 @@ public class Editor extends JFrame {
 			}
 			*/
 
+			public Block getBlock(){
+				return current;
+			}
+
 			public void addListDataListener( ListDataListener l ){
 				listeners.add( l );
 			}
@@ -784,10 +804,30 @@ public class Editor extends JFrame {
 		}
 
 		final ObjectList objectList = new ObjectList();
-		final JList currentObjects = new JList( objectList );
-		holder.add( new JLabel( "Objects" ) );
-		holder.add( new JScrollPane( currentObjects ) );
+		// final JList currentObjects = new JList( objectList );
+		final SwingEngine blockObjectsEngine = new SwingEngine( "block-objects.xml" );
+		// holder.add( new JLabel( "Objects" ) );
+		// holder.add( new JScrollPane( currentObjects ) );
+		final JButton objectsAdd = (JButton) blockObjectsEngine.find( "add" );
+		final JButton objectsDelete = (JButton) blockObjectsEngine.find( "delete" );
+		final JList currentObjects = (JList) blockObjectsEngine.find( "current" );
+		currentObjects.setModel( objectList );
+		holder.add( (JPanel) blockObjectsEngine.getRootComponent() );
+
 		holder.add( Box.createVerticalGlue() );
+
+		objectsAdd.addActionListener(new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				try{
+					if ( objectList.getBlock() == null ){
+						throw new EditorException( "Select a block" );
+					}
+					mousey.showAddObject( objectList.getBlock() );
+				} catch ( EditorException e ){
+					showError( e );
+				}
+			}
+		});
 
 		/* if an object is selected highlight it and scroll over to it */
 		currentObjects.addListSelectionListener( new ListSelectionListener(){
@@ -1433,6 +1473,10 @@ public class Editor extends JFrame {
 
 	private static void showError( String message ){
 		JOptionPane.showMessageDialog( null, message, "Paintown Editor Error", JOptionPane.ERROR_MESSAGE );
+	}
+
+	private static void showError( EditorException e ){
+		showError( e.getMessage() );
 	}
 
 	public static void main( String[] args ){

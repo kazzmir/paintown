@@ -1,0 +1,45 @@
+<panel layout="GridBagLayout">
+	<label text="Objects">
+	<gridbagconstraints
+		gridx="0"
+		gridy="0"
+		weightx="1"
+		weighty="0.1"
+		gridheight="1"
+		anchor="GridBagConstraints.NORTHWEST"
+		fill="GridBagConstraints.HORIZONTAL"
+		/>
+	</label>
+	<vbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="1"
+			weightx="1"
+			weighty="0.1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			/>
+		<hbox>
+			<button id="add" text="Add object" />
+			<glue />
+			<button id="add-random" text="Add random objects" />
+		</hbox>
+		<hbox>
+			<button id="delete" text="Delete object" />
+			<glue />
+			<button id="delete-all" text="Delete all objects" />
+		</hbox>
+	</vbox>
+	<scrollpane>
+		<gridbagconstraints
+			gridx="0"
+			gridy="2"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.BOTH"
+			/>
+		<list id="current" />
+	</scrollpane>
+</panel>
