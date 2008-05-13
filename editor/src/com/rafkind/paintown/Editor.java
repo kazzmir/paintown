@@ -269,6 +269,20 @@ public class Editor extends JFrame {
 		dataPath = f;
 	}
 
+	private String generateBoysName(){
+		return new RandomNameAction( "boys.txt" ){
+			public void actionPerformed( ActionEvent event ){
+			}
+		}.generateName();
+	}
+
+	private String generateGirlsName(){
+		return new RandomNameAction( "girls.txt" ){
+			public void actionPerformed( ActionEvent event ){
+			}
+		}.generateName();
+	}
+
 	private void smoothScroll( final JScrollBar scroll, final int start, final int end ){
 		new Thread(){
 			public void run(){
@@ -985,6 +999,12 @@ public class Editor extends JFrame {
 		view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_C, 2 ), "copy" );
 		/* ctrl-v */
 		view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_V, 2 ), "paste" );
+		/* ctrl-b */
+		view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_B, 2 ), "change-boy-name" );
+		view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_G, 2 ), "change-girl-name" );
+		
+		currentObjects.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_B, 2 ), "change-boy-name" );
+		currentObjects.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_G, 2 ), "change-girl-name" );
 
 		view.getActionMap().put( "delete", new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
@@ -1006,6 +1026,29 @@ public class Editor extends JFrame {
 				}
 			}
 		});
+
+		AbstractAction changeBoy = new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( mousey.getSelected() != null && mousey.getSelected() instanceof Character ){
+					Character guy = (Character) mousey.getSelected();
+					guy.setName( Editor.this.generateBoysName() );
+				}
+			}
+		};
+
+		AbstractAction changeGirl = new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				if ( mousey.getSelected() != null && mousey.getSelected() instanceof Character ){
+					Character guy = (Character) mousey.getSelected();
+					guy.setName( Editor.this.generateGirlsName() );
+				}
+			}
+		};
+		
+		view.getActionMap().put( "change-boy-name", changeBoy );
+		view.getActionMap().put( "change-girl-name", changeGirl );
+		currentObjects.getActionMap().put( "change-boy-name", changeBoy );
+		currentObjects.getActionMap().put( "change-girl-name", changeGirl );
 
 		view.getActionMap().put( "paste", new AbstractAction(){
 			private int calculateLength( List blocks ){
