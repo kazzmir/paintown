@@ -817,6 +817,19 @@ public class Editor extends JFrame {
 
 		holder.add( Box.createVerticalGlue() );
 
+		objectsDelete.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				Block block = objectList.getBlock();
+				Thing t = (Thing) currentObjects.getSelectedValue();
+				if ( t != null && block != null ){
+					mousey.setSelected( null );
+					block.removeThing( t );
+					objectList.setBlock( block );
+					viewScroll.repaint();
+				}
+			}
+		});
+
 		objectsAdd.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				try{
@@ -853,7 +866,7 @@ public class Editor extends JFrame {
 			}
 
 			private Character make() throws LoadException {
-				File choose = (File) objectsModel.getElementAt( (int)(Math.random() * (objectsModel.getSize() - 1)) );
+				File choose = (File) objectsModel.getElementAt( (int)(Math.random() * (objectsModel.getSize())) );
 				Token temp = new Token();
 				temp.addToken( new Token( "character" ) );
 				temp.addToken( new String[]{ "name", "TempName" } );
@@ -1388,7 +1401,7 @@ public class Editor extends JFrame {
 						length += b.getLength();
 					}
 				}
-				smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), (int)(length * level.getScale() - 10) );
+				smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), (int)(length * level.getScale() - 15) );
 				// viewScroll.getHorizontalScrollBar().setValue( (int)(length * level.getScale() - 10) );
 			}
 

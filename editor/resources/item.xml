@@ -57,7 +57,7 @@
 
 		<button id="save" text="Save" />
 		<glue size="1" />
-		<button id="close" text="Close" />
+		<button id="close" text="Cancel" />
 		<glue />
 	</hbox>
 </panel>

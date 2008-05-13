@@ -64,6 +64,6 @@
 			/>
 
 		<button id="save" text="Save" />
-		<button id="close" text="Close" />
+		<button id="close" text="Cancel" />
 	</hbox>
 </panel>
