@@ -98,6 +98,10 @@ public class Block{
 		objects.remove( t );
 	}
 
+	public void removeAllThings(){
+		objects.clear();
+	}
+
 	public void render( Graphics2D g, int x, int height, int minZ, int maxZ, int num ){
 		Object[] objs = this.objects.toArray();
 		Arrays.sort( objs, new Comparator(){

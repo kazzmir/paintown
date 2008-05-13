@@ -811,6 +811,7 @@ public class Editor extends JFrame {
 		final JButton objectsAdd = (JButton) blockObjectsEngine.find( "add" );
 		final JButton objectsDelete = (JButton) blockObjectsEngine.find( "delete" );
 		final JButton objectsAddRandom = (JButton) blockObjectsEngine.find( "add-random" );
+		final JButton objectsDeleteAll = (JButton) blockObjectsEngine.find( "delete-all" );
 		final JList currentObjects = (JList) blockObjectsEngine.find( "current" );
 		currentObjects.setModel( objectList );
 		holder.add( (JPanel) blockObjectsEngine.getRootComponent() );
@@ -824,6 +825,18 @@ public class Editor extends JFrame {
 				if ( t != null && block != null ){
 					mousey.setSelected( null );
 					block.removeThing( t );
+					objectList.setBlock( block );
+					viewScroll.repaint();
+				}
+			}
+		});
+
+		objectsDeleteAll.addActionListener( new AbstractAction(){
+			public void actionPerformed( ActionEvent event ){
+				Block block = objectList.getBlock();
+				if ( block != null ){
+					mousey.setSelected( null );
+					block.removeAllThings();
 					objectList.setBlock( block );
 					viewScroll.repaint();
 				}
