@@ -576,7 +576,7 @@ public class Editor extends JFrame {
 						x += b1.getLength();
 					}
 				}
-				showAddObjectPopup( new MouseEvent( Editor.this, -1, 0, 0, (int)(x * level.getScale()), 50, 1, false ) );
+				showAddObjectPopup( new MouseEvent( Editor.this, -1, 0, 0, (int)((x + block.getLength() / 2) * level.getScale()), (int)((level.getMinZ() + level.getMaxZ()) * level.getScale() / 2), 1, false ) );
 			}
 
 			private void showAddObjectPopup( final MouseEvent event ){
