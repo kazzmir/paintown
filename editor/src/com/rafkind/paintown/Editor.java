@@ -810,19 +810,76 @@ public class Editor extends JFrame {
 		// holder.add( new JScrollPane( currentObjects ) );
 		final JButton objectsAdd = (JButton) blockObjectsEngine.find( "add" );
 		final JButton objectsDelete = (JButton) blockObjectsEngine.find( "delete" );
+		final JButton objectsAddRandom = (JButton) blockObjectsEngine.find( "add-random" );
 		final JList currentObjects = (JList) blockObjectsEngine.find( "current" );
 		currentObjects.setModel( objectList );
 		holder.add( (JPanel) blockObjectsEngine.getRootComponent() );
 
 		holder.add( Box.createVerticalGlue() );
 
-		objectsAdd.addActionListener(new AbstractAction(){
+		objectsAdd.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				try{
 					if ( objectList.getBlock() == null ){
 						throw new EditorException( "Select a block" );
 					}
 					mousey.showAddObject( objectList.getBlock() );
+				} catch ( EditorException e ){
+					showError( e );
+				}
+			}
+		});
+
+		objectsAddRandom.addActionListener( new AbstractAction(){
+			private RandomNameAction makeName = new RandomNameAction( "boys.txt" ){
+				public void actionPerformed( ActionEvent event ){
+				}
+			};
+
+			private int randomX(){
+				if ( Math.random() > 0.5 ){
+					return -((int)(Math.random() * 640) + 320);
+				} else {
+					return (int)(Math.random() * 800) + 350;
+				}
+			}
+
+			private int randomY(){
+				return (int)(Math.random() * (level.getMaxZ() - level.getMinZ()));
+			}
+
+			private int randomHealth(){
+				return (int)(Math.random() * 60) + 20;
+			}
+
+			private Character make() throws LoadException {
+				File choose = (File) objectsModel.getElementAt( (int)(Math.random() * (objectsModel.getSize() - 1)) );
+				Token temp = new Token();
+				temp.addToken( new Token( "character" ) );
+				temp.addToken( new String[]{ "name", "TempName" } );
+				temp.addToken( new String[]{ "coords", String.valueOf( randomX() ), String.valueOf( randomY() ) } );
+				temp.addToken( new String[]{ "health", String.valueOf( randomHealth() ) } );
+				temp.addToken( new String[]{ "path", choose.getPath() } );
+				Character guy = new Character( temp );
+				guy.setMap( (int)(Math.random() * guy.getMaxMaps()));
+				return guy;
+			}
+
+			public void actionPerformed( ActionEvent event ){
+				try{
+					if ( objectList.getBlock() == null ){
+						throw new EditorException( "Select a block" );
+					}
+					for ( int i = 0; i < 4; i++ ){
+						try{
+							objectList.getBlock().addThing( make() );
+						} catch ( LoadException e ){
+							System.out.println( "Ignoring exception" );
+							e.printStackTrace();
+						}
+					}
+					objectList.setBlock( objectList.getBlock() );
+					viewScroll.repaint();
 				} catch ( EditorException e ){
 					showError( e );
 				}
