@@ -119,7 +119,7 @@ static string findNextFile( const char * name ){
 	do{
 		num += 1;
 		sprintf( buf, "%s%d%s", first, num, extension );
-	} while ( Util::exists( buf ) );
+	} while ( num != 0 && Util::exists( buf ) );
 	return string( buf );
 }
 
