@@ -46,7 +46,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 	// Mouse Manager Constructor
 	keyInputManager::keyInputManager()
 	{
-		// Nothing yet
+		dTimer.reset();
+		delay = 0;
 		input = new allegroKeyInput();
 		keyHolder[keys::SPACE]=false;
 		keyHolder[keys::TAB]=false;
@@ -71,24 +72,28 @@ THE POSSIBILITY OF SUCH DAMAGE.
 	// Check mouse for changes and fire events
 	void keyInputManager::update()
 	{
+		if(delay<=dTimer.msecs())dTimer.reset();
 		if(input)
 		{
 			// update the keyboard
 			input->update();
-			// Do pressed queue
-			while(!input->pressedEmpty())
+			if(dTimer.msecs()<=delay)
 			{
-				keys k = input->dequeuePressed();
-				keyHolder[k.getValue()] = true;
-				pressed.emit(k);
-			}
-			
-			// Do released queue
-			while(!input->releasedEmpty())
-			{
-				keys k = input->dequeueReleased();
-				keyHolder[k.getValue()] = false;
-				released.emit(k);
+				// Do pressed queue
+				while(!input->pressedEmpty())
+				{
+					keys k = input->dequeuePressed();
+					keyHolder[k.getValue()] = true;
+					pressed.emit(k);
+				}
+				
+				// Do released queue
+				while(!input->releasedEmpty())
+				{
+					keys k = input->dequeueReleased();
+					keyHolder[k.getValue()] = false;
+					released.emit(k);
+				}
 			}
 		}
 	}
@@ -113,5 +118,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 			return false;
 		}
 		return keyHolder[unicode];
+	}
+	
+	//! Set delay in milleseconds (doesn't effect the keyStates)
+	void keyInputManager::setDelay(unsigned int msecs)
+	{
+		delay = msecs;
 	}
 

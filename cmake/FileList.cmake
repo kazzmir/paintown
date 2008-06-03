@@ -128,12 +128,13 @@ src/menu/optionfactory.cpp
 )
 
 set(GUI_SRC
+src/gui/al_keyinput.cpp
 src/gui/box.cpp
 src/gui/container.cpp
-src/gui/rectarea.cpp
-src/gui/widget.cpp
 src/gui/keys.cpp
 src/gui/keyinput.cpp
 src/gui/keyinput_manager.cpp
-src/gui/al_keyinput.cpp
+src/gui/rectarea.cpp
+src/gui/timer.cpp
+src/gui/widget.cpp
 )

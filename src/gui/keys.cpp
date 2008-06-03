@@ -62,17 +62,17 @@ THE POSSIBILITY OF SUCH DAMAGE.
     // Is the value a character
     bool keys::isCharacter() const
     {
-	    return false;//(getAsciiValue() >= 32 && getAsciiValue() <= 255);
+	    return (getValue() >= 32 && getValue() <= 126);
     }
     // Is the value a number
     bool keys::isNumber() const
     {
-	    return false;//(getAsciiValue() >= 48 && getAsciiValue() <= 57);
+	    return (getValue() >= 48 && getValue() <= 57);
     }
     // Is the value a letter
     bool keys::isLetter() const
     {
-	    return false;//(getAsciiValue() >= 65 && getAsciiValue() <= 90) || (getAsciiValue() >= 97 && getAsciiValue() <= 122);
+	    return (getValue() >= 65 && getValue() <= 90) || (getValue() >= 97 && getValue() <= 122);
     }
     // Get the Raw Value
     int keys::getValue() const

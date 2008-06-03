@@ -42,6 +42,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 #include "keys.h"
 #include "keyinput.h"
 #include "sigslot.h"
+#include "timer.h"
 
 class keyInputManager
 {
@@ -58,6 +59,10 @@ class keyInputManager
 		//! Key state (pass true to enable blocking checking)
 		bool keyState(int unicode, bool blocking=false);
 		
+		
+		//! Set delay in milleseconds (doesn't effect the keyStates)
+		void setDelay(unsigned int msecs);
+		
 		//! \name Signals
 		sigslot::signal1<const keys &> pressed;
 		sigslot::signal1<const keys &> released;
@@ -65,6 +70,12 @@ class keyInputManager
 	private:
 		//! input pointer
 		keyInput *input;
+		
+		//! Timer for delay
+		guiTimer dTimer;
+		
+		//! Delay
+		unsigned int delay;
 		
 		//! Key states
 		bool keyHolder[keys::MAX];
