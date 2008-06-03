@@ -295,7 +295,7 @@ Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
 	config->addToken( number );
 	*number << num;
 
-	char * func_names[] = {"left","right","up","down","attack1","attack2","attack3","jump"};
+	const char * func_names[] = {"left","right","up","down","attack1","attack2","attack3","jump"};
 	get_func funcs[] = {&Configuration::getLeft,
 	                    &Configuration::getRight,
 	                    &Configuration::getUp,

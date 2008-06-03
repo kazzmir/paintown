@@ -384,7 +384,9 @@ void Menu::setBitmap(Bitmap *bmp){
 /*! Get current background in Bitmap */
 Bitmap *Menu::getBackground()
 {
-	return dynamic_cast<OptionBg *>(backgrounds.front())->getCurrentBackground();
+	//return dynamic_cast<OptionBg *>(backgrounds.front())->getCurrentBackground();
+	OptionBg *temp = (OptionBg *)backgrounds.front();
+	return temp->getCurrentBackground();
 }
 
 FreeTypeFont *Menu::getFont(){

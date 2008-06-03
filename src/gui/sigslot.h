@@ -147,8 +147,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 
 /* If you plan on using this outside of saggui, comment the include then uncomment the definition */
-#include "dllspec.h"
-//#define SAGGUI_EXPORT
+//#include "dllspec.h"
+#define SAGGUI_EXPORT
 
 /* This can be safely ignored if you are using this outside saggui as it puts the sigslot back into its own namespace */
 #ifdef SAGGUI_EXT_EXPORT
