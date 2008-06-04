@@ -11,6 +11,8 @@ lblue(255),
 lgreen(255),
 rblue(255),
 rgreen(255){
+	setRunnable(false);
+	
 	if ( *token != "npc" ){
 		throw LoadException( "Not npc option" );
 	}

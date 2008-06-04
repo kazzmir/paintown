@@ -48,6 +48,7 @@ class MenuOption
 		Bitmap *bmp;
 		int adjustLeftColor;
 		int adjustRightColor;
+		bool runnable;
 		
 		// Stuff we don't need to be concerned with
 		friend class Menu;
@@ -79,6 +80,10 @@ class MenuOption
 		inline void setRightAdjustColor(int c) { adjustRightColor = c; }
 		
 		inline int getRightAdjustColor() const { return adjustRightColor; }
+		
+		inline void setRunnable(const bool r) { runnable = r; }
+		
+		inline bool isRunnable() const { return runnable; }
 };
 
 #endif

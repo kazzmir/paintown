@@ -218,18 +218,18 @@ useflags Menu::run(){
 				
 				if ( keyboard.keyState(keys::LEFT, true ) ){
 					if ( (*selectedOption)->leftKey()){
-						//key.wait();
+						
 					}
 				}
 				
 				if ( keyboard.keyState(keys::RIGHT, true ) ){
 					if ( (*selectedOption)->rightKey()){
-						//key.wait();
+						
 					}
 				}
 				
 				if ( keyboard.keyState(keys::ENTER, true ) ){
-					(*selectedOption)->setState( MenuOption::Run );
+					if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
 				}
 				
 				// Logic

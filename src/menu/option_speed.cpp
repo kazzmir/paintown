@@ -6,6 +6,8 @@
 
 OptionSpeed::OptionSpeed(Token *token)throw( LoadException ) : MenuOption(adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
+	setRunnable(false);
+	
 	if ( *token != "speed" )
 		throw LoadException("Not speed option");
 	
