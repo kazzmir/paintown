@@ -3,7 +3,6 @@
 #include "menu/menu_option.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
-#include "util/keyboard.h"
 #include "util/sound.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
@@ -18,10 +17,14 @@
 
 #include "menu/menu_global.h"
 
+#include "gui/keyinput_manager.h"
+
 #include <queue>
 #include <map>
 
 Bitmap *Menu::work = 0;
+
+keyInputManager Menu::keyboard;
 
 static std::queue<MenuOption *> backgrounds;
 
@@ -163,14 +166,6 @@ void Menu::load(const std::string &filename) throw( LoadException ){
 
 useflags Menu::run(){
 	
-	Keyboard key;
-	
-	key.setDelay( Keyboard::Key_UP, 300 );
-	key.setDelay( Keyboard::Key_DOWN, 300 );
-	key.setDelay( Keyboard::Key_ENTER, 300 );
-	key.setDelay( Keyboard::Key_LEFT, 50 );
-	key.setDelay( Keyboard::Key_RIGHT, 50 );
-	
 	Bitmap screen_buffer( 320, 240 );
 	bool done = false;
 	bool endGame = false;
@@ -198,13 +193,14 @@ useflags Menu::run(){
 		while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 	
 			bool draw = false;
-			key.poll();
+			
+			keyboard.update();
 	
 			if ( Global::speed_counter > 0 ){
 				draw = true;
 				// Keys
 				
-				if ( key[ Keyboard::Key_UP ] ){
+				if ( keyboard.keyState(keys::UP, true ) ){	
 					(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption > menuOptions.begin() ){
 						selectedOption--;
@@ -212,7 +208,7 @@ useflags Menu::run(){
 					(*selectedOption)->setState(MenuOption::Selected);	
 				}
 
-				if ( key[ Keyboard::Key_DOWN ] ){
+				if ( keyboard.keyState(keys::DOWN, true ) ){
 					(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
 						selectedOption++;
@@ -220,19 +216,19 @@ useflags Menu::run(){
 					(*selectedOption)->setState(MenuOption::Selected);
 				}
 				
-				if ( key[ Keyboard::Key_LEFT ] ){
+				if ( keyboard.keyState(keys::LEFT, true ) ){
 					if ( (*selectedOption)->leftKey()){
-						key.wait();
+						//key.wait();
 					}
 				}
 				
-				if ( key[ Keyboard::Key_RIGHT ] ){
+				if ( keyboard.keyState(keys::RIGHT, true ) ){
 					if ( (*selectedOption)->rightKey()){
-						key.wait();
+						//key.wait();
 					}
 				}
 				
-				if ( key[ Keyboard::Key_ENTER ] ){
+				if ( keyboard.keyState(keys::ENTER, true ) ){
 					(*selectedOption)->setState( MenuOption::Run );
 				}
 				
@@ -320,20 +316,18 @@ useflags Menu::run(){
 	
 			while ( Global::speed_counter < 1 ){
 				Util::rest( 1 );
-				key.poll();
+				keyboard.update();
 			}
 	
-			endGame = done |= key[ Keyboard::Key_ESC ];
+			endGame = done |= keyboard.keyState(keys::ESC, true );
 		}
 		
-		// Stupid keyboard
-		key.wait();
 		// do we got an option to run, lets do it
 		if((*selectedOption)->getState() == MenuOption::Run){
 			try{
 				(*selectedOption)->run(endGame);
 			} catch ( const ReturnException & re ){
-				key.wait();
+				
 			}
 			// Reset it's state
 			(*selectedOption)->setState(MenuOption::Selected);

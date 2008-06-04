@@ -39,23 +39,20 @@ THE POSSIBILITY OF SUCH DAMAGE.
 #include "keyinput_manager.h"
 #include "al_keyinput.h"
 	
-	/* signals
-	signal1<const keys &> keyInputManager::pressed;
-	signal1<const keys &> keyInputManager::released;*/
+	allegroKeyInput keyInputManager::input;
 	
 	// Mouse Manager Constructor
 	keyInputManager::keyInputManager()
 	{
 		dTimer.reset();
 		delay = 0;
-		input = new allegroKeyInput();
 		keyHolder[keys::SPACE]=false;
 		keyHolder[keys::TAB]=false;
 		keyHolder[keys::ENTER]=false;
 		keyBlocker[keys::SPACE]=false;
 		keyBlocker[keys::TAB]=false;
 		keyBlocker[keys::ENTER]=false;
-		for(int i=0;i<1100;++i)
+		for(int i=0;i<keys::MAX;++i)
 		{
 			keyHolder[i]=false;
 			keyBlocker[i]=false;
@@ -65,35 +62,32 @@ THE POSSIBILITY OF SUCH DAMAGE.
 	// Mouse Manager Destructor
 	keyInputManager::~keyInputManager()
 	{
-		// destroy input
-		if(input)delete input;
+		// nothing
 	}
 	
 	// Check mouse for changes and fire events
 	void keyInputManager::update()
 	{
 		if(delay<=dTimer.msecs())dTimer.reset();
-		if(input)
+		
+		// update the keyboard
+		input.update();
+		if(dTimer.msecs()<=delay)
 		{
-			// update the keyboard
-			input->update();
-			if(dTimer.msecs()<=delay)
+			// Do pressed queue
+			while(!input.pressedEmpty())
 			{
-				// Do pressed queue
-				while(!input->pressedEmpty())
-				{
-					keys k = input->dequeuePressed();
-					keyHolder[k.getValue()] = true;
-					pressed.emit(k);
-				}
-				
-				// Do released queue
-				while(!input->releasedEmpty())
-				{
-					keys k = input->dequeueReleased();
-					keyHolder[k.getValue()] = false;
-					released.emit(k);
-				}
+				keys k = input.dequeuePressed();
+				keyHolder[k.getValue()] = true;
+				pressed.emit(k);
+			}
+			
+			// Do released queue
+			while(!input.releasedEmpty())
+			{
+				keys k = input.dequeueReleased();
+				keyHolder[k.getValue()] = false;
+				released.emit(k);
 			}
 		}
 	}
@@ -105,12 +99,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
 		
 		if(blocking)
 		{
-			if(keyHolder[unicode] && !keyBlocker[unicode])
+			
+			if(keyHolder[unicode] && !(keyBlocker[unicode]))
 			{
 				keyBlocker[unicode]=true;
 				return true;
 			}
-			else if(keyHolder[unicode] && keyBlocker[unicode])
+			else if(!keyHolder[unicode] && keyBlocker[unicode])
 			{
 				keyBlocker[unicode]=false;
 				return false;

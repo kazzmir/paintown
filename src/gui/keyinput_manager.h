@@ -40,9 +40,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 #define KEYINPUT_MANAGER_H
 
 #include "keys.h"
-#include "keyinput.h"
+//#include "keyinput.h"
 #include "sigslot.h"
 #include "timer.h"
+
+class allegroKeyInput;
 
 class keyInputManager
 {
@@ -69,7 +71,7 @@ class keyInputManager
 		
 	private:
 		//! input pointer
-		keyInput *input;
+		static allegroKeyInput input;
 		
 		//! Timer for delay
 		guiTimer dTimer;
