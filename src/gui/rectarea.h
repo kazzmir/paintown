@@ -8,7 +8,7 @@ struct RectArea
 	bool empty();
 	int x;
 	int y;
-	int width; // Really not necessary but is there in case of later need
+	int width; 
 	int height;
 	int body;
 	int bodyAlpha;
