@@ -51,6 +51,7 @@ MenuOption(event){
 		throw LoadException("No name set, this option should have a name!");
 	}
 	
+	/*
 	if(!lineedit)lineedit = new LineEdit();
 	lineedit->position.x = 20;
 	lineedit->position.y = 20;
@@ -67,6 +68,7 @@ MenuOption(event){
 	keyInputManager::pressed.connect(lineedit,&LineEdit::keyPress);
 	
 	lineedit->setFocused(true);
+	*/
 }
 
 OptionAdventure::~OptionAdventure(){
@@ -75,12 +77,16 @@ OptionAdventure::~OptionAdventure(){
 }
 
 void OptionAdventure::logic(){
-	lineedit->setFont(Menu::getFont());
-	lineedit->logic();
+	if ( lineedit ){
+		lineedit->setFont(Menu::getFont());
+		lineedit->logic();
+	}
 }
 
 void OptionAdventure::draw(Bitmap *work){
-	lineedit->render(work);
+	if ( lineedit ){
+		lineedit->render(work);
+	}
 }
 
 void OptionAdventure::run(bool &endGame){
