@@ -2,10 +2,11 @@
 #define _paintown_gui_widget_h
 
 #include "gui/rectarea.h"
+#include "gui/sigslot.h"
 
 class Bitmap;
 
-class Widget
+class Widget : public sigslot::has_slots<>
 {
 	public:
 		Widget();

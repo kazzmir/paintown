@@ -40,6 +40,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 #include "al_keyinput.h"
 	
 	allegroKeyInput keyInputManager::input;
+	guiTimer keyInputManager::dTimer;
+	unsigned int keyInputManager::delay;
+	bool keyInputManager::keyHolder[keys::MAX];
+	bool keyInputManager::keyBlocker[keys::MAX];
+	sigslot::signal1<const keys &> keyInputManager::pressed;
+	sigslot::signal1<const keys &> keyInputManager::released;
 	
 	// Mouse Manager Constructor
 	keyInputManager::keyInputManager()

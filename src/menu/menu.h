@@ -21,7 +21,6 @@ typedef uint32_t useflags;
 class Bitmap;
 class MenuOption;
 class Token;
-class keyInputManager;
 		
 class Menu
 {
@@ -67,7 +66,7 @@ class Menu
 		
 		//! get font
 		static FreeTypeFont *getFont();
-
+		
 		//! Set flag(s)
 		inline void setFlags(useflags f, bool tf){ if(tf){_menuflags |= f;}else{_menuflags &= ~f;}}
 		
@@ -75,8 +74,6 @@ class Menu
 		inline useflags getFlags() { return _menuflags; }
 		
 	protected:
-		//! Our keyboard
-		static keyInputManager keyboard;
 		//! Our current bitmap to draw to
 		static Bitmap *work;
 		//! Current music

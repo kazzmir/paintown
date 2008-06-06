@@ -24,8 +24,6 @@
 
 Bitmap *Menu::work = 0;
 
-keyInputManager Menu::keyboard;
-
 static std::queue<MenuOption *> backgrounds;
 
 static FreeTypeFont *font;
@@ -194,13 +192,13 @@ useflags Menu::run(){
 	
 			bool draw = false;
 			
-			keyboard.update();
+			keyInputManager::update();
 	
 			if ( Global::speed_counter > 0 ){
 				draw = true;
 				// Keys
 				
-				if ( keyboard.keyState(keys::UP, true ) ){	
+				if ( keyInputManager::keyState(keys::UP, true ) ){	
 					(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption > menuOptions.begin() ){
 						selectedOption--;
@@ -208,7 +206,7 @@ useflags Menu::run(){
 					(*selectedOption)->setState(MenuOption::Selected);	
 				}
 
-				if ( keyboard.keyState(keys::DOWN, true ) ){
+				if ( keyInputManager::keyState(keys::DOWN, true ) ){
 					(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
 						selectedOption++;
@@ -216,19 +214,19 @@ useflags Menu::run(){
 					(*selectedOption)->setState(MenuOption::Selected);
 				}
 				
-				if ( keyboard.keyState(keys::LEFT, true ) ){
+				if ( keyInputManager::keyState(keys::LEFT, true ) ){
 					if ( (*selectedOption)->leftKey()){
 						
 					}
 				}
 				
-				if ( keyboard.keyState(keys::RIGHT, true ) ){
+				if ( keyInputManager::keyState(keys::RIGHT, true ) ){
 					if ( (*selectedOption)->rightKey()){
 						
 					}
 				}
 				
-				if ( keyboard.keyState(keys::ENTER, true ) ){
+				if ( keyInputManager::keyState(keys::ENTER, true ) ){
 					if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
 				}
 				
@@ -316,10 +314,10 @@ useflags Menu::run(){
 	
 			while ( Global::speed_counter < 1 ){
 				Util::rest( 1 );
-				keyboard.update();
+				keyInputManager::update();
 			}
 	
-			endGame = done |= keyboard.keyState(keys::ESC, true );
+			endGame = done |= keyInputManager::keyState(keys::ESC, true );
 		}
 		
 		// do we got an option to run, lets do it

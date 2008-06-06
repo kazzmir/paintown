@@ -63,6 +63,21 @@ class LineEdit : public Widget
 		//! Set the cursor blink rate in miliseconds (default 500)
 		void setCursorBlinkRate(unsigned int msecs);
 		
+		//! Update
+		void logic();
+		
+		//! Draw
+		void render(Bitmap *work);
+		
+		//! set Focus
+		void setFocused(bool focus);
+		
+		//! check Focus
+		bool isFocused();
+		
+		//! Keypresses
+		sigslot::slot keyPress(const keys &k);
+		
 	protected:
 		//! Current font the label is currently using (uses systemFont by default)
 		FreeTypeFont *currentSetFont;
@@ -86,16 +101,16 @@ class LineEdit : public Widget
 		bool autoResizable;
 		
 		//! Text horizontal position
-		double textX;
+		int textX;
 		
 		//! Text vertical position
-		double textY;
+		int textY;
 		
 		//! Cursor horizontal position
-		double cursorX;
+		int cursorX;
 		
 		//! Cursor vertical position
-		double cursorY;
+		int cursorY;
 		
 		//! Cursor index relative to the string
 		unsigned int cursorIndex;
@@ -118,14 +133,8 @@ class LineEdit : public Widget
 		//! If the font size changes
 		void fontChange();
 		
-		//! Update
-		void logic();
-		
-		//! Draw
-		void render(Bitmap *work);
-		
-		//! Keypresses
-		void keyPress(const keys &k);
+		//! Focused?
+		bool focused;
 		
 };
 

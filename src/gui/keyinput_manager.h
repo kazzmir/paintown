@@ -49,41 +49,40 @@ class allegroKeyInput;
 class keyInputManager
 {
 	public:
+		//! Evaluate keyboard and fire events
+		static void update();
+		
+		//! Key state (pass true to enable blocking checking)
+		static bool keyState(int unicode, bool blocking=false);
+		
+		//! Set delay in milleseconds (doesn't effect the keyStates)
+		static void setDelay(unsigned int msecs);
+		
+		//! \name Signals
+		static sigslot::signal1<const keys &> pressed;
+		static sigslot::signal1<const keys &> released;
+		
+	private:
 		//! Constructor
 		keyInputManager();
 		
 		//! Destructor
 		~keyInputManager();
 		
-		//! Evaluate keyboard and fire events
-		void update();
-		
-		//! Key state (pass true to enable blocking checking)
-		bool keyState(int unicode, bool blocking=false);
-		
-		
-		//! Set delay in milleseconds (doesn't effect the keyStates)
-		void setDelay(unsigned int msecs);
-		
-		//! \name Signals
-		sigslot::signal1<const keys &> pressed;
-		sigslot::signal1<const keys &> released;
-		
-	private:
 		//! input pointer
 		static allegroKeyInput input;
 		
 		//! Timer for delay
-		guiTimer dTimer;
+		static guiTimer dTimer;
 		
 		//! Delay
-		unsigned int delay;
+		static unsigned int delay;
 		
 		//! Key states
-		bool keyHolder[keys::MAX];
+		static bool keyHolder[keys::MAX];
 		
 		//! Blocker state
-		bool keyBlocker[keys::MAX];
+		static bool keyBlocker[keys::MAX];
 };
 
 #endif /* KEYINPUT_MANAGER_H */

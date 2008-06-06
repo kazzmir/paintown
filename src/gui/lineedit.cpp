@@ -9,12 +9,10 @@ LineEdit::LineEdit()
 	changed = autoResizable = false;
 	hAlignment = hAlignMod = vAlignment = T_Middle;
 	textX = textY = cursorX = cursorY = cursorIndex = limit = 0;
-	textSizeH = currentSetFont->getHeight();
+	textSizeH = 0;
 	cursorTime.reset();
 	blinkRate = 500;
-	//setAttribute(AT_Sunken | AT_Editable, true);
-	//onPaint.connect(this,&LineEdit::draw);
-	//onKeyPress.connect(this,&LineEdit::keyPress);
+	focused = false;
 }
 LineEdit::~LineEdit()
 {
@@ -56,12 +54,12 @@ void LineEdit::logic()
 				cursorX = textX + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
 				break;
 			case T_Middle:
-				textX = position.width/2;
-				cursorX = (textX - currentSetFont->textLength(currentSetText.c_str())/2) + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
+				textX = (position.width/2) - (currentSetFont->textLength(currentSetText.c_str())/2);
+				cursorX = (textX) + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
 				break;
 			case T_Right:
-				textX = (position.width - 1)-2;
-				cursorX = textX - currentSetFont->textLength(currentSetText.substr(0,currentSetText.length()-cursorIndex).c_str());
+				textX = position.width - currentSetFont->textLength(currentSetText.c_str());//(position.width - 1)-2;
+				cursorX = position.width - currentSetFont->textLength(currentSetText.substr(0,currentSetText.length()-cursorIndex).c_str());
 				break;
 			case T_Bottom:
 			case T_Top:
@@ -75,7 +73,7 @@ void LineEdit::logic()
 				cursorY = 1;
 				break;
 			case T_Middle:
-				textY = cursorY = (position.height - textSizeH-(2))/2;
+				textY = cursorY = (position.height - textSizeH-(5))/2;
 				break;
 			case T_Bottom:
 				textY = (position.height - 1) - textSizeH - 1;
@@ -86,8 +84,8 @@ void LineEdit::logic()
 				break;
 		}
 			
-		textY++;
-		textX++;
+		//textY++;
+		//textX++;
 		changed = false;
 	}
 }
@@ -95,27 +93,54 @@ void LineEdit::logic()
 // Draw
 void LineEdit::render(Bitmap *work)
 {
-	//if(attributes & AT_Visible)
-	//{
-		currentSetFont->printf(int(position.x + textX),int(position.y + textY),textColor,*work,currentSetText,int(hAlignment));
-		//if(attributes & AT_Focused)
-		//{
+	
+		checkWorkArea();
+		// Check if we are using a rounded box
+		if(position.radius>0)
+		{
+			roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.body );
+			roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.border );
+		}
+		else
+		{
+			workArea->rectangleFill( 0, 0, position.width-1, position.height-1, position.body );
+			workArea->rectangle( 0, 0, position.width-1, position.height-1, position.border );
+		}
+		
+		if(currentSetFont)currentSetFont->printf(textX,textY,textColor,*workArea,currentSetText,0);
+		if(focused)
+		{
 			if(cursorTime.msecs()<=blinkRate)
 			{
-				work->line(position.x + cursorX,position.y + cursorY,position.x + cursorX,position.y + cursorY+textSizeH,textColor);
+				workArea->line(cursorX,cursorY,cursorX,cursorY+textSizeH-5,textColor);
 			}
-		//}
-	//}
+		}
+		
+		Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
+		workArea->drawingMode( Bitmap::MODE_TRANS );
+		workArea->drawTrans(position.x,position.y,*work);
+		work->drawingMode( Bitmap::MODE_SOLID );
+
 }
 
 // Keypresses
-void LineEdit::keyPress(const keys &k)
+sigslot::slot LineEdit::keyPress(const keys &k)
 {
-	if(k.isCharacter())
+	if(focused)
 	{
-		if(limit!=0)
+		if(k.isCharacter())
 		{
-			if(currentSetText.length()<limit)
+			if(limit!=0)
+			{
+				if(currentSetText.length()<limit)
+				{
+					//currentSetText += k.getValue();
+					currentSetText.insert(cursorIndex, std::string(1,(char)k.getValue()));
+					++cursorIndex;
+					changed = true;
+				}
+			}
+			else
 			{
 				//currentSetText += k.getValue();
 				currentSetText.insert(cursorIndex, std::string(1,(char)k.getValue()));
@@ -125,39 +150,32 @@ void LineEdit::keyPress(const keys &k)
 		}
 		else
 		{
-			//currentSetText += k.getValue();
-			currentSetText.insert(cursorIndex, std::string(1,(char)k.getValue()));
-			++cursorIndex;
+			switch(k.getValue())
+			{
+				case keys::DEL:
+					if(cursorIndex<currentSetText.length())
+					{
+						currentSetText.erase(cursorIndex,1);
+					}
+					break;
+				case keys::BACKSPACE:
+					if(cursorIndex>0)
+					{
+						currentSetText.erase(cursorIndex - 1, 1);
+						--cursorIndex;
+					}
+					break;
+				case keys::RIGHT:
+					if(cursorIndex<currentSetText.length())++cursorIndex;
+					break;
+				case keys::LEFT:
+					if(cursorIndex>0)--cursorIndex;
+					break;
+				case keys::INSERT:
+					break;
+			}
 			changed = true;
 		}
-	}
-	else
-	{
-		switch(k.getValue())
-		{
-			case keys::DEL:
-				if(cursorIndex<currentSetText.length())
-				{
-					currentSetText.erase(cursorIndex,1);
-				}
-				break;
-			case keys::BACKSPACE:
-				if(cursorIndex>0)
-				{
-					currentSetText.erase(cursorIndex - 1, 1);
-					--cursorIndex;
-				}
-				break;
-			case keys::RIGHT:
-				if(cursorIndex<currentSetText.length())++cursorIndex;
-				break;
-			case keys::LEFT:
-				if(cursorIndex>0)--cursorIndex;
-				break;
-			case keys::INSERT:
-				break;
-		}
-		changed = true;
 	}
 }
 
@@ -243,6 +261,7 @@ void LineEdit::setCursorColor(const int color)
 void LineEdit::setFont(FreeTypeFont *f)
 {
 	currentSetFont = f;
+	if(currentSetFont)changed = true;
 }
 
 // Set autoResizeable
@@ -256,4 +275,14 @@ void LineEdit::setCursorBlinkRate(unsigned int msecs)
 {
 	blinkRate = msecs;
 }
+
+//! set Focus
+void LineEdit::setFocused(bool focus)
+{
+	focused = focus;
+}
+
+//! check Focus
+bool LineEdit::isFocused()
+{ return focused; }
 

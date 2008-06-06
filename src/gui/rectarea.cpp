@@ -1,6 +1,6 @@
 #include "gui/rectarea.h"
 
-RectArea::RectArea() : x(0), y(0), width(0), height(0), body(0), bodyAlpha(0), border(0), borderAlpha(0), radius(0)
+RectArea::RectArea() : x(0), y(0), width(0), height(0), body(0), bodyAlpha(255), border(0), borderAlpha(255), radius(0)
 {
 }
 
