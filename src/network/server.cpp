@@ -598,24 +598,35 @@ void networkServer(){
 
 	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 	try{
+		/*
 #ifdef WINDOWS
 		Network::blocking( false );
 #endif
+*/
 		Global::debug( 1 ) << "[server] Get socket" << endl;
-		Network::Socket server = Network::open( port );
+		try{
+			Network::Socket server = Network::open( port );
+		} catch ( const InvalidPortException & e ){
+			Global::debug( 0 ) << "[server] Cannot open port " << port << ". hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
+			throw ReturnException();
+		}
+		/*
 		// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 		if ( server == NL_INVALID ){
 			Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
 			throw ReturnException();
 		}
+		*/
 		
 		Global::debug( 1 ) << "[server] Run chat server" << endl;
 
 		ChatServer chat( "server", server );
 		chat.run();
+		/*
 #ifdef WINDOWS
 		Network::blocking( true );
 #endif
+*/
 		vector< Network::Socket > sockets = chat.getConnectedClients();
 		if ( ! sockets.empty() ){
 			Global::debug( 1 ) << "[server] Start game with " << sockets.size() << " clients" << endl;

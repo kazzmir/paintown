@@ -2,12 +2,20 @@
 #include "network.h"
 #include "globals.h"
 #include <string>
+#include <sstream>
 
 using namespace std;
 
 namespace Network{
 
 NetworkException::~NetworkException() throw (){
+}
+	
+InvalidPortException::InvalidPortException( int port ):
+NetworkException(""){
+	ostringstream num;
+	num << port;
+	this->setMessage(num.str());
 }
 
 Message::Message(){
@@ -185,11 +193,11 @@ void readBytes( NLsocket socket, uint8_t * data, int length ){
 	}
 }
 
-Socket open( int port ){
+Socket open( int port ) throw( InvalidPortException ){
 	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 	NLsocket server = nlOpen( port, NL_RELIABLE );
 	if ( server == NL_INVALID ){
-		throw NetworkException( "Invalid port" );
+		throw InvalidPortException(port);
 	}
 	open_sockets.push_back( server );
 	return server;
@@ -249,21 +257,21 @@ void listen( Socket s ){
 	}
 }
 
-Socket accept( Socket s, int & error ) throw( NetworkException ){
+Socket accept( Socket s ) throw( NetworkException ){
 	Socket connection = nlAcceptConnection( s );
 	if ( connection == NL_INVALID ){
+		/*
 		if ( nlGetError() == NL_NO_PENDING ){
 			error = NO_CONNECTIONS_PENDING;
 		} else {
 			error = NETWORK_ERROR;
 		}
 		return s;
-		/*
+		*/
 		if ( nlGetError() == NL_NO_PENDING ){
 			throw NoConnectionsPendingException();
 		}
 		throw NetworkException("Could not accept connection");
-		*/
 	}
 	open_sockets.push_back( connection );
 	return connection;

@@ -23,10 +23,16 @@ public:
 	inline const std::string getMessage() const {
 		return message;
 	}
-
-	std::string message;
-
+	
 	~NetworkException() throw();
+
+protected:
+	inline void setMessage( const std::string & m ){
+		this->message = m;
+	}
+
+private:
+	std::string message;
 };
 
 class NoConnectionsPendingException: public NetworkException{
@@ -34,6 +40,11 @@ public:
 	NoConnectionsPendingException( const std::string & message = "" ):
 		NetworkException( message ){
 	}
+};
+
+class InvalidPortException: public NetworkException{
+public:
+	InvalidPortException( int port );
 };
 
 struct Message{
@@ -70,9 +81,9 @@ void shutdown();
 void blocking( bool b );
 
 void listen( Socket s );
-Socket accept( Socket s, int & error ) throw( NetworkException );
+Socket accept( Socket s ) throw( NetworkException );
 
-Socket open( int port );
+Socket open( int port ) throw( InvalidPortException );
 Socket connect( std::string server, int port ) throw ( NetworkException );
 void close( Socket );
 void closeAll();
