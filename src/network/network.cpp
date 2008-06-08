@@ -15,7 +15,7 @@ InvalidPortException::InvalidPortException( int port ):
 NetworkException(""){
 	ostringstream num;
 	num << port;
-	this->setMessage(num.str());
+	this->setMessage( "Invalid port " + num.str() );
 }
 
 Message::Message(){
