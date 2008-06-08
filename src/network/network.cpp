@@ -6,6 +6,7 @@
 
 using namespace std;
 
+/* TODO: Wrap open_sockets with a mutex */
 namespace Network{
 
 NetworkException::~NetworkException() throw (){

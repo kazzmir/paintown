@@ -23,6 +23,11 @@
 
 namespace Network{
 
+static std::ostream & debug( int level ){
+	Global::debug( level ) << "[server] ";
+	return Global::debug( level );
+}
+
 // static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
 /*
@@ -459,7 +464,7 @@ static void playGame( const vector< Socket > & sockets ){
 		id += 1;
 		for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 			const Socket & socket = *it;
-			Global::debug( 1 ) << "[server] Read character path from " << id << endl;
+			debug( 1 ) << "Read character path from " << id << endl;
 			Message message( socket );
 			int type;
 			message >> type;
@@ -475,7 +480,7 @@ static void playGame( const vector< Socket > & sockets ){
 				clientId.send( socket );
 				id += 1;
 			} else {
-				Global::debug( 0 ) << "[server] Got a bogus message: " << type << endl;
+				debug( 0 ) << "Got a bogus message: " << type << endl;
 			}
 		}
 
@@ -499,7 +504,7 @@ static void playGame( const vector< Socket > & sockets ){
 		vector< string > levels = Level::readLevels( levelSet );
 		for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
 			string level = *it;
-			Global::debug( 1 ) << "[server] Sending level '" << level << "'" << endl;
+			debug( 1 ) << "Sending level '" << level << "'" << endl;
 			Message loadLevel;
 			loadLevel << World::LOAD_LEVEL;
 			loadLevel.path = level;
@@ -516,10 +521,10 @@ static void playGame( const vector< Socket > & sockets ){
 				playerX->setStatus( Status_Falling );
 			}
 
-			Global::debug( 1 ) << "[server] Create network world" << endl;
+			debug( 1 ) << "Create network world" << endl;
 			NetworkWorld world( sockets, players, level );
 
-			Global::debug( 1 ) << "[server] Load music" << endl;
+			debug( 1 ) << "Load music" << endl;
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
@@ -558,10 +563,10 @@ static void playGame( const vector< Socket > & sockets ){
 		sendToAll( sockets, gameOver );
 
 	} catch ( const LoadException & le ){
-		Global::debug( 0 ) << "[server] Load exception: " + le.getReason() << endl;
+		debug( 0 ) << "Load exception: " + le.getReason() << endl;
 	} catch ( const ReturnException & re ){
 	} catch ( const NetworkException & ne ){
-		Global::debug( 0 ) << "[server] Network excetion: " + ne.getMessage() << endl;
+		debug( 0 ) << "Network excetion: " + ne.getMessage() << endl;
 	}
 
 	for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
@@ -594,7 +599,7 @@ void networkServer(){
 
 	Keyboard key;
 
-	Global::debug( 1 ) << "Port " << port << endl;
+	debug( 1 ) << "Port is " << port << endl;
 
 	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 	try{
@@ -603,7 +608,7 @@ void networkServer(){
 		Network::blocking( false );
 #endif
 */
-		Global::debug( 1 ) << "[server] Get socket" << endl;
+		debug( 1 ) << "Get socket" << endl;
 		Network::Socket server = Network::open( port );
 		
 		/*
@@ -614,7 +619,7 @@ void networkServer(){
 		}
 		*/
 		
-		Global::debug( 1 ) << "[server] Run chat server" << endl;
+		debug( 1 ) << "Run chat server" << endl;
 
 		ChatServer chat( "server", server );
 		chat.run();
@@ -625,7 +630,7 @@ void networkServer(){
 */
 		vector< Network::Socket > sockets = chat.getConnectedClients();
 		if ( ! sockets.empty() ){
-			Global::debug( 1 ) << "[server] Start game with " << sockets.size() << " clients" << endl;
+			debug( 1 ) << "Start game with " << sockets.size() << " clients" << endl;
 			playGame( sockets );
 		} else {
 			key.poll();
@@ -635,7 +640,7 @@ void networkServer(){
 		}
 		Network::close( server );
 	} catch ( const NetworkException & ne ){
-		Global::debug( 0 ) << "Network error: " << ne.getMessage() << endl;
+		debug( 0 ) << "Network error: " << ne.getMessage() << endl;
 		key.poll();
 		popup( font, "Network error: " + ne.getMessage() );
 		key.wait();
