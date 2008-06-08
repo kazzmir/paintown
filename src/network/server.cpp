@@ -604,12 +604,8 @@ void networkServer(){
 #endif
 */
 		Global::debug( 1 ) << "[server] Get socket" << endl;
-		try{
-			Network::Socket server = Network::open( port );
-		} catch ( const InvalidPortException & e ){
-			Global::debug( 0 ) << "[server] Cannot open port " << port << ". hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
-			throw ReturnException();
-		}
+		Network::Socket server = Network::open( port );
+		
 		/*
 		// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 		if ( server == NL_INVALID ){
