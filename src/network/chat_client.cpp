@@ -9,6 +9,10 @@
 #include "util/font.h"
 #include "util/funcs.h"
 
+static std::ostream & debug( int level ){
+	Global::debug( level ) << "[chat-client] ";
+	return Global::debug( level );
+}
 static void * serverInput( void * client_ ){
 	ChatClient * client = (ChatClient *) client_;
 	bool done = false;
@@ -19,7 +23,7 @@ static void * serverInput( void * client_ ){
 			ChatType kind;
 			message >> x;
 			kind = (ChatType) x;
-			Global::debug( 1 ) << "Received message type " << kind << endl;
+			debug( 1 ) << "Received message type " << kind << endl;
 			switch ( kind ){
 				case ADD_MESSAGE : {
 					client->addMessage( message.path, 0 );
@@ -58,7 +62,7 @@ static void * serverInput( void * client_ ){
 				}
 			}
 		} catch ( const Network::NetworkException & e ){
-			Global::debug( 0 ) << "Input thread died" << endl;
+			debug( 0 ) << "Input thread died" << endl;
 			done = true;
 		}
 	}
@@ -83,7 +87,7 @@ finished( false ){
 		nameMessage << CHANGE_NAME;
 		nameMessage.send( socket );
 	} catch ( const Network::NetworkException & n ){
-		Global::debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
+		debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
 	}
 }
 
@@ -157,7 +161,7 @@ bool ChatClient::sendMessage( const string & message ){
 		net.send( socket );
 		return true;
 	} catch ( const Network::NetworkException & e ){
-		Global::debug( 0 ) << "Client could not send message" << endl;
+		debug( 0 ) << "Client could not send message" << endl;
 	}
 	return false;
 }
@@ -299,11 +303,11 @@ void ChatClient::finish(){
 }
 	
 void ChatClient::killInputThread(){
-	Global::debug( 0 ) << "Killing input socket" << endl;
+	debug( 0 ) << "Killing input socket" << endl;
 	Network::close( getSocket() );
-	Global::debug( 0 ) << "Waiting for input thread to die" << endl;
+	debug( 0 ) << "Waiting for input thread to die" << endl;
 	pthread_join( inputThread, NULL );
-	Global::debug( 0 ) << "Input thread killed" << endl;
+	debug( 0 ) << "Input thread killed" << endl;
 }
 
 void ChatClient::run(){

@@ -14,6 +14,11 @@
 #include "object/cat.h"
 #include "object/item.h"
 
+static std::ostream & debug( int level ){
+	Global::debug( level ) << "[network-world-client] ";
+	return Global::debug( level );
+}
+
 static void * handleMessages( void * arg ){
 	NetworkWorldClient * world = (NetworkWorldClient *) arg;
 	NLsocket socket = world->getServer();
@@ -23,18 +28,18 @@ static void * handleMessages( void * arg ){
 	try{
 		while ( world->isRunning() ){
 			received += 1;
-			Global::debug( 1 ) << "Receiving message " << received << endl;
+			debug( 1 ) << "Receiving message " << received << endl;
 			Network::Message m( socket );
 			// pthread_mutex_lock( lock );
 			world->addIncomingMessage( m );
-			Global::debug( 2 ) << "Received path '" << m.path << "'" << endl;
+			debug( 2 ) << "Received path '" << m.path << "'" << endl;
 			// pthread_mutex_unlock( lock );
 		}
 	} catch ( const Network::NetworkException & n ){
-		Global::debug( 0 ) << "Network exception: " << n.getMessage() << endl;
+		debug( 0 ) << "Network exception: " << n.getMessage() << endl;
 	}
 
-	Global::debug( 0 ) << "Client input stopped" << endl;
+	debug( 0 ) << "Client input stopped" << endl;
 
 	return NULL;
 }
@@ -52,7 +57,7 @@ running( true ){
 }
 	
 NetworkWorldClient::~NetworkWorldClient(){
-	Global::debug( 1 ) << "Destroy client world" << endl;
+	debug( 1 ) << "Destroy client world" << endl;
 	stopRunning();
 	pthread_join( message_thread, NULL );
 }
@@ -120,10 +125,10 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 			block.setPath( path );
 			Character * character = (Character *) ObjectFactory::createObject( &block );
 			if ( character == NULL ){
-				Global::debug( 0 ) << "Could not create character!" << endl;
+				debug( 0 ) << "Could not create character!" << endl;
 				return;
 			}
-			Global::debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
+			debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
 			character->setId( id );
 			character->setAlliance( alliance );
 			/* TODO: should these values be hard-coded? */
@@ -133,7 +138,7 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 			addObject( character );
 		}
 	} else {
-		Global::debug( 1 ) << id << " is not unique" << endl;
+		debug( 1 ) << id << " is not unique" << endl;
 	}
 }
 
@@ -149,7 +154,7 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
 		block.setCoords( 200, 150 );
 		Cat * cat = (Cat *) ObjectFactory::createObject( &block );
 		if ( cat == NULL ){
-			Global::debug( 0 ) << "Could not create cat" << endl;
+			debug( 0 ) << "Could not create cat" << endl;
 			return;
 		}
 
@@ -193,7 +198,7 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
 		block.setCoords( x, z );
 		Item * item = (Item *) ObjectFactory::createObject( &block );
 		if ( item == NULL ){
-			Global::debug( 0 ) << "Could not create item" << endl;
+			debug( 0 ) << "Could not create item" << endl;
 			return;
 		}
 
@@ -285,16 +290,16 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 			}
 			case FINISH : {
 
-				Global::debug( 1 ) << "Received finish message" << endl;
+				debug( 1 ) << "Received finish message" << endl;
 				world_finished = true;
 				break;
 			}
 			case NOTHING : {
-				Global::debug( 0 ) << "Invalid message. Data dump" << endl;
+				debug( 0 ) << "Invalid message. Data dump" << endl;
 				for ( int i = 0; i < Network::DATA_SIZE; i++ ){
-					Global::debug( 0 ) << (int) message.data[ i ] << " ";
+					debug( 0 ) << (int) message.data[ i ] << " ";
 				}
-				Global::debug( 0 ) << endl;
+				debug( 0 ) << endl;
 				break;
 			}
 		}

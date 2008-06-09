@@ -15,6 +15,11 @@
 
 using namespace std;
 
+static std::ostream & debug( int level ){
+	Global::debug( level ) << "[chat-server] ";
+	return Global::debug( level );
+}
+
 Client::Client( Network::Socket socket, ChatServer * server, unsigned int id ):
 socket( socket ),
 server( server ),
@@ -60,9 +65,9 @@ static void * clientInput( void * client_ ){
 	bool done = false;
 	while ( ! done ){
 		try{
-			Global::debug( 1 ) << "Client " << client->getId() << " waiting for message" << endl;
+			debug( 1 ) << "Client " << client->getId() << " waiting for message" << endl;
 			Network::Message message( client->getSocket() );
-			Global::debug( 1 ) << client->getId() << " Got a message: '" << message.path << "'" << endl;
+			debug( 1 ) << client->getId() << " Got a message: '" << message.path << "'" << endl;
 			int type;
 			message >> type;
 			switch ( type ){
@@ -85,15 +90,15 @@ static void * clientInput( void * client_ ){
 			done = ! client->isAlive();
 			Util::rest( 1 );
 		} catch ( const Network::NetworkException & e ){
-			Global::debug( 0 ) << "Client input " << client->getId() << " died" << endl;
+			debug( 0 ) << "Client input " << client->getId() << " died" << endl;
 			done = true;
 		}
 	}
 
-	Global::debug( 1 ) << client->getId() << " is done" << endl;
+	debug( 1 ) << client->getId() << " is done" << endl;
 	
 	if ( client->canKill() ){
-		Global::debug( 1 ) << "Input thread killing client" << endl;
+		debug( 1 ) << "Input thread killing client" << endl;
 		client->getServer()->killClient( client );
 	}
 
@@ -107,7 +112,7 @@ static void * clientOutput( void * client_ ){
 		Network::Message message;
 		done = ! client->isAlive();
 		if ( client->getOutgoing( message ) != false ){
-			Global::debug( 1 ) << "Sending a message to " << client->getId() << endl;
+			debug( 1 ) << "Sending a message to " << client->getId() << endl;
 			try{
 				/*
 				Network::Message net;
@@ -116,7 +121,7 @@ static void * clientOutput( void * client_ ){
 				*/
 				message.send( client->getSocket() );
 			} catch ( const Network::NetworkException & e ){
-				Global::debug( 0 ) << "Client output " << client->getId() << " died" << endl;
+				debug( 0 ) << "Client output " << client->getId() << " died" << endl;
 				done = true;
 			}
 		} else {
@@ -125,7 +130,7 @@ static void * clientOutput( void * client_ ){
 	}
 
 	if ( client->canKill() ){
-		Global::debug( 1 ) << "Output thread killing client" << endl;
+		debug( 1 ) << "Output thread killing client" << endl;
 		client->getServer()->killClient( client );
 	}
 
@@ -173,7 +178,7 @@ static void * acceptConnections( void * server_ ){
 	bool done = false;
 	ChatServer * server = (ChatServer *) server_;
 	Network::Socket socket = server->getSocket();
-	Global::debug( 1 ) << "Accepting connections" << endl;
+	debug( 1 ) << "Accepting connections" << endl;
 	while ( ! done ){
 		done = ! server->isAccepting();
 		/*
@@ -198,7 +203,7 @@ static void * acceptConnections( void * server_ ){
 			server->addConnection( Network::accept( socket ) );
 		} catch ( const Network::NoConnectionsPendingException & e ){
 		} catch ( const Network::NetworkException & e ){
-			Global::debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
+			debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
 			done = true;
 		}
 		Util::rest( 1 );
@@ -208,7 +213,7 @@ static void * acceptConnections( void * server_ ){
 	Network::close( socket );
 #endif
 
-	Global::debug( 1 )  << "Accept connection thread is done" << endl;
+	debug( 1 )  << "Accept connection thread is done" << endl;
 
 	return NULL;
 }
@@ -221,13 +226,13 @@ focus( INPUT_BOX ),
 client_id( 1 ),
 name( name ),
 accepting( true ){
-	Global::debug( 1 ) << "[chat-server] Constructor" << endl;
+	debug( 1 ) << "Constructor" << endl;
 	background = new Bitmap( Global::titleScreen() );
 
-	Global::debug( 1 ) << "[chat-server] Listen on socket" << endl;
+	debug( 1 ) << "Listen on socket" << endl;
 	Network::listen( socket );
 	pthread_mutex_init( &lock, NULL );
-	Global::debug( 1 ) << "[chat-server] Start accepting connections" << endl;
+	debug( 1 ) << "Start accepting connections" << endl;
 }
 	
 bool ChatServer::isAccepting(){
@@ -239,16 +244,16 @@ bool ChatServer::isAccepting(){
 }
 
 void ChatServer::stopAccepting(){
-	Global::debug( 1 ) << "Stop accepting" << endl;
+	debug( 1 ) << "Stop accepting" << endl;
 	pthread_mutex_lock( &lock );
 	accepting = false;
 	pthread_mutex_unlock( &lock );
 #ifndef WINDOWS
 	Network::close( socket );
 #endif
-	Global::debug( 1 ) << "Waiting for accepting thread to stop" << endl;
+	debug( 1 ) << "Waiting for accepting thread to stop" << endl;
 	pthread_join( acceptThread, NULL );
-	Global::debug( 1 ) << "Not accepting any connections" << endl;
+	debug( 1 ) << "Not accepting any connections" << endl;
 }
 
 void ChatServer::addConnection( Network::Socket s ){
@@ -273,7 +278,7 @@ void ChatServer::addConnection( Network::Socket s ){
 	}
 	pthread_mutex_unlock( &lock );
 
-	Global::debug( 1 ) << "Adding client " << client->getId() << endl;
+	debug( 1 ) << "Adding client " << client->getId() << endl;
 
 	addMessage( "** A client joined", 0 );
 
@@ -363,15 +368,15 @@ void ChatServer::shutdownClientThreads(){
 
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		Client * c = *it;
-		Global::debug( 1 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
+		debug( 1 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
 		pthread_join( c->getInputThread(), NULL );
-		Global::debug( 1 ) << "Input thread done for " << c->getId() << endl;
+		debug( 1 ) << "Input thread done for " << c->getId() << endl;
 		pthread_join( c->getOutputThread(), NULL );
-		Global::debug( 1 ) << "Output thread done for " << c->getId() << endl;
-		Global::debug( 1 ) << "Client " << c->getId() << " is done" << endl;
+		debug( 1 ) << "Output thread done for " << c->getId() << endl;
+		debug( 1 ) << "Client " << c->getId() << " is done" << endl;
 	}
 
-	Global::debug( 1 ) << "[chat-server] Shut down all clients" << endl;
+	debug( 1 ) << "Shut down all clients" << endl;
 }
 	
 vector< Network::Socket > ChatServer::getConnectedClients(){
@@ -404,19 +409,19 @@ void ChatServer::killClient( Client * c ){
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
 		Client * client = *it;
 		if ( client == c ){
-			Global::debug( 1 ) << "Killing client " << c->getId() << endl;
+			debug( 1 ) << "Killing client " << c->getId() << endl;
 			c->kill();
-			Global::debug( 1 ) << "Closing client socket " << c->getSocket() << endl;
+			debug( 1 ) << "Closing client socket " << c->getSocket() << endl;
 			Network::close( c->getSocket() );
 			/* It looks like the client that called killClient is waiting
 			 * for itself to exit but pthread_join won't block if the
 			 * argument is the same as the calling thread, so its ok.
 			 */
-			Global::debug( 1 ) << "Waiting for input thread to die" << endl;
+			debug( 1 ) << "Waiting for input thread to die" << endl;
 			pthread_join( c->getInputThread(), NULL );
-			Global::debug( 1 ) << "Waiting for output thread to die" << endl;
+			debug( 1 ) << "Waiting for output thread to die" << endl;
 			pthread_join( c->getOutputThread(), NULL );
-			Global::debug( 1 ) << "Deleting client" << endl;
+			debug( 1 ) << "Deleting client" << endl;
 			/* delete can be moved to the input/output thread exit part
 			 * if need be.
 			 */
@@ -575,11 +580,11 @@ void ChatServer::run(){
 				throw ReturnException();
 			} else if ( done && focus == START_GAME ){
 				stopAccepting();
-				Global::debug( 1 ) << "[chat-server] Shut down client threads" << endl;
+				debug( 1 ) << "Shut down client threads" << endl;
 				shutdownClientThreads();
-				Global::debug( 1 ) << "[chat-server] Finished shutting things down. Done is " << done << endl;
+				debug( 1 ) << "Finished shutting things down. Done is " << done << endl;
 				done = true;
-				Global::debug( 1 ) << "[chat-server] Done is " << done << endl;
+				debug( 1 ) << "Done is " << done << endl;
 				break;
 			}
 		}
@@ -596,7 +601,7 @@ void ChatServer::run(){
 		}
 	}
 
-	Global::debug( 1 ) << "[chat-server] Chat server done" << endl;
+	debug( 1 ) << "Chat server done" << endl;
 }
 	
 ChatServer::~ChatServer(){

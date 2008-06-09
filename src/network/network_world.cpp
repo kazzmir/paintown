@@ -13,6 +13,11 @@ struct Stuff{
 	NetworkWorld * world;
 };
 
+static std::ostream & debug( int level ){
+	Global::debug( level ) << "[network-world] ";
+	return Global::debug( level );
+}
+
 static void * handleMessages( void * arg ){
 	Stuff * s = (Stuff *) arg;
 	Network::Socket socket = s->socket;
@@ -23,11 +28,11 @@ static void * handleMessages( void * arg ){
 			Network::Message m( socket );
 			// pthread_mutex_lock( lock );
 			world->addIncomingMessage( m, socket );
-			Global::debug( 2 ) << "Received path '" << m.path << "'" << endl;
+			debug( 2 ) << "Received path '" << m.path << "'" << endl;
 			// pthread_mutex_unlock( lock );
 		}
 	} catch ( const Network::NetworkException & ne ){
-		Global::debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
+		debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
 	}
 
 	delete s;
@@ -192,14 +197,14 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 				Character * c_grabbing = (Character *) findObject( grabbing );
 				Character * c_grabbed = (Character *) findObject( grabbed );
 				if ( c_grabbed != NULL && c_grabbing != NULL ){
-					Global::debug( 2 ) << grabbing << " threw " << grabbed << endl;
+					debug( 2 ) << grabbing << " threw " << grabbed << endl;
 					c_grabbed->setFacing( c_grabbing->getOppositeFacing() );
 					c_grabbed->thrown();
 					addMessage( c_grabbed->movedMessage() );
 					addMessage( c_grabbed->fallMessage( 3.2, 5.0 ) );
 					c_grabbed->fall( 3.2, 5.0 );
 					c_grabbing->setStatus( Status_Ground );
-					Global::debug( 2 ) << grabbed << " status is " << c_grabbed->getStatus() << endl;
+					debug( 2 ) << grabbed << " status is " << c_grabbed->getStatus() << endl;
 				}
 				break;
 			}
@@ -237,14 +242,14 @@ void NetworkWorld::flushOutgoing(){
 		for ( vector< Network::Socket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
 			try{
 				if ( from != *socket ){
-					Global::debug( 1 ) << "Send message " << sent_messages << " to " << *socket << endl;
+					debug( 1 ) << "Send message " << sent_messages << " to " << *socket << endl;
 					m.send( *socket );
-					Global::debug( 1 ) << "Sent message" << endl;
+					debug( 1 ) << "Sent message" << endl;
 				}
 				socket++;
 			} catch ( const Network::NetworkException & ne ){
 				socket = sockets.erase( socket );
-				Global::debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
+				debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
 			}
 		}
 	}
