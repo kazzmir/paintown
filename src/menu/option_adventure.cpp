@@ -11,14 +11,9 @@
 
 #include "menu/menu.h"
 
-#include "gui/lineedit.h"
-#include "gui/keyinput_manager.h"
-
 #include <iostream>
 
 using namespace std;
-
-static LineEdit *lineedit =0;
 
 OptionAdventure::OptionAdventure(Token *token) throw( LoadException ):
 MenuOption(event){
@@ -50,43 +45,16 @@ MenuOption(event){
 	if ( getText().empty() ){
 		throw LoadException("No name set, this option should have a name!");
 	}
-	
-	/*
-	if(!lineedit)lineedit = new LineEdit();
-	lineedit->position.x = 20;
-	lineedit->position.y = 20;
-	lineedit->position.width = 400;
-	lineedit->position.height = 30;
-	lineedit->position.radius = 5;
-	
-	lineedit->position.body = Bitmap::makeColor( 255, 255, 255 );
-	lineedit->position.border = Bitmap::makeColor( 255, 255, 0 );
-	lineedit->setHorizontalAlign(LineEdit::T_Left);
-	
-	lineedit->setText("Hello mongrel, type something");
-	
-	keyInputManager::pressed.connect(lineedit,&LineEdit::keyPress);
-	
-	lineedit->setFocused(true);
-	*/
 }
 
 OptionAdventure::~OptionAdventure(){
 	// Nothing
-	if(lineedit)delete lineedit;
 }
 
 void OptionAdventure::logic(){
-	if ( lineedit ){
-		lineedit->setFont(Menu::getFont());
-		lineedit->logic();
-	}
 }
 
 void OptionAdventure::draw(Bitmap *work){
-	if ( lineedit ){
-		lineedit->render(work);
-	}
 }
 
 void OptionAdventure::run(bool &endGame){

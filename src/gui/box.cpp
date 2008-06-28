@@ -19,7 +19,7 @@ void Box::logic()
 }
 
 // Render
-void Box::render(Bitmap *work)		
+void Box::render(const Bitmap *work)		
 {
 	checkWorkArea();
 	// Check if we are using a rounded box

@@ -9,6 +9,9 @@
 #include "return_exception.h"
 #include "globals.h"
 #include "init.h"
+#include "gui/lineedit.h"
+#include "gui/keyinput_manager.h"
+#include "menu/menu.h"
 #include <iostream>
 
 #include <signal.h>
@@ -233,6 +236,24 @@ accepting( true ){
 	Network::listen( socket );
 	pthread_mutex_init( &lock, NULL );
 	debug( 1 ) << "Start accepting connections" << endl;
+	lineEdit = new LineEdit();
+	lineEdit->position.x = 20;
+	lineEdit->position.y = 20 + messages.getHeight();
+	lineEdit->position.width = 400;
+	lineEdit->position.height = 30;
+	lineEdit->position.radius = 5;
+	
+	lineEdit->position.body = Bitmap::makeColor( 255, 255, 255 );
+	lineEdit->position.border = Bitmap::makeColor( 255, 255, 0 );
+	lineEdit->setHorizontalAlign(LineEdit::T_Left);
+	
+	lineEdit->setText("Hi!");
+	// lineEdit->setFont(Menu::getFont());
+	lineEdit->setFont(& Font::getFont(Util::getDataPath() + Global::DEFAULT_FONT, 20, 20));
+	keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
+	lineEdit->setFocused(true);
+
+	editCounter = 0;
 }
 	
 bool ChatServer::isAccepting(){
@@ -292,12 +313,14 @@ void ChatServer::addConnection( Network::Socket s ){
 	pthread_mutex_unlock( &lock );
 }
 
+#if 0
 static char lowerCase( const char * x ){
 	if ( x[0] >= 'A' && x[0] <= 'Z' ){
 		return x[0] - 'A' + 'a';
 	}
 	return x[0];
 }
+#endif
 
 void ChatServer::sendMessage( const Network::Message & message, unsigned int id ){
 	pthread_mutex_lock( &lock );
@@ -331,6 +354,21 @@ void ChatServer::addMessage( const string & s, unsigned int id ){
 }
 
 void ChatServer::handleInput( Keyboard & keyboard ){
+
+	keyInputManager::update();
+	lineEdit->logic();
+
+	if ( lineEdit->didChanged( editCounter ) ){
+		needUpdate();
+	}
+
+	if ( keyboard[ Keyboard::Key_ENTER ] ){
+		addMessage( name + ": " + lineEdit->getText(), 0 );
+		lineEdit->clearText();
+		needUpdate();
+	}
+
+	/*
 	vector< int > keys;
 	keyboard.readKeys( keys );
 
@@ -353,6 +391,7 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 			needUpdate();
 		}
 	}
+	*/
 }
 	
 void ChatServer::shutdownClientThreads(){
@@ -445,10 +484,17 @@ bool ChatServer::logic( Keyboard & keyboard ){
 		focus = nextFocus( focus );
 		needUpdate();
 	}
+		
+	/*
+	keyInputManager::update();
+	lineEdit->setFont(Menu::getFont());
+	lineEdit->logic();
+	*/
 
 	switch ( focus ){
 		case INPUT_BOX : {
 			handleInput( keyboard );
+			// handleInput( keyboard );
 			break;
 		}
 		case START_GAME : {
@@ -499,7 +545,7 @@ void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
 	work.rectangle( x, y, x + messages.getWidth(), y + font.getHeight(), color );
 	Bitmap input_box( work, x + 1, y, messages.getWidth(), font.getHeight() );
 	// font.printf( x + 1, y, Bitmap::makeColor( 255, 255, 255 ), work, input, 0 );
-	font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
+	// font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
 
 }
 
@@ -539,6 +585,8 @@ void ChatServer::draw( const Bitmap & work ){
 
 	font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( START_GAME ), work, "Start the game", 0 );
 	font.printf( start_x + font.textLength( "Start the game" ) + 20, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( QUIT ), work, "Quit", 0 );
+	
+	lineEdit->render(work);
 
 	need_update = false;
 }
@@ -609,4 +657,5 @@ ChatServer::~ChatServer(){
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		delete *it;
 	}
+	delete lineEdit;
 }

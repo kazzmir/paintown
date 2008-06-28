@@ -26,7 +26,8 @@ Bitmap *Menu::work = 0;
 
 static std::queue<MenuOption *> backgrounds;
 
-static FreeTypeFont *font;
+// static FreeTypeFont *font;
+static Font *font;
 
 const int yellow = Bitmap::makeColor( 255, 255, 0 );
 const int white = Bitmap::makeColor( 255, 255, 255 );
@@ -381,7 +382,7 @@ Bitmap *Menu::getBackground()
 	return temp->getCurrentBackground();
 }
 
-FreeTypeFont *Menu::getFont(){
+Font *Menu::getFont(){
 	return font;
 }
 

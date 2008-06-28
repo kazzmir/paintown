@@ -6,29 +6,37 @@ LineEdit::LineEdit()
 {
 	currentSetFont=0;
 	textColor = 0;
-	changed = autoResizable = false;
+	changed_ = autoResizable = false;
 	hAlignment = hAlignMod = vAlignment = T_Middle;
 	textX = textY = cursorX = cursorY = cursorIndex = limit = 0;
 	textSizeH = 0;
 	cursorTime.reset();
 	blinkRate = 500;
 	focused = false;
+	changeCounter = 0;
 }
+
 LineEdit::~LineEdit()
 {
+}
+	
+bool LineEdit::didChanged( unsigned long long & counter ){
+	bool did = counter < changeCounter;
+	counter = changeCounter;
+	return did;
 }
 
 // If the font size changes
 void LineEdit::fontChange()
 {
-	changed=true;
+	changed();
 }
 
 // Update
 void LineEdit::logic()
 {
 	if((blinkRate*2)<=cursorTime.msecs())cursorTime.reset();
-	if(changed)
+	if(changed_)
 	{
 		textSizeH = currentSetFont->getHeight();
 		if(autoResizable)
@@ -86,12 +94,16 @@ void LineEdit::logic()
 			
 		//textY++;
 		//textX++;
-		changed = false;
+		stable();
 	}
+}
+	
+void LineEdit::render(const Bitmap & work){
+	this->render(&work);
 }
 		
 // Draw
-void LineEdit::render(Bitmap *work)
+void LineEdit::render(const Bitmap *work)
 {
 	
 		checkWorkArea();
@@ -137,7 +149,7 @@ sigslot::slot LineEdit::keyPress(const keys &k)
 					//currentSetText += k.getValue();
 					currentSetText.insert(cursorIndex, std::string(1,(char)k.getValue()));
 					++cursorIndex;
-					changed = true;
+					changed();
 				}
 			}
 			else
@@ -145,7 +157,7 @@ sigslot::slot LineEdit::keyPress(const keys &k)
 				//currentSetText += k.getValue();
 				currentSetText.insert(cursorIndex, std::string(1,(char)k.getValue()));
 				++cursorIndex;
-				changed = true;
+				changed();
 			}
 		}
 		else
@@ -174,7 +186,7 @@ sigslot::slot LineEdit::keyPress(const keys &k)
 				case keys::INSERT:
 					break;
 			}
-			changed = true;
+			changed();
 		}
 	}
 }
@@ -194,7 +206,7 @@ void LineEdit::setText(const std::string & text)
 		}
 	}
 	cursorIndex = currentSetText.length();
-	changed = true;
+	changed();
 }
 
 
@@ -209,7 +221,7 @@ void LineEdit::clearText()
 {
 	currentSetText.clear();
 	cursorIndex=0;
-	changed=true;
+	changed();
 }
 
 //! Set text limit
@@ -227,21 +239,21 @@ void LineEdit::setLimit(unsigned int l)
 		}
 	}
 	cursorIndex = currentSetText.length();
-	changed=true;
+	changed();
 }
 		
 // Set Horizontal Alignment
 void LineEdit::setHorizontalAlign(const textAlign a)
 {
 	hAlignment = hAlignMod = a;
-	changed = true;
+	changed();
 }
 		
 // Set Vertical Alignment
 void LineEdit::setVerticalAlign(const textAlign a)
 {
 	vAlignment = a;
-	changed = true;
+	changed();
 }
 		
 // Set textColor
@@ -258,10 +270,10 @@ void LineEdit::setCursorColor(const int color)
 }
 
 // Set font
-void LineEdit::setFont(FreeTypeFont *f)
+void LineEdit::setFont(const Font *f)
 {
 	currentSetFont = f;
-	if(currentSetFont)changed = true;
+	if(currentSetFont) changed();
 }
 
 // Set autoResizeable

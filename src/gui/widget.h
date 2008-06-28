@@ -20,7 +20,7 @@ class Widget : public sigslot::has_slots<>
 		virtual void logic()=0;
 		
 		// Render
-		virtual void render(Bitmap *work)=0;
+		virtual void render(const Bitmap *work)=0;
 	
 	protected:
 		void arc( Bitmap *work, int x, int y, double startAngle, int radius, int color );

@@ -8,6 +8,7 @@
 
 class Bitmap;
 class Keyboard;
+class LineEdit;
 
 enum Focus{
 	INPUT_BOX,
@@ -132,7 +133,7 @@ protected:
 	Network::Socket socket;
 	Bitmap * background;
 	Messages messages;
-	std::string input;
+	// std::string input;
 	Focus focus;
 	unsigned int client_id;
 	pthread_mutex_t lock;
@@ -140,6 +141,8 @@ protected:
 	std::vector< Client * > clients;
 	std::string name;
 	bool accepting;
+	LineEdit * lineEdit;
+	unsigned long long editCounter;
 };
 
 #endif

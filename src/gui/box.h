@@ -13,7 +13,7 @@ class Box : public Widget
 		virtual void logic();
 		
 		// Render
-		virtual void render(Bitmap *work);
+		virtual void render(const Bitmap *work);
 	
 	protected:
 };

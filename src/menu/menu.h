@@ -65,7 +65,7 @@ class Menu
 		static Menu *getMenu(const std::string &name);
 		
 		//! get font
-		static FreeTypeFont *getFont();
+		static Font *getFont();
 		
 		//! Set flag(s)
 		inline void setFlags(useflags f, bool tf){ if(tf){_menuflags |= f;}else{_menuflags &= ~f;}}
@@ -83,7 +83,8 @@ class Menu
 		//! Area for placement of option list
 		Box backboard;
 		//! Font for this menu
-		FreeTypeFont *vFont;
+		// FreeTypeFont *vFont;
+		Font *vFont;
 		//! Font width
 		int fontWidth;
 		//! Font height
