@@ -244,6 +244,7 @@ accepting( true ){
 	lineEdit->position.radius = 5;
 	
 	lineEdit->position.body = Bitmap::makeColor( 0, 0, 0 );
+	lineEdit->position.bodyAlpha = 128;
 	lineEdit->position.border = Bitmap::makeColor( 255, 255, 0 );
 	lineEdit->setHorizontalAlign(LineEdit::T_Left);
 	lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
@@ -496,18 +497,21 @@ bool ChatServer::logic( Keyboard & keyboard ){
 		case INPUT_BOX : {
 			handleInput( keyboard );
 			// handleInput( keyboard );
+			lineEdit->position.border = Bitmap::makeColor(255,255,0);
 			break;
 		}
 		case START_GAME : {
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
 				return true;
 			}
+			lineEdit->position.border = Bitmap::makeColor(255,255,255);
 			break;
 		}
 		case QUIT : {
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
 				return true;
 			}
+			lineEdit->position.border = Bitmap::makeColor(255,255,255);
 			break;
 		}
 	}
