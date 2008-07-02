@@ -51,6 +51,8 @@ class keyInputManager
 	public:
 		//! Evaluate keyboard and fire events
 		static void update();
+
+		static void clear();
 		
 		//! Key state (pass true to enable blocking checking)
 		static bool keyState(int unicode, bool blocking=false);

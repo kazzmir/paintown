@@ -72,6 +72,9 @@ class keyInput
 		
 		//! Is the pressed queue empty?
 		bool releasedEmpty();
+
+		/* clear all buffers */
+		void clear();
 	
 		//! Get next pressed key
 		keys dequeuePressed();

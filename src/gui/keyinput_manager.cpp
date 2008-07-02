@@ -38,6 +38,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "keyinput_manager.h"
 #include "al_keyinput.h"
+#include <iostream>
+#include "globals.h"
+
+static std::ostream & debug( int level ){
+	Global::debug( level ) << "[key input manager] ";
+	return Global::debug( level );
+}
 	
 	allegroKeyInput keyInputManager::input;
 	guiTimer keyInputManager::dTimer;
@@ -70,6 +77,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
 	{
 		// nothing
 	}
+		
+	void keyInputManager::clear(){
+		input.clear();
+	}
 	
 	// Check mouse for changes and fire events
 	void keyInputManager::update()
@@ -81,10 +92,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
 		if(dTimer.msecs()<=delay)
 		{
 			// Do pressed queue
-			while(!input.pressedEmpty())
-			{
+			while(!input.pressedEmpty()){
 				keys k = input.dequeuePressed();
 				keyHolder[k.getValue()] = true;
+				debug( 5 ) << "Pressed key " << k.getValue() << std::endl;
 				pressed.emit(k);
 			}
 			

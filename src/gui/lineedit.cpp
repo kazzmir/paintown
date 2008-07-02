@@ -1,6 +1,13 @@
 #include "lineedit.h"
+#include <iostream>
+#include "globals.h"
 
 #include "gui/keys.h"
+
+static std::ostream & debug( int level ){
+	Global::debug( level ) << "[line edit] ";
+	return Global::debug( level );
+}
 
 LineEdit::LineEdit()
 {
@@ -103,41 +110,38 @@ void LineEdit::render(const Bitmap & work){
 }
 		
 // Draw
-void LineEdit::render(const Bitmap *work)
-{
-	
-		checkWorkArea();
-		// Check if we are using a rounded box
-		if(position.radius>0)
-		{
-			roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.body );
-			roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.border );
-		}
-		else
-		{
-			workArea->rectangleFill( 0, 0, position.width-1, position.height-1, position.body );
-			workArea->rectangle( 0, 0, position.width-1, position.height-1, position.border );
-		}
-		
-		if(currentSetFont)currentSetFont->printf(textX,textY,textColor,*workArea,currentSetText,0);
-		if(focused)
-		{
-			if(cursorTime.msecs()<=blinkRate)
-			{
-				workArea->line(cursorX,cursorY,cursorX,cursorY+textSizeH-5,textColor);
-			}
-		}
-		
-		Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
-		workArea->drawingMode( Bitmap::MODE_TRANS );
-		workArea->drawTrans(position.x,position.y,*work);
-		work->drawingMode( Bitmap::MODE_SOLID );
+void LineEdit::render(const Bitmap *work){
 
+	checkWorkArea();
+	// Check if we are using a rounded box
+	if(position.radius>0) {
+		roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.body );
+		roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.border );
+	} else {
+		workArea->rectangleFill( 0, 0, position.width-1, position.height-1, position.body );
+		workArea->rectangle( 0, 0, position.width-1, position.height-1, position.border );
+	}
+
+	if (currentSetFont){
+		currentSetFont->printf(textX,textY,textColor,*workArea,currentSetText,0);
+	}
+
+	if(focused){
+		if(cursorTime.msecs()<=blinkRate){
+			workArea->line(cursorX,cursorY,cursorX,cursorY+textSizeH-5,textColor);
+		}
+	}
+
+	Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
+	workArea->drawingMode( Bitmap::MODE_TRANS );
+	workArea->drawTrans(position.x,position.y,*work);
+	work->drawingMode( Bitmap::MODE_SOLID );
 }
 
 // Keypresses
 sigslot::slot LineEdit::keyPress(const keys &k)
 {
+	debug( 5 ) << "Received key press " << k.getValue() << endl;
 	if(focused)
 	{
 		if(k.isCharacter())

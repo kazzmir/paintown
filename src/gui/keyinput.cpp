@@ -37,6 +37,15 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "keyinput.h"
+#include <iostream>
+#include "globals.h"
+
+/*
+static std::ostream & debug( int level ){
+	Global::debug( level ) << "[key input] ";
+	return Global::debug( level );
+}
+*/
 
  // Constructor
     keyInput::keyInput()
@@ -71,18 +80,32 @@ THE POSSIBILITY OF SUCH DAMAGE.
         return k;
     }
     // Push a key
-    void keyInput::queuePressed(keys k)
-    {
+    void keyInput::queuePressed(keys k){
         pressedQueue.push(k);
 	std::map<int, keys>::iterator p;
 	p = pressedKeys.find(k.getValue());
 	if(p == pressedKeys.end())pressedKeys.insert(std::make_pair(k.getValue(),k));
+
     }
+		
+	void keyInput::clear(){
+		int pressedElements = pressedQueue.size();
+		for ( int i = 0; i < pressedElements; i++ ){
+			pressedQueue.pop();
+		}
+		int releasedElements = releasedQueue.size();
+		for ( int i = 0; i < releasedElements; i++ ){
+			releasedQueue.pop();
+		}
+		pressedKeys.clear();
+	}
+
     // Push a key
     void keyInput::queueReleased(keys k)
     {
         releasedQueue.push(k);
 	std::map<int, keys>::iterator p;
 	p = pressedKeys.find(k.getValue());
+
 	if(p != pressedKeys.end())deleteList.push_back(p);
     }

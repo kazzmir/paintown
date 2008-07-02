@@ -7,6 +7,7 @@ data/players/akuma/**/*.png - http://www.zweifuss.com/sprites.htm. ???
 data/bgs/**/*.png - http://www.senileteam.com/games.php#bor.
 data/chars/**/*.png - http://www.senileteam.com/games.php#bor.
 data/sprites/**/*.png - http://www.senileteam.com/games.php#bor.
+data/menu/paintown.png - By Miguel Gavidia and Mark Oates
 data/music/aqua.s3m - Purple Motion
 data/music/c_heaven.xm - One Man Project
 data/music/elw-sick.xm - elwood

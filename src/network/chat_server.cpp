@@ -238,14 +238,15 @@ accepting( true ){
 	debug( 1 ) << "Start accepting connections" << endl;
 	lineEdit = new LineEdit();
 	lineEdit->position.x = 20;
-	lineEdit->position.y = 20 + messages.getHeight();
+	lineEdit->position.y = 20 + messages.getHeight() + 5;
 	lineEdit->position.width = 400;
 	lineEdit->position.height = 30;
 	lineEdit->position.radius = 5;
 	
-	lineEdit->position.body = Bitmap::makeColor( 255, 255, 255 );
+	lineEdit->position.body = Bitmap::makeColor( 0, 0, 0 );
 	lineEdit->position.border = Bitmap::makeColor( 255, 255, 0 );
 	lineEdit->setHorizontalAlign(LineEdit::T_Left);
+	lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
 	
 	lineEdit->setText("Hi!");
 	// lineEdit->setFont(Menu::getFont());
@@ -485,8 +486,8 @@ bool ChatServer::logic( Keyboard & keyboard ){
 		needUpdate();
 	}
 		
-	/*
 	keyInputManager::update();
+	/*
 	lineEdit->setFont(Menu::getFont());
 	lineEdit->logic();
 	*/
@@ -520,9 +521,15 @@ void ChatServer::needUpdate(){
 	
 Focus ChatServer::nextFocus( Focus f ){
 	switch ( f ){
-		case INPUT_BOX : return START_GAME;
+		case INPUT_BOX : {
+			lineEdit->disconnect_all();
+			return START_GAME;
+		}
 		case START_GAME : return QUIT;
-		case QUIT : return INPUT_BOX;
+		case QUIT : {
+			keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
+			return INPUT_BOX;
+		}
 		default : return INPUT_BOX;
 	}
 }
@@ -579,7 +586,7 @@ void ChatServer::draw( const Bitmap & work ){
 	background->Blit( work );
 	messages.draw( start_x, start_y, work, font );
 		
-	drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
+	// drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
 
 	drawBuddyList( start_x + messages.getWidth() + 10, start_y, work, font );
 
