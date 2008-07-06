@@ -425,6 +425,8 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 	key.setDelay( Keyboard::Key_DOWN, LAZY_KEY_DELAY );
 	Global::speed_counter = 0;
 
+	key.wait();
+
 	while ( ! done ){
 		
 		key.poll();
@@ -438,7 +440,7 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 				if ( key[ Keyboard::Key_UP ] ){
 					draw = true;
 					choose = (choose - 1 + possible.size()) % possible.size();
-				}
+			}
 
 				if ( key[ Keyboard::Key_DOWN ] ){
 					draw = true;
