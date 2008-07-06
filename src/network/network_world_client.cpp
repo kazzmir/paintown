@@ -402,6 +402,7 @@ void NetworkWorldClient::act(){
 		} else ++it;
 	}
 
+	/* TODO; bundle messages up to save acks */
 	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
 		Network::Message & m = *it;
 		sendMessage( m, getServer() );

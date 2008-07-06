@@ -232,9 +232,6 @@ accepting( true ){
 	debug( 1 ) << "Constructor" << endl;
 	background = new Bitmap( Global::titleScreen() );
 
-	debug( 1 ) << "Listen on socket" << endl;
-	Network::listen( socket );
-	pthread_mutex_init( &lock, NULL );
 	debug( 1 ) << "Start accepting connections" << endl;
 	lineEdit = new LineEdit();
 	lineEdit->position.x = 20;
@@ -256,6 +253,13 @@ accepting( true ){
 	lineEdit->setFocused(true);
 
 	editCounter = 0;
+	
+	/* listen() may throw an exception, so call it here so that the destructor
+	 * can properly delete the other objects that were created.
+	 */
+	debug( 1 ) << "Listen on socket" << endl;
+	Network::listen( socket );
+	pthread_mutex_init( &lock, NULL );
 }
 	
 bool ChatServer::isAccepting(){

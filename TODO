@@ -15,9 +15,10 @@ DONE * make network client screen not flicker
 DONE * fix races in grabbing
 DONE * use new menuing system
 DONE * continuous levels
+DONE * add buttons to editor that add random enemies and random items
+DONE * fix threading in windows, use -mthread
 
 * network versus play
-* fix threading in windows, use -mthread
 * use joystick
 * fix bug with setting max lives
 * separate z planes for each block
@@ -25,6 +26,5 @@ DONE * continuous levels
 * infinite enemy mode like in super smash brothers
 * breakable inanimate objects like boxes and trash cans
 * better key input in network chat
-* add buttons to editor that add random enemies and random items
 * RPG mode???
 * allow level to go left or right

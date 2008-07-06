@@ -44,7 +44,14 @@ public:
 
 class InvalidPortException: public NetworkException{
 public:
-	InvalidPortException( int port );
+	InvalidPortException( int port, const std::string & message = "" );
+};
+
+class CannotListenException: public NetworkException{
+public:
+	CannotListenException( const std::string & message = "" ):
+		NetworkException( message ){
+	}
 };
 
 struct Message{
@@ -62,7 +69,7 @@ struct Message{
 	Message & operator>>( int & x );
 
 	int size() const;
-	void dump( uint8_t * buffer ) const;
+	uint8_t * dump( uint8_t * buffer ) const;
 
 	void send( Socket socket ) const;
 	void reset();
@@ -80,7 +87,7 @@ void init();
 void shutdown();
 void blocking( bool b );
 
-void listen( Socket s );
+void listen( Socket s ) throw( NetworkException );
 Socket accept( Socket s ) throw( NetworkException );
 
 Socket open( int port ) throw( InvalidPortException );

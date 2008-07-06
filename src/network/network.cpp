@@ -12,10 +12,12 @@ namespace Network{
 NetworkException::~NetworkException() throw (){
 }
 	
-InvalidPortException::InvalidPortException( int port ):
+InvalidPortException::InvalidPortException( int port, const string & message ):
 NetworkException(""){
 	ostringstream num;
 	num << port;
+	num << ". ";
+	num << message;
 	this->setMessage( "Invalid port " + num.str() );
 }
 
@@ -57,7 +59,7 @@ Message::Message( Socket socket ){
 	}
 }
 
-void Message::dump( uint8_t * buffer ) const {
+uint8_t * Message::dump( uint8_t * buffer ) const {
 	*(uint16_t *) buffer = id;
 	buffer += sizeof(uint16_t);
 	memcpy( buffer, data, DATA_SIZE );
@@ -66,9 +68,12 @@ void Message::dump( uint8_t * buffer ) const {
 		*(uint16_t *) buffer = path.length() + 1;
 		buffer += sizeof(uint16_t);
 		memcpy( buffer, path.c_str(), path.length() + 1 );
+		buffer += path.length() + 1;
 	} else {
 		*(uint16_t *) buffer = (uint16_t) -1;
+		buffer += sizeof(uint16_t);
 	}
+	return buffer;
 }
 
 void Message::send( Socket socket ) const {
@@ -196,9 +201,10 @@ void readBytes( NLsocket socket, uint8_t * data, int length ){
 
 Socket open( int port ) throw( InvalidPortException ){
 	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
+	Global::debug( 1 ) << "Attemping to open port " << port << endl;
 	NLsocket server = nlOpen( port, NL_RELIABLE );
 	if ( server == NL_INVALID ){
-		throw InvalidPortException(port);
+		throw InvalidPortException(port, nlGetSystemErrorStr(nlGetSystemError()));
 	}
 	open_sockets.push_back( server );
 	return server;
@@ -252,9 +258,9 @@ void blocking( bool b ){
 	}
 }
 
-void listen( Socket s ){
+void listen( Socket s ) throw( NetworkException ){
 	if ( nlListen( s ) == NL_FALSE ){
-		Global::debug( 0 ) << "Could not listen on socket " << s << ": " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
+		throw CannotListenException( string(nlGetSystemErrorStr( nlGetSystemError() )) );
 	}
 }
 

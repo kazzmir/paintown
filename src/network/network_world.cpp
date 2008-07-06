@@ -248,6 +248,7 @@ void NetworkWorld::flushOutgoing(){
 				}
 				socket++;
 			} catch ( const Network::NetworkException & ne ){
+				/* TODO: remove character if the socket dies */
 				socket = sockets.erase( socket );
 				debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
 			}
