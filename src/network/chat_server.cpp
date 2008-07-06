@@ -524,17 +524,21 @@ void ChatServer::needUpdate(){
 }
 	
 Focus ChatServer::nextFocus( Focus f ){
+	lineEdit->setFocused(false);
 	switch ( f ){
 		case INPUT_BOX : {
-			lineEdit->disconnect_all();
 			return START_GAME;
 		}
 		case START_GAME : return QUIT;
 		case QUIT : {
-			keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
+			lineEdit->setFocused(true);
+			// keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
 			return INPUT_BOX;
 		}
-		default : return INPUT_BOX;
+		default : {
+			lineEdit->setFocused(true);
+			return INPUT_BOX;
+		}
 	}
 }
 
