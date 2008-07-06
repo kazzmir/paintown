@@ -3,6 +3,7 @@
 
 #include "network.h"
 #include "messages.h"
+#include "gui/sigslot.h"
 #include <pthread.h>
 #include <string>
 
@@ -16,6 +17,7 @@ enum Focus{
 	QUIT,
 };
 
+class keys;
 class ChatServer;
 
 class Client{
@@ -65,6 +67,7 @@ public:
 
 	virtual ~Client();
 private:
+
 	Network::Socket socket;
 	ChatServer * server;
 	unsigned int id;
@@ -79,7 +82,7 @@ private:
 	std::vector< Network::Message > outgoing;
 };
 
-class ChatServer{
+class ChatServer: public sigslot::has_slots<> {
 public:
 	ChatServer( const std::string & name, Network::Socket socket );
 
@@ -127,6 +130,8 @@ protected:
 	inline const int clientId(){
 		return client_id++;
 	}
+	
+	sigslot::slot keyPress(const keys &k);
 
 protected:
 	bool need_update;
@@ -143,6 +148,7 @@ protected:
 	bool accepting;
 	LineEdit * lineEdit;
 	unsigned long long editCounter;
+	bool enterPressed;
 };
 
 #endif

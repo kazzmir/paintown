@@ -11,6 +11,7 @@
 #include "init.h"
 #include "gui/lineedit.h"
 #include "gui/keyinput_manager.h"
+#include "gui/keys.h"
 #include "menu/menu.h"
 #include <iostream>
 
@@ -228,7 +229,8 @@ messages( 400, 350 ),
 focus( INPUT_BOX ),
 client_id( 1 ),
 name( name ),
-accepting( true ){
+accepting( true ),
+enterPressed( false ){
 	debug( 1 ) << "Constructor" << endl;
 	background = new Bitmap( Global::titleScreen() );
 
@@ -250,6 +252,7 @@ accepting( true ){
 	// lineEdit->setFont(Menu::getFont());
 	lineEdit->setFont(& Font::getFont(Util::getDataPath() + Global::DEFAULT_FONT, 20, 20));
 	keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
+	keyInputManager::pressed.connect(this,&ChatServer::keyPress);
 	lineEdit->setFocused(true);
 
 	editCounter = 0;
@@ -358,6 +361,15 @@ void ChatServer::addMessage( const string & s, unsigned int id ){
 	}
 	*/
 }
+	
+sigslot::slot ChatServer::keyPress(const keys &k){
+	switch ( k.getValue() ){
+		case keys::ENTER : {
+			enterPressed = true;
+			break;
+		}
+	}
+}
 
 void ChatServer::handleInput( Keyboard & keyboard ){
 
@@ -368,7 +380,16 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 		needUpdate();
 	}
 
+	/*
 	if ( keyboard[ Keyboard::Key_ENTER ] ){
+		addMessage( name + ": " + lineEdit->getText(), 0 );
+		lineEdit->clearText();
+		needUpdate();
+	}
+	*/
+		
+	if ( enterPressed ){
+		enterPressed = false;
 		addMessage( name + ": " + lineEdit->getText(), 0 );
 		lineEdit->clearText();
 		needUpdate();
