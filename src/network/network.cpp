@@ -76,6 +76,20 @@ uint8_t * Message::dump( uint8_t * buffer ) const {
 	return buffer;
 }
 
+int totalSize( const std::vector< Message > & messages ){
+	int totalSize = 0;
+	for ( vector< Message >::const_iterator it = messages.begin(); it != messages.end(); it++ ){
+		totalSize += (*it).size();
+	}
+	return totalSize;
+}
+
+void dump( const std::vector< Message > & messages, uint8_t * buffer ){
+	for ( vector< Message >::const_iterator it = messages.begin(); it != messages.end(); it++ ){
+		buffer = (*it).dump( buffer );
+	}
+}
+
 void Message::send( Socket socket ) const {
 	/*
 	send16( socket, id );
@@ -129,7 +143,7 @@ static string getHawkError(){
 	       string( nlGetSystemErrorStr( nlGetSystemError() ) );
 }
 
-int16_t read16( NLsocket socket ){
+int16_t read16( Socket socket ){
 	uint8_t data[ sizeof(uint16_t) ];
 	readBytes( socket, data, sizeof(uint16_t) ); 
 	return *(uint16_t *)data;
@@ -143,7 +157,7 @@ int16_t read16( NLsocket socket ){
 	*/
 }
 
-void send16( NLsocket socket, int16_t bytes ){
+void send16( Socket socket, int16_t bytes ){
 	/*
 	if ( nlWrite( socket, &length, sizeof(int16_t) ) != sizeof(int16_t) ){
 		throw NetworkException( string("Could not send 16 bits.") + getHawkError() );
@@ -152,7 +166,7 @@ void send16( NLsocket socket, int16_t bytes ){
 	sendBytes( socket, (uint8_t *) &bytes, sizeof(bytes) );
 }
 
-string readStr( NLsocket socket, const uint16_t length ){
+string readStr( Socket socket, const uint16_t length ){
 
 	char buffer[ length + 1 ];
 	NLint bytes = nlRead( socket, buffer, length );
@@ -165,13 +179,13 @@ string readStr( NLsocket socket, const uint16_t length ){
 
 }
 
-void sendStr( NLsocket socket, const string & str ){
+void sendStr( Socket socket, const string & str ){
 	if ( nlWrite( socket, str.c_str(), str.length() + 1 ) != (signed)(str.length() + 1) ){
 		throw NetworkException( string("Could not write string.") + getHawkError() );
 	}
 }
 
-void sendBytes( NLsocket socket, const uint8_t * data, int length ){
+void sendBytes( Socket socket, const uint8_t * data, int length ){
 	const uint8_t * position = data;
 	int written = 0;
 	while ( written < length ){
@@ -185,7 +199,7 @@ void sendBytes( NLsocket socket, const uint8_t * data, int length ){
 	}
 }
 
-void readBytes( NLsocket socket, uint8_t * data, int length ){
+void readBytes( Socket socket, uint8_t * data, int length ){
 	uint8_t * position = data;
 	int read = 0;
 	while ( read < length ){
@@ -202,7 +216,7 @@ void readBytes( NLsocket socket, uint8_t * data, int length ){
 Socket open( int port ) throw( InvalidPortException ){
 	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 	Global::debug( 1 ) << "Attemping to open port " << port << endl;
-	NLsocket server = nlOpen( port, NL_RELIABLE );
+	Socket server = nlOpen( port, NL_RELIABLE );
 	if ( server == NL_INVALID ){
 		throw InvalidPortException(port, nlGetSystemErrorStr(nlGetSystemError()));
 	}

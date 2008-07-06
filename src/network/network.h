@@ -70,6 +70,7 @@ struct Message{
 
 	int size() const;
 	uint8_t * dump( uint8_t * buffer ) const;
+	void dump( const std::vector< Message > & messages, uint8_t * buffer );
 
 	void send( Socket socket ) const;
 	void reset();
@@ -77,12 +78,12 @@ struct Message{
 	std::string path;
 };
 
-int16_t read16( NLsocket socket );
-void send16( NLsocket socket, int16_t length );
-std::string readStr( NLsocket socket, const uint16_t length );
-void sendStr( NLsocket socket, const std::string & str );
-void sendBytes( NLsocket socket, const uint8_t * data, int length );
-void readBytes( NLsocket socket, uint8_t * data, int length );
+int16_t read16( Socket socket );
+void send16( Socket socket, int16_t length );
+std::string readStr( Socket socket, const uint16_t length );
+void sendStr( Socket socket, const std::string & str );
+void sendBytes( Socket socket, const uint8_t * data, int length );
+void readBytes( Socket socket, uint8_t * data, int length );
 void init();
 void shutdown();
 void blocking( bool b );
