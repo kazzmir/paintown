@@ -165,6 +165,7 @@ protected:
 	}
 	
 	sigslot::slot keyPress(const keys &k);
+	sigslot::slot keyRelease(const keys &k);
 
 protected:
 	bool need_update;

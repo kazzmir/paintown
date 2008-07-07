@@ -253,6 +253,7 @@ enterPressed( false ){
 	lineEdit->setFont(& Font::getFont(Util::getDataPath() + Global::DEFAULT_FONT, 20, 20));
 	keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
 	keyInputManager::pressed.connect(this,&ChatServer::keyPress);
+	keyInputManager::released.connect(this,&ChatServer::keyRelease);
 	lineEdit->setFocused(true);
 
 	editCounter = 0;
@@ -371,6 +372,15 @@ sigslot::slot ChatServer::keyPress(const keys &k){
 	}
 }
 
+sigslot::slot ChatServer::keyRelease(const keys &k){
+	switch ( k.getValue() ){
+		case keys::ENTER : {
+			enterPressed = false;
+			break;
+		}
+	}
+}
+
 void ChatServer::handleInput( Keyboard & keyboard ){
 
 	keyInputManager::update();
@@ -388,8 +398,8 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 	}
 	*/
 		
-	if ( enterPressed ){
-		enterPressed = false;
+	if ( enterPressed && lineEdit->getText().length() > 0 ){
+		// enterPressed = false;
 		addMessage( name + ": " + lineEdit->getText(), 0 );
 		lineEdit->clearText();
 		needUpdate();
