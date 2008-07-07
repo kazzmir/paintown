@@ -56,6 +56,8 @@ void OptionNetworkJoin::draw(Bitmap *work){
 
 void OptionNetworkJoin::run(bool &endGame){
 	Keyboard key;
+	key.poll();
+	key.wait();
 	Network::networkClient();
 	key.poll();
 	key.wait();

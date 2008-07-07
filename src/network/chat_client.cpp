@@ -8,6 +8,9 @@
 #include "util/keyboard.h"
 #include "util/font.h"
 #include "util/funcs.h"
+#include "gui/lineedit.h"
+#include "gui/keyinput_manager.h"
+#include "gui/keys.h"
 
 static std::ostream & debug( int level ){
 	Global::debug( level ) << "[chat-client] ";
@@ -75,7 +78,8 @@ need_update( true ),
 messages( 400, 300 ),
 socket( socket ),
 focus( INPUT_BOX ),
-finished( false ){
+finished( false ),
+enterPressed( false ){
 	background = new Bitmap( Global::titleScreen() );
 	pthread_mutex_init( &lock, NULL );
 
@@ -88,6 +92,47 @@ finished( false ){
 		nameMessage.send( socket );
 	} catch ( const Network::NetworkException & n ){
 		debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
+	}
+
+	lineEdit = new LineEdit();
+	lineEdit->position.x = 20;
+	lineEdit->position.y = 20 + messages.getHeight() + 5;
+	lineEdit->position.width = 400;
+	lineEdit->position.height = 30;
+	lineEdit->position.radius = 5;
+	
+	lineEdit->position.body = Bitmap::makeColor( 0, 0, 0 );
+	lineEdit->position.bodyAlpha = 128;
+	lineEdit->position.border = Bitmap::makeColor( 255, 255, 0 );
+	lineEdit->setHorizontalAlign(LineEdit::T_Left);
+	lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
+	
+	lineEdit->setText("Hi!");
+	// lineEdit->setFont(Menu::getFont());
+	lineEdit->setFont(& Font::getFont(Util::getDataPath() + Global::DEFAULT_FONT, 20, 20));
+	keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
+	keyInputManager::pressed.connect(this,&ChatClient::keyPress);
+	keyInputManager::released.connect(this,&ChatClient::keyRelease);
+	lineEdit->setFocused(true);
+
+	editCounter = 0;
+}
+
+sigslot::slot ChatClient::keyPress(const keys &k){
+	switch ( k.getValue() ){
+		case keys::ENTER : {
+			enterPressed = true;
+			break;
+		}
+	}
+}
+
+sigslot::slot ChatClient::keyRelease(const keys &k){
+	switch ( k.getValue() ){
+		case keys::ENTER : {
+			enterPressed = false;
+			break;
+		}
 	}
 }
 
@@ -146,12 +191,14 @@ void ChatClient::addMessage( const string & s, unsigned int id ){
 	pthread_mutex_unlock( &lock );
 }
 
+/*
 static char lowerCase( const char * x ){
 	if ( x[0] >= 'A' && x[0] <= 'Z' ){
 		return x[0] - 'A' + 'a';
 	}
 	return x[0];
 }
+*/
 
 bool ChatClient::sendMessage( const string & message ){
 	try{
@@ -183,6 +230,7 @@ void ChatClient::popup( Keyboard & key, const std::string & str ){
 }
 
 void ChatClient::handleInput( Keyboard & keyboard ){
+	/*
 	vector< int > keys;
 	keyboard.readKeys( keys );
 
@@ -208,6 +256,23 @@ void ChatClient::handleInput( Keyboard & keyboard ){
 			needUpdate();
 		}
 	}
+	*/
+
+	lineEdit->logic();
+
+	if ( lineEdit->didChanged( editCounter ) ){
+		needUpdate();
+	}
+
+	if ( enterPressed && lineEdit->getText().length() > 0 ){
+		// enterPressed = false;
+		addMessage( "You: " + lineEdit->getText(), 0 );
+		if ( ! sendMessage( lineEdit->getText() ) ){
+			popup( keyboard, "Could not send message" );
+		}
+		lineEdit->clearText();
+		needUpdate();
+	}
 }
 
 void ChatClient::needUpdate(){
@@ -219,20 +284,27 @@ bool ChatClient::logic( Keyboard & keyboard ){
 		focus = nextFocus( focus );
 		needUpdate();
 	}
+	
+	keyInputManager::update();
 
+	lineEdit->setFocused(false);
 	switch ( focus ){
 		case INPUT_BOX : {
+			lineEdit->setFocused(true);
+			lineEdit->position.border = Bitmap::makeColor(255,255,0);
 			handleInput( keyboard );
 			return false;
 			break;
 		}
 		case QUIT : {
+			lineEdit->position.border = Bitmap::makeColor(255,255,255);
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
 				return true;
 			}
 			break;
 		}
 	}
+	debug( 1 ) << "Focus is " << lineEdit->isFocused() << endl;
 	return false;
 }
 
@@ -276,7 +348,8 @@ void ChatClient::draw( const Bitmap & work ){
 	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 	background->Blit( work );
 	messages.draw( start_x, start_y, work, font );
-	drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
+	// drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
+	lineEdit->render(work);
 	drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
 
 	int color = Bitmap::makeColor( 255, 255, 255 );
@@ -363,5 +436,6 @@ void ChatClient::run(){
 
 ChatClient::~ChatClient(){
 	delete background;
+	delete lineEdit;
 }
 

@@ -3,11 +3,14 @@
 
 #include "network.h"
 #include "messages.h"
+#include "gui/sigslot.h"
 #include <string>
 #include <pthread.h>
 
 class Keyboard;
 class Bitmap;
+class LineEdit;
+class keys;
 
 enum Focus{
 	INPUT_BOX,
@@ -19,7 +22,7 @@ struct Buddy{
 	int id;
 };
 
-class ChatClient{
+class ChatClient: public sigslot::has_slots<> {
 public:
 	ChatClient( Network::Socket socket, const std::string & name );
 
@@ -51,6 +54,9 @@ protected:
 	bool sendMessage( const std::string & message );
 	void popup( Keyboard & key, const std::string & str );
 
+	sigslot::slot keyPress(const keys &k);
+	sigslot::slot keyRelease(const keys &k);
+
 private:
 	Bitmap * background;
 	bool need_update;
@@ -62,6 +68,9 @@ private:
 	pthread_t inputThread;
 	std::vector< Buddy > buddies;
 	bool finished;
+	LineEdit * lineEdit;
+	unsigned long long editCounter;
+	bool enterPressed;
 };
 
 #endif

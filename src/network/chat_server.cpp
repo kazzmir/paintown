@@ -383,7 +383,6 @@ sigslot::slot ChatServer::keyRelease(const keys &k){
 
 void ChatServer::handleInput( Keyboard & keyboard ){
 
-	keyInputManager::update();
 	lineEdit->logic();
 
 	if ( lineEdit->didChanged( editCounter ) ){
@@ -528,8 +527,10 @@ bool ChatServer::logic( Keyboard & keyboard ){
 	lineEdit->logic();
 	*/
 
+	lineEdit->setFocused(false);
 	switch ( focus ){
 		case INPUT_BOX : {
+			lineEdit->setFocused(true);
 			handleInput( keyboard );
 			// handleInput( keyboard );
 			lineEdit->position.border = Bitmap::makeColor(255,255,0);
@@ -559,21 +560,11 @@ void ChatServer::needUpdate(){
 }
 	
 Focus ChatServer::nextFocus( Focus f ){
-	lineEdit->setFocused(false);
 	switch ( f ){
-		case INPUT_BOX : {
-			return START_GAME;
-		}
+		case INPUT_BOX : return START_GAME;
 		case START_GAME : return QUIT;
-		case QUIT : {
-			lineEdit->setFocused(true);
-			// keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
-			return INPUT_BOX;
-		}
-		default : {
-			lineEdit->setFocused(true);
-			return INPUT_BOX;
-		}
+		case QUIT : return INPUT_BOX;
+		default : return INPUT_BOX;
 	}
 }
 

@@ -372,6 +372,7 @@ void networkClient(){
 							is >> porti;
 							Network::Socket socket = Network::connect( host, porti );
 							ChatClient chat( socket, name );
+							keyboard.wait();
 							chat.run();
 							if ( chat.isFinished() ){
 								playGame( socket );
