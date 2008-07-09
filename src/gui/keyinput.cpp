@@ -79,6 +79,19 @@ static std::ostream & debug( int level ){
         releasedQueue.pop();
         return k;
     }
+    
+    // Check key without popping
+    keys keyInput::checkNextPressed()
+    {
+	    return pressedQueue.front();
+    }
+		
+    // Check key without popping
+    keys keyInput::checkNextReleased()
+    {
+	    return releasedQueue.front();
+    }
+    
     // Push a key
     void keyInput::queuePressed(keys k){
         pressedQueue.push(k);

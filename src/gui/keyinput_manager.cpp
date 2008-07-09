@@ -47,8 +47,8 @@ static std::ostream & debug( int level ){
 }
 	
 	allegroKeyInput keyInputManager::input;
-	guiTimer keyInputManager::dTimer;
-	unsigned int keyInputManager::delay;
+	guiTimer keyInputManager::dTimer[keys::MAX];
+	unsigned int keyInputManager::delay[keys::MAX];
 	bool keyInputManager::keyHolder[keys::MAX];
 	bool keyInputManager::keyBlocker[keys::MAX];
 	sigslot::signal1<const keys &> keyInputManager::pressed;
@@ -57,8 +57,8 @@ static std::ostream & debug( int level ){
 	// Mouse Manager Constructor
 	keyInputManager::keyInputManager()
 	{
-		dTimer.reset();
-		delay = 0;
+		//dTimer.reset();
+		//delay = 0;
 		keyHolder[keys::SPACE]=false;
 		keyHolder[keys::TAB]=false;
 		keyHolder[keys::ENTER]=false;
@@ -67,6 +67,8 @@ static std::ostream & debug( int level ){
 		keyBlocker[keys::ENTER]=false;
 		for(int i=0;i<keys::MAX;++i)
 		{
+			dTimer[i].reset();
+			delay[i]=0;
 			keyHolder[i]=false;
 			keyBlocker[i]=false;
 		}
@@ -85,18 +87,23 @@ static std::ostream & debug( int level ){
 	// Check mouse for changes and fire events
 	void keyInputManager::update()
 	{
-		if(delay<=dTimer.msecs())dTimer.reset();
+		//if(delay<=dTimer.msecs())dTimer.reset();
 		
 		// update the keyboard
 		input.update();
-		if(dTimer.msecs()<=delay)
-		{
+		//if(dTimer.msecs()<=delay)
+		//{
 			// Do pressed queue
 			while(!input.pressedEmpty()){
-				keys k = input.dequeuePressed();
-				keyHolder[k.getValue()] = true;
-				debug( 5 ) << "Pressed key " << k.getValue() << std::endl;
-				pressed.emit(k);
+				keys k = input.checkNextPressed();
+				if(delay[k.getValue()]<=dTimer[k.getValue()].msecs())dTimer[k.getValue()].reset();
+				if(dTimer[k.getValue()].msecs()<=delay[k.getValue()])
+				{
+					input.dequeuePressed();
+					keyHolder[k.getValue()] = true;
+					debug( 5 ) << "Pressed key " << k.getValue() << std::endl;
+					pressed.emit(k);
+				}
 			}
 			
 			// Do released queue
@@ -106,7 +113,7 @@ static std::ostream & debug( int level ){
 				keyHolder[k.getValue()] = false;
 				released.emit(k);
 			}
-		}
+		//}
 	}
 	
 	// Key state
@@ -133,8 +140,8 @@ static std::ostream & debug( int level ){
 	}
 	
 	//! Set delay in milleseconds (doesn't effect the keyStates)
-	void keyInputManager::setDelay(unsigned int msecs)
+	void keyInputManager::setDelay(unsigned int msecs, const keys::keyTypes key)
 	{
-		delay = msecs;
+		delay[key] = msecs;
 	}
 

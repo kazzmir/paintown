@@ -81,6 +81,12 @@ class keyInput
 	
 		//! Get next released key
 		keys dequeueReleased();
+		
+		//! Check key without popping
+		keys checkNextPressed();
+		
+		//! Check key without popping
+		keys checkNextReleased();
 	
 		//! Insert pressed key
 		void queuePressed(keys k);

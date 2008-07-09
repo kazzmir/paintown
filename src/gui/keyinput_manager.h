@@ -58,7 +58,7 @@ class keyInputManager
 		static bool keyState(int unicode, bool blocking=false);
 		
 		//! Set delay in milleseconds (doesn't effect the keyStates)
-		static void setDelay(unsigned int msecs);
+		static void setDelay(unsigned int msecs, const keys::keyTypes);
 		
 		//! \name Signals
 		static sigslot::signal1<const keys &> pressed;
@@ -75,10 +75,10 @@ class keyInputManager
 		static allegroKeyInput input;
 		
 		//! Timer for delay
-		static guiTimer dTimer;
+		static guiTimer dTimer[keys::MAX];
 		
 		//! Delay
-		static unsigned int delay;
+		static unsigned int delay[keys::MAX];
 		
 		//! Key states
 		static bool keyHolder[keys::MAX];
