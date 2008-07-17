@@ -8,6 +8,7 @@
 #include "init.h"
 #include <sstream>
 #include <iostream>
+#include <cstring>
 #include <stdlib.h>
 #include <time.h>
 
