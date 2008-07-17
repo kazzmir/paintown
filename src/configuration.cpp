@@ -7,6 +7,7 @@
 #include "object/object.h"
 #include <sstream>
 #include <fstream>
+#include <cstring>
 
 #include <map>
 
