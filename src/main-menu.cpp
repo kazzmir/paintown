@@ -23,7 +23,7 @@ static bool isArg( const char * s1, const char * s2 ){
 static void showOptions(){
 	Global::debug( 0 ) << "Paintown by Jon Rafkind" << endl;
 	Global::debug( 0 ) << "-w : Fullscreen mode" << endl;
-	Global::debug( 0 ) << "-d <path> : Use data path of <path>. Default is ./data/" << endl;
+	Global::debug( 0 ) << "-d <path> : Use data path of <path>. Default is " << Util::getDataPath() << endl;
 	Global::debug( 0 ) << "-l # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
 	Global::debug( 0 ) << "-m : Turn off music" << endl;
 	Global::debug( 0 ) << endl;
