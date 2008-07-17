@@ -661,7 +661,7 @@ void ChatServer::run(){
 			done = logic( keyboard );
 			think -= 1;
 			Global::speed_counter = 0;
-			if ( keyboard[ Keyboard::Key_ESC ] || done && focus == QUIT ){
+			if ( keyboard[ Keyboard::Key_ESC ] || (done && focus == QUIT) ){
 				addMessage( "** Server quit", 0 );
 				stopAccepting();
 				killAllClients();

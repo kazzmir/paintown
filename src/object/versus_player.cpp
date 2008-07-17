@@ -190,7 +190,7 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 		animation_current = getMovement( "grab" );
 	}
 
-	if ( getStatus() == Status_Ground && animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" ) ){
+	if ( (getStatus() == Status_Ground) && (animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" )) ){
 
 		// if ( keyboard[ KEY_RIGHT ] || keyboard[ KEY_LEFT ] ){
 		if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){

@@ -732,7 +732,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		world->addMessage( animationMessage() );
 	}
 	
-	if ( getStatus() == Status_Ground && animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" ) ){
+	if ( (getStatus() == Status_Ground) && (animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" )) ){
 
 		bool moved = false;
 		if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){

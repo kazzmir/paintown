@@ -4,7 +4,7 @@
 #include "stimulation.h"
 
 class Character;
-class Network::Message;
+// class Network::Message;
 
 class HealthStimulation : public Stimulation {
 public:
