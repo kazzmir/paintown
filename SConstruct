@@ -117,8 +117,8 @@ else:
 	config = env.Configure()
 	try:
 		config.env.ParseConfig( 'allegro-config --libs --cflags' )
-		config.env.ParseConfig( 'libpng-config --libs --cflags' )
 		config.env.ParseConfig( 'freetype-config --libs --cflags' )
+		config.env.ParseConfig( 'libpng-config --libs --cflags' )
 		
 		staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
 		staticEnv.ParseConfig( 'freetype-config --cflags' )
@@ -133,18 +133,19 @@ else:
 	staticEnv.Append( LIBS = [png,'z','m'] )
 	staticEnv.Append( LIBS = freetype )
 
+	if False:
+		## why doesnt this work!
+		if not config.TryCompile("int main(){ return 0; }\n", ".c"):
+			print "You need a C compiler such as gcc installed"
+			Exit( 1 )
+		if not config.TryCompile("class a{}; int main(){ a x = new a(); delete x; return 0; }\n", ".cpp" ):
+			print "You need a C++ compiler such as g++ installed"
+			Exit( 1 )
 	if not config.CheckHeader( 'allegro.h' ):
 		print "You need the header files for Allegro. Get it from http://alleg.sf.net"
 		Exit( 1 )
-	if False:
-		if not config.CheckHeader( 'dumb.h' ):
-			print "You need to install DUMB. Get it from http://dumb.sf.net"
-			Exit( 1 )
-		if not config.CheckHeader( 'aldumb.h' ):
-			print "You need to configure DUMB for Allegro support. Reinstall DUMB"
-			Exit( 1 )
 	if not config.CheckHeader( 'ft2build.h' ):
-		print "You need freetype. Install X11"
+		print "You need freetype. Install freetype and/or X11"
 		Exit( 1 )
 	if not config.CheckHeader( 'png.h' ):
 		print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
