@@ -17,7 +17,10 @@ def useMingw():
 	return False
 
 def readExec( program ):
-	return os.popen( program ).readline().replace("\n",'')
+	try:
+		return os.popen( program ).readline().replace("\n",'')
+	except OSError:
+		return ""
 
 def getEnvironment():
     if useMingw():
@@ -102,20 +105,26 @@ else:
 
 	staticEnv.Append( LIBS = [ hawknl_static, dumb_static ] )
 
-	dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
+	try:
+		dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
+	except OSError:
+		pass
 
 	if isOSX():
 		staticEnv[ 'CXX' ] = 'misc/g++'
 		staticEnv[ 'CC' ] = 'misc/gcc'
 	
 	config = env.Configure()
-	config.env.ParseConfig( 'allegro-config --libs --cflags' )
-	config.env.ParseConfig( 'libpng-config --libs --cflags' )
-	config.env.ParseConfig( 'freetype-config --libs --cflags' )
-	
-	staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
-	staticEnv.ParseConfig( 'freetype-config --cflags' )
-	staticEnv.ParseConfig( 'libpng-config --cflags' )
+	try:
+		config.env.ParseConfig( 'allegro-config --libs --cflags' )
+		config.env.ParseConfig( 'libpng-config --libs --cflags' )
+		config.env.ParseConfig( 'freetype-config --libs --cflags' )
+		
+		staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
+		staticEnv.ParseConfig( 'freetype-config --cflags' )
+		staticEnv.ParseConfig( 'libpng-config --cflags' )
+	except OSError:
+		pass
 
 	## This is a hack. Copy the static libraries to misc and then link
 	## those in, otherwise gcc will try to pick the .so's from /usr/lib
