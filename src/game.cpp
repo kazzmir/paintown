@@ -153,13 +153,14 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 	key.setDelay( Keyboard::Key_F2, 100 );
 	key.setDelay( Keyboard::Key_F12, 50 );
 
-	key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
-	key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
+	if ( Global::getDebug() > 0 ){
+		key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
+		key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
+		key.setDelay( Keyboard::Key_F4, 200 );
+		key.setDelay( Keyboard::Key_F8, 300 );
+	}
+
 	key.setDelay( Keyboard::Key_P, 100 );
-
-	key.setDelay( Keyboard::Key_F4, 200 );
-
-	key.setDelay( Keyboard::Key_F8, 300 );
 	key.setDelay( Keyboard::Key_TAB, 300 );
 	
 	/* the game graphics are meant for 320x240 and will be stretched
@@ -216,15 +217,6 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 				}
 			}
 
-			const double SPEED_INC = 0.02;
-			if ( key[ Keyboard::Key_MINUS_PAD ] ){
-				gameSpeed -= SPEED_INC;
-				if ( gameSpeed < SPEED_INC ){
-					gameSpeed = SPEED_INC;
-				}
-				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-			}
-
 			if ( key[ Keyboard::Key_F1 ] ){
 				helpTime = helpTime < 260 ? 260 : helpTime;
 			}
@@ -244,22 +236,33 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 			}
 			*/
 
-			if ( key[ Keyboard::Key_PLUS_PAD ] ){
-				gameSpeed += SPEED_INC;
-				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-			}
+			if ( Global::getDebug() > 0 ){
+				const double SPEED_INC = 0.02;
+				if ( key[ Keyboard::Key_PLUS_PAD ] ){
+					gameSpeed += SPEED_INC;
+					Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+				}
 
-			if ( key[ Keyboard::Key_ENTER_PAD ] ){
-				gameSpeed = 1;
-				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-			}
+				if ( key[ Keyboard::Key_MINUS_PAD ] ){
+					gameSpeed -= SPEED_INC;
+					if ( gameSpeed < SPEED_INC ){
+						gameSpeed = SPEED_INC;
+					}
+					Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+				}
 
-			if ( key[ Keyboard::Key_F4 ] ){
-				try{
-					world.reloadLevel();
-					draw = true;
-				} catch ( const LoadException & le ){
-					Global::debug( 0 ) << "Could not reload world: " << le.getReason() << endl;
+				if ( key[ Keyboard::Key_ENTER_PAD ] ){
+					gameSpeed = 1;
+					Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+				}
+
+				if ( key[ Keyboard::Key_F4 ] ){
+					try{
+						world.reloadLevel();
+						draw = true;
+					} catch ( const LoadException & le ){
+						Global::debug( 0 ) << "Could not reload world: " << le.getReason() << endl;
+					}
 				}
 			}
 
