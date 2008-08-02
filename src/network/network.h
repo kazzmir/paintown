@@ -2,7 +2,7 @@
 #define _paintown_network_h
 
 #include <stdint.h>
-#include "hawknl/hawknl/nl.h"
+#include "hawknl/nl.h"
 #include <string>
 #include <vector>
 #include <exception>
