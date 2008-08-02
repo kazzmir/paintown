@@ -77,3 +77,7 @@ $ cd paintown-x.x
 $ svn export https://paintown.svn.sf.net/svnroot/paintown/data # get a fresh checkout of the data
 
 Now just make the directory into a .dmg file. I used 'QuickDmg', http://tomkox.net. Drag and drop the folder onto QuickDmg and it will produce a .dmg file.
+
+Other:
+
+If the scons build fails because it cannot find hawknl/nl.h it may be because of this problem, http://scons.tigris.org/issues/show_bug.cgi?id=2121. Try the patch listed on that page, http://scons.tigris.org/nonav/issues/showattachment.cgi/448/bug2121_proposed_patch.
