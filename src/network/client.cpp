@@ -355,6 +355,17 @@ void networkClient(){
 				}
 			}
 
+            if ( keyboard[ Keyboard::Key_UP ] ){
+                draw = true;
+                switch ( focus ){
+                    case NAME : focus = BACK; break;
+                    case HOST : focus = NAME; break;
+					case PORT : focus = HOST; break;
+					case CONNECT : focus = PORT; break;
+					case BACK : focus = CONNECT; break;
+                }
+            }
+
 			if ( keyboard[ Keyboard::Key_ESC ] ){
 				throw ReturnException();
 			}

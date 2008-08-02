@@ -91,6 +91,7 @@ title(Bitmap::makeColor(0,255,255)){
 	credits.push_back("fall.xm - elwood");
 	credits.push_back("kajahtaa.xm - cube");
 	credits.push_back("kilimanz.mod - ???");
+	credits.push_back("SM_TechTown.it - SaMPLeMaSTeR");
 	credits.push_back("");
 	credits.push_back("Email: jon@rafkind.com");
 	credits.push_back("");
