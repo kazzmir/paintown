@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "lineedit.h"
 #include <iostream>
 #include "globals.h"

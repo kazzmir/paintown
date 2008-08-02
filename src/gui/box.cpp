@@ -1,5 +1,5 @@
-#include "gui/box.h"
 #include "util/bitmap.h"
+#include "gui/box.h"
 
 Box::Box()
 {

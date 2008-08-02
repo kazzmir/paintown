@@ -1,6 +1,6 @@
+#include "util/bitmap.h"
 #include "gui/widget.h"
 #include <math.h>
-#include "util/bitmap.h"
 #include "globals.h"
 
 

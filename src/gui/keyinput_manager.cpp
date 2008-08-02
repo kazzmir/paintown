@@ -36,8 +36,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "keyinput_manager.h"
 #include "al_keyinput.h"
+#include "keyinput_manager.h"
 #include <iostream>
 #include "globals.h"
 

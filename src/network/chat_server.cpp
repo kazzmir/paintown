@@ -279,9 +279,9 @@ void ChatServer::stopAccepting(){
 	pthread_mutex_lock( &lock );
 	accepting = false;
 	pthread_mutex_unlock( &lock );
-#ifndef WINDOWS
+// #ifndef WINDOWS
 	Network::close( socket );
-#endif
+// #endif
 	debug( 1 ) << "Waiting for accepting thread to stop" << endl;
 	pthread_join( acceptThread, NULL );
 	debug( 1 ) << "Not accepting any connections" << endl;
