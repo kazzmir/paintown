@@ -28,3 +28,4 @@ DONE * fix threading in windows, use -mthread
 * better key input in network chat
 * RPG mode???
 * allow level to go left or right
+* use CPP to define DATA_PATH
