@@ -361,11 +361,13 @@ public class Parser {
    */
   private void supportMacOS() {
     if (SwingEngine.isMacOSXSupported() && SwingEngine.isMacOSX()) {
+	    /*
       try {
         MacApp.getInstance().update(mac_map);
       } catch (Throwable t) {
         // intentionally empty
       }
+      */
     }
   }
 

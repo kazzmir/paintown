@@ -10,7 +10,9 @@
 		       debug="true"
 		       fork="true">
 		       <classpath>
+			       <!--
 		       	<pathelement path="lib/ui.jar" />
+			-->
 		       	<pathelement path="lib/jdom.jar" />
 		       </classpath>
 	       </javac>
@@ -22,7 +24,9 @@
 
 	<target name="jar" depends="compile">
 		<unjar src="lib/jdom.jar" dest="classes" />
+		<!--
 		<unjar src="lib/ui.jar" dest="classes" />
+		-->
 		<copy todir="classes">
 			<fileset dir="resources">
 				<include name="**/*.xml" />
