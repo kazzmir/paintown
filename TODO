@@ -29,3 +29,4 @@ DONE * fix threading in windows, use -mthread
 * RPG mode???
 * allow level to go left or right
 * use CPP to define DATA_PATH
+* tutorial mode
