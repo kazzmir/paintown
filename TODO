@@ -17,6 +17,7 @@ DONE * use new menuing system
 DONE * continuous levels
 DONE * add buttons to editor that add random enemies and random items
 DONE * fix threading in windows, use -mthread
+DONE * better key input in network chat
 
 * network versus play
 * use joystick
@@ -25,8 +26,8 @@ DONE * fix threading in windows, use -mthread
 * level lighting. lamps/objects can make the level brighter as the user gets close to them
 * infinite enemy mode like in super smash brothers
 * breakable inanimate objects like boxes and trash cans
-* better key input in network chat
 * RPG mode???
 * allow level to go left or right
 * use CPP to define DATA_PATH
 * tutorial mode
+* allow characters to block
