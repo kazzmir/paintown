@@ -1,7 +1,7 @@
 Paintown
-Version 3.0
+Version 3.1
 Jon Rafkind
-1/27/2008
+8/3/2008
 
 Get Source:
 
@@ -9,7 +9,9 @@ Get Source:
 	Game engine: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/trunk
 	Data: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/data
 
-	You need the svn program, which is part of subversion, http://subversion.tigris.org/. Put the data directory inside the trunk directory, trunk/data.
+	You need the svn program, which is part of subversion - http://subversion.tigris.org/, to do this. Put the data directory inside the trunk directory, trunk/data.
+
+	As of r1124 the data/ directory is an external resource for trunk, so you only have to check out trunk and svn will automatically get data/ for you.
 
 Compilation:
 
