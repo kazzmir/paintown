@@ -31,3 +31,4 @@ DONE * better key input in network chat
 * use CPP to define DATA_PATH
 * tutorial mode
 * allow characters to block
+* give enemies 'behaviors' which model how they act
