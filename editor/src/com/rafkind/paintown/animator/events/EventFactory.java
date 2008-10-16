@@ -39,6 +39,7 @@ public class EventFactory
 			events.put( "z-distance", new Lambda0(){public Object invoke(){return new ZDistanceEvent();}});
 
 			ignoreEvents.add( "basedir" );
+			ignoreEvents.add( "range" );
 			ignoreEvents.add( "keys" );
 			ignoreEvents.add( "type" );
 			ignoreEvents.add( "name" );
