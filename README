@@ -59,6 +59,7 @@ Requirements:
 	* libpng - http://www.libpng.org/pub/png/libpng.html
 	* pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
 	* freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
+	* Python headers. Use 'python-dev' on ubuntu.
 
 Thanks:
 	Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	

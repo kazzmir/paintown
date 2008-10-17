@@ -1,5 +1,32 @@
 import os;
 
+def checkPython(context):
+    import distutils.sysconfig
+    context.Message("Checking if python is embeddable... ")
+
+    include_path = distutils.sysconfig.get_config_var('INCLUDEPY')
+    link_stuff = distutils.sysconfig.get_config_var('LINKFORSHARED')
+    libs = distutils.sysconfig.get_config_var('LDLIBRARY')
+    lib_path = distutils.sysconfig.get_config_var('LIBP')
+
+    tmp = context.env.Clone()
+    env = context.env
+    env.Append(CPPPATH = [include_path])
+    env.Append(LINKFLAGS = link_stuff.split(' '))
+    env.Append(LIBPATH = [lib_path])
+    env.Append(LIBS = libs)
+    ret = context.TryLink("""
+        #include <Python.h>
+        int main(int argc, char *argv[]) {
+            Py_Initialize();
+        }
+    """, ".c");
+    if not ret:
+        context.sconf.env = tmp
+
+    context.Result(ret)
+    return ret
+
 def isWindows():
 	import re
 	import sys
@@ -86,7 +113,7 @@ if False:
 	env.Append( CCFLAGS = '-pg' )
 	env.Append( LINKFLAGS = '-pg' )
 
-staticEnv = env.Copy()
+staticEnv = env.Clone()
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 env.Append( LIBS = [dumb,hawknl] )
