@@ -503,7 +503,15 @@ public class CharacterAnimation{
 		
 		JPanel canvas = (JPanel) animEditor.find( "canvas" );
 		final DrawArea area = new DrawArea();
-		canvas.add(area);
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 0;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.fill = GridBagConstraints.BOTH;
+                constraints.anchor = GridBagConstraints.NORTHWEST;
+
+		canvas.add(area, constraints);
 
 		final JLabel scaleNum = (JLabel) animEditor.find( "scale-num" );
 		scaleNum.setText( "Scale: " + area.getScale() );
