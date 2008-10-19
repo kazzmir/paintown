@@ -1,4 +1,4 @@
-Import( 'use', 'python' );
+Import('use');
 
 obj_files = []
 
@@ -15,9 +15,6 @@ filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
 
 for i in filelist:
     addFiles(filelist[i])
-
-if python:
-    addFiles(['modules/python.c'])
 
 x = []
 x.append( use.Program( 'paintown', obj_files + ['xmain.cpp'] ) )

@@ -8,8 +8,12 @@ src/main-menu.cpp
 src/init.cpp
 src/nameplacer.cpp
 src/select_player.cpp
+src/script.cpp
 src/world.cpp
 src/versus_world.cpp)
+
+set(MODULE_SRC
+src/modules/python.cpp)
 
 set(LEVEL_SRC
 src/level/block.cpp

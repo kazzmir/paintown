@@ -121,9 +121,6 @@ if False:
 staticEnv = env.Clone()
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
-env.Append( LIBS = [dumb,hawknl] )
-
-python = False
 
 if isWindows():
     env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
@@ -183,18 +180,20 @@ else:
     if not config.CheckHeader( 'png.h' ):
         print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
         Exit( 1 )
-    python = config.CheckPython()
+    config.CheckPython()
 
     env = config.Finish()
+
+env.Append( LIBS = [dumb,hawknl] )
 
 env.Append(CCFLAGS = ['-Werror'])
 staticEnv.Append(CCFLAGS = ['-Werror'])
 
 use = env
-shared = SConscript( 'src/SConstruct', build_dir='build', exports = ['use', 'python'] );
+shared = SConscript( 'src/SConstruct', build_dir='build', exports = ['use'] );
 
 use = staticEnv
-static = SConscript( 'src/SConstruct', build_dir='build-static', exports = ['use', 'python'] )
+static = SConscript( 'src/SConstruct', build_dir='build-static', exports = ['use'] )
 
 for i in shared:
     Default(env.Install( '.', i ))
