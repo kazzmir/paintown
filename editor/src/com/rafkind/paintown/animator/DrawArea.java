@@ -17,8 +17,8 @@ import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.*;
 
 public final class DrawArea extends JComponent {
-	private int x = 150;
-	private int y = 100;
+	private int x = 50;
+	private int y = 50;
 	private double scale;
 	
 	private AnimationEvent currentEvent;
@@ -47,20 +47,22 @@ public final class DrawArea extends JComponent {
 		repaint();
 	}
 
+        /*
 	public Dimension getPreferredSize(){
-		return new Dimension(640,480);
+		return new Dimension(800,600);
 	}
+        */
 
 	public void paintComponent( Graphics g ){
-		
+
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.scale( getScale(), getScale() );
 
 		g.setColor( new Color( 0, 0, 0 ) );
-		g.fillRect( 0, 0, 640, 480 );
+		g.fillRect( 0, 0, getWidth(), getHeight() );
 		g.setColor( new Color( 255, 255, 0 ) );
-		g.drawLine( 0, y, 640, y );
-		g.drawLine( x, 0, x, 480 );
+		g.drawLine( 0, y, getWidth(), y );
+		g.drawLine( x, 0, x, getHeight() );
 
 		if ( currentAnimation != null ){
 			currentAnimation.draw( g, x, y - currentAnimation.getHeight() );

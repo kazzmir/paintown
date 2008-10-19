@@ -58,7 +58,7 @@ public final class Player{
 	private CharacterStats character;
 	
 	public SpecialPanel getEditor(){
-		return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField, character );
+	    return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField, character );
 	}
 	
 	/*
@@ -86,6 +86,16 @@ public final class Player{
 		
 		final DrawArea _drawArea = new DrawArea();
 
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 0;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.fill = GridBagConstraints.BOTH;
+                constraints.anchor = GridBagConstraints.NORTHWEST;
+		
+                canvas.add(_drawArea, constraints);
+
 		final JLabel scaleNum = (JLabel) playerEditor.find( "scale-num" );
 		scaleNum.setText( "Scale: " + _drawArea.getScale() );
 		final JSlider scale = (JSlider) playerEditor.find( "scale" );
@@ -96,9 +106,7 @@ public final class Player{
 				scaleNum.setText( "Scale: " + _drawArea.getScale() );
 			}
 		});
-		
-		canvas.add(_drawArea);
-		
+
 		nameField = (JTextField) contextEditor.find( "name" );
 		
 		nameField.setText( character.getName() );

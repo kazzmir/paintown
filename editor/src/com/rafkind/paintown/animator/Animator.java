@@ -36,7 +36,7 @@ public class Animator extends JFrame {
 
 	public Animator() throws Exception {
 		super( "Paintown Animator" );
-		this.setSize( (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 50, (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 50 );
+		this.setSize( (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 100, (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 100 );
 
 		animator = this;
 
