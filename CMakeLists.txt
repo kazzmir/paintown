@@ -11,6 +11,7 @@
 # Prevents any mishaps
 # Also remove the makefile to regenerate the filelist
 # -------------------------------------------------------
+cmake_minimum_required(VERSION 2.3)
 if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt)
 	file(REMOVE ${CMAKE_SOURCE_DIR}/CMakeCache.txt)
 	file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/CMakeFiles)
@@ -63,7 +64,8 @@ find_package(ZLIB)
 find_package(PNG)
 find_package(ALLEGRO)
 find_package(FREETYPE)
-#find_package(THREADS)
+find_package(Threads)
+include(TestForPythonEmbed)
 
 # -------------------------------------------------------
 # Include Source
@@ -92,9 +94,18 @@ if(NOT ALLEGRO_FOUND)
 	message(FATAL_ERROR "Couldn't find Allegro")
 endif(NOT ALLEGRO_FOUND)
 
+# freetype
 if(NOT FREETYPE_FOUND)
 	message(FATAL_ERROR "Couldn't find freetype")
 endif(NOT FREETYPE_FOUND)
+
+# Python
+if(PYTHON_EMBEDABLE)
+	set(PY_INCLUDE ${PYTHON_INCLUDE_PATH}) 
+	set(PY_LIBS ${PYTHON_LIBRARIES})
+	add_definitions(-DPYTHON)
+	add_definitions(-DHAVE_PYTHON)
+endif(PYTHON_EMBEDABLE)
 
 # -------------------------------------------------------
 # Paths and system setup
@@ -150,15 +161,15 @@ endif(MSVC)
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${PY_LIBS} ${WIN_LIB} ${WINSOCK})
 
 set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
-${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC})
+${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${MODULE_SRC})
 
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${FREETYPE_INCLUDE_DIR} src/hawknl)
+include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules ${FREETYPE_INCLUDE_DIR} src/hawknl ${PY_INCLUDE})
 
 # -------------------------------------------------------
 # Paintown and test

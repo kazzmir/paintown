@@ -46,7 +46,7 @@ MACRO(BUILD_RUN FILENAME ARGUMENTS MSG FLAGS LIBS)
                     ${CMAKE_BINARY_DIR}
                     ${FILENAME}
                     COMPILE_DEFINITIONS ${FLAGS}
-                    "-DLINK_LIBRARIES:STRING=${LIBS}"
+                    CMAKE_FLAGS -DLINK_LIBRARIES:STRING=${LIBS}
                     OUTPUT_VARIABLE OUTPUT
 		    ARGS ${ARGUMENTS})
 			#message(STATUS compile: ${VAR_2} | run: ${VAR_1} | output: ${OUTPUT})
@@ -56,4 +56,5 @@ MACRO(BUILD_RUN FILENAME ARGUMENTS MSG FLAGS LIBS)
 			if(VAR_1)
 				FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeError.log "Couldn't run ${FILENAME} failed with the following output:\n" "${OUTPUT}\n")
 			endif(VAR_1)
+		    SET(BUILD_RUN_RETURN ${VAR_1})
 ENDMACRO(BUILD_RUN FILENAME ARGUMENTS MSG FLAGS LIBS)
