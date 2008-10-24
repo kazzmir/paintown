@@ -25,7 +25,13 @@ using namespace std;
 volatile int Global::speed_counter = 0;
 volatile int Global::second_counter = 0;
 
-static const int TICS_PER_SECOND = 90;
+/* the original engine was running at 90 ticks per second, but we dont
+ * need to render that fast, so TICS_PER_SECOND is really fps and
+ * LOGIC_MULTIPLIER will be used to adjust the speed counter to its
+ * original value.
+ */
+static const int TICS_PER_SECOND = 40;
+const double Global::LOGIC_MULTIPLIER = (double) 90 / (double) TICS_PER_SECOND;
 
 pthread_mutex_t Global::loading_screen_mutex;
 bool Global::done_loading = false;

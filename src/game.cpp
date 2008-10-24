@@ -172,7 +172,11 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 
 	Global::speed_counter = 0;
 	Global::second_counter = 0;
-	int game_time = 100;
+	// int game_time = 100;
+        int frames = 0;
+        const int max_fps_index = 5;
+        double fps[max_fps_index] = {0,0,0,0,0};
+        int fps_index = 0;
 	bool done = false;
 
 	double gameSpeed = startingGameSpeed();
@@ -186,7 +190,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 
 		if ( Global::speed_counter > 0 ){
 			if ( ! paused ){
-				runCounter += Global::speed_counter * gameSpeed;
+				runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
 
 				while ( runCounter >= 1.0 ){
 					draw = true;
@@ -269,14 +273,23 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 			Global::speed_counter = 0;
 		}
 		
+                /*
 		while ( Global::second_counter > 0 ){
 			game_time--;
 			Global::second_counter--;
 			if ( game_time < 0 )
 				game_time = 0;
 		}
+                */
+                if ( Global::second_counter > 0 ){
+                    fps[fps_index] = (double) frames / (double) Global::second_counter;
+                    fps_index = (fps_index+1) % max_fps_index;
+                    Global::second_counter = 0;
+                    frames = 0;
+                }
 	
 		if ( draw ){
+                    frames += 1;
 			world.draw( &work );
 
 			work.Stretch( screen_buffer );
@@ -302,6 +315,13 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
+                        
+                        double real_fps = 0;
+                        for ( int i = 0; i < max_fps_index; i++ ){
+                            real_fps += fps[i];
+                        }
+                        real_fps /= max_fps_index;
+                        font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, real_fps );
 
 			/* getX/Y move when the world is quaking */
 			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
@@ -549,7 +569,7 @@ void playVersusMode( Character * player1, Character * player2, int round ) throw
 
 		if ( Global::speed_counter > 0 ){
 			if ( ! paused ){
-				runCounter += Global::speed_counter * gameSpeed;
+				runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
 
 				while ( runCounter >= 1.0 ){
 					draw = true;

@@ -128,6 +128,8 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 
 	bool draw = true;
 	unsigned int clock = 0;
+        double runCounter = 0;
+        double gameSpeed = 1;
 	Sound beep( Util::getDataPath() + "/sounds/beep1.wav" );
 	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
 		key.poll();
@@ -135,8 +137,10 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 		Character * ch = (Character *) players[ current ].guy;
 
 		if ( Global::speed_counter > 0 ){
-			double think = Global::speed_counter;
-			while ( think > 0 ){
+			// double think = Global::speed_counter;
+                        runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+			while ( runCounter >= 1.0 ){
+                            runCounter -= 1;
 				clock += 1;
 			
 				if ( clock % 5 == 0 ){
@@ -197,7 +201,7 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 					top += boxesPerLine;
 				}
 
-				think--;
+				// think--;
 			}
 
 			Global::speed_counter = 0;
