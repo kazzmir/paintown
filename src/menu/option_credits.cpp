@@ -186,11 +186,11 @@ void OptionCredits::run( bool &endGame ){
 
 		bool draw = false;
 		if ( Global::speed_counter / 2 > 0 ){
-			double think = Global::speed_counter / 2;
+			double think = Global::speed_counter / 2 * Global::LOGIC_MULTIPLIER;
 			draw = true;
 
-			while ( think > 0 ){
-				think--;
+			while ( think >= 1.0 ){
+				think -= 1;
 				min_y -= 1;
 				if ( min_y < -(int)(maxCredits * font.getHeight() * 1.1) ){
 					min_y = GFX_Y;

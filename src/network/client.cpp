@@ -62,7 +62,7 @@ static void playLevel( World & world, const vector< Object * > & players ){
 
 		if ( Global::speed_counter > 0 ){
 			if ( ! paused ){
-				runCounter += Global::speed_counter * gameSpeed;
+				runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
 
 				while ( runCounter >= 1.0 ){
 					draw = true;
