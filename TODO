@@ -28,9 +28,12 @@ DONE * better key input in network chat
 * breakable inanimate objects like boxes and trash cans
 * RPG mode???
 * allow level to go left or right
-* use CPP to define DATA_PATH
 * tutorial mode
 * allow characters to block
 * give enemies 'behaviors' which model how they act
 
-
+For 3.2
+-------
+* Get python scripting module in a useable state
+* Be able to scale the screen to arbitrary sizes
+* use CPP to define DATA_PATH
