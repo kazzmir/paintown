@@ -177,6 +177,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
         const int max_fps_index = 5;
         double fps[max_fps_index] = {0,0,0,0,0};
         int fps_index = 0;
+        bool show_fps = false;
 	bool done = false;
 
 	double gameSpeed = startingGameSpeed();
@@ -224,6 +225,13 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 			if ( key[ Keyboard::Key_F1 ] ){
 				helpTime = helpTime < 260 ? 260 : helpTime;
 			}
+                        
+                        if ( key[ Keyboard::Key_F9 ] ){
+                            show_fps = true;
+                        }
+                        if ( key[ Keyboard::Key_F10 ] ){
+                            show_fps = false;
+                        }
 
 			if ( key[ Keyboard::Key_P ] ){
 				paused = ! paused;
@@ -321,7 +329,9 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
                             real_fps += fps[i];
                         }
                         real_fps /= max_fps_index;
-                        font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, real_fps );
+                        if ( show_fps ){
+                            font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, real_fps );
+                        }
 
 			/* getX/Y move when the world is quaking */
 			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
@@ -420,7 +430,12 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 	// Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	int fontY = 20;
 	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, fontY );
-	vector< string > possible = Util::getFiles( base + "/", "*.txt" );
+	vector<string> possible = Util::getFiles( base + "/", "*.txt" );
+        for ( vector<string>::iterator it = possible.begin(); it != possible.end(); it++ ){
+            string & path = *it;
+            path.erase(0, Util::getDataPath().length() + 1);
+        }
+
 	if ( possible.size() == 0 ){
 		return "no-files!!!";
 	}
@@ -471,7 +486,7 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 				}
 
 				if ( key[ Keyboard::Key_ENTER ] ){
-					return possible[ choose ];
+					return Util::getDataPath() + "/" + possible[ choose ];
 				}
 
 				if ( key[ Keyboard::Key_ESC ] ){

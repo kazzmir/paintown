@@ -68,11 +68,18 @@ def getDebug():
     except KeyError:
         return 0
 
+def getDataPath():
+    try:
+        return ARGUMENTS['data']
+    except KeyError:
+        return 'data'
+
 debug = getDebug()
+dataPath = getDataPath()
 
 cflags = [ '-Wall' ]
 cppflags = [ '-fno-rtti', '-Woverloaded-virtual' ]
-cdefines = []
+cdefines = ['DATA_PATH=\\\"%s\\\"' % dataPath]
 # cppflags = [ '-Woverloaded-virtual' ]
 
 if debug:
