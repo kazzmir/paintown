@@ -60,6 +60,9 @@ class Menu
 		
 		/*! Get current background in Bitmap */
 		static Bitmap *getBackground();
+		
+		//! Our current bitmap to draw to
+		static Bitmap *work;
 
 		//! Get menu by name
 		static Menu *getMenu(const std::string &name);
@@ -74,8 +77,6 @@ class Menu
 		inline useflags getFlags() { return _menuflags; }
 		
 	protected:
-		//! Our current bitmap to draw to
-		static Bitmap *work;
 		//! Current music
 		std::string music;
 		//! background of current
