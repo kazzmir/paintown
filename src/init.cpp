@@ -74,6 +74,11 @@ static void registerSignals(){
 #endif
 }
 
+static void close_paintown(){
+    exit(0);
+}
+END_OF_FUNCTION(close_paintown)
+
 bool Global::init( int gfx ){
 
 	ostream & out = Global::debug( 0 );
@@ -106,6 +111,9 @@ bool Global::init( int gfx ){
 	out<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
 	srand( time( NULL ) );
 	set_display_switch_mode( SWITCH_BACKGROUND );
+
+        LOCK_FUNCTION(close_paintown);
+        set_close_button_callback(close_paintown);
 	
 	atexit( &dumb_exit );
 	atexit( Network::closeAll );
