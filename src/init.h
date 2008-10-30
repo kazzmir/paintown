@@ -7,6 +7,9 @@
 
 /* global vars */
 
+#define GFX_X 640
+#define GFX_Y 480
+
 namespace Global{
 	extern volatile int speed_counter;
 	extern volatile int second_counter;
@@ -23,9 +26,6 @@ namespace Global{
 
 	bool init( int gfx );
 }
-
-#define GFX_X 640
-#define GFX_Y 480
 
 /*
 #define GFX_X 320

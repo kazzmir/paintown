@@ -56,7 +56,8 @@ const int Global::getDebug(){
 }
 
 void Global::showTitleScreen(){
-	Bitmap::Screen->Blit( Global::titleScreen() );
+    Bitmap s( Global::titleScreen() );
+    s.BlitToScreen();
 }
 
 const std::string Global::titleScreen(){

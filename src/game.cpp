@@ -204,7 +204,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 							if ( player->spawnTime() == 0 ){
 								player->deathReset();
 								if ( player->getLives() == 0 ){
-									fadeOut( "You lose" );
+									fadeOut( screen_buffer, "You lose" );
 									return false;
 								}
 								world.addMessage( removeMessage( player->getId() ) );
@@ -334,7 +334,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
                         }
 
 			/* getX/Y move when the world is quaking */
-			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
+			screen_buffer.BlitToScreen( world.getX(), world.getY() );
 
 			if ( key[ Keyboard::Key_F12 ] ){
 				string file = findNextFile( "scr.bmp" );
@@ -419,14 +419,17 @@ void realGame( const vector< Object * > & players, const string & levelFile ){
 			return;
 		}
 
-		fadeOut( "Next level" );
+		// fadeOut( "Next level" );
 	}
 
-	fadeOut( "You win!" );
+        /* fix.. */
+	// fadeOut( "You win!" );
 }
 
 const string selectLevelSet( const string & base ) throw( ReturnException ){
-	Bitmap::Screen->Blit( Global::titleScreen() );
+        Bitmap background( Global::titleScreen() );
+	// Bitmap::Screen->Blit( Global::titleScreen() );
+
 	// Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	int fontY = 20;
 	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, fontY );
@@ -448,13 +451,14 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 	*/
 	int choose = 0;
 
-	font.printf( 180, (int)(200 - fontY * 1.2), Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Select a set of levels to play", 0 );
+	font.printf( 180, (int)(200 - fontY * 1.2), Bitmap::makeColor( 255, 255, 255 ), background, "Select a set of levels to play", 0 );
 	for ( unsigned int i = 0; i < possible.size(); i++ ){
 		int yellow = Bitmap::makeColor( 255, 255, 0 );
 		int white = Bitmap::makeColor( 255, 255, 255 );
 		unsigned int color = i == (unsigned) choose ? yellow : white;
-		font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, possible[ i ], 0 );
+		font.printf( 200, (int)(200 + i * fontY * 1.2), color, background, possible[ i ], 0 );
 	}
+        background.BlitToScreen();
 
 	Keyboard key;
 	bool done = false;
@@ -502,8 +506,9 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 				int yellow = Bitmap::makeColor( 255, 255, 0 );
 				int white = Bitmap::makeColor( 255, 255, 255 );
 				unsigned int color = i == (unsigned) choose ? yellow : white;
-				font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, possible[ i ], 0 );
-			}		
+				font.printf( 200, (int)(200 + i * fontY * 1.2), color, background, possible[ i ], 0 );
+			}
+                        background.BlitToScreen();
 		}
 		
 		while ( Global::speed_counter == 0 ){
@@ -515,15 +520,16 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 	return "nothing-selected";
 }
 
-void fadeOut( const string & message ){
+void fadeOut( Bitmap & work, const string & message ){
 	Bitmap dark( GFX_X, GFX_Y );
 	dark.clear();
 	Bitmap::transBlender( 0, 0, 0, 128 );
 
-	dark.drawTrans( 0, 0, *Bitmap::Screen );
+	dark.drawTrans( 0, 0, work );
 	
 	const Font & f = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 50, 50 );
-	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), *Bitmap::Screen, message, 0 );
+	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );
+        work.BlitToScreen();
 
 	Util::rest( 2000 );
 }
@@ -593,11 +599,11 @@ void playVersusMode( Character * player1, Character * player2, int round ) throw
 
 					if ( player1->getHealth() <= 0 || player2->getHealth() <= 0 ){
 						if ( player1->getHealth() <= 0 && player2->getHealth() > 0 ){
-							fadeOut( "Player 2 wins!" );
+							fadeOut( screen_buffer, "Player 2 wins!" );
 						} else if ( player1->getHealth() > 0 && player2->getHealth() <= 0 ){
-							fadeOut( "Player 1 wins!" );
+							fadeOut( screen_buffer, "Player 1 wins!" );
 						} else {
-							fadeOut( "Draw!" );
+							fadeOut( screen_buffer, "Draw!" );
 						}
 						return;
 					}
@@ -802,7 +808,7 @@ void playVersusMode( Character * player1, Character * player2, int round ) throw
 			}
 
 			/* getX/Y move when the world is quaking */
-			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
+			screen_buffer.BlitToScreen( world.getX(), world.getY() );
 
 			if ( key[ Keyboard::Key_F12 ] ){
 				Global::debug( 2 ) << "Saved screenshot to scr.bmp" << endl;

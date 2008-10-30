@@ -9,12 +9,13 @@
 
 class Object;
 class Character;
+class Bitmap;
 
 namespace Game{
 
 void realGame( const std::vector< Object * > & players, const std::string & levelFile );
 const string selectLevelSet( const std::string & base ) throw( ReturnException );
-void fadeOut( const std::string & message );
+void fadeOut( Bitmap & work, const std::string & message );
 
 Object * selectPlayer( bool invincibile, const std::string & message = "" ) throw( LoadException, ReturnException );
 

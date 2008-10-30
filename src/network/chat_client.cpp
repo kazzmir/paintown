@@ -213,17 +213,18 @@ bool ChatClient::sendMessage( const string & message ){
 	return false;
 }
 	
-void ChatClient::popup( Keyboard & key, const std::string & str ){
+void ChatClient::popup( Bitmap & work, Keyboard & key, const std::string & str ){
 	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 	int length = font.textLength( str.c_str() ) + 20;
 	int height = font.getHeight() * 2;
-	Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, GFX_Y / 2, length, height );
+	Bitmap area( work, work.getWidth() / 2 - length / 2, work.getHeight() / 2, length, height );
 	area.drawingMode( Bitmap::MODE_TRANS );
 	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
 	area.drawingMode( Bitmap::MODE_SOLID );
 	int color = Bitmap::makeColor( 255, 255, 255 );
 	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
 	font.printf( 10, area.getHeight() / 3, Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
+        work.BlitToScreen();
 
 	key.wait();
 	key.readKey();
@@ -267,9 +268,7 @@ void ChatClient::handleInput( Keyboard & keyboard ){
 	if ( enterPressed && lineEdit->getText().length() > 0 ){
 		// enterPressed = false;
 		addMessage( "You: " + lineEdit->getText(), 0 );
-		if ( ! sendMessage( lineEdit->getText() ) ){
-			popup( keyboard, "Could not send message" );
-		}
+                toSend.push(lineEdit->getText());
 		lineEdit->clearText();
 		needUpdate();
 	}
@@ -403,6 +402,14 @@ void ChatClient::run(){
 				done = true;
 				break;
 			}
+		
+                        while ( ! toSend.empty() ){
+                            if ( ! sendMessage( toSend.front() ) ){
+                                popup( work, keyboard, "Could not send message" );
+                            }
+                            toSend.pop();
+                        }
+
 			think -= 1;
 			Global::speed_counter = 0;
 			done = isFinished();

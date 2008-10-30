@@ -99,7 +99,7 @@ static void playLevel( World & world, const vector< Object * > & players ){
 			render->render( &screen_buffer );
 	
 			/* getX/Y move when the world is quaking */
-			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
+			screen_buffer.BlitToScreen( world.getX(), world.getY() );
 			work.clear();
 		}
 
@@ -286,9 +286,10 @@ static bool handlePortInput( string & str, const vector< int > & keys ){
 	return cy;
 }
 
-static void popup( const Font & font, const string & message ){
+static void popup( Bitmap & work, const Font & font, const string & message ){
 	int length = font.textLength( message.c_str() ) + 20; 
-	Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+	// Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+	Bitmap area( work, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
 	Bitmap::transBlender( 0, 0, 0, 128 );
 	area.drawingMode( Bitmap::MODE_TRANS );
 	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
@@ -296,6 +297,7 @@ static void popup( const Font & font, const string & message ){
 	int color = Bitmap::makeColor( 255, 255, 255 );
 	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
 	font.printf( 10, area.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
+        work.BlitToScreen();
 }
 
 static const char * getANumber(){
@@ -390,7 +392,7 @@ void networkClient(){
 							}
 							Network::close( socket );
 						} catch ( const NetworkException & e ){
-							popup( font, e.getMessage() );
+							popup( work, font, e.getMessage() );
 							keyboard.wait();
 							keyboard.readKey();
 							/*

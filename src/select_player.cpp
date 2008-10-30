@@ -285,7 +285,7 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 				work.triangle( startX + x1, GFX_Y - 8, startX + x2, GFX_Y - 8, startX + (x1 + x2) / 2, GFX_Y - 3, gradient[ clock % maxGradient ] );
 			}
 
-			work.Blit( *Bitmap::Screen );
+			work.BlitToScreen();
 			draw = false;
 		}
 
@@ -720,7 +720,7 @@ vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, Ret
 				work.triangle( startX + x1, GFX_Y - 8, startX + x2, GFX_Y - 8, startX + (x1 + x2) / 2, GFX_Y - 3, gradient[ clock % maxGradient ] );
 			}
 
-			work.Blit( *Bitmap::Screen );
+			work.BlitToScreen();
 			draw = false;
 		}
 

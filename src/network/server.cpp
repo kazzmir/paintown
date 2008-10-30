@@ -157,18 +157,18 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 #endif
 
 static int getServerPort(){
+    Bitmap background( Global::titleScreen() );
 	const int drawY = 250;
 	{
-		Bitmap background( Global::titleScreen() );
-		background.BlitToScreen();
+		// background.BlitToScreen();
 		const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 		Bitmap black( 300, font.getHeight() * 4 );
 		black.clear();
 		black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
 		Bitmap::transBlender( 0, 0, 0, 92 );
-		black.drawTrans( 20, drawY - font.getHeight() - 20, *Bitmap::Screen );
-		font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port:", 0 );
-		font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Enter to start. ESC to quit", 0 );
+		black.drawTrans( 20, drawY - font.getHeight() - 20, background );
+		font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
+		font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
 	}
 
 	Keyboard key;
@@ -223,7 +223,8 @@ static int getServerPort(){
 			work.clear();
 			const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 			font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
-			work.Blit( 100, drawY, *Bitmap::Screen );
+			work.Blit( 100, drawY, background );
+                        background.BlitToScreen();
 		}
 
 		while ( Global::speed_counter == 0 ){
@@ -419,7 +420,7 @@ static void playLevel( World & world, const vector< Object * > & players ){
 			// const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
 
 			/* getX/Y move when the world is quaking */
-			screen_buffer.Blit( world.getX(), world.getY(), *Bitmap::Screen );
+			screen_buffer.BlitToScreen( world.getX(), world.getY() );
 
 			/*
 			if ( key[ Keyboard::Key_F12 ] ){
@@ -582,7 +583,8 @@ static void playGame( const vector< Socket > & sockets ){
 
 static void popup( const Font & font, const string & message ){
 	int length = font.textLength( message.c_str() ) + 20; 
-	Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+        Bitmap background( Global::titleScreen() );
+	Bitmap area( background, background.getWidth() / 2 - length / 2, 220, length, font.getHeight() * 3 );
 	Bitmap::transBlender( 0, 0, 0, 128 );
 	area.drawingMode( Bitmap::MODE_TRANS );
 	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
@@ -590,6 +592,7 @@ static void popup( const Font & font, const string & message ){
 	int color = Bitmap::makeColor( 255, 255, 255 );
 	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
 	font.printf( 10, area.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
+        background.BlitToScreen();
 }
 
 void networkServer(){

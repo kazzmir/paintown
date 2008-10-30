@@ -58,9 +58,12 @@ void * loadingScreen( void * arg ){
 
 	Global::speed_counter = 0;
 
-	Bitmap::Screen->Blit( Global::titleScreen() );
-	Bitmap::Screen->Blit( load_x, load_y, load_width, load_height, 0, 0, work );
-	Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), *Bitmap::Screen, "Made by Jon Rafkind", 0 );
+        { /* force scoping */
+            Bitmap background( Global::titleScreen() );
+            background.Blit( load_x, load_y, load_width, load_height, 0, 0, work );
+            Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), background, "Made by Jon Rafkind", 0 );
+            background.BlitToScreen();
+        }
 	bool quit = false;
 
 	/* keeps the colors moving */
@@ -87,7 +90,8 @@ void * loadingScreen( void * arg ){
 				work.putPixel( it->x, it->y, color );
 			}
 			/* work already contains the correct background */
-			work.Blit( load_x, load_y, *Bitmap::Screen );
+			// work.Blit( load_x, load_y, *Bitmap::Screen );
+                        work.BlitAreaToScreen( load_x, load_y );
 		}
 
 		pthread_mutex_lock( &Global::loading_screen_mutex );

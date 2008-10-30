@@ -32,6 +32,7 @@ volatile int Global::second_counter = 0;
  */
 static const int TICS_PER_SECOND = 40;
 const double Global::LOGIC_MULTIPLIER = (double) 90 / (double) TICS_PER_SECOND;
+        
 
 pthread_mutex_t Global::loading_screen_mutex;
 bool Global::done_loading = false;
@@ -85,11 +86,17 @@ bool Global::init( int gfx ){
 	out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
 	
 	loadpng_init();
+        
+        Bitmap::SCALE_X = GFX_X;
+        Bitmap::SCALE_Y = GFX_Y;
+
+        const int sx = 640;
+        const int sy = 480;
 
 	out<<"Install keyboard: "<<install_keyboard()<<endl;
 	out<<"Install mouse: "<<install_mouse()<<endl;
 	set_color_depth( 16 );
-	out<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y ) <<endl;
+	out<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, sx, sy ) <<endl;
 
 	LOCK_VARIABLE( speed_counter );
 	LOCK_VARIABLE( second_counter );

@@ -1176,11 +1176,13 @@ bool Character::realCollision( ObjectAttack * obj ){
 		// cout<<"Ax: "<<ax<< " Ay: "<<ay<<" Width: "<<hisCollide->getWidth()<<" Height: "<<hisCollide->getHeight()<<endl;
 
 		bool b = myCollide->Collision( hisCollide, mx, my, ax, ay, my_xflip, false, his_xflip, false );
+                /*
 		if ( b && false ){
 			myCollide->draw( *Bitmap::Screen, 50, 50, my_xflip );
 			hisCollide->draw( *Bitmap::Screen, 50 + (ax - mx), 50 + (ay - my), his_xflip );
 			Util::rest( 500 );
 		}
+                */
 		return b;
 	}
 	return false;

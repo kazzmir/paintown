@@ -6,6 +6,7 @@
 #include "gui/sigslot.h"
 #include <string>
 #include <pthread.h>
+#include <queue>
 
 class Keyboard;
 class Bitmap;
@@ -52,7 +53,7 @@ protected:
 	void drawInputBox( int x, int y, const Bitmap & work );
 	void drawBuddies( const Bitmap & area, int x, int y, const Font & f );
 	bool sendMessage( const std::string & message );
-	void popup( Keyboard & key, const std::string & str );
+	void popup( Bitmap & work, Keyboard & key, const std::string & str );
 
 	sigslot::slot keyPress(const keys &k);
 	sigslot::slot keyRelease(const keys &k);
@@ -71,6 +72,7 @@ private:
 	LineEdit * lineEdit;
 	unsigned long long editCounter;
 	bool enterPressed;
+        queue< string > toSend;
 };
 
 #endif

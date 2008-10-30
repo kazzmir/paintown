@@ -36,4 +36,4 @@ For 3.2
 -------
 * Get python scripting module in a useable state
 * Be able to scale the screen to arbitrary sizes
-* use CPP to define DATA_PATH
+DONE * use CPP to define DATA_PATH
