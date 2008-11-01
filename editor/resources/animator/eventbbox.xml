@@ -1,4 +1,4 @@
-<dialog layout="GridBagLayout" size="200">
+<panel layout="GridBagLayout" size="200">
 	<vbox>
 		<gridbagconstraints
 			gridx="0"
@@ -30,4 +30,4 @@
 			<glue />
 		</hbox>
 	</vbox>
-</dialog>
+</panel>

@@ -28,9 +28,9 @@ public class SoundEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		final SwingEngine engine = new SwingEngine( "animator/eventsound.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,50);
+		((JPanel)engine.getRootComponent()).setSize(200,50);
 		
 		final JTextField soundfield = (JTextField) engine.find( "sound" );
 		final JButton soundbutton = (JButton) engine.find( "sound-button" );
@@ -47,7 +47,7 @@ public class SoundEvent implements AnimationEvent
 				}
 			});
 			
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()

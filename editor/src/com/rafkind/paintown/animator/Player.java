@@ -84,7 +84,14 @@ public final class Player{
 		
 		canvas = (JPanel) playerEditor.find( "canvas" );
 		
-		final DrawArea _drawArea = new DrawArea();
+		final DrawArea _drawArea = new DrawArea(new Lambda0(){
+                    public Object invoke(){
+                        /* yes, this should be null unless something better
+                         * can be put in the popup place
+                         */
+                        return null;
+                    }
+                });
 
                 GridBagConstraints constraints = new GridBagConstraints();
                 constraints.gridx = 0;

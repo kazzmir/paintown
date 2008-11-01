@@ -51,9 +51,9 @@ public class ProjectileEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		final SwingEngine engine = new SwingEngine( "animator/eventprojectile.xml" );
-		((JDialog)engine.getRootComponent()).setSize(250,250);
+		((JPanel)engine.getRootComponent()).setSize(250,250);
 		
 		final JSpinner atxspin = (JSpinner) engine.find( "atx" );
 		atxspin.setValue(new Integer(_at_x));
@@ -124,7 +124,7 @@ public class ProjectileEvent implements AnimationEvent
 			}
 		});
 		
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()

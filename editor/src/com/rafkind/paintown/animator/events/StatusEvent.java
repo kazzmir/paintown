@@ -26,9 +26,9 @@ public class StatusEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventstatus.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,50);
+		((JPanel)engine.getRootComponent()).setSize(200,50);
 		
 		final JComboBox statusbox = (JComboBox) engine.find( "status" );
 		statusbox.addItem(new String("ground"));
@@ -42,7 +42,7 @@ public class StatusEvent implements AnimationEvent {
 				_status = (String)statusbox.getSelectedItem();
 			}
 		});
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()

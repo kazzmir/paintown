@@ -44,9 +44,9 @@ public class AttackEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( final Animation animation ){
+	public JPanel getEditor( final Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventattack.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,150);
+		((JPanel)engine.getRootComponent()).setSize(200,150);
 		
 		final JSpinner x1spin = (JSpinner) engine.find( "x1" );
 		x1spin.setValue(new Integer(_x1));
@@ -100,7 +100,7 @@ public class AttackEvent implements AnimationEvent {
 		});
 		
 		
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()

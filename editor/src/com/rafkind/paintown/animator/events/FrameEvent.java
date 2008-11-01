@@ -48,9 +48,9 @@ public class FrameEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( final Animation animation ){
+	public JPanel getEditor( final Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventframe.xml" );
-		((JDialog)engine.getRootComponent()).setSize(350,270);
+		((JPanel)engine.getRootComponent()).setSize(350,270);
 		JPanel canvas = (JPanel)engine.find("canvas");
 		canvas.setSize(350,200);
 		
@@ -103,7 +103,7 @@ public class FrameEvent implements AnimationEvent {
 		
 		framebox.setSelectedIndex( index );
 		
-		return (JDialog)engine.getRootComponent();
+		return (JPanel) engine.getRootComponent();
 	}
 
 	private List getFiles( String path ){

@@ -9,6 +9,7 @@ import java.io.*;
 
 import org.swixml.SwingEngine;
 
+import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.Lambda1;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.exception.*;
@@ -337,8 +338,15 @@ public class CharacterAnimation{
 				if ( rightClick( e ) || e.getClickCount() == 2 ){
 					int index = eventList.locationToIndex(e.getPoint());
 					AnimationEvent event = (AnimationEvent) animation.getEvents().elementAt(index);
-					JDialog dialog = event.getEditor( animation );
-					if ( dialog != null ){
+                                        JPanel editor = event.getEditor(animation);
+                                        if ( editor != null ){
+                                            JDialog dialog = new JDialog();
+                                            dialog.setSize(editor.getSize());
+                                            Point here = animEditor.getRootComponent().getLocation();
+                                            SwingUtilities.convertPointToScreen(here, animEditor.getRootComponent());
+                                            here.setLocation(here.getX() + animEditor.getRootComponent().getWidth() / 2, here.getY() + animEditor.getRootComponent().getHeight() / 2);
+                                            dialog.setLocation(here);
+                                            dialog.getContentPane().add(editor);
 						dialog.addWindowStateListener(new WindowStateListener(){
 							public void windowStateChanged(WindowEvent e){
 								/* should use a list update event here */
@@ -382,8 +390,16 @@ public class CharacterAnimation{
 		eventAdd.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
 				AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
-				JDialog dialog = temp.getEditor( animation );
-				if ( dialog != null ){
+                                JPanel editor = temp.getEditor(animation);
+				if ( editor != null ){
+                                    JDialog dialog = new JDialog();
+                                    dialog.setSize(editor.getSize());
+                                    Point here = animEditor.getRootComponent().getLocation();
+                                    SwingUtilities.convertPointToScreen(here, animEditor.getRootComponent());
+                                    here.setLocation(here.getX() + animEditor.getRootComponent().getWidth() / 2, here.getY() + animEditor.getRootComponent().getHeight() / 2);
+                                    dialog.setLocation(here);
+
+                                    dialog.getContentPane().add(editor);
 					dialog.addWindowStateListener(new WindowStateListener(){
 						public void windowStateChanged(WindowEvent e){
 							eventList.setListData( animation.getEvents() );
@@ -407,8 +423,16 @@ public class CharacterAnimation{
 			public void actionPerformed( ActionEvent event ){
 				if( ! animation.getEvents().isEmpty()){
 					AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt( eventList.getSelectedIndex() );
-					JDialog dialog = temp.getEditor( animation );
-					if ( dialog != null ){
+                                        JPanel editor = temp.getEditor(animation);
+					if ( editor != null ){
+                                            JDialog dialog = new JDialog();
+                                            dialog.setSize(editor.getSize());
+                                            Point here = animEditor.getRootComponent().getLocation();
+                                            SwingUtilities.convertPointToScreen(here, animEditor.getRootComponent());
+                                            here.setLocation(here.getX() + animEditor.getRootComponent().getWidth() / 2, here.getY() + animEditor.getRootComponent().getHeight() / 2);
+                                            dialog.setLocation(here);
+
+                                            dialog.getContentPane().add(editor);
 						dialog.addWindowStateListener(new WindowStateListener(){
 							public void windowStateChanged(WindowEvent e){
 								eventList.setListData( animation.getEvents() );
@@ -502,7 +526,16 @@ public class CharacterAnimation{
 		controls.add((JComponent)controlEditor.getRootComponent());
 		
 		JPanel canvas = (JPanel) animEditor.find( "canvas" );
-		final DrawArea area = new DrawArea();
+		final DrawArea area = new DrawArea(new Lambda0(){
+                    public Object invoke(){
+                        if ( eventList.getSelectedIndex() != -1 ){
+                            AnimationEvent event = (AnimationEvent) eventList.getSelectedValue();
+                            return event.getEditor(animation);
+                        } else {
+                            return null;
+                        }
+                    }
+                });
                 GridBagConstraints constraints = new GridBagConstraints();
                 constraints.gridx = 0;
                 constraints.gridy = 0;

@@ -27,9 +27,9 @@ public class FaceEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventface.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,50);
+		((JPanel)engine.getRootComponent()).setSize(200,50);
 		
 		final JComboBox facebox = (JComboBox) engine.find( "face" );
 		facebox.addItem(new String("reverse"));
@@ -41,7 +41,7 @@ public class FaceEvent implements AnimationEvent {
 				_face = (String)facebox.getSelectedItem();
 			}
 		});
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()

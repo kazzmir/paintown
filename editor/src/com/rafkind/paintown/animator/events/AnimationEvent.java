@@ -9,7 +9,7 @@ import com.rafkind.paintown.Token;
 public interface AnimationEvent{
 	public void interact( Animation animation );
 	public String getName();
-	public JDialog getEditor( Animation animation );
+	public JPanel getEditor( Animation animation );
 	public Token getToken();
 	public void loadToken(Token token);
 }

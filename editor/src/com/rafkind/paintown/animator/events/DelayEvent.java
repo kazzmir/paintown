@@ -13,8 +13,7 @@ import org.swixml.SwingEngine;
 public class DelayEvent implements AnimationEvent {
 	private int _delay;
 	
-	public void loadToken(Token token)
-	{
+	public void loadToken(Token token){
 		_delay = token.readInt(0);
 	}
 	
@@ -22,14 +21,13 @@ public class DelayEvent implements AnimationEvent {
 		animation.setDelay( _delay );
 	}
 	
-	public String getName()
-	{
+	public String getName(){
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventdelay.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,50);
+		((JPanel)engine.getRootComponent()).setSize(200,50);
 		
 		final JSpinner delayspin = (JSpinner) engine.find( "delay" );
 		delayspin.setValue(new Integer(_delay));
@@ -40,7 +38,7 @@ public class DelayEvent implements AnimationEvent {
 				_delay = ((Integer)delayspin.getValue()).intValue();
 			}
 		});
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()

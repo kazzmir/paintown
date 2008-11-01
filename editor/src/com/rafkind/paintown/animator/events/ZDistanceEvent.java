@@ -26,9 +26,9 @@ public class ZDistanceEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventzdistance.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,50);
+		((JPanel)engine.getRootComponent()).setSize(200,50);
 		
 		final JSpinner dspin = (JSpinner) engine.find( "zdistance" );
 		dspin.setValue(new Integer(_d));
@@ -39,7 +39,7 @@ public class ZDistanceEvent implements AnimationEvent {
 				_d = ((Integer)dspin.getValue()).intValue();
 			}
 		});
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()

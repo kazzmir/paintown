@@ -10,14 +10,12 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class MoveEvent implements AnimationEvent
-{
+public class MoveEvent implements AnimationEvent {
 	private int _x;
 	private int _y;
 	private int _z;
 	
-	public void loadToken(Token token)
-	{
+	public void loadToken(Token token) {
 		_x = token.readInt(0);
 		_y = token.readInt(1);
 		_z = token.readInt(2);
@@ -33,38 +31,32 @@ public class MoveEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventmove.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,150);
+		((JPanel)engine.getRootComponent()).setSize(200,150);
 		
 		final JSpinner xspin = (JSpinner) engine.find( "x" );
 		xspin.setValue(new Integer(_x));
-		xspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		xspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_x = ((Integer)xspin.getValue()).intValue();
 			}
 		});
 		final JSpinner yspin = (JSpinner) engine.find( "y" );
 		yspin.setValue(new Integer(_y));
-		yspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		yspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_y = ((Integer)yspin.getValue()).intValue();
 			}
 		});
 		final JSpinner zspin = (JSpinner) engine.find( "z" );
 		zspin.setValue(new Integer(_z));
-		zspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		zspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_z = ((Integer)zspin.getValue()).intValue();
 			}
 		});
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()

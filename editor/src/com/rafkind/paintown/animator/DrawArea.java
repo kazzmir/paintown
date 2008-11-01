@@ -24,18 +24,120 @@ public final class DrawArea extends JComponent {
 	private AnimationEvent currentEvent;
 	private Animation currentAnimation;
 
-	public DrawArea(){
+	public DrawArea(final Lambda0 loader){
+            setFocusable(true);
 		currentAnimation = null;
 
 		scale = 1.0;
 
 		this.addMouseMotionListener( new MouseMotionAdapter(){
-			public void mouseDragged( MouseEvent event ){
-				x = (int)(event.getX() / getScale());
-				y = (int)(event.getY() / getScale());
-				DrawArea.this.repaint();
-			}
+                    public void mouseClicked(MouseEvent e){
+                        requestFocusInWindow();
+                    }
+
+                    public void mouseDragged( MouseEvent event ){
+                        x = (int)(event.getX() / getScale());
+                        y = (int)(event.getY() / getScale());
+                        DrawArea.this.repaint();
+                    }
 		});
+
+                class PopupHack{
+                    private Popup box;
+                    private int counter;
+                    public PopupHack(JComponent insides){
+                        Point here = DrawArea.this.getLocation();
+                        SwingUtilities.convertPointToScreen(here, DrawArea.this);
+                        box = PopupFactory.getSharedInstance().getPopup(DrawArea.this, insides, (int) here.getX(), (int) here.getY());
+                        box.show();
+                        counter = 10;
+                    }
+
+                    public void hide(){
+                        box.hide();
+                    }
+
+                    public boolean decrement(){
+                        counter -= 1;
+                        return counter <= 0;
+                    }
+
+                    public void pressed(){
+                        counter = 10;
+                    }
+                }
+
+                final PopupHack[] box = new PopupHack[1];
+
+                this.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_Q, 0, false ), "press" );
+		this.getActionMap().put( "press", new AbstractAction(){
+                    public void actionPerformed( ActionEvent event ){
+                        boolean ok = false;
+                        synchronized(box){
+                            ok = box[0] == null;
+                        }
+                        if ( ok ){
+                            /*
+                            System.out.println("Pressed a key");
+                            JButton button = new JButton("hello!");
+                            button.setSize(100,100);
+                            */
+                            JComponent input = (JComponent) loader.invoke_();
+                            if ( input == null ){
+                                return;
+                            }
+                            synchronized(box){
+                                box[0] = new PopupHack(input);
+                            }
+                            final Timer t = new Timer(500, new ActionListener(){
+                                public void actionPerformed( ActionEvent event ){
+                                }
+                            });
+                            t.addActionListener(new ActionListener(){
+                                public void actionPerformed(ActionEvent event){
+                                    synchronized(box){
+                                        if ( box[0] != null && box[0].decrement() ){
+                                            box[0].hide();
+                                            box[0] = null;
+                                            t.stop();
+                                        }
+                                    }
+                                }
+                            });
+                            t.start();
+                        } else {
+                            synchronized(box){
+                                box[0].pressed();
+                            }
+                        }
+                    }
+		});
+
+                /*
+                this.addKeyListener(new KeyListener(){
+                    private Popup box;
+                    public void keyPressed(KeyEvent e){
+                        if ( box == null ){
+                            System.out.println("Pressed a key");
+                            jbutton button = new jbutton("hello!");
+                            button.setsize(100,100);
+                            box = popupfactory.getsharedinstance().getpopup(drawarea.this, button, getx(), gety());
+                            box.show();
+                        }
+                    }
+
+                    public void keyReleased(KeyEvent e){
+                        if ( box != null ){
+                            System.out.println("Key released");
+                            box.hide();
+                            box = null;
+                        }
+                    }
+
+                    public void keyTyped(KeyEvent e){
+                    }
+                });
+                */
 	}
 
 	public double getScale(){

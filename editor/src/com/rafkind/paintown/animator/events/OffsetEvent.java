@@ -29,9 +29,9 @@ public class OffsetEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( final Animation animation ){
+	public JPanel getEditor( final Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventoffset.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,100);
+		((JPanel)engine.getRootComponent()).setSize(200,100);
 		
 		final JSpinner xspin = (JSpinner) engine.find( "x" );
 		xspin.setValue(new Integer(_x));
@@ -52,7 +52,7 @@ public class OffsetEvent implements AnimationEvent
 				animation.forceRedraw();
 			}
 		});
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken(){

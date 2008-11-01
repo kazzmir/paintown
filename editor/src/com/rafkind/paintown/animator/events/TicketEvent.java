@@ -24,8 +24,8 @@ public class TicketEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
-		JDialog j = new JDialog();
+	public JPanel getEditor( Animation animation ){
+		JPanel j = new JPanel();
 		j.setSize( 200, 50 );
 		return j;
 		/*

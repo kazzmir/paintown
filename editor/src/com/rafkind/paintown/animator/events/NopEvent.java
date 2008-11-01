@@ -10,8 +10,7 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class NopEvent implements AnimationEvent
-{	
+public class NopEvent implements AnimationEvent{	
 	public void loadToken(Token token){
 		// Nothing to be done
 	}
@@ -24,7 +23,7 @@ public class NopEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		// Not necessary
 		return null;
 	}

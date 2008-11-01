@@ -4,6 +4,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.Lambda1;
 
 import org.swixml.SwingEngine;
@@ -20,7 +21,11 @@ public class ProjectilePane {
 
 		SwingEngine engine = new SwingEngine( "animator/projectile.xml" );
 		
-		final DrawArea drawArea = new DrawArea();
+		final DrawArea drawArea = new DrawArea(new Lambda0(){
+                    public Object invoke(){
+                        return null;
+                    }
+                });
 		JPanel canvas = (JPanel) engine.find( "canvas" );
 		canvas.add( drawArea );
 

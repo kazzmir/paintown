@@ -10,14 +10,12 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class JumpEvent implements AnimationEvent
-{
+public class JumpEvent implements AnimationEvent {
 	private double _x;
 	private double _y;
 	private double _z;
 	
-	public void loadToken(Token token)
-	{
+	public void loadToken(Token token){
 		_x = token.readDouble(0);
 		_y = token.readDouble(1);
 		_z = token.readDouble(2);
@@ -26,23 +24,20 @@ public class JumpEvent implements AnimationEvent
 	public void interact( Animation animation ){
 	}
 	
-	public String getName()
-	{
+	public String getName(){
 		return getToken().toString();
 	}
 	
-	public JDialog getEditor( Animation animation ){
+	public JPanel getEditor( Animation animation ){
 		SwingEngine engine = new SwingEngine( "animator/eventjump.xml" );
-		((JDialog)engine.getRootComponent()).setSize(200,150);
+		((JPanel)engine.getRootComponent()).setSize(200,150);
 		
 		final JPanel xpanel = (JPanel) engine.find( "x" );
 		final JSpinner xspin = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
 		xpanel.add(xspin);
 		xspin.setValue(new Double(_x));
-		xspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		xspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_x = ((Double)xspin.getValue()).doubleValue();
 			}
 		});
@@ -50,10 +45,8 @@ public class JumpEvent implements AnimationEvent
 		final JSpinner yspin = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
 		ypanel.add(yspin);
 		yspin.setValue(new Double(_y));
-		yspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		yspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_y = ((Double)yspin.getValue()).doubleValue();
 			}
 		});
@@ -61,14 +54,12 @@ public class JumpEvent implements AnimationEvent
 		final JSpinner zspin = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, .01));
 		zpanel.add(zspin);
 		zspin.setValue(new Double(_z));
-		zspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		zspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_z = ((Double)zspin.getValue()).doubleValue();
 			}
 		});
-		return (JDialog)engine.getRootComponent();
+		return (JPanel)engine.getRootComponent();
 	}
 	
 	public Token getToken()
