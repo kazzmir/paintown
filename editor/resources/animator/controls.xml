@@ -12,9 +12,6 @@
 		<hbox>
 			<button text="Stop" id="stop" />
 			<button text="Play" id="play" />
-			<glue />
-		</hbox>
-		<hbox>
 			<button text="Show Token" id="token" />
 			<glue />
 		</hbox>

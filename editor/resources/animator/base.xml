@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel layout="GridBagLayout">
-	<splitpane>
+	<splitpane id="split">
 		<gridbagconstraints
 			gridx="0"
 			gridy="0"
@@ -40,17 +40,29 @@
 		<slider id="scale" minimum="1" maximum="20" />
 	</vbox>
 	<panel layout="GridBagLayout">
-		<panel id="context" border="MatteBorder(2,2,2,2,667A63)">
+		<scrollpane layout="GridBagLayout">
 			<gridbagconstraints
-				gridx="1"
-				gridy="0"
-				insets="1,1,1,1"
-				weightx="0.1"
-				weighty="0.9"
-				gridwidth="1"
-				fill="GridBagConstraints.BOTH"
-				anchor="GridBagConstraints.NORTH" />
-		</panel>
+					gridx="1"
+					gridy="0"
+					insets="1,1,1,1"
+					weightx="0.1"
+					weighty="0.9"
+					gridwidth="1"
+					fill="GridBagConstraints.BOTH"
+					anchor="GridBagConstraints.NORTH" />
+
+			<panel id="context" border="MatteBorder(2,2,2,2,667A63)">
+				<gridbagconstraints
+					gridx="0"
+					gridy="0"
+					insets="1,1,1,1"
+					weightx="0.1"
+					weighty="0.9"
+					gridwidth="1"
+					fill="GridBagConstraints.BOTH"
+					anchor="GridBagConstraints.NORTH" />
+			</panel>
+		</scrollpane>
 		<panel id="controls" border="MatteBorder(2,2,2,2,667A63)">
 			<gridbagconstraints
 				gridx="1"

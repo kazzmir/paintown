@@ -79,6 +79,18 @@ public final class Player{
 		
 		//debugSwixml(playerEditor);
 		//debugSwixml(contextEditor);
+
+                final JSplitPane split = (JSplitPane) playerEditor.find("split");
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run(){
+                        if ( split.getDividerLocation() != -1 ){
+                            split.setDividerLocation(0.6);
+                        } else {
+                            SwingUtilities.invokeLater(this);
+                        }
+                    }
+
+                });
 		
 		context = (JPanel) playerEditor.find( "context" );
 		

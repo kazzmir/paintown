@@ -44,6 +44,18 @@ public class CharacterAnimation{
 		animEditor = new SwingEngine( "animator/base.xml" );
 
 		this.save = object;
+
+                final JSplitPane split = (JSplitPane) animEditor.find("split");
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run(){
+                        if ( split.getDividerLocation() != -1 ){
+                            split.setDividerLocation(0.6);
+                        } else {
+                            SwingUtilities.invokeLater(this);
+                        }
+                    }
+
+                });
 		
 		SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
 		
