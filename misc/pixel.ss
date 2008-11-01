@@ -1,7 +1,8 @@
+#lang scheme
 ;; Show the pixel value and rgb values that loadpng thinks a sprite has
 
 (require (planet "util.ss" ("kazzmir" "allegro.plt")))
-(require (prefix image- (planet "image.ss" ("kazzmir" "allegro.plt"))))
+(require (prefix-in image- (planet "image.ss" ("kazzmir" "allegro.plt"))))
 
 (define (show picture x y)
   (easy-init 1 1 16)
@@ -12,9 +13,9 @@
     (image-destroy image))
   (easy-exit))
 
-(if (< 3 (vector-length (current-command-line-arguments)))
+(if (< (vector-length (current-command-line-arguments)) 3)
   (begin
-    (printf "pixel.ss pic.png x y"))
+    (printf "pixel.ss pic.png x y\n"))
   (let ((pic (vector-ref (current-command-line-arguments) 0))
 	(x (string->number (vector-ref (current-command-line-arguments) 1)))
 	(y (string->number (vector-ref (current-command-line-arguments) 2))))

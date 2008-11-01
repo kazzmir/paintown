@@ -1,8 +1,9 @@
+#lang scheme
 
 ;; Show the pixel value and rgb values that loadpng thinks a sprite has
 
 (require (planet "util.ss" ("kazzmir" "allegro.plt")))
-(require (prefix image- (planet "image.ss" ("kazzmir" "allegro.plt"))))
+(require (prefix-in image- (planet "image.ss" ("kazzmir" "allegro.plt"))))
 
 (define (for-each-pixel image func)
   (let yloop ((y 0))
@@ -21,7 +22,7 @@
       (rgb (image-color (string->number (list-ref rgb 1))
 			(string->number (list-ref rgb 2))
 			(string->number (list-ref rgb 3))))
-      (else 0))))
+      (else (error 'convert-value "Invalid format '~a'" v)))))
 
 (define (replace picture val1 val2)
   (printf "Replacing ~a with ~a\n" val1 val2)
@@ -34,9 +35,9 @@
     (image-save image picture)
     (image-destroy image)))
 
-(if (< 3 (vector-length (current-command-line-arguments)))
+(if (< (vector-length (current-command-line-arguments)) 3)
   (begin
-    (printf "replacepic.png val1 val2\n")
+    (printf "replace pic.png val1 val2\n")
     (printf "val: num=# or rgb=#,#,#\n"))
   (begin
     (easy-init 1 1 16)
