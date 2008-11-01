@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import javax.swing.event.*;
 import java.io.*;
 
@@ -282,7 +283,9 @@ public class Animator extends JFrame {
 				object.setPath( path );
 				try{
 					object.saveData();
+                                        doMessagePopup("Saved to " + path);
 				} catch ( Exception e ){
+                                    doMessagePopup("Could not save:" + e.getMessage());
 					e.printStackTrace();
 				}
 				return null;
@@ -344,6 +347,29 @@ public class Animator extends JFrame {
 			}
 		});
 	}
+
+        private void doMessagePopup(String message){
+            Point here = this.getLocation();
+            SwingUtilities.convertPointToScreen(here, this);
+            int x = (int)(here.getX() + this.getWidth() / 3);
+            int y = (int)(here.getY() + this.getHeight() / 3);
+            JLabel label = new JLabel(message);
+            label.setBackground(new Color(0,43,250));
+            label.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            final Popup popup = PopupFactory.getSharedInstance().getPopup(this, label, x, y );
+            popup.show();
+            final javax.swing.Timer kill = new javax.swing.Timer(1000, new ActionListener(){
+                public void actionPerformed( ActionEvent event ){
+                }
+            });
+            kill.addActionListener(new ActionListener(){
+                public void actionPerformed( ActionEvent event ){
+                    popup.hide();
+                    kill.stop();
+                }
+            });
+            kill.start();
+        }
 	
 	private File userSelectFile(){
 		JFileChooser chooser = new JFileChooser( new File( "." ) );
