@@ -84,3 +84,5 @@ Now just make the directory into a .dmg file. I used 'QuickDmg', http://tomkox.n
 Other:
 
 If the scons build fails because it cannot find hawknl/nl.h it may be because of this problem, http://scons.tigris.org/issues/show_bug.cgi?id=2121. Try the patch listed on that page, http://scons.tigris.org/nonav/issues/showattachment.cgi/448/bug2121_proposed_patch.
+
+Upgrading to scons 1.1.0 also fixes this issue.
