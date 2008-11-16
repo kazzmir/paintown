@@ -16,7 +16,7 @@ namespace Script{
         virtual ~Engine();
     };
 
-    Engine * getEngine(const std::string & name);
+    Engine * getEngine(const std::string & name, const std::string & path);
 
     class NoSuchEngine: public std::exception {
     public:

@@ -14,7 +14,7 @@ namespace Script{
     Engine::~Engine(){
     }
 
-    Engine * getEngine(const string & name){
+    Engine * getEngine(const string & name, const string & path){
 #ifdef HAVE_PYTHON
         if (name == "python"){
             return new PythonEngine();

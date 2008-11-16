@@ -13,6 +13,9 @@ class Block;
 class Heart;
 class Object;
 class Atmosphere;
+namespace Script{
+    class Engine;
+}
 
 struct Panel{
 	Bitmap * pic;
@@ -53,6 +56,14 @@ public:
 	~Scene();
 
 protected:
+
+        inline void setScript(Script::Engine const * script){
+            this->script = script;
+        }
+
+        inline const Script::Engine * getScript() const{
+            return this->script;
+        }
 
 	/* true if the scene the next block is ready */
 	bool canContinue( int x );
@@ -119,6 +130,8 @@ protected:
 	double foregroundParallax;
 
 	Atmosphere * atmosphere;
+
+        Script::Engine const * script;
 };
 
 #endif

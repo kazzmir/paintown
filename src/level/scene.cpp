@@ -13,6 +13,7 @@
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "environment/atmosphere.h"
+#include "../script.h"
 
 using namespace std;
 
@@ -75,6 +76,11 @@ atmosphere( NULL ){
 				double d;
 				*tok >> d;
 				setForegroundParallax( d );
+                        } else if ( *tok == "script" ){
+                            string kind;
+                            string scriptPath;
+                            *tok >> kind >> scriptPath;
+                            setScript(Script::getEngine(kind, scriptPath));
 			} else if ( *tok == "atmosphere" ){
 				string s;
 				*tok >> s;
