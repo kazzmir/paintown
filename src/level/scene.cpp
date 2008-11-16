@@ -42,7 +42,8 @@ current_block( NULL ),
 blockNumber( 1 ),
 backgroundParallax( 5 ),
 foregroundParallax( 1.2 ),
-atmosphere( NULL ){
+atmosphere( NULL ),
+script(NULL){
 
 	TokenReader tr( filename );
 
@@ -361,6 +362,10 @@ Scene::~Scene(){
 	if ( atmosphere ){
 		delete atmosphere;
 	}
+
+        if (script){
+            delete script;
+        }
 	
 	/*
 	for ( vector< Heart * >::iterator it = hearts.begin(); it != hearts.end(); it++ ){
