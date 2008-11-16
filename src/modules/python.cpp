@@ -17,6 +17,10 @@ path(path){
     Global::debug(1) << "Loading python.." << endl;
     Py_Initialize();
     Global::debug(1) << "Load module " << path << endl;
+    
+    /* TODO: Use PySys_GetObject() to get sys.path and then use
+     * PyString_FromStringAndSize() and PyList_Append()
+     */
     ostringstream python_string;
     python_string << "x = \"" << (Util::getDataPath() + path) << "\"; import sys; sys.path.append(x[0:x.rfind('/')])";
     Global::debug(1) << "Executing '" << python_string.str() << "'" << endl;
