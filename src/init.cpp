@@ -19,6 +19,7 @@
 #include "loadpng/loadpng.h"
 #include "util/bitmap.h"
 #include "configuration.h"
+#include "script.h"
 
 using namespace std;
 
@@ -50,6 +51,7 @@ void inc_second_counter() {
 }
 END_OF_FUNCTION( inc_second_counter );
 
+/* catch a socket being closed prematurely on unix */
 #ifndef ALLEGRO_WINDOWS
 static void handleSigPipe( int i, siginfo_t * sig, void * data ){
 }
@@ -90,6 +92,7 @@ bool Global::init( int gfx ){
 	set_volume_per_voice( 0 );
 	out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
 	
+        /* png */
 	loadpng_init();
         
         Bitmap::SCALE_X = GFX_X;
@@ -100,31 +103,41 @@ bool Global::init( int gfx ){
 
 	out<<"Install keyboard: "<<install_keyboard()<<endl;
 	out<<"Install mouse: "<<install_mouse()<<endl;
+        /* 16 bit color depth */
 	set_color_depth( 16 );
+
+        /* set up the screen */
 	out<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, sx, sy ) <<endl;
 
 	LOCK_VARIABLE( speed_counter );
 	LOCK_VARIABLE( second_counter );
 	LOCK_FUNCTION( (void *)inc_speed_counter );
 	LOCK_FUNCTION( (void *)inc_second_counter );
+        /* set up the timers */
 	out<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
 	out<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
+        /* initialize random number generator */
 	srand( time( NULL ) );
+
+        /* keep running in the background */
 	set_display_switch_mode( SWITCH_BACKGROUND );
 
+        /* close window when the X is pressed */
         LOCK_FUNCTION(close_paintown);
         set_close_button_callback(close_paintown);
 	
+        /* music */
 	atexit( &dumb_exit );
 	atexit( Network::closeAll );
 	dumb_register_packfiles();
 
 	registerSignals();
-	
+
 	Network::init();
 
 	Configuration::loadConfigurations();
 	
+        /* this mutex is used to show the loading screen while the game loads */
 	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
 	
 	out<<"-- END init --"<<endl;
