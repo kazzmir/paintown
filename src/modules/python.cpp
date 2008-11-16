@@ -1,20 +1,32 @@
+#ifdef HAVE_PYTHON
+
 #include "../script.h"
 #include "python.h"
-#ifdef HAVE_PYTHON
+#include <string>
+#include "../globals.h"
+
 #include <Python.h>
 
-PythonEngine::PythonEngine():
-Script::Engine(){
+using namespace std;
+
+PythonEngine::PythonEngine(const string & path):
+Script::Engine(),
+path(path){
+    Global::debug(0) << "Loading python.." << endl;
+    Py_Initialize();
+    Global::debug(0) << "Load module " << path << endl;
+    PyObject* module = PyImport_ImportModule(path.c_str());
+    Global::debug(0) << "Loaded " << module << endl;
 }
 
 void PythonEngine::init(){
-    Py_Initialize();
 }
 
 void PythonEngine::shutdown(){
 }
 
 PythonEngine::~PythonEngine(){
+    Py_Finalize();
 }
 
 #endif
