@@ -1,6 +1,6 @@
 #include <allegro.h>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <winalleg.h>
 #endif
 

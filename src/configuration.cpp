@@ -11,7 +11,7 @@
 
 #include <map>
 
-#ifdef WINDOWS
+#ifdef _WIN32
 #define _WIN32_IE 0x400
 #include <shlobj.h>
 #endif
@@ -205,7 +205,7 @@ int Configuration::getJump() const {
 	return jump;
 }
 
-#ifdef WINDOWS
+#ifdef _WIN32
 static string configFile(){
 	ostringstream str;
 	char path[ MAX_PATH ];

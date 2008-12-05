@@ -213,7 +213,7 @@ static void * acceptConnections( void * server_ ){
 		Util::rest( 1 );
 	}
 	
-#ifdef WINDOWS
+#ifdef _WIN32
 	Network::close( socket );
 #endif
 

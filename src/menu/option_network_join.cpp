@@ -59,6 +59,7 @@ void OptionNetworkJoin::run(bool &endGame){
 	key.poll();
 	key.wait();
 	Network::networkClient();
+	key.clear();
 	key.poll();
 	key.wait();
 }

@@ -607,7 +607,7 @@ void networkServer(){
 	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
 	try{
 		/*
-#ifdef WINDOWS
+#ifdef _WIN32
 		Network::blocking( false );
 #endif
 */
@@ -627,7 +627,7 @@ void networkServer(){
 		ChatServer chat( "server", server );
 		chat.run();
 		/*
-#ifdef WINDOWS
+#ifdef _WIN32
 		Network::blocking( true );
 #endif
 */

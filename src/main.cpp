@@ -1,4 +1,4 @@
-#ifdef WINDOWS
+#ifdef _WIN32
 #define BITMAP dummyBITMAP
 #include <windows.h>
 #undef BITMAP
