@@ -39,7 +39,7 @@ static void * handleMessages( void * arg ){
 		debug( 0 ) << "Network exception: " << n.getMessage() << endl;
 	}
 
-	debug( 0 ) << "Client input stopped" << endl;
+	debug( 1 ) << "Client input stopped" << endl;
 
 	return NULL;
 }

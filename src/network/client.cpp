@@ -195,7 +195,7 @@ static void playGame( Socket socket ){
 						/* yes, send it twice! */
 						ok.send( socket );
 						ok.send( socket );
-						Global::debug( 0 ) << "Sent ok" << endl;
+						Global::debug( 1 ) << "Sent ok" << endl;
 					} catch ( const ReturnException & e ){
 						Network::close( socket );
 					}
