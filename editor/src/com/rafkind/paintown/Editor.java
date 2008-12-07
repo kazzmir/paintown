@@ -174,7 +174,7 @@ public class Editor extends JFrame {
 					Level level = (Level) levels.get( tabbed.getSelectedComponent() );
 					File file = level.getPath();
 					if ( file == null ){
-						file = userSelectFile();
+						file = userSelectFile("Save level");
 					}
 					/* write the text to a file */
 					if ( file != null ){
@@ -195,7 +195,7 @@ public class Editor extends JFrame {
 			public void actionPerformed( ActionEvent event ){
 				if ( tabbed.getSelectedComponent() != null ){
 					Level level = (Level) levels.get( tabbed.getSelectedComponent() );
-					File file = userSelectFile();
+					File file = userSelectFile("Save level as");
 					/* write the text to a file */
 					if ( file != null ){
 						try{
@@ -309,8 +309,9 @@ public class Editor extends JFrame {
 		copy = t;
 	}
 
-	private File userSelectFile(){
+	private File userSelectFile(String title){
 		JFileChooser chooser = new JFileChooser( new File( "." ) );
+                chooser.setDialogTitle(title);
 		int returnVal = chooser.showOpenDialog( Editor.this );
 		if ( returnVal == JFileChooser.APPROVE_OPTION ){
 			return chooser.getSelectedFile();
