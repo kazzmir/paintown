@@ -91,10 +91,25 @@ void Player::gainLife( int l ){
 	lives += l;
 }
 
+void Player::debugDumpKeyCache(int level){
+    if (key_cache.size() > 0){
+        ostream & out = Global::debug(level);
+        deque< keyState >::iterator cur = key_cache.begin();
+        out << "[player] Key cache" << endl;
+        for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
+            int key = (*cur).key;
+            out << "[player]  " << keyToName(key) << endl;
+        }
+        out << "[player] end key cache" << endl;
+    }
+}
+
 void Player::fillKeyCache(){
 
+        /* get the latest key presses */
 	keyboard.poll();
 
+        /* pull off a key every once in a while */
 	if ( acts++ > GLOBAL_KEY_DELAY ){
 		// key_cache.clear();
 		/*
@@ -119,6 +134,7 @@ void Player::fillKeyCache(){
 			 * possibly be worried about it
 			 */
 			if ( careAboutKey( n ) ){
+                                /* dont repeat keys */
 				if ( ! last_key[ n ] ){
 					key_cache.push_back( keyState( n, getFacing() ) );
 					acts = 0;
@@ -126,6 +142,8 @@ void Player::fillKeyCache(){
 				new_last[ n ] = true;		
 			}
 		}
+
+                /* stores the keys pressed in the last frame */
 		last_key = new_last;
 	} else {
 		last_key.clear();
@@ -181,6 +199,11 @@ void Player::draw( Bitmap * work, int rel_x ){
 	// work->rectangle( x1, y1, x1 + 100, y1 + nameHeight + 1, Bitmap::makeColor( 255, 255, 255 ) );
 }
 
+/* animation keys are lists of lists of keys where inner lists
+ * are a set of keys that all must pressed simaltaneously.
+ * (f f (a1 a2)) means that the user must press
+ * forward, forward and then a1 and a2 at the same time.
+ */
 bool Player::combo( Animation * ani, deque< keyState >::iterator cache_cur_key, deque< keyState >::iterator end ){
 	int startFacing = (*cache_cur_key).facing;
 			
@@ -195,13 +218,13 @@ bool Player::combo( Animation * ani, deque< keyState >::iterator cache_cur_key, 
 		}
 
 		const KeyPress & kp = *k;
-		bool all_pressed = false;
+		bool all_pressed = true;
 		for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
 			int find_key = getKey( *cur_key, startFacing );
 			int key = (*cache_cur_key).key;
 			// if ( find_key == (*cache_cur_key) ){
-			if ( find_key == key ){
-				all_pressed = true;
+			if ( find_key != key ){
+				all_pressed = false;
 			}
 		}
 		if ( !all_pressed ){
@@ -312,6 +335,37 @@ bool Player::careAboutKey( int key ){
 		getKey( PAIN_KEY_ATTACK3 ) == key ||
 		getKey( PAIN_KEY_JUMP ) == key ||
 		getKey( PAIN_KEY_GRAB ) == key;
+}
+
+const char * Player::keyToName(int key){
+    if (getKey( PAIN_KEY_FORWARD ) == key){
+        return "forward";
+    }
+    if (getKey( PAIN_KEY_BACK ) == key){
+        return "backward";
+    }
+    if (getKey( PAIN_KEY_UP ) == key){
+        return "up";
+    }
+    if (getKey( PAIN_KEY_DOWN ) == key){
+        return "down";
+    }
+    if (getKey( PAIN_KEY_ATTACK1 ) == key){
+        return "attack1";
+    }
+    if (getKey( PAIN_KEY_ATTACK2 ) == key){
+        return "attack2";
+    }
+    if (getKey( PAIN_KEY_ATTACK3 ) == key){
+        return "attack3";
+    }
+    if (getKey( PAIN_KEY_JUMP ) == key){
+        return "jump";
+    }
+    if (getKey( PAIN_KEY_GRAB ) == key){
+        return "grab";
+    }
+    return "unknown";
 }
 	
 int Player::getKey( int x ){
@@ -514,6 +568,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		// unsigned int num_keys = 0;
 		map<Animation *, int > possible_animations;
 
+                debugDumpKeyCache(2);
 
 		/*
 		vector< Animation * > xv;
@@ -621,6 +676,9 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		int max = -1;
 		if ( ! possible_animations.empty() ){
 
+                        /* if its a get animation then it takes precedence
+                         * over the rest
+                         */
 			Animation * get = hasGetAnimation( possible_animations );
 			if ( get != NULL ){
 				for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
@@ -634,6 +692,10 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 				possible_animations.erase( get );
 			}
 
+                        /* if its not a get animation then choose the animation
+                         * with the longest sequence of keys required to invoke
+                         * the animation
+                         */
 			if ( getStatus() != Status_Get ){
 
 				for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
@@ -655,6 +717,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			}
 		}
 		
+                /* special cases when no animation has been chosen */
 		if ( final == NULL /* && animation_current == NULL ){ */ && getStatus() != Status_Grab ){
 			bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ];
 			if ( getMovement( "jump" ) == NULL || animation_current != getMovement( "jump" ) ){
@@ -706,7 +769,10 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			animation_current->reset();
 			world->addMessage( animationMessage() );
 
-			key_cache.clear();
+                        /* after executing a move clear the cache so that
+                         * its not repeated forever
+                         */
+                        key_cache.clear();
 			
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;

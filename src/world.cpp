@@ -399,7 +399,7 @@ void World::draw( Bitmap * work ){
 		object_z[ n->getRZ() ].push_back( n );
 	}
 
-	Global::debug( 1 ) << "World draw" << endl;
+	Global::debug( 3 ) << "World draw" << endl;
 	
 	// min_x = (int)min_x_virtual;
 	Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );

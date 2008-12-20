@@ -65,6 +65,8 @@ public:
 	
 protected:
 	void fillKeyCache();
+        void debugDumpKeyCache(int level);
+        const char * keyToName(int key);
 	bool combo( Animation * ani );
 	bool combo( Animation * ani, deque< keyState >::iterator cache_cur_key, deque< keyState >::iterator end );
 	virtual int getKey( int x, int facing );

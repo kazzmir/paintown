@@ -372,6 +372,12 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 		throw LoadException("No 'fall' movement");
 	}
 
+        if (getMovement("walk") != NULL){
+            if (getMovement("walk")->getKeys().size() > 0){
+                Global::debug(0) << "Warning: " << getName() << " should contain any keys for the 'walk' movement" << endl;
+            }
+        }
+
 	// animation_current = movements[ "idle" ];
 	animation_current = getMovement( "idle" );
 
