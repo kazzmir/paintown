@@ -60,14 +60,15 @@ def readExec( program ):
 
 def getEnvironment():
     if isCygwin():
-        env = Environment(ENV = os.environ)
+        env = Environment(ENV = os.environ, tools = ['mingw'])
         env['CXX'] = 'C:\\MinGW\\bin\\g++.exe'
         env['CC'] = 'C:\\MinGW\\bin\\gcc.exe'
+        env['AR'] = 'C:\\MinGW\\bin\\ar.exe'
 	return env
     elif useMingw():
-	return Environment( ENV = os.environ, tools = ['mingw'] )
+	return Environment(ENV = os.environ, tools = ['mingw'])
     else:
-	return Environment( ENV = os.environ )
+	return Environment(ENV = os.environ)
 
 if isWindows():
     print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"
@@ -119,10 +120,10 @@ def buildDumb(where, env):
 def buildHawknl(where, env):
 	return SConscript( "src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env' )
 
-dumbEnv = Environment( ENV = os.environ )
-hawkEnv = Environment( ENV = os.environ )
-dumbStaticEnv = Environment( ENV = os.environ )
-hawkStaticEnv = Environment( ENV = os.environ )
+dumbEnv = getEnvironment()
+hawkEnv = getEnvironment()
+dumbStaticEnv = getEnvironment()
+hawkStaticEnv = getEnvironment()
 
 if isOSX():
     dumbStaticEnv[ 'CXX' ] = 'misc/g++'
@@ -139,18 +140,22 @@ hawknl_static = buildHawknl('build-static', hawkStaticEnv)
 dumb_static = buildDumb('build-static', dumbStaticEnv)
 
 if False:
-	env.Append( CCFLAGS = '-pg' )
-	env.Append( LINKFLAGS = '-pg' )
+    env.Append( CCFLAGS = '-pg' )
+    env.Append( LINKFLAGS = '-pg' )
 
 staticEnv = env.Clone()
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
+
+env.Append( LIBS = [dumb,hawknl] )
 
 if isWindows():
     env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
     env.Append( CPPDEFINES = 'WINDOWS' )
     env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
     env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
+    # env.Append( CCFLAGS = ['-mthreads'] )
+    # env.Append( LINKFLAGS = ['-mthreads'] )
     staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
     staticEnv.Append( CPPDEFINES = 'WINDOWS' )
 else:
@@ -208,9 +213,8 @@ else:
 
     env = config.Finish()
 
-env.Append( LIBS = [dumb,hawknl] )
-
-env.Append(CCFLAGS = ['-Werror'])
+if not isWindows():
+   env.Append(CCFLAGS = ['-Werror'])
 staticEnv.Append(CCFLAGS = ['-Werror'])
 
 use = env
