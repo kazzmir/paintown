@@ -19,7 +19,7 @@ namespace Script{
         if (name == "python"){
             return new PythonEngine(path);
         }
+#endif
         throw NoSuchEngine(name);
     }
-#endif
 }

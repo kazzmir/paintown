@@ -1,4 +1,5 @@
-import os;
+import os
+# os.sep = '/'
 
 def checkPython(context):
     import distutils.sysconfig
@@ -39,6 +40,12 @@ def isOSX():
     import sys
     return "darwin" in sys.platform
 
+def isCygwin():
+    try:
+        return os.environ['CYGWIN'] == '1'
+    except:
+        return False    
+
 def useMingw():
     try:
 	return "mingw" in ARGUMENTS[ 'env' ]
@@ -52,13 +59,23 @@ def readExec( program ):
         return ""
 
 def getEnvironment():
-    if useMingw():
+    if isCygwin():
+        env = Environment(ENV = os.environ)
+        env['CXX'] = 'C:\\MinGW\\bin\\g++.exe'
+        env['CC'] = 'C:\\MinGW\\bin\\gcc.exe'
+	return env
+    elif useMingw():
 	return Environment( ENV = os.environ, tools = ['mingw'] )
     else:
 	return Environment( ENV = os.environ )
 
 if isWindows():
     print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"
+    if not isCygwin():
+        print "Cygwin not detected. If are you using cygwin set"
+	print "export CYGWIN=1"
+    else:
+        print "Cygwin detected"
     
 env = getEnvironment()
 
