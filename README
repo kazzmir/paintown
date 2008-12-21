@@ -1,89 +1,124 @@
 Paintown
-Version 3.1
+Version 3.2
 Jon Rafkind
-8/3/2008
+??/??/2009
 
-Get Source:
+Topics:
+  Get Source
+  Compilation
+    Linux
+    Windows
+    Cygwin
+    OSX
+  Install
+    Linux
+  Requirements to build
+  Thanks
 
-	If you are reading this you might already have the source. If not get it from here
-	Game engine: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/trunk
-	Data: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/data
 
-	You need the svn program, which is part of subversion - http://subversion.tigris.org/, to do this. Put the data directory inside the trunk directory, trunk/data.
+* Get Source:
 
-	As of r1124 the data/ directory is an external resource for trunk, so you only have to check out trunk and svn will automatically get data/ for you.
+  If you are reading this you might already have the source. If not get it from here
+  Game engine: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/trunk
 
-Compilation:
+  You need the svn program, which is part of subversion - http://subversion.tigris.org/, to do this. Put the data directory inside the trunk directory, trunk/data.
 
-	You can use scons or cmake. If you have scons installed type
+  As of r1124 the data/ directory is an external resource for trunk, so you only have to check out trunk and svn will automatically get data/ for you.
+  
+  Data: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/data
 
-	$ scons
+* Compilation:
+  
+  You can use scons or cmake.
 
-	If the scons build fails because it cannot find hawknl/nl.h it may be because of this problem, http://scons.tigris.org/issues/show_bug.cgi?id=2121. Try the patch listed on that page, http://scons.tigris.org/nonav/issues/showattachment.cgi/448/bug2121_proposed_patch.  
-	Upgrading to scons 1.1.0 also fixes this issue.
+  If the scons build fails because it cannot find hawknl/nl.h it may be because of this problem, http://scons.tigris.org/issues/show_bug.cgi?id=2121. Try the patch listed on that page, http://scons.tigris.org/nonav/issues/showattachment.cgi/448/bug2121_proposed_patch.  
+  Upgrading to scons 1.1.0 also fixes this issue.
 
-	If you are on windows and have visual studio and mingw but would rather
-	use mingw type
 
-	$ scons env=mingw
+  * Linux
 
-	Or you can use cmake
+    $ scons
 
-	paintown $ md b
-	paintown $ cd b
-	paintown/b $ cmakesetup ..
-	paintown/b $ make
+  * Windows
+	
+    To use mingw type
 
-	The executable will end up in bin/paintown.exe
+      $ scons env=mingw
 
-	To build a statically linked binary give the 'static' target
-	$ scons static
+    Otherwise
 
-Install:
-	$ ./install.sh -d <data> -b <bin>
+      $ scons
 
-	Copy the data directory to <data> and put a script in <bin>.
-	Default <data> directory is /usr/share/games/paintown
-	Default <bin> directory is /usr/games
+    Or you can use cmake
 
-	The script will prompt you to input these directories if you do not
-	give -d and/or -b.
+      paintown $ md b
+      paintown $ cd b
+      paintown/b $ cmakesetup ..
+      paintown/b $ make
 
-Requirements:
+    The executable will end up in bin/paintown.exe
 
-	You need the following things to compile Paintown:
-	* gcc - http://www.gnu.org/software/gcc/
-	Either * scons - http://www.scons.org
-	       * python - http://www.python.org
-        Or
-	       * cmake - http://www.cmake.org
-	* Allegro - 4.1 or higher. http://alleg.sf.net
-	* zlib - http://www.zlib.net/
-	* libpng - http://www.libpng.org/pub/png/libpng.html
-	* pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
-	* freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
-	* Python headers. Use 'python-dev' on ubuntu.
+    To build a statically linked binary give the 'static' target
+    $ scons static
 
-Thanks:
-	Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	
-	DUMB - http://dumb.sf.net
-	loadpng - http://tjaden.strangesoft.net/loadpng/
+  * Cygwin
+    
+    Don't use cygwin's tools. Install python/scons/mingw for regular windows and use that.
+    $ c:\progra~1\Python24\Scripts\scons
 
-How to build a .dmg file of paintown:
+  * OSX
+    $ scons
 
-My .dmg files don't autostart, they are basically just container files for the binary and data. But no matter, to make the .dmg my way first compile paintown statically.
+    How to build a .dmg file of paintown:
 
-$ scons static
+    My .dmg files don't autostart, they are basically just container files for the binary and data. But no matter, to make the .dmg my way first compile paintown statically.
 
-Which should produce 'paintown-static'. Then create a folder for paintown to put the binary and the data.
+      $ scons static
 
-$ mkdir paintown-x.x # x is the version
-$ cp paintown-static paintown-x.x/paintown # rename it just to 'paintown'
-$ cd paintown-x.x
-$ svn export https://paintown.svn.sf.net/svnroot/paintown/data # get a fresh checkout of the data
+    Which should produce 'paintown-static'. Then create a folder for paintown to put the binary and the data.
 
-Now just make the directory into a .dmg file. I used 'QuickDmg', http://tomkox.net. Drag and drop the folder onto QuickDmg and it will produce a .dmg file.
+      $ mkdir paintown-x.x # x is the version
+      $ cp paintown-static paintown-x.x/paintown # rename it just to 'paintown'
+      $ cd paintown-x.x
+      $ svn export https://paintown.svn.sf.net/svnroot/paintown/data # get a fresh checkout of the data
+
+   Now just make the directory into a .dmg file. I used 'QuickDmg', http://tomkox.net. Drag and drop the folder onto QuickDmg and it will produce a .dmg file.
+
+* Install:
+
+  * Linux
+
+  $ ./install.sh -d <data> -b <bin>
+
+  Copy the data directory to <data> and put a script in <bin>.
+  Default <data> directory is /usr/share/games/paintown
+  Default <bin> directory is /usr/games
+
+  The script will prompt you to input these directories if you do not
+  give -d and/or -b.
+
+  * Anything other than Linux
+    Copy the binary and data somewhere. Otherwise use the prepackaged installers.
+
+* Requirements to build:
+
+  You need the following things to compile Paintown:
+    * gcc - http://www.gnu.org/software/gcc/
+    Either * scons - http://www.scons.org
+           * python - http://www.python.org
+    Or
+           * cmake - http://www.cmake.org
+    * Allegro - 4.1 or higher. http://alleg.sf.net
+    * zlib - http://www.zlib.net/
+    * libpng - http://www.libpng.org/pub/png/libpng.html
+    * pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
+    * freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
+    * Python headers. Use 'python-dev' on ubuntu.
+
+* Thanks:
+  Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	
+  DUMB - http://dumb.sf.net
+  loadpng - http://tjaden.strangesoft.net/loadpng/
+
 
 Other:
-
-
