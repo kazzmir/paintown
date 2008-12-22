@@ -82,6 +82,7 @@
 				<glue size="1" />
 			</hbox>
 		</vbox>
+		<!--
 		<glue size="1" />
 		<vbox>
 			<label text="Animations" />
@@ -97,5 +98,6 @@
 				<glue size="1" />
 			</hbox>
 		</vbox>
+		-->
 	</vbox>
 </panel>

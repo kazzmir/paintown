@@ -13,7 +13,7 @@ import com.rafkind.paintown.Lambda1;
 
 public abstract class AnimatedObject extends BasicObject {
 	
-	private Vector animations = new Vector();
+	private Vector<Animation> animations = new Vector<Animation>();
 	private List updates;
 
 	public AnimatedObject( String name ){
@@ -56,7 +56,7 @@ public abstract class AnimatedObject extends BasicObject {
 		animations.add( a );
 	}
 
-	public Vector getAnimations(){
+	public Vector<Animation> getAnimations(){
 		return animations;
 	}
 

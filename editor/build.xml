@@ -4,8 +4,8 @@
 		<mkdir dir="classes" />
 		<javac srcdir="src"
 		       destdir="classes"
-		       target="1.4"
-		       source="1.4"
+		       target="1.5"
+		       source="1.5"
 		       includeAntruntime="false"
 		       debug="true"
 		       fork="true">

@@ -26,6 +26,44 @@ public final class Player{
         return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField, character );
     }
 
+    private JPanel createAnimation(){
+        final JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+
+        final DrawArea drawArea = new DrawArea(new Lambda0(){
+            public Object invoke(){
+                /* yes, this should be null unless something better
+                 * can be put in the popup place
+                 */
+                return null;
+            }
+        });
+
+        panel.add(drawArea, constraints);
+
+        /*
+        final JLabel scaleNum = (JLabel) playerEditor.find( "scale-num" );
+        scaleNum.setText( "Scale: " + _drawArea.getScale() );
+        final JSlider scale = (JSlider) playerEditor.find( "scale" );
+        scale.setValue( (int)(_drawArea.getScale() * 5.0) );
+        scale.addChangeListener( new ChangeListener(){
+            public void stateChanged( ChangeEvent e ){
+                _drawArea.setScale( scale.getValue() / 5.0 );
+                scaleNum.setText( "Scale: " + _drawArea.getScale() );
+            }
+        });
+        */
+
+        return panel;
+    }
+
     public Player(final Animator animator, final CharacterStats character){
         this.character = character;
 
@@ -50,14 +88,28 @@ public final class Player{
         });
 
         final JPanel context = (JPanel) playerEditor.find( "context" );
+        final JTabbedPane animations = (JTabbedPane) playerEditor.find("animations");
 
-        final JPanel canvas = (JPanel) playerEditor.find( "canvas" );
+        final JButton addAnimation = (JButton) playerEditor.find("add-animation");
+        addAnimation.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                // animations.add("New animation", createAnimation());
+                animations.add("New animation", new CharacterAnimation(character, new Animation()));
+            }
+        });
+
+        for (Animation animation : character.getAnimations()){
+            animations.add(animation.getName(), new CharacterAnimation(character, animation));
+	}
+
+        /*
+        // final JPanel canvas = (JPanel) playerEditor.find( "canvas" );
 
         final DrawArea _drawArea = new DrawArea(new Lambda0(){
             public Object invoke(){
-                /* yes, this should be null unless something better
+                / * yes, this should be null unless something better
                  * can be put in the popup place
-                 */
+                 * /
                 return null;
             }
         });
@@ -70,7 +122,7 @@ public final class Player{
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.NORTHWEST;
 
-        canvas.add(_drawArea, constraints);
+        // canvas.add(_drawArea, constraints);
 
         final JLabel scaleNum = (JLabel) playerEditor.find( "scale-num" );
         scaleNum.setText( "Scale: " + _drawArea.getScale() );
@@ -82,6 +134,7 @@ public final class Player{
                 scaleNum.setText( "Scale: " + _drawArea.getScale() );
             }
         });
+        */
 
         nameField = (JTextField) contextEditor.find( "name" );
 
@@ -321,6 +374,7 @@ public final class Player{
             }
         };
 
+        /*
         final JList animList = (JList) contextEditor.find( "anims");
         animList.setListData( character.getAnimations() );
 
@@ -381,7 +435,9 @@ public final class Player{
                 animList.setListData( character.getAnimations() );
             }
         });
+        */
 
+        /*
         final JPanel controls = (JPanel) playerEditor.find( "controls" );
 
         final JButton displayToken = (JButton) controlEditor.find( "token" );
@@ -423,6 +479,7 @@ public final class Player{
         });
 
         controls.add((JComponent)controlEditor.getRootComponent());
+        */
 
         context.add((JComponent)contextEditor.getRootComponent());
     }
