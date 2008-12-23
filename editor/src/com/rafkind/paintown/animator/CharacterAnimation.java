@@ -11,6 +11,7 @@ import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.Lambda1;
+import com.rafkind.paintown.Lambda2;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.exception.*;
 import com.rafkind.paintown.RelativeFileChooser;
@@ -29,19 +30,23 @@ import java.util.ArrayList;
 
 public class CharacterAnimation extends JPanel {
 
+    /*
     private SwingEngine animEditor;
     private JTextField nameField;
     private BasicObject save;
+    */
 
+    /*
     public SpecialPanel getEditor(){	
         return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField, save );
     }
+    */
 
     private boolean rightClick( MouseEvent event ){
         return event.getButton() == MouseEvent.BUTTON3;
     }
 
-    public CharacterAnimation( final AnimatedObject object, final Animation animation ){
+    public CharacterAnimation(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
         this.setLayout(new GridBagLayout());
 
         GridBagConstraints animConstraints = new GridBagConstraints();
@@ -53,10 +58,10 @@ public class CharacterAnimation extends JPanel {
         animConstraints.fill = GridBagConstraints.BOTH;
         animConstraints.anchor = GridBagConstraints.NORTHWEST;
 
-        animEditor = new SwingEngine( "animator/animation.xml" );
+        final SwingEngine animEditor = new SwingEngine( "animator/animation.xml" );
         this.add((JPanel) animEditor.getRootComponent(), animConstraints);
 
-        this.save = object;
+        // this.save = object;
 
         final JSplitPane split = (JSplitPane) animEditor.find("split");
         SwingUtilities.invokeLater(new Runnable(){
@@ -78,21 +83,25 @@ public class CharacterAnimation extends JPanel {
 
         JPanel context = (JPanel) animEditor.find( "context" );
 
-        nameField = (JTextField) contextEditor.find( "name" );
+        final JTextField nameField = (JTextField) contextEditor.find( "name" );
 
         nameField.setText( animation.getName() );
 
         nameField.getDocument().addDocumentListener(new DocumentListener(){
+            final CharacterAnimation self = CharacterAnimation.this;
             public void changedUpdate(DocumentEvent e){
-                animation.setName( nameField.getText() );
+                animation.setName(nameField.getText());
+                changeName.invoke_(self, nameField.getText());
             }
 
             public void insertUpdate(DocumentEvent e){
-                animation.setName( nameField.getText() );
+                animation.setName(nameField.getText());
+                changeName.invoke_(self, nameField.getText());
             }
 
             public void removeUpdate(DocumentEvent e){
-                animation.setName( nameField.getText() );
+                animation.setName(nameField.getText());
+                changeName.invoke_(self, nameField.getText());
             }
         });
 

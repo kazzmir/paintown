@@ -90,16 +90,23 @@ public final class Player{
         final JPanel context = (JPanel) playerEditor.find( "context" );
         final JTabbedPane animations = (JTabbedPane) playerEditor.find("animations");
 
+        final Lambda2 changeName = new Lambda2(){
+            public Object invoke(Object self, Object name){
+                animations.setTitleAt(animations.indexOfComponent((JComponent) self), (String) name);
+                return this;
+            }
+        };
+
         final JButton addAnimation = (JButton) playerEditor.find("add-animation");
         addAnimation.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
                 // animations.add("New animation", createAnimation());
-                animations.add("New animation", new CharacterAnimation(character, new Animation()));
+                animations.add("New animation", new CharacterAnimation(character, new Animation(), changeName));
             }
         });
 
         for (Animation animation : character.getAnimations()){
-            animations.add(animation.getName(), new CharacterAnimation(character, animation));
+            animations.add(animation.getName(), new CharacterAnimation(character, animation, changeName));
 	}
 
         /*
@@ -364,15 +371,17 @@ public final class Player{
             }
         });
 
+        /*
         final Lambda1 editAnimation = new Lambda1(){
             public Object invoke( Object i ){
                 int index = ((Integer) i).intValue();
                 Animation temp = character.getAnimation( index );
-                CharacterAnimation edit = new CharacterAnimation( character, temp );
-                animator.addNewTab( edit.getEditor(), temp.getName());
+                CharacterAnimation edit = new CharacterAnimation(character, temp, changeName);
+                animator.addNewTab(edit.getEditor(), temp.getName());
                 return null;
             }
         };
+        */
 
         /*
         final JList animList = (JList) contextEditor.find( "anims");
