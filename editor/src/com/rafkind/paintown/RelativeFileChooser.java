@@ -21,7 +21,7 @@ public class RelativeFileChooser extends JDialog {
 
 	public RelativeFileChooser( JFrame frame, File start ){
 		super( frame, "Choose a file", true );
-		this.setSize( 300, 300 );
+		this.setSize( 300, 400 );
 
 		SwingEngine engine = new SwingEngine( "relative.xml" );
 		JPanel panel = (JPanel) engine.getRootComponent();

@@ -1,30 +1,65 @@
 <panel layout="GridBagLayout">
-	<vbox>
+	<label text="Choose a file">
 		<gridbagconstraints
 			gridx="0"
 			gridy="0"
 			weightx="1"
-			weighty="1"
+			weighty="0"
 			gridheight="1"
 			anchor="GridBagConstraints.NORTHWEST"
 			fill="GridBagConstraints.HORIZONTAL"
 			/>
-		<label text="Choose a file" />
-		<hbox>
-			<label text="Path" />
-			<!-- TODO: change some colors -->
-			<textfield editable="false" id="path" />
-		</hbox>
-		<button id="up" text="Back" />
-		<scrollpane minimumsize="100,200">
-			<list id="files" />
-		</scrollpane>
+	</label>
+	<hbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="1"
+			weightx="1"
+			weighty="0"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.HORIZONTAL"
+			/>
+		<label text="Path" />
+		<!-- TODO: change some colors -->
+		<textfield editable="false" id="path" />
+	</hbox>
+	<button id="up" text="Back">
+		<gridbagconstraints
+			gridx="0"
+			gridy="2"
+			weightx="1"
+			weighty="0"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.NONE"
+			/>
+	</button>
+	<scrollpane minimumsize="100,200">
+		<gridbagconstraints
+			gridx="0"
+			gridy="3"
+			weightx="1"
+			weighty="0.7"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.BOTH"
+			/>
+		<list id="files" />
+	</scrollpane>
+	<hbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="4"
+			weightx="1"
+			weighty="0.1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.HORIZONTAL"
+			/>
+		<button id="ok" text="Choose" />
+		<glue size="1" />
+		<button id="cancel" text="Cancel" />
 		<glue />
-		<hbox>
-			<button id="ok" text="OK" />
-			<glue size="1" />
-			<button id="cancel" text="Cancel" />
-			<glue />
-		</hbox>
-	</vbox>
+	</hbox>
 </panel>
