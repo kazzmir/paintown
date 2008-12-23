@@ -61,17 +61,15 @@ public class CharacterAnimation extends JPanel {
         final JSplitPane split = (JSplitPane) animEditor.find("split");
         SwingUtilities.invokeLater(new Runnable(){
             public void run(){
-                split.setDividerLocation(0.6);
-                /*
-                if (split.getDividerLocation() != -1){
+                /* hack to set the divider location */
+                if (split.getWidth() != 0){
                     split.setDividerLocation(0.6);
                 } else {
                     SwingUtilities.invokeLater(this);
                 }
-                */
             }
-
         });
+        // split.setDividerLocation(0.6);
 
         // SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
         SwingEngine contextEditor = animEditor;
