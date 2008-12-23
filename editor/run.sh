@@ -5,6 +5,7 @@ case "$1" in
 	java -classpath editor.jar com.rafkind.paintown.animator.Animator
 	;;
      "")
+     	echo "To run the character animator: ./run.sh animator"
 	java -jar editor.jar -client
 	;;
 esac
