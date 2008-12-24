@@ -101,7 +101,10 @@ public final class Player{
         addAnimation.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
                 // animations.add("New animation", createAnimation());
-                animations.add("New animation", new CharacterAnimation(character, new Animation(), changeName));
+                Animation animation = new Animation();
+                character.addAnimation(animation);
+                new Thread(animation).start();
+                animations.add("New animation", new CharacterAnimation(character, animation, changeName));
             }
         });
 
