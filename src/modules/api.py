@@ -1,7 +1,6 @@
 class Engine:
     def __init__(self):
         self.world = None
-        print "Api engine init"
         pass
 
     def levelLength(self):
@@ -11,7 +10,6 @@ class Engine:
 
     def createWorld(self, world):
         self.world = world
-        print "Create new world = " + str(world)
 
 engines = []
 def register(engine):
