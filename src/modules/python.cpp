@@ -14,12 +14,12 @@ using namespace std;
 
 /* get the length of the level */
 static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
+
     PyObject * cobject;
 
     if (PyArg_ParseTuple(args, "O", &cobject)){
         World * world = (World*) PyCObject_AsVoidPtr(cobject);
         int length = world->levelLength();
-        Py_DECREF(cobject);
         return Py_BuildValue("i", length);
     }
 
@@ -33,14 +33,16 @@ static PyMethodDef PaintownModule[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
+/* initialize the intepreter and set up the module paths */
 PythonEngine::PythonEngine(const string & path):
 Script::Engine(),
 path(path){
     Global::debug(1) << "Loading python.." << endl;
     Py_Initialize();
+
     Py_InitModule("paintown", PaintownModule);
     Global::debug(1) << "Load module " << path << endl;
-    
+
     /* TODO: Use PySys_GetObject() to get sys.path and then use
      * PyString_FromStringAndSize() and PyList_Append()
      */
@@ -59,6 +61,7 @@ void PythonEngine::init(){
 void PythonEngine::shutdown(){
 }
 
+/* called when for each logic frame */
 void PythonEngine::tick(){
     PyObject * api_module = PyImport_ImportModule("api");
     if (api_module == NULL){
@@ -79,13 +82,17 @@ void PythonEngine::tick(){
 }
         
 void PythonEngine::createWorld(const World & world){
+
+    /* Load the user module so that it can register itself */
     Global::debug(1) << "Loading module " << module << endl;
-    PyObject * python_module = PyImport_ImportModule(module.c_str());
-    Global::debug(1) << "Loaded " << python_module << endl;
-    if (python_module == NULL){
+    PyObject * user_module = PyImport_ImportModule(module.c_str());
+    Global::debug(1) << "Loaded " << user_module << endl;
+    if (user_module == NULL){
         PyErr_Print();
     }
-
+    Py_DECREF(user_module);
+    
+    /* call our api to create the world */
     PyObject * api_module = PyImport_ImportModule("api");
     if (api_module == NULL){
         PyErr_Print();
