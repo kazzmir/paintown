@@ -18,8 +18,10 @@ static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
     if (PyArg_ParseTuple(args, "O", &cobject)){
         World * world = (World*) PyCObject_AsVoidPtr(cobject);
         int length = world->levelLength();
+        Py_DECREF(cobject);
         return Py_BuildValue("i", length);
     }
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -71,6 +73,7 @@ void PythonEngine::createWorld(const World & world){
     if (create == NULL){
         PyErr_Print();
     }
+    Py_DECREF(api_module);
     PyObject * cobject = PyCObject_FromVoidPtr((void*) &world, NULL);
     if (cobject == NULL){
         PyErr_Print();
@@ -82,6 +85,7 @@ void PythonEngine::createWorld(const World & world){
         Py_DECREF(result);
     }
     Py_DECREF(create);
+    Py_DECREF(cobject);
 
     /*
     ostringstream python_string;
