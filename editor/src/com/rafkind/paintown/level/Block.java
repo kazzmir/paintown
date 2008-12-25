@@ -14,6 +14,7 @@ import java.util.Comparator;
 public class Block{
 
 	private int length;
+        private int id;
 	private List objects;
 	private boolean enabled = true;
 	private boolean highlight = false;
@@ -25,6 +26,14 @@ public class Block{
 		if ( l != null ){
 			length = l.readInt( 0 );	
 		}
+
+                Token tid = token.findToken("id");
+                if (tid != null){
+                    id = tid.readInt(0);
+                    Level.checkBlockId(id);
+                } else {
+                    id = Level.nextBlockId();
+                }
 
 		Token f = token.findToken( "finish" );
 		if ( f != null ){
@@ -163,6 +172,7 @@ public class Block{
 		Token block = new Token();
 		block.addToken( new Token( "block" ) );
 		// block.addToken( new Token().addToken( new Token( "length" ) ).addToken( new Token( String.valueOf( getLength() ) ) ) );
+		block.addToken(new String[]{"id", String.valueOf(getId())});
 		block.addToken( new String[]{ "length", String.valueOf( getLength() ) } );
 		if ( isContinuous() ){
 			block.addToken( new String[]{ "continuous" } );
@@ -197,4 +207,12 @@ public class Block{
 	public int getLength(){
 		return length;
 	}
+
+        public int getId(){
+            return id;
+        }
+
+        public void setId(int id){
+            this.id = id;
+        }
 }

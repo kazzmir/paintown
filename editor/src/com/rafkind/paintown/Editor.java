@@ -1409,12 +1409,14 @@ public class Editor extends JFrame {
 				final JTextField length = (JTextField) engine.find( "length" );
 				final JTextField finish = (JTextField) engine.find( "finish" );
 				final JCheckBox isFinish = (JCheckBox) engine.find( "is-finish" );
+                                final JSpinner id = (JSpinner) engine.find("id");
 				final JCheckBox isContinuous = (JCheckBox) engine.find( "is-continuous" );
 				final JButton save = (JButton) engine.find( "save" );
 				final JButton close = (JButton) engine.find( "close" );
 
 				length.setText( String.valueOf( block.getLength() ) );
 				isContinuous.setSelected( block.isContinuous() );
+                                id.setValue(block.getId());
 				isFinish.setSelected( block.isFinish() );
 				finish.setEnabled( block.isFinish() );
 				finish.setText( String.valueOf( block.getFinish() ) );
@@ -1427,6 +1429,7 @@ public class Editor extends JFrame {
 				save.addActionListener( new AbstractAction(){
 					public void actionPerformed( ActionEvent event ){
 						block.setLength( Integer.parseInt( length.getText() ) );
+                                                block.setId(((Integer) id.getValue()).intValue());
 						if ( isFinish.isSelected() ){
 							block.setFinish( Integer.parseInt( finish.getText() ) );
 						} else {

@@ -36,6 +36,7 @@ public class Level{
 	private List blocks;
 
         private static int nextId = 0;
+        private static int nextBlockId = 0;
 
         public static int nextId(){
             nextId += 1;
@@ -50,6 +51,21 @@ public class Level{
 
         public static void resetId(){
             nextId = 0;
+        }
+
+        public static int nextBlockId(){
+            nextBlockId += 1;
+            return nextBlockId;
+        }
+
+        public static void checkBlockId(int i){
+            if (i > nextBlockId){
+                nextBlockId = i;
+            }
+        }
+
+        public static void resetBlockId(){
+            nextBlockId = 0;
         }
 
 	private class Panel{
@@ -362,6 +378,7 @@ public class Level{
 		this.blocks = new ArrayList();
 
                 resetId();
+                resetBlockId();
 	}
 
 	private void load( File f ) throws LoadException {

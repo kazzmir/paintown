@@ -9,9 +9,13 @@
 			anchor="GridBagConstraints.NORTHWEST"
 			fill="GridBagConstraints.HORIZONTAL"
 			/>
-		<hbox>				
+		<hbox>
 			<label text="Length:" />
 			<textfield size="10" id="length" />
+		</hbox>
+		<hbox>
+			<label text="Id:" />
+			<spinner id="id" />
 		</hbox>
 		<hbox>
 			<checkbox id="is-finish" />
