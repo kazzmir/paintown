@@ -1,8 +1,10 @@
-#include "script.h"
-#include <string>
 #ifdef HAVE_PYTHON
 #include "modules/python.h"
 #endif
+
+#include "script.h"
+#include "globals.h"
+#include <string>
 
 using namespace std;
 
@@ -20,7 +22,9 @@ namespace Script{
             return new PythonEngine(path);
         }
 #endif
-        throw NoSuchEngine(name);
+        Global::debug(0) << "*Warning* no such engine '" << name << "' for path " << path << endl;
+        return new NoEngine();
+        // throw NoSuchEngine(name);
     }
 
     NoEngine::NoEngine():Engine(){
@@ -36,6 +40,9 @@ namespace Script{
     }
 
     void NoEngine::destroyWorld(const World & world){
+    }
+            
+    void NoEngine::tick(){
     }
 
     NoEngine::~NoEngine(){

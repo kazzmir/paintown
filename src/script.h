@@ -17,6 +17,7 @@ namespace Script{
 
         virtual void createWorld(const World & world) = 0;
         virtual void destroyWorld(const World & world) = 0;
+        virtual void tick() = 0;
 
         virtual ~Engine();
     };
@@ -37,6 +38,7 @@ namespace Script{
 
             virtual void createWorld(const World & world);
             virtual void destroyWorld(const World & world);
+            virtual void tick();
 
             virtual ~NoEngine();
     };

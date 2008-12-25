@@ -3,9 +3,9 @@
 
 #ifdef HAVE_PYTHON
 
+#include <Python.h>
 #include "../script.h"
 #include <string>
-#include <Python.h>
 
 class World;
 
@@ -17,6 +17,7 @@ public:
     virtual void shutdown();
     virtual void createWorld(const World & world);
     virtual void destroyWorld(const World & world);
+    virtual void tick();
 
     virtual ~PythonEngine();
 protected:

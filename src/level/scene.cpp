@@ -182,7 +182,11 @@ script(NULL){
 }
         
 const int Scene::totalLength() const {
-    return scene_length;
+    int blength = 0;
+    for ( deque< Block * >::const_iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
+        blength += (*it)->getLength();
+    }
+    return blength;
 }
 
 void Scene::calculateLength(){

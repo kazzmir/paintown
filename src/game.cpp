@@ -199,6 +199,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 				while ( runCounter >= 1.0 ){
 					draw = true;
 					world.act();
+                                        world.getEngine()->tick();
 					runCounter -= 1.0;
 
 					for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){

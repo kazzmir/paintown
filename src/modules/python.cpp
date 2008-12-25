@@ -12,6 +12,7 @@
 
 using namespace std;
 
+/* get the length of the level */
 static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
     PyObject * cobject;
 
@@ -26,6 +27,7 @@ static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
     return Py_None;
 }
 
+/* methods that the python world use to talk to the paintown engine */
 static PyMethodDef PaintownModule[] = {
     {"levelLength",  paintown_levelLength, METH_VARARGS, "Register a paintown engine."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
@@ -55,6 +57,25 @@ void PythonEngine::init(){
 }
 
 void PythonEngine::shutdown(){
+}
+
+void PythonEngine::tick(){
+    PyObject * api_module = PyImport_ImportModule("api");
+    if (api_module == NULL){
+        PyErr_Print();
+    }
+    PyObject * create = PyObject_GetAttrString(api_module, "tick");
+    if (create == NULL){
+        PyErr_Print();
+    }
+    Py_DECREF(api_module);
+    PyObject * result = PyObject_CallFunction(create, NULL);
+    if (result == NULL){
+        PyErr_Print();
+    } else {
+        Py_DECREF(result);
+    }
+    Py_DECREF(create);
 }
         
 void PythonEngine::createWorld(const World & world){

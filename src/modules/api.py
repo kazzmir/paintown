@@ -8,6 +8,9 @@ class Engine:
         assert(self.world != None)
         return paintown.levelLength(self.world)
 
+    def tick(self):
+        pass
+
     def createWorld(self, world):
         self.world = world
 
@@ -18,6 +21,10 @@ def register(engine):
 def createWorld(world):
     for engine in engines:
         engine.createWorld(world)
+
+def tick():
+    for engine in engines:
+        engine.tick()
 
 """
 >> Necessary things to support:
