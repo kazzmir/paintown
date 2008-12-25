@@ -17,6 +17,14 @@ public:
 		length = l;
 	}
 
+        inline const int getId() const {
+            return id;
+        }
+
+        inline void setId(const int id){
+            this->id = id;
+        }
+
 	inline const int getLength() const {
 		return length;
 	}
@@ -48,6 +56,7 @@ public:
 
 protected:
 	int length;
+        int id;
 	bool wait;
 
 	vector< BlockObject * > objects;

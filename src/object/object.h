@@ -152,12 +152,22 @@ public:
 	virtual Network::Message movedMessage();
 	virtual Network::Message collidedMessage();
 
+        /* these are network ids */
 	virtual inline void setId( unsigned int id ){
 		this->id = id;
 	}
 
 	virtual inline unsigned const int getId() const {
 		return this->id;
+	}
+
+        /* regular ids */
+        virtual inline void setObjectId( unsigned int id ){
+		this->objectId = id;
+	}
+
+	virtual inline unsigned const int getObjectId() const {
+		return this->objectId;
 	}
 
 	/* getRY:
@@ -382,7 +392,11 @@ private:
 	/* the sound played when this object gets hit */
 	Sound hit;
 
+        /* network id */
 	unsigned int id;
+
+        /* this id is assigned by the level */
+        int objectId;
 };
 
 #endif

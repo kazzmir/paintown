@@ -22,6 +22,7 @@ static const string dataPath( const string & str ){
 */
 	
 Block::Block( Token * tok ) throw ( LoadException ):
+id(-1),
 finished( -1 ),
 continuous( false ){
 
@@ -40,6 +41,10 @@ continuous( false ){
 				setLength( l );
 			} else if ( *current == "wait" ){
 				*current >> wait;
+			} else if ( *current == "id" ){
+                            int id;
+                            *current >> id;
+                            setId(id);
 			} else if ( *current == "continuous" ){
 				setContinuous( true );
 			} else if ( *current == "finish" ){

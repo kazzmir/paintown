@@ -102,6 +102,14 @@ public:
 		coords_z = z;
 	}
 
+        inline void setId(const int id){
+            this->id = id;
+        }
+
+        inline const int getId() const{
+            return id;
+        }
+
 	~BlockObject();
 
 protected:
@@ -121,6 +129,7 @@ protected:
 	int health;
 
 	int coords_x, coords_z;
+        int id;
 
 	string stimulationType;
 	int stimulationValue;

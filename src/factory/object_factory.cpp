@@ -48,6 +48,7 @@ Object * ObjectFactory::makeItem( Item * item, BlockObject * block ){
 	block->getCoords( x, z );
 	item->setX( x );
 	item->setZ( z );
+        item->setObjectId(block->getId());
 	return item;
 
 }
@@ -57,6 +58,7 @@ Object * ObjectFactory::makeActor( Actor * ret, BlockObject * block ){
 	block->getCoords( x, z );
 	ret->setX( x );
 	ret->setZ( z );
+        ret->setObjectId(block->getId());
 
 	return ret;
 }
@@ -73,6 +75,7 @@ Object * ObjectFactory::makeCat( Cat * ret, BlockObject * block ){
 Object * ObjectFactory::makeNetworkCharacter( NetworkCharacter * guy, BlockObject * block ){
 
 	guy->setMap( block->getMap() );
+        guy->setObjectId(block->getId());
 
 	return guy;
 }
@@ -91,6 +94,7 @@ Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 	ret->setMap( block->getMap() );
 	ret->setMaxHealth( block->getHealth() );
 	ret->setHealth( block->getHealth() );
+        ret->setObjectId(block->getId());
 
 	hearts.push_back( ret->getHeart() );
 
