@@ -50,6 +50,7 @@ public class ItemEditor implements PropertyEditor {
 		final JTextField y = (JTextField) engine.find( "y" );
 		y.setText( String.valueOf( item.getY() ) );
 		final JSpinner block = (JSpinner) engine.find( "block" );
+                final JSpinner id = (JSpinner) engine.find("id");
 		final JTextField path = (JTextField) engine.find( "path" );
 		path.setText( item.getPath() );
 		path.setEditable( false );
@@ -65,6 +66,8 @@ public class ItemEditor implements PropertyEditor {
 			healthLabel.setEnabled( true );
 			healthSpinner.setEnabled( true );
 		}
+                
+                id.setValue(item.getId());
 
 		healthRadio.addActionListener( new AbstractAction(){
 			public void actionPerformed( ActionEvent event ){
@@ -110,6 +113,7 @@ public class ItemEditor implements PropertyEditor {
 				item.setName( name.getText() );
 				item.setX( xInt );
 				item.setY( yInt );
+                                item.setId(((Integer) id.getValue()).intValue());
 				Block b = getBlock( ((Integer) block.getValue()).intValue(), level );
 				Block old = level.findBlock( item );
 				if ( b != null && old != null && b != old ){

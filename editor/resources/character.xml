@@ -51,6 +51,10 @@
 			<label text="Map" />
 			<spinner id="map" />
 		</hbox>
+		<hbox>
+			<label text="Id" />
+			<spinner id="id" />
+		</hbox>
 	</vbox>
 	<hbox>
 		<gridbagconstraints

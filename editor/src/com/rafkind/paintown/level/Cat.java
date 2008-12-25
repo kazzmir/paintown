@@ -84,10 +84,11 @@ public class Cat extends Thing {
 	public Token toToken(){
 		Token thing = new Token();
 		thing.addToken( new Token( "object" ) );
-		thing.addToken( new String[]{ "name", "\"" + getName() + "\"" } );
-		thing.addToken( new String[]{ "type", getType() } );
-		thing.addToken( new String[]{ "path", getPath() } );
-		thing.addToken( new String[]{ "coords", String.valueOf( getX() ), String.valueOf( getY() ) } );
+		thing.addToken( new String[]{"id", String.valueOf(getId())} );
+		thing.addToken( new String[]{"name", "\"" + getName() + "\"" } );
+		thing.addToken( new String[]{"type", getType() } );
+		thing.addToken( new String[]{"path", getPath() } );
+		thing.addToken( new String[]{"coords", String.valueOf( getX() ), String.valueOf( getY() ) } );
 
 		return thing;
 	}

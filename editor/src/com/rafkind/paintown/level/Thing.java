@@ -22,6 +22,7 @@ import java.util.List;
 public abstract class Thing{
 
 	private int x, y;
+        private int id;
 	private int width, height;
 	private String path;
 	private BufferedImage main;
@@ -38,6 +39,14 @@ public abstract class Thing{
 			y = coords.readInt( 1 );
 		}
 
+                Token tid = token.findToken("id");
+                if (tid != null){
+                    id = tid.readInt(0);
+                    Level.checkId(id);
+                } else {
+                    id = Level.nextId();
+                }
+
 		Token tpath = token.findToken( "path" );
 		if ( tpath != null ){
 			setPath( tpath.readString( 0 ) );
@@ -51,6 +60,7 @@ public abstract class Thing{
 		listeners = new ArrayList();
 		setX( copy.getX() );
 		setY( copy.getY() );
+                setId(copy.getId());
 		setMain( copy.getMain() );
 		setPath( copy.getPath() );
 		setName( copy.getName() );
@@ -68,6 +78,14 @@ public abstract class Thing{
 		this.name = s;
 		fireUpdate();
 	}
+
+        public int getId(){
+            return id;
+        }
+
+        public void setId(int i){
+            id = i;
+        }
 
 	public abstract Thing copy();
 

@@ -88,6 +88,7 @@ public class CharacterEditor implements PropertyEditor {
 		path.setEditable( false );
 		final JTextField aggression = (JTextField) engine.find( "aggression" );
 		aggression.setText( String.valueOf( character.getAggression() ) );
+                final JSpinner id = (JSpinner) engine.find("id");
 		final JSpinner block = (JSpinner) engine.find( "block" );
 		final JSlider aggressionScroll = (JSlider) engine.find( "aggression-slider" );
 		final JLabel aggressionLevel = (JLabel) engine.find( "aggression-level" );
@@ -111,6 +112,8 @@ public class CharacterEditor implements PropertyEditor {
 		} else {
 			aggressionScroll.setValue( character.getAggression() );
 		}
+
+                id.setValue(character.getId());
 
 		aggressionLevel.setText( "Aggression level: " + convertAggressionLevel( aggressionScroll.getValue() ) );
 
@@ -151,6 +154,7 @@ public class CharacterEditor implements PropertyEditor {
 				character.setHealth( Integer.parseInt( health.getText() ) );
 				character.setX( xInt );
 				character.setY( yInt );
+                                character.setId(((Integer) id.getValue()).intValue());
 				character.setMap( ((Integer) map.getValue()).intValue() );
 				int a = Integer.parseInt( aggression.getText() );
 				character.setAggression( a );

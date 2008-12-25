@@ -35,6 +35,23 @@ public class Level{
 
 	private List blocks;
 
+        private static int nextId = 0;
+
+        public static int nextId(){
+            nextId += 1;
+            return nextId;
+        }
+
+        public static void checkId(int i){
+            if (i > nextId){
+                nextId = i;
+            }
+        }
+
+        public static void resetId(){
+            nextId = 0;
+        }
+
 	private class Panel{
 		public String name;
 		public Image image;
@@ -343,6 +360,8 @@ public class Level{
 		this.backPanels = new HashMap();
 		this.panelOrder = new ArrayList();
 		this.blocks = new ArrayList();
+
+                resetId();
 	}
 
 	private void load( File f ) throws LoadException {

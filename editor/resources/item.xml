@@ -30,6 +30,10 @@
 			<label text="Block: " />
 			<spinner id="block" />
 		</hbox>
+		<hbox>
+			<label text="Id: " />
+			<spinner id="id" />
+		</hbox>
 		<buttongroup>
 
 			<hbox>
