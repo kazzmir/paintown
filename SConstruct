@@ -13,7 +13,8 @@ def checkPython(context):
     tmp = context.env.Clone()
     env = context.env
     env.Append(CPPPATH = [include_path])
-    env.Append(LINKFLAGS = link_stuff.split(' '))
+    if link_stuff != None:
+        env.Append(LINKFLAGS = link_stuff.split(' '))
     env.Append(LIBPATH = [lib_path])
     env.Append(LIBS = libs)
     env.Append(CPPDEFINES = ['HAVE_PYTHON'])
@@ -48,9 +49,9 @@ def isCygwin():
 
 def useMingw():
     try:
-	return "mingw" in ARGUMENTS[ 'env' ]
+        return "mingw" in ARGUMENTS[ 'env' ]
     except KeyError:
-	return False
+        return False
 
 def readExec( program ):
     try:
@@ -60,21 +61,23 @@ def readExec( program ):
 
 def getEnvironment():
     if isCygwin():
+        import SCons.Tool.zip
         env = Environment(ENV = os.environ, tools = ['mingw'])
         env['CXX'] = 'C:\\MinGW\\bin\\g++.exe'
         env['CC'] = 'C:\\MinGW\\bin\\gcc.exe'
         env['AR'] = 'C:\\MinGW\\bin\\ar.exe'
-	return env
+        SCons.Tool.zip.generate(env)
+        return env
     elif useMingw():
-	return Environment(ENV = os.environ, tools = ['mingw'])
+        return Environment(ENV = os.environ, tools = ['mingw'])
     else:
-	return Environment(ENV = os.environ)
+        return Environment(ENV = os.environ)
 
 if isWindows():
     print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"
     if not isCygwin():
         print "Cygwin not detected. If are you using cygwin set"
-	print "export CYGWIN=1"
+        print "export CYGWIN=1"
     else:
         print "Cygwin detected"
     
@@ -115,10 +118,10 @@ env.Append( CCFLAGS = cflags,
             CPPDEFINES = cdefines )
 
 def buildDumb(where, env):
-	return SConscript( "src/dumb/SConscript", build_dir = '%s/dumb' % where, exports = 'env' )
+    return SConscript( "src/dumb/SConscript", build_dir = '%s/dumb' % where, exports = 'env' )
 
 def buildHawknl(where, env):
-	return SConscript( "src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env' )
+    return SConscript( "src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env' )
 
 dumbEnv = getEnvironment()
 hawkEnv = getEnvironment()
@@ -154,6 +157,11 @@ if isWindows():
     env.Append( CPPDEFINES = 'WINDOWS' )
     env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
     env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
+
+    config = env.Configure(custom_tests = {"CheckPython" : checkPython})
+    config.CheckPython()
+    env = config.Finish()
+
     # env.Append( CCFLAGS = ['-mthreads'] )
     # env.Append( LINKFLAGS = ['-mthreads'] )
     staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
