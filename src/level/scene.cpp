@@ -180,6 +180,10 @@ script(NULL){
 	Global::debug( 1 ) <<"Scene length = "<<scene_length<<". Length used = "<<blength<<endl;
 
 }
+        
+const int Scene::totalLength() const {
+    return scene_length;
+}
 
 void Scene::calculateLength(){
 	scene_length = 0;

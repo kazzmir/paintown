@@ -12,18 +12,20 @@
 
 using namespace std;
 
-static PyObject * paintown_register(PyObject * dummy, PyObject * args){
-    PyObject * result = NULL;
+static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
+    PyObject * cobject;
 
-    Global::debug(1) << "[python:paintown] called the stuff method" << endl;
-
+    if (PyArg_ParseTuple(args, "O", &cobject)){
+        World * world = (World*) PyCObject_AsVoidPtr(cobject);
+        int length = world->levelLength();
+        return Py_BuildValue("i", length);
+    }
     Py_INCREF(Py_None);
-    result = Py_None;
-    return result;
+    return Py_None;
 }
 
 static PyMethodDef PaintownModule[] = {
-    {"register",  paintown_register, METH_VARARGS, "Register a paintown engine."},
+    {"levelLength",  paintown_levelLength, METH_VARARGS, "Register a paintown engine."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -60,6 +62,27 @@ void PythonEngine::createWorld(const World & world){
     if (python_module == NULL){
         PyErr_Print();
     }
+
+    PyObject * api_module = PyImport_ImportModule("api");
+    if (api_module == NULL){
+        PyErr_Print();
+    }
+    PyObject * create = PyObject_GetAttrString(api_module, "createWorld");
+    if (create == NULL){
+        PyErr_Print();
+    }
+    PyObject * cobject = PyCObject_FromVoidPtr((void*) &world, NULL);
+    if (cobject == NULL){
+        PyErr_Print();
+    }
+    PyObject * result = PyObject_CallFunction(create, (char*) "(O)", cobject);
+    if (result == NULL){
+        PyErr_Print();
+    } else {
+        Py_DECREF(result);
+    }
+    Py_DECREF(create);
+
     /*
     ostringstream python_string;
     Global::debug(1) << "[python] Create world" << endl;

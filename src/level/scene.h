@@ -50,6 +50,8 @@ public:
 
 	void advanceBlocks( int n );
 
+        const int totalLength() const;
+
 	int getLimit();
 	void act( int min_x, int max_x, vector< Object * > * objects );
 

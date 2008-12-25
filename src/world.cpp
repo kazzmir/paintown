@@ -187,6 +187,14 @@ Network::Message World::deleteMessage( unsigned int id ){
 
 	return message;
 }
+        
+const int World::levelLength() const {
+    if (scene == NULL){
+        Global::debug(-1) << "Scene is null" << endl;
+        exit(1);
+    }
+    return scene->totalLength();
+}
 
 void World::doLogic(){
 
