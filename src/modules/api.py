@@ -1,24 +1,20 @@
-class Paintown:
+import paintown
+
+class Engine:
     def __init__(self):
+        print "Api engine init"
         pass
 
-    def getProperty(self, propertyName):
-        pass
+    def createWorld(self, world):
+        print "Create new world = " + str(world)
 
-    def setProperty(self, propertyName, value):
-        pass
+engines = []
+def register(engine):
+    engines.append(engine)
 
-    def spawn(self, obj):
-        pass
-
-    def kill(self, obj):
-        pass
-
-def createItem(name, x, y):
-    pass
-
-def createEnemy(name, x, y):
-    pass
+def createWorld(world):
+    for engine in engines:
+        engine.createWorld(world)
 
 """
 >> Necessary things to support:

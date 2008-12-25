@@ -22,4 +22,22 @@ namespace Script{
 #endif
         throw NoSuchEngine(name);
     }
+
+    NoEngine::NoEngine():Engine(){
+    }
+
+    void NoEngine::init(){
+    }
+
+    void NoEngine::shutdown(){
+    }
+
+    void NoEngine::createWorld(const World & world){
+    }
+
+    void NoEngine::destroyWorld(const World & world){
+    }
+
+    NoEngine::~NoEngine(){
+    }
 }

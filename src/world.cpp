@@ -1,5 +1,6 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "script.h"
 #include "object/object.h"
 #include "object/object_attack.h"
 #include "object/character.h"
@@ -67,6 +68,14 @@ World::~World(){
 	}
 
 	deleteObjects( &objects );
+}
+        
+Script::Engine * const World::getEngine() const {
+    if (scene){
+        return scene->getScript();
+    }
+    Global::debug(-1) << "Script is null somehow" << endl;
+    exit(1);
 }
 
 void World::reloadLevel() throw( LoadException ){

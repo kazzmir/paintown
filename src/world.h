@@ -12,6 +12,10 @@ class Bitmap;
 #include "util/load_exception.h"
 #include "network/network.h"
 
+namespace Script{
+    class Engine;
+}
+
 struct PlayerTracker{
 	double min_x;
 	Object * player;
@@ -37,6 +41,8 @@ public:
 	virtual const bool finished() const;
 
 	virtual void reloadLevel() throw( LoadException );
+
+        virtual Script::Engine * const getEngine() const;
 
 	/* upper left hand corner of the screen */
 	virtual int getX();

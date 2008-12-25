@@ -55,14 +55,14 @@ public:
 
 	~Scene();
 
-protected:
-
-        inline void setScript(Script::Engine const * script){
-            this->script = script;
+        inline Script::Engine * const getScript() const{
+            return this->script;
         }
 
-        inline const Script::Engine * getScript() const{
-            return this->script;
+protected:
+
+        inline void setScript(Script::Engine * const script){
+            this->script = script;
         }
 
 	/* true if the scene the next block is ready */
@@ -131,7 +131,7 @@ protected:
 
 	Atmosphere * atmosphere;
 
-        Script::Engine const * script;
+        Script::Engine * script;
 };
 
 #endif

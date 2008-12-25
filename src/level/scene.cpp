@@ -45,6 +45,8 @@ foregroundParallax( 1.2 ),
 atmosphere( NULL ),
 script(NULL){
 
+    script = new Script::NoEngine();
+
 	TokenReader tr( filename );
 
 	// Token * current = tr.readToken();
@@ -81,6 +83,7 @@ script(NULL){
                             string kind;
                             string scriptPath;
                             *tok >> kind >> scriptPath;
+                            delete getScript();
                             setScript(Script::getEngine(kind, scriptPath));
 			} else if ( *tok == "atmosphere" ){
 				string s;

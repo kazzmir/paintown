@@ -15,6 +15,7 @@
 #include "util/tokenreader.h"
 #include "util/keyboard.h"
 #include "globals.h"
+#include "script.h"
 #include "loading.h"
 #include "network/network.h"
 #include "world.h"
@@ -169,6 +170,8 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 	Bitmap work( 320, 240 );
 	// Bitmap work( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
+
+        world.getEngine()->createWorld(world);
 
 	Global::speed_counter = 0;
 	Global::second_counter = 0;
@@ -352,6 +355,8 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 
 		done |= key[ Keyboard::Key_ESC ] || world.finished();
 	}
+        
+        world.getEngine()->destroyWorld(world);
 
 	if ( key[ Keyboard::Key_ESC ] ){
 		while ( key[ Keyboard::Key_ESC ] ){

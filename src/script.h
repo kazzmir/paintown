@@ -4,6 +4,8 @@
 #include <string>
 #include <exception>
 
+class World;
+
 namespace Script{
 
     class Engine{
@@ -12,6 +14,9 @@ namespace Script{
 
         virtual void init() = 0;
         virtual void shutdown() = 0;
+
+        virtual void createWorld(const World & world) = 0;
+        virtual void destroyWorld(const World & world) = 0;
 
         virtual ~Engine();
     };
@@ -22,6 +27,18 @@ namespace Script{
     public:
         NoSuchEngine(const std::string & s){
         }
+    };
+
+    class NoEngine: public Engine {
+        public:
+            NoEngine();
+            virtual void init();
+            virtual void shutdown();
+
+            virtual void createWorld(const World & world);
+            virtual void destroyWorld(const World & world);
+
+            virtual ~NoEngine();
     };
 }
 
