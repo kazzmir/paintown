@@ -66,6 +66,7 @@ public:
 	virtual void deathReset();
 	
 protected:
+        void initializeAttackGradient();
 	void fillKeyCache();
         void debugDumpKeyCache(int level);
         const char * keyToName(int key);
@@ -93,11 +94,12 @@ protected:
 	int name_id;
         unsigned int score;
         double attack_bonus;
+        static const int num_attack_gradient = 50;
+        int attack_gradient[num_attack_gradient];
 
 	bool invincible;
 
 	// int last_key;
-
 };
 
 #endif

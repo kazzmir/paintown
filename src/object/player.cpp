@@ -46,6 +46,8 @@ invincible( false ){
 
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
+
+        initializeAttackGradient();
 }
 	
 Player::Player( const string & filename ) throw( LoadException ):
@@ -69,6 +71,7 @@ invincible( false ){
 
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
+        initializeAttackGradient();
 }
 	
 Player::Player( const Character & chr ) throw( LoadException ):
@@ -80,6 +83,7 @@ attack_bonus(0),
 invincible( false ){
 	show_life = getHealth();
 	lives = DEFAULT_LIVES;
+        initializeAttackGradient();
 }
 
 Player::Player( const Player & pl ) throw( LoadException ):
@@ -91,6 +95,12 @@ attack_bonus(0),
 invincible( false ){
 	show_life = getHealth();
         score = pl.score;
+        initializeAttackGradient();
+}
+
+void Player::initializeAttackGradient(){
+    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Bitmap::makeColor(255,255,255), Bitmap::makeColor(255,255,0));
+    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Bitmap::makeColor(255,255,0), Bitmap::makeColor(255,0,0));
 }
 
 void Player::loseLife( int l ){
@@ -207,7 +217,11 @@ void Player::draw( Bitmap * work, int rel_x ){
 
         ostringstream score_s;
         score_s << score;
-        render->addMessage(player_font, (hasIcon + x1) * 2 + player_font.textLength(name.c_str()) + 5, y1 * 2, Bitmap::makeColor(255,255,255), -1, score_s.str().c_str());
+        int attack_color = (int)(attack_bonus * 10);
+        if (attack_color > num_attack_gradient - 1){
+            attack_color = num_attack_gradient - 1;
+        }
+        render->addMessage(player_font, (hasIcon + x1) * 2 + player_font.textLength(name.c_str()) + 5, y1 * 2, attack_gradient[attack_color], -1, score_s.str().c_str());
 
 	// cout << "Draw name at " << y1 * 2 << endl;
 	// player_font.printf( (hasIcon + x1) * 2, y1, Bitmap::makeColor(255,255,255), *work, getName() );
