@@ -4,6 +4,7 @@
 class Object;
 class Scene;
 class Bitmap;
+class Block;
 
 #include <vector>
 #include <map>
@@ -49,6 +50,7 @@ public:
 	virtual int getY();
 
         virtual const int levelLength() const;
+        virtual const Block * currentBlock() const;
 
 	virtual void doScene( int min_x, int max_x );
 

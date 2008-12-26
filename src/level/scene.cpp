@@ -233,7 +233,11 @@ void Scene::advanceBlocks( int n ){
 		}
 
 		block_length += current_block->getLength();
-		delete current_block;
+		// delete current_block;
+                /* store blocks so that they are deleted in the destructor.
+                 * this way the scripting engine can do stuff with it
+                 */
+                old_level_blocks.push_back(current_block);
 		current_block = level_blocks.front();
 		level_blocks.pop_front();
 		blockNumber += 1;
@@ -357,6 +361,9 @@ Scene::~Scene(){
 	for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
 		delete *it;
 	}
+        for (vector<Block*>::iterator it = old_level_blocks.begin(); it != old_level_blocks.end(); it++){
+            delete *it;
+        }
 
 	if ( background )
 		delete background;

@@ -1,18 +1,27 @@
+class Block:
+    def __init__(self, id):
+        self.id = id
+
 class Engine:
     def __init__(self):
         self.world = None
         pass
+
+    def createWorld(self, world):
+        self.world = world
 
     def levelLength(self):
         import paintown
         assert(self.world != None)
         return paintown.levelLength(self.world)
 
+    def currentBlock(self):
+        import paintown
+        assert(self.world != None)
+        return Block(paintown.currentBlock(self.world))
+
     def tick(self):
         pass
-
-    def createWorld(self, world):
-        self.world = world
 
 engines = []
 def register(engine):

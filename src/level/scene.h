@@ -48,6 +48,10 @@ public:
 		return blockNumber;
 	}
 
+        inline Block * currentBlock() const {
+            return current_block;
+        }
+
 	void advanceBlocks( int n );
 
         const int totalLength() const;
@@ -112,6 +116,7 @@ protected:
 	map< int, Panel * > panels;
 
 	deque< Block * > level_blocks;
+        vector<Block*> old_level_blocks;
 
 	vector< Heart * > hearts;
 

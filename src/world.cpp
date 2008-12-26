@@ -188,6 +188,14 @@ Network::Message World::deleteMessage( unsigned int id ){
 	return message;
 }
         
+const Block * World::currentBlock() const {
+    if (scene == NULL){
+        Global::debug(-1) << "Scene is null" << endl;
+        exit(1);
+    }
+    return scene->currentBlock();
+}
+        
 const int World::levelLength() const {
     if (scene == NULL){
         Global::debug(-1) << "Scene is null" << endl;

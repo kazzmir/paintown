@@ -27,9 +27,23 @@ static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
     return Py_None;
 }
 
+static PyObject * paintown_currentBlock(PyObject * dummy, PyObject * args){
+
+    PyObject * cobject;
+
+    if (PyArg_ParseTuple(args, "O", &cobject)){
+        World * world = (World*) PyCObject_AsVoidPtr(cobject);
+        return Py_BuildValue("i", world->currentBlock());
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 /* methods that the python world use to talk to the paintown engine */
 static PyMethodDef PaintownModule[] = {
-    {"levelLength",  paintown_levelLength, METH_VARARGS, "Register a paintown engine."},
+    {"levelLength",  paintown_levelLength, METH_VARARGS, "Get the length of the level."},
+    {"currentBlock", paintown_currentBlock, METH_VARARGS, "Get the current block."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
