@@ -221,7 +221,11 @@ void Player::draw( Bitmap * work, int rel_x ){
         if (attack_color > num_attack_gradient - 1){
             attack_color = num_attack_gradient - 1;
         }
-        render->addMessage(player_font, (hasIcon + x1) * 2 + player_font.textLength(name.c_str()) + 5, y1 * 2, attack_gradient[attack_color], -1, score_s.str().c_str());
+
+        // int attack_x = (hasIcon + x1) * 2 + player_font.textLength(name.c_str()) + 5;
+        int attack_x = (hasIcon + x1) * 2 + 100 * Bitmap::getScale() - player_font.textLength(score_s.str().c_str());;
+
+        render->addMessage(player_font, attack_x, y1 * 2, attack_gradient[attack_color], -1, score_s.str().c_str());
 
 	// cout << "Draw name at " << y1 * 2 << endl;
 	// player_font.printf( (hasIcon + x1) * 2, y1, Bitmap::makeColor(255,255,255), *work, getName() );
