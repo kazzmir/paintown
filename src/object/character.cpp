@@ -52,6 +52,7 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
+glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -78,6 +79,7 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
+glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -107,6 +109,7 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
+glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -157,6 +160,7 @@ draw_shadow( true ){
 	setShadow( chr.getShadow() );
 	status = chr.getStatus();
 	invincibility = chr.invincibility;
+        glowing = chr.glowing;
 	toughness = chr.getToughness();
 
 	if ( chr.die_sound != NULL ) 
@@ -857,6 +861,10 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 		invincibility--;
 	}
 
+        if (getGlowing() > 0){
+            setGlowing(getGlowing() - 1);
+        }
+
 	for ( vector< Object * >::iterator it = projectiles.begin(); it != projectiles.end(); it++ ){
 		Object * obj = *it;
 		obj->setAlliance( getAlliance() );
@@ -1448,6 +1456,20 @@ void Character::draw( Bitmap * work, int rel_x ){
 			} else {
 				animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
 			}
+                } else if (getGlowing() > 0){
+                    /* hopefully this will glow yellowish or something */
+                    double f = sin( 3.14159 / 180.0 * glowing * 6 );
+                    int max_white = 80;
+                    int base_blue = 120;
+                    int c = (int)(f * max_white);
+                    if ( c < 0 ) c = 0;
+                    int v = (int)(f * (255 - (max_white + base_blue)) + base_blue + c);
+                    Bitmap::transBlender(v, v, c, 50);
+                    if ( getFacing() == Object::FACING_RIGHT ){
+                        animation_current->DrawLit( getRX() - rel_x, getRY(), work );
+                    } else {
+                        animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
+                    }
 		} else {
 
 			if ( getFacing() == Object::FACING_RIGHT ){

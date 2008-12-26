@@ -420,6 +420,11 @@ void Player::hurt( int x ){
 	if ( ! isInvincible() ){
 		Character::hurt( x );
 	}
+
+        /* gained health, probably through a power-up. time to glow! */
+        if (x < 0){
+            setGlowing(100);
+        }
 }
 
 void Player::takeDamage( World * world, ObjectAttack * obj, int x ){
