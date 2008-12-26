@@ -39,6 +39,8 @@ public:
 	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
 	
 	virtual void hurt( int x );
+	
+        virtual void attacked( Object * something, vector< Object * > & objects );
 
 	virtual inline void setExplode( bool b ){
 		/* */
@@ -89,6 +91,8 @@ protected:
 	int show_life;
 
 	int name_id;
+        unsigned int score;
+        double attack_bonus;
 
 	bool invincible;
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include "animation.h"
 #include "util/bitmap.h"
@@ -30,6 +31,8 @@ Player::Player( const char * filename ) throw( LoadException ):
 Character( filename, ALLIANCE_PLAYER ),
 acts(0),
 name_id(-1),
+score(0),
+attack_bonus(0),
 invincible( false ){
 	lives = DEFAULT_LIVES;
 	
@@ -49,6 +52,8 @@ Player::Player( const string & filename ) throw( LoadException ):
 Character( filename, ALLIANCE_PLAYER ),
 acts(0),
 name_id(-1),
+score(0),
+attack_bonus(0),
 invincible( false ){
 
 	lives = DEFAULT_LIVES;
@@ -70,6 +75,8 @@ Player::Player( const Character & chr ) throw( LoadException ):
 Character( chr ),
 acts(0),
 name_id(-1),
+score(0),
+attack_bonus(0),
 invincible( false ){
 	show_life = getHealth();
 	lives = DEFAULT_LIVES;
@@ -79,8 +86,11 @@ Player::Player( const Player & pl ) throw( LoadException ):
 Character( pl ),
 acts( 0 ),
 name_id(-1),
+score(0),
+attack_bonus(0),
 invincible( false ){
 	show_life = getHealth();
+        score = pl.score;
 }
 
 void Player::loseLife( int l ){
@@ -153,6 +163,13 @@ void Player::fillKeyCache(){
 		key_cache.pop_front();
 	}
 }
+        
+void Player::attacked( Object * something, vector< Object * > & objects ){
+    Character::attacked(something, objects);
+    score += (int)(85 * (1 + attack_bonus));
+    attack_bonus += 1;
+    Global::debug(1) << "Attack bonus : " << attack_bonus << endl;
+}
 	
 void Player::drawLifeBar( int x, int y, Bitmap * work ){
 	drawLifeBar( x, y, show_life, work );
@@ -187,6 +204,11 @@ void Player::draw( Bitmap * work, int rel_x ){
 	// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
 	FontRender * render = FontRender::getInstance();
 	render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
+
+        ostringstream score_s;
+        score_s << score;
+        render->addMessage(player_font, (hasIcon + x1) * 2 + player_font.textLength(name.c_str()) + 5, y1 * 2, Bitmap::makeColor(255,255,255), -1, score_s.str().c_str());
+
 	// cout << "Draw name at " << y1 * 2 << endl;
 	// player_font.printf( (hasIcon + x1) * 2, y1, Bitmap::makeColor(255,255,255), *work, getName() );
 	// drawLifeBar( hasIcon + x1, y1 + player_font.getHeight() / 2, show_life, work );
@@ -466,6 +488,12 @@ Network::Message Player::thrownMessage( unsigned int id ){
 }
 
 void Player::act( vector< Object * > * others, World * world, vector< Object * > * add ){
+
+    if (attack_bonus > 0){
+        attack_bonus -= 0.02;
+    } else {
+        attack_bonus = 0;
+    }
 
 	if ( show_life < getHealth() ){
 		show_life++;
