@@ -419,7 +419,16 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
 	const int gib_size = 12;
 	for ( int x = 0; x < bitmap->getWidth(); x += gib_size ){
 		for ( int y = 0; y < bitmap->getHeight(); y += gib_size ){
-			Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
+			// Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
+                        Bitmap * sub = new Bitmap(gib_size, gib_size);
+                        bitmap->Blit(x, y, 0, 0, *sub);
+
+                        // for (int num = 0; num < gib_size / 3; num++){
+                        for (int num = 0; num < 2; num++){
+                            sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::MaskColor);
+                            sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::makeColor(255,0,0));
+                        }
+
 			if ( 100.0 * (double) nonMaskingPixels( sub ) / (double) (sub->getWidth() * sub->getHeight()) < 10.0 ){
 				delete sub;
 			} else {
