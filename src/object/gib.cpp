@@ -6,10 +6,11 @@
 #include "globals.h"
 #include <math.h>
 
-Gib::Gib( const int x, const int y, const int z, double dx, double dy, Bitmap * image ):
+Gib::Gib( const int x, const int y, const int z, double dx, double dy, double dz, Bitmap * image ):
 ObjectNonAttack( x, z ),
-dx( dx ),
-dy( dy ),
+dx(dx),
+dy(dy),
+dz(dz),
 angle( 0 ),
 fade( 0 ),
 image( image ){
@@ -74,13 +75,15 @@ void Gib::act( vector< Object * > * others, World * world, vector< Object * > * 
 		}
 	} else {
 
-		moveX( dx );
-		moveY( dy );
+		moveX(dx);
+		moveY(dy);
+                moveZ(dz);
 
 		dy -= 0.1;
 		if ( getY() <= 0 ){
 			dy = -dy / 2;
 			dx = dx / 2;
+                        dz = dz / 2;
 			if ( fade == 0 && fabs( dy ) < 0.1 ){
 				fade = 1;
 			}

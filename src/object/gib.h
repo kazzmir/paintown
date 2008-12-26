@@ -12,7 +12,7 @@ struct Point{
 
 class Gib: public ObjectNonAttack{
 public:
-	Gib( const int x, const int y, const int z, double dx, double dy, Bitmap * image );
+	Gib( const int x, const int y, const int z, double dx, double dy, double dz, Bitmap * image );
 	Gib( const Gib & g );
 	
 	virtual void draw( Bitmap * work, int rel_x );
@@ -29,7 +29,7 @@ public:
 	virtual ~Gib();
 
 protected:
-	double dx, dy;
+	double dx, dy, dz;
 	int angle;
 	int fade;
 	Bitmap * image;

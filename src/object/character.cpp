@@ -719,9 +719,10 @@ void Character::died( vector< Object * > & objects ){
 			
 			int x = (int) getX() + part.x;
 			int y = (int) getY() + part.y;
-			double dx = (Util::rnd( 11 ) - 5) / 4.2;
-			double dy = (Util::rnd( 10 ) + 4) / 3.5;
-			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy, part.image ) );
+			double dx = (Util::rnd(11) - 5) / 4.2;
+			double dy = (Util::rnd(10) + 4) / 3.5;
+                        double dz = (Util::rnd(11) - 5) / 5;
+			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy, dz, part.image ) );
 		}
 		if ( squish_sound != NULL ){
 			squish_sound->play();
