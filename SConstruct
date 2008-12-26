@@ -221,6 +221,10 @@ else:
 
     env = config.Finish()
 
+    static_config = staticEnv.Configure(custom_tests = {"CheckPython" : checkPython})
+    static_config.CheckPython()
+    staticEnv = static_config.Finish()
+
 if not isWindows():
    env.Append(CCFLAGS = ['-Werror'])
 staticEnv.Append(CCFLAGS = ['-Werror'])

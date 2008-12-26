@@ -29,12 +29,12 @@ DONE * better key input in network chat
 * RPG mode???
 * allow level to go left or right
 * tutorial mode
+* allow characters to run
 * allow characters to block
 * give enemies 'behaviors' which model how they act
 
 For 3.2
 -------
-* Get python scripting module in a useable state
-* Be able to scale the screen to arbitrary sizes
+partly done * Get python scripting module in a useable state
+partly done * Be able to scale the screen to arbitrary sizes
 DONE * use CPP to define DATA_PATH
-
