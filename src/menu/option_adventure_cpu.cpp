@@ -63,6 +63,7 @@ void OptionAdventureCpu::run(bool &endGame){
 		string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
 		key.wait();
 		player = Game::selectPlayer( MenuGlobals::getInvincible(), "Pick a player" );
+                player->setObjectId(-1);
 		((Player *)player)->setLives( MenuGlobals::getLives() );
 		vector< Object * > players;
 		players.push_back( player );
@@ -71,6 +72,8 @@ void OptionAdventureCpu::run(bool &endGame){
 			Object * b = Game::selectPlayer( false, "Pick a buddy" );
 			buddies.push_back( b );
 			Object * buddy = new BuddyPlayer( (Character *) player, *(Character *) b );
+                        /* buddies start at -2 and go down */
+                        buddy->setObjectId(-(i + 2));
 			buddies.push_back( buddy );
 			players.push_back( buddy );
 		}
