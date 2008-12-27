@@ -20,7 +20,8 @@ using namespace std;
 World::World():
 quake_time( 0 ),
 draw_minimaps( true ),
-mini_map( NULL ){
+mini_map( NULL ),
+takeAScreenshot(false){
 	scene = NULL;
 	bang = NULL;
 }
@@ -29,7 +30,8 @@ World::World( const vector< Object * > & players, const string & path, int _scre
 quake_time( 0 ),
 path( path ),
 draw_minimaps( true ),
-mini_map( NULL ){
+mini_map( NULL ),
+takeAScreenshot(false){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -68,6 +70,10 @@ World::~World(){
 	}
 
 	deleteObjects( &objects );
+            
+        for (deque<Bitmap*>::iterator it = screenshots.begin(); it != screenshots.end(); it++){
+            delete *it;
+        }
 }
         
 Script::Engine * const World::getEngine() const {
@@ -253,6 +259,8 @@ void World::doLogic(){
 							(*fight)->collided( o_good, added_effects );
 							addMessage( (*fight)->collidedMessage() );
 							(*fight)->takeDamage( this, o_good, o_good->getDamage() );
+
+                                                        takeScreenshot();
 						// }
 					}
 				}
@@ -415,6 +423,17 @@ bool World::shouldDrawMiniMaps(){
 	return draw_minimaps;
 }
 
+void World::doTakeScreenshot(Bitmap * work){
+    takeAScreenshot = false;
+    Global::debug(2) << "Take a screenshot" << endl;
+    screenshots.push_back(new Bitmap(*work, true));
+    while (screenshots.size() > 4){
+        Bitmap * front = screenshots.front();
+        delete front;
+        screenshots.pop_front();
+    }
+}
+
 void World::draw( Bitmap * work ){
 
 	map< int, vector<Object*> > object_z;
@@ -424,7 +443,7 @@ void World::draw( Bitmap * work ){
 		object_z[ n->getRZ() ].push_back( n );
 	}
 
-	Global::debug( 3 ) << "World draw" << endl;
+	Global::debug( 4 ) << "World draw" << endl;
 	
 	// min_x = (int)min_x_virtual;
 	Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
@@ -451,6 +470,12 @@ void World::draw( Bitmap * work ){
 			break;
 		}
 	}
+
+        if (shouldTakeScreenshot() && (screenshots.empty() || Util::rnd(10) == 0)){
+            doTakeScreenshot(work);
+        } else {
+            takeAScreenshot = false;
+        }
 	
 	/*
 	int min_x = 0;

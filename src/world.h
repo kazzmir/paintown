@@ -7,6 +7,7 @@ class Bitmap;
 class Block;
 
 #include <vector>
+#include <deque>
 #include <map>
 #include <string>
 
@@ -78,6 +79,16 @@ protected:
 
 	virtual const bool isPlayer( Object * o ) const;
 
+        inline const bool shouldTakeScreenshot() const {
+            return takeAScreenshot;
+        }
+
+        inline void takeScreenshot(){
+            takeAScreenshot = true;
+        }
+
+        virtual void doTakeScreenshot(Bitmap * work);
+
 protected:
 	std::vector< PlayerTracker > players;
 	Object * bang;
@@ -94,6 +105,9 @@ protected:
 	bool draw_minimaps;
 	
 	Bitmap * mini_map;
+
+        deque<Bitmap*> screenshots;
+        bool takeAScreenshot;
 public:
 	enum{
 		NOTHING,
