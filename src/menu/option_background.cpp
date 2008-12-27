@@ -10,40 +10,43 @@ OptionBg::OptionBg(Token *token)throw( LoadException ) : MenuOption(event) , ani
 	if ( *token != "background" )
 		throw LoadException("Not a background");
 	
-	while ( token->hasTokens() )
-	{
-		try 
-		{
+	while ( token->hasTokens() ){
+		try{
 			Token * tok;
 			*token >> tok;
-			if ( *tok == "image" )
-			{
+			if ( *tok == "image" ){
 				// Create an image and push it back on to vector
 				std::string temp;
 				*tok >> temp;
+
+                                /*
+                                 * just testing the grey scale code..
+                                 *
+				Bitmap * bmp = new Bitmap(Util::getDataPath() + temp);
+				if (!bmp->getError()){
+                                    images.push_back(new Bitmap(bmp->greyScale()));
+                                }
+                                delete bmp;
+                                */
+
 				Bitmap *bmp = new Bitmap(Util::getDataPath() +temp);
-				if(!bmp->getError())images.push_back(bmp);
-				else delete bmp;
-			}
-			else if( *tok == "delay" )
-			{
+				if (!bmp->getError()){
+                                    images.push_back(bmp);
+                                } else {
+                                    delete bmp;
+                                }
+			} else if( *tok == "delay" ) {
 				*tok >> animDelay;
-			}
-			else 
-			{
+			} else {
 				Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
-		} 
-		catch ( const TokenException & ex )
-		{
+		} catch ( const TokenException & ex ) {
 			// delete current;
 			string m( "Menu parse error: " );
 			m += ex.getReason();
 			throw LoadException( m );
-		} 
-		catch ( const LoadException & ex )
-		{
+		} catch ( const LoadException & ex ) {
 			// delete current;
 			throw ex;
 		}
