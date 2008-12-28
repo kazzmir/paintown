@@ -360,7 +360,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 
         bool force_quit = key[Keyboard::Key_ESC];
 
-        if (!force_quit){
+        if (!force_quit || true){
             work.clear();
             Sound snapshot(Util::getDataPath() + "/sounds/snapshot.wav");
             for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
@@ -378,6 +378,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
                 int x = work.getWidth() / 2;
                 int y = work.getHeight() / 2;
                 double scale = 0.9;
+                shot->border(0, 1, Bitmap::makeColor(64,64,64));
                 shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
                 work.Stretch( screen_buffer );
                 screen_buffer.BlitToScreen();
