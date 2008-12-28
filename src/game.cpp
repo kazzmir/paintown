@@ -360,7 +360,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 
         bool force_quit = key[Keyboard::Key_ESC];
 
-        if (!force_quit || true){
+        if (!force_quit){
             work.clear();
             Sound snapshot(Util::getDataPath() + "/sounds/snapshot.wav");
             for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
