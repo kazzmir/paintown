@@ -422,16 +422,38 @@ void World::drawMiniMaps( bool b ){
 bool World::shouldDrawMiniMaps(){
 	return draw_minimaps;
 }
+        
+const deque<Bitmap*> & World::getScreenshots(){
+    return screenshots;
+}
 
 void World::doTakeScreenshot(Bitmap * work){
     takeAScreenshot = false;
     Global::debug(2) << "Take a screenshot" << endl;
     screenshots.push_back(new Bitmap(*work, true));
+
+    const int change = 1000;
+    int position = Util::rnd(change);
+    while (screenshots.size() > 4){
+        int index = position % screenshots.size();
+        position += change + Util::rnd(change);
+
+        deque<Bitmap*>::iterator kill;
+        int i;
+        for (i = 0, kill = screenshots.begin(); i < index && kill != screenshots.end(); kill++, i++){
+            // nothing
+        }
+        delete *kill;
+        screenshots.erase(kill);
+    }
+
+    /*
     while (screenshots.size() > 4){
         Bitmap * front = screenshots.front();
         delete front;
         screenshots.pop_front();
     }
+    */
 }
 
 void World::draw( Bitmap * work ){
@@ -471,7 +493,7 @@ void World::draw( Bitmap * work ){
 		}
 	}
 
-        if (shouldTakeScreenshot() && (screenshots.empty() || Util::rnd(10) == 0)){
+        if (shouldTakeScreenshot() && (screenshots.empty() || Util::rnd(15) == 0)){
             doTakeScreenshot(work);
         } else {
             takeAScreenshot = false;

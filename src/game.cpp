@@ -22,6 +22,7 @@
 #include "versus_world.h"
 #include "init.h"
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
@@ -356,16 +357,43 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 
 		done |= key[ Keyboard::Key_ESC ] || world.finished();
 	}
+
+        bool force_quit = key[Keyboard::Key_ESC];
+
+        if (!force_quit){
+            work.clear();
+            for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
+                Bitmap * shot = *it;
+                int angle = Util::rnd(13) - 6;
+
+                /*
+                int gap = 4;
+                int x = Util::rnd(work.getWidth() - 2 * work.getWidth() / gap) + work.getWidth() / gap;
+                int y = Util::rnd(work.getHeight() - 2 * work.getHeight() / gap) + work.getHeight() / gap;
+                double scale = 1.0 - log(world.getScreenshots().size()+1) / 9.0;
+                shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
+                */
+
+                int x = work.getWidth() / 2;
+                int y = work.getHeight() / 2;
+                double scale = 0.9;
+                shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
+                work.Stretch( screen_buffer );
+                screen_buffer.BlitToScreen();
+                Util::rest(1500);
+            }
+            Util::rest(2000);
+        }
         
         world.getEngine()->destroyWorld(world);
 
-	if ( key[ Keyboard::Key_ESC ] ){
-		while ( key[ Keyboard::Key_ESC ] ){
-			key.poll();
-			Util::rest( 1 );
-		}
-		return false;
-	}
+        if (force_quit){
+            while ( key[ Keyboard::Key_ESC ] ){
+                key.poll();
+                Util::rest( 1 );
+            }
+            return false;
+        }
 
 	return true;
 }

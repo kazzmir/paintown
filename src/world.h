@@ -50,6 +50,8 @@ public:
 	virtual int getX();
 	virtual int getY();
 
+        virtual const deque<Bitmap*> & getScreenshots();
+
         virtual const int levelLength() const;
         virtual const Block * currentBlock() const;
 
