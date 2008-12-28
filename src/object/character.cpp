@@ -318,7 +318,6 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 			} else if ( *n == "icon" ){
 				string icon_path;
 				*n >> icon_path;
-				own_stuff = true;
 				// cout<<"Loading icon "<<icon_path<<endl;
 				icon = new Bitmap( dataPath( icon_path ) );
 			} else if ( *n == "remap" ){
@@ -386,6 +385,7 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	animation_current = getMovement( "idle" );
 
 	body_parts = getBodyParts( getMovement( "idle" ) );
+        own_stuff = true;
 
 	path = filename;
 }
@@ -1569,13 +1569,14 @@ void Character::print() const{
 }
 
 Character::~Character(){
-	if ( own_stuff ){
-		if ( icon ) delete icon;
-
-		for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
-			BodyPart & b = *it;
-			delete b.image;
-		}
+	if (own_stuff){
+            if (icon != NULL){
+                delete icon;
+            }
+            for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
+                BodyPart & b = *it;
+                delete b.image;
+            }
 	}
 
 	for ( map< int, map<string,Animation*> >::iterator it = mapper.begin(); it != mapper.end(); it++ ){
