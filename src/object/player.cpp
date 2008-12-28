@@ -103,6 +103,9 @@ void Player::initializeAttackGradient(){
     Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Bitmap::makeColor(255,255,0), Bitmap::makeColor(255,0,0));
 }
 
+Player::~Player(){
+}
+
 void Player::loseLife( int l ){
 	lives -= l;
 }

@@ -415,6 +415,16 @@ void realGame( const vector< Object * > & players, const string & levelFile ){
 		try {
 			// vector< Object * > players;
 			// players.push_back( player );
+
+                        /*
+                        Global::debug(0) << "Memory debug loop" << endl;
+                        for (int i = 0; i < 1000; i++){
+                            World world( players, *it );
+                            ObjectFactory::destroy();
+                            HeartFactory::destroy();
+                        }
+                        */
+
 			World world( players, *it );
 
 			Music::pause();
@@ -435,7 +445,7 @@ void realGame( const vector< Object * > & players, const string & levelFile ){
 
 			stopLoading( loading_screen_thread );
 
-			gameState = playLevel( world, players, showHelp );
+                        gameState = playLevel( world, players, showHelp );
 			showHelp = 0;
 
 		} catch ( const LoadException & le ){

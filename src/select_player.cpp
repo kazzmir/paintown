@@ -66,6 +66,7 @@ Key getNth( const map< Key, Value > & m, int i ){
 */
 
 Object * Game::selectPlayer( bool invincibile, const string & message ) throw( LoadException, ReturnException ){
+
 	Bitmap background( Global::titleScreen() );
 
 	/* hm, it would be nice to cache this I suppose */
@@ -92,10 +93,12 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 	key.setDelay( keyLeft, 300 );
 	key.setDelay( changeRemapKey, 200 );
 
+
 	/* preview box for each character */
 	Bitmap temp( 120, 120 );
 	Bitmap preview( GFX_X / 2, GFX_Y / 2 );
 	Bitmap reflection( GFX_X / 2, GFX_Y / 2 );
+	
 
 	// const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
 	// const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
@@ -131,6 +134,7 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
         double runCounter = 0;
         double gameSpeed = 1;
 	Sound beep( Util::getDataPath() + "/sounds/beep1.wav" );
+
 	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
 		key.poll();
 

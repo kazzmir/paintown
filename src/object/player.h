@@ -60,10 +60,11 @@ public:
 	inline const bool isInvincible() const {
 		return this->invincible;
 	}
-
-
+	
 	/* reset some stuff when the player dies */
 	virtual void deathReset();
+        
+        virtual ~Player();
 	
 protected:
         void initializeAttackGradient();

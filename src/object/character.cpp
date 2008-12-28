@@ -1583,7 +1583,7 @@ Character::~Character(){
 		map< string, Animation * > & use = (*it).second;
 		for ( map<string,Animation*>::iterator m_it = use.begin(); m_it != use.end(); m_it++ ){
 			Animation* & aa = (*m_it).second;
-			if ( (*m_it).second != NULL ){
+			if (aa != NULL){
 				delete aa;
 			}
 		}
