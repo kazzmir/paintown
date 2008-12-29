@@ -1,5 +1,10 @@
 Import('use');
 
+def isWindows():
+    import re
+    import sys
+    return "win32" in sys.platform
+
 obj_files = []
 
 def addFiles( files ):
@@ -20,8 +25,14 @@ scripts = Split("""
 modules/api.py
 """);
 
+def icon():
+    if isWindows():
+        return ['windows/game.res']
+    else:
+        return []
+
 x = []
-x.append( use.Program( 'paintown', obj_files + ['xmain.cpp'] ) )
+x.append(use.Program( 'paintown', obj_files + ['xmain.cpp'] + icon()))
 x.append(use.Zip('scripts', scripts))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
