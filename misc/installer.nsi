@@ -1,8 +1,11 @@
 Name "Paintown"
 
 OutFile "paintown-win32-3.2.exe"
+Icon "icon.ico"
+WindowIcon on
 
 InstallDir $PROGRAMFILES\Paintown
+UninstallIcon "icon.ico"
 
 Page directory
 Page instfiles
