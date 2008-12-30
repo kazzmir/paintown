@@ -521,6 +521,27 @@ void Player::deathReset(){
 	animation_current = getMovement( "idle" );
 	loseLife();
 }
+        
+void Player::interpretMessage(Network::Message & message){
+    int type;
+    message >> type;
+
+    /* reset because Object::interpretMessage() is going to read
+     * the type as well
+     */
+    message.reset();
+    Character::interpretMessage( message );
+    switch (type){
+        case PlayerMessages::Score : {
+            unsigned int s;
+            int attack;
+            message >> s >> attack;
+            setScore(s);
+            attack_bonus = (double) attack / 10.0;
+            break;
+        }
+    }
+}
 	
 Network::Message Player::thrownMessage( unsigned int id ){
 	Network::Message message;

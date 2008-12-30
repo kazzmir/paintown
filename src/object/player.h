@@ -69,6 +69,8 @@ public:
             this->score = score;
         }
 	
+        virtual void interpretMessage( Network::Message & m );
+	
 	/* reset some stuff when the player dies */
 	virtual void deathReset();
 	

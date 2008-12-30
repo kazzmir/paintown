@@ -57,6 +57,25 @@ void NetworkPlayer::interpretMessage( Network::Message & message ){
         }
     }
 }
+        
+void NetworkPlayer::attacked( World * world, Object * something, vector< Object * > & objects ){
+    NetworkCharacter::attacked(world, something, objects);
+    score += (int)(85 * (1 + attack_bonus));
+    attack_bonus += 1;
+    Global::debug(1) << "Attack bonus : " << attack_bonus << endl;
+    world->addMessage(scoreMessage());
+}
+
+Network::Message NetworkPlayer::scoreMessage(){
+    Network::Message m;
+
+    m.id = getId();
+    m << PlayerMessages::Score;
+    m << score;
+    m << (int)(attack_bonus * 10);
+
+    return m;
+}
 
 void NetworkPlayer::draw( Bitmap * work, int rel_x ){
     Character::draw( work, rel_x );
@@ -96,4 +115,10 @@ void NetworkPlayer::draw( Bitmap * work, int rel_x ){
 /* just performs the current animation */
 void NetworkPlayer::act( vector< Object * > * others, World * world, vector< Object * > * add ){
     NetworkCharacter::act(others, world, add);
+
+    if (attack_bonus > 0){
+        attack_bonus -= 0.02;
+    } else {
+        attack_bonus = 0;
+    }
 }

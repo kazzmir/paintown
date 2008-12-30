@@ -20,12 +20,14 @@ public:
 public:
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual void interpretMessage( Network::Message & m );
+        virtual void attacked( World * world, Object * something, vector< Object * > & objects );
 
 	/* logic */
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 
 protected:
         void initializeAttackGradient();
+	virtual Network::Message scoreMessage();
 
 protected:
         unsigned int score;
