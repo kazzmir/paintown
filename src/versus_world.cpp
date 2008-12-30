@@ -101,7 +101,7 @@ void VersusWorld::act(){
 							added_effects.push_back( addx );
 						}
 
-						o_good->attacked( *fight, added_effects );
+						o_good->attacked(this, *fight, added_effects );
 						(*fight)->collided( o_good, added_effects );
 						(*fight)->takeDamage( this, o_good, o_good->getDamage() );
 						// }

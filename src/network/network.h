@@ -65,8 +65,10 @@ struct Message{
 
 	Message & operator=( const Message & m );
 	Message & operator<<( int x );
+	Message & operator<<( unsigned int x );
 	Message & operator<<( std::string p );
 	Message & operator>>( int & x );
+	Message & operator>>( unsigned int & x );
 
 	int size() const;
 	uint8_t * dump( uint8_t * buffer ) const;

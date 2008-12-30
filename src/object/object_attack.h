@@ -7,6 +7,8 @@
 
 using namespace std;
 
+class World;
+
 class ObjectAttack: public Object{
 public:
 	ObjectAttack( int alliance );
@@ -20,7 +22,7 @@ public:
 	virtual const double minZDistance() const = 0;
 
 	/* this object just attached 'something' */
-	virtual void attacked( Object * something, vector< Object * > & objects ) = 0;
+	virtual void attacked( World * world, Object * something, vector< Object * > & objects ) = 0;
 	
 	virtual inline const unsigned int getTicket() const{
 		return attack_ticket;

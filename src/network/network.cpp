@@ -111,17 +111,29 @@ void Message::reset(){
 	position = data;
 }
 
-Message & Message::operator<<( int x ){
+Message & Message::operator<<(int x){
 
 	*(int16_t *) position = x;
-	position += sizeof( int16_t );
+	position += sizeof(int16_t);
 
 	return *this;
 }
+
+Message & Message::operator<<(unsigned int x){
+	*(int32_t *) position = x;
+	position += sizeof(int32_t);
+	return *this;
+}
 	
-Message & Message::operator>>( int & x ){
+Message & Message::operator>>(int & x){
 	x = *(int16_t *) position;
-	position += sizeof( int16_t );
+	position += sizeof(int16_t);
+	return *this;
+}
+
+Message & Message::operator>>(unsigned int & x){
+	x = *(int32_t *) position;
+	position += sizeof(int32_t);
 	return *this;
 }
 

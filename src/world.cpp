@@ -255,7 +255,7 @@ void World::doLogic(){
 								addMessage( createBangMessage( (int) x, 0, (int) y + addx->getHeight() / 2 ) );
 							}
 
-							o_good->attacked( *fight, added_effects );
+							o_good->attacked(this, *fight, added_effects );
 							(*fight)->collided( o_good, added_effects );
 							addMessage( (*fight)->collidedMessage() );
 							(*fight)->takeDamage( this, o_good, o_good->getDamage() );

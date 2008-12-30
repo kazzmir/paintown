@@ -40,7 +40,7 @@ public:
 	
 	virtual void hurt( int x );
 	
-        virtual void attacked( Object * something, vector< Object * > & objects );
+        virtual void attacked( World * world, Object * something, vector< Object * > & objects );
 
 	virtual inline void setExplode( bool b ){
 		/* */
@@ -60,6 +60,14 @@ public:
 	inline const bool isInvincible() const {
 		return this->invincible;
 	}
+
+        inline const unsigned int getScore() const {
+            return score;
+        }
+
+        inline void setScore(unsigned int score){
+            this->score = score;
+        }
 	
 	/* reset some stuff when the player dies */
 	virtual void deathReset();
@@ -67,6 +75,8 @@ public:
         virtual ~Player();
 	
 protected:
+	virtual Network::Message scoreMessage();
+
         void initializeAttackGradient();
 	void fillKeyCache();
         void debugDumpKeyCache(int level);

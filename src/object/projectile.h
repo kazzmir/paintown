@@ -30,7 +30,7 @@ public:
 	virtual const int getHeight() const;
 	virtual void getAttackCoords( int & x, int & y);
 	virtual const double minZDistance() const;
-	virtual void attacked( Object * something, vector< Object * > & objects );
+	virtual void attacked(World * world, Object * something, vector< Object * > & objects );
 	virtual Network::Message getCreateMessage();
 
 	virtual const int getRY() const;

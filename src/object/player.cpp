@@ -15,6 +15,7 @@
 #include "util/load_exception.h"
 #include "world.h"
 #include "object.h"
+#include "object_messages.h"
 #include "player.h"
 
 // how many ticks to wait before the key cache is cleared.
@@ -176,12 +177,24 @@ void Player::fillKeyCache(){
 		key_cache.pop_front();
 	}
 }
+	
+Network::Message Player::scoreMessage(){
+    Network::Message m;
+
+    m.id = getId();
+    m << PlayerMessages::Score;
+    m << getScore();
+    m << (int)(attack_bonus * 10);
+
+    return m;
+}
         
-void Player::attacked( Object * something, vector< Object * > & objects ){
-    Character::attacked(something, objects);
+void Player::attacked( World * world, Object * something, vector< Object * > & objects ){
+    Character::attacked(world, something, objects);
     score += (int)(85 * (1 + attack_bonus));
     attack_bonus += 1;
     Global::debug(1) << "Attack bonus : " << attack_bonus << endl;
+    world->addMessage(scoreMessage());
 }
 	
 void Player::drawLifeBar( int x, int y, Bitmap * work ){

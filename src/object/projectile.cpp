@@ -196,6 +196,6 @@ const double Projectile::minZDistance() const {
 	return currentAnimation->getMinZDistance();
 }
 
-void Projectile::attacked( Object * something, vector< Object * > & objects ){
+void Projectile::attacked(World * world, Object * something, vector< Object * > & objects ){
 	setLife( 0 );
 }

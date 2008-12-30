@@ -1099,7 +1099,7 @@ const map<string,Animation*> & Character::getMovements() {
 	return mapper[ current_map ];
 }
 	
-void Character::attacked( Object * something, vector< Object * > & objects ){
+void Character::attacked( World * world, Object * something, vector< Object * > & objects ){
 	animation_current->contacted();
 }
 

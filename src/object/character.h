@@ -86,7 +86,7 @@ public:
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	
-	virtual void attacked( Object * something, vector< Object * > & objects );
+	virtual void attacked( World * world, Object * something, vector< Object * > & objects );
 
 	/* obj hurt you, take some damage */
 	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
