@@ -21,16 +21,15 @@ config( config ){
 }
 
 void VersusPlayer::draw( Bitmap * work, int rel_x ){
-
-	Character::draw( work, rel_x );
+    Character::draw( work, rel_x );
 }
 
 int VersusPlayer::getKey( int motion, int facing ){
-	return Configuration::config( config ).getKey( motion, facing );
+    return Configuration::config( config ).getKey( motion, facing );
 }
 	
 bool VersusPlayer::canGrab( Object * enemy ){
-		  return false;
+    return false;
 }
 	
 void VersusPlayer::act( vector< Object * > * others, World * world, vector< Object * > * add ){
