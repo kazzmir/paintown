@@ -1,6 +1,7 @@
 #include "util/bitmap.h"
 #include "network_character.h"
 #include "object.h"
+#include "object_messages.h"
 #include "animation.h"
 #include "util/font.h"
 #include "util/funcs.h"
@@ -57,17 +58,17 @@ void NetworkCharacter::interpretMessage( Network::Message & message ){
 	int type;
 	message >> type;
 	switch ( type ){
-		case CHARACTER_SHOW_NAME : {
-			int amount;
-			message >> amount;
-			setNameTime( amount );
-			break;
-		}
-		default : {
-			message.reset();
-			Character::interpretMessage( message );
-			break;
-		}
+            case CharacterMessages::ShowName : {
+                int amount;
+                message >> amount;
+                setNameTime( amount );
+                break;
+            }
+            default : {
+                message.reset();
+                Character::interpretMessage( message );
+                break;
+            }
 	}
 }
 	

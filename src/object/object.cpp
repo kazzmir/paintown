@@ -1,4 +1,5 @@
 #include "object.h"
+#include "object_messages.h"
 #include "object_attack.h"
 #include "stimulation.h"
 #include "util/ebox.h"
@@ -162,33 +163,33 @@ void Object::print() const{
 }
 	
 void Object::interpretMessage( Network::Message & message ){
-	int type;
-	message >> type;
-	switch ( type ){
-		case OBJECT_MOVED : {
-			int x, y, z, facing;
-			int xfrac;
-			message >> x >> xfrac >> y >> z >> facing;
-			setX( x + xfrac / 100.0 );
-			setY( y );
-			setZ( z );
-			setFacing( facing );
-			break;
-		}
-		case OBJECT_COLLIDED : {
-			vector< Object * > objects;
-			/* TODO: get the real object that collided instead of NULL */
-			collided( NULL, objects );
-			break;
-		}
-	}
+    int type;
+    message >> type;
+    switch ( type ){
+        case ObjectMessages::Moved : {
+            int x, y, z, facing;
+            int xfrac;
+            message >> x >> xfrac >> y >> z >> facing;
+            setX( x + xfrac / 100.0 );
+            setY( y );
+            setZ( z );
+            setFacing( facing );
+            break;
+        }
+        case ObjectMessages::Collided : {
+            vector< Object * > objects;
+            /* TODO: get the real object that collided instead of NULL */
+            collided( NULL, objects );
+            break;
+        }
+    }
 }
 	
 Network::Message Object::collidedMessage(){
 	Network::Message m;
 
 	m.id = getId();
-	m << OBJECT_COLLIDED;
+	m << ObjectMessages::Collided;
 
 	return m;
 }
@@ -197,7 +198,7 @@ Network::Message Object::movedMessage(){
 	Network::Message m;
 
 	m.id = getId();
-	m << OBJECT_MOVED;
+	m << ObjectMessages::Moved;
 	m << (int) getX();
 	/* include the decimal part of x */
 	m << (int) ((getX() - (int) getX()) * 100);

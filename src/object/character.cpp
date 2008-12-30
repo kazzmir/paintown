@@ -9,6 +9,7 @@
 #include "character.h"
 #include "globals.h"
 #include "object.h"
+#include "object_messages.h"
 #include "object_attack.h"
 #include "stimulation.h"
 #include "gib.h"
@@ -1302,7 +1303,7 @@ Network::Message Character::explodeMessage(){
 	Network::Message message;
 
 	message.id = getId();
-	message << CHARACTER_EXPLODE;
+	message << CharacterMessages::Explode;
 
 	return message;
 }
@@ -1311,7 +1312,7 @@ Network::Message Character::fallMessage( double x, double y ){
 	Network::Message message;
 
 	message.id = getId();
-	message << CHARACTER_FALL;
+	message << CharacterMessages::Fall;
 	message << (int)(x * 100);
 	message << (int)(y * 100);
 
@@ -1322,7 +1323,7 @@ Network::Message Character::ungrabMessage(){
 	Network::Message message;
 
 	message.id = getId();
-	message << CHARACTER_UNGRAB;
+	message << CharacterMessages::Ungrab;
 
 	return message;
 }
@@ -1330,7 +1331,7 @@ Network::Message Character::ungrabMessage(){
 Network::Message Character::showNameMessage( int amount ){
 	Network::Message message;
 	message.id = getId();
-	message << CHARACTER_SHOW_NAME;
+	message << CharacterMessages::ShowName;
 	message << amount;
 
 	return message;
@@ -1340,7 +1341,7 @@ Network::Message Character::healthMessage(){
 	Network::Message message;
 
 	message.id = getId();
-	message << CHARACTER_HEALTH;
+	message << CharacterMessages::Health;
 	message << getHealth();
 
 	return message;
@@ -1350,7 +1351,7 @@ Network::Message Character::jumpMessage( double x, double z ){
 	Network::Message message;
 	message.id = getId();
 
-	message << CHARACTER_JUMP;
+	message << CharacterMessages::Jump;
 	message << (int)(x * 100);
 	message << (int)(z * 100);
 
@@ -1358,75 +1359,80 @@ Network::Message Character::jumpMessage( double x, double z ){
 }
 	
 void Character::interpretMessage( Network::Message & message ){
-	int type;
-	message >> type;
-	message.reset();
-	Object::interpretMessage( message );
-	switch ( type ){
-		case OBJECT_MOVED : {
-			int status;
-			int moving;
-			message >> status;
-			message >> moving;
-			setStatus( status );
-			setMoving( moving );
-			break;
-		}
-		case CHARACTER_JUMP : {
-			int x, z;
-			message >> x >> z;
-			doJump( x / 100.0, z / 100.0 );
-			animation_current = getMovement( "jump" );
-			break;
-		}
-		case CHARACTER_HEALTH : {
-			int health;
-			message >> health;
-			setHealth( health );
-			Global::debug( 1 ) << "Health for " << getId() << " is " << getHealth() << endl;
-			break;
-		}
-		case CHARACTER_EXPLODE : {
-			setExplode( true );
-			break;
-		}
-		case CHARACTER_FALL : {
-			int x, y;
-			message >> x >> y;
-			fall( x / 100.0, y / 100.0 );
-			break;
-		}
-		case CHARACTER_UNGRAB : {
-			setStatus( Status_Ground );
-			if ( getLink() ){
-				getLink()->unGrab();
-				setLink( NULL );
-			}
-			break;
-		}
-		case CHARACTER_ANIMATION : {
-			int map;
-			message >> map;
-			setMap( map );
-			animation_current = getMovement( message.path );
-			if ( animation_current == NULL ){
-				Global::debug( 1 ) << "Could not find animation for '" << message.path << "'" << endl;
-				animation_current = getMovement( "idle" );
-			}
-			if ( message.path != "walk" && message.path != "idle" ){
-				animation_current->reset();
-				nextTicket();
-			}
-			break;
-		}
-	}
+    int type;
+    message >> type;
+    namespace CM = CharacterMessages;
+
+    /* reset because Object::interpretMessage() is going to read
+     * the type as well
+     */
+    message.reset();
+    Object::interpretMessage( message );
+    switch ( type ){
+        case ObjectMessages::Moved : {
+            int status;
+            int moving;
+            message >> status;
+            message >> moving;
+            setStatus( status );
+            setMoving( moving );
+            break;
+        }
+        case CM::Jump : {
+            int x, z;
+            message >> x >> z;
+            doJump( x / 100.0, z / 100.0 );
+            animation_current = getMovement( "jump" );
+            break;
+        }
+        case CM::Health : {
+            int health;
+            message >> health;
+            setHealth( health );
+            Global::debug( 1 ) << "Health for " << getId() << " is " << getHealth() << endl;
+            break;
+        }
+        case CM::Explode : {
+            setExplode( true );
+            break;
+        }
+        case CM::Fall : {
+            int x, y;
+            message >> x >> y;
+            fall( x / 100.0, y / 100.0 );
+            break;
+        }
+        case CM::Ungrab : {
+            setStatus( Status_Ground );
+            if ( getLink() ){
+            getLink()->unGrab();
+            setLink( NULL );
+            }
+            break;
+        }
+        case CM::Animation : {
+            int map;
+            message >> map;
+            setMap( map );
+            animation_current = getMovement( message.path );
+            if ( animation_current == NULL ){
+            Global::debug( 1 ) << "Could not find animation for '" << message.path << "'" << endl;
+            animation_current = getMovement( "idle" );
+            }
+            if ( message.path != "walk" && message.path != "idle" ){
+            animation_current->reset();
+            nextTicket();
+            }
+            break;
+        }
+    }
 }
 	
 Network::Message Character::animationMessage(){
 	Network::Message m;
 
 	m.id = getId();
-	m << CHARACTER_ANIMATION;
+	m << CharacterMessages::Animation;
 	m << getCurrentMap();
 	m.path = getCurrentMovement()->getName();
 

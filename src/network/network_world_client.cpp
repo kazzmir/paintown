@@ -230,6 +230,7 @@ Object * NetworkWorldClient::findObject( unsigned int id ){
 	return NULL;
 }
 	
+/* messages are defined in ../world.h */
 void NetworkWorldClient::handleMessage( Network::Message & message ){
 	if ( message.id == 0 ){
 		int type;

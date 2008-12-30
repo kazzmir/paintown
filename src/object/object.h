@@ -16,9 +16,6 @@ class Stimulation;
 #define MAX_(a,b) ((a) > (b) ? (a) : (b))
 #define MID_(a,b,c) MAX_(a,MIN_(b,c))
 
-const int OBJECT_MOVED = 0;
-const int OBJECT_COLLIDED = 1;
-
 // using namespace std;
 
 /* generic game object

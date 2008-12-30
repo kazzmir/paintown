@@ -18,15 +18,6 @@ class Projectile;
 
 using namespace std;
 
-const int CHARACTER_ANIMATION = 20;
-const int CHARACTER_JUMP = 21;
-const int CHARACTER_EXPLODE = 22;
-const int CHARACTER_HEALTH = 23;
-const int CHARACTER_FALL = 24;
-const int CHARACTER_UNGRAB = 25;
-const int CHARACTER_SHOW_NAME = 26;
-
-
 /* used for gibs */
 struct BodyPart{
 	BodyPart( int x, int y, Bitmap * image ):x(x), y(y), image(image){}
