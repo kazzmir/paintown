@@ -43,6 +43,7 @@ protected:
 	Object * removeObject( unsigned int id );
 
 	void sendMessage( const Network::Message & message, NLsocket socket );
+        void sendMessages(const vector<Network::Message> & messages, Network::Socket socket);
 
 	bool uniqueObject( unsigned int id );
 	void handleMessage( Network::Message & message );

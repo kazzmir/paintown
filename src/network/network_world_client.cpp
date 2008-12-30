@@ -334,8 +334,16 @@ void NetworkWorldClient::doScene( int min_x, int max_x ){
 	}
 }
 
-void NetworkWorldClient::sendMessage( const Network::Message & message, NLsocket socket ){
+void NetworkWorldClient::sendMessage( const Network::Message & message, Network::Socket socket ){
 	message.send( socket );
+}
+
+void NetworkWorldClient::sendMessages(const vector<Network::Message> & messages, Network::Socket socket){
+    int length = Network::totalSize(messages);
+    uint8_t * data = new uint8_t[length];
+    Network::dump(messages, data);
+    Network::sendBytes(socket, data, length);
+    delete[] data;
 }
 
 void NetworkWorldClient::act(){
@@ -409,11 +417,7 @@ void NetworkWorldClient::act(){
 		} else ++it;
 	}
 
-	/* TODO; bundle messages up to save acks */
-	for ( vector< Network::Message >::iterator it = outgoing.begin(); it != outgoing.end(); it++ ){
-		Network::Message & m = *it;
-		sendMessage( m, getServer() );
-	}
+        sendMessages(outgoing, getServer());
 	outgoing.clear();
 	
 	for ( vector< Object * >::iterator it = added_effects.begin(); it != added_effects.end(); ){
