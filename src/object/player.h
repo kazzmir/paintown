@@ -71,6 +71,8 @@ public:
 	
 	/* reset some stuff when the player dies */
 	virtual void deathReset();
+	
+        virtual Network::Message getCreateMessage();
         
         virtual ~Player();
 	

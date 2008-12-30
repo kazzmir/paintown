@@ -177,6 +177,13 @@ void Player::fillKeyCache(){
 		key_cache.pop_front();
 	}
 }
+        
+Network::Message Player::getCreateMessage(){
+    Network::Message message = Character::getCreateMessage();
+    int player = World::IS_PLAYER;
+    message << player;
+    return message;
+}
 	
 Network::Message Player::scoreMessage(){
     Network::Message m;

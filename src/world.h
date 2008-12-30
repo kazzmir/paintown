@@ -129,6 +129,7 @@ public:
 		THROWN,
 		IGNORE_MESSAGE,
 		GAME_OVER,
+                IS_PLAYER,
 	};
 
 };
