@@ -339,11 +339,14 @@ void NetworkWorldClient::sendMessage( const Network::Message & message, Network:
 }
 
 void NetworkWorldClient::sendMessages(const vector<Network::Message> & messages, Network::Socket socket){
+    Network::sendAllMessages(messages, socket);
+    /*
     int length = Network::totalSize(messages);
     uint8_t * data = new uint8_t[length];
     Network::dump(messages, data);
     Network::sendBytes(socket, data, length);
     delete[] data;
+    */
 }
 
 void NetworkWorldClient::act(){

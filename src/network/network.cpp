@@ -76,18 +76,63 @@ uint8_t * Message::dump( uint8_t * buffer ) const {
 	return buffer;
 }
 
-int totalSize( const std::vector< Message > & messages ){
-	int totalSize = 0;
-	for ( vector< Message >::const_iterator it = messages.begin(); it != messages.end(); it++ ){
-		totalSize += (*it).size();
-	}
-	return totalSize;
+template <typename M>
+int messageSize(const M& message);
+
+template <>
+int messageSize<Message>(Message const & message){
+    return message.size();
 }
 
-void dump( const std::vector< Message > & messages, uint8_t * buffer ){
-	for ( vector< Message >::const_iterator it = messages.begin(); it != messages.end(); it++ ){
-		buffer = (*it).dump( buffer );
-	}
+template <>
+int messageSize<Message*>(Message* const & message){
+    return message->size();
+}
+
+template <class M>
+uint8_t * messageDump(const M& message, uint8_t * buffer);
+
+template <>
+uint8_t * messageDump<Message>(const Message & message, uint8_t * buffer){
+    return message.dump(buffer);
+}
+
+template <>
+uint8_t * messageDump<Message*>(Message* const & message, uint8_t * buffer){
+    return message->dump(buffer);
+}
+
+template <typename M>
+int totalSize(const vector<M> & messages){
+    int size = 0;
+    for (typename vector<M>::const_iterator it = messages.begin(); it != messages.end(); it++){
+        size += messageSize<M>(*it);
+    }
+    return size;
+}
+
+template <class M>
+void dump(const std::vector<M> & messages, uint8_t * buffer ){
+    for (typename vector<M>::const_iterator it = messages.begin(); it != messages.end(); it++ ){
+        buffer = messageDump<M>(*it, buffer);
+    }
+}
+
+template <class M>
+void doSendAllMessages(const vector<M> & messages, Socket socket){
+    int length = totalSize<M>(messages);
+    uint8_t * data = new uint8_t[length];
+    dump<M>(messages, data);
+    sendBytes(socket, data, length);
+    delete[] data;
+}
+
+void sendAllMessages(const vector<Message> & messages, Socket socket){
+    doSendAllMessages<Message>(messages, socket);
+}
+
+void sendAllMessages(const vector<Message*> & messages, Socket socket){
+    doSendAllMessages<Message*>(messages, socket);
 }
 
 void Message::send( Socket socket ) const {

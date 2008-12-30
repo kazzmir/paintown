@@ -234,6 +234,20 @@ void NetworkWorld::flushOutgoing(){
 	outgoing.clear();
 	pthread_mutex_unlock( &message_mutex );
 
+        for (vector<Network::Socket>::iterator socket = sockets.begin(); socket != sockets.end(); socket++){
+            vector<Network::Message*> messages;
+            for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
+                Network::Message & message = (*it).message;
+		Network::Socket from = (*it).socket;
+                if (from != *socket){
+                    messages.push_back(&message);
+                }
+            }
+
+            Network::sendAllMessages(messages, *socket);
+        }
+
+#if 0
 	/* TODO: combine packets together into one big bundle to save TCP ack's */
 	for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
 		Network::Message & m = (*it).message;
@@ -254,6 +268,7 @@ void NetworkWorld::flushOutgoing(){
 			}
 		}
 	}
+#endif
 }
 	
 void NetworkWorld::act(){

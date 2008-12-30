@@ -79,8 +79,17 @@ struct Message{
 	std::string path;
 };
 
-void dump( const std::vector< Message > & messages, uint8_t * buffer );
-int totalSize( const std::vector< Message > & messages );
+/*
+template <class M>
+int totalSize(const std::vector<M> & messages);
+
+template <class M>
+void dump(const std::vector<M> & messages, uint8_t * buffer );
+*/
+
+void sendAllMessages(const std::vector<Message> & messages, Socket socket);
+void sendAllMessages(const std::vector<Message*> & messages, Socket socket);
+
 int16_t read16( Socket socket );
 void send16( Socket socket, int16_t length );
 std::string readStr( Socket socket, const uint16_t length );
