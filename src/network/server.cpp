@@ -1,3 +1,5 @@
+#include "util/bitmap.h"
+
 #include "chat_server.h"
 #include "factory/font_render.h"
 #include "factory/heart_factory.h"
@@ -17,7 +19,6 @@
 #include "return_exception.h"
 #include "server.h"
 #include <sstream>
-#include "util/bitmap.h"
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/keyboard.h"
