@@ -1,25 +1,26 @@
-#include "server.h"
-#include "util/keyboard.h"
-#include "util/bitmap.h"
-#include "util/funcs.h"
-#include "globals.h"
-#include "factory/font_render.h"
-#include "object/object.h"
-#include "object/character.h"
-#include "object/player.h"
-#include "loading.h"
-#include "init.h"
 #include "chat_server.h"
-#include "music.h"
-#include "network_world.h"
-#include "object/network_character.h"
-#include "level/utils.h"
-#include "util/font.h"
-#include "game.h"
+#include "factory/font_render.h"
 #include "factory/heart_factory.h"
 #include "factory/object_factory.h"
+#include "game.h"
+#include "globals.h"
+#include "init.h"
+#include "level/utils.h"
+#include "loading.h"
+#include "music.h"
+#include "network_world.h"
+#include "object/character.h"
+#include "object/network_character.h"
+#include "object/network_player.h"
+#include "object/object.h"
+#include "object/player.h"
 #include "return_exception.h"
+#include "server.h"
 #include <sstream>
+#include "util/bitmap.h"
+#include "util/font.h"
+#include "util/funcs.h"
+#include "util/keyboard.h"
 
 namespace Network{
 
@@ -470,7 +471,7 @@ static void playGame( const vector< Socket > & sockets ){
 			int type;
 			message >> type;
 			if ( type == World::CREATE_CHARACTER ){
-				Character * client_character = new NetworkCharacter( Util::getDataPath() + message.path, ALLIANCE_PLAYER );
+				Character * client_character = new NetworkPlayer( Util::getDataPath() + message.path, ALLIANCE_PLAYER );
 				((NetworkCharacter *)client_character)->alwaysShowName();
 				players.push_back( client_character );
 				client_character->setLives( 1 );

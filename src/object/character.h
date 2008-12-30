@@ -16,8 +16,6 @@ class World;
 class Sound;
 class Projectile;
 
-using namespace std;
-
 /* used for gibs */
 struct BodyPart{
 	BodyPart( int x, int y, Bitmap * image ):x(x), y(y), image(image){}
@@ -44,7 +42,7 @@ public:
 	/* constructors and destructor */
 	Character( int alliance ); 
 	Character( const char * filename, int alliance ) throw( LoadException );
-	Character( const string & filename, int alliance ) throw ( LoadException );
+	Character( const std::string & filename, int alliance ) throw ( LoadException );
 	Character( const Character & chr ) throw( LoadException );
 	
 	virtual ~Character();
@@ -54,7 +52,7 @@ public:
 	virtual void createProjectile( Projectile * projectile );
 
 	/* logic */
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
 	/* drawing */
 	virtual void draw( Bitmap * work, int rel_x );
@@ -73,7 +71,7 @@ public:
 	virtual void thrown();
 
 	/* you have collided with obj */
-	virtual void collided( ObjectAttack * obj, vector< Object * > & objects );
+	virtual void collided( ObjectAttack * obj, std::vector< Object * > & objects );
 	
 	inline virtual void setFacing( const int f ){
 		if ( getStatus() == Status_Ground || getStatus() == Status_Grabbed ){
@@ -86,7 +84,7 @@ public:
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	
-	virtual void attacked( World * world, Object * something, vector< Object * > & objects );
+	virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
 
 	/* obj hurt you, take some damage */
 	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
@@ -94,7 +92,7 @@ public:
 	/* make the character jump! */
 	virtual void jump();
 
-	virtual void died( vector< Object * > & objects );
+	virtual void died( std::vector< Object * > & objects );
 
 public:
 	/* debug methods */
@@ -201,7 +199,7 @@ public:
 	/* for testing purposes only */
 	virtual bool testAnimation();
 	virtual void testAnimation( unsigned int x );
-	virtual void testAnimation( string name );
+	virtual void testAnimation( std::string name );
 	void testReset();
 
 
@@ -222,23 +220,23 @@ public:
 		return thrown_status;
 	}
 
-	inline const map< int, map<string,Animation*> > getMapper() const {
+	inline const std::map< int, std::map<std::string,Animation*> > getMapper() const {
 		return mapper;
 	}
 
 	virtual bool isGettable();
 	virtual Animation * getCurrentMovement();
-	virtual void setMovement( Animation * animation, const string & name );
-	virtual Animation * getMovement( const string & str );
+	virtual void setMovement( Animation * animation, const std::string & name );
+	virtual Animation * getMovement( const std::string & str );
 	virtual Animation * getMovement( const unsigned int x );
-	virtual const map<string,Animation*> & getMovements();
+	virtual const std::map<std::string,Animation*> & getMovements();
 
 	virtual inline const int getShadow() const {
 		return shadow;
 	}
 	virtual void getAttackCoords( int & x, int & y);
-	const string getName() const;
-	void setName( const string & str );
+	const std::string getName() const;
+	void setName( const std::string & str );
 
 	inline void setSpeed( const double s ){
 		speed = s;
@@ -262,7 +260,7 @@ public:
 
 	virtual const int getWidth() const;
 	virtual const int getHeight() const;
-	virtual const string & getAttackName();
+	virtual const std::string & getAttackName();
 	virtual inline const int getStatus() const {
 		return status;
 	}
@@ -289,7 +287,7 @@ public:
 	
 	virtual void drawLifeBar( int x, int y, Bitmap * work );
 	
-	virtual inline const string getPath() const {
+	virtual inline const std::string getPath() const {
 		return path;
 	}
 
@@ -344,12 +342,12 @@ protected:
 	const int getShadowX();
 	const int getShadowY();
 
-	virtual void filterEnemies( vector< Object * > & mine, vector< Object * > * all );
-	virtual void reMap( const string & from, const string & to, int id );
+	virtual void filterEnemies( std::vector< Object * > & mine, std::vector< Object * > * all );
+	virtual void reMap( const std::string & from, const std::string & to, int id );
 	void loadSelf( const char * filename ) throw ( LoadException );
 	bool realCollision( ObjectAttack * obj );
 	
-	vector< BodyPart > getBodyParts( Animation * animation );
+        std::vector< BodyPart > getBodyParts( Animation * animation );
 
 	virtual void landed( World * world );
 
@@ -361,7 +359,7 @@ protected:
 	/* helper functions */
 
 	// void parseObject( string object_string ) throw( exception );
-	void upperCase( string & who );
+	void upperCase( std::string & who );
 
 	inline const int getInvincibility() const {
 		return invincibility;
@@ -381,7 +379,7 @@ protected:
 	}
 
 protected:
-	string name;
+        std::string name;
 	// int speed;
 	int type;
 	int shadow;
@@ -445,9 +443,9 @@ protected:
 
 	unsigned int current_map;
 	/* map from id to map of animations */
-	map< int, map<string,Animation*> > mapper;
-	vector< Object * > projectiles;
-	vector< BodyPart > body_parts;
+	map< int, std::map<std::string,Animation*> > mapper;
+        std::vector< Object * > projectiles;
+        std::vector< BodyPart > body_parts;
 	
 	Sound * die_sound;
 	Sound * landed_sound;

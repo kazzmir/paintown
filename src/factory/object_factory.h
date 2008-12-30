@@ -9,6 +9,7 @@ class Heart;
 class Item;
 class Enemy;
 class NetworkCharacter;
+class NetworkPlayer;
 
 #include <map>
 #include <vector>
@@ -41,7 +42,7 @@ private:
 	Object * makeActor(Actor * ret, BlockObject * block);
 	Object * makeCat(Cat * ret, BlockObject * block);
 	Object * makeNetworkCharacter(NetworkCharacter * guy, BlockObject * block);
-	Object * makeNetworkPlayer(NetworkCharacter * guy, BlockObject * block);
+	Object * makeNetworkPlayer(NetworkPlayer * guy, BlockObject * block);
 
 	~ObjectFactory();
 

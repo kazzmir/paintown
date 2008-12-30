@@ -10,6 +10,7 @@
 #include "music.h"
 #include "object/character.h"
 #include "object/network_character.h"
+#include "object/network_player.h"
 #include "network_world_client.h"
 #include "game.h"
 #include "return_exception.h"
@@ -170,7 +171,7 @@ static void playGame( Socket socket ){
 					int id;
 					next >> id;
 					if ( uniqueId( players, id ) ){
-						Character * c = new NetworkCharacter( Util::getDataPath() + next.path, ALLIANCE_PLAYER );
+						Character * c = new NetworkPlayer( Util::getDataPath() + next.path, ALLIANCE_PLAYER );
 						c->setId( id );
 						((NetworkCharacter *)c)->alwaysShowName();
 						players.push_back( c );
@@ -207,6 +208,10 @@ static void playGame( Socket socket ){
 				}
 			}
 		}
+
+                for (vector<Object*>::iterator it = players.begin(); it != players.end(); it++){
+                    delete *it;
+                }
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "[client] Load exception: " + le.getReason();
 	}

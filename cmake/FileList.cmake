@@ -74,6 +74,7 @@ src/object/enemy.cpp
 src/object/gib.cpp
 src/object/item.cpp
 src/object/network_character.cpp
+src/object/network_player.cpp
 src/object/object.cpp
 src/object/object_attack.cpp
 src/object/object_nonattack.cpp

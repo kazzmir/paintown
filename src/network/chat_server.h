@@ -6,6 +6,7 @@
 #include "gui/sigslot.h"
 #include <pthread.h>
 #include <string>
+#include <vector>
 
 class Bitmap;
 class Keyboard;
@@ -114,7 +115,7 @@ public:
 	bool isAccepting();
 
 	/* get the list of connected clients */
-	vector< Network::Socket > getConnectedClients();
+        std::vector< Network::Socket > getConnectedClients();
 
 	inline const std::string getName() const {
 		return name;

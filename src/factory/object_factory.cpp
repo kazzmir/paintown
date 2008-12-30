@@ -6,6 +6,7 @@
 #include "level/blockobject.h"
 #include "object/enemy.h"
 #include "object/network_character.h"
+#include "object/network_player.h"
 #include "object/actor.h"
 #include "object/cat.h"
 #include "object/heart.h"
@@ -80,6 +81,12 @@ Object * ObjectFactory::makeNetworkCharacter( NetworkCharacter * guy, BlockObjec
 	return guy;
 }
 
+Object * ObjectFactory::makeNetworkPlayer( NetworkPlayer * guy, BlockObject * block ){
+	guy->setMap( block->getMap() );
+        guy->setObjectId(block->getId());
+	return guy;
+}
+
 Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 
 	int x, z;
@@ -121,6 +128,14 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
 				}
 				return makeNetworkCharacter( (NetworkCharacter *) cached[ block->getPath() ]->copy(), block );
+				break;
+			}
+                        case NetworkPlayerType : {
+				if ( cached[ block->getPath() ] == NULL ){
+					cached[ block->getPath() ] = new NetworkPlayer( block->getPath(), 0 );
+					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+				}
+				return makeNetworkPlayer( (NetworkPlayer *) cached[ block->getPath() ]->copy(), block );
 				break;
 			}
 			case ActorType : {
