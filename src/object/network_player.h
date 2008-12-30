@@ -23,8 +23,15 @@ public:
 
 	/* logic */
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+
+protected:
+        void initializeAttackGradient();
+
 protected:
         unsigned int score;
+        double attack_bonus;
+        static const int num_attack_gradient = 50;
+        int attack_gradient[num_attack_gradient];
 };
 
 #endif
