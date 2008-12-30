@@ -109,7 +109,7 @@ vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, 
 			}
 
 			/* does this violate some OOP principle? oh wel */
-			if ( obj->getType() == ObjectFactory::OBJECT_ENEMY ){
+			if ( obj->getType() == ObjectFactory::EnemyType ){
 				Heart * h = ((Enemy *)newobj)->getHeart();
 				hearts.push_back( h );
 			}

@@ -120,7 +120,13 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 		}
 		if ( ! found ){
 			BlockObject block;
-			block.setType( ObjectFactory::OBJECT_NETWORK_CHARACTER );
+                        int isPlayer;
+                        message >> isPlayer;
+                        if (isPlayer == World::IS_PLAYER){
+                            block.setType( ObjectFactory::NetworkPlayerType );
+                        } else {
+                            block.setType( ObjectFactory::NetworkCharacterType );
+                        }
 			block.setMap( map );
 			block.setPath( path );
 			Character * character = (Character *) ObjectFactory::createObject( &block );
@@ -148,7 +154,7 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
 	if ( uniqueObject( id ) ){
 		string path = Util::getDataPath() + "/" + message.path;
 		BlockObject block;
-		block.setType( ObjectFactory::OBJECT_CAT );
+		block.setType( ObjectFactory::CatType );
 		block.setPath( path );
 		/* TODO: should these values be hard-coded? */
 		block.setCoords( 200, 150 );
@@ -190,7 +196,7 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
 		message >> x >> z >> value;
 		string path = Util::getDataPath() + "/" + message.path;
 		BlockObject block;
-		block.setType( ObjectFactory::OBJECT_ITEM );
+		block.setType( ObjectFactory::ItemType );
 		block.setPath( path );
 		/* TODO: dont hard-code this */
 		block.setStimulationType( "health" );

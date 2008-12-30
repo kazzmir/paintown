@@ -6,13 +6,14 @@
 #include "util/token_exception.h"
 #include "util/token.h"
 #include "util/funcs.h"
+#include "globals.h"
 
 static const string dataPath( const string & str ){
 	return Util::getDataPath() + str;
 }
 
 BlockObject::BlockObject():
-type( -1 ),
+type(ObjectFactory::NoneType),
 aggression( -1 ),
 map( 0 ),
 health( 1 ),
@@ -24,7 +25,7 @@ stimulationValue( 0 ){
 }
 
 BlockObject::BlockObject( Token * tok ) throw ( LoadException ):
-type( -1 ),
+type(ObjectFactory::NoneType),
 aggression( -1 ),
 map( 0 ),
 health( 1 ),
@@ -42,13 +43,13 @@ stimulationValue( 0 ){
 				string k;
 				*current >> k;
 				if ( k == "item" ){
-					type = ObjectFactory::OBJECT_ITEM;
+					type = ObjectFactory::ItemType;
 				} else if ( k == "enemy" ){
-					type = ObjectFactory::OBJECT_ENEMY;
+					type = ObjectFactory::EnemyType;
 				} else if ( k == "actor" ){
-					type = ObjectFactory::OBJECT_ACTOR;
+					type = ObjectFactory::ActorType;
 				} else if ( k == "cat" ){
-					type = ObjectFactory::OBJECT_CAT;
+					type = ObjectFactory::CatType;
 				} else {
 					tok->print(" ");
 					throw LoadException("Not a valid type");
@@ -116,16 +117,18 @@ stimulationValue( 0 ){
 		name = "a";
 		name += getType();
 	}
-	if ( getAlias() == "" )
+
+	if ( getAlias() == "" ){
 		setAlias( getName() );
+        }
 
 	if ( getPath() == "" ){
-		cout<<endl;
-		cout<<"**WARNING**"<<endl;
-		tok->print(" ");
-		string str("No path given for ");
-		str += getName();
-		throw LoadException( str );
+            Global::debug(0) << endl;
+            Global::debug(0) << "**WARNING**"<<endl;
+            tok->print(" ");
+            string str("No path given for ");
+            str += getName();
+            throw LoadException( str );
 	}
 }
 

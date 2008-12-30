@@ -105,7 +105,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 	
 	try{
 		switch( block->getType() ){
-			case OBJECT_ITEM : {
+			case ItemType : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
@@ -115,7 +115,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 
 				break;
 			}
-			case OBJECT_NETWORK_CHARACTER : {
+			case NetworkCharacterType : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new NetworkCharacter( block->getPath(), 0 );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
@@ -123,7 +123,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				return makeNetworkCharacter( (NetworkCharacter *) cached[ block->getPath() ]->copy(), block );
 				break;
 			}
-			case OBJECT_ACTOR : {
+			case ActorType : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Actor( block->getPath() );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
@@ -132,7 +132,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				return makeActor( (Actor *) cached[ block->getPath() ]->copy(), block );
 				break;
 			}
-			case OBJECT_ENEMY : {
+			case EnemyType : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Enemy( block->getPath() );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
@@ -141,7 +141,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				return makeEnemy( (Enemy *) cached[ block->getPath() ]->copy(), block );
 				break;
 			}
-			case OBJECT_CAT : {
+			case CatType : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Cat( block->getPath() );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;

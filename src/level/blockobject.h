@@ -2,6 +2,7 @@
 #define _block_object_h
 
 #include "util/load_exception.h"
+#include "factory/object_factory.h"
 #include <string>
 
 using namespace std;
@@ -15,13 +16,13 @@ public:
 	BlockObject( Token * tok ) throw ( LoadException );
 
 /* getters */
-public:
+public: 
 
 	inline const string & getAlias() const {
 		return alias;
 	}
 
-	inline const int getType() const {
+	inline const ObjectFactory::ObjectType getType() const {
 		return type;
 	}
 
@@ -61,7 +62,7 @@ public:
 /* setters */
 public:
 
-	inline void setType( const int l ) {
+	inline void setType(const ObjectFactory::ObjectType l) {
 		type = l;
 	}
 
@@ -115,7 +116,7 @@ public:
 protected:
 
 	/* the type of object this is */
-	int type;
+        ObjectFactory::ObjectType type;
 
 	int aggression;
 
