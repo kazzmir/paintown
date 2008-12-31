@@ -76,9 +76,12 @@ uint8_t * Message::dump( uint8_t * buffer ) const {
 	return buffer;
 }
 
+/*
 template <typename M>
 int messageSize(const M& message);
+*/
 
+/*
 template <>
 int messageSize<Message>(Message const & message){
     return message.size();
@@ -88,7 +91,16 @@ template <>
 int messageSize<Message*>(Message* const & message){
     return message->size();
 }
+*/
+int messageSize(Message const & message){
+    return message.size();
+}
 
+int messageSize(Message* const & message){
+    return message->size();
+}
+
+/*
 template <class M>
 uint8_t * messageDump(const M& message, uint8_t * buffer);
 
@@ -101,12 +113,21 @@ template <>
 uint8_t * messageDump<Message*>(Message* const & message, uint8_t * buffer){
     return message->dump(buffer);
 }
+*/
+uint8_t * messageDump(const Message & message, uint8_t * buffer){
+    return message.dump(buffer);
+}
+
+uint8_t * messageDump(Message* const & message, uint8_t * buffer){
+    return message->dump(buffer);
+}
 
 template <typename M>
 int totalSize(const vector<M> & messages){
     int size = 0;
     for (typename vector<M>::const_iterator it = messages.begin(); it != messages.end(); it++){
-        size += messageSize<M>(*it);
+        // size += messageSize<M>(*it);
+        size += messageSize(*it);
     }
     return size;
 }
@@ -114,7 +135,7 @@ int totalSize(const vector<M> & messages){
 template <class M>
 void dump(const std::vector<M> & messages, uint8_t * buffer ){
     for (typename vector<M>::const_iterator it = messages.begin(); it != messages.end(); it++ ){
-        buffer = messageDump<M>(*it, buffer);
+        buffer = messageDump(*it, buffer);
     }
 }
 
