@@ -19,6 +19,10 @@ bool ObjectNonAttack::collision( ObjectAttack * obj ){
 
 void ObjectNonAttack::grabbed( Object * obj ){
 }
+
+bool ObjectNonAttack::isGrabbable(Object * obj){
+    return false;
+}
 	
 bool ObjectNonAttack::isGrabbed(){
 	return false;

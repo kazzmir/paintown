@@ -116,6 +116,8 @@ public:
 
 	/* have I hit something? */
 	virtual bool collision( ObjectAttack * obj );
+        
+        virtual bool isGrabbable(Object * obj);
 
 	virtual bool isJumping();
 	

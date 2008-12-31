@@ -18,6 +18,7 @@ public:
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	virtual bool isGrabbed();
+        virtual bool isGrabbable(Object * obj);
 	virtual Object * copy();
 	virtual const std::string & getAttackName();
 	virtual bool isAttacking();

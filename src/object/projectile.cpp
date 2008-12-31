@@ -176,6 +176,10 @@ bool Projectile::isGettable(){
 const int Projectile::getWidth() const {
 	return currentAnimation->getWidth();
 }
+        
+bool Projectile::isGrabbable(Object * object){
+    return false;
+}
 
 const int Projectile::getHeight() const {
 	return currentAnimation->getHeight();

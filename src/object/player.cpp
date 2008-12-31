@@ -464,6 +464,10 @@ void Player::takeDamage( World * world, ObjectAttack * obj, int x ){
 /* check to see if the player is close enough to an enemy */
 bool Player::canGrab( Object * enemy ){
 	// return false;
+        if (!enemy->isGrabbable(this)){
+            return false;
+        }
+
 	if ( !enemy->isCollidable( this ) ){
 		return false;
 	}

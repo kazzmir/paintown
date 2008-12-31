@@ -110,6 +110,8 @@ public:
 
 	virtual bool isGettable() = 0;
 
+        virtual bool isGrabbable(Object * obj) = 0;
+
 	/* isAttacking:
 	 * Returns true if this object is performing an attack move
 	 */

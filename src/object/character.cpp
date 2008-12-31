@@ -626,6 +626,10 @@ const int Character::getAlliance() const{
 
 	return Object::getAlliance();
 }
+        
+bool Character::isGrabbable(Object * obj){
+    return true;
+}
 
 Object * Character::copy(){
 	return new Character( *this );
