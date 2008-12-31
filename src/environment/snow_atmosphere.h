@@ -6,17 +6,21 @@ class Bitmap;
 #include "atmosphere.h"
 
 struct Flake{
-	Flake( int x, int y, int type ):
+	Flake(int x, int y, int type, int angle ):
 		x(x),
 		y(y),
 		dx(x),
 		dy(y),
+                angle(angle),
 		type(type),
-		dir(0){}
+		dir(0),
+                spin(0){}
 	int x, y;
 	double dx, dy;
+        int angle;
 	int type;
 	int dir;
+        int spin;
 };
 
 class SnowAtmosphere: public Atmosphere {
