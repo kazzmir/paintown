@@ -17,6 +17,7 @@
 #include "object/object.h"
 #include "object/player.h"
 #include "return_exception.h"
+#include "menu/menu_global.h"
 #include "server.h"
 #include <sstream>
 #include "util/font.h"
@@ -451,49 +452,79 @@ static void playLevel( World & world, const vector< Object * > & players ){
 	}
 }
 
+static int allAlliance = ALLIANCE_FREE_FOR_ALL;
+static int playerAlliance(){
+    if (MenuGlobals::freeForAll()){
+        return allAlliance++;
+    } else {
+        return ALLIANCE_PLAYER;
+    }
+}
+
 static void playGame( const vector< Socket > & sockets ){
 	vector< Object * > players;
 	pthread_t loading_screen_thread;
 	try{
+            /* first the user selects his own player */
 		Object * player = Game::selectPlayer( false, "Pick a player" );
 		players.push_back( player );
+                /* then the user selects a set of levels to play */
 		string levelSet = Game::selectLevelSet( Util::getDataPath() + "/levels" );
 		
-
+                /* show the loading screen */
 		startLoading( &loading_screen_thread );
 
+                /* reset the alliance settings */
+                allAlliance = ALLIANCE_FREE_FOR_ALL;
+
+                /* the server player is network id 1 */
 		int id = 1;
 		player->setId( id );
+                /* the server's player alliance can just be ALLIANCE_PLAYER, so no
+                 * need to change it
+                 */
+
 		id += 1;
+                /* all other players will send their chosen character as a
+                 * CREATE_CHARACTER message. after receiving it, send back the
+                 * network id for that character.
+                 */
 		for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 			const Socket & socket = *it;
 			debug( 1 ) << "Read character path from " << id << endl;
 			Message message( socket );
 			int type;
 			message >> type;
-			if ( type == World::CREATE_CHARACTER ){
-				Character * client_character = new NetworkPlayer( Util::getDataPath() + message.path, ALLIANCE_PLAYER );
-				((NetworkCharacter *)client_character)->alwaysShowName();
-				players.push_back( client_character );
-				client_character->setLives( 1 );
-				client_character->setId( id );
-				Message clientId;
-				clientId << World::SET_ID;
-				clientId << id;
-				clientId.send( socket );
-				id += 1;
-			} else {
+                        if ( type == World::CREATE_CHARACTER ){
+                            int alliance = playerAlliance();
+                            Character * client_character = new NetworkPlayer(Util::getDataPath() + message.path, alliance);
+                            /* Don't need this line now that NetworkPlayer exists.
+                             * take it out at some point.
+                             */
+                            ((NetworkCharacter *)client_character)->alwaysShowName();
+
+                            players.push_back(client_character);
+                            client_character->setLives(1);
+                            client_character->setId(id);
+                            Message clientId;
+                            clientId << World::SET_ID;
+                            clientId << id;
+                            clientId << alliance;
+                            clientId.send( socket );
+                            id += 1;
+                        } else {
 				debug( 0 ) << "Got a bogus message: " << type << endl;
 			}
 		}
 
-		for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+		for ( vector<Object *>::iterator it = players.begin(); it != players.end(); it++ ){
 			Character * c = (Character *) *it;
 			string path = c->getPath();
 			path.erase( 0, Util::getDataPath().length() );
 			Message add;
 			add << World::CREATE_CHARACTER;
 			add << c->getId();
+                        add << c->getAlliance();
 			add.path = path;
 			sendToAll( sockets, add );
 		}

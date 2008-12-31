@@ -277,7 +277,15 @@ void Configuration::loadConfigurations(){
 				*n >> lives;
 			} else if ( *n == "npc-buddies" ){
 				*n >> npc_buddies;
-			}
+			} else if (*n == "play-mode"){
+                            string mode;
+                            *n >> mode;
+                            if (mode == "cooperative"){
+                                Configuration::setPlayMode(Configuration::Cooperative);
+                            } else if (mode == "free-for-all"){
+                                Configuration::setPlayMode(Configuration::FreeForAll);
+                            }
+                        }
 		}
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load configuration file " << configFile() << ": " << le.getReason() << endl;
@@ -337,6 +345,16 @@ void Configuration::saveConfiguration(){
 	*fullscreen << "fullscreen" << Configuration::getFullscreen();
 	head.addToken( fullscreen );
 
+        Token * mode = new Token();
+        string smode;
+        if (Configuration::getPlayMode() == Configuration::Cooperative){
+            smode = "cooperative";
+        } else if (Configuration::getPlayMode() == Configuration::FreeForAll){
+            smode = "free-for-all";
+        }
+        *mode << "play-mode" << smode;
+        head.addToken(mode);
+
 	Token * lives = new Token();
 	*lives << "lives" << Configuration::getLives();
 	head.addToken( lives );
@@ -357,6 +375,8 @@ bool Configuration::invincible = false;
 bool Configuration::fullscreen = false;
 int Configuration::lives = 4;
 int Configuration::npc_buddies = 1;
+// Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
+Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
 double Configuration::getGameSpeed(){
 	return gamespeed;
@@ -401,4 +421,12 @@ int Configuration::getNpcBuddies(){
 void Configuration::setNpcBuddies( int i ){
 	npc_buddies = i;
 	saveConfiguration();
+}
+        
+Configuration::PlayMode Configuration::getPlayMode(){
+    return play_mode;
+}
+
+void Configuration::setPlayMode(Configuration::PlayMode mode){
+    play_mode = mode;
 }

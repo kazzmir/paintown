@@ -45,6 +45,12 @@ public:
 
 	static int getNpcBuddies();
 	static void setNpcBuddies( int i );
+
+        /* free for all lets players attack each other in network mode.
+         * cooperative means they are on the same team.
+         */
+        static bool freeForAll();
+        static bool cooperative();
 	
 private:
 		

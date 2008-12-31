@@ -148,11 +148,13 @@ static void playGame( Socket socket ){
 		/* get the id from the server */
 		Message myid( socket );
 		int type;
+                int alliance;
 		myid >> type;
 		int client_id = -1;
 		if ( type == World::SET_ID ){
-			myid >> client_id;
+			myid >> client_id >> alliance;
 			player->setId( client_id );
+                        player->setAlliance(alliance);
 			Global::debug( 1 ) << "Client id is " << client_id << endl;
 		} else {
 			Global::debug( 0 ) << "Bogus message, expected SET_ID( " << World::SET_ID << " ) got " << type << endl;
@@ -169,9 +171,10 @@ static void playGame( Socket socket ){
 			switch ( type ){
 				case World::CREATE_CHARACTER : {
 					int id;
-					next >> id;
+                                        int alliance;
+					next >> id >> alliance;
 					if ( uniqueId( players, id ) ){
-						Character * c = new NetworkPlayer( Util::getDataPath() + next.path, ALLIANCE_PLAYER );
+						Character * c = new NetworkPlayer( Util::getDataPath() + next.path, alliance);
 						c->setId( id );
 						((NetworkCharacter *)c)->alwaysShowName();
 						players.push_back( c );

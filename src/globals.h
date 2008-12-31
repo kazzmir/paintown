@@ -9,6 +9,7 @@ class Bitmap;
 extern const int ALLIANCE_NONE;
 extern const int ALLIANCE_PLAYER;
 extern const int ALLIANCE_ENEMY;
+extern const int ALLIANCE_FREE_FOR_ALL;
 
 extern const int MIN_RELATIVE_DISTANCE;
 

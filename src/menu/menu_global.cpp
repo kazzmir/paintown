@@ -95,3 +95,11 @@ int MenuGlobals::getNpcBuddies(){
 void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
 }
+
+bool MenuGlobals::freeForAll(){
+    return Configuration::getPlayMode() == Configuration::FreeForAll;
+}
+
+bool MenuGlobals::cooperative(){
+    return Configuration::getPlayMode() == Configuration::Cooperative;
+}

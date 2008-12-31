@@ -10,6 +10,11 @@ public:
 	static void loadConfigurations();
 	static void saveConfiguration();
 
+        enum PlayMode{
+            Cooperative = 1,
+            FreeForAll = 2,
+        };
+
 	/* return a Keyboard::Key_X based on some PAIN_KEY_X */
 	int getKey( int which, int facing );
 	
@@ -42,6 +47,8 @@ public:
 	static void setLives(int l);
 	static int getNpcBuddies();
 	static void setNpcBuddies( int i );
+        static PlayMode getPlayMode();
+        static void setPlayMode(PlayMode mode);
 
 protected:
 	Configuration();
@@ -81,6 +88,7 @@ private:
 	static int lives;
 
 	static int npc_buddies;
+        static PlayMode play_mode;
 };
 
 #endif
