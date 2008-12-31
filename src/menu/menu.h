@@ -44,10 +44,10 @@ class Menu
 		};
 		
 		/*! load */
-		void load(const std::string &filename)throw( LoadException );
+		void load(const std::string &filename) throw (LoadException);
 		
 		/*! load */
-		void load(Token *token)throw( LoadException );
+		void load(Token *token) throw (LoadException);
 		
 		/*! do logic, draw whatever */
 		virtual useflags run();

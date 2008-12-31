@@ -5,7 +5,9 @@
 #include "util/funcs.h"
 #include "util/sound.h"
 #include "util/token.h"
+#include "util/token_exception.h"
 #include "util/tokenreader.h"
+#include "util/load_exception.h"
 #include "globals.h"
 #include "init.h"
 #include "music.h"
@@ -64,7 +66,7 @@ currentDrawState( FadeIn ){
 	backboard.position.radius = 15;
 }
 
-void Menu::load(Token *token)throw( LoadException ){
+void Menu::load(Token *token) throw (LoadException){
 	if ( *token != "menu" )
 		throw LoadException("Not a menu");
 	
@@ -154,13 +156,17 @@ void Menu::load(Token *token)throw( LoadException ){
 	}
 }
 
-void Menu::load(const std::string &filename) throw( LoadException ){
+void Menu::load(const std::string &filename) throw (LoadException){
 	// Must check for initial token, menu
-	TokenReader tr( filename );
+        try{
+            TokenReader tr( filename );
 
-	// Token * current = tr.readToken();
-	Token * token = tr.readToken();
-	load( token );
+            // Token * current = tr.readToken();
+            Token * token = tr.readToken();
+            load( token );
+        } catch (const TokenException & t){
+            throw LoadException(t.getReason());
+        }
 }
 
 useflags Menu::run(){

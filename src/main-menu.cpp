@@ -73,18 +73,18 @@ int paintown_main( int argc, char ** argv ){
 	diff.endTime();
 	diff.printTime( "Init:" );
 	
-	Music music( music_on );
+	Music music(music_on);
 	try{
 		Menu game;
-		game.load( Util::getDataPath() + "menu/main.txt");
+		game.load(Util::getDataPath() + "/menu/main.txt");
 		game.run();
-	} catch ( const TokenException & ex ) {
-		Global::debug( 0 ) << "There was a problem with the token. Error was:\n" << ex.getReason() << endl;
+	} catch (const TokenException & ex){
+		Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
 		return -1;
-	} catch ( const LoadException & ex ) {
-		Global::debug( 0 ) << "There was a problem loading the main menu. Error was:\n" << ex.getReason() << endl;
+	} catch (const LoadException & ex){
+		Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
 		return -1;
-	}
+        }
 
 	Configuration::saveConfiguration();
 	
