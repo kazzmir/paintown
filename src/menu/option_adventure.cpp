@@ -65,7 +65,7 @@ void OptionAdventure::run(bool &endGame){
 		key.wait();
 		
 		player = Game::selectPlayer( MenuGlobals::getInvincible() );
-                player->setObjectId(-1);
+                player->setObjectId((unsigned int)-1);
 		((Player *)player)->setLives( MenuGlobals::getLives() );
 		vector< Object * > players;
 		players.push_back( player );
