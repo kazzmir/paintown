@@ -150,17 +150,17 @@ staticEnv = env.Clone()
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 
-env.Append( LIBS = [dumb,hawknl] )
 
 if isWindows():
-    env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
-    env.Append( CPPDEFINES = 'WINDOWS' )
-    env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
-    env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
 
     config = env.Configure(custom_tests = {"CheckPython" : checkPython})
     config.CheckPython()
     env = config.Finish()
+
+    env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
+    env.Append( CPPDEFINES = 'WINDOWS' )
+    env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
+    env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
 
     # env.Append( CCFLAGS = ['-mthreads'] )
     # env.Append( LINKFLAGS = ['-mthreads'] )
@@ -170,7 +170,6 @@ else:
     env.Append( LIBS = [ 'pthread' ] )
     staticEnv.Append( LIBS = [ 'pthread' ] )
 
-    staticEnv.Append( LIBS = [ hawknl_static, dumb_static ] )
 
     try:
         dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
@@ -228,6 +227,9 @@ else:
 if not isWindows():
    env.Append(CCFLAGS = ['-Werror'])
 staticEnv.Append(CCFLAGS = ['-Werror'])
+
+staticEnv.Append( LIBS = [ hawknl_static, dumb_static ] )
+env.Append( LIBS = [dumb,hawknl] )
 
 use = env
 shared = SConscript( 'src/SConstruct', build_dir='build', exports = ['use'] );
