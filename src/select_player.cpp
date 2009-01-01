@@ -248,7 +248,13 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 			preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
 
 			const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
-			font.printf( 10, font.getHeight() + 5, Bitmap::makeColor( 255, 255, 255 ), work, copy.getName(), 0 );
+                        for (int c = 1; c >= 0; c--){
+                            int color = 255 - c * 190;
+                            int x = 10 + 5 * c;
+                            int y = font.getHeight() + 5 + c * 5;
+                            font.printf( x, y, Bitmap::makeColor(color, color, color ), work, copy.getName(), 0 );
+                        }
+
 			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
 
 			int x = startX, y = startY;
