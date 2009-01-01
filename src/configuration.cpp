@@ -375,8 +375,8 @@ bool Configuration::invincible = false;
 bool Configuration::fullscreen = false;
 int Configuration::lives = 4;
 int Configuration::npc_buddies = 1;
-// Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
-Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
+Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
+// Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
 double Configuration::getGameSpeed(){
 	return gamespeed;

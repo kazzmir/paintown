@@ -122,6 +122,7 @@ src/menu/option_fullscreen.cpp
 src/menu/option_invincible.cpp
 src/menu/option_key.cpp
 src/menu/option_lives.cpp
+src/menu/option_playmode.cpp
 src/menu/option_network_host.cpp
 src/menu/option_network_join.cpp
 src/menu/option_npc_buddies.cpp

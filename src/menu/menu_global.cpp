@@ -103,3 +103,11 @@ bool MenuGlobals::freeForAll(){
 bool MenuGlobals::cooperative(){
     return Configuration::getPlayMode() == Configuration::Cooperative;
 }
+
+void MenuGlobals::setFreeForAll(){
+    Configuration::setPlayMode(Configuration::FreeForAll);
+}
+
+void MenuGlobals::setCooperative(){
+    Configuration::setPlayMode(Configuration::Cooperative);
+}

@@ -51,6 +51,8 @@ public:
          */
         static bool freeForAll();
         static bool cooperative();
+        static void setFreeForAll();
+        static void setCooperative();
 	
 private:
 		
