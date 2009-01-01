@@ -54,13 +54,18 @@ running( true ){
 	objects.clear();
 	pthread_mutex_init( &message_mutex, NULL );
 	pthread_mutex_init( &running_mutex, NULL );
-	pthread_create( &message_thread, NULL, handleMessages, this );
+}
+
+void NetworkWorldClient::startMessageHandler(){
+    pthread_create( &message_thread, NULL, handleMessages, this );
 }
 	
 NetworkWorldClient::~NetworkWorldClient(){
 	debug( 1 ) << "Destroy client world" << endl;
+        /*
 	stopRunning();
 	pthread_join( message_thread, NULL );
+        */
 }
 	
 bool NetworkWorldClient::isRunning(){
@@ -74,6 +79,11 @@ void NetworkWorldClient::stopRunning(){
 	pthread_mutex_lock( &running_mutex );
 	running = false;
 	pthread_mutex_unlock( &running_mutex );
+        Network::Message finish;
+        finish << World::FINISH;
+        finish.id = 0;
+        finish.send(getServer());
+	pthread_join( message_thread, NULL );
 }
 	
 void NetworkWorldClient::addIncomingMessage( const Network::Message & message ){

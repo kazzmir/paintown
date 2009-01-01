@@ -26,6 +26,10 @@ public:
 
 	Network::Message finishMessage();
 
+        /* starts the threads for each client */
+        void startMessageHandlers();
+        void waitForHandlers();
+
 	bool isRunning();
 
 	void flushOutgoing();

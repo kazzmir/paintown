@@ -461,6 +461,48 @@ static int playerAlliance(){
     }
 }
 
+static void waitAllOk(const vector<Socket> & sockets){
+    Global::debug(1) << "Waiting for an ok from all clients" << endl;
+    for (vector<Socket>::const_iterator it = sockets.begin(); it != sockets.end(); it++){
+        bool done = false;
+        while (!done){
+            Message ok(*it);
+            int type;
+            ok >> type;
+            if (type == World::OK){
+                Global::debug(1) << "Received ok from client " << *it << endl;
+                done = true;
+            } else {
+                Global::debug(1) << "Received " << type << " from client " << *it << ". Ignoring.." << endl;
+            }
+        }
+    }
+}
+
+static void waitAllFinish(const vector<Socket> & sockets){
+    for (vector<Socket>::const_iterator it = sockets.begin(); it != sockets.end(); it++){
+        bool done = false;
+        while (!done){
+            Message ok(*it);
+            int type;
+            ok >> type;
+            if (type == World::FINISH){
+                Global::debug(1) << "Received finish from client " << *it << endl;
+                done = true;
+            } else {
+                Global::debug(1) << "Received " << type << " from client " << *it << ". Ignoring.." << endl;
+            }
+        }
+    }
+}
+
+static void sendAllOk(const vector<Socket> & sockets){
+    Message ok;
+    ok << World::OK;
+    Global::debug(1) << "Sending an ok to all clients" << endl;
+    sendToAll(sockets, ok);
+}
+
 static void playGame( const vector< Socket > & sockets ){
 	vector< Object * > players;
 	pthread_t loading_screen_thread;
@@ -568,14 +610,38 @@ static void playGame( const vector< Socket > & sockets ){
 			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
 			Music::play();
 
+                        /* wait for an ok from all the clients, then send another
+                         * ok to continue
+                         */
+                        waitAllOk(sockets);
+                        sendAllOk(sockets);
+
+                        world.startMessageHandlers();
+
 			stopLoading( loading_screen_thread );
 			playLevel( world, players );
 			world.stopRunning();
+			startLoading( &loading_screen_thread );
 			Message finish;
 			finish << World::FINISH;
 			finish.id = 0;
-			sendToAll( sockets, finish );
+                        Global::debug(1) << "Sending finish message to all clients" << endl;
+			sendToAll(sockets, finish);
+                        world.waitForHandlers();
 
+                        waitAllFinish(sockets);
+
+                        Message ignore;
+                        ignore << World::IGNORE_MESSAGE;
+                        ignore.id = 0;
+                        Global::debug(1) << "Sending ignore to all clients" << endl;
+                        sendToAll(sockets, ignore);
+
+                        /* another ok barrier */
+                        waitAllOk(sockets);
+                        sendAllOk(sockets);
+
+                        /*
 			for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
 				Socket s = *it;
 				bool done = false;
@@ -584,6 +650,7 @@ static void playGame( const vector< Socket > & sockets ){
 					int type;
 					ok >> type;
 					if ( type == World::OK ){
+                                            Global::debug(1) << "Received ok from client " << s << endl;
 						done = true;
 					}
 				}
@@ -592,7 +659,7 @@ static void playGame( const vector< Socket > & sockets ){
 				ok << World::OK;
 				ok.send( s );
 			}
-			startLoading( &loading_screen_thread );
+                        */
 		}
 		Network::Message gameOver;
 		gameOver.id = 0;

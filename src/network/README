@@ -1,0 +1,15 @@
+server/client setup
+
+* Server starts a chat server and clients join by sending their name.
+* Server presses the start button and sends OK_TO_START to clients.
+* Server and clients choose their character
+* Clients send CREATE_CHARACTER messages to the server with the path of their chosen character. Server creates network proxy objects and sends back the id and alliance for that player.
+* Once the server has received CREATE_CHARACTER messages from all the clients it then sends CREATE_CHARACTER messages for each player it knows about. Clients being told about their own characters ignore the message. New characters are created using network proxy objects.
+* Server sends LOAD_LEVEL to the clients
+* Clients send OK to server
+* Server sends OK to clients
+* Start game
+* At the end of the level the server sends FINISH to each client and turns off the message handling boolean, but each message handler might be waiting for one more message before returning
+* Each client breaks out of its game loop, sends a dummy message to the server so that it can break out of its message handler, turns off its message handling boolean, and sends a finish message to the server
+* The server receives each finish message and sends a dummy message to each client so that the client can break out of its message handler
+* Then the clients send an ok to the server, the server responds with an ok and the loop continues where the server sends LOAD_LEVEL

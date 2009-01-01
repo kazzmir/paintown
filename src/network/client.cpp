@@ -130,6 +130,27 @@ static bool uniqueId( const vector< Object * > & objs, Object::networkid_t id ){
 	return true;
 }
 
+/* send ok to server, get an ok back */
+static void waitForServer(Socket socket){
+    Message ok;
+    ok << World::OK;
+    ok.send( socket );
+    Global::debug( 1 ) << "Sent ok" << endl;
+    Message ok_ack(socket);
+    int type;
+    ok_ack >> type;
+    if (type != World::OK){
+        Global::debug(0) << "Did not receive ok from the server, instead received " << type << ". Badness may ensure" << endl;
+    }
+    Global::debug( 1 ) << "Received ok" << endl;
+}
+
+static void sendDummy(Socket socket){
+    Message dummy;
+    dummy << World::IGNORE_MESSAGE;
+    dummy.send( socket );
+}
+
 static void playGame( Socket socket ){
 	pthread_t loadingThread;
 	try{
@@ -190,18 +211,25 @@ static void playGame( Socket socket ){
 					Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
 					Music::play();
 
+                                        waitForServer(socket);
+
+                                        world.startMessageHandler();
+
 					stopLoading( loadingThread );
 					try{
 						playLevel( world, players );
 						startLoading( &loadingThread );
+                                                Global::debug(1) << "Stop running client world" << endl;
+                                                /* this dummy lets the server message handler
+                                                 * stop running. its currently blocked waiting for
+                                                 * a message to come through.
+                                                 */
+                                                sendDummy(socket);
 						world.stopRunning();
-						Message ok;
-						ok << World::OK;
-						/* yes, send it twice! */
-						ok.send( socket );
-						ok.send( socket );
-						Global::debug( 1 ) << "Sent ok" << endl;
-					} catch ( const ReturnException & e ){
+                                                Global::debug(1) << "Send dummy packet" << endl;
+                                                /* then wait for a barrier */
+                                                waitForServer(socket);
+                                        } catch ( const ReturnException & e ){
 						Network::close( socket );
 					}
 					break;

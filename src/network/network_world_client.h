@@ -23,6 +23,9 @@ public:
 	inline pthread_mutex_t * getLock(){
 		return &message_mutex;
 	}
+
+        /* start thread to handle messages */
+        void startMessageHandler();
 	
 	virtual void doScene( int min_x, int max_x );
 	virtual void addMessage( Network::Message m, Network::Socket from = 0 );

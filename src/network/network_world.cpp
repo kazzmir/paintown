@@ -9,8 +9,8 @@
 using namespace std;
 
 struct Stuff{
-	NLsocket socket;
-	NetworkWorld * world;
+    Network::Socket socket;
+    NetworkWorld * world;
 };
 
 static std::ostream & debug( int level ){
@@ -59,17 +59,26 @@ running( true ){
 	}
 	this->id = max_id + 1;
 
-
-	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-		Stuff * s = new Stuff;
-		s->socket = *it;
-		s->world = this;
-		pthread_t thread;
-		pthread_create( &thread, NULL, handleMessages, s );
-		threads.push_back( thread );
-	}
 }
-	
+
+void NetworkWorld::startMessageHandlers(){
+    for ( vector<Network::Socket>::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+        Stuff * s = new Stuff;
+        s->socket = *it;
+        s->world = this;
+        pthread_t thread;
+        pthread_create( &thread, NULL, handleMessages, s );
+        threads.push_back( thread );
+    }
+}
+
+void NetworkWorld::waitForHandlers(){
+    for (vector<pthread_t>::iterator it = threads.begin(); it != threads.end(); it++){
+        pthread_t & thread = *it;
+        pthread_join(thread, NULL);
+    }
+}
+
 NetworkWorld::~NetworkWorld(){
 	stopRunning();
 
