@@ -150,7 +150,7 @@ static void playGame( Socket socket ){
 		int type;
                 int alliance;
 		myid >> type;
-                Object::networkid_t client_id = -1;
+                Object::networkid_t client_id = (Object::networkid_t) -1;
 		if ( type == World::SET_ID ){
 			myid >> client_id >> alliance;
 			player->setId( client_id );
