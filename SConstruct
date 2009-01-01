@@ -5,15 +5,20 @@ def isWindows():
     import sys
     return "win32" in sys.platform
 
+def isOSX():
+    import re
+    import sys
+    return "darwin" in sys.platform
+
 def checkPython(context):
     import distutils.sysconfig
     context.Message("Checking if python is embeddable... ")
 
     include_path = distutils.sysconfig.get_config_var('INCLUDEPY')
     link_stuff = distutils.sysconfig.get_config_var('LINKFORSHARED')
-    libs = distutils.sysconfig.get_config_var('LDLIBRARY')
+    # libs = distutils.sysconfig.get_config_var('LDLIBRARY')
+    libs = distutils.sysconfig.get_config_var('LIBRARY')
     lib_path = distutils.sysconfig.get_config_var('LIBP')
-
 
     # hacks for windows because distutils is broken
     if libs == None and isWindows():
@@ -45,11 +50,6 @@ def checkPython(context):
 
     context.Result(ret)
     return ret
-
-def isOSX():
-    import re
-    import sys
-    return "darwin" in sys.platform
 
 def isCygwin():
     try:
