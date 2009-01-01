@@ -102,7 +102,7 @@ bool NetworkWorldClient::uniqueObject( unsigned int id ){
 
 void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 	int alliance;
-	int id;
+	unsigned int id;
 	int map;
 	string path = Util::getDataPath() + "/" + message.path;
 	message >> alliance >> id >> map;
@@ -110,7 +110,7 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 		bool found = false;
 		for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
 			Character * character = (Character *) it->player;
-			if ( character->getId() == (unsigned int) id ){
+			if ( character->getId() == id ){
 				character->deathReset();
 				addObject( character );
 				found = true;

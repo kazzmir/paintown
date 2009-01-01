@@ -469,7 +469,7 @@ bool Player::canGrab( Object * enemy ){
         }
 
 	if ( !enemy->isCollidable( this ) ){
-		return false;
+            return false;
 	}
 
 	if ( enemy->isGrabbed() ){
@@ -835,7 +835,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 						if ( canGrab( guy ) ){
 							cy = true;
 							Global::debug( 2 ) << getId() << " grabbing " << guy->getId() << endl;
-							grabEnemy( guy );
+							grabEnemy(guy);
 							world->addMessage( grabMessage( getId(), guy->getId() ) );
 							setZ( guy->getZ()+1 );
 							animation_current = getMovement( "grab" );

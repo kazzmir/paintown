@@ -529,11 +529,14 @@ static void playGame( const vector< Socket > & sockets ){
 			sendToAll( sockets, add );
 		}
 
+                /*
 		Message addServer;
 		addServer << World::CREATE_CHARACTER;
 		addServer << player->getId();
+		addServer << player->getAlliance();
 		addServer << ((Character *)player)->getPath().substr( Util::getDataPath().length() );
 		sendToAll( sockets, addServer );
+                */
 
 		vector< string > levels = Level::readLevels( levelSet );
 		for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){

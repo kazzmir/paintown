@@ -170,10 +170,11 @@ static void playGame( Socket socket ){
 			next >> type;
 			switch ( type ){
 				case World::CREATE_CHARACTER : {
-					int id;
+					unsigned int id;
                                         int alliance;
 					next >> id >> alliance;
 					if ( uniqueId( players, id ) ){
+                                            Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
 						Character * c = new NetworkPlayer( Util::getDataPath() + next.path, alliance);
 						c->setId( id );
 						((NetworkCharacter *)c)->alwaysShowName();
