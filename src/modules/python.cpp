@@ -99,7 +99,7 @@ void PythonEngine::createWorld(const World & world){
 
     /* Load the user module so that it can register itself */
     Global::debug(1) << "Loading module " << module << endl;
-    PyObject * user_module = PyImport_ImportModule(module.c_str());
+    PyObject * user_module = PyImport_ImportModule((char*) module.c_str());
     Global::debug(1) << "Loaded " << user_module << endl;
     if (user_module == NULL){
         PyErr_Print();

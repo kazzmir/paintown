@@ -1,5 +1,9 @@
 import os
-# os.sep = '/'
+
+def isWindows():
+    import re
+    import sys
+    return "win32" in sys.platform
 
 def checkPython(context):
     import distutils.sysconfig
@@ -10,13 +14,24 @@ def checkPython(context):
     libs = distutils.sysconfig.get_config_var('LDLIBRARY')
     lib_path = distutils.sysconfig.get_config_var('LIBP')
 
+
+    # hacks for windows because distutils is broken
+    if libs == None and isWindows():
+        libs = ['python24']
+    if lib_path == None and isWindows():
+        import os
+        lib_path = os.path.join(os.path.dirname(include_path),'libs')
+
     tmp = context.env.Clone()
     env = context.env
-    env.Append(CPPPATH = [include_path])
+    if include_path != None:
+        env.Append(CPPPATH = [include_path])
     if link_stuff != None:
         env.Append(LINKFLAGS = link_stuff.split(' '))
-    env.Append(LIBPATH = [lib_path])
-    env.Append(LIBS = libs)
+    if lib_path != None:
+        env.Append(LIBPATH = [lib_path])
+    if libs != None:
+        env.Append(LIBS = libs)
     env.Append(CPPDEFINES = ['HAVE_PYTHON'])
     ret = context.TryLink("""
         #include <Python.h>
@@ -30,11 +45,6 @@ def checkPython(context):
 
     context.Result(ret)
     return ret
-
-def isWindows():
-    import re
-    import sys
-    return "win32" in sys.platform
 
 def isOSX():
     import re
@@ -156,6 +166,9 @@ if isWindows():
     config = env.Configure(custom_tests = {"CheckPython" : checkPython})
     config.CheckPython()
     env = config.Finish()
+    
+    staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
+    env.Append( LIBS = [dumb,hawknl] )
 
     env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
     env.Append( CPPDEFINES = 'WINDOWS' )
@@ -169,7 +182,6 @@ if isWindows():
 else:
     env.Append( LIBS = [ 'pthread' ] )
     staticEnv.Append( LIBS = [ 'pthread' ] )
-
 
     try:
         dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
@@ -224,12 +236,13 @@ else:
     static_config.CheckPython()
     staticEnv = static_config.Finish()
 
+    staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
+    env.Append( LIBS = [dumb,hawknl] )
+
 if not isWindows():
    env.Append(CCFLAGS = ['-Werror'])
 staticEnv.Append(CCFLAGS = ['-Werror'])
 
-staticEnv.Append( LIBS = [ hawknl_static, dumb_static ] )
-env.Append( LIBS = [dumb,hawknl] )
 
 use = env
 shared = SConscript( 'src/SConstruct', build_dir='build', exports = ['use'] );
