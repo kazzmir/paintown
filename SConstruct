@@ -27,6 +27,12 @@ def checkPython(context):
         import os
         lib_path = os.path.join(os.path.dirname(include_path),'libs')
 
+    # hacks for osx because distutils doesn't quote things
+    if isOSX():
+        import re
+        f = re.compile('(-framework System Python.framework/Versions/.*/Python)')
+        link_stuff = re.sub(f, r"'\1'", link_stuff)
+
     tmp = context.env.Clone()
     env = context.env
     if include_path != None:
