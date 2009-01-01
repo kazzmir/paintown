@@ -76,6 +76,9 @@ while [ -n "$1" ]; do
 			shift
 			output="$1"
 			;;
+		-framework*)
+			cmd="$cmd '$1'"
+			;;
 		*)
 			cmd="$cmd $1"
 			;;
@@ -107,14 +110,18 @@ esac
 
 # TODO: use trap to cleanup
 
+invoker="perl $(dirname $0)/invoker.pl"
+
 # build the i386 version
-$gcc $cmd $FLAGS_i386 -arch i386 -o $output.i386
+echo $gcc $cmd $FLAGS_i386 -arch i386 -o $output.i386 > c
+$invoker c
 if [ $? -ne 0 ]; then
 	exit 1
 fi
 
 # build the PPC version
-MACOSX_DEPLOYMENT_TARGET=$OSX_TARGET /usr/bin/$gcc-3.3 $cmd $FLAGS_PPC -arch ppc -o $output.ppc
+echo /usr/bin/$gcc-3.3 $cmd $FLAGS_PPC -arch ppc -o $output.ppc > c
+MACOSX_DEPLOYMENT_TARGET=$OSX_TARGET $invoker c
 if [ $? -ne 0 ]; then
 	rm -f $output.i386
 	exit 1 

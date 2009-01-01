@@ -26,7 +26,7 @@ SnowAtmosphere::~SnowAtmosphere(){
 }
 
 static void drawFlake0( Flake * f, Bitmap * work ){
-    int c = (int)(200 + 3 * log(f->y < 1 ? 1 : 2 * f->y));
+    int c = (int)(200 + 3 * log((double)(f->y < 1 ? 1 : 2 * f->y)));
     if (c > 255){
         c = 255;
     }

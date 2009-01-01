@@ -246,7 +246,7 @@ void Player::draw( Bitmap * work, int rel_x ){
         }
 
         // int attack_x = (hasIcon + x1) * 2 + player_font.textLength(name.c_str()) + 5;
-        int attack_x = (hasIcon + x1) * 2 + 100 * Bitmap::getScale() - player_font.textLength(score_s.str().c_str());;
+        int attack_x = (int)((hasIcon + x1) * 2 + 100 * Bitmap::getScale() - player_font.textLength(score_s.str().c_str()));
 
         render->addMessage(player_font, attack_x, y1 * 2, attack_gradient[attack_color], -1, score_s.str().c_str());
 
