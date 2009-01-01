@@ -120,7 +120,7 @@ static void playLevel( World & world, const vector< Object * > & players ){
 	}
 }
 
-static bool uniqueId( const vector< Object * > & objs, unsigned int id ){
+static bool uniqueId( const vector< Object * > & objs, Object::networkid_t id ){
 	for ( vector< Object * >::const_iterator it = objs.begin(); it != objs.end(); it++ ){
 		Object * o = *it;
 		if ( o->getId() == id ){
@@ -150,7 +150,7 @@ static void playGame( Socket socket ){
 		int type;
                 int alliance;
 		myid >> type;
-		int client_id = -1;
+                Object::networkid_t client_id = -1;
 		if ( type == World::SET_ID ){
 			myid >> client_id >> alliance;
 			player->setId( client_id );
@@ -170,7 +170,7 @@ static void playGame( Socket socket ){
 			next >> type;
 			switch ( type ){
 				case World::CREATE_CHARACTER : {
-					unsigned int id;
+                                        Object::networkid_t id;
                                         int alliance;
 					next >> id >> alliance;
 					if ( uniqueId( players, id ) ){

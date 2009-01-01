@@ -45,7 +45,7 @@ World( players, path, screen_size ),
 sockets( sockets ),
 sent_messages( 0 ),
 running( true ){
-	unsigned int max_id = 0;
+    Object::networkid_t max_id = 0;
 
 	pthread_mutex_init( &message_mutex, NULL );
 	pthread_mutex_init( &running_mutex, NULL );
@@ -82,7 +82,7 @@ NetworkWorld::~NetworkWorld(){
 }
 	
 void NetworkWorld::addObject( Object * o ){
-	if ( o->getId() != (unsigned int) -1 ){
+	if ( o->getId() != (Object::networkid_t) -1 ){
 		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 			Object * obj = *it;
 			if ( obj->getId() == o->getId() ){
@@ -161,7 +161,7 @@ void NetworkWorld::doScene( int min_x, int max_x ){
 	objects.insert( objects.end(), obj.begin(), obj.end() );
 }
 
-Object * NetworkWorld::findObject( unsigned int id ){
+Object * NetworkWorld::findObject( Object::networkid_t id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
 		if ( o->getId() == id ){
@@ -177,8 +177,8 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 		message >> type;
 		switch ( type ){
 			case GRAB : {
-				int grabbing;
-				int grabbed;
+                                Object::networkid_t grabbing;
+                                Object::networkid_t grabbed;
 				message >> grabbing;
 				message >> grabbed;
 				Character * c_grabbing = (Character *) findObject( grabbing );
@@ -190,8 +190,8 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 				break;
 			}
 			case THROWN : {
-			        int grabbing;
-				int grabbed;
+                              Object::networkid_t grabbing;
+                              Object::networkid_t grabbed;
 				message >> grabbing;
 				message >> grabbed;
 				Character * c_grabbing = (Character *) findObject( grabbing );

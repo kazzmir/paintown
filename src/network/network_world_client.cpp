@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "level/blockobject.h"
 #include "util/funcs.h"
+#include "object/object.h"
 #include "object/player.h"
 #include "factory/object_factory.h"
 #include <pthread.h>
@@ -44,7 +45,7 @@ static void * handleMessages( void * arg ){
 	return NULL;
 }
 	
-NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, unsigned int id, int screen_size ) throw ( LoadException ):
+NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size ) throw ( LoadException ):
 World( players, path, screen_size ),
 server( server ),
 world_finished( false ),
@@ -90,7 +91,7 @@ vector< Network::Message > NetworkWorldClient::getIncomingMessages(){
 	return m;
 }
 
-bool NetworkWorldClient::uniqueObject( unsigned int id ){
+bool NetworkWorldClient::uniqueObject( Object::networkid_t id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
 		if ( o->getId() == id ){
@@ -102,7 +103,7 @@ bool NetworkWorldClient::uniqueObject( unsigned int id ){
 
 void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 	int alliance;
-	unsigned int id;
+        Object::networkid_t id;
 	int map;
 	string path = Util::getDataPath() + "/" + message.path;
 	message >> alliance >> id >> map;
@@ -149,7 +150,7 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 }
 
 void NetworkWorldClient::handleCreateCat( Network::Message & message ){
-	int id;
+    Object::networkid_t id;
 	message >> id;
 	if ( uniqueObject( id ) ){
 		string path = Util::getDataPath() + "/" + message.path;
@@ -174,7 +175,7 @@ const bool NetworkWorldClient::finished() const {
 	return world_finished;
 }
 
-Object * NetworkWorldClient::removeObject( unsigned int id ){
+Object * NetworkWorldClient::removeObject( Object::networkid_t id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
 		Object * o = *it;
 		if ( o->getId() == id ){
@@ -226,7 +227,7 @@ void NetworkWorldClient::handleCreateBang( Network::Message & message ){
 	addObject( addx );
 }
 
-Object * NetworkWorldClient::findObject( unsigned int id ){
+Object * NetworkWorldClient::findObject( Object::networkid_t id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
 		if ( o->getId() == id ){
@@ -265,8 +266,8 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				break;
 			}
 			case GRAB : {
-				int grabbing;
-				int grabbed;
+                                Object::networkid_t grabbing;
+                                Object::networkid_t grabbed;
 				message >> grabbing;
 				message >> grabbed;
 				Character * c_grabbing = (Character *) findObject( grabbing );
@@ -278,7 +279,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				break;
 			}
 			case DELETE_OBJ : {
-				int id;
+                                Object::networkid_t id;
 				message >> id;
 				Object * o = removeObject( id );
 				if ( o != NULL ){
@@ -290,7 +291,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				break;
 			}
 			case REMOVE : {
-				int id;
+                                Object::networkid_t id;
 				message >> id;
 				removeObject( id );
 				break;
@@ -313,6 +314,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 	} else {
 		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 			Object * o = *it;
+                        /* message.id is a uint16_t and getId() is an unsigned long */
 			if ( o->getId() == message.id ){
 				o->interpretMessage( message );
 			}
@@ -425,7 +427,7 @@ void NetworkWorldClient::act(){
 	
 	for ( vector< Object * >::iterator it = added_effects.begin(); it != added_effects.end(); ){
 		Object * o = *it;
-		o->setId( (unsigned int) -1 );
+		o->setId( (Object::networkid_t) -1 );
 		it++;
 	}
 	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );

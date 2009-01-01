@@ -331,7 +331,7 @@ public:
 	virtual Network::Message animationMessage();
 	virtual Network::Message showNameMessage( int amount );
 	virtual Network::Message fallMessage( double x, double y );
-	virtual Network::Message grabMessage( unsigned int from, unsigned int who );
+        virtual Network::Message grabMessage(Object::networkid_t from, Object::networkid_t who);
 	
 	virtual void interpretMessage( Network::Message & m );
 	

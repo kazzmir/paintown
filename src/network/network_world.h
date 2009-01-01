@@ -4,6 +4,7 @@
 #include "network.h"
 #include "world.h"
 #include "util/load_exception.h"
+#include "object/object.h"
 #include <pthread.h>
 #include <vector>
 
@@ -36,7 +37,7 @@ public:
 	virtual ~NetworkWorld();
 
 protected:
-	Object * findObject( unsigned int id );
+	Object * findObject( Object::networkid_t id );
 	void sendMessage( const Network::Message & message, NLsocket socket );
 	vector< Network::Message > getIncomingMessages();
 	void handleMessage( Network::Message & message );
@@ -55,7 +56,7 @@ private:
 	std::vector< Packet > outgoing;
 	std::vector< Network::Message > incoming;
 	std::vector< pthread_t > threads;
-	unsigned int id;
+        Object::networkid_t id;
 
 	unsigned int sent_messages;
 

@@ -478,7 +478,7 @@ static void playGame( const vector< Socket > & sockets ){
                 allAlliance = ALLIANCE_FREE_FOR_ALL;
 
                 /* the server player is network id 1 */
-		int id = 1;
+                Object::networkid_t id = 1;
 		player->setId( id );
                 /* the server's player alliance can just be ALLIANCE_PLAYER, so no
                  * need to change it

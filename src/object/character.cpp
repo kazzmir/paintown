@@ -859,7 +859,7 @@ void Character::createProjectile( Projectile * projectile ){
 	projectiles.push_back( (Object *) projectile );
 }
 	
-Network::Message Character::grabMessage( unsigned int from, unsigned int who ){
+Network::Message Character::grabMessage( Object::networkid_t from, Object::networkid_t who ){
 	Network::Message message;
 	message.id = 0;
 	message << World::GRAB;

@@ -24,6 +24,8 @@ class Stimulation;
 class Object{
 public:
 
+    typedef unsigned int networkid_t;
+
 	/* Constructors */
 	Object( int alliance );
 	Object( const int x, const int y, int alliance );
@@ -152,11 +154,11 @@ public:
 	virtual Network::Message collidedMessage();
 
         /* these are network ids */
-	virtual inline void setId( unsigned int id ){
+	virtual inline void setId(networkid_t id){
 		this->id = id;
 	}
 
-	virtual inline unsigned const int getId() const {
+	virtual inline const networkid_t getId() const {
 		return this->id;
 	}
 
@@ -392,7 +394,7 @@ private:
 	Sound hit;
 
         /* network id */
-	unsigned int id;
+	networkid_t id;
 
         /* this id is assigned by the level */
         int objectId;
