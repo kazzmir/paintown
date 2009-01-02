@@ -175,7 +175,7 @@ static int getServerPort(){
 	}
 
 	Keyboard key;
-	key.setAllDelay( 90 );
+	key.setAllDelay( 150 );
 	key.setDelay( Keyboard::Key_BACKSPACE, 30 );
 	key.setDelay( Keyboard::Key_ESC, 0 );
 
@@ -620,6 +620,10 @@ static void playGame( const vector< Socket > & sockets ){
 
 			stopLoading( loading_screen_thread );
 			playLevel( world, players );
+
+                        ObjectFactory::destroy();
+                        HeartFactory::destroy();
+
 			world.stopRunning();
 			startLoading( &loading_screen_thread );
 			Message finish;

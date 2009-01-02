@@ -6,6 +6,8 @@
 #include "util/funcs.h"
 #include "util/font.h"
 #include "factory/font_render.h"
+#include "factory/object_factory.h"
+#include "factory/heart_factory.h"
 #include "world.h"
 #include "music.h"
 #include "object/character.h"
@@ -218,6 +220,10 @@ static void playGame( Socket socket ){
 					stopLoading( loadingThread );
 					try{
 						playLevel( world, players );
+
+                                                ObjectFactory::destroy();
+                                                HeartFactory::destroy();
+
 						startLoading( &loadingThread );
                                                 Global::debug(1) << "Stop running client world" << endl;
                                                 /* this dummy lets the server message handler
