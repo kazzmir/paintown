@@ -628,7 +628,7 @@ const int Character::getAlliance() const{
 }
         
 bool Character::isGrabbable(Object * obj){
-    return true;
+    return getStatus() == Status_Ground;
 }
 
 Object * Character::copy(){
@@ -731,6 +731,10 @@ void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
 }
 	
 void Character::died( vector< Object * > & objects ){
+    if (getLink() != NULL){
+        getLink()->unGrab();
+    }
+
 	if ( getExplode() ){
 		for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
 			const BodyPart & part = *it;
