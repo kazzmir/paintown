@@ -64,6 +64,7 @@ Topics:
   * Cygwin
     
     Don't use cygwin's tools. Install python/scons/mingw for regular windows and use that.
+    $ export CYGWIN=1
     $ c:\progra~1\Python24\Scripts\scons
 
   * OSX
