@@ -109,6 +109,9 @@ class Menu
 		//! Draw text
 		void drawText(Bitmap *work);
 		
+		//! Draw info text
+		void drawInfoText(Bitmap *work);
+		
 		//! Draw states
 		enum menuDrawState
 		{

@@ -2,6 +2,7 @@
 #define _paintown_menu_option_h
 
 #include <string>
+#include "gui/box.h"
 
 class Bitmap;
 
@@ -45,6 +46,8 @@ class MenuOption
 		state currentState;
 		type mType;
 		std::string text;
+		std::string infoText;
+		Box infoTextLocation;
 		Bitmap *bmp;
 		int adjustLeftColor;
 		int adjustRightColor;
@@ -68,6 +71,14 @@ class MenuOption
 		inline void setText(const std::string &t) { text = t; }
 		
 		inline std::string getText() const { return text; }
+		
+		inline void setInfoText(const std::string &t) { infoText = t; }
+		
+		inline std::string getInfoText() const { return infoText; }
+		
+		void setInfoTextLocation(int x, int y);
+		
+		Box getInfoTextLocation() const;
 		
 		inline void setBitmap(Bitmap *b) { bmp = b; }
 		

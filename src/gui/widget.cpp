@@ -22,12 +22,12 @@ static inline int Max(int x, int y){ return (((x) > (y)) ? (x) : (y)); }
 //! mid (borrowed from allegro)
 static inline int Mid(int x,int y,int z){ return (Max((x), Min((y), (z)))); }
 
-Widget::Widget() : workArea(0)
+Widget::Widget() : position(0,0,0,0), workArea(0)
 {
 	// Nothing yet
 }
 		
-Widget::Widget( const Widget & w ){
+Widget::Widget( const Widget & w ) : position(0,0,0,0), workArea(0){
 }
 
 Widget::~Widget(){

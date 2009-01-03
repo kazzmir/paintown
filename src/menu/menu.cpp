@@ -316,6 +316,8 @@ useflags Menu::run(){
 				drawTextBoard(work);
 				// Draw text
 				drawText(work);
+				// Draw info text
+				drawInfoText(work);
 				// Finally render to screen
 				work->BlitToScreen();
 			}
@@ -500,6 +502,42 @@ void Menu::drawText(Bitmap *work){
 				vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * fontHeight *1.2), color, *work, (*b)->getText(), 0 );
 				break;
 		}
+	}
+}
+
+
+// Draw info text
+void Menu::drawInfoText ( Bitmap *work ){
+	(*selectedOption)->setInfoText("This is a test for the box");
+	(*selectedOption)->setInfoTextLocation(300,50);
+	if ( (*selectedOption)->getInfoText().empty() ) return;
+	switch ( currentDrawState ){
+		case FadeIn :
+				break;
+		case FadeInText :
+				break;
+		case NoFade:
+		default:
+		{
+			Box area = (*selectedOption)->getInfoTextLocation();
+			area.position.radius = 15;
+			area.position.width = vFont->textLength( (*selectedOption)->getInfoText().c_str() ) + 10;
+			area.position.height = vFont->getHeight() + 5;
+			std::cout << (*selectedOption)->getInfoTextLocation().position.x << "\n";
+			//area.position.x = area.position.x - (area.position.width / 2);
+			//area.position.y = area.position.y - (area.position.height / 2);
+			area.position.body = backboard.position.body;
+			area.position.bodyAlpha = backboard.position.bodyAlpha;
+			area.position.border = backboard.position.border;
+			area.position.borderAlpha = backboard.position.borderAlpha;
+			
+			// Draw box
+			area.render(work);
+			
+			// Draw text
+			vFont->printf( area.position.x + 5, area.position.y + 2, white, *work, (*selectedOption)->getInfoText(), 0 );
+		}
+				break;
 	}
 }
 
