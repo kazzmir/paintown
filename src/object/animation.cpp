@@ -97,51 +97,52 @@ contact( NULL ){
 
 	TimeDifference diff;
 
-	Token * current;
+	Token * current1;
 
 	string basedir( "./" );
 	diff.startTime();
 	while ( tok->hasTokens() ){
 		
 		try {
-			*tok >> current;
+			*tok >> current1;
+                        Token current(*current1);
 
-			if ( *current == "name" ){
-				*current >> name;
+			if ( current == "name" ){
+				current >> name;
 
 				/* this should be deprecated soon */
 				if ( name.find("attack" ) != string::npos ){
 					is_attack = true;
 				}
-			} else if ( *current == "loop" ){
-				*current >> loop;
-			} else if ( *current == "type" ){
+			} else if ( current == "loop" ){
+				current >> loop;
+			} else if ( current == "type" ){
 				string x;
-				*current >> x;
+				current >> x;
 				if ( x == "attack" )
 					is_attack = true;
-			} else if ( *current == "basedir" ){
-				*current >> basedir;
-			} else if ( *current == "offset" ){
+			} else if ( current == "basedir" ){
+				current >> basedir;
+			} else if ( current == "offset" ){
 				// *current >> offset_x >> offset_y;
 				int x = 0;
 				int y = 0;
 				try{
-					*current >> x >> y;
+					current >> x >> y;
 				} catch ( const TokenException & te ){
 					/* ignore token exceptions here */
 				}
 				// cout<<"Read offset as "<<x<<" "<<y<<endl;
 				AnimationEventOffset * ani = new AnimationEventOffset( x, y );
 				events.push_back( ani );
-			} else if ( *current == "projectile" ){
-				AnimationEventProjectile * ani = new AnimationEventProjectile( current );
+			} else if ( current == "projectile" ){
+				AnimationEventProjectile * ani = new AnimationEventProjectile( &current );
 				events.push_back( ani );
-			} else if ( *current == "move" ){
+			} else if ( current == "move" ){
 				try{
 					int x, y, z;
 					x = y = z = 0;
-					*current >> x >> y >> z;
+					current >> x >> y >> z;
 
 					AnimationEventMove * em = new AnimationEventMove( x, y, z );
 					events.push_back( em );
@@ -149,25 +150,25 @@ contact( NULL ){
 					Global::debug( 0 ) << "Could not read move event: " << te.getReason() << endl;
 					/* ignore token exceptions here */
 				}
-			} else if ( *current == "blast" ){
-			} else if ( *current == "damage" ){
-				*current >> damage;
-			} else if ( *current == "sequence" ){
+			} else if ( current == "blast" ){
+			} else if ( current == "damage" ){
+				current >> damage;
+			} else if ( current == "sequence" ){
 				string p, n;
-				*current >> p >> n;
+				current >> p >> n;
 				// sequences[ p ] = n;
 				// cout<<getName() << ":Adding sequence "<<p<<endl;
 				sequences.push_back( p );
 				// *current >> prev_sequence >> next_sequence;
-			} else if ( *current == "contact" ){
+			} else if ( current == "contact" ){
 				string st;
-				*current >> st;
+				current >> st;
 				contact = new Sound( dataPath( st ) );
-			} else if ( *current == "keys" ){
+			} else if ( current == "keys" ){
 
-				while ( current->hasTokens() ){
+				while ( current.hasTokens() ){
 					Token * nm;
-					*current >> nm;
+					current >> nm;
 					KeyPress press;
 					// nm->print("combo ");
 					if ( !nm->hasTokens() ){
@@ -193,10 +194,10 @@ contact( NULL ){
 					keys.push_back( press );
 				}
 
-			} else if ( *current == "status" ){
+			} else if ( current == "status" ){
 				
 				string st;
-				*current >> st;
+				current >> st;
 				if ( st == "jump" ){
 					status = Status_Jumping;
 				} else if ( st == "ground" ){
@@ -206,14 +207,14 @@ contact( NULL ){
 				} else {
 					Global::debug( 0 ) <<"Unhandled status "<<st<<endl;
 				}
-			} else if ( *current == "shadow" ){
+			} else if ( current == "shadow" ){
 				int x, y;
-				*current >> x >> y;
+				current >> x >> y;
 				AnimationEvent * ani = new AnimationEventShadow( x, y );
 				events.push_back( ani );
-			} else if ( *current == "coords" ){
+			} else if ( current == "coords" ){
 				Token * c;
-				*current >> c;
+				current >> c;
 				int x, y, z;
 				x = y = z = -1;
 				while ( c != NULL ){
@@ -226,12 +227,12 @@ contact( NULL ){
 						y = d;
 					if ( dimension == "z" )
 						z = d;
-					*current >> c;
+					current >> c;
 				}
 				AnimationEvent * ani = new AnimationEventCoords( x, y, z );
 				events.push_back( ani );
 
-			} else if ( *current == "bbox" ){
+			} else if ( current == "bbox" ){
 
 				/*
 				int x1, y1, x2, y2;
@@ -241,9 +242,9 @@ contact( NULL ){
 				AnimationEvent * ani = new AnimationEventBBox( x1, y1, x2, y2 );
 				events.push_back( ani );
 				*/
-			} else if ( *current == "attack" ){
+			} else if ( current == "attack" ){
 
-				Attack ak( current );
+				Attack ak( &current );
 		
 				/*
 				int x1 = 0; 
@@ -259,14 +260,14 @@ contact( NULL ){
 				// AnimationEvent * ani = new AnimationEventAttack( x1, y1, x2, y2, damage, force );
 				AnimationEvent * ani = new AnimationEventAttack( ak );
 				events.push_back( ani );
-			} else if ( *current == "z-distance" ){
+			} else if ( current == "z-distance" ){
 				double d;
-				*current >> d;
+				current >> d;
 				AnimationEvent * e = new AnimationEventZDistance( d );
 				events.push_back( e );
-			} else if ( *current == "sound" ){
+			} else if ( current == "sound" ){
 				string st;
-				*current >> st;
+				current >> st;
 
 				if ( sounds.find( st ) == sounds.end() ){
 					Sound * sp = new Sound( dataPath( st ) );
@@ -276,9 +277,9 @@ contact( NULL ){
 				AnimationEvent * aes = new AnimationEventSound( st );
 				events.push_back( aes );
 
-			} else if ( *current == "setstatus" ){
+			} else if ( current == "setstatus" ){
 				string st;
-				*current >> st;
+				current >> st;
 				int m = Status_Ground;
 				if ( st == "jump" ){
 					m = Status_Jumping;	
@@ -287,22 +288,22 @@ contact( NULL ){
 				}
 				AnimationEvent * ani = new AnimationEventStatus( m );
 				events.push_back( ani );
-			} else if ( *current == "jump" ){
+			} else if ( current == "jump" ){
 				double x, y, z;
-				*current >> x >> y >> z;
+				current >> x >> y >> z;
 				AnimationEvent * ani = new AnimationEventJump( x, y, z );
 				events.push_back( ani );
-			} else if ( *current == "decommision" ){
+			} else if ( current == "decommision" ){
 				string l;
-				*current >> l;
+				current >> l;
 				addDecommision( l );
-			} else if ( *current == "commision" ){
+			} else if ( current == "commision" ){
 				string l;
-				*current >> l;
+				current >> l;
 				addCommision( l );
-			} else if ( *current == "face" ){
+			} else if ( current == "face" ){
 				string way;
-				*current >> way;
+				current >> way;
 				int direction = Object::FACING_RIGHT;
 				if ( way == "right" ){
 					direction = Object::FACING_RIGHT;
@@ -313,24 +314,24 @@ contact( NULL ){
 				}
 				AnimationEvent * ani = new AnimationEventFace( direction );
 				events.push_back( ani );
-			} else if ( *current == "nop" ){
+			} else if ( current == "nop" ){
 				events.push_back( new AnimationEventNOP() );
-			} else if ( *current == "next-ticket" ){
+			} else if ( current == "next-ticket" ){
 				events.push_back( new AnimationEventTicket() );
-			} else if ( *current == "range" ){
+			} else if ( current == "range" ){
 				int r;
-				*current >> r;
+				current >> r;
 				setRange( r );
-			} else if ( *current == "delay" ){
+			} else if ( current == "delay" ){
 					
 				int delay = 0;
-				*current >> delay;
+				current >> delay;
 				AnimationEvent * ani = new AnimationEventDelay( delay );
 				events.push_back( ani );
 
-			} else if ( *current == "frame" ){
+			} else if ( current == "frame" ){
 				string path;
-				*current >> path;
+				current >> path;
 				path = dataPath( basedir + path );
 				if ( frames.find( path ) == frames.end() ){
 					Bitmap * pic = new Bitmap( path );
@@ -346,14 +347,14 @@ contact( NULL ){
 				events.push_back( ani );
 			} else {
 				Global::debug( 0 ) << tok->getFileName() << " Unhandled animation attribute: "<<endl;
-				current->print(" ");
+				current.print(" ");
 			}
 
 		} catch ( const TokenException & te ){
 			string m( "Animation parse error: ");
 			m += te.getReason();
 
-			current->print(" ");
+			current1->print(" ");
 
 			throw LoadException( m );
 		}
