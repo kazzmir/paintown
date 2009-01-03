@@ -7,22 +7,23 @@ MenuOption::MenuOption( Token *token, const type t)throw( LoadException ) : curr
 {
 	setType(t);
 	
-	Token _token(*token);
+	Token tok(*token);
 	
-	while ( _token.hasTokens() ){
+	while ( tok.hasTokens() ){
 		try{
-			Token * tok;
-			_token >> tok;
-			if ( *tok == "info" ){
+			Token * token;
+			tok >> token;
+			if ( *token == "info" ){
 				// get info text and location and add to option
 				std::string temp;
-				int x, y;
-				*tok >> temp >> x >> y;
+				int x=0, y=0;
+				*token >> temp;
 				setInfoText(temp);
+				try{ *token >> x >> y; } catch ( const TokenException &ex ){ }
 				setInfoTextLocation(x,y);
 			} else {
 				Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
-				tok->print(" ");
+				token->print(" ");
 			}
 		} catch ( const TokenException & ex ) {
 			// delete current;

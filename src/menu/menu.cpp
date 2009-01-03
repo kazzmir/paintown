@@ -36,8 +36,11 @@ static std::map<std::string, Menu *> menus;
 
 int Menu::fadeSpeed = 12;
 
-
 int fadeAlpha=0;
+
+int infoPositionX = 0;
+
+int infoPositionY = 0;
 
 static void addMenu( Menu * m ) throw( LoadException ){
 	std::map<std::string, Menu *>::iterator i = menus.find(m->getName());
@@ -109,6 +112,8 @@ void Menu::load(Token *token)throw( LoadException ){
 				if(temp)menuOptions.push_back(temp);
 			} else if( *tok == "action" ) {
 				ActionAct(tok);
+			} else if( *tok == "info-position" ) {
+				*tok >> infoPositionX >> infoPositionY;
 			} else {
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 				tok->print(" ");
@@ -142,6 +147,10 @@ void Menu::load(Token *token)throw( LoadException ){
 		std::string f = Util::getDataPath() + "/fonts/arial.ttf";
 		vFont = new FreeTypeFont(f);
 		vFont->setSize( fontWidth,fontHeight );
+	}
+	
+	if( ! infoPositionX || ! infoPositionY ){
+		throw LoadException("The position for the menu info boxes must be set!");
 	}
 	
 	// Finally lets assign list order numering and some other stuff
@@ -508,8 +517,6 @@ void Menu::drawText(Bitmap *work){
 
 // Draw info text
 void Menu::drawInfoText ( Bitmap *work ){
-	//(*selectedOption)->setInfoText("This is a test for the box");
-	//(*selectedOption)->setInfoTextLocation(300,50);
 	if ( (*selectedOption)->getInfoText().empty() ) return;
 	switch ( currentDrawState ){
 		case FadeIn :
@@ -523,8 +530,8 @@ void Menu::drawInfoText ( Bitmap *work ){
 			area.position.radius = 15;
 			area.position.width = vFont->textLength( (*selectedOption)->getInfoText().c_str() ) + 10;
 			area.position.height = vFont->getHeight() + 5;
-			area.position.x = area.position.x - (area.position.width / 2);
-			area.position.y = area.position.y - (area.position.height / 2);
+			area.position.x = area.position.x !=0 ? area.position.x - (area.position.width / 2) : infoPositionX - (area.position.width / 2);
+			area.position.y = area.position.x !=0 ? area.position.y - (area.position.height / 2) : infoPositionY - (area.position.height / 2);
 			area.position.body = backboard.position.body;
 			area.position.bodyAlpha = backboard.position.bodyAlpha;
 			area.position.border = backboard.position.border;
