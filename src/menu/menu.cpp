@@ -529,9 +529,30 @@ void Menu::drawInfoText ( Bitmap *work ){
         case NoFade:
         default: {
             Box area = (*selectedOption)->getInfoTextLocation();
+            vector<string> strings;
+            size_t start = 0;
+            size_t last = 0;
+            const string & optionText = (*selectedOption)->getInfoText();
+            start = optionText.find("\n");
+            while (start != string::npos){
+                strings.push_back(optionText.substr(last, start - last));
+                last = start + 1;
+                start = optionText.find("\n", last);
+            }
+            strings.push_back(optionText.substr(last));
+
             area.position.radius = 15;
-            area.position.width = vFont->textLength( (*selectedOption)->getInfoText().c_str() ) + 10;
-            area.position.height = vFont->getHeight() + 20;
+            int maxWidth = 0;
+            int height = 0;
+            for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
+                int w = vFont->textLength((*it).c_str()) + 10;
+                if (w > maxWidth){
+                    maxWidth = w;
+                }
+                height += vFont->getHeight();
+            }
+            area.position.width = maxWidth;
+            area.position.height = height + 20;
             area.position.x = area.position.x !=0 ? area.position.x - (area.position.width / 2) : infoPositionX - (area.position.width / 2);
             area.position.y = area.position.y !=0 ? area.position.y - (area.position.height / 2) : infoPositionY - (area.position.height / 2);
             // area.position.body = backboard.position.body;
@@ -544,7 +565,12 @@ void Menu::drawInfoText ( Bitmap *work ){
             area.render(work);
 
             // Draw text
-            vFont->printf( area.position.x + 5, area.position.y + 10, white, *work, (*selectedOption)->getInfoText(), 0 );
+            int sy = area.position.y + 10;
+            for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
+                string & str = *it;
+                vFont->printf(area.position.x + 5, sy, white, *work, str, 0 );
+                sy += vFont->getHeight();
+            }
             break;
         }
     }

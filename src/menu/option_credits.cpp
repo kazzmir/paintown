@@ -139,7 +139,9 @@ title(Bitmap::makeColor(0,255,255)){
 				color = Bitmap::makeColor( r, b, g );
 			} else {
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-				tok->print(" ");
+                                if (Global::getDebug() >= 3){
+                                    tok->print(" ");
+                                }
 			}
 		} catch ( const TokenException & ex ) {
 			string m( "Menu parse error: " );
