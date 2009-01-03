@@ -129,6 +129,7 @@ src/menu/option_npc_buddies.cpp
 src/menu/option_menu.cpp
 src/menu/option_quit.cpp
 src/menu/option_versus.cpp
+src/menu/option_screen_size.cpp
 src/menu/option_speed.cpp
 src/menu/optionfactory.cpp
 )

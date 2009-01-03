@@ -97,9 +97,11 @@ bool Global::init( int gfx ){
         
         Bitmap::SCALE_X = GFX_X;
         Bitmap::SCALE_Y = GFX_Y;
+	
+        Configuration::loadConfigurations();
 
-        const int sx = 640;
-        const int sy = 480;
+        const int sx = Configuration::getScreenWidth();
+        const int sy = Configuration::getScreenHeight();
 
 	out<<"Install keyboard: "<<install_keyboard()<<endl;
 	out<<"Install mouse: "<<install_mouse()<<endl;
@@ -135,18 +137,10 @@ bool Global::init( int gfx ){
 
 	Network::init();
 
-	Configuration::loadConfigurations();
-	
         /* this mutex is used to show the loading screen while the game loads */
 	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
 	
 	out<<"-- END init --"<<endl;
 
-	/*
-	Bitmap::Screen = new Bitmap( screen );
-	if ( ! Bitmap::Screen ){
-		return false;
-	}
-	*/
 	return true;
 }

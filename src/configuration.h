@@ -49,6 +49,10 @@ public:
 	static void setNpcBuddies( int i );
         static PlayMode getPlayMode();
         static void setPlayMode(PlayMode mode);
+        static void setScreenWidth(int i);
+        static int getScreenWidth();
+        static void setScreenHeight(int i);
+        static int getScreenHeight();
 
 protected:
 	Configuration();
@@ -89,6 +93,9 @@ private:
 
 	static int npc_buddies;
         static PlayMode play_mode;
+
+        static int screen_width;
+        static int screen_height;
 };
 
 #endif

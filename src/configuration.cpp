@@ -277,6 +277,11 @@ void Configuration::loadConfigurations(){
 				*n >> lives;
 			} else if ( *n == "npc-buddies" ){
 				*n >> npc_buddies;
+                        } else if (*n == "screen-size"){
+                            int w, h;
+                            *n >> w >> h;
+                            Configuration::setScreenWidth(w);
+                            Configuration::setScreenHeight(h);
 			} else if (*n == "play-mode"){
                             string mode;
                             *n >> mode;
@@ -345,6 +350,10 @@ void Configuration::saveConfiguration(){
 	*fullscreen << "fullscreen" << Configuration::getFullscreen();
 	head.addToken( fullscreen );
 
+        Token * screen = new Token();
+        *screen << "screen-size" << Configuration::getScreenWidth() << Configuration::getScreenHeight();
+        head.addToken(screen);
+
         Token * mode = new Token();
         string smode;
         if (Configuration::getPlayMode() == Configuration::Cooperative){
@@ -376,6 +385,8 @@ bool Configuration::fullscreen = false;
 int Configuration::lives = 4;
 int Configuration::npc_buddies = 1;
 Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
+int Configuration::screen_width = 640;
+int Configuration::screen_height = 480;
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
 double Configuration::getGameSpeed(){
@@ -429,4 +440,20 @@ Configuration::PlayMode Configuration::getPlayMode(){
 
 void Configuration::setPlayMode(Configuration::PlayMode mode){
     play_mode = mode;
+}
+
+void Configuration::setScreenWidth(int i){
+    screen_width = i;
+}
+
+int Configuration::getScreenWidth(){
+    return screen_width;
+}
+
+void Configuration::setScreenHeight(int i){
+    screen_height = i;
+}
+
+int Configuration::getScreenHeight(){
+    return screen_height;
 }

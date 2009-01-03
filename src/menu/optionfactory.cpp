@@ -12,6 +12,7 @@
 #include "menu/option_network_host.h"
 #include "menu/option_network_join.h"
 #include "menu/option_versus.h"
+#include "menu/option_screen_size.h"
 #include "menu/option_speed.h"
 #include "menu/option_fullscreen.h"
 #include "menu/option_lives.h"
@@ -40,6 +41,8 @@ MenuOption *getOption(Token *token){
 		return new OptionNetworkHost(tok);
 	} else if ( *tok == "network-join" ){
 		return new OptionNetworkJoin(tok);
+        } else if (*tok == "screen-size"){
+            return new OptionScreenSize(tok);
 	} else if ( *tok == "npc" ){
 		return new OptionNpcBuddies(tok);
         } else if (*tok == "play-mode"){
