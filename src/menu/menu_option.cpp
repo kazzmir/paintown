@@ -28,7 +28,7 @@ ID(0){
                 setInfoText(temp);
                 try{
                     *token >> x >> y;
-                } catch ( const TokenException &ex ){
+                } catch (const TokenException & ex){
                     x = 0;
                     y = 0;
                 }

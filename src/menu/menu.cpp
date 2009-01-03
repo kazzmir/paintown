@@ -520,34 +520,34 @@ void Menu::drawText(Bitmap *work){
 
 // Draw info text
 void Menu::drawInfoText ( Bitmap *work ){
-	if ( (*selectedOption)->getInfoText().empty() ) return;
-	switch ( currentDrawState ){
-		case FadeIn :
-				break;
-		case FadeInText :
-				break;
-		case NoFade:
-		default:
-		{
-			Box area = (*selectedOption)->getInfoTextLocation();
-			area.position.radius = 15;
-			area.position.width = vFont->textLength( (*selectedOption)->getInfoText().c_str() ) + 10;
-			area.position.height = vFont->getHeight() + 5;
-			area.position.x = area.position.x !=0 ? area.position.x - (area.position.width / 2) : infoPositionX - (area.position.width / 2);
-			area.position.y = area.position.y !=0 ? area.position.y - (area.position.height / 2) : infoPositionY - (area.position.height / 2);
-			area.position.body = backboard.position.body;
-			area.position.bodyAlpha = backboard.position.bodyAlpha;
-			area.position.border = backboard.position.border;
-			area.position.borderAlpha = backboard.position.borderAlpha;
-			
-			// Draw box
-			area.render(work);
-			
-			// Draw text
-			vFont->printf( area.position.x + 5, area.position.y + 5, white, *work, (*selectedOption)->getInfoText(), 0 );
-		}
-				break;
-	}
+    if ( (*selectedOption)->getInfoText().empty() ) return;
+    switch ( currentDrawState ){
+        case FadeIn :
+            break;
+        case FadeInText :
+            break;
+        case NoFade:
+        default: {
+            Box area = (*selectedOption)->getInfoTextLocation();
+            area.position.radius = 15;
+            area.position.width = vFont->textLength( (*selectedOption)->getInfoText().c_str() ) + 10;
+            area.position.height = vFont->getHeight() + 20;
+            area.position.x = area.position.x !=0 ? area.position.x - (area.position.width / 2) : infoPositionX - (area.position.width / 2);
+            area.position.y = area.position.y !=0 ? area.position.y - (area.position.height / 2) : infoPositionY - (area.position.height / 2);
+            // area.position.body = backboard.position.body;
+            area.position.body = Bitmap::makeColor(32,32,0);
+            area.position.bodyAlpha = backboard.position.bodyAlpha;
+            area.position.border = backboard.position.border;
+            area.position.borderAlpha = backboard.position.borderAlpha;
+
+            // Draw box
+            area.render(work);
+
+            // Draw text
+            vFont->printf( area.position.x + 5, area.position.y + 10, white, *work, (*selectedOption)->getInfoText(), 0 );
+            break;
+        }
+    }
 }
 
 Menu::~Menu(){
