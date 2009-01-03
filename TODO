@@ -19,6 +19,14 @@ DONE * add buttons to editor that add random enemies and random items
 DONE * fix threading in windows, use -mthread
 DONE * better key input in network chat
 
+For 3.2
+-------
+partly done * Get python scripting module in a useable state
+DONE * Be able to scale the screen to arbitrary sizes
+DONE * use CPP to define DATA_PATH
+
+Future
+-------
 * network versus play
 * use joystick
 * fix bug with setting max lives
@@ -33,8 +41,3 @@ DONE * better key input in network chat
 * allow characters to block
 * give enemies 'behaviors' which model how they act
 
-For 3.2
--------
-partly done * Get python scripting module in a useable state
-partly done * Be able to scale the screen to arbitrary sizes
-DONE * use CPP to define DATA_PATH
