@@ -32,7 +32,9 @@ MenuOption(token, event){
 				this->setText(temp);
 			} else {
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-				tok->print(" ");
+                                if (Global::getDebug() >= 3){
+                                    tok->print(" ");
+                                }
 			}
 		} catch ( const TokenException & ex ) {
 			// delete current;
