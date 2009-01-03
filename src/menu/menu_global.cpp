@@ -1,9 +1,8 @@
+#include "util/bitmap.h"
 #include "menu/menu_global.h"
-
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "menu/menu_option.h"
-#include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/keyboard.h"
 #include "util/sound.h"

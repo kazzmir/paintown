@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "menu/option_fullscreen.h"
 #include "util/token.h"
 #include "menu/menu.h"

@@ -1,3 +1,5 @@
+#include "util/bitmap.h"
+#include "util/font.h"
 #include "menu/option_key.h"
 #include "util/token.h"
 #include "configuration.h"
@@ -6,7 +8,6 @@
 #include "globals.h"
 #include "init.h"
 #include "util/keyboard.h"
-#include "util/bitmap.h"
 
 #include "gui/box.h"
 

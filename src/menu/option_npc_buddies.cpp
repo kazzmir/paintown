@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "menu/option_npc_buddies.h"
 #include "util/token.h"
 #include "menu/menu.h"

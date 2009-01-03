@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 
-#include "util/font.h"
 #include "util/load_exception.h"
 #include "return_exception.h"
 #include "gui/box.h"
@@ -18,6 +17,7 @@
 // Keep consistent
 typedef uint32_t useflags;
 
+class Font;
 class Bitmap;
 class MenuOption;
 class Token;

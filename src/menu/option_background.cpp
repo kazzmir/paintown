@@ -1,5 +1,5 @@
-#include "menu/option_background.h"
 #include "util/bitmap.h"
+#include "menu/option_background.h"
 #include "util/token.h"
 #include "util/funcs.h"
 #include "globals.h"

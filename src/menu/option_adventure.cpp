@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "menu/option_adventure.h"
 #include "menu/menu_global.h"
 #include "util/keyboard.h"

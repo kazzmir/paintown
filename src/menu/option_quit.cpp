@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "menu/option_quit.h"
 #include "util/token.h"
 #include "menu/menu.h"
