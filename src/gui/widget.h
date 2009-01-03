@@ -13,6 +13,9 @@ class Widget : public sigslot::has_slots<>
 		Widget( const Widget & w );
 		virtual ~Widget();
 		
+		// copy
+		Widget &operator=( const Widget &);
+		
 		// position info
 		RectArea position;
 		

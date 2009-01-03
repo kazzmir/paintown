@@ -12,6 +12,10 @@ RectArea::RectArea(int x, int y, int w, int h)
 	this->height  = height;
 }
 
+RectArea::RectArea( const RectArea &r ){
+
+}
+
 bool RectArea::empty()
 {
 	return (x==0 && y==0 && width==0 && height==0);
@@ -25,3 +29,16 @@ bool RectArea::operator==( const RectArea &rect)
 			(height == rect.height));
 }
 
+RectArea &RectArea::operator=( const RectArea &copy){
+	x =  copy.x;
+	y = copy.y;
+	width = copy.width; 
+	height =  copy.height;
+	body =  copy.body;
+	bodyAlpha =  copy.bodyAlpha;
+	border = copy.border;
+	borderAlpha = copy.borderAlpha;
+	radius = copy.radius;
+	
+	return *this;
+}

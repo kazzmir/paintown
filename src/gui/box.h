@@ -7,7 +7,11 @@ class Box : public Widget
 {
 	public:
 		Box();
+		Box( const Box & b );
 		virtual ~Box();
+		
+		// copy
+		Box &operator=( const Box &);
 		
 		// Logic
 		virtual void logic();

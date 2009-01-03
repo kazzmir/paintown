@@ -36,6 +36,14 @@ Widget::~Widget(){
 	}
 }
 
+// copy
+Widget &Widget::operator=( const Widget &copy){
+	position = copy.position;
+	workArea = copy.workArea;
+	
+	return *this;
+}
+
 void Widget::arc( Bitmap *work, int x, int y, double startAngle, int radius, int color )
 {
 	int q = 0;// for counters

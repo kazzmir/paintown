@@ -6,11 +6,20 @@ Box::Box()
 	// Nothing yet
 }
 
+Box::Box( const Box & b ){
+}
+
 Box::~Box()
 {
 	// Nothing yet
 }
 
+Box &Box::operator=( const Box &copy){
+	position = copy.position;
+	workArea = copy.workArea;
+	
+	return *this;
+}
 
 // Logic
 void Box::logic()

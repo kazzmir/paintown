@@ -5,6 +5,7 @@ struct RectArea
 {
 	RectArea();
 	RectArea(int x, int y, int w, int h); 
+	RectArea( const RectArea &r );
 	bool empty();
 	int x;
 	int y;
@@ -18,6 +19,7 @@ struct RectArea
 	inline int getX2() { return x + width; }
 	inline int getY2() { return y + height; }
 	bool operator==( const RectArea &);
+	RectArea &operator=( const RectArea &);
 };
 
 #endif
