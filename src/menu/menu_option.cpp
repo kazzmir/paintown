@@ -23,7 +23,9 @@ MenuOption::MenuOption( Token *token, const type t)throw( LoadException ) : curr
 				setInfoTextLocation(x,y);
 			} else {
 				Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
-				token->print(" ");
+                                if (Global::getDebug() >= 3){
+                                    token->print(" ");
+                                }
 			}
 		} catch ( const TokenException & ex ) {
 			// delete current;
