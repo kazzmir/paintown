@@ -33,20 +33,19 @@ class MenuOption
 			Run
 		};
 		
-		enum type
-		{
-			event = 0,
-			option,
-			adjustableOption
+		enum OptionType{
+			Event = 0,
+			Option,
+			AdjustableOption
 		};
 		
-		MenuOption(Token *token, const type t = option)throw( LoadException );
+		MenuOption(Token *token, const OptionType t = Option) throw (LoadException);
 	
 		virtual ~MenuOption();
 		
 	private:
 		state currentState;
-		type mType;
+		OptionType mType;
 		std::string text;
 		std::string infoText;
 		Box infoTextLocation;
@@ -66,9 +65,9 @@ class MenuOption
 		
 		inline state getState() const { return currentState; }
 		
-		inline void setType(const type t) { mType = t; }
+		inline void setType(const OptionType t) { mType = t; }
 		
-		inline type getType() const { return mType; }
+		inline OptionType getType() const { return mType; }
 		
 		inline void setText(const std::string &t) { text = t; }
 		

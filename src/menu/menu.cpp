@@ -411,12 +411,12 @@ Font *Menu::getFont(){
 void Menu::checkTextLength(MenuOption *opt){
 	// Set longest text length depending on type
 	switch(opt->getType()){
-		case MenuOption::adjustableOption : {
+		case MenuOption::AdjustableOption : {
 			int len = vFont->textLength(opt->getText().c_str()) + 10;
 			if(len > longestTextLength)longestTextLength = len;
 			break;
 		}
-		case MenuOption::option:
+		case MenuOption::Option:
 		default : {
 			int len = vFont->textLength(opt->getText().c_str());
 			if ( len > longestTextLength ){
@@ -474,7 +474,7 @@ void Menu::drawText(Bitmap *work){
 				Bitmap::transBlender( 0, 0, 0, fadeAlpha );
 				work->drawingMode( Bitmap::MODE_TRANS );
 				switch((*b)->getType()) {
-					case MenuOption::adjustableOption : {
+					case MenuOption::AdjustableOption : {
 						const int triangleSize = 10;
 						int cx = (backboard.position.x + startx) - 15;
 						int cy = (int)(backboard.position.y + starty + i * fontHeight * 1.2 + fontHeight / 2 + 2);
@@ -484,7 +484,7 @@ void Menu::drawText(Bitmap *work){
 						work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*b)->getRightAdjustColor() );
 						break;
 					}
-					case MenuOption::option:
+					case MenuOption::Option:
 					default:
 						break;
 				}
@@ -497,7 +497,7 @@ void Menu::drawText(Bitmap *work){
 				// These menus are temporary, they will need to be changed
 				const unsigned int color = ((*b)->getState() == MenuOption::Selected) ? yellow : white;
 				switch((*b)->getType()) {
-					case MenuOption::adjustableOption : {
+					case MenuOption::AdjustableOption : {
 						const int triangleSize = 10;
 						int cx = (backboard.position.x + startx) - 15;
 						int cy = (int)(backboard.position.y + starty + i * fontHeight * 1.2 + fontHeight / 2 + 2);
@@ -507,7 +507,7 @@ void Menu::drawText(Bitmap *work){
 						work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*b)->getRightAdjustColor() );
 						break;
 					}
-					case MenuOption::option:
+					case MenuOption::Option:
 					default:
 						break;
 				}

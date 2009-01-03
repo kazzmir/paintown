@@ -7,7 +7,7 @@
 #include "init.h"
 
 OptionPlayMode::OptionPlayMode(Token *token) throw (LoadException):
-MenuOption(token, adjustableOption),
+MenuOption(token, AdjustableOption),
 name(""),
 lblue(255),
 lgreen(255),

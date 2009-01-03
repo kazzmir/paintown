@@ -115,7 +115,7 @@ static int readKey( Keyboard & key ){
 	return k;
 }
 
-OptionKey::OptionKey(Token *token)throw( LoadException ) : MenuOption(token, event), name(""), player(-1), type(invalidkey), keyCode(0)
+OptionKey::OptionKey(Token *token) throw (LoadException): MenuOption(token, Event), name(""), player(-1), type(invalidkey), keyCode(0)
 {
 	if ( *token != "key" )
 		throw LoadException("Not key option");

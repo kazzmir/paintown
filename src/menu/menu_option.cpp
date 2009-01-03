@@ -3,7 +3,7 @@
 #include "util/token.h"
 #include "globals.h"
 
-MenuOption::MenuOption(Token *token, const type t) throw (LoadException):
+MenuOption::MenuOption(Token *token, const OptionType t) throw (LoadException):
 currentState(Deselected),
 text(""),
 infoText(""),

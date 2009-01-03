@@ -8,9 +8,9 @@
 #include "util/bitmap.h"
 
 OptionQuit::OptionQuit(Token *token) throw( LoadException ):
-MenuOption(token, event){
+MenuOption(token, Event){
 	if ( *token != "quit" ){
-		throw LoadException("Not key option");
+		throw LoadException("Not quit option");
 	}
 }
 

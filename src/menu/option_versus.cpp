@@ -430,7 +430,7 @@ static void playVersusMode( Character * player1, Character * player2, int round 
 #endif
 
 OptionVersus::OptionVersus( Token *token ) throw( LoadException ):
-MenuOption(token, event), human(false){
+MenuOption(token, Event), human(false){
 	if ( *token != "versus" ){
 		throw LoadException("Not versus");
 	}

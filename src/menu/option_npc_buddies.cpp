@@ -6,7 +6,7 @@
 #include "globals.h"
 
 OptionNpcBuddies::OptionNpcBuddies( Token * token ) throw( LoadException ):
-MenuOption(token, adjustableOption),
+MenuOption(token, AdjustableOption),
 name(""),
 lblue(255),
 lgreen(255),

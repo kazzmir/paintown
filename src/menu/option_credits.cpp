@@ -65,7 +65,7 @@ using namespace std;
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
 OptionCredits::OptionCredits( Token * token ) throw( LoadException ):
-MenuOption(token, event),
+MenuOption(token, Event),
 background(0),
 music(""),
 color(Bitmap::makeColor(255,255,255)),
