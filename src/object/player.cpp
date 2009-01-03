@@ -456,6 +456,8 @@ void Player::takeDamage( World * world, ObjectAttack * obj, int x ){
 		unGrab();
 	}
 
+        attack_bonus = 0;
+
 	Character::takeDamage( world, obj, x );
 
 	// cout<<"Player taking "<<x<<" damage"<<endl;
@@ -542,6 +544,15 @@ void Player::interpretMessage(Network::Message & message){
             message >> s >> attack;
             setScore(s);
             attack_bonus = (double) attack / 10.0;
+            break;
+        }
+        case CharacterMessages::Health : {
+            int health;
+            message.reset();
+            message >> type >> health;
+            if (health < getHealth()){
+                attack_bonus = 0;
+            }
             break;
         }
     }
