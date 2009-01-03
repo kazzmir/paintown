@@ -13,7 +13,7 @@
 using namespace std;
 
 OptionAdventureCpu::OptionAdventureCpu(Token *token) throw( LoadException ):
-MenuOption(event){
+MenuOption(token, event){
 	if ( *token != "adventure-cpu" ){
 		throw LoadException("Not an adventure");
 	}

@@ -5,7 +5,7 @@
 #include "globals.h"
 #include "init.h"
 
-OptionFullscreen::OptionFullscreen(Token *token)throw( LoadException ) : MenuOption(adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
+OptionFullscreen::OptionFullscreen(Token *token)throw( LoadException ) : MenuOption(token, adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
 	setRunnable(false);
 	

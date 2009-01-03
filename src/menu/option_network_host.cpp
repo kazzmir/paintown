@@ -13,7 +13,7 @@
 using namespace std;
 
 OptionNetworkHost::OptionNetworkHost(Token *token) throw( LoadException ):
-MenuOption(event){
+MenuOption(token, event){
 	if ( *token != "network-host" ){
 		throw LoadException("Not a network-host");
 	}

@@ -5,7 +5,7 @@
 #include "globals.h"
 #include "init.h"
 
-OptionBg::OptionBg(Token *token)throw( LoadException ) : MenuOption(event) , animDelay(5)
+OptionBg::OptionBg(Token *token)throw( LoadException ) : MenuOption(token, event) , animDelay(5)
 {
 	if ( *token != "background" )
 		throw LoadException("Not a background");

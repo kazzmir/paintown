@@ -13,7 +13,7 @@
 using namespace std;
 
 OptionNetworkJoin::OptionNetworkJoin(Token *token) throw( LoadException ):
-MenuOption(event){
+MenuOption(token, event){
 	if ( *token != "network-join" ){
 		throw LoadException("Not a network-join");
 	}

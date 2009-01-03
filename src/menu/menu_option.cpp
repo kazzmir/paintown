@@ -1,9 +1,39 @@
 #include "menu/menu_option.h"
 #include "util/bitmap.h"
+#include "util/token.h"
+#include "globals.h"
 
-MenuOption::MenuOption(const type t) : currentState(Deselected), text(""), infoText(""), bmp(0), adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )), adjustRightColor(Bitmap::makeColor( 255, 255, 255 )), runnable(true), ID(0)
+MenuOption::MenuOption( Token *token, const type t)throw( LoadException ) : currentState(Deselected), text(""), infoText(""), bmp(0), adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )), adjustRightColor(Bitmap::makeColor( 255, 255, 255 )), runnable(true), ID(0)
 {
 	setType(t);
+	
+	Token _token(*token);
+	
+	while ( _token.hasTokens() ){
+		try{
+			Token * tok;
+			_token >> tok;
+			if ( *tok == "info" ){
+				// get info text and location and add to option
+				std::string temp;
+				int x, y;
+				*tok >> temp >> x >> y;
+				setInfoText(temp);
+				setInfoTextLocation(x,y);
+			} else {
+				Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
+				tok->print(" ");
+			}
+		} catch ( const TokenException & ex ) {
+			// delete current;
+			string m( "Menu parse error: " );
+			m += ex.getReason();
+			throw LoadException( m );
+		} catch ( const LoadException & ex ) {
+			// delete current;
+			throw ex;
+		}
+	}
 }
 
 MenuOption::~MenuOption()
@@ -22,8 +52,5 @@ bool MenuOption::rightKey()
 	return false;
 }
 
-void MenuOption::setInfoTextLocation(int x, int y) { infoTextLocation.position.x = x; infoTextLocation.position.y = y; }
-		
-Box MenuOption::getInfoTextLocation() const { return infoTextLocation; }
 		
 

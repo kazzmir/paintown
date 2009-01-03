@@ -16,7 +16,7 @@
 using namespace std;
 
 OptionAdventure::OptionAdventure(Token *token) throw( LoadException ):
-MenuOption(event){
+MenuOption(token, event){
 	if ( *token != "adventure" ){
 		throw LoadException("Not an adventure");
 	}

@@ -508,8 +508,8 @@ void Menu::drawText(Bitmap *work){
 
 // Draw info text
 void Menu::drawInfoText ( Bitmap *work ){
-	(*selectedOption)->setInfoText("This is a test for the box");
-	(*selectedOption)->setInfoTextLocation(300,50);
+	//(*selectedOption)->setInfoText("This is a test for the box");
+	//(*selectedOption)->setInfoTextLocation(300,50);
 	if ( (*selectedOption)->getInfoText().empty() ) return;
 	switch ( currentDrawState ){
 		case FadeIn :
@@ -523,9 +523,8 @@ void Menu::drawInfoText ( Bitmap *work ){
 			area.position.radius = 15;
 			area.position.width = vFont->textLength( (*selectedOption)->getInfoText().c_str() ) + 10;
 			area.position.height = vFont->getHeight() + 5;
-			std::cout << (*selectedOption)->getInfoTextLocation().position.x << "\n";
-			//area.position.x = area.position.x - (area.position.width / 2);
-			//area.position.y = area.position.y - (area.position.height / 2);
+			area.position.x = area.position.x - (area.position.width / 2);
+			area.position.y = area.position.y - (area.position.height / 2);
 			area.position.body = backboard.position.body;
 			area.position.bodyAlpha = backboard.position.bodyAlpha;
 			area.position.border = backboard.position.border;
@@ -535,7 +534,7 @@ void Menu::drawInfoText ( Bitmap *work ){
 			area.render(work);
 			
 			// Draw text
-			vFont->printf( area.position.x + 5, area.position.y + 2, white, *work, (*selectedOption)->getInfoText(), 0 );
+			vFont->printf( area.position.x + 5, area.position.y + 5, white, *work, (*selectedOption)->getInfoText(), 0 );
 		}
 				break;
 	}

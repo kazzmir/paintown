@@ -5,7 +5,7 @@
 #include "util/token_exception.h"
 #include "util/funcs.h"
 
-OptionMenu::OptionMenu(Token *token)throw( LoadException ) : MenuOption(event), _menu(0)
+OptionMenu::OptionMenu(Token *token)throw( LoadException ) : MenuOption(token, event), _menu(0)
 {
 	_menu = new Menu();
 	// Lets try loading from a file

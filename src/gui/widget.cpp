@@ -27,7 +27,9 @@ Widget::Widget() : position(0,0,0,0), workArea(0)
 	// Nothing yet
 }
 		
-Widget::Widget( const Widget & w ) : position(0,0,0,0), workArea(0){
+Widget::Widget( const Widget & w ){
+	this->position = w.position;
+	this->workArea = w.workArea;
 }
 
 Widget::~Widget(){

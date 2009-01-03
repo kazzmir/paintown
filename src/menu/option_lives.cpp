@@ -5,7 +5,7 @@
 #include "globals.h"
 
 OptionLives::OptionLives( Token * token ) throw( LoadException ):
-MenuOption(adjustableOption),
+MenuOption(token, adjustableOption),
 name(""),
 lblue(255),
 lgreen(255),

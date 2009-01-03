@@ -3,8 +3,10 @@
 
 #include <string>
 #include "gui/box.h"
+#include "util/load_exception.h"
 
 class Bitmap;
+class Token;
 
 class MenuOption
 {
@@ -38,7 +40,7 @@ class MenuOption
 			adjustableOption
 		};
 		
-		MenuOption(const type t = option);
+		MenuOption(Token *token, const type t = option)throw( LoadException );
 	
 		virtual ~MenuOption();
 		
@@ -76,9 +78,9 @@ class MenuOption
 		
 		inline std::string getInfoText() const { return infoText; }
 		
-		void setInfoTextLocation(int x, int y);
+		inline void setInfoTextLocation(int x, int y) { infoTextLocation.position.x = x; infoTextLocation.position.y = y; }
 		
-		Box getInfoTextLocation() const;
+		inline Box getInfoTextLocation() const { return infoTextLocation; }
 		
 		inline void setBitmap(Bitmap *b) { bmp = b; }
 		

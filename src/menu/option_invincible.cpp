@@ -4,7 +4,7 @@
 #include "menu/menu_global.h"
 #include "globals.h"
 
-OptionInvincible::OptionInvincible(Token *token)throw( LoadException ) : MenuOption(adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
+OptionInvincible::OptionInvincible(Token *token)throw( LoadException ) : MenuOption(token, adjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
 	setRunnable(false);
 	

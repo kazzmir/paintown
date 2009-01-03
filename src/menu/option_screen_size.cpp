@@ -7,7 +7,7 @@
 #include <sstream>
 
 OptionScreenSize::OptionScreenSize(Token *token) throw (LoadException):
-MenuOption(adjustableOption),
+MenuOption(token, adjustableOption),
 name(""),
 lblue(255),
 lgreen(255),
