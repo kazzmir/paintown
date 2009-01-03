@@ -531,7 +531,7 @@ void Menu::drawInfoText ( Bitmap *work ){
 			area.position.width = vFont->textLength( (*selectedOption)->getInfoText().c_str() ) + 10;
 			area.position.height = vFont->getHeight() + 5;
 			area.position.x = area.position.x !=0 ? area.position.x - (area.position.width / 2) : infoPositionX - (area.position.width / 2);
-			area.position.y = area.position.x !=0 ? area.position.y - (area.position.height / 2) : infoPositionY - (area.position.height / 2);
+			area.position.y = area.position.y !=0 ? area.position.y - (area.position.height / 2) : infoPositionY - (area.position.height / 2);
 			area.position.body = backboard.position.body;
 			area.position.bodyAlpha = backboard.position.bodyAlpha;
 			area.position.border = backboard.position.border;
