@@ -470,6 +470,9 @@ void Menu::drawText(Bitmap *work){
 	int middle = 0;
 	int currentCounter = 0;
 	
+	int optionAlphaIncrements = 250 / (fromMiddle + 1);
+	int optionAlpha = optionAlphaIncrements;
+	
 	for(int i=0;beginIter!=endIter;++beginIter,++i){
 		if ( beginIter == selectedOption ){middle = i;break;}
 	}
@@ -481,9 +484,70 @@ void Menu::drawText(Bitmap *work){
 	      std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter;
 	      const int startx = (backboard.position.width/2)-(vFont->textLength((*iterOption)->getText().c_str())/2);
 	      const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
-	      vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
+	      switch(currentDrawState){
+			case FadeIn : {
+				break;
+			}
+			case FadeInText : {
+				Bitmap::transBlender( 0, 0, 0, fadeAlpha );
+				work->drawingMode( Bitmap::MODE_TRANS );
+				if ( iterOption == selectedOption ) {
+					switch((*iterOption)->getType()) {
+						case MenuOption::AdjustableOption : {
+							const int triangleSize = 10;
+							int cx = (backboard.position.x + startx) - 15;
+							int cy = (int)(backboard.position.y + starty + i * (vFont->getHeight()/spacing) + (vFont->getHeight()/spacing) / 2 + 2);
+							work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
+									
+							cx = (backboard.position.x+startx + vFont->textLength((*iterOption)->getText().c_str()))+15;
+							work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getRightAdjustColor() );
+							break;
+						}
+						case MenuOption::Option:
+						default:
+							break;
+					}
+				}
+				Bitmap::transBlender( 0, 0, 0, optionAlpha );
+				vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
+				work->drawingMode( Bitmap::MODE_SOLID );
+				break;
+			}
+			case NoFade:
+			default:
+			{
+				if ( iterOption == selectedOption ) {
+					switch((*iterOption)->getType()) {
+						case MenuOption::AdjustableOption : {
+							const int triangleSize = 10;
+							int cx = (backboard.position.x + startx) - 15;
+							int cy = (int)(backboard.position.y + starty + i * (vFont->getHeight()/spacing) + (vFont->getHeight()/spacing) / 2 + 2);
+							work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
+									
+							cx = (backboard.position.x+startx + vFont->textLength((*iterOption)->getText().c_str()))+15;
+							work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getRightAdjustColor() );
+							break;
+						}
+						case MenuOption::Option:
+						default:
+							break;
+					}
+				}
+				Bitmap::transBlender( 0, 0, 0, optionAlpha );
+				work->drawingMode( Bitmap::MODE_TRANS );
+				vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
+				work->drawingMode( Bitmap::MODE_SOLID );
+				break;
+			}
+	      }	
+	      
 	      currentCounter++;
 	      if ( currentCounter > signed(menuOptions.size()-1) ) currentCounter = 0;
+	      
+	      optionAlpha+=optionAlphaIncrements;
+	      if ( optionAlpha >= 250 ){optionAlphaIncrements -= optionAlphaIncrements*2;optionAlpha=250;}
+	      
+	      
 	}
 	/*
 	std::vector <MenuOption *>::iterator b = menuOptions.begin();
