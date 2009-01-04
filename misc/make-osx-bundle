@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version=3.2
+version=3-2
 
 cp paintown-static paintown-$version
-fixbundle paintown-$version -v 3.2 -V "Paintown $version"
+fixbundle paintown-$version -v $version -V "Paintown $version"
