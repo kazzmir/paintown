@@ -131,6 +131,7 @@ if(APPLE)
     # Added stuff for osx
 	# -------------------------------------------------------
 	set(WIN_LIB "-framework Carbon")
+	add_definitions(-DMACOSX)
 endif(APPLE)
 
 # -------------------------------------------------------
