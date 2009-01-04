@@ -458,13 +458,43 @@ void Menu::drawTextBoard(Bitmap *work){
 
 //! Draw text
 void Menu::drawText(Bitmap *work){
+	const int DisplayTotal = (backboard.position.height / vFont->getHeight()) % 2 ==0 ? backboard.position.height / vFont->getHeight() - 1 : backboard.position.height / vFont->getHeight();
+	const int FromMiddle = (DisplayTotal - 1)/2;
+	const int starty = (backboard.position.height/2)-((vFont->getHeight() * DisplayTotal)/2);
+	
+	std::vector <MenuOption *>::iterator beginIter = menuOptions.begin();
+	std::vector <MenuOption *>::iterator endIter = menuOptions.end();
+	
+	int Middle = 0;
+	int CurrentCounter = 0;
+	
+	for(int i=0;beginIter!=endIter;++beginIter,++i){
+		if ( beginIter == selectedOption ){Middle = i;break;}
+	}
+	
+	CurrentCounter = Middle - FromMiddle;
+	//std::cout << CurrentCounter << " | " << (menuOptions.size()-1) << "\n";
+	if ( CurrentCounter < 0 ) CurrentCounter = (menuOptions.size()) + CurrentCounter;
+	
+	//std::cout << CurrentCounter << " | " << (menuOptions.size()-1) << "\n";
+	
+	for(int i=0;i<DisplayTotal;++i){
+	      std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + CurrentCounter;
+	      const int startx = (backboard.position.width/2)-(vFont->textLength((*iterOption)->getText().c_str())/2);
+	      const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
+	      vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()), color, *work, (*iterOption)->getText(), 0 );
+	      CurrentCounter++;
+	      if ( CurrentCounter > signed(menuOptions.size()-1) ) CurrentCounter = 0;
+	}
+	/*
 	std::vector <MenuOption *>::iterator b = menuOptions.begin();
 	std::vector <MenuOption *>::iterator e = menuOptions.end();
 	const int startx = (backboard.position.width/2)-(longestTextLength/2);
 	const int starty = (backboard.position.height/2)-((vFont->getHeight()*(menuOptions.size()-1))/2);
-	for(int i=0;b!=e;++b,++i){
+	for(int i=0;b!=e;++b,++i){ */
 		/* There more than likely won't be any need to draw, but hey maybe sometime in the future
 		the need might arise */
+	/*
 		(*b)->draw(work);
 		switch(currentDrawState){
 			case FadeIn : {
@@ -516,6 +546,7 @@ void Menu::drawText(Bitmap *work){
 				break;
 		}
 	}
+	*/
 }
 
 
