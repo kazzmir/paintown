@@ -3,4 +3,7 @@
 version=3-2
 
 cp paintown-static paintown-$version
+rm -rf paintown-$version.app
 fixbundle paintown-$version -v $version -V "Paintown $version"
+cd paintown-$version.app/Contents/Resources
+svn export https://paintown.svn.sf.net/svnroot/paintown/data

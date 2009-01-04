@@ -166,13 +166,15 @@ void Menu::load(Token *token)throw( LoadException ){
 	}
 }
 
-void Menu::load(const std::string &filename) throw( LoadException ){
-	// Must check for initial token, menu
-	TokenReader tr( filename );
-
-	// Token * current = tr.readToken();
-	Token * token = tr.readToken();
-	load( token );
+void Menu::load(const std::string &filename) throw (LoadException){
+    // Must check for initial token, menu
+    try{
+        TokenReader tr( filename );
+        Token * token = tr.readToken();
+        load(token);
+    } catch (const TokenException & e){
+        throw LoadException(e.getReason());
+    }
 }
 
 useflags Menu::run(){
