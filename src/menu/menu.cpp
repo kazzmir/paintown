@@ -458,33 +458,30 @@ void Menu::drawTextBoard(Bitmap *work){
 
 //! Draw text
 void Menu::drawText(Bitmap *work){
-	const int DisplayTotal = (backboard.position.height / vFont->getHeight()) % 2 ==0 ? backboard.position.height / vFont->getHeight() - 1 : backboard.position.height / vFont->getHeight();
-	const int FromMiddle = (DisplayTotal - 1)/2;
-	const int starty = (backboard.position.height/2)-((vFont->getHeight() * DisplayTotal)/2);
+	const int displayTotal = (backboard.position.height / int(vFont->getHeight()/1.5)) % 2 ==0 ? backboard.position.height / (vFont->getHeight()/1.5) - 1 : backboard.position.height / (vFont->getHeight()/1.5);
+	const int fromMiddle = (displayTotal - 1)/2;
+	const int starty = (backboard.position.height/2)-(((vFont->getHeight()/1.5) * displayTotal)/2);
 	
 	std::vector <MenuOption *>::iterator beginIter = menuOptions.begin();
 	std::vector <MenuOption *>::iterator endIter = menuOptions.end();
 	
-	int Middle = 0;
-	int CurrentCounter = 0;
+	int middle = 0;
+	int currentCounter = 0;
 	
 	for(int i=0;beginIter!=endIter;++beginIter,++i){
-		if ( beginIter == selectedOption ){Middle = i;break;}
+		if ( beginIter == selectedOption ){middle = i;break;}
 	}
 	
-	CurrentCounter = Middle - FromMiddle;
-	//std::cout << CurrentCounter << " | " << (menuOptions.size()-1) << "\n";
-	if ( CurrentCounter < 0 ) CurrentCounter = (menuOptions.size()) + CurrentCounter;
+	currentCounter = middle - fromMiddle;
+	if ( currentCounter < 0 ) currentCounter = (menuOptions.size()) + currentCounter;
 	
-	//std::cout << CurrentCounter << " | " << (menuOptions.size()-1) << "\n";
-	
-	for(int i=0;i<DisplayTotal;++i){
-	      std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + CurrentCounter;
+	for(int i=0;i<displayTotal;++i){
+	      std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter;
 	      const int startx = (backboard.position.width/2)-(vFont->textLength((*iterOption)->getText().c_str())/2);
 	      const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
-	      vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()), color, *work, (*iterOption)->getText(), 0 );
-	      CurrentCounter++;
-	      if ( CurrentCounter > signed(menuOptions.size()-1) ) CurrentCounter = 0;
+	      vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/1.5), color, *work, (*iterOption)->getText(), 0 );
+	      currentCounter++;
+	      if ( currentCounter > signed(menuOptions.size()-1) ) currentCounter = 0;
 	}
 	/*
 	std::vector <MenuOption *>::iterator b = menuOptions.begin();
