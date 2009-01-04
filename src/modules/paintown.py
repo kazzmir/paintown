@@ -7,15 +7,31 @@ def itemType():
     import paintown_internal
     return paintown_internal.itemType()
 
-class Enemy:
-    def __init__(self, id, type):
+class Object:
+    def __init__(self, world, id, type):
+        self.world = world
         self.id = id
         self.type = type
 
-class Item:
-    def __init__(self, id, type):
-        self.id = id
-        self.type = type
+class Enemy(Object):
+    def __init__(self, world, id, type):
+        Object.__init__(self, world, id, type)
+
+    def getHealth(self):
+        import paintown_internal
+        return paintown_internal.getHealth(self.world, self.id)
+
+    def setHealth(self, health):
+        import paintown_internal
+        return paintown_internal.setHealth(self.world, self.id, health)
+
+    def hurt(self, damage):
+        import paintown_internal
+        return paintown_interanl.hurt(self.world, self.id, damage)
+
+class Item(Object):
+    def __init__(self, world, id, type):
+        Object.__init__(self, world, id, type)
 
 class Block:
     Enemy = enemyType()
@@ -29,13 +45,17 @@ class Block:
         import paintown_internal
         type = paintown_internal.objectType(self.world, object)
         if type == Enemy:
-            return Enemy(object, type)
+            return Enemy(self.world, object, type)
         elif type == Item:
-            return Item(object, type)
+            return Item(self.world, object, type)
 
     def getObjects(self, type = None):
         import paintown_internal
         return [makeObject(x) for x in paintown_internal.getBlockObjects(self.world, type)]
+
+    def addObject(self, object):
+        import paintown_internal
+        return paintown_internal.addObject(world, object)
 
 class Engine:
     def __init__(self):
