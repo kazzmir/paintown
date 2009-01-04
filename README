@@ -77,6 +77,8 @@ Topics:
     This will create paintown-x-y.app/ and paintown-x-y.dmg.
 
    You need buildDmg.pl: http://www.objectpark.org/buildDMG.html
+   I have placed the perl script in the misc directory, misc/buildDMG.pl, so just put
+   that in a directory that is part of your path.
 
 * Install:
 
