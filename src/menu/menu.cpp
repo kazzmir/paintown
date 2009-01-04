@@ -458,9 +458,11 @@ void Menu::drawTextBoard(Bitmap *work){
 
 //! Draw text
 void Menu::drawText(Bitmap *work){
-	const int displayTotal = (backboard.position.height / int(vFont->getHeight()/1.5)) % 2 ==0 ? backboard.position.height / (vFont->getHeight()/1.5) - 1 : backboard.position.height / (vFont->getHeight()/1.5);
+        const double spacing = 1.3;
+
+	const int displayTotal = (backboard.position.height / int(vFont->getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont->getHeight()/spacing) - 1 : backboard.position.height / (vFont->getHeight()/spacing);
 	const int fromMiddle = (displayTotal - 1)/2;
-	const int starty = (backboard.position.height/2)-(((vFont->getHeight()/1.5) * displayTotal)/2);
+	const int starty = (backboard.position.height/2)-(((vFont->getHeight()/spacing) * displayTotal)/2);
 	
 	std::vector <MenuOption *>::iterator beginIter = menuOptions.begin();
 	std::vector <MenuOption *>::iterator endIter = menuOptions.end();
@@ -479,7 +481,7 @@ void Menu::drawText(Bitmap *work){
 	      std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter;
 	      const int startx = (backboard.position.width/2)-(vFont->textLength((*iterOption)->getText().c_str())/2);
 	      const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
-	      vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/1.5), color, *work, (*iterOption)->getText(), 0 );
+	      vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
 	      currentCounter++;
 	      if ( currentCounter > signed(menuOptions.size()-1) ) currentCounter = 0;
 	}
