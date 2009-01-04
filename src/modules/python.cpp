@@ -10,6 +10,12 @@
 
 #include <Python.h>
 
+/* the public api */
+static const char * paintown_api = "paintown";
+
+/* the internal api */
+static const char * paintown_internal = "paintown_internal";
+
 using namespace std;
 
 /* get the length of the level */
@@ -54,7 +60,7 @@ path(path){
     Global::debug(1) << "Loading python.." << endl;
     Py_Initialize();
 
-    Py_InitModule("paintown", PaintownModule);
+    Py_InitModule(paintown_internal, PaintownModule);
     Global::debug(1) << "Load module " << path << endl;
 
     /* TODO: Use PySys_GetObject() to get sys.path and then use
@@ -77,7 +83,7 @@ void PythonEngine::shutdown(){
 
 /* called when for each logic frame */
 void PythonEngine::tick(){
-    PyObject * api_module = PyImport_ImportModule("api");
+    PyObject * api_module = PyImport_ImportModule(paintown_api);
     if (api_module == NULL){
         PyErr_Print();
     }
@@ -107,7 +113,7 @@ void PythonEngine::createWorld(const World & world){
     Py_DECREF(user_module);
     
     /* call our api to create the world */
-    PyObject * api_module = PyImport_ImportModule("api");
+    PyObject * api_module = PyImport_ImportModule(paintown_api);
     if (api_module == NULL){
         PyErr_Print();
     }
