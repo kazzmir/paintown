@@ -1,6 +1,41 @@
-class Block:
-    def __init__(self, id):
+
+def enemyType():
+    import paintown_internal
+    return paintown_internal.enemyType()
+
+def itemType():
+    import paintown_internal
+    return paintown_internal.itemType()
+
+class Enemy:
+    def __init__(self, id, type):
         self.id = id
+        self.type = type
+
+class Item:
+    def __init__(self, id, type):
+        self.id = id
+        self.type = type
+
+class Block:
+    Enemy = enemyType()
+    Item = itemType()
+
+    def __init__(self, world, id):
+        self.id = id
+        self.world = world
+
+    def makeObject(self, object):
+        import paintown_internal
+        type = paintown_internal.objectType(self.world, object)
+        if type == Enemy:
+            return Enemy(object, type)
+        elif type == Item:
+            return Item(object, type)
+
+    def getObjects(self, type = None):
+        import paintown_internal
+        return [makeObject(x) for x in paintown_internal.getBlockObjects(self.world, type)]
 
 class Engine:
     def __init__(self):
@@ -18,7 +53,10 @@ class Engine:
     def currentBlock(self):
         import paintown_internal
         assert(self.world != None)
-        return Block(paintown_internal.currentBlock(self.world))
+        return getBlock(paintown_internal.currentBlock(self.world))
+
+    def getBlock(self,id)
+        return Block(self.world, id)
 
     def tick(self):
         pass

@@ -6,6 +6,7 @@
 #include "../globals.h"
 #include "../util/funcs.h"
 #include "../world.h"
+#include "factory/object_factory.h"
 #include <sstream>
 
 #include <Python.h>
@@ -33,6 +34,16 @@ static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
     return Py_None;
 }
 
+/* Returns a list of existing objects in a block
+ *   paintown_internal.getBlockObjects(self.world, type)
+ */
+static PyObject * paintown_getBlockObjects(PyObject * dummy, PyObject * args){
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/* Returns the id corresponding to latest block
+ */
 static PyObject * paintown_currentBlock(PyObject * dummy, PyObject * args){
 
     PyObject * cobject;
@@ -45,11 +56,33 @@ static PyObject * paintown_currentBlock(PyObject * dummy, PyObject * args){
     Py_INCREF(Py_None);
     return Py_None;
 }
+        
+/* Returns the object type for a given identifier */
+static PyObject * paintown_objectType(PyObject * dummy, PyObject * args){
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/* Returns the integer corresponding to enemy types
+ */
+static PyObject * paintown_enemyType(PyObject * dummy, PyObject * args){
+    return Py_BuildValue("i", ObjectFactory::EnemyType);
+}
+
+/* Returns the integer corresponding to item types
+ */
+static PyObject * paintown_itemType(PyObject * dummy, PyObject * args){
+    return Py_BuildValue("i", ObjectFactory::ItemType);
+}
 
 /* methods that the python world use to talk to the paintown engine */
 static PyMethodDef PaintownModule[] = {
     {"levelLength",  paintown_levelLength, METH_VARARGS, "Get the length of the level."},
     {"currentBlock", paintown_currentBlock, METH_VARARGS, "Get the current block."},
+    {"enemyType", paintown_enemyType, METH_VARARGS, "Get the type of the enemy class."},
+    {"itemType", paintown_itemType, METH_VARARGS, "Get the type of the item class."},
+    {"getBlockObjects", paintown_getBlockObjects, METH_VARARGS, "Get the objects in a block."},
+    {"objectType", paintown_objectType, METH_VARARGS, "Get the type of an object."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -100,7 +133,8 @@ void PythonEngine::tick(){
     }
     Py_DECREF(create);
 }
-        
+
+/* called when the world is created */
 void PythonEngine::createWorld(const World & world){
 
     /* Load the user module so that it can register itself */
