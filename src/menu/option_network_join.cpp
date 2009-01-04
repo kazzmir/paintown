@@ -60,7 +60,11 @@ void OptionNetworkJoin::run(bool &endGame){
 	Keyboard key;
 	key.poll();
 	key.wait();
-	Network::networkClient();
+        try{
+            Network::networkClient();
+        } catch (const ReturnException &r){
+        }
+
 	key.clear();
 	key.poll();
 	key.wait();

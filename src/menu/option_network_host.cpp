@@ -58,7 +58,10 @@ void OptionNetworkHost::draw(Bitmap *work){
 
 void OptionNetworkHost::run(bool &endGame){
 	Keyboard key;
-	Network::networkServer();
+        try{
+            Network::networkServer();
+        } catch (const ReturnException &e){
+        }
 	key.clear();
 	key.poll();
 	key.wait();

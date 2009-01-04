@@ -347,7 +347,6 @@ useflags Menu::run(){
 			try{
 				(*selectedOption)->run(endGame);
 			} catch ( const ReturnException & re ){
-				
 			}
 			// Reset it's state
 			(*selectedOption)->setState(MenuOption::Selected);
