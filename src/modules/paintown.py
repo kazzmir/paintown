@@ -11,14 +11,14 @@ class Engine:
         self.world = world
 
     def levelLength(self):
-        import paintown
+        import paintown_internal
         assert(self.world != None)
-        return paintown.levelLength(self.world)
+        return paintown_internal.levelLength(self.world)
 
     def currentBlock(self):
-        import paintown
+        import paintown_internal
         assert(self.world != None)
-        return Block(paintown.currentBlock(self.world))
+        return Block(paintown_internal.currentBlock(self.world))
 
     def tick(self):
         pass
