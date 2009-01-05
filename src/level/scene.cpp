@@ -9,6 +9,7 @@
 #include "util/funcs.h"
 #include "object/object.h"
 #include "scene.h"
+#include "object/enemy.h"
 #include "globals.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
@@ -246,6 +247,10 @@ bool Scene::canContinue( int x ){
 	return (current_block->isContinuous() && x >= getLimit() - 320) || (hearts.empty() && current_block->empty() && x >= getLimit() - 320);
 }
 
+void Scene::addEnemy(Enemy * obj){
+    hearts.push_back(obj->getHeart());
+    added_objects.push_back(obj);
+}
 
 void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 	clearHearts();
@@ -257,6 +262,8 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 
 	vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
 	hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
+        objects->insert(objects->end(), added_objects.begin(), added_objects.end());
+        added_objects.clear();
 
 	if ( atmosphere ){
 		atmosphere->act();

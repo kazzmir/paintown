@@ -13,6 +13,7 @@ class Block;
 class Heart;
 class Object;
 class Atmosphere;
+class Enemy;
 
 struct Panel{
 	Bitmap * pic;
@@ -48,6 +49,8 @@ public:
         inline Block * currentBlock() const {
             return current_block;
         }
+
+        void addEnemy(Enemy * obj);
 
 	void advanceBlocks( int n );
 
@@ -108,6 +111,7 @@ protected:
         vector<Block*> old_level_blocks;
 
 	vector< Heart * > hearts;
+        vector<Object*> added_objects;
 
 	int scene_length;
 

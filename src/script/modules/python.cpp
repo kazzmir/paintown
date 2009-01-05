@@ -9,7 +9,9 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "world.h"
+#include "level/blockobject.h"
 #include "factory/object_factory.h"
+#include "object/enemy.h"
 #include <sstream>
 
 /* the public api */
@@ -38,61 +40,96 @@ PyObject * AutoObject::getObject(){
 
 namespace PaintownLevel{
 
-/* get the length of the level */
-static PyObject * levelLength(PyObject * dummy, PyObject * args){
+    /* get the length of the level */
+    static PyObject * levelLength(PyObject * dummy, PyObject * args){
 
-    PyObject * cobject;
+        PyObject * cobject;
 
-    if (PyArg_ParseTuple(args, "O", &cobject)){
-        World * world = (World*) PyCObject_AsVoidPtr(cobject);
-        int length = world->levelLength();
-        return Py_BuildValue("i", length);
+        if (PyArg_ParseTuple(args, "O", &cobject)){
+            World * world = (World*) PyCObject_AsVoidPtr(cobject);
+            int length = world->levelLength();
+            return Py_BuildValue("i", length);
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
-}
+    static PyObject * addCharacter(PyObject * dummy, PyObject * args){
+        PyObject * cworld;
+        int health = 0;
+        int x = 0;
+        int z = 0;
+        int map = 0;
+        char * name;
+        char * path;
 
-/* Returns a list of existing objects in a block
- *   paintown_internal.getBlockObjects(self.world, type)
- */
-static PyObject * getBlockObjects(PyObject * dummy, PyObject * args){
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/* Returns the id corresponding to latest block
- */
-static PyObject * currentBlock(PyObject * dummy, PyObject * args){
-
-    PyObject * cobject;
-
-    if (PyArg_ParseTuple(args, "O", &cobject)){
-        World * world = (World*) PyCObject_AsVoidPtr(cobject);
-        return Py_BuildValue("i", world->currentBlock());
+        if (PyArg_ParseTuple(args, "Ossiiii", &cworld, &path, &name, &map, &health, &x, &z)){
+            string spath(path);
+            string sname(name);
+            BlockObject block;
+            block.setPath(Util::getDataPath() + spath);
+            block.setName(sname);
+            block.setAlias(sname);
+            block.setMap(map);
+            block.setType(ObjectFactory::EnemyType);
+            block.setHealth(health);
+            block.setCoords(x,z);
+            /* the factory will create an enemy and the enemy
+             * will call into the script module to create a new character,
+             * so just return that handle
+             */
+            World * world = (World*) PyCObject_AsVoidPtr(cworld);
+            Enemy * enemy = (Enemy*) ObjectFactory::createObject(&block);
+            world->addEnemy(enemy);
+            Py_INCREF((PyObject*) enemy->getScriptObject());
+            return (PyObject*) enemy->getScriptObject();
+        }
+        
+        Py_INCREF(Py_None);
+        return Py_None;
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
-}
+    /* Returns a list of existing objects in a block
+     *   paintown_internal.getBlockObjects(self.world, type)
+     */
+    static PyObject * getBlockObjects(PyObject * dummy, PyObject * args){
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
 
-/* Returns the object type for a given identifier */
-static PyObject * objectType(PyObject * dummy, PyObject * args){
-    Py_INCREF(Py_None);
-    return Py_None;
-}
+    /* Returns the id corresponding to latest block
+    */
+    static PyObject * currentBlock(PyObject * dummy, PyObject * args){
 
-/* Returns the integer corresponding to enemy types
- */
-static PyObject * enemyType(PyObject * dummy, PyObject * args){
-    return Py_BuildValue("i", ObjectFactory::EnemyType);
-}
+        PyObject * cobject;
 
-/* Returns the integer corresponding to item types
- */
-static PyObject * itemType(PyObject * dummy, PyObject * args){
-    return Py_BuildValue("i", ObjectFactory::ItemType);
-}
+        if (PyArg_ParseTuple(args, "O", &cobject)){
+            World * world = (World*) PyCObject_AsVoidPtr(cobject);
+            return Py_BuildValue("i", world->currentBlock());
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
+    /* Returns the object type for a given identifier */
+    static PyObject * objectType(PyObject * dummy, PyObject * args){
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
+    /* Returns the integer corresponding to enemy types
+    */
+    static PyObject * enemyType(PyObject * dummy, PyObject * args){
+        return Py_BuildValue("i", ObjectFactory::EnemyType);
+    }
+
+    /* Returns the integer corresponding to item types
+    */
+    static PyObject * itemType(PyObject * dummy, PyObject * args){
+        return Py_BuildValue("i", ObjectFactory::ItemType);
+    }
 
 }
 
@@ -180,6 +217,7 @@ static PyMethodDef PaintownModule[] = {
     {"itemType", PaintownLevel::itemType, METH_VARARGS, "Get the type of the item class."},
     {"getBlockObjects", PaintownLevel::getBlockObjects, METH_VARARGS, "Get the objects in a block."},
     {"objectType", PaintownLevel::objectType, METH_VARARGS, "Get the type of an object."},
+    {"addCharacter", PaintownLevel::addCharacter, METH_VARARGS, "Create a new character"},
     {"getHealth", PaintownCharacter::getHealth, METH_VARARGS, "Get the health of a character."},
     {"setHealth", PaintownCharacter::setHealth, METH_VARARGS, "Set the health of a character."},
     {"getX", PaintownCharacter::getX, METH_VARARGS, "Get the X coordinate of an object"},

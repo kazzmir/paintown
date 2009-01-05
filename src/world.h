@@ -5,6 +5,7 @@ class Object;
 class Scene;
 class Bitmap;
 class Block;
+class Enemy;
 
 #include <vector>
 #include <deque>
@@ -54,6 +55,8 @@ public:
 
         virtual const int levelLength() const;
         virtual const Block * currentBlock() const;
+        
+        void addEnemy(Enemy * obj);
 
 	virtual void doScene( int min_x, int max_x );
 
@@ -62,7 +65,7 @@ public:
 
 	virtual void drawMiniMaps( bool b );
 	virtual bool shouldDrawMiniMaps();
-				
+
 	void killAllHumans( Object * player );
 
 	virtual void addMessage( Network::Message m, Network::Socket from = 0 );

@@ -7,6 +7,7 @@
 #include "util/load_exception.h"
 #include "globals.h"
 #include "object/effect.h"
+#include "object/enemy.h"
 #include "level/scene.h"
 #include "world.h"
 #include "network/network.h"
@@ -211,6 +212,15 @@ const int World::levelLength() const {
         exit(1);
     }
     return scene->totalLength();
+}
+        
+void World::addEnemy(Enemy * obj){
+    if (scene){
+        scene->addEnemy(obj);
+    } else {
+        /* scene should exist.. but just be safe */
+        delete obj;
+    }
 }
 
 void World::doLogic(){

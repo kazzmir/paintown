@@ -166,7 +166,9 @@ public:
 		return this->id;
 	}
 
-        /* regular ids */
+        /* regular ids
+         * * not used for anything!
+         */
         virtual inline void setObjectId( unsigned int id ){
 		this->objectId = id;
 	}
