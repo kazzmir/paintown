@@ -1011,6 +1011,10 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 		}
 	}
 
+        if (getScriptObject() != NULL){
+            getScriptObject()->tick();
+        }
+
 	/*
 	if ( isJumping() ){
 		// cout<<"Jumping: "<<getJumpingYVelocity()<<endl;

@@ -2,6 +2,8 @@
 
 #include <Python.h>
 
+#include "script/character.h"
+#include "object/character.h"
 #include "script/script.h"
 #include "python.h"
 #include <string>
@@ -35,8 +37,10 @@ PyObject * AutoObject::getObject(){
     return object;
 }
 
+namespace PaintownLevel{
+
 /* get the length of the level */
-static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
+static PyObject * levelLength(PyObject * dummy, PyObject * args){
 
     PyObject * cobject;
 
@@ -53,14 +57,14 @@ static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
 /* Returns a list of existing objects in a block
  *   paintown_internal.getBlockObjects(self.world, type)
  */
-static PyObject * paintown_getBlockObjects(PyObject * dummy, PyObject * args){
+static PyObject * getBlockObjects(PyObject * dummy, PyObject * args){
     Py_INCREF(Py_None);
     return Py_None;
 }
 
 /* Returns the id corresponding to latest block
  */
-static PyObject * paintown_currentBlock(PyObject * dummy, PyObject * args){
+static PyObject * currentBlock(PyObject * dummy, PyObject * args){
 
     PyObject * cobject;
 
@@ -72,33 +76,52 @@ static PyObject * paintown_currentBlock(PyObject * dummy, PyObject * args){
     Py_INCREF(Py_None);
     return Py_None;
 }
-        
+
 /* Returns the object type for a given identifier */
-static PyObject * paintown_objectType(PyObject * dummy, PyObject * args){
+static PyObject * objectType(PyObject * dummy, PyObject * args){
     Py_INCREF(Py_None);
     return Py_None;
 }
 
 /* Returns the integer corresponding to enemy types
  */
-static PyObject * paintown_enemyType(PyObject * dummy, PyObject * args){
+static PyObject * enemyType(PyObject * dummy, PyObject * args){
     return Py_BuildValue("i", ObjectFactory::EnemyType);
 }
 
 /* Returns the integer corresponding to item types
  */
-static PyObject * paintown_itemType(PyObject * dummy, PyObject * args){
+static PyObject * itemType(PyObject * dummy, PyObject * args){
     return Py_BuildValue("i", ObjectFactory::ItemType);
+}
+
+}
+
+namespace PaintownCharacter{
+    static PyObject * getHealth(PyObject * dummy, PyObject * args){
+
+        PyObject * cobject;
+
+        if (PyArg_ParseTuple(args, "O", &cobject)){
+            Script::Character * character = (Script::Character*) PyCObject_AsVoidPtr(cobject);
+            int length = character->getCharacter()->getHealth();
+            return Py_BuildValue("i", length);
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
 }
 
 /* methods that the python world use to talk to the paintown engine */
 static PyMethodDef PaintownModule[] = {
-    {"levelLength",  paintown_levelLength, METH_VARARGS, "Get the length of the level."},
-    {"currentBlock", paintown_currentBlock, METH_VARARGS, "Get the current block."},
-    {"enemyType", paintown_enemyType, METH_VARARGS, "Get the type of the enemy class."},
-    {"itemType", paintown_itemType, METH_VARARGS, "Get the type of the item class."},
-    {"getBlockObjects", paintown_getBlockObjects, METH_VARARGS, "Get the objects in a block."},
-    {"objectType", paintown_objectType, METH_VARARGS, "Get the type of an object."},
+    {"levelLength",  PaintownLevel::levelLength, METH_VARARGS, "Get the length of the level."},
+    {"currentBlock", PaintownLevel::currentBlock, METH_VARARGS, "Get the current block."},
+    {"enemyType", PaintownLevel::enemyType, METH_VARARGS, "Get the type of the enemy class."},
+    {"itemType", PaintownLevel::itemType, METH_VARARGS, "Get the type of the item class."},
+    {"getBlockObjects", PaintownLevel::getBlockObjects, METH_VARARGS, "Get the objects in a block."},
+    {"objectType", PaintownLevel::objectType, METH_VARARGS, "Get the type of an object."},
+    {"getHealth", PaintownCharacter::getHealth, METH_VARARGS, "Get the health of a character."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -155,6 +178,12 @@ void * PythonEngine::createCharacter(Script::Character * obj){
 void PythonEngine::destroyCharacter(void * handle){
     PyObject * obj = (PyObject*) handle;
     Py_DECREF(obj);
+}
+    
+void PythonEngine::characterTick(void * handle){
+    PyObject * character = (PyObject*) handle;
+    AutoObject tick(PyObject_GetAttrString(character, "tick"));
+    AutoObject result(PyObject_CallFunction(tick.getObject(), NULL));
 }
 
 /* called when for each logic frame */

@@ -64,6 +64,10 @@ class Character:
     def __init__(self, character):
         self.character = character
 
+    def tick(self):
+        import paintown_internal
+        pass
+
 class Engine:
     def __init__(self):
         self.world = None

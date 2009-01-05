@@ -76,6 +76,9 @@ namespace Script{
     void NoEngine::destroyCharacter(void * handle){
     }
 
+    void NoEngine::characterTick(void * obj){
+    }
+
     NoEngine::~NoEngine(){
     }
 
@@ -84,6 +87,10 @@ namespace Script{
     handle(NULL),
     guy(guy){
         handle = getEngine()->createCharacter(this);
+    }
+
+    void Character::tick(){
+        getEngine()->characterTick(handle);
     }
 
     Character::~Character(){
