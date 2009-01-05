@@ -247,6 +247,10 @@ bool Scene::canContinue( int x ){
 	return (current_block->isContinuous() && x >= getLimit() - 320) || (hearts.empty() && current_block->empty() && x >= getLimit() - 320);
 }
 
+/* put the enemy into a vector so that it can be added into the game objects
+ * later on. This is because modifying the world object list during
+ * the logic() method will corrupt the iterators.
+ */
 void Scene::addEnemy(Enemy * obj){
     hearts.push_back(obj->getHeart());
     added_objects.push_back(obj);

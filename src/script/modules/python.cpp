@@ -55,6 +55,9 @@ namespace PaintownLevel{
         return Py_None;
     }
 
+    /* create a new character (enemy really) and add it into the world
+     * Returns the python object that represents the character.
+     */
     static PyObject * addCharacter(PyObject * dummy, PyObject * args){
         PyObject * cworld;
         int health = 0;
