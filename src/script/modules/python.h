@@ -17,11 +17,12 @@ public:
     virtual void shutdown();
     virtual void createWorld(const World & world);
     virtual void destroyWorld(const World & world);
-    virtual void * createCharacter(Script::Character * character);
-    virtual void destroyCharacter(void * handle);
+    virtual void * createCharacter(void * character);
+    virtual void destroyObject(void * handle);
     virtual void objectTick(void * handle);
     virtual void objectTakeDamage(void * who, void * handle, int damage);
     virtual void objectCollided(void * me, void * him);
+    virtual void characterAttacked(void * me, void * him);
     virtual void tick();
 
     virtual ~PythonEngine();

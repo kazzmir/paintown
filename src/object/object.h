@@ -371,11 +371,11 @@ public:
 	 */
 	virtual void hurt( int x );
 
-        virtual void setScriptObject(Script::Object * object){
+        virtual void setScriptObject(void * object){
             scriptObject = object;
         }
 
-        virtual Script::Object * getScriptObject(){
+        virtual void * getScriptObject(){
             return scriptObject;
         }
 
@@ -411,7 +411,7 @@ private:
         /* this id is assigned by the level */
         int objectId;
 
-        Script::Object * scriptObject;
+        void * scriptObject;
 };
 
 #endif

@@ -14,7 +14,7 @@
 #include "util/load_exception.h"
 #include "object/object.h"
 #include "object_factory.h"
-#include "script/character.h"
+#include "script/script.h"
 
 using namespace std;
 
@@ -103,7 +103,7 @@ Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 	ret->setMaxHealth( block->getHealth() );
 	ret->setHealth( block->getHealth() );
         ret->setObjectId(block->getId());
-        ret->setScriptObject(new Script::Character(ret));
+        ret->setScriptObject(Script::Engine::getEngine()->createCharacter(ret));
 
 	hearts.push_back( ret->getHeart() );
 

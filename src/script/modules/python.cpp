@@ -2,7 +2,6 @@
 
 #include <Python.h>
 
-#include "script/character.h"
 #include "object/character.h"
 #include "script/script.h"
 #include "python.h"
@@ -102,8 +101,8 @@ namespace PaintownCharacter{
         PyObject * cobject;
 
         if (PyArg_ParseTuple(args, "O", &cobject)){
-            Script::Object * object = (Script::Object*) PyCObject_AsVoidPtr(cobject);
-            int length = object->getObject()->getHealth();
+            Character * object = (Character*) PyCObject_AsVoidPtr(cobject);
+            int length = object->getHealth();
             return Py_BuildValue("i", length);
         }
 
@@ -116,8 +115,8 @@ namespace PaintownCharacter{
 
         int much = 0;
         if (PyArg_ParseTuple(args, "Oi", &cobject, &much)){
-            Script::Object * object = (Script::Object*) PyCObject_AsVoidPtr(cobject);
-            object->getObject()->setHealth(much);
+            Object * object = (Object*) PyCObject_AsVoidPtr(cobject);
+            object->setHealth(much);
         }
 
         Py_INCREF(Py_None);
@@ -128,8 +127,8 @@ namespace PaintownCharacter{
     static PyObject * getDouble(PyObject * dummy, PyObject * args, const double (Object::*get)() const){
         PyObject * cobject;
         if (PyArg_ParseTuple(args, "O", &cobject)){
-            Script::Object * object = (Script::Object*) PyCObject_AsVoidPtr(cobject);
-            return Py_BuildValue("d", (object->getObject()->*get)());
+            Object * object = (Object*) PyCObject_AsVoidPtr(cobject);
+            return Py_BuildValue("d", (object->*get)());
         }
 
         Py_INCREF(Py_None);
@@ -152,8 +151,8 @@ namespace PaintownCharacter{
         PyObject * cobject;
         double value = 0;
         if (PyArg_ParseTuple(args, "Od", &cobject, &value)){
-            Script::Object * object = (Script::Object*) PyCObject_AsVoidPtr(cobject);
-            (object->getObject()->*set)(value);
+            Object * object = (Object*) PyCObject_AsVoidPtr(cobject);
+            (object->*set)(value);
         }
 
         Py_INCREF(Py_None);
@@ -229,7 +228,7 @@ void PythonEngine::init(){
 void PythonEngine::shutdown(){
 }
     
-void * PythonEngine::createCharacter(Script::Character * obj){
+void * PythonEngine::createCharacter(void * obj){
     Global::debug(1) << "Create a character from " << obj << endl;
     AutoObject api_module(PyImport_ImportModule((char*)paintown_api));
     AutoObject create(PyObject_GetAttrString(api_module.getObject(), "createCharacter"));
@@ -242,9 +241,23 @@ void * PythonEngine::createCharacter(Script::Character * obj){
     return ret;
 }
 
-void PythonEngine::destroyCharacter(void * handle){
+void PythonEngine::destroyObject(void * handle){
     PyObject * obj = (PyObject*) handle;
     Py_DECREF(obj);
+}
+    
+void PythonEngine::characterAttacked(void * from, void * handle){
+    PyObject * object = (PyObject*) from;
+    AutoObject function(PyObject_GetAttrString(object, "didAttack"));
+    PyObject * maybeNull = (PyObject*) handle;
+    if (handle == NULL){
+        maybeNull = Py_None;
+        Py_INCREF(maybeNull);
+    }
+    AutoObject result(PyObject_CallFunction(function.getObject(), (char*) "(O)", maybeNull));
+    if (handle == NULL){
+        Py_DECREF(maybeNull);
+    }
 }
 
 void PythonEngine::objectCollided(void * from, void * handle){

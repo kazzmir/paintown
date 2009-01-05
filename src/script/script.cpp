@@ -4,7 +4,6 @@
 
 #include "script.h"
 #include "globals.h"
-#include "character.h"
 #include "object/character.h"
 #include <string>
 
@@ -67,11 +66,11 @@ namespace Script{
     void NoEngine::tick(){
     }
             
-    void * NoEngine::createCharacter(Character * character){
+    void * NoEngine::createCharacter(void * character){
         return NULL;
     }
 
-    void NoEngine::destroyCharacter(void * handle){
+    void NoEngine::destroyObject(void * handle){
     }
 
     void NoEngine::objectTick(void * obj){
@@ -80,12 +79,16 @@ namespace Script{
     void NoEngine::objectTakeDamage(void * who, void * handle, int damage){
     }
             
+    void NoEngine::characterAttacked(void * me, void * him){
+    }
+            
     void NoEngine::objectCollided(void * me, void * him){
     }
 
     NoEngine::~NoEngine(){
     }
 
+    /*
     typedef ::Object ObjectObject;
     Object::Object(ObjectObject * const guy):
     handle(NULL),
@@ -120,8 +123,17 @@ namespace Script{
     Object(guy){
         handle = getEngine()->createCharacter(this);
     }
+        
+    void Character::attacked(Object * him){
+        void * himHandle = NULL;
+        if (him != NULL){
+            himHandle = him->getHandle();
+        }
+        getEngine()->characterAttacked(handle, himHandle);
+    }
 
     Character::~Character(){
         getEngine()->destroyCharacter(handle);
     }
+    */
 }

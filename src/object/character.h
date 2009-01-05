@@ -327,10 +327,6 @@ public:
             return glowing;
         }
         
-        virtual inline Script::Character * getScriptCharacter(){
-            return (Script::Character*) getScriptObject();
-        }
-	
 	virtual Network::Message getCreateMessage();
 	virtual Network::Message movedMessage();
 	virtual Network::Message explodeMessage();

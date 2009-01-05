@@ -25,7 +25,7 @@
 #include "util/token.h"
 #include "util/token_exception.h"
 #include "util/tokenreader.h"
-#include "script/character.h"
+#include "script/script.h"
 #include "world.h"
 
 using namespace std;
@@ -1007,8 +1007,8 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 		}
 	}
 
-        if (getScriptCharacter() != NULL){
-            getScriptCharacter()->tick();
+        if (getScriptObject() != NULL){
+            Script::Engine::getEngine()->objectTick(getScriptObject());
         }
 
 	/*
@@ -1113,6 +1113,13 @@ const map<string,Animation*> & Character::getMovements() {
 	
 void Character::attacked( World * world, Object * something, vector< Object * > & objects ){
 	animation_current->contacted();
+        if (getScriptObject() != NULL){
+            void * script = NULL;
+            if (something != NULL){
+                script = something->getScriptObject();
+            }
+            Script::Engine::getEngine()->characterAttacked(getScriptObject(), script);
+        }
 }
 
 void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){

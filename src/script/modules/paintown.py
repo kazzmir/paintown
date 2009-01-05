@@ -41,6 +41,9 @@ class Object:
     def didCollide(self, him):
         pass
 
+    def didAttack(self, him):
+        pass
+
     def takeDamage(self, him, damage):
         pass
 

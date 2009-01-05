@@ -3,7 +3,7 @@
 #include "object_attack.h"
 #include "stimulation.h"
 #include "util/ebox.h"
-#include "script/object.h"
+#include "script/script.h"
 #include <math.h>
 #include <exception>
 #include <iostream>
@@ -157,11 +157,11 @@ const int Object::getAlliance() const{
 void Object::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	hit.play();
         if (getScriptObject() != NULL){
-            Script::Object * object = NULL;
+            void * object = NULL;
             if (obj != NULL){
                 object = obj->getScriptObject();
             }
-            getScriptObject()->collided(object);
+            Script::Engine::getEngine()->objectCollided(getScriptObject(), object);
         }
 }
 
@@ -238,11 +238,11 @@ void Object::takeDamage( World * world, ObjectAttack * obj, int x ){
 	this->hurt( x );
 	damage += x;
         if (getScriptObject() != NULL){
-            Script::Object * him = NULL;
+            void * him = NULL;
             if (obj != NULL){
                 him = obj->getScriptObject();
             }
-            getScriptObject()->takeDamage(him, x);
+            Script::Engine::getEngine()->objectTakeDamage(getScriptObject(), him, x);
         }
 }
 	
@@ -254,5 +254,7 @@ ECollide * Object::getCollide() const {
 }
 
 Object::~Object(){
-        delete scriptObject;
+    if (getScriptObject() != NULL){
+        Script::Engine::getEngine()->destroyObject(getScriptObject());
+    }
 }

@@ -18,8 +18,9 @@ namespace Script{
             return guy;
         }
 
-    protected:
-        virtual inline void * getHandle(){
+        /* should really be protected */
+    public:
+        virtual inline void * getHandle() const {
             return handle;
         }
 
