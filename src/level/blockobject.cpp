@@ -67,6 +67,7 @@ stimulationValue( 0 ){
                             int id;
                             *current >> id;
                             setId(id);
+                            ObjectFactory::maxId(id);
 			} else if ( *current == "path" ){
 				string n;
 				*current >> n;

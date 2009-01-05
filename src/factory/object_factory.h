@@ -21,6 +21,7 @@ class ObjectFactory{
 public:
 	static Object * createObject( BlockObject * block );
         static int getNextObjectId();
+        static void maxId(int id);
 	static void destroy();
         
 private:

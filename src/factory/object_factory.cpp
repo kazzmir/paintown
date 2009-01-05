@@ -26,6 +26,10 @@ Object * ObjectFactory::createObject( BlockObject * block ){
 int ObjectFactory::getNextObjectId(){
     return getFactory()->_getNextObjectId();
 }
+        
+void ObjectFactory::maxId(int id){
+    getFactory()->maxObjectId(id);
+}
 
 ObjectFactory * ObjectFactory::getFactory(){
     if ( factory == NULL ){
