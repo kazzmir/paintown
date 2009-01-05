@@ -10,20 +10,35 @@ using namespace std;
 
 namespace Script{
 
+    Engine * Engine::theEngine = NULL;
+
     Engine::Engine(){
+        if (theEngine != NULL){
+            delete theEngine;
+        }
+        theEngine = this;
     }
 
     Engine::~Engine(){
     }
 
-    Engine * getEngine(const string & name, const string & path){
+    Engine * Engine::getEngine(){
+        return theEngine;
+    }
+
+    Engine * getEngine(){
+        return Engine::getEngine();
+    }
+
+    /* sets the global engine */
+    void newEngine(const string & name, const string & path){
 #ifdef HAVE_PYTHON
         if (name == "python"){
-            return new PythonEngine(path);
+            new PythonEngine(path);
         }
 #endif
         Global::debug(0) << "*Warning* no such engine '" << name << "' for path " << path << endl;
-        return new NoEngine();
+        new NoEngine();
         // throw NoSuchEngine(name);
     }
 

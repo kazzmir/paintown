@@ -77,11 +77,14 @@ World::~World(){
 }
         
 Script::Engine * const World::getEngine() const {
+    return Script::getEngine();
+    /*
     if (scene){
         return scene->getScript();
     }
     Global::debug(-1) << "Script is null somehow" << endl;
     exit(1);
+    */
 }
 
 void World::reloadLevel() throw( LoadException ){

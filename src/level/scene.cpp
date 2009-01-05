@@ -42,15 +42,14 @@ current_block( NULL ),
 blockNumber( 1 ),
 backgroundParallax( 5 ),
 foregroundParallax( 1.2 ),
-atmosphere( NULL ),
-script(NULL){
-
-    script = new Script::NoEngine();
+atmosphere( NULL ){
 
 	TokenReader tr( filename );
 
 	// Token * current = tr.readToken();
 	Token * current;
+        
+        Script::newEngine("none","none");
 
 	/* the first panel index */
 	// char panel_num = 'a';
@@ -83,8 +82,7 @@ script(NULL){
                             string kind;
                             string scriptPath;
                             *tok >> kind >> scriptPath;
-                            delete getScript();
-                            setScript(Script::getEngine(kind, scriptPath));
+                            Script::newEngine(kind, scriptPath);
 			} else if ( *tok == "atmosphere" ){
 				string s;
 				*tok >> s;
@@ -381,14 +379,10 @@ Scene::~Scene(){
 		delete atmosphere;
 	}
 
-        if (script){
-            delete script;
-        }
-	
 	/*
 	for ( vector< Heart * >::iterator it = hearts.begin(); it != hearts.end(); it++ ){
 		delete *it;
 	}
 	*/
-
+        Script::newEngine("none", "none");
 }

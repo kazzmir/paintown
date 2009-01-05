@@ -9,8 +9,13 @@ class World;
 namespace Script{
 
     class Engine{
+    private:
+        /* there is one global engine in existence at any time */
+        static Engine * theEngine;
     public:
         Engine();
+
+        static Engine * getEngine();
 
         virtual void init() = 0;
         virtual void shutdown() = 0;
@@ -21,8 +26,10 @@ namespace Script{
 
         virtual ~Engine();
     };
+    
 
-    Engine * getEngine(const std::string & name, const std::string & path);
+    Engine * getEngine();
+    void newEngine(const std::string & name, const std::string & path);
 
     class NoSuchEngine: public std::exception {
     public:
