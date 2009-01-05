@@ -93,7 +93,7 @@ path(path){
     Global::debug(1) << "Loading python.." << endl;
     Py_Initialize();
 
-    Py_InitModule(paintown_internal, PaintownModule);
+    Py_InitModule((char*) paintown_internal, PaintownModule);
     Global::debug(1) << "Load module " << path << endl;
 
     /* TODO: Use PySys_GetObject() to get sys.path and then use
@@ -116,7 +116,7 @@ void PythonEngine::shutdown(){
 
 /* called when for each logic frame */
 void PythonEngine::tick(){
-    PyObject * api_module = PyImport_ImportModule(paintown_api);
+    PyObject * api_module = PyImport_ImportModule((char*)paintown_api);
     if (api_module == NULL){
         PyErr_Print();
     }
@@ -147,7 +147,7 @@ void PythonEngine::createWorld(const World & world){
     Py_DECREF(user_module);
     
     /* call our api to create the world */
-    PyObject * api_module = PyImport_ImportModule(paintown_api);
+    PyObject * api_module = PyImport_ImportModule((char*)paintown_api);
     if (api_module == NULL){
         PyErr_Print();
     }
