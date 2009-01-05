@@ -628,7 +628,7 @@ const int Character::getAlliance() const{
 }
         
 bool Character::isGrabbable(Object * obj){
-    return getStatus() == Status_Ground;
+    return getStatus() == Status_Ground || getStatus() == Status_Hurt;
 }
 
 Object * Character::copy(){
