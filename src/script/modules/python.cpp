@@ -1,5 +1,7 @@
 #ifdef HAVE_PYTHON
 
+#include <Python.h>
+
 #include "script/script.h"
 #include "python.h"
 #include <string>
@@ -8,8 +10,6 @@
 #include "world.h"
 #include "factory/object_factory.h"
 #include <sstream>
-
-#include <Python.h>
 
 /* the public api */
 static const char * paintown_api = "paintown";
