@@ -1,6 +1,7 @@
 #include "util/bitmap.h"
 #include "menu/menu_option.h"
 #include "util/token.h"
+#include "util/funcs.h"
 #include "globals.h"
 
 MenuOption::MenuOption(Token *token, const OptionType t) throw (LoadException):
@@ -33,7 +34,20 @@ ID(0){
                     y = 0;
                 }
                 setInfoTextLocation(x,y);
-            } else {
+            } 
+	    else if ( *token == "option-image" ){
+		// add bitmaps to vector for use in individual options
+		std::string temp;
+		*token >> temp;
+		Bitmap *bmp = new Bitmap(Util::getDataPath() + temp);
+		if(bmp->getError()){
+		  delete bmp;
+		}
+		else {
+		  bitmaps.push_back(bmp);
+		}
+	    }
+	    else {
                 Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
                     token->print(" ");
@@ -52,7 +66,14 @@ ID(0){
 }
 
 MenuOption::~MenuOption(){
-    // Nothing
+    // Kill all bitmaps if any
+    for ( unsigned int i = 0; i < bitmaps.size(); ++i ){
+	    if(bitmaps[i])delete bitmaps[i];
+	}
+}
+
+std::vector<Bitmap *> &MenuOption::getBitmaps() { 
+    return bitmaps;
 }
 
 // This is to pass paramaters to an option ie a bar or something

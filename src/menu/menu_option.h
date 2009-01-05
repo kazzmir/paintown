@@ -2,6 +2,7 @@
 #define _paintown_menu_option_h
 
 #include <string>
+#include <vector>
 #include "gui/box.h"
 #include "util/load_exception.h"
 
@@ -42,7 +43,9 @@ class MenuOption
 		MenuOption(Token *token, const OptionType t = Option) throw (LoadException);
 	
 		virtual ~MenuOption();
-		
+
+	protected:
+		std::vector<Bitmap *> &getBitmaps();
 	private:
 		state currentState;
 		OptionType mType;
@@ -53,6 +56,9 @@ class MenuOption
 		int adjustLeftColor;
 		int adjustRightColor;
 		bool runnable;
+		
+		// Image resource for use in individual options
+		std::vector<Bitmap *>bitmaps;
 		
 		// Stuff we don't need to be concerned with
 		friend class Menu;
