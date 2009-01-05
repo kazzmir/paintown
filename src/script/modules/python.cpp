@@ -122,7 +122,54 @@ namespace PaintownCharacter{
 
         Py_INCREF(Py_None);
         return Py_None;
+    }
 
+
+    static PyObject * getDouble(PyObject * dummy, PyObject * args, const double (Object::*get)() const){
+        PyObject * cobject;
+        if (PyArg_ParseTuple(args, "O", &cobject)){
+            Script::Object * object = (Script::Object*) PyCObject_AsVoidPtr(cobject);
+            return Py_BuildValue("d", (object->getObject()->*get)());
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
+    static PyObject * getX(PyObject * dummy, PyObject * args){
+        return getDouble(dummy, args, &Object::getX);
+    }
+    
+    static PyObject * getY(PyObject * dummy, PyObject * args){
+        return getDouble(dummy, args, &Object::getY);
+    }
+    
+    static PyObject * getZ(PyObject * dummy, PyObject * args){
+        return getDouble(dummy, args, &Object::getZ);
+    }
+
+    static PyObject * setDouble(PyObject * dummy, PyObject * args, void (Object::*set)(const double value)){
+        PyObject * cobject;
+        double value = 0;
+        if (PyArg_ParseTuple(args, "Od", &cobject, &value)){
+            Script::Object * object = (Script::Object*) PyCObject_AsVoidPtr(cobject);
+            (object->getObject()->*set)(value);
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+    
+    static PyObject * setX(PyObject * dummy, PyObject * args){
+        return setDouble(dummy, args, &Object::setX);
+    }
+    
+    static PyObject * setY(PyObject * dummy, PyObject * args){
+        return setDouble(dummy, args, &Object::setY);
+    }
+    
+    static PyObject * setZ(PyObject * dummy, PyObject * args){
+        return setDouble(dummy, args, &Object::setZ);
     }
 }
 
@@ -136,6 +183,12 @@ static PyMethodDef PaintownModule[] = {
     {"objectType", PaintownLevel::objectType, METH_VARARGS, "Get the type of an object."},
     {"getHealth", PaintownCharacter::getHealth, METH_VARARGS, "Get the health of a character."},
     {"setHealth", PaintownCharacter::setHealth, METH_VARARGS, "Set the health of a character."},
+    {"getX", PaintownCharacter::getX, METH_VARARGS, "Get the X coordinate of an object"},
+    {"getY", PaintownCharacter::getY, METH_VARARGS, "Get the Y coordinate of an object"},
+    {"getZ", PaintownCharacter::getZ, METH_VARARGS, "Get the Z coordinate of an object"},
+    {"setX", PaintownCharacter::setX, METH_VARARGS, "Set the X coordinate of an object"},
+    {"setY", PaintownCharacter::setY, METH_VARARGS, "Set the Y coordinate of an object"},
+    {"setZ", PaintownCharacter::setZ, METH_VARARGS, "Set the Z coordinate of an object"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 

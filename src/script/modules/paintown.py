@@ -8,6 +8,30 @@ class Object:
     def tick(self):
         pass
 
+    def getX(self):
+        import paintown_internal
+        return paintown_internal.getX(self.getObject())
+
+    def setX(self, value):
+        import paintown_internal
+        paintown_internal.setX(self.getObject(), value)
+    
+    def getY(self):
+        import paintown_internal
+        return paintown_internal.getY(self.getObject())
+    
+    def setY(self, value):
+        import paintown_internal
+        paintown_internal.setY(self.getObject(), value)
+
+    def getZ(self):
+        import paintown_internal
+        return paintown_internal.getZ(self.getObject())
+    
+    def setZ(self, value):
+        import paintown_internal
+        paintown_internal.setZ(self.getObject(), value)
+
     def getObject(self):
         return self.object
 
