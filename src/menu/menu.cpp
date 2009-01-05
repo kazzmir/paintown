@@ -54,6 +54,7 @@ static void addMenu( Menu * m ) throw( LoadException ){
 
 Menu::Menu():
 music(""),
+selectSound(""),
 background(0),
 vFont(0),
 fontWidth(24),
@@ -82,6 +83,8 @@ void Menu::load(Token *token)throw( LoadException ){
 			} else if ( *tok == "music" ) {
 				// Set music and push onto the stack
 				*tok >> music;
+			} else if( *tok == "select-sound" ) {
+				*tok >> selectSound;
 			} else if ( *tok == "background" ) {
 				// Create new background and push onto the stack
 				background = new OptionBg(tok);
@@ -194,6 +197,10 @@ useflags Menu::run(){
 		MenuGlobals::setMusic(music);
 	}
 	
+	if ( !selectSound.empty() ){
+		MenuGlobals::setSelectSound(selectSound);
+	}
+	
         double runCounter = 0;
 	while( ! endGame ){
 		Global::speed_counter = 0;
@@ -223,7 +230,8 @@ useflags Menu::run(){
                                                     selectedOption--;
                                             }
 					    else selectedOption = menuOptions.end() -1;
-                                            (*selectedOption)->setState(MenuOption::Selected);	
+                                            (*selectedOption)->setState(MenuOption::Selected);
+					    MenuGlobals::playSelectSound();
                                     }
 
                                     if ( keyInputManager::keyState(keys::DOWN, true ) ){
@@ -233,6 +241,7 @@ useflags Menu::run(){
                                             }
 					    else selectedOption = menuOptions.begin();
                                             (*selectedOption)->setState(MenuOption::Selected);
+					    MenuGlobals::playSelectSound();
                                     }
                                     
                                     if ( keyInputManager::keyState(keys::LEFT, true ) ){
@@ -325,7 +334,9 @@ useflags Menu::run(){
 				if ( backgrounds.front() ){
 					backgrounds.front()->draw(work);
 				}
-
+				
+				// Draw any misc stuff in the background of the menu of selected object 
+				(*selectedOption)->draw(work);
 				// Draw text board
 				drawTextBoard(work);
 				// Draw text
@@ -355,11 +366,21 @@ useflags Menu::run(){
 			if ( !music.empty() ){
 				MenuGlobals::setMusic(music);
 			}
+			if ( !selectSound.empty() ){
+				MenuGlobals::setSelectSound(selectSound);
+			}
+			
 		}
 
 		if(!music.empty()){
 			if(MenuGlobals::currentMusic() != music){
 				MenuGlobals::popMusic();
+			}
+		}
+		
+		if(!selectSound.empty()){
+			if(MenuGlobals::currentSelectSound() != selectSound){
+				MenuGlobals::popSelectSound();
 			}
 		}
 

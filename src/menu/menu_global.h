@@ -3,6 +3,9 @@
 
 #include <string>
 #include <queue>
+#include "util/load_exception.h"
+
+class Sound;
 
 class MenuGlobals{
 public:
@@ -18,6 +21,18 @@ public:
 	
 	/*! pop music */
 	static void popMusic();
+	
+	/*! set the select sound */
+	static void setSelectSound(const std::string &file);
+	
+	/*! get current select sound */
+	static const std::string currentSelectSound();
+	
+	/*! play current select sound */
+	static void playSelectSound() throw (LoadException);
+	
+	/*! pop select sound */
+	static void popSelectSound();
 	
 	/*! game speed */
 	static double getGameSpeed();
@@ -58,5 +73,6 @@ private:
 		
 	static std::priority_queue<std::string> lastPlayed;
 	
+	static std::priority_queue<std::string> selectSound;	
 };
 #endif

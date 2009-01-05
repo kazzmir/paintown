@@ -15,6 +15,8 @@
 
 std::priority_queue<std::string> MenuGlobals::lastPlayed;
 
+std::priority_queue<std::string> MenuGlobals::selectSound;
+
 //static std::queue<MenuOption *> backgrounds;
 
 MenuGlobals::MenuGlobals(){
@@ -44,6 +46,36 @@ void MenuGlobals::popMusic(){
 		Music::pause();
 		Music::loadSong( Util::getDataPath() + lastPlayed.top() );
 		Music::play();
+	}
+}
+
+void MenuGlobals::setSelectSound(const std::string &file){
+	selectSound.push(file);
+}
+
+const std::string MenuGlobals::currentSelectSound(){
+	if(!selectSound.empty()){
+		return selectSound.top();
+	}
+	else return std::string();
+}
+
+void MenuGlobals::playSelectSound() throw (LoadException){
+	if(!selectSound.empty()){
+	      try{
+		    Sound select( Util::getDataPath() + selectSound.top() );
+		    select.play();
+		    Global::debug( 0 ) <<"works: "<< Util::getDataPath()+selectSound.top() <<endl;
+	      }
+	      catch ( const LoadException & ex ) {
+		      throw ex;
+	      }
+	}
+}
+
+void MenuGlobals::popSelectSound(){
+	if(!selectSound.empty()){
+		selectSound.pop();
 	}
 }
 

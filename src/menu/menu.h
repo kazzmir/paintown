@@ -79,6 +79,8 @@ class Menu
 	protected:
 		//! Current music
 		std::string music;
+		//! Current select sound, beep or whatever
+		std::string selectSound;
 		//! background of current
 		MenuOption *background;
 		//! Area for placement of option list
