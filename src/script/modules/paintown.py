@@ -1,4 +1,5 @@
 
+# Old junk
 def enemyType():
     import paintown_internal
     return paintown_internal.enemyType()
@@ -57,6 +58,8 @@ class Block:
         import paintown_internal
         return paintown_internal.addObject(world, object)
 
+## Useful stuff
+
 class Character:
     def __init__(self, character):
         self.character = character
@@ -82,7 +85,7 @@ class Engine:
         assert(self.world != None)
         return getBlock(paintown_internal.currentBlock(self.world))
 
-    def getBlock(self,id)
+    def getBlock(self,id):
         return Block(self.world, id)
 
     def tick(self):
@@ -90,8 +93,7 @@ class Engine:
 
 engines = []
 def register(engine):
-    engines = [engine]
-    # engines.append(engine)
+    engines.append(engine)
 
 def createCharacter(character):
     return engines[0].createCharacter(character)

@@ -22,6 +22,9 @@ using namespace PythonModule;
 
 AutoObject::AutoObject(PyObject* object):
 object(object){
+    if (object == NULL){
+        PyErr_Print();
+    }
 }
 
 AutoObject::~AutoObject(){
@@ -119,6 +122,15 @@ path(path){
     int from = path.rfind("/")+1;
     int to = path.rfind(".");
     module = path.substr(from, to - from);
+
+    /* Load the user module so that it can register itself */
+    Global::debug(1) << "Loading module " << module << endl;
+    PyObject * user_module = PyImport_ImportModule((char*) module.c_str());
+    Global::debug(1) << "Loaded " << user_module << endl;
+    if (user_module == NULL){
+        PyErr_Print();
+    }
+    Py_DECREF(user_module);
 }
 
 void PythonEngine::init(){
@@ -128,6 +140,7 @@ void PythonEngine::shutdown(){
 }
     
 void * PythonEngine::createCharacter(Script::Character * obj){
+    Global::debug(1) << "Create a character from " << obj << endl;
     AutoObject api_module(PyImport_ImportModule((char*)paintown_api));
     AutoObject create(PyObject_GetAttrString(api_module.getObject(), "createCharacter"));
     AutoObject cobject(PyCObject_FromVoidPtr((void*) obj, NULL));
@@ -135,6 +148,7 @@ void * PythonEngine::createCharacter(Script::Character * obj){
 
     PyObject * ret = result.getObject();
     Py_INCREF(ret);
+    Global::debug(1) << "Created python character " << ret << endl;
     return ret;
 }
 
@@ -165,16 +179,6 @@ void PythonEngine::tick(){
 
 /* called when the world is created */
 void PythonEngine::createWorld(const World & world){
-
-    /* Load the user module so that it can register itself */
-    Global::debug(1) << "Loading module " << module << endl;
-    PyObject * user_module = PyImport_ImportModule((char*) module.c_str());
-    Global::debug(1) << "Loaded " << user_module << endl;
-    if (user_module == NULL){
-        PyErr_Print();
-    }
-    Py_DECREF(user_module);
-    
     /* call our api to create the world */
     PyObject * api_module = PyImport_ImportModule((char*)paintown_api);
     if (api_module == NULL){

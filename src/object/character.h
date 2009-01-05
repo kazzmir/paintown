@@ -16,6 +16,10 @@ class World;
 class Sound;
 class Projectile;
 
+namespace Script{
+    class Character;
+}
+
 /* used for gibs */
 struct BodyPart{
 	BodyPart( int x, int y, Bitmap * image ):x(x), y(y), image(image){}
@@ -337,6 +341,14 @@ public:
 	
 	virtual void fall( double x_vel, double y_vel );
 
+        virtual void setScriptObject(Script::Character * object){
+            scriptObject = object;
+        }
+
+        virtual Script::Character * getScriptObject(){
+            return scriptObject;
+        }
+
 protected:
 
 	virtual Network::Message jumpMessage( double x, double y );
@@ -379,6 +391,7 @@ protected:
 	virtual bool getExplode(){
 		return explode;
 	}
+
 
 protected:
         std::string name;
@@ -461,6 +474,8 @@ protected:
 	bool draw_shadow;
 
 	string path;
+
+        Script::Character * scriptObject;
 };
 
 #endif

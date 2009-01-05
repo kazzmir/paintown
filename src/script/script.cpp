@@ -4,6 +4,7 @@
 
 #include "script.h"
 #include "globals.h"
+#include "character.h"
 #include "object/character.h"
 #include <string>
 
