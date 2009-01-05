@@ -478,10 +478,12 @@ void Menu::drawText(Bitmap *work){
 	}
 	
 	currentCounter = middle - fromMiddle;
-	if ( currentCounter < 0 ) currentCounter = (menuOptions.size()) + currentCounter;
+	if ( currentCounter < 0 ){
+            currentCounter = (menuOptions.size()) + currentCounter;
+        }
 	
 	for(int i=0;i<displayTotal;++i){
-	      std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter;
+	      std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter % menuOptions.size();
 	      const int startx = (backboard.position.width/2)-(vFont->textLength((*iterOption)->getText().c_str())/2);
 	      const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
 	      switch(currentDrawState){
@@ -533,7 +535,21 @@ void Menu::drawText(Bitmap *work){
 							break;
 					}
 				}
-				Bitmap::transBlender( 0, 0, 0, optionAlpha );
+
+                                int distance;
+                                if (i > fromMiddle){
+                                    distance = i - fromMiddle;
+                                } else {
+                                    distance = fromMiddle - i;
+                                }
+
+                                // distance = (currentCounter + middle) % (fromMiddle);
+
+                                // printf("counter %d distance %d middle %d\n", currentCounter, distance, middle);
+                                double normal = (double) distance / (double) fromMiddle;
+                                int alpha = (int)(255.0 - 164.0 * normal * normal);
+
+				Bitmap::transBlender(0, 0, 0, alpha);
 				work->drawingMode( Bitmap::MODE_TRANS );
 				vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
 				work->drawingMode( Bitmap::MODE_SOLID );
@@ -541,8 +557,14 @@ void Menu::drawText(Bitmap *work){
 			}
 	      }	
 	      
+              /*
 	      currentCounter++;
-	      if ( currentCounter > signed(menuOptions.size()-1) ) currentCounter = 0;
+	      if ( currentCounter >= signed(menuOptions.size()) ){
+                  currentCounter = 0;
+              }
+              */
+              // currentCounter = (currentCounter + 1) % menuOptions.size();
+              currentCounter = currentCounter + 1;
 	      
 	      optionAlpha+=optionAlphaIncrements;
 	      if ( optionAlpha >= 250 ){optionAlphaIncrements -= optionAlphaIncrements*2;optionAlpha=250;}
