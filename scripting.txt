@@ -1,0 +1,137 @@
+Scripting in paintown:
+
+* Preliminary
+
+First be sure that paintown was compiled with python support. Windows and OSX are
+prebuilt with this support. On OSX I built paintown with python 2.3.
+
+On Linux cmake and scons will try to detect if you can build with python. In scons
+look for lines like:
+
+  Checking if python is embeddable... yes
+
+If it says '... no' then you do not have the proper python headers installed. Check
+config.log and search for Python to see what went wrong. Most likely you just need to
+install the python headers which are python-dev on ubuntu.
+
+* Setup
+
+Scripts can be applied to single levels at a time. You cannot have script objects live
+for the entirety of a game. To add a script to a level add an expression to a level
+file like so
+
+  (script python "levels/test/1.py")
+
+`python' signifies the script engine to use and "levels/test/1.py" is the python script
+that should be loaded for this level. In the future other scripting engines might exist
+which is why you must specify `python'.
+
+When the level is first loaded it will also load the script file, levels/test/1.py in
+this case. Your script must register itself in the following way
+
+  import paintown
+  class MyEngine(paintown.Engine):
+    def __init__(self):
+      pass
+  paintown.register(MyEngine())
+
+The `paintown' module provides classes that represent various objects in the paintown
+engine. You can extend these classes with whatever functionality you desire.
+
+* API
+
+The api lists all the classes that the `paintown' module provides. Each class
+is broken up into overridable and non-overridable methods. You should not
+override the non-overridable methods or the game will probably crash.
+
+class Engine
+  # Represents the paintown engine. Use this class for creating other objects
+  # and querying global parameters
+
+  # Non-overridable methods
+
+  def levelLength(self)
+    # Returns the length of the level
+
+  # Overridable methods
+
+  def createWorld(self, world)
+    # world : PyCObject
+    # returns : nothing
+    # This method is called when the level is loaded. If you override this method
+    # you must call Engine.createWorld(world) because the world parameter is
+    # used to talk to the C engine
+
+  def createCharacter(self, character)
+    # character : PyCObject
+    # returns : Character or subclass of Character
+    # Returns a new python object that represents a character in the game. The
+    # default return value is Character(character). You can override this method
+    # if you want to subclass the Character functionality but you must return
+    # a subclass of Character (as opposed to Object).
+
+class Object
+  # Represents an object in the paintown engine (not necessarily characters, also items)
+
+  # Non-overridable methods
+
+  def getX(self)
+    # returns : float
+    # Return the X coordinate of the object
+  
+  def getY(self)
+    # returns : float
+    # Return the Y coordinate of the object
+
+  def getZ(self)
+    # returns : float
+    # Return the Z coordinate of the object
+  
+  def setX(self, value)
+    # value : float
+    # returns : none
+    # Set the X coordinate of the object
+  
+  def setY(self, value)
+    # value : float
+    # returns : none
+    # Set the Y coordinate of the object
+  
+  def setZ(self, value)
+    # value : float
+    # returns : none
+    # Set the Z coordinate of the object
+
+  def getHealth(self)
+    # returns : integer
+    # Returns the health of the object
+
+  def setHealth(self, health)
+    # health : integer
+    # Sets the health of the object
+
+  # Overridable methods
+
+  def didCollide(self, him)
+    # him : None or a Object
+    # returns : none
+    # Called when this object was hit by another object (him)
+
+  def takeDamage(self, him, damage)
+    # him : None or a Object
+    # damage : float
+    # returns : none
+    # Called when this object takes damage from him
+
+class Character(Object)
+  # Represents a character in the engine
+
+  # Overridable methods
+
+  def didAttack(self, him)
+    # him : None or a Character
+    # returns : none
+    # Called when this character attacked another character
+
+* Notes
+  The paintown engine is likely to crash if anything goes wrong in your script.

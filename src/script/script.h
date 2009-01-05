@@ -44,6 +44,7 @@ namespace Script{
         }
     };
 
+    /* a dummy engine class that doesn't do anything */
     class NoEngine: public Engine {
         public:
             NoEngine();

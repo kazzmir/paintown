@@ -41,9 +41,6 @@ class Object:
     def didCollide(self, him):
         pass
 
-    def didAttack(self, him):
-        pass
-
     def takeDamage(self, him, damage):
         pass
 
@@ -53,6 +50,9 @@ class Object:
 class Character(Object):
     def __init__(self, character):
         Object.__init__(self, character)
+    
+    def didAttack(self, him):
+        pass
 
 class Engine:
     def __init__(self):

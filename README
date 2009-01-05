@@ -12,6 +12,7 @@ Topics:
     OSX
   Install
     Linux
+  Scripting
   Requirements to build
   Thanks
 
@@ -95,6 +96,11 @@ Topics:
 
   * Anything other than Linux
     Copy the binary and data somewhere. Otherwise use the prepackaged installers.
+
+* Scripting
+
+  A python engine has been added to paintown so you can script a level. See
+  scripting.txt for more details.
 
 * Requirements to build:
 
