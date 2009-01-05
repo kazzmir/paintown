@@ -4,11 +4,14 @@
 
 #include "script.h"
 #include "globals.h"
+#include "object/character.h"
 #include <string>
 
 using namespace std;
 
 namespace Script{
+
+    typedef ::Character ObjectCharacter;
 
     Engine * Engine::theEngine = NULL;
 
@@ -61,5 +64,12 @@ namespace Script{
     }
 
     NoEngine::~NoEngine(){
+    }
+
+
+    Character::Character(ObjectCharacter * guy){
+    }
+
+    Character::~Character(){
     }
 }

@@ -5,6 +5,7 @@
 #include <exception>
 
 class World;
+class Character;
 
 namespace Script{
 
@@ -48,6 +49,13 @@ namespace Script{
             virtual void tick();
 
             virtual ~NoEngine();
+    };
+
+    /* mirrors an enemy in the game */
+    class Character{
+    public:
+        Character(::Character * guy);
+        virtual ~Character();
     };
 }
 

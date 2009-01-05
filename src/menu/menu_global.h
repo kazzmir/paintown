@@ -72,7 +72,6 @@ public:
 private:
 		
 	static std::priority_queue<std::string> lastPlayed;
-	
 	static std::priority_queue<std::string> selectSound;	
 };
 #endif

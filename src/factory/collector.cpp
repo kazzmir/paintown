@@ -4,6 +4,7 @@
 #include "font_factory.h"
 #include "font_render.h"
 #include "object_factory.h"
+#include "resource.h"
 #include "shadow.h"
 #include <iostream>
 
@@ -14,6 +15,8 @@ using namespace std;
 #endif
 
 Collector::Collector(){
+    /* the only resource */
+    resource = new Resource();
 }
 
 Collector::~Collector(){
@@ -23,4 +26,5 @@ Collector::~Collector(){
 	HeartFactory::destroy();
 	FontFactory::destroy();
 	FontRender::destroy();
+        delete resource;
 }

@@ -9,6 +9,7 @@
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "globals.h"
+#include "resource.h"
 #include "init.h"
 #include "configuration.h"
 #include "music.h"
@@ -61,13 +62,11 @@ const std::string MenuGlobals::currentSelectSound(){
 }
 
 void MenuGlobals::playSelectSound() throw (LoadException){
-	if(!selectSound.empty()){
+	if (!selectSound.empty()){
 	      try{
-		    Sound select( Util::getDataPath() + selectSound.top() );
-		    select.play();
-		    Global::debug( 0 ) <<"works: "<< Util::getDataPath()+selectSound.top() <<endl;
-	      }
-	      catch ( const LoadException & ex ) {
+                  Sound * select = Resource::getSound(selectSound.top());
+                  select->play();
+	      } catch ( const LoadException & ex ) {
 		      throw ex;
 	      }
 	}
