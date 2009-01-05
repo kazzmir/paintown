@@ -1,6 +1,6 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
-#include "script.h"
+#include "script/script.h"
 #include "object/object.h"
 #include "object/object_attack.h"
 #include "object/character.h"

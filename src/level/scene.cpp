@@ -13,7 +13,7 @@
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "environment/atmosphere.h"
-#include "../script.h"
+#include "script/script.h"
 
 using namespace std;
 

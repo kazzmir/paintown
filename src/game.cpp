@@ -15,7 +15,7 @@
 #include "util/tokenreader.h"
 #include "util/keyboard.h"
 #include "globals.h"
-#include "script.h"
+#include "script/script.h"
 #include "loading.h"
 #include "network/network.h"
 #include "world.h"

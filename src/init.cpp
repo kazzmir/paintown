@@ -19,7 +19,7 @@
 #include "loadpng/loadpng.h"
 #include "util/bitmap.h"
 #include "configuration.h"
-#include "script.h"
+#include "script/script.h"
 
 using namespace std;
 

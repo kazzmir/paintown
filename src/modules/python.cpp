@@ -1,11 +1,11 @@
 #ifdef HAVE_PYTHON
 
-#include "../script.h"
+#include "script/script.h"
 #include "python.h"
 #include <string>
-#include "../globals.h"
-#include "../util/funcs.h"
-#include "../world.h"
+#include "globals.h"
+#include "util/funcs.h"
+#include "world.h"
 #include "factory/object_factory.h"
 #include <sstream>
 
