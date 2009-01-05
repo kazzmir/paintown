@@ -12,10 +12,8 @@ src/world.cpp
 src/versus_world.cpp)
 
 set(SCRIPT_SRC
-src/script/script.cpp)
-
-set(MODULE_SRC
-src/modules/python.cpp)
+src/script/script.cpp
+src/script/modules/python.cpp)
 
 set(LEVEL_SRC
 src/level/block.cpp
