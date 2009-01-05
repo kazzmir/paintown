@@ -57,6 +57,10 @@ class Block:
         import paintown_internal
         return paintown_internal.addObject(world, object)
 
+class Character:
+    def __init__(self, character):
+        self.character = character
+
 class Engine:
     def __init__(self):
         self.world = None
@@ -69,6 +73,9 @@ class Engine:
         import paintown_internal
         assert(self.world != None)
         return paintown_internal.levelLength(self.world)
+
+    def createCharacter(self, character):
+        return Character(character)
 
     def currentBlock(self):
         import paintown_internal
@@ -83,7 +90,11 @@ class Engine:
 
 engines = []
 def register(engine):
-    engines.append(engine)
+    engines = [engine]
+    # engines.append(engine)
+
+def createCharacter(character):
+    return engines[0].createCharacter(character)
 
 def createWorld(world):
     for engine in engines:

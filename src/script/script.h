@@ -9,6 +9,8 @@ class Character;
 
 namespace Script{
 
+    class Character;
+
     class Engine{
     private:
         /* there is one global engine in existence at any time */
@@ -23,6 +25,8 @@ namespace Script{
 
         virtual void createWorld(const World & world) = 0;
         virtual void destroyWorld(const World & world) = 0;
+        virtual void * createCharacter(Character * character) = 0;
+        virtual void destroyCharacter(void * handle) = 0;
         virtual void tick() = 0;
 
         virtual ~Engine();
@@ -46,6 +50,8 @@ namespace Script{
 
             virtual void createWorld(const World & world);
             virtual void destroyWorld(const World & world);
+            virtual void * createCharacter(Character * character);
+            virtual void destroyCharacter(void * handle);
             virtual void tick();
 
             virtual ~NoEngine();
@@ -56,6 +62,12 @@ namespace Script{
     public:
         Character(::Character * guy);
         virtual ~Character();
+    private:
+        /* opaque object that the engine used to communicate between
+         * the paintown engine and the script engine
+         */
+        void * handle;
+        ::Character * guy;
     };
 }
 

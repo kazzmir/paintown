@@ -18,6 +18,19 @@ static const char * paintown_api = "paintown";
 static const char * paintown_internal = "paintown_internal";
 
 using namespace std;
+using namespace PythonModule;
+
+AutoObject::AutoObject(PyObject* object):
+object(object){
+}
+
+AutoObject::~AutoObject(){
+    Py_DECREF(object);
+}
+
+PyObject * AutoObject::getObject(){
+    return object;
+}
 
 /* get the length of the level */
 static PyObject * paintown_levelLength(PyObject * dummy, PyObject * args){
@@ -112,6 +125,22 @@ void PythonEngine::init(){
 }
 
 void PythonEngine::shutdown(){
+}
+    
+void * PythonEngine::createCharacter(Script::Character * obj){
+    AutoObject api_module(PyImport_ImportModule((char*)paintown_api));
+    AutoObject create(PyObject_GetAttrString(api_module.getObject(), "createCharacter"));
+    AutoObject cobject(PyCObject_FromVoidPtr((void*) obj, NULL));
+    AutoObject result(PyObject_CallFunction(create.getObject(), (char*) "(O)", cobject.getObject()));
+
+    PyObject * ret = result.getObject();
+    Py_INCREF(ret);
+    return ret;
+}
+
+void PythonEngine::destroyCharacter(void * handle){
+    PyObject * obj = (PyObject*) handle;
+    Py_DECREF(obj);
 }
 
 /* called when for each logic frame */

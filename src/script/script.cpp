@@ -38,8 +38,13 @@ namespace Script{
 #ifdef HAVE_PYTHON
         if (name == "python"){
             new PythonEngine(path);
+            return;
         }
 #endif
+        if (name == "none"){
+            new NoEngine();
+            return;
+        }
         Global::debug(0) << "*Warning* no such engine '" << name << "' for path " << path << endl;
         new NoEngine();
         // throw NoSuchEngine(name);
@@ -62,14 +67,25 @@ namespace Script{
             
     void NoEngine::tick(){
     }
+            
+    void * NoEngine::createCharacter(Character * character){
+        return NULL;
+    }
+
+    void NoEngine::destroyCharacter(void * handle){
+    }
 
     NoEngine::~NoEngine(){
     }
 
 
-    Character::Character(ObjectCharacter * guy){
+    Character::Character(ObjectCharacter * guy):
+    handle(NULL),
+    guy(guy){
+        handle = getEngine()->createCharacter(this);
     }
 
     Character::~Character(){
+        getEngine()->destroyCharacter(handle);
     }
 }

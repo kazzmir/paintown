@@ -17,6 +17,8 @@ public:
     virtual void shutdown();
     virtual void createWorld(const World & world);
     virtual void destroyWorld(const World & world);
+    virtual void * createCharacter(Script::Character * character);
+    virtual void destroyCharacter(void * handle);
     virtual void tick();
 
     virtual ~PythonEngine();
@@ -25,6 +27,20 @@ protected:
     std::string module;
     PyObject * user;
 };
+
+namespace PythonModule{
+    class AutoObject{
+    public:
+        AutoObject(PyObject*);
+        virtual ~AutoObject();
+
+        PyObject * getObject();
+
+    private:
+        PyObject * object;
+    };
+}
+
 #endif
 
 #endif
