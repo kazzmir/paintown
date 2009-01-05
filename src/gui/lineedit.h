@@ -22,6 +22,15 @@ public:
 		T_Top,
 		T_Bottom
 	};
+	
+	//! enumerator housing alignment positions
+	enum inputType {
+		inputGeneral = 0,
+		inputAllCaps,
+		inputNoCaps,
+		inputNumerical
+	};
+	
 	//! Constructor
 	LineEdit();
 
@@ -45,6 +54,9 @@ public:
 
 	//! Set Vertical Alignment
 	void setVerticalAlign(const textAlign a);
+	
+	//! Set the type of input default general
+	void setInputType(const inputType i = inputGeneral);
 
 	//! Set textColor
 	void setTextColor(const int color);
@@ -94,15 +106,9 @@ protected:
 
 	//! Vertical Alignment (TOP, MIDDLE, BOTTOM)
 	textAlign vAlignment;
-
-	void changed(){
-		changed_ = true;
-		changeCounter += 1;
-	}
-
-	void stable(){
-		changed_ = false;
-	}
+	
+	//! Input type
+	inputType inputTypeValue;
 
 	//! Has changed?
 	bool changed_;
@@ -140,14 +146,23 @@ protected:
 	//! Cursor blink rate
 	unsigned int blinkRate;
 
-	//! If the font size changes
-	void fontChange();
-
 	//! Focused?
 	bool focused;
 
 	// keeps track of changes
 	unsigned long long changeCounter;
+	
+	//! If the font size changes
+	void fontChange();
+	
+	inline void changed(){
+		changed_ = true;
+		changeCounter += 1;
+	}
+
+	inline void stable(){
+		changed_ = false;
+	}
 };
 
 #endif

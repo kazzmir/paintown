@@ -10,18 +10,28 @@ static std::ostream & debug( int level ){
 	return Global::debug( level );
 }
 
-LineEdit::LineEdit()
+LineEdit::LineEdit() : 
+currentSetFont(0), 
+currentSetText(""),
+hAlignment(T_Middle),
+hAlignMod(T_Middle),
+vAlignment(T_Middle),
+inputTypeValue(inputGeneral),
+changed_(0),
+autoResizable(0),
+textX(0),
+textY(0),
+cursorX(0),
+cursorY(0),
+cursorIndex(0),
+textColor(0),
+textSizeH(0),
+limit(0),
+blinkRate(500),
+focused(false),
+changeCounter(0)
 {
-	currentSetFont=0;
-	textColor = 0;
-	changed_ = autoResizable = false;
-	hAlignment = hAlignMod = vAlignment = T_Middle;
-	textX = textY = cursorX = cursorY = cursorIndex = limit = 0;
-	textSizeH = 0;
 	cursorTime.reset();
-	blinkRate = 500;
-	focused = false;
-	changeCounter = 0;
 }
 
 LineEdit::~LineEdit()
@@ -162,22 +172,44 @@ sigslot::slot LineEdit::keyPress(const keys &k)
 	{
 		if(k.isCharacter())
 		{
-			if(limit!=0)
-			{
-				if(currentSetText.length()<limit)
-				{
-					//currentSetText += k.getValue();
-					currentSetText.insert(cursorIndex, std::string(1,(char)k.getValue()));
-					++cursorIndex;
-					changed();
-				}
+			char keyValue = k.getValue();
+			bool addValue = false;
+			
+			switch(inputTypeValue){
+			  case inputNumerical:
+				if ( k.isNumber() ) addValue = !addValue;
+				break;
+			  case inputNoCaps:
+				keyValue = tolower(keyValue);
+				addValue = !addValue;
+				break;
+			  case inputAllCaps:
+				keyValue = toupper(keyValue);
+				addValue = !addValue;
+				break;
+			  case inputGeneral:
+			  default:
+				addValue = !addValue;
+				break;
 			}
-			else
-			{
-				//currentSetText += k.getValue();
-				currentSetText.insert(cursorIndex, std::string(1,(char)k.getValue()));
-				++cursorIndex;
-				changed();
+			if(addValue){
+			  if(limit!=0)
+			  {
+				  if(currentSetText.length()<limit)
+				  {
+					  //currentSetText += k.getValue();
+					  currentSetText.insert(cursorIndex, std::string(1,keyValue));
+					  ++cursorIndex;
+					  changed();
+				  }
+			  }
+			  else
+			  {
+				  //currentSetText += k.getValue();
+				  currentSetText.insert(cursorIndex, std::string(1,keyValue));
+				  ++cursorIndex;
+				  changed();
+			  }
 			}
 		}
 		else
@@ -274,6 +306,11 @@ void LineEdit::setVerticalAlign(const textAlign a)
 {
 	vAlignment = a;
 	changed();
+}
+
+//! Set the type of input default general
+void LineEdit::setInputType(const inputType i){
+	inputTypeValue = i;
 }
 		
 // Set textColor
