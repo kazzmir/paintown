@@ -27,7 +27,8 @@ namespace Script{
         virtual void destroyWorld(const World & world) = 0;
         virtual void * createCharacter(Character * character) = 0;
         virtual void destroyCharacter(void * handle) = 0;
-        virtual void characterTick(void * handle) = 0;
+        virtual void objectTick(void * handle) = 0;
+        virtual void objectTakeDamage(void * who, void * handle, int damage) = 0;
         virtual void tick() = 0;
 
         virtual ~Engine();
@@ -54,7 +55,8 @@ namespace Script{
             virtual void * createCharacter(Character * character);
             virtual void destroyCharacter(void * handle);
             virtual void tick();
-            virtual void characterTick(void * handle);
+            virtual void objectTick(void * handle);
+            virtual void objectTakeDamage(void * who, void * handle, int damage);
 
             virtual ~NoEngine();
     };

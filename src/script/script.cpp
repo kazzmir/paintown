@@ -74,21 +74,40 @@ namespace Script{
     void NoEngine::destroyCharacter(void * handle){
     }
 
-    void NoEngine::characterTick(void * obj){
+    void NoEngine::objectTick(void * obj){
+    }
+            
+    void NoEngine::objectTakeDamage(void * who, void * handle, int damage){
     }
 
     NoEngine::~NoEngine(){
     }
 
-    typedef ::Character ObjectCharacter;
-    Character::Character(ObjectCharacter * const guy):
+    typedef ::Object ObjectObject;
+    Object::Object(ObjectObject * const guy):
     handle(NULL),
     guy(guy){
-        handle = getEngine()->createCharacter(this);
+    }
+        
+    void Object::takeDamage(Object * him, int damage){
+        void * himHandle = NULL;
+        if (him != NULL){
+            himHandle = him->getHandle();
+        }
+        getEngine()->objectTakeDamage(handle, himHandle, damage);
+    }
+    
+    void Object::tick(){
+        getEngine()->objectTick(handle);
     }
 
-    void Character::tick(){
-        getEngine()->characterTick(handle);
+    Object::~Object(){
+    }
+
+    typedef ::Character ObjectCharacter;
+    Character::Character(ObjectCharacter * const guy):
+    Object(guy){
+        handle = getEngine()->createCharacter(this);
     }
 
     Character::~Character(){

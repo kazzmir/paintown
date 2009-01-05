@@ -19,7 +19,8 @@ public:
     virtual void destroyWorld(const World & world);
     virtual void * createCharacter(Script::Character * character);
     virtual void destroyCharacter(void * handle);
-    virtual void characterTick(void * handle);
+    virtual void objectTick(void * handle);
+    virtual void objectTakeDamage(void * who, void * handle, int damage);
     virtual void tick();
 
     virtual ~PythonEngine();

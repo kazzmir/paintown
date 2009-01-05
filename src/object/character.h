@@ -326,6 +326,10 @@ public:
         virtual inline const int getGlowing() const {
             return glowing;
         }
+        
+        virtual inline Script::Character * getScriptCharacter(){
+            return (Script::Character*) getScriptObject();
+        }
 	
 	virtual Network::Message getCreateMessage();
 	virtual Network::Message movedMessage();
@@ -340,14 +344,6 @@ public:
 	virtual void interpretMessage( Network::Message & m );
 	
 	virtual void fall( double x_vel, double y_vel );
-
-        virtual void setScriptObject(Script::Character * object){
-            scriptObject = object;
-        }
-
-        virtual Script::Character * getScriptObject(){
-            return scriptObject;
-        }
 
 protected:
 
@@ -474,8 +470,6 @@ protected:
 	bool draw_shadow;
 
 	string path;
-
-        Script::Character * scriptObject;
 };
 
 #endif

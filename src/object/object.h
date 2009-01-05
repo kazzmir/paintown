@@ -7,6 +7,10 @@ class ObjectAttack;
 class World;
 class Stimulation;
 
+namespace Script{
+    class Object;
+}
+
 #include "util/sound.h"
 #include "network/network.h"
 #include <string>
@@ -367,6 +371,14 @@ public:
 	 */
 	virtual void hurt( int x );
 
+        virtual void setScriptObject(Script::Object * object){
+            scriptObject = object;
+        }
+
+        virtual Script::Object * getScriptObject(){
+            return scriptObject;
+        }
+
 	/* destructor
 	 * Nothing to cleanup.
 	 */
@@ -398,6 +410,8 @@ private:
 
         /* this id is assigned by the level */
         int objectId;
+
+        Script::Object * scriptObject;
 };
 
 #endif

@@ -1,72 +1,24 @@
-
-# Old junk
-def enemyType():
-    import paintown_internal
-    return paintown_internal.enemyType()
-
-def itemType():
-    import paintown_internal
-    return paintown_internal.itemType()
-
 class Object:
-    def __init__(self, world, id, type):
-        self.world = world
-        self.id = id
-        self.type = type
+    def __init__(self, object):
+        self.object = object
 
-class Enemy(Object):
-    def __init__(self, world, id, type):
-        Object.__init__(self, world, id, type)
+    def takeDamage(self, him, damage):
+        pass
 
-    def getHealth(self):
-        import paintown_internal
-        return paintown_internal.getHealth(self.world, self.id)
+    def getObject(self):
+        return self.object
 
-    def hurt(self, damage):
-        import paintown_internal
-        return paintown_interanl.hurt(self.world, self.id, damage)
-
-class Item(Object):
-    def __init__(self, world, id, type):
-        Object.__init__(self, world, id, type)
-
-class Block:
-    Enemy = enemyType()
-    Item = itemType()
-
-    def __init__(self, world, id):
-        self.id = id
-        self.world = world
-
-    def makeObject(self, object):
-        import paintown_internal
-        type = paintown_internal.objectType(self.world, object)
-        if type == Enemy:
-            return Enemy(self.world, object, type)
-        elif type == Item:
-            return Item(self.world, object, type)
-
-    def getObjects(self, type = None):
-        import paintown_internal
-        return [makeObject(x) for x in paintown_internal.getBlockObjects(self.world, type)]
-
-    def addObject(self, object):
-        import paintown_internal
-        return paintown_internal.addObject(world, object)
-
-## Useful stuff
-
-class Character:
+class Character(Object):
     def __init__(self, character):
-        self.character = character
+        Object.__init__(self, character)
 
     def getHealth(self):
         import paintown_internal
-        return paintown_internal.getHealth(self.character)
+        return paintown_internal.getHealth(self.getObject())
 
     def setHealth(self, health):
         import paintown_internal
-        return paintown_internal.setHealth(self.character, health)
+        return paintown_internal.setHealth(self.getObject(), health)
 
     def tick(self):
         pass

@@ -3,6 +3,7 @@
 #include "object_attack.h"
 #include "stimulation.h"
 #include "util/ebox.h"
+#include "script/object.h"
 #include <math.h>
 #include <exception>
 #include <iostream>
@@ -30,7 +31,8 @@ max_health( 0 ),
 damage( 0 ),
 facing( FACING_RIGHT ),
 alliance( alliance ),
-id( 0 ){
+id( 0 ),
+scriptObject(NULL){
 }
 
 Object::Object( const int x, const int y, int _alliance ):
@@ -45,11 +47,13 @@ max_health( 0 ),
 damage( 0 ),
 facing( FACING_RIGHT ),
 alliance( _alliance ),
-id( 0 ){
+id( 0 ),
+scriptObject(NULL){
 }
 
 Object::Object( const Object & copy ):
-damage( 0 ){
+damage( 0 ),
+scriptObject(NULL){
 	actualx = copy.actualx;
 	actualy = copy.actualy;
 	actualz = copy.actualz;
@@ -226,7 +230,13 @@ void Object::reduceDamage( const double much ){
 void Object::takeDamage( World * world, ObjectAttack * obj, int x ){
 	this->hurt( x );
 	damage += x;
-	// health -= x;
+        if (getScriptObject() != NULL){
+            Script::Object * him = NULL;
+            if (obj != NULL){
+                him = obj->getScriptObject();
+            }
+            getScriptObject()->takeDamage(him, x);
+        }
 }
 	
 void Object::touch( Object * obj ){
@@ -237,4 +247,5 @@ ECollide * Object::getCollide() const {
 }
 
 Object::~Object(){
+        delete scriptObject;
 }

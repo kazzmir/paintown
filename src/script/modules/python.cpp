@@ -194,9 +194,23 @@ void PythonEngine::destroyCharacter(void * handle){
     Py_DECREF(obj);
 }
     
-void PythonEngine::characterTick(void * handle){
-    PyObject * character = (PyObject*) handle;
-    AutoObject tick(PyObject_GetAttrString(character, "tick"));
+void PythonEngine::objectTakeDamage(void * from, void * handle, int damage){
+    PyObject * object = (PyObject*) from;
+    AutoObject function(PyObject_GetAttrString(object, "takeDamage"));
+    PyObject * maybeNull = (PyObject*) handle;
+    if (handle == NULL){
+        maybeNull = Py_None;
+        Py_INCREF(maybeNull);
+    }
+    AutoObject result(PyObject_CallFunction(function.getObject(), (char*) "(Oi)", maybeNull, damage));
+    if (handle == NULL){
+        Py_DECREF(maybeNull);
+    }
+}
+    
+void PythonEngine::objectTick(void * handle){
+    PyObject * object = (PyObject*) handle;
+    AutoObject tick(PyObject_GetAttrString(object, "tick"));
     AutoObject result(PyObject_CallFunction(tick.getObject(), NULL));
 }
 

@@ -57,8 +57,7 @@ glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
-draw_shadow( true ),
-scriptObject(NULL){
+draw_shadow( true ){
 }
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
@@ -85,8 +84,7 @@ glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
-draw_shadow( true ),
-scriptObject(NULL){
+draw_shadow( true ){
 	name = "";
 
 	loadSelf( filename.c_str() );
@@ -116,8 +114,7 @@ glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
-draw_shadow( true ),
-scriptObject(NULL){
+draw_shadow( true ){
 	name = "";
 
 	loadSelf( filename );
@@ -134,8 +131,7 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 explode( false ),
-draw_shadow( true ),
-scriptObject(NULL){
+draw_shadow( true ){
 
 	/* these are set in object.cpp */
 	// setHealth( chr.getHealth() );
@@ -1011,8 +1007,8 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 		}
 	}
 
-        if (getScriptObject() != NULL){
-            getScriptObject()->tick();
+        if (getScriptCharacter() != NULL){
+            getScriptCharacter()->tick();
         }
 
 	/*
@@ -1614,8 +1610,6 @@ Character::~Character(){
 	delete die_sound;
 	delete landed_sound;
 	delete squish_sound;
-
-        delete scriptObject;
 
 	/*
 	for ( map<string,Animation*>::iterator it = movements.begin(); it != movements.end(); it++ ){
