@@ -269,7 +269,12 @@ void PythonEngine::init(){
 
 void PythonEngine::shutdown(){
 }
-    
+
+/* this method is not called from python so the Py_INCREF keeps an
+ * extra reference to the python object so that it won't get collected.
+ * destroyObject will Py_DECREF this object when the paintown object
+ * is deleted.
+ */
 void * PythonEngine::createCharacter(void * obj){
     Global::debug(1) << "Create a character from " << obj << endl;
     AutoObject api_module(PyImport_ImportModule((char*)paintown_api));
