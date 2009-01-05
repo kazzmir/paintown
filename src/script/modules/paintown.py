@@ -22,10 +22,6 @@ class Enemy(Object):
         import paintown_internal
         return paintown_internal.getHealth(self.world, self.id)
 
-    def setHealth(self, health):
-        import paintown_internal
-        return paintown_internal.setHealth(self.world, self.id, health)
-
     def hurt(self, damage):
         import paintown_internal
         return paintown_interanl.hurt(self.world, self.id, damage)
@@ -64,8 +60,15 @@ class Character:
     def __init__(self, character):
         self.character = character
 
-    def tick(self):
+    def getHealth(self):
         import paintown_internal
+        return paintown_internal.getHealth(self.character)
+
+    def setHealth(self, health):
+        import paintown_internal
+        return paintown_internal.setHealth(self.character, health)
+
+    def tick(self):
         pass
 
 class Engine:

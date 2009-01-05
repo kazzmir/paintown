@@ -99,7 +99,6 @@ static PyObject * itemType(PyObject * dummy, PyObject * args){
 
 namespace PaintownCharacter{
     static PyObject * getHealth(PyObject * dummy, PyObject * args){
-
         PyObject * cobject;
 
         if (PyArg_ParseTuple(args, "O", &cobject)){
@@ -110,6 +109,20 @@ namespace PaintownCharacter{
 
         Py_INCREF(Py_None);
         return Py_None;
+    }
+
+    static PyObject * setHealth(PyObject * dummy, PyObject * args){
+        PyObject * cobject;
+
+        int much = 0;
+        if (PyArg_ParseTuple(args, "Oi", &cobject, &much)){
+            Script::Character * character = (Script::Character*) PyCObject_AsVoidPtr(cobject);
+            character->getCharacter()->setHealth(much);
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+
     }
 }
 
@@ -122,6 +135,7 @@ static PyMethodDef PaintownModule[] = {
     {"getBlockObjects", PaintownLevel::getBlockObjects, METH_VARARGS, "Get the objects in a block."},
     {"objectType", PaintownLevel::objectType, METH_VARARGS, "Get the type of an object."},
     {"getHealth", PaintownCharacter::getHealth, METH_VARARGS, "Get the health of a character."},
+    {"setHealth", PaintownCharacter::setHealth, METH_VARARGS, "Set the health of a character."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 

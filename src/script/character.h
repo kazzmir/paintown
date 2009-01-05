@@ -7,12 +7,12 @@ namespace Script{
     /* mirrors an enemy in the game */
     class Character{
     public:
-        Character(::Character * guy);
+        Character(::Character * const guy);
         virtual ~Character();
 
         virtual void tick();
 
-        virtual inline const ::Character* getCharacter(){
+        virtual inline ::Character* const getCharacter(){
             return guy;
         }
 
@@ -21,7 +21,7 @@ namespace Script{
          * the paintown engine and the script engine
          */
         void * handle;
-        const ::Character * guy;
+        ::Character * const guy;
     };
 
 }

@@ -12,8 +12,6 @@ using namespace std;
 
 namespace Script{
 
-    typedef ::Character ObjectCharacter;
-
     Engine * Engine::theEngine = NULL;
 
     Engine::Engine(){
@@ -82,8 +80,8 @@ namespace Script{
     NoEngine::~NoEngine(){
     }
 
-
-    Character::Character(ObjectCharacter * guy):
+    typedef ::Character ObjectCharacter;
+    Character::Character(ObjectCharacter * const guy):
     handle(NULL),
     guy(guy){
         handle = getEngine()->createCharacter(this);
