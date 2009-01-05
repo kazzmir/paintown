@@ -20,11 +20,18 @@ using namespace std;
 
 ObjectFactory * ObjectFactory::factory = NULL;
 Object * ObjectFactory::createObject( BlockObject * block ){
-	if ( factory == NULL ){
-		factory = new ObjectFactory();
-	}
+	return getFactory()->makeObject( block );
+}
+        
+int ObjectFactory::getNextObjectId(){
+    return getFactory()->_getNextObjectId();
+}
 
-	return factory->makeObject( block );
+ObjectFactory * ObjectFactory::getFactory(){
+    if ( factory == NULL ){
+        factory = new ObjectFactory();
+    }
+    return factory;
 }
 	
 void ObjectFactory::destroy(){
@@ -34,7 +41,8 @@ void ObjectFactory::destroy(){
 	}
 }
 
-ObjectFactory::ObjectFactory(){
+ObjectFactory::ObjectFactory():
+nextObjectId(0){
 }
 
 static Stimulation * makeStimulation( const string & str, int value ){
@@ -109,8 +117,19 @@ Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
 
 	return ret;
 }
+        
+int ObjectFactory::_getNextObjectId(){
+    return nextObjectId++;
+}
+
+void ObjectFactory::maxObjectId(int id){
+    if (id >= nextObjectId){
+        nextObjectId = id + 1;
+    }
+}
 
 Object * ObjectFactory::makeObject( BlockObject * block ){
+    maxObjectId(block->getId());
 	
 	try{
 		switch( block->getType() ){

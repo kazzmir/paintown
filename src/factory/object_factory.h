@@ -20,7 +20,11 @@ using namespace std;
 class ObjectFactory{
 public:
 	static Object * createObject( BlockObject * block );
+        static int getNextObjectId();
 	static void destroy();
+        
+private:
+        static ObjectFactory * getFactory();
 
 public:
         enum ObjectType{
@@ -44,13 +48,16 @@ private:
 	Object * makeNetworkCharacter(NetworkCharacter * guy, BlockObject * block);
 	Object * makeNetworkPlayer(NetworkPlayer * guy, BlockObject * block);
 
+        int _getNextObjectId();
+        void maxObjectId(int id);
+
 	~ObjectFactory();
 
 private:
 	map< string, Object * > cached;
 	static ObjectFactory * factory;
 	vector< Heart * > hearts;
-	
+        int nextObjectId;
 };
 
 #endif

@@ -167,7 +167,6 @@ public:
 	}
 
         /* regular ids
-         * * not used for anything!
          */
         virtual inline void setObjectId( unsigned int id ){
 		this->objectId = id;

@@ -75,6 +75,7 @@ namespace PaintownLevel{
             block.setName(sname);
             block.setAlias(sname);
             block.setMap(map);
+            block.setId(ObjectFactory::getNextObjectId());
             block.setType(ObjectFactory::EnemyType);
             block.setHealth(health);
             block.setCoords(x,z);
@@ -82,8 +83,8 @@ namespace PaintownLevel{
              * will call into the script module to create a new character,
              * so just return that handle
              */
-            World * world = (World*) PyCObject_AsVoidPtr(cworld);
             Enemy * enemy = (Enemy*) ObjectFactory::createObject(&block);
+            World * world = (World*) PyCObject_AsVoidPtr(cworld);
             world->addEnemy(enemy);
             Py_INCREF((PyObject*) enemy->getScriptObject());
             return (PyObject*) enemy->getScriptObject();
