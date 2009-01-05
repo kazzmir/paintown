@@ -102,8 +102,8 @@ namespace PaintownCharacter{
         PyObject * cobject;
 
         if (PyArg_ParseTuple(args, "O", &cobject)){
-            Script::Character * character = (Script::Character*) PyCObject_AsVoidPtr(cobject);
-            int length = character->getCharacter()->getHealth();
+            Script::Object * object = (Script::Object*) PyCObject_AsVoidPtr(cobject);
+            int length = object->getObject()->getHealth();
             return Py_BuildValue("i", length);
         }
 
@@ -116,8 +116,8 @@ namespace PaintownCharacter{
 
         int much = 0;
         if (PyArg_ParseTuple(args, "Oi", &cobject, &much)){
-            Script::Character * character = (Script::Character*) PyCObject_AsVoidPtr(cobject);
-            character->getCharacter()->setHealth(much);
+            Script::Object * object = (Script::Object*) PyCObject_AsVoidPtr(cobject);
+            object->getObject()->setHealth(much);
         }
 
         Py_INCREF(Py_None);

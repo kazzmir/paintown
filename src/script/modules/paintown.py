@@ -5,12 +5,11 @@ class Object:
     def takeDamage(self, him, damage):
         pass
 
+    def tick(self):
+        pass
+
     def getObject(self):
         return self.object
-
-class Character(Object):
-    def __init__(self, character):
-        Object.__init__(self, character)
 
     def getHealth(self):
         import paintown_internal
@@ -20,8 +19,9 @@ class Character(Object):
         import paintown_internal
         return paintown_internal.setHealth(self.getObject(), health)
 
-    def tick(self):
-        pass
+class Character(Object):
+    def __init__(self, character):
+        Object.__init__(self, character)
 
 class Engine:
     def __init__(self):
