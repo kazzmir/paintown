@@ -156,6 +156,13 @@ const int Object::getAlliance() const{
 	
 void Object::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	hit.play();
+        if (getScriptObject() != NULL){
+            Script::Object * object = NULL;
+            if (obj != NULL){
+                object = obj->getScriptObject();
+            }
+            getScriptObject()->collided(object);
+        }
 }
 
 void Object::moveZ( double z ){

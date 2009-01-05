@@ -12,6 +12,7 @@ namespace Script{
 
         virtual void takeDamage(Object * him, int damage);
         virtual void tick();
+        virtual void collided(Object * him);
 
         virtual inline ::Object* const getObject(){
             return guy;

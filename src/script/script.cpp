@@ -79,6 +79,9 @@ namespace Script{
             
     void NoEngine::objectTakeDamage(void * who, void * handle, int damage){
     }
+            
+    void NoEngine::objectCollided(void * me, void * him){
+    }
 
     NoEngine::~NoEngine(){
     }
@@ -95,6 +98,14 @@ namespace Script{
             himHandle = him->getHandle();
         }
         getEngine()->objectTakeDamage(handle, himHandle, damage);
+    }
+
+    void Object::collided(Object * him){
+        void * himHandle = NULL;
+        if (him != NULL){
+            himHandle = him->getHandle();
+        }
+        getEngine()->objectCollided(handle, himHandle);
     }
     
     void Object::tick(){

@@ -2,12 +2,6 @@ class Object:
     def __init__(self, object):
         self.object = object
 
-    def takeDamage(self, him, damage):
-        pass
-
-    def tick(self):
-        pass
-
     def getX(self):
         import paintown_internal
         return paintown_internal.getX(self.getObject())
@@ -42,6 +36,16 @@ class Object:
     def setHealth(self, health):
         import paintown_internal
         return paintown_internal.setHealth(self.getObject(), health)
+
+    # Callbacks
+    def didCollide(self, him):
+        pass
+
+    def takeDamage(self, him, damage):
+        pass
+
+    def tick(self):
+        pass
 
 class Character(Object):
     def __init__(self, character):

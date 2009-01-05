@@ -21,6 +21,7 @@ public:
     virtual void destroyCharacter(void * handle);
     virtual void objectTick(void * handle);
     virtual void objectTakeDamage(void * who, void * handle, int damage);
+    virtual void objectCollided(void * me, void * him);
     virtual void tick();
 
     virtual ~PythonEngine();

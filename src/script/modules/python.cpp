@@ -246,6 +246,20 @@ void PythonEngine::destroyCharacter(void * handle){
     PyObject * obj = (PyObject*) handle;
     Py_DECREF(obj);
 }
+
+void PythonEngine::objectCollided(void * from, void * handle){
+    PyObject * object = (PyObject*) from;
+    AutoObject function(PyObject_GetAttrString(object, "didCollide"));
+    PyObject * maybeNull = (PyObject*) handle;
+    if (handle == NULL){
+        maybeNull = Py_None;
+        Py_INCREF(maybeNull);
+    }
+    AutoObject result(PyObject_CallFunction(function.getObject(), (char*) "(O)", maybeNull));
+    if (handle == NULL){
+        Py_DECREF(maybeNull);
+    }
+}
     
 void PythonEngine::objectTakeDamage(void * from, void * handle, int damage){
     PyObject * object = (PyObject*) from;
