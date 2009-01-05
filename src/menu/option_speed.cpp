@@ -65,10 +65,6 @@ void OptionSpeed::logic()
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionSpeed::draw(Bitmap *work)
-{
-}
-
 void OptionSpeed::run(bool &endGame)
 {
 }

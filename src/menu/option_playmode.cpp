@@ -79,9 +79,6 @@ void OptionPlayMode::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionPlayMode::draw(Bitmap *work){
-}
-
 void OptionPlayMode::run(bool &endGame){
 }
     

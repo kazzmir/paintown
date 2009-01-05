@@ -73,9 +73,6 @@ void OptionNpcBuddies::logic(){
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionNpcBuddies::draw(Bitmap *work){
-}
-
 void OptionNpcBuddies::run(bool &endGame){
 }
 

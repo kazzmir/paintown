@@ -53,9 +53,6 @@ OptionNetworkJoin::~OptionNetworkJoin(){
 void OptionNetworkJoin::logic(){
 }
 
-void OptionNetworkJoin::draw(Bitmap *work){
-}
-
 void OptionNetworkJoin::run(bool &endGame){
 	Keyboard key;
 	key.poll();

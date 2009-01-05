@@ -62,10 +62,6 @@ void OptionInvincible::logic()
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionInvincible::draw(Bitmap *work)
-{
-}
-
 void OptionInvincible::run(bool &endGame)
 {
 }

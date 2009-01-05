@@ -32,11 +32,6 @@ void OptionMenu::logic()
 	// Nothing
 }
 
-void OptionMenu::draw(Bitmap *work)
-{
-	// Nothing
-}
-
 void OptionMenu::run(bool &endGame)
 {
 	// Do our new menu

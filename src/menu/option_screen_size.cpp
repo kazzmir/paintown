@@ -77,9 +77,6 @@ void OptionScreenSize::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionScreenSize::draw(Bitmap *work){
-}
-
 void OptionScreenSize::run(bool &endGame){
 }
 

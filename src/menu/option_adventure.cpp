@@ -16,8 +16,6 @@
 
 using namespace std;
 
-static unsigned int backgroundCounter = 0;
-
 OptionAdventure::OptionAdventure(Token *token) throw( LoadException ):
 MenuOption(token, Event){
 	if ( *token != "adventure" ){
@@ -57,15 +55,6 @@ OptionAdventure::~OptionAdventure(){
 }
 
 void OptionAdventure::logic(){
-}
-
-void OptionAdventure::draw(Bitmap *work){
-	
-	if ( !(getBitmaps().empty()) ){
-	    getBitmaps()[backgroundCounter]->Stretch(*work);
-	    backgroundCounter++;
-	    if(backgroundCounter>=getBitmaps().size())backgroundCounter=0;
-	}
 }
 
 void OptionAdventure::run(bool &endGame){

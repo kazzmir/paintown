@@ -177,10 +177,6 @@ void OptionKey::logic()
 	setText(std::string(temp));
 }
 
-void OptionKey::draw(Bitmap *work)
-{
-}
-
 void OptionKey::run(bool &endGame)
 {
 	//int x, y, width, height;

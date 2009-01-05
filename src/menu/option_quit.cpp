@@ -21,9 +21,6 @@ void OptionQuit::logic(){
 	setText( "Quit" );
 }
 
-void OptionQuit::draw( Bitmap * work ){
-}
-
 void OptionQuit::run(bool &endGame){
 	endGame = true;
 }

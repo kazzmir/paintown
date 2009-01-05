@@ -76,9 +76,6 @@ void OptionLives::logic(){
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionLives::draw(Bitmap *work){
-}
-
 void OptionLives::run(bool &endGame){
 }
 

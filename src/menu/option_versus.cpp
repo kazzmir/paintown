@@ -431,9 +431,6 @@ OptionVersus::~OptionVersus(){
 void OptionVersus::logic(){
 }
 
-void OptionVersus::draw(Bitmap *work){
-}
-
 void OptionVersus::run(bool &endGame){
 	/*
 	Keyboard key;

@@ -14,9 +14,9 @@ class MenuOption
 	public:
 		// Do logic before run part
 		virtual void logic()=0;
-	
-		// Do drawing before run part
-		virtual void draw(Bitmap *work)=0;
+		
+		// Do drawing or backgrounds in run part
+		virtual void draw(Bitmap *work);
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
@@ -59,6 +59,7 @@ class MenuOption
 		
 		// Image resource for use in individual options
 		std::vector<Bitmap *>bitmaps;
+		unsigned int bitmapCounter;
 		
 		// Stuff we don't need to be concerned with
 		friend class Menu;

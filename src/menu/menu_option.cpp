@@ -12,6 +12,7 @@ bmp(0),
 adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )),
 adjustRightColor(Bitmap::makeColor( 255, 255, 255 )),
 runnable(true),
+bitmapCounter(0),
 ID(0){
     setType(t);
 
@@ -69,6 +70,14 @@ MenuOption::~MenuOption(){
     // Kill all bitmaps if any
     for ( unsigned int i = 0; i < bitmaps.size(); ++i ){
 	    if(bitmaps[i])delete bitmaps[i];
+	}
+}
+
+void MenuOption::draw(Bitmap *work){
+  if ( !bitmaps.empty()) {
+	    bitmaps[bitmapCounter]->Stretch(*work);
+	    bitmapCounter++;
+	    if(bitmapCounter>=bitmaps.size())bitmapCounter=0;
 	}
 }
 

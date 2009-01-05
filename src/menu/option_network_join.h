@@ -12,9 +12,6 @@ public:
 
 	// Do logic before run part
 	virtual void logic();
-
-	// Do drawing before run part
-	virtual void draw(Bitmap *work);
 	
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option

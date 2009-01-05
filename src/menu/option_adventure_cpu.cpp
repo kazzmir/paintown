@@ -52,9 +52,6 @@ OptionAdventureCpu::~OptionAdventureCpu(){
 void OptionAdventureCpu::logic(){
 }
 
-void OptionAdventureCpu::draw(Bitmap *work){
-}
-
 void OptionAdventureCpu::run(bool &endGame){
 	int max_buddies = MenuGlobals::getNpcBuddies();
 

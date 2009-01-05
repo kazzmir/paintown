@@ -53,9 +53,6 @@ OptionNetworkHost::~OptionNetworkHost(){
 void OptionNetworkHost::logic(){
 }
 
-void OptionNetworkHost::draw(Bitmap *work){
-}
-
 void OptionNetworkHost::run(bool &endGame){
 	Keyboard key;
         try{

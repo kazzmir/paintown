@@ -115,9 +115,6 @@ OptionCredits::~OptionCredits(){
 void OptionCredits::logic(){
 }
 
-void OptionCredits::draw(Bitmap *work){
-}
-
 void OptionCredits::run( bool &endGame ){
 	Keyboard key;
 
