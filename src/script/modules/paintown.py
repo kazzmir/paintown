@@ -112,25 +112,25 @@ engines = []
 def register(engine):
     engines.append(engine)
 
-def createCharacter(character):
+def checkEngine():
     if len(engines) == 0:
         raise PaintownException("No engines were registered!")
+
+def createCharacter(character):
+    checkEngine()
     return engines[0].createCharacter(character)
 
 def createPlayer(player):
-    if len(engines) == 0:
-        raise PaintownException("No engines were registered!")
+    checkEngine()
     return engines[0].createPlayer(player)
 
 def createWorld(world):
-    if len(engines) == 0:
-        raise PaintownException("No engines were registered!")
+    checkEngine()
     for engine in engines:
         engine.createWorld(world)
 
 def tick():
-    if len(engines) == 0:
-        raise PaintownException("No engines were registered!")
+    checkEngine()
     for engine in engines:
         engine.tick()
 
