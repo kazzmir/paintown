@@ -2,6 +2,7 @@
 #define _buddy_player_h
 
 #include "character.h" 
+#include "score.h"
 #include "util/keyboard.h"
 #include <deque>
 #include "util/load_exception.h"
@@ -11,7 +12,7 @@ class World;
 
 using namespace std;
 
-class BuddyPlayer: public Character{
+class BuddyPlayer: public Character, public Score {
 public:
 
 	BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException );

@@ -30,9 +30,9 @@ using namespace std;
 
 Player::Player( const char * filename ) throw( LoadException ): 
 Character( filename, ALLIANCE_PLAYER ),
+Score(),
 acts(0),
 name_id(-1),
-score(0),
 attack_bonus(0),
 invincible( false ){
 	lives = DEFAULT_LIVES;
@@ -53,9 +53,9 @@ invincible( false ){
 	
 Player::Player( const string & filename ) throw( LoadException ):
 Character( filename, ALLIANCE_PLAYER ),
+Score(),
 acts(0),
 name_id(-1),
-score(0),
 attack_bonus(0),
 invincible( false ){
 
@@ -75,11 +75,11 @@ invincible( false ){
         initializeAttackGradient();
 }
 	
-Player::Player( const Character & chr ) throw( LoadException ):
+Player::Player(const Character & chr) throw( LoadException ):
 Character( chr ),
+Score(),
 acts(0),
 name_id(-1),
-score(0),
 attack_bonus(0),
 invincible( false ){
 	show_life = getHealth();
@@ -87,15 +87,14 @@ invincible( false ){
         initializeAttackGradient();
 }
 
-Player::Player( const Player & pl ) throw( LoadException ):
+Player::Player(const Player & pl) throw( LoadException ):
 Character( pl ),
+Score(pl),
 acts( 0 ),
 name_id(-1),
-score(0),
 attack_bonus(0),
 invincible( false ){
 	show_life = getHealth();
-        score = pl.score;
         initializeAttackGradient();
 }
 
@@ -184,7 +183,7 @@ Network::Message Player::getCreateMessage(){
     message << player;
     return message;
 }
-	
+
 Network::Message Player::scoreMessage(){
     Network::Message m;
 
@@ -198,7 +197,7 @@ Network::Message Player::scoreMessage(){
         
 void Player::attacked( World * world, Object * something, vector< Object * > & objects ){
     Character::attacked(world, something, objects);
-    score += (int)(85 * (1 + attack_bonus));
+    increaseScore((int)(85 * (1 + attack_bonus)));
     attack_bonus += 1;
     Global::debug(1) << "Attack bonus : " << attack_bonus << endl;
     world->addMessage(scoreMessage());
@@ -239,7 +238,7 @@ void Player::draw( Bitmap * work, int rel_x ){
 	render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
 
         ostringstream score_s;
-        score_s << score;
+        score_s << getScore();
         int attack_color = (int)(attack_bonus * 10);
         if (attack_color > num_attack_gradient - 1){
             attack_color = num_attack_gradient - 1;

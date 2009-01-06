@@ -2,6 +2,7 @@
 #define _paintown_player_h
 
 #include "character.h" 
+#include "score.h"
 #include "util/keyboard.h"
 #include <deque>
 #include "util/load_exception.h"
@@ -18,7 +19,7 @@ struct keyState{
 	int facing;
 };
 
-class Player: public Character{
+class Player: public Character, public Score{
 public:
 
 	Player( const char * filename ) throw( LoadException );
@@ -60,14 +61,6 @@ public:
 	inline const bool isInvincible() const {
 		return this->invincible;
 	}
-
-        inline const unsigned int getScore() const {
-            return score;
-        }
-
-        inline void setScore(unsigned int score){
-            this->score = score;
-        }
 	
         virtual void interpretMessage( Network::Message & m );
 	
@@ -79,7 +72,7 @@ public:
         virtual ~Player();
 	
 protected:
-	virtual Network::Message scoreMessage();
+        Network::Message scoreMessage();
 
         void initializeAttackGradient();
 	void fillKeyCache();
@@ -107,7 +100,6 @@ protected:
 	int show_life;
 
 	int name_id;
-        unsigned int score;
         double attack_bonus;
         static const int num_attack_gradient = 50;
         int attack_gradient[num_attack_gradient];
