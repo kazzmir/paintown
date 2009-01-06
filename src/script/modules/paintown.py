@@ -68,6 +68,17 @@ class Player(Character):
     def isPlayer(self):
         return True
 
+    def getScore(self):
+        import paintown_internal
+        return paintown_internal.getScore(self.getObject())
+
+    def increaseScore(self, much):
+        self.setScore(self.getScore() + much)
+
+    def setScore(self, score):
+        import paintown_internal
+        paintown_internal.setScore(self.getObject(), score)
+
 class Engine:
     def __init__(self):
         self.world = None
@@ -106,8 +117,8 @@ class Engine:
     def createCharacter(self, character):
         return Character(character)
 
-    def createPlayer(self, character):
-        return Player(character)
+    def createPlayer(self, player):
+        return Player(player)
 
     def currentBlock(self):
         import paintown_internal

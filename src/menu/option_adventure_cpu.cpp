@@ -10,6 +10,8 @@
 #include "util/funcs.h"
 #include "util/keyboard.h"
 
+#include <sstream>
+
 using namespace std;
 
 OptionAdventureCpu::OptionAdventureCpu(Token *token) throw( LoadException ):
@@ -67,15 +69,17 @@ void OptionAdventureCpu::run(bool &endGame){
 		vector< Object * > players;
 		players.push_back( player );
 
-		for ( int i = 0; i < max_buddies; i++ ){
-			Object * b = Game::selectPlayer( false, "Pick a buddy" );
-			buddies.push_back( b );
-			Object * buddy = new BuddyPlayer( (Character *) player, *(Character *) b );
-                        /* buddies start at -2 and go down */
-                        buddy->setObjectId(-(i + 2));
-			buddies.push_back( buddy );
-			players.push_back( buddy );
-		}
+                for ( int i = 0; i < max_buddies; i++ ){
+                    ostringstream out;
+                    out << "Pick buddy " << i+1;
+                    Object * b = Game::selectPlayer(false, out.str());
+                    buddies.push_back( b );
+                    Object * buddy = new BuddyPlayer( (Character *) player, *(Character *) b );
+                    /* buddies start at -2 and go down */
+                    buddy->setObjectId(-(i + 2));
+                    buddies.push_back( buddy );
+                    players.push_back( buddy );
+                }
 		Game::realGame( players, level );
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;

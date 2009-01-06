@@ -80,11 +80,11 @@ src/object/object.cpp
 src/object/object_attack.cpp
 src/object/object_nonattack.cpp
 src/object/player.cpp
+src/object/player-common.cpp
 src/object/versus_player.cpp
 src/object/versus_enemy.cpp
 src/object/projectile.cpp
 src/object/attack.cpp
-src/object/score.cpp
 src/object/stimulation.cpp
 src/object/health_stimulation.cpp
 src/object/character.cpp

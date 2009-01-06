@@ -2,7 +2,7 @@
 #define _paintown_player_h
 
 #include "character.h" 
-#include "score.h"
+#include "player-common.h"
 #include "util/keyboard.h"
 #include <deque>
 #include "util/load_exception.h"
@@ -11,19 +11,17 @@
 class Animation;
 class World;
 
-using namespace std;
-
 struct keyState{
 	keyState( int key, int facing ):key(key),facing(facing){}
 	int key;
 	int facing;
 };
 
-class Player: public Character, public Score{
+class Player: public PlayerCommon {
 public:
 
 	Player( const char * filename ) throw( LoadException );
-	Player( const string & str ) throw( LoadException );
+	Player( const std::string & str ) throw( LoadException );
 	Player( const Player & pl ) throw( LoadException );
 	Player( const Character & chr ) throw( LoadException );
 	
@@ -35,13 +33,13 @@ public:
 	
 	virtual Object * copy();
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	
 	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
 	
 	virtual void hurt( int x );
 	
-        virtual void attacked( World * world, Object * something, vector< Object * > & objects );
+        virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
 
 	virtual inline void setExplode( bool b ){
 		/* */

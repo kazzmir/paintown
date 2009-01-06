@@ -15,7 +15,7 @@ static const char * PLAYER_FONT = "/fonts/arial.ttf";
 static const int SPAWN_TIME = 1500;
 
 BuddyPlayer::BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException ):
-Character( chr ),
+PlayerCommon( chr ),
 name_id(-1),
 invincible( false ),
 want_x( -1 ),

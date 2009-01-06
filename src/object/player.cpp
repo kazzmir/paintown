@@ -29,8 +29,7 @@ using namespace std;
 #define DEFAULT_LIVES 4
 
 Player::Player( const char * filename ) throw( LoadException ): 
-Character( filename, ALLIANCE_PLAYER ),
-Score(),
+PlayerCommon(filename),
 acts(0),
 name_id(-1),
 attack_bonus(0),
@@ -52,8 +51,7 @@ invincible( false ){
 }
 	
 Player::Player( const string & filename ) throw( LoadException ):
-Character( filename, ALLIANCE_PLAYER ),
-Score(),
+PlayerCommon(filename),
 acts(0),
 name_id(-1),
 attack_bonus(0),
@@ -76,8 +74,7 @@ invincible( false ){
 }
 	
 Player::Player(const Character & chr) throw( LoadException ):
-Character( chr ),
-Score(),
+PlayerCommon(chr),
 acts(0),
 name_id(-1),
 attack_bonus(0),
@@ -88,8 +85,7 @@ invincible( false ){
 }
 
 Player::Player(const Player & pl) throw( LoadException ):
-Character( pl ),
-Score(pl),
+PlayerCommon( pl ),
 acts( 0 ),
 name_id(-1),
 attack_bonus(0),

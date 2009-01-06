@@ -3,6 +3,7 @@
 #include <Python.h>
 
 #include "object/character.h"
+#include "object/player-common.h"
 #include "script/script.h"
 #include "python.h"
 #include <string>
@@ -276,6 +277,29 @@ namespace PaintownCharacter{
         Py_INCREF(Py_None);
         return Py_None;
     }
+
+    static PyObject * getScore(PyObject * dummy, PyObject * args){
+        PyObject * cobject;
+        if (PyArg_ParseTuple(args, "O", &cobject)){
+            PlayerCommon * object = (PlayerCommon*) PyCObject_AsVoidPtr(cobject);
+            return Py_BuildValue("i", (int) object->getScore());
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
+    static PyObject * setScore(PyObject * dummy, PyObject * args){
+        PyObject * cobject;
+        int much;
+        if (PyArg_ParseTuple(args, "Oi", &cobject, &much)){
+            PlayerCommon * object = (PlayerCommon*) PyCObject_AsVoidPtr(cobject);
+            object->setScore(much);
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
 }
 
 /* methods that the python world use to talk to the paintown engine */
@@ -299,6 +323,8 @@ static PyMethodDef PaintownModule[] = {
     {"setY", PaintownCharacter::setY, METH_VARARGS, "Set the Y coordinate of an object."},
     {"setZ", PaintownCharacter::setZ, METH_VARARGS, "Set the Z coordinate of an object."},
     {"getId", PaintownCharacter::getId, METH_VARARGS, "Get the id of an object."},
+    {"getScore", PaintownCharacter::getScore, METH_VARARGS, "Get the score of a player."},
+    {"setScore", PaintownCharacter::setScore, METH_VARARGS, "Set the score of a player."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
