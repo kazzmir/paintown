@@ -75,6 +75,10 @@ class Engine:
         import paintown_internal
         return paintown_internal.findObject(self.world, id)
 
+    def getObjects(self):
+        import paintown_internal
+        return paintown_internal.getObjects(self.world)
+
     def addCharacter(self, path, name, map, health, x, z):
         import paintown_internal
         return paintown_internal.addCharacter(self.world, path, name, map, health, x, z)

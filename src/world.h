@@ -56,6 +56,10 @@ public:
         virtual const int levelLength() const;
         virtual const Block * currentBlock() const;
         
+        virtual inline const vector<Object*> & getObjects() const {
+            return objects;
+        }
+        
         void addEnemy(Enemy * obj);
 
 	virtual void doScene( int min_x, int max_x );

@@ -23,6 +23,8 @@ static const char * paintown_internal = "paintown_internal";
 using namespace std;
 using namespace PythonModule;
 
+/* automatically decrements the reference count when it goes out of scope
+ */
 AutoObject::AutoObject(PyObject* object):
 object(object){
     if (object == NULL){
@@ -111,6 +113,25 @@ namespace PaintownLevel{
 
         Py_INCREF(Py_None);
         return Py_None;
+    }
+
+    static PyObject * getObjects(PyObject * dummy, PyObject * args){
+        PyObject * list = PyList_New(0);
+        PyObject * cworld = NULL;
+
+        if (PyArg_ParseTuple(args, "O", &cworld)){
+            World * world = (World*) PyCObject_AsVoidPtr(cworld);
+            vector<Object*> objects = world->getObjects();
+            for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+                Object * object = *it;
+                if (object->getScriptObject() != NULL){
+                    PyObject * script = (PyObject*) object->getScriptObject();
+                    PyList_Append(list, script);
+                }
+            }
+        }
+
+        return list;
     }
 
     /* Returns a list of existing objects in a block
@@ -252,6 +273,7 @@ static PyMethodDef PaintownModule[] = {
     {"objectType", PaintownLevel::objectType, METH_VARARGS, "Get the type of an object."},
     {"addCharacter", PaintownLevel::addCharacter, METH_VARARGS, "Create a new character"},
     {"findObject", PaintownLevel::findObject, METH_VARARGS, "Find an object by its id."},
+    {"getObjects", PaintownLevel::getObjects, METH_VARARGS, "Get all the existing objects."},
     {"getHealth", PaintownCharacter::getHealth, METH_VARARGS, "Get the health of a character."},
     {"setHealth", PaintownCharacter::setHealth, METH_VARARGS, "Set the health of a character."},
     {"getX", PaintownCharacter::getX, METH_VARARGS, "Get the X coordinate of an object."},
