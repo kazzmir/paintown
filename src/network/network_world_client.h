@@ -39,7 +39,7 @@ public:
 
 protected:
 
-	Object * findObject( Object::networkid_t id );
+	Object * findNetworkObject( Object::networkid_t id );
 	void handleCreateCharacter( Network::Message & message );
 	void handleCreateCat( Network::Message & message );
 	void handleCreateBang( Network::Message & message );

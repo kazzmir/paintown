@@ -94,6 +94,25 @@ namespace PaintownLevel{
         return Py_None;
     }
 
+    static PyObject * findObject(PyObject * dummy, PyObject * args){
+        PyObject * cworld;
+        int id = 0;
+        if (PyArg_ParseTuple(args, "Oi", &cworld, &id)){
+            World * world = (World*) PyCObject_AsVoidPtr(cworld);
+            Object * obj = world->findObject(id);
+            if (obj == NULL){
+                Py_INCREF(Py_None);
+                return Py_None;
+            }
+            PyObject * script = (PyObject*) obj->getScriptObject();
+            Py_INCREF(script);
+            return script;
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
     /* Returns a list of existing objects in a block
      *   paintown_internal.getBlockObjects(self.world, type)
      */
@@ -222,6 +241,7 @@ static PyMethodDef PaintownModule[] = {
     {"getBlockObjects", PaintownLevel::getBlockObjects, METH_VARARGS, "Get the objects in a block."},
     {"objectType", PaintownLevel::objectType, METH_VARARGS, "Get the type of an object."},
     {"addCharacter", PaintownLevel::addCharacter, METH_VARARGS, "Create a new character"},
+    {"findObject", PaintownLevel::findObject, METH_VARARGS, "Find an object by its id."},
     {"getHealth", PaintownCharacter::getHealth, METH_VARARGS, "Get the health of a character."},
     {"setHealth", PaintownCharacter::setHealth, METH_VARARGS, "Set the health of a character."},
     {"getX", PaintownCharacter::getX, METH_VARARGS, "Get the X coordinate of an object"},

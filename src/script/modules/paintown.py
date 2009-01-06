@@ -67,6 +67,10 @@ class Engine:
         assert(self.world != None)
         return paintown_internal.levelLength(self.world)
 
+    def findObject(self, id):
+        import paintown_internal
+        return paintown_internal.findObject(self.world, id)
+
     def addCharacter(self, path, name, map, health, x, z):
         import paintown_internal
         return paintown_internal.addCharacter(self.world, path, name, map, health, x, z)

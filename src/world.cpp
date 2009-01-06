@@ -222,6 +222,16 @@ void World::addEnemy(Enemy * obj){
         delete obj;
     }
 }
+        
+Object * World::findObject(int id){
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Object * object = *it;
+        if (object->getObjectId() == (unsigned int) id){
+            return object;
+        }
+    }
+    return NULL;
+}
 
 void World::doLogic(){
 

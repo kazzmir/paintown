@@ -60,6 +60,8 @@ public:
 
 	virtual void doScene( int min_x, int max_x );
 
+        virtual Object * findObject(int id);
+
 	virtual int getMaximumZ();
 	virtual int getMinimumZ();
 

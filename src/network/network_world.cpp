@@ -170,7 +170,7 @@ void NetworkWorld::doScene( int min_x, int max_x ){
 	objects.insert( objects.end(), obj.begin(), obj.end() );
 }
 
-Object * NetworkWorld::findObject( Object::networkid_t id ){
+Object * NetworkWorld::findNetworkObject( Object::networkid_t id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
 		if ( o->getId() == id ){
@@ -190,8 +190,8 @@ void NetworkWorld::handleMessage( Network::Message & message ){
                                 Object::networkid_t grabbed;
 				message >> grabbing;
 				message >> grabbed;
-				Character * c_grabbing = (Character *) findObject( grabbing );
-				Character * c_grabbed = (Character *) findObject( grabbed );
+				Character * c_grabbing = (Character *) findNetworkObject( grabbing );
+				Character * c_grabbed = (Character *) findNetworkObject( grabbed );
 				if ( c_grabbing != NULL && c_grabbed != NULL ){
 					c_grabbed->grabbed( c_grabbing );
 					c_grabbing->setLink( c_grabbed );
@@ -203,8 +203,8 @@ void NetworkWorld::handleMessage( Network::Message & message ){
                               Object::networkid_t grabbed;
 				message >> grabbing;
 				message >> grabbed;
-				Character * c_grabbing = (Character *) findObject( grabbing );
-				Character * c_grabbed = (Character *) findObject( grabbed );
+				Character * c_grabbing = (Character *) findNetworkObject( grabbing );
+				Character * c_grabbed = (Character *) findNetworkObject( grabbed );
 				if ( c_grabbed != NULL && c_grabbing != NULL ){
 					debug( 2 ) << grabbing << " threw " << grabbed << endl;
 					c_grabbed->setFacing( c_grabbing->getOppositeFacing() );
@@ -219,7 +219,7 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 			}
 		}
 	} else {
-		Object * o = findObject( message.id );
+		Object * o = findNetworkObject( message.id );
 		if ( o != NULL ){
 			o->interpretMessage( message );
 		}
