@@ -39,10 +39,10 @@ ObjectFactory * ObjectFactory::getFactory(){
 }
 	
 void ObjectFactory::destroy(){
-	if ( factory ){
-		delete factory;
-		factory = NULL;
-	}
+    if ( factory ){
+        delete factory;
+        factory = NULL;
+    }
 }
 
 ObjectFactory::ObjectFactory():

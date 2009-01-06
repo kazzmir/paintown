@@ -32,6 +32,7 @@ damage( 0 ),
 facing( FACING_RIGHT ),
 alliance( alliance ),
 id( 0 ),
+objectId(-1),
 scriptObject(NULL){
 }
 
@@ -48,11 +49,13 @@ damage( 0 ),
 facing( FACING_RIGHT ),
 alliance( _alliance ),
 id( 0 ),
+objectId(-1),
 scriptObject(NULL){
 }
 
 Object::Object( const Object & copy ):
 damage( 0 ),
+objectId(-1),
 scriptObject(NULL){
 	actualx = copy.actualx;
 	actualy = copy.actualy;

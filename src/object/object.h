@@ -168,11 +168,11 @@ public:
 
         /* regular ids
          */
-        virtual inline void setObjectId( unsigned int id ){
+        virtual inline void setObjectId(int id){
 		this->objectId = id;
 	}
 
-	virtual inline unsigned const int getObjectId() const {
+	virtual inline const int getObjectId() const {
 		return this->objectId;
 	}
 
