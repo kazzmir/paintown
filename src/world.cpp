@@ -4,7 +4,6 @@
 #include "object/object.h"
 #include "object/object_attack.h"
 #include "object/character.h"
-#include "factory/object_factory.h"
 #include "util/load_exception.h"
 #include "globals.h"
 #include "object/effect.h"
@@ -52,10 +51,6 @@ takeAScreenshot(false){
 
         for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
             PlayerTracker & tracker = *it;
-            /* players need a new id because the level could create objects with
-             * ids that overlap with the player
-             */
-            tracker.player->setObjectId(ObjectFactory::getNextObjectId());
             void * handle = Script::Engine::getEngine()->createPlayer(tracker.player);
             tracker.player->setScriptObject(handle);
             tracker.script = handle;
