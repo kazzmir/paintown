@@ -51,7 +51,14 @@ class Engine
   # Non-overridable methods
 
   def levelLength(self)
+    # returns : integer
     # Returns the length of the level
+
+  def findObject(self, id)
+    # id : integer
+    # returns : None or Object-subclass
+    # Searches for an existing object with the given id and returns its python
+    # class that it was created with.
 
   # Overridable methods
 
@@ -74,6 +81,10 @@ class Object
   # Represents an object in the paintown engine (not necessarily characters, also items)
 
   # Non-overridable methods
+
+  def getId(self)
+    # returns : integer
+    # Returns the id of the object
 
   def getX(self)
     # returns : float
