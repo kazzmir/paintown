@@ -100,7 +100,7 @@ namespace PaintownLevel{
         if (PyArg_ParseTuple(args, "Oi", &cworld, &id)){
             World * world = (World*) PyCObject_AsVoidPtr(cworld);
             Object * obj = world->findObject(id);
-            if (obj == NULL){
+            if (obj == NULL || obj->getScriptObject() == NULL){
                 Py_INCREF(Py_None);
                 return Py_None;
             }
