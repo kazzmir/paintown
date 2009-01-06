@@ -5,6 +5,7 @@
 #include "object/object_attack.h"
 #include "object/character.h"
 #include "util/load_exception.h"
+#include "factory/object_factory.h"
 #include "globals.h"
 #include "object/effect.h"
 #include "object/enemy.h"
@@ -51,6 +52,7 @@ takeAScreenshot(false){
 
         for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
             PlayerTracker & tracker = *it;
+            tracker.player->setObjectId(ObjectFactory::getNextObjectId());
             void * handle = Script::Engine::getEngine()->createPlayer(tracker.player);
             tracker.player->setScriptObject(handle);
             tracker.script = handle;

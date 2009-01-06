@@ -54,6 +54,9 @@ class Object:
 class Character(Object):
     def __init__(self, character):
         Object.__init__(self, character)
+
+    def isPlayer(self):
+        return False
     
     def didAttack(self, him):
         pass
@@ -61,6 +64,9 @@ class Character(Object):
 class Player(Character):
     def __init__(self, player):
         Character.__init__(self, player)
+    
+    def isPlayer(self):
+        return True
 
 class Engine:
     def __init__(self):
@@ -82,6 +88,12 @@ class Engine:
     def getObjects(self):
         import paintown_internal
         return paintown_internal.getObjects(self.world)
+
+    def getEnemies(self):
+        return filter(lambda n: not n.isPlayer(), self.getObjects())
+    
+    def getPlayers(self):
+        return filter(lambda n: n.isPlayer(), self.getObjects())
 
     def addCharacter(self, path, name, map, health, x, z):
         import paintown_internal
