@@ -57,6 +57,21 @@ namespace PaintownLevel{
         return Py_None;
     }
 
+    static PyObject * cacheCharacter(PyObject * dummy, PyObject * args){
+        char * path;
+        if (PyArg_ParseTuple(args, "s", &path)){
+            string spath(path);
+            BlockObject block;
+            block.setType(ObjectFactory::EnemyType);
+            block.setPath(Util::getDataPath() + spath);
+            Enemy * enemy = (Enemy*) ObjectFactory::createObject(&block);
+            delete enemy;
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
     /* create a new character (enemy really) and add it into the world
      * Returns the python object that represents the character.
      */
@@ -272,6 +287,7 @@ static PyMethodDef PaintownModule[] = {
     {"getBlockObjects", PaintownLevel::getBlockObjects, METH_VARARGS, "Get the objects in a block."},
     {"objectType", PaintownLevel::objectType, METH_VARARGS, "Get the type of an object."},
     {"addCharacter", PaintownLevel::addCharacter, METH_VARARGS, "Create a new character"},
+    {"cacheCharacter", PaintownLevel::cacheCharacter, METH_VARARGS, "Ensure a character is cached for future lookups"},
     {"findObject", PaintownLevel::findObject, METH_VARARGS, "Find an object by its id."},
     {"getObjects", PaintownLevel::getObjects, METH_VARARGS, "Get all the existing objects."},
     {"getHealth", PaintownCharacter::getHealth, METH_VARARGS, "Get the health of a character."},

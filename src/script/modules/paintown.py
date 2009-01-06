@@ -83,6 +83,10 @@ class Engine:
         import paintown_internal
         return paintown_internal.addCharacter(self.world, path, name, map, health, x, z)
 
+    def cacheCharacter(self, path):
+        import paintown_internal
+        paintown_internal.cacheCharacter(path)
+
     def createCharacter(self, character):
         return Character(character)
 
@@ -102,13 +106,19 @@ def register(engine):
     engines.append(engine)
 
 def createCharacter(character):
+    if len(engines) == 0:
+        raise PaintownException("No engines were registered!")
     return engines[0].createCharacter(character)
 
 def createWorld(world):
+    if len(engines) == 0:
+        raise PaintownException("No engines were registered!")
     for engine in engines:
         engine.createWorld(world)
 
 def tick():
+    if len(engines) == 0:
+        raise PaintownException("No engines were registered!")
     for engine in engines:
         engine.tick()
 
