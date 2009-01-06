@@ -18,6 +18,7 @@ public:
     virtual void createWorld(const World & world);
     virtual void destroyWorld(const World & world);
     virtual void * createCharacter(void * character);
+    virtual void * createPlayer(void * player);
     virtual void destroyObject(void * handle);
     virtual void objectTick(void * handle);
     virtual void objectTakeDamage(void * who, void * handle, int damage);

@@ -37,7 +37,7 @@ takeAScreenshot(false){
 	bang = NULL;
 	screen_size = _screen_size;
 
-	for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+	for ( vector<Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
 		PlayerTracker t;
 		t.min_x = 0;
 		t.player = *it;
@@ -48,6 +48,13 @@ takeAScreenshot(false){
 	loadLevel( path );
 
 	mini_map = new Bitmap( screen_size, (int)((double) screen_size / 1.3333) );
+
+        for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
+            PlayerTracker & tracker = *it;
+            void * handle = Script::Engine::getEngine()->createPlayer(tracker.player);
+            tracker.player->setScriptObject(handle);
+            tracker.script = handle;
+        }
 
 	/*
 	if ( player != NULL ){
@@ -74,6 +81,15 @@ World::~World(){
             
         for (deque<Bitmap*>::iterator it = screenshots.begin(); it != screenshots.end(); it++){
             delete *it;
+        }
+	
+        for ( vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
+            PlayerTracker & tracker = *it;
+            void * handle = tracker.script;
+            if (handle != NULL){
+                Script::Engine::getEngine()->destroyObject(handle);
+            }
+            tracker.player->setScriptObject(NULL);
         }
 }
         
@@ -147,7 +163,7 @@ void World::deleteObjects( vector< Object * > * objects ){
 }
 
 void World::Quake( int q ){
-	quake_time += q;
+    quake_time += q;
 }
 
 /* true if the player has crossed the finish line */
@@ -167,12 +183,12 @@ const bool World::finished() const {
 }
 	
 const bool World::isPlayer( Object * o ) const {
-		for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
-			if ( it->player == o ){
-				return true;
-			}
-		}
-		return false;
+    for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
+        if ( it->player == o ){
+            return true;
+        }
+    }
+    return false;
 }
 
 void World::addMessage( Network::Message m, Network::Socket from ){

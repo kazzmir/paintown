@@ -58,6 +58,10 @@ class Character(Object):
     def didAttack(self, him):
         pass
 
+class Player(Character):
+    def __init__(self, player):
+        Character.__init__(self, player)
+
 class Engine:
     def __init__(self):
         self.world = None
@@ -90,6 +94,9 @@ class Engine:
     def createCharacter(self, character):
         return Character(character)
 
+    def createPlayer(self, character):
+        return Player(character)
+
     def currentBlock(self):
         import paintown_internal
         assert(self.world != None)
@@ -109,6 +116,11 @@ def createCharacter(character):
     if len(engines) == 0:
         raise PaintownException("No engines were registered!")
     return engines[0].createCharacter(character)
+
+def createPlayer(player):
+    if len(engines) == 0:
+        raise PaintownException("No engines were registered!")
+    return engines[0].createPlayer(player)
 
 def createWorld(world):
     if len(engines) == 0:

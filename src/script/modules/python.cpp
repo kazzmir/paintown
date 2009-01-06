@@ -344,10 +344,10 @@ void PythonEngine::shutdown(){
  * destroyObject will Py_DECREF this object when the paintown object
  * is deleted.
  */
-void * PythonEngine::createCharacter(void * obj){
+static void * callCreateMethod(void * obj, const char * method){
     Global::debug(1) << "Create a character from " << obj << endl;
     AutoObject api_module(PyImport_ImportModule((char*)paintown_api));
-    AutoObject create(PyObject_GetAttrString(api_module.getObject(), "createCharacter"));
+    AutoObject create(PyObject_GetAttrString(api_module.getObject(), (char*) method));
     AutoObject cobject(PyCObject_FromVoidPtr((void*) obj, NULL));
     AutoObject result(PyObject_CallFunction(create.getObject(), (char*) "(O)", cobject.getObject()));
 
@@ -355,6 +355,14 @@ void * PythonEngine::createCharacter(void * obj){
     Py_INCREF(ret);
     Global::debug(1) << "Created python character " << ret << endl;
     return ret;
+}
+
+void * PythonEngine::createCharacter(void * obj){
+    return callCreateMethod(obj, "createCharacter");
+}
+
+void * PythonEngine::createPlayer(void * obj){
+    return callCreateMethod(obj, "createPlayer");
 }
 
 void PythonEngine::destroyObject(void * handle){

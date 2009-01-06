@@ -22,6 +22,7 @@ namespace Script{
 struct PlayerTracker{
 	double min_x;
 	Object * player;
+        void * script;
 };
 
 class World{

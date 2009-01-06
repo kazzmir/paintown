@@ -69,6 +69,10 @@ namespace Script{
     void * NoEngine::createCharacter(void * character){
         return NULL;
     }
+    
+    void * NoEngine::createPlayer(void * player){
+        return NULL;
+    }
 
     void NoEngine::destroyObject(void * handle){
     }
