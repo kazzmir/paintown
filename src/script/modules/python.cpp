@@ -183,7 +183,6 @@ namespace PaintownCharacter{
         return Py_None;
     }
 
-
     static PyObject * getDouble(PyObject * dummy, PyObject * args, const double (Object::*get)() const){
         PyObject * cobject;
         if (PyArg_ParseTuple(args, "O", &cobject)){
@@ -230,6 +229,17 @@ namespace PaintownCharacter{
     static PyObject * setZ(PyObject * dummy, PyObject * args){
         return setDouble(dummy, args, &Object::setZ);
     }
+
+    static PyObject * getId(PyObject * dummy, PyObject * args){
+        PyObject * cobject;
+        if (PyArg_ParseTuple(args, "O", &cobject)){
+            Object * object = (Object*) PyCObject_AsVoidPtr(cobject);
+            return Py_BuildValue("i", (int) object->getObjectId());
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
 }
 
 /* methods that the python world use to talk to the paintown engine */
@@ -244,12 +254,13 @@ static PyMethodDef PaintownModule[] = {
     {"findObject", PaintownLevel::findObject, METH_VARARGS, "Find an object by its id."},
     {"getHealth", PaintownCharacter::getHealth, METH_VARARGS, "Get the health of a character."},
     {"setHealth", PaintownCharacter::setHealth, METH_VARARGS, "Set the health of a character."},
-    {"getX", PaintownCharacter::getX, METH_VARARGS, "Get the X coordinate of an object"},
-    {"getY", PaintownCharacter::getY, METH_VARARGS, "Get the Y coordinate of an object"},
-    {"getZ", PaintownCharacter::getZ, METH_VARARGS, "Get the Z coordinate of an object"},
-    {"setX", PaintownCharacter::setX, METH_VARARGS, "Set the X coordinate of an object"},
-    {"setY", PaintownCharacter::setY, METH_VARARGS, "Set the Y coordinate of an object"},
-    {"setZ", PaintownCharacter::setZ, METH_VARARGS, "Set the Z coordinate of an object"},
+    {"getX", PaintownCharacter::getX, METH_VARARGS, "Get the X coordinate of an object."},
+    {"getY", PaintownCharacter::getY, METH_VARARGS, "Get the Y coordinate of an object."},
+    {"getZ", PaintownCharacter::getZ, METH_VARARGS, "Get the Z coordinate of an object."},
+    {"setX", PaintownCharacter::setX, METH_VARARGS, "Set the X coordinate of an object."},
+    {"setY", PaintownCharacter::setY, METH_VARARGS, "Set the Y coordinate of an object."},
+    {"setZ", PaintownCharacter::setZ, METH_VARARGS, "Set the Z coordinate of an object."},
+    {"getId", PaintownCharacter::getId, METH_VARARGS, "Get the id of an object."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 

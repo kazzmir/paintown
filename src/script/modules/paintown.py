@@ -2,6 +2,10 @@ class Object:
     def __init__(self, object):
         self.object = object
 
+    def getId(self):
+        import paintown_internal
+        return paintown_internal.getId(self.getObject())
+
     def getX(self):
         import paintown_internal
         return paintown_internal.getX(self.getObject())
