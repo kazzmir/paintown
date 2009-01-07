@@ -21,9 +21,11 @@ DONE * better key input in network chat
 
 For 3.2
 -------
-partly done * Get python scripting module in a useable state
+DONE * Get python scripting module in a useable state
 DONE * Be able to scale the screen to arbitrary sizes
 DONE * use CPP to define DATA_PATH
+* make network mode use versions
+* allow level sets to only allow explicit players
 
 Future
 -------
