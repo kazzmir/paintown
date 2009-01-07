@@ -16,6 +16,7 @@ UninstPage instfiles
 Section "Paintown (required)"
 	SetOutPath $INSTDIR
 	File "..\paintown.exe"
+	File "..\scripts.zip"
 	File "..\README"
 	File "..\LEGAL"
 	File "..\LICENSE"
