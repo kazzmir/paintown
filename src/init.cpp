@@ -85,6 +85,7 @@ bool Global::init( int gfx ){
 
 	ostream & out = Global::debug( 0 );
 	out << "-- BEGIN init --" << endl;
+        out << "Paintown version " << Global::getVersionString() << endl;
 	out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
 	out <<"Allegro init: "<<allegro_init()<<endl;
 	out <<"Install timer: "<<install_timer()<<endl;

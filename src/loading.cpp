@@ -61,6 +61,7 @@ void * loadingScreen( void * arg ){
         { /* force scoping */
             Bitmap background( Global::titleScreen() );
             background.Blit( load_x, load_y, load_width, load_height, 0, 0, work );
+            Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2 - Font::getDefaultFont().getHeight(), Bitmap::makeColor( 192, 192, 192 ), background, "Paintown version %s", 0, Global::getVersionString().c_str());
             Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), background, "Made by Jon Rafkind", 0 );
             background.BlitToScreen();
         }

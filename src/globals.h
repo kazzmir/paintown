@@ -19,6 +19,9 @@ namespace Global{
 
 extern const char * DEFAULT_FONT;
 
+const int getVersion();
+std::string getVersionString();
+
 void setDebug( int i );
 const int getDebug();
 std::ostream & debug( int i );

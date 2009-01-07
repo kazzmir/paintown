@@ -3,8 +3,12 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
 #include <iostream>
+#include <sstream>
 
 using namespace std;
+
+static int major_version = 3;
+static int minor_version = 2;
 
 /*
 const int MIN_WORLD_Z = 160;
@@ -50,6 +54,16 @@ ostream & Global::debug( int i ){
 
 void Global::setDebug( int i ){
 	global_debug_level = i;
+}
+
+const int Global::getVersion(){
+    return major_version * 100 + minor_version;
+}
+
+string Global::getVersionString(){
+    ostringstream str;
+    str << major_version << "." << minor_version;
+    return str.str();
 }
 
 const int Global::getDebug(){
