@@ -6,8 +6,8 @@ cp paintown-static paintown-$version
 rm -rf paintown-$version.app
 fixbundle paintown-$version -v $version -V "Paintown $version"
 cp scripts.zip paintown-$version.app/Contents/Resources
-cd paintown-$version.app/Contents/Resources
-svn export https://paintown.svn.sf.net/svnroot/paintown/data
+(cd paintown-$version.app/Contents/Resources; 
+ svn export https://paintown.svn.sf.net/svnroot/paintown/data)
 buildDMG.pl -dmgName paintown-$version paintown-$version.app/
 echo "Created paintown-$version.dmg"
 ls -l paintown-$version.dmg
