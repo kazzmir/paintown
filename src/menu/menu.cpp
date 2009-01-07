@@ -481,9 +481,9 @@ void Menu::drawTextBoard(Bitmap *work){
 void Menu::drawText(Bitmap *work){
     const double spacing = 1.3;
 
-    const int displayTotal = (backboard.position.height / int(vFont->getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont->getHeight()/spacing) - 1 : backboard.position.height / (vFont->getHeight()/spacing);
+    const int displayTotal = (int)((backboard.position.height / (int)(vFont->getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont->getHeight()/spacing) - 1 : backboard.position.height / (vFont->getHeight()/spacing));
     const int fromMiddle = (displayTotal - 1)/2;
-    const int starty = (backboard.position.height/2)-(((vFont->getHeight()/spacing) * displayTotal)/2);
+    const int starty = (int)((backboard.position.height/2)-(((vFont->getHeight()/spacing) * displayTotal)/2));
 
     std::vector <MenuOption *>::iterator beginIter = menuOptions.begin();
     std::vector <MenuOption *>::iterator endIter = menuOptions.end();
