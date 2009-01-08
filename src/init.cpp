@@ -51,6 +51,15 @@ void inc_second_counter() {
 }
 END_OF_FUNCTION( inc_second_counter );
 
+#ifndef ALLEGRO_WINDOWS
+static void handleSigSegV(int i, siginfo_t * sig, void * data){
+    Bitmap::setGfxModeText();
+    allegro_exit();
+    exit(0);
+}
+#else
+#endif
+
 /* catch a socket being closed prematurely on unix */
 #ifndef ALLEGRO_WINDOWS
 static void handleSigPipe( int i, siginfo_t * sig, void * data ){
@@ -69,6 +78,10 @@ static void registerSignals(){
 	memset( &action, 0, sizeof(struct sigaction) );
 	action.sa_sigaction = handleSigPipe;
 	sigaction( SIGPIPE, &action, NULL );
+
+	memset( &action, 0, sizeof(struct sigaction) );
+	action.sa_sigaction = handleSigSegV;
+	sigaction( SIGSEGV, &action, NULL );
 	/*
 	action.sa_sigaction = handleSigUsr1;
 	sigaction( SIGUSR1, &action, NULL );
