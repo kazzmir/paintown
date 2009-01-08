@@ -84,10 +84,12 @@ void OptionScreenSize::setMode(int width, int height){
     if (width != Configuration::getScreenWidth() ||
         height != Configuration::getScreenHeight()){
 
-        Configuration::setScreenWidth(width);
-        Configuration::setScreenHeight(height);
         int gfx = Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED;
-        Bitmap::setGraphicsMode(gfx, width, height);
+        int ok = Bitmap::setGraphicsMode(gfx, width, height);
+        if (ok == 0){
+            Configuration::setScreenWidth(width);
+            Configuration::setScreenHeight(height);
+        }
     }
 }
 
