@@ -11,6 +11,8 @@
 #include "init.h"
 #include "music.h"
 
+#include "factory/font_factory.h"
+
 #include "menu/optionfactory.h"
 #include "menu/option_background.h"
 
@@ -28,7 +30,7 @@ Bitmap *Menu::work = 0;
 static std::queue<MenuOption *> backgrounds;
 
 // static FreeTypeFont *font;
-static Font *font;
+static Font *sharedFont = 0;
 
 const int yellow = Bitmap::makeColor( 255, 255, 0 );
 const int white = Bitmap::makeColor( 255, 255, 255 );
@@ -109,8 +111,10 @@ void Menu::load(Token *token)throw( LoadException ){
 			} else if ( *tok == "font" ) {
 				std::string temp;
 				*tok >> temp >> fontWidth >> fontHeight;
-				vFont = new FreeTypeFont(Util::getDataPath() + temp);
-				vFont->setSize(fontWidth,fontHeight);
+				vFont = FontFactory::getFont(Util::getDataPath() + temp, fontWidth, fontHeight); 
+				//new FreeTypeFont(Util::getDataPath() + temp);
+				//vFont->setSize(fontWidth,fontHeight);
+				if ( ! sharedFont ) sharedFont = vFont;
 			} else if( *tok == "option" ) {
 				MenuOption *temp = getOption(tok);
 				if(temp)menuOptions.push_back(temp);
@@ -150,9 +154,13 @@ void Menu::load(Token *token)throw( LoadException ){
 	addMenu( this );
 	
 	if ( ! vFont ){
+	    if( ! sharedFont ){
 		std::string f = Util::getDataPath() + "/fonts/arial.ttf";
-		vFont = new FreeTypeFont(f);
-		vFont->setSize( fontWidth,fontHeight );
+		//vFont = new FreeTypeFont(f);
+		//vFont->setSize( fontWidth,fontHeight );
+		vFont = FontFactory::getFont(f, fontWidth, fontHeight);
+	    }
+	    else vFont = sharedFont;
 	}
 	
 	if( ! infoPositionX || ! infoPositionY ){
@@ -205,8 +213,9 @@ useflags Menu::run(){
 	while( ! endGame ){
 		Global::speed_counter = 0;
 		Global::second_counter = 0;
-		int game_time = 100;		
-		font = vFont;
+		int game_time = 100;
+		
+		sharedFont = vFont;
 		
 		// Reset fade stuff
 		resetFadeInfo();
@@ -426,7 +435,7 @@ Bitmap *Menu::getBackground()
 }
 
 Font *Menu::getFont(){
-	return font;
+	return sharedFont;
 }
 
 //! Set longest length
@@ -667,7 +676,4 @@ Menu::~Menu(){
 		backgrounds.pop();
 	}
 	//if(background)delete background;
-	if ( vFont ){
-		delete vFont;
-	}
 }
