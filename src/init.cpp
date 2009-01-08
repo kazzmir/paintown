@@ -55,6 +55,9 @@ END_OF_FUNCTION( inc_second_counter );
 static void handleSigSegV(int i, siginfo_t * sig, void * data){
     Bitmap::setGfxModeText();
     allegro_exit();
+    /* write to a log file or something because sigsegv shouldn't
+     * normally happen.
+     */
     exit(0);
 }
 #else
@@ -82,6 +85,7 @@ static void registerSignals(){
 	memset( &action, 0, sizeof(struct sigaction) );
 	action.sa_sigaction = handleSigSegV;
 	sigaction( SIGSEGV, &action, NULL );
+
 	/*
 	action.sa_sigaction = handleSigUsr1;
 	sigaction( SIGUSR1, &action, NULL );
@@ -90,6 +94,8 @@ static void registerSignals(){
 }
 
 static void close_paintown(){
+    Bitmap::setGfxModeText();
+    allegro_exit();
     exit(0);
 }
 END_OF_FUNCTION(close_paintown)
