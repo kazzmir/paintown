@@ -1,6 +1,7 @@
 #include "util/bitmap.h"
 #include "menu/option_credits.h"
 #include "menu/menu_global.h"
+#include "menu/menu.h"
 #include "globals.h"
 #include "init.h"
 #include "util/funcs.h"
@@ -10,8 +11,6 @@
 #include "util/font.h"
 
 using namespace std;
-
-static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 
 OptionCredits::OptionCredits( Token * token ) throw( LoadException ):
 MenuOption(token, Event),
@@ -122,7 +121,7 @@ void OptionCredits::run( bool &endGame ){
 
 	Global::speed_counter = 0;
 	int min_y = GFX_Y;
-	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+	
 	Bitmap tmp( GFX_X, GFX_Y );
 	if ( ! music.empty() ){
 		MenuGlobals::setMusic( music );
@@ -140,7 +139,7 @@ void OptionCredits::run( bool &endGame ){
 			while ( think >= 1.0 ){
 				think -= 1;
 				min_y -= 1;
-				if ( min_y < -(int)(maxCredits * font.getHeight() * 1.1) ){
+				if ( min_y < -(int)(maxCredits * Menu::getFont()->getHeight() * 1.1) ){
 					min_y = GFX_Y;
 				}
 			}
@@ -161,12 +160,12 @@ void OptionCredits::run( bool &endGame ){
 			bool isTitle = true;
 			for ( /**/ ; b != e; b++ ){
 				if ( isTitle ){
-					font.printf( 100, y, title, tmp, (*b), 0 );
+					Menu::getFont()->printf( 100, y, title, tmp, (*b), 0 );
 					isTitle = false;
 				} else {
-					font.printf( 100, y, color, tmp, (*b), 0 );
+					Menu::getFont()->printf( 100, y, color, tmp, (*b), 0 );
 				}
-				y += font.getHeight() + 2;
+				y += Menu::getFont()->getHeight() + 2;
 
 				if ( (*b).empty() ){
 					isTitle = true;

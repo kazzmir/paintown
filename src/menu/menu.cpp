@@ -29,7 +29,6 @@ Bitmap *Menu::work = 0;
 
 static std::queue<MenuOption *> backgrounds;
 
-// static FreeTypeFont *font;
 static Font *sharedFont = 0;
 
 const int yellow = Bitmap::makeColor( 255, 255, 0 );
@@ -112,8 +111,6 @@ void Menu::load(Token *token)throw( LoadException ){
 				std::string temp;
 				*tok >> temp >> fontWidth >> fontHeight;
 				vFont = FontFactory::getFont(Util::getDataPath() + temp, fontWidth, fontHeight); 
-				//new FreeTypeFont(Util::getDataPath() + temp);
-				//vFont->setSize(fontWidth,fontHeight);
 				if ( ! sharedFont ) sharedFont = vFont;
 			} else if( *tok == "option" ) {
 				MenuOption *temp = getOption(tok);
@@ -156,8 +153,6 @@ void Menu::load(Token *token)throw( LoadException ){
 	if ( ! vFont ){
 	    if( ! sharedFont ){
 		std::string f = Util::getDataPath() + "/fonts/arial.ttf";
-		//vFont = new FreeTypeFont(f);
-		//vFont->setSize( fontWidth,fontHeight );
 		vFont = FontFactory::getFont(f, fontWidth, fontHeight);
 	    }
 	    else vFont = sharedFont;
@@ -675,5 +670,4 @@ Menu::~Menu(){
 		delete backgrounds.front();
 		backgrounds.pop();
 	}
-	//if(background)delete background;
 }
