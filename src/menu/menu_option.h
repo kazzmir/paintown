@@ -8,6 +8,7 @@
 
 class Bitmap;
 class Token;
+class Menu;
 
 class MenuOption
 {
@@ -56,6 +57,7 @@ class MenuOption
 		int adjustLeftColor;
 		int adjustRightColor;
 		bool runnable;
+		bool forRemoval;
 		
 		// Image resource for use in individual options
 		std::vector<Bitmap *>bitmaps;
@@ -66,6 +68,9 @@ class MenuOption
 		int ID;
 		inline void setID(int id){ ID = id; }
 		inline int getID(){ return ID; }
+		
+		// This is the owner of this option
+		Menu *parent;
 	public:
 		
 		inline void setState(const state s) { currentState = s; }
@@ -103,6 +108,10 @@ class MenuOption
 		inline void setRunnable(const bool r) { runnable = r; }
 		
 		inline bool isRunnable() const { return runnable; }
+		
+		inline void setForRemoval(const bool r) { forRemoval = r; }
+		
+		inline bool scheduledForRemoval() const { return forRemoval; }
 };
 
 #endif

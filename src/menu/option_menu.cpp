@@ -8,6 +8,10 @@
 OptionMenu::OptionMenu(Token *token) throw (LoadException): MenuOption(token, Event), _menu(0)
 {
 	_menu = new Menu();
+	
+	// Set this menu as an option
+	_menu->setAsOption(true);
+	
 	// Lets try loading from a file
 	std::string temp;
 	// Filename
@@ -19,6 +23,9 @@ OptionMenu::OptionMenu(Token *token) throw (LoadException): MenuOption(token, Ev
 	}
 	else _menu->load(Util::getDataPath() + temp);
 	this->setText(_menu->getName());
+	
+	// Lets check if this menu is going bye bye
+	if ( _menu->checkRemoval() ) setForRemoval(true);
 }
 
 OptionMenu::~OptionMenu()

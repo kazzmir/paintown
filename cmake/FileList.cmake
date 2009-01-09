@@ -118,7 +118,6 @@ src/menu/menu_action.cpp
 src/menu/menu_option.cpp
 src/menu/option_adventure.cpp
 src/menu/option_adventure_cpu.cpp
-src/menu/option_background.cpp
 src/menu/option_credits.cpp
 src/menu/option_fullscreen.cpp
 src/menu/option_invincible.cpp

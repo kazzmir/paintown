@@ -86,6 +86,12 @@ class Menu
                 static void setFontWidth(int w);
                 static void setFontHeight(int h);
 		
+		inline bool checkRemoval() const { return removeOption; }
+		
+		inline void setAsOption( const bool o ) { option = o; }
+		
+		inline bool isOption() const { return option; }
+		
 		//! Set flag(s)
 		inline void setFlags(useflags f, bool tf){ if(tf){_menuflags |= f;}else{_menuflags &= ~f;}}
 		
@@ -98,16 +104,9 @@ class Menu
 		//! Current select sound, beep or whatever
 		std::string selectSound;
 		//! background of current
-		MenuOption *background;
+		//MenuOption *background;
 		//! Area for placement of option list
 		Box backboard;
-		//! Font for this menu
-		// FreeTypeFont *vFont;
-		// std::string ourFont;
-		//! Font width
-		// int fontWidth;
-		//! Font height
-		// int fontHeight;
 		//! menu flags
 		useflags _menuflags;
 		//! longest menu text
@@ -118,11 +117,17 @@ class Menu
 		std::vector <MenuOption *>::iterator selectedOption;
 		std::string _name;
 		
-		// Error checker if no options do not add to menu
+		// Error checker if no options do not add to menu and remove from list
 		bool hasOptions;
+		
+		// this is for menu removal if an option
+		bool removeOption;
 		
 		//! Set longest length
 		void checkTextLength(MenuOption *opt);
+		
+		//! Draw background
+		void drawBackground(Bitmap *work);
 		
 		//! Draw board
 		void drawTextBoard(Bitmap *work);
@@ -132,6 +137,9 @@ class Menu
 		
 		//! Draw info text
 		void drawInfoText(Bitmap *work);
+		
+		//! Cleanup options to remove omited items
+		void optionCleanup();
 		
 		//! Draw states
 		enum menuDrawState
@@ -151,5 +159,11 @@ class Menu
 		static int fadeSpeed;
 
 		Box fadeBox;
+		
+		//! Set background for this menu
+		Bitmap *background;
+		
+		//! Is this an option?
+		bool option;
 };
 #endif

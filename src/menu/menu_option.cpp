@@ -12,8 +12,10 @@ bmp(0),
 adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )),
 adjustRightColor(Bitmap::makeColor( 255, 255, 255 )),
 runnable(true),
+forRemoval(false),
 bitmapCounter(0),
-ID(0){
+ID(0),
+parent(0){
     setType(t);
 
     Token tok(*token);

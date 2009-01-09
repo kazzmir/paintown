@@ -12,7 +12,6 @@
 #include "music.h"
 
 #include "menu/optionfactory.h"
-#include "menu/option_background.h"
 
 #include "menu/actionfactory.h"
 
@@ -25,7 +24,9 @@
 
 Bitmap *Menu::work = 0;
 
-static std::queue<MenuOption *> backgrounds;
+// The top level menu, it is required to be main or whatever this set to
+static std::string parentMenu = "main";
+
 
 static std::string sharedFont = "";
 static int sharedFontWidth = 24;
@@ -36,8 +37,6 @@ const int white = Bitmap::makeColor( 255, 255, 255 );
 
 static std::map<std::string, Menu *> menus;
 
-static std::string parentMenu = "";
-
 int Menu::fadeSpeed = 12;
 
 int fadeAlpha=0;
@@ -46,12 +45,12 @@ int infoPositionX = 0;
 
 int infoPositionY = 0;
 
+// Creates unique ID's for options so that they can be flagged for removal
+static unsigned int menuOptionID = 0;
+
 static void addMenu( Menu * m ) throw( LoadException ){
 	std::map<std::string, Menu *>::iterator i = menus.find(m->getName());
 	if ( i == menus.end() ){
-	  
-		// Lets set the name of the top level menu
-		if ( menus.empty() ) parentMenu = m->getName();
 		  
 		menus[m->getName()] = m; 
 		
@@ -63,12 +62,14 @@ static void addMenu( Menu * m ) throw( LoadException ){
 Menu::Menu():
 music(""),
 selectSound(""),
-background(0),
 _menuflags(0),
 longestTextLength(0),
 _name(""),
 hasOptions(false),
-currentDrawState( FadeIn ){
+removeOption(false),
+currentDrawState( FadeIn ),
+background(0),
+option(false){
 	if ( ! work ){
 		work = new Bitmap( GFX_X, GFX_Y ); //Bitmap::Screen;
 	}
@@ -94,10 +95,17 @@ void Menu::load(Token *token)throw( LoadException ){
 			} else if( *tok == "select-sound" ) {
 				*tok >> selectSound;
 			} else if ( *tok == "background" ) {
-				// Create new background and push onto the stack
-				background = new OptionBg(tok);
-				
-				backgrounds.push(background);
+				std::string temp;
+				*tok >> temp;
+				if ( background ){
+					delete background;
+				}
+				background = new Bitmap(Util::getDataPath() +temp);
+				if ( background->getError() ){
+				    Global::debug(0) << "Problem loading Bitmap: " << Util::getDataPath() + temp << endl;
+                                    delete background;
+				    background = 0;
+                                }
 			} else if ( *tok == "position" ) {
 				// This handles the placement of the menu list and surrounding box
 				*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
@@ -118,17 +126,12 @@ void Menu::load(Token *token)throw( LoadException ){
                             string str;
                             *tok >> str >> sharedFontWidth >> sharedFontHeight; 
                             sharedFont = Util::getDataPath() + str;
-                                
-                                /*
-				if ( sharedFont.empty() ){
-				      sharedFont = ourFont;
-				      sharedFontWidth = fontWidth;
-				      sharedFontHeight = fontHeight;
-				}
-                                */
 			} else if( *tok == "option" ) {
 				MenuOption *temp = getOption(tok);
 				if(temp){
+				    menuOptionID++;
+				    temp->setID(menuOptionID);
+				    temp->parent = this;
 				    hasOptions = true;
 				    menuOptions.push_back(temp);
 				}
@@ -157,8 +160,12 @@ void Menu::load(Token *token)throw( LoadException ){
 		throw LoadException("No name set, the menu should have a name!");
 	}
 
-	if ( backgrounds.empty() ){
-		throw LoadException("There should be at least one background in the entire menu!");
+	if ( !background && getName() == parentMenu ){
+		throw LoadException("There should be at least one background in the main menu!");
+	}
+	
+	if (! infoPositionX || ! infoPositionY){
+		throw LoadException("The position for the menu info boxes must be set!");
 	}
 
 	if ( backboard.position.empty() ){
@@ -166,35 +173,36 @@ void Menu::load(Token *token)throw( LoadException ){
 	}
 	
 	if ( ! hasOptions ) {
-		throw LoadException("This menu needs to have options!");
+		if( getName() == parentMenu ){
+		    throw LoadException("This is the main menu, it is required that it has options!");
+		} else{
+		  Global::debug(0) << "The menu \"" << getName() << "\" has no options & will be omitted from the top level menu!" << endl;
+		    removeOption = true;
+		  return;
+		}
 	}
 	
 	addMenu( this );
-	
-        /*
-	if ( ourFont.empty() ){
-	    if( sharedFont.empty() ){
-		std::string f = Util::getDataPath() + "/fonts/arial.ttf";
-		ourFont = sharedFont = f;
-	    }
-	    else ourFont = sharedFont;
-	}
-        */
 
         if (sharedFont == ""){
             sharedFont = "fonts/arial.ttf";
         }
 	
-	if (! infoPositionX || ! infoPositionY){
-		throw LoadException("The position for the menu info boxes must be set!");
-	}
-	
 	// Finally lets assign list order numering and some other stuff
 	// First length
 	longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
+	
+	// Before we finish lets get rid of the cruft
+	for( std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); ){
+	      if( (*optBegin)->scheduledForRemoval() ){
+		Global::debug(0) << "Removed option: " << (*optBegin)->getText() << endl;
+		delete (*optBegin);
+		optBegin = menuOptions.erase(optBegin);
+	      }
+	      else optBegin++;
+	}
 
-	for ( unsigned int i = 0; i < menuOptions.size(); i++ ){
-		menuOptions[i]->setID(i);
+	for( unsigned int i = 0; i < menuOptions.size(); i++ ){
 		checkTextLength(menuOptions[i]);
 	}
 }
@@ -205,6 +213,13 @@ void Menu::load(const std::string &filename) throw (LoadException){
         TokenReader tr( filename );
         Token * token = tr.readToken();
         load(token);
+	
+	if( !option){
+	    if( !getMenu(parentMenu) ){
+	      throw LoadException("\"main\" menu not found, this must the top level directory!");
+	    }
+	}
+	
     } catch (const TokenException & e){
         throw LoadException(e.getReason());
     }
@@ -301,11 +316,6 @@ useflags Menu::run(){
                                             if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
                                     }
                                     
-                                    // Logic
-                                    if ( backgrounds.front() ){
-                                            backgrounds.front()->logic();
-                                    }
-                                    
                                     std::vector <MenuOption *>::iterator b = menuOptions.begin();
                                     std::vector <MenuOption *>::iterator e = menuOptions.end();
                                     for ( ; b != e; b++ ){
@@ -372,9 +382,9 @@ useflags Menu::run(){
 			if ( draw ){
 				work->clear();
 				// Draw
-				if ( backgrounds.front() ){
-					backgrounds.front()->draw(work);
-				}
+				
+				// Do the background
+				drawBackground(work);
 				
 				// Draw any misc stuff in the background of the menu of selected object 
 				(*selectedOption)->draw(work);
@@ -426,13 +436,6 @@ useflags Menu::run(){
 		}
 
 		if(endGame){
-			//  pop out any backgrounds pushed onto the stack reseting it to the old one if applicable
-			if(backgrounds.size() >= 2){
-				delete backgrounds.front();
-				backgrounds.pop();
-				background = backgrounds.front();
-			}
-			
 			// Deselect selected entry
 			(*selectedOption)->setState(MenuOption::Deselected);
 		}
@@ -465,9 +468,7 @@ void Menu::setBitmap(Bitmap *bmp){
 /*! Get current background in Bitmap */
 Bitmap *Menu::getBackground()
 {
-	//return dynamic_cast<OptionBg *>(backgrounds.front())->getCurrentBackground();
-	OptionBg *temp = (OptionBg *)backgrounds.front();
-	return temp->getCurrentBackground();
+	return getMenu(parentMenu)->background;
 }
 
 std::string &Menu::getFont(){
@@ -512,12 +513,6 @@ void Menu::setFont(const std::string &font, int w, int h){
         std::map<std::string, Menu *>::iterator end = menus.end();
 
         for ( ;begin!=end;++begin ){
-            /*
-            begin->second->ourFont = font;
-            begin->second->fontWidth = w;
-            begin->second->fontHeight = h;
-            */
-
             begin->second->longestTextLength = Font::getFont(font, w, h).textLength(begin->second->menuOptions[0]->getText().c_str());
         }
         sharedFont = font;
@@ -555,6 +550,14 @@ void Menu::resetFadeInfo(){
 	fadeBox.position.x = backboard.position.x+(backboard.position.width/2);
 	fadeBox.position.y = backboard.position.y+(backboard.position.height/2);
 	fadeAlpha = 0;
+}
+
+void Menu::drawBackground(Bitmap *work){
+	if( !background ){
+	      Bitmap *temp = getMenu( parentMenu )->background;
+	      if( temp )temp->Stretch(*work); 
+	}
+	else background->Stretch(*work);
 }
 
 //! Draw board
@@ -760,9 +763,5 @@ Menu::~Menu(){
 	for(;b!=e;++b){
 		if((*b))delete (*b);
 	}
-	
-	while(!backgrounds.empty()){
-		delete backgrounds.front();
-		backgrounds.pop();
-	}
+	if( background )delete background;
 }
