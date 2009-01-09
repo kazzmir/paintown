@@ -67,8 +67,20 @@ class Menu
 		//! Get menu by name
 		static Menu *getMenu(const std::string &name);
 		
+		//! Get top level menu name
+		static std::string &getParentMenu();
+		
 		//! get font
-		static Font *getFont();
+		static std::string &getFont();
+		
+		//! get font width
+		static int getFontWidth();
+		
+		//! get font height
+		static int getFontHeight();
+		
+		//! set new font menu wide
+		static void setFont(const std::string &font, int w, int h);
 		
 		//! Set flag(s)
 		inline void setFlags(useflags f, bool tf){ if(tf){_menuflags |= f;}else{_menuflags &= ~f;}}
@@ -87,7 +99,7 @@ class Menu
 		Box backboard;
 		//! Font for this menu
 		// FreeTypeFont *vFont;
-		Font *vFont;
+		std::string ourFont;
 		//! Font width
 		int fontWidth;
 		//! Font height
@@ -101,6 +113,9 @@ class Menu
 		std::vector <MenuOption *> menuOptions;
 		std::vector <MenuOption *>::iterator selectedOption;
 		std::string _name;
+		
+		// Error checker if no options do not add to menu
+		bool hasOptions;
 		
 		//! Set longest length
 		void checkTextLength(MenuOption *opt);

@@ -12,6 +12,7 @@
 #include "menu/option_network_host.h"
 #include "menu/option_network_join.h"
 #include "menu/option_versus.h"
+#include "menu/option_select_font.h"
 #include "menu/option_screen_size.h"
 #include "menu/option_speed.h"
 #include "menu/option_fullscreen.h"
@@ -64,6 +65,9 @@ MenuOption *getOption(Token *token){
 	} else if ( *tok == "lives" ){
 		// Invincible
 		return new OptionLives(tok);
+	} else if ( *tok == "font-select" ){
+		// Invincible
+		return new OptionSelectFont(tok);
 	} else {
 		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 		tok->print(" ");

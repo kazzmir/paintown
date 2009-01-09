@@ -29,12 +29,16 @@ Bitmap *Menu::work = 0;
 
 static std::queue<MenuOption *> backgrounds;
 
-static Font *sharedFont = 0;
+static std::string sharedFont = "";
+static int sharedFontWidth = 24;
+static int sharedFontHeight = 24;
 
 const int yellow = Bitmap::makeColor( 255, 255, 0 );
 const int white = Bitmap::makeColor( 255, 255, 255 );
 
 static std::map<std::string, Menu *> menus;
+
+static std::string parentMenu = "";
 
 int Menu::fadeSpeed = 12;
 
@@ -47,7 +51,12 @@ int infoPositionY = 0;
 static void addMenu( Menu * m ) throw( LoadException ){
 	std::map<std::string, Menu *>::iterator i = menus.find(m->getName());
 	if ( i == menus.end() ){
-		menus[m->getName()] = m;
+	  
+		// Lets set the name of the top level menu
+		if ( menus.empty() ) parentMenu = m->getName();
+		  
+		menus[m->getName()] = m; 
+		
 	} else {
 		throw LoadException("A menu by the name of \""+m->getName()+"\" already exists!"); 
 	}
@@ -57,12 +66,13 @@ Menu::Menu():
 music(""),
 selectSound(""),
 background(0),
-vFont(0),
+ourFont(""),
 fontWidth(24),
 fontHeight(24),
 _menuflags(0),
 longestTextLength(0),
 _name(""),
+hasOptions(false),
 currentDrawState( FadeIn ){
 	if ( ! work ){
 		work = new Bitmap( GFX_X, GFX_Y ); //Bitmap::Screen;
@@ -73,6 +83,8 @@ currentDrawState( FadeIn ){
 void Menu::load(Token *token)throw( LoadException ){
 	if ( *token != "menu" )
 		throw LoadException("Not a menu");
+	else if ( ! token->hasTokens() )
+		return;
 	
 	while ( token->hasTokens() ){
 		try{
@@ -108,13 +120,18 @@ void Menu::load(Token *token)throw( LoadException ){
 				// Menu fade in speed
 				*tok >> fadeSpeed;
 			} else if ( *tok == "font" ) {
-				std::string temp;
-				*tok >> temp >> fontWidth >> fontHeight;
-				vFont = FontFactory::getFont(Util::getDataPath() + temp, fontWidth, fontHeight); 
-				if ( ! sharedFont ) sharedFont = vFont;
+				*tok >> ourFont >> fontWidth >> fontHeight; 
+				if ( sharedFont.empty() ){
+				      sharedFont = ourFont;
+				      sharedFontWidth = fontWidth;
+				      sharedFontHeight = fontHeight;
+				}
 			} else if( *tok == "option" ) {
 				MenuOption *temp = getOption(tok);
-				if(temp)menuOptions.push_back(temp);
+				if(temp){
+				    hasOptions = true;
+				    menuOptions.push_back(temp);
+				}
 			} else if( *tok == "action" ) {
 				ActionAct(tok);
 			} else if( *tok == "info-position" ) {
@@ -147,15 +164,19 @@ void Menu::load(Token *token)throw( LoadException ){
 	if ( backboard.position.empty() ){
 		throw LoadException("The position for the menu list must be set!");
 	}
-
+	
+	if ( ! hasOptions ) {
+		throw LoadException("This menu needs to have options!");
+	}
+	
 	addMenu( this );
 	
-	if ( ! vFont ){
-	    if( ! sharedFont ){
+	if ( ourFont.empty() ){
+	    if( sharedFont.empty() ){
 		std::string f = Util::getDataPath() + "/fonts/arial.ttf";
-		vFont = FontFactory::getFont(f, fontWidth, fontHeight);
+		ourFont = sharedFont = f;
 	    }
-	    else vFont = sharedFont;
+	    else ourFont = sharedFont;
 	}
 	
 	if( ! infoPositionX || ! infoPositionY ){
@@ -164,7 +185,7 @@ void Menu::load(Token *token)throw( LoadException ){
 	
 	// Finally lets assign list order numering and some other stuff
 	// First length
-	longestTextLength = vFont->textLength(menuOptions[0]->getText().c_str());
+	longestTextLength = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight)->textLength(menuOptions[0]->getText().c_str());
 
 	for ( unsigned int i = 0; i < menuOptions.size(); i++ ){
 		menuOptions[i]->setID(i);
@@ -210,7 +231,9 @@ useflags Menu::run(){
 		Global::second_counter = 0;
 		int game_time = 100;
 		
-		sharedFont = vFont;
+		sharedFont = ourFont;
+		sharedFontWidth = fontWidth;
+		sharedFontHeight = fontHeight;
 		
 		// Reset fade stuff
 		resetFadeInfo();
@@ -413,6 +436,10 @@ Menu *Menu::getMenu(const std::string &name){
 	return 0;
 }
 
+std::string &Menu::getParentMenu(){
+	return parentMenu;
+}
+
 const std::string &Menu::getName(){
 	return _name;
 }
@@ -429,8 +456,37 @@ Bitmap *Menu::getBackground()
 	return temp->getCurrentBackground();
 }
 
-Font *Menu::getFont(){
+std::string &Menu::getFont(){
 	return sharedFont;
+}
+
+//! get font width
+int Menu::getFontWidth(){
+  return sharedFontWidth;
+}
+
+//! get font height
+int Menu::getFontHeight(){
+  return sharedFontHeight;
+}
+
+//! set new font menu wide
+void Menu::setFont(const std::string &font, int w, int h){
+	if ( Util::exists( Util::getDataPath() + font ) == true){
+	    std::map<std::string, Menu *>::iterator begin = menus.begin();
+	    std::map<std::string, Menu *>::iterator end = menus.end();
+	    
+	    for ( ;begin!=end;++begin ){
+		  begin->second->ourFont = font;
+		  begin->second->fontWidth = w;
+		  begin->second->fontHeight = h;
+		  begin->second->longestTextLength = FontFactory::getFont(Util::getDataPath() + begin->second->ourFont,begin->second->fontWidth,begin->second->fontHeight)->textLength(begin->second->menuOptions[0]->getText().c_str());
+	    }
+	    sharedFont = font;
+	    sharedFontWidth = w;
+	    sharedFontHeight = h;
+	    
+	}
 }
 
 //! Set longest length
@@ -438,13 +494,13 @@ void Menu::checkTextLength(MenuOption *opt){
 	// Set longest text length depending on type
 	switch(opt->getType()){
 		case MenuOption::AdjustableOption : {
-			int len = vFont->textLength(opt->getText().c_str()) + 10;
+			int len = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight)->textLength(opt->getText().c_str()) + 10;
 			if(len > longestTextLength)longestTextLength = len;
 			break;
 		}
 		case MenuOption::Option:
 		default : {
-			int len = vFont->textLength(opt->getText().c_str());
+			int len = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight)->textLength(opt->getText().c_str());
 			if ( len > longestTextLength ){
 				longestTextLength = len;
 			}
@@ -483,6 +539,7 @@ void Menu::drawTextBoard(Bitmap *work){
 
 //! Draw text
 void Menu::drawText(Bitmap *work){
+    Font *vFont = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight);
     const double spacing = 1.3;
 
     const int displayTotal = (int)((backboard.position.height / (int)(vFont->getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont->getHeight()/spacing) - 1 : backboard.position.height / (vFont->getHeight()/spacing));
@@ -603,6 +660,7 @@ void Menu::drawText(Bitmap *work){
 // Draw info text
 void Menu::drawInfoText ( Bitmap *work ){
     if ( (*selectedOption)->getInfoText().empty() ) return;
+    Font *vFont = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight);
     switch ( currentDrawState ){
         case FadeIn :
             break;
