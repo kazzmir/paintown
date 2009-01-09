@@ -275,15 +275,17 @@ useflags Menu::run(){
 					    MenuGlobals::playSelectSound();
                                     }
                                     
-                                    if ( keyInputManager::keyState(keys::LEFT, true ) ){
+                                    if ( keyInputManager::keyState(keys::LEFT, true) ||
+                                         keyInputManager::keyState('h', true)){
                                             if ( (*selectedOption)->leftKey()){
-                                                    
+                                                /* ??? */
                                             }
                                     }
                                     
-                                    if ( keyInputManager::keyState(keys::RIGHT, true ) ){
+                                    if ( keyInputManager::keyState(keys::RIGHT, true )||
+                                         keyInputManager::keyState('l', true )){
                                             if ( (*selectedOption)->rightKey()){
-                                                    
+                                                /* ??? */
                                             }
                                     }
                                     
@@ -543,12 +545,12 @@ void Menu::drawTextBoard(Bitmap *work){
 
 //! Draw text
 void Menu::drawText(Bitmap *work){
-    Font *vFont = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight);
+    const Font & vFont = Font::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight);
     const double spacing = 1.3;
 
-    const int displayTotal = (int)((backboard.position.height / (int)(vFont->getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont->getHeight()/spacing) - 1 : backboard.position.height / (vFont->getHeight()/spacing));
+    const int displayTotal = (int)((backboard.position.height / (int)(vFont.getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont.getHeight()/spacing) - 1 : backboard.position.height / (vFont.getHeight()/spacing));
     const int fromMiddle = (displayTotal - 1)/2;
-    const int starty = (int)((backboard.position.height/2)-(((vFont->getHeight()/spacing) * displayTotal)/2));
+    const int starty = (int)((backboard.position.height/2)-(((vFont.getHeight()/spacing) * displayTotal)/2));
 
     std::vector <MenuOption *>::iterator beginIter = menuOptions.begin();
     std::vector <MenuOption *>::iterator endIter = menuOptions.end();
@@ -575,7 +577,7 @@ void Menu::drawText(Bitmap *work){
 
     for (int i=0;i<displayTotal;++i){
         std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter % menuOptions.size();
-        const int startx = (backboard.position.width/2)-(vFont->textLength((*iterOption)->getText().c_str())/2);
+        const int startx = (backboard.position.width/2)-(vFont.textLength((*iterOption)->getText().c_str())/2);
         const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
 
         int distance;
@@ -603,10 +605,10 @@ void Menu::drawText(Bitmap *work){
                         case MenuOption::AdjustableOption : {
                             const int triangleSize = 10;
                             int cx = (backboard.position.x + startx) - 15;
-                            int cy = (int)(backboard.position.y + starty + i * (vFont->getHeight()/spacing) + (vFont->getHeight()/spacing) / 2 + 2);
+                            int cy = (int)(backboard.position.y + starty + i * (vFont.getHeight()/spacing) + (vFont.getHeight()/spacing) / 2 + 2);
                             work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
 
-                            cx = (backboard.position.x+startx + vFont->textLength((*iterOption)->getText().c_str()))+15;
+                            cx = (backboard.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
                             work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getRightAdjustColor() );
                             break;
                             }
@@ -619,7 +621,7 @@ void Menu::drawText(Bitmap *work){
 
                 int alpha = (int)(textAlpha * fadeAlpha / 255.0);
                 Bitmap::transBlender(0, 0, 0, alpha);
-                vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
+                vFont.printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont.getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
                 work->drawingMode( Bitmap::MODE_SOLID );
                 break;
             }
@@ -630,10 +632,10 @@ void Menu::drawText(Bitmap *work){
                         case MenuOption::AdjustableOption : {
                             const int triangleSize = 10;
                             int cx = (backboard.position.x + startx) - 15;
-                            int cy = (int)(backboard.position.y + starty + i * (vFont->getHeight()/spacing) + (vFont->getHeight()/spacing) / 2 + 2);
+                            int cy = (int)(backboard.position.y + starty + i * (vFont.getHeight()/spacing) + (vFont.getHeight()/spacing) / 2 + 2);
                             work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
 
-                            cx = (backboard.position.x+startx + vFont->textLength((*iterOption)->getText().c_str()))+15;
+                            cx = (backboard.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
                             work->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getRightAdjustColor() );
                             break;
                         }
@@ -646,7 +648,7 @@ void Menu::drawText(Bitmap *work){
 
                 Bitmap::transBlender(0, 0, 0, textAlpha);
                 work->drawingMode( Bitmap::MODE_TRANS );
-                vFont->printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont->getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
+                vFont.printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont.getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
                 work->drawingMode( Bitmap::MODE_SOLID );
                 break;
             }
@@ -664,7 +666,7 @@ void Menu::drawText(Bitmap *work){
 // Draw info text
 void Menu::drawInfoText ( Bitmap *work ){
     if ( (*selectedOption)->getInfoText().empty() ) return;
-    Font *vFont = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight);
+    const Font & vFont = Font::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight);
     switch ( currentDrawState ){
         case FadeIn :
             break;
@@ -689,11 +691,11 @@ void Menu::drawInfoText ( Bitmap *work ){
             int maxWidth = 0;
             int height = 0;
             for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
-                int w = vFont->textLength((*it).c_str()) + 10;
+                int w = vFont.textLength((*it).c_str()) + 10;
                 if (w > maxWidth){
                     maxWidth = w;
                 }
-                height += vFont->getHeight();
+                height += vFont.getHeight();
             }
             area.position.width = maxWidth;
             area.position.height = height + 20;
@@ -712,8 +714,8 @@ void Menu::drawInfoText ( Bitmap *work ){
             int sy = area.position.y + 10;
             for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
                 string & str = *it;
-                vFont->printf(area.position.x + 5, sy, white, *work, str, 0 );
-                sy += vFont->getHeight();
+                vFont.printf(area.position.x + 5, sy, white, *work, str, 0 );
+                sy += vFont.getHeight();
             }
             break;
         }
