@@ -251,7 +251,9 @@ useflags Menu::run(){
                                     runCounter -= 1;
                                     // Keys
                                     
-                                    if ( keyInputManager::keyState(keys::UP, true ) ){	
+                                    if ( keyInputManager::keyState(keys::UP, true ) ||
+                                            /* for vi people like me */
+                                         keyInputManager::keyState('k', true )){	
                                             (*selectedOption)->setState(MenuOption::Deselected);
                                             if ( selectedOption > menuOptions.begin() ){
                                                     selectedOption--;
@@ -261,7 +263,9 @@ useflags Menu::run(){
 					    MenuGlobals::playSelectSound();
                                     }
 
-                                    if ( keyInputManager::keyState(keys::DOWN, true ) ){
+                                    if ( keyInputManager::keyState(keys::DOWN, true ) ||
+                                            /* for vi people like me */
+                                         keyInputManager::keyState('j', true )){
                                             (*selectedOption)->setState(MenuOption::Deselected);
                                             if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
                                                     selectedOption++;
