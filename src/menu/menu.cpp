@@ -66,9 +66,6 @@ Menu::Menu():
 music(""),
 selectSound(""),
 background(0),
-ourFont(""),
-fontWidth(24),
-fontHeight(24),
 _menuflags(0),
 longestTextLength(0),
 _name(""),
@@ -120,12 +117,17 @@ void Menu::load(Token *token)throw( LoadException ){
 				// Menu fade in speed
 				*tok >> fadeSpeed;
 			} else if ( *tok == "font" ) {
-				*tok >> ourFont >> fontWidth >> fontHeight; 
+                            string str;
+                            *tok >> str >> sharedFontWidth >> sharedFontHeight; 
+                            sharedFont = Util::getDataPath() + str;
+                                
+                                /*
 				if ( sharedFont.empty() ){
 				      sharedFont = ourFont;
 				      sharedFontWidth = fontWidth;
 				      sharedFontHeight = fontHeight;
 				}
+                                */
 			} else if( *tok == "option" ) {
 				MenuOption *temp = getOption(tok);
 				if(temp){
@@ -171,6 +173,7 @@ void Menu::load(Token *token)throw( LoadException ){
 	
 	addMenu( this );
 	
+        /*
 	if ( ourFont.empty() ){
 	    if( sharedFont.empty() ){
 		std::string f = Util::getDataPath() + "/fonts/arial.ttf";
@@ -178,14 +181,19 @@ void Menu::load(Token *token)throw( LoadException ){
 	    }
 	    else ourFont = sharedFont;
 	}
+        */
+
+        if (sharedFont == ""){
+            sharedFont = "fonts/arial.ttf";
+        }
 	
-	if( ! infoPositionX || ! infoPositionY ){
+	if (! infoPositionX || ! infoPositionY){
 		throw LoadException("The position for the menu info boxes must be set!");
 	}
 	
 	// Finally lets assign list order numering and some other stuff
 	// First length
-	longestTextLength = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight)->textLength(menuOptions[0]->getText().c_str());
+	longestTextLength = FontFactory::getFont(getFont(), getFontWidth(), getFontHeight())->textLength(menuOptions[0]->getText().c_str());
 
 	for ( unsigned int i = 0; i < menuOptions.size(); i++ ){
 		menuOptions[i]->setID(i);
@@ -231,9 +239,11 @@ useflags Menu::run(){
 		Global::second_counter = 0;
 		int game_time = 100;
 		
+                /*
 		sharedFont = ourFont;
 		sharedFontWidth = fontWidth;
 		sharedFontHeight = fontHeight;
+                */
 		
 		// Reset fade stuff
 		resetFadeInfo();
@@ -475,24 +485,47 @@ int Menu::getFontWidth(){
 int Menu::getFontHeight(){
   return sharedFontHeight;
 }
+                
+void Menu::setFontName(const std::string & str){
+    sharedFont = str;
+    setFont(sharedFont, getFontWidth(), getFontHeight());
+}
+
+void Menu::setFontWidth(int w){
+    if (w < 1){
+        w = 1;
+    }
+    sharedFontWidth = w;
+    setFont(sharedFont, getFontWidth(), getFontHeight());
+}
+
+void Menu::setFontHeight(int h){
+    if (h < 1){
+        h = 1;
+    }
+    sharedFontHeight = h;
+    setFont(sharedFont, getFontWidth(), getFontHeight());
+}
 
 //! set new font menu wide
 void Menu::setFont(const std::string &font, int w, int h){
-	if ( Util::exists( Util::getDataPath() + font ) == true){
-	    std::map<std::string, Menu *>::iterator begin = menus.begin();
-	    std::map<std::string, Menu *>::iterator end = menus.end();
-	    
-	    for ( ;begin!=end;++begin ){
-		  begin->second->ourFont = font;
-		  begin->second->fontWidth = w;
-		  begin->second->fontHeight = h;
-		  begin->second->longestTextLength = FontFactory::getFont(Util::getDataPath() + begin->second->ourFont,begin->second->fontWidth,begin->second->fontHeight)->textLength(begin->second->menuOptions[0]->getText().c_str());
-	    }
-	    sharedFont = font;
-	    sharedFontWidth = w;
-	    sharedFontHeight = h;
-	    
-	}
+    if ( Util::exists(font) == true){
+        std::map<std::string, Menu *>::iterator begin = menus.begin();
+        std::map<std::string, Menu *>::iterator end = menus.end();
+
+        for ( ;begin!=end;++begin ){
+            /*
+            begin->second->ourFont = font;
+            begin->second->fontWidth = w;
+            begin->second->fontHeight = h;
+            */
+
+            begin->second->longestTextLength = Font::getFont(font, w, h).textLength(begin->second->menuOptions[0]->getText().c_str());
+        }
+        sharedFont = font;
+        sharedFontWidth = w;
+        sharedFontHeight = h;
+    }
 }
 
 //! Set longest length
@@ -500,13 +533,13 @@ void Menu::checkTextLength(MenuOption *opt){
 	// Set longest text length depending on type
 	switch(opt->getType()){
 		case MenuOption::AdjustableOption : {
-			int len = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight)->textLength(opt->getText().c_str()) + 10;
+			int len = FontFactory::getFont(getFont(), getFontWidth(), getFontHeight())->textLength(opt->getText().c_str()) + 10;
 			if(len > longestTextLength)longestTextLength = len;
 			break;
 		}
 		case MenuOption::Option:
 		default : {
-			int len = FontFactory::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight)->textLength(opt->getText().c_str());
+			int len = FontFactory::getFont(getFont(), getFontWidth(), getFontHeight())->textLength(opt->getText().c_str());
 			if ( len > longestTextLength ){
 				longestTextLength = len;
 			}
@@ -545,7 +578,7 @@ void Menu::drawTextBoard(Bitmap *work){
 
 //! Draw text
 void Menu::drawText(Bitmap *work){
-    const Font & vFont = Font::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight);
+    const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
     const double spacing = 1.3;
 
     const int displayTotal = (int)((backboard.position.height / (int)(vFont.getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont.getHeight()/spacing) - 1 : backboard.position.height / (vFont.getHeight()/spacing));
@@ -666,7 +699,7 @@ void Menu::drawText(Bitmap *work){
 // Draw info text
 void Menu::drawInfoText ( Bitmap *work ){
     if ( (*selectedOption)->getInfoText().empty() ) return;
-    const Font & vFont = Font::getFont(Util::getDataPath() + ourFont,fontWidth,fontHeight);
+    const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
     switch ( currentDrawState ){
         case FadeIn :
             break;

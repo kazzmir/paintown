@@ -8,10 +8,6 @@
 #include "init.h"
 #include <sstream>
 
-std::string OptionSelectFont::current = "";
-int OptionSelectFont::height = 0;
-int OptionSelectFont::width = 0;
-
 OptionSelectFont::OptionSelectFont(Token *token) throw (LoadException):
 MenuOption(token, AdjustableOption),
 typeAdjust(fontName),
@@ -67,21 +63,18 @@ OptionSelectFont::~OptionSelectFont(){
 }
 
 void OptionSelectFont::logic(){
-  current = Menu::getFont();  
-  width = Menu::getFontWidth();
-  height = Menu::getFontHeight();
   switch (typeAdjust){
       case fontName:	  
-	  setText("Current Font: " + current);
+	  setText("Current Font: " + Menu::getFont());
 	  break;
       case fontWidth:{
 	  ostringstream temp;
-	  temp << "Font Width: " << width;
+	  temp << "Font Width: " << Menu::getFontWidth();
 	  setText(temp.str());
 	  break;}
       case fontHeight:{
 	  ostringstream temp;
-	  temp << "Font Height: " << height;
+	  temp << "Font Height: " << Menu::getFontHeight();
 	  setText(temp.str());
 	  break;}
       default:
@@ -116,15 +109,15 @@ bool OptionSelectFont::leftKey(){
 	  nextIndex(false);
 	  break;
       case fontWidth:
-	  width -=1;
+          Menu::setFontWidth(Menu::getFontWidth() - 1);
 	  break;
       case fontHeight:
-	  height -=1;
+          Menu::setFontHeight(Menu::getFontHeight() - 1);
 	  break;
       default:
 	break;
     }
-    Menu::setFont(current, width, height);
+    // Menu::setFont(current, width, height);
     lblue = lgreen = 0;
     return true;
 }
@@ -135,32 +128,35 @@ bool OptionSelectFont::rightKey(){
 	    nextIndex(true);
 	  break;
       case fontWidth:
-	  width +=1;
+          Menu::setFontWidth(Menu::getFontWidth() + 1);
 	  break;
       case fontHeight:
-	  height +=1;
+          Menu::setFontHeight(Menu::getFontHeight() + 1);
 	  break;
       default:
 	break;
     }
-    Menu::setFont(current, width, height);
+    // Menu::setFont(current, width, height);
     rblue = rgreen = 0;
     return true;
 }
 
 void OptionSelectFont::nextIndex(bool forward){
-  unsigned int index = 0;
-  for( unsigned int i = 0 ; i < fonts.size() ; ++i ){
-      if ( current == fonts[i] ){
-	    if ( forward ){
+  int index = 0;
+  for (unsigned int i = 0 ; i < fonts.size() ; ++i){
+      if (Menu::getFont() == fonts[i]){
+	    if (forward){
 		index = i + 1;
-		if ( index >= fonts.size() ) index = 0;
-	    }
-	    else {
+		if (index >= (int) fonts.size()){
+                    index = 0;
+                }
+	    } else {
 		index = i - 1;
-		if ( index < 0 ) index = fonts.size()-1;
+		if (index < 0){
+                    index = (int)fonts.size()-1;
+                }
 	    }
       }    
   }
-  current = fonts[index];
+  Menu::setFontName(fonts[index]);
 }

@@ -81,6 +81,10 @@ class Menu
 		
 		//! set new font menu wide
 		static void setFont(const std::string &font, int w, int h);
+
+                static void setFontName(const std::string & str);
+                static void setFontWidth(int w);
+                static void setFontHeight(int h);
 		
 		//! Set flag(s)
 		inline void setFlags(useflags f, bool tf){ if(tf){_menuflags |= f;}else{_menuflags &= ~f;}}
@@ -99,11 +103,11 @@ class Menu
 		Box backboard;
 		//! Font for this menu
 		// FreeTypeFont *vFont;
-		std::string ourFont;
+		// std::string ourFont;
 		//! Font width
-		int fontWidth;
+		// int fontWidth;
 		//! Font height
-		int fontHeight;
+		// int fontHeight;
 		//! menu flags
 		useflags _menuflags;
 		//! longest menu text

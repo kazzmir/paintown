@@ -31,19 +31,13 @@ protected:
 
 private:
     // Type of selector
-    enum adjust{
+    enum Adjust{
       fontName=0,
       fontHeight,
       fontWidth
     };
     // Current type of menu to adjust
-    adjust typeAdjust;
-    // Current set font
-    static std::string current;
-    // Current width
-    static int width;
-    // Current height
-    static int height;
+    Adjust typeAdjust;
     
     int lblue, lgreen;
     int rblue, rgreen;
