@@ -11,8 +11,6 @@
 #include "init.h"
 #include "music.h"
 
-#include "factory/font_factory.h"
-
 #include "menu/optionfactory.h"
 #include "menu/option_background.h"
 
@@ -193,7 +191,7 @@ void Menu::load(Token *token)throw( LoadException ){
 	
 	// Finally lets assign list order numering and some other stuff
 	// First length
-	longestTextLength = FontFactory::getFont(getFont(), getFontWidth(), getFontHeight())->textLength(menuOptions[0]->getText().c_str());
+	longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
 
 	for ( unsigned int i = 0; i < menuOptions.size(); i++ ){
 		menuOptions[i]->setID(i);
@@ -533,13 +531,13 @@ void Menu::checkTextLength(MenuOption *opt){
 	// Set longest text length depending on type
 	switch(opt->getType()){
 		case MenuOption::AdjustableOption : {
-			int len = FontFactory::getFont(getFont(), getFontWidth(), getFontHeight())->textLength(opt->getText().c_str()) + 10;
+			int len = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(opt->getText().c_str()) + 10;
 			if(len > longestTextLength)longestTextLength = len;
 			break;
 		}
 		case MenuOption::Option:
 		default : {
-			int len = FontFactory::getFont(getFont(), getFontWidth(), getFontHeight())->textLength(opt->getText().c_str());
+			int len = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(opt->getText().c_str());
 			if ( len > longestTextLength ){
 				longestTextLength = len;
 			}
