@@ -181,7 +181,7 @@ void OptionKey::logic()
 void OptionKey::run(bool &endGame)
 {
 	//int x, y, width, height;
-	const Font &vFont = Font::getFont(Util::getDataPath() + Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
+	const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
 	Box dialog;
 	dialog.position.width = vFont.textLength("Press a Key!") + 10;
 	dialog.position.height = vFont.getHeight() + 10;

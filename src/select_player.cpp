@@ -9,7 +9,6 @@
 #include "init.h"
 // #include "select_player.h"
 #include "game.h"
-#include "factory/font_factory.h"
 #include "util/font.h"
 #include "world.h"
 #include "return_exception.h"

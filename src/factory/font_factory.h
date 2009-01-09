@@ -6,11 +6,14 @@
 
 struct DATAFILE;
 class Font;
+class Collector;
 
 using namespace std;
 
 class FontFactory{
-public:
+private:
+    friend class Collector;
+    friend class Font;
 	static Font * getFont( const string & str, const int x, const int y );
 	static void destroy();
 

@@ -6,7 +6,6 @@
 #include "character.h" 
 #include "util/font.h"
 #include "util/funcs.h"
-#include "factory/font_factory.h"
 #include "factory/font_render.h"
 #include "configuration.h"
 #include "globals.h"

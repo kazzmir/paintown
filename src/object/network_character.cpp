@@ -5,7 +5,6 @@
 #include "animation.h"
 #include "util/font.h"
 #include "util/funcs.h"
-#include "factory/font_factory.h"
 #include "factory/font_render.h"
 #include "nameplacer.h"
 #include "globals.h"

@@ -1,5 +1,4 @@
 #include "animation.h"
-#include "factory/font_factory.h"
 #include "factory/font_render.h"
 #include "globals.h"
 #include <math.h>

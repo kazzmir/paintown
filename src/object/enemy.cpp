@@ -8,7 +8,6 @@
 #include "util/funcs.h"
 #include "util/font.h"
 #include "factory/font_render.h"
-#include "factory/font_factory.h"
 #include "nameplacer.h"
 #include "globals.h"
 #include "heart.h"

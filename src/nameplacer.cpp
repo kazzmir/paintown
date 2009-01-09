@@ -2,7 +2,6 @@
 
 #include "nameplacer.h"
 #include "util/font.h"
-#include "factory/font_factory.h"
 #include "util/funcs.h"
 #include "globals.h"
 

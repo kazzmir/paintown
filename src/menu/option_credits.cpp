@@ -127,7 +127,7 @@ void OptionCredits::run( bool &endGame ){
 		MenuGlobals::setMusic( music );
 	}
 	
-	const Font &vFont = Font::getFont(Util::getDataPath() + Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
+	const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
 
 	while ( ! key[ Keyboard::Key_ESC ] ){
 
