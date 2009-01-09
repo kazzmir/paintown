@@ -9,7 +9,6 @@
 #include "util/token.h"
 #include "util/token_exception.h"
 #include "util/font.h"
-#include "factory/font_factory.h"
 
 using namespace std;
 
@@ -128,7 +127,7 @@ void OptionCredits::run( bool &endGame ){
 		MenuGlobals::setMusic( music );
 	}
 	
-	Font *vFont = FontFactory::getFont(Util::getDataPath() + Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
+	const Font &vFont = Font::getFont(Util::getDataPath() + Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
 
 	while ( ! key[ Keyboard::Key_ESC ] ){
 
@@ -142,7 +141,7 @@ void OptionCredits::run( bool &endGame ){
 			while ( think >= 1.0 ){
 				think -= 1;
 				min_y -= 1;
-				if ( min_y < -(int)(maxCredits * vFont->getHeight() * 1.1) ){
+				if ( min_y < -(int)(maxCredits * vFont.getHeight() * 1.1) ){
 					min_y = GFX_Y;
 				}
 			}
@@ -163,12 +162,12 @@ void OptionCredits::run( bool &endGame ){
 			bool isTitle = true;
 			for ( /**/ ; b != e; b++ ){
 				if ( isTitle ){
-					vFont->printf( 100, y, title, tmp, (*b), 0 );
+					vFont.printf( 100, y, title, tmp, (*b), 0 );
 					isTitle = false;
 				} else {
-					vFont->printf( 100, y, color, tmp, (*b), 0 );
+					vFont.printf( 100, y, color, tmp, (*b), 0 );
 				}
-				y += vFont->getHeight() + 2;
+				y += vFont.getHeight() + 2;
 
 				if ( (*b).empty() ){
 					isTitle = true;

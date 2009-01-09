@@ -9,7 +9,6 @@
 #include "init.h"
 #include "util/keyboard.h"
 #include "util/funcs.h"
-#include "factory/font_factory.h"
 
 #include "gui/box.h"
 
@@ -182,10 +181,10 @@ void OptionKey::logic()
 void OptionKey::run(bool &endGame)
 {
 	//int x, y, width, height;
-	Font *vFont = FontFactory::getFont(Util::getDataPath() + Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
+	const Font &vFont = Font::getFont(Util::getDataPath() + Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
 	Box dialog;
-	dialog.position.width = vFont->textLength("Press a Key!") + 10;
-	dialog.position.height = vFont->getHeight() + 10;
+	dialog.position.width = vFont.textLength("Press a Key!") + 10;
+	dialog.position.height = vFont.getHeight() + 10;
 	dialog.position.x = (Menu::getBackground()->getWidth()/2) - (dialog.position.width/2);
 	dialog.position.y = (Menu::getBackground()->getHeight()/2) - (dialog.position.height/2);
 	dialog.position.radius = 10;
@@ -194,7 +193,7 @@ void OptionKey::run(bool &endGame)
 	dialog.position.border = Bitmap::makeColor(255,255,255);
 	dialog.position.borderAlpha = 255;
 	dialog.render(Menu::work);
-	vFont->printf( dialog.position.x+5, dialog.position.y+5, Bitmap::makeColor(255,255,255), *Menu::work, "Press a Key!", -1);
+	vFont.printf( dialog.position.x+5, dialog.position.y+5, Bitmap::makeColor(255,255,255), *Menu::work, "Press a Key!", -1);
 	Menu::work->BlitToScreen();
 	Keyboard key;
 	keyCode = readKey( key );
