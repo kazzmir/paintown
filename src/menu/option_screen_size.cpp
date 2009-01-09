@@ -7,6 +7,47 @@
 #include "init.h"
 #include <sstream>
 
+#ifdef WINDOWS
+#include <windows.h>
+#include <stdio.h>
+
+/* contributed by Roy Underthump from allegro.cc */
+void getScreenResolutions(){
+    HWND hwnd;
+    HDC  hdc;
+
+    int i;
+
+    int iPixelFormat;
+
+    int descerr;
+
+    int retval;
+
+    DEVMODE d;
+
+    PIXELFORMATDESCRIPTOR pfd;
+
+    hwnd = GetDesktopWindow();
+    hdc  = GetDC(hwnd);
+
+    for(i=0;;i++){
+        retval = EnumDisplaySettings(0,i,&d);
+        if(!retval) break;
+
+        descerr = DescribePixelFormat(hdc, i+1, sizeof(pfd), &pfd);
+        if(!descerr){
+            return -1;
+        }
+
+        printf("\n#%d bpp %d width %d height %d colorbits %d fps %d",i,d.dmBitsPerPel,
+                d.dmPelsWidth, d.dmPelsHeight,pfd.cColorBits,d.dmDisplayFrequency);
+
+        if(pfd.dwFlags & PFD_SUPPORT_OPENGL)printf(" OGL OK");
+    }
+}
+#endif
+
 OptionScreenSize::OptionScreenSize(Token *token) throw (LoadException):
 MenuOption(token, AdjustableOption),
 name(""),
