@@ -300,7 +300,7 @@ void Menu::run(){
                                             }
 					    else selectedOption = menuOptions.end() -1;
                                             (*selectedOption)->setState(MenuOption::Selected);
-					    MenuGlobals::playSelectSound();
+					    if(menuOptions.size() > 2)MenuGlobals::playSelectSound();
                                     }
 
                                     if ( keyInputManager::keyState(keys::DOWN, true ) ||
@@ -312,7 +312,7 @@ void Menu::run(){
                                             }
 					    else selectedOption = menuOptions.begin();
                                             (*selectedOption)->setState(MenuOption::Selected);
-					    MenuGlobals::playSelectSound();
+					    if(menuOptions.size() > 2)MenuGlobals::playSelectSound();
                                     }
                                     
                                     if ( keyInputManager::keyState(keys::LEFT, true) ||
@@ -657,6 +657,9 @@ void Menu::drawText(Bitmap *work){
         // printf("counter %d distance %d middle %d\n", currentCounter, distance, middle);
         double normal = (double) distance / (double) fromMiddle;
         int textAlpha = (int)(255.0 - 164.0 * normal * normal);
+	if( textAlpha < 0 && (displayTotal == 1 || displayTotal == 2 )){
+	  textAlpha = 255;
+	} else if( textAlpha < 0) textAlpha = 25;
 
         switch (currentDrawState){
             case FadeIn : {
