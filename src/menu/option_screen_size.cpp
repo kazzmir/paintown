@@ -67,6 +67,16 @@ static vector<ScreenSize> getScreenResolutions(){
 }
 #endif
 
+static bool doSort(const ScreenSize & a, const ScreenSize & b){
+    return (a.w * a.h) < (b.w * b.h);
+}
+
+static vector<ScreenSize> sortResolutions(const vector<ScreenSize> & modes){
+    vector<ScreenSize> copy(modes);
+    sort(copy.begin(), copy.end(), doSort);
+    return copy;
+}
+
 OptionScreenSize::OptionScreenSize(Token *token) throw (LoadException):
 MenuOption(token, AdjustableOption),
 name(""),
@@ -77,7 +87,7 @@ rgreen(255){
     setRunnable(false);
 
     Global::debug(1) << "Get screen resolution" << endl;
-    modes = getScreenResolutions();
+    modes = sortResolutions(getScreenResolutions());
 
     if (Global::getDebug() >= 1){
         for (vector<ScreenSize>::iterator it = modes.begin(); it != modes.end(); it++){
