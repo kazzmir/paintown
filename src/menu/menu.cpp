@@ -149,11 +149,7 @@ void Menu::load(Token *token)throw( LoadException ){
 			} else if( *tok == "option" ) {
 				MenuOption *temp = getOption(tok);
 				if(temp){
-				    menuOptionID++;
-				    temp->setID(menuOptionID);
-				    temp->parent = this;
-				    hasOptions = true;
-				    menuOptions.push_back(temp);
+				    addOption(temp);
 				}
 			} else if( *tok == "action" ) {
 				ActionAct(tok);
@@ -483,8 +479,15 @@ std::string &Menu::getParentMenu(){
 	return parentMenu;
 }
 
-const std::string &Menu::getName(){
-	return _name;
+/*! Add options to menu */
+void Menu::addOption(MenuOption *opt){
+  if(opt){
+      menuOptionID++;
+      opt->setID(menuOptionID);
+      opt->parent = this;
+      hasOptions = true;
+      menuOptions.push_back(opt);
+  }
 }
 
 void Menu::setBitmap(Bitmap *bmp){

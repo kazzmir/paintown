@@ -36,7 +36,13 @@ class Menu
 		virtual void run();
 		
 		/*! get menu name */
-		const std::string &getName();
+		inline const std::string &getName() const { return _name; };
+		
+		/*! set menu name */
+		inline void setName(const std::string &n){ _name = n; };
+		
+		/*! Add options to menu */
+		void addOption(MenuOption *opt);
 		
 		/*! set the bitmap */
 		static void setBitmap(Bitmap *bmp);
@@ -75,6 +81,9 @@ class Menu
 		
 		inline bool isOption() const { return option; }
 		
+		//! Area for placement of option list
+		Box backboard;
+		
 	protected:
 		//! Current music
 		std::string music;
@@ -82,10 +91,6 @@ class Menu
 		std::string selectSound;
                 std::string backSound;
                 std::string okSound;
-		//! background of current
-		//MenuOption *background;
-		//! Area for placement of option list
-		Box backboard;
 		//! longest menu text
 		int longestTextLength;
 		

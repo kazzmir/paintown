@@ -18,53 +18,55 @@ ID(0),
 parent(0){
     setType(t);
 
-    Token tok(*token);
+    if(token){
+      Token tok(*token);
 
-    while ( tok.hasTokens() ){
-        try{
-            Token * token;
-            tok >> token;
-            if ( *token == "info" ){
-                // get info text and location and add to option
-                std::string temp;
-                int x=0, y=0;
-                *token >> temp;
-                setInfoText(temp);
-                try{
-                    *token >> x >> y;
-                } catch (const TokenException & ex){
-                    x = 0;
-                    y = 0;
-                }
-                setInfoTextLocation(x,y);
-            } 
-	    else if ( *token == "option-image" ){
-		// add bitmaps to vector for use in individual options
-		std::string temp;
-		*token >> temp;
-		Bitmap *bmp = new Bitmap(Util::getDataPath() + temp);
-		if(bmp->getError()){
-		  delete bmp;
-		}
-		else {
-		  bitmaps.push_back(bmp);
-		}
-	    }
-	    else {
-                Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
-                if (Global::getDebug() >= 3){
-                    token->print(" ");
-                }
-            }
-        } catch ( const TokenException & ex ) {
-            // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException( m );
-        } catch ( const LoadException & ex ) {
-            // delete current;
-            throw ex;
-        }
+      while ( tok.hasTokens() ){
+	  try{
+	      Token * token;
+	      tok >> token;
+	      if ( *token == "info" ){
+		  // get info text and location and add to option
+		  std::string temp;
+		  int x=0, y=0;
+		  *token >> temp;
+		  setInfoText(temp);
+		  try{
+		      *token >> x >> y;
+		  } catch (const TokenException & ex){
+		      x = 0;
+		      y = 0;
+		  }
+		  setInfoTextLocation(x,y);
+	      } 
+	      else if ( *token == "option-image" ){
+		  // add bitmaps to vector for use in individual options
+		  std::string temp;
+		  *token >> temp;
+		  Bitmap *bmp = new Bitmap(Util::getDataPath() + temp);
+		  if(bmp->getError()){
+		    delete bmp;
+		  }
+		  else {
+		    bitmaps.push_back(bmp);
+		  }
+	      }
+	      else {
+		  Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
+		  if (Global::getDebug() >= 3){
+		      token->print(" ");
+		  }
+	      }
+	  } catch ( const TokenException & ex ) {
+	      // delete current;
+	      string m( "Menu parse error: " );
+	      m += ex.getReason();
+	      throw LoadException( m );
+	  } catch ( const LoadException & ex ) {
+	      // delete current;
+	      throw ex;
+	  }
+      }
     }
 }
 

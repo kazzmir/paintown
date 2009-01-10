@@ -6,6 +6,7 @@
 #include "util/load_exception.h"
 
 class Sound;
+class Menu;
 
 class MenuGlobals{
 public:
@@ -60,6 +61,12 @@ public:
 
 	static int getNpcBuddies();
 	static void setNpcBuddies( int i );
+	
+	inline static void setLevel(const std::string &l){ level = l; }
+	
+	inline static const std::string &getLevel(){ return level; }
+	
+	static std::string doLevelMenu(const std::string dir);
 
         /* free for all lets players attack each other in network mode.
          * cooperative means they are on the same team.
@@ -72,6 +79,8 @@ public:
 private:
 		
 	static std::priority_queue<std::string> lastPlayed;
-	static std::priority_queue<std::string> selectSound;	
+	static std::priority_queue<std::string> selectSound;
+	
+	static std::string level;
 };
 #endif

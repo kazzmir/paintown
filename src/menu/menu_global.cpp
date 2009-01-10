@@ -3,6 +3,7 @@
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "menu/menu_option.h"
+#include "menu/option_level.h"
 #include "util/funcs.h"
 #include "util/keyboard.h"
 #include "util/sound.h"
@@ -18,7 +19,7 @@ std::priority_queue<std::string> MenuGlobals::lastPlayed;
 
 std::priority_queue<std::string> MenuGlobals::selectSound;
 
-//static std::queue<MenuOption *> backgrounds;
+std::string MenuGlobals::level = "";
 
 MenuGlobals::MenuGlobals(){
 }
@@ -124,6 +125,48 @@ int MenuGlobals::getNpcBuddies(){
 
 void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
+}
+
+std::string MenuGlobals::doLevelMenu(const std::string dir){
+    std::vector<std::string> possible = Util::getFiles( Util::getDataPath() + dir + "/", "*.txt" );
+	int count = 0;
+        for ( vector<string>::iterator it = possible.begin(); it != possible.end(); it++ ){
+            string & path = *it;
+            path.erase(0, Util::getDataPath().length() + 1);
+	    count+=60;
+        }
+	
+	if ( count > 250 ) count = 250;
+
+	if ( possible.size() == 0 ){
+		return "no-files";
+	}
+	
+	try{
+		Menu temp;
+		temp.load(Util::getDataPath() + "menu/level_select.txt");
+		temp.backboard.position.height = count;
+	
+		for ( unsigned int i = 0; i < possible.size(); i++ ){
+			OptionLevel *opt = new OptionLevel(0);
+			opt->setText(possible[i]);
+			opt->setInfoText("Select a set of levels to play");
+			temp.addOption(opt);
+		}		
+		// Run it
+		temp.run();
+	} catch (const TokenException & ex){
+		Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
+		return "";
+	} catch (const LoadException & ex){
+		Global::debug(0) << "There was a problem loading the level select menu. Error was:\n  " << ex.getReason() << endl;
+		return "";
+        }
+	// Now lets get the level or return
+	std::string l = level;
+	level = "";
+      
+      return l;
 }
 
 bool MenuGlobals::freeForAll(){
