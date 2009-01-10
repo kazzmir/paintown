@@ -81,6 +81,7 @@ class Menu
 		//! Current select sound, beep or whatever
 		std::string selectSound;
                 std::string backSound;
+                std::string okSound;
 		//! background of current
 		//MenuOption *background;
 		//! Area for placement of option list

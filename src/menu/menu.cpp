@@ -104,6 +104,16 @@ void Menu::load(Token *token)throw( LoadException ){
                                 /* we failed, so set the backSound to nothing */
                                 backSound = "";
                             }
+                        } else if (*tok == "ok-sound"){
+                            *tok >> okSound;
+                            try{
+                                /* try to load it */
+                                Resource::getSound(okSound);
+                            } catch (const LoadException & le){
+                                Global::debug(0) << "Could not load sound " << okSound << " because " << le.getReason() << endl;
+                                /* we failed, so set the backSound to nothing */
+                                okSound = "";
+                            }
 			} else if ( *tok == "background" ) {
 				std::string temp;
 				*tok >> temp;
@@ -419,7 +429,11 @@ void Menu::run(){
 		// do we got an option to run, lets do it
 		if ((*selectedOption)->getState() == MenuOption::Run){
 			try{
-				(*selectedOption)->run(endGame);
+                            if (backSound != ""){
+                                Sound * ok = Resource::getSound(okSound);
+                                ok->play();
+                            }
+                            (*selectedOption)->run(endGame);
 			} catch ( const ReturnException & re ){
 			}
 			// Reset it's state
