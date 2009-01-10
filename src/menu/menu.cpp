@@ -62,7 +62,6 @@ static void addMenu( Menu * m ) throw( LoadException ){
 Menu::Menu():
 music(""),
 selectSound(""),
-_menuflags(0),
 longestTextLength(0),
 _name(""),
 hasOptions(false),
@@ -216,7 +215,7 @@ void Menu::load(const std::string &filename) throw (LoadException){
 	
 	if( !option){
 	    if( !getMenu(parentMenu) ){
-	      throw LoadException("\"main\" menu not found, this must the top level directory!");
+	      throw LoadException("\"main\" menu not found, the top level directory must be named \"main\"!");
 	    }
 	}
 	
@@ -225,14 +224,14 @@ void Menu::load(const std::string &filename) throw (LoadException){
     }
 }
 
-useflags Menu::run(){
+void Menu::run(){
 	
 	Bitmap screen_buffer( 320, 240 );
 	bool done = false;
 	bool endGame = false;
 	
 	if ( menuOptions.empty() ){
-		return _menuflags;
+		return;
 	}
 
 	selectedOption = menuOptions.begin();
@@ -441,7 +440,7 @@ useflags Menu::run(){
 		}
 	}
 	
-	return _menuflags;
+	return;
 }
 
 
@@ -608,7 +607,8 @@ void Menu::drawText(Bitmap *work){
     if ( currentCounter < 0 ){
         currentCounter = (menuOptions.size()) + currentCounter;
     }
-
+    // Set clipping so that text won't go beyond it's boundaries
+    work->setClipRect(backboard.position.x+2, backboard.position.y+2,backboard.position.getX2()-2,backboard.position.getY2()-2);
     for (int i=0;i<displayTotal;++i){
         std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter % menuOptions.size();
         const int startx = (backboard.position.width/2)-(vFont.textLength((*iterOption)->getText().c_str())/2);
@@ -695,6 +695,7 @@ void Menu::drawText(Bitmap *work){
         if ( optionAlpha >= 250 ){optionAlphaIncrements -= optionAlphaIncrements*2;optionAlpha=250;}
         */
     }
+    work->setClipRect(0, 0, work->getWidth(), work->getHeight());
 }
 
 // Draw info text
