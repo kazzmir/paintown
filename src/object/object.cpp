@@ -249,6 +249,9 @@ void Object::takeDamage( World * world, ObjectAttack * obj, int x ){
         }
 }
 	
+void Object::drawFront(Bitmap * work, int rel_x){
+}
+	
 void Object::touch( Object * obj ){
 }
 

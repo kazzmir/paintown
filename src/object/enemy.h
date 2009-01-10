@@ -28,7 +28,7 @@ public:
 	using Character::drawLifeBar;
 	virtual void drawLifeBar( int x, int y, Bitmap * work );
 	
-	virtual void draw( Bitmap * work, int rel_x );
+	virtual void drawFront( Bitmap * work, int rel_x );
 	
 	virtual void hurt( int x );
 

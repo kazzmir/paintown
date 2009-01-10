@@ -202,9 +202,7 @@ void Player::drawLifeBar( int x, int y, Bitmap * work ){
 	drawLifeBar( x, y, show_life, work );
 }
 	
-void Player::draw( Bitmap * work, int rel_x ){
-
-	Character::draw( work, rel_x );
+void Player::drawFront( Bitmap * work, int rel_x ){
 
 	int x1, y1;
 	NamePlacer::getPlacement( x1, y1, name_id );

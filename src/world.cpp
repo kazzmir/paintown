@@ -453,6 +453,14 @@ void World::drawWorld( const PlayerTracker & tracker, Bitmap * where, const map<
 		}
 	}
 	scene->drawFront( min_x, where );
+
+        /* sigh, need a special case to draw object stuff in front */
+        for ( map<int,vector<Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
+		const vector<Object *> & xx = (*it).second;
+		for ( vector<Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+			(*mm)->drawFront( where, min_x );
+		}
+	}
 }
 	
 void World::drawMiniMaps( bool b ){

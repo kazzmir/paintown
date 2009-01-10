@@ -44,6 +44,7 @@ public:
 	 * Draws the object onto the specified Bitmap
 	 */
 	virtual void draw( Bitmap * work, int rel_x ) = 0;
+	virtual void drawFront(Bitmap * work, int rel_x);
 
 	/* print:
 	 * Print some debugging information

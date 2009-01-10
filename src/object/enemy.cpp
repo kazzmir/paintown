@@ -86,9 +86,7 @@ void Enemy::drawLifeBar( int x, int y, Bitmap * work ){
 	drawLifeBar( x, y, getDeath() == 0 ? show_life : 0, work );
 }
 
-void Enemy::draw( Bitmap * work, int rel_x ){
-	Character::draw( work, rel_x );
-
+void Enemy::drawFront( Bitmap * work, int rel_x ){
 	if ( show_name_time > 0 ){
 		show_name_time--;
 
