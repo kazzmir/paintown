@@ -3,6 +3,9 @@ This document lists the providence of non-source code related files.
 data/paintown-title.png - Created by yours truly, Jon Rafkind. License - public domain
 data/players/kagetsura/aah1.wav - http://freesound.iua.upf.edu/samplesViewSingle.php?id=9430. Creative Commons.
 data/sounds/rain.wav - http://freesound.iua.upf.edu/usersViewSingle.php?id=28867. Creative Commons.
+data/menu/sounds/menu-select.wav - http://www.freesound.org/samplesViewSingle.php?id=50561. Creative Commons
+data/menu/sounds/menu-ok.wav - http://www.freesound.org/samplesViewSingle.php?id=50565. Creative Commons.
+data/menu/sounds/menu-back.wav - http://www.freesound.org/samplesViewSingle.php?id=50557. Creative Commons.
 data/players/akuma/**/*.png - http://www.zweifuss.com/sprites.htm. ???
 data/bgs/**/*.png - http://www.senileteam.com/games.php#bor.
 data/chars/**/*.png - http://www.senileteam.com/games.php#bor.

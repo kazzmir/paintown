@@ -7,6 +7,7 @@
 #include "util/font.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
+#include "resource.h"
 #include "globals.h"
 #include "init.h"
 #include "music.h"
@@ -93,6 +94,16 @@ void Menu::load(Token *token)throw( LoadException ){
 				*tok >> music;
 			} else if( *tok == "select-sound" ) {
 				*tok >> selectSound;
+                        } else if (*tok == "back-sound"){
+                            *tok >> backSound;
+                            try{
+                                /* try to load it */
+                                Resource::getSound(backSound);
+                            } catch (const LoadException & le){
+                                Global::debug(0) << "Could not load sound " << backSound << " because " << le.getReason() << endl;
+                                /* we failed, so set the backSound to nothing */
+                                backSound = "";
+                            }
 			} else if ( *tok == "background" ) {
 				std::string temp;
 				*tok >> temp;
@@ -406,7 +417,7 @@ void Menu::run(){
 		}
 		
 		// do we got an option to run, lets do it
-		if((*selectedOption)->getState() == MenuOption::Run){
+		if ((*selectedOption)->getState() == MenuOption::Run){
 			try{
 				(*selectedOption)->run(endGame);
 			} catch ( const ReturnException & re ){
@@ -419,30 +430,32 @@ void Menu::run(){
 			if ( !selectSound.empty() ){
 				MenuGlobals::setSelectSound(selectSound);
 			}
-			
 		}
 
-		if(!music.empty()){
+		if (!music.empty()){
 			if(MenuGlobals::currentMusic() != music){
 				MenuGlobals::popMusic();
 			}
 		}
 		
-		if(!selectSound.empty()){
+		if (!selectSound.empty()){
 			if(MenuGlobals::currentSelectSound() != selectSound){
 				MenuGlobals::popSelectSound();
 			}
 		}
 
-		if(endGame){
+		if (endGame){
 			// Deselect selected entry
 			(*selectedOption)->setState(MenuOption::Deselected);
+                        if (backSound != ""){
+                            Sound * back = Resource::getSound(backSound);
+                            back->play();
+                        }
 		}
 	}
 	
 	return;
 }
-
 
 Menu *Menu::getMenu(const std::string &name){
 	std::map<std::string, Menu *>::iterator i = menus.find(name);
