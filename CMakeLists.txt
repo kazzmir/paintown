@@ -114,16 +114,16 @@ endif(PYTHON_EMBEDABLE)
 # MINGW
 # -------------------------------------------------------
 
-if(MINGW)
+if(MINGW OR CYGWIN)
 	# -------------------------------------------------------
 	# Take those user options and set the necessary compile time preprocessors
 	# -------------------------------------------------------
 	add_definitions(-DWINDOWS)
 	set(WIN_LIB -lgdi32 -luser32 -lwsock32)
 	 set(CMAKE_THREAD_LIBS_INIT -lpthreadGC2)
-else(MINGW)
+else(MINGW OR CYGWIN)
 	 set(CMAKE_THREAD_LIBS_INIT -lpthread)
-endif(MINGW)
+endif(MINGW OR CYGWIN)
 
 
 if(APPLE)
@@ -190,3 +190,10 @@ target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS
 
 add_executable (menutest src/menu/menutest.cpp)
 target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
+
+# Do scrip zip only in *nix land
+if(UNIX OR LINUX OR CYGWIN)
+  configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_BINARY_DIR}/build/script/modules/paintown.py COPYONLY)
+  execute_process(COMMAND zip -r bin/scripts build
+		  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+endif(UNIX OR LINUX OR CYGWIN)
