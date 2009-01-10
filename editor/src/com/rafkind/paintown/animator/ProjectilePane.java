@@ -6,6 +6,7 @@ import javax.swing.event.*;
 
 import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.Lambda1;
+import com.rafkind.paintown.Lambda2;
 
 import org.swixml.SwingEngine;
 
@@ -41,8 +42,12 @@ public class ProjectilePane {
 			public Object invoke( Object i ){
 				int index = ((Integer) i).intValue();
 				Animation temp = projectile.getAnimation( index );
-				CharacterAnimation edit = new CharacterAnimation( projectile, temp );
-				animator.addNewTab( edit.getEditor(), temp.getName() );
+				CharacterAnimation edit = new CharacterAnimation( projectile, temp, new Lambda2(){
+                                    public Object invoke(Object o1, Object o2){
+                                        return null;
+                                    }
+                                });
+				// animator.addNewTab( edit.getEditor(), temp.getName() );
 				return null;
 			}
 		};
