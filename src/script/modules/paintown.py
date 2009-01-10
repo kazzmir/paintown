@@ -120,13 +120,13 @@ class Engine:
     def createPlayer(self, player):
         return Player(player)
 
-    def currentBlock(self):
-        import paintown_internal
-        assert(self.world != None)
-        return getBlock(paintown_internal.currentBlock(self.world))
+    # def currentBlock(self):
+    #     import paintown_internal
+    #     assert(self.world != None)
+    #     return getBlock(paintown_internal.currentBlock(self.world))
 
-    def getBlock(self,id):
-        return Block(self.world, id)
+    # def getBlock(self,id):
+    #     return Block(self.world, id)
 
     def tick(self):
         pass

@@ -59,6 +59,33 @@ class Engine
     # returns : None or Object-subclass
     # Searches for an existing object with the given id and returns its python
     # class that it was created with.
+  
+  def addCharacter(self, path, name, map, health, x, z)
+    # path : string
+    # name : string
+    # map : integer
+    # health : integer
+    # x : integer
+    # z : integer
+    # returns a new Character
+    # Creates a new character and adds him to the current block in the game
+
+  def cacheCharacter(self, path)
+    # path : string
+    # returns : none
+    # Ensures that a certain character is cached in the game
+
+  def getEnemies(self)
+    # returns : list
+    # Get all the alive enemies
+
+  def getPlayers(self)
+    # returns : list
+    # Get all the players
+
+  def getObjects(self)
+    # returns : list
+    # Get all the objects in the current block
 
   # Overridable methods
 
@@ -137,12 +164,37 @@ class Object
 class Character(Object)
   # Represents a character in the engine
 
+  # Non-overridable methods
+  def isPlayer(self)
+    # returns : boolean
+    # True if this is a player or not
+
   # Overridable methods
 
   def didAttack(self, him)
     # him : None or a Character
     # returns : none
     # Called when this character attacked another character
+
+class Player(Character):
+  # Represents a player
+
+  # Non-overridable methods
+  def getScore(self)
+    # returns : integer
+    # Score for the player
+
+  def increaseScore(self, amount)
+    # amount : integer
+    # returns : none
+    # Increases the score for a player
+
+  def setScore(self, score)
+    # score : integer
+    # returns : none
+    # Sets the score for a player
+
+  # Overridable methods
 
 * Notes
   The paintown engine is likely to crash if anything goes wrong in your script.
