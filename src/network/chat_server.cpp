@@ -185,24 +185,6 @@ static void * acceptConnections( void * server_ ){
 	debug( 1 ) << "Accepting connections" << endl;
 	while ( ! done ){
 		done = ! server->isAccepting();
-		/*
-		Network::Socket s = Network::accept( socket );
-		if ( myerror != 0 ){
-			switch ( myerror ){
-				case Network::NO_CONNECTIONS_PENDING : {
-					break;
-				}
-				case Network::NETWORK_ERROR : {
-					done = true;
-					break;
-				}
-			}
-		} else {
-			Global::debug( 1 ) << "Adding connection" << endl;
-			server->addConnection( s );
-		}
-		*/
-
 		try{
 			server->addConnection( Network::accept( socket ) );
 		} catch ( const Network::NoConnectionsPendingException & e ){
