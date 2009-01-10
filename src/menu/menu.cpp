@@ -300,7 +300,7 @@ void Menu::run(){
                                             }
 					    else selectedOption = menuOptions.end() -1;
                                             (*selectedOption)->setState(MenuOption::Selected);
-					    if(menuOptions.size() > 2)MenuGlobals::playSelectSound();
+					    if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
                                     }
 
                                     if ( keyInputManager::keyState(keys::DOWN, true ) ||
@@ -312,7 +312,7 @@ void Menu::run(){
                                             }
 					    else selectedOption = menuOptions.begin();
                                             (*selectedOption)->setState(MenuOption::Selected);
-					    if(menuOptions.size() > 2)MenuGlobals::playSelectSound();
+					    if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
                                     }
                                     
                                     if ( keyInputManager::keyState(keys::LEFT, true) ||
