@@ -52,7 +52,8 @@ static unsigned int menuOptionID = 0;
 static void addMenu( Menu * m ) throw( LoadException ){
 	std::map<std::string, Menu *>::iterator i = menus.find(m->getName());
 	if ( i == menus.end() ){
-		  
+		// ignore level selector
+		if (m->getName() == "level-select" )return;
 		menus[m->getName()] = m; 
 		
 	} else {

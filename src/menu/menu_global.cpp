@@ -144,15 +144,14 @@ std::string MenuGlobals::doLevelMenu(const std::string dir){
 	
 	try{
 		Menu temp;
-		temp.load(Util::getDataPath() + "menu/level_select.txt");
-		temp.backboard.position.height = count;
-	
 		for ( unsigned int i = 0; i < possible.size(); i++ ){
 			OptionLevel *opt = new OptionLevel(0);
 			opt->setText(possible[i]);
 			opt->setInfoText("Select a set of levels to play");
 			temp.addOption(opt);
-		}		
+		}
+		temp.load(Util::getDataPath() + "menu/level_select.txt");
+		temp.backboard.position.height = count;
 		// Run it
 		temp.run();
 	} catch (const TokenException & ex){
