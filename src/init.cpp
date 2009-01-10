@@ -138,11 +138,12 @@ bool Global::init( int gfx ){
         /* set up the timers */
 	out<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
 	out<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
+	out << "Initialize random number generator" << endl;
         /* initialize random number generator */
 	srand( time( NULL ) );
 
         /* keep running in the background */
-	set_display_switch_mode( SWITCH_BACKGROUND );
+	set_display_switch_mode(SWITCH_BACKGROUND);
 
         /* close window when the X is pressed */
         LOCK_FUNCTION(close_paintown);
@@ -155,6 +156,7 @@ bool Global::init( int gfx ){
 
 	registerSignals();
 
+	out << "Initialize network" << endl;
 	Network::init();
 
         /* this mutex is used to show the loading screen while the game loads */

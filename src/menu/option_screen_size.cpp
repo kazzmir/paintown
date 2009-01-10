@@ -49,6 +49,10 @@ static vector<ScreenSize> getScreenResolutions(){
         modes.push_back(ScreenSize(d.dmPelsWidth, d.dmPelsHeight));
     }
 
+    if (modes.empty()){
+        modes.push_back(ScreenSize(640,480));
+    }
+
     return modes;
 }
 #else
@@ -72,7 +76,14 @@ rblue(255),
 rgreen(255){
     setRunnable(false);
 
+    Global::debug(1) << "Get screen resolution" << endl;
     modes = getScreenResolutions();
+
+    if (Global::getDebug() >= 1){
+        for (vector<ScreenSize>::iterator it = modes.begin(); it != modes.end(); it++){
+            Global::debug(1) << "Screen size: " << it->w << " x " << it->h << endl;
+        }
+    }
 
     if ( *token != "screen-size" ){
         throw LoadException("Not a screen-size");
@@ -142,11 +153,17 @@ void OptionScreenSize::setMode(int width, int height){
     if (width != Configuration::getScreenWidth() ||
         height != Configuration::getScreenHeight()){
 
+        Global::debug(1) << "Changing mode to " << width << " x " << height << endl;
         int gfx = Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED;
         int ok = Bitmap::setGraphicsMode(gfx, width, height);
         if (ok == 0){
+            Global::debug(1) << "Success" << endl;
             Configuration::setScreenWidth(width);
             Configuration::setScreenHeight(height);
+        } else {
+            Global::debug(1) << "Fail" << endl;
+            int ok = Bitmap::setGraphicsMode(gfx, Configuration::getScreenWidth(), Configuration::getScreenHeight());
+            Global::debug(1) << "Set mode back " << ok << endl;
         }
     }
 }

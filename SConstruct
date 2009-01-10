@@ -180,9 +180,10 @@ if isWindows():
     env.Append( CPPDEFINES = 'WINDOWS' )
     env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
     env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
+    
+    #env.Append( CCFLAGS = ['-mthreads'] )
+    #env.Append( LINKFLAGS = ['-mthreads'] )
 
-    # env.Append( CCFLAGS = ['-mthreads'] )
-    # env.Append( LINKFLAGS = ['-mthreads'] )
     staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
     staticEnv.Append( CPPDEFINES = 'WINDOWS' )
 else:
