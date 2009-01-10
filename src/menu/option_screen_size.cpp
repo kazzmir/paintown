@@ -46,11 +46,7 @@ static vector<ScreenSize> getScreenResolutions(){
 
            if(pfd.dwFlags & PFD_SUPPORT_OPENGL)printf(" OGL OK");
          */
-        ScreenSize s;
-        s.w = d.dmPelsWidth;
-        s.h = d.dmPelsHeight;
-        modes.push_back(s);
-        // modes.push_back((ScreenSize) {.w = d.dmPelsWidth, .h = d.dmPelsHeight});
+        modes.push_back(ScreenSize(d.dmPelsWidth, d.dmPelsHeight));
     }
 
     return modes;
@@ -58,11 +54,11 @@ static vector<ScreenSize> getScreenResolutions(){
 #else
 static vector<ScreenSize> getScreenResolutions(){
 	vector<ScreenSize> modes;
-	modes.push_back({.w = 640, .h = 480});
-	modes.push_back({.w = 800, .h = 600});
-	modes.push_back({.w = 1024, .h = 768});
-	modes.push_back({.w = 1280, .h = 1024});
-	modes.push_back({.w = 1600, .h = 1200});
+	modes.push_back(ScreenSize(640, 480));
+	modes.push_back(ScreenSize(800, 600));
+	modes.push_back(ScreenSize(1024, 768));
+	modes.push_back(ScreenSize(1280, 1024));
+	modes.push_back(ScreenSize(1600, 1200));
 	return modes;
 }
 #endif

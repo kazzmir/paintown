@@ -9,6 +9,7 @@
 class Token;
 
 struct ScreenSize{
+    ScreenSize(int w, int h):w(w), h(h){}
     int w, h;
 };
 
