@@ -12,16 +12,12 @@
 #include <stdio.h>
 
 /* contributed by Roy Underthump from allegro.cc */
-void getScreenResolutions(){
+static vector<ScreenSize> getScreenResolutions(){
     HWND hwnd;
     HDC  hdc;
 
-    int i;
-
-    int iPixelFormat;
-
+    // int iPixelFormat;
     int descerr;
-
     int retval;
 
     DEVMODE d;
@@ -31,20 +27,43 @@ void getScreenResolutions(){
     hwnd = GetDesktopWindow();
     hdc  = GetDC(hwnd);
 
-    for(i=0;;i++){
+    vector<ScreenSize> modes;
+
+    for (int i = 0;; i++){
         retval = EnumDisplaySettings(0,i,&d);
-        if(!retval) break;
+        if (!retval){
+            break;
+        }
 
         descerr = DescribePixelFormat(hdc, i+1, sizeof(pfd), &pfd);
         if(!descerr){
-            return -1;
+            continue;
         }
 
-        printf("\n#%d bpp %d width %d height %d colorbits %d fps %d",i,d.dmBitsPerPel,
-                d.dmPelsWidth, d.dmPelsHeight,pfd.cColorBits,d.dmDisplayFrequency);
+        /*
+           printf("\n#%d bpp %d width %d height %d colorbits %d fps %d",i,d.dmBitsPerPel,
+           d.dmPelsWidth, d.dmPelsHeight,pfd.cColorBits,d.dmDisplayFrequency);
 
-        if(pfd.dwFlags & PFD_SUPPORT_OPENGL)printf(" OGL OK");
+           if(pfd.dwFlags & PFD_SUPPORT_OPENGL)printf(" OGL OK");
+         */
+        ScreenSize s;
+        s.w = d.dmPelsWidth;
+        s.h = d.dmPelsHeight;
+        modes.push_back(s);
+        // modes.push_back((ScreenSize) {.w = d.dmPelsWidth, .h = d.dmPelsHeight});
     }
+
+    return modes;
+}
+#else
+static vector<ScreenSize> getScreenResolutions(){
+	vector<ScreenSize> modes;
+	modes.push_back({.w = 640, .h = 480});
+	modes.push_back({.w = 800, .h = 600});
+	modes.push_back({.w = 1024, .h = 768});
+	modes.push_back({.w = 1280, .h = 1024});
+	modes.push_back({.w = 1600, .h = 1200});
+	return modes;
 }
 #endif
 
@@ -56,6 +75,8 @@ lgreen(255),
 rblue(255),
 rgreen(255){
     setRunnable(false);
+
+    modes = getScreenResolutions();
 
     if ( *token != "screen-size" ){
         throw LoadException("Not a screen-size");
@@ -134,13 +155,15 @@ void OptionScreenSize::setMode(int width, int height){
     }
 }
 
+/*
 static int modes[][2] = {{640,480}, {800,600}, {1024,768}, {1280,1024}, {1600,1200}};
 // static int max_modes = sizeof(modes) / sizeof(int[]);
 static int max_modes = 5;
+*/
 
-static int findMode(int width, int height){
-    for (int mode = 0; mode < max_modes; mode++){
-        if (modes[mode][0] == width && modes[mode][1] == height){
+int OptionScreenSize::findMode(int width, int height){
+    for (int mode = 0; mode < (int) modes.size(); mode++){
+        if (modes[mode].w == width && modes[mode].h == height){
             return mode;
         }
     }
@@ -149,13 +172,13 @@ static int findMode(int width, int height){
 
 bool OptionScreenSize::leftKey(){
     int mode = findMode(Configuration::getScreenWidth(), Configuration::getScreenHeight());
-    if (mode >= 1 && mode < max_modes){
+    if (mode >= 1 && mode < (int)modes.size()){
         mode -= 1;
     } else {
         mode = 0;
     }
 
-    setMode(modes[mode][0], modes[mode][1]);
+    setMode(modes[mode].w, modes[mode].h);
 
     lblue = lgreen = 0;
     return true;
@@ -163,13 +186,13 @@ bool OptionScreenSize::leftKey(){
 
 bool OptionScreenSize::rightKey(){
     int mode = findMode(Configuration::getScreenWidth(), Configuration::getScreenHeight());
-    if (mode >= 0 && mode < max_modes - 1){
+    if (mode >= 0 && mode < (int)modes.size() - 1){
         mode += 1;
     } else {
         mode = 0;
     }
 
-    setMode(modes[mode][0], modes[mode][1]);
+    setMode(modes[mode].w, modes[mode].h);
 
     rblue = rgreen = 0;
     return true;

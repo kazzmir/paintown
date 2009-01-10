@@ -4,7 +4,13 @@
 #include "menu_option.h"
 #include "util/load_exception.h"
 
+#include <vector>
+
 class Token;
+
+struct ScreenSize{
+    int w, h;
+};
 
 /*! Handles key reconfiguration */
 class OptionScreenSize : public MenuOption {
@@ -27,10 +33,12 @@ public:
 protected:
 
     void setMode(int width, int height);
+    int findMode(int width, int height);
 
 private:
     // name
     std::string name;
+    std::vector<ScreenSize> modes;
 
     int lblue, lgreen;
     int rblue, rgreen;
