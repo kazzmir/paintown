@@ -24,8 +24,6 @@ For 3.2
 DONE * Get python scripting module in a useable state
 DONE * Be able to scale the screen to arbitrary sizes
 DONE * use CPP to define DATA_PATH
-* make network mode use versions
-* allow level sets to only allow explicit players
 
 Future
 -------
@@ -42,4 +40,6 @@ Future
 * allow characters to run
 * allow characters to block
 * give enemies 'behaviors' which model how they act
-
+* make network mode use versions
+* allow level sets to only allow explicit players
+* make a console like in quake where debug output can go
