@@ -11,7 +11,7 @@
 # Prevents any mishaps
 # Also remove the makefile to regenerate the filelist
 # -------------------------------------------------------
-cmake_minimum_required(VERSION 2.3)
+cmake_minimum_required(VERSION 2.6)
 if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt)
 	file(REMOVE ${CMAKE_SOURCE_DIR}/CMakeCache.txt)
 	file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/CMakeFiles)
@@ -57,7 +57,6 @@ project (paintown)
 # -------------------------------------------------------
 # Including needed macros
 # -------------------------------------------------------
-include(CMakeMacros)
 include(CheckCSourceCompiles)
 include(CheckCXXSourceCompiles)
 find_package(ZLIB)
@@ -185,15 +184,18 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/hawknl)
 add_executable (paintown src/xmain.cpp)
 target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
-add_executable (test src/test.cpp)
-target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
+#add_executable (test src/test.cpp)
+#target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
-add_executable (menutest src/menu/menutest.cpp)
-target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
+#add_executable (menutest src/menu/menutest.cpp)
+#target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 # Do scrip zip only in *nix land
 if(UNIX OR LINUX OR CYGWIN)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_BINARY_DIR}/build/script/modules/paintown.py COPYONLY)
+  execute_process(COMMAND mkdir bin
+		  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		  OUTPUT_QUIET)
   execute_process(COMMAND zip -r bin/scripts build
 		  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endif(UNIX OR LINUX OR CYGWIN)

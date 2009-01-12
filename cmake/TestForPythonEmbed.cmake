@@ -6,13 +6,24 @@
 find_package(PythonLibs)
 
 if(PYTHONLIBS_FOUND)
-	BUILD_RUN("${CMAKE_CURRENT_SOURCE_DIR}/cmake/TestForPythonEmbed.c" "" "Checking if Python is Embedable" "-I${PYTHON_INCLUDE_PATH}" "${PYTHON_LIBRARIES}")
-        IF(NOT BUILD_RUN_RETURN)
-	    MESSAGE(STATUS "Python is embedable")
-            SET(PYTHON_EMBEDABLE TRUE)
-	ELSE(NOT BUILD_RUN_RETURN)
+	MESSAGE(STATUS "Checking if Python is Embedable")
+	SET(CMAKE_REQUIRED_INCLUDES ${PYTHON_INCLUDE_PATH})
+	SET(CMAKE_REQUIRED_LIBRARIES ${PYTHON_LIBRARIES})
+	CHECK_C_SOURCE_COMPILES(
+"#include <Python.h>
+int main(int argc, char *argv[]) {
+   Py_Initialize();
+   return 0;
+}
+
+" PY_EMBED)
+	IF(PY_EMBED)
+	    MESSAGE(STATUS "Python is embeddable")
+	    SET(PYTHON_EMEDABLE TRUE)
+	ELSE(PY_EMBED)
 	    MESSAGE(STATUS "Python is not embedable")
-	ENDIF(NOT BUILD_RUN_RETURN)
+	    SET(PYTHON_EMBEDABLE FALSE)
+	ENDIF(PY_EMBED)
 ELSE(PYTHONLIBS_FOUND)
     MESSAGE(STATUS "Python is not embedable")
     SET(PYTHON_EMBEDABLE FALSE)

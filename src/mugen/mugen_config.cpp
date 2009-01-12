@@ -8,14 +8,3 @@
 
 using namespace std;
 
-MugenConfig::MugenConfig(){
-	
-}
-    
-MugenConfig::MugenConfig(MugenConfig const & copy){
-
-}
-
-MugenToken::~MugenToken(){
-   
-}
