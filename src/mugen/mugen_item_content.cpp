@@ -3,7 +3,6 @@
 
 MugenItem MugenItemContent::empty("empty");
 
-
 MugenItemContent::MugenItemContent( const MugenItemContent & copy ){
   items = copy.items;
   reset();
@@ -34,13 +33,9 @@ const std::string & MugenItemContent::getHead() const{
    return items.front().query(); 
 }
 
-MugenItemContent & MugenItemContent::operator=( MugenItemContent & i){
-  items.clear();
-  while( !itemQueue.empty() )itemQueue.pop();
-  for ( std::vector< MugenItem >::iterator begin = i.items.begin() ; begin != i.items.end() ; ++begin ){
-    this->items.push_back( (*begin) );
-    this->itemQueue.push( &items.back() );
-  }
+MugenItemContent & MugenItemContent::operator=( const MugenItemContent & i){
+  items = i.items;
+  reset();
   return *this;
 }
 

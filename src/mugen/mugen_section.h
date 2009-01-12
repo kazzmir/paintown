@@ -2,8 +2,9 @@
 #define mugen_config_h
 
 #include <string>
-#include <map>
-#include "mugen_config_exception.h"
+#include <vector>
+#include <queue>
+#include "mugen_exception.h"
 
 class MugenItemContent;
 
@@ -35,13 +36,23 @@ public:
     MugenSection();
     virtual ~MugenSection();
     
-    const std::string &getHeader() const { return header; }
+    inline const std::string &getHeader() const { return header; }
     
     MugenSection & operator=( MugenSection & s);
     
+    MugenSection & operator<<( const MugenItemContent & item ) throw (MugenException);
+    
+    const MugenItemContent & getNext();
+    
+    void reset();
+    
   private:
     std::string header;
-    std::map< const std::string, MugenItemContent > itemContent;
+    std::queue< MugenItemContent * > itemContentQueue;
+    std::vector< MugenItemContent > itemContent;
+    
+    // Empty MugenItemContent
+    static MugenItemContent empty;
 
 };
 

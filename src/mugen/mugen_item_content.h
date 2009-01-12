@@ -21,7 +21,7 @@ class MugenItemContent{
     
     void reset();
     
-    MugenItemContent & operator=( MugenItemContent & i);
+    MugenItemContent & operator=( const MugenItemContent & i);
   
     MugenItemContent & operator<<( const std::string & item );
  
