@@ -1,0 +1,1629 @@
+M.U.G.E.N  Updates
+------------------
+Updates are in order of most recent first. It will be easier to
+read this from the bottom up.
+
+14 April 2002
+=============
+
+At a Glance
+-----------
+- Added zipped character support
+- Some bugfixes
+
+Code
+----
+- select.def: Added experimental ZIP character support (zipped storyboards not yet
+  supported) .def file must have same name as .zip file
+- CNS: New trigger: MoveReversed
+- CNS: Modified triggers: MoveContact, MoveGuarded, MoveHit
+       Return values now give information about time since hit status change.
+- CMD: Added [Remap] section for button remapping.
+- CNS: ReversalDef controller: sparkxy now treated as spark offset
+- CNS: Hitdef controller: "sprpriority" parameter renamed to "p1sprpriority".
+       New p2sprpriority parameter added
+- CNS: Pause/Superpause controller: new params: pausebg, endcmdbuftime
+- Training menu: Added AI level option to "AI" dummy
+
+- CMD: Fixed $ (4-way dir detection) bug: release of a direction was being detected as a
+  press by the $ direction modifier. "Transfer of charge direction" bug (feature?) is
+  still there
+- fonts: fixed bug where right/center justified strings are cut off after a newline
+- *** Changed from previous version ***
+- common1.cns: states 120,130,131,132: added guard-release handling (mugen exe no longer
+  does this internally)
+- Fixed bug in CMD detection, where the same command will get detected multiple
+  times if the last button is repeatedly pressed
+- Tweaked precaching (performance may increase or decrease)
+
+
+Known Issues / Notes
+--------------------
+Please consult readme.txt for known issues and problems.
+
+
+
+14 November 2001
+================
+
+At a Glance
+-----------
+- Added Survival play modes. See how long you can last!
+- Some bugfixes
+
+Code
+----
+- system.def: [Title Info]: menu.itemname.*: you can disable an item by using ""
+  Added items for survival modes.
+- mugen.cfg: [Arcade]: added AI ramping options
+- New play modes: Survival, Co-op Survival
+- CNS: HitDef: ground.type and air.type: hi/lo attributes are swapped if
+  p2 is hit from behind
+
+- Nonexistent stages in select.def now automatically excluded from stage list
+- Projectile damage now affected by AttackMulSet
+- Fixed palette section bug introduced in 2001.11.01
+- Fixed serious precaching bug
+
+
+Known Issues / Notes
+--------------------
+Please consult readme.txt for known issues and problems.
+
+
+
+1 Nov 2001
+==========
+
+At a Glance
+-----------
+- Platform change to Linux. DOS platform is no longer supported
+- New graphics engine, supports more alpha effects
+- Select-on-continue
+- Precaching system that significantly reduces loading times
+- Multiple joystick support
+- Many bugfixes, some speed/memory improvements
+
+
+Code
+----
+- Added multiple joystick support.
+- Implemented precaching system that loads player data as early as possible
+  while the game is running. This reduces load times, but requires a fast
+  computer (recommend at least 300MHz).
+- CNS: AngleDraw controller: new parameters: value, scale
+- CNS: Helper: setting ownpal=0 no longer allows the helper to affect its
+  parent's palette.
+- BGs: trans parameter accepts "addalpha" value, along with "alpha" 
+  parameter
+- *** Changed from previous version ***
+  Stages: [Shadow]: "reflect" parameter moved to [Reflection] group, renamed
+  to "intensity". value now ranges from 0 (none) to 256 (full). Older stages
+  with "reflect = 1" should be changed to "intensity = 128" to achieve the
+  same effect.
+- Stages: [Shadow]: New parameters: intensity, fade.range
+- AIR: New transparency type: AS???D??? (additive with specifiable alpha
+  values). ??? is a value from 0 to 256.
+  eg. for 50% transparency,
+    0,0, 0,0, 5, , AS128D128  
+- CNS: New controller: Trans
+  Overrides player animation transparency
+- CNS: Explod controller: new parameter: trans
+- CNS: AfterImage controller: trans parameter accepts "addalpha" value, along
+  with "alpha" parameter
+- CNS: Projectile controller: new parameters: afterimage.???
+  Adds afterimage effects to projectile.
+- Graphics engine completely rewritten. Improved performance in some cases,
+  slightly decreased in others. 16-bit sprites will no longer be supported.
+  Please report any incorrect behavior.
+- stages: sprite filename should no longer be prepended with "stages/".
+  (will support old filenames in this version; may not in later versions)
+- CNS: Explod controller: new parameter: ignorehitpause
+- CNS: Trigger: MatchOver now triggers sooner: a short while after a winner has
+  been decided.
+- Afterimages now always drawn behind character sprite
+- CNS: new parameter for gethitvar trigger: gethitvar(isbound)
+  Returns 1 if player is subject of an attacker's TargetBind controller.
+  Useful for debugging throws, to make sure target is bound when he should be.
+  See kfm.cns state 920 for an example.
+- system.def: Added fadein.time and fadeout.time parameters to Title, Select
+  Info and VS Screen
+- stopped command buffering during superpause
+- updated file/directory search routines. May improve system load times very
+  slightly
+- Added select-on-continue
+- Added rule for limiting the number of draw games (in data/fight.def)
+- CNS: New trigger: inguarddist
+- Made player caching work a little smarter
+- CNS: Fixed TeamMode trigger
+- Fixed minor bug related to palette effects not being shown after round is reset
+- Round now continues updating during pause/superpause
+  *** Changed from previous version ***
+- common1.cns: moved hi/low ground guard switching logic from engine into states.
+  States affected: 120, 130, 131, 140, 150, 151, 152, 153
+- common1.cns: air guard states 132, 155: prevented player from entering ground
+  guard state if out of opponent guard distance
+- common1.cns: fixed mistake in guard states 151, 153 -- player was recoving from
+  guarding in half the time he was supposed to.
+- CNS: New triggers: lifemax, powermax
+- Training mode: Training menu toggle is now your character's Z button
+  instead of keyboard 'M'.
+- Reduced memory consumption for AfterImages
+- mugen.cfg: [Config]: 
+  - Removed HelperFrameEffects option (now always on)
+  - Added new options: AfterImageMax, LayeredSpriteMax, ExplodMax,
+    SysExplodMax, HelperMax and PlayerProjectileMax
+- CMD: [Command]: New parameter: buffer.time
+  Allows for command buffering. Full description is in kfm.cmd.
+- CMD: [Command]: New command special character: >
+  means there must be no other keys pressed between the previous and the
+  current character. Multiple successive direction symbols are expanded
+  using this character. See kfm.cns.
+- CMD: Added a [Defaults] section.
+- common1.cns: Added comments on special state handling
+
+- CNS: air.fall parameter: now correctly affects juggle points on first hit
+- CNS: fixed persistent variables bug
+- system.def, etc: invalid font banks no longer cause crash
+- fight.def: now properly reads [Turns Lifebar]
+- CNS: offset sctrl: now works properly for stand and crouch state types
+- fixed minor lifebar display bug
+- Implemented more accurate scaling functions
+- Fixed a BG anim reset bug
+- Fixed problem where rapid button jamming can affect the other
+  player's input
+- HitDef: NoChainID: Matched actual behavior to documented behavior.
+- palfx: Time parameter: Matched actual behavior to documented behavior.
+- CNS: clipboard controllers: Fixed tab character problem.
+- BGs: fixed parallax tiling problem (BGs support tile=0 amd tile=1 only)
+- BGs: fixed "width" parameter parallax calculations
+
+- Now using Allegro 3.9.37 (WIP)
+- Updated to JGMOD 0.99
+
+
+Docs
+----
+- Added full docs for stages/bgs
+- Stage/bg tutorial updated, in html format
+- Doc formats are now rtf/html/txt. No more .doc
+- Updated air, sctrls, trigger docs to reflect changes/additions
+- Updated character tutorial 4
+
+
+Misc
+----
+- Kung Fu Man learned a new attack, the powerful Kung Fu Blow
+
+
+Known Issues / Notes
+--------------------
+- DOS ver: 
+  - you cannot enable more than one joystick at a time
+  - does not support precaching
+  - Soundcards that are not true SB16 tend to have the stereo
+    backwards. Set reversestereo = 1 in mugen.cfg
+- Linux version is new. There are several known problems at this time:
+  - depth in mugen.cfg must match depth when in X
+  - console must use same res and depth as screen. Not allowed to switch
+    res/depth in console (unless root)
+  - be careful of filename case sensitivity and \ and / in files.
+  - multi-joystick and sound do work, but linux must be set up correctly
+    first
+  - linux sound uses esd or /dev/dsp, but 2.4.X kernels have changed to
+    /dev/sound/dsp
+  - cannot disable key repeat in X. You can make a script to run mugen:
+      xset r off    (disable)
+      ./mugen
+      xset r on     (enable)
+- Storyboards lack text and sound options
+- No support for multiple palettes in players
+- Helpers used as projectile replacements do not have all the desired
+  properties of a projectile
+- Collision boxes in helpers inherit parent's scale, regardless of own
+  scale
+- HitOverride controller always prevents player from being hit by
+  attacks with a HitDef p2stateno parameter
+- Stick-around helpers and explods get removed during intro skip
+
+
+
+15 Apr 2001
+===========
+
+At a Glance
+-----------
+- Cooperative Team mode returns (it was missing from 2001.04.01)
+- You can now swap character order in Turns team mode (see readme.txt)
+- Some bugfixes and speed improvements
+
+
+Code
+----
+
+- CNS: Projectile controller: new parameter: projscale
+  scales a projectile by x,y.
+- Added Cooperative Team mode (that was missing from 2001.04.01)
+  Selection scheme is slightly different: p1 gets first selection,
+  then p2. After that, p1 selects opponent team mode
+- CNS: trigger: P1Name is now Name. P1Name remains an alias for
+  Name.
+- CNS: new triggers: IsHomeTeam, AuthorName, TeamSide
+- CNS: new triggers: RoundsExisted, TeamMode, NumEnemy, NumPartner
+  ID, PlayerIDExist 
+  See trigger docs.
+  *** These triggers are deprecated to begin with. Use at your
+      own risk ***
+- CNS: exp: new redirection keywords: enemy, enemyNear, partner,
+  playerID
+  See exp docs section VI (Trigger redirection).
+  *** These redirection keywords are deprecated to begin with. Use
+      at your own risk ***
+- system.def: [Title Info] group: Added parameters for menu
+  customization. See data/system.def.
+- fight.def: [Round] group: Added roundX.* components. You can
+  define your own anims/sprites to use for each round (up to
+  round 9).
+- Turns mode: You can now swap player order within your team
+  before a match and between rounds. Hold forward to rotate your
+  team order to the next player, backwards to rotate to the last
+  player, and up to rotate two players (only for 4 players).
+  For clarity, here is the swap chart:
+             starting team
+        1 2 3 4  |  1 2 3  |  1 2
+       ----------+---------+------
+  fwd:  2 3 4 1  |  2 3 1  |  2 1
+  back: 4 1 2 3  |  3 1 2  |  2 1
+  up:   3 4 1 2  |         |
+
+- Command line: replaced all of -nomp3, -nomidi and -nocda options
+  with -nomusic
+
+- Fixed a BindToX facing parameter bug
+- Fixed some slowdown problems at character select screen
+- Fixed title BGM bug when demo starts
+- Fixed bug where players do nothing in demo fight
+- Now using Allegro 3.9.34 (WIP)
+
+
+Docs
+----
+- Added introduction to air.txt
+- Finished tutorials 3 and 4. Rewrote parts of tutorial 1 and 2.
+  (Look in docs/tutorial/)
+
+
+Misc
+----
+
+- Moved "big" motif into main distribution.
+- Tools: updated sprmaker docs, added missing prompt to sprmaker.
+  New version for sprmaker: 0.97a
+  New version for tools package: 0.98a
+
+
+Known issues/Notes
+-------------------
+- Storyboards lack text and sound options. These will be added
+  later.
+- You cannot enable more than one joystick at a time. This is a
+  limitation of DOS.
+- Specifying an invalid font bank may cause crashes
+- Hitdefs with p2stateno may not work right if 3 or more players
+  interact in collisions at the exact same time
+- Palfx might not work if continually asserted between rounds,
+  such as if done in a state -2
+- Helpers used as projectile replacements do not have all the desired
+  properties of a projectile.
+- Soundcards that are not true SB16 tend to have the stereo
+  backwards. Set reversestereo = 1 in mugen.cfg
+- Shadows and reflections will not display correctly for characters
+  using the AngleDraw controller.
+
+
+
+1 Apr 2001
+==========
+
+At a Glance
+-----------
+- New team mode! Turns mode lets you pick 2 to 4 characters per team.
+  If one character is knocked out, the next will enter the fight.
+  You can even mix team types.
+- Now M.U.G.E.N supports storyboards! Game intro, character endings
+  and other cutscenes are now possible.
+- New fight demo kicks in if game is left idle at title screen
+- Joystick configuration added to options menu
+
+
+Code
+----
+- *** Changed from previous version ***
+  common1.cns changed to include guard states.
+  Affected states: 120, 140
+- *** Changed from previous version ***
+  system.def: Added some new parameters. Search for those labeled
+  as "new". [Team ?] group names renamed to [Simul ?].
+- Added fight demo. When the game idles at the title screen for
+  some time, a demo fight will be begin between two characters.
+  Options are configurable in data/system.def
+- Added storyboard engine. A storyboard is a script that describes
+  a cutscene. An example of use is for a character ending.
+  See storybrd docs for details.
+- system.def: Storyboards added for pre-game logo, game intro,
+  game over, default ending and credits
+- *** Changed from previous version ***
+  char def: Storyboards added for arcade intro and ending
+  See chars/kfm.def for the new groups.
+- Added -storyboard option to command-line. Following argument is
+  filename of storyboard to play. MUGEN will play the storyboard,
+  then exit. Use for testing. eg.
+    mugen -storyboard data/kfm/credits.def
+- Added joystick configuration to options screen
+- BGMs: for all non-stage BGMs, you can specify a loop parameter.
+  eg. in system.def under [Music]:
+    title.bgm.loop = 0
+  will prevent the title music from looping
+- CNS: Statedef: type, movetype and physics parameters:
+  Now can take "U" to leave old value unchanged. Documented in
+  cns.doc section III.d.
+- CNS: StatetypeSet controller:
+  Added "physics" parameter. "value" parameter renamed to "statetype".
+  Old parameter name is still recognized, but may be removed in
+  upcoming releases
+- CNS: HitFallDamage controller:
+  damage taken is now scaled by player's defence
+- CNS: New trigger: TicksPerSecond
+- Match logging: Now logs "teamX" instead of "playerX" for
+  single-person teams as well as multi-person teams.
+- CNS: TargetState/TargetVelSet/TargetVelAdd/TargetFacing/
+       TargetLifeAdd/TargetPowerAdd controllers:
+    Added "ID" parameter.
+
+- system.def changed. Please update your motifs
+- Bugfix: CNS: HitDef: nochainID now works according to spec
+- Bugfix: Sprites in fightfx.sff are now affected by screen fades
+- Backgrounds: fixed jerky parallax movement for BGs with small delta-x
+- Some parts of code rewritten. Please report bugs that may have
+  been introduced, particularly in the character selection system
+- Fixed bug where palette selections sometimes get changed over
+  the course of a match
+- Fixed guarding corner pushback bug
+
+
+Misc
+----
+- New KFM motif:
+  Contains logo, game intro and ending credits storyboards, as well
+  as a replacement title screen. To run: mugen -r kfm
+  You can look at these files in data/kfm to see how simple
+  storyboards are done.
+- Kung Fu Man perfected his fearsome Kung Fu Knee attack with
+  a follow-up kick
+- Kung Fu Man adds Kung Fu Upper and Smash Kung Fu upper to his
+  deadly arsenal of attacks. See chars/kfm/readme.txt for his
+  move list.
+
+
+Known issues/Notes
+-------------------
+- You cannot change character order in Turns team mode. There is
+  currently no provision for character intro states past round 1 in
+  Turns mode. Support for these features will be added later.
+- Storyboards lack text and sound options. These will be added
+  later.
+- You cannot enable more than one joystick at a time. This is a
+  limitation of DOS.
+- Specifying an invalid font bank may cause crashes
+- Hitdefs with p2stateno may not work right if 3 or more players
+  interact in collisions at the exact same time
+- Palfx might not work if continually asserted between rounds,
+  such as if done in a state -2
+- Helpers used as projectile replacements do not have all the desired
+  properties of a projectile.
+- Soundcards that are not true SB16 tend to have the stereo
+  backwards. Set reversestereo = 1 in mugen.cfg
+- Shadows and reflections will not display correctly for characters
+  using the AngleDraw controller.
+
+
+
+29 Nov 2000
+===========
+- Fixed a major bug in the player caching system
+
+
+
+18 Nov 2000
+===========
+At a Glance
+-----------
+- Some bugfixes
+- Minor additions to engine
+
+
+Docs
+----
+- trigger and sctrls documentation updated with new triggers
+  and controllers, some corrections made.
+
+
+Code
+----
+- mugen.cfg: 
+  [Sound]: Added cdadevice option. Selects CD-ROM device (drive).
+  [Misc]: Added UnloadSystem option. Set to 1 to save some memory.
+- system.def: alignmt flag no longer ignored for font elements:
+    font = fontno, fontbank, alignmt
+- Characters turn to face the enemy after KO.
+- Characters turn to face the enemy whenever ctrl=1 and a
+  ChangeState controller is executed.
+- CNS: HitDef:
+  New parameters: 
+    envshake.*, fall.envshake.*, guard.kill, fall.kill
+- CNS: GetHitVar trigger:
+  New parameters: fall.envshake.*, fall.kill
+- CNS: New controller: FallEnvShake
+- CNS: New trigger: DrawGame
+- CNS: All palfx controllers (includes palfx parameters to HitDef)
+  New parameter: color
+  Adjusts the color level. 0 is black and white. 256 is normal.
+  Defaults to 256.
+- CNS: AfterImage controller: 
+  New parameters: palcolor, palinvertall. Same effect as for palfx.
+- mugen.cfg: [Debug] group: 
+  Added AllowDebugMode and AllowDebugKeys.
+- mugen.cfg: [Video] group: 
+  Added VESA3 video mode option.
+- Clipboard history made to scroll. Newest text event is at the bottom of
+  the clipboard.
+- CNS: DisplayToClipboard and AppendToClipboard:
+  Backslash (\) is now escape sequence. The 3 sequences recognized are:
+  \" - quote
+  \n - newline
+  \\ - backslash
+
+- Fixed memory leak for parallax backgrounds (bug was introduced
+  in 07.31)
+- Fixed bug where one extra pixel is drawn for tiled parallax
+  backgrounds
+- Bug fixed: Projectiles created by helpers while the root player
+  is in an opponent's custom animation inherit incorrect animation
+  data.
+
+
+Misc
+----
+- Kung Fu Man mastered a new attack, the Kung Fu Knee
+
+
+
+13 Aug 2000
+===========
+
+At a Glance
+-----------
+- Some optimizations for speed
+- Added CD Audio support for BGMs
+- Added Random Select to character select screen
+- Many bug fixes
+
+
+Docs
+----
+- trigger and sctrls documentation updated with new triggers
+  and controllers, some corrections made.
+
+
+Code
+----
+
+- A warning is logged if required sprites or animations are missing
+- CNS: New trigger: matchno
+- *** Changed from previous version ***
+  - system.def: [Select Info]:
+    New parameters: cell.random, showemptyboxes and moveoveremptyboxes
+  - system.sff: Added boxrand.pcx (random select icon)
+    Please update your motifs with the new icon.
+- select.def: added random selection. See comments.
+- *** Changed from previous version ***
+  Players can now cancel any state into a walk state, as long
+  as ctrl=1. To prevent this behavior, use the new NoWalk
+  AssertSpecial flag. If your character overrides the run state,
+  you may want to use it.
+- Maximum number of state changes for "State machine stuck in loop"
+  error increased from 5 to 500.
+- Recoded some input handling.
+  Affected areas: All player input, all menus (most changes in title, 
+  options, training menu), key config, character selection.
+  Small bug in options screen fixed. Keys held down from before a
+  round starts now register correctly.
+  Please report any bugs.
+- CNS: Persistent vars can now persist between matches in arcade mode.
+  common1.cns state 5900 has been changed to reset all variables
+  in the first round, so you can override state 5900 to keep your
+  persistent variables.
+- CD Audio support added.
+  To use CDA for BGMs, the filename should be the track number, and the
+  extension "da". For example, Track 3 will be "3.da". See 
+  stages/stage0.def or stages/kfm.def for a description.
+- mugen.cfg:
+  Added CDAVolume and PlayCDA options to [Sound]
+- CNS: Helper: New parameter: facing
+  See sctrls docs for description.
+- CNS: Explod: New parameter: removeongethit
+  See sctrls docs for description.
+- *** Changed from previous version ***
+  CNS: HitCount trigger:
+  Now counts the number of frames in which a hit was registered,
+  not the total number of hits in that move. If this change gives you
+  undesired behavior in your character, use UniqHitCount instead.
+- CNS: New trigger: UniqHitCount
+  Counts the total number of hits in the current move, like
+  the old HitCount trigger in earlier versions of MUGEN.
+- select.def: Increased the number of "order" groups from
+  3 to 10.
+- CNS: AssertSpecial controller: Added new flags:
+  - NoBG - Background is black
+  - NoFG - Force foreground not to be drawn
+- CNS: Statedef: Added new parameter: sprpriority
+  You are encouraged to set attacks states to use
+  sprpriority = 2, so that the player will appear in
+  front of standing, crouching or jumping players.
+  Details in cns.doc.
+- CNS: Projectile controller:
+  Changed default value for sprpriority from 2 to 3.
+- CNS: Superpause controller updated. Can use self's anims
+  and sounds now. Player is now unhittable by default during
+  superpause. See sctrls.doc.
+
+- CNS: Fixed Offset display update problems
+- CNS: Helper offset bugs have been fixed to match its described
+  behavior in the sctrls docs.
+- BG: Reduced memory consumption when using type = Paral
+- select.def: "random" for the stagename no longer adds to the stage
+  select list.
+- Backgrounds: fixed crashes that occur when using Parallax backgrounds
+- Optimized collision detection for speed
+- Debug keys no longer work unless in debug mode, except for
+  Ctrl-D which takes you in and out of debug mode.
+  (Release version only - no changes for beta testers)
+- Fixed bindtoparent/bindtoroot bug, where helpers are
+  affected by bindings set by previous helpers.
+- Fixed bug where "KOed by teammate" icon does not show up.
+- Collision detection is stopped after round enters "Over"
+  state, ie. when players go into their win poses.
+- Fixed bug where player sometimes doesn't fall when
+  simultaneously KOed by two attackers
+- Fixed bug where playing after winning the game causes
+  strange behaviour (especially in team modes)
+
+- These states in common1.cns have changed. Please make
+  sure your characters' state overrides are kept up to date.
+  0, 11, 20, 40, 100, 110 - sprpriority added
+
+
+
+1 Jul 2000
+==========
+
+At a Glance
+-----------
+- Game engine updates:
+  - Expressions support added to CNS and CMD. Gives much more
+    control and flexibility over character behaviour
+  - Lots of additions to the CNS format
+- Better customizability for title screen, lifebars, etc
+  - Animation and text support added
+  - Control over layering priority and more
+  - Various win icons, such as "special win", "cheese win", etc
+- New sound engine 
+  - panning based on character position on screen
+  - better sound control
+- Better camera algorithm. Less "drunkenness" on tall stages.
+- More command line options
+- Fixed various bugs
+- Fontmaker tool added to toolset
+- Updated docs. Full listing of state controllers and triggers available
+
+*** There are compatibility issues with previous version of MUGEN.
+    Please see incompt2.txt
+
+
+Docs
+----
+- Most docs have been updated.
+
+
+Code
+----
+- CNS: SuperPause controller
+  New parameter: "poweradd". Adds power to the player.
+- CNS: HitOverride controller
+  New parameter: "forceair".
+- Added information screen. Info screen comes up automatically
+  the first time you run MUGEN, or if the medium on which
+  MUGEN is run from is not writable (eg. CD-ROM).
+- Frame skipping ability extended to all screens, not just the
+  fight screen.
+- 4 frame upper limit imposed on auto frameskip. This means that
+  on slow computers, the game speed might slow down to ensure
+  regular screen updates.
+
+- *** Changed from previous version ***
+  Stages: stage names must be encased in quotemarks
+- *** Changed from previous version ***
+  Characters are set to a new initial state (number 5900) at
+  the start of each round. You can override this state
+  to initialize variables and helpers.
+- *** Changed from previous version ***
+  Characters are no longer frozen during PreIntro (fade in).
+  Character intro states will need to account for updates
+  during PreIntro. Use the RoundState trigger to tell
+  when PreIntro is over.
+  For most cases, it is a simple matter of freezing the
+  animation while RoundState = 0.
+
+- CNS: New trigger: HitPauseTime
+- Added some options to select.def, like max matches to fight in
+  arcade mode, etc. Check it for details.
+- Added match logging: mugen -log <logfile>
+  Records some match details to a file.
+
+- *** Changed from previous version ***
+  AIR: Some required animations have been changed. See docs/air.txt
+  for details.
+- *** Changed from previous version ***
+  SPR: 10 new required sprites. See docs/spr.txt for details.
+- common.snd: Added medium and heavy fall sounds (7,1 and 7,2
+  respectively)
+- *** Changed from previous version ***
+  CNS: having a fall flag on a Hitdef will now force p2 to fall,
+  even if he is standing and the y-component of ground.velocity
+  is 0
+
+- CNS: HitDef controller:
+  Added "HitOnce" paramater.
+  If set to 1, the HitDef only affects one opponent. If the hit is 
+  successful, all other targets will be dropped.
+  Defaults to 0 most of the time. Only exception is if the attr parameter
+  is a throw type, which makes it default to 1.
+- CNS: HitDef controller:
+  Added 'S' option to sparkno, guard.sparkno
+    sparkno = S500
+  will use anim action 500 from the player's own .air file for
+  the spark.
+
+- CNS: New controller: ModifyExplod
+  Modifies a existing explods' parameters.
+  Takes all parameters that Explod takes, with the exception of anim.
+  In general, specifying any parameter in ModifyExplod will affect the
+  corresponding parameter in the existing explod.
+  id - the ID number of the explod(s) to change. -1 to affect all.
+       -1 by default.
+- CNS: HitDef controller
+  Added parameters:
+  ground.cornerpush.veloff = ?
+    (float) velocity at which p1 is pushed back if p2 is hit while
+            in the corner and on the ground
+            Defaults to 1.3 * (x-component of guard.velocity)
+  air.cornerpush.veloff = ?
+    (float) velocity at which p1 is pushed back if p2 is hit while
+            in the corner and in the air
+            Defaults to ground.cornerpush.veloff
+  down.cornerpush.veloff = ?
+    (float) velocity at which p1 is pushed back if p2 is hit while
+            in the corner and in a "down" movetype state (eg. lying down)
+            Defaults to ground.cornerpush.veloff
+  guard.cornerpush.veloff = ?
+    (float) velocity at which p1 is pushed back if p2 guards while
+            in the corner and on the ground
+            Defaults to ground.cornerpush.veloff
+  airguard.cornerpush.veloff = ?
+    (float) velocity at which p1 is pushed back if p2 guards while
+            in the corner and in the air
+            Defaults to guard.cornerpush.veloff
+
+- CNS: AssertSpecial controller updated
+  "NoShadow" flag only affects p1 now. Use "GlobalNoShadow"
+  to affect all players, explods and projectiles.
+  New flags have been added. See sctrl docs for details
+
+- CNS: New controller: Pause
+- CNS: Superpause controller
+  added darken, p2defmul parameters
+- CNS: Explod controller
+  added supermovetime parameter (supermove parameter now deprecated)
+  added pausemovetime parameter
+- CNS: Helper controller
+  added pausemovetime parameter
+- CNS: Projectile controller
+  added supermovetime parameter
+  added pausemovetime parameter
+- CNS: All PalFX controllers
+  added invertall parameter
+  See sctrl docs for details.
+
+- *** Changed from previous version ***
+  All spark references have been changed from "0, anim#" to just
+  "anim#". For example, in a HitDef, 
+    sparkno = 0,6
+  would be:
+    sparkno = 6
+  Anim numbers have changed in fightfx.air!
+  (with the new anim numbers, that '6' would be different too)
+  Here are the places that are affected in the cns files:
+  [data]
+  sparkno = 0, ??
+  guard.sparkno = 0, ??
+  [state]
+  type = HitDef
+  sparkno = 0, ??
+  guard.sparkno = 0, ??
+  All references to anims in fightfx.air should be changed
+  to reflect the new numbers. Check these also:
+  [state]
+  type = Explod
+  anim = F??
+  [state]
+  type = SuperPause
+  anim = ??
+  [state]
+  type = GameMakeAnim
+  anim = ??
+
+- Each helper's power guage is now linked to its root's. So adding and
+  subtracting power in the helper's states affects the team's power.
+- CNS: New trigger: Const
+  Returns value of one of the player's constants. See trigger documentation
+  for details.
+- MUGEN command line format changed:
+    Type MUGEN -h for more info.
+- *** Changed from previous version ***
+  Font format has been changed. You will need to download the new version of
+  AirView to use the new format.
+- *** Changed from previous version ***
+  Eliminated data/select.cfg, graphics/select.sff, graphics/selectbg.sff,
+             graphics/title.sff
+  Moved graphics/system.sff to data/system.sff
+  Renamed graphics/staticfx.* to data/fightfx.*
+  data/title.pcx no longer used. Title screen background def will handle it.
+  Character and stage list is now in data/select.def.
+  System information and background definitions are in data/system.def
+  Formats have changed! If you have made custom versions of these files
+  before, you'll need to update them. Please look inside system.def and
+  fight.def for details.
+- cns: Added BGPalFx controller
+  Works like the PalFx controller, except it affects the background.
+- cns: Added AllPalFx controller
+  Works like the PalFx controller, but affects everything.
+
+- *** Changed from previous version ***
+  Added win icons for normal, special, super, time over and other wins.
+  Fight screen syntax has been standardized, and is now more customizable.
+  Sorry, older versions of data/fight.def are not compatible.
+  graphics/fight.sff moved to data/fight.sff
+  sound/fight.snd has been split into two files and moved.
+  Announcer sounds such as "round 1" are in data/fight.snd.
+  Shared sounds between characters, including all the hit noises, are
+  now in data/common.snd. The PlaySnd controller now plays sounds from
+  common.snd instead of fight.snd when you use the F prefix.
+- *** Changed from previous version ***
+  Updated common1.cns:
+  Moved some hard-coded logic into common1.cns, such as standing, walking,
+  etc. If you overrode these states before, you should take a look at
+  common1.cns to make sure you don't miss something that was added.
+  Also, all references to var(9) in common1.cns have been switched to SysVar(0)
+  in order to prevent clashes with user variables. Please check your state
+  overrides.
+- Added resolution-doubling modes. Look under [Video] in data/mugen.cfg.
+- data/mugen.cfg: QuickVS option removed. Now allowed at all times.
+- CNS: New trigger: prevno
+  Returns the previous state number
+- CNS: New trigger: GetHitVar
+  Format: GetHitVar(varname)
+  where varname is the name of the GetHit variable you request. This trigger
+  is mainly for common1.cns, and you should take note of its existence when
+  overriding gethit states.
+- CNS: HitDef controller: New parameter: yaccel
+    yaccel = y
+  where y is the downward acceleration you want p2 to experience if he is hit
+  into the air
+- CNS: Helper controller:
+  Added new parameters that allow you to override members of the [Size] group.
+  For example, you can override xscale with this parameter:
+    size.xscale = 2
+- CNS: TargetBind, BindToTarget controllers:
+  Added "ID" parameter. If set to a value that is not -1, then controller
+  affects only a target that was previously hit by a hitdef with a matching
+  "ID" parameter. Defaults to -1, meaning that it affects any target.
+  Use to prevent binding to incorrect targets in team mode.
+- Stages: 
+  - reduced "drunken camera" problem on tall stages
+  - added new parameter: "floortension" to [Camera] group. Is distance
+    of highest player from ground before camera starts to move up.
+    see stages/stage0.def for details.
+- Bug fix: music on title screen now plays at the correct volume.
+  If the same music file is specified between two successive screens,
+  such as between the title screen and select screen, then the music
+  does not restart between those screens.
+- mugen.cfg:
+  "ReverseStereo" parameter added to [Sound] group.
+  "StereoEffects" parameter added to [Sound] group.
+  "BufferedRead" parameter added to [Misc] group.
+
+- CNS: Redirection to "target" is now possible.
+  eg. trigger1 = target, pos y > 0     ;Refers to first target, if any
+  eg. trigger1 = target(50), command = x ;Refers to 1st target with chain-ID of 50
+      In the second case above, the target should have been previously hit by
+      a HitDef with a parameter "ID = 50". 
+      (Reminder: don't confuse it with the "chainID" parameter in the HitDef)
+- CNS: New trigger: NumTarget
+  Returns the number of targets.
+- CNS: AssertSpecial controller: 
+  New flag: TimerFreeze - assert to temporarily freeze the game timer
+- CNS: PlaySnd controller:
+  New parameters: 
+    channel = c
+      (optional, int) Plays the sound on the player's sound channel c.
+      Only one voice may play on a particular channel at a time.
+      For example, if you play a sound on channel 2, then play any sound
+      on the same channel before the first sound is done, then by
+      default the first sound is stopped as the second one plays.
+      0 is a special channel reserved for player voices. Channel 0 voices
+      are stopped when the player is hit. It's recommended you play your
+      character's voice sounds on channel 0.
+      If omitted, defaults to -1, meaning it will play on any free channel.
+    lowpriority = ?
+      (optional, boolean) Only valid if channel != -1.
+      If this is set to 1, then a sound currently playing on that channel
+      (from a previous PlaySnd call) cannot be interrupted by this sound.
+    freqmul = f
+      The sound frequency will be multiplied by f. For example. f = 1.1
+      will result in a higher-pitched sound.
+      Defaults to 1 (no change in frequency).
+    loop = ?
+      Set to 1 to have the sound sample loop over and over.
+      Defaults to 0.
+    pan = p
+      (mutually exclusive with abspan)
+      This is the positional offset of the sound, measured in pixels.
+      If p > 0, then the sound is offset to the front of the player.
+      If p < 0, then sound is offset to the back.
+      Defaults to 0.
+    abspan = p
+      (mutually exclusive with pan)
+      Like pan, except the sound is panned from the center of the screen,
+      not from the player's position.
+- CNS: New controller: StopSnd
+  Required parameters:
+    channel = c
+      Stops playback of a sound on channel c, if there is any. If c is
+      -1, then sounds on all channels are stopped, including those
+      belonging to other players.
+- CNS: New controller: SndPan
+  Required parameters:
+    channel = c
+    pan = p     OR    abspan = p
+      Pans a sound playing on channel c. c must be >= 0 (-1 not accepted)
+      See PlaySnd for description on pan and abspan parameters.
+      You can continually assert this controller as the player moves
+      across the screen, to have his sound "follow" him.
+
+
+Bug fixes
+---------
+- Explods (with ownpal = 1) and projectiles are now affected by global
+  palette changes, such as screen fade in and fade out
+- Fixed bug where some explod shadows did not draw in the right place
+- Fixed bug that causes a single hitdef to register multiple
+  hits in team mode
+- Hitdefs that affect only one opponent now randomly select
+  one opponent instead of giving preference to p2
+- Fixed problem where offsets of projectiles and bound targets are
+  updated one frame late during an EnvShake
+- Fixed bug where juggles points are reset if comboing into a move
+  with throw attribute on the HitDef.
+- camera "shake" fixed
+- fixed bug where anim 5090 is not played back when it should be
+- fixed bug that causes the state to be updated twice as a player turns
+  around
+- fixed problem where player would sometimes not fall if hit with a
+  second attack right after being hit with an attack that should have
+  caused him to fall
+- solved problem where the x-component of the velset parameter in the
+  StateDef is ignored for p1, if p2 is in a gethit state in the screen
+  corner. Old method required this strange behavior to push p1 back from
+  the corner when hitting p2, but now that push-back behavior is handled with
+  a temporary velocity variable, you do not have to worry about p1's
+  x-velocity being modified by attacks in the corner.
+- dust is now created as explods with sprpriority = 10, preventing them
+  from showing up over the foreground
+- Sound system was changed. Hopefully no major bugs popped up.
+- Fixed bug where tabs are not recognised as whitespace.
+- Fixed minor animation bug that occurs when you hit a person out of a
+  custom state with certain HitDefs, such as those with the "Up" animtype.
+
+
+Tools
+-----
+- Sprmaker: -p option (eliminate successive palettes) now works.
+  You are encouraged to use this option on your stage .sff files,
+  as having fewer total palettes makes MUGEN run faster.
+- Added Fntmaker tool
+
+
+1 Jan 2000
+==========
+At a glance:
+- Began testing of helpers. Helpers can be used to create and control
+  player-type objects that have their own states. Assisting characters
+  such as pets can be done using helpers, but one might find other
+  uses too.
+- Training dummy controls - Press 'M' while paused in training mode.
+- Complete documentation is available for state triggers.
+- Stages now support reflections for a shiny-smooth effect.
+- Explods bugs have been fixed. Explods let you create simple effects.
+- Lots of engine updates
+
+Known issues
+------------
+- Camera make shake horizontally when there are opposing players
+  standing very close to the tension lines on either end of the
+  screen. This problem goes away if one of the characters move.
+- Dust is drawn over the foreground layer of a stage
+- Lifebars are not very customizable, especially in team mode
+- No tools are available for creating fonts
+
+Docs
+----
+- cns documentation has been updated. Minor points have been
+  clarified or elaborated on. Trigger documentation has been
+  moved out of cns.txt.
+- full trigger documentation is in trigger.txt. We do not
+  have full controller documentation yet
+- incompatibility issues are addressed in incompat.txt
+- a html table of contents is available in docs/ as mugen.htm
+
+Code
+----
+- *** changed from previous version ***
+  Intro is no longer held by using var9. Instead, use the new AssertSpecial
+  controller to assert the "Intro" flag:
+    [State 191, 1]        ;In the intro state
+    type = AssertSpecial
+    trigger1 = Time = [0,70]
+    flag = Intro
+  More on the AssertSpecial controller below.
+- *** changed from previous version ***
+  CNS: MakeExplod controller renamed to Explod
+  Lots of explod updates
+- *** changed from previous version ***
+  Palette ordering is now:
+  X Y Z
+  4 5 6
+  A B C
+  1 2 3
+  As before, holding down start while selecting gives you the
+  extra palettes (palno+6)
+
+- mugen.cfg: [Arcade] group: "AI.Cheat" added. Check mugen.cfg
+  for a description of it. You may want to turn this off if a
+  AI that cheats offends you.
+- Players now cannot guard a hit that does enough guard damage to KO them.
+- Triggers now allow retargeting. See trigger.txt for details.
+- CNS: New controllers: Helper, DestroySelf
+  See incompat.txt for a mini-guide on helpers.
+- CNS: New controller: HitOverride
+  Overrides the player's gethit state. Useful for preventing helper
+  characters from changing into clones of p1 if they are hit. Still
+  under development, so format may change.
+- CNS: HitDef controller
+  Added new optional parameter "AffectTeam". This lets you choose who you
+  can hit. Valid values are "Enemy", "Friendly" and "Both". Defaults
+  to "Enemy" if omitted.
+- CNS: Projectile controller
+  Added optional "projcancelanim" parameter. It is the animation to play
+  when the projectile is canceled out by another.
+- CNS: ProjHit, ProjContact, ProjGuarded controllers
+  Format has changed. Please see docs/trigger.txt for more information.
+- CNS: ScreenBound controller
+  Minor change in parameter "movecamera". It now takes two arguments,
+  the first for x and the second for y. For example, if you only want the
+  camera to follow your character horizontally but not vertically, you
+  would use "movecamera = 1, 0".
+  This defaults to 0,0 if omitted (camera does not follow at all)
+- CNS: New trigger: NumExplod
+  Returns the number of explods belonging to the player. If you append
+  an ID number to the trigger name, it counts only explods with a matching
+  ID. For example, trigger1 = NumExplod1000 < 2
+  will trigger if there are fewer than 2 explods with ID 1000
+- CNS: New controller: MoveHitReset
+  Resets MoveHit, MoveGuarded and MoveContact flags.
+- CNS: New trigger: Lose
+  Works like the win trigger, except detects if p1's team has lost.
+- CNS: Hitdef controller:
+  Velocity parameters can now take the letter 'n' in place of a velocity
+  component. This keeps the opponent's velocity unchanged when he is hit.
+  For example, 
+    ground.velocity = n, -5 
+  x-velocity is unchanged, but y-velocity is set to -5.
+- CNS: [Size] group:
+  Added optional "shadowoffset" parameter. This is the amount by which the
+  shadow of the character will be offset as it is drawn. Use to prevent
+  characters from "floating" in the air.
+- CNS: New controllers: BindToParent, BindToRoot
+  Binds a player's position to its parent or root.
+  Takes parameters:
+    pos = x,y
+    time = t
+    facing = f
+  x,y is the offset to the position you are binding to
+  t is the time to bind (default 1). Set to -1 to bind indefinitely
+  f is the direction to face relative to the parent/root. Valid values
+  are 1, -1 and 0. Set to 0 to ignore the parent/root's facing direction.
+- CNS: New controller: BindToTarget
+  Takes parameters:
+    pos = x,y [, relpos]
+    time = t
+  x,y is the offset to the position you are binding to
+  The optional relpos parameter is one of {foot, mid, head}. Defaults
+  to "foot".
+  t is the time to bind (default 1). Set to -1 to bind indefinitely
+  For example,
+    pos = 5,20, head
+    time = 10
+- CNS: Added parameters to constants: [Size] group:
+    head.pos = x, y  ;Def: -5,-90
+    mid.pos = x, y   ;Def: -5,-60
+  head.pos is the approximate position of the head of your character in one of
+  his light gethit frames.  head.pos is the approximate position of the
+  midsection of your character in a light gethit frame. May be used in
+  the BindToTarget controller to position yourself at the corresponding
+  positions of the opponent. All positions are relative to the player's axis.
+
+- Ctrl-D now cycles through all active players and helpers.
+- Fixed some rounding errors in drawing sprites. You may need to check
+  your background and character offsets again.
+- CNS: New trigger: Matchover
+  Returns 1 if the match has ended, 0 if not. We say a match has ended when
+  either side has won enough rounds necessary to proceed to the next stage.
+  Might be useful for win poses that only occur when a player wins a match.
+- CNS: Controllers in general:
+  Added "ignorehitpause" paremeter. If set to 1, then that state controller
+  will continue to be updated during the pausetime of the player, that is,
+  when the player is frozen for a short time on a successful attack. Example
+  uses: play sounds, flash screen white, create explods, etc
+  Be careful not to abuse this parameter; it may cause difficult-to-trace
+  character problems when used incorrectly
+- CNS: AfterImage controller:
+  Added optional "trans" parameter. Set to "add", "sub" or "add1" to
+  make the after images transparent.
+- Stages: Added "reflect" parameter to [Shadow] group. If set to 1, 
+  a "reflection" effect will be applied to all players, as well as their
+  projectiles and explods that have a non-zero shadow paremeter.
+  See KFM's updated stage.
+- Improved loading time by pre-caching sound and graphics files. Also fixed
+  bug that made large sound files load very slowly
+- CNS: PalFX controller:
+  Added optional parameter "sinadd". Creates "blinking" or "slow blinking"
+  effects by applying color offsets to the player's palette using sinusoidal
+  enveloping.
+    sinadd = r, g, b, P
+  r,g,b are the maximum amounts of red, green and blue to add/subtract from
+  the palette. P is the period of the sine wave in game ticks.
+  You might like to use this for fireballs that "burn" people.
+- CNS: HitDef controller:
+  animtype, air.animtype and fall.animtype now accept "Up" as a value.
+  This makes the opponent go into an animation where he is knocked straight
+  up (anim action 5060), and then arcs over and comes down head-first
+  (action 5061). If you have the optional actions 5101 and 5016, these
+  will replace 5100 (hit ground and bounce into air) and 5105 (hit ground from
+  bounce) in the case of "Up" anim types.
+  If the opponent does not have these animations, then he will default to
+  the normal falling animations.
+
+- CNS: Projectile controller: 
+  Added "projsprpriority" parameter. It is the sprite drawing priority of
+  the projectile. Defaults to 2.
+
+- CNS: New Controller: AssertSpecial
+  Lets you assert special flags, such as ones to keep the fight from
+  starting (Intro) as well ones to keep the round from ending (RoundNotOver).
+  Asserted flags are valid only for one game tick; for most flags, you may
+  need to continuously assert it over a period of time.
+  The required parameter is "flag", and its value must be one of:
+    Intro
+    RoundNotOver
+    NoStandGuard
+    NoCrouchGuard
+    NoAirGuard
+  To assert multiple flags in a single controller (up to 3), you can use
+  the optional parameters "flag2" and "flag3", which take the same values
+  as "flag".
+  For example, this is one you might find useful for very long win poses.
+    [State 181, 1]         ;During the win state
+    type = AssertSpecial
+    trigger1 = Time = [0,500]
+    flag = RoundNotOver
+
+- Training mode: Training dummy control added - see readme.txt
+- Camera shaking slightly changed (does it look better?)
+- CNS: StateDef:
+  Added new parameters: hitdefpersist, movehitpersist 
+- AIR: added new transparency mode: A1
+  Fades background to 50% intensity before adding the sprite.
+  So far all transparency functions do not work for vertically-flipped sprites
+  eg.
+    [Begin Action 1]
+    10,0, 0,0, 5, , A1
+- Fixed problem with slow camera panning. Basically, the camera will
+  pan quickly if the player at the edges have an x-velocity that moves
+  the player towards the edge. Camera will still pan slowly if you
+  use PosAdd to move the players towards the edges (this is intentional)
+- CNS: New trigger: palno 
+  Gives you the palette number of the player, starting from 1.
+- Projectiles:
+  Projectiles that have an animation action with infinite looptime (when set to
+  the remove state) are now immediately deleted.
+  Projectiles can simultaneously affect multiple opponents (in team battle)
+
+Misc
+----
+- name1.fnt has most characters now
+
+Bug fixes
+---------
+- Fixed minor anim bug in SelfState
+- Recoded some palette-handling functions
+- More camera problems have been fixed. Camera should be able to scroll
+  quickly if needed, but stage tension should be kept around 50 in
+  order for it to look right.
+- Rewrote combo-counting code. The counter should work properly in team
+  mode now.
+
+
+
+19 Oct 99
+=========
+At a glance:
+- Added Team Battle mode. Go against two computers at
+  a time if the game's too easy for you.
+- More background control
+- Implemented explods
+- Slightly more control over projectiles
+- Planstation joypad support with force-feedback
+  (through converter)
+- Updated some documentation
+- Improved camera movement
+- Several bug fixes
+
+Known bugs
+----------
+- In team battle, players may occasionally get stuck in a "thrown" state
+  if the attacker was hit out of start of the throw state.
+
+Docs
+----
+- cns: more trigger information in Appendix A
+       full documentation of the HitDef controller in Appendix B
+- readme: Added HotKeys info
+- added mugen.htm, a 
+- more FAQs in the FAQ
+- added spr.gif. Refer to this for required sprites and their axes.
+- updated spr.txt
+- For cmd docs: see player.cmd
+- For background: see stages/stage0.def
+
+Code
+----
+- CNS: Implemented "MakeExplod" controller, which is a more flexible version
+  of GameMakeAnim. Format may change; we recommend you do not use it yet.
+- Background controllers implemented. Still under testing.
+  These let you have more control over how the background elements
+  behave. Format may change.
+
+- CNS: Variable added to [Size]:
+    proj.doscale = ?
+  Set to 1 if you want to apply scaling to your projectiles. The scale factor
+  will be the same as the character's.
+- CNS: LifeAdd and TargetLifeAdd controllers damages are now affected by the
+  the player's defense multiplier.
+- The players no longer continually update at time 0 of the intro state during
+  the initial fade-in. Any controller at state time 0 of the intro states will
+  be executed once at the beginning of the fade-in, and the character will be
+  frozen until the fade-in is complete.
+- Training mode: Training dummy no longer gets KOed. Life will return to full
+  after 1 second of idle time.
+- CNS: [Data]: Added "volume" parameter. Adjust the volume of individual
+  players' voices using this.
+- Support for PSX controllers in place. Final implementation of input devices
+  still not decided.
+- CNS: Projectile controller:
+  -Added optional "ProjHeightBound" parameter. Has two values:
+     ProjHeightBound = y1, y2
+   y1 is the upper bound of the projectile, and y2 is the lower bound. If the
+   projectile vertically leaves the range between y1 and y2 it will remove
+   itself. Default value is -240, 1
+  -Added optional "ProjStageBound" parameter.
+   The value is the the distance the projectile can travel off the edge of the
+   stage (not screen) before being deleted. Default value is 40.
+  -Added optional "ProjRemAnim" parameter. It is the action number of the
+   animation to play when the projectile removes itself, or when it hits another
+   projectile. Defaults to the same value as "ProjHitAnim" parameter. Set to -1
+   if you do not want an animation to play.
+  -Also, projectile now plays the remove-animation when it deletes itself, either
+   when its time runs out, or when it leaves its set boundary ("projedgebound"
+   and "projheightbound" parameters)
+  -Added projpriority controller. If projectile collides with
+   another projectile of equal priority, they will cancel. If
+   it collides with another of lower priority, it will cancel the
+   lower-priority projectile, and the higher-priority one will have
+   its priority decreased by 1.
+   Defaults to 4. 
+
+- data/mugen.cfg:
+  Tweaked default volume settings.
+  Added mp3 volume control.
+
+- *** changed from previous version ***
+  BG on title, options, select and versus screens no longer move on their own.
+  Assign velocities if you want the background to move.
+- Added a few more parameters to data/select.cfg under [Portrait] and
+  [VS Screen] and [Dimensions]
+
+- Slight update on select screen graphics
+- CNS: Projectile controller:
+  Added "projedgebound" parameter. The value is distance off the edge of the
+  screen before projectile is deleted.  Default value is 40.
+- Changed palette controllers to a dynamically-sized array. Will handle palette
+  effect on an arbitrary number of sprites now (instead of the old 64)
+- You can now load up a different def file within a player's directory.
+  This will allow for distribution of different versions of a character
+  that use some common files, such as the sff and snd. Within a different
+  def file, you can specify different cns and air files. See data/select.cfg
+  for details.
+- Better camera algorithm
+- Key Config now displays key names instead of scancodes
+  6x9 FNT files updated with '*' and '~' characters
+- CNS: HitDef controller: hitflag parameter:
+  Added '+' to the list of possible options. If '+' is added, then hit can only
+  affect people who are in a gethit state
+- CNS: HitDef:
+  All moves with "throw" attribute can now only hit one opponent at a time.
+  This is so you cannot throw 2 people at the same time in Team Battle.
+- CNS: HitDef controller:
+  Added new parameter "ID". You can assign an ID number to the hit. May be
+  used to test if an opponent was last hit by a certain move. If omitted
+  defaults to 0
+- CNS: HitDef controller:
+  Added new parameter "chainID". If included, then the hit can only hit people
+  that were previously hit by a hit with the same ID value. Use in
+  conjunction with a hit that has the "ID" parameter.
+- CNS: Added TargetDrop controller:
+  Removes all targets from P1's list of targets (you hit Ctrl-C to see the
+  list). You should drop unwanted targets if you do not want them to be
+  affected by controllers such as TargetBind.
+  This is an advanced controller. You may see little use for it unless you
+  are making complex chain-type moves. This is mainly intended to make moves
+  work correctly during Team Battle modes.
+  No required args.
+  Optional Args:
+    excludeID = ?
+      If an opponent was last hit by a move which has the hitID number
+      (parameter "ID" of attacker's HitDef controller) equal to the excludeID
+      value, then he will not be dropped from the list of the attacker's
+      targets.
+- data/fight.def:
+  Added to [Round]: win2text
+- Added Team battle mode.
+
+- CNS: Minor change in "target???" controllers: these controllers no longer
+  affect targets who are guarding. eg. TargetLifeAdd will change the life
+  of a target being hit, but not of one who is guarding
+- Updated to link with Allegro 3.9.25
+
+- BG: Element: Added optional "positionlink" parameter
+  Set to 1 to link that bg element's position to the previous element.
+  The "velocity" and "delta" parameters will be ignored.
+  The "start" parameter becomes the offset from the previous element.
+- BG: Element: Added optional "sin.x" and "sin.y" parameters
+  Offsets the background position using a sine function.
+  "sin.x" and "sin.y" are for offsetting the x and y positions respectively.
+  Each has 3 parameters, ie:
+  sin.x = M, P, O
+  M (decimal) is the magnitude in pixels
+  P (decimal) is the period in game ticks
+  O (decimal) is the time offset in game ticks
+  Specifically, the function is computed as such:
+    offset = M * sine ((ticks+O)/P * 2 * Pi)
+- DEF: Added optional "displayname" parameter to [Info].
+  It is the name to display on the select screen, fight screen, etc.
+  If omitted, will be same as "name" parameter.
+- CNS: Added "p1name" and "p2name" triggers.
+  p1name returns the name of the player (in the DEF file, under [Info]:  name)
+  p2name returns the name of the opponent
+  Eg:
+    trigger1 = p1name = KFM
+  Case insensitive, so "KFM" is the same as "kfM" and "kfm".
+  Example use for p1name: 
+    Special reactions for certain characters when they are throw. Ie,
+    use "p1name" in the states that p2 will get from p1's CNS.
+  Example use for p2name: 
+    Special reactions towards certain characters, or special intros.
+- Background:
+  The "mask" parameter is no longer ignored for parallax background
+  elements. An example use for this could be clouds, where you can
+  see the sky through holes in the clouds.
+- CNS: TargetBind controller:
+  Default value of "time" parameter changed from 0 to 1.
+- CNS: HitDef controller:
+  If the "ground.velocity" parameter has a non-zero y value, then
+  the "forcestand" parameter's value will default to 1 instead of 0.
+  It can still be overridden by setting it to 0, but it will look
+  strange.
+- You can now type: mugen <char1> <char2> [stagename]
+  For example, if you type: mugen kfm kfm mystage
+  Then the game will load stages/mystage.def for the quickvs stage.
+
+- P2 is now invincible during the p1pausetime of p1's reversal.
+  Stops projectiles from interrupting the reversal.
+- Can now change states right away in intro (state 191).
+  You can use "p2name" trigger for special intros between people.
+
+Bugfixes
+--------
+- Fixed the floating point exception from having topz and botz being
+  equal in the stage definition.
+- You can't "influence" the AI by whacking its buttons anymore
+- Fixed a nasty bug where missing characters would cause Mugen to
+  crash at the versus screen.
+- Fixed problems where P2 bound to P1 by the TargetBind controller
+  would not fall down if P1 was hit.
+- Fixed some problems with reversals. Mainly, some parameters such as fall
+  and fall.yvelocity, etc were not working before.
+
+
+
+3 Sep 99
+========
+A lot of engine updates this time.
+At a glance:
+-Added reversal attacks
+-Guard cancels
+-Character palette effects
+-Added Training mode to main menu
+-Stage select in all but Arcade mode
+-Sound device configuration
+-MOD and S3M music capability (thanks to Guan Foo Wah's JGMOD)
+-Projectile control improvements
+-Lots of updates to state control
+-Various bug fixes
+
+Misc
+----
+- Added new hit spark: Use spark 0,6 for blood
+- Updated action numbers in docs/air.txt. Also added
+  something about flipping and transparency in air.
+
+Code
+----
+- Added Training Mode. Will add more functionality later.
+  If you want to turn on the CPU, Hit Ctrl-1 (p1) or Ctrl-2 (p2)
+- Select-cursor positions are now remembered in VS, Watch and Training.
+- CNS: Put in mod-playing capability. Supports, MOD, S3M and whatever 
+  works with JGMOD.
+  New in data/mugen.cfg:
+  [Sound]
+  playmod = ?
+  modvolume = ?
+- CNS: Added "height" to [Size] group.
+  Say you set "height = 60", then it means that if p2 is jumping
+  over p1 (p1 is standing), and p2's y-pos is < -60, then p2 will
+  pass through p1. This makes it easy to jump over tall people.
+  If omitted, defaults to 60.
+- CNS: "Projectile" controller:
+  Added "projID" parameter. Set to a number that you want to identify
+  the projectile with. If omitted, defaults to 0. Can ignore this
+  parameter if you don't want to do advanced projectile stuffs.
+- CNS: "Projectile" controller: "postype" parameter:
+  Added value "p2". If use "p2", then projectile is created relative to
+  the opponent. Useful for explosions that appear under the other guy's
+  feet and stuff.
+- CNS: Added "NumProjID" trigger.
+  Returns the number of projectiles that currently exist (doesn't
+  count the other player's projectiles, only yours), and
+  have the specified ID number. Place the ID number right after
+  "NumProjID" (no spaces). Eg,
+    trigger1 = NumProjID500 = 0
+  Triggers if there are no projectiles with ID number 500.
+  Note: If the ID number is omitted, defaults to 0.
+- CNS: Added "ProjHit", "ProjGuarded" and "ProjContact" triggers.
+  Works like MoveHit, etc, except it detects if a projectile
+  with the specified ID has hit. Like NumProjID, place the ID
+  number after the triggername. Eg,
+    trigger1 = ProjContact1000 = 0
+  Triggers if a projectile with ID 1000 has come in contact with p2.
+  Note: It will trigger once for each hit of the projectile, so
+  a multi-hit projectile can activate the trigger multiple times.
+  Note2: Unlike "MoveHit", etc, the "Projhit" triggers are valid only
+  for one game-tick after hit/contact.
+- CNS: "Superpause" controller:
+  Added "movetime" parameter. Set to the number of game-ticks to
+  allow the player to move DURING the superpause. Eg, "movetime = 30"
+  lets the player continue moving during the first 30 ticks of
+  the pause, while everything else in the game is frozen.
+- select.cfg: [Characters]: stagefilename made optional.
+  If you omit the stagefilename, a random stage will be chosen.
+- CNS: "Projectile" controller:
+  p1stateno and p2stateno parameters now work properly
+- CMD:
+  You can now interrupt guard by using a trigger like:
+  triggerall = command = some_command
+  trigger1 = stateno >= 150 ; These are the guard
+  trigger1 = stateno <= 153 ; states.
+- Added stage select to versus and watch modes.
+  To name your stage, add a group [Info] to your stage def,
+  and put the name in a parameter called "name". eg:
+  [Info]
+  name = My Stage Name
+- CNS: Added new controller "statetypeset".
+  Lets you change the statetype and/or the movetype in the
+  middle of a state. Params:
+    value = state_type
+    movetype = move_type
+  state_type is S, C, A or L
+  move_type is A, H or I
+- Changed to dynamically-allocated array for characters
+  in charsel.c
+- Fixed bug where you could not guard a hit after being hit
+  in the air (common1.cns problem that came up when fixing a
+  small combo-count bug last time)
+- Fixed bug where guard sounds played from the hit sound bank
+  instead of its own
+- Fixed bug in tiled backgrounds that had tilespacing
+- Allowed animated backgrounds to tile (the tilespacing parameter
+  must have values > 0)
+- Added sound configuration routines to data/mugen.cfg
+  See for details.
+- CNS: Added trigger "p2life" returns amount of life that p2 has
+- CNS: "LifeAdd" and "TargetLifeAdd" controllers:
+  Added "kill" parameter. Set "kill = 0" if you do not want
+  the player's life to go below 1.
+- CNS: "HitDef" controller:
+  Added "guard.pausetime" parameter. Like "pausetime", except
+  values are for guarded hits.
+- Added "Draw Game" state (state 175 in common1.cns)
+  Will go to this state if both players have same life when
+  time runs out. If player does not have anim 175, defaults
+  to "Time Over" state (state 170)
+- You can jump over people lying down in the corner now.
+- CMD: Added "s" button, for start. Use it like any other
+  button. If you want to make a taunt, you'll need to program
+  it into the CMD and CNS. Use state 195 for taunt.
+- CNS: Added "facep2" parameter to StateDef. If set to "1",
+  the player will turn to face p2 at the start of the
+  state (see cns docs).
+- CNS: Added new triggers: "FrontEdgeDist", "BackEdgeDist",
+  "FrontEdgeBodyDist", "BackEdgeBodyDist".
+  "FrontEdgeDist" is the x-distance of the player's x-axis
+  from the edge of the screen that is in front of the player.
+  "FrontEdgeDist" is the x-distance of the player's x-axis
+  from the edge of the screen that is behind the player.
+  "FrontEdgeBodyDist" and "BackEdgeBodyDist" are almost the
+  same as the other two, except it takes the distance
+  from the edge to the sides of the players, instead of
+  the x-axis.
+- CNS: Added new controller: "PalFX"
+  Adjusts palette of player.
+  Params:
+    time = time
+    mul = mulr, mulg, mulb
+    add = addr, addg, addb
+  time (int) - Time to keep the palette effect
+  mul? (int) - 0 for dark, 256 for normal, >256 for contrast
+  add? (int) - 0 for normal, -1 to -256 for dark, 1 to 256 for 
+               bright
+- CNS: HitDef controller:
+  Added new parameters:
+    palfx.time
+    palfx.mul
+    palfx.add
+  These are the same as "PalFX". It will do palette effects on
+  the opponent if the move hits.
+- common1.cns: player blinks white when recovering from fall
+- CNS: Projectile trigger: 
+  Added optional "projshadow" parameter. Set to color of
+  shadow: eg. 
+    projshadow = 64,64,64
+  To use stage's shadow color settings, set to -1, eg.
+    projshadow = -1
+- CNS: Added "Reversal" controller
+  Like HitDef, but with limited parameters
+  P1's clsn1 box catches p2's clsn1 box (attack).
+  New parameter:
+    p2attr = attr_list
+  attr_list is the list of attributes of p2's hitdef that
+  p1 can catch. eg. 
+    p2attr = SA, NA,SA
+  means Stand+Air, NormalAttack,SpecialAttack
+  Use with p1stateno (and optionally p2stateno) for creating
+  reversal attacks. Use a "targetbind" controller in p1's
+  reversal-success-state to bind p2, if necessary.
+- Fixed minor guard problem, where you could not immediately
+  guard low attacks if you weren't already crouching
+
+
+
+
+16 Aug 99
+=========
+At a glance:
+ - Animated backgrounds
+ - Change background implementation
+ - Lots of doc updates, but still far from done
+ - Music in title, select and versus screens
+ - Lots of small fixes
+
+Misc
+----
+- Updated docs for most things
+- New suggested life for players is 1000, instead of 256.
+- Moved all stage defs and sffs from data/ into the stages/ directory
+  If you made backgrounds, check your defs to set the files to
+  the stages/ directory.
+- Added new hit spark.
+
+Code
+----
+- Added BGM capability at Char Select and VS Screen.
+  Check select.cfg, under [Music].
+- Added BGM capability at Title Screen.
+  Check system.def, under [Music].
+- Does not require "sound = blah.snd" in the DEF file to run
+- Added screenshot to title screen
+- Changed implementation of backgrounds. Now a background x-position
+  of 0 corresponds to the middle of the screen. It can move left
+  (negative) and right (positive). This makes it much easier to
+  do the def for the backgrounds.
+  Parallax works slightly different now. If you use "width = ?,?"
+  it acts like it did before: scales the background to create a
+  perspective effect. If you use "xscale = ?,?" it doesn't
+  pull off the scaling. That way if you have a floor that already
+  looks "3D", it leaves it alone.
+  Player start x-positions should now be -70 and 70 for all stages.
+- Animated BGs at last! The anim data is kept in the def
+  file for the BGs.
+- Added "boundhigh", "boundlow" and "verticalfollow" to [Camera]
+  in stage0.def. Controls vertical movement.
+- Added key config to options
+- Now there's a line-fade when you skip the intro
+- CNS: Hitdef: Added "P" type to hitflag. If you have a hitflag
+  with "P" in it, the attack can cancel out projectiles.
+- CNS: Added new trigger: AnimExist = actionno
+  1 if actionno exists in P1's AIR, 0 if not.
+  Used this to fix small animation bug in common1.cns.
+
+KFM
+---
+- Changed life and damage to match new 1000 life.
+
+Bugfixes
+--------
+- Fixed skipping intro multiple times
+- Fixed another bug in common1.cns, where action 5040 would repeat
+  over and over in state 5040 (air recover)
+- Fixed the problem where you don't really get pushed back from
+  the corner if you're doing a combo. So now in the CNS, if you have
+  a "velset = 0" in the StateDef, it sets your x-velocity to 0 as
+  usual, except if the other guy is being hit in the corner.
+- Fixed bugs on timeover, where characters did not stop guarding
+  or crouching
+- Deletes projectiles if skipping intro (no more leftover KFM wood
+  pieces)
+- Fixed a bug it did not check hold-commands
+  for buttons. Like, /a and /b etc were not being detected
+- Fixed bug where keypresses are lost during game slowdown
+- Fixed the problem where the "command" state controller doesn't
+  work in the win pose -- useful for selecting the win pose by
+  holding buttons

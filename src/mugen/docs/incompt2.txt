@@ -1,0 +1,183 @@
+Incompatibility Notice for M.U.G.E.N ver 2000.06.27
+===================================================
+M.U.G.E.N, (c) Elecbyte 2000
+
+This document is meant for users who wish to update characters from 
+MUGEN version 2000.01.01 to work with 2000.06.27 and newer versions of 
+MUGEN.
+
+
+The following is a list of changes that must be performed to bring 
+characters into compliance with the 2000.06.27 CNS standard.
+
+1. Changed syntax for var, numprojid, ishelper, numhelper, numexplod 
+    triggers.ID numbers passed to these triggers must be enclosed
+    within parentheses (in older revisions of the CNS standard, these
+    ID numbers were suffixed to the trigger name). For instance, var8 
+    should now be written var(8).
+ 
+    Note: In a previous revision of this document, the projguarded,
+    projcancel, and projhit triggers were erroneously listed as having 
+    syntax changes similar to the above. The correct syntax for these
+    triggers, as given in trigger.txt, is unchanged from earlier
+    versions.
+
+2. Changed syntax for helper, target redirection keywords.
+    As above, ID numbers passed to these redirection keywords must be 
+    enclosed within parentheses, whereas they were appended to the 
+    keywords in previous versions.
+
+3. Changed syntax for animexist, selfanimexist triggers.
+    The action number to check with an animexist or selfanimexist
+    trigger must now be given in parentheses. For example,
+
+    (old) AnimExist = 5555
+    (new) AnimExist(5555)
+    
+    (old) SelfAnimExist != 5555
+    (new) !SelfAnimExist(5555)
+
+3. Velocity, position triggers removed.
+    The alternate keywords Velocity and Position are no longer accepted 
+    for the Vel and Pos triggers.
+
+4. Command names and player names must be enclosed in
+   double quotes.
+    Basically, any user-defined string must be quoted. For instance, 
+      trigger1 = command = Kumquat, Kiwi, and Penguin
+    should become
+      trigger1 = command = "Kumquat, Kiwi, and Penguin"
+    Also, any definition of a player name (whether in the DEF file,
+    as a parameter to the Helper state controller, or as an argument
+    to the p*name triggers) must also be given in quotes.
+
+5. Sloppy parsing versus strict parsing.
+    The parser is now much more exacting about the kinds of input it
+    will accept. This means that many syntax errors that would cause 
+    silent failures or glitches under the old parser will now be
+    rejected outright. It is, of course, not possible to give a 
+    comprehensive list of possible syntax errors, but common errors 
+    include the following:
+      *) typing => or =< instead of >= and <=
+      *) Failing to escape comments with a semicolon
+      *) Invalid use of strings as ID numbers (numexplodMyExplodType)
+      *) Specification of a floating-point number where an integer is 
+         expected
+      *) Typing . instead of , or vice versa
+      *) Listing more parameters than are expected by the state 
+         controller (see sctrls.doc)
+
+6. All spark references have been changed from 0,n (where n is the 
+   animation number) to just n.
+    For example, in a HitDef, 
+      sparkno = 0,6
+    would be:
+      sparkno = 6
+    In addition, most anim numbers in fightfx.air (formerly
+    staticfx.air) have been remapped. Here is the new mapping:
+    Standard effects
+    0 - light hit spark
+    1 - medium hit spark
+    2 - strong hit spark
+    3 - big super hit spark
+    10 - light blood hit spark
+    11 - medium blood hit spark
+    12 - strong blood hit spark
+    40 - light guard spark
+    41 - medium guard spark
+    42 - strong guard spark
+    60 - small ground shockwave
+    61 - medium ground shockwave
+    62 - big ground shockwave
+    70 - light wall-hit shockwave/spark
+    71 - medium wall-hit shockwave/spark
+    72 - strong wall-hit shockwave/spark
+    Other effects
+    100 - lv1 super spark
+    101 - lv2 super spark
+    102 - lv3 super spark
+    120 - small dust
+    130 - power-up effect
+    To map old numbers to new ones, change accordingly:
+    Old      New
+    ---      ---
+    0-4      0
+    5        1
+    6        12
+    7        2
+    15       60
+    20       40
+    30       100
+    31       102
+    50       120
+    100      130
+    After mapping the example given above would now be:
+    In a HitDef:
+      sparkno = 0,6
+    should be:
+      sparkno = 12
+
+7. Some required anim numbers have been changed.
+    These are the changes since the 2000.01.01 version of MUGEN:
+     Old     Changes
+    ----     -------
+    5100     Split into 5100, 5160
+    5101     Split into 5101, 5161
+    5105     Changed to 5170
+    5106     Changed to 5171
+    5051     Exchanged with 5060
+    5060     Exchanged with 5051
+    5150     Changed to 5140
+    5155     Changed to 5150
+    How to fix older characters:
+    1. Cut and paste the second element to the last element of action
+       5100 into a new action 5160. If there is only one element in
+       action 5100, just copy it.
+    2. Action 5100 should now have exactly one element in it. Set
+       the looptime of that element to 3.
+    3. Repeat step 1 and 2 for action 5101, if your character has it.
+       Instead of 5160, make an action 5161.
+    4. Change action number 5105 to 5170. Action 5105 is no longer
+       used.
+    5. Repeat step 4 for action 5106 (if you character has it),
+       changing it to 5171.
+    6. Change action number 5051 to 5060, and 5060 to 5051, if
+       they exist.
+    7. Change action number 5150 to 5140, and 5155 to 5150, if
+       they exist.
+    8. Check your character's .cns for references to any of the
+       affected actions, and modify the controllers accordingly.
+
+8. There are 10 new required sprites, in addition to the old set.
+    Refer to docs/spr.gif to see which new sprites your character
+    should have.
+
+9. In the character's cns file, having a fall flag on a Hitdef will
+   now force the opponent to fall in all cases. This is unlike
+   previous versions of MUGEN, where if p2 is standing and the
+   y-component of p1's ground.velocity is 0, then p2 does not fall.
+   Check your HitDefs to make sure they produce correct behavior.
+
+10. Characters are no longer frozen during PreIntro.
+    PreIntro is the time at the beginning of a round, when the
+    screen is fading in.
+    Character intro states will need to account for updates
+    during PreIntro. Use the RoundState trigger to tell
+    when PreIntro is over.
+    For most cases, it is a simple matter of freezing the
+    animation while RoundState = 0. For example, you can add
+    a state that looks like this:
+      [State 191, X]
+      type = ChangeAnim
+      trigger1 = RoundState = 0
+      value = 190
+
+12. Helpers no longer inherit State -2 controllers. Unless they have 
+    keyctrl=1, they no longer inherit State -1 controllers either.
+
+13. There are new fields in the .DEF file to specify a character's 
+    author, revision date, and minimum required version of MUGEN. See 
+    KFM's .DEF file for details.
+
+14. Stage names in stage .DEF files must be enclosed in double quotes, 
+    similarly to item 4.

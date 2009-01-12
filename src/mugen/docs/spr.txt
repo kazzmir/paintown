@@ -1,0 +1,157 @@
+The sprite standard
+===================
+M.U.G.E.N, (c) Elecbyte 2002
+Documentation for version 2002.04.14
+
+Updated 26 June 2000
+
+
+
+====================================================================
+0. Contents
+====================================================================
+
+I.   Required Sprites
+II.  Recommended group numbers
+
+
+
+====================================================================
+I. Required Sprites
+====================================================================
+
+Every character must have what is called "required sprites". These are
+sprites that you may not necessarily be using for your animations, but
+must always be included in the character's SFF. These sprites are
+necessary for your character to appear correctly when thrown.
+
+- Use only these standard frames when making a action in the .air file
+  that characters beside yourself will execute. For example, getting
+  thrown animation.
+- The horizontal component of "Axis" means around the center of the
+  character, unless specified otherwise
+
+Standard getting hit
+--------------------
+- You MUST follow the numbers exactly.
+- Axes labelled "where feet would be" should have the axis approximately
+  between where both feet would be, if the character was made to stand
+  with his center of gravity fixed in the same position as that required
+  frame
+- Axes labelled "midsection" should have the axis around the waist area
+- Axes labelled "head" should have the axis in the middle of the
+  character's head
+- Some numbers, such as 5000,1 to 5000,9 are for you to add intermediate
+  frames if you choose to do so.
+- See spr.gif for an example of how the sprites should approximately look
+  and where the axes should be placed.
+- Sprites labeled with an asterisk (*) are the new required sprites that
+  were added since MUGEN version 2000.06.27.
+
+Frame     Description                                  Axis
+-------   ------------                                 ----
+5000,0    Hit high while standing, head back slightly  Feet
+5000,10   Hit high while standing, head back more      Feet
+5000,20   Hit high while standing, head back far       Feet
+5001,0    Frame 5000,0                                 Midsection
+5001,10   Frame 5000,10                                Midsection
+5001,20   Frame 5000,20                                Midsection
+5002,0    Frame 5000,0                                 Head
+5002,10   Frame 5000,10                                Head
+5002,20   Frame 5000,20                                Head
+5010,0    Hit low while standing, bent over slightly   Feet
+5010,10   Hit low while standing, bent over more       Feet
+5010,20   Hit low while standing, bent over far        Feet
+5011,0    Frame 5010,0                                 Midsection
+5011,10   Frame 5010,10                                Midsection
+5011,20   Frame 5010,20                                Midsection
+5012,0    Frame 5010,0                                 Head
+5012,10   Frame 5010,10                                Head
+5012,20   Frame 5010,20                                Head
+5020,0    Hit while crouching, head back slightly      Feet
+5020,10   Hit while crouching, head back more          Feet
+5020,20   Hit while crouching, head back far           Feet
+5030,0    Hit back, head back slightly                 Where feet would be if standing
+5030,10   Hit back, head back far                      Where feet would be
+5030,20 * Hit in stomach with body horizontal          Where feet would be
+5030,30 * Hit back, body horizontal                    Where feet would be
+5030,40 * Falling, head down slightly                  Where feet would be
+5030,50 * Falling, head down far                       Where feet would be
+5031,0    Frame 5030,0                                 Midsection
+5031,10   Frame 5030,10                                Midsection
+5031,20 * Frame 5030,20                                Midsection
+5031,30 * Frame 5030,30                                Midsection
+5031,40 * Frame 5030,40                                Midsection
+5031,50 * Frame 5030,50                                Midsection
+5032,0    Frame 5030,0                                 Head
+5032,10   Frame 5030,10                                Head
+5032,20 * Frame 5030,20                                Head
+5032,30 * Frame 5030,30                                Head
+5032,40 * Frame 5030,40                                Head
+5032,50 * Frame 5030,50                                Head
+5040,0    Fall and hitting ground                      Ground-level (eg. back)
+5040,10   Lying down on ground                         Ground-level
+5040,20 * Hit while lying on ground                    Ground-level
+5041,0    Frame 5040,0                                 Middle of body
+5041,10   Frame 5040,10                                Middle of body
+5041,20 * Frame 5040,20                                Middle of body
+5042,0    Frame 5040,0                                 Head
+5042,10   Frame 5040,10                                Head
+5042,20 * Frame 5040,20                                Head
+5060,0  * Hit up, head pointed up, body vertical       Where feet would be if standing
+5060,10 * Head pointed down, body vertical             Where feet would be
+5061,0  * Frame 5060,0                                 Midsection
+5061,10 * Frame 5060,10                                Midsection
+5062,0  * Frame 5060,0                                 Head
+5062,10 * Frame 5060,10                                Head
+5070,0  * Thrown, body tiled forwards slightly         Where feet would be if standing
+5070,10 * Thrown, body tiled forwards far              Where feet would be
+5070,20 * Thrown, body horizontal, head in front       Where feet would be
+5071,0  * Frame 5070,0                                 Midsection
+5071,10 * Frame 5070,10                                Midsection
+5071,20 * Frame 5070,20                                Midsection
+5072,0  * Frame 5070,0                                 Head
+5072,10 * Frame 5070,10                                Head
+5072,20 * Frame 5070,20                                Head
+
+
+
+====================================================================
+II. Recommended group numbers
+====================================================================
+
+Group     Description                  Comments
+-------   ------------                 --------
+0         Standing
+5         Turning
+10        Stand to crouch
+11        Crouching
+12        Stand to crouch
+20        Walking forwards
+21        Walking backwards
+40        Jump start (on ground)
+41        Jump neutral (upwards)
+42        Jump forwards (upwards)
+43        Jump back (upwards)
+44        Jump neutral (downwards)
+45        Jump fwd (downwards)
+46        Jump back (downwards)
+47        Jump landing
+100       Run fwd
+105       Hop back
+110       Dodge up                     
+115       Dodge down
+120       Start guarding (stand)
+121       Start guarding (crouch)
+122       Start guarding (air)
+130       Guard (stand)
+131       Guard (crouch)
+132       Guard (air)
+140       Stop guarding (stand)
+141       Stop guarding (crouch)
+142       Stop guarding (air)
+150       Guarding a hit (stand)
+151       Guarding a hit (crouch)
+152       Guarding a hit (air)
+
+

@@ -1,0 +1,83 @@
+/*--| SFF file structure
+|--------------------------------------------------*\
+  Version 1.01
+HEADER (512 bytes)
+------
+Bytes
+00-11  "ElecbyteSpr\0" signature				[12]
+12-15  1 verhi, 1 verlo, 1 verlo2, 1 verlo3			[04]
+16-19  Number of groups						[04]
+20-24  Number of images						[04]
+24-27  File offset where first subfile is located		[04]
+28-31  Size of subheader in bytes				[04]
+32     Palette type (1=SPRPALTYPE_SHARED or 0=SPRPALTYPE_INDIV)	[01]
+33-35  Blank; set to zero					[03]
+36-511 Blank; can be used for comments				[476]
+
+SUBFILEHEADER (32 bytes)
+-------
+Bytes
+00-03 File offset where next subfile in the "linked list" is	[04] 
+      located.  Null if last subfile
+
+04-07 Subfile length (not including header)			[04]
+      Length is 0 if it is a linked sprite
+08-09 Image axis X coordinate					[02]
+10-11 Image axis Y coordinate					[02]
+12-13 Group number						[02]
+14-15 Image number (in the group)				[02]
+16-17 Index of previous copy of sprite (linked sprites only)	[02]
+      This is the actual
+18    True if palette is same as previous image			[01]
+19-31 Blank; can be used for comments				[14]
+32-   PCX graphic data. If palette data is available, it is the last
+      768 bytes.
+\*--------------------------------------------------------------------------*/
+
+
+
+/*--| SND file structure
+|--------------------------------------------------*\
+  Version 1.01
+HEADER
+------
+Bytes
+00-11  "ElecbyteSnd\0" signature				[12]
+12-15  4 verhi, 4 verlo						[04]
+16-19  Number of sounds						[04]
+20-23  File offset where first subfile is located.		[04]
+24-511 Blank; can be used for comments.				[488]
+
+SUBFILEHEADER
+-------
+Bytes
+00-03 File offset where next subfile in the linked list is	[04]
+      located. Null if last subfile.
+04-07 Subfile length (not including header.)			[04]
+08-11 Group number						[04]
+12-15 Sample number						[04]
+08-   Sound data (WAV)
+
+\*--------------------------------------------------------------------------*/
+
+
+/*--| FNT file structure |--------------------------------------------------*\
+/*
+ * Very simple file format, formed by concatenating a pcx file and a text
+ * file together and prepending a header.
+ * May be optimized for size by stripping the text file of comments before
+ * adding it to the .fnt file. Be sure text data comes last in the file.
+ */
+
+  Version 1.0
+HEADER
+------
+Bytes
+00-11  "ElecbyteFnt\0" signature                                         [12]
+12-15  2 verhi, 2 verlo                                                  [04]
+16-20  File offset where PCX data is located.                            [04]
+20-23  Length of PCX data in bytes.                                      [04]
+24-27  File offset where TEXT data is located.                           [04]
+28-31  Length of TEXT data in bytes.                                     [04]
+32-63  Blank; can be used for comments.                                  [40]
+\*--------------------------------------------------------------------------*/
