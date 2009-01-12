@@ -10,8 +10,8 @@ header("empty"){
   reset();
 }
 
-MugenSection::MugenSection() :
-header("empty"){
+MugenSection::MugenSection( const std::string &name ) :
+header( name ){
 }
 
 MugenSection::~MugenSection(){
@@ -25,8 +25,7 @@ MugenSection & MugenSection::operator=( MugenSection & s){
   return *this;
 }
 
-MugenSection & MugenSection::operator<<( const MugenItemContent & item ) throw (MugenException){
-  if( header.empty() )throw MugenException("This section isn't named!");
+MugenSection & MugenSection::operator<<( const MugenItemContent & item ){
   itemContent.push_back( item );
   itemContentQueue.push( &itemContent.back() );
   
