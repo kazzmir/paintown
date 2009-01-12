@@ -5,6 +5,8 @@
 #include <map>
 #include "mugen_config_exception.h"
 
+class MugenItemContent;
+
 /* Item represents a section in the mugen Configuration file
 example:
 --------------------------------
@@ -29,11 +31,13 @@ that are stored by the lead item
 class MugenSection{
 public:
 
-    MugenSection( ConfigSection const & copy );
+    MugenSection( MugenSection const & copy );
     MugenSection();
     virtual ~MugenSection();
     
-    inline const std::string &getHeader() const { return header; }
+    const std::string &getHeader() const; { return header; }
+    
+    MugenSection & operator=( MugenSection & s);
     
   private:
     std::string header;

@@ -5,13 +5,15 @@
 #include <vector>
 #include <queue>
 
+class MugenItem;
+
 // This hold several Mugen Items
 // example like a sprite group number, sprite number, pos x, pos y, display time/ticks, flip, color addition
 // so the total MugenItems will have between 5 to 7 entries (last two are optional)
 
 class MugenItemContent{
   public:
-    MugenItemContent( MugenItemContent const & copy );
+    MugenItemContent( const MugenItemContent & copy );
     MugenItemContent();
     virtual ~MugenItemContent();
     
@@ -19,14 +21,19 @@ class MugenItemContent{
     
     void reset();
     
-    MugenItemContent & operator=( const MugenItemContent & i);
-    MugenItemContent & operator<<( const string & item );
+    MugenItemContent & operator=( MugenItemContent & i);
+  
+    MugenItemContent & operator<<( const std::string & item );
+ 
+    const MugenItem & getNext();
     
-    inline const std::string &getHead() const { return items.front().query(); };
+    const std::string & getHead() const;
     
   private:
-    std::queue< const MugenItem &> itemQueue;
+    std::queue< const MugenItem *> itemQueue;
     std::vector< MugenItem > items;
+    
+    static MugenItem empty;
 };
 
 
