@@ -35,7 +35,7 @@ public:
     MugenSection();
     virtual ~MugenSection();
     
-    const std::string &getHeader() const; { return header; }
+    const std::string &getHeader() const { return header; }
     
     MugenSection & operator=( MugenSection & s);
     
