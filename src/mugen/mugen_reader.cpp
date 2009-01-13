@@ -88,7 +88,7 @@ const std::vector< MugenSection > & MugenReader::getCollection() throw(MugenExce
 		    if( !contentHolder.empty() ){
 		      itemHolder << contentHolder;
 		    }
-		    sectionHolder << itemHolder;
+		    sectionHolder << new MugenItemContent(itemHolder);
 		  }
 		  breakLoop = true;
 		  break;
@@ -97,7 +97,7 @@ const std::vector< MugenSection > & MugenReader::getCollection() throw(MugenExce
 		if( i+1 == line.size() && !contentHolder.empty() ){
 		    if ( line[i] != ' ' ) contentHolder += line[i];
 		    itemHolder << contentHolder;
-		    sectionHolder << itemHolder;
+		    sectionHolder << new MugenItemContent(itemHolder);
 		    breakLoop = true;
 		    break;
 		}

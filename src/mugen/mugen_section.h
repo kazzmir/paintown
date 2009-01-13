@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <queue>
 #include "mugen_exception.h"
 
 class MugenItemContent;
@@ -38,13 +37,13 @@ public:
     
     inline const std::string &getHeader() const { return header; }
     inline void setHeader( std::string & name ){ header = name; }
-    inline bool hasItems()const { return !itemContentQueue.empty(); }
+    const bool hasItems()const;
     
     MugenSection & operator=( const MugenSection & s);
     
-    MugenSection & operator<<( const MugenItemContent & item ) throw( MugenException );
+    MugenSection & operator<<( MugenItemContent * item ) throw( MugenException );
     
-    const MugenItemContent & getNext();
+    const MugenItemContent * getNext();
     
     void reset();
     
@@ -52,8 +51,8 @@ public:
     
   private:
     std::string header;
-    std::queue< MugenItemContent * > itemContentQueue;
-    std::vector< MugenItemContent > itemContent;
+    unsigned int contentCounter;
+    std::vector< MugenItemContent * > itemContent;
     
     // Empty MugenItemContent
     static MugenItemContent empty;

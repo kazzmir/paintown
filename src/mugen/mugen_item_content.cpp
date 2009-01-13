@@ -3,39 +3,48 @@
 
 MugenItem MugenItemContent::empty("empty");
 
-MugenItemContent::MugenItemContent( const MugenItemContent & copy ){
+MugenItemContent::MugenItemContent( const MugenItemContent & copy ) : 
+itemCounter(0){
   items = copy.items;
   reset();
 }
 
-MugenItemContent::MugenItemContent(){
+MugenItemContent::MugenItemContent() :
+itemCounter(0){
 }
 
 MugenItemContent::~MugenItemContent(){
-}
-
-void MugenItemContent::reset(){
-  while( !itemQueue.empty() )itemQueue.pop();
-  for ( std::vector< MugenItem >::iterator begin = items.begin() ; begin != items.end() ; ++begin ){
-    this->itemQueue.push( &items.back() );
+  for( std::vector< MugenItem *>::iterator i = items.begin(); i != items.end(); ++i ){
+      delete (*i);
   }
 }
 
+const bool MugenItemContent::hasItems()const { 
+  return ( itemCounter < items.size() ); 
+}
+
+void MugenItemContent::reset(){
+  itemCounter = 0;
+}
+
 void MugenItemContent::clear(){
-  while( !itemQueue.empty() )itemQueue.pop();
+  itemCounter = 0;
+  for( std::vector< MugenItem *>::iterator i = items.begin(); i != items.end(); ++i ){
+      delete (*i);
+  }
   items.clear();
 }
 
-const MugenItem & MugenItemContent::getNext(){
-  if( items.empty() )return empty;
-  const MugenItem *temp = itemQueue.front();
-  itemQueue.pop();
-  return *temp;
+const MugenItem * MugenItemContent::getNext(){
+  if( items.empty() || itemCounter == items.size() )return &empty;
+  const unsigned int temp = itemCounter;
+  itemCounter++;
+  return items[temp];
 }
 
 const std::string & MugenItemContent::getHead() const{ 
    if( items.empty() ) empty.query();
-   return items.front().query(); 
+   return items.front()->query(); 
 }
 
 MugenItemContent & MugenItemContent::operator=( const MugenItemContent & i){
@@ -45,8 +54,7 @@ MugenItemContent & MugenItemContent::operator=( const MugenItemContent & i){
 }
 
 MugenItemContent & MugenItemContent::operator<<( const std::string & item ){
-  this->items.push_back( MugenItem( item ) );
-  this->itemQueue.push( &items.back() );
+  this->items.push_back( new MugenItem( item ) );
   return *this;
 }
 

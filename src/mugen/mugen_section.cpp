@@ -4,52 +4,59 @@
 MugenItemContent MugenSection::empty;
 
 MugenSection::MugenSection( MugenSection const & copy ) :
-header("empty"){
+header("empty"),
+contentCounter(0){
   this->header = copy.header;
   this->itemContent = copy.itemContent;
-  reset();
+  this->reset();
 }
 
 MugenSection::MugenSection() :
-header( "empty" ){
+header( "empty" ),
+contentCounter(0){
 }
 
 MugenSection::~MugenSection(){
+  for( std::vector< MugenItemContent *>::iterator i = itemContent.begin(); i != itemContent.end(); ++i ){
+      delete (*i);
+  }
+}
+
+const bool MugenSection::hasItems()const { 
+  return ( contentCounter < itemContent.size() ); 
 }
     
 MugenSection & MugenSection::operator=( const MugenSection & s){
   this->header = s.header;
   this->itemContent = s.itemContent;
-  reset();
+  this->reset();
   
   return *this;
 }
 
-MugenSection & MugenSection::operator<<( const MugenItemContent & item ) throw( MugenException ){
-  if ( header == "empty" ) throw MugenException("This section has no header, cannot add items!");
-  itemContent.push_back( item );
-  itemContentQueue.push( &itemContent.back() );
-  
+MugenSection & MugenSection::operator<<( MugenItemContent * item ) throw( MugenException ){
+  if ( header == "empty" ) throw MugenException( std::string("This section has no header, cannot add items!") );
+  this->itemContent.push_back( item );  
   return *this;
   
 }
     
-const MugenItemContent & MugenSection::getNext(){
-  if( itemContent.empty() )return empty;
-  const MugenItemContent *temp = itemContentQueue.front();
-  itemContentQueue.pop();
-  return *temp;
+const MugenItemContent * MugenSection::getNext(){
+  if( itemContent.empty() || ( contentCounter == itemContent.size() ) )return &empty;
+  const unsigned int temp = contentCounter;
+  contentCounter++;
+  return itemContent[temp];
 }
 
 void MugenSection::reset(){
-  while( !itemContentQueue.empty() )itemContentQueue.pop();
-  for ( std::vector< MugenItemContent >::iterator begin = itemContent.begin() ; begin != itemContent.end() ; ++begin ){
-    this->itemContentQueue.push( &itemContent.back() );
-  }
+  contentCounter =0;
 }
 
 void MugenSection::clear(){
-  while( !itemContentQueue.empty() )itemContentQueue.pop();
+  contentCounter = 0;
+  for( std::vector< MugenItemContent *>::iterator i = itemContent.begin(); i != itemContent.end(); ++i ){
+      delete (*i);
+  }
   itemContent.clear();
   header = "empty";
 }

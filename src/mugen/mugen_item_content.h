@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <queue>
 
 class MugenItem;
 
@@ -17,7 +16,7 @@ class MugenItemContent{
     MugenItemContent();
     virtual ~MugenItemContent();
     
-    inline bool hasItems()const { return !itemQueue.empty(); }
+    const bool hasItems() const;
     
     void reset();
     
@@ -27,13 +26,13 @@ class MugenItemContent{
   
     MugenItemContent & operator<<( const std::string & item );
  
-    const MugenItem & getNext();
+    const MugenItem * getNext();
     
     const std::string & getHead() const;
     
   private:
-    std::queue< const MugenItem *> itemQueue;
-    std::vector< MugenItem > items;
+    unsigned int itemCounter;
+    std::vector< MugenItem *> items;
     
     static MugenItem empty;
 };

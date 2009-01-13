@@ -50,10 +50,10 @@ int main( int argc, char ** argv ){
 		}
 	}
 	
-	MugenReader reader( ourFile );
+	//MugenReader reader( ourFile );
 	
-	std::vector< MugenSection > collection;
-	
+	//std::vector< MugenSection > collection;
+	/*
 	try{
 	  collection = reader.getCollection();
 	  cout << endl << "---------------------------------------------------------" << endl;
@@ -75,7 +75,33 @@ int main( int argc, char ** argv ){
 	    cout << "Problem loading file, error was: " << ex.getReason() << endl;
 	    return 1;
 	}
+	*/
 	
+	MugenSection test;
+	std::string st = "stuff";
+	test.setHeader( st );
+	MugenItemContent cont;
+	cont << "one";
+	cont << "two";
+	cont << "three";
+	cont << "four";
+	test << &cont;
+	cont.clear();
+	cont << "five";
+	cont << "six";
+	cont << "seven";
+	cont << "eight";
+	test << &cont;
+	
+	while( test.hasItems() ){
+		const MugenItemContent *content = test.getNext();
+		while( content->hasItems() ){
+		  const MugenItem *temp = content->getNext();
+		  cout << temp->query() << ",";
+		}
+		cout << endl;
+	    }
+	    cout << endl;
 	
 	return 0;
 }
