@@ -26,8 +26,7 @@ protected:
 	
 	enum SearchState{
 	  Section = 0,
-	  ContentGet,
-	  ContentNext
+	  ContentGet
 	};
 	
 	void addSection( MugenSection section );
