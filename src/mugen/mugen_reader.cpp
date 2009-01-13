@@ -52,14 +52,19 @@ const std::vector< MugenSection > & MugenReader::getCollection() throw(MugenExce
       std::string contentHolder = "";
       // Place holder to put back all the grabbed content
       MugenItemContent itemHolder;
+      // Needed to kill loop
+      bool breakLoop = false;
       
       for( unsigned int i = 0; i < line.size(); ++i ){
-	    if ( line[i] == ' ' && (!beginSection || !inQuote) )continue;
 	    // Go to work
 	    switch( state ){
 	      case Section:{
 		// Done with this
-		if( line[i] == comment )break;
+		if( line[i] == comment ){
+		  breakLoop = true;
+		  break;
+		}
+		else if ( line[i] == ' ' && !beginSection )continue;
 		//Start grabbing our section
 		else if( line[i] == openbracket){
 		  beginSection = true;
@@ -69,24 +74,45 @@ const std::vector< MugenSection > & MugenReader::getCollection() throw(MugenExce
 		  sectionHolder.setHeader( contentHolder );
 		  state = ContentGet;
 		  beginSection = false;
+		  breakLoop = true;
 		  break;
 		}
 		else if( beginSection )contentHolder += line[i];
-		break;
 	      }
-	      case ContentGet:{
-	      default:
+	      break;
+	      case ContentGet:
+	      default:{
 		// Done with this
 		if( line[i] == comment ){
-		  if( itemHolder.hasItems() )sectionHolder << itemHolder;
+		  if( itemHolder.hasItems() ){
+		    if( !contentHolder.empty() ){
+		      itemHolder << contentHolder;
+		    }
+		    sectionHolder << itemHolder;
+		  }
+		  breakLoop = true;
 		  break;
 		}
+		// Check if we are near the end to kill it
+		if( i+1 == line.size() && !contentHolder.empty() ){
+		    if ( line[i] != ' ' ) contentHolder += line[i];
+		    itemHolder << contentHolder;
+		    sectionHolder << itemHolder;
+		    breakLoop = true;
+		    break;
+		}
+		// Buh bye spaces
+		if ( line[i] == ' ' && !inQuote ){
+		  continue;
+		}
 		// This section is done, push it on the stack and reset everything
-		else if( line[i] == openbracket ){
-		  collection.push_back(sectionHolder);
+		if( line[i] == openbracket ){
+		  if( sectionHolder.hasItems() )addSection( sectionHolder );
 		  sectionHolder.reset();
 		  beginSection = true;
 		  state = Section;
+		  contentHolder = "";
+		  break;
 		}
 		// We got one push back the other and reset the holder to get the next
 		else if( line[i] == colon || line[i] == seperator || line[i] == equal ){
@@ -99,11 +125,16 @@ const std::vector< MugenSection > & MugenReader::getCollection() throw(MugenExce
 		}
 		//Start grabbing our item
 		else contentHolder += line[i];
-		break;
 	      }
+	      break;
 	    }
+	    if( breakLoop )break;
+	    
+	    std::cout << contentHolder << endl;
       }
   }
+  // Add in last section
+  if( sectionHolder.hasItems() )addSection( sectionHolder );
   
   return collection;
 }

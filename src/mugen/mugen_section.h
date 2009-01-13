@@ -38,8 +38,9 @@ public:
     
     inline const std::string &getHeader() const { return header; }
     inline void setHeader( std::string & name ){ header = name; }
+    inline bool hasItems()const { return !itemContentQueue.empty(); }
     
-    MugenSection & operator=( MugenSection & s);
+    MugenSection & operator=( const MugenSection & s);
     
     MugenSection & operator<<( const MugenItemContent & item ) throw( MugenException );
     

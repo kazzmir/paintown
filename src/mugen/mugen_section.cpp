@@ -17,7 +17,7 @@ header( "empty" ){
 MugenSection::~MugenSection(){
 }
     
-MugenSection & MugenSection::operator=( MugenSection & s){
+MugenSection & MugenSection::operator=( const MugenSection & s){
   this->header = s.header;
   this->itemContent = s.itemContent;
   reset();
