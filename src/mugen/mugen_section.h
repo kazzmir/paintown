@@ -43,7 +43,7 @@ public:
     
     MugenSection & operator<<( MugenItemContent * item ) throw( MugenException );
     
-    const MugenItemContent * getNext();
+    MugenItemContent * getNext();
     
     void reset();
     

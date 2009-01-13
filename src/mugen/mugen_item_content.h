@@ -26,7 +26,7 @@ class MugenItemContent{
   
     MugenItemContent & operator<<( const std::string & item );
  
-    const MugenItem * getNext();
+    MugenItem * getNext();
     
     const std::string & getHead() const;
     

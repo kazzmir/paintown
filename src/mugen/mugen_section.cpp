@@ -41,7 +41,7 @@ MugenSection & MugenSection::operator<<( MugenItemContent * item ) throw( MugenE
   
 }
     
-const MugenItemContent * MugenSection::getNext(){
+MugenItemContent * MugenSection::getNext(){
   if( itemContent.empty() || ( contentCounter == itemContent.size() ) )return &empty;
   const unsigned int temp = contentCounter;
   contentCounter++;

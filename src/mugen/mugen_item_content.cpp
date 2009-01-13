@@ -35,7 +35,7 @@ void MugenItemContent::clear(){
   items.clear();
 }
 
-const MugenItem * MugenItemContent::getNext(){
+MugenItem * MugenItemContent::getNext(){
   if( items.empty() || itemCounter == items.size() )return &empty;
   const unsigned int temp = itemCounter;
   itemCounter++;

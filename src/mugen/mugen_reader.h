@@ -15,21 +15,21 @@ public:
 
 	~MugenReader();
 	
-	const std::vector< MugenSection > & getCollection() throw(MugenException);
+	const std::vector< MugenSection * > & getCollection() throw(MugenException);
 
 protected:
 
 	std::ifstream ifile;
 	std::string myfile;
 	
-	std::vector< MugenSection >collection;
+	std::vector< MugenSection * >collection;
 	
 	enum SearchState{
 	  Section = 0,
 	  ContentGet
 	};
 	
-	void addSection( MugenSection section );
+	void addSection( MugenSection * section );
 };
 
 #endif
