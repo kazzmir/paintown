@@ -21,6 +21,11 @@ void MugenItemContent::reset(){
   }
 }
 
+void MugenItemContent::clear(){
+  while( !itemQueue.empty() )itemQueue.pop();
+  items.clear();
+}
+
 const MugenItem & MugenItemContent::getNext(){
   if( items.empty() )return empty;
   const MugenItem *temp = itemQueue.front();

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include "mugen_exception.h"
 
 class MugenItemContent;
 
@@ -32,18 +33,21 @@ class MugenSection{
 public:
 
     MugenSection( MugenSection const & copy );
-    MugenSection( const std::string &name );
+    MugenSection();
     virtual ~MugenSection();
     
     inline const std::string &getHeader() const { return header; }
+    inline void setHeader( std::string & name ){ header = name; }
     
     MugenSection & operator=( MugenSection & s);
     
-    MugenSection & operator<<( const MugenItemContent & item );
+    MugenSection & operator<<( const MugenItemContent & item ) throw( MugenException );
     
     const MugenItemContent & getNext();
     
     void reset();
+    
+    void clear();
     
   private:
     std::string header;

@@ -19,10 +19,18 @@ public:
 
 protected:
 
-	ifstream ifile;
-	string myfile;
+	std::ifstream ifile;
+	std::string myfile;
 	
 	std::vector< MugenSection >collection;
+	
+	enum searchState{
+	  section = 0,
+	  contentGet,
+	  contentNext
+	};
+	
+	void addSection( MugenSection section );
 };
 
 #endif

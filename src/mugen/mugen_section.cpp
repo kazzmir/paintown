@@ -10,8 +10,8 @@ header("empty"){
   reset();
 }
 
-MugenSection::MugenSection( const std::string &name ) :
-header( name ){
+MugenSection::MugenSection() :
+header( "empty" ){
 }
 
 MugenSection::~MugenSection(){
@@ -25,7 +25,8 @@ MugenSection & MugenSection::operator=( MugenSection & s){
   return *this;
 }
 
-MugenSection & MugenSection::operator<<( const MugenItemContent & item ){
+MugenSection & MugenSection::operator<<( const MugenItemContent & item ) throw( MugenException ){
+  if ( header == "empty" ) throw MugenException("This section has no header, cannot add items!");
   itemContent.push_back( item );
   itemContentQueue.push( &itemContent.back() );
   
@@ -47,4 +48,9 @@ void MugenSection::reset(){
   }
 }
 
+void MugenSection::clear(){
+  while( !itemContentQueue.empty() )itemContentQueue.pop();
+  itemContent.clear();
+  header = "empty";
+}
 
