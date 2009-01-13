@@ -24,10 +24,10 @@ protected:
 	
 	std::vector< MugenSection >collection;
 	
-	enum searchState{
-	  section = 0,
-	  contentGet,
-	  contentNext
+	enum SearchState{
+	  Section = 0,
+	  ContentGet,
+	  ContentNext
 	};
 	
 	void addSection( MugenSection section );
