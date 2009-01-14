@@ -8,6 +8,11 @@
 #include "mugen_section.h"
 #include "mugen_reader.h"
 
+// Check for Clsn
+bool checkClsn( const std::string &clsn ){
+  return ( clsn.find("Clsn") != std::string::npos );
+}
+
 MugenReader::MugenReader( const char * file ){
   ifile.open( file );
   myfile = string( file );
@@ -36,11 +41,20 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
   
   const char openbracket = '[';
   const char closebracket = ']';
+  const char openparen = '(';
+  const char closeparen = ')';
   const char comment = ';';
   const char seperator = ',';
   const char colon = ':';
   const char equal = '=';
+  const char notequal = '!';
   const char quote = '"';
+  const char orcondition = '|';
+  const char andcondition = '&';
+  const char greater = '>';
+  const char less = '<';
+  const char add = '+';
+  const char multiply = '*';
   
   
   SearchState state = Section;
@@ -110,16 +124,143 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 		if ( line[i] == ' ' && !inQuote ){
 		  continue;
 		}
-		// This section is done, push it on the stack and reset everything
-		if( line[i] == openbracket ){
+		// Check if this section is done, push it on the stack and reset everything
+		if( line[i] == openbracket && !checkClsn( contentHolder ) && !itemHolder->hasItems() ){
 		  if( sectionHolder->hasItems() )addSection( sectionHolder );
 		  beginSection = true;
 		  state = Section;
 		  contentHolder = "";
 		  break;
 		}
+		// It's peanut butter bracket time
+		else if( line[i] == openbracket && !checkClsn( contentHolder ) && !inQuote ){
+		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  contentHolder = openbracket;
+		  *itemHolder << contentHolder;
+		  contentHolder = "";
+		}
+		else if( line[i] == closebracket && !checkClsn( contentHolder )  && !inQuote ){
+		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  contentHolder = closebracket;
+		  *itemHolder << contentHolder;
+		  contentHolder = "";
+		}
 		// We got one push back the other and reset the holder to get the next
-		else if( line[i] == colon || line[i] == seperator || line[i] == equal ){
+		else if( line[i] == colon || line[i] == seperator ){
+		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  contentHolder = "";
+		}
+		// Conditional or
+		else if( line[i] == orcondition && !inQuote ){
+		  // Check to see if the next line is another |
+		  if( i+1 != line.size() ){
+		    if( line[i+1] == orcondition ){
+			if( !contentHolder.empty() ) *itemHolder << contentHolder;
+			contentHolder = orcondition;
+		    }
+		    else {
+		      contentHolder += orcondition;
+		      *itemHolder << contentHolder;
+		      contentHolder = "";
+		    }
+		  }
+		}
+		// Conditional and
+		else if( line[i] == andcondition && !inQuote ){
+		  // Check to see if the next line is another &
+		  if( i+1 != line.size() ){
+		    if( line[i+1] == andcondition ){
+			if( !contentHolder.empty() ) *itemHolder << contentHolder;
+			contentHolder = andcondition;
+		    }
+		    else {
+		      contentHolder += andcondition;
+		      *itemHolder << contentHolder;
+		      contentHolder = "";
+		    }
+		  }
+		}
+		// Parenthesis open
+		else if(line[i] == openparen && !inQuote ){
+		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  contentHolder = openparen;
+		  *itemHolder << contentHolder;
+		  contentHolder = "";
+		}
+		// Parenthesis closed
+		else if(line[i] == closeparen && !inQuote ){
+		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  contentHolder = closeparen;
+		  *itemHolder << contentHolder;
+		  contentHolder = "";
+		}
+		// Equal
+		else if(line[i] == equal && !inQuote ){
+		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  contentHolder = equal;
+		  *itemHolder << contentHolder;
+		  contentHolder = "";
+		}
+		// Not Equal
+		else if( line[i] == notequal && !inQuote ){
+		  // Check to see if the next line is =
+		  if( i+1 != line.size() ){
+		    if( line[i+1] == equal ){
+			if( !contentHolder.empty() ) *itemHolder << contentHolder;
+			contentHolder = "!=";
+			*itemHolder << contentHolder;
+			contentHolder = "";
+			i++;
+		    }
+		  }
+		}
+		// Greater than
+		else if(line[i] == greater && !inQuote ){
+		   // Check to see if the next line is =
+		  if( i+1 != line.size() ){
+		    if( line[i+1] == equal ){
+			if( !contentHolder.empty() ) *itemHolder << contentHolder;
+			contentHolder = ">=";
+			*itemHolder << contentHolder;
+			contentHolder = "";
+			i++;
+		    } else{
+			if( !contentHolder.empty() ) *itemHolder << contentHolder;
+			contentHolder = greater;
+			*itemHolder << contentHolder;
+			contentHolder = "";
+		    }
+		  } 
+		}
+		// Less than
+		else if(line[i] == less && !inQuote ){
+		   // Check to see if the next line is =
+		  if( i+1 != line.size() ){
+		    if( line[i+1] == equal ){
+			if( !contentHolder.empty() ) *itemHolder << contentHolder;
+			contentHolder = "<=";
+			*itemHolder << contentHolder;
+			contentHolder = "";
+			i++;
+		    } else{
+			if( !contentHolder.empty() ) *itemHolder << contentHolder;
+			contentHolder = less;
+			*itemHolder << contentHolder;
+			contentHolder = "";
+		    }
+		  } 
+		}
+		// Add
+		else if(line[i] == add && !inQuote ){
+		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  contentHolder = add;
+		  *itemHolder << contentHolder;
+		  contentHolder = "";
+		}
+		// Multiply
+		else if(line[i] == multiply && !inQuote ){
+		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  contentHolder = multiply;
 		  *itemHolder << contentHolder;
 		  contentHolder = "";
 		}
