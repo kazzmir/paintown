@@ -9,7 +9,7 @@
 #include "mugen_reader.h"
 
 // Check for Clsn
-bool checkClsn( const std::string &clsn ){
+static bool checkClsn( const std::string &clsn ){
   return ( clsn.find("Clsn") != std::string::npos );
 }
 
