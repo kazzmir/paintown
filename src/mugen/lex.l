@@ -7,6 +7,7 @@
 %%
 
 	void * dont_care = yyunput;
+	void * dont_care2 = input;
 
 /*
 main(){
