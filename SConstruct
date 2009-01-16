@@ -211,6 +211,10 @@ else:
     except OSError:
         pass
 
+    # lex library
+    env.Append(LIBS = ['l'])
+    staticEnv.Append(LIBS = ['l'])
+
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
     png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )

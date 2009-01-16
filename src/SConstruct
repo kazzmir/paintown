@@ -25,6 +25,9 @@ scripts = Split("""
 script/modules/paintown.py
 """);
 
+obj_files.append(use.CFile('mugen/lex', 'mugen/lex.l'))
+obj_files.append(use.CFile('mugen/parse', 'mugen/parse.y'))
+
 def icon():
     if isWindows():
         return ['windows/game.res']
