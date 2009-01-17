@@ -10,6 +10,18 @@ def isOSX():
     import sys
     return "darwin" in sys.platform
 
+def checkLex(context):
+    context.Message("Checking for lex... ")
+    ret = context.TryAction("lex -V")[0] == 1
+    context.Result(ret)
+    return ret
+
+def checkYacc(context):
+    context.Message("Checking for yacc... ")
+    ret = context.TryAction("yacc -V")[0] == 1
+    context.Result(ret)
+    return ret
+
 def checkPython(context):
     import distutils.sysconfig
     context.Message("Checking if python is embeddable... ")
@@ -166,11 +178,16 @@ staticEnv = env.Clone()
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 
+custom_tests = {"CheckPython" : checkPython,
+                "CheckLex" : checkLex,
+                "CheckYacc" : checkYacc}
 
 if isWindows():
 
-    config = env.Configure(custom_tests = {"CheckPython" : checkPython})
+    config = env.Configure(custom_tests = custom_tests)
     config.CheckPython()
+    config.CheckLex()
+    config.CheckYacc()
     env = config.Finish()
     
     staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
@@ -199,7 +216,7 @@ else:
         staticEnv[ 'CXX' ] = 'misc/g++'
         staticEnv[ 'CC' ] = 'misc/gcc'
     
-    config = env.Configure(custom_tests = {"CheckPython" : checkPython})
+    config = env.Configure(custom_tests = custom_tests)
     try:
         config.env.ParseConfig( 'allegro-config --libs --cflags' )
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
@@ -240,6 +257,12 @@ else:
         print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
         Exit( 1 )
     config.CheckPython()
+    if not config.CheckLex():
+        print "** Install a lex package such as flex"
+        Exit(1)
+    if not config.CheckYacc():
+        print "** Install a yacc package such as bison"
+        Exit(1)
 
     env = config.Finish()
 
