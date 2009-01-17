@@ -24,6 +24,7 @@ MugenReader::MugenReader( const string & file ){
 }
 
 MugenReader::~MugenReader(){
+  ifile.close();
   
   for( std::vector< MugenSection * >::iterator i = collection.begin() ; i != collection.end() ; ++i ){
       delete (*i);

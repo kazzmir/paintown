@@ -9,6 +9,7 @@ public:
     MugenSound( const MugenSound &copy );
     ~MugenSound();
     
+    int next;
     int length;
     int groupNumber;
     int sampleNumber;

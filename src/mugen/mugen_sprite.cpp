@@ -3,7 +3,7 @@
 
 MugenSprite::MugenSprite():
 next(0),
-pcxSize(0),
+length(0),
 x(0),
 y(0),
 groupNumber(0),
@@ -15,18 +15,19 @@ samePalette(0){
 
 MugenSprite::MugenSprite( const MugenSprite &copy ){
     this->next = copy.next;
-    this->pcxSize = copy.pcxSize;
+    this->length = copy.length;
     this->x = copy.x;
     this->y = copy.y;
     this->groupNumber = copy.groupNumber;
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
-    strncpy(this->comments, copy.comments, 14);
-    this->pcxData = copy.pcxData;
+    strncpy( this->comments, copy.comments, 14 );
+    this->pcx = new char[this->length];
+    strncpy( this->pcx, copy.pcx, this->length );
 }
 
 MugenSprite::~MugenSprite(){
-    if( pcxData ) delete pcxData;
+    if( pcx ) delete pcx;
 }
 

@@ -22,11 +22,16 @@ protected:
 	std::ifstream ifile;
 	std::string myfile;
 	
+	int location;
+	
 	// Our collection is setup by group and sprite number
 	std::map< int, std::map< int, MugenSound * > >collection;
 	
-	// Add another sprite
-	void addSound( int group, int number, MugenSound * );
+	// Add another sound
+	void addSound( MugenSound * );
+	
+	// Get next sound data
+	void getNext();
 };
 
 #endif

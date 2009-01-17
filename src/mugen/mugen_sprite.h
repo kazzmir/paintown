@@ -10,7 +10,7 @@ public:
     ~MugenSprite();
     
     int next;
-    int pcxSize;
+    int length;
     int x;
     int y;
     int groupNumber;
@@ -18,7 +18,7 @@ public:
     int prev;
     bool samePalette;
     char comments[14];
-    char * pcxData;
+    char * pcx;
 
 };
 
