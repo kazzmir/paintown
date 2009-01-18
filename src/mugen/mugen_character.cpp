@@ -84,25 +84,20 @@ void MugenCharacter::load() throw( MugenException ){
 		std::string itemhead = item->query();
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
 		transform( itemhead.begin(), itemhead.end(), itemhead.begin(), lowerCase );
-		if( itemhead == "name" ){
+		if (itemhead == "name"){
 		    *content->getNext() >> name;
-		}
-		else if (itemhead == "displayname" ){
+                    Global::debug(1) << "Read name '" << name << "'" << endl;
+		} else if (itemhead == "displayname" ){
 		    *content->getNext() >> displayName;
-		}
-		else if (itemhead == "versiondate" ){
+		} else if (itemhead == "versiondate" ){
 		    *content->getNext() >> versionDate;
-		}
-		else if (itemhead == "mugenversion" ){
+		} else if (itemhead == "mugenversion" ){
 		    *content->getNext() >> mugenVersion;
-		}
-		else if (itemhead == "author" ){
+		} else if (itemhead == "author" ){
 		    *content->getNext() >> author;
-		}
-		else if (itemhead == "pal.defaults" ){
+		} else if (itemhead == "pal.defaults" ){
 		    // Add parse info
-		}
-		else throw MugenException( "Unhandled option in Info Section: " + itemhead );
+		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
 	    }
 	}
 	else if( head == "Files" ){

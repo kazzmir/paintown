@@ -47,7 +47,7 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
   const char colon = ':';
   const char equal = '=';
   const char quote = '"';
-  
+  const char * ignored = "\r\n";
   
   SearchState state = Section;
   // Our section and items
@@ -107,7 +107,9 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 		}
 		// Check if we are near the end to kill it
 		if( i+1 == line.size() && !contentHolder.empty() ){
-		    if ( line[i] != ' ' ) contentHolder += line[i];
+		    if (line[i] != ' ' && !strchr(ignored, line[i])){
+                        contentHolder += line[i];
+                    }
 		    *itemHolder << contentHolder;
 		    *sectionHolder << itemHolder;
 		    breakLoop = true;
@@ -145,7 +147,9 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 		  inQuote = !inQuote;
 		}
 		//Start grabbing our item
-		else contentHolder += line[i];
+		else if (! strchr(ignored, line[i])){
+                    contentHolder += line[i];
+                }
 	      }
 	      break;
 	    }
