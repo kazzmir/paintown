@@ -1,3 +1,4 @@
+#include <allegro.h>
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -7,11 +8,14 @@
 #include <vector>
 #include <map>
 
+#include "globals.h"
 #include "mugen/mugen_reader.h"
 #include "mugen/mugen_section.h"
 #include "mugen/mugen_item_content.h"
 #include "mugen/mugen_item.h"
 #include "mugen/mugen_character.h"
+
+#include "util/funcs.h"
 
 using namespace std;
 
@@ -33,13 +37,15 @@ int main( int argc, char ** argv ){
 	    showOptions();
 	    return 0;
 	}
+
 	const char * FILE_ARG = "-f";
 	const char * LOC_ARG = "-c";
+        const char * DEBUG_ARG = "-l";
 	std::string ourFile;
 	bool configLoaded = false;
 
-	//Global::setDebug( 0 );
-	
+        allegro_init();
+
 	for ( int q = 1; q < argc; q++ ){
 		if ( isArg( argv[ q ], FILE_ARG ) ){
 			q += 1;
@@ -52,8 +58,7 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
-		}
-		else if ( isArg( argv[ q ], LOC_ARG ) ){
+		} else if ( isArg( argv[ q ], LOC_ARG ) ){
 			q += 1;
 			if ( q < argc ){
 				ourFile = std::string( argv[ q ] );
@@ -63,8 +68,17 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
-		}
-		else{
+		} else if (isArg(argv[q], DEBUG_ARG)){
+                    q += 1;
+                    if (q < argc){
+                        istringstream i( argv[ q ] );
+                        int f;
+                        i >> f;
+                        Global::setDebug( f );
+                    } else {
+                        Global::debug(0) << "No number given for " << DEBUG_ARG << endl;
+                    }
+                } else {
 		    // WHAT?
 		    showOptions();
 		    return 0;

@@ -15,6 +15,7 @@
 #include "mugen_sff_reader.h"
 #include "mugen_snd_reader.h"
 #include "mugen_reader.h"
+#include "globals.h"
 
 static int lowerCase( int c ){ return tolower( c );}
 
@@ -33,8 +34,9 @@ MugenCharacter::~MugenCharacter(){
 void MugenCharacter::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
     std::string baseDir = Util::getDataPath() + "mugen/chars/" + location + "/";
-    cout << baseDir << endl;
+    Global::debug(1) << baseDir << endl;
     std::vector< string > files = Util::getFiles( baseDir, "*" );
+    Global::debug(1) << "Got files " << files.size() << endl;
     std::string ourDefFile = "";
     for( unsigned int i = 0; i < files.size(); ++i ){
 	std::string temp = files[i].c_str();
