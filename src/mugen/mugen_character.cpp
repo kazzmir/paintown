@@ -1,5 +1,7 @@
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <cstring>
 #include <vector>
@@ -14,6 +16,8 @@
 #include "mugen_snd_reader.h"
 #include "mugen_reader.h"
 
+static int lowerCase( int c ){ return tolower( c );}
+
 MugenCharacter::MugenCharacter( const string & s ){
     this->location = s;
 }
@@ -27,7 +31,25 @@ MugenCharacter::~MugenCharacter(){
 }
 
 void MugenCharacter::load() throw( MugenException ){
-    MugenReader reader( Util::getDataPath() + "mugen/chars/" + location + "/" + location + ".def" );
+    // Lets look for our def since some assholes think that all file systems are case insensitive
+    std::string loc = Util::getDataPath() + "mugen/chars/" + location + "/";
+    cout << loc << endl;
+    std::vector< string > files = Util::getFiles( loc, "*" );
+    std::string ourDefFile = "";
+    for( unsigned int i = 0; i < files.size(); ++i ){
+	std::string temp = files[i].c_str();
+	transform( temp.begin(), temp.end(), temp.begin(), lowerCase );
+	if( std::string( location + ".def" ) == temp ){
+	    // We got number one chinese retaurant
+	    ourDefFile = files[i];
+	    break;
+	}
+    }
+    if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );
+    
+    cout << loc << ourDefFile << endl;
+    
+    MugenReader reader( loc + ourDefFile );
     std::vector< MugenSection * > collection;
     try{
 	collection = reader.getCollection();
