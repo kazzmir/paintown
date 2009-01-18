@@ -115,7 +115,11 @@ Topics:
     * libpng - http://www.libpng.org/pub/png/libpng.html
     * pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
     * freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
-    * Python headers. Use 'python-dev' on ubuntu.
+    * Python headers, usually this comes with python
+    
+  * Quick instructions for ubuntu
+    $ sudo apt-get install python-dev libfreetype6-dev liballegro4.2 zlib1g-dev
+    $ sudo apt-get install flex bison
 
 * Thanks:
   Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	
