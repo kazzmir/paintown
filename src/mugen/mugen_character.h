@@ -62,6 +62,8 @@ protected:
 	std::string stateFile;
 	// Common States
 	std::string commonStateFile;
+	// Other state files? I can't find documentation on this, in the meantime we'll wing it
+	std::string stFile[12];
 	// Sprites
 	std::string sffFile;
 	// animations

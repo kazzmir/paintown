@@ -4,6 +4,8 @@
 #include <cstring>
 #include <vector>
 
+#include "globals.h"
+
 #include "mugen_sprite.h"
 #include "mugen_sff_reader.h"
 
@@ -31,7 +33,7 @@ MugenSffReader::~MugenSffReader(){
 
 const std::map< int, std::map< int, MugenSprite * > > & MugenSffReader::getCollection() throw(MugenException){
     if ( !ifile ){
-	throw MugenException( std::string("Could not open SFF file: ") + myfile );
+	throw MugenException( "Could not open SFF file: " + myfile );
     }
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
     ifile.seekg(location,ios::beg);
@@ -41,6 +43,8 @@ const std::map< int, std::map< int, MugenSprite * > > & MugenSffReader::getColle
     ifile.read( (char *)&totalGroups, 4 );
     ifile.read( (char *)&totalImages, 4 );
     ifile.read( (char *)&location, 4 );
+    
+    Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
     
     // We got some stuff
     if( totalImages > 0){

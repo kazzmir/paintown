@@ -4,6 +4,8 @@
 #include <cstring>
 #include <vector>
 
+#include "globals.h"
+
 #include "mugen_sound.h"
 #include "mugen_snd_reader.h"
 
@@ -41,6 +43,8 @@ const std::map< int, std::map< int, MugenSound * > > & MugenSndReader::getCollec
     
     ifile.read( (char *)&totalSounds, 4 );
     ifile.read( (char *)&location, 4 );
+    
+     Global::debug(1) << "Got Total Sounds: " << totalSounds << ", Next Location in file: " << location << endl;
     
     // We got some stuff
     if( totalSounds > 0){
