@@ -70,8 +70,19 @@ class MugenAnimation{
 	
 	// Get next Frame
 	const MugenFrame *getNext();
-
+	
+	// Reset
+	inline void reset(){ position = 0; }
+	
+	// Add a frame
+	void addFrame( MugenFrame * );
+	
+    private:
+	
 	std::vector< MugenFrame * > frames;
+	
+	unsigned int loopPosition;
+	unsigned int position;
 };
 
 #endif

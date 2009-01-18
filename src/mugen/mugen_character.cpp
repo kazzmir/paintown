@@ -158,7 +158,7 @@ void MugenCharacter::load() throw( MugenException ){
 		else if (itemhead == "ending.storyboard" ){
 		    *content->getNext() >> endingFile;
 		}
-		else throw MugenException( "Unhandled option in Info Section: " + itemhead );
+		else throw MugenException( "Unhandled option in Arcade Section: " + itemhead );
 	    }
 	}
     }

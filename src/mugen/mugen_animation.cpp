@@ -53,15 +53,29 @@ MugenFrame::~MugenFrame(){
 /*
 Holds mugen animations, ie: player.air
 */
-MugenAnimation::MugenAnimation(){
+MugenAnimation::MugenAnimation():
+loopPosition(0),
+position(0){
 }
 MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
+    this->frames = copy.frames;
 }
 MugenAnimation::~MugenAnimation(){
+    for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
+	delete (*i);
+    }
+}
+
+void MugenAnimation::addFrame( MugenFrame *frame ){
+    if( frame->loopstart ) loopPosition = frames.size();
+    frames.push_back( frame );
 }
 
 const MugenFrame *MugenAnimation::getNext(){
-    return 0;
+    if( position < frames.size() )position++;
+    else position = loopPosition;
+    
+    return frames[position];
 }
 
 
