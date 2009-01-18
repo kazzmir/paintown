@@ -35,7 +35,7 @@ MugenReader::~MugenReader(){
 const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenException){
   
   if ( !ifile ){
-      throw MugenException( std::string("Could not open ") + myfile );
+      throw MugenException( std::string("Could not open configuration file: ") + myfile );
   }
   
   std::string line;

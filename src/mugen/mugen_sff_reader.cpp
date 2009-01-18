@@ -31,7 +31,7 @@ MugenSffReader::~MugenSffReader(){
 
 const std::map< int, std::map< int, MugenSprite * > > & MugenSffReader::getCollection() throw(MugenException){
     if ( !ifile ){
-	throw MugenException( std::string("Could not open ") + myfile );
+	throw MugenException( std::string("Could not open SFF file: ") + myfile );
     }
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
     ifile.seekg(location,ios::beg);

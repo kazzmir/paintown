@@ -19,6 +19,25 @@
 
 static int lowerCase( int c ){ return tolower( c );}
 
+static std::string fixFileName( const std::string &dir, std::string str ){
+    // Temp fix until the lexer fixes this crap
+    while( str[str.size() -1] != ' ' ){ str.erase( str.end() ); }
+    std::string returnString = "";
+    std::vector< string > files = Util::getFiles( dir, "*" );
+    Global::debug(1) << "Correcting file: " << str << ", in directory: "<< dir <<".\nGot " << files.size() << " files." << endl;
+    for( unsigned int i = 0; i < files.size(); ++i ){
+	std::string temp = files[i].c_str();
+	transform( temp.begin(), temp.end(), temp.begin(), lowerCase );
+	if( std::string( dir + str ) == temp ){
+	    // We got number one chinese retaurant
+	    returnString = files[i];
+	    break;
+	}
+    }
+    Global::debug(1) << "Corrected file: " << returnString << endl;
+    return returnString;
+}
+
 MugenCharacter::MugenCharacter( const string & s ){
     this->location = s;
 }
@@ -35,23 +54,13 @@ void MugenCharacter::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
     std::string baseDir = Util::getDataPath() + "mugen/chars/" + location + "/";
     Global::debug(1) << baseDir << endl;
-    std::vector< string > files = Util::getFiles( baseDir, "*" );
-    Global::debug(1) << "Got files " << files.size() << endl;
-    std::string ourDefFile = "";
-    for( unsigned int i = 0; i < files.size(); ++i ){
-	std::string temp = files[i].c_str();
-	transform( temp.begin(), temp.end(), temp.begin(), lowerCase );
-	if( std::string( location + ".def" ) == temp ){
-	    // We got number one chinese retaurant
-	    ourDefFile = files[i];
-	    break;
-	}
-    }
+    const std::string ourDefFile = fixFileName( baseDir, std::string(location + ".def") );
+    
     if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );
     
-    cout << baseDir << ourDefFile << endl;
+    Global::debug(1) << ourDefFile << endl;
     
-    MugenReader reader( baseDir + ourDefFile );
+    MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
@@ -166,14 +175,14 @@ void MugenCharacter::load() throw( MugenException ){
     }
     
     /* Sprites */
-    MugenSffReader spriteReader( baseDir + sffFile );
+    MugenSffReader spriteReader( fixFileName( baseDir, sffFile ) );
     sprites = spriteReader.getCollection();
     
     /* Animations */
     // Need to build the air reader
     
     /* Sounds */
-    MugenSndReader soundReader( baseDir + sndFile );
+    MugenSndReader soundReader( fixFileName( baseDir, sndFile ) );
     sounds = soundReader.getCollection();
     
 }
