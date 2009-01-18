@@ -10,6 +10,7 @@
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
+class MugenAnimation;
 
 class MugenCharacter{
 public:
@@ -195,7 +196,8 @@ protected:
 	/* Sprites */
 	std::map< int, std::map< int, MugenSprite * > > sprites;
 	
-	/* Animation Lists */
+	/* Animation Lists stored by action number, ie [Begin Action 500] */
+	std::map< int, MugenAnimation * > animations;
 	
 	/* Sounds */
 	std::map< int, std::map< int, MugenSound * > > sounds;
