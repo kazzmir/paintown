@@ -24,6 +24,8 @@ public:
 	// Do code
 	
 	void load() throw( MugenException );
+	
+	inline const std::string &getName() const { return name; }
 
 protected:
 
