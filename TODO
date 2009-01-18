@@ -43,3 +43,4 @@ Future
 * make network mode use versions
 * allow level sets to only allow explicit players
 * make a console like in quake where debug output can go
+* more characters
