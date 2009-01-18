@@ -4,9 +4,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include "mugen_exception.h"
 
 class MugenItemContent;
+class MugenSprite;
+class MugenSound;
 
 class MugenCharacter{
 public:
@@ -63,18 +66,7 @@ protected:
 	// Sounds
 	std::string sndFile;
 	// Palettes max 12
-	std::string pal1File;
-	std::string pal2File;
-	std::string pal3File;
-	std::string pal4File;
-	std::string pal5File;
-	std::string pal6File;
-	std::string pal7File;
-	std::string pal8File;
-	std::string pal9File;
-	std::string pal10File;
-	std::string pal11File;
-	std::string pal12File;
+	std::string palFile[12];
 	
 	// Arcade mode ( I don't think we will be using this anytime soon )
 	std::string introFile;
@@ -82,7 +74,9 @@ protected:
 	
 	/* Now on to the nitty gritty */
 	
-	/* Player Data comes from cns file */
+	/* Player Data and constants comes from cns file */
+	
+	/* Section [Data] */
 	
 	// Life
 	int life;
@@ -117,6 +111,8 @@ protected:
 	int intpersistindex;
 	int floatpersistindex;
 	
+	/* Section [Size] */
+	
 	// Horizontal Scaling Factor
 	int xscale;
 	//Vertical scaling factor.
@@ -148,53 +144,61 @@ protected:
 	// = 0,0    ;Player drawing offset in pixels (x, y)
 	int drawoffsetx;
 	int drawoffsety;
+	
+	/* Section [Velocity] */
+	
 	//   = 2.4      ;Walk forward
-	int walkfwd;
+	double walkfwd;
 	// = -2.2     ;Walk backward
-	int walkback;
+	double walkback;
 	//  = 4.6, 0    ;Run forward (x, y)
-	int runfwdx;
-	int runfwdy;
+	double runfwdx;
+	double runfwdy;
 	// = -4.5,-3.8 ;Hop backward (x, y)
-	int runbackx;
-	int runbacky;
+	double runbackx;
+	double runbacky;
 	// = 0,-8.4    ;Neutral jumping velocity (x, y)
-	int jumpneux;
-	int jumpneuy;
+	double jumpneux;
+	double jumpneuy;
 	// = -2.55    ;Jump back Speed (x, y)
-	int jumpbackx;
-	int jumpbacky;
+	double jumpbackx;
+	double jumpbacky;
 	// = 2.5       ;Jump forward Speed (x, y)
-	int jumpfwdx;
-	int jumpfwdy;
+	double jumpfwdx;
+	double jumpfwdy;
 	// = -2.55,-8.1 ;Running jump speeds (opt)
-	int runjumpbackx;
-	int runjumpbacky;
+	double runjumpbackx;
+	double runjumpbacky;
 	// = 4,-8.1      ;.
-	int runjumpfwdx;
-	int runjumpfwdy;
+	double runjumpfwdx;
+	double runjumpfwdy;
 	// = 0,-8.1      ;.
-	int airjumpneux;
-	int airjumpneuy;
+	double airjumpneux;
+	double airjumpneuy;
 	// Air jump speeds (opt)
-	int airjumpback;
-	int airjumpfwd;
+	double airjumpback;
+	double airjumpfwd;
+	
+	/* Movement */
+	
 	//  = 1      ;Number of air jumps allowed (opt)
 	int airjumpnum;
 	//  = 35  ;Minimum distance from ground before you can air jump (opt)
 	int airjumpheight;
 	// = .44         ;Vertical acceleration
-	int yaccel;
+	double yaccel;
 	//  = .85  ;Friction coefficient when standing
-	int standfriction;
+	double standfriction;
 	//  = .82 ;Friction coefficient when crouching
-	int crouchfriction;
+	double crouchfriction;
 
 	/* Sprites */
+	std::map< int, std::map< int, MugenSprite * > > sprites;
 	
 	/* Animation Lists */
 	
 	/* Sounds */
+	std::map< int, std::map< int, MugenSound * > > sounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
 	
