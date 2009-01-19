@@ -8,6 +8,7 @@
 
 #include "util/funcs.h"
 
+#include "mugen_animation.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
@@ -64,7 +65,7 @@ MugenCharacter::~MugenCharacter(){
 
 void MugenCharacter::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
-    std::string baseDir = Util::getDataPath() + "mugen/chars/" + location + "/";
+    baseDir = Util::getDataPath() + "mugen/chars/" + location + "/";
     Global::debug(1) << baseDir << endl;
     const std::string ourDefFile = fixFileName( baseDir, std::string(location + ".def") );
     
@@ -215,7 +216,7 @@ void MugenCharacter::load() throw( MugenException ){
 		    *content->getNext() >> endingFile;
 		}
 		else throw MugenException( "Unhandled option in Arcade Section: " + itemhead );
-	    }
+	    }    
 	}
     }
     
@@ -224,10 +225,45 @@ void MugenCharacter::load() throw( MugenException ){
     sprites = spriteReader.getCollection();
     
     /* Animations */
-    // Need to build the air reader
+    bundleAnimations();
     
     /* Sounds */
     MugenSndReader soundReader( fixFileName( baseDir, sndFile ) );
     sounds = soundReader.getCollection();
     
 }
+
+// animations
+void MugenCharacter::bundleAnimations() throw( MugenException){
+    MugenReader reader( baseDir + airFile );
+    std::vector< MugenSection * > collection;
+    collection = reader.getCollection();
+    
+    /* Extract info for our first section of our character */
+    for( unsigned int i = 0; i < collection.size(); ++i ){
+	MugenAnimation *animation = new MugenAnimation();
+	std::string head = collection[i]->getHeader();
+	head.replace(0,13,"");
+	while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		transform( itemhead.begin(), itemhead.end(), itemhead.begin(), lowerCase );
+		// Attack boxes for this frame
+		if( itemhead.find("clsn1[") != std::string::npos ){
+		    
+		}
+		// defend boxes for this frame
+		else if( itemhead.find("clsn2[") != std::string::npos ){
+		}
+		else{
+		    
+		}
+	}
+	int h;
+	MugenItem(head) >> h;
+	animations[h] = animation;
+    }
+}
+
+

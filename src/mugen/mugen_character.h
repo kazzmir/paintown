@@ -35,6 +35,8 @@ protected:
 	*/
 	std::string location;
 	
+	std::string baseDir;
+	
 	/* These items are taken from character.def file */
 	
 	/* Base definitions */
@@ -208,7 +210,9 @@ protected:
 	
 	/* Commands, Triggers or whatever else we come up with */
 	
-	
+    protected:
+	/* This creates the animations no need for a new class to handle this */
+	void bundleAnimations() throw( MugenException);
 };
 
 #endif
