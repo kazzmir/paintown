@@ -60,6 +60,10 @@ MugenCharacter::MugenCharacter( const char * location ){
 }
 
 MugenCharacter::~MugenCharacter(){
+    // Get rid of animation lists;
+    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+	delete i->second;
+    }
     
 }
 
@@ -244,24 +248,115 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 	MugenAnimation *animation = new MugenAnimation();
 	std::string head = collection[i]->getHeader();
 	head.replace(0,13,"");
+	std::vector<MugenArea> clsn1Holder;
+	std::vector<MugenArea> clsn2Holder;
+	bool clsn1Reset = false;
+	bool clsn2Reset = false;
+	bool setloop = false;
 	while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		transform( itemhead.begin(), itemhead.end(), itemhead.begin(), lowerCase );
-		// Attack boxes for this frame
-		if( itemhead.find("clsn1[") != std::string::npos ){
-		    
+		// Attack boxes
+		if( itemhead.find("clsn1default:") != std::string::npos ){
+		    // Get number
+		    int num;
+		    *content->getNext() >> num;
+		    clsn1Holder.clear();
+		    for( int n = 0; n < num; ++n ){
+			content = collection[i]->getNext();
+			item = content->getNext();
+			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
+			MugenArea area;
+			clsn1Holder.push_back(area);
+		    }
+		}
+		// defend boxes
+		else if( itemhead.find("clsn2default:") != std::string::npos ){
+		    // Get number
+		    int num;
+		    *content->getNext() >> num;
+		    clsn2Holder.clear();
+		    for( int n = 0; n < num; ++n ){
+			content = collection[i]->getNext();
+			item = content->getNext();
+			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
+			MugenArea area;
+			clsn2Holder.push_back(area);
+		    }
+		}
+		// defend boxes
+		else if( itemhead.find("clsn2:") != std::string::npos ){
+		    clsn2Reset = true;
+		    // Get number
+		    int num;
+		    *content->getNext() >> num;
+		    clsn2Holder.clear();
+		    for( int n = 0; n < num; ++n ){
+			content = collection[i]->getNext();
+			item = content->getNext();
+			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
+			MugenArea area;
+			clsn2Holder.push_back(area);
+		    }
+		}
+		// Attack boxes
+		else if( itemhead.find("clsn1:") != std::string::npos ){
+		    clsn1Reset = true;
+		    // Get number
+		    int num;
+		    *content->getNext() >> num;
+		    clsn1Holder.clear();
+		    for( int n = 0; n < num; ++n ){
+			content = collection[i]->getNext();
+			item = content->getNext();
+			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
+			MugenArea area;
+			clsn1Holder.push_back(area);
+		    }
 		}
 		// defend boxes for this frame
-		else if( itemhead.find("clsn2[") != std::string::npos ){
+		else if( itemhead.find("loopstart") != std::string::npos ){
+		    setloop = true;
 		}
+		// This is where we get our frame
 		else{
-		    
+		    // This is the new frame
+		    MugenFrame *frame = new MugenFrame();
+		    frame->defenseCollision = clsn2Holder;
+		    frame->attackCollision = clsn1Holder;
+		    frame->loopstart = setloop;
+		    /* Get sprite details */
+		    int group,sprnum,x,y,time;
+		    bool flipH, flipV;
+		    std::string color;
+		    // Need to get the parsed data and populate these above items
+		    // Add sprite
+		    frame->sprite = sprites[group][sprnum];
+		    frame->xoffset = x;
+		    frame->yoffset = y;
+		    frame->time = time;
+		    frame->flipHorizontal = flipH;
+		    frame->flipVertical = flipV;
+		    frame->colorAdd = color;
+		    // Add frame
+		    animation->addFrame(frame);
 		}
+		// Clear if it was not a default set, since it's valid for only one frame
+		if( clsn1Reset ){
+		    clsn1Holder.clear();
+		    clsn1Reset = false;
+		}
+		if( clsn2Reset ){
+		    clsn2Holder.clear();
+		    clsn2Reset = false;
+		}
+		if( setloop )setloop = false;
 	}
 	int h;
 	MugenItem(head) >> h;
+	Global::debug(1) << "Adding Animation 'Begin Action " << h << "'" << endl;
 	animations[h] = animation;
     }
 }
