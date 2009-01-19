@@ -52,7 +52,7 @@ protected:
 	// Author 
 	std::string author;
 	// Palette defaults
-	MugenItemContent *palDefaults;
+	int palDefaults[12];
 	
 	/* Relevant files */
 	

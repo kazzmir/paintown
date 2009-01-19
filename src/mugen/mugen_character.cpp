@@ -51,6 +51,29 @@ static std::string fixFileName( const std::string &dir, std::string str ){
     return std::string(dir + str);
 }
 
+// If you use this, please delete the item after you use it, this isn't java ok
+static MugenItemContent *parseOpt( const std::string &opt ){
+    std::string contentHolder = "";
+    MugenItemContent *temp = new MugenItemContent();
+    const char * ignored = "\r\n";
+    for( unsigned int i = 0; i < opt.size(); ++i ){
+	if( opt[i] == ' ' ){
+	    continue;
+	}
+	// We got one push back the other and reset the holder to get the next
+	else if( opt[i] == ',' ){
+	    if( !contentHolder.empty() ) *temp << contentHolder;
+	    Global::debug(1) << "Got content: " << contentHolder << endl;
+	    contentHolder = "";
+	}
+	//Start grabbing our item
+	else if (! strchr(ignored, opt[i])){
+		contentHolder += opt[i];
+	}
+    }
+    return temp;
+}
+
 MugenCharacter::MugenCharacter( const string & s ){
     this->location = s;
 }
@@ -102,6 +125,13 @@ void MugenCharacter::load() throw( MugenException ){
 		    *content->getNext() >> author;
 		} else if (itemhead == "pal.defaults" ){
 		    // Add parse info
+		    MugenItemContent *temp = parseOpt( content->getNext()->query() );
+		    for( int pal = 0; pal < 12; ++pal ){
+			if( temp->hasItems() )*temp->getNext() >> palDefaults[pal];
+			else break;
+			Global::debug(1) << "Pal" << pal << ": " << palDefaults[pal] << endl;
+		    }
+		    delete temp;
 		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
 	    }
 	}
@@ -266,9 +296,15 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    clsn1Holder.clear();
 		    for( int n = 0; n < num; ++n ){
 			content = collection[i]->getNext();
-			item = content->getNext();
+			Global::debug(1) << content->getNext() << " start" << endl;
 			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
+			MugenItemContent *temp = parseOpt( content->getNext()->query() );
 			MugenArea area;
+			*temp->getNext() >> area.x1;
+			*temp->getNext() >> area.y1;
+			*temp->getNext() >> area.x2;
+			*temp->getNext() >> area.y2;
+			delete temp;
 			clsn1Holder.push_back(area);
 		    }
 		}
@@ -280,9 +316,15 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    clsn2Holder.clear();
 		    for( int n = 0; n < num; ++n ){
 			content = collection[i]->getNext();
-			item = content->getNext();
+			Global::debug(1) << content->getNext() << " start" << endl;
 			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
+			MugenItemContent *temp = parseOpt( content->getNext()->query() );
 			MugenArea area;
+			*temp->getNext() >> area.x1;
+			*temp->getNext() >> area.y1;
+			*temp->getNext() >> area.x2;
+			*temp->getNext() >> area.y2;
+			delete temp;
 			clsn2Holder.push_back(area);
 		    }
 		}
@@ -295,9 +337,15 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    clsn2Holder.clear();
 		    for( int n = 0; n < num; ++n ){
 			content = collection[i]->getNext();
-			item = content->getNext();
+			Global::debug(1) << content->getNext() << " start" << endl;
 			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
+			MugenItemContent *temp = parseOpt( content->getNext()->query() );
 			MugenArea area;
+			*temp->getNext() >> area.x1;
+			*temp->getNext() >> area.y1;
+			*temp->getNext() >> area.x2;
+			*temp->getNext() >> area.y2;
+			delete temp;
 			clsn2Holder.push_back(area);
 		    }
 		}
@@ -310,9 +358,15 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    clsn1Holder.clear();
 		    for( int n = 0; n < num; ++n ){
 			content = collection[i]->getNext();
-			item = content->getNext();
+			Global::debug(1) << content->getNext() << " start" << endl;
 			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
+			MugenItemContent *temp = parseOpt( content->getNext()->query() );
 			MugenArea area;
+			*temp->getNext() >> area.x1;
+			*temp->getNext() >> area.y1;
+			*temp->getNext() >> area.x2;
+			*temp->getNext() >> area.y2;
+			delete temp;
 			clsn1Holder.push_back(area);
 		    }
 		}
@@ -328,18 +382,24 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    frame->attackCollision = clsn1Holder;
 		    frame->loopstart = setloop;
 		    /* Get sprite details */
-		    int group,sprnum,x,y,time;
-		    bool flipH, flipV;
-		    std::string color;
+		    int group,sprnum;
 		    // Need to get the parsed data and populate these above items
+		    *content->getNext() >> group;
+		    *content->getNext() >> sprnum;
+		    *content->getNext() >> frame->xoffset;
+		    *content->getNext() >> frame->yoffset;
+		    *content->getNext() >> frame->time;
+		    // Check for flips
+		    if( content->hasItems() ){
+			std::string flip;
+			*content->getNext() >> flip;
+			transform( flip.begin(), flip.end(), flip.begin(), lowerCase );
+			if( flip.find("h") != std::string::npos )frame->flipHorizontal = true;
+			if( flip.find("v") != std::string::npos )frame->flipVertical = true;
+		    }
+		    if( content->hasItems() )*content->getNext() >> frame->colorAdd;
 		    // Add sprite
 		    frame->sprite = sprites[group][sprnum];
-		    frame->xoffset = x;
-		    frame->yoffset = y;
-		    frame->time = time;
-		    frame->flipHorizontal = flipH;
-		    frame->flipVertical = flipV;
-		    frame->colorAdd = color;
 		    // Add frame
 		    animation->addFrame(frame);
 		}
