@@ -9,7 +9,8 @@ y(0),
 groupNumber(0),
 imageNumber(0),
 prev(0),
-samePalette(0){
+samePalette(0),
+pcx(NULL){
     //Nothing
 }
 
@@ -28,6 +29,8 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
 }
 
 MugenSprite::~MugenSprite(){
-    if( pcx ) delete pcx;
+    if (pcx){
+        delete[] pcx;
+        pcx = NULL;
+    }
 }
-

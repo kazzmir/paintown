@@ -31,24 +31,28 @@ MugenSffReader::~MugenSffReader(){
 	
 }
 
-const std::map< int, std::map< int, MugenSprite * > > & MugenSffReader::getCollection() throw(MugenException){
-    if ( !ifile ){
+const std::map<int, std::map<int, MugenSprite *> > & MugenSffReader::getCollection() throw (MugenException){
+    if (!ifile){
 	throw MugenException( "Could not open SFF file: " + myfile );
     }
-    // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
+
+    /* Lets go ahead and skip the crap -> (Elecbyte signature and version)
+     * start at the 16th byte
+     */
     ifile.seekg(location,ios::beg);
     int totalGroups;
     int totalImages;
     
-    ifile.read( (char *)&totalGroups, 4 );
-    ifile.read( (char *)&totalImages, 4 );
-    ifile.read( (char *)&location, 4 );
+    /* this probably isn't endian safe.. */
+    ifile.read((char *)&totalGroups, 4);
+    ifile.read((char *)&totalImages, 4);
+    ifile.read((char *)&location, 4);
     
     Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
     
     // We got some stuff
-    if( totalImages > 0){
-	for( int i = 0; i < totalImages; ++i ){
+    if (totalImages > 0){
+	for (int i = 0; i < totalImages; ++i){
 	    getNext();
 	}
     }
@@ -69,22 +73,21 @@ void MugenSffReader::getNext(){
     // next sprite
     MugenSprite *temp = new MugenSprite();
     
-    ifile.read( (char *)&temp->next, 4 );
-    ifile.read( (char *)&temp->length, 4 );
-    ifile.read( (char *)&temp->x, 2 );
-    ifile.read( (char *)&temp->y, 2 );
-    ifile.read( (char *)&temp->groupNumber, 2 );
-    ifile.read( (char *)&temp->imageNumber, 2 );
-    ifile.read( (char *)&temp->prev, 2 );
-    ifile.read( (char *)&temp->samePalette, 1 );
-    ifile.read( (char *)&temp->comments, 14 );
+    ifile.read((char *)&temp->next, 4);
+    ifile.read((char *)&temp->length, 4);
+    ifile.read((char *)&temp->x, 2);
+    ifile.read((char *)&temp->y, 2);
+    ifile.read((char *)&temp->groupNumber, 2);
+    ifile.read((char *)&temp->imageNumber, 2);
+    ifile.read((char *)&temp->prev, 2);
+    ifile.read((char *)&temp->samePalette, 1);
+    ifile.read((char *)&temp->comments, 14);
     temp->pcx = new char[temp->length];
-    ifile.read( (char *)temp->pcx, temp->length );
+    ifile.read((char *)temp->pcx, temp->length);
     
     // Set the next file location
     location = temp->next;
     
     // Add our sprite
-    addSprite( temp );
+    addSprite(temp);
 }
-
