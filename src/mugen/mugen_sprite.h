@@ -3,6 +3,7 @@
 
 #include <string>
 
+/* basically a struct so no need for accessors/mutators */
 class MugenSprite{
 public:
     MugenSprite();
@@ -19,7 +20,6 @@ public:
     bool samePalette;
     char comments[14];
     char * pcx;
-
 };
 
 #endif

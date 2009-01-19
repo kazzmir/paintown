@@ -25,7 +25,7 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
     this->samePalette = copy.samePalette;
     strncpy( this->comments, copy.comments, 14 );
     this->pcx = new char[this->length];
-    strncpy( this->pcx, copy.pcx, this->length );
+    memcpy(this->pcx, copy.pcx, this->length);
 }
 
 MugenSprite::~MugenSprite(){

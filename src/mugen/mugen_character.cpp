@@ -264,7 +264,6 @@ void MugenCharacter::load() throw( MugenException ){
     /* Sounds */
     MugenSndReader soundReader( fixFileName( baseDir, sndFile ) );
     sounds = soundReader.getCollection();
-    
 }
 
 // animations
