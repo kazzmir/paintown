@@ -7,6 +7,7 @@
 #include "mugen_item_content.h"
 #include "mugen_section.h"
 #include "mugen_reader.h"
+#include "globals.h"
 
 // Check for Clsn
 static bool checkClsn( const std::string &clsn ){
@@ -14,28 +15,31 @@ static bool checkClsn( const std::string &clsn ){
 }
 
 MugenReader::MugenReader( const char * file ){
-  ifile.open( file );
-  myfile = string( file );
+    Global::debug(1) << "[mugen reader] Opening file '" << file << "'" << endl;
+    ifile.open( file );
+    myfile = string( file );
 }
 
 MugenReader::MugenReader( const string & file ){
-  ifile.open( file.c_str() );
-  myfile = file;
+    Global::debug(1) << "[mugen reader] Opening file '" << file << "'" << endl;
+    ifile.open( file.c_str() );
+    myfile = file;
 }
 
 MugenReader::~MugenReader(){
-  ifile.close();
-  
-  for( std::vector< MugenSection * >::iterator i = collection.begin() ; i != collection.end() ; ++i ){
-      delete (*i);
-  }
-	
+    ifile.close();
+
+    for( std::vector< MugenSection * >::iterator i = collection.begin() ; i != collection.end() ; ++i ){
+        delete (*i);
+    }
+
 }
 
 const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenException){
   
   if ( !ifile ){
-      throw MugenException( std::string("Could not open configuration file: ") + myfile );
+      perror("cant open file");
+      throw MugenException( std::string("Could not open file: ") + myfile );
   }
   
   std::string line;

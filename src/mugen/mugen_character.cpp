@@ -16,6 +16,7 @@
 #include "mugen_sff_reader.h"
 #include "mugen_snd_reader.h"
 #include "mugen_reader.h"
+#include "mugen_sprite.h"
 #include "globals.h"
 
 static int lowerCase( int c ){ return tolower( c );}
@@ -88,6 +89,71 @@ MugenCharacter::~MugenCharacter(){
 	delete i->second;
     }
     
+}
+
+namespace Sff{
+
+// Get next sprite
+static MugenSprite * readSprite(ifstream & ifile, int & location){
+    // if ( !location )return;
+    // Go to next sprite
+    ifile.seekg(location, ios::beg);
+    // next sprite
+    MugenSprite *temp = new MugenSprite();
+    
+    ifile.read((char *)&temp->next, 4);
+    ifile.read((char *)&temp->length, 4);
+    ifile.read((char *)&temp->x, 2);
+    ifile.read((char *)&temp->y, 2);
+    ifile.read((char *)&temp->groupNumber, 2);
+    ifile.read((char *)&temp->imageNumber, 2);
+    ifile.read((char *)&temp->prev, 2);
+    ifile.read((char *)&temp->samePalette, 1);
+    ifile.read((char *)&temp->comments, 14);
+    temp->pcx = new char[temp->length];
+    ifile.read((char *)temp->pcx, temp->length);
+    
+    // Set the next file location
+    location = temp->next;
+    
+    return temp;
+}
+
+static const map<int,map<int, MugenSprite *> > readSprites(const string & filename) throw (MugenException){
+    /* 16 skips the header stuff */
+    int location = 16;
+    ifstream ifile;
+    ifile.open(filename.c_str(), ios::binary);
+    if (!ifile){
+	throw MugenException("Could not open SFF file: " + filename);
+    }
+
+    /* Lets go ahead and skip the crap -> (Elecbyte signature and version)
+     * start at the 16th byte
+     */
+    ifile.seekg(location,ios::beg);
+    int totalGroups;
+    int totalImages;
+    
+    /* this probably isn't endian safe.. */
+    ifile.read((char *)&totalGroups, 4);
+    ifile.read((char *)&totalImages, 4);
+    ifile.read((char *)&location, 4);
+    
+    Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
+
+    map<int, map<int, MugenSprite*> > sprites;
+    
+    for (int i = 0; i < totalImages; ++i){
+        MugenSprite * sprite = readSprite(ifile, location);
+        sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
+    }
+
+    ifile.close();
+    
+    return sprites;
+}
+
 }
 
 void MugenCharacter::load() throw( MugenException ){
@@ -255,8 +321,9 @@ void MugenCharacter::load() throw( MugenException ){
     }
     
     /* Sprites */
-    MugenSffReader spriteReader( fixFileName( baseDir, sffFile ) );
-    sprites = spriteReader.getCollection();
+    // MugenSffReader spriteReader( fixFileName( baseDir, sffFile ) );
+    // sprites = spriteReader.getCollection();
+    sprites = Sff::readSprites(fixFileName(baseDir, sffFile));
     
     /* Animations */
     bundleAnimations();
@@ -268,7 +335,7 @@ void MugenCharacter::load() throw( MugenException ){
 
 // animations
 void MugenCharacter::bundleAnimations() throw( MugenException){
-    MugenReader reader( baseDir + airFile );
+    MugenReader reader( Util::trim(baseDir + airFile) );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
