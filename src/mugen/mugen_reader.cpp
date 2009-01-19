@@ -17,12 +17,18 @@ static bool checkClsn( const std::string &clsn ){
 MugenReader::MugenReader( const char * file ){
     Global::debug(1) << "[mugen reader] Opening file '" << file << "'" << endl;
     ifile.open( file );
+    if (!ifile){
+        perror("cant open file");
+    }
     myfile = string( file );
 }
 
 MugenReader::MugenReader( const string & file ){
     Global::debug(1) << "[mugen reader] Opening file '" << file << "'" << endl;
     ifile.open( file.c_str() );
+    if (!ifile){
+        perror("cant open file");
+    }
     myfile = file;
 }
 
@@ -38,7 +44,6 @@ MugenReader::~MugenReader(){
 const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenException){
   
   if ( !ifile ){
-      perror("cant open file");
       throw MugenException( std::string("Could not open file: ") + myfile );
   }
   
