@@ -21,6 +21,10 @@
 
 static int lowerCase( int c ){ return tolower( c );}
 
+static void fixCase( std::string &str ){
+    transform( str.begin(), str.end(), str.begin(), lowerCase );
+}
+
 static std::string fixFileName( const std::string &dir, std::string str ){
     Global::debug(1) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
@@ -39,7 +43,7 @@ static std::string fixFileName( const std::string &dir, std::string str ){
 	Global::debug(1) << "Correcting file: " << str << ", in directory: "<< dir <<".\nGot " << files.size() << " files." << endl;
 	for( unsigned int i = 0; i < files.size(); ++i ){
 	    std::string temp = files[i].c_str();
-	    transform( temp.begin(), temp.end(), temp.begin(), lowerCase );
+	    fixCase( temp );
 	    if( std::string( dir + str ) == temp ){
 		// We got number one chinese retaurant
 		returnString = files[i];
@@ -177,7 +181,7 @@ void MugenCharacter::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		transform( itemhead.begin(), itemhead.end(), itemhead.begin(), lowerCase );
+		fixCase( itemhead );
 		if (itemhead == "name"){
 		    *content->getNext() >> name;
                     Global::debug(1) << "Read name '" << name << "'" << endl;
@@ -206,7 +210,7 @@ void MugenCharacter::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		transform( itemhead.begin(), itemhead.end(), itemhead.begin(), lowerCase );
+		fixCase( itemhead );
 		if( itemhead == "cmd" ){
 		    *content->getNext() >> cmdFile;
 		}
@@ -308,7 +312,7 @@ void MugenCharacter::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		transform( itemhead.begin(), itemhead.end(), itemhead.begin(), lowerCase );
+		fixCase( itemhead );
 		if( itemhead == "intro.storyboard" ){
 		    *content->getNext() >> introFile;
 		}
@@ -353,7 +357,7 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		transform( itemhead.begin(), itemhead.end(), itemhead.begin(), lowerCase );
+		fixCase( itemhead );
 		// Attack boxes
 		if( itemhead.find("clsn1default:") != std::string::npos ){
 		    // Get number
@@ -459,7 +463,7 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    if( content->hasItems() ){
 			std::string flip;
 			*content->getNext() >> flip;
-			transform( flip.begin(), flip.end(), flip.begin(), lowerCase );
+			fixCase( flip );
 			if( flip.find("h") != std::string::npos )frame->flipHorizontal = true;
 			if( flip.find("v") != std::string::npos )frame->flipVertical = true;
 		    }
