@@ -72,7 +72,7 @@ private:
 	LineEdit * lineEdit;
 	unsigned long long editCounter;
 	bool enterPressed;
-        queue< string > toSend;
+        std::queue<std::string> toSend;
 };
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef _paintown_snow_atmosphere_h
 #define _paintown_snow_atmosphere_h
 
+#include <vector>
+
 class Bitmap;
 
 #include "atmosphere.h"
@@ -33,7 +35,7 @@ public:
 	virtual void act();
 	
 protected:
-	vector< Flake * > flakes;
+        std::vector< Flake * > flakes;
 };
 
 #endif

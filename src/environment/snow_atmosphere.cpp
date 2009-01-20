@@ -3,6 +3,8 @@
 #include "snow_atmosphere.h"
 #include <math.h>
 
+using namespace std;
+
 static int screenX(){
 	return 320;
 }
