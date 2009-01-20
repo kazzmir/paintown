@@ -28,6 +28,14 @@ public:
 	inline const std::string &getName() const {
             return name;
         }
+	
+	inline const int getTotalGroups() const {
+	    return totalGroups;
+	}
+	
+	inline const int getTotalSprites() const {
+	    return totalImages;
+	}
 
         inline const std::map<int, MugenAnimation*> & getAnimations() const {
             return animations;
@@ -206,17 +214,25 @@ protected:
 	double crouchfriction;
 
 	/* Sprites */
+	
+	// Our total of sprites and groups
+	int totalGroups;
+	int totalImages;
+	// Sprites organized by group and number
 	std::map< int, std::map< int, MugenSprite * > > sprites;
 	
 	/* Animation Lists stored by action number, ie [Begin Action 500] */
 	std::map< int, MugenAnimation * > animations;
 	
-	/* Sounds */
+	/* Sounds organized by group and number */
 	std::map< int, std::map< int, MugenSound * > > sounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
 	
     protected:
+	/* Read sprites */
+	void readSprites() throw (MugenException);
+	    
 	/* This creates the animations no need for a new class to handle this */
 	void bundleAnimations() throw( MugenException);
 };

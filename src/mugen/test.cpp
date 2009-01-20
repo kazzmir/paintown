@@ -20,6 +20,10 @@
 #include "util/bitmap.h"
 #include "util/funcs.h"
 
+#include "factory/font_render.h"
+
+#include "gui/keyinput_manager.h"
+
 using namespace std;
 
 
@@ -70,6 +74,7 @@ int main( int argc, char ** argv ){
 
         allegro_init();
         install_timer();
+	install_keyboard();
         set_color_depth(16);
         Bitmap::setGfxModeWindowed(640, 480);
 
@@ -145,6 +150,7 @@ int main( int argc, char ** argv ){
                 Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
 		MugenCharacter character( ourFile );
 		character.load();
+		/*
                 for (map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin(); it != character.getAnimations().end(); it++){
                     Global::debug(0) << "Animation " << it->first << endl;
                     const vector<MugenFrame*> & frames = it->second->getFrames();
@@ -158,8 +164,72 @@ int main( int argc, char ** argv ){
                         Util::rest(1000);
                     }
                 }
-
-                Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
+		*/
+		Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
+		bool quit = false;
+		
+		map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin();
+		unsigned int currentAnim = 0;
+		unsigned int lastAnim = character.getAnimations().size() -1;
+		unsigned int currentFrame = 0;
+		unsigned int lastFrame = it->second->getFrames().size() -1;
+		
+		Bitmap b;
+		
+		Bitmap work( 640, 480 );
+		
+		MugenSprite * sprite = 0;
+		
+		while( !quit ){
+		    work.clear();
+		    keyInputManager::update();
+		    
+		    if( keyInputManager::keyState(keys::UP, true) ){
+			if( currentAnim < lastAnim ){
+			    currentAnim++;
+			    it++;
+			}
+			currentFrame = 0;
+			lastFrame = it->second->getFrames().size()-1;
+			sprite = it->second->getFrames()[currentFrame]->sprite;
+			if (sprite != 0){
+			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			}
+		    }
+		    else if( keyInputManager::keyState(keys::DOWN, true) ){
+			if( currentAnim > 0 ){
+			    currentAnim--;
+			    it--;
+			}
+			currentFrame = 0;
+			lastFrame = it->second->getFrames().size()-1;
+			sprite = it->second->getFrames()[currentFrame]->sprite;
+			if (sprite != 0){
+			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			}
+		    }
+		    else if( keyInputManager::keyState(keys::LEFT, true) ){
+			if( currentFrame > 0 )currentFrame--;
+			sprite = it->second->getFrames()[currentFrame]->sprite;
+			if (sprite != 0){
+			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			}
+		    }
+		    else if( keyInputManager::keyState(keys::RIGHT, true) ){
+			if( currentFrame < lastFrame )currentFrame++;
+			sprite = it->second->getFrames()[currentFrame]->sprite;
+			if (sprite != 0){
+			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			}
+		    }
+		    quit |= keyInputManager::keyState(keys::ESC, true );
+		    
+		    b.Blit(work);
+		    Font::getDefaultFont().printf( 15, 120, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i, Current Frame: %i", 0, currentAnim, currentFrame );
+		    if(sprite!=0)Font::getDefaultFont().printf( 15, 140, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %i | x: %i | y: %i | Group: %i | Image: %i", sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
+		    work.BlitToScreen();
+		    Util::rest(1);
+		}
 	    }
 	    catch( MugenException &ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
