@@ -113,7 +113,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->imageNumber, 2);
     ifile.read((char *)&temp->prev, 2);
     ifile.read((char *)&temp->samePalette, 1);
-    ifile.read((char *)&temp->comments, 14);
+    ifile.read((char *)&temp->comments, 13);
     temp->pcx = new char[temp->length];
     ifile.read((char *)temp->pcx, temp->length);
     
