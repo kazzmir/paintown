@@ -24,7 +24,8 @@ class MugenFrame{
     public:
 	MugenFrame();
 	MugenFrame( const MugenFrame &copy );
-	~MugenFrame();
+	virtual ~MugenFrame();
+
 	// We'll keep them, but they probably won't be used
 	std::vector< MugenArea > defenseCollision;
 	// This is the only one will be worried about
@@ -60,8 +61,8 @@ class MugenFrame{
 };
 
 /*
-Holds mugen animations, ie: player.air
-*/
+ * Holds mugen animations, ie: player.air
+ */
 class MugenAnimation{
     public:
 	MugenAnimation();
@@ -76,6 +77,10 @@ class MugenAnimation{
 	
 	// Add a frame
 	void addFrame( MugenFrame * );
+
+        inline const std::vector<MugenFrame*> & getFrames() const {
+            return frames;
+        }
 	
     private:
 	

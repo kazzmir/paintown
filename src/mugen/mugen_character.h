@@ -25,7 +25,13 @@ public:
 	
 	void load() throw( MugenException );
 	
-	inline const std::string &getName() const { return name; }
+	inline const std::string &getName() const {
+            return name;
+        }
+
+        inline const std::map<int, MugenAnimation*> & getAnimations() const {
+            return animations;
+        }
 
 protected:
 

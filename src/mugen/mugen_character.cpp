@@ -452,10 +452,10 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    frame->attackCollision = clsn1Holder;
 		    frame->loopstart = setloop;
 		    /* Get sprite details */
-		    int group,sprnum;
+		    int group, spriteNumber;
 		    // Need to get the parsed data and populate these above items
 		    *content->getNext() >> group;
-		    *content->getNext() >> sprnum;
+		    *content->getNext() >> spriteNumber;
 		    *content->getNext() >> frame->xoffset;
 		    *content->getNext() >> frame->yoffset;
 		    *content->getNext() >> frame->time;
@@ -469,7 +469,10 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    }
 		    if( content->hasItems() )*content->getNext() >> frame->colorAdd;
 		    // Add sprite
-		    frame->sprite = sprites[group][sprnum];
+		    frame->sprite = sprites[group][spriteNumber];
+                    if (frame->sprite == 0){
+                        Global::debug(0) << "No sprite for group " << group << " number " << spriteNumber << endl;
+                    }
 		    // Add frame
 		    animation->addFrame(frame);
 		}
