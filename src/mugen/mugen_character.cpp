@@ -103,6 +103,13 @@ MugenCharacter::~MugenCharacter(){
 }
 
 namespace Sff{
+    
+static MugenSprite *getCorrectIndex( MugenSprite *spr[], int index ){
+    if( !spr[index]->length ){
+	    return getCorrectIndex( spr, spr[index]->prev );
+    }
+    else return spr[index];
+}
 
 // Get next sprite
 static MugenSprite * readSprite(ifstream & ifile, int & location){
@@ -121,9 +128,9 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->prev, 2);
     ifile.read((char *)&temp->samePalette, 1);
     ifile.read((char *)&temp->comments, 13);
-    // Lets get the real length, in case we've been duped
-    temp->length = temp->next - location - 32;
     if( temp->length ){
+	// Lets get the real length, in case we've been duped
+	//temp->length = temp->next - location - 32;
 	temp->pcx = new char[temp->length];
 	ifile.read((char *)temp->pcx, temp->length);
     }
@@ -166,7 +173,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	* if prev is larger than index then this file is corrupt */
 	if( sprite->prev > i && !sprite->length ) throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
 	else if( !sprite->length ){
-	    const MugenSprite *temp = spriteIndex[sprite->prev];
+	    const MugenSprite *temp = getCorrectIndex( spriteIndex, sprite->prev );//spriteIndex[sprite->prev];
 	    sprite->pcx = new char[temp->length];
 	    strncpy( sprite->pcx, temp->pcx, temp->length );
 	}

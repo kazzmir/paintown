@@ -10,15 +10,15 @@ public:
     MugenSprite( const MugenSprite &copy );
     ~MugenSprite();
     
-    int next;
-    int length;
-    int x;
-    int y;
-    int groupNumber;
-    int imageNumber;
-    int prev;
+    unsigned long next;
+    unsigned long length;
+    unsigned short x;
+    unsigned short y;
+    unsigned short groupNumber;
+    unsigned short imageNumber;
+    unsigned short prev;
     bool samePalette;
-    char comments[14];
+    char comments[13];
     char * pcx;
 };
 
