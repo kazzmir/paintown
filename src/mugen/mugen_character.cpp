@@ -6,6 +6,11 @@
 #include <cstring>
 #include <vector>
 
+// To aid in filesize
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "util/funcs.h"
 
 #include "mugen_animation.h"
@@ -104,12 +109,12 @@ MugenCharacter::~MugenCharacter(){
 
 namespace Sff{
     
-static MugenSprite *getCorrectIndex( MugenSprite *spr[], int index ){
+/*static MugenSprite *getCorrectIndex( MugenSprite *spr[], int index ){
     if( !spr[index]->length ){
 	    return getCorrectIndex( spr, spr[index]->prev );
     }
     else return spr[index];
-}
+}*/
 
 // Get next sprite
 static MugenSprite * readSprite(ifstream & ifile, int & location){
@@ -130,7 +135,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->comments, 13);
     if( temp->length ){
 	// Lets get the real length, in case we've been duped
-	//temp->length = temp->next - location - 32;
+	temp->length = temp->next - location - 32;
 	temp->pcx = new char[temp->length];
 	ifile.read((char *)temp->pcx, temp->length);
     }
@@ -148,6 +153,13 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     if (!ifile){
 	throw MugenException("Could not open SFF file: " + filename);
     }
+    
+    // Lets get the filesize
+    FILE *tempstream = fopen( filename.c_str(), "r" );
+    fseek( tempstream, 0, SEEK_END );
+    int filesize = ftell( tempstream );
+    fclose( tempstream );
+    
 
     /* Lets go ahead and skip the crap -> (Elecbyte signature and version)
      * start at the 16th byte
@@ -165,17 +177,43 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 
     map<int, map<int, MugenSprite*> > sprites;
     
-    MugenSprite *spriteIndex[totalImages];
+    /*unsigned int offset[totalImages + 1];
+    unsigned char *dupcheck[totalImages + 1];
+    unsigned int imglist[totalImages + 1];
+    unsigned int imagenumber;*/
+    
+    MugenSprite *spriteIndex[totalImages + 1];
+    
     
     for (int i = 0; i < totalImages; ++i){
+	/*offset[i] = location;*/
+	if( location > filesize ){
+	    throw MugenException("Error in SFF file: " + filename + ". Offset of image beyond the end of the file.");
+	}
         MugenSprite * sprite = readSprite(ifile, location);
+	
+	/*image
+	imagenumber = sprite.groupNumber;
+	imagenumber = ( imagenumber << 16 ) + sprite.imageNumber;
+	imglist[i] = imagenumber;
+	
+	for( int j = 0; j < i; ++j ){
+	    if( imglist[i] < 255 ) ++dupcheck[i];
+	}
+	
+	if( dupcheck[i] )*/
+	    
+	
 	/* Lets check if this is a duplicate sprite if so copy it
 	* if prev is larger than index then this file is corrupt */
 	if( sprite->prev > i && !sprite->length ) throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
 	else if( !sprite->length ){
-	    const MugenSprite *temp = getCorrectIndex( spriteIndex, sprite->prev );//spriteIndex[sprite->prev];
+	    const MugenSprite *temp = spriteIndex[sprite->prev];//getCorrectIndex( spriteIndex, sprite->prev );//spriteIndex[sprite->prev];
+	    if( !temp ) throw MugenException("Error in SFF file: " + filename + ". Referenced sprite is NULL.");
 	    sprite->pcx = new char[temp->length];
 	    strncpy( sprite->pcx, temp->pcx, temp->length );
+	    sprite->length = temp->length;
+	    Global::debug(1) << "Referenced Sprite: " << temp->length << " | at location: " << sprite->prev << endl;
 	}
 	spriteIndex[i] = sprite;
         sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
@@ -385,7 +423,7 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 	bool setloop = false;
 	while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
+		MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		fixCase( itemhead );
 		// Attack boxes
@@ -475,7 +513,7 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    setloop = true;
 		}
 		// This is where we get our frame
-		else{
+		else if( itemhead.find("clsn") == std::string::npos ){
 		    // This is the new frame
 		    MugenFrame *frame = new MugenFrame();
 		    frame->defenseCollision = clsn2Holder;
@@ -484,11 +522,13 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    /* Get sprite details */
 		    int group, spriteNumber;
 		    // Need to get the parsed data and populate these above items
-		    *content->getNext() >> group;
+		    //*content->getNext() >> group;
+		    *item >> group;
 		    *content->getNext() >> spriteNumber;
 		    *content->getNext() >> frame->xoffset;
 		    *content->getNext() >> frame->yoffset;
 		    *content->getNext() >> frame->time;
+		    Global::debug(0) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
 		    // Check for flips
 		    if( content->hasItems() ){
 			std::string flip;
