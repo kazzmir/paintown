@@ -14,6 +14,9 @@ public:
     MugenArea();
     MugenArea( const MugenArea &copy );
     ~MugenArea();
+    
+    MugenArea & operator=( const MugenArea &copy );
+    
     int x1,y1,x2,y2;
 };
 
@@ -25,6 +28,8 @@ class MugenFrame{
 	MugenFrame();
 	MugenFrame( const MugenFrame &copy );
 	virtual ~MugenFrame();
+	
+	MugenFrame & operator=( const MugenFrame &copy );
 
 	// We'll keep them, but they probably won't be used
 	std::vector< MugenArea > defenseCollision;

@@ -10,6 +10,8 @@ public:
     MugenSprite( const MugenSprite &copy );
     ~MugenSprite();
     
+    MugenSprite & operator=( const MugenSprite &copy );
+    
     unsigned long next;
     unsigned long length;
     unsigned short x;
@@ -18,7 +20,7 @@ public:
     unsigned short imageNumber;
     unsigned short prev;
     bool samePalette;
-    char comments[13];
+    char comments[14];
     char * pcx;
 };
 

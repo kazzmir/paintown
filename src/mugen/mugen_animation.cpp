@@ -20,6 +20,15 @@ MugenArea::MugenArea( const MugenArea &copy ){
     this->x1 = copy.y2;
 }
 
+MugenArea & MugenArea::operator=( const MugenArea &copy ){
+    this->x1 = copy.x1;
+    this->x1 = copy.y1;
+    this->x1 = copy.x2;
+    this->x1 = copy.y2;
+    
+    return *this;
+}
+
 MugenArea::~MugenArea(){
 }
 
@@ -47,6 +56,21 @@ MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->colorAdd = copy.colorAdd;
 
 }
+
+MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
+    this->loopstart = copy.loopstart;
+    this->sprite = copy.sprite;
+    this->xoffset = copy.xoffset;
+    this->yoffset = copy.yoffset;
+    this->time = copy.time;
+    this->flipHorizontal = copy.flipHorizontal;
+    this->flipVertical = copy.flipVertical;
+    this->colorAdd = copy.colorAdd;
+    
+    return *this;
+
+}
+
 MugenFrame::~MugenFrame(){
 }
 

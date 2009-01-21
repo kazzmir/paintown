@@ -135,7 +135,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->comments, 13);
     if( temp->length ){
 	// Lets get the real length, in case we've been duped
-	temp->length = temp->next - location - 32;
+	//temp->length = temp->next - location - 32;
 	temp->pcx = new char[temp->length];
 	ifile.read((char *)temp->pcx, temp->length);
     }

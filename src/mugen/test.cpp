@@ -226,7 +226,7 @@ int main( int argc, char ** argv ){
 		    
 		    b.Blit(work);
 		    Font::getDefaultFont().printf( 15, 120, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i, Current Frame: %i", 0, currentAnim, currentFrame );
-		    if(sprite!=0)Font::getDefaultFont().printf( 15, 140, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %i | x: %i | y: %i | Group: %i | Image: %i", sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
+		    if(sprite!=0)Font::getDefaultFont().printf( 15, 140, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x: %d | y: %d | Group: %d | Image: %d", sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
 		    work.BlitToScreen();
 		    Util::rest(1);
 		}
