@@ -188,7 +188,7 @@ int main( int argc, char ** argv ){
 		    keyInputManager::update();
 		    ++ticks;
 		    const int time = it->second->getFrames()[currentFrame]->time == -1 ? 300 : it->second->getFrames()[currentFrame]->time;
-		    if(animate && ticks >= time){
+		    if(animate && ticks >= 15 + time){
 			ticks = 0;
 			if( it->second->getFrames()[currentFrame]->loopstart ) loop = currentFrame;
 			if( currentFrame < lastFrame )currentFrame++;
@@ -246,9 +246,9 @@ int main( int argc, char ** argv ){
 		    }
 		    quit |= keyInputManager::keyState(keys::ESC, true );
 		    
-		    b.Blit(work);
-		    Font::getDefaultFont().printf( 15, 120, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i, Current Frame: %i", 0, currentAnim, currentFrame );
-		    if(sprite!=0)Font::getDefaultFont().printf( 15, 140, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x: %d | y: %d | Group: %d | Image: %d", sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
+		    b.Blit(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
+		    Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i, Current Frame: %i", 0, currentAnim, currentFrame );
+		    if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x: %d | y: %d | Group: %d | Image: %d", sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
 		    work.BlitToScreen();
 		    Util::rest(1);
 		}
