@@ -167,6 +167,9 @@ int main( int argc, char ** argv ){
 		*/
 		Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
 		bool quit = false;
+		bool animate = false;
+		int ticks = 0;
+		int loop = 0;
 		
 		map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin();
 		unsigned int currentAnim = 0;
@@ -183,12 +186,25 @@ int main( int argc, char ** argv ){
 		while( !quit ){
 		    work.clear();
 		    keyInputManager::update();
+		    ++ticks;
+		    const int time = it->second->getFrames()[currentFrame]->time == -1 ? 300 : it->second->getFrames()[currentFrame]->time;
+		    if(animate && ticks >= time){
+			ticks = 0;
+			if( it->second->getFrames()[currentFrame]->loopstart ) loop = currentFrame;
+			if( currentFrame < lastFrame )currentFrame++;
+			else currentFrame = loop;
+			sprite = it->second->getFrames()[currentFrame]->sprite;
+			if (sprite != 0){
+			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			}
+		    }
 		    
 		    if( keyInputManager::keyState(keys::UP, true) ){
 			if( currentAnim < lastAnim ){
 			    currentAnim++;
 			    it++;
 			}
+			loop = 0;
 			currentFrame = 0;
 			lastFrame = it->second->getFrames().size()-1;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
@@ -201,6 +217,7 @@ int main( int argc, char ** argv ){
 			    currentAnim--;
 			    it--;
 			}
+			loop = 0;
 			currentFrame = 0;
 			lastFrame = it->second->getFrames().size()-1;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
@@ -208,19 +225,24 @@ int main( int argc, char ** argv ){
 			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
 			}
 		    }
-		    else if( keyInputManager::keyState(keys::LEFT, true) ){
+		    else if( keyInputManager::keyState(keys::LEFT, true) && !animate){
 			if( currentFrame > 0 )currentFrame--;
+			else currentFrame = lastFrame;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
 			if (sprite != 0){
 			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
 			}
 		    }
-		    else if( keyInputManager::keyState(keys::RIGHT, true) ){
+		    else if( keyInputManager::keyState(keys::RIGHT, true) && !animate){
 			if( currentFrame < lastFrame )currentFrame++;
+			else currentFrame = 0;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
 			if (sprite != 0){
 			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
 			}
+		    }
+		    else if( keyInputManager::keyState(keys::SPACE, true) ){
+			animate = !animate;
 		    }
 		    quit |= keyInputManager::keyState(keys::ESC, true );
 		    
