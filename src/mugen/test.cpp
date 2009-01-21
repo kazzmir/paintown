@@ -174,11 +174,11 @@ int main( int argc, char ** argv ){
 		unsigned int currentFrame = 0;
 		unsigned int lastFrame = it->second->getFrames().size() -1;
 		
-		Bitmap b;
+		MugenSprite * sprite = it->second->getFrames()[currentFrame]->sprite;
+		
+		Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
 		
 		Bitmap work( 640, 480 );
-		
-		MugenSprite * sprite = 0;
 		
 		while( !quit ){
 		    work.clear();
