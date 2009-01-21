@@ -88,18 +88,76 @@ MugenCharacter::MugenCharacter( const char * location ){
 }
 
 MugenCharacter::~MugenCharacter(){
-    // Get rid of sprites
-    for( std::map< int, std::map< int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }
-    
     // Get rid of animation lists;
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-	if( i->second )delete i->second;
+	delete i->second;
     }
     
+}
+
+namespace Sff{
+
+// Get next sprite
+static MugenSprite * readSprite(ifstream & ifile, int & location){
+    // if ( !location )return;
+    // Go to next sprite
+    ifile.seekg(location, ios::beg);
+    // next sprite
+    MugenSprite *temp = new MugenSprite();
+    
+    ifile.read((char *)&temp->next, 4);
+    ifile.read((char *)&temp->length, 4);
+    ifile.read((char *)&temp->x, 2);
+    ifile.read((char *)&temp->y, 2);
+    ifile.read((char *)&temp->groupNumber, 2);
+    ifile.read((char *)&temp->imageNumber, 2);
+    ifile.read((char *)&temp->prev, 2);
+    ifile.read((char *)&temp->samePalette, 1);
+    ifile.read((char *)&temp->comments, 13);
+    temp->pcx = new char[temp->length];
+    ifile.read((char *)temp->pcx, temp->length);
+    
+    // Set the next file location
+    location = temp->next;
+    
+    return temp;
+}
+
+static const map<int,map<int, MugenSprite *> > readSprites(const string & filename) throw (MugenException){
+    /* 16 skips the header stuff */
+    int location = 16;
+    ifstream ifile;
+    ifile.open(filename.c_str(), ios::binary);
+    if (!ifile){
+	throw MugenException("Could not open SFF file: " + filename);
+    }
+
+    /* Lets go ahead and skip the crap -> (Elecbyte signature and version)
+     * start at the 16th byte
+     */
+    ifile.seekg(location,ios::beg);
+    int totalGroups;
+    int totalImages;
+    
+    /* this probably isn't endian safe.. */
+    ifile.read((char *)&totalGroups, 4);
+    ifile.read((char *)&totalImages, 4);
+    ifile.read((char *)&location, 4);
+    
+    Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
+
+    map<int, map<int, MugenSprite*> > sprites;
+    
+    for (int i = 0; i < totalImages; ++i){
+        MugenSprite * sprite = readSprite(ifile, location);
+        sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
+    }
+
+    ifile.close();
+    
+    return sprites;
+}
+
 }
 
 void MugenCharacter::load() throw( MugenException ){
@@ -269,7 +327,7 @@ void MugenCharacter::load() throw( MugenException ){
     /* Sprites */
     // MugenSffReader spriteReader( fixFileName( baseDir, sffFile ) );
     // sprites = spriteReader.getCollection();
-    readSprites();
+    sprites = Sff::readSprites(fixFileName(baseDir, sffFile));
     
     /* Animations */
     bundleAnimations();
@@ -277,66 +335,6 @@ void MugenCharacter::load() throw( MugenException ){
     /* Sounds */
     MugenSndReader soundReader( fixFileName( baseDir, sndFile ) );
     sounds = soundReader.getCollection();
-}
-
-
-void MugenCharacter::readSprites() throw (MugenException){
-    /* 16 skips the header stuff */
-    int location = 16;
-    ifstream ifile;
-    ifile.open( fixFileName(baseDir, sffFile).c_str(), ios::binary);
-    if (!ifile){
-	throw MugenException("Could not open SFF file: " + sffFile);
-    }
-
-    /* Lets go ahead and skip the crap -> (Elecbyte signature and version)
-     * start at the 16th byte
-     */
-    ifile.seekg(location,ios::beg);
-    
-    /* this probably isn't endian safe.. */
-    ifile.read((char *)&totalGroups, 4);
-    ifile.read((char *)&totalImages, 4);
-    ifile.read((char *)&location, 4);
-    
-    Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
-    
-    // This is so we can link to duplicates
-    MugenSprite *sprIndex[totalImages];
-    
-    for (int i = 0; i < totalImages; ++i){
-        if ( !location ) break;
-	// Go to next sprite
-	ifile.seekg(location, ios::beg);
-	// next sprite
-	MugenSprite *sprite = new MugenSprite();
-	
-	ifile.read((char *)&sprite->next, 4);
-	ifile.read((char *)&sprite->length, 4);
-	ifile.read((char *)&sprite->x, 2);
-	ifile.read((char *)&sprite->y, 2);
-	ifile.read((char *)&sprite->groupNumber, 2);
-	ifile.read((char *)&sprite->imageNumber, 2);
-	ifile.read((char *)&sprite->prev, 2);
-	ifile.read((char *)&sprite->samePalette, 1);
-	ifile.read((char *)&sprite->comments, 13);
-	// Lets get the real length, in case we've been duped
-	//sprite->length = sprite->next - location - 32;
-	if( sprite->length ){
-	    sprite->pcx = new char[sprite->length];
-	    ifile.read((char *)sprite->pcx, sprite->length );
-	    
-	    Global::debug(1) << "Next Sprite: " << sprite->next << ", Length: " << sprite->length << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
-	    // Set the next file location
-	    location = sprite->next;
-	    sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
-	    sprIndex[i] = sprite;
-	}
-	else{
-	}
-    }
-
-    ifile.close();
 }
 
 // animations
