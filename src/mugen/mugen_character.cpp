@@ -88,9 +88,16 @@ MugenCharacter::MugenCharacter( const char * location ){
 }
 
 MugenCharacter::~MugenCharacter(){
+     // Get rid of sprites
+    for( std::map< int, std::map< int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
+    }
+    
     // Get rid of animation lists;
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-	delete i->second;
+	if( i->second )delete i->second;
     }
     
 }
@@ -114,9 +121,12 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->prev, 2);
     ifile.read((char *)&temp->samePalette, 1);
     ifile.read((char *)&temp->comments, 13);
-    temp->pcx = new char[temp->length];
-    ifile.read((char *)temp->pcx, temp->length);
-    
+    // Lets get the real length, in case we've been duped
+    temp->length = temp->next - location - 32;
+    if( temp->length ){
+	temp->pcx = new char[temp->length];
+	ifile.read((char *)temp->pcx, temp->length);
+    }
     // Set the next file location
     location = temp->next;
     
@@ -148,9 +158,22 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 
     map<int, map<int, MugenSprite*> > sprites;
     
+    MugenSprite *spriteIndex[totalImages];
+    
     for (int i = 0; i < totalImages; ++i){
         MugenSprite * sprite = readSprite(ifile, location);
+	/* Lets check if this is a duplicate sprite if so copy it
+	* if prev is larger than index then this file is corrupt */
+	if( sprite->prev > i && !sprite->length ) throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
+	else if( !sprite->length ){
+	    const MugenSprite *temp = spriteIndex[sprite->prev];
+	    sprite->pcx = new char[temp->length];
+	    strncpy( sprite->pcx, temp->pcx, temp->length );
+	}
+	spriteIndex[i] = sprite;
         sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
+	
+	Global::debug(1) << "Next Sprite: " << sprite->next << ", Length: " << sprite->length << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
     }
 
     ifile.close();
