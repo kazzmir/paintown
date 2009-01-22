@@ -26,9 +26,9 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
-    strncpy( this->comments, copy.comments, 14 );
-    this->pcx = new char[this->length];
-    memcpy(this->pcx, copy.pcx, this->length);
+    strncpy( this->comments, copy.comments, 13 );
+    this->pcx = new char[this->reallength];
+    memcpy(this->pcx, copy.pcx, this->reallength);
 }
 
 MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
@@ -41,9 +41,9 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
-    strncpy( this->comments, copy.comments, 14 );
-    this->pcx = new char[this->length];
-    memcpy(this->pcx, copy.pcx, this->length);
+    strncpy( this->comments, copy.comments, 13 );
+    this->pcx = new char[this->reallength];
+    memcpy(this->pcx, copy.pcx, this->reallength);
     
     return *this;
 }
