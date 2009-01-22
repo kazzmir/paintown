@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "Configuration.h"
+#include "ast/Configuration.h"
 
 extern int yylex();
 extern int yyerror(const char *);

@@ -25,9 +25,12 @@ scripts = Split("""
 script/modules/paintown.py
 """);
 
-obj_files.append(use.CFile('mugen/lex', 'mugen/lex.l'))
+lex = use.CFile('mugen/lex', 'mugen/lex.l')
+yacc = use.CXXFile('mugen/parse', 'mugen/parse.yy')
+use.Depends(lex, yacc)
+# obj_files.append(use.CFile('mugen/lex', 'mugen/lex.l'))
 #obj_files.append(use.CXXFile('mugen/lex', 'mugen/lex.ll'))
-obj_files.append(use.CXXFile('mugen/parse', 'mugen/parse.yy'))
+obj_files.append([yacc, lex])
 
 def icon():
     if isWindows():
