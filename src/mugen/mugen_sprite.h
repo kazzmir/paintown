@@ -13,6 +13,7 @@ public:
     MugenSprite & operator=( const MugenSprite &copy );
     
     unsigned long next;
+    unsigned long location;
     unsigned long length;
     unsigned long reallength;
     unsigned short x;

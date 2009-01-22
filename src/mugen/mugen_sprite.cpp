@@ -3,6 +3,7 @@
 
 MugenSprite::MugenSprite():
 next(0),
+location(0),
 length(0),
 reallength(0),
 x(0),
@@ -18,6 +19,7 @@ pcx(NULL){
 
 MugenSprite::MugenSprite( const MugenSprite &copy ){
     this->next = copy.next;
+    this->location = copy.location;
     this->length = copy.length;
     this->reallength = copy.reallength;
     this->x = copy.x;
@@ -33,6 +35,7 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
 
 MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->next = copy.next;
+    this->location = copy.location;
     this->length = copy.length;
     this->reallength = copy.reallength;
     this->x = copy.x;

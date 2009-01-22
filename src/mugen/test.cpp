@@ -282,7 +282,8 @@ int main( int argc, char ** argv ){
 		    work.clear();
 		    keyInputManager::update();
 		    ++ticks;
-		    const int time = it->second->getFrames()[currentFrame]->time == -1 ? 300 : it->second->getFrames()[currentFrame]->time;
+		    // Since -1 is to stop the animation completely, we'll give it a pause of 150 ticks, because we want to see the loop
+		    const int time = it->second->getFrames()[currentFrame]->time == -1 ? 150 : it->second->getFrames()[currentFrame]->time;
 		    if(animate && ticks >= 15 + time){
 			ticks = 0;
 			if( it->second->getFrames()[currentFrame]->loopstart ) loop = currentFrame;

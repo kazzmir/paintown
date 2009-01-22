@@ -143,6 +143,8 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.seekg(location, ios::beg);
     // next sprite
     MugenSprite *temp = new MugenSprite();
+    // set the sprite location
+    temp->location = location;
     
     ifile.read((char *)&temp->next, 4);
     ifile.read((char *)&temp->length, 4);
@@ -153,7 +155,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->prev, 2);
     ifile.read((char *)&temp->samePalette, 1);
     ifile.read((char *)&temp->comments, 13);
-    temp->reallength = temp->next - location - 32;
+    temp->reallength = temp->next - temp->location - 32;
     //temp->reallength = temp->length;
     if( temp->next == 0 ) {
 	if( temp->samePalette ) temp->reallength = temp->length-768;
@@ -206,17 +208,20 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	else if( !location )break;
         MugenSprite * sprite = readSprite(ifile, location);    
 	
-	/* Lets check if this is a duplicate sprite if so copy it
-	* if prev is larger than index then this file is corrupt */
-	if( sprite->prev > i && !sprite->length ) throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
 	if( sprite->length == 0 ){ // Lets get the linked sprite
+	    /* Lets check if this is a duplicate sprite if so copy it
+	    * if prev is larger than index then this file is corrupt */
+	    if( sprite->prev >= i ) throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
+	    if( sprite->prev > 32767 ) throw MugenException("Error in SFF file: " + filename + ". Reference too large in image.");
 	    while( sprite->length == 0 ){
 		const MugenSprite *temp = spriteIndex[sprite->prev];
 		if( !temp ) throw MugenException("Error in SFF file: " + filename + ". Referenced sprite is NULL.");
-		/*sprite->prev = temp->prev;
-		sprite->length = temp->reallength;
-		sprite->reallength = temp->reallength;*/
-		sprite->length = temp->next - spriteIndex[sprite->prev]->prev -32;
+		
+		// Seek to the location of the pcx data
+		ifile.seekg(temp->location + 32, ios::beg);
+		sprite->location = temp->location;
+		sprite->length = temp->next - temp->location - 32;
+		
 		if( (sprite->prev <= temp->prev) && ((sprite->prev != 0) || (i == 0)) && temp->length==0 ) {
 		    std::ostringstream st;
 		    st << "Image " << i << "(" << sprite->groupNumber << "," << sprite->imageNumber << ") : circular definition or forward linking. Aborting.\n"; 
@@ -224,11 +229,13 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 		}
 		else{
 		    if(sprite->length == 0) sprite->prev = temp->prev;
-		    else sprite->reallength = temp->next - spriteIndex[sprite->prev]->prev -32;
+		    else sprite->reallength = temp->next - temp->location -32;
 		}
+		
 		Global::debug(1) << "Referenced Sprite: " << temp->reallength << " | at location: " << sprite->prev << endl;
 	    }
 	}
+	
 	// Read in pcx header
 	pcx_header pcxhead;
 	ifile.read( (char *)&pcxhead.manufacturer, sizeof(unsigned char) );
@@ -249,8 +256,10 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	ifile.read( (char *)&pcxhead.HscreenSize, sizeof(unsigned short));
 	ifile.read( (char *)&pcxhead.VscreenSize, sizeof(unsigned short) );
 	ifile.read( (char *)&pcxhead.filler, sizeof(char) * 54 );
+	
 	// Now read in the entire pcx
-	ifile.seekg(location + 32,ios::beg);
+	// Seek to the location of the pcx data
+	ifile.seekg(sprite->location + 32, ios::beg);
 	sprite->pcx = new char[sprite->reallength];
 	ifile.read((char *)sprite->pcx, sprite->reallength);
 	spriteIndex[i] = sprite;
