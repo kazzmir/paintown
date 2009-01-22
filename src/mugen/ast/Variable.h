@@ -8,24 +8,24 @@ public:
 	Variable(const char *n):
 		name(n),
 		numberIndex(0),
-		numberIndexFlag(false),
 		stringIndex(0),
+		numberIndexFlag(false),
 		stringIndexFlag(false) {
 	}
 
 	Variable(const char *n, const int index):
 		name(n),
 		numberIndex(index),
-		numberIndexFlag(true),
 		stringIndex(0),
+		numberIndexFlag(true),
 		stringIndexFlag(false) {
 	}
 
 	Variable (const char *n, const char *index):
 		name(n),
 		numberIndex(0),
-		numberIndexFlag(false),
 		stringIndex(index),
+		numberIndexFlag(false),
 		stringIndexFlag(true) {
 	}
 

@@ -4,6 +4,8 @@
 #include <string.h>
 
 #include "ast/Configuration.h"
+#include "ast/Value.h"
+#include "ast/Modifier.h"
 
 extern int yylex();
 extern int yyerror(const char *);
@@ -13,7 +15,7 @@ Section *currentSection;
 Variable *currentLhs;
 std::list<Value *> *currentRhs;
 Value *currentValue;
-std::list<Modifer *> *currentModifiers;
+std::list<Modifier *> *currentModifiers;
 
 %}
 
@@ -95,7 +97,7 @@ range:
 
 modifiedIdentifier:
     modifiers { currentValue = new Value(); 
-	currentValue->setSpecies(ModifierIdentifier); } chainedIdentifiers
+	currentValue->setSpecies(ModifiedIdentifier); } chainedIdentifiers
     | chainedIdentifiers
 
 modifiers:
@@ -137,4 +139,5 @@ int yyerror(const char *msg) {
 	for (int i = 0; i < strlen(yytext); i++) {
 	    printf("%d, ", yytext[i]);
 	}*/
+    return 0;
 }

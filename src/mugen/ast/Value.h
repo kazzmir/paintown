@@ -71,6 +71,18 @@ public:
 				break;
 			case Range: printf("<%g - %g>", number, higherNumber);
 				break;
+                        case ParameterizedIdentifier: {
+                            break;
+                        }
+                        case ModifiedIdentifier: {
+                            break;
+                        }
+                        case SimpleExpression: {
+                            break;
+                        }
+                        case SimpleIdentifier: {
+                            break;
+                        }
 		}
 	}
 private:

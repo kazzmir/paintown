@@ -7,8 +7,8 @@ class Expression {
 public:
 	Expression(Value *lhs, char * o, Value *rhs):
 		left(lhs),
-		op(o),
-		right(rhs) {
+		right(rhs),
+		op(o){
 	}
 
 	Value *getLeft() { return left; }
