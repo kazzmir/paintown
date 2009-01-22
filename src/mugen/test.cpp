@@ -26,6 +26,98 @@
 
 using namespace std;
 
+/* testing spellcasters code 
+static int sff_memloadInt(unsigned char *data, int *ofs) {
+    int a,b;
+    a = data[*ofs];
+    (*ofs)++;
+    b = data[*ofs];
+    (*ofs)++;
+    return a + (b <<8);
+}
+
+static RGB* sffLoadPaletteFromMemory(unsigned char *data) {
+    RGB* pal = (RGB*) malloc(sizeof(RGB) * 256);
+    int  a, ofs;
+    ofs = 0;
+    for (a=0; a < 256; ++a) {
+        pal[a].r = data[ofs++] / 4;
+        pal[a].g = data[ofs++] / 4;
+        pal[a].b = data[ofs++] / 4;
+    }
+    return pal;
+}
+
+static BITMAP* sffLoadPcxFromMemory(unsigned char* data) {
+    BITMAP *bmp = NULL;
+    
+    // skip the first 3 bytes 
+    int     ofs = 3;
+    //char    planes = data[ofs++];
+    int     width  = -sff_memloadInt(data, &ofs);
+    int     height = -sff_memloadInt(data, &ofs);
+    int     bpp  = 0;
+    int     bytesPerLine = 0;
+    int     x,y;
+    int     value;
+    int     count;
+    
+    width += sff_memloadInt(data, &ofs) +1;
+    height+= sff_memloadInt(data, &ofs) +1;
+    
+    // skip 4 bytes (dpi) 
+    ofs += 4;
+    
+    // skip 16 color palette 
+    ofs += 48;
+    
+    /// padding 
+    ofs++;
+        
+        
+    bpp  = data[ofs++] *8;
+    if (bpp != 8) { // || bpp != 24) {
+        return NULL;
+    }
+    
+    bytesPerLine = sff_memloadInt(data, &ofs);
+    
+    // image data starts at ofs 128
+    ofs = 128;
+    bmp = create_bitmap_ex(bpp, width, height);
+    for (y=0; y < height; ++y) {
+        x = 0;
+        while (x < bytesPerLine) {
+            value = data[ofs++];
+            
+            // check if upper 2 bit are set 
+            if ((value & 0xc0) == 0xc0) {
+                // bits are set, that means the
+                 //  lower 6 bit contain the repeat count,
+                 //  and the color is stored in the next byte
+                
+                count = value & 0x3f;
+                value = data[ofs++];
+            } else {
+                // value contains the color already 
+                count = 1;
+            }
+            if (bpp == 8) {
+                while (count > 0) {
+                    if (x < bmp->w) {
+                        bmp->line[y][x] = value;                        
+                    }
+                    ++x;
+                    --count;
+                }
+            }
+        }
+    }
+    
+    
+    return bmp;
+}
+*/
 
 static bool isArg( const char * s1, const char * s2 ){
 	return strcasecmp( s1, s2 ) == 0;
@@ -159,7 +251,7 @@ int main( int argc, char ** argv ){
                         if (sprite == 0){
                             continue;
                         }
-                        Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+                        Bitmap b = new Bitmap(sffLoadPcxFromMemory( (char*) sprite->pcx ));;//Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->reallength);
                         b.BlitToScreen();
                         Util::rest(1000);
                     }
@@ -179,7 +271,10 @@ int main( int argc, char ** argv ){
 		
 		MugenSprite * sprite = it->second->getFrames()[currentFrame]->sprite;
 		
-		Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+		//BITMAP *b_buff = sffLoadPcxFromMemory( (unsigned char*) sprite->pcx );
+		//Bitmap b = Bitmap(b_buff, true);//Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->reallength);
+		//destroy_bitmap(b_buff);
+		Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->reallength);
 		
 		Bitmap work( 640, 480 );
 		
@@ -195,7 +290,10 @@ int main( int argc, char ** argv ){
 			else currentFrame = loop;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
 			if (sprite != 0){
-			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			   /*b_buff = sffLoadPcxFromMemory( (unsigned char*) sprite->pcx );
+			   b = Bitmap(b_buff, true);
+			   destroy_bitmap(b_buff);*/
+			   b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->reallength);
 			}
 		    }
 		    
@@ -209,7 +307,10 @@ int main( int argc, char ** argv ){
 			lastFrame = it->second->getFrames().size()-1;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
 			if (sprite != 0){
-			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			  /* b_buff = sffLoadPcxFromMemory( (unsigned char*) sprite->pcx );
+			   b = Bitmap(b_buff, true);
+			   destroy_bitmap(b_buff);*/
+			  b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->reallength);
 			}
 		    }
 		    else if( keyInputManager::keyState(keys::DOWN, true) ){
@@ -222,7 +323,10 @@ int main( int argc, char ** argv ){
 			lastFrame = it->second->getFrames().size()-1;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
 			if (sprite != 0){
-			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			   /*b_buff = sffLoadPcxFromMemory( (unsigned char*) sprite->pcx );
+			   b = Bitmap(b_buff, true);
+			   destroy_bitmap(b_buff);*/
+			   b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->reallength);
 			}
 		    }
 		    else if( keyInputManager::keyState(keys::LEFT, true) && !animate){
@@ -230,7 +334,10 @@ int main( int argc, char ** argv ){
 			else currentFrame = lastFrame;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
 			if (sprite != 0){
-			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			  /*  b_buff = sffLoadPcxFromMemory( (unsigned char*) sprite->pcx );
+			   b = Bitmap(b_buff, true);
+			   destroy_bitmap(b_buff); */
+			  b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->reallength);
 			}
 		    }
 		    else if( keyInputManager::keyState(keys::RIGHT, true) && !animate){
@@ -238,7 +345,10 @@ int main( int argc, char ** argv ){
 			else currentFrame = 0;
 			sprite = it->second->getFrames()[currentFrame]->sprite;
 			if (sprite != 0){
-			    b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->length);
+			   /*  b_buff = sffLoadPcxFromMemory( (unsigned char*) sprite->pcx );
+			   b = Bitmap(b_buff, true);
+			   destroy_bitmap(b_buff); */
+			  b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->reallength);
 			}
 		    }
 		    else if( keyInputManager::keyState(keys::SPACE, true) ){

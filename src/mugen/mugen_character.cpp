@@ -150,7 +150,8 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->prev, 2);
     ifile.read((char *)&temp->samePalette, 1);
     ifile.read((char *)&temp->comments, 13);
-    temp->reallength = temp->next - location - 32;
+    //temp->reallength = temp->next - location - 32;
+    temp->reallength = temp->length;
     if( temp->next == 0 ) {
 	if( temp->samePalette ) temp->reallength = temp->length-768;
 	else temp->reallength = temp->length;
@@ -199,6 +200,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	if( location > filesize ){
 	    throw MugenException("Error in SFF file: " + filename + ". Offset of image beyond the end of the file.");
 	}
+	else if( !location )break;
         MugenSprite * sprite = readSprite(ifile, location);    
 	
 	/* Lets check if this is a duplicate sprite if so copy it
