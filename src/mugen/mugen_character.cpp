@@ -5,6 +5,9 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <ostream>
+#include <sstream>
+#include <iostream>
 
 // To aid in filesize
 #include <stdio.h>
@@ -150,8 +153,8 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->prev, 2);
     ifile.read((char *)&temp->samePalette, 1);
     ifile.read((char *)&temp->comments, 13);
-    //temp->reallength = temp->next - location - 32;
-    temp->reallength = temp->length;
+    temp->reallength = temp->next - location - 32;
+    //temp->reallength = temp->length;
     if( temp->next == 0 ) {
 	if( temp->samePalette ) temp->reallength = temp->length-768;
 	else temp->reallength = temp->length;
@@ -210,9 +213,19 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	    while( sprite->length == 0 ){
 		const MugenSprite *temp = spriteIndex[sprite->prev];
 		if( !temp ) throw MugenException("Error in SFF file: " + filename + ". Referenced sprite is NULL.");
-		sprite->prev = temp->prev;
+		/*sprite->prev = temp->prev;
 		sprite->length = temp->reallength;
-		sprite->reallength = temp->reallength;
+		sprite->reallength = temp->reallength;*/
+		sprite->length = temp->next - spriteIndex[sprite->prev]->prev -32;
+		if( (sprite->prev <= temp->prev) && ((sprite->prev != 0) || (i == 0)) && temp->length==0 ) {
+		    std::ostringstream st;
+		    st << "Image " << i << "(" << sprite->groupNumber << "," << sprite->imageNumber << ") : circular definition or forward linking. Aborting.\n"; 
+		    throw MugenException( st.str() );
+		}
+		else{
+		    if(sprite->length == 0) sprite->prev = temp->prev;
+		    else sprite->reallength = temp->next - spriteIndex[sprite->prev]->prev -32;
+		}
 		Global::debug(1) << "Referenced Sprite: " << temp->reallength << " | at location: " << sprite->prev << endl;
 	    }
 	}
