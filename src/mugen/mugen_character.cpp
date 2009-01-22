@@ -69,6 +69,7 @@ static MugenItemContent *parseOpt( const std::string &opt ){
     std::string contentHolder = "";
     MugenItemContent *temp = new MugenItemContent();
     const char * ignored = "\r\n";
+    Global::debug(1) << "Parsing string to ItemContent: " << opt << endl;
     for( unsigned int i = 0; i < opt.size(); ++i ){
 	if( opt[i] == ' ' ){
 	    continue;
@@ -477,48 +478,47 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		fixCase( itemhead );
+		Global::debug(1) << "Item Head: " << itemhead << endl;
 		// Attack boxes
-		if( itemhead.find("clsn1default:") != std::string::npos ){
+		if( itemhead.find("clsn1default") != std::string::npos ){
 		    // Get number
 		    int num;
 		    *content->getNext() >> num;
 		    clsn1Holder.clear();
 		    for( int n = 0; n < num; ++n ){
 			content = collection[i]->getNext();
-			Global::debug(1) << content->getNext() << " start" << endl;
+			Global::debug(1) << "Beginning to get frames for: " << content->getNext()->query() << endl;
 			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
-			MugenItemContent *temp = parseOpt( content->getNext()->query() );
 			MugenArea area;
-			*temp->getNext() >> area.x1;
-			*temp->getNext() >> area.y1;
-			*temp->getNext() >> area.x2;
-			*temp->getNext() >> area.y2;
-			delete temp;
+			*content->getNext() >> area.x1;
+			*content->getNext() >> area.y1;
+			*content->getNext() >> area.x2;
+			*content->getNext() >> area.y2;
+			Global::debug(1) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
 			clsn1Holder.push_back(area);
 		    }
 		}
 		// defend boxes
-		else if( itemhead.find("clsn2default:") != std::string::npos ){
+		else if( itemhead.find("clsn2default") != std::string::npos ){
 		    // Get number
 		    int num;
 		    *content->getNext() >> num;
 		    clsn2Holder.clear();
 		    for( int n = 0; n < num; ++n ){
 			content = collection[i]->getNext();
-			Global::debug(1) << content->getNext() << " start" << endl;
+			Global::debug(1) << "Beginning to get frames for: " << content->getNext()->query() << endl;
 			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
-			MugenItemContent *temp = parseOpt( content->getNext()->query() );
 			MugenArea area;
-			*temp->getNext() >> area.x1;
-			*temp->getNext() >> area.y1;
-			*temp->getNext() >> area.x2;
-			*temp->getNext() >> area.y2;
-			delete temp;
+			*content->getNext() >> area.x1;
+			*content->getNext() >> area.y1;
+			*content->getNext() >> area.x2;
+			*content->getNext() >> area.y2;
+			Global::debug(1) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
 			clsn2Holder.push_back(area);
 		    }
 		}
 		// defend boxes
-		else if( itemhead.find("clsn2:") != std::string::npos ){
+		else if( itemhead.find("clsn2") != std::string::npos ){
 		    clsn2Reset = true;
 		    // Get number
 		    int num;
@@ -526,20 +526,19 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    clsn2Holder.clear();
 		    for( int n = 0; n < num; ++n ){
 			content = collection[i]->getNext();
-			Global::debug(1) << content->getNext() << " start" << endl;
+			Global::debug(1) << "Beginning to get frames for: " << content->getNext()->query() << endl;
 			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
-			MugenItemContent *temp = parseOpt( content->getNext()->query() );
 			MugenArea area;
-			*temp->getNext() >> area.x1;
-			*temp->getNext() >> area.y1;
-			*temp->getNext() >> area.x2;
-			*temp->getNext() >> area.y2;
-			delete temp;
+			*content->getNext() >> area.x1;
+			*content->getNext() >> area.y1;
+			*content->getNext() >> area.x2;
+			*content->getNext() >> area.y2;
+			Global::debug(1) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
 			clsn2Holder.push_back(area);
 		    }
 		}
 		// Attack boxes
-		else if( itemhead.find("clsn1:") != std::string::npos ){
+		else if( itemhead.find("clsn1") != std::string::npos ){
 		    clsn1Reset = true;
 		    // Get number
 		    int num;
@@ -547,15 +546,14 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    clsn1Holder.clear();
 		    for( int n = 0; n < num; ++n ){
 			content = collection[i]->getNext();
-			Global::debug(1) << content->getNext() << " start" << endl;
+			Global::debug(1) << "Beginning to get frames for: " << content->getNext()->query() << endl;
 			// Need to set the coordinates in MugenArea and add it to list x1,y1,x2,y2
-			MugenItemContent *temp = parseOpt( content->getNext()->query() );
 			MugenArea area;
-			*temp->getNext() >> area.x1;
-			*temp->getNext() >> area.y1;
-			*temp->getNext() >> area.x2;
-			*temp->getNext() >> area.y2;
-			delete temp;
+			*content->getNext() >> area.x1;
+			*content->getNext() >> area.y1;
+			*content->getNext() >> area.x2;
+			*content->getNext() >> area.y2;
+			Global::debug(1) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
 			clsn1Holder.push_back(area);
 		    }
 		}
@@ -573,7 +571,6 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    /* Get sprite details */
 		    int group, spriteNumber;
 		    // Need to get the parsed data and populate these above items
-		    //*content->getNext() >> group;
 		    *item >> group;
 		    *content->getNext() >> spriteNumber;
 		    *content->getNext() >> frame->xoffset;
@@ -596,17 +593,17 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
                     }
 		    // Add frame
 		    animation->addFrame(frame);
+		    // Clear if it was not a default set, since it's valid for only one frame
+		    if( clsn1Reset ){
+			clsn1Holder.clear();
+			clsn1Reset = false;
+		    }
+		    if( clsn2Reset ){
+			clsn2Holder.clear();
+			clsn2Reset = false;
+		    }
+		    if( setloop )setloop = false;
 		}
-		// Clear if it was not a default set, since it's valid for only one frame
-		if( clsn1Reset ){
-		    clsn1Holder.clear();
-		    clsn1Reset = false;
-		}
-		if( clsn2Reset ){
-		    clsn2Holder.clear();
-		    clsn2Reset = false;
-		}
-		if( setloop )setloop = false;
 	}
 	int h;
 	MugenItem(head) >> h;

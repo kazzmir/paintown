@@ -119,6 +119,12 @@ static BITMAP* sffLoadPcxFromMemory(unsigned char* data) {
 }
 */
 
+static void showCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int w, int h, int color ){
+    for( unsigned int i = 0; i < vec.size(); ++i ){
+	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + w + vec[i].x2, y + h + vec[i].y2, color );
+    }
+}
+
 static bool isArg( const char * s1, const char * s2 ){
 	return strcasecmp( s1, s2 ) == 0;
 }
@@ -260,6 +266,8 @@ int main( int argc, char ** argv ){
 		Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
 		bool quit = false;
 		bool animate = false;
+		bool showClsn1 = false;
+		bool showClsn2 = false;
 		int ticks = 0;
 		int loop = 0;
 		
@@ -355,11 +363,23 @@ int main( int argc, char ** argv ){
 		    else if( keyInputManager::keyState(keys::SPACE, true) ){
 			animate = !animate;
 		    }
+		    else if( keyInputManager::keyState('a', true) ){
+			showClsn1 = !showClsn1;
+		    }
+		    else if( keyInputManager::keyState('d', true) ){
+			showClsn2 = !showClsn2;
+		    }
 		    quit |= keyInputManager::keyState(keys::ESC, true );
 		    
 		    b.Blit(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
+		    if( showClsn2 )showCollision( it->second->getFrames()[currentFrame]->defenseCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 0,255,0 )  );
+		    if( showClsn1 )showCollision( it->second->getFrames()[currentFrame]->attackCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 255,0,0 )  );
 		    Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i, Current Frame: %i", 0, currentAnim, currentFrame );
 		    if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x: %d | y: %d | Group: %d | Image: %d",0, sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
+		    Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
+		    Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
+		    Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
+		    
 		    work.BlitToScreen();
 		    Util::rest(1);
 		}
