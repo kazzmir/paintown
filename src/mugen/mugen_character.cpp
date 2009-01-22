@@ -109,12 +109,29 @@ MugenCharacter::~MugenCharacter(){
 
 namespace Sff{
     
-/*static MugenSprite *getCorrectIndex( MugenSprite *spr[], int index ){
-    if( !spr[index]->length ){
-	    return getCorrectIndex( spr, spr[index]->prev );
-    }
-    else return spr[index];
-}*/
+/* PCX HEADER */
+typedef struct {
+    unsigned char manufacturer; /* Constant Flag, 10 = ZSoft .pcx */
+    unsigned char version;      /* Version information */
+    unsigned char encoding;     /* 1 = .PCX run length encoding */
+    unsigned char BitsPerPixel; /* Number of bits to represent a pixel */
+    short Xmin;                 /* Image Dimensions */
+    short Ymin;
+    short Xmax;
+    short Ymax;
+    unsigned short HDpi;         /* Horizontal Resolution of image in DPI */
+    unsigned short VDpi;         /* Vertical Resolution of image in DPI */
+    unsigned char colormap[48];  /* Color palette setting */
+    unsigned char reserved;      /* Should be set to 0. */
+    unsigned char NPlanes;       /* Number of color planes */
+    unsigned short BytesPerLine; /* Number of bytes to allocate for a scanline plane. */
+    unsigned short PaletteInfo;  /* How to interpret palette: 1 = Color/BW,
+                                    2 = Grayscale (ignored in PB IV/ IV +) */
+    unsigned short HscreenSize;  /* Horizontal screen size in pixels. */
+    unsigned short VscreenSize;  /* Vertical screen size in pixels. */
+    char filler[54];             /* Blank to fill out 128 byte header. */
+} pcx_header;
+/* Source: ZSoft Corporation's PCX File Format Technical Reference Manual, Revision 5. */
 
 // Get next sprite
 static MugenSprite * readSprite(ifstream & ifile, int & location){
@@ -133,14 +150,11 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->prev, 2);
     ifile.read((char *)&temp->samePalette, 1);
     ifile.read((char *)&temp->comments, 13);
-    if( temp->length ){
-	// Lets get the real length, in case we've been duped
-	//temp->length = temp->next - location - 32;
-	temp->pcx = new char[temp->length];
-	ifile.read((char *)temp->pcx, temp->length);
+    temp->reallength = temp->next - location - 32;
+    if( temp->next == 0 ) {
+	if( temp->samePalette ) temp->reallength = temp->length-768;
+	else temp->reallength = temp->length;
     }
-    // Set the next file location
-    location = temp->next;
     
     return temp;
 }
@@ -171,54 +185,66 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     /* this probably isn't endian safe.. */
     ifile.read((char *)&totalGroups, 4);
     ifile.read((char *)&totalImages, 4);
-    ifile.read((char *)&location, 4);
+    //ifile.read((char *)&location, 4);
+    location = 512;
     
     Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
     map<int, map<int, MugenSprite*> > sprites;
     
-    /*unsigned int offset[totalImages + 1];
-    unsigned char *dupcheck[totalImages + 1];
-    unsigned int imglist[totalImages + 1];
-    unsigned int imagenumber;*/
-    
     MugenSprite *spriteIndex[totalImages + 1];
     
     
     for (int i = 0; i < totalImages; ++i){
-	/*offset[i] = location;*/
 	if( location > filesize ){
 	    throw MugenException("Error in SFF file: " + filename + ". Offset of image beyond the end of the file.");
 	}
-        MugenSprite * sprite = readSprite(ifile, location);
-	
-	/*image
-	imagenumber = sprite.groupNumber;
-	imagenumber = ( imagenumber << 16 ) + sprite.imageNumber;
-	imglist[i] = imagenumber;
-	
-	for( int j = 0; j < i; ++j ){
-	    if( imglist[i] < 255 ) ++dupcheck[i];
-	}
-	
-	if( dupcheck[i] )*/
-	    
+        MugenSprite * sprite = readSprite(ifile, location);    
 	
 	/* Lets check if this is a duplicate sprite if so copy it
 	* if prev is larger than index then this file is corrupt */
 	if( sprite->prev > i && !sprite->length ) throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
-	else if( !sprite->length ){
-	    const MugenSprite *temp = spriteIndex[sprite->prev];//getCorrectIndex( spriteIndex, sprite->prev );//spriteIndex[sprite->prev];
-	    if( !temp ) throw MugenException("Error in SFF file: " + filename + ". Referenced sprite is NULL.");
-	    sprite->pcx = new char[temp->length];
-	    strncpy( sprite->pcx, temp->pcx, temp->length );
-	    sprite->length = temp->length;
-	    Global::debug(1) << "Referenced Sprite: " << temp->length << " | at location: " << sprite->prev << endl;
+	if( sprite->length == 0 ){ // Lets get the linked sprite
+	    while( sprite->length == 0 ){
+		const MugenSprite *temp = spriteIndex[sprite->prev];
+		if( !temp ) throw MugenException("Error in SFF file: " + filename + ". Referenced sprite is NULL.");
+		sprite->prev = temp->prev;
+		sprite->length = temp->reallength;
+		sprite->reallength = temp->reallength;
+		Global::debug(1) << "Referenced Sprite: " << temp->reallength << " | at location: " << sprite->prev << endl;
+	    }
 	}
+	// Read in pcx header
+	pcx_header pcxhead;
+	ifile.read( (char *)&pcxhead.manufacturer, sizeof(unsigned char) );
+	ifile.read( (char *)&pcxhead.version, sizeof(unsigned char) );
+	ifile.read( (char *)&pcxhead.encoding, sizeof(unsigned char) );
+	ifile.read( (char *)&pcxhead.BitsPerPixel, sizeof(unsigned char) );
+	ifile.read( (char *)&pcxhead.Xmin, sizeof(short) );
+	ifile.read( (char *)&pcxhead.Ymin, sizeof(short) );
+	ifile.read( (char *)&pcxhead.Xmax, sizeof(short));
+	ifile.read( (char *)&pcxhead.Ymax, sizeof(short) );
+	ifile.read( (char *)&pcxhead.HDpi, sizeof(unsigned short));
+	ifile.read( (char *)&pcxhead.VDpi, sizeof(unsigned short) );
+	ifile.read( (char *)&pcxhead.colormap, sizeof(unsigned char) * 48);
+	ifile.read( (char *)&pcxhead.reserved, sizeof(unsigned char) );
+	ifile.read( (char *)&pcxhead.NPlanes, sizeof(unsigned char) );
+	ifile.read( (char *)&pcxhead.BytesPerLine, sizeof(unsigned short));
+	ifile.read( (char *)&pcxhead.PaletteInfo, sizeof(unsigned short) );
+	ifile.read( (char *)&pcxhead.HscreenSize, sizeof(unsigned short));
+	ifile.read( (char *)&pcxhead.VscreenSize, sizeof(unsigned short) );
+	ifile.read( (char *)&pcxhead.filler, sizeof(char) * 54 );
+	// Now read in the entire pcx
+	ifile.seekg(location + 32,ios::beg);
+	sprite->pcx = new char[sprite->reallength];
+	ifile.read((char *)sprite->pcx, sprite->reallength);
 	spriteIndex[i] = sprite;
         sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
 	
-	Global::debug(1) << "Next Sprite: " << sprite->next << ", Length: " << sprite->length << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
+	// Set the next file location
+	location = sprite->next;
+	
+	Global::debug(1) << "Next Sprite: " << sprite->next << ", Length: " << sprite->reallength << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
     }
 
     ifile.close();

@@ -4,6 +4,7 @@
 MugenSprite::MugenSprite():
 next(0),
 length(0),
+reallength(0),
 x(0),
 y(0),
 groupNumber(0),
@@ -12,12 +13,13 @@ prev(0),
 samePalette(0),
 pcx(NULL){
     //Nothing
-    comments[13] = '\0';
+    comments[12] = '\0';
 }
 
 MugenSprite::MugenSprite( const MugenSprite &copy ){
     this->next = copy.next;
     this->length = copy.length;
+    this->reallength = copy.reallength;
     this->x = copy.x;
     this->y = copy.y;
     this->groupNumber = copy.groupNumber;
@@ -32,6 +34,7 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
 MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->next = copy.next;
     this->length = copy.length;
+    this->reallength = copy.reallength;
     this->x = copy.x;
     this->y = copy.y;
     this->groupNumber = copy.groupNumber;

@@ -14,13 +14,14 @@ public:
     
     unsigned long next;
     unsigned long length;
+    unsigned long reallength;
     unsigned short x;
     unsigned short y;
     unsigned short groupNumber;
     unsigned short imageNumber;
     unsigned short prev;
     bool samePalette;
-    char comments[14];
+    char comments[13];
     char * pcx;
 };
 
