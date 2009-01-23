@@ -270,7 +270,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	// Set the next file location
 	location = sprite->next;
 	
-	Global::debug(1) << "Next Sprite: " << sprite->next << ", Length: " << sprite->reallength << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
+	Global::debug(1) << "Location: " << sprite->location  << ", Next Sprite: "  << sprite->next << ", Length: " << sprite->reallength << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
     }
 
     ifile.close();
