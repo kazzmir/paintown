@@ -22,7 +22,7 @@ public:
     unsigned short imageNumber;
     unsigned short prev;
     bool samePalette;
-    char comments[13];
+    char * comments;
     char * pcx;
 };
 

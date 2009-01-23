@@ -155,7 +155,8 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->imageNumber, 2);
     ifile.read((char *)&temp->prev, 2);
     ifile.read((char *)&temp->samePalette, 1);
-    ifile.read((char *)&temp->comments, 13);
+    temp->comments = new char[13];
+    ifile.read((char *)temp->comments, 13);
     temp->reallength = temp->next - temp->location - 32;
     
     // Last sprite
