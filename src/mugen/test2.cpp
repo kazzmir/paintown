@@ -1,7 +1,7 @@
 extern int yylex(void);
 extern int yyparse(void);
 
-#include "Configuration.h"
+#include "ast/Configuration.h"
 
 extern Configuration *configuration;
 

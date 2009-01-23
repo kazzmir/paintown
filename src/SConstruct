@@ -25,8 +25,13 @@ scripts = Split("""
 script/modules/paintown.py
 """);
 
+use.Append(YACCFLAGS = ["-d"])
+
+def isH(name):
+    return name.endswith(".hpp") or name.endswith(".hh") or name.endswith(".h")
+
 lex = use.CFile('mugen/lex', 'mugen/lex.l')
-yacc = use.CXXFile('mugen/parse', 'mugen/parse.yy')
+yacc = filter(lambda s: not isH(s.path), use.CXXFile('mugen/parse', 'mugen/parse.yy'))
 use.Depends(lex, yacc)
 # obj_files.append(use.CFile('mugen/lex', 'mugen/lex.l'))
 #obj_files.append(use.CXXFile('mugen/lex', 'mugen/lex.ll'))
@@ -43,7 +48,7 @@ x.append(use.Program( 'paintown', obj_files + ['xmain.cpp'] + icon()))
 x.append(use.Zip('scripts', scripts))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
-#x.append( use.Program( 'mugentest', obj_files + ['mugen/test.cpp'] ) )
+x.append( use.Program( 'mugentest', obj_files + ['mugen/test.cpp'] ) )
 x.append( use.Program( 'mugentest2', obj_files + ['mugen/test2.cpp'] ) )
 
 Return( 'x' )

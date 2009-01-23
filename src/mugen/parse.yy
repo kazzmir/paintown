@@ -7,7 +7,7 @@
 #include "ast/Value.h"
 #include "ast/Modifier.h"
 
-extern int yylex();
+int yylex();
 extern int yyerror(const char *);
 
 Configuration *configuration;
@@ -132,6 +132,10 @@ mathExpression:
 %%
 extern int yylineno;
 extern char *yytext;
+
+int yylex(){
+	return 0;
+}
 
 int yyerror(const char *msg) {
     printf("%d: %s at \'%s\'\n", yylineno, msg, yytext);

@@ -1,5 +1,5 @@
 %{
-#include "parse.tab.h"
+#include "parse.hh"
 %}
 
 %%
@@ -22,3 +22,5 @@
 
 . { return yytext[0]; }
 %%
+
+char * dont_care = (char*) yyunput;
