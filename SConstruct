@@ -235,8 +235,8 @@ else:
         pass
 
     # lex library
-    env.Append(LIBS = ['l'])
-    staticEnv.Append(LIBS = ['l'])
+    env.Append(LIBS = ['fl'])
+    staticEnv.Append(LIBS = ['fl'])
 
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
