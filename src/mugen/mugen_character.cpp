@@ -157,7 +157,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->samePalette, sizeof(bool));
     ifile.read((char *)temp->comments, sizeof(temp->comments));
     temp->reallength = temp->next - temp->location - 32;
-    
+     
     // Last sprite
     if( temp->next == 0 ) {
 	if( temp->samePalette ) temp->reallength = temp->length-768;
@@ -266,6 +266,18 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	ifile.read((char *)sprite->pcx, sprite->reallength);
 	spriteIndex[i] = sprite;
         sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
+	
+	
+	// Dump to file just so we can test the pcx in something else
+	if( Global::getDebug() == 3 ){
+	    std::ostringstream st;
+	    st << "pcxdump/g" << sprite->groupNumber << "i" << sprite->imageNumber << ".pcx";
+	    FILE *pcx;
+	    if( (pcx = fopen( st.str().c_str(), "wb" )) != NULL ){
+		size_t bleh = fwrite( sprite->pcx, sprite->reallength, 1, pcx );
+		fclose( pcx );
+	    }
+	}
 	
 	// Set the next file location
 	location = sprite->next;
