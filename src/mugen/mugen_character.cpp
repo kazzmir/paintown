@@ -187,13 +187,20 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
      * start at the 16th byte
      */
     ifile.seekg(location,ios::beg);
-    int totalGroups;
-    int totalImages;
+    unsigned long totalGroups;
+    unsigned long totalImages;
+    unsigned long suboffset;
+    unsigned long subhead;
+    unsigned int sharedPal;
     
     /* this probably isn't endian safe.. */
     ifile.read((char *)&totalGroups, sizeof(unsigned long));
     ifile.read((char *)&totalImages, sizeof(unsigned long));
-    ifile.read((char *)&location, sizeof(unsigned long));
+    ifile.read((char *)&suboffset, sizeof(unsigned long));
+    ifile.read((char *)&subhead, sizeof(unsigned long));
+    ifile.read((char *)&sharedPal, sizeof(bool));
+    if( sharedPal && sharedPal != 1 )sharedPal = 0;
+    location = suboffset;
     if( location < 512 || location > 2147482717 )location = 512;
     
     Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
@@ -202,15 +209,59 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     
     MugenSprite *spriteIndex[totalImages + 1];
     
+    // Palette related
+    char is8bitpal = 0;
+    int islinked = 0;
+    char palselect[totalImages + 1];
+    bool found1st = false;
+    //unsigned char colorsave[3]; // rgb pal save
+    unsigned char palsaveD[768]; // default palette
+    unsigned char palsave1[786]; // First image palette
     
-    for (int i = 0; i < totalImages; ++i){
+    // Palette information
+    for( unsigned int i = 0; i < totalImages; ++i){
+	if( location > filesize ){
+	    break;
+	}
+        MugenSprite * sprite = readSprite(ifile, location);    
+	if( sprite->samePalette ){
+	    if( i > 0 && palselect[i-1] == 2 ) palselect[i] = 2;
+	    else palselect[i] = 1;
+	}
+	if( (sprite->groupNumber == 0 || sprite->groupNumber == 9000) && sprite->imageNumber == 0){
+	    if( sprite->samePalette ){
+		for( int j = i; j > 0 && palselect[j] == 1; --j ){
+		    palselect[j] = 2;
+		    if( palselect[j-1] == 0 ) palselect[j-1] = 2;
+		}
+	    }
+	    else palselect[i] = 2;
+	}
+	
+	// Set the next file location
+	const int temploc = location;
+	location = sprite->next;
+	
+	delete sprite;
+	
+	if( !location )break;
+	else if( location < (temploc + 32) || location > 2147483615 )break;
+    }
+    
+    if( location < 512 || location > 2147482717 )location = 512;
+    else location = suboffset;
+    
+    
+    for (unsigned int i = 0; i < totalImages; ++i){
 	if( location > filesize ){
 	    throw MugenException("Error in SFF file: " + filename + ". Offset of image beyond the end of the file.");
 	}
-	else if( !location )break;
+	
         MugenSprite * sprite = readSprite(ifile, location);    
 	
 	if( sprite->length == 0 ){ // Lets get the linked sprite
+	    // This is linked
+	    islinked = 1;
 	    /* Lets check if this is a duplicate sprite if so copy it
 	    * if prev is larger than index then this file is corrupt */
 	    if( sprite->prev >= i ) throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
@@ -223,6 +274,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 		ifile.seekg(temp->location + 32, ios::beg);
 		sprite->location = temp->location;
 		sprite->length = temp->next - temp->location - 32;
+		sprite->samePalette = temp->samePalette;
 		
 		if( (sprite->prev <= temp->prev) && ((sprite->prev != 0) || (i == 0)) && temp->length==0 ) {
 		    std::ostringstream st;
@@ -234,9 +286,10 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 		    else sprite->reallength = temp->next - temp->location -32;
 		}
 		
-		Global::debug(1) << "Referenced Sprite: " << temp->reallength << " | at location: " << sprite->prev << endl;
+		Global::debug(1) << "Referenced Sprite Location: " << temp->location << " | Group: " << temp->groupNumber << " | Sprite: " << temp->groupNumber << " | at index: " << sprite->prev << endl;
 	    }
 	}
+	else islinked = 0;
 	
 	// Read in pcx header
 	pcx_header pcxhead;
@@ -264,6 +317,51 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	ifile.seekg(sprite->location + 32, ios::beg);
 	sprite->pcx = new char[sprite->reallength];
 	ifile.read((char *)sprite->pcx, sprite->reallength);
+	
+	// Figure out palette stuff (I don't even understand half of this... borrowed from sffextract.c 
+	if( ( sprite->reallength < 129 ) || ( pcxhead.version < 5 ) || ( pcxhead.BitsPerPixel != 8 ) || ( pcxhead.NPlanes != 1 ) )is8bitpal = 0;
+	else if( ( !islinked && sprite->samePalette ) ){
+	    if( ( sprite->reallength < 897 ) || *(sprite->pcx + sprite->reallength - 769 ) != 12 ){
+		if( *(sprite->pcx + sprite->reallength - 1 ) != 12 ) is8bitpal = 0;
+		else is8bitpal = 2;
+	    }
+	    else is8bitpal = 1;
+	    
+	}
+	else if( *(sprite->pcx + sprite->reallength - 1 ) != 12 ){
+	    if( (sprite->reallength < 897 ) || *(sprite->pcx + sprite->reallength - 769 ) != 12 )is8bitpal=0;
+	    else is8bitpal = -1;
+	}
+	else is8bitpal = 1;
+	
+	if ( !islinked ){
+	    if( !found1st && is8bitpal!=2 ){
+		memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
+		memcpy( palsave1, palsaveD, 768);
+		found1st = true;
+	    }
+	    else if( palselect[i] == 2 || is8bitpal == 2 ){
+		if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
+		    memmove( sprite->pcx + sprite->reallength - 768, palsave1, 768);
+		}
+	    }
+	    else if( palselect[i] == 1 || found1st ){
+		if ( is8bitpal == 1 || !(sprite->groupNumber == 9000 && sprite->imageNumber == 1) ){
+		    memmove( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
+		}
+	    }
+	    else {
+		if( sprite->samePalette ){
+		    memmove( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
+		}
+		else if( !sharedPal ){
+		    memmove( palsaveD, sprite->pcx+sprite->reallength-768, 768);
+		}
+	    }
+	}
+	    
+	
+	// Add to our lists
 	spriteIndex[i] = sprite;
         sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
 	
@@ -275,6 +373,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	    FILE *pcx;
 	    if( (pcx = fopen( st.str().c_str(), "wb" )) != NULL ){
 		size_t bleh = fwrite( sprite->pcx, sprite->reallength, 1, pcx );
+		bleh = bleh;
 		fclose( pcx );
 	    }
 	}
@@ -282,10 +381,17 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	// Set the next file location
 	location = sprite->next;
 	
-	Global::debug(1) << "Location: " << sprite->location  << ", Next Sprite: "  << sprite->next << ", Length: " << sprite->reallength << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
+	if( !location ){
+	    Global::debug(1) << "End of Sprites or File. Continuing...." << endl;
+	    break;
+	}
+	
+	Global::debug(1) << "Index: " << i << ", Location: " << sprite->location  << ", Next Sprite: "  << sprite->next << ", Length: " << sprite->reallength << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
     }
 
     ifile.close();
+    
+    Global::debug(1) << "Got Total Sprites: " << totalImages << endl;
     
     return sprites;
 }
@@ -460,7 +566,7 @@ void MugenCharacter::load() throw( MugenException ){
     // MugenSffReader spriteReader( fixFileName( baseDir, sffFile ) );
     // sprites = spriteReader.getCollection();
     sprites = Sff::readSprites(fixFileName(baseDir, sffFile));
-    
+    Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
     
@@ -471,9 +577,11 @@ void MugenCharacter::load() throw( MugenException ){
 
 // animations
 void MugenCharacter::bundleAnimations() throw( MugenException){
-    MugenReader reader( Util::trim(baseDir + airFile) );
+    MugenReader reader( fixFileName(baseDir, airFile) );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
+    
+    if( collection.empty() ) throw MugenException( "Problem loading Animations from file: " + airFile );
     
     /* Extract info for our first section of our character */
     for( unsigned int i = 0; i < collection.size(); ++i ){
