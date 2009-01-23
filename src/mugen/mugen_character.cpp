@@ -147,16 +147,15 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     // set the sprite location
     temp->location = location;
     
-    ifile.read((char *)&temp->next, 4);
-    ifile.read((char *)&temp->length, 4);
-    ifile.read((char *)&temp->x, 2);
-    ifile.read((char *)&temp->y, 2);
-    ifile.read((char *)&temp->groupNumber, 2);
-    ifile.read((char *)&temp->imageNumber, 2);
-    ifile.read((char *)&temp->prev, 2);
-    ifile.read((char *)&temp->samePalette, 1);
-    temp->comments = new char[13];
-    ifile.read((char *)temp->comments, 13);
+    ifile.read((char *)&temp->next, sizeof(unsigned long));
+    ifile.read((char *)&temp->length, sizeof(unsigned long));
+    ifile.read((char *)&temp->x, sizeof(unsigned short));
+    ifile.read((char *)&temp->y, sizeof(unsigned short));
+    ifile.read((char *)&temp->groupNumber, sizeof(unsigned short));
+    ifile.read((char *)&temp->imageNumber, sizeof(unsigned short));
+    ifile.read((char *)&temp->prev, sizeof(unsigned short));
+    ifile.read((char *)&temp->samePalette, sizeof(bool));
+    ifile.read((char *)temp->comments, sizeof(temp->comments));
     temp->reallength = temp->next - temp->location - 32;
     
     // Last sprite
@@ -192,9 +191,9 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     int totalImages;
     
     /* this probably isn't endian safe.. */
-    ifile.read((char *)&totalGroups, 4);
-    ifile.read((char *)&totalImages, 4);
-    ifile.read((char *)&location, 4);
+    ifile.read((char *)&totalGroups, sizeof(unsigned long));
+    ifile.read((char *)&totalImages, sizeof(unsigned long));
+    ifile.read((char *)&location, sizeof(unsigned long));
     if( location < 512 || location > 2147482717 )location = 512;
     
     Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;

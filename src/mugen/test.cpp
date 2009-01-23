@@ -121,7 +121,7 @@ static BITMAP* sffLoadPcxFromMemory(unsigned char* data) {
 
 static void showCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int w, int h, int color ){
     for( unsigned int i = 0; i < vec.size(); ++i ){
-	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + w + vec[i].x2, y + h + vec[i].y2, color );
+	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, (x + w) + vec[i].x2, (y + h) + vec[i].y2, color );
     }
 }
 
