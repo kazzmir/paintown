@@ -12,13 +12,19 @@ def isOSX():
 
 def checkLex(context):
     context.Message("Checking for lex... ")
-    ret = context.TryAction("lex -V")[0] == 1
+    out = context.TryAction("lex -V")
+    if out[0] != 1:
+        print "Failed. Output was '%s'" % out[1]
+    ret = out[0] == 1
     context.Result(ret)
     return ret
 
 def checkYacc(context):
     context.Message("Checking for yacc... ")
-    ret = context.TryAction("yacc -V")[0] == 1
+    out = context.TryAction("yacc -V")
+    if out[0] != 1:
+        print "Failed. Output was '%s'" % out[1]
+    ret = out[0] == 1
     context.Result(ret)
     return ret
 
