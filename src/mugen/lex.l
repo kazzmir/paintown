@@ -24,3 +24,4 @@
 %%
 
 char * dont_care = (char*) yyunput;
+char * dont_care2 = (char*) input;
