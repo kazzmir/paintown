@@ -21,7 +21,7 @@ def checkLex(context):
 
 def checkYacc(context):
     context.Message("Checking for yacc... ")
-    out = context.TryAction("yacc -V")
+    out = context.TryAction("yacc src/garbage.yy")
     if out[0] != 1:
         print "Failed. Output was '%s'" % out[1]
     ret = out[0] == 1
