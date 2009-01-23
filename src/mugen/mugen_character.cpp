@@ -242,7 +242,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	const int temploc = location;
 	location = sprite->next;
 	
-	delete sprite;
+	if(sprite)delete sprite;
 	
 	if( !location )break;
 	else if( location < (temploc + 32) || location > 2147483615 )break;
@@ -355,7 +355,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 		    memmove( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
 		}
 		else if( !sharedPal ){
-		    memmove( palsaveD, sprite->pcx+sprite->reallength-768, 768);
+		    memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
 		}
 	    }
 	}
