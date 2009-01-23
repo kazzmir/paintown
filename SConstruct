@@ -281,9 +281,9 @@ else:
     staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
     env.Append( LIBS = [dumb,hawknl] )
 
-if not isWindows():
-   env.Append(CCFLAGS = ['-Werror'])
-staticEnv.Append(CCFLAGS = ['-Werror'])
+# if not isWindows():
+#    env.Append(CCFLAGS = ['-Werror'])
+# staticEnv.Append(CCFLAGS = ['-Werror'])
 
 
 use = env
