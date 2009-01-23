@@ -214,6 +214,8 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     int islinked = 0;
     char palselect[totalImages + 1];
     bool found1st = false;
+   // bool useact = false;
+  //  bool kyara = false;
     //unsigned char colorsave[3]; // rgb pal save
     unsigned char palsaveD[768]; // default palette
     unsigned char palsave1[786]; // First image palette
@@ -342,22 +344,26 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	    }
 	    else if( palselect[i] == 2 || is8bitpal == 2 ){
 		if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
-		    memmove( sprite->pcx + sprite->reallength - 768, palsave1, 768);
+		    memcpy( sprite->pcx + sprite->reallength - 768, palsave1, 768);
 		}
 	    }
 	    else if( palselect[i] == 1 || found1st ){
 		if ( is8bitpal == 1 || !(sprite->groupNumber == 9000 && sprite->imageNumber == 1) ){
-		    memmove( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
+		    memcpy( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
 		}
 	    }
-	    else {
+	    else if( is8bitpal == 1 || !found1st ){
+		memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
+		found1st = true;
+	    }
+	    /*else if( is8bitpal == 1 ) {
 		if( sprite->samePalette ){
-		    memmove( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
+		    memcpy( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
 		}
 		else if( !sharedPal ){
 		    memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
 		}
-	    }
+	    }*/
 	}
 	    
 	
