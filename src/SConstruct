@@ -26,6 +26,7 @@ script/modules/paintown.py
 """);
 
 use.Append(YACCFLAGS = ["-d"])
+use['YACCHXXFILESUFFIX'] = '.hh'
 
 def isH(name):
     return name.endswith(".hpp") or name.endswith(".hh") or name.endswith(".h")
