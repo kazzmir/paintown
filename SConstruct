@@ -11,8 +11,8 @@ def isOSX():
     return "darwin" in sys.platform
 
 def checkLex(context):
-    context.Message("Checking for lex... ")
-    out = context.TryAction("lex -V")
+    context.Message("Checking for flex... ")
+    out = context.TryAction("flex -V")
     if out[0] != 1:
         print "Failed. Output was '%s'" % out[1]
     ret = out[0] == 1
@@ -144,6 +144,8 @@ else:
 
 # env.Append( CCFLAGS = '-m32' )
 # env.Append( LINKFLAGS = '-m32' )
+
+env['LEX'] = 'flex'
 
 # env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
 env.Append( CCFLAGS = cflags,

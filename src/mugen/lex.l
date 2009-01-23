@@ -3,6 +3,8 @@
 #include "parse.hh"
 %}
 
+%option yylineno
+
 %%
 
 ;[^\n\r]*[\n\r] { return COMMENT; }
@@ -21,8 +23,11 @@
 
 [ \t]* { ; }
 
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&: { *(char*) 0 = 0; REJECT; }
+
 . { return yytext[0]; }
 %%
 
 char * dont_care = (char*) yyunput;
 char * dont_care2 = (char*) input;
+char * dont_care3 = (char*) yy_flex_realloc;
