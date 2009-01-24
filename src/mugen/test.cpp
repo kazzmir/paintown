@@ -389,6 +389,10 @@ int main( int argc, char ** argv ){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
 	    }
+	    catch(...){
+		Global::debug(0) << "Unknown problem loading file" << endl;
+		return 1;
+	    }
 	}
 	
 	return 0;

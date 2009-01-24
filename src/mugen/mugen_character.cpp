@@ -98,8 +98,8 @@ MugenCharacter::MugenCharacter( const char * location ){
 
 MugenCharacter::~MugenCharacter(){
      // Get rid of sprites
-    for( std::map< int, std::map< int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    for( std::map< unsigned short, std::map< unsigned short, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< unsigned short, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }
@@ -167,7 +167,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     return temp;
 }
 
-static const map<int,map<int, MugenSprite *> > readSprites(const string & filename, const string & palette) throw (MugenException){
+static const map<unsigned short,map<unsigned short, MugenSprite *> > readSprites(const string & filename, const string & palette) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
@@ -205,7 +205,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     
     Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
-    map<int, map<int, MugenSprite*> > sprites;
+    map<unsigned short, map<unsigned short, MugenSprite*> > sprites;
     
     MugenSprite *spriteIndex[totalImages + 1];
     
@@ -368,27 +368,35 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	ifile.read( (char *)&pcxhead.VscreenSize, sizeof(unsigned short) );
 	ifile.read( (char *)&pcxhead.filler, sizeof(char) * 54 );
 	
-	// Now read in the entire pcx
+	// Now read in the pcx
 	// Seek to the location of the pcx data
 	ifile.seekg(sprite->location + 32, ios::beg);
+	char *tmppcx = new char[sprite->reallength];
 	sprite->pcx = new char[sprite->reallength];
-	ifile.read((char *)sprite->pcx, sprite->reallength);
+	ifile.read((char *)tmppcx, sprite->reallength);
 	
 	// Figure out palette stuff (I don't even understand half of this... borrowed from sffextract.c 
 	if( ( sprite->reallength < 129 ) || ( pcxhead.version < 5 ) || ( pcxhead.BitsPerPixel != 8 ) || ( pcxhead.NPlanes != 1 ) )is8bitpal = 0;
 	else if( ( !islinked && sprite->samePalette ) ){
-	    if( ( sprite->reallength < 897 ) || *(sprite->pcx + sprite->reallength - 769 ) != 12 ){
-		if( *(sprite->pcx + sprite->reallength - 1 ) != 12 ) is8bitpal = 0;
+	    if( ( sprite->reallength < 897 ) || *(tmppcx + sprite->reallength - 769 ) != 12 ){
+		if( *(tmppcx + sprite->reallength - 1 ) != 12 ) is8bitpal = 0;
 		else is8bitpal = 2;
 	    }
 	    else is8bitpal = 1;
 	    
 	}
-	else if( *(sprite->pcx + sprite->reallength - 1 ) != 12 ){
-	    if( (sprite->reallength < 897 ) || *(sprite->pcx + sprite->reallength - 769 ) != 12 )is8bitpal=0;
+	else if( *(tmppcx + sprite->reallength - 1 ) != 12 ){
+	    if( (sprite->reallength < 897 ) || *(tmppcx + sprite->reallength - 769 ) != 12 )is8bitpal=0;
 	    else is8bitpal = -1;
 	}
 	else is8bitpal = 1;
+	
+	 /* Skip last 768 bytes if we're about to replace the palette. */
+        if( is8bitpal%2 && (!sprite->samePalette || is8bitpal==-1) && !(sprite->groupNumber==9000 && sprite->imageNumber==1) && ((useact && !kyara) || (palselect[i]==2 && i!=0)) ){
+               memcpy( sprite->pcx, tmppcx, sprite->reallength - 768 );
+        }
+        /* Otherwise, save the whole thing. */
+        else memcpy( sprite->pcx, tmppcx, sprite->reallength );
 	
 	//if ( !islinked ){
 	if( is8bitpal ){
@@ -399,13 +407,13 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	    }
 	    else if( palselect[i] == 2 || (useact && !kyara) || is8bitpal == 2 ){
 		if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
-		    memcpy( sprite->pcx + sprite->reallength - 768, palsave1, 768);
+		    memcpy( sprite->pcx + (sprite->reallength - 768), palsave1, 768);
 		    Global::debug(1) << "Applying 1st palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 	    }
 	    else if( palselect[i] == 1 || found1st ){
 		if ( is8bitpal == 1 || !(sprite->groupNumber == 9000 && sprite->imageNumber == 1) ){
-		    memcpy( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
+		    memcpy( sprite->pcx + (sprite->reallength - 768), palsaveD, 768);
 		    Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 	    }
@@ -418,7 +426,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	    }
 	    else if( !useact && is8bitpal == 1 ) {
 		if( sprite->samePalette ){
-		    memcpy( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
+		    memcpy( sprite->pcx + (sprite->reallength - 768), palsaveD, 768);
 		    Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 		else if( !sharedPal ){
@@ -431,8 +439,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	
 	// Add to our lists
 	spriteIndex[i] = sprite;
-        sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
-	
+	sprites[sprite->groupNumber][sprite->imageNumber] = sprite;
 	
 	// Dump to file just so we can test the pcx in something else
 	if( Global::getDebug() == 3 ){
@@ -455,6 +462,8 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	}
 	
 	Global::debug(1) << "Index: " << i << ", Location: " << sprite->location  << ", Next Sprite: "  << sprite->next << ", Length: " << sprite->reallength << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
+	
+	if( tmppcx )delete tmppcx;
     }
 
     ifile.close();
@@ -775,7 +784,7 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    }
 		    if( content->hasItems() )*content->getNext() >> frame->colorAdd;
 		    // Add sprite
-		    frame->sprite = sprites[group][spriteNumber];
+		    frame->sprite = sprites[(unsigned short)group][(unsigned short)spriteNumber];
                     if (frame->sprite == 0){
                         Global::debug(0) << "No sprite for group " << group << " number " << spriteNumber << endl;
                     }
