@@ -371,7 +371,7 @@ int main( int argc, char ** argv ){
 		    }
 		    quit |= keyInputManager::keyState(keys::ESC, true );
 		    
-		    b.Blit(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
+		    b.draw(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
 		    if( showClsn2 )showCollision( it->second->getFrames()[currentFrame]->defenseCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 0,255,0 )  );
 		    if( showClsn1 )showCollision( it->second->getFrames()[currentFrame]->attackCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 255,0,0 )  );
 		    Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i, Current Frame: %i", 0, currentAnim, currentFrame );

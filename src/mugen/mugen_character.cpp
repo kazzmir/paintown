@@ -217,9 +217,9 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     bool useact = true;
     bool kyara = false;
     
-    unsigned char colorsave[3]; // rgb pal save
-    unsigned char palsaveD[768]; // default palette
-    unsigned char palsave1[786]; // First image palette
+    unsigned char colorsave[3]= "\0"; // rgb pal save
+    unsigned char palsaveD[768]= "\0"; // default palette
+    unsigned char palsave1[768]= "\0"; // First image palette
     
     // Load in first palette
     FILE *act_file = fopen( palette.c_str(), "rb" );
@@ -241,8 +241,37 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	    }
 	    Global::debug(1) << "Applying palette from ACT file: " << palette << endl;
 	}
+	else if( ftell(act_file) < 897 ){ /* 128-byte header + 768-byte palette + 0x0C byte = minimum 8-bit PCX file size. */
+            useact = false;
+            Global::debug(1) << "File " << palette << " is not a valid palette file." << endl;
+        }
+        else{ /* we'll assume it's a PCX file, for now. */
+            fseek( act_file, 0, SEEK_SET );
+	    pcx_header pcxhead;
+            size_t bleh = fread( &pcxhead, sizeof(pcx_header), 1, act_file );
+            /* Check to see if the PCX file uses an 8-bit palette. */
+            if( (pcxhead.manufacturer == 10) && (pcxhead.version >= 5) && (pcxhead.BitsPerPixel == 8) && (pcxhead.NPlanes == 1) ){
+                fseek( act_file, -769, SEEK_END);
+                bleh = fread( colorsave, 1, 1, act_file ); /* No need to define another variable; colorsave will do just fine. */
+                if( colorsave[0] == 12 ){
+                    fseek( act_file, -768, SEEK_END );
+                    bleh = fread( palsave1, 768, 1, act_file );
+                    Global::debug(1) << "Applying palette from PCX file: " << palette << endl;
+                }
+                else{
+                    useact = false;
+                    Global::debug(1) << "File " << palette << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
+                }
+            }
+            /* Add support for JASC and RIFF palette files later... */
+            /* Minimum JASC PAL size = 1,813 bytes (carriage returns are necessary). */
+            else{
+                useact = false;
+		Global::debug(1) << "File " << palette << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
+            }
+        }
     }
-    fclose( act_file );
+    if( act_file )fclose( act_file );
     
     // Palette information
     if( kyara){
@@ -372,13 +401,16 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	    else if( palselect[i] == 2 || (useact && !kyara) || is8bitpal == 2 ){
 		if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
 		    memcpy( sprite->pcx + sprite->reallength - 768, palsave1, 768);
+		    Global::debug(1) << "Applying 1st palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 	    }
 	    else if( palselect[i] == 1 || found1st ){
 		if ( is8bitpal == 1 || !(sprite->groupNumber == 9000 && sprite->imageNumber == 1) ){
 		    memcpy( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
+		    Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 	    }
+	    // Not used
 	    else if( kyara ){ 
 		if( is8bitpal == 1 || !found1st ){
 		    memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
@@ -388,6 +420,7 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	    else if( !useact && is8bitpal == 1 ) {
 		if( sprite->samePalette ){
 		    memcpy( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
+		    Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 		else if( !sharedPal ){
 		    memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
