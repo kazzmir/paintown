@@ -156,13 +156,13 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     ifile.read((char *)&temp->prev, sizeof(unsigned short));
     ifile.read((char *)&temp->samePalette, sizeof(bool));
     ifile.read((char *)temp->comments, sizeof(temp->comments));
-    temp->reallength = temp->next - temp->location - 32;
+    temp->newlength = temp->reallength = temp->next - temp->location - 32;
      
     // Last sprite
-    if( temp->next == 0 ) {
-	if( temp->samePalette ) temp->reallength = temp->length-768;
-	else temp->reallength = temp->length;
-    }
+   /* if( temp->next == 0 ) {
+	if( temp->samePalette ) temp->newlength = temp->reallength = temp->length-768;
+	else temp->newlength = temp->reallength = temp->length;
+    }*/
     
     return temp;
 }
@@ -339,7 +339,7 @@ static void readSprites(const string & filename, const string & palette, map<uns
 		}
 		else{
 		    if(sprite->length == 0) sprite->prev = temp->prev;
-		    else sprite->reallength = temp->next - temp->location -32;
+		    else sprite->newlength = sprite->reallength = temp->next - temp->location -32;
 		}
 		
 		Global::debug(1) << "Referenced Sprite Location: " << temp->location << " | Group: " << temp->groupNumber << " | Sprite: " << temp->groupNumber << " | at index: " << sprite->prev << endl;
@@ -372,7 +372,13 @@ static void readSprites(const string & filename, const string & palette, map<uns
 	// Seek to the location of the pcx data
 	ifile.seekg(sprite->location + 32, ios::beg);
 	char *tmppcx = new char[sprite->reallength];
-	sprite->pcx = new char[sprite->reallength];
+	if( sprite->samePalette ){
+	    // Lets give it space for the palette
+	    Global::debug(1) << "This sprite is less that 768 or has a shared palette - Group: " << sprite->groupNumber << " | Image: " << sprite->imageNumber << endl;
+	    sprite->newlength += 768;
+	    sprite->pcx = new char[sprite->newlength];
+	}
+	else sprite->pcx = new char[sprite->reallength];
 	ifile.read((char *)tmppcx, sprite->reallength);
 	
 	// Figure out palette stuff (I don't even understand half of this... borrowed from sffextract.c 
@@ -392,48 +398,48 @@ static void readSprites(const string & filename, const string & palette, map<uns
 	else is8bitpal = 1;
 	
 	 /* Skip last 768 bytes if we're about to replace the palette. */
-        if( is8bitpal%2 && (!sprite->samePalette || is8bitpal==-1) && !(sprite->groupNumber==9000 && sprite->imageNumber==1) && ((useact && !kyara) || (palselect[i]==2 && i!=0)) ){
-               memcpy( sprite->pcx, tmppcx, sprite->reallength - 768 );
-        }
+        /*if( is8bitpal%2 && (!sprite->samePalette || is8bitpal==-1) && !(sprite->groupNumber==9000 && sprite->imageNumber==1) && ((useact && !kyara) || (palselect[i]==2 && i!=0)) ){
+               memcpy( sprite->pcx, tmppcx, sprite->reallength );
+        }*/
         /* Otherwise, save the whole thing. */
-        else memcpy( sprite->pcx, tmppcx, sprite->reallength );
+        /*else*/ memcpy( sprite->pcx, tmppcx, sprite->reallength );
 	
 	// Done with tmppcx
 	delete tmppcx;
 	
 	//if ( !islinked ){
-	if( is8bitpal ){
+	if( is8bitpal && sprite->samePalette ){
 	    if( !found1st  && !useact && is8bitpal!=2 ){
-		memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
+		memcpy( palsaveD, sprite->pcx+(sprite->reallength), 768);
 		memcpy( palsave1, palsaveD, 768);
 		found1st = true;
 	    }
 	    else if( palselect[i] == 2 || (useact && !kyara) || is8bitpal == 2 ){
 		if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
-		    memcpy( sprite->pcx + (sprite->reallength - 768), palsave1, 768);
+		    memcpy( sprite->pcx + (sprite->reallength), palsave1, 768);
 		    Global::debug(1) << "Applying 1st palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 	    }
 	    else if( palselect[i] == 1 || found1st ){
 		if ( is8bitpal == 1 || !(sprite->groupNumber == 9000 && sprite->imageNumber == 1) ){
-		    memcpy( sprite->pcx + (sprite->reallength - 768), palsaveD, 768);
+		    memcpy( sprite->pcx + (sprite->reallength), palsaveD, 768);
 		    Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 	    }
 	    // Not used
 	    else if( kyara ){ 
 		if( is8bitpal == 1 || !found1st ){
-		    memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
+		    memcpy( palsaveD, sprite->pcx+sprite->reallength, 768);
 		    found1st = true;
 		}
 	    }
 	    else if( !useact && is8bitpal == 1 ) {
 		if( sprite->samePalette ){
-		    memcpy( sprite->pcx + (sprite->reallength - 768), palsaveD, 768);
+		    memcpy( sprite->pcx + (sprite->reallength), palsaveD, 768);
 		    Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
 		}
 		else if( !sharedPal ){
-		    memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
+		    memcpy( palsaveD, sprite->pcx+sprite->reallength, 768);
 		}
 	    }
 	}
@@ -450,7 +456,7 @@ static void readSprites(const string & filename, const string & palette, map<uns
 	    st << "pcxdump/g" << sprite->groupNumber << "i" << sprite->imageNumber << ".pcx";
 	    FILE *pcx;
 	    if( (pcx = fopen( st.str().c_str(), "wb" )) != NULL ){
-		size_t bleh = fwrite( sprite->pcx, sprite->reallength, 1, pcx );
+		size_t bleh = fwrite( sprite->pcx, sprite->newlength, 1, pcx );
 		bleh = bleh;
 		fclose( pcx );
 	    }

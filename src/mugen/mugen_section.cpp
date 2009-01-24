@@ -18,7 +18,7 @@ contentCounter(0){
 
 MugenSection::~MugenSection(){
   for( std::vector< MugenItemContent *>::iterator i = itemContent.begin(); i != itemContent.end(); ++i ){
-      delete (*i);
+      if(*i)delete (*i);
   }
 }
 

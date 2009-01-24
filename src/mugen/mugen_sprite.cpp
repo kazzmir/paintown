@@ -6,6 +6,7 @@ next(0),
 location(0),
 length(0),
 reallength(0),
+newlength(0),
 x(0),
 y(0),
 groupNumber(0),
@@ -21,6 +22,7 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
     this->location = copy.location;
     this->length = copy.length;
     this->reallength = copy.reallength;
+    this->newlength = copy.newlength;
     this->x = copy.x;
     this->y = copy.y;
     this->groupNumber = copy.groupNumber;
@@ -37,6 +39,7 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->location = copy.location;
     this->length = copy.length;
     this->reallength = copy.reallength;
+    this->newlength = copy.newlength;
     this->x = copy.x;
     this->y = copy.y;
     this->groupNumber = copy.groupNumber;

@@ -18,6 +18,7 @@ public:
     unsigned long location;
     unsigned long length;
     unsigned long reallength;
+    unsigned long newlength;
     unsigned short x;
     unsigned short y;
     unsigned short groupNumber;

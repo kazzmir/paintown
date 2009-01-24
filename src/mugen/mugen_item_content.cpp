@@ -15,7 +15,7 @@ itemCounter(0){
 
 MugenItemContent::~MugenItemContent(){
   for( std::vector< MugenItem *>::iterator i = items.begin(); i != items.end(); ++i ){
-      delete (*i);
+      if(*i)delete (*i);
   }
 }
 
