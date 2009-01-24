@@ -331,7 +331,6 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 		ifile.seekg(temp->location + 32, ios::beg);
 		sprite->location = temp->location;
 		sprite->length = temp->next - temp->location - 32;
-		sprite->samePalette = temp->samePalette;
 		
 		if( (sprite->prev <= temp->prev) && ((sprite->prev != 0) || (i == 0)) && temp->length==0 ) {
 		    std::ostringstream st;
