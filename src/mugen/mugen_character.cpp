@@ -217,9 +217,9 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     bool useact = true;
     bool kyara = false;
     
-    unsigned char colorsave[3]= "\0"; // rgb pal save
-    unsigned char palsaveD[768]= "\0"; // default palette
-    unsigned char palsave1[768]= "\0"; // First image palette
+    unsigned char colorsave[3]; // rgb pal save
+    unsigned char palsaveD[768]; // default palette
+    unsigned char palsave1[768]; // First image palette
     
     // Load in first palette
     FILE *act_file = fopen( palette.c_str(), "rb" );
