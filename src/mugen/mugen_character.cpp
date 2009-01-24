@@ -98,8 +98,8 @@ MugenCharacter::MugenCharacter( const char * location ){
 
 MugenCharacter::~MugenCharacter(){
      // Get rid of sprites
-    for( std::map< unsigned short, std::map< unsigned short, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< unsigned short, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }
@@ -167,7 +167,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     return temp;
 }
 
-static const map<unsigned short,map<unsigned short, MugenSprite *> > readSprites(const string & filename, const string & palette) throw (MugenException){
+static void readSprites(const string & filename, const string & palette, map<unsigned int,map<unsigned int, MugenSprite *> > & sprites) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
@@ -205,7 +205,7 @@ static const map<unsigned short,map<unsigned short, MugenSprite *> > readSprites
     
     Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
-    map<unsigned short, map<unsigned short, MugenSprite*> > sprites;
+    //map<unsigned short, map<unsigned short, MugenSprite*> > sprites;
     
     MugenSprite *spriteIndex[totalImages + 1];
     
@@ -398,6 +398,9 @@ static const map<unsigned short,map<unsigned short, MugenSprite *> > readSprites
         /* Otherwise, save the whole thing. */
         else memcpy( sprite->pcx, tmppcx, sprite->reallength );
 	
+	// Done with tmppcx
+	delete tmppcx;
+	
 	//if ( !islinked ){
 	if( is8bitpal ){
 	    if( !found1st  && !useact && is8bitpal!=2 ){
@@ -463,14 +466,13 @@ static const map<unsigned short,map<unsigned short, MugenSprite *> > readSprites
 	
 	Global::debug(1) << "Index: " << i << ", Location: " << sprite->location  << ", Next Sprite: "  << sprite->next << ", Length: " << sprite->reallength << ", x|y: " << sprite->x << "|" << sprite->y << ", Group|Image Number: " << sprite->groupNumber << "|" << sprite->imageNumber << ", Prev: " << sprite->prev << ", Same Pal: " << sprite->samePalette << ", Comments: " << sprite->comments << endl;
 	
-	if( tmppcx )delete tmppcx;
     }
 
     ifile.close();
     
     Global::debug(1) << "Got Total Sprites: " << totalImages << endl;
     
-    return sprites;
+    //return sprites;
 }
 
 }
@@ -642,7 +644,7 @@ void MugenCharacter::load() throw( MugenException ){
     /* Sprites */
     // MugenSffReader spriteReader( fixFileName( baseDir, sffFile ) );
     // sprites = spriteReader.getCollection();
-    sprites = Sff::readSprites( fixFileName(baseDir, sffFile), fixFileName(baseDir, palFile[0]) );
+    Sff::readSprites( fixFileName(baseDir, sffFile), fixFileName(baseDir, palFile[0]), sprites );
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();

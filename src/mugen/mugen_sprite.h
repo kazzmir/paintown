@@ -11,6 +11,8 @@ public:
     ~MugenSprite();
     
     MugenSprite & operator=( const MugenSprite &copy );
+    // For map searching
+    bool operator<( const MugenSprite &copy );
     
     unsigned long next;
     unsigned long location;

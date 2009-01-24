@@ -206,7 +206,7 @@ protected:
 	double crouchfriction;
 
 	/* Sprites */
-	std::map< unsigned short, std::map< unsigned short, MugenSprite * > > sprites;
+	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
 	
 	/* Animation Lists stored by action number, ie [Begin Action 500] */
 	std::map< int, MugenAnimation * > animations;

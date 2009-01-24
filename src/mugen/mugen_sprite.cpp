@@ -50,6 +50,10 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     return *this;
 }
 
+bool MugenSprite::operator<( const MugenSprite &copy ){
+    return ( (this->groupNumber < copy.groupNumber) && (this->imageNumber < copy.imageNumber) );
+}
+
 MugenSprite::~MugenSprite(){
     if (pcx){
         delete[] pcx;
