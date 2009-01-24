@@ -167,7 +167,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     return temp;
 }
 
-static const map<int,map<int, MugenSprite *> > readSprites(const string & filename) throw (MugenException){
+static const map<int,map<int, MugenSprite *> > readSprites(const string & filename, const string & palette) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
@@ -214,40 +214,66 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
     int islinked = 0;
     char palselect[totalImages + 1];
     bool found1st = false;
-   // bool useact = false;
-  //  bool kyara = false;
-    //unsigned char colorsave[3]; // rgb pal save
+    bool useact = true;
+    bool kyara = false;
+    
+    unsigned char colorsave[3]; // rgb pal save
     unsigned char palsaveD[768]; // default palette
     unsigned char palsave1[786]; // First image palette
     
-    // Palette information
-    for( unsigned int i = 0; i < totalImages; ++i){
-	if( location > filesize ){
-	    break;
-	}
-        MugenSprite * sprite = readSprite(ifile, location);    
-	if( sprite->samePalette ){
-	    if( i > 0 && palselect[i-1] == 2 ) palselect[i] = 2;
-	    else palselect[i] = 1;
-	}
-	if( (sprite->groupNumber == 0 || sprite->groupNumber == 9000) && sprite->imageNumber == 0){
-	    if( sprite->samePalette ){
-		for( int j = i; j > 0 && palselect[j] == 1; --j ){
-		    palselect[j] = 2;
-		    if( palselect[j-1] == 0 ) palselect[j-1] = 2;
-		}
+    // Load in first palette
+    FILE *act_file = fopen( palette.c_str(), "rb" );
+    if( !act_file ){
+	Global::debug(1) << "Unable to open ACT file: " << palette << endl;
+	useact = false;
+    }
+    else{
+	fseek( act_file, 0, SEEK_END );
+	if( ftell(act_file) == 768 ){ /* then it must be an ACT file. */
+	    for( int i=0; i<256; i++ ){
+		fseek( act_file, -3*(i+1), SEEK_END );
+		// stupid fread
+		size_t bleh = fread( colorsave, 3, 1, act_file );
+		bleh = bleh;
+		palsave1[3*i]=colorsave[0];
+		palsave1[3*i+1]=colorsave[1];
+		palsave1[3*i+2]=colorsave[2];
 	    }
-	    else palselect[i] = 2;
+	    Global::debug(1) << "Applying palette from ACT file: " << palette << endl;
 	}
-	
-	// Set the next file location
-	const int temploc = location;
-	location = sprite->next;
-	
-	if(sprite)delete sprite;
-	
-	if( !location )break;
-	else if( location < (temploc + 32) || location > 2147483615 )break;
+    }
+    fclose( act_file );
+    
+    // Palette information
+    if( kyara){
+	for( unsigned int i = 0; i < totalImages; ++i){
+	    if( location > filesize ){
+		break;
+	    }
+	    MugenSprite * sprite = readSprite(ifile, location);    
+	    if( sprite->samePalette ){
+		if( i > 0 && palselect[i-1] == 2 ) palselect[i] = 2;
+		else palselect[i] = 1;
+	    }
+	    if( (sprite->groupNumber == 0 || sprite->groupNumber == 9000) && sprite->imageNumber == 0){
+		if( sprite->samePalette ){
+		    for( int j = i; j > 0 && palselect[j] == 1; j-- ){
+			palselect[j] = 2;
+			if( palselect[j-1] == 0 ) palselect[j-1] = 2;
+		    }
+		}
+		else palselect[i] = 2;
+	    }
+	    
+	    // Set the next file location
+	    const int temploc = location;
+	    location = sprite->next;
+	    
+	    if(sprite)delete sprite;
+	    
+	    if( !location )break;
+	    else if( location < (temploc + 32) || location > 2147483615 )break;
+	}
     }
     
     if( location < 512 || location > 2147482717 )location = 512;
@@ -336,13 +362,14 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 	}
 	else is8bitpal = 1;
 	
-	if ( !islinked ){
-	    if( !found1st && is8bitpal!=2 ){
+	//if ( !islinked ){
+	if( is8bitpal ){
+	    if( !found1st  && !useact && is8bitpal!=2 ){
 		memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
 		memcpy( palsave1, palsaveD, 768);
 		found1st = true;
 	    }
-	    else if( palselect[i] == 2 || is8bitpal == 2 ){
+	    else if( palselect[i] == 2 || (useact && !kyara) || is8bitpal == 2 ){
 		if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
 		    memcpy( sprite->pcx + sprite->reallength - 768, palsave1, 768);
 		}
@@ -352,19 +379,22 @@ static const map<int,map<int, MugenSprite *> > readSprites(const string & filena
 		    memcpy( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
 		}
 	    }
-	    else if( is8bitpal == 1 || !found1st ){
-		memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
-		found1st = true;
+	    else if( kyara ){ 
+		if( is8bitpal == 1 || !found1st ){
+		    memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
+		    found1st = true;
+		}
 	    }
-	    /*else if( is8bitpal == 1 ) {
+	    else if( !useact && is8bitpal == 1 ) {
 		if( sprite->samePalette ){
 		    memcpy( sprite->pcx + sprite->reallength - 768, palsaveD, 768);
 		}
 		else if( !sharedPal ){
 		    memcpy( palsaveD, sprite->pcx+sprite->reallength-768, 768);
 		}
-	    }*/
+	    }
 	}
+	//}
 	    
 	
 	// Add to our lists
@@ -571,7 +601,7 @@ void MugenCharacter::load() throw( MugenException ){
     /* Sprites */
     // MugenSffReader spriteReader( fixFileName( baseDir, sffFile ) );
     // sprites = spriteReader.getCollection();
-    sprites = Sff::readSprites(fixFileName(baseDir, sffFile));
+    sprites = Sff::readSprites( fixFileName(baseDir, sffFile), fixFileName(baseDir, palFile[0]) );
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
