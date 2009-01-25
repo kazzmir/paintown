@@ -39,7 +39,14 @@ static void removeSpaces( std::string &str ){
 	for( int i = str.size()-1; i>-1; --i){
 	    if( str[i] == ' ' )str.erase( str.begin()+i );
 	    else if( str[i] == '\t' )str.erase( str.begin()+i );
-	    else break;
+	}
+    }
+}
+
+static void invertSlashes( std::string &str ){
+    if( str.find('\\') != std::string::npos ){
+	for( int i = str.size()-1; i>-1; --i){
+	    if( str[i] == '\\' )str[i] = '/';
 	}
     }
 }
@@ -48,6 +55,8 @@ static std::string fixFileName( const std::string &dir, std::string str ){
     Global::debug(1) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
     removeSpaces( str );
+    // Fixes stupid windows users shit
+    invertSlashes( str );
     // Lets check if we need to fix anything first
     if( Util::exists( dir + str ) == false ){
 	Global::debug(1) << "Couldn't find file: " << str << endl;
