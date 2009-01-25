@@ -64,6 +64,136 @@ void testPCX(){
     Util::rest(3000);
 }
 
+void showCharacter(const string & ourFile){
+    Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
+    MugenCharacter character( ourFile );
+    character.load();
+    /*
+       for (map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin(); it != character.getAnimations().end(); it++){
+       Global::debug(0) << "Animation " << it->first << endl;
+       const vector<MugenFrame*> & frames = it->second->getFrames();
+       for (vector<MugenFrame*>::const_iterator frame = frames.begin(); frame != frames.end(); frame++){
+       MugenSprite * sprite = (*frame)->sprite;
+       if (sprite == 0){
+       continue;
+       }
+       Bitmap b = new Bitmap(sffLoadPcxFromMemory( (char*) sprite->pcx ));;//Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+       b.BlitToScreen();
+       Util::rest(1000);
+       }
+       }
+       */
+    Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
+    bool quit = false;
+    bool animate = false;
+    bool showClsn1 = false;
+    bool showClsn2 = false;
+    int ticks = 0;
+    int loop = 0;
+
+    map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin();
+    unsigned int currentAnim = 0;
+    unsigned int lastAnim = character.getAnimations().size() -1;
+    unsigned int currentFrame = 0;
+    unsigned int lastFrame = it->second->getFrames().size() -1;
+
+    if (it->second->getFrames().size() == 0){
+        Global::debug(0) << "No frames!" << endl;
+        exit(0);
+    }
+
+    MugenSprite * sprite = it->second->getFrames()[currentFrame]->sprite;
+
+    Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+
+    Bitmap work( 640, 480 );
+
+    while( !quit ){
+        work.clear();
+        keyInputManager::update();
+        ++ticks;
+        // Since -1 is to stop the animation completely, we'll give it a pause of 150 ticks, because we want to see the loop
+        const int time = it->second->getFrames()[currentFrame]->time == -1 ? 150 : it->second->getFrames()[currentFrame]->time;
+        if(animate && ticks >= 15 + time){
+            ticks = 0;
+            if( it->second->getFrames()[currentFrame]->loopstart ) loop = currentFrame;
+            if( currentFrame < lastFrame )currentFrame++;
+            else currentFrame = loop;
+            sprite = it->second->getFrames()[currentFrame]->sprite;
+            if (sprite != 0){
+                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+            }
+        }
+
+        if( keyInputManager::keyState(keys::UP, true) ){
+            if( currentAnim < lastAnim ){
+                currentAnim++;
+                it++;
+            }
+            loop = 0;
+            currentFrame = 0;
+            lastFrame = it->second->getFrames().size()-1;
+            sprite = it->second->getFrames()[currentFrame]->sprite;
+            if (sprite != 0){
+                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+            }
+        }
+        else if( keyInputManager::keyState(keys::DOWN, true) ){
+            if( currentAnim > 0 ){
+                currentAnim--;
+                it--;
+            }
+            loop = 0;
+            currentFrame = 0;
+            lastFrame = it->second->getFrames().size()-1;
+            sprite = it->second->getFrames()[currentFrame]->sprite;
+            if (sprite != 0){
+                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+            }
+        }
+        else if( keyInputManager::keyState(keys::LEFT, true) && !animate){
+            if( currentFrame > 0 )currentFrame--;
+            else currentFrame = lastFrame;
+            sprite = it->second->getFrames()[currentFrame]->sprite;
+            if (sprite != 0){
+                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+            }
+        }
+        else if( keyInputManager::keyState(keys::RIGHT, true) && !animate){
+            if( currentFrame < lastFrame )currentFrame++;
+            else currentFrame = 0;
+            sprite = it->second->getFrames()[currentFrame]->sprite;
+            if (sprite != 0){
+                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+            }
+        }
+        else if( keyInputManager::keyState(keys::SPACE, true) ){
+            animate = !animate;
+        }
+        else if( keyInputManager::keyState('a', true) ){
+            showClsn1 = !showClsn1;
+        }
+        else if( keyInputManager::keyState('d', true) ){
+            showClsn2 = !showClsn2;
+        }
+        quit |= keyInputManager::keyState(keys::ESC, true );
+
+        b.draw(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
+        if( showClsn2 )showCollision( it->second->getFrames()[currentFrame]->defenseCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 0,255,0 )  );
+        if( showClsn1 )showCollision( it->second->getFrames()[currentFrame]->attackCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 255,0,0 )  );
+        Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i, Current Frame: %i", 0, currentAnim, currentFrame );
+        if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x: %d | y: %d | Group: %d | Image: %d",0, sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
+        Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, b.getWidth(), b.getHeight() );
+        Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
+        Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
+        Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
+
+        work.BlitToScreen();
+        Util::rest(1);
+    }
+
+}
+
 int main( int argc, char ** argv ){
 	
 	if(argc <= 1){
@@ -152,138 +282,11 @@ int main( int argc, char ** argv ){
 	}
 	else{
 	    try{
-                Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
-		MugenCharacter character( ourFile );
-		character.load();
-		/*
-                for (map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin(); it != character.getAnimations().end(); it++){
-                    Global::debug(0) << "Animation " << it->first << endl;
-                    const vector<MugenFrame*> & frames = it->second->getFrames();
-                    for (vector<MugenFrame*>::const_iterator frame = frames.begin(); frame != frames.end(); frame++){
-                        MugenSprite * sprite = (*frame)->sprite;
-                        if (sprite == 0){
-                            continue;
-                        }
-                        Bitmap b = new Bitmap(sffLoadPcxFromMemory( (char*) sprite->pcx ));;//Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-                        b.BlitToScreen();
-                        Util::rest(1000);
-                    }
-                }
-		*/
-		Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
-		bool quit = false;
-		bool animate = false;
-		bool showClsn1 = false;
-		bool showClsn2 = false;
-		int ticks = 0;
-		int loop = 0;
-		
-		map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin();
-		unsigned int currentAnim = 0;
-		unsigned int lastAnim = character.getAnimations().size() -1;
-		unsigned int currentFrame = 0;
-		unsigned int lastFrame = it->second->getFrames().size() -1;
-
-                if (it->second->getFrames().size() == 0){
-                    Global::debug(0) << "No frames!" << endl;
-                    exit(0);
-                }
-		
-		MugenSprite * sprite = it->second->getFrames()[currentFrame]->sprite;
-		
-		Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-		
-		Bitmap work( 640, 480 );
-		
-		while( !quit ){
-		    work.clear();
-		    keyInputManager::update();
-		    ++ticks;
-		    // Since -1 is to stop the animation completely, we'll give it a pause of 150 ticks, because we want to see the loop
-		    const int time = it->second->getFrames()[currentFrame]->time == -1 ? 150 : it->second->getFrames()[currentFrame]->time;
-		    if(animate && ticks >= 15 + time){
-			ticks = 0;
-			if( it->second->getFrames()[currentFrame]->loopstart ) loop = currentFrame;
-			if( currentFrame < lastFrame )currentFrame++;
-			else currentFrame = loop;
-			sprite = it->second->getFrames()[currentFrame]->sprite;
-			if (sprite != 0){
-			   b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-			}
-		    }
-		    
-		    if( keyInputManager::keyState(keys::UP, true) ){
-			if( currentAnim < lastAnim ){
-			    currentAnim++;
-			    it++;
-			}
-			loop = 0;
-			currentFrame = 0;
-			lastFrame = it->second->getFrames().size()-1;
-			sprite = it->second->getFrames()[currentFrame]->sprite;
-			if (sprite != 0){
-			  b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-			}
-		    }
-		    else if( keyInputManager::keyState(keys::DOWN, true) ){
-			if( currentAnim > 0 ){
-			    currentAnim--;
-			    it--;
-			}
-			loop = 0;
-			currentFrame = 0;
-			lastFrame = it->second->getFrames().size()-1;
-			sprite = it->second->getFrames()[currentFrame]->sprite;
-			if (sprite != 0){
-			  b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-			}
-		    }
-		    else if( keyInputManager::keyState(keys::LEFT, true) && !animate){
-			if( currentFrame > 0 )currentFrame--;
-			else currentFrame = lastFrame;
-			sprite = it->second->getFrames()[currentFrame]->sprite;
-			if (sprite != 0){
-			 b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-			}
-		    }
-		    else if( keyInputManager::keyState(keys::RIGHT, true) && !animate){
-			if( currentFrame < lastFrame )currentFrame++;
-			else currentFrame = 0;
-			sprite = it->second->getFrames()[currentFrame]->sprite;
-			if (sprite != 0){
-			  b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-			}
-		    }
-		    else if( keyInputManager::keyState(keys::SPACE, true) ){
-			animate = !animate;
-		    }
-		    else if( keyInputManager::keyState('a', true) ){
-			showClsn1 = !showClsn1;
-		    }
-		    else if( keyInputManager::keyState('d', true) ){
-			showClsn2 = !showClsn2;
-		    }
-		    quit |= keyInputManager::keyState(keys::ESC, true );
-		    
-		    b.draw(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
-		    if( showClsn2 )showCollision( it->second->getFrames()[currentFrame]->defenseCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 0,255,0 )  );
-		    if( showClsn1 )showCollision( it->second->getFrames()[currentFrame]->attackCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 255,0,0 )  );
-		    Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i, Current Frame: %i", 0, currentAnim, currentFrame );
-		    if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x: %d | y: %d | Group: %d | Image: %d",0, sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
-		    Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, b.getWidth(), b.getHeight() );
-		    Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
-		    Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
-		    Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
-		    
-		    work.BlitToScreen();
-		    Util::rest(1);
-		}
-	    }
-	    catch( MugenException &ex){
+                showCharacter(ourFile);
+            } catch( MugenException &ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
-	    }
-	    catch(...){
+	    } catch(...){
 		Global::debug(0) << "Unknown problem loading file" << endl;
 		return 1;
 	    }
