@@ -183,6 +183,11 @@ int main( int argc, char ** argv ){
 		unsigned int lastAnim = character.getAnimations().size() -1;
 		unsigned int currentFrame = 0;
 		unsigned int lastFrame = it->second->getFrames().size() -1;
+
+                if (it->second->getFrames().size() == 0){
+                    Global::debug(0) << "No frames!" << endl;
+                    exit(0);
+                }
 		
 		MugenSprite * sprite = it->second->getFrames()[currentFrame]->sprite;
 		
