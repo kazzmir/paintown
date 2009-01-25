@@ -33,16 +33,21 @@ static void fixCase( std::string &str ){
     transform( str.begin(), str.end(), str.begin(), lowerCase );
 }
 
-static std::string fixFileName( const std::string &dir, std::string str ){
-    Global::debug(1) << "Current File: " << str << endl;
-    // Temp fix until the lexer fixes this crap
+static void removeSpaces( std::string &str ){
     if( str.find(' ') != std::string::npos ){
 	Global::debug(1) << "Removing spaces from: " << str << endl;
 	for( int i = str.size()-1; i>-1; --i){
 	    if( str[i] == ' ' )str.erase( str.begin()+i );
+	    else if( str[i] == '\t' )str.erase( str.begin()+i );
 	    else break;
 	}
     }
+}
+
+static std::string fixFileName( const std::string &dir, std::string str ){
+    Global::debug(1) << "Current File: " << str << endl;
+    // Temp fix until the lexer fixes this crap
+    removeSpaces( str );
     // Lets check if we need to fix anything first
     if( Util::exists( dir + str ) == false ){
 	Global::debug(1) << "Couldn't find file: " << str << endl;
@@ -405,7 +410,7 @@ static void readSprites(const string & filename, const string & palette, map<uns
         /*else*/ memcpy( sprite->pcx, tmppcx, sprite->reallength );
 	
 	// Done with tmppcx
-	delete tmppcx;
+	delete [] tmppcx;
 	
 	//if ( !islinked ){
 	if( is8bitpal && sprite->samePalette ){
@@ -503,6 +508,7 @@ void MugenCharacter::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
+		removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
 		fixCase( itemhead );
 		if (itemhead == "name"){
@@ -533,6 +539,7 @@ void MugenCharacter::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
+		removeSpaces( itemhead);
 		fixCase( itemhead );
 		if( itemhead == "cmd" ){
 		    *content->getNext() >> cmdFile;
@@ -635,6 +642,7 @@ void MugenCharacter::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
+		removeSpaces( itemhead);
 		fixCase( itemhead );
 		if( itemhead == "intro.storyboard" ){
 		    *content->getNext() >> introFile;
