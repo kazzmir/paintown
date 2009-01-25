@@ -421,43 +421,43 @@ static void readSprites(const string & filename, const string & palette, map<uns
 	// Done with tmppcx
 	delete [] tmppcx;
 	
-	//if ( !islinked ){
-	if( is8bitpal && sprite->samePalette ){
-	    if( !found1st  && !useact && is8bitpal!=2 ){
-		memcpy( palsaveD, sprite->pcx+(sprite->reallength), 768);
-		memcpy( palsave1, palsaveD, 768);
-		found1st = true;
-	    }
-	    else if( palselect[i] == 2 || (useact && !kyara) || is8bitpal == 2 ){
-		if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
-		    memcpy( sprite->pcx + (sprite->reallength), palsave1, 768);
-		    Global::debug(1) << "Applying 1st palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
-		}
-	    }
-	    else if( palselect[i] == 1 || found1st ){
-		if ( is8bitpal == 1 || !(sprite->groupNumber == 9000 && sprite->imageNumber == 1) ){
-		    memcpy( sprite->pcx + (sprite->reallength), palsaveD, 768);
-		    Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
-		}
-	    }
-	    // Not used
-	    else if( kyara ){ 
-		if( is8bitpal == 1 || !found1st ){
-		    memcpy( palsaveD, sprite->pcx+sprite->reallength, 768);
+	if ( !islinked ){
+	    if( is8bitpal && sprite->samePalette ){
+		if( !found1st  && !useact && is8bitpal!=2 ){
+		    memcpy( palsaveD, sprite->pcx+(sprite->reallength), 768);
+		    memcpy( palsave1, palsaveD, 768);
 		    found1st = true;
 		}
-	    }
-	    else if( !useact && is8bitpal == 1 ) {
-		if( sprite->samePalette ){
-		    memcpy( sprite->pcx + (sprite->reallength), palsaveD, 768);
-		    Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
+		else if( palselect[i] == 2 || (useact && !kyara) || is8bitpal == 2 ){
+		    if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
+			memcpy( sprite->pcx + (sprite->reallength), palsave1, 768);
+			Global::debug(1) << "Applying 1st palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
+		    }
 		}
-		else if( !sharedPal ){
-		    memcpy( palsaveD, sprite->pcx+sprite->reallength, 768);
+		else if( palselect[i] == 1 || found1st ){
+		    if ( is8bitpal == 1 || !(sprite->groupNumber == 9000 && sprite->imageNumber == 1) ){
+			memcpy( sprite->pcx + (sprite->reallength), palsaveD, 768);
+			Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
+		    }
+		}
+		// Not used
+		else if( kyara ){ 
+		    if( is8bitpal == 1 || !found1st ){
+			memcpy( palsaveD, sprite->pcx+sprite->reallength, 768);
+			found1st = true;
+		    }
+		}
+		else if( !useact && is8bitpal == 1 ) {
+		    if( sprite->samePalette ){
+			memcpy( sprite->pcx + (sprite->reallength), palsaveD, 768);
+			Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
+		    }
+		    else if( !sharedPal ){
+			memcpy( palsaveD, sprite->pcx+sprite->reallength, 768);
+		    }
 		}
 	    }
 	}
-	//}
 	    
 	
 	// Add to our lists
