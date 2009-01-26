@@ -753,7 +753,7 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		    *content->getNext() >> frame->xoffset;
 		    *content->getNext() >> frame->yoffset;
 		    *content->getNext() >> frame->time;
-		    Global::debug(0) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
+		    Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
 		    // Check for flips
 		    if( content->hasItems() ){
 			std::string flip;
