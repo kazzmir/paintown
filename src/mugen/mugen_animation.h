@@ -184,13 +184,13 @@ class MugenAnimation{
 	void addFrame( MugenFrame * );
 	
 	// Get name of type of animation
-	static const std::string getName(const int t);
+	static const std::string getName(const MugenAnimationType t);
 	
 	// Set type number
-	inline void setType(const int t){ type = t; }
+	inline void setType(const MugenAnimationType t){ type = t; }
 	
 	// Get type number
-	inline const int getType(){ return type; }
+	inline const MugenAnimationType getType(){ return type; }
 
         inline const std::vector<MugenFrame*> & getFrames() const {
             return frames;
@@ -203,7 +203,7 @@ class MugenAnimation{
 	unsigned int loopPosition;
 	unsigned int position;
 	
-	int type;
+	MugenAnimationType type;
 };
 
 #endif

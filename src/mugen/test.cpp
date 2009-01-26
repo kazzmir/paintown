@@ -190,7 +190,7 @@ void showCharacter(const string & ourFile){
 	else b.draw(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
         if( showClsn2 )showCollision( it->second->getFrames()[currentFrame]->defenseCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 0,255,0 )  );
         if( showClsn1 )showCollision( it->second->getFrames()[currentFrame]->attackCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 255,0,0 )  );
-        Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s), Current Frame: %i", 0, it->first, MugenAnimation::getName(it->first).c_str() ,currentFrame );
+        Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s), Current Frame: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentFrame );
         if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x: %d | y: %d | Group: %d | Image: %d",0, sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
         Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, b.getWidth(), b.getHeight() );
         Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );

@@ -784,8 +784,8 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 	}
 	int h;
 	MugenItem(head) >> h;
-	animation->setType(h);
-	Global::debug(1) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(h) << "'" << endl;
+	animation->setType(MugenAnimationType(h));
+	Global::debug(1) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(animation->getType()) << "'" << endl;
 	animations[h] = animation;
     }
 }
