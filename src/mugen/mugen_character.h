@@ -32,6 +32,10 @@ public:
         inline const std::map<int, MugenAnimation*> & getAnimations() const {
             return animations;
         }
+	
+	inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
+            return sounds;
+        }
 
 protected:
 
@@ -212,7 +216,7 @@ protected:
 	std::map< int, MugenAnimation * > animations;
 	
 	/* Sounds */
-	std::map< int, std::map< int, MugenSound * > > sounds;
+	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
 	

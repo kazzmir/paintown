@@ -159,8 +159,6 @@ src/mugen/mugen_item.cpp
 src/mugen/mugen_item_content.cpp
 src/mugen/mugen_reader.cpp
 src/mugen/mugen_section.cpp
-src/mugen/mugen_sff_reader.cpp
-src/mugen/mugen_snd_reader.cpp
 src/mugen/mugen_sound.cpp
 src/mugen/mugen_sprite.cpp
 )

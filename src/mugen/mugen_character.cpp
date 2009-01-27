@@ -21,8 +21,7 @@
 #include "mugen_item_content.h"
 #include "mugen_section.h"
 #include "mugen_character.h"
-#include "mugen_sff_reader.h"
-#include "mugen_snd_reader.h"
+#include "mugen_sound.h"
 #include "mugen_reader.h"
 #include "mugen_sprite.h"
 #include "globals.h"
@@ -123,6 +122,13 @@ MugenCharacter::~MugenCharacter(){
 	if( i->second )delete i->second;
     }
     
+    // Get rid of sounds
+    for( std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
+      for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
+    }
+    
 }
 
 namespace Sff{
@@ -153,7 +159,6 @@ typedef struct {
 
 // Get next sprite
 static MugenSprite * readSprite(ifstream & ifile, int & location){
-    // if ( !location )return;
     // Go to next sprite
     ifile.seekg(location, ios::beg);
     // next sprite
@@ -173,10 +178,10 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     temp->newlength = temp->reallength = temp->next - temp->location - 32;
      
     // Last sprite
-   /* if( temp->next == 0 ) {
+    if( temp->next == 0 ) {
 	if( temp->samePalette ) temp->newlength = temp->reallength = temp->length-768;
 	else temp->newlength = temp->reallength = temp->length;
-    }*/
+    }
     
     return temp;
 }
@@ -497,6 +502,51 @@ static void readSprites(const string & filename, const string & palette, map<uns
 
 }
 
+namespace Snd{
+static void readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException){
+    /* 16 skips the header stuff */
+    int location = 16;
+    ifstream ifile;
+    ifile.open(filename.c_str(), ios::binary);
+    if (!ifile){
+	throw MugenException("Could not open SND file: " + filename);
+    }
+    
+    // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
+    ifile.seekg(location,ios::beg);
+    int totalSounds;
+    
+    ifile.read( (char *)&totalSounds, 4 );
+    ifile.read( (char *)&location, 4 );
+    
+     Global::debug(1) << "Got Total Sounds: " << totalSounds << ", Next Location in file: " << location << endl;
+    
+    // We got some stuff
+    if( totalSounds > 0){
+	for( int i = 0; i < totalSounds; ++i ){
+	   // Go to next sound
+	    ifile.seekg(location, ios::beg);
+	    // next sprite
+	    MugenSound *temp = new MugenSound();
+	    
+	    ifile.read( (char *)&temp->next, 4 );
+	    ifile.read( (char *)&temp->length, 4 );
+	    ifile.read( (char *)&temp->groupNumber, 4 );
+	    ifile.read( (char *)&temp->sampleNumber, 4 );
+	    temp->sample = new char[temp->length];
+	    ifile.read( (char *)temp->sample, temp->length );
+	    
+	    // Set the next file location
+	    location = temp->next;
+	    
+	    sounds[ temp->groupNumber ][ temp->sampleNumber ] = temp;
+	}
+    }
+    
+    ifile.close();
+}
+}
+
 void MugenCharacter::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
     baseDir = Util::getDataPath() + "mugen/chars/" + location + "/";
@@ -618,18 +668,15 @@ void MugenCharacter::load() throw( MugenException ){
 	    }    
 	}
     }
-    
+    Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
-    // MugenSffReader spriteReader( fixFileName( baseDir, sffFile ) );
-    // sprites = spriteReader.getCollection();
-    Sff::readSprites( fixFileName(baseDir, sffFile), fixFileName(baseDir, palFile[0]), sprites );
+   Sff::readSprites( fixFileName(baseDir, sffFile), fixFileName(baseDir, palFile[0]), sprites );
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
-    
+   Global::debug(1) << "Reading Snd (sound) Data..." << endl; 
     /* Sounds */
-    MugenSndReader soundReader( fixFileName( baseDir, sndFile ) );
-    sounds = soundReader.getCollection();
+    Snd::readSounds( fixFileName( baseDir, sndFile ), sounds );
 }
 
 // animations
