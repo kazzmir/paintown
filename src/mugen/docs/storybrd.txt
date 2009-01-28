@@ -1,0 +1,304 @@
+Storyboard documentation
+========================
+M.U.G.E.N, (c) Elecbyte 2002
+Documentation for version 2002.04.14
+ 
+Updated 27 October 2001
+ 
+ 
+ 
+Contents
+--------
+I.   Introduction
+II.  Getting started
+III. How to view storyboards
+IV.  Storyboard basics
+V.   Testing your storyboard
+A.   SceneDef parameter reference
+B.   Scene parameter reference
+ 
+ 
+ 
+====================================================================
+I. Introduction
+====================================================================
+ 
+What is a storyboard?
+ 
+A storyboard is a way to put together animation and music in M.U.G.E.N, usually in the form of a cutscene.
+ 
+What do you use storyboards for?
+ 
+Storyboards can be used in M.U.G.E.N to make cutscenes such as the game introduction, character endings, credits and more.
+ 
+Some terminology
+ 
+A cutscene is what you actually see (and hear). An event is point in time to play back a cutscene. A storyboard refers to the .def file that defines what you see during a cutscene. Here is an example: during the ending event, the ending cutscene will be played back. The ending cutscene uses the ending.def storyboard.
+ 
+ 
+ 
+====================================================================
+II. Getting started
+====================================================================
+ 
+Cutscenes Events
+ 
+There are several events that trigger cutscenes. The first set is defined in data/system.def, and applies to all characters within the game. This cutscenes in this set are called the "system cutscenes".
+ 
+Game Logo - played back once when you start M.U.G.E.N
+Game Intro - played back after the Game Logo
+Default Ending - played back after you beat the game with a
+    character that does not have a user-defined ending.
+Credits - played back after the ending cutscene
+Game Over - played back if you choose "No" at the continue screen
+ 
+The next set is specific to each character, and is define in the character's .def file. For example, Kung Fu Man's is in chars/kfm/kfm.def. These are known as the "character cutscenes".
+ 
+Character Intro - played back once when you select your character
+Character Ending - played back when you beat the game. The default
+    ending will not be played back if this cutscene exists
+ 
+ 
+Trying it out
+ 
+At the command line, type:
+ 
+  mugen -r kfm
+ 
+This will start the "KFM" motif (for more information on motifs, please read readme.txt). Right away, you will see the game logo, followed by the game intro. After the game intro ends, you will be at the title screen. If you start Arcade mode and choose Kung Fu Man, his character intro will be played, and then the fight begins. If you lose the fight and choose "No" at the continue screen, the game over cutscene is played and you are returned to the title screen. If you win, Kung Fu Man's character ending will be played, followed by the ending credits.
+ 
+These are where each of the storyboard files are in the KFM motif.
+ 
+Game Logo        - data/kfm/logo.def
+Game Intro       - data/kfm/intro.def
+Default Ending   - (none)
+Credits          - data/kfm/credits.def
+Game Over        - data/kfm/gameover.def
+Character Intro  - chars/kfm/intro.def
+Character Ending - chars/kfm/ending.def
+ 
+The storyboard filenames for the system cutscenes are in data/kfm/system.def.
+ 
+ 
+ 
+====================================================================
+III. How to view storyboards
+====================================================================
+ 
+To play back a storyboard file, use MUGEN's -storyboard command-line option. The syntax is:
+ 
+  mugen -storyboard <storyboard filename>
+ 
+For example, to play back data/kfm/intro.def, you would type:
+ 
+  mugen -storyboard data/kfm/intro.def
+ 
+The storyboard search directory defaults to data/, so you can omit the "data/" part if you like. The following will also play back data/kfm/intro.def:
+ 
+  mugen -storyboard kfm/intro.def
+ 
+This feature can be useful for quickly testing your storyboards as you build them.
+ 
+ 
+ 
+====================================================================
+IV. Storyboard basics
+====================================================================
+ 
+Here is an example of a simple storyboard that shows just one picture for 5 seconds. If you are not already familiar with sprites and animations, please consult the spr and air docs before continuing.
+ 
+;----------------------------------------------------------
+[SceneDef]
+spr = sprite.sff       ;Filename of sprite file to use
+ 
+[Scene 0]
+; Overlay Anims (from 0 to 9)
+layerall.pos = 160,120 ;Default position for all layers
+layer0.anim =  0       ;Anim action number to show
+; Total time
+end.time = 300         ;300 ticks = 5 seconds
+ 
+;Animation to use
+[Begin Action 0]
+0,0, 0,0, -1
+;----------------------------------------------------------
+ 
+A storyboard must always begin with a [SceneDef] group. Within this group you must specify the name of the sprite file to use. This sprite file must exist in the same directory as the storyboard file. The sprite file should contain all the sprites you need for your storyboard.
+ 
+A storyboard is broken up into scenes. How you choose to divide up your storyboard is up to you. In the example above, there is only one scene, the [Scene 0] group. All scenes must begin with a group that looks like [Scene ?], where the question mark (?) can be any identifier string. Typically, scenes are labeled in numerical order starting from 0.
+ 
+Scenes are composed of up to 10 animation objects. Each of these objects exists on its own layer, and the layers are overlaid on top of each other. Layers are numbered from 0 to 9, with 0 being at the bottom, and 9 at the top. For instance, an animation on layer 0 is underneath another on layer 1, and the animation on layer 1 is under that of layer 2, and so on. Each animation object must make reference to an animation action using a "layerX.anim" parameter, where X is the layer number. Each action must be defined within the same storyboard file.
+ 
+The simple example above has only one layer. Its drawing position is determined by the value of the "layerall.pos" parameter, and the action number of the animation is the value of the "layer0.anim" parameter. In this case, the action number is 0. Action 0 is defined right after the [Scene 0] group.
+ 
+One important parameter is "end.time". This is the time to end the scene, measured in ticks. One tick is equivalent to 1/60th of a second. When one scene ends, it goes on to show the next. If there are no more scenes, the storyboard playback ends. In the example, "end.time" is 300 ticks, which is the same as 5 seconds. Since there is only one scene, the storyboard ends at the same time.
+ 
+The next example will show a slideshow of pictures, along with a title overlaid on top. Again, this only has one scene.
+ 
+;----------------------------------------------------------
+[SceneDef]
+spr = sprite.sff       ;Filename of sprite file to use
+ 
+[Scene 0]
+; Overlay Anims (from 0 to 9)
+layerall.pos = 160,120 ;Default position for all layers
+layer0.anim =  0       ;Anim action number for slideshow pictures
+layer1.anim =  1       ;Anim action number for title
+; Total time
+end.time = 600         ;600 ticks = 10 seconds
+ 
+;Animation to use for pictures
+[Begin Action 0]
+0,0, 0,0, 120
+0,1, 0,0, 120
+0,2, 0,0, 120
+0,3, 0,0, 120
+0,4, 0,0, 120
+
+ ;Animation to use for title
+[Begin Action 1]
+1,0, 0,0, -1
+;----------------------------------------------------------
+ 
+Note that there are 2 layers now. Layer 0 is used for the slideshow of pictures, and layer 1 is used for the overlay title. If you imagine the slideshow to be pictures of your vacation trip, the title might be an image with text that reads, "My summer vacation".
+ 
+The new "fadein.time" and "fadeout.time" parameters specify fade-in and fade-out times respectively, measured in ticks.
+ 
+This third example shows multiple scenes, with screen fades between each scene.
+ 
+;----------------------------------------------------------
+[SceneDef]
+spr = sprite.sff
+ 
+[Scene 0]
+; Fade parameters
+fadein.time = 30       ;30 ticks (0.5 seconds) for fade-in
+fadeout.time = 30      ;30 ticks for fade-out
+; Overlay Anims (from 0 to 9)
+layerall.pos = 160,120
+layer0.anim =  0
+; Music
+bgm = mysong.s3m       ;Filename for music
+; Total time
+end.time = 120
+ 
+;Animation to use for scene 0
+[Begin Action 0]
+0,0, 0,0, -1
+ 
+[Scene 1]
+; Fade parameters
+fadein.time = 30       ;30 ticks (0.5 seconds) for fade-in
+fadeout.time = 30      ;30 ticks for fade-out
+; Overlay Anims (from 0 to 9)
+layerall.pos = 160,120
+layer0.anim =  10
+; Total time
+end.time = 120
+ 
+;Animation to use for scene 1
+[Begin Action 10]
+10,0, 0,0, -1
+ 
+[Scene 2]
+; Fade parameters
+fadein.time = 30       ;30 ticks (0.5 seconds) for fade-in
+fadeout.time = 30      ;30 ticks for fade-out
+; Overlay Anims (from 0 to 9)
+layerall.pos = 160,120
+layer0.anim =  20
+; Total time
+end.time = 120
+ 
+;Animation to use for scene 2
+[Begin Action 20]
+20,0, 0,0, -1
+;----------------------------------------------------------
+ 
+There is a "bgm" parameter in the first scene. This plays back a music file "mysong.s3m" at the start of the scene, and that music will continue playing until the end of the storyboard. In this case, mysong.s3m should be placed in the same directory as the storyboard file.
+ 
+For full details on the parameters for Scenes and SceneDefs, see the sections titled "SceneDef parameter reference" and "Scene parameter reference" below.
+ 
+ 
+ 
+====================================================================
+V. Testing your storyboard
+====================================================================
+ 
+This section covers some tips for testing your storyboard.
+ 
+You may find pausing and framestepping useful when you play back your storyboard. The pause and framestep buttons are Pause and Scroll Lock on your keyboard respectively. These key are enabled only if MUGEN is running in debug mode. You are not advised to use the pause function if your storyboard has animations synchronized to the music, as pausing may disrupt synchronization.
+ 
+When you write a long storyboard with many scenes, you may like to skip over completed scenes to view your newer ones. To do this, add a line to your SceneDef group:
+ 
+[SceneDef]
+spr = sprite.sff       ;Filename of sprite file to use
+startscene = 0         ;<-- line added
+ 
+Change the 0 to whatever scene number you would like to start your storyboard at. For example, if you are working on the 10th scene, and you would like to skip the first 9 scenes during testing, enter the number 10. Note that skipping a scene will cause the music in that scene not to be played back.
+ 
+ 
+ 
+====================================================================
+A. SceneDef parameter reference
+====================================================================
+ 
+Required parameters:
+  spr = filename (string)
+This is the filename of the sprite (.sff) file to use in the  storyboard.
+ 
+Optional parameters:
+  startscene = scene_number (int)
+This parameter is used mainly for testing purposes. If specified, the first scene_number scenes will be skipped. Valid values are from 0 to the total number of scenes minus 1. If omitted, defaults to 0.
+ 
+ 
+ 
+====================================================================
+B. Scene parameter reference
+====================================================================
+ 
+Please note that time is measured in ticks, where 60 ticks is equal to one second. Take note that some optional parameters have default values that depend on the scene number. For example, if the "clearcolor" parameter is omitted, it will have a different default value on the first scene, compared to if it was omitted on following scenes.
+ 
+ 
+Required parameters:
+  end.time = t (int)
+t is the time to end the scene, measured in ticks relative to the starting time of the scene. If there is another scene after the current one, it will start when the current scene ends. Otherwise, the whole storyboard will end.
+ 
+Basic optional parameters:
+  fadein.time = duration (int)
+  fadein.col = r,g,b (int,int,int)
+duration is the length of time (measured in ticks) to fade the screen in, at the start of the scene. Note that fadein.time does not affect the ending time of the scene. r,g,b represents the R,G and B values of the starting fade color. Valid values for duration are from 0 (no fade) to the value of end.time. Valid values for the r,g,b triplet are 0,0,0 (fade from black) and 255,255,255 (fade from white) only. Other fade colors are currently not supported. If omitted, duration defaults to 0 (no fade) and r,g,b to 0,0,0 (fade from black).
+ 
+  fadeout.time = duration (int)
+  fadeout.col = r,g,b (int,int,int)
+Similar to the fadein parameters, except this fades the scene out.
+ 
+  clearcolor = r,g,b (int,int,int)
+This is the color to clear the screen with before drawing each tick. If r is set to -1, the screen will not be cleared. If omitted on the first scene, r defaults to -1. If omitted on successive scenes, r,g,b defaults the previous scene's values. For instance, if you set clearcolor to 0,0,0 in the first scene, you do not need to specify the parameter for successive scenes if you would like them all to use the same color values.
+ 
+  layerall.pos = x,y (int,int)
+This is the default position to draw all animations. If omitted on the first scene, defaults to 0,0. If omitted on successive scenes, the value defaults to that of the previous scene's. Note that this parameter does not affect background objects.
+ 
+  layerX.anim = actionno (int)
+  layerX.offset = offx,offy (int,int)
+  layerX.starttime = t (int,int)
+If actionno specified, the animation with action number actionno will be shown. If this parameter is omitted, no animation will be drawn.
+X is the layer priority of the animation. For example, an animation with X = 0 will be drawn below another with X = 1. Valid values for X are from 0 to 9.
+offx,offy is the x,y position offset to draw the animation at. The values of this parameter are added to those of the "layerall.pos" parameter to determine the drawing position. This defaults to 0,0 if omitted.
+t is the time to start drawing the animation object. If omitted, it defaults to 0.
+ 
+  bgm = filename (string)
+If specified, the music file named filename will begin to play at the start of the current scene. If omitted on the first scene, no BGM will play. If omitted on successive scenes, the BGM from the previous scene will continue to play. If filename is an empty string, the BGM currently being played will be stopped. The BGM file should be placed in the same directory as the storyboard file.
+ 
+  bgm.loop = loop (boolean)
+Set loop to a non-zero to make the background music loop, 0 to prevent looping. The default value is 0.
+ 
+ 
+Advanced optional parameters:
+ 
+  window = x1,y1,x2,y2 (int,int,int,int)
+This defines the drawing window of the storyboard. x1,y1 are the x,y coordinates of the upper left of the window, while x2,y2 represents the lower right. Anything drawn outside this window will not be seen. Note that this parameter does not affect the drawing window of background-type objects. If omitted on the first scene, the values will default to the full size of the screen. If omitted on successive scenes, the values will default to the those of the previous scene's.
+ 
+  bg.name = bgname (string)
+If this parameter is specified, you can make use of a background object. bgname is a string prepended to your background definition groups. For example, if bgname is "Scene04bg", then your background definition group must be named "Scene04bgDef", and the following background elements must begin with "Scene04bg". data/kfm/intro.def and data/kfm/credits.def are examples that use this parameter. Note that background objects are not affected by the "window" parameter. All elements of a background objects are drawn underneath all "layerX" animation objects, with the exception of elements with the "layer" parameter set at 1.
+   

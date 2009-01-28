@@ -1,0 +1,441 @@
+Background / Stage Documentation
+================================
+M.U.G.E.N, (c) Elecbyte 2002
+Documentation for version 2002.04.14
+ 
+Updated 27 October 2001
+ 
+ 
+ 
+====================================================================
+0. Contents
+====================================================================
+I.      Overview
+II.      Description of stage settings
+III.      Description of background elements
+IV.      Background controllers
+ 
+ 
+ 
+====================================================================
+I. Overview
+====================================================================
+ 
+A background in MUGEN consists of one or more background elements, and zero or more background controllers. These are combined with stage settings to produce the appearance and functionality of a stage for use in MUGEN.
+ 
+The stage settings control general parameters such as the size of the stage, movement of the camera, starting position of characters and camera in relation to the stage, shadow color, floor reflections, etc. Most fighting games maintain consistent values of these background parameters across their constituent stages, especially in regards to stage size and camera movement.
+ 
+A background element is an individual unit of graphical data that is displayed on screen. All the visible parts of the stage are formed out of background elements. Each background element has individual settings for its sprite data, transparency, location, tiling, scroll speed with respect to the camera, and animation (if applicable). "Parallaxing" elements add a raster effect when scrolling the camera. Background elements may be of any size, although in practice, backgrounds are usually pieced together from several moderately-sized elements.
+ 
+A background controller will perform additional manipulations on a background element, such as change its position or velocity, make it invisible or invisible, etc. Applications of background controllers include making characters stroll back and forth in the background, having debris fly across the screen, or creating changes in the background at set times (such entering a cave when the characters are fighting on a ship). In general, background controllers may allow you to create more advanced effects for a stage or optimize certain animations to reduce memory consumption, although many stages will do quite well without any controllers at all.
+ 
+When creating a stage, you must assure that the visible area on the screen is "covered" by background elements at all times. Leaving holes in the background will cause a hall-of-mirrors effect in that location. Enabling the "debugbg" parameter will fill all holes with a bright shade of magenta, which should assist you in locating and fixing them.
+ 
+Besides the obvious use in stages, backgrounds objects are used in MUGEN for the backgrounds of all system screens such as the title screen and the character select screen, as well as for use in storyboards. These types of backgrounds are referred to as "system backgrounds" and "storyboard backgrounds" respectively. Backgrounds objects used for stages are called "stage backgrounds". Besides their intended use, there is essentially no difference between the different types of backgrounds. This document covers stage settings as well as the background object format.
+ 
+ 
+ 
+====================================================================
+II. Description of stage settings
+====================================================================
+ 
+Stage settings define the background's relationship with the stage. The stage settings must be in the same stage file as the background. There are several groups that make up the settings. They are:
+ 
+(all parameters are required unless specifically marked as "optional")
+ 
+[Info]
+name = "STAGENAME"
+STAGENAME is the name to display in the stage select list.
+ 
+[Camera]
+startx = X
+starty = Y
+This is the camera's starting position. You should set these both to 0.
+ 
+boundleft = LEFT_X
+boundright = RIGHT_X
+These are the minimum and maximum x values that the camera can move to. LEFT_X must be a negative number, and RIGHT_X must be a positive number. Adjust these values to limit how far left and right you can scroll to.
+ 
+boundhigh = TOP_Y
+boundlow = 0
+These values control how far the camera can move vertically. TOP_Y must be a negative value. "boundlow" must always be set to 0.
+ 
+verticalfollow = SCALE
+This value affects the vertical movement of the camera to follow the highest player. SCALE is a floating-point value from 0 to 1. A value of 0 means the camera does not move up at all. A higher value makes the camera track the higher player closer. A value of 1 makes the camera track the player as close as possible.
+ 
+floortension = TENSION_Y
+This is the minimum vertical distance the highest player has to be from the floor (given as a positive value), before the camera starts to move up to follow him.
+ 
+tension = TENSION_X
+This is the horizontal distance a player can get to the edges before the camera starts to follow. Valid values are from 0 to 160.
+ 
+ 
+[PlayerInfo]
+p1startx = START_X
+p1starty = START_Y
+p1startz = 0
+p1facing = FACING
+START_X and START_Y is the starting location of player 1. "p1startz" currently has no effect and must be set to 0. FACING should be 1 to make the player face right, and -1 to make him face left.
+ 
+p2startx = START_X
+p2starty = START_Y
+p2startz = 0
+p2facing = FACING
+These are the parameters that affect player 2's starting location.
+ 
+leftbound  = LEFT_X
+rightbound =  RIGHT_X
+topbound  =  0
+botbound  =  0
+These parameters affect all players. LEFT_X is the minimum x-position that players can have, and RIGHT_X is the maximum x-position they can get to. The "boundleft" and "boundright" CameraInfo parameters take care of keeping the players on the stage, so you can leave LEFT_X and RIGHT_X at large values.
+ 
+ 
+ [Scaling]
+topz  = 0
+botz  = 50
+topscale = 1
+botscale = 1.2
+These parameters are no longer used and need not be changed.
+ 
+ 
+ [Bound]
+screenleft = LEFTDIST_X
+screenright = RIGHTDIST_X
+These are the distances to the edge of the screen that the player can move to. Both values must be positive.
+ 
+ 
+ [StageInfo]
+zoffset = GROUND_Y
+This parameter is the vertical distance of the ground level from the top of the screen, given in pixels. The parameter is inappropriately named, but has been left unchanged for compatibility purposes.
+ 
+zoffsetlink = BG_ID ;(optional)
+If this parameter is specified, it links the zoffset value to the y-position of a background element with ID number BG_ID. For example, you can link the value to a dummy element (refer to "Other background element types" in section III: Description of background elements) with a sin.y parameter to make the characters bob up and down in a sinusoidal fashion.
+ 
+autoturn = 1
+Leave this parameter to 1 to make characters automatically turn to face each other. Setting this to another value will cause undesirable behavior.
+ 
+resetBG = RESET
+If RESET is 1, backgrounds will be reset between rounds. If RESET is 0, backgrounds will continue playing.
+ 
+ 
+[Shadow]
+intensity = INTENSITY ;(optional)
+This controls how dark the shadow is. Valid values range from 0 (lightest) to 256 (darkest). Defaults to 128 if omitted.
+ 
+color = R,G,B ;(optional)
+This parameter affects the color of the shadow. R,G,B are the color components (ranging between 0 and 255) of the players' shadows. The higher the number, the less of the corresponding color there is in the shadow. The smaller the numbers, the lighter the shadows will appear. Defaults to 0,0,0 if omitted.
+ 
+yscale = SCALE_Y ;(optional)
+This is the vertical scale factor of the shadow. Use a larger SCALE_Y to make the shadow longer. You can use a negative SCALE_Y to make the shadow fall on the other side of the players. Defaults to 0.4 if omitted.
+ 
+fade.range = TOP_Y, BOT_Y ;(optional)
+This parameter lets you set the range over which the shadow is visible. It is used to create an effect of the shadow fading as the player gets farther away from the ground. The first value is the high level, and the second is the middle level. Both represent y-coordinates of the player. A shadow is invisible if the player is above the high level, and fully visible if below the middle level. The shadow is faded in between the two levels. If omitted, defaults to no effect (shadow is always fully visible). Take note that y-coordinate values are negative, and TOP_Y should be less than BOT_Y.
+ 
+ 
+ [Reflection]
+reflect = REFLECT ;(optional)
+Set REFLECT to 1 to enable reflection shadows, 0 to disable them. Reflection shadows create a "shiny floor" effect. Defaults to 0 if omitted.
+ 
+ 
+ [Music]
+bgmusic = BGM_FILENAME ;(optional)
+BGM_FILENAME is the name of the music file to play in the stage. Music files are usually put in the sound/ directory. Leaving BGM_FILENAME blank will result in no music being played. If the music file does not exist, no music will be played. To play CD audio, put the track number followed by ".da". Using a track number of 0 will play a random audio track. For example, to play track 3 from a music CD, use "bgmusic = 3.da". If omitted, defaults to no music.
+ 
+bgvolume = VOLUME_OFFSET ;(optional)
+This parameter adjusts the volume of the BGM being played. 0 is normal, negative for softer, and positive for louder (only for mp3, mods and CDA). Valid values are from -255 to 255. If omitted, defaults to 0.
+ 
+ 
+ 
+====================================================================
+III. Description of background elements
+====================================================================
+ 
+To define your stage's background elements, you must first create a [BGDef] group at the end of your DEF file. The format is as follows:
+ 
+[BGDef]
+spr = stages/my_stage.sff
+debugbg = 1
+ 
+You should replace "stages/my_stage.sff" with the path of the SFF file containing your stage's sprite data. To ensure good runtime speed, remember to set debugbg = 0 when your stage is finalized.
+ 
+Once the [BGDef] definition is created, everything below it in the DEF file is considered to belong in the [BGDef] section. In the [BGDef] section, you should specify one or more background elements. Background elements are drawn in the order they appear in the DEF file (with later elements overdrawing previous ones), so the rearmost elements should be defined first. The format for specifying a static background element is as follows.
+ 
+-- Static background elements --
+ 
+[BG my_element_name]
+type = normal
+spriteno = 0,0
+id = 0
+layerno = 0
+start = 0,0
+delta = .5, .5
+trans = none
+mask = 0
+tile = 0,0
+tilespacing = 0,0
+window = 0,0,319,239
+windowdelta = 0,0
+ 
+Many of the parameters can be omitted. We will examine each in detail.
+ 
+[BG my_element_name]  ; (required)
+Only [BG] is actually required. my_element_name can be anything you want. Generally, it helps to give each element a distinct and descriptive name, since "my_element_name" is what will be used in error messages.
+ 
+type = normal  ; (required)
+This specifies that this background element is a static sprite, neither animated nor parallaxing.
+ 
+spriteno = 0,0  ; (required)
+This specifies which sprite in the SFF to display for this background element.
+ 
+id = 0   ; (optional)
+Specifies an ID number to refer to this background element by. This is used to allow background controllers to specify which elements they control. Different background elements can share the same ID number if necessary.
+ 
+layerno = 0  ; (optional)
+If layerno = 0, then this background element is drawn behind the characters. If layerno = 1, then this element is drawn in front of the characters. Within each layer, background elements are drawn back-to-front in the order they appear in the DEF file. layerno defaults to 0 if omitted.
+ 
+start = 0,0  ; (optional)
+Specifies the background element's starting position with respect to the top center of the screen (positive y values go downward). The background element's axis (the one specified for the designated sprite in the SFF) is placed at this starting position. If omitted, start defaults to 0,0.
+ 
+delta = .5,.5 ; (optional)
+Specifies how many pixels the background element should scroll for each pixel of camera movement in the horizontal and vertical directions, respectively. Setting delta=1,1 will cause the background element to move at the same speed as the camera. This is good for things like the ground under the characters' feet. For elements off in the distance, use smaller values of delta to create the illusion of depth. Similarly, elements in the foreground (layerno = 1) should usually be given deltas larger than 1. Deltas less than 0 are possible, but may have an unintended effect. delta defaults to 1,1 if omitted.
+ 
+trans = none ; (optional)
+Specifies whether this background element should be transparent or not. Transparency modes are none, add, add1, sub. These specify no transparency (the default), color addition (spotlight effect), 50% color addition, and color subtraction (shadow effect).
+ 
+mask = 0  ; (optional)
+If mask is set to 1, color 0 of the sprite will not be drawn. This is used in drawing objects which are not rectangular in shape. For reasons of speed, mask should be set to 0 when not needed. mask defaults to 0.
+ 
+tile = 0,0 ; (optional)
+This line specifies if the background element should be repeated (tiled) in the horizontal and/or vertical directions, respectively. A value of 0 specifies no tiling, a value of 1 specifies infinite tiling, and any value greater than 1 will cause the element to tile that number of times. If this line is omitted, no tiling will be performed.
+ 
+tilespacing = 0,0 ; (optional)
+If tiling is enabled, this line specifies the space to put between separate instances of the tile in the horizontal and vertical directions, respectively. There is no effect if tiling is not enabled. tilespacing defaults to 0,0.
+ 
+window = 0, 0, 319, 239  ; (optional)
+Specify window with four coordinates x1, y1, x2, and y2 respectively. Considering the upper left corner of the screen as (0,0), these coordinates are taken to form a rectangular box with (x1,y1) and (x2,y2) at opposite corners. At any given time, only the part of the background element that comes within this box (the "window") will be drawn. In this example, the window specified is (0,0) - (319,239), which is the entire screen. If you do not need the windowing effect, omit this line entirely.
+ 
+windowdelta = 0,0  ; (optional)
+Specifies the delta of the background element's window. It works similarly to the delta for the background element itself. In limited situations, some interesting effects may be accomplished by using different values for delta and windowdelta (in conjunction with window). windowdelta defaults to 0,0 (no movement) if omitted.
+ 
+ 
+-- Animated background elements --
+ 
+The format for specifying an animated background element is almost exactly the same as for a normal background element. There are only three notable differences, which will be explained below.
+ 
+[BG my_animated_element]
+type = anim
+actionno = 55
+(all other parameters other than "spriteno" are the same as for static background elements.)
+ 
+First, for the element to animate, a type of "anim" must be specified. Second, an "action number" (actionno) must be specified. This replaces the "spriteno" parameter that would be used for a  normal background element. The value of actionno must be for an animation that is defined in the DEF file. In this example, since actionno is 55, Action 55 must be defined as follows:
+ 
+[Begin Action 55]
+0,0,0,0,5
+0,1,0,0,5
+ 
+The format is the same as specifying animations in the AIR file, so details will be omitted here. The Action definition can be placed anywhere below the original [BGDef] group. Typical strategies are either to define the action immediately after the element it belongs to, or else to collect all the stage's actions together at the beginning or end of the [BGDef] section.
+ 
+Note that each sprite you specify in the animation has its own axis (specified in the SFF file). During animation playback, the axis of  each sprite will be lined up to correspond with the axis of the background element itself.
+ 
+The effect of the "tilespacing" parameter is different for "anim"-type elements compared to "normal"-type elements. For a "normal" element, the x-value of this parameter specifies the horizontal distance between the right edge of the first tile and the left edge of the second tile. In the case of an "anim" element, the x-value specifies the horizontal distance between the LEFT edge of the first tile and the left edge of the second tile. This applies similarly for the y-value. The reason for this is because the size of an anim is not necessarily constant. tilespacing defaults to 1,1 in this case.
+ 
+The final difference between animated and normal elements is that animated elements always have mask = 1.
+ 
+ 
+-- Parallaxing background elements -
+ 
+To see an example of a parallaxing background element, look at the floor in KFM's stage. Parallaxing background elements, as their name implies, give the illusion of parallax (the phenomenon that close objects appear to move faster than distant objects when the camera moves). Parallaxing background elements must consist of a single sprite (they cannot be animated). Nor can they be transparent.
+ 
+The format is as follows.
+ 
+[BG my_parallax_element]
+type = parallax
+spriteno = 10, 0
+xscale = 1,1.75
+yscalestart = 100
+yscaledelta = 1.2
+(all other parameters are the same as static elements, except that trans is disabled.)
+ 
+The first and second xscale parameters scale the horizontal delta of the background element's top and bottom edge, respectively. (The deltas for the rest of the element are linearly interpolated between these two values.) For instance, if we specified delta = .78, .75, then the top of the sprite would move at .78 * 1 = .78 pixels per camera unit, and the bottom would move at .75 * 1.75 = 1.365 pixels per camera unit. xscale is responsible for creating the parallaxing effect in the horizontal direction.
+ 
+yscalestart is the percentage to scale the sprite vertically when the camera is at ground level. It defaults to 100.
+ 
+yscaledelta is the amount to add to the scale factor for every camera unit the camera moves up. In the example above, if the camera moves up by one unit, the scale factor will 101.2%, and if it moves up another unit, the scale will be 102.4% and so on.
+ 
+ 
+-- Advanced Parameters -
+ 
+These parameters can be added to any background element as necessary.
+ 
+id = 88
+This specifies an ID number for the background element. Multiple elements can share the same ID number. The purpose of the ID number is to allow background controllers to specify which elements they are operating on. Defaults to 0 if omitted.
+ 
+positionlink = 1
+Set positionlink to 1 to lock this element's position to the position of the element immediately preceding it in the DEF file. If set to 1, the values of the "start" parameter for the current element are treated as an offset from the previous element's position. The "delta" parameter will have no effect in this case. This is useful for getting large groups of elements to move in unison; if you edit the start and delta values of the first element in the positionlink chain, the effects will be seen throughout all elements the chain. positionlink defaults to 0 if omitted.
+ 
+velocity = 4.5,6.0
+Specifies initial x and y velocities for the background element (these default to 0). This functionality is also subsumed by the VelSet background controllers.
+ 
+sin.x = 4.5, 6.0, 0
+sin.y = 4.5, 6.0, 0
+Specifies sinusoidal movement for the element in the x direction or y direction. The first parameter is the amplitude, the second parameter is the period of the motion in game ticks, and the third parameter specifies the initial phase shift of the sinusoidal motion (defaults to 0, i.e., the element will start in the exact middle of its sinusoidal range). These parameters are basically superseded by the SinX and SinY background controllers.
+ 
+-- Other background element types --
+ 
+Besides "normal", "anim" and "parallax" background types, there is also a "dummy" type. As its name implies, a "dummy"-type background has no associated graphics. A dummy element's position is affected just like any other element type. Currently, the only use for a dummy element is to serve as a placeholder for the effect of the "zoffsetlink" parameter in [StageInfo] of the stage settings.
+ 
+ 
+ 
+====================================================================
+IV. Background controllers
+====================================================================
+ 
+Background controllers operate on an internal timer that starts at 0 when the round starts, and increases by 1 for every game tick. When the timer reaches the controller's start time, then the controller becomes active. When the timer reaches the controller's end time, then the controller deactivates. If a positive looptime is specified for the controller, then the controller's internal timer will reset to 0 when the looptime is reached.
+ 
+Background controllers must be grouped under a parent BGCtrlDef. You can use multiple BGCtrlDefs to separate the controllers into several groups. Each block of BGCtrlDef and background controllers may be placed anywhere within the [BGDef] section of the DEF file. The general format for these blocks is as follows.
+ 
+[BGCtrlDef my_controller_name]
+looptime = GLOBAL_LOOPTIME
+ctrlID = DEFAULTID_1, DEFAULTID_2, ...
+ 
+[BGCtrl my_controller_1]
+type = CONTROLLER_TYPE
+time = START_TIME, END_TIME, LOOPTIME
+ctrlID = ID_1, ID_2, ...
+(controller-specific parameters here)
+ 
+[BGCtrl my_controller_2]
+(etc.)
+ 
+GLOBAL_LOOPTIME specifies the number of ticks after which the BGCtrlDef should reset its internal timer, as well as the internal timers of all BGCtrls it contains. To disable the looptime, set it to -1 or omit the parameter.
+ 
+DEFAULTID_1, DEFAULTID_2, etc., specify the IDs of background elements to be affected by any BGCtrl that doesn't specify its own list of ctrlIDs. You can list up to 10 ID numbers for this parameter. If the line is omitted, then the default will be to affect all background elements.
+ 
+START_TIME, END_TIME, and LOOPTIME are the times at which the background controller should start acting, stop acting, and reset its internal timer, respectively. If LOOPTIME is omitted or set to -1, then the background controller will not reset its own timer. (Its timer can still be reset by its parent BGCtrlDef if a GLOBAL_LOOPTIME is specified.) The background controller will be continuously active between START_TIME and END_TIME. START_TIME is required, but if END_TIME is omitted then it will default to the same value as START_TIME (so the controller will be active for 1 tick only).
+ 
+ID_1, ID_2, etc., specify the IDs of background elements for this controller to act on. This list, if specified,  overrides the default list specified in the BGCtrlDef. The maximum number of IDs specifiable is 10.
+ 
+ 
+Below is the list of BGCtrl types and their associated parameters.
+ 
+[BGCtrl]
+type = null
+ 
+As the name implies, this controller does nothing. It is useful mainly for debugging, when you want to quickly disable a controller without commenting the whole thing out. Simply change the type to null and comment out the old type. This controller has no additional parameters.
+ 
+ 
+[BGCtrl]
+type = Visible
+value = 0 or 1
+ 
+While active, this controller sets the affected background elements to be invisible (0) or visible (1). Time will still pass for invisible elements (meaning, in the case of animated elements, that the animation will continue to progress even though it can't be seen).
+ 
+ 
+[BGCtrl]
+type = Enabled
+value = 0 or 1
+ 
+This controller either disables (0) or enables (1) the affected background elements. When an element is disabled, it is invisible and time does not pass for it (so, in the case of animated elements, any animation is paused when it's disabled).
+ 
+ 
+[BGCtrl]
+type = VelSet
+x = X_VELOCITY
+y = Y_VELOCITY
+ 
+This controller will set the x/y velocity of the affected background elements to the specified values. Velocities are measured in pixels per game tick. You can specify either or both of the x and y parameters. If either is omitted, the element's velocity in that direction will not change.
+ 
+ 
+[BGCtrl]
+type = VelAdd
+x = X_ACCELERATION
+y = Y_ACCELERATION
+ 
+This controller will add the specified values to the x/y velocity of the affected background elements. You can specify either or both of the x and y parameters. If either is omitted, the element's velocity in that direction will not change.
+ 
+ 
+[BGCtrl]
+type = PosSet
+x = X_POS
+y = Y_POS
+ 
+This controller will set the x/y coordinate of the affected background elements to the specified values. You can specify either or both of the x and y parameters. If either is omitted, the element's coordinate on that axis will not change.
+ 
+ 
+[BGCtrl]
+type = PosAdd
+x = X_DISPLACEMENT
+y = Y_DISPLACEMENT
+ 
+This controller will displace the x/y coordinate of the affected background elements by the specified values. You can specify either or both of the x and y parameters. If either is omitted, the element's coordinate on that axis will not change.
+ 
+ 
+[BGCtrl]
+type = Anim
+value = ACTIONNO
+ 
+Changes the animation displayed by the affected elements to the specified animation number.
+ 
+ 
+[BGCtrl]
+type = SinX or SinY
+value = AMPLITUDE, PERIOD, OFFSET
+ 
+Changes the amplitude, period, and phase offset for the affected elements' sinusoidal motions in the appropriate directions. These values have the same effect as they do for the "sin.x" and "sin.y" background element parameters.
+ 
+ 
+ 
+-- Simple Example -
+ 
+Suppose we want to make a person walk back and forth from (-300,0) to (300,0), right behind the main characters. We'll use background controllers to accomplish this task.
+ 
+First, define the walking animations. Say that the character's walking sprites are 10,0 through 10,3 and that they face to the right.
+ 
+; Walk right
+[Begin Action 10]
+10,0,0,0,6
+10,1,0,0,6
+10,2,0,0,6
+10,3,0,0,6
+ 
+; Walk left
+[Begin Action 11]
+10,0,0,0,6,H
+10,1,0,0,6,H
+10,2,0,0,6,H
+10,3,0,0,6,H
+ 
+Now start the character off at the far left edge of his range.
+ 
+[BGDef]
+(...)
+ 
+[BG Peregrinator]
+type = anim
+actionno = 10
+id = 10
+start = -300, 0
+delta = 1,1
+ 
+Let's give Peregrinator a comfortable ambling speed of 2 pixels per tick. The one-way distance for his walk is 600 pixels, which will take 300 ticks. In total, it'll take him 600 ticks to make the round trip. Using this knowledge, set up the background controllers appropriately: since the entire situation repeats every 600 ticks, we can set the global looptime to 600.
+ 
+[BGCtrlDef Peregrinator]
+; reset the whole deal every 600 ticks.
+looptime = 600
+ctrlID = 10
+ 
+; Set velocity of 2 pixels/sec rightward at time 0.
+[BGCtrl Walk Right]
+type = VelSet
+time = 0
+x = 2
+ 
+; Set velocity of 2 pixels/sec leftward at time 300.
+[BGCtrl Walk Left]
+type = VelSet
+time = 300
+x = -2
+ 
+ 
+And that's it! You can make the walk look better by having Peregrinator slow down and display a turning animation at each end of his walk. This would entail use of the VelAdd and Anim controllers. If you want Peregrinator to stop and start at regular intervals as he goes from one end to the other, you could create more VelSet and Anim controllers with their own individual looptimes (to get the behavior to repeat at regular intervals).
+ 

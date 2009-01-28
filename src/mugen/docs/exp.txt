@@ -1,0 +1,547 @@
+Expressions
+===========
+M.U.G.E.N, (c) Elecbyte 2002
+Documentation for version 2002.04.14
+ 
+Beta-release documentation
+Updated 27 October 2001
+ 
+ 
+ 
+====================================================================
+0. Contents
+====================================================================
+ 
+MUGEN supports the use of arithmetic expressions in the CNS and CMD files. This document gives a complete description of
+expression syntax.
+ 
+I.    Data types: Ints and Floats
+II.   Arithmetic operators
+III.  Precedence and associativity of operators
+IV.   Expression syntax
+V.    Triggers
+VI.   Trigger redirection
+VII.  SC values
+VIII. More on function-type triggers
+IX.   Expressions in state and state controller parameters
+X.    (Advanced) Optimizing for speed
+ 
+ 
+ 
+====================================================================
+I. Data types: Ints and Floats
+====================================================================
+ 
+An int is a whole number, such as 0, 1, -4, etc. Ints can assume values
+between about -2 billion and 2 billion. A float is a real number which
+has a "decimal part", such as 5.24, or -4247.44. Note that a whole number such as 55 can also be represented as a float, thus: 55.0. Floats offer only 7 significant figures of precision.
+ 
+The behavior of arithmetic expressions depends heavily on the underlying data types used to represent numbers. Also, state controllers may expect their input to be given as a certain type, and will give errors if the wrong type is supplied.
+ 
+ 
+ 
+====================================================================
+II. Arithmetic operators
+====================================================================
+ 
+In addition to the familiar arithmetic operators like +, -, *, and /,
+several other operators exist which act on their input values in
+different ways. This section describes the behavior of these operators.
+ 
++  
+The familiar addition operator. x + y evaluates to an int if x and y
+are both ints, or a float if x and y are both floats. If one of x or y
+is a float, then both are converted to floats (with possible loss
+of precision in the process) and then x + y is evaluated as a sum
+of floats.
+ 
+- 
+The familiar subtraction operator. As with addition, x - y evaluates
+to an int if x and y are both ints, or a float if they are both floats.
+If one of x or y is a float, they are both converted to floats and the
+subtraction is performed as a subtraction of floats.
+ 
+- 
+If - appears in a context where the subtraction operator is not
+appropriate, it is interpreted as the negation operator. That is, given input x, "-x" represents the value -x. Returns the same type as x's.
+ 
+* 
+The multiplication operator. The behavior is similar to the + and -
+operators.
+ 
+/
+The division operator. If x and y are both ints, then x/y gives the
+number of times that y goes evenly into x. For instance, 7/2 = 3,
+because 2 goes into 7 three times (with a remainder of 1 which is
+discarded). If x and y are both floats, then x/y returns a float. For
+instance, 7.0/2.0 = 3.5. Finally, if one of x or y is a float, they are both converted to floats before evaluation.
+The result of a division by zero will be discussed in the section on
+SC values.
+ 
+%
+The remainder or mod operator. If x and y are both ints, x%y returns
+an int representing the remainder after performing a division x/y. For
+instance, 7%2 = 1, and 23 % 17 = 6. It is an error to use the % operator on float values, or to compute x%0. The result of such operations will be discussed in the section on SC values.
+ 
+**
+The exponentiation operator. If x and y are both ints >= 0, then x**y
+gives an int representing x raised to the power of y (we define 0**0 =
+1). Otherwise, x**y is computed as an exponentiation of real numbers
+(converting x and y to floats first if necessary). The result of an
+invalid exponentiation such as -1^.5 will be discussed in the section on SC values.
+ 
+!
+The logical NOT operator. !x evaluates to 0 (int) if x is nonzero,
+and 1 (int) if x is zero.
+ 
+&&
+The logical AND operator. x && y evaluates to 1 (int) if x and y
+are both nonzero, and to 0 (int) otherwise.
+ 
+||
+The logical OR operator. x || y evaluates to 1 (int) if one or more
+of x and y is nonzero, and to 0 (int) otherwise.
+ 
+^^
+The logical XOR operator. x ^^ y evaluates to 1 (int) if exactly one
+of x and y is nonzero, and to 0 (int) otherwise.
+ 
+~
+The bitwise NOT operator. ~x inverts the bits of x's binary (two's
+complement) representation. It is an error to apply this to a float --
+for the result of such an operation, see the section on SC values.
+ 
+&
+The bitwise AND operator. The nth bit of x&y is set if and only if the
+nth bits of both x and y are set. Returns an SC value if either of x or y is a float.
+ 
+|
+The bitwise OR operator. The nth bit of x|y is set if and only if the
+nth bit of either x or of y (or both) is set. Returns an SC value if either of x or y is a float.
+ 
+^
+The bitwise XOR operator. The nth bit of x^y is set if and only if the
+nth bit of exactly one of x and y is set. Returns a SC value if either of x or y is a float.
+ 
+=
+The equality operator. If x and y are both ints or both floats, x = y
+evaluates to 1 (int) if x and y are equal, and 0 otherwise. If exactly
+one of x or y is a float, then they are both converted to floats before
+testing for equality.
+ 
+:=
+The assignment operator. An unredirected variable name (var(n) or fvar(n) for suitable values of n) must appear on the left-hand side. If the left-hand side contains an integer variable, then the right-hand side is truncated to an integer before assignment. If the left-hand side contains a float variable, then the right-hand side is converted to float if necessary before assignment. In both cases, the value of the expression is the value that is assigned to the variable.
+ 
+!=
+The inequality operator. If x and y are both ints or both floats,
+x != y evaluates to 1 (int) if x and y are not equal, and 0 otherwise.
+If exactly one of x or y is a float, then they are both converted to
+floats before testing for equality.
+ 
+<
+The less-than operator. If x and y are both ints or both floats, x <
+y evaluates to 1 (int) if x < y, and 0 otherwise. If exactly one of x or y is a float, then they are both converted to floats before testing for equality.
+ 
+<=
+Similar to <, with the exception that if x = y, then x <= y returns
+1 (int).
+ 
+>
+The greater-than operator. If x and y are both ints or both floats,
+x > y evaluates to 1 (int) if x > y, and 0 (int) otherwise. If exactly
+one of x or y is a float, then they are both converted to floats before testing for equality.
+ 
+>=
+Similar to >, with the exception that if x = y, then x >= y returns
+1 (int).
+ 
+=[,]
+!=[,]
+=[,)
+!=[,)
+=(,]
+!=(,]
+=(,)
+!=(,)
+Interval operators. These take three arguments, x, y, and z. If any of
+x, y, or z is a float, they are all converted to floats. After conversion if necessary, x = [y,z] is equivalent to (x >= y) && (x <= z). Similarly, x = (y,z) is equivalent to (x > y) && (x < z). The half-open intervals have the obvious meaning.
+ 
+The negated interval operators work as follows: x != [y,z] is equivalent (after conversion if necessary) to (x < y) || (x > z).
+x != (y,z) is equivalent to (x <= y) || (x >= z). The half-open intervals again have the obvious meaning.
+ 
+You can view the interval operators as producing the appropriate open, closed, or half-open intervals on the ints or the floats. The = symbol means set membership in this context.
+ 
+Some restrictions apply on where intervals may be placed in an
+expression. See the section on syntax for details.
+ 
+ 
+ 
+====================================================================
+III. Precedence and associativity of operators
+====================================================================
+ 
+If you consider an expression like 3+2*5, the result is different
+depending if you evaluate the * first (yielding 13) or if you evaluate
+the + first (yielding 25). To disambiguate expressions such as this,
+operators are assigned distinct precedence levels. In this case, the
+precedence of * is higher than the precedence of +, so the * is
+evaluated first, then the + is applied to the result. So the correct
+answer is 13.
+ 
+If two operators share the same precedence, then the expression is
+evaluated from left to right, except for the unary operators and the
+assignment operator, which associate right to left. For instance, * and / share the same precedence, so 5.0*5/6 evaluates to 25.0/6, which evaluates to 4.166667.  On the other hand, 5/6*5.0 evaluates to 0*5.0, which evaluates to 0.0.  In contrast, because unary operators associate right to left, -!0 is grouped as -(!0), which evaluates to -(1), which then evaluates to -1.
+ 
+If part of an expression is grouped in parentheses (), then that part of the expression is evaluated first. For instance, in the expression
+(3+2)*5, the + is evaluated first, giving 5*5, which then evaluates to
+25. If parentheses are nested, the innermost parentheses are evaluated
+first.
+ 
+Operator precedence is basically the same as in C. The complete list of operator precedence, from highest to lowest, is as follows:
+ 
+! ~ -  (Unary operators)
+**
+* / %
++ -
+> >= < <=
+= != intervals
+:=
+&
+^
+|
+&&
+^^
+||
+ 
+Programmers are encouraged to parenthesize as necessary to maintain
+clarity. Otherwise, bugs due to subtle misunderstanding of operator
+precedence are almost assured.
+ 
+ 
+ 
+====================================================================
+IV. Expression syntax
+====================================================================
+ 
+Basically, any normal arithmetic expression is allowable. In addition,
+since the relational operators (>, <=, etc.) are viewed as returning
+ints, it is possible to operate on their return values, giving some
+unusual-looking expressions like
+ 
+1.0 = (2 = (1 > 0) + !(0 < 1))
+ 
+The 1 > 0 term evaluates to 1, and the 0 < 1 term evaluates to 0. Hence
+!(0 < 1) evaluates to 1, so the expression simplifies to
+ 
+1.0 = (2 = 1 + 1)
+ 
+Since 2 = 1 + 1, the term in parentheses evaluates to 1, so the
+expression further simplifies (after type conversion) to
+ 
+1.0 = 1.0
+ 
+which evaluates to 1 (int), since the equality holds.
+ 
+A notable restriction in expression syntax is that interval operators
+are only allowed to appear on the rightmost side of an expression. If
+part of an expression is enclosed in parentheses, then that part is
+considered a subexpression, and an interval is allowed to appear on the
+right side of that subexpression. So the following is a well-formed
+expression, which evaluates to 0:
+ 
+(1 = [0,2]) = (0,1)
+ 
+But the following is not well-formed:
+ 
+1 = [0,2] = (0,1)
+ 
+In addition, no operator symbols other than = or != may appear before an interval. So an expression like 5 > [0,2], or 4 + [1,4), is not allowed.
+ 
+In comma-separated parameter lists, such as the arguments to some
+function-type triggers or parameters to state controllers, each expression in the list is considered a separate subexpression, and therefore intervals may appear at the end of those subexpressions.
+ 
+ 
+ 
+====================================================================
+V. Triggers
+====================================================================
+ 
+For historical reasons, two distinct constructs are both called
+"triggers." The first is what might be more properly called a
+condition-type trigger, and the second is what might be more properly
+called a function-type trigger. For instance, in the CNS, a typical
+state controller might look like
+ 
+[State 1234, 5]
+type = ChangeState
+trigger1 = time = 0
+value = 0
+ 
+The entire line "trigger1 = time = 0" is a condition-type trigger. If
+the expression "time = 0" evaluates to a nonzero value, then the
+ChangeState controller is executed. If the expression "time = 0"
+evaluates to zero, then the ChangeState controller is not executed.
+Thus whether the condition is zero or nonzero affects whether the
+controller is triggered.
+ 
+On the other hand, the word "time" appearing in the expression is a
+function-type trigger. It returns a value, namely, the amount of time
+that the player has been in state 1234. Note that a function-type
+trigger doesn't "trigger" anything. It just gives a value that can be
+acted on within the expression.
+ 
+To further illustrate the difference, let us consider a different state controller:
+ 
+[State 1234, 5]
+type = VarSet
+trigger1 = 1
+v = 0
+value = time + 5
+ 
+Note that the condition-type trigger "trigger1 = 1" now contains no
+function-type triggers within it. Since the expression "1" always
+evaluates to 1, the controller will be triggered every frame. To
+determine what value to assign var0, the expression "time + 5" is
+evaluated. The function-type trigger "time" returns the player's
+statetime. Then 5 is added and the result is stored in var0.
+ 
+A complete list of function-type triggers can be found in trigger.doc.
+ 
+In general, which of the two types of triggers is meant is clear from
+context. Where there is some ambiguity, the terms "condition-type
+trigger" and "function-type trigger" will be used.
+ 
+ 
+ 
+====================================================================
+VI. Trigger redirection
+====================================================================
+ 
+In the above example, the time trigger returned the statetime of the
+player. But sometimes, one might wish to check the statetime of the
+player's target, or the player's parent (if the player is a helper),
+etc. This can be accomplished by preceding the trigger name by a keyword indicating whose information should be returned. This process is known as trigger redirection. For example,
+ 
+5 + parent, time
+ 
+returns 5 + the player's parent's statetime.
+ 
+The complete list of redirection keywords is the following:
+ 
+*) parent
+  Redirects the trigger to the player's parent. (Player must be a
+  helper.)
+ 
+*) root
+  Redirects the trigger to the root.
+ 
+*) helper
+  Redirects the trigger to the first helper found. See the related
+  trigger "NumHelper" in the trigger documentation.
+ 
+*) helper(ID)
+  ID should be a well-formed expression that evaluates to a positive
+  integer. The trigger is then redirected to a helper with the
+  corresponding ID number.
+ 
+*) target
+  Redirects the trigger to the first target found.
+*) target(ID)
+  ID should be a well-formed expression that evaluates to a non-
+  negative integer. The trigger is then redirected to a target with
+  the corresponding targetID. The targetID is specified in the "ID"
+  parameter of a HitDef controller.
+ 
+*) partner
+  Redirects the trigger to the player's partner. Normal helpers and
+  neutral players are not considered opponents. See the related
+  trigger "numpartner" in the trigger documentation.
+ 
+*) enemy
+  Redirects the trigger to the first opponent found. Normal helpers
+  and neutral players are not considered opponents. See the related
+  trigger "numenemy" in the trigger documentation.
+*) enemy(n)
+  n should be a well-formed expression that evaluates to a non-
+  negative integer. The trigger is redirected to the n'th opponent.
+ 
+*) enemyNear
+  Redirects the trigger to the nearest opponent.
+*) enemyNear(n)
+  n should be a well-formed expression that evaluates to a non-
+  negative integer. The trigger is redirected to the n'th-nearest
+  opponent.
+ 
+*) playerID(ID)
+  n should be a well-formed expression that evaluates to a non-
+  negative integer. The trigger is redirected to the player with
+  unique ID equal to ID. See the "ID" and "PlayerExistID" triggers
+  in the trigger documentation.
+ 
+If the trigger is redirected to an invalid destination (for instance,
+if it is retargeted to a helper when none exist), then an error is
+returned. See the section on SC values.
+ 
+Note: multiple redirection (e.g.,  root,target,time) is not currently supported.
+ 
+ 
+====================================================================
+VII. SC values
+====================================================================
+ 
+There are several sources of unrecoverable error in expressions. For
+instance, one could attempt to divide by 0, evaluate the square root of a negative number, or attempt to redirect a trigger to a nonexistent destination. In these situations, SC values are used as a way to complete expression evaluation gracefully.
+ 
+An SC value is a special kind of int which can only take on the values 1 or 0, called SC true (STrue) and SC false (SFalse). The result of any operation or trigger evaluation on an SC value is that SC value. (In other words, you can think of the SC values as variants on the "bottom" element in computation theory. Semantically speaking, CNS expression evaluation is strict in bottom.) If two SC values are given to the same operator, then the leftmost one takes priority.
+ 
+For instance, the expression
+ 
+4 + (1/0)*2
+ 
+evaluates to 4 + (SFalse) * 2, which evaluates to 4 + SFalse, which
+evaluates to SFalse. On the other hand,
+ 
+STrue / SFalse
+ 
+would evaluate to STrue, because STrue comes on the left. Finally,
+ 
+helper, time
+ 
+would evaluate to SFalse if called with no helpers.
+ 
+Currently, STrue is unused. Only SFalse is returned in error conditions. This means that any condition-type trigger that causes an error during evaluation will not trigger. So, in
+ 
+type = ChangeState
+trigger1 = helper, statetype = A
+value = 0
+ 
+the ChangeState controller would never be executed if no helpers
+existed, because the expression "helper, statetype = A" would evaluate
+to SFalse, which is 0.
+ 
+The documentation on function-type triggers explains exactly when those
+triggers will return SFalse.
+ 
+SC values were originally called short-circuit values, because evaluation on an SC value "short-circuits" and does not act as normal. However, this nomenclature had the potential to cause confusion with short-circuit logical evaluation, so it had to be changed, though not so drastically as to cause further confusion. Hence short-circuit values became SC values. At the moment, SC officially stands for "skip and carry", because when an SC value is encountered, normal calculation is skipped and the SC value is simply carried on. Other possibilities for SC include "semantic codomain" and "so-called". We welcome better suggestions for what SC should stand for.
+ 
+ 
+====================================================================
+VIII. More on function-type triggers
+====================================================================
+ 
+Most function-type triggers either take no arguments or take arguments
+in a parameter list. For instance, the time trigger takes no arguments, whereas the ifelse trigger takes three arguments
+ 
+ifelse(exp1,exp2,exp3)
+ 
+where exp1, exp2, and exp3 are all valid expressions. In this kind of
+situation, exp1, exp2, and exp3 are all considered separate subexpressions, so intervals can appear on the rightmost end of each of those subexpressions. The order of evaluation of parameter lists is from left to right.
+ 
+Due to irregular syntax, some old function-type triggers cannot take
+expressions as their arguments. Because of this, they cannot be
+integrated into expressions in the standard manner. For nonstandard
+triggers of this type, the triggers can only appear with certain sets of operators and arguments (which are outlined in trigger.doc). In
+particular, these triggers cannot take expressions as their arguments. For instance,
+ 
+trigger1 = AnimElem = (1+1)
+ 
+is an invalid expression.
+ 
+Old-style function-type triggers appear only in "clauses" (trigger, relational operator, argument). These clauses are treated as a single unit (specifically, a single nullary trigger) for the purposes of expression evaluation. This means, among other things, that the concept of operator precedence is not applicable to operators appearing within an old-style function-type trigger clause. For instance, in
+ 
+trigger1 = AnimElem = 5 + 4
+ 
+the expression is broken down into three units:
+{AnimElem=5} {+} {4}
+The "AnimElem=5" unit is treated as the name of a nullary trigger, hence the + operator does not have precedence over the = appearing within the name "AnimElem=5". In other words, this expression means something like "Execute the trigger called `AnimElem=5', then add 4 to the result."
+ 
+The list of old-style function-type triggers, and expression-capable replacements if applicable, is as follows:
+ 
+AnimElem, superseded by AnimElemTime
+P1Name, P2Name, P3Name, P4Name
+StateType, P2StateType
+Command
+MoveType, P2MoveType
+TimeMod, superseded by the % operator
+ProjHit, ProjContact, ProjGuarded; superseded by ProjHitTime,
+  ProjContactTime, and ProjGuardedTime
+ 
+ 
+ 
+====================================================================
+IX. Expressions in state and state controller parameters
+====================================================================
+ 
+For the most part, any parameter to the statedef or a state controller
+can be an expression. The exceptions are parameters that are given as
+strings. For instance, hit attributes, guardflags, etc. cannot be
+specified as expressions. Also, the ForceFeedback controller, as well as the ignorehitpause and persistent parameters to all controllers, are irregular in that they cannot take expressions.
+ 
+State controller parameters are evaluated at the time the controller is triggered, and are not subsequently re-evaluated unless the controller is triggered again. Parameters that are given as comma-separated lists are evaluated from left to right. To achieve continual evaluation of controller parameters, the controller must be continually triggered.
+ 
+In the case of certain controllers such as HitDef, it is not always wise to use continual triggering, since this decreases performance and also may lead to undesired behavior. In this case, the programmer may wish to try to delay triggering the HitDef as long as possible, so as to evaluate the HitDef parameters right before they are used.
+ 
+ 
+ 
+====================================================================
+X. (Advanced) Optimizing for speed
+====================================================================
+ 
+MUGEN evaluates condition-type triggers for a state controller in the following order: First it evaluates triggeralls, from top to bottom. If any of the triggeralls evaluates to 0, the rest of the triggers are skipped and evaluation proceeds to the next controller. If all the triggeralls evaluate to nonzero, then the engine starts to evaluate trigger1's, from top to bottom. If any of these evaluate to 0, then evaluation skips to the first trigger2, and so on. If all the triggers in a block (besides triggerall) evaluate to nonzero, then the state controller parameters are evaluated and the controller is triggered.
+ 
+In other words, the logical evaluation of triggers is short-circuited.
+In C-like notation, this setup might be denoted
+ 
+  triggerall,1 && triggerall,2 && ... && ((trigger1,1 && trigger1,2
+    && ...) || (trigger2,1 && trigger2,2 && ...) || ... )
+ 
+where (e.g.) trigger1,2 denotes the second trigger1 line, trigger2,1  denotes the first trigger2 line, etc. The logical evaluation of this trigger group would then be short-circuited as in C.
+ 
+Because of this system, considerable performance gains can be attained by organizing expressions so that the condition-type triggers are as simple, and as few in number, as possible. The bulk of the "work" can be offloaded to the state controller parameters, which are only evaluated once at trigger time, instead of every frame that the player is in the state. For instance,
+ 
+[State -1]
+type = ChangeState
+trigger1 = command = "a"
+trigger1 = power < 1000
+value = 3000
+ 
+[State -1]
+type = ChangeState
+trigger1 = command = "a"
+trigger1 = power >= 1000
+value = 3001
+ 
+[State -1]
+type = ChangeState
+trigger1 = command = "a"
+trigger1 = power >= 2000
+value = 3002
+ 
+could be more compactly expressed as
+ 
+[State -1]
+type = ChangeState
+trigger1 = command = "a"
+value = 3000 + (power >= 1000) + (power >= 2000)
+ 
+Further speedups are possible if triggeralls that are most likely to be false are placed highest in the triggerall block. Similarly, the trigger1 block should be the most likely block to trigger, but within the trigger1 block itself, the triggers that are most likely to evaluate to 0 should be placed highest. For state controllers with many triggers containing duplicated conditions, it may be faster to break the controllers up into two separate blocks, each with its own set of triggeralls.
+ 
+If you have a complex condition which is being used as the trigger condition for many consecutive state controllers, you may wish to save the value of the condition in a variable, then use that variable as a trigger to the subsequent controllers. For instance,
+ 
+trigger1 = (command="abc" && command!="holddown" && power>=1000) ||      
+           (command="abc" && command!="holddown" && var(5)) ||
+           ((command != "abc" || command = "holddown") && power>=2000)
+ 
+could be written as (assuming var(0) is available):
+ 
+trigger1 = (var(0):=(command="abc" && command !="holddown") && power>=
+           1000) || (var(0) && var(5)) || (!var(0) && power>=2000)
+ 
+Finally, since the expression parser performs no optimization on expressions, an expression like
+ 
+trigger1 = ctrl
+ 
+is slightly faster than
+ 
+trigger1 = ctrl = 1
+ 

@@ -1,0 +1,739 @@
+The CNS format
+==============
+M.U.G.E.N, (c) Elecbyte 2002
+Documentation for version 2002.04.14
+ 
+Beta-release documentation (incomplete)
+Updated 8 January 2002
+ 
+ 
+ 
+====================================================================
+0. Contents
+====================================================================
+Section I.    Introduction
+Section II.   Player Variables
+Section III.  States
+Section IV.   Expressions
+Appendix A.   Special State Numbers
+ 
+ 
+ 
+====================================================================
+I. Introduction
+====================================================================
+ 
+The CNS file of a player serves two purposes:
+i. It defines the variables of that player, such as walking speed, drawing scale factor, and so on.
+ii. It contains the states of the player, which describe all the moves that the player can do. States are the building blocks that you can use to create simple as well as complicated moves.
+ 
+Like many other character files, the CNS is a text file that you can edit with any text editor.
+ 
+In the CNS file, a semicolon (;) is considered a "comment" character. Any text on the same line after the semicolon will be ignored by the program. The CNS is mostly case-insensitive, i.e. "MyName" is treated the same as "myname" and "mYnAMe". The only exception is the "command" trigger, but you do not need to worry about this for now.
+ 
+Some terminology
+----------------
+When we say "group", we mean any block of lines of text beginning with something that looks like [groupname], and ending before the next group. For example, the group "Blah" consists of the first three lines in the following:
+ 
+[Blah]
+line1
+line2
+[Group 2]
+more lines
+ 
+Within a group, the parameters can appear in any order. So,
+ 
+[SomeGroup]
+value1 = 1234
+value2 = "A string"
+ 
+is equivalent to:
+ 
+[SomeGroup]
+value2 = "A string"
+value1 = 1234
+ 
+ 
+ 
+====================================================================
+II. Player Variables
+====================================================================
+ 
+No full documentation yet. See chars/kfm/kfm.cns for comments on each variable.
+ 
+Some importants one to note:
+- In [Size], you can use "xscale" and "yscale" to change the width and height of your character. This saves the trouble of scaling every single one of the sprites.
+- Set up the speeds of the player in [Velocity]
+- Set the player's downward acceleration -- "yaccel" in [Movement]
+ 
+ 
+ 
+====================================================================
+III. States
+====================================================================
+ 
+a. Overview of Finite State Machines in MUGEN
+b. Introduction to States
+c. Basic Parts of a State
+d. Details on StateDef
+e. Details on State Controllers
+f. Common states (common1.cns)
+ 
+ 
+-------------------------------------------------
+III.a. Overview of Finite State Machines in MUGEN
+-------------------------------------------------
+ 
+This section presents a working (heuristic) characterization of finite state machines, as found in MUGEN. It is not especially technical, but it is aimed at the analytically minded reader. Feel free to skip over this section if you are already familiar with finite state machines, or if you are not interested in the details.
+ 
+A finite state machine (henceforth abbreviated FSM) is an automaton with a finite set of subroutines, each of which performs some function and then employs some criterion to choose the next subroutine to jump to. Each subroutine is called a "state", and the FSM is said to be in a given state when it is currently processing the directives in that state. A FSM can only be in one state at any given time.
+ 
+The following is a trivial example of a FSM, given in pseudocode.
+ 
+State 0:
+1. Read in a number.
+2. If the number is 0, go to state 0. Else, go to state 1.
+ 
+State 1:
+1. Print "Woohoo!"
+2. Go to state 3.
+ 
+State 2:
+1. Go to state 0.
+ 
+State 3:
+1. Quit
+ 
+Suppose this FSM starts in state 0 and reads in the value 0. Then it will return to the beginning of state 0, and read another number. This will continue until the FSM reads a nonzero number, at which point it will switch to state 1. In state 1, the FSM prints "Woohoo!" and then switches to state 3. State 3 causes the FSM to quit. State 2 is never reached in this example.
+ 
+Here's a state out of an FSM which might be used for a fighting game character.
+ 
+State 555:
+1. Try to punch the other guy.
+2. If successful, and the user is holding punch, go to state 555 (chain 
+   move).
+3. If successful and the user is not holding punch, play recovery
+   animation.
+4. If not successful, play miss animation.
+5. When the recovery or miss animation ends, go to state 0 (idle).
+ 
+Characters in MUGEN are finite state machines. The character's CNS file defines a number of states, each of which contains one or more state controllers. State controllers are what actually give the character its functionality, similarly to the instructions for our character's FSM given above. For instance, the controller HitDef allows the character to hit his opponent, the ChangeState controller allows the character to make a state transition, and the ChangeAnim controller allows  the character to play a specified animation. Each state controller is specified along with one or more test conditions, called "triggers" or "condition-type triggers," which must be satisfied in order for that controller to be executed.
+ 
+Each MUGEN character has three special states, numbered -1, -2, and -3. These are the only allowable states with negative numbers. State -1 generally contains state controllers that determine state transition rules based on user input (commands). State -2 contains other state controllers that need to be checked every tick. State -3 contains state controllers which are checked every tick unless the player is temporarily using another player's state data (for instance, when the player is being thrown).
+ 
+For each tick of game-time, MUGEN makes a single pass through each of the special states, from top to bottom, in order of increasing state number (-3, -2, then -1). For each state controller encountered, its condition-type triggers are evaluated and, if they are satisfied, the controller is executed. Then processing proceeds to the next state controller in the state. A state transition (ChangeState) in any of the special states will update the player's current state number, but will not abort processing of the special states. After all the state controllers in the special states have been checked, the player's current state is processed, again from top to bottom. If a state transition is made out of the current state, the rest of the state controllers (if any) in the current state are skipped, and processing continues from the beginning of the new state. When the end of the current state is reached and no state transition is made, processing halts for this tick.
+ 
+There is one exception to the above scenario. If the character is a "helper" character, i.e., spawned by the Helper state controller, that character will not have the special states -3 and -2. The helper character will not have the special state -1 either, unless it has keyboard input enabled. (This is controlled by the Helper state controller when the character is created.)
+ 
+Note for the technically minded: A character's state machine might be considered an "impure" FSM, since there are a number of implicit state transition rules which are not user-specified. For instance, hitting the character causes a state transition which is not explicitly coded into the character's CNS. Furthermore, a single CNS state is usually much more complex than a state in a typical FSM as considered in mathematics or computer science. In any case, you will not find the rigorous definition of an FSM especially applicable to working with MUGEN.
+ 
+ 
+-----------------------------
+III.b. Introduction to States
+-----------------------------
+ 
+Programming states is the hardest part of creating a character. It entails a lot of work, testing, and sometimes trial-and-error. In this section, we'll often refer the player being programmed, and to his opponent as well. Let us call the player whose states we are editing P1, and his opponent P2.
+ 
+Do not be discouraged if you do not understand a lot of this document on your first reading. The best way to learn about states is to first play around with values in the CNS of a completed character, and see what effects they have on him or her. There's nothing to fear from "tweaking" the CNS; M.U.G.E.N is designed to detect syntax errors and report them.
+ 
+Included with the M.U.G.E.N distribution package is a character named Kung Fu Man (KFM for short.) You can find him in the directory chars/kfm.
+ 
+The CMD file contains declarations of command names and the definition of State -1, a special state which is used to control how the character responds to user input. See the CMD document for more information.
+ 
+Here are some concepts that will be useful for you to know:
+1. Life and power
+2. Control
+3. Game-time and state-time
+4. Position, velocity and acceleration
+5. Juggling
+ 
+1. Life and power
+A player's life bar is the yellow bar at the top of the screen on his side of the screen. When the life bar reaches zero, the player is knocked out. His power bar is the blue bar, and that increases with each attack he gives or takes. When the power bar reaches certain values, he can do super moves.
+ 
+2. Control
+When we say a player "has control", we mean that he is ready to walk or jump or attack. A player who does not have control will not respond to your input (from keyboard or joystick). For example, when P1 is in his stand state, he has control, and will walk forward if you press the forward button. A player will typically not have control when he is in an attack state, otherwise you could just walk away halfway through a punch.
+ 
+There is an exception to the rule, however. Sometims you can let the player respond to certain moves even if he has no control. That is called a "move interrupt", or a "move cancel". See the CMD documentation for details.
+ 
+We will frequently refer to a player's "control flag". A "flag" is a value that is either true, or false. If we say the player's control flag is true, then it means he has control.
+ 
+3. Game-time and state-time
+M.U.G.E.N keeps track of the time that has passed in the game. Every time the game is updated (this includes updating the players, checking collisions, and drawing to the screen), we say game-time has increased by one.
+The time a player has spent in a state is known as the "state-time". The state-time starts at 0 at the beginning of a state, and increases by one tick for every tick of game-time.
+ 
+4. Position, velocity and acceleration
+Those of you with basic knowledge of math should understand these concepts. M.U.G.E.N uses the following coordinate system.
+The greater the X-position, the farther right the player is. The less the X-position, the closer he is to the left.
+A Y-position of zero is at ground level. As the player's Y-position gets larger he moves downwards. For example, a negative Y-position means he is in the air.
+Similarly, when we say a player has positive X-velocity, it means he is moving forward, and if he as negative X-velocity, he is moving backwards. A player with positive Y-velocity is moving downward, and a negative Y-velocity means he is moving up.
+A positive X-acceleration means the player's X-velocity is increasing, a negative X-acceleration means his X-velocity is decreasing. Likewise for Y-acceleration.
+ 
+5. Juggling
+M.U.G.E.N allows for certain moves to "juggle", that is, to hit opponents who have been knocked into the air, or are lying down on the ground. The juggling system works this way: each person starts with a set number of juggle "points" on the first hit that makes them fall, typically 15.
+Some quick terminology: when we say a player is "falling", then we mean he does not recover control in the air, and will fall onto the ground.
+If a player is hit while he is in the falling in the air or lying down on the ground, then his juggle points will decrease by an amount depending on the attack. When an attack requires more juggle points than the opponent has left, then the attack will miss. Any move that causes the opponent to fall immediately subtracts its juggle points on the first hit.
+For example, an attack that requires 7 juggle points could theoretically be used to juggle the opponent twice (assuming you started with 15 points), leaving the opponent with 1 point left. Subsequent such attacks will miss.
+The reason for this juggle system is to prevent infinite combos in the air.
+ 
+ 
+-----------------------------
+III.c. Basic Parts of a State
+-----------------------------
+ 
+Note: This section assumes you have at least browsed the documentation of AIR files, and understand the concepts of animation, as know the meaning of key words and phrases such as action and element of an action.
+ 
+Here is a short example state for P1:
+ 
+[Statedef 200]
+type = S
+physics = S
+movetype = I
+ctrl = 0
+anim = 200
+velset = 0
+ 
+[State 200, 1]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+ 
+This state plays back the Action 200 of P1's animation, and returns P1 to his standing state after the animation has ended. In this case, assume Action 200 has a finite looptime. That is, Action 200 does not have any elements with time equal to -1.
+ 
+At this point, you do not need to worry about the details. Let us begin by knowing what a state consists of.
+ 
+All states must have a single Statedef section and one or more State sections.
+ 
+Statedef contains the starting information of a state, such as what kind of state it is (standing, crouching, in the air) and what kind of move he is doing (attacking, idling.)
+ 
+Each State section is referred to as a state controller, or a controller for short. Controllers tell the program what to do to P1, and when to do it. There are many kinds of controllers, each with its own function. For example, there are controllers to change the players position or velocity, define the effects of attacks, create projectiles, switch between animation Actions, change states, and so on. Each controller must have at least one trigger. A trigger is an event that causes the controller to be activated. Examples are: trigger at the start of the state, trigger at the end of the animation (as seen in the example State above), trigger on an element of an animation Action, trigger when P2 is within a certain range of P1, and so on.
+ 
+ 
+--------------------------
+III.d. Details on StateDef
+--------------------------
+ 
+Every state must begin with exactly one StateDef group, also known as a Statedef section. A StateDef group must look like this (put in one or more parameters where the dots are):
+[Statedef state_number]
+. state_parameters
+.
+.
+Replace state_number with the number of the state you are programming. With the exception of the special group numbers (see Appendix A) you are allowed to use any state number you choose. To avoid choosing a special group number, do not choose numbers from 0-199, and from 5000-5999.
+ 
+The lines that follow should include the following parameters:
+1. type
+2. movetype
+3. physics
+4. anim
+ 
+1. type
+This is the state type of P1 in that state. It defines if he is standing, crouching, in the air, or lying down. The corresponding values are "S", "C" , "A" and "L" respectively (without the quotation marks). To leave the type unchanged from the previous state, use a value of "U". If this line is omitted, it assumes the type is "S". You will most commonly use "S", "C" and "A". For example, a crouching state type would require the line:
+ 
+type = C
+ 
+The type is used to determine several factors, most importantly, how P1 will react to being hit. For example, being in a "stand"-type state, P1 will react as if he is standing on the ground. If the type was "air", then P1 would react to the hit accordingly.
+ 
+2. movetype
+This is the type of move P1 is doing: "A" for attack, "I" for idle and "H" for being hit. To leave the movetype unchanged from the previous state, use a value of "U". The value is assumed to be "I" if this line is omitted. "A" and "H" should be self-explanatory. "I" is used for states where P1 is neither attacking, nor being hit. For example, an attack state should have the line:
+ 
+movetype = A
+ 
+You need to specify the movetype so the program will know how to process the state. Incorrectly specifying the movetype may cause P1 to act incorrectly.
+ 
+3. physics
+You need to specify what physics to use in that state. Valid values are "S" for stand, "C" for crouch, "A" for air, and "N" for none. To leave the physics unchanged from the previous state, use a value of "U". If omitted, the value of "N" is assumed. The kind of physics is used to determine how P1 behaves.
+ 
+For "S" physics, P1 will experience friction with the ground. The value for the friction coefficient is set in the Player Variables (see section II).
+For "C" physics, P1 will experience friction, just like in the "S" state.
+For "A" physics, P1 will accelerate downwards, and if his Y-position is greater than 0 (ie. he touches the ground) he will immediately go into his landing state.
+If you use "N" P1 will not use any of these pre-programmed physics.
+ 
+Do not confuse "physics" with the state "type". They are usually the same, but you are given the choice if you want more control. For instance, you may choose to use "N" (no physics), and specify your own acceleration and landing detection for an aerial state.
+ 
+4. anim
+This parameter changes the Animation Action of P1. Specify the action number as the value. If you do not want P1 to change animation at the start of the state, omit this parameter.
+ 
+So to have a state with number 400, where the player is doing a crouching attack with Action 400, the typical parameters would be:
+ 
+[Statedef 400]
+type = c
+movetype = a
+physics = c
+anim = 400
+ 
+ 
+The other optional parameters that you can use are:
+4. velset
+5. ctrl
+6. poweradd
+7. juggle
+8. facep2
+9. hitdefpersist
+10. movehitpersist
+11. hitcountpersist
+12. sprpriority
+ 
+4. velset
+You can use velset to set P1's velocity at the beginning of the state. The format is a number pair, representing the x velocity and the y velocity respectively. Omitting this line will leave P1's velocity unchanged. For example,
+velset = 4,-8
+makes P1 start moving diagonally up and forwards.
+There is an exception to this. Even if you have velset = 0, attacking P2 in the corner will push P1 away.
+ 
+5. ctrl
+This parameter will set P1's control. A value of "0" sets the flag to false, "1" sets it to true. If omitted, P1's control flag is left unchanged. For example, to give P1 control, use
+ctrl = 1
+ 
+6. poweradd
+When included, the poweradd parameter adds to the player's power bar. The value is a number, and can be positive or negative. This parameter is typically used in attack moves, where you want the player to gain power just by performing the attack. For example, to add 40 power, type
+poweradd = 40
+ 
+7. juggle
+The juggle parameter is useful only for attacks. It specifies how many points of juggling the move requires. If omitted for an attack, that attack will juggle if the previous attacking state successfully juggled. You should include the juggle parameter for all attacks. If an attack spans more than one state, include the juggle parameter only in the first state of that attack. Juggling was explained in detail in "Useful Concepts" in Section IIIa.
+ 
+8. facep2
+When you include the line "facep2 = 1", the player will be turned, if necessary, to face the opponent at the beginning of the state. "facep2" has the default value of "0" if omitted.
+ 
+9. hitdefpersist
+   If set to 1, any HitDefs which are active at the time of a state
+   transition to this state will remain active. If set to 0, the
+   default, any such HitDefs will be disabled when the state
+   transition is made.
+ 
+10. movehitpersist
+If set to 1, the move hit information from the previous state (whether the attack hit or missed, guarded, etc; see Move* triggers in trigger docs) will be carried over into this state. If set to 0 (the default), this information will be reset upon entry into this state.
+ 
+11. hitcountpersist
+   If set to 1, the hit counter (how many hits this attack has done)
+   will be carried over from the previous state to this state. If set
+   to 0 (the default), the hit counter will be reset upon state
+   transition. This parameter does not affect the combo counter which
+   is displayed on the screen. See the hitcount and uniqhitcount
+   trigger documentation for how to check the hit counter.
+ 
+12. sprpriority
+   If this parameter is present, the player's sprite layering
+   priority will be set to the value specified. If omitted, the
+   sprite priority will be left unchanged. common1.cns (the CNS file
+   that is inherited by every player) defines the sprite priority of
+   standing or crouching players to be 0, and jumping players to be 1.
+   For most attack states, you will want to set sprpriority = 2, so
+   that the attacker appears in front.
+   See SprPriority in the sctrls documentation for how to change
+   sprite priority using a controller.
+ 
+ 
+-----------------------------------
+III.e. Details on State Controllers
+-----------------------------------
+ 
+d.1 Controller Format
+d.2 Triggers
+d.3 Commonly-used controllers
+ 
+ 
+III.d.1 Controller Format
+-------------------------
+ 
+All states must have at least one state controller, otherwise it will cause an error. State controller groups have the following format:
+[State state_number, some_number]
+type = controller_type
+trigger1 = condition_exp
+.  universal optional parameters
+.  additional parameters depending on controller
+.
+.
+ 
+The state_number must be the same number of the state from the statedef. some_number can be any number you choose; it is the number that is reported when an error is found, so you know which controller needs to be fixed.
+ 
+The universal (applicable to all state controllers) optional parameters are the ignorehitpause and persistency parameters. If ignorehitpause is set to 1, MUGEN will check this state controller even if the character is paused by a hit. Otherwise, this state controller will not be checked during a hit pause. The default is 0, which is recommended for all but exceptional situations. For an explanation of the persistency parameter, see the section on trigger persistency.
+ 
+The controller_type is the name of the controller you are using. Each type of controller has a different effect, and requires different parameters. See sctrls.txt for a full list of state controllers.
+ 
+The order of the controllers is significant. Controllers listed first are the ones checked and, if necessary, activated first.
+ 
+Here is an example of a controller that gives P1 control at the start of the state (the same effect as putting "ctrl = 1" as a parameter in the StateDef):
+ 
+[State 300, 1] ;State 300. 1 is just an arbitrary number.
+type = CtrlSet ;Changes the control flag.
+trigger1 = Time = 0
+value = 1
+ 
+In this example, the CtrlSet type lets you change the control flag of P1. The line that reads "trigger1 = Time = 0" means that this controller is activated when the state-time is 0, ie. at the start of that state. The line "value = 1" says that we want to set the value of the control flag to 1, which means true. If we want to make P1 start the state with no control, then we just need to change the last line to "value = 0".
+ 
+Let's look another example. This controller moves P1 forwards by 10 pixels twice: on the second and third element of his current Animation Action. Don't worry if you don't know what parameters go with which controller types. You can learn more about them from the state controller documentation (sctrls).
+ 
+[State 300, 2]
+type = PosAdd ;Adds to P1's position
+trigger1 = AnimElem = 2 ;Trigger on 2nd element.
+trigger2 = AnimElem = 3 ;Trigger on 3rd element.
+x = 10
+ 
+As you see above, each controller must have at least one trigger. A trigger is a condition that causes the controller to be activated. This example has two triggers, and the controller is activated when EITHER ONE is true.
+ 
+ 
+III.d.2 Triggers
+----------------
+ 
+i. Trigger logic
+ 
+The first trigger should always be "trigger1", and subsequent triggers should be "trigger2", then "trigger3" and so on. The logic for deciding if a controller should be activated is:
+1. Are all conditions of "trigger1" true? If so, then yes, activate the controller.
+2. Otherwise, repeat the test for "trigger2", and so on, until no more triggers are found.
+This can be thought of as "OR" logic.
+ 
+Be careful; skipping numbers will cause some triggers to be ignored. For example, if you have triggers "trigger1", "trigger2" and "trigger4" without a "trigger3", then "trigger4" will be ignored.
+ 
+Now what if you want more than one condition to be met before the controller is activated? Here is an commonly-used example for testing if a player in the air has reached the ground. The triggers used are:
+trigger1 = Vel Y > 0 ; True if Y-velocity is > 0 (going down)
+trigger1 = Pos Y > 0 ; True if Y-position is > 0 (below ground)
+At this point, you may be confused by the format of the trigger. Do not worry about it for now. We will get to it soon.
+As you can see above, both the triggers have the same number. When several triggers have the same number, it implements the "AND" logic. That is, the controller is activated if every one of the triggers with the same number is true, but not if one or more of them is false.
+ 
+You can combine both ideas. For example:
+trigger1 = Vel Y > 0 ; True if Y-velocity is > 0 (going down)
+trigger1 = Pos Y > 0 ; True if Y-position is > 0 (below ground)
+trigger2 = Time = 5  ; True if state-time is 5
+The controller for this would be activated if the player landed on the ground (Y-velocity and Y-Position are both > 0), OR if his state time was 5.
+ 
+Here is a summary:
+- Triggers with the same number activate the controller only if all of them are true.
+- Triggers with different numbers activate the controller if any one or more of them are true.
+ 
+The format of a trigger is:
+trigger? = trigger_type trigger_test
+trigger_type is the name of the trigger (see triggers.txt for the full list).
+ 
+condition_exp is an arithmetic expression to be checked for equality to 0. If condition_exp is 0, then the trigger is false. If condition_exp is nonzero, then the trigger is true. The condition_exp is usually a simple relational expression as in the examples above, but can be as simple or as complicated as required.
+ 
+It is possible to use logical operators between expressions. For instance, this is equivalent to the previous example above.
+trigger1 = ((Vel Y > 0) && (Pos Y > 0)) || Time = 5
+See exp.txt for a detailed explanation of arithmetic expressions.
+ 
+A useful shortcut you might use is "triggerall". It determines a condition that must be true for all triggers. For instance in:
+ 
+triggerall = Vel X = 0
+trigger1 = Pos Y > -2
+trigger2 = AnimElem = 3
+trigger3 = Time = [2,9]
+ 
+For any of trigger1 to trigger3 to be checked, the triggerall condition must be true too. In this case, as long as the X-velocity is not 0, then the state controller will not be activated. You can have more than one triggerall condition if you need. Note that at least one trigger1 must be present, even if you specify triggeralls.
+ 
+ii. Trigger persistency
+ 
+In the case where you do not want the trigger to activate every single time the condition is true, you will need to add a "persistent" paramter. Let us begin with an example:
+ 
+[State 310, 1]
+type = PosAdd
+trigger1 = Vel Y > 1
+x = 10
+ 
+This state controller moves P1 forwards by 10 pixels for every tick of game time where P1's Y-velocity is greater than 1. That is, the controller is being activated everytime the trigger condition is true. If we want the controller to be activated only once, we will need to add a line:
+ 
+[State 310, 1]
+type = PosAdd
+trigger1 = Vel Y > 1
+persistent = 0       ;<-- Added this line
+x = 10
+ 
+"Persistent" has a default value of 1, meaning that the controller is activated everytime the trigger is true.
+Setting "persistent" to 0 allows the controller to be activated only once during that state. This holds true until P1 leaves that state. If P1 returns to that state later, the controller can be activated once again.
+ 
+The "persistent" parameter can also take values other than 0 and 1:
+ 
+[State 310, 1]
+type = PosAdd
+trigger1 = Vel Y > 1
+persistent = 2       ;<-- Modified this line
+x = 10
+ 
+In this case, setting "persistent" to 2 means the controller will be activated once of every two times the trigger is true. Setting "persistent" to 3 activates the controller every 3rd time, and so on.
+ 
+iii. Trigger redirection
+ 
+One might wish to check the statetime of the player's target, or the player's parent (if the player is a helper), etc.
+ 
+ 
+III.d.3 Commonly-used controllers
+---------------------------------
+ 
+The "Null" controller will be useful for debugging. A "null" controller basically does nothing. You can use it to temporarily turn off certain controllers, instead of commenting out the entire section. For example, you might want to disable this:
+ 
+[State 300, 1] ;Controller that accelerates P1 forwards
+type = VelAdd
+trigger1 = Time >= 0
+x = .8
+ 
+Simply comment out the type and put in "null":
+ 
+[State 300, 1] ;Controller that accelerates P1 forwards
+type = null ;VelAdd
+trigger1 = Time >= 0
+x = .8
+ 
+Later, when you want to reenable the controller, just change the type back to what it used to be.
+ 
+Now let us look back at the example:
+ 
+[Statedef 200]
+type = S
+physics = S
+movetype = I
+ctrl = 0
+anim = 200
+velset = 0
+ 
+[State 200, 1]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+ 
+[State 200, 1] is a "ChangeState" controller. As the name implies, it changes P1's state number. The "value" parameter should have the number of the state to change to. The optional "ctrl" parameter can be set P1's control flag as he changes states.
+ 
+Now let's make this an attack state. First of all, the animation action needs attack collision boxes. A quick review from the air documentation: Clsn1 is for attack and Clsn2 is where the player can be hit. So P1 will hit P2 if any one of P1's Clsn1 boxes intersects with any of P2's Clsn2 boxes.
+ 
+As an example, let's assume the animation action in P1's AIR file looks like this:
+ 
+[Begin Action 200]
+200,0, 0,0, 3
+200,1, 0,0, 4
+200,2, 0,0, 4
+200,3, 0,0, 3
+ 
+After defining the bounding boxes, it looks like:
+ 
+[Begin Action 200]
+Clsn2: 1
+  Clsn2[0] = -10,0, 10,-80
+200,0, 0,0, 3
+Clsn1: 1
+  Clsn1[0] =  10,-70, 40,-60
+Clsn2: 2
+  Clsn2[0] = -10,  0, 10,-80
+  Clsn2[1] =  10,-70, 40,-60
+200,1, 0,0, 4
+Clsn2Default: 1 ;Use this box for the last two frames
+  Clsn2[0] = -10,0, 10,-80
+200,2, 0,0, 4
+200,3, 0,0, 3
+ 
+As you can see, each element has a Clsn2 box defined for it (the last two elements are using the same boxes). The second element is the only one with a Clsn1 box.
+ 
+Note: It is all right to define Clsn1 boxes for any elements in an Animation Action, but if you put a Clsn1 box in the very first element, the attack will be instantaneous, and become unblockable. Therefore, it is recommended that you define Clsn1 boxes only for elements after the first one.
+ 
+Now we are ready to set up the state in the CNS. We will explain the changes below.
+ 
+[Statedef 200]
+type = S
+physics = S
+movetype = A  ;<-- changed from "I" to "A"
+ctrl = 0
+anim = 200
+velset = 0
+ 
+[State 200, 1] ;<-- Added this state controller
+type = HitDef
+trigger1 = AnimElem = 2
+attr = S, NA
+animtype  = Light
+damage    = 10
+guardflag = MA
+pausetime = 12,12
+sparkxy = 0,-55
+hitsound   = 5,0
+guardsound = 6,0
+ground.type = High
+ground.slidetime = 12
+ground.hittime  = 15
+ground.velocity = -5
+air.velocity = -2.5,-3.5
+ 
+[State 200, 2]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+ 
+The "movetype" parameter in the StateDef is set to "A" for "attack". Remember to do this for all attack states. As before, P1 changes back to his standing state after his animation is over.
+ 
+That HitDef controller looks like a monster! Do not worry, we will go through it slowly.
+ 
+L1: type = HitDef
+L2: trigger1 = AnimElem = 2
+This specifies the controller type as "HitDef", which stands for "Hit Definition". It is triggered on the second element of animation. Any Clsn2 box from the time the trigger was activated will take on this hit definition.
+If, for example, you had a Clsn1 in both the second and third element of animation, triggering a single HitDef at the second element makes it apply to both elements of animation. So P1 will hit at most once: if the second element hits, the third will miss. If the second element misses, the third can still hit. To make the attack hit twice, you must trigger a HitDef for each of the two elements.
+ 
+L3: attr = S, NA
+This is the attribute of the attack. It is used to determine if the attack can hit P2. In this case, it is a Standing Normal Attack.
+"attr" has the format:
+attr = arg1, arg2
+Where:
+- arg1 is either "S", "C" or "A". Similar to "statetype" for the StateDef, this says whether the attack is a standing, crouching, or aerial attack.
+- arg2 is a 2-character string. The first character is either "N" for "normal", "S" for "special", or "H" for "hyper" (or "super", as it is commonly known). The second character must be either "A" for "attack" (a normal hit attack), "T" for "throw", or "P" for projectile.
+ 
+L4: animtype = Light
+This refers to the type of animation that P2 will go into when hit by the attack. Choose from "light", "medium", "hard" or "back". The first three should be self-explanatory. "Back" is the animation where P2 is knocked off her feet.
+ 
+L5: damage = 10
+This is the damage that P2 takes when hit, and it does no damage if guarded. If we changed that line to "damage = 10, 1", then it will do 1 point of damage if guarded.
+ 
+L6: guardflag = MA
+"Guardflag" determines how P2 may guard the attack. Here, it may be guarded high(standing), low (crouching) and in the air. The argument must be a string of characters that includes any of the following: "H" for "high", "L" for "low" or "A" for air. "M" (mid) is equivalent to saying "HL".
+ 
+L7: pausetime = 12,12
+This is the time that each player will pause on the hit. The first argument is the time to freeze P1, measured in game-ticks. The second is the time to make P2 shake before recoiling from the hit.
+ 
+L8: sparkxy = 0,-55
+This is where to make the hit/guard spark. The arguments must be in the form "x, y". x is relative to the front of P2. A negative x makes a spark deeper inside P2. y is relative to P1. A negative y makes a spark higher up.
+ 
+L9: hitsound = 5,0
+This is the sound to play on hit (from fight.snd). The included fight.snd lets you choose from 5,0 (light hit sound) through to 5,4 (painful whack). To play a sound from the player's own SND file, precede the first number with an "S". For example, "hitsound = S1,0".
+ 
+L10: guardsound = 6,0
+This is the sound to play on guard (from fight.snd). Right now all we have is 6,0. To play a sound from the player's own SND file, precede the first number with an "S".
+ 
+L11: ground.type = High
+This is the kind of attack for ground attacks (it also defaults to air attacks if you do not have "air.type = ?"). In this case, it is a high attack. Choose from "High" for attacks that make P2's head snap backwards, "Low" for attacks that look like that hit in the stomach, "Trip" for low sweep attacks, or "None" to not do anything to P2. "High" and "Low" attacks are the same on P2 if the AnimType is "Back".
+ 
+L12: ground.slidetime = 12
+This is the time in game-ticks that P2 will slide back for after being hit (this time does not include the pausetime for P2). Applicable only to hits that keep P2 on the ground.
+ 
+L13: ground.hittime = 15
+Time that P2 stays in the hit state after being hit. Applicable only to hits that keep P2 on the ground.
+ 
+L14: ground.velocity = -5
+Initial X-velocity to give P2 after being hit, if P2 is in a standing or crouching state on the ground. You can specify a Y-velocity as the second argument if you want P2 to be knocked into the air, eg. "ground.velocity = -3, -2".
+ 
+L15: air.velocity = -2.5,-3.5
+Initial velocity to give P2 if P2 is hit in the air
+ 
+There are more things that you can control in a HitDef. See sctrls.txt for details.
+ 
+ 
+----------------------------------
+III.f. Common states (common1.cns)
+----------------------------------
+ 
+If you look at a player's DEF file, you will see the line:
+stcommon = common1.cns  ;Common states
+Every player shares some common states, which are the basic parts of the game engine. These common states are found in data/common1.cns. Some examples are states for running and getting hit. A full list is available in Appendix A, Special State Controller Numbers.
+ 
+If there is a common state that you would like to override for a certain player, all you need to do is make a state in that player's CNS with the same number as the one you would like to override. Then, when the player changes to that certain state number, he will enter that new state, instead of the one in common1.cns.
+ 
+You should remember that when overriding certain states that have special properties coded inside M.U.G.E.N, the new states you make will still have the same special properties as the ones you overrode. For example, the run state (state 100) sets the player's velocity to whatever values you specified in his player variables. If you override state 100, the new state will still have the property of setting that player's velocity.
+ 
+A common example is overriding the running state. M.U.G.E.N's default behaviour for the running state is to have the player continue moving forward at a constant speed, until you let go of the forward key. At that point he returns to the stand state.
+ 
+Now, let's say we want that player (let us call him P1) to instead hop forward, just like the default double-tap back hop. You can make a state in P1's CNS:
+ 
+; RUN_FWD (overridden to dash-type)
+[Statedef 100]
+type    = S   ;Running is on the ground
+physics = N   ;We'll define our own physics
+anim = 100    ;Anim action 100
+ctrl = 0      ;No control for duration of dash
+ 
+[State 100, 1] ;To start dashing forwards
+type = VelSet
+trigger1 = Time = [0,5]
+x = 6
+ 
+[State 100, 2] ;Friction after initial dash
+type = VelMul
+trigger1 = Time > 5
+x = .85
+ 
+[State 100, 3] ;
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+ 
+Here, we assume that Action 100 has a finite looptime. The velocity in "run.fwd" under [Velocity] of the player variables is not really ignored, but [State 100,1] overrides that detail by setting the X-velocity to 6.
+ 
+ 
+ 
+====================================================================
+IV. Expressions
+====================================================================
+ 
+MUGEN has support for expressions in both the CNS and the CMD files. This section will briefly cover some examples of expressions. Don't take this for a thorough reference; it is only a quick guide to get you started. For a complete explanation of expressions, please refer to the expressions documentation (exp).
+ 
+Expressions allow you to use a trigger as the value of a parameter. The following example increases the x-position of the player by a value that is equal to his state time.
+ 
+[State 200, 1]
+type = PosAdd
+trigger1 = Time = 0
+x = Time
+ 
+Simple arithmetic is also possible using expressions. Some basic arithmetic operators are:
++ addition
+- subtraction
+* multiplication
+/ division
+ 
+[State 200, 1]
+type = VelSet
+   trigger1 = 1   ;Note: this is logically equivalent to
+   x = Time + 4   ;"trigger1 = Time >= 0"
+ 
+Expressions in state controller parameters are evaluated at runtime, meaning that every time a state controller with a parameter containing an expression is executed, the parameter's value is recalculated during that instant. In the example above, the player's x-velocity is recomputed for every frame that he stays in state 200.
+ 
+The order of evaluation generally left-to-right, but with multiplication and division taking precedence over addition and subtraction. For example, in an expression 5 + 6 / 2, the result is 8. To force the addition to take place before the division, you can add in parentheses, ie. (5 + 6) / 2, which gives a result of 5.5.
+ 
+Expressions may also be used in the trigger line. These expressions are evaluated every time the trigger is checked. This next example changes the player's state when his state time is greater than the value stored in the variable var(1).
+ 
+[State 200, 1]
+type = ChangeState
+trigger1 = Time > var(1)
+value = 201
+ 
+Variables may also take expressions, as seen below.
+ 
+[State 200, 1]
+type = VarSet
+trigger1 = Time = [1,5]
+var(Time) = Time * 2
+ 
+Logical operators may also be used. || is used for "or", and && for "and". For example, this changes the player's state when his state time is greater than 90, and his animation has ended.
+ 
+[State 200, 1]
+type = ChangeState
+trigger1 = Time > 90 && AnimTime = 0
+value = 0
+ 
+The trigger line above is logically equivalent to these two lines:
+ 
+trigger1 = Time > 90
+trigger1 = AnimTime = 0
+ 
+&& takes precedence over ||. Whenever you use more than one logical operator in an expression, try to use brackets for clarity. It's not required, but it makes it easier to understand. For instance:
+ 
+trigger1 = ((Time > 90) && (AnimTime = 0) || (var(2) = [5,9]))
+ 
+Not all parameters support expressions. Typically, those that are of a non-numeric type do not support expressions. For example, this is an illegal construct:
+ 
+[State 300, 5]
+type = HitDef
+trigger1 = Time = 0
+ground.type = High && Low    ; <-- illegal -- non-numeric types!
+ 
+ 
+ 
+====================================================================
+Appendix A.  Special State Numbers
+====================================================================
+ 
+Unless you plan to override a common state, avoid choosing state numbers in the range 0-199 and 5000-5999. Here is a list of states in common1.cns. State numbers labeled "reserved" should not be used, as they may be assigned special functionality in a later version of MUGEN.
+ 
+ 
+Number      Description
+------      -----------
+0           Stand
+10          Stand-to-crouch
+11          Crouching
+12          Crouch-to-stand
+20          Walk
+ 
+This list is not yet complete. Please be patient.
+ 
