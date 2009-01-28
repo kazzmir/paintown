@@ -131,7 +131,7 @@ MugenCharacter::~MugenCharacter(){
     
 }
 
-namespace Sff{
+namespace Sprite{
     
 /* PCX HEADER */
 typedef struct {
@@ -502,7 +502,7 @@ static void readSprites(const string & filename, const string & palette, map<uns
 
 }
 
-namespace Snd{
+namespace Sound{
 static void readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
@@ -670,13 +670,13 @@ void MugenCharacter::load() throw( MugenException ){
     }
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
-   Sff::readSprites( fixFileName(baseDir, sffFile), fixFileName(baseDir, palFile[0]), sprites );
+   Sprite::readSprites( fixFileName(baseDir, sffFile), fixFileName(baseDir, palFile[0]), sprites );
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
    Global::debug(1) << "Reading Snd (sound) Data..." << endl; 
     /* Sounds */
-    Snd::readSounds( fixFileName( baseDir, sndFile ), sounds );
+    Sound::readSounds( fixFileName( baseDir, sndFile ), sounds );
 }
 
 // animations
