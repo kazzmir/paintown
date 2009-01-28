@@ -92,6 +92,7 @@ void showCharacter(const string & ourFile){
     bool animate = false;
     bool showClsn1 = false;
     bool showClsn2 = false;
+    bool moveImage = false;
     int ticks = 0;
     int loop = 0;
 
@@ -112,8 +113,8 @@ void showCharacter(const string & ourFile){
 
     Bitmap work( 640, 480 );
     
-    const int xaxis = 260;
-    const int yaxis = 230;
+    int xaxis = 260;
+    int yaxis = 230;
 
     while( !quit ){
         work.clear();
@@ -183,10 +184,15 @@ void showCharacter(const string & ourFile){
         else if( keyInputManager::keyState('d', true) ){
             showClsn2 = !showClsn2;
         }
+	
+	if( mouse_b & 1 )moveImage = true;
+	else if( !(mouse_b & 1) )moveImage = false;
+	
         quit |= keyInputManager::keyState(keys::ESC, true );
 	
 	if( sprite!= 0 ){
 	    // Figure out the correct placement according to axis
+	    if( moveImage ){ xaxis=mouse_x; yaxis =mouse_y; }
 	    const int placex = (xaxis - sprite->x ) + it->second->getFrames()[currentFrame]->xoffset;
 	    const int placey = (yaxis - sprite->y ) + it->second->getFrames()[currentFrame]->yoffset;
 	    
@@ -234,6 +240,7 @@ int main( int argc, char ** argv ){
         allegro_init();
         install_timer();
 	install_keyboard();
+	install_mouse();
         set_color_depth(16);
         Bitmap::setGfxModeWindowed(640, 480);
 
