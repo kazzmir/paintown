@@ -69,6 +69,8 @@ void testPCX(){
 }
 
 void showCharacter(const string & ourFile){
+    set_color_depth(16);
+    Bitmap::setGfxModeWindowed(640, 480);
     Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
     MugenCharacter character( ourFile );
     character.load();
@@ -217,6 +219,8 @@ void showCharacter(const string & ourFile){
         Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
         Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
         Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
+	
+	show_mouse(work.getBitmap());
 
         work.BlitToScreen();
         Util::rest(1);
@@ -241,8 +245,6 @@ int main( int argc, char ** argv ){
         install_timer();
 	install_keyboard();
 	install_mouse();
-        set_color_depth(16);
-        Bitmap::setGfxModeWindowed(640, 480);
 
 	for ( int q = 1; q < argc; q++ ){
 		if ( isArg( argv[ q ], FILE_ARG ) ){
