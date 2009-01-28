@@ -26,10 +26,14 @@
 
 using namespace std;
 
-static void showCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int w, int h, int color ){
+static void showCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int color, int &start ){
+    int next = start;
     for( unsigned int i = 0; i < vec.size(); ++i ){
-	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, (x + w) + vec[i].x2, (y + h) + vec[i].y2, color );
+	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
+	Font::getDefaultFont().printf( 15, 310 + next, color, bmp, "CLSN: x1(%i),y1(%i),x2(%i),y2(%i)",0, vec[i].x1,vec[i].y1,vec[i].x2,vec[i].y2 );
+	next+=10;
     }
+    start = next;
 }
 
 static bool isArg( const char * s1, const char * s2 ){
@@ -107,6 +111,9 @@ void showCharacter(const string & ourFile){
     Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
 
     Bitmap work( 640, 480 );
+    
+    const int xaxis = 260;
+    const int yaxis = 230;
 
     while( !quit ){
         work.clear();
@@ -177,19 +184,27 @@ void showCharacter(const string & ourFile){
             showClsn2 = !showClsn2;
         }
         quit |= keyInputManager::keyState(keys::ESC, true );
-
-        if( it->second->getFrames()[currentFrame]->flipHorizontal && ! it->second->getFrames()[currentFrame]->flipVertical ){
-	    b.drawHFlip(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
+	
+	if( sprite!= 0 ){
+	    // Figure out the correct placement according to axis
+	    const int placex = (xaxis - sprite->x ) + it->second->getFrames()[currentFrame]->xoffset;
+	    const int placey = (yaxis - sprite->y ) + it->second->getFrames()[currentFrame]->yoffset;
+	    
+	    if( it->second->getFrames()[currentFrame]->flipHorizontal && ! it->second->getFrames()[currentFrame]->flipVertical ){
+		b.drawHFlip(placex, placey, work);
+	    }
+	    else if( it->second->getFrames()[currentFrame]->flipVertical && ! it->second->getFrames()[currentFrame]->flipHorizontal ){
+		b.drawVFlip(placex, placey, work);
+	    }
+	    else if( it->second->getFrames()[currentFrame]->flipVertical && it->second->getFrames()[currentFrame]->flipHorizontal ){
+		b.drawRotate(placex, placey, 180, work);
+	    }
+	    else b.draw(placex, placey, work);
+	    
+	    int start = 10;
+	     if( showClsn2 )showCollision( it->second->getFrames()[currentFrame]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ), start  );
+	     if( showClsn1 )showCollision( it->second->getFrames()[currentFrame]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ), start  );
 	}
-	else if( it->second->getFrames()[currentFrame]->flipVertical && ! it->second->getFrames()[currentFrame]->flipHorizontal ){
-	    b.drawVFlip(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
-	}
-	else if( it->second->getFrames()[currentFrame]->flipVertical && it->second->getFrames()[currentFrame]->flipHorizontal ){
-	    b.drawRotate(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, 180, work);
-	}
-	else b.draw(240 + it->second->getFrames()[currentFrame]->xoffset, 100 + it->second->getFrames()[currentFrame]->yoffset, work);
-        if( showClsn2 )showCollision( it->second->getFrames()[currentFrame]->defenseCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 0,255,0 )  );
-        if( showClsn1 )showCollision( it->second->getFrames()[currentFrame]->attackCollision, work, 240, 100, b.getWidth(), b.getHeight(), Bitmap::makeColor( 255,0,0 )  );
         Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s), Current Frame: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentFrame );
         if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x: %d | y: %d | Group: %d | Image: %d",0, sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
         Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, b.getWidth(), b.getHeight() );

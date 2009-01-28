@@ -15,16 +15,16 @@ y2(0){
 
 MugenArea::MugenArea( const MugenArea &copy ){
     this->x1 = copy.x1;
-    this->x1 = copy.y1;
-    this->x1 = copy.x2;
-    this->x1 = copy.y2;
+    this->y1 = copy.y1;
+    this->x2 = copy.x2;
+    this->y2 = copy.y2;
 }
 
 MugenArea & MugenArea::operator=( const MugenArea &copy ){
     this->x1 = copy.x1;
-    this->x1 = copy.y1;
-    this->x1 = copy.x2;
-    this->x1 = copy.y2;
+    this->y1 = copy.y1;
+    this->x2 = copy.x2;
+    this->y2 = copy.y2;
     
     return *this;
 }
