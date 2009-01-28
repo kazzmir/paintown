@@ -43,4 +43,8 @@ Future
 * make network mode use versions
 * allow level sets to only allow explicit players
 * make a console like in quake where debug output can go
-* more characters
+* mugen characters in paintown
+  - replace (attack (x y w h)) with (attack (box x y w h) (box x y w h)) to support
+  multiple attack boxes. clearing attack boxes will consist of (attack).
+  - create a new MugenCharacter (either extends Character or ObjectAttack) to deal
+  with mugen things like state.
