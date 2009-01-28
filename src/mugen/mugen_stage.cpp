@@ -415,8 +415,60 @@ void MugenStage::load() throw( MugenException ){
 	    }
 	    */
 	}
-	// Animation Info
+	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	else if( head.find("Begin Action") !=std::string::npos ){
+	    MugenAnimation *animation = new MugenAnimation();
+	    head.replace(0,13,"");
+	    bool setloop = false;
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		fixCase( itemhead );
+		Global::debug(1) << "Item Head: " << itemhead << endl;
+		if( itemhead.find("loopstart") != std::string::npos ){
+		    setloop = true;
+		}
+		// This is where we get our frame
+		else{
+		    // This is the new frame
+		    MugenFrame *frame = new MugenFrame();
+		    frame->loopstart = setloop;
+		    /* Get sprite details */
+		    int group, spriteNumber;
+		    // Need to get the parsed data and populate these above items
+		    *item >> group;
+		    *content->getNext() >> spriteNumber;
+		    *content->getNext() >> frame->xoffset;
+		    *content->getNext() >> frame->yoffset;
+		    *content->getNext() >> frame->time;
+		    Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
+		    // Check for flips
+		    if( content->hasItems() ){
+			std::string flip;
+			*content->getNext() >> flip;
+			fixCase( flip );
+			if( flip.find("h") != std::string::npos )frame->flipHorizontal = true;
+			if( flip.find("v") != std::string::npos )frame->flipVertical = true;
+		    }
+		    if( content->hasItems() )*content->getNext() >> frame->colorAdd;
+		    // Add sprite
+		    frame->sprite = sprites[(unsigned short)group][(unsigned short)spriteNumber];
+                    if (frame->sprite == 0){
+                        Global::debug(0) << "No sprite for group " << group << " number " << spriteNumber << endl;
+                    }
+		    // Add frame
+		    animation->addFrame(frame);
+		    
+		    if( setloop )setloop = false;
+		}
+	    }
+	    int h;
+	    MugenItem(head) >> h;
+	    animation->setType(MugenAnimationType(h));
+	    Global::debug(1) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(animation->getType()) << "'" << endl;
+	    animations[h] = animation;
+	    
 	}
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
 	
@@ -424,10 +476,5 @@ void MugenStage::load() throw( MugenException ){
 }
 	
 
-/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults 
-This will be called when Begin Action is found in the file */
-void bundleAnimation( const MugenItemContent *content ) throw( MugenException){
-    
-}
 
 	
