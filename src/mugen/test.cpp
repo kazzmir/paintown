@@ -45,7 +45,7 @@ static void showOptions(){
     Global::debug(0) << "M.U.G.E.N. Config Reader:" << endl;
     Global::debug(0) << "-f <file>: Load a M.U.G.E.N. config file and output to screen." << endl;
     Global::debug(0) << "-c <name>: Load a M.U.G.E.N. character and output some data about it.\n         ie: 'data/mugen/chars/name' only pass name." << endl;
-    Global::debug(0) << "-s <name>: Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name' only pass name." << endl;
+    Global::debug(0) << "-s <name>: Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name.def' only pass name.def." << endl;
     Global::debug(0) << "-d <level>: Set debug level." << endl;
     Global::debug(0) << endl;
 }
