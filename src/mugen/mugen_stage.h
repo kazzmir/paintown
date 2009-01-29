@@ -15,14 +15,11 @@ class MugenBackground;
 
 class MugenStage{
 public:
-	// Location at dataPath() + "mugen/chars/"
+	// Location at dataPath() + "mugen/stages/"
 	MugenStage( const string & s );
 	MugenStage( const char * location );
 
 	~MugenStage();
-	
-	// Convert to paintown character or whatever
-	// Do code
 	
 	void load() throw( MugenException );
 	
@@ -33,6 +30,8 @@ public:
         inline const std::map<int, MugenAnimation*> & getAnimations() const {
             return animations;
         }
+	
+	int getTicks();
 /*	
 	inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
             return sounds;

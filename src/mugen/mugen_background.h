@@ -75,6 +75,8 @@ public:
     
     void render( int xaxis, int yaxis, Bitmap *bmp );
     
+    std::string name;
+    
     BackgroundType type;
     // If -1 then use the animation
     int groupNumber;
@@ -88,6 +90,8 @@ public:
     double deltax;
     double deltay;
     std::string trans;
+    int alphalow;
+    int alphahigh;
     bool mask;
     int tilex;
     int tiley;

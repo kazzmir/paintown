@@ -45,6 +45,8 @@ starty(0),
 deltax(0),
 deltay(0),
 trans(""),
+alphalow(0),
+alphahigh(0),
 mask(true),
 tilex(0),
 tiley(0),
@@ -71,6 +73,8 @@ MugenBackground::MugenBackground( const MugenBackground &copy ){
 MugenBackground::~MugenBackground(){
 }
 MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
+    
+    return *this;
 }
     
 void MugenBackground::logic(){

@@ -16,6 +16,7 @@
 #include "mugen_character.h"
 #include "mugen_animation.h"
 #include "mugen_sprite.h"
+#include "mugen_stage.h"
 
 #include "util/bitmap.h"
 #include "util/funcs.h"
@@ -44,6 +45,8 @@ static void showOptions(){
     Global::debug(0) << "M.U.G.E.N. Config Reader:" << endl;
     Global::debug(0) << "-f <file>: Load a M.U.G.E.N. config file and output to screen." << endl;
     Global::debug(0) << "-c <name>: Load a M.U.G.E.N. character and output some data about it.\n         ie: 'data/mugen/chars/name' only pass name." << endl;
+    Global::debug(0) << "-s <name>: Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name' only pass name." << endl;
+    Global::debug(0) << "-d <level>: Set debug level." << endl;
     Global::debug(0) << endl;
 }
 
@@ -228,6 +231,82 @@ void showCharacter(const string & ourFile){
 
 }
 
+void showStage(const string & ourFile){
+    set_color_depth(16);
+    Bitmap::setGfxModeWindowed(640, 480);
+    Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
+    MugenStage stage( ourFile );
+    stage.load();
+    Global::debug(0) << "Loaded stage: \"" << stage.getName() << "\" successfully." << endl;
+    bool quit = false;
+    /*
+    map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin();
+    unsigned int currentAnim = 0;
+    unsigned int lastAnim = character.getAnimations().size() -1;
+    unsigned int currentFrame = 0;
+    unsigned int lastFrame = it->second->getFrames().size() -1;
+
+    if (it->second->getFrames().size() == 0){
+        Global::debug(0) << "No frames!" << endl;
+        exit(0);
+    }
+
+    MugenSprite * sprite = it->second->getFrames()[currentFrame]->sprite;
+
+    Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+    
+    int xaxis = 260;
+    int yaxis = 230;
+*/
+    int ticks=0;
+    Bitmap work( 2000, 480 );
+    while( !quit ){
+        work.clear();
+        keyInputManager::update();
+        ++ticks;
+        // Since -1 is to stop the animation completely, we'll give it a pause of 150 ticks, because we want to see the loop
+        /*const int time = it->second->getFrames()[currentFrame]->time == -1 ? 150 : it->second->getFrames()[currentFrame]->time;
+        if(animate && ticks >= 15 + time){
+            ticks = 0;
+            if( it->second->getFrames()[currentFrame]->loopstart ) loop = currentFrame;
+            if( currentFrame < lastFrame )currentFrame++;
+            else currentFrame = loop;
+            sprite = it->second->getFrames()[currentFrame]->sprite;
+            if (sprite != 0){
+                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+            }
+        }*/
+
+        if( keyInputManager::keyState(keys::UP, true) ){
+           
+        }
+        else if( keyInputManager::keyState(keys::DOWN, true) ){
+           
+        }
+        else if( keyInputManager::keyState(keys::LEFT, true)){
+           
+        }
+        else if( keyInputManager::keyState(keys::RIGHT, true)){
+           
+        }
+	
+        quit |= keyInputManager::keyState(keys::ESC, true );
+	
+	/*Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s), Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
+        if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
+        Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, b.getWidth(), b.getHeight() );
+        Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
+        Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
+        Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );*/
+	
+	show_mouse(work.getBitmap());
+
+        work.BlitToScreen();
+        Util::rest(1);
+    }
+
+}
+
 int main( int argc, char ** argv ){
 	
 	if(argc <= 1){
@@ -236,10 +315,11 @@ int main( int argc, char ** argv ){
 	}
 
 	const char * FILE_ARG = "-f";
-	const char * LOC_ARG = "-c";
+	const char * CHAR_ARG = "-c";
         const char * DEBUG_ARG = "-l";
+	const char * STAGE_ARG = "-s";
 	std::string ourFile;
-	bool configLoaded = false;
+	int configLoaded = -1;
 
         allegro_init();
         install_timer();
@@ -251,17 +331,29 @@ int main( int argc, char ** argv ){
 			q += 1;
 			if ( q < argc ){
 				ourFile = std::string( argv[ q ] );
-				configLoaded = !configLoaded;
+				configLoaded = 0;
 			}
 			else{
                             Global::debug(0) << "Error no file given!" << endl;
 			  showOptions();
 			  return 0;
 			}
-		} else if ( isArg( argv[ q ], LOC_ARG ) ){
+		} else if ( isArg( argv[ q ], CHAR_ARG ) ){
 			q += 1;
 			if ( q < argc ){
 				ourFile = std::string( argv[ q ] );
+				configLoaded = 1;
+			}
+			else{
+                            Global::debug(0) << "Error no file given!" << endl;
+			  showOptions();
+			  return 0;
+			}
+		} else if ( isArg( argv[ q ], STAGE_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				ourFile = std::string( argv[ q ] );
+				configLoaded = 2;
 			}
 			else{
                             Global::debug(0) << "Error no file given!" << endl;
@@ -285,7 +377,7 @@ int main( int argc, char ** argv ){
 		}
 	}
 	
-	if( configLoaded ){
+	if( configLoaded == 0 ){
 	    MugenReader reader( ourFile );
 	    
 	    std::vector< MugenSection * > collection;
@@ -313,7 +405,7 @@ int main( int argc, char ** argv ){
 		return 1;
 	    }
 	}
-	else{
+	else if (configLoaded == 1){
 	    try{
                 showCharacter(ourFile);
             } catch( MugenException &ex){
@@ -324,6 +416,18 @@ int main( int argc, char ** argv ){
 		return 1;
 	    }
 	}
+	else if ( configLoaded == 2 ){
+	    try{
+                showStage(ourFile);
+            } catch( MugenException &ex){
+                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+		return 1;
+	    } catch(...){
+		Global::debug(0) << "Unknown problem loading file" << endl;
+		return 1;
+	    }
+	}
+	else showOptions();
 	
 	return 0;
 }

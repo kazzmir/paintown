@@ -135,9 +135,9 @@ MugenStage::~MugenStage(){
 	
 void MugenStage::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
-    baseDir = Util::getDataPath() + "mugen/stages/" + location + "/";
+    baseDir = Util::getDataPath() + "mugen/stages/";
     Global::debug(1) << baseDir << endl;
-    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location + ".def") );
+    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location) );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
      
@@ -171,6 +171,10 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> startx;
 		} else if ( itemhead.find("starty")!=std::string::npos ){
 		    *content->getNext() >> starty;
+		} else if ( itemhead.find("boundleft")!=std::string::npos ){
+		    *content->getNext() >> boundleft;
+		} else if ( itemhead.find("boundright")!=std::string::npos ){
+		    *content->getNext() >> boundright;
 		} else if ( itemhead.find("boundhigh")!=std::string::npos ){
 		    *content->getNext() >> boundhigh;
 		} else if ( itemhead.find("boundlow")!=std::string::npos ){
@@ -257,7 +261,7 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> zoffset;
 		} else if ( itemhead.find("autoturn")!=std::string::npos ){
 		    *content->getNext() >> autoturn;
-		} else if ( itemhead.find("resetBG")!=std::string::npos ){
+		} else if ( itemhead.find("resetbg")!=std::string::npos ){
 		    *content->getNext() >> resetBG;
 		} else throw MugenException( "Unhandled option in StageInfo Section: " + itemhead );
 	    }
@@ -313,22 +317,86 @@ void MugenStage::load() throw( MugenException ){
 	else if( head == "music" ){ /* Ignore for now */ }
 	// This our background data definitions
 	else if( head.find("bg") !=std::string::npos ){
-	    /*
+	    MugenBackground *temp = new MugenBackground();
+	    head.replace(0,3,"");
+	    temp->name = head;
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
-		if ( itemhead.find("spr")!=std::string::npos ){
-		    *content->getNext() >> sffFile;
-		} else if ( itemhead.find("debugbg")!=std::string::npos ){
-		    *content->getNext() >> debugbg;
-		} else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
+		if ( itemhead.find("type")!=std::string::npos ){
+		    std::string type;
+		    *content->getNext() >> type;
+		    MugenUtil::removeSpaces( type );
+		    if( type == "normal" )temp->type = Normal;
+		    else if( type == "anim" )temp->type = Anim;
+		    else if( type == "parallax" )temp->type = Parallax;
+		    else if( type == "dummy" )temp->type = Dummy;
+		} else if ( itemhead.find("spriteno")!=std::string::npos ){
+		    *content->getNext() >> temp->groupNumber;
+		    *content->getNext() >> temp->imageNumber;
+		} else if ( itemhead.find("actionno")!=std::string::npos ){
+		    *content->getNext() >> temp->actionno;
+		} else if ( itemhead.find("id")!=std::string::npos ){
+		    *content->getNext() >> temp->id;
+		} else if ( itemhead.find("layerno")!=std::string::npos ){
+		    *content->getNext() >> temp->layerno;
+		} else if ( itemhead.find("start")!=std::string::npos ){
+		    *content->getNext() >> temp->startx;
+		    *content->getNext() >> temp->starty;
+		} else if ( itemhead.find("delta")!=std::string::npos ){
+		    *content->getNext() >> temp->deltax;
+		    *content->getNext() >> temp->deltay;
+		} else if ( itemhead.find("trans")!=std::string::npos ){
+		    *content->getNext() >> temp->trans;
+		} else if ( itemhead.find("alpha")!=std::string::npos ){
+		    *content->getNext() >> temp->alphalow;
+		    *content->getNext() >> temp->alphahigh;
+		} else if ( itemhead.find("mask")!=std::string::npos ){
+		    *content->getNext() >> temp->mask;
+		} else if ( itemhead.find("tile")!=std::string::npos ){
+		    *content->getNext() >> temp->tilex;
+		    *content->getNext() >> temp->tiley;
+		} else if ( itemhead.find("tilespacing")!=std::string::npos ){
+		    *content->getNext() >> temp->tilespacingx;
+		    *content->getNext() >> temp->tilespacingy;
+		} else if ( itemhead.find("window")!=std::string::npos ){
+		    MugenArea area;
+		    *content->getNext() >> area.x1;
+		    *content->getNext() >> area.y1;
+		    *content->getNext() >> area.x2;
+		    *content->getNext() >> area.y2;
+		    temp->window = area;
+		} else if ( itemhead.find("windowdelta")!=std::string::npos ){
+		    *content->getNext() >> temp->windowdeltax;
+		    *content->getNext() >> temp->windowdeltay;
+		} else if ( itemhead.find("xscale")!=std::string::npos ){
+		    *content->getNext() >> temp->xscaletop;
+		    *content->getNext() >> temp->xscalebot;
+		} else if ( itemhead.find("yscalestart")!=std::string::npos ){
+		    *content->getNext() >> temp->yscalestart;
+		} else if ( itemhead.find("yscaledelta")!=std::string::npos ){
+		    *content->getNext() >> temp->yscaledelta;
+		} else if ( itemhead.find("positionlink")!=std::string::npos ){
+		    *content->getNext() >> temp->positionlink;
+		} else if ( itemhead.find("velocity")!=std::string::npos ){
+		    *content->getNext() >> temp->velocityx;
+		    *content->getNext() >> temp->velocityy;
+		} else if ( itemhead.find("sin.x")!=std::string::npos ){
+		    *content->getNext() >> temp->sinx_amp;
+		    *content->getNext() >> temp->sinx_period;
+		    *content->getNext() >> temp->sinx_offset;
+		} else if ( itemhead.find("sin.y")!=std::string::npos ){
+		    *content->getNext() >> temp->siny_amp;
+		    *content->getNext() >> temp->siny_period;
+		    *content->getNext() >> temp->siny_offset;
+		} else throw MugenException( "Unhandled option in BG " + head + " Section: " + itemhead );
 	    }
-	    */
+	    
 	}
 	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
-	else if( head.find("Begin Action") !=std::string::npos ){
+	else if( head.find("begin action") !=std::string::npos ){
 	    MugenAnimation *animation = new MugenAnimation();
 	    head.replace(0,13,"");
 	    bool setloop = false;
@@ -381,6 +449,8 @@ void MugenStage::load() throw( MugenException ){
 	    animations[h] = animation;
 	    
 	}
+	else if( head.find("BGCtrlDef") != std::string::npos ){ /* Ignore for now */ }
+	else if( head.find("BGCtrl") != std::string::npos ){ /* Ignore for now */ }
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
 	
     }
