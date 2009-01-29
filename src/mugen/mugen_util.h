@@ -2,6 +2,8 @@
 #define mugen_util_h
 
 #include <string>
+#include <map>
+#include <vector>
 #include "mugen_exception.h"
 
 class MugenSprite;

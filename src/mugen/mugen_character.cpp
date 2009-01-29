@@ -109,7 +109,6 @@ void MugenCharacter::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces( itemhead);
-		MugenUtil::fixCase( itemhead );
 		if( itemhead.find("cmd")!=std::string::npos ){
 		    *content->getNext() >> cmdFile;
 		}
@@ -167,7 +166,6 @@ void MugenCharacter::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces( itemhead);
-		MugenUtil::fixCase( itemhead );
 		if( itemhead.find("intro.storyboard") != std::string::npos ){
 		    *content->getNext() >> introFile;
 		}
@@ -211,7 +209,6 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 		MugenItemContent *content = collection[i]->getNext();
 		MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::fixCase( itemhead );
 		Global::debug(1) << "Item Head: " << itemhead << endl;
 		// Attack boxes
 		if( itemhead.find("clsn1default") != std::string::npos ){

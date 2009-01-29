@@ -2,9 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cctype>
-#include <string>
 #include <cstring>
-#include <vector>
 #include <ostream>
 #include <sstream>
 #include <iostream>

@@ -1,6 +1,8 @@
 #include "mugen_item_content.h"
 #include "mugen_item.h"
 
+#include "mugen_util.h"
+
 MugenItem MugenItemContent::empty("empty");
 
 MugenItemContent::MugenItemContent( const MugenItemContent & copy ) : 
@@ -54,7 +56,13 @@ MugenItemContent & MugenItemContent::operator=( const MugenItemContent & i){
 }
 
 MugenItemContent & MugenItemContent::operator<<( const std::string & item ){
-  this->items.push_back( new MugenItem( item ) );
+    // Lets be consistent, make all headers lowercase
+    if( items.empty() ){
+	std::string temp = item;
+	MugenUtil::fixCase( temp );
+	this->items.push_back( new MugenItem( temp ) );
+    }
+    else this->items.push_back( new MugenItem( item ) );
   return *this;
 }
 
