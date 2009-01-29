@@ -15,6 +15,7 @@
 #include "util/bitmap.h"
 
 #include "mugen_animation.h"
+#include "mugen_background.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
@@ -198,6 +199,11 @@ MugenStage::~MugenStage(){
     
     // Get rid of animation lists;
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+	if( i->second )delete i->second;
+    }
+    
+    // Get rid of background lists;
+    for( std::map< int, MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
 	if( i->second )delete i->second;
     }
     

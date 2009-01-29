@@ -11,6 +11,7 @@ class MugenItemContent;
 class MugenSprite;
 class MugenSound;
 class MugenAnimation;
+class MugenBackground;
 
 class MugenStage{
 public:
@@ -217,14 +218,16 @@ protected:
 	/* Animation Lists stored by action number, ie [Begin Action 500] */
 	std::map< int, MugenAnimation * > animations;
 	
+	/* Backgrounds */
+	std::map< int, MugenBackground * > backgrounds;
+	
 	/* Sounds */
 	//std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
 	
     protected:
-	/* This creates the animations no need for a new class to handle this */
-	void bundleAnimation( const MugenItemContent *content ) throw( MugenException);
+	
 };
 
 #endif

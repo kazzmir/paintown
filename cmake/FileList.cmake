@@ -152,6 +152,7 @@ src/gui/widget.cpp
 
 set(MUGEN_SRC
 src/mugen/mugen_animation.cpp
+src/mugen/mugen_background.cpp
 src/mugen/mugen_character.cpp
 src/mugen/mugen_command.cpp
 src/mugen/mugen_exception.cpp
