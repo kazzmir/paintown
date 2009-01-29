@@ -13,93 +13,17 @@
 
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "globals.h"
 
 #include "mugen_animation.h"
 #include "mugen_background.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
-#include "mugen_character.h"
 #include "mugen_sound.h"
 #include "mugen_reader.h"
 #include "mugen_sprite.h"
-#include "globals.h"
-
-
-static int lowerCase( int c ){ return tolower( c );}
-
-static void fixCase( std::string &str ){
-    transform( str.begin(), str.end(), str.begin(), lowerCase );
-}
-
-static void removeSpaces( std::string &str ){
-    if( str.find(' ') != std::string::npos ){
-	Global::debug(1) << "Removing spaces from: " << str << endl;
-	for( int i = str.size()-1; i>-1; --i){
-	    if( str[i] == ' ' )str.erase( str.begin()+i );
-	    else if( str[i] == '\t' )str.erase( str.begin()+i );
-	}
-    }
-}
-
-static void invertSlashes( std::string &str ){
-    if( str.find('\\') != std::string::npos ){
-	for( int i = str.size()-1; i>-1; --i){
-	    if( str[i] == '\\' )str[i] = '/';
-	}
-    }
-}
-
-static std::string fixFileName( const std::string &dir, std::string str ){
-    Global::debug(1) << "Current File: " << str << endl;
-    // Temp fix until the lexer fixes this crap
-    removeSpaces( str );
-    // Fixes stupid windows users shit
-    invertSlashes( str );
-    // Lets check if we need to fix anything first
-    if( Util::exists( dir + str ) == false ){
-	Global::debug(1) << "Couldn't find file: " << str << endl;
-	std::string returnString = "";
-	std::vector< string > files = Util::getFiles( dir, "*" );
-	Global::debug(1) << "Correcting file: " << str << ", in directory: "<< dir <<".\nGot " << files.size() << " files." << endl;
-	for( unsigned int i = 0; i < files.size(); ++i ){
-	    std::string temp = files[i].c_str();
-	    fixCase( temp );
-	    if( std::string( dir + str ) == temp ){
-		// We got number one chinese retaurant
-		returnString = files[i];
-		break;
-	    }
-	}
-	Global::debug(1) << "Corrected file: " << returnString << endl;
-	return returnString;
-    }
-    return std::string(dir + str);
-}
-
-// If you use this, please delete the item after you use it, this isn't java ok
-static MugenItemContent *parseOpt( const std::string &opt ){
-    std::string contentHolder = "";
-    MugenItemContent *temp = new MugenItemContent();
-    const char * ignored = "\r\n";
-    Global::debug(1) << "Parsing string to ItemContent: " << opt << endl;
-    for( unsigned int i = 0; i < opt.size(); ++i ){
-	if( opt[i] == ' ' ){
-	    continue;
-	}
-	// We got one push back the other and reset the holder to get the next
-	else if( opt[i] == ',' ){
-	    if( !contentHolder.empty() ) *temp << contentHolder;
-	    Global::debug(1) << "Got content: " << contentHolder << endl;
-	    contentHolder = "";
-	}
-	//Start grabbing our item
-	else if (! strchr(ignored, opt[i])){
-		contentHolder += opt[i];
-	}
-    }
-    return temp;
-}
+#include "mugen_util.h"
 
 MugenStage::MugenStage( const string & s ):
 location( s ),
@@ -213,7 +137,7 @@ void MugenStage::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
     baseDir = Util::getDataPath() + "mugen/stages/" + location + "/";
     Global::debug(1) << baseDir << endl;
-    const std::string ourDefFile = fixFileName( baseDir, std::string(location + ".def") );
+    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location + ".def") );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
      
@@ -224,15 +148,15 @@ void MugenStage::load() throw( MugenException ){
     /* Extract info for our first section of our character */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
-	fixCase(head);
+	MugenUtil::fixCase(head);
 	if( head == "info" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("name")!=std::string::npos ){
 		    *content->getNext() >> name;
                     Global::debug(1) << "Read name '" << name << "'" << endl;
@@ -244,9 +168,9 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("startx")!=std::string::npos ){
 		    *content->getNext() >> startx;
 		} else if ( itemhead.find("starty")!=std::string::npos ){
@@ -269,9 +193,9 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("p1startx")!=std::string::npos ){
 		    *content->getNext() >> p1startx;
 		} else if ( itemhead.find("p1starty")!=std::string::npos ){
@@ -304,9 +228,9 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("topz")!=std::string::npos ){
 		    *content->getNext() >> topz;
 		} else if ( itemhead.find("botz")!=std::string::npos ){
@@ -323,9 +247,9 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("screenleft")!=std::string::npos ){
 		    *content->getNext() >> screenleft;
 		} else if ( itemhead.find("screenright")!=std::string::npos ){
@@ -338,9 +262,9 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("zoffset")!=std::string::npos ){
 		    *content->getNext() >> zoffset;
 		} else if ( itemhead.find("autoturn")!=std::string::npos ){
@@ -355,9 +279,9 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> shadowIntensity;
 		} else if ( itemhead.find("color")!=std::string::npos ){
@@ -379,9 +303,9 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> reflectionIntensity;
 		} else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
@@ -392,11 +316,13 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("spr")!=std::string::npos ){
 		    *content->getNext() >> sffFile;
+		    Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
+		    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir, sffFile), "", sprites );
 		} else if ( itemhead.find("debugbg")!=std::string::npos ){
 		    *content->getNext() >> debugbg;
 		} else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
@@ -410,9 +336,9 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		removeSpaces(itemhead);
+		MugenUtil::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		if ( itemhead.find("spr")!=std::string::npos ){
 		    *content->getNext() >> sffFile;
 		} else if ( itemhead.find("debugbg")!=std::string::npos ){
@@ -430,7 +356,7 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		fixCase( itemhead );
+		MugenUtil::fixCase( itemhead );
 		Global::debug(1) << "Item Head: " << itemhead << endl;
 		if( itemhead.find("loopstart") != std::string::npos ){
 		    setloop = true;
@@ -453,7 +379,7 @@ void MugenStage::load() throw( MugenException ){
 		    if( content->hasItems() ){
 			std::string flip;
 			*content->getNext() >> flip;
-			fixCase( flip );
+			MugenUtil::fixCase( flip );
 			if( flip.find("h") != std::string::npos )frame->flipHorizontal = true;
 			if( flip.find("v") != std::string::npos )frame->flipVertical = true;
 		    }

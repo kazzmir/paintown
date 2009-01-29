@@ -163,4 +163,5 @@ src/mugen/mugen_section.cpp
 src/mugen/mugen_sound.cpp
 src/mugen/mugen_sprite.cpp
 src/mugen/mugen_stage.cpp
+src/mugen/mugen_util.cpp
 )
