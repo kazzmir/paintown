@@ -48,7 +48,7 @@ p2startz(0),
 p2facing(-1),
 leftbound(-1000),
 rightbound(1000),
-topbound(0),
+topbound(-25),
 botbound(0),
 topz(0),
 botz(50),
@@ -66,7 +66,8 @@ fadeRangeHigh(0),
 fadeRangeMid(0),
 reflectionIntensity(0),
 sffFile(""),
-debugbg(0){
+debugbg(0),
+board(0){
 }
 
 MugenStage::MugenStage( const char * location ):
@@ -92,7 +93,7 @@ p2startz(0),
 p2facing(-1),
 leftbound(-1000),
 rightbound(1000),
-topbound(0),
+topbound(-25),
 botbound(0),
 topz(0),
 botz(50),
@@ -110,7 +111,8 @@ fadeRangeHigh(0),
 fadeRangeMid(0),
 reflectionIntensity(0),
 sffFile(""),
-debugbg(0){
+debugbg(0),
+board(0){
 }
 
 MugenStage::~MugenStage(){
@@ -127,7 +129,12 @@ MugenStage::~MugenStage(){
     }
     
     // Get rid of background lists;
-    for( std::map< int, MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
+    for( std::map< std::string, MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
+	if( i->second )delete i->second;
+    }
+    
+    // Get rid of foreground lists;
+    for( std::map< std::string, MugenBackground * >::iterator i = foregrounds.begin() ; i != foregrounds.end() ; ++i ){
 	if( i->second )delete i->second;
     }
     
@@ -320,11 +327,13 @@ void MugenStage::load() throw( MugenException ){
 	    MugenBackground *temp = new MugenBackground();
 	    head.replace(0,3,"");
 	    temp->name = head;
+	    Global::debug(1) << "Found background: " << temp->name << endl;
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		Global::debug(1) << "Getting next item: " << itemhead << endl;
 		if ( itemhead.find("type")!=std::string::npos ){
 		    std::string type;
 		    *content->getNext() >> type;
@@ -393,7 +402,9 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> temp->siny_offset;
 		} else throw MugenException( "Unhandled option in BG " + head + " Section: " + itemhead );
 	    }
-	    
+	    // lets see where we lay
+	    if( temp->layerno == 0 )backgrounds[temp->name] = temp;
+	    else if( temp->layerno == 1 )foregrounds[temp->name] = temp;
 	}
 	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	else if( head.find("begin action") !=std::string::npos ){
@@ -454,8 +465,47 @@ void MugenStage::load() throw( MugenException ){
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
 	
     }
+    Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
+    // Setup board our worksurface to the proper size of the entire stage
+    Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
+    board = new Bitmap( abs(boundleft) + boundright, abs(boundhigh) + boundlow );
+    
+}
+
+void MugenStage::logic( int &x, int &y ){
+    
+    if( x < boundleft ) x = boundleft;
+    else if( x > boundright )x = boundright;
+    if( y < boundhigh ) y = boundhigh;
+    else if( y > boundlow )y = boundlow;
+    
+    startx = x;
+    starty = y;
+    
+    for( map< std::string, MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	i->second->logic();
+    }
+    for( map< std::string, MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	i->second->logic();
+    }
+    
 }
 	
-
+void MugenStage::render( Bitmap *work ){
+    const int axisx = ( abs(boundleft) + boundright ) / 2;
+    const int axisy = boundhigh;
+    
+    for( map< std::string, MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	i->second->render( axisx, axisy, sprites, board );
+    }
+    
+    // Players go in here
+    
+    for( map< std::string, MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	i->second->render( axisx, axisy, sprites, board );
+    }
+    
+    board->Blit( startx, starty, 320, 240, 0, 0, *work );
+}
 
 	

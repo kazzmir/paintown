@@ -259,11 +259,14 @@ void showStage(const string & ourFile){
     int yaxis = 230;
 */
     int ticks=0;
-    Bitmap work( 2000, 480 );
+    Bitmap work( 320, 240 );
+    Bitmap back( 640, 480 );
+    int viewx = 0, viewy = 0;
     while( !quit ){
         work.clear();
         keyInputManager::update();
         ++ticks;
+	stage.logic(viewx,viewy);
         // Since -1 is to stop the animation completely, we'll give it a pause of 150 ticks, because we want to see the loop
         /*const int time = it->second->getFrames()[currentFrame]->time == -1 ? 150 : it->second->getFrames()[currentFrame]->time;
         if(animate && ticks >= 15 + time){
@@ -277,17 +280,17 @@ void showStage(const string & ourFile){
             }
         }*/
 
-        if( keyInputManager::keyState(keys::UP, true) ){
-           
+        if( keyInputManager::keyState(keys::UP, false) ){
+           viewy--;
         }
-        else if( keyInputManager::keyState(keys::DOWN, true) ){
-           
+        if( keyInputManager::keyState(keys::DOWN, false) ){
+           viewy++;
         }
-        else if( keyInputManager::keyState(keys::LEFT, true)){
-           
+        if( keyInputManager::keyState(keys::LEFT, false)){
+           viewx--;
         }
-        else if( keyInputManager::keyState(keys::RIGHT, true)){
-           
+        if( keyInputManager::keyState(keys::RIGHT, false)){
+           viewx++;
         }
 	
         quit |= keyInputManager::keyState(keys::ESC, true );
@@ -296,12 +299,12 @@ void showStage(const string & ourFile){
         if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
         Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, b.getWidth(), b.getHeight() );
         Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
-        Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
-        Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );*/
-	
+        Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );*/
+        Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), work, "viewport x: %i  |  viewport y: %i",0, viewx, viewy );
+	stage.render(&work);
 	show_mouse(work.getBitmap());
-
-        work.BlitToScreen();
+	work.Stretch(back);
+        back.BlitToScreen();
         Util::rest(1);
     }
 

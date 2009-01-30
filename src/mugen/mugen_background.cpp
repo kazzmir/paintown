@@ -1,7 +1,13 @@
 #include "mugen_background.h"
 
+#include <ostream>
+#include <cstring>
+#include <string>
+#include "globals.h"
 #include "mugen_sprite.h"
 #include "util/bitmap.h"
+
+using namespace std;
 
 static int idCounter = -9999999;
 
@@ -34,8 +40,8 @@ void MugenBgController::act( std::map<int, MugenBackground *> &bgs ){
 // mugen background
 MugenBackground::MugenBackground():
 type(Normal),
-groupNumber(0),
-imageNumber(0),
+groupNumber(-1),
+imageNumber(-1),
 actionno(0),
 action(0),
 id(++idCounter),
@@ -80,7 +86,20 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
 void MugenBackground::logic(){
 }
     
-void MugenBackground::render( int xaxis, int yaxis, Bitmap *bmp ){
+void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites, Bitmap *work ){
+    // We have a sprite
+    if( imageNumber != -1 && groupNumber != -1 ){
+	MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
+	if (sprite != 0){
+	    const int x = (xaxis - startx ) - sprite->x;
+	    const int y = (yaxis - starty ) - sprite->y;
+	    
+	    Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength).draw( x,y, *work );
+	}
+    }
+    // Else we should have an animation
+    else{
+    }
 }
     
   

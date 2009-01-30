@@ -7,6 +7,7 @@
 #include <map>
 #include "mugen_exception.h"
 
+class Bitmap;
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
@@ -31,7 +32,17 @@ public:
             return animations;
         }
 	
+	inline const int getCameraX() { return startx; }
+	inline const int getCameraY() { return starty; }
+	
 	int getTicks();
+	
+	// This will update ticks and controllers. When ready pass the player objects to properly allow camera to follow
+	// For now use view port, x and y screen size will be used to determine width/height
+	void logic( int &x, int &y );
+	
+	// Render the backgrounds appropriately
+	void render( Bitmap *work );
 /*	
 	inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
             return sounds;
@@ -218,14 +229,17 @@ protected:
 	std::map< int, MugenAnimation * > animations;
 	
 	/* Backgrounds */
-	std::map< int, MugenBackground * > backgrounds;
+	std::map< std::string, MugenBackground * > backgrounds;
+	
+	/* Foregrounds */
+	std::map< std::string, MugenBackground * > foregrounds;
 	
 	/* Sounds */
 	//std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
 	
-    protected:
+	Bitmap *board;
 	
 };
 

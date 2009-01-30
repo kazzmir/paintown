@@ -73,7 +73,7 @@ public:
     
     void logic();
     
-    void render( int xaxis, int yaxis, Bitmap *bmp );
+    void render( int xaxis, int yaxis, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites, Bitmap *work );
     
     std::string name;
     
