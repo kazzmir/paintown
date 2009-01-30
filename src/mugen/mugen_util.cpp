@@ -50,6 +50,10 @@ void MugenUtil::invertSlashes( std::string &str ){
 	}
     }
 }
+/*
+std:string MugenUtil::getHeadDir( const std::string & dir ){
+    return dir.substr( ( dir.find_lastof( '/' ) != std::string::npos ? dir.find_lastof( '/' ) : 0 ), lastslash,dir.size() );
+}*/
 
 std::string MugenUtil::fixFileName( const std::string &dir, std::string str ){
     Global::debug(1) << "Current File: " << str << endl;
