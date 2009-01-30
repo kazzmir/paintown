@@ -87,37 +87,58 @@ void MugenBackground::logic(){
 }
     
 void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites, Bitmap *work ){
-    // We have a sprite
-    if( imageNumber != -1 && groupNumber != -1 ){
-	MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
-	if (sprite != 0){
-	    const int x = (xaxis - startx ) - sprite->x;
-	    const int y = (yaxis - starty ) - sprite->y;
-	    
-	    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-	    // see if we need to tile this beyatch
-	    int tilexloc = x;
-	    const int width = bmp.getWidth();
-	    const int height = bmp.getHeight();
-	    // Figure out total we need to tile
-	    int repeatv = ( tilex > 0 ? (tilex > 1 ? tilex : ( work->getWidth() / width ) ) : 1 );
-	    int repeath = ( tiley > 0 ? (tiley > 1 ? tiley : ( work->getHeight() / height ) ) : 1 );
-	    // We need to repeat and wrap
-	    for( int v = 0; v <= repeatv; v++ ){
-		int tileyloc = y;
-		for( int h = 0; h <= repeath; h++ ){
-		    if( mask )bmp.draw( tilexloc,tileyloc, *work );
-		    else bmp.Blit( tilexloc, tileyloc, *work );
-		    tileyloc += height + tilespacingy;
-		    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
+    
+    switch( type ){
+	case Normal:{
+	    // We have a sprite
+	    if( imageNumber != -1 && groupNumber != -1 ){
+		MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
+		const int x = (xaxis - startx ) - sprite->x;
+		const int y = (yaxis - starty ) - sprite->y;
+		if (sprite != 0){
+		    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+		    // see if we need to tile this beyatch
+		    int tilexloc = x;
+		    const int width = bmp.getWidth();
+		    const int height = bmp.getHeight();
+		    // Figure out total we need to tile
+		    int repeatv = ( tilex > 0 ? (tilex > 1 ? tilex : ( work->getWidth() / width ) ) : 1 );
+		    int repeath = ( tiley > 0 ? (tiley > 1 ? tiley : ( work->getHeight() / height ) ) : 1 );
+		    // We need to repeat and wrap
+		    for( int v = 0; v <= repeatv; v++ ){
+			int tileyloc = y;
+			for( int h = 0; h <= repeath; h++ ){
+			    if( mask )bmp.draw( tilexloc,tileyloc, *work );
+			    else bmp.Blit( tilexloc, tileyloc, *work );
+			    tileyloc += height + tilespacingy;
+			    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
+			}
+			tilexloc += width + tilespacingx;
+			if( tilexloc >= work->getWidth() )tilexloc = work->getWidth() - tilexloc;
+		    }
 		}
-		tilexloc += width + tilespacingx;
-		if( tilexloc >= work->getWidth() )tilexloc = work->getWidth() - tilexloc;
 	    }
+	    break;
 	}
-	else Global::debug(1) << "WTF!" << endl; 
+	case Parallax:{
+	    // We have a sprite
+	    if( imageNumber != -1 && groupNumber != -1 ){
+		MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
+		const int x = (xaxis - startx ) - sprite->x;
+		const int y = (yaxis - starty ) - sprite->y;
+		if (sprite != 0){
+		    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+		    bmp.Blit( x, y, *work );
+		}
+	    }
+	    break;
+	}
+	case Anim:{
+	    break;
+	}
+	case Dummy:
+	default:
+	    break;
     }
-    // Else we should have an animation
-    else{
-    }
+    
 }
