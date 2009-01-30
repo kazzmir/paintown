@@ -117,21 +117,22 @@ void MugenCharacter::load() throw( MugenException ){
 		    *content->getNext() >> constantsFile;
 		}
 		else if ( itemhead.find("st")!=std::string::npos ){
-		    if (itemhead == "st0" )*content->getNext() >> stFile[0];
-		    else if (itemhead == "st1" )*content->getNext() >> stFile[1];
-		    else if (itemhead == "st2" )*content->getNext() >> stFile[2];
-		    else if (itemhead == "st3" )*content->getNext() >> stFile[3];
-		    else if (itemhead == "st4" )*content->getNext() >> stFile[4];
-		    else if (itemhead == "st5" )*content->getNext() >> stFile[5];
-		    else if (itemhead == "st6" )*content->getNext() >> stFile[6];
-		    else if (itemhead == "st7" )*content->getNext() >> stFile[7];
-		    else if (itemhead == "st8" )*content->getNext() >> stFile[8];
-		    else if (itemhead == "st9" )*content->getNext() >> stFile[9];
-		    else if (itemhead == "st10" )*content->getNext() >> stFile[10];
-		    else if (itemhead == "st11" )*content->getNext() >> stFile[11];
-		    else if (itemhead == "st12" )*content->getNext() >> stFile[12];
-		    else if( itemhead == "stcommon" )*content->getNext() >> commonStateFile;
-		    else if( itemhead == "st" )*content->getNext() >> stateFile;
+		    MugenUtil::removeSpaces(itemhead);
+		    if (itemhead.find("st0") !=std::string::npos )*content->getNext() >> stFile[0];
+		    else if (itemhead.find("st1") !=std::string::npos )*content->getNext() >> stFile[1];
+		    else if (itemhead.find("st2")!=std::string::npos )*content->getNext() >> stFile[2];
+		    else if (itemhead.find("st3")!=std::string::npos )*content->getNext() >> stFile[3];
+		    else if (itemhead.find("st4")!=std::string::npos )*content->getNext() >> stFile[4];
+		    else if (itemhead.find("st5")!=std::string::npos )*content->getNext() >> stFile[5];
+		    else if (itemhead.find("st6")!=std::string::npos )*content->getNext() >> stFile[6];
+		    else if (itemhead.find("st7")!=std::string::npos )*content->getNext() >> stFile[7];
+		    else if (itemhead.find("st8")!=std::string::npos )*content->getNext() >> stFile[8];
+		    else if (itemhead.find("st9")!=std::string::npos )*content->getNext() >> stFile[9];
+		    else if (itemhead.find("st10")!=std::string::npos )*content->getNext() >> stFile[10];
+		    else if (itemhead.find("st11")!=std::string::npos )*content->getNext() >> stFile[11];
+		    else if (itemhead.find("st12")!=std::string::npos )*content->getNext() >> stFile[12];
+		    else if( itemhead.find("stcommon")!=std::string::npos )*content->getNext() >> commonStateFile;
+		    else if( itemhead.find("st")!=std::string::npos )*content->getNext() >> stateFile;
 		    else throw MugenException( "Unhandled state file in Files Section: " + itemhead );
 		}
 		else if (itemhead.find("sprite") != std::string::npos ){
@@ -144,18 +145,18 @@ void MugenCharacter::load() throw( MugenException ){
 		    *content->getNext() >> sndFile;
 		}
 		else if( itemhead.find("pal") != std::string::npos ){
-		    if (itemhead == "pal1" )*content->getNext() >> palFile[0];
-		    else if (itemhead == "pal2" )*content->getNext() >> palFile[1];
-		    else if (itemhead == "pal3" )*content->getNext() >> palFile[2];
-		    else if (itemhead == "pal4" )*content->getNext() >> palFile[3];
-		    else if (itemhead == "pal5" )*content->getNext() >> palFile[4];
-		    else if (itemhead == "pal6" )*content->getNext() >> palFile[5];
-		    else if (itemhead == "pal7" )*content->getNext() >> palFile[6];
-		    else if (itemhead == "pal8" )*content->getNext() >> palFile[7];
-		    else if (itemhead == "pal9" )*content->getNext() >> palFile[8];
-		    else if (itemhead == "pal10" )*content->getNext() >> palFile[9];
-		    else if (itemhead == "pal11" )*content->getNext() >> palFile[10];
-		    else if (itemhead == "pal12" )*content->getNext() >> palFile[11];
+		    if (itemhead.find("pal1") != std::string::npos )*content->getNext() >> palFile[0];
+		    else if (itemhead.find("pal2") != std::string::npos )*content->getNext() >> palFile[1];
+		    else if (itemhead.find("pal3") != std::string::npos )*content->getNext() >> palFile[2];
+		    else if (itemhead.find("pal4") != std::string::npos )*content->getNext() >> palFile[3];
+		    else if (itemhead.find("pal5") != std::string::npos )*content->getNext() >> palFile[4];
+		    else if (itemhead.find("pal6") != std::string::npos )*content->getNext() >> palFile[5];
+		    else if (itemhead.find("pal7") != std::string::npos )*content->getNext() >> palFile[6];
+		    else if (itemhead.find("pal8") != std::string::npos )*content->getNext() >> palFile[7];
+		    else if (itemhead.find("pal9") != std::string::npos )*content->getNext() >> palFile[8];
+		    else if (itemhead.find("pal10") != std::string::npos )*content->getNext() >> palFile[9];
+		    else if (itemhead.find("pal11") != std::string::npos )*content->getNext() >> palFile[10];
+		    else if (itemhead.find("pal12") != std::string::npos )*content->getNext() >> palFile[11];
 		    else throw MugenException( "Unhandled Palette File in Files Section: " + itemhead );
 		}
 		else throw MugenException( "Unhandled option in Files Section: " + itemhead );
