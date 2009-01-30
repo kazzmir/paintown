@@ -229,10 +229,10 @@ protected:
 	std::map< int, MugenAnimation * > animations;
 	
 	/* Backgrounds */
-	std::map< std::string, MugenBackground * > backgrounds;
+	std::vector< MugenBackground * > backgrounds;
 	
 	/* Foregrounds */
-	std::map< std::string, MugenBackground * > foregrounds;
+	std::vector< MugenBackground * > foregrounds;
 	
 	/* Sounds */
 	//std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;

@@ -129,13 +129,13 @@ MugenStage::~MugenStage(){
     }
     
     // Get rid of background lists;
-    for( std::map< std::string, MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
-	if( i->second )delete i->second;
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
+	if( (*i) )delete (*i);
     }
     
     // Get rid of foreground lists;
-    for( std::map< std::string, MugenBackground * >::iterator i = foregrounds.begin() ; i != foregrounds.end() ; ++i ){
-	if( i->second )delete i->second;
+    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin() ; i != foregrounds.end() ; ++i ){
+	if( (*i) )delete (*i);
     }
     
     if( board ) delete board;
@@ -404,8 +404,10 @@ void MugenStage::load() throw( MugenException ){
 		} else throw MugenException( "Unhandled option in BG " + head + " Section: " + itemhead );
 	    }
 	    // lets see where we lay
-	    if( temp->layerno == 0 )backgrounds[temp->name] = temp;
-	    else if( temp->layerno == 1 )foregrounds[temp->name] = temp;
+	    //if( temp->layerno == 0 )backgrounds[temp->name] = temp;
+	    //else if( temp->layerno == 1 )foregrounds[temp->name] = temp;
+	    if( temp->layerno == 0 )backgrounds.push_back(temp);
+	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
 	}
 	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	else if( head.find("begin action") !=std::string::npos ){
@@ -481,12 +483,14 @@ void MugenStage::logic( int &x, int &y ){
     
     startx = x;
     starty = y;
-    
-    for( map< std::string, MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	i->second->logic();
+    for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	(*i)->logic();
     }
-    for( map< std::string, MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	i->second->logic();
+    
+    // Players go in here
+    
+    for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	(*i)->logic();
     }
     
 }
@@ -494,15 +498,14 @@ void MugenStage::logic( int &x, int &y ){
 void MugenStage::render( Bitmap *work ){
     const int axisx = ( abs(boundleft) + boundright ) / 2;
     const int axisy = 0;
-    
-    for( map< std::string, MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	i->second->render( axisx, axisy, sprites, board );
+    for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	(*i)->render( axisx, axisy, sprites, board );
     }
     
     // Players go in here
     
-    for( map< std::string, MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	i->second->render( axisx, axisy, sprites, board );
+    for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	(*i)->render( axisx, axisy, sprites, board );
     }
     
     board->Blit( startx, starty, 320, 240, 0, 0, *work );

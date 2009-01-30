@@ -103,10 +103,11 @@ void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std:
 	    int repeatv = ( tilex > 0 ? (tilex > 1 ? tilex : ( work->getWidth() / width ) ) : 1 );
 	    int repeath = ( tiley > 0 ? (tiley > 1 ? tiley : ( work->getHeight() / height ) ) : 1 );
 	    // We need to repeat and wrap
-	    for( int v = 0; v < repeatv; v++ ){
+	    for( int v = 0; v <= repeatv; v++ ){
 		int tileyloc = y;
-		for( int h = 0; h < repeath; h++ ){
-		    bmp.draw( tilexloc,tileyloc, *work );
+		for( int h = 0; h <= repeath; h++ ){
+		    if( mask )bmp.draw( tilexloc,tileyloc, *work );
+		    else bmp.Blit( tilexloc, tileyloc, *work );
 		    tileyloc += height + tilespacingy;
 		    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
 		}
@@ -114,6 +115,7 @@ void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std:
 		if( tilexloc >= work->getWidth() )tilexloc = work->getWidth() - tilexloc;
 	    }
 	}
+	else Global::debug(1) << "WTF!" << endl; 
     }
     // Else we should have an animation
     else{
