@@ -101,6 +101,3 @@ void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std:
     else{
     }
 }
-    
-  
-  

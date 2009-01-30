@@ -507,5 +507,3 @@ void MugenStage::render( Bitmap *work ){
     
     board->Blit( startx, starty, 320, 240, 0, 0, *work );
 }
-
-	
