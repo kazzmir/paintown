@@ -138,6 +138,7 @@ MugenStage::~MugenStage(){
 	if( i->second )delete i->second;
     }
     
+    if( board ) delete board;
 }
 	
 void MugenStage::load() throw( MugenException ){
@@ -468,8 +469,7 @@ void MugenStage::load() throw( MugenException ){
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
     // Setup board our worksurface to the proper size of the entire stage
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
-    board = new Bitmap( abs(boundleft) + boundright, abs(boundhigh) + boundlow );
-    
+    board = new Bitmap( abs(boundleft) + boundright, 240 + abs(boundhigh) + boundlow );
 }
 
 void MugenStage::logic( int &x, int &y ){
@@ -493,7 +493,7 @@ void MugenStage::logic( int &x, int &y ){
 	
 void MugenStage::render( Bitmap *work ){
     const int axisx = ( abs(boundleft) + boundright ) / 2;
-    const int axisy = boundhigh;
+    const int axisy = 0;
     
     for( map< std::string, MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	i->second->render( axisx, axisy, sprites, board );

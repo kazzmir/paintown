@@ -94,7 +94,25 @@ void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std:
 	    const int x = (xaxis - startx ) - sprite->x;
 	    const int y = (yaxis - starty ) - sprite->y;
 	    
-	    Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength).draw( x,y, *work );
+	    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+	    // see if we need to tile this beyatch
+	    int tilexloc = x;
+	    const int width = bmp.getWidth();
+	    const int height = bmp.getHeight();
+	    // Figure out total we need to tile
+	    int repeatv = ( tilex > 0 ? (tilex > 1 ? tilex : ( work->getWidth() / width ) ) : 1 );
+	    int repeath = ( tiley > 0 ? (tiley > 1 ? tiley : ( work->getHeight() / height ) ) : 1 );
+	    // We need to repeat and wrap
+	    for( int v = 0; v < repeatv; v++ ){
+		int tileyloc = y;
+		for( int h = 0; h < repeath; h++ ){
+		    bmp.draw( tilexloc,tileyloc, *work );
+		    tileyloc += height + tilespacingy;
+		    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
+		}
+		tilexloc += width + tilespacingx;
+		if( tilexloc >= work->getWidth() )tilexloc = work->getWidth() - tilexloc;
+	    }
 	}
     }
     // Else we should have an animation
