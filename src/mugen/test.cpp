@@ -244,7 +244,7 @@ void showStage(const string & ourFile){
     Bitmap back( 640, 480 );
     int viewx = stage.getCameraX(), viewy = stage.getCameraY();
     while( !quit ){
-        work.clear();
+        back.clear();
         keyInputManager::update();
         
 	stage.logic(viewx,viewy);
