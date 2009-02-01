@@ -100,8 +100,10 @@ void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std:
 	    // We have a sprite
 	    if( imageNumber != -1 && groupNumber != -1 ){
 		MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
-		const int x = (xaxis - sprite->x) + startx;
-		const int y = (yaxis - sprite->y) + starty;
+		// const int x = (xaxis - sprite->x) + startx;
+		// const int y = (yaxis - sprite->y) + starty;
+		const int x = (xaxis) + startx;
+		const int y = (yaxis) + starty;
 		if (sprite != 0){
 		    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
 		    // see if we need to tile this beyatch

@@ -482,8 +482,10 @@ void MugenStage::load() throw( MugenException ){
     // Setup board our worksurface to the proper size of the entire stage
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
     board = new Bitmap( 320 + abs(boundleft) + boundright, 240 + abs(boundhigh) + boundlow );
-    xaxis = 320 + (abs(boundleft) + boundright) / 2;
-    yaxis = abs(boundhigh) + boundlow;
+    // xaxis = 320 + (abs(boundleft) + boundright) / 2;
+    // yaxis = abs(boundhigh) + boundlow;
+    xaxis = 160;
+    yaxis = 0;
 }
 
 void MugenStage::logic( int &x, int &y ){
