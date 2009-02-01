@@ -239,7 +239,12 @@ protected:
 	
 	/* Commands, Triggers or whatever else we come up with */
 	
+	// Our working bitmap
 	Bitmap *board;
+	
+	// Our real axis givin that we have to use negatives
+	int xaxis;
+	int yaxis;
 	
 };
 

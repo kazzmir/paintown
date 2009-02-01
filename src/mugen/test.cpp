@@ -239,33 +239,14 @@ void showStage(const string & ourFile){
     stage.load();
     Global::debug(0) << "Loaded stage: \"" << stage.getName() << "\" successfully." << endl;
     bool quit = false;
-    /*
-    map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin();
-    unsigned int currentAnim = 0;
-    unsigned int lastAnim = character.getAnimations().size() -1;
-    unsigned int currentFrame = 0;
-    unsigned int lastFrame = it->second->getFrames().size() -1;
-
-    if (it->second->getFrames().size() == 0){
-        Global::debug(0) << "No frames!" << endl;
-        exit(0);
-    }
-
-    MugenSprite * sprite = it->second->getFrames()[currentFrame]->sprite;
-
-    Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
     
-    int xaxis = 260;
-    int yaxis = 230;
-*/
-   // int ticks=0;
     Bitmap work( 320, 240 );
     Bitmap back( 640, 480 );
     int viewx = stage.getCameraX(), viewy = stage.getCameraY();
     while( !quit ){
-        work.clear();
+        back.clear();
         keyInputManager::update();
-        //++ticks;
+        
 	stage.logic(viewx,viewy);
         
         if( keyInputManager::keyState(keys::UP, false) ){
@@ -284,9 +265,9 @@ void showStage(const string & ourFile){
         quit |= keyInputManager::keyState(keys::ESC, true );
 	
 	stage.render(&work);
-	Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), work, "viewport x: %i  |  viewport y: %i",0, viewx, viewy );
-	show_mouse(work.getBitmap());
 	work.Stretch(back);
+	Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, viewx, viewy );
+	show_mouse(back.getBitmap());
         back.BlitToScreen();
         Util::rest(1);
     }

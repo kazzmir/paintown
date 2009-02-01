@@ -11,7 +11,7 @@ using namespace std;
 
 static int calculateTile( int length, int width ){
     int loc = 0;
-    for( int i = 1; ; i++ ){
+    for( int i = 1; ; ++i ){
 	if( loc > length )return i;
 	loc+=width;
     }
@@ -58,7 +58,7 @@ startx(0),
 starty(0),
 deltax(0),
 deltay(0),
-trans(""),
+trans(None),
 alphalow(0),
 alphahigh(0),
 mask(true),
@@ -95,29 +95,38 @@ void MugenBackground::logic(){
 }
     
 void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites, Bitmap *work ){
-    
     switch( type ){
 	case Normal:{
 	    // We have a sprite
 	    if( imageNumber != -1 && groupNumber != -1 ){
 		MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
-		const int x = (xaxis - startx ) - sprite->x;
-		const int y = (yaxis - starty ) - sprite->y;
+		const int x = (xaxis - sprite->x) + startx;
+		const int y = (yaxis - sprite->y) + starty;
 		if (sprite != 0){
 		    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
 		    // see if we need to tile this beyatch
 		    int tilexloc = x;
 		    const int width = bmp.getWidth();
 		    const int height = bmp.getHeight();
-		    // Figure out total we need to tile
+		    // Figure out total we need to tile (this crap doesn't work needs fix)
 		    int repeath = ( tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
 		    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( work->getHeight(), height ) ) ) : 1 );
-		    // We need to repeat and wrap
-		    for( int h = 0; h <= repeath; h++ ){
+		     // We need to repeat and wrap
+		    for( int h = 0; h < repeath; h++ ){
 			int tileyloc = y;
-			for( int v = 0; v <= repeatv; v++ ){
-			    if( mask )bmp.draw( tilexloc,tileyloc, *work );
-			    else bmp.Blit( tilexloc, tileyloc, *work );
+			for( int v = 0; v < repeatv; v++ ){
+			    // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
+			    if( trans == None ){
+				if( mask )bmp.draw( tilexloc,tileyloc, *work );
+				else bmp.Blit( tilexloc, tileyloc, *work );
+			    }
+			    else{
+				// Need to figure out blend correctly addalpha is given to two locations ?
+				Bitmap::transBlender( 0, 0, 0, alphalow );
+				bmp.drawingMode( Bitmap::MODE_TRANS );
+				bmp.drawTrans( tilexloc, tileyloc, *work);
+				work->drawingMode( Bitmap::MODE_SOLID );
+			    }
 			    tileyloc += height + tilespacingy;
 			    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
 			}
@@ -132,8 +141,8 @@ void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std:
 	    // We have a sprite
 	    if( imageNumber != -1 && groupNumber != -1 ){
 		MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
-		const int x = (xaxis - startx ) - sprite->x;
-		const int y = (yaxis - starty ) - sprite->y;
+		const int x = (xaxis - sprite->x) + startx;
+		const int y = (yaxis - sprite->y) + starty;
 		if (sprite != 0){
 		    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
 		    bmp.Blit( x, y, *work );

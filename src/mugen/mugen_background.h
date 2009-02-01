@@ -30,6 +30,14 @@ enum BackgroundType{
     Dummy
 };
 
+enum TransType{
+    None = 0,
+    Add,
+    Add1,
+    Sub,
+    Addalpha
+};
+
 class BgController{
     public:
 	BgController( ControlType ctrl, std::vector<int>ids );
@@ -89,7 +97,7 @@ public:
     int starty;
     double deltax;
     double deltay;
-    std::string trans;
+    TransType trans;
     int alphalow;
     int alphahigh;
     bool mask;

@@ -67,7 +67,9 @@ fadeRangeMid(0),
 reflectionIntensity(0),
 sffFile(""),
 debugbg(0),
-board(0){
+board(0),
+xaxis(0),
+yaxis(0){
 }
 
 MugenStage::MugenStage( const char * location ):
@@ -112,7 +114,9 @@ fadeRangeMid(0),
 reflectionIntensity(0),
 sffFile(""),
 debugbg(0),
-board(0){
+board(0),
+xaxis(0),
+yaxis(0){
 }
 
 MugenStage::~MugenStage(){
@@ -359,7 +363,14 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> temp->deltax;
 		    *content->getNext() >> temp->deltay;
 		} else if ( itemhead.find("trans")!=std::string::npos ){
-		    *content->getNext() >> temp->trans;
+		    std::string type;
+		    *content->getNext() >> type;
+		    MugenUtil::removeSpaces( type );
+		    if( type == "none" )temp->trans = None;
+		    else if( type == "add" )temp->trans = Add;
+		    else if( type == "add1" )temp->trans = Add1;
+		    else if( type == "sub" )temp->trans = Sub;
+		    else if( type == "addalpha" )temp->trans = Addalpha;
 		} else if ( itemhead.find("alpha")!=std::string::npos ){
 		    *content->getNext() >> temp->alphalow;
 		    *content->getNext() >> temp->alphahigh;
@@ -470,7 +481,9 @@ void MugenStage::load() throw( MugenException ){
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
     // Setup board our worksurface to the proper size of the entire stage
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
-    board = new Bitmap( abs(boundleft) + boundright, 240 + abs(boundhigh) + boundlow );
+    board = new Bitmap( 320 + abs(boundleft) + boundright, 240 + abs(boundhigh) + boundlow );
+    xaxis = 320 + (abs(boundleft) + boundright) / 2;
+    yaxis = abs(boundhigh) + boundlow;
 }
 
 void MugenStage::logic( int &x, int &y ){
@@ -495,17 +508,15 @@ void MugenStage::logic( int &x, int &y ){
 }
 	
 void MugenStage::render( Bitmap *work ){
-    const int axisx = ( abs(boundleft) + boundright ) / 2;
-    const int axisy = 0;
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	(*i)->render( axisx, axisy, sprites, board );
+	(*i)->render( xaxis, yaxis, sprites, board );
     }
     
     // Players go in here
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	(*i)->render( axisx, axisy, sprites, board );
+	(*i)->render( xaxis, yaxis, sprites, board );
     }
     
-    board->Blit( startx, starty, 320, 240, 0, 0, *work );
+    board->Blit( xaxis + startx, yaxis + starty, 320, 240, 0, 0, *work );
 }
