@@ -109,7 +109,7 @@ void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std:
 		    const int width = bmp.getWidth();
 		    const int height = bmp.getHeight();
 		    // Figure out total we need to tile (this crap doesn't work needs fix)
-		    int repeath = ( tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
+		    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
 		    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( work->getHeight(), height ) ) ) : 1 );
 		     // We need to repeat and wrap
 		    for( int h = 0; h < repeath; h++ ){
