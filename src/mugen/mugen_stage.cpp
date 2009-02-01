@@ -403,9 +403,8 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> temp->siny_offset;
 		} else throw MugenException( "Unhandled option in BG " + head + " Section: " + itemhead );
 	    }
+	    // Do some fixups and necessary things
 	    // lets see where we lay
-	    //if( temp->layerno == 0 )backgrounds[temp->name] = temp;
-	    //else if( temp->layerno == 1 )foregrounds[temp->name] = temp;
 	    if( temp->layerno == 0 )backgrounds.push_back(temp);
 	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
 	}
