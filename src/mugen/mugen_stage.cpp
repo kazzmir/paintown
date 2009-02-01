@@ -347,22 +347,22 @@ void MugenStage::load() throw( MugenException ){
 		    else if( type == "anim" )temp->type = Anim;
 		    else if( type == "parallax" )temp->type = Parallax;
 		    else if( type == "dummy" )temp->type = Dummy;
-		} else if ( itemhead.find("spriteno")!=std::string::npos ){
+		} else if (itemhead == "spriteno"){
 		    *content->getNext() >> temp->groupNumber;
 		    *content->getNext() >> temp->imageNumber;
-		} else if ( itemhead.find("actionno")!=std::string::npos ){
+		} else if (itemhead == "actionno"){
 		    *content->getNext() >> temp->actionno;
-		} else if ( itemhead.find("id")!=std::string::npos ){
+		} else if (itemhead == "id"){
 		    *content->getNext() >> temp->id;
-		} else if ( itemhead.find("layerno")!=std::string::npos ){
+		} else if (itemhead == "layerno"){
 		    *content->getNext() >> temp->layerno;
-		} else if ( itemhead.find("start")!=std::string::npos ){
+		} else if (itemhead == "start"){
 		    *content->getNext() >> temp->startx;
 		    *content->getNext() >> temp->starty;
-		} else if ( itemhead.find("delta")!=std::string::npos ){
+		} else if (itemhead == "delta"){
 		    *content->getNext() >> temp->deltax;
 		    *content->getNext() >> temp->deltay;
-		} else if ( itemhead.find("trans")!=std::string::npos ){
+		} else if (itemhead == "trans"){
 		    std::string type;
 		    *content->getNext() >> type;
 		    MugenUtil::removeSpaces( type );
@@ -371,49 +371,52 @@ void MugenStage::load() throw( MugenException ){
 		    else if( type == "add1" )temp->trans = Add1;
 		    else if( type == "sub" )temp->trans = Sub;
 		    else if( type == "addalpha" )temp->trans = Addalpha;
-		} else if ( itemhead.find("alpha")!=std::string::npos ){
+		} else if (itemhead == "alpha"){
 		    *content->getNext() >> temp->alphalow;
 		    *content->getNext() >> temp->alphahigh;
-		} else if ( itemhead.find("mask")!=std::string::npos ){
+		} else if (itemhead == "mask"){
 		    *content->getNext() >> temp->mask;
-		} else if ( itemhead.find("tile")!=std::string::npos ){
+		} else if (itemhead == "tile"){
 		    *content->getNext() >> temp->tilex;
+                    Global::debug(2) << "Tile x is " << temp->tilex << endl;
 		    *content->getNext() >> temp->tiley;
-		} else if ( itemhead.find("tilespacing")!=std::string::npos ){
+                    Global::debug(2) << "Tile y is " << temp->tiley << endl;
+		} else if (itemhead == "tilespacing"){
 		    *content->getNext() >> temp->tilespacingx;
 		    *content->getNext() >> temp->tilespacingy;
-		} else if ( itemhead.find("window")!=std::string::npos ){
+		} else if (itemhead == "window"){
 		    MugenArea area;
 		    *content->getNext() >> area.x1;
 		    *content->getNext() >> area.y1;
 		    *content->getNext() >> area.x2;
 		    *content->getNext() >> area.y2;
 		    temp->window = area;
-		} else if ( itemhead.find("windowdelta")!=std::string::npos ){
+		} else if (itemhead == "windowdelta"){
 		    *content->getNext() >> temp->windowdeltax;
 		    *content->getNext() >> temp->windowdeltay;
-		} else if ( itemhead.find("xscale")!=std::string::npos ){
+		} else if (itemhead == "xscale"){
 		    *content->getNext() >> temp->xscaletop;
 		    *content->getNext() >> temp->xscalebot;
-		} else if ( itemhead.find("yscalestart")!=std::string::npos ){
+		} else if (itemhead == "yscalestart"){
 		    *content->getNext() >> temp->yscalestart;
-		} else if ( itemhead.find("yscaledelta")!=std::string::npos ){
+		} else if (itemhead == "yscaledelta"){
 		    *content->getNext() >> temp->yscaledelta;
-		} else if ( itemhead.find("positionlink")!=std::string::npos ){
+		} else if (itemhead == "positionlink"){
 		    *content->getNext() >> temp->positionlink;
-		} else if ( itemhead.find("velocity")!=std::string::npos ){
+		} else if (itemhead == "velocity"){
 		    *content->getNext() >> temp->velocityx;
 		    *content->getNext() >> temp->velocityy;
-		} else if ( itemhead.find("sin.x")!=std::string::npos ){
+		} else if (itemhead == "sin.x"){
 		    *content->getNext() >> temp->sinx_amp;
 		    *content->getNext() >> temp->sinx_period;
 		    *content->getNext() >> temp->sinx_offset;
-		} else if ( itemhead.find("sin.y")!=std::string::npos ){
+		} else if (itemhead == "sin.y"){
 		    *content->getNext() >> temp->siny_amp;
 		    *content->getNext() >> temp->siny_period;
 		    *content->getNext() >> temp->siny_offset;
 		} else throw MugenException( "Unhandled option in BG " + head + " Section: " + itemhead );
 	    }
+            Global::debug(2) << "Background " << temp->id << " has tilex " << temp->tilex << endl;
 	    // Do some fixups and necessary things
 	    // lets see where we lay
 	    if( temp->layerno == 0 )backgrounds.push_back(temp);

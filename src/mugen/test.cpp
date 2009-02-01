@@ -244,6 +244,7 @@ void showStage(const string & ourFile){
     Bitmap back( 640, 480 );
     int viewx = stage.getCameraX(), viewy = stage.getCameraY();
     while( !quit ){
+        /* todo: explain the reasoning behind clearing back and not work */
         back.clear();
         keyInputManager::update();
         

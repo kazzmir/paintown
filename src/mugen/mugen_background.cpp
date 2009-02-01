@@ -114,6 +114,7 @@ void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std:
 		    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
 		    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( work->getHeight(), height ) ) ) : 1 );
 		     // We need to repeat and wrap
+                    Global::debug(1) << id << " tilex is " << tilex << ". Repeat h is " << repeath << endl;
 		    for( int h = 0; h < repeath; h++ ){
 			int tileyloc = y;
 			for( int v = 0; v < repeatv; v++ ){
