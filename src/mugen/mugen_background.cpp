@@ -119,18 +119,7 @@ void MugenBackground::render( int xaxis, int yaxis, Bitmap *work ){
 	    for( int h = 0; h < repeath; h++ ){
 		int tileyloc = y;
 		for( int v = 0; v < repeatv; v++ ){
-		    // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
-		    if( trans == None ){
-			if( mask )spriteBmp->draw( tilexloc,tileyloc, *work );
-			else spriteBmp->Blit( tilexloc, tileyloc, *work );
-		    }
-		    else{
-			// Need to figure out blend correctly addalpha is given to two locations ?
-			Bitmap::transBlender( 0, 0, 0, alphalow );
-			spriteBmp->drawingMode( Bitmap::MODE_TRANS );
-			spriteBmp->drawTrans( tilexloc, tileyloc, *work);
-			work->drawingMode( Bitmap::MODE_SOLID );
-		    }
+		    draw( tilexloc, tileyloc, *work );
 		    tileyloc += height + tilespacingy;
 		    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
 		}
@@ -143,7 +132,7 @@ void MugenBackground::render( int xaxis, int yaxis, Bitmap *work ){
 	    // This is also a sprite
 	    const int x = (xaxis - sprite->x) + startx;
 	    const int y = (yaxis - sprite->y) + starty;
-	    spriteBmp->Blit( x, y, *work );
+	    draw( x, y, *work );
 	    break;
 	}
 	case Anim:{
@@ -162,5 +151,28 @@ void MugenBackground::preload(){
     // Lets load our sprite
     if(sprite){
 	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
+    }
+}
+
+void MugenBackground::draw( const int &x, const int &y, Bitmap &work ){
+    // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
+    switch( type ){
+	case Addalpha:{
+	    // Need to figure out blend correctly addalpha is given to two locations ?
+	    Bitmap::transBlender( 0, 0, 0, alphalow );
+	    spriteBmp->drawingMode( Bitmap::MODE_TRANS );
+	    spriteBmp->drawTrans( x, y, work);
+	    work.drawingMode( Bitmap::MODE_SOLID );
+	    break;
+	}
+	case Add:
+	case Add1:
+	case Sub:
+	case None:
+	default:{
+	    if( mask )spriteBmp->draw( x,y, work );
+	    else spriteBmp->Blit( x, y, work );
+	    break;
+	}
     }
 }

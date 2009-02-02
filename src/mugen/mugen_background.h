@@ -137,6 +137,8 @@ public:
     // Do any extra stuff so that it can be used
     void preload();
     
+    // Do draw stuff
+    void draw( const int &x, const int &y, Bitmap &work );
 };
 
 #endif
