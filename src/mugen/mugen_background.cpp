@@ -51,7 +51,6 @@ type(Normal),
 groupNumber(-1),
 imageNumber(-1),
 actionno(0),
-action(0),
 id(++idCounter),
 layerno(0),
 startx(0),
@@ -80,11 +79,16 @@ sinx_period(0),
 sinx_offset(0),
 siny_amp(0),
 siny_period(0),
-siny_offset(0){
+siny_offset(0),
+sprite(0),
+spriteBmp(0),
+action(0){
 }
 MugenBackground::MugenBackground( const MugenBackground &copy ){
 }
 MugenBackground::~MugenBackground(){
+    // Kill the bmp
+    if( spriteBmp )delete spriteBmp;
 }
 MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     
@@ -94,71 +98,69 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
 void MugenBackground::logic(){
 }
     
-void MugenBackground::render( int xaxis, int yaxis, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites, Bitmap *work ){
+void MugenBackground::render( int xaxis, int yaxis, Bitmap *work ){
     switch( type ){
 	case Normal:{
-	    // We have a sprite
-	    if( imageNumber != -1 && groupNumber != -1 ){
-		MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
-		// const int x = (xaxis - sprite->x) + startx;
-		// const int y = (yaxis - sprite->y) + starty;
-		const int x = (xaxis) + startx;
-		const int y = (yaxis) + starty;
-		if (sprite != 0){
-		    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-		    // see if we need to tile this beyatch
-		    int tilexloc = x;
-		    const int width = bmp.getWidth();
-		    const int height = bmp.getHeight();
-		    // Figure out total we need to tile (this crap doesn't work needs fix)
-		    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
-		    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( work->getHeight(), height ) ) ) : 1 );
-		     // We need to repeat and wrap
-                    Global::debug(1) << id << " tilex is " << tilex << ". Repeat h is " << repeath << endl;
-		    for( int h = 0; h < repeath; h++ ){
-			int tileyloc = y;
-			for( int v = 0; v < repeatv; v++ ){
-			    // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
-			    if( trans == None ){
-				if( mask )bmp.draw( tilexloc,tileyloc, *work );
-				else bmp.Blit( tilexloc, tileyloc, *work );
-			    }
-			    else{
-				// Need to figure out blend correctly addalpha is given to two locations ?
-				Bitmap::transBlender( 0, 0, 0, alphalow );
-				bmp.drawingMode( Bitmap::MODE_TRANS );
-				bmp.drawTrans( tilexloc, tileyloc, *work);
-				work->drawingMode( Bitmap::MODE_SOLID );
-			    }
-			    tileyloc += height + tilespacingy;
-			    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
-			}
-			tilexloc += width + tilespacingx;
-			if( tilexloc >= work->getWidth() )tilexloc = work->getWidth() - tilexloc;
+	    // Normal is a sprite
+	    // const int x = (xaxis - sprite->x) + startx;
+	    // const int y = (yaxis - sprite->y) + starty;
+	    const int x = (xaxis) + startx;
+	    const int y = (yaxis) + starty;
+	    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
+	    // see if we need to tile this beyatch
+	    int tilexloc = x;
+	    const int width = bmp.getWidth();
+	    const int height = bmp.getHeight();
+	    // Figure out total we need to tile (this crap doesn't work needs fix)
+	    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
+	    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( work->getHeight(), height ) ) ) : 1 );
+		// We need to repeat and wrap
+	    Global::debug(1) << id << " tilex is " << tilex << ". Repeat h is " << repeath << endl;
+	    for( int h = 0; h < repeath; h++ ){
+		int tileyloc = y;
+		for( int v = 0; v < repeatv; v++ ){
+		    // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
+		    if( trans == None ){
+			if( mask )spriteBmp->draw( tilexloc,tileyloc, *work );
+			else spriteBmp->Blit( tilexloc, tileyloc, *work );
 		    }
+		    else{
+			// Need to figure out blend correctly addalpha is given to two locations ?
+			Bitmap::transBlender( 0, 0, 0, alphalow );
+			spriteBmp->drawingMode( Bitmap::MODE_TRANS );
+			spriteBmp->drawTrans( tilexloc, tileyloc, *work);
+			work->drawingMode( Bitmap::MODE_SOLID );
+		    }
+		    tileyloc += height + tilespacingy;
+		    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
 		}
+		tilexloc += width + tilespacingx;
+		if( tilexloc >= work->getWidth() )tilexloc = work->getWidth() - tilexloc;
 	    }
 	    break;
 	}
 	case Parallax:{
-	    // We have a sprite
-	    if( imageNumber != -1 && groupNumber != -1 ){
-		MugenSprite *sprite = sprites[(unsigned int)groupNumber][(unsigned int)imageNumber];
-		const int x = (xaxis - sprite->x) + startx;
-		const int y = (yaxis - sprite->y) + starty;
-		if (sprite != 0){
-		    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-		    bmp.Blit( x, y, *work );
-		}
-	    }
+	    // This is also a sprite
+	    const int x = (xaxis - sprite->x) + startx;
+	    const int y = (yaxis - sprite->y) + starty;
+	    spriteBmp->Blit( x, y, *work );
 	    break;
 	}
 	case Anim:{
+	    // there is no sprite use our action!
 	    break;
 	}
 	case Dummy:
+	    // Do nothing
 	default:
 	    break;
     }
     
+}
+
+void MugenBackground::preload(){
+    // Lets load our sprite
+    if(sprite){
+	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
+    }
 }

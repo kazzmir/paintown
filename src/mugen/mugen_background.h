@@ -8,6 +8,7 @@
 
 class MugenSprite;
 class MugenBackground;
+class MugenStage;
 class Bitmap;
 
 enum ControlType{
@@ -81,8 +82,12 @@ public:
     
     void logic();
     
-    void render( int xaxis, int yaxis, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites, Bitmap *work );
+    void render( int xaxis, int yaxis, Bitmap *work );
     
+    // Stage be our friend
+    friend class MugenStage;
+    
+    protected:
     std::string name;
     
     BackgroundType type;
@@ -90,7 +95,6 @@ public:
     int groupNumber;
     int imageNumber;
     int actionno;
-    MugenAnimation *action;
     int id;
     int layerno;
     int startx;
@@ -121,6 +125,18 @@ public:
     double siny_amp;
     double siny_period;
     double siny_offset;
+    
+    // sprite 
+    MugenSprite *sprite;
+    
+    Bitmap *spriteBmp;
+    
+    // animation
+    MugenAnimation *action;
+    
+    // Do any extra stuff so that it can be used
+    void preload();
+    
 };
 
 #endif

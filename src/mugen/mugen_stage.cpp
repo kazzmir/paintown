@@ -419,6 +419,9 @@ void MugenStage::load() throw( MugenException ){
             Global::debug(2) << "Background " << temp->id << " has tilex " << temp->tilex << endl;
 	    // Do some fixups and necessary things
 	    // lets see where we lay
+	    temp->sprite = sprites[(unsigned int)temp->groupNumber][(unsigned int)temp->imageNumber];
+	    // now load
+	    temp->preload();
 	    if( temp->layerno == 0 )backgrounds.push_back(temp);
 	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
 	}
@@ -514,13 +517,13 @@ void MugenStage::logic( int &x, int &y ){
 	
 void MugenStage::render( Bitmap *work ){
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	(*i)->render( xaxis, yaxis, sprites, board );
+	(*i)->render( xaxis, yaxis, board );
     }
     
     // Players go in here
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	(*i)->render( xaxis, yaxis, sprites, board );
+	(*i)->render( xaxis, yaxis, board );
     }
     
     board->Blit( xaxis + startx, yaxis + starty, 320, 240, 0, 0, *work );
