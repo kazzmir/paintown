@@ -80,9 +80,9 @@ public:
     
     MugenBackground & operator=( const MugenBackground &copy );
     
-    void logic();
+    void logic( const int &x, const int &y );
     
-    void render( int xaxis, int yaxis, Bitmap *work );
+    void render( const int &xaxis, const int &yaxis, Bitmap *work );
     
     // Stage be our friend
     friend class MugenStage;

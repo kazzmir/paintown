@@ -95,10 +95,12 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     return *this;
 }
     
-void MugenBackground::logic(){
+void MugenBackground::logic( const int &x, const int &y ){
+    sprite->x += x * deltax;
+    sprite->y += y * deltay;
 }
     
-void MugenBackground::render( int xaxis, int yaxis, Bitmap *work ){
+void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work ){
     switch( type ){
 	case Normal:{
 	    // Normal is a sprite

@@ -490,8 +490,8 @@ void MugenStage::load() throw( MugenException ){
     board = new Bitmap( 320 + abs(boundleft) + boundright, 240 + abs(boundhigh) + boundlow );
     // xaxis = 320 + (abs(boundleft) + boundright) / 2;
     // yaxis = abs(boundhigh) + boundlow;
-    xaxis = 160;
-    yaxis = 0;
+    xaxis = 160;//abs(boundleft) + boundright;
+    yaxis = abs(boundhigh) + boundlow;
 }
 
 void MugenStage::logic( int &x, int &y ){
@@ -501,16 +501,19 @@ void MugenStage::logic( int &x, int &y ){
     if( y < boundhigh ) y = boundhigh;
     else if( y > boundlow )y = boundlow;
     
+    const int diffx = startx - x;
+    const int diffy = starty - y;
+    
     startx = x;
     starty = y;
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	(*i)->logic();
+	(*i)->logic( diffx, diffy );
     }
     
     // Players go in here
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	(*i)->logic();
+	(*i)->logic( diffx, diffy );
     }
     
 }
