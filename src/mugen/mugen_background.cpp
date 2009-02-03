@@ -111,6 +111,7 @@ void MugenBackground::render( int xaxis, int yaxis, Bitmap *work ){
 	    int tilexloc = x;
 	    const int width = bmp.getWidth();
 	    const int height = bmp.getHeight();
+	    bool dirx = false, diry = false;
 	    // Figure out total we need to tile (this crap doesn't work needs fix)
 	    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
 	    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( work->getHeight(), height ) ) ) : 1 );
@@ -120,11 +121,21 @@ void MugenBackground::render( int xaxis, int yaxis, Bitmap *work ){
 		int tileyloc = y;
 		for( int v = 0; v < repeatv; v++ ){
 		    draw( tilexloc, tileyloc, *work );
-		    tileyloc += height + tilespacingy;
-		    if( tileyloc >= work->getHeight() )tileyloc = work->getHeight() - tileyloc;
+		    if( !diry )tileyloc += height + tilespacingy;
+		    else tileyloc -= height + tilespacingy;
+		    if( tileyloc >= work->getHeight() ){
+			//tileyloc = work->getHeight() - tileyloc;
+			diry = true;
+			tileyloc = y - height + tilespacingy;
+		    }
 		}
-		tilexloc += width + tilespacingx;
-		if( tilexloc >= work->getWidth() )tilexloc = work->getWidth() - tilexloc;
+		if( !dirx )tilexloc += width + tilespacingx;
+		else tilexloc -= width + tilespacingx;
+		if( tilexloc >= work->getWidth() ){
+		    //tilexloc = work->getWidth() - tilexloc;
+		    dirx = true;
+		    tilexloc = x - width + tilespacingx;
+		}
 	    }
 	    break;
 	}
