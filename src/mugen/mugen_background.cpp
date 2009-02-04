@@ -80,6 +80,8 @@ sinx_offset(0),
 siny_amp(0),
 siny_period(0),
 siny_offset(0),
+xoffset(0),
+yoffset(0),
 sprite(0),
 spriteBmp(0),
 action(0){
@@ -96,18 +98,17 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
 }
     
 void MugenBackground::logic( const int &x, const int &y ){
-    sprite->x += x * deltax;
-    sprite->y += y * deltay;
+    xoffset += x * deltax;
+    yoffset += y * deltay;
+    Global::debug(1) << "x move: " << x << " | y move: " << y << endl;
 }
     
 void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work ){
     switch( type ){
 	case Normal:{
 	    // Normal is a sprite
-	    // const int x = (xaxis - sprite->x) + startx;
-	    // const int y = (yaxis - sprite->y) + starty;
-	    const int x = (xaxis) + startx;
-	    const int y = (yaxis) + starty;
+	    const int x = (xaxis - sprite->x) + (startx + xoffset);
+	    const int y = (yaxis - sprite->y) + (starty + yoffset);
 	    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
 	    // see if we need to tile this beyatch
 	    int tilexloc = x;
@@ -143,8 +144,8 @@ void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work )
 	}
 	case Parallax:{
 	    // This is also a sprite
-	    const int x = (xaxis - sprite->x) + startx;
-	    const int y = (yaxis - sprite->y) + starty;
+	    const int x = (xaxis - sprite->x) + startx + xoffset;
+	    const int y = (yaxis - sprite->y) + starty + yoffset;
 	    draw( x, y, *work );
 	    break;
 	}
@@ -169,13 +170,13 @@ void MugenBackground::preload(){
 
 void MugenBackground::draw( const int &x, const int &y, Bitmap &work ){
     // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
-    switch( type ){
+    switch( trans ){
 	case Addalpha:{
-	    // Need to figure out blend correctly addalpha is given to two locations ?
+	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
 	    Bitmap::transBlender( 0, 0, 0, alphalow );
 	    spriteBmp->drawingMode( Bitmap::MODE_TRANS );
 	    spriteBmp->drawTrans( x, y, work);
-	    work.drawingMode( Bitmap::MODE_SOLID );
+	    spriteBmp->drawingMode( Bitmap::MODE_SOLID );
 	    break;
 	}
 	case Add:

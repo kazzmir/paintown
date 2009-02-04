@@ -125,6 +125,8 @@ public:
     double siny_amp;
     double siny_period;
     double siny_offset;
+    int xoffset;
+    int yoffset;
     
     // sprite 
     MugenSprite *sprite;

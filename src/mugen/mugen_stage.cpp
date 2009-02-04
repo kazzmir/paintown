@@ -501,8 +501,8 @@ void MugenStage::logic( int &x, int &y ){
     if( y < boundhigh ) y = boundhigh;
     else if( y > boundlow )y = boundlow;
     
-    const int diffx = startx - x;
-    const int diffy = starty - y;
+    const int diffx = x - startx;
+    const int diffy = y - starty;
     
     startx = x;
     starty = y;
