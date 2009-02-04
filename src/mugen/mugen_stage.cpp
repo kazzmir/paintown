@@ -484,6 +484,13 @@ void MugenStage::load() throw( MugenException ){
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
 	
     }
+    // Set up the animations for those that have action numbers assigned (not -1 )
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	if( (*i)->actionno != -1 ){
+	    (*i)->action = animations[ (*i)->actionno ];
+	}
+    }
+    
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
     // Setup board our worksurface to the proper size of the entire stage
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;

@@ -222,7 +222,6 @@ class MugenAnimation{
 	bool showOffense;
 	
 	int ticks;
-	int loop;
 };
 
 #endif

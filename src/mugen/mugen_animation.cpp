@@ -97,14 +97,15 @@ position(0),
 type(UNKNOWN),
 showDefense(false),
 showOffense(false),
-ticks(0),
-loop(0){
+ticks(0){
 }
 MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
     this->frames = copy.frames;
     this->loopPosition = copy.loopPosition;
     this->position = copy.position;
     this->type = copy.type;
+    this->showDefense = copy.showDefense;
+    this->showOffense = copy.showOffense;
 }
 MugenAnimation::~MugenAnimation(){
     for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
@@ -123,7 +124,7 @@ void MugenAnimation::addFrame( MugenFrame *frame ){
 }
 
 const MugenFrame *MugenAnimation::getNext(){
-    if( position < frames.size() )position++;
+    if( position < frames.size() -1 )position++;
     else position = loopPosition;
     
     return frames[position];
@@ -134,9 +135,8 @@ void MugenAnimation::logic(){
 	ticks++;
 	if(ticks >= 15 + frames[position]->time){
 		ticks = 0;
-		if( frames[position]->loopstart ) loop = position;
-		if( position < frames.size() )position++;
-		else position = loop;
+		if( position < frames.size() -1 )position++;
+		else position = loopPosition;
 	}
     }
 }

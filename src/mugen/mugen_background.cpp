@@ -50,7 +50,7 @@ MugenBackground::MugenBackground():
 type(Normal),
 groupNumber(-1),
 imageNumber(-1),
-actionno(0),
+actionno(-1),
 id(++idCounter),
 layerno(0),
 startx(0),
