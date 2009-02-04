@@ -8,6 +8,8 @@
 #include <string.h>
 #endif
 
+#warning you are ugly
+
 #include "globals.h"
 #include "init.h"
 #include <pthread.h>
