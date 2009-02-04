@@ -19,8 +19,8 @@ public:
     unsigned long length;
     unsigned long reallength;
     unsigned long newlength;
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
     unsigned short groupNumber;
     unsigned short imageNumber;
     unsigned short prev;

@@ -142,8 +142,8 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     
     ifile.read((char *)&temp->next, sizeof(unsigned long));
     ifile.read((char *)&temp->length, sizeof(unsigned long));
-    ifile.read((char *)&temp->x, sizeof(unsigned short));
-    ifile.read((char *)&temp->y, sizeof(unsigned short));
+    ifile.read((char *)&temp->x, sizeof(short));
+    ifile.read((char *)&temp->y, sizeof(short));
     ifile.read((char *)&temp->groupNumber, sizeof(unsigned short));
     ifile.read((char *)&temp->imageNumber, sizeof(unsigned short));
     ifile.read((char *)&temp->prev, sizeof(unsigned short));
