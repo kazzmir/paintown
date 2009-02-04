@@ -77,21 +77,6 @@ void showCharacter(const string & ourFile){
     Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
     MugenCharacter character( ourFile );
     character.load();
-    /*
-       for (map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin(); it != character.getAnimations().end(); it++){
-       Global::debug(0) << "Animation " << it->first << endl;
-       const vector<MugenFrame*> & frames = it->second->getFrames();
-       for (vector<MugenFrame*>::const_iterator frame = frames.begin(); frame != frames.end(); frame++){
-       MugenSprite * sprite = (*frame)->sprite;
-       if (sprite == 0){
-       continue;
-       }
-       Bitmap b = new Bitmap(sffLoadPcxFromMemory( (char*) sprite->pcx ));;//Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-       b.BlitToScreen();
-       Util::rest(1000);
-       }
-       }
-       */
     Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
     bool quit = false;
     bool animate = false;

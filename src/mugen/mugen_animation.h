@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+class Bitmap;
 class MugenSprite;
 
 /*
@@ -63,6 +64,8 @@ class MugenFrame{
 	15,4, 0,0, 5, ,AS128D128 ;<-- Mix 50% source with 50% dest
 	*/
 	std::string colorAdd;
+	
+	Bitmap *bmp;
 };
 
 
@@ -186,11 +189,21 @@ class MugenAnimation{
 	// Get name of type of animation
 	static const std::string getName(const MugenAnimationType t);
 	
+	// Update logic
+	void logic();
+	
+	void render( int xaxis, int yaxis, Bitmap &work );
+	
 	// Set type number
 	inline void setType(const MugenAnimationType t){ type = t; }
 	
 	// Get type number
 	inline const MugenAnimationType getType(){ return type; }
+	
+	// Show offense | defense Clsn framework
+	inline void toggleDefense(){ showOffense = !showDefense; }
+	inline void toggleOffense(){ showOffense = !showOffense; }
+	
 
         inline const std::vector<MugenFrame*> & getFrames() const {
             return frames;
@@ -204,6 +217,12 @@ class MugenAnimation{
 	unsigned int position;
 	
 	MugenAnimationType type;
+	
+	bool showDefense;
+	bool showOffense;
+	
+	int ticks;
+	int loop;
 };
 
 #endif

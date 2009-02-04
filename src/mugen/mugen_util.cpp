@@ -13,6 +13,7 @@
 #include <stdlib.h>
 
 #include "util/funcs.h"
+#include "util/bitmap.h"
 
 #include "mugen_animation.h"
 #include "mugen_item.h"
@@ -515,3 +516,6 @@ void MugenUtil::readSounds(const string & filename, std::map<unsigned int,std::m
     
     ifile.close();
 }
+
+
+

@@ -6,8 +6,10 @@
 #include <vector>
 #include "mugen_exception.h"
 
+class Bitmap;
 class MugenSprite;
 class MugenSound;
+class MugenItemContent;
 
 struct MugenUtil{
     static void fixCase( std::string &str );

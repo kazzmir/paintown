@@ -100,6 +100,7 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
 void MugenBackground::logic( const int &x, const int &y ){
     xoffset += x * deltax;
     yoffset += y * deltay;
+    if( type == Anim ) action->logic();
     Global::debug(1) << "x move: " << x << " | y move: " << y << endl;
 }
     
@@ -151,6 +152,9 @@ void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work )
 	}
 	case Anim:{
 	    // there is no sprite use our action!
+	    const int x = (xaxis - sprite->x) + startx + xoffset;
+	    const int y = (yaxis - sprite->y) + starty + yoffset;
+	    action->render( x, y, *work );
 	    break;
 	}
 	case Dummy:

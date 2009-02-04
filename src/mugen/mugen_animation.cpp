@@ -4,6 +4,15 @@
 #include <vector>
 
 #include "mugen_sprite.h"
+#include "mugen_util.h"
+
+#include "util/bitmap.h"
+
+static void renderCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int color ){
+    for( unsigned int i = 0; i < vec.size(); ++i ){
+	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
+    }
+}
 
 /// area
 MugenArea::MugenArea():
@@ -43,7 +52,8 @@ yoffset(0),
 time(0),
 flipHorizontal(false),
 flipVertical(false),
-colorAdd(""){
+colorAdd(""),
+bmp(0){
 }
 MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->loopstart = copy.loopstart;
@@ -54,6 +64,7 @@ MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->flipHorizontal = copy.flipHorizontal;
     this->flipVertical = copy.flipVertical;
     this->colorAdd = copy.colorAdd;
+    if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
 
 }
 
@@ -66,12 +77,15 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
     this->flipHorizontal = copy.flipHorizontal;
     this->flipVertical = copy.flipVertical;
     this->colorAdd = copy.colorAdd;
+    if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
     
     return *this;
 
 }
 
 MugenFrame::~MugenFrame(){
+    // Kill bitmap
+    if( bmp )delete bmp;
 }
 
 /*
@@ -80,7 +94,11 @@ Holds mugen animations, ie: player.air
 MugenAnimation::MugenAnimation():
 loopPosition(0),
 position(0),
-type(UNKNOWN){
+type(UNKNOWN),
+showDefense(false),
+showOffense(false),
+ticks(0),
+loop(0){
 }
 MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
     this->frames = copy.frames;
@@ -90,11 +108,16 @@ MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
 }
 MugenAnimation::~MugenAnimation(){
     for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
-	delete (*i);
+	if( (*i) )delete (*i);
     }
 }
 
 void MugenAnimation::addFrame( MugenFrame *frame ){
+    // This gets deleted by frame, so don't worry, be happy
+    if( !frame->bmp ){
+	if( frame->sprite )frame->bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) frame->sprite->pcx, frame->sprite->newlength));
+	else frame->bmp = new Bitmap();
+    }
     if( frame->loopstart ) loopPosition = frames.size();
     frames.push_back( frame );
 }
@@ -104,6 +127,39 @@ const MugenFrame *MugenAnimation::getNext(){
     else position = loopPosition;
     
     return frames[position];
+}
+
+void MugenAnimation::logic(){
+    if( frames[position]->time != -1 ){
+	ticks++;
+	if(ticks >= 15 + frames[position]->time){
+		ticks = 0;
+		if( frames[position]->loopstart ) loop = position;
+		if( position < frames.size() )position++;
+		else position = loop;
+	}
+    }
+}
+
+void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
+    const int spritex = frames[position]->sprite ? frames[position]->sprite->x : 0;
+    const int spritey = frames[position]->sprite ? frames[position]->sprite->y : 0;
+    const int placex = (xaxis - spritex ) + frames[position]->xoffset;
+    const int placey = (yaxis - spritey ) + frames[position]->yoffset;
+    
+    if( frames[position]->flipHorizontal && ! frames[position]->flipVertical ){
+	frames[position]->bmp->drawHFlip(placex, placey, work);
+    }
+    else if( frames[position]->flipVertical && ! frames[position]->flipHorizontal ){
+	frames[position]->bmp->drawVFlip(placex, placey, work);
+    }
+    else if( frames[position]->flipVertical && frames[position]->flipHorizontal ){
+	frames[position]->bmp->drawRotate(placex, placey, 180, work);
+    }
+    else frames[position]->bmp->draw(placex, placey, work);
+    
+    if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
+    if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
 }
 
 // Get name of type of animation
