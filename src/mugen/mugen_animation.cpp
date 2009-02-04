@@ -154,7 +154,7 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
 	frames[position]->bmp->drawVFlip(placex, placey, work);
     }
     else if( frames[position]->flipVertical && frames[position]->flipHorizontal ){
-	frames[position]->bmp->drawRotate(placex, placey, 180, work);
+	frames[position]->bmp->drawHVFlip(placex, placey,work);
     }
     else frames[position]->bmp->draw(placex, placey, work);
     
