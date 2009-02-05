@@ -110,11 +110,10 @@ void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work )
 	    // Normal is a sprite
 	    const int x = (xaxis - sprite->x) + (startx + xoffset);
 	    const int y = (yaxis - sprite->y) + (starty + yoffset);
-	    Bitmap bmp = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
 	    // see if we need to tile this beyatch
 	    int tilexloc = x;
-	    const int width = bmp.getWidth();
-	    const int height = bmp.getHeight();
+	    const int width = spriteBmp->getWidth();
+	    const int height = spriteBmp->getHeight();
 	    bool dirx = false, diry = false;
 	    // Figure out total we need to tile (this crap doesn't work needs fix)
 	    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
