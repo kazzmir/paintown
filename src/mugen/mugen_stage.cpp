@@ -495,7 +495,7 @@ void MugenStage::load() throw( MugenException ){
     // Setup board our worksurface to the proper size of the entire stage
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
     board = new Bitmap( 320 + (abs(boundleft) + boundright), 240 + abs(boundhigh) + boundlow );
-    xaxis = 160;//320 + (abs(boundleft) + boundright) / 2;
+    xaxis = (abs(boundleft) + boundright);//(320 + (abs(boundleft) + boundright)) / 2;
     yaxis = abs(boundhigh) + boundlow;
 }
 
@@ -506,8 +506,8 @@ void MugenStage::logic( int &x, int &y ){
     if( y < boundhigh ) y = boundhigh;
     else if( y > boundlow )y = boundlow;
     
-    const int diffx = x - startx;
-    const int diffy = y - starty;
+    const int diffx = startx - x;
+    const int diffy = starty - y;
     
     startx = x;
     starty = y;
