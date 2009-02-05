@@ -188,10 +188,15 @@ void MugenBackground::preload( const int &xaxis, const int &yaxis ){
     // Lets load our sprite
     if(sprite){
 	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
+	// Set our initial offsets
+	xoffset = 160 + (xaxis - sprite->x) + startx;
+	yoffset = (yaxis - sprite->y) + starty;
     }
-    // Set our initial offsets
-    xoffset = 160 + (xaxis - sprite->x) + startx;
-    yoffset = (yaxis - sprite->y) + starty;
+    else{
+	// Set our initial offsets
+	xoffset = 160 + (xaxis) + startx;
+	yoffset = (yaxis) + starty;
+    }
 }
 
 void MugenBackground::draw( const int &x, const int &y, Bitmap &work ){
