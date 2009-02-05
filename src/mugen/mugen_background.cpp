@@ -17,6 +17,30 @@ static int calculateTile( int length, int width ){
     }
 }
 
+static void doParallax(Bitmap &bmp, Bitmap &work, int xscroll, int y1, float z1, int y2, float z2){
+   if(y2 <= y1) return;
+
+   // trade down the centre of the screen
+   float z = 1.0 / z1;
+   float z_add = ((1.0 / z2) - z) / (y2 - y1);
+   float src_y = 0;
+   float src_y_add = ((float)bmp.getHeight() / z2) / (y2 - y1);
+
+   while(y1 < y2)
+   {
+      float y = src_y / z;
+      int start_x = (work.getWidth() >> 1) - z*((bmp.getWidth() >> 1) + xscroll);
+      int width = bmp.getWidth()*z;
+
+      //stretch_blit(source, dest, 0, y, source->w, 1, start_x, y1, width, 1);
+      bmp.Stretch( work, 0, y, bmp.getWidth(), 1, start_x, y1, width, 1 );
+
+      y1++;
+      z +=  z_add;
+      src_y += src_y_add;
+   }
+}
+
 static int idCounter = -9999999;
 
 BgController::BgController( ControlType ctrl, std::vector<int>ids ):
@@ -146,7 +170,8 @@ void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work )
 	    // This is also a sprite
 	    const int x = (xaxis - sprite->x) + startx + xoffset;
 	    const int y = (yaxis - sprite->y) + starty + yoffset;
-	    draw( x, y, *work );
+	    //draw( x, y, *work );
+	    doParallax( *spriteBmp, *work, x, y, xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*yaxis), xscaletop * 1.75);
 	    break;
 	}
 	case Anim:{

@@ -494,10 +494,8 @@ void MugenStage::load() throw( MugenException ){
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
     // Setup board our worksurface to the proper size of the entire stage
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
-    board = new Bitmap( 320 + abs(boundleft) + boundright, 240 + abs(boundhigh) + boundlow );
-    // xaxis = 320 + (abs(boundleft) + boundright) / 2;
-    // yaxis = abs(boundhigh) + boundlow;
-    xaxis = 160;//abs(boundleft) + boundright;
+    board = new Bitmap( 320 + (abs(boundleft) + boundright), 240 + abs(boundhigh) + boundlow );
+    xaxis = 160;//320 + (abs(boundleft) + boundright) / 2;
     yaxis = abs(boundhigh) + boundlow;
 }
 
