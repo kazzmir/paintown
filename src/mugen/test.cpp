@@ -219,7 +219,7 @@ void showCharacter(const string & ourFile){
 void showStage(const string & ourFile){
     set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
-    Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
+    Global::debug(0) << "Trying to load stage: " << ourFile << "..." << endl;
     MugenStage stage( ourFile );
     stage.load();
     Global::debug(0) << "Loaded stage: \"" << stage.getName() << "\" successfully." << endl;

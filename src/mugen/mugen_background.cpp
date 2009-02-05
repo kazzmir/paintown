@@ -168,7 +168,7 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 	}
 	case Parallax:{
 	    // This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
-	    doParallax( *spriteBmp, *work, x, y - (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75);
+	    doParallax( *spriteBmp, *work, x + 160, y - (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75);
 	    break;
 	}
 	case Anim:{
