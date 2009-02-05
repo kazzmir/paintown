@@ -106,6 +106,8 @@ siny_period(0),
 siny_offset(0),
 xoffset(0),
 yoffset(0),
+movex(0),
+movey(0),
 sprite(0),
 spriteBmp(0),
 action(0){
@@ -122,18 +124,19 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
 }
     
 void MugenBackground::logic( const int &x, const int &y ){
-    xoffset += x * deltax;
-    yoffset += y * deltay;
+    movex = movey = 0;
+    movex += x * deltax;
+    movey += y * deltay;
     if( type == Anim ) action->logic();
     Global::debug(1) << "x move: " << x << " | y move: " << y << endl;
 }
     
-void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work ){
+void MugenBackground::render( Bitmap *work ){
+    const int x = xoffset + movex;
+    const int y = yoffset + movey;
     switch( type ){
 	case Normal:{
 	    // Normal is a sprite
-	    const int x = (xaxis - sprite->x) + (startx + xoffset);
-	    const int y = (yaxis - sprite->y) + (starty + yoffset);
 	    // see if we need to tile this beyatch
 	    int tilexloc = x;
 	    const int width = spriteBmp->getWidth();
@@ -142,8 +145,7 @@ void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work )
 	    // Figure out total we need to tile (this crap doesn't work needs fix)
 	    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
 	    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( work->getHeight(), height ) ) ) : 1 );
-		// We need to repeat and wrap
-	    Global::debug(1) << id << " tilex is " << tilex << ". Repeat h is " << repeath << endl;
+	    // We need to repeat and wrap
 	    for( int h = 0; h < repeath; h++ ){
 		int tileyloc = y;
 		for( int v = 0; v < repeatv; v++ ){
@@ -167,17 +169,12 @@ void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work )
 	    break;
 	}
 	case Parallax:{
-	    // This is also a sprite
-	    const int x = (xaxis - sprite->x) + startx + xoffset;
-	    const int y = (yaxis - sprite->y) + starty + yoffset;
-	    //draw( x, y, *work );
-	    doParallax( *spriteBmp, *work, x, y, xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*yaxis), xscaletop * 1.75);
+	    // This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
+	    doParallax( *spriteBmp, *work, x, y - (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75);
 	    break;
 	}
 	case Anim:{
 	    // there is no sprite use our action!
-	    const int x = (xaxis - sprite->x) + startx + xoffset;
-	    const int y = (yaxis - sprite->y) + starty + yoffset;
 	    action->render( x, y, *work );
 	    break;
 	}
@@ -189,11 +186,14 @@ void MugenBackground::render( const int &xaxis, const int &yaxis, Bitmap *work )
     
 }
 
-void MugenBackground::preload(){
+void MugenBackground::preload( const int &xaxis, const int &yaxis ){
     // Lets load our sprite
     if(sprite){
 	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
     }
+    // Set our initial offsets
+    xoffset = (xaxis - sprite->x) + startx;
+    yoffset = (yaxis - sprite->y) + starty;
 }
 
 void MugenBackground::draw( const int &x, const int &y, Bitmap &work ){

@@ -82,7 +82,7 @@ public:
     
     void logic( const int &x, const int &y );
     
-    void render( const int &xaxis, const int &yaxis, Bitmap *work );
+    void render( Bitmap *work );
     
     // Stage be our friend
     friend class MugenStage;
@@ -127,6 +127,8 @@ public:
     double siny_offset;
     int xoffset;
     int yoffset;
+    int movex;
+    int movey;
     
     // sprite 
     MugenSprite *sprite;
@@ -137,7 +139,7 @@ public:
     MugenAnimation *action;
     
     // Do any extra stuff so that it can be used
-    void preload();
+    void preload( const int &xaxis, const int &yaxis );
     
     // Do draw stuff
     void draw( const int &x, const int &y, Bitmap &work );

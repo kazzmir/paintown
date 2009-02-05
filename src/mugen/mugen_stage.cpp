@@ -420,8 +420,6 @@ void MugenStage::load() throw( MugenException ){
 	    // Do some fixups and necessary things
 	    // lets see where we lay
 	    temp->sprite = sprites[(unsigned int)temp->groupNumber][(unsigned int)temp->imageNumber];
-	    // now load
-	    temp->preload();
 	    if( temp->layerno == 0 )backgrounds.push_back(temp);
 	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
 	}
@@ -484,19 +482,31 @@ void MugenStage::load() throw( MugenException ){
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
 	
     }
-    // Set up the animations for those that have action numbers assigned (not -1 )
-    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	if( (*i)->actionno != -1 ){
-	    (*i)->action = animations[ (*i)->actionno ];
-	}
-    }
     
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
     // Setup board our worksurface to the proper size of the entire stage
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
-    board = new Bitmap( 320 + (abs(boundleft) + boundright), 240 + abs(boundhigh) + boundlow );
-    xaxis = (abs(boundleft) + boundright);//(320 + (abs(boundleft) + boundright)) / 2;
-    yaxis = abs(boundhigh) + boundlow;
+    //board = new Bitmap( 320 + (abs(boundleft) + boundright), 240 + abs(boundhigh) + boundlow );
+    board = new Bitmap( 320, 240 );
+    xaxis = startx;//(abs(boundleft) + boundright);//(320 + (abs(boundleft) + boundright)) / 2;
+    yaxis = starty;
+    
+    // Set up the animations for those that have action numbers assigned (not -1 )
+    // Also do their preload
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	if( (*i)->actionno != -1 ){
+	    (*i)->action = animations[ (*i)->actionno ];
+	}
+	// now load
+	(*i)->preload( xaxis, yaxis );
+    }
+    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	if( (*i)->actionno != -1 ){
+	    (*i)->action = animations[ (*i)->actionno ];
+	}
+	// now load
+	(*i)->preload( xaxis, yaxis );
+    }
 }
 
 void MugenStage::logic( int &x, int &y ){
@@ -509,8 +519,6 @@ void MugenStage::logic( int &x, int &y ){
     const int diffx = startx - x;
     const int diffy = starty - y;
     
-    startx = x;
-    starty = y;
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
     }
@@ -525,14 +533,14 @@ void MugenStage::logic( int &x, int &y ){
 	
 void MugenStage::render( Bitmap *work ){
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	(*i)->render( xaxis, yaxis, board );
+	(*i)->render( board );
     }
     
     // Players go in here
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	(*i)->render( xaxis, yaxis, board );
+	(*i)->render( board );
     }
     
-    board->Blit( xaxis + startx, yaxis + starty, 320, 240, 0, 0, *work );
+    board->Blit( xaxis, yaxis, 320, 240, 0, 0, *work );
 }
