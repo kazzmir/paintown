@@ -131,7 +131,7 @@ void MugenBackground::logic( const int &x, const int &y ){
     Global::debug(1) << "x move: " << x << " | y move: " << y << endl;
 }
     
-void MugenBackground::render( Bitmap *work ){
+void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
     const int x = xoffset + movex;
     const int y = yoffset + movey;
     switch( type ){
@@ -143,8 +143,8 @@ void MugenBackground::render( Bitmap *work ){
 	    const int height = spriteBmp->getHeight();
 	    bool dirx = false, diry = false;
 	    // Figure out total we need to tile (this crap doesn't work needs fix)
-	    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( work->getWidth(), width ) ) ) : 1 );
-	    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( work->getHeight(), height ) ) ) : 1 );
+	    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
+	    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
 	    // We need to repeat and wrap
 	    for( int h = 0; h < repeath; h++ ){
 		int tileyloc = y;
@@ -153,7 +153,6 @@ void MugenBackground::render( Bitmap *work ){
 		    if( !diry )tileyloc += height + tilespacingy;
 		    else tileyloc -= height + tilespacingy;
 		    if( tileyloc >= work->getHeight() ){
-			//tileyloc = work->getHeight() - tileyloc;
 			diry = true;
 			tileyloc = y - height + tilespacingy;
 		    }
@@ -161,7 +160,6 @@ void MugenBackground::render( Bitmap *work ){
 		if( !dirx )tilexloc += width + tilespacingx;
 		else tilexloc -= width + tilespacingx;
 		if( tilexloc >= work->getWidth() ){
-		    //tilexloc = work->getWidth() - tilexloc;
 		    dirx = true;
 		    tilexloc = x - width + tilespacingx;
 		}

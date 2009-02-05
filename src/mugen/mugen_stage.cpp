@@ -533,13 +533,13 @@ void MugenStage::logic( int &x, int &y ){
 	
 void MugenStage::render( Bitmap *work ){
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	(*i)->render( board );
+	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
     }
     
     // Players go in here
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	(*i)->render( board );
+	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
     }
     
     board->Blit( xaxis, yaxis, 320, 240, 0, 0, *work );

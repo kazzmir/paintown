@@ -82,7 +82,7 @@ public:
     
     void logic( const int &x, const int &y );
     
-    void render( Bitmap *work );
+    void render( const int &totalLength, const int &totalHeight, Bitmap *work );
     
     // Stage be our friend
     friend class MugenStage;
