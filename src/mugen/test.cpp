@@ -253,8 +253,7 @@ void showStage(const string & ourFile){
 	stage.render(&work);
 	work.Stretch(back);
 	Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, viewx, viewy );
-	show_mouse(back.getBitmap());
-        back.BlitToScreen();
+	back.BlitToScreen();
         Util::rest(1);
     }
 
