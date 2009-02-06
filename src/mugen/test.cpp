@@ -229,8 +229,6 @@ void showStage(const string & ourFile){
     Bitmap back( 640, 480 );
     
     while( !quit ){
-        /* todo: explain the reasoning behind clearing back and not work */
-        back.clear();
         keyInputManager::update();
         
 	stage.logic();

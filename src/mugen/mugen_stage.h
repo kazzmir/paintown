@@ -229,7 +229,7 @@ protected:
 	// Sprite file
 	std::string sffFile;
 	// This is debug for backgrounds probably won't use it, clears to magenta before drawing first layer 
-	int debugbg;
+	bool debugbg;
 	
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;

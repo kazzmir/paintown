@@ -66,7 +66,7 @@ fadeRangeHigh(0),
 fadeRangeMid(0),
 reflectionIntensity(0),
 sffFile(""),
-debugbg(0),
+debugbg(false),
 board(0),
 xaxis(0),
 yaxis(0),
@@ -121,7 +121,7 @@ fadeRangeHigh(0),
 fadeRangeMid(0),
 reflectionIntensity(0),
 sffFile(""),
-debugbg(0),
+debugbg(false),
 board(0),
 xaxis(0),
 yaxis(0),
@@ -551,6 +551,8 @@ void MugenStage::logic( ){
 }
 	
 void MugenStage::render( Bitmap *work ){
+    // Clear to magenta like big daddy mugen does
+    if( debugbg )board->floodfill( 0, 0, Bitmap::makeColor(255,0,255) );
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
     }
