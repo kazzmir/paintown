@@ -25,6 +25,22 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 
+PlayerFiller::PlayerFiller():x1(0),x2(50),y1(0),y2(80),xoffset(0),yoffset(0),zoffset(0),facing(1){}
+PlayerFiller::~PlayerFiller() { }
+
+void PlayerFiller::render( Bitmap &work ){
+    const int x = xoffset;
+    const int y = yoffset + zoffset;
+	if( facing ){
+	    work.rectangle( x + x1, y - y1, x + x2, y - y2, Bitmap::makeColor(0,0,255) );
+	    work.vLine( y - y1, x + x2, y - y2, Bitmap::makeColor(255,0,0) );
+	}
+	else{
+	    work.rectangle( x - x1, y - y1, x - x2, y - y2, Bitmap::makeColor(0,0,255) );
+	    work.vLine( y - y1, x - x1, y - y2, Bitmap::makeColor(255,0,0) );
+	}
+}
+
 MugenStage::MugenStage( const string & s ):
 location( s ),
 baseDir(""),
@@ -50,10 +66,10 @@ leftbound(-1000),
 rightbound(1000),
 topbound(-25),
 botbound(0),
-topz(0),
+/*topz(0),
 botz(50),
 topscale(1),
-botscale(1.2),
+botscale(1.2),*/
 screenleft(15),
 screenright(15),
 zoffset(200),
@@ -97,10 +113,10 @@ leftbound(-1000),
 rightbound(1000),
 topbound(-25),
 botbound(0),
-topz(0),
+/*topz(0),
 botz(50),
 topscale(1),
-botscale(1.2),
+botscale(1.2),*/
 screenleft(15),
 screenright(15),
 zoffset(200),
@@ -157,7 +173,7 @@ void MugenStage::load() throw( MugenException ){
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
-    /* Extract info for our first section of our character */
+    /* Extract info for our first section of our stage */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
 	MugenUtil::fixCase(head);
@@ -233,6 +249,9 @@ void MugenStage::load() throw( MugenException ){
 		} else throw MugenException( "Unhandled option in PlayerInfo Section: " + itemhead );
 	    }
 	}
+	else if( head == "scaling" ){ /* do Nothing read below */ }
+	/*
+	Aparently no longer in use, fuck it ignore it
 	else if( head == "scaling" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
@@ -250,6 +269,7 @@ void MugenStage::load() throw( MugenException ){
 		} else throw MugenException( "Unhandled option in Scaling Section: " + itemhead );
 	    }
 	}
+	*/
 	else if( head == "bound" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
@@ -484,12 +504,11 @@ void MugenStage::load() throw( MugenException ){
     }
     
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
-    // Setup board our worksurface to the proper size of the entire stage
+    // Setup board our worksurface to the proper size of the entire stage 320x240 :P
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
-    //board = new Bitmap( 320 + (abs(boundleft) + boundright), 240 + abs(boundhigh) + boundlow );
     board = new Bitmap( 320, 240 );
-    xaxis = startx;//(abs(boundleft) + boundright);//(320 + (abs(boundleft) + boundright)) / 2;
-    yaxis = starty;
+    camerax = xaxis = startx;
+    cameray = yaxis = starty;
     
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
@@ -507,17 +526,27 @@ void MugenStage::load() throw( MugenException ){
 	// now load
 	(*i)->preload( xaxis, yaxis );
     }
+    
+    // Temp remove later
+    players[0].xoffset = 160 + xaxis + p1startx;
+    players[0].yoffset = yaxis + p1starty;
+    players[0].zoffset = zoffset + p1startz;
+    players[0].facing = p1facing;
+    players[1].xoffset = 160 + xaxis + p2startx;
+    players[1].yoffset = yaxis + p2starty;
+    players[1].zoffset = zoffset + p2startz;
+    players[1].facing = p2facing;
 }
 
-void MugenStage::logic( int &x, int &y ){
+void MugenStage::logic( ){
     
-    if( x < boundleft ) x = boundleft;
-    else if( x > boundright )x = boundright;
-    if( y < boundhigh ) y = boundhigh;
-    else if( y > boundlow )y = boundlow;
+    if( camerax < boundleft ) camerax = boundleft;
+    else if( camerax > boundright )camerax = boundright;
+    if( cameray < boundhigh ) cameray = boundhigh;
+    else if( cameray > boundlow )cameray = boundlow;
     
-    const int diffx = startx - x;
-    const int diffy = starty - y;
+    const int diffx = startx - camerax;
+    const int diffy = starty - cameray;
     
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
@@ -537,6 +566,9 @@ void MugenStage::render( Bitmap *work ){
     }
     
     // Players go in here
+    // Temp remove later
+    players[0].render( *board );
+    players[1].render( *board );
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
@@ -544,3 +576,16 @@ void MugenStage::render( Bitmap *work ){
     
     board->Blit( xaxis, yaxis, 320, 240, 0, 0, *work );
 }
+
+void MugenStage::reset( ){
+    camerax = startx; cameray = starty;
+    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	// reset just reloads it to default
+	(*i)->preload( xaxis, yaxis );
+    }
+    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	// reset
+	(*i)->preload( xaxis, yaxis );
+    }
+}
+

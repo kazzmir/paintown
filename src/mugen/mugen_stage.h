@@ -14,6 +14,17 @@ class MugenSound;
 class MugenAnimation;
 class MugenBackground;
 
+class PlayerFiller{
+    public:
+    PlayerFiller();
+    ~PlayerFiller();
+    int x1,x2,y1,y2;
+    int xoffset, yoffset,zoffset;
+    // -1 left 1 right
+    int facing;
+    void render( Bitmap &work );
+};
+
 class MugenStage{
 public:
 	// Location at dataPath() + "mugen/stages/"
@@ -32,17 +43,23 @@ public:
             return animations;
         }
 	
-	inline const int getCameraX() { return startx; }
-	inline const int getCameraY() { return starty; }
+	inline const int getCameraX() { return camerax; }
+	inline const int getCameraY() { return cameray; }
+	
+	inline void setCamera( const int &x, const int &y ) { camerax = x; cameray = y; }
+	inline void moveCamera( const int &x, const int &y ) { camerax += x; cameray += y; }
 	
 	int getTicks();
 	
 	// This will update ticks and controllers. When ready pass the player objects to properly allow camera to follow
 	// For now use view port, x and y screen size will be used to determine width/height
-	void logic( int &x, int &y );
+	void logic();
 	
 	// Render the backgrounds appropriately
 	void render( Bitmap *work );
+	
+	// Reset scenario
+	void reset();
 /*	
 	inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
             return sounds;
@@ -130,11 +147,11 @@ protected:
 	/*
 	;--------------------------------------------------------
 	[Scaling]
-	;No need to change these values*/
+	;No need to change these values
 	int topz;	//     = 0       ;Top z-coordinate for scaling
 	int botz; //   ;Bottom z-coordinate for scaling
 	double topscale; //      ;Scale to use at top
-	double botscale; //     ;Scale to use at bottom
+	double botscale; //     ;Scale to use at bottom*/
 	
 	/*
 	;--------------------------------------------------------
@@ -245,6 +262,11 @@ protected:
 	// Our real axis givin that we have to use negatives
 	int xaxis;
 	int yaxis;
+	int camerax;
+	int cameray;
+	
+	// Temp solution to figure out the player location and handling
+	PlayerFiller players[2];
 	
 };
 

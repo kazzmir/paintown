@@ -227,32 +227,35 @@ void showStage(const string & ourFile){
     
     Bitmap work( 320, 240 );
     Bitmap back( 640, 480 );
-    int viewx = stage.getCameraX(), viewy = stage.getCameraY();
+    
     while( !quit ){
         /* todo: explain the reasoning behind clearing back and not work */
         back.clear();
         keyInputManager::update();
         
-	stage.logic(viewx,viewy);
+	stage.logic();
         
         if( keyInputManager::keyState(keys::UP, false) ){
-           viewy--;
+           stage.moveCamera(0,-1);
         }
         if( keyInputManager::keyState(keys::DOWN, false) ){
-           viewy++;
+           stage.moveCamera(0,1);
         }
         if( keyInputManager::keyState(keys::LEFT, false)){
-           viewx--;
+           stage.moveCamera(-1,0);
         }
         if( keyInputManager::keyState(keys::RIGHT, false)){
-           viewx++;
+           stage.moveCamera(1,0);
         }
+	if( keyInputManager::keyState(keys::SPACE, true)){
+	    stage.reset();
+	}
 	
         quit |= keyInputManager::keyState(keys::ESC, true );
 	
 	stage.render(&work);
 	work.Stretch(back);
-	Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, viewx, viewy );
+	Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, stage.getCameraX(), stage.getCameraY() );
 	back.BlitToScreen();
         Util::rest(1);
     }
