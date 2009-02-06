@@ -25,22 +25,6 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 
-PlayerFiller::PlayerFiller():x1(0),x2(50),y1(0),y2(80),xoffset(0),yoffset(0),zoffset(0),facing(1){}
-PlayerFiller::~PlayerFiller() { }
-
-void PlayerFiller::render( Bitmap &work ){
-    const int x = xoffset;
-    const int y = yoffset + zoffset;
-	if( facing ){
-	    work.rectangle( x + x1, y - y1, x + x2, y - y2, Bitmap::makeColor(0,0,255) );
-	    work.vLine( y - y1, x + x2, y - y2, Bitmap::makeColor(255,0,0) );
-	}
-	else{
-	    work.rectangle( x - x1, y - y1, x - x2, y - y2, Bitmap::makeColor(0,0,255) );
-	    work.vLine( y - y1, x - x1, y - y2, Bitmap::makeColor(255,0,0) );
-	}
-}
-
 MugenStage::MugenStage( const string & s ):
 location( s ),
 baseDir(""),
@@ -88,7 +72,7 @@ xaxis(0),
 yaxis(0){
 }
 
-MugenStage::MugenStage( const char * location ):
+MugenStage::MugenStage( const char * location ): World(),
 location( std::string(location) ),
 baseDir(""),
 name(""),
@@ -526,16 +510,6 @@ void MugenStage::load() throw( MugenException ){
 	// now load
 	(*i)->preload( xaxis, yaxis );
     }
-    
-    // Temp remove later
-    players[0].xoffset = 160 + xaxis + p1startx;
-    players[0].yoffset = yaxis + p1starty;
-    players[0].zoffset = zoffset + p1startz;
-    players[0].facing = p1facing;
-    players[1].xoffset = 160 + xaxis + p2startx;
-    players[1].yoffset = yaxis + p2starty;
-    players[1].zoffset = zoffset + p2startz;
-    players[1].facing = p2facing;
 }
 
 void MugenStage::logic( ){
@@ -566,9 +540,6 @@ void MugenStage::render( Bitmap *work ){
     }
     
     // Players go in here
-    // Temp remove later
-    players[0].render( *board );
-    players[1].render( *board );
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
@@ -587,5 +558,12 @@ void MugenStage::reset( ){
 	// reset
 	(*i)->preload( xaxis, yaxis );
     }
+}
+
+void MugenStage::act(){
+    logic();
+}
+void MugenStage::draw( Bitmap * work ){
+    render( work );
 }
 

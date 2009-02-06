@@ -7,6 +7,9 @@
 #include <map>
 #include "mugen_exception.h"
 
+// Implement world because raf is a kind man
+#include "world.h"
+
 class Bitmap;
 class MugenItemContent;
 class MugenSprite;
@@ -14,18 +17,7 @@ class MugenSound;
 class MugenAnimation;
 class MugenBackground;
 
-class PlayerFiller{
-    public:
-    PlayerFiller();
-    ~PlayerFiller();
-    int x1,x2,y1,y2;
-    int xoffset, yoffset,zoffset;
-    // -1 left 1 right
-    int facing;
-    void render( Bitmap &work );
-};
-
-class MugenStage{
+class MugenStage : public World{
 public:
 	// Location at dataPath() + "mugen/stages/"
 	MugenStage( const string & s );
@@ -60,11 +52,11 @@ public:
 	
 	// Reset scenario
 	void reset();
-/*	
-	inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
-            return sounds;
-        }
-*/
+	
+	// Inherited world actions
+	virtual void act();
+	virtual void draw( Bitmap * work );
+	
 protected:
 
 	/* Location is the directory passed in ctor
@@ -264,9 +256,6 @@ protected:
 	int yaxis;
 	int camerax;
 	int cameray;
-	
-	// Temp solution to figure out the player location and handling
-	PlayerFiller players[2];
 	
 };
 
