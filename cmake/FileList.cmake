@@ -12,6 +12,9 @@ src/resource.cpp
 src/world.cpp
 src/versus_world.cpp)
 
+set(GAME_SRC
+src/game/console.cpp)
+
 set(SCRIPT_SRC
 src/script/script.cpp
 src/script/modules/python.cpp)
