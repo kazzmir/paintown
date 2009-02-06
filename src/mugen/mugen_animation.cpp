@@ -162,6 +162,16 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
     if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
 }
 
+void MugenAnimation::forwardFrame(){
+    if( position < frames.size() -1 )position++;
+    else position = loopPosition;
+}
+
+void MugenAnimation::backFrame(){
+    if( position > loopPosition )position--;
+    else position = position = frames.size() - 1;
+}
+
 // Get name of type of animation
 const std::string MugenAnimation::getName(const MugenAnimationType t){
     switch( t ){

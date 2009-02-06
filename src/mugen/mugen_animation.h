@@ -189,10 +189,19 @@ class MugenAnimation{
 	// Get name of type of animation
 	static const std::string getName(const MugenAnimationType t);
 	
-	// Update logic
+	// Update logic | go through frames
 	void logic();
 	
+	// Render current frame
 	void render( int xaxis, int yaxis, Bitmap &work );
+	
+	// Go forward a frame 
+	void forwardFrame();
+	// Go back a frame
+	void backFrame();
+	
+	inline unsigned int getCurrentPosition() { return position; }
+	inline MugenFrame *getCurrentFrame(){ return frames[position]; }
 	
 	// Set type number
 	inline void setType(const MugenAnimationType t){ type = t; }
@@ -201,7 +210,7 @@ class MugenAnimation{
 	inline const MugenAnimationType getType(){ return type; }
 	
 	// Show offense | defense Clsn framework
-	inline void toggleDefense(){ showOffense = !showDefense; }
+	inline void toggleDefense(){ showDefense = !showDefense; }
 	inline void toggleOffense(){ showOffense = !showOffense; }
 	
 

@@ -83,23 +83,16 @@ void showCharacter(const string & ourFile){
     bool showClsn1 = false;
     bool showClsn2 = false;
     bool moveImage = false;
-    int ticks = 0;
-    int loop = 0;
-
+   
     map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin();
     unsigned int currentAnim = 0;
     unsigned int lastAnim = character.getAnimations().size() -1;
     unsigned int currentFrame = 0;
-    unsigned int lastFrame = it->second->getFrames().size() -1;
-
+    
     if (it->second->getFrames().size() == 0){
         Global::debug(0) << "No frames!" << endl;
         exit(0);
     }
-
-    MugenSprite * sprite = it->second->getFrames()[currentFrame]->sprite;
-
-    Bitmap b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
 
     Bitmap work( 640, 480 );
     
@@ -109,70 +102,40 @@ void showCharacter(const string & ourFile){
     while( !quit ){
         work.clear();
         keyInputManager::update();
-        ++ticks;
-        // Since -1 is to stop the animation completely, we'll give it a pause of 150 ticks, because we want to see the loop
-        const int time = it->second->getFrames()[currentFrame]->time == -1 ? 150 : it->second->getFrames()[currentFrame]->time;
-        if(animate && ticks >= 15 + time){
-            ticks = 0;
-            if( it->second->getFrames()[currentFrame]->loopstart ) loop = currentFrame;
-            if( currentFrame < lastFrame )currentFrame++;
-            else currentFrame = loop;
-            sprite = it->second->getFrames()[currentFrame]->sprite;
-            if (sprite != 0){
-                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-            }
-        }
-
+	if( animate ) it->second->logic();
+        
         if( keyInputManager::keyState(keys::UP, true) ){
             if( currentAnim < lastAnim ){
                 currentAnim++;
                 it++;
             }
-            loop = 0;
             currentFrame = 0;
-            lastFrame = it->second->getFrames().size()-1;
-            sprite = it->second->getFrames()[currentFrame]->sprite;
-            if (sprite != 0){
-                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-            }
         }
         else if( keyInputManager::keyState(keys::DOWN, true) ){
             if( currentAnim > 0 ){
                 currentAnim--;
                 it--;
             }
-            loop = 0;
             currentFrame = 0;
-            lastFrame = it->second->getFrames().size()-1;
-            sprite = it->second->getFrames()[currentFrame]->sprite;
-            if (sprite != 0){
-                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-            }
         }
         else if( keyInputManager::keyState(keys::LEFT, true) && !animate){
-            if( currentFrame > 0 )currentFrame--;
-            else currentFrame = lastFrame;
-            sprite = it->second->getFrames()[currentFrame]->sprite;
-            if (sprite != 0){
-                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-            }
+	    it->second->forwardFrame();
+	    currentFrame = it->second->getCurrentPosition();
         }
         else if( keyInputManager::keyState(keys::RIGHT, true) && !animate){
-            if( currentFrame < lastFrame )currentFrame++;
-            else currentFrame = 0;
-            sprite = it->second->getFrames()[currentFrame]->sprite;
-            if (sprite != 0){
-                b = Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength);
-            }
+	    it->second->backFrame();
+	    currentFrame = it->second->getCurrentPosition();
         }
         else if( keyInputManager::keyState(keys::SPACE, true) ){
             animate = !animate;
         }
         else if( keyInputManager::keyState('a', true) ){
             showClsn1 = !showClsn1;
+	    it->second->toggleOffense();
         }
         else if( keyInputManager::keyState('d', true) ){
             showClsn2 = !showClsn2;
+	    it->second->toggleDefense();
         }
 	
 	if( mouse_b & 1 )moveImage = true;
@@ -180,30 +143,16 @@ void showCharacter(const string & ourFile){
 	
         quit |= keyInputManager::keyState(keys::ESC, true );
 	
-	if( sprite!= 0 ){
-	    // Figure out the correct placement according to axis
-	    if( moveImage ){ xaxis=mouse_x; yaxis =mouse_y; }
-	    const int placex = (xaxis - sprite->x ) + it->second->getFrames()[currentFrame]->xoffset;
-	    const int placey = (yaxis - sprite->y ) + it->second->getFrames()[currentFrame]->yoffset;
-	    
-	    if( it->second->getFrames()[currentFrame]->flipHorizontal && ! it->second->getFrames()[currentFrame]->flipVertical ){
-		b.drawHFlip(placex, placey, work);
-	    }
-	    else if( it->second->getFrames()[currentFrame]->flipVertical && ! it->second->getFrames()[currentFrame]->flipHorizontal ){
-		b.drawVFlip(placex, placey, work);
-	    }
-	    else if( it->second->getFrames()[currentFrame]->flipVertical && it->second->getFrames()[currentFrame]->flipHorizontal ){
-		b.drawRotate(placex, placey, 180, work);
-	    }
-	    else b.draw(placex, placey, work);
-	    
-	    int start = 10;
-	     if( showClsn2 )showCollision( it->second->getFrames()[currentFrame]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ), start  );
-	     if( showClsn1 )showCollision( it->second->getFrames()[currentFrame]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ), start  );
-	}
+	if( moveImage ){ xaxis=mouse_x; yaxis =mouse_y; }
+	it->second->render( xaxis, yaxis, work );
+	
+	int start = 10;
+	if( showClsn2 )showCollision( it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ), start  );
+	if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ), start  );
+	
         Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s), Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
-        if(sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->length, sprite->x, sprite->y, sprite->groupNumber, sprite->imageNumber);
-        Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, b.getWidth(), b.getHeight() );
+        if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->length, it->second->getCurrentFrame()->sprite->x, it->second->getCurrentFrame()->sprite->y, it->second->getCurrentFrame()->sprite->groupNumber, it->second->getCurrentFrame()->sprite->imageNumber);
+        Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->bmp->getWidth(), it->second->getCurrentFrame()->bmp->getHeight() );
         Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
         Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
         Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
