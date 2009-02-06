@@ -69,7 +69,15 @@ sffFile(""),
 debugbg(0),
 board(0),
 xaxis(0),
-yaxis(0){
+yaxis(0),
+camerax(0),
+cameray(0),
+totalRounds(3),
+round(1),
+totalTime(99),
+time(99),
+p1points(0),
+p2points(0){
 }
 
 MugenStage::MugenStage( const char * location ): World(),
@@ -116,7 +124,15 @@ sffFile(""),
 debugbg(0),
 board(0),
 xaxis(0),
-yaxis(0){
+yaxis(0),
+camerax(0),
+cameray(0),
+totalRounds(3),
+round(1),
+totalTime(99),
+time(99),
+p1points(0),
+p2points(0){
 }
 
 MugenStage::~MugenStage(){

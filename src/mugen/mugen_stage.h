@@ -254,8 +254,29 @@ protected:
 	// Our real axis givin that we have to use negatives
 	int xaxis;
 	int yaxis;
+	
+	// Camera location on stage
 	int camerax;
 	int cameray;
+	
+	// Total rounds set to -1 for infinite rounds
+	int totalRounds;
+	
+	// Current round
+	int round;
+	
+	// Total Time per round -1 for infinite time
+	int totalTime;
+	
+	// Current time
+	int time;
+	
+	// p1 round points (this also goes for team players ie 2v1 etc)
+	int p1points;
+	
+	// p2 round points
+	int p2points;
+	
 	
 };
 
