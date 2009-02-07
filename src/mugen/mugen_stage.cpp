@@ -584,7 +584,7 @@ void MugenStage::render( Bitmap *work ){
 
 void MugenStage::reset( ){
     camerax = startx; cameray = starty;
-    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	// reset just reloads it to default
 	(*i)->preload( xaxis, yaxis );
     }

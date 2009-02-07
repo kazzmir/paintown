@@ -129,6 +129,9 @@ public:
     int yoffset;
     int movex;
     int movey;
+    double velx;
+    double vely;
+    int ticks;
     
     // sprite 
     MugenSprite *sprite;

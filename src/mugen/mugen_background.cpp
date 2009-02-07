@@ -1,5 +1,6 @@
 #include "mugen_background.h"
 
+#include <math.h>
 #include <ostream>
 #include <cstring>
 #include <string>
@@ -108,6 +109,9 @@ xoffset(0),
 yoffset(0),
 movex(0),
 movey(0),
+velx(0),
+vely(0),
+ticks(0),
 sprite(0),
 spriteBmp(0),
 action(0){
@@ -127,13 +131,23 @@ void MugenBackground::logic( const int &x, const int &y ){
     movex = movey = 0;
     movex += x * deltax;
     movey += y * deltay;
+    velx += velocityx;
+    vely += velocityy;
+    //whatvar = sinx_amp * sin(whatvar*sinx_period + sinx_offset);
+    //whatvar = siny_amp * sin(whatvar*siny_period + siny_offset);
+    ticks++;
+    if( ticks >= 1 ){
+	// Do frame or whatever movement etc
+	// Reset
+	ticks = 0;
+    }
     if( type == Anim ) action->logic();
     Global::debug(1) << "x move: " << x << " | y move: " << y << endl;
 }
     
 void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
-    const int x = xoffset + movex;
-    const int y = yoffset + movey;
+    const int x = xoffset + movex + velx;
+    const int y = yoffset + movey + vely;
     switch( type ){
 	case Normal:{
 	    // Normal is a sprite
@@ -191,11 +205,13 @@ void MugenBackground::preload( const int &xaxis, const int &yaxis ){
 	// Set our initial offsets
 	xoffset = 160 + (xaxis - sprite->x) + startx;
 	yoffset = (yaxis - sprite->y) + starty;
+	velx = vely = 0;
     }
     else{
 	// Set our initial offsets
 	xoffset = 160 + (xaxis) + startx;
 	yoffset = (yaxis) + starty;
+	velx = vely = 0;
     }
 }
 
