@@ -105,6 +105,7 @@ sinx_offset(0),
 siny_amp(0),
 siny_period(0),
 siny_offset(0),
+sin_angle(0),
 xoffset(0),
 yoffset(0),
 movex(0),
@@ -133,6 +134,8 @@ void MugenBackground::logic( const int &x, const int &y ){
     movey += y * deltay;
     velx += velocityx;
     vely += velocityy;
+    /* how much should sin_angle be incremented by each frame? */
+    sin_angle += 0.00005;
     //whatvar = sinx_amp * sin(whatvar*sinx_period + sinx_offset);
     //whatvar = siny_amp * sin(whatvar*siny_period + siny_offset);
     ticks++;
@@ -146,8 +149,8 @@ void MugenBackground::logic( const int &x, const int &y ){
 }
     
 void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
-    const int x = xoffset + movex + velx;
-    const int y = yoffset + movey + vely;
+    const int x = (int)(xoffset + movex + velx + sinx_amp * sin(sin_angle*sinx_period + sinx_offset));
+    const int y = (int)(yoffset + movey + vely + siny_amp * sin(sin_angle*siny_period + siny_offset));
     switch( type ){
 	case Normal:{
 	    // Normal is a sprite

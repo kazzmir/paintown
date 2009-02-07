@@ -125,6 +125,7 @@ public:
     double siny_amp;
     double siny_period;
     double siny_offset;
+    double sin_angle;
     int xoffset;
     int yoffset;
     int movex;
