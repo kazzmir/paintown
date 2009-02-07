@@ -134,7 +134,9 @@ void MugenBackground::logic( const int &x, const int &y ){
     movey += y * deltay;
     velx += velocityx;
     vely += velocityy;
-    /* how much should sin_angle be incremented by each frame? */
+    /* how much should sin_angle be incremented by each frame?
+     * I think the total angle should be (ticks % sin_period) * 2pi / sin_period
+     */
     sin_angle += 0.00005;
     //whatvar = sinx_amp * sin(whatvar*sinx_period + sinx_offset);
     //whatvar = siny_amp * sin(whatvar*siny_period + siny_offset);
