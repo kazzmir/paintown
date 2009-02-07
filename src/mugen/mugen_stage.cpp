@@ -25,6 +25,21 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 
+static void correctStageName( std::string &str ){
+    if( str.find( "stages/") != std::string::npos || str.find( "stages\\") != std::string::npos ){
+	size_t rem = str.find_first_of( "stages/" );
+	if( rem != std::string::npos ){
+	    str.replace( rem, std::string("stages/").size(), "" );
+	    return;
+	}
+	rem = str.find_first_of( "stages\\" );
+	if( rem != std::string::npos ){
+	    str.replace( rem, std::string("stages\\").size(), "" );
+	    return;
+	}
+    }
+}
+
 MugenStage::MugenStage( const string & s ):
 location( s ),
 baseDir(""),
@@ -340,6 +355,7 @@ void MugenStage::load() throw( MugenException ){
 		if ( itemhead.find("spr")!=std::string::npos ){
 		    *content->getNext() >> sffFile;
 		    Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
+		    correctStageName( sffFile );
 		    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir, sffFile), "", sprites );
 		} else if ( itemhead.find("debugbg")!=std::string::npos ){
 		    *content->getNext() >> debugbg;
