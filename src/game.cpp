@@ -20,6 +20,7 @@
 #include "network/network.h"
 #include "world.h"
 #include "game/adventure_world.h"
+#include "game/console.h"
 #include "versus_world.h"
 #include "init.h"
 #include <iostream>
@@ -173,6 +174,11 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 	// Bitmap work( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 
+        /* 100 pixel tall console */
+        Console console(100);
+        bool toggleConsole = false;
+        const int consoleKey = Keyboard::Key_TILDE;
+
         world.getEngine()->createWorld(world);
 
 	Global::speed_counter = 0;
@@ -187,8 +193,10 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 
 	double gameSpeed = startingGameSpeed();
 	
-	double runCounter = 0;
 	bool paused = false;
+
+        /* dont put any variables after runCounter and before the while loop */
+	double runCounter = 0;
 	while ( ! done ){
 
 		bool draw = false;
@@ -202,6 +210,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 					draw = true;
 					world.act();
                                         world.getEngine()->tick();
+                                        console.act();
 					runCounter -= 1.0;
 
 					for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
@@ -237,6 +246,15 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
                         }
                         if ( key[ Keyboard::Key_F10 ] ){
                             show_fps = false;
+                        }
+
+                        if (key[consoleKey] && !toggleConsole){
+                            console.toggle();
+                            toggleConsole = true;
+                        }
+
+                        if (!key[consoleKey]){
+                            toggleConsole = false;
                         }
 
 			if ( key[ Keyboard::Key_P ] ){
@@ -338,6 +356,7 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
                         if ( show_fps ){
                             font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, real_fps );
                         }
+                        console.draw(screen_buffer);
 
 			/* getX/Y move when the world is quaking */
 			screen_buffer.BlitToScreen( world.getX(), world.getY() );
