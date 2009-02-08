@@ -174,8 +174,8 @@ static bool playLevel( World & world, const vector< Object * > & players, int he
 	// Bitmap work( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 
-        /* 100 pixel tall console */
-        Console console(100);
+        /* 150 pixel tall console */
+        Console console(150);
         bool toggleConsole = false;
         const int consoleKey = Keyboard::Key_TILDE;
 

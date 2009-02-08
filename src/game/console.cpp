@@ -1,5 +1,7 @@
 #include "console.h"
 #include "util/bitmap.h"
+#include "util/font.h"
+#include "util/funcs.h"
 
 Console::Console(const int maxHeight):
 state(Closed),
@@ -43,7 +45,13 @@ void Console::act(){
 void Console::draw(const Bitmap & work){
     /* if we can show something */
     if (height > 0){
+        Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	Bitmap::transBlender(0, 0, 0, 160);
         work.rectangleFill(0, 0, work.getWidth(), height, Bitmap::makeColor(200,0,0));
+        work.horizontalLine(0, height, work.getWidth(), Bitmap::makeColor(200, 200, 200));
+        const Font & font = Font::getFont(Util::getDataPath() + "/fonts/arial.ttf", 15, 15);
+        font.printf(0, height - font.getHeight(), Bitmap::makeColor(255, 255, 255), work, "Console!", 0 );
+        Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
     
