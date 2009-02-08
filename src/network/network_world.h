@@ -2,7 +2,7 @@
 #define _paintown_network_world_h
 
 #include "network.h"
-#include "world.h"
+#include "game/adventure_world.h"
 #include "util/load_exception.h"
 #include "object/object.h"
 #include <pthread.h>
@@ -14,7 +14,7 @@ struct Packet{
 	Network::Socket socket;
 };
 
-class NetworkWorld: public World{
+class NetworkWorld: public AdventureWorld {
 public:
 	NetworkWorld( const std::vector< NLsocket > & sockets, const std::vector< Object * > & players, const string & path, int screen_size = 320 ) throw ( LoadException );
 	

@@ -19,6 +19,7 @@
 #include "loading.h"
 #include "network/network.h"
 #include "world.h"
+#include "game/adventure_world.h"
 #include "versus_world.h"
 #include "init.h"
 #include <iostream>
@@ -428,7 +429,7 @@ void realGame( const vector< Object * > & players, const string & levelFile ){
                         }
                         */
 
-			World world( players, *it );
+			AdventureWorld world( players, *it );
 
 			Music::pause();
 			Music::fadeIn( 0.3 );

@@ -1,5 +1,6 @@
 #include "object/object.h"
 #include "object/character.h"
+#include "game/adventure_world.h"
 #include "network_world.h"
 #include "network.h"
 #include "util/funcs.h"
@@ -41,7 +42,7 @@ static void * handleMessages( void * arg ){
 }
 
 NetworkWorld::NetworkWorld( const vector< NLsocket > & sockets, const vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
-World( players, path, screen_size ),
+AdventureWorld( players, path, screen_size ),
 sockets( sockets ),
 sent_messages( 0 ),
 running( true ){
@@ -100,7 +101,7 @@ void NetworkWorld::addObject( Object * o ){
 		}
 	}
 
-	World::addObject( o );
+	AdventureWorld::addObject( o );
 }
 	
 void NetworkWorld::addMessage( Network::Message m, Network::Socket from ){
@@ -281,7 +282,7 @@ void NetworkWorld::flushOutgoing(){
 }
 	
 void NetworkWorld::act(){
-	World::act();
+	AdventureWorld::act();
 
 	vector< Network::Message > messages = getIncomingMessages();
 	for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){

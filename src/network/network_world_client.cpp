@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "game/adventure_world.h"
 #include "network_world_client.h"
 #include "network.h"
 #include "level/scene.h"
@@ -46,7 +47,7 @@ static void * handleMessages( void * arg ){
 }
 	
 NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size ) throw ( LoadException ):
-World( players, path, screen_size ),
+AdventureWorld( players, path, screen_size ),
 server( server ),
 world_finished( false ),
 id( id ),

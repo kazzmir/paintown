@@ -19,107 +19,61 @@ namespace Script{
     class Engine;
 }
 
-struct PlayerTracker{
-	double min_x;
-	Object * player;
-        void * script;
-};
-
 class World{
 public:
 	World();
-	World( const std::vector< Object * > & players, const std::string & path, int screen_size = 320 ) throw ( LoadException );
-
 	virtual ~World();
 
-	void Quake( int q );
+	virtual void Quake( int q );
 
 	inline const int getQuake() const {
 		return quake_time;
 	}
 
-	virtual void act();
-	virtual void draw( Bitmap * work );
-	virtual void addObject( Object * o );
+	virtual void act() = 0;
+	virtual void draw( Bitmap * work ) = 0;
+	virtual void addObject( Object * o ) = 0;
 
-	virtual const bool finished() const;
+	virtual const bool finished() const = 0;
 
-	virtual void reloadLevel() throw( LoadException );
+	virtual void reloadLevel() throw( LoadException ) = 0;
 
-        virtual Script::Engine * const getEngine() const;
+        virtual Script::Engine * const getEngine() const = 0;
 
 	/* upper left hand corner of the screen */
-	virtual int getX();
-	virtual int getY();
+	virtual int getX() = 0;
+	virtual int getY() = 0;
 
-        virtual const deque<Bitmap*> & getScreenshots();
+        virtual const deque<Bitmap*> & getScreenshots() = 0;
 
-        virtual const int levelLength() const;
-        virtual const Block * currentBlock() const;
+        virtual const int levelLength() const = 0;
+        virtual const Block * currentBlock() const = 0;
         
         virtual inline const vector<Object*> & getObjects() const {
             return objects;
         }
         
-        void addEnemy(Enemy * obj);
+        virtual void addEnemy(Enemy * obj) = 0;
 
-	virtual void doScene( int min_x, int max_x );
+	virtual void doScene( int min_x, int max_x ) = 0;
 
-        virtual Object * findObject(int id);
+        virtual Object * findObject(int id) = 0;
 
-	virtual int getMaximumZ();
-	virtual int getMinimumZ();
+	virtual int getMaximumZ() = 0;
+	virtual int getMinimumZ() = 0;
 
-	virtual void drawMiniMaps( bool b );
-	virtual bool shouldDrawMiniMaps();
+	virtual void drawMiniMaps( bool b ) = 0;
+	virtual bool shouldDrawMiniMaps() = 0;
 
-	void killAllHumans( Object * player );
+	virtual void killAllHumans( Object * player ) = 0;
 
-	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
-	Network::Message createBangMessage( int x, int y, int z );
-
-protected:
-
-	Network::Message deleteMessage( unsigned int id );
-	void loadLevel( const std::string & path ) throw( LoadException );
-
-	void drawWorld( const PlayerTracker & tracker, Bitmap * where, const std::map< int, std::vector< Object * > > & object_z );
-
-	virtual void deleteObjects( std::vector< Object * > * objects );
-
-	virtual void doLogic();
-
-	virtual const bool isPlayer( Object * o ) const;
-
-        inline const bool shouldTakeScreenshot() const {
-            return takeAScreenshot;
-        }
-
-        inline void takeScreenshot(){
-            takeAScreenshot = true;
-        }
-
-        virtual void doTakeScreenshot(Bitmap * work);
+	virtual void addMessage(Network::Message m, Network::Socket from = 0) = 0;
+	virtual Network::Message createBangMessage( int x, int y, int z ) = 0;
 
 protected:
-	std::vector< PlayerTracker > players;
-	Object * bang;
-	
-	std::vector< Object * > objects;
-
-	Scene * scene;
-
 	int quake_time;
-	// int min_x;
-	int screen_size;
-	std::string path;
+	std::vector<Object *> objects;
 
-	bool draw_minimaps;
-	
-	Bitmap * mini_map;
-
-        deque<Bitmap*> screenshots;
-        bool takeAScreenshot;
 public:
 	enum{
 		NOTHING,
@@ -141,7 +95,6 @@ public:
 		GAME_OVER,
                 IS_PLAYER,
 	};
-
 };
 
 #endif

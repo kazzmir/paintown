@@ -1,4 +1,4 @@
-#include "world.h"
+#include "game/adventure_world.h"
 #include "versus_world.h"
 #include "object/character.h"
 #include "util/bitmap.h"
@@ -6,7 +6,7 @@
 #include "object/effect.h"
 
 VersusWorld::VersusWorld( int z, Character * player1, Character * player2 ):
-World(),
+AdventureWorld(),
 player1( player1 ),
 player2( player2 ),
 z( z ){

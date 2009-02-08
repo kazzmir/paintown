@@ -10,6 +10,9 @@
 // Implement world because raf is a kind man
 #include "world.h"
 
+/* dont extend AdventureWorld, but need it for now */
+#include "game/adventure_world.h"
+
 class Bitmap;
 class MugenItemContent;
 class MugenSprite;
@@ -17,7 +20,7 @@ class MugenSound;
 class MugenAnimation;
 class MugenBackground;
 
-class MugenStage : public World{
+class MugenStage: public AdventureWorld {
 public:
 	// Location at dataPath() + "mugen/stages/"
 	MugenStage( const string & s );

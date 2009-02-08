@@ -2,12 +2,12 @@
 #define _paintown_network_world_client_h
 
 #include <pthread.h>
-#include "world.h"
+#include "game/adventure_world.h"
 #include "network.h"
 #include "object/object.h"
 #include "util/load_exception.h"
 
-class NetworkWorldClient: public World{
+class NetworkWorldClient: public AdventureWorld {
 public:
 
 	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size = 320 ) throw ( LoadException );

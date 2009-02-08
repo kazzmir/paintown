@@ -586,10 +586,16 @@ Animation * Character::getMovement( const unsigned int x ){
 }
 
 bool Character::testAnimation(){
+    /*
+    Global::debug(0) << "Cannot test animations anymore" << endl;
+    return false;
+    */
+    /*
 	World w;
 	vector< Object * > others;
 	vector< Object * > more;
 	act( &others, &w, &more );
+        */
 	return animation_current->Act();
 }
 

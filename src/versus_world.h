@@ -1,12 +1,12 @@
 #ifndef _paintown_versus_world_h
 #define _paintown_versus_world_h
 
-#include "world.h"
+#include "game/adventure_world.h"
 
 class Character;
 class Bitmap;
 
-class VersusWorld: public World {
+class VersusWorld: public AdventureWorld {
 public:
 	VersusWorld( int z, Character * player1, Character * player2 );
 	virtual ~VersusWorld();

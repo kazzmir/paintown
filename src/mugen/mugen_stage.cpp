@@ -15,6 +15,8 @@
 #include "util/bitmap.h"
 #include "globals.h"
 
+#include "game/adventure_world.h"
+
 #include "mugen_animation.h"
 #include "mugen_background.h"
 #include "mugen_item.h"
@@ -41,6 +43,7 @@ static void correctStageName( std::string &str ){
 }
 
 MugenStage::MugenStage( const string & s ):
+AdventureWorld(),
 location( s ),
 baseDir(""),
 name(""),
@@ -95,7 +98,7 @@ p1points(0),
 p2points(0){
 }
 
-MugenStage::MugenStage( const char * location ): World(),
+MugenStage::MugenStage( const char * location ): AdventureWorld(),
 location( std::string(location) ),
 baseDir(""),
 name(""),
