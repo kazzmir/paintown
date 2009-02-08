@@ -44,6 +44,7 @@ public:
 	virtual int getX() = 0;
 	virtual int getY() = 0;
 
+        /* this shouldn't be here */
         virtual const deque<Bitmap*> & getScreenshots() = 0;
 
         virtual const int levelLength() const = 0;
@@ -53,9 +54,8 @@ public:
             return objects;
         }
         
+        /* bleh.. */
         virtual void addEnemy(Enemy * obj) = 0;
-
-	virtual void doScene( int min_x, int max_x ) = 0;
 
         virtual Object * findObject(int id) = 0;
 
@@ -75,26 +75,44 @@ protected:
 	std::vector<Object *> objects;
 
 public:
-	enum{
-		NOTHING,
-		CREATE_CHARACTER,
-		CREATE_CAT,
-		CREATE_BANG,
-		CREATE_ITEM,
-		CREATE_PROJECTILE,
-		NEXT_BLOCK,
-		FINISH,
-		REMOVE, /* remove object from world */
-		SET_ID,
-		OK,
-		LOAD_LEVEL,
-		DELETE_OBJ, /* remove object and delete it */
-		GRAB,
-		THROWN,
-		IGNORE_MESSAGE,
-		GAME_OVER,
-                IS_PLAYER,
-	};
+        enum{
+            /* no action, just a dummy value */
+            NOTHING,
+            /* create a new character */
+            CREATE_CHARACTER,
+            /* create a cat */
+            CREATE_CAT,
+            /* create a bang effect */
+            CREATE_BANG,
+            /* create an item */
+            CREATE_ITEM,
+            /* create a projectile */
+            CREATE_PROJECTILE,
+            /* advance a block in the game */
+            NEXT_BLOCK,
+            /* the level is finished */
+            FINISH,
+            /* remove object from world */
+            REMOVE,
+            /* set id of the player */
+            SET_ID,
+            /* acknowledge a message */
+            OK,
+            /* load a new level */
+            LOAD_LEVEL,
+            /* remove object and delete it */
+            DELETE_OBJ,
+            /* grab a character */
+            GRAB,
+            /* throw a character */
+            THROWN,
+            /* dummy message (different from NOTHING) */
+            IGNORE_MESSAGE,
+            /* entire game is over, time to go outside */
+            GAME_OVER,
+            /* entire game is over, time to go outside */
+            IS_PLAYER,
+        };
 };
 
 #endif
