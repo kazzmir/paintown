@@ -90,6 +90,8 @@ xaxis(0),
 yaxis(0),
 camerax(0),
 cameray(0),
+stageStart(false),
+ticker(0),
 totalRounds(3),
 round(1),
 totalTime(99),
@@ -145,6 +147,8 @@ xaxis(0),
 yaxis(0),
 camerax(0),
 cameray(0),
+stageStart(false),
+ticker(0),
 totalRounds(3),
 round(1),
 totalTime(99),
@@ -368,7 +372,7 @@ void MugenStage::load() throw( MugenException ){
 	else if( head == "music" ){ /* Ignore for now */ }
 	// This our background data definitions
 	else if( head.find("bg") !=std::string::npos ){
-	    MugenBackground *temp = new MugenBackground();
+	    MugenBackground *temp = new MugenBackground(ticker);
 	    head.replace(0,3,"");
 	    temp->name = head;
 	    Global::debug(1) << "Found background: " << temp->name << endl;
@@ -548,6 +552,12 @@ void MugenStage::load() throw( MugenException ){
 }
 
 void MugenStage::logic( ){
+    
+    // implement some stuff before we actually begin the round then start the round
+    if(!stageStart)stageStart = true;
+    
+    // Run our ticker on and on like energizer bunnies (tm)
+    ticker++;
     
     if( camerax < boundleft ) camerax = boundleft;
     else if( camerax > boundright )camerax = boundright;

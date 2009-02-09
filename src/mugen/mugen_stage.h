@@ -44,7 +44,7 @@ public:
 	inline void setCamera( const int &x, const int &y ) { camerax = x; cameray = y; }
 	inline void moveCamera( const int &x, const int &y ) { camerax += x; cameray += y; }
 	
-	int getTicks();
+	inline unsigned long int getTicks(){ return ticker; }
 	
 	// This will update ticks and controllers. When ready pass the player objects to properly allow camera to follow
 	// For now use view port, x and y screen size will be used to determine width/height
@@ -261,6 +261,12 @@ protected:
 	// Camera location on stage
 	int camerax;
 	int cameray;
+	
+	// Start the stage sometime
+	bool stageStart;
+	
+	// Our ticker/frames during duration of the entire stage lifetime
+	unsigned long int ticker;
 	
 	// Total rounds set to -1 for infinite rounds
 	int totalRounds;

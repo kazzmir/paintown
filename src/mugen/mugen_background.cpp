@@ -71,7 +71,7 @@ void MugenBgController::act( std::map<int, MugenBackground *> &bgs ){
 }
 
 // mugen background
-MugenBackground::MugenBackground():
+MugenBackground::MugenBackground( const unsigned long int &ticker ):
 type(Normal),
 groupNumber(-1),
 imageNumber(-1),
@@ -112,12 +112,14 @@ movex(0),
 movey(0),
 velx(0),
 vely(0),
+stageTicker( ticker ),
 ticks(0),
 sprite(0),
 spriteBmp(0),
 action(0){
 }
-MugenBackground::MugenBackground( const MugenBackground &copy ){
+MugenBackground::MugenBackground( const MugenBackground &copy ):
+stageTicker( copy.stageTicker ){
 }
 MugenBackground::~MugenBackground(){
     // Kill the bmp

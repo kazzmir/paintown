@@ -203,6 +203,7 @@ void showStage(const string & ourFile){
 	stage.render(&work);
 	work.Stretch(back);
 	Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, stage.getCameraX(), stage.getCameraY() );
+	Font::getDefaultFont().printf( 15, 230, Bitmap::makeColor( 255, 255, 255 ), back, "Frames: %i",0, stage.getTicks() );
 	back.BlitToScreen();
         Util::rest(1);
     }

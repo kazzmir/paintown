@@ -74,7 +74,7 @@ class MugenBgController{
 // mugen background
 class MugenBackground{
 public:
-    MugenBackground();
+    MugenBackground( const unsigned long int &ticker );
     MugenBackground( const MugenBackground &copy );
     ~MugenBackground();
     
@@ -132,6 +132,7 @@ public:
     int movey;
     double velx;
     double vely;
+    const unsigned long int &stageTicker;
     int ticks;
     
     // sprite 
