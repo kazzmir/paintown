@@ -122,10 +122,11 @@ public:
     double sinx_amp;
     double sinx_period;
     double sinx_offset;
+    double sinx_angle;
     double siny_amp;
     double siny_period;
     double siny_offset;
-    double sin_angle;
+    double siny_angle;
     int xoffset;
     int yoffset;
     int movex;

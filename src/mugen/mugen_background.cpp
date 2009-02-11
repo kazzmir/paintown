@@ -8,6 +8,8 @@
 #include "mugen_sprite.h"
 #include "util/bitmap.h"
 
+static double pi2 = 3.14159265 * 2;
+
 using namespace std;
 
 static int calculateTile( int length, int width ){
@@ -102,10 +104,11 @@ velocityy(0),
 sinx_amp(0),
 sinx_period(0),
 sinx_offset(0),
+sinx_angle(0),
 siny_amp(0),
 siny_period(0),
 siny_offset(0),
-sin_angle(0),
+siny_angle(0),
 xoffset(0),
 yoffset(0),
 movex(0),
@@ -139,9 +142,10 @@ void MugenBackground::logic( const int &x, const int &y ){
     /* how much should sin_angle be incremented by each frame?
      * I think the total angle should be (ticks % sin_period) * 2pi / sin_period
      */
-    sin_angle += 0.00005;
-    //whatvar = sinx_amp * sin(whatvar*sinx_period + sinx_offset);
-    //whatvar = siny_amp * sin(whatvar*siny_period + siny_offset);
+    //sin_angle += 0.00005;
+    sinx_angle += 0.00005;//= (stageTicker % sinx_period) * (pi2 / sinx_period);
+    siny_angle += 0.00005;//= (stageTicker % siny_period) * (pi2 / siny_period);
+    
     ticks++;
     if( ticks >= 1 ){
 	// Do frame or whatever movement etc
@@ -153,8 +157,8 @@ void MugenBackground::logic( const int &x, const int &y ){
 }
     
 void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
-    const int x = (int)(xoffset + movex + velx + sinx_amp * sin(sin_angle*sinx_period + sinx_offset));
-    const int y = (int)(yoffset + movey + vely + siny_amp * sin(sin_angle*siny_period + siny_offset));
+    const int x = (int)(xoffset + movex + velx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
+    const int y = (int)(yoffset + movey + vely + siny_amp * sin(siny_angle*siny_period + siny_offset));
     switch( type ){
 	case Normal:{
 	    // Normal is a sprite
