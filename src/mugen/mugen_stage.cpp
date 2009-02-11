@@ -552,6 +552,10 @@ void MugenStage::load() throw( MugenException ){
 }
 
 void MugenStage::logic( ){
+    // camera crap
+    if (quake_time > 0){
+	quake_time--;
+    }
     
     // implement some stuff before we actually begin the round then start the round
     if(!stageStart)stageStart = true;
@@ -564,8 +568,8 @@ void MugenStage::logic( ){
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
     
-    const int diffx = startx - camerax;
-    const int diffy = starty - cameray;
+    const int diffx = startx - camerax + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
+    const int diffy = starty - cameray + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
     
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
@@ -613,4 +617,28 @@ void MugenStage::act(){
 void MugenStage::draw( Bitmap * work ){
     render( work );
 }
+void MugenStage::addObject( Object * o ){ }
+const bool MugenStage::finished() const { }
+void MugenStage::reloadLevel() throw( LoadException ){ }
+Script::Engine * const MugenStage::getEngine() const { }
+/* upper left hand corner of the screen */
+int MugenStage::getX(){ getCameraX(); }
+int MugenStage::getY(){ getCameraY(); }
+/* this shouldn't be here */
+// I guess ignore this one
+//const deque<Bitmap*> & getScreenshots() = 0;
+const int MugenStage::levelLength(){ }
+// Since this isn't a paintown level, I guess block wouldn't apply
+const Block * MugenStage::currentBlock(){ }
+/* bleh.. */
+void MugenStage::addEnemy(Enemy * obj){ }
+Object * MugenStage::findObject(int id){ }
+// These should be the same, but we'll see, mugen has some funny parameters
+int MugenStage::getMaximumZ(){ }
+int MugenStage::getMinimumZ(){ }
+void MugenStage::drawMiniMaps( bool b ){ }
+bool MugenStage::shouldDrawMiniMaps(){ }
+void MugenStage::killAllHumans( Object * player ){ }
+void MugenStage::addMessage(Network::Message m, Network::Socket from){ }
+Network::Message MugenStage::createBangMessage( int x, int y, int z ){ }
 

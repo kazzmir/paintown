@@ -59,6 +59,29 @@ public:
 	// Inherited world actions
 	virtual void act();
 	virtual void draw( Bitmap * work );
+	virtual void addObject( Object * o );
+	virtual const bool finished() const;
+	virtual void reloadLevel() throw( LoadException );
+        virtual Script::Engine * const getEngine() const;
+	/* upper left hand corner of the screen */
+	virtual int getX();
+	virtual int getY();
+        /* this shouldn't be here */
+	// I guess ignore this one
+        //virtual const deque<Bitmap*> & getScreenshots() = 0;
+        virtual const int levelLength();
+	// Since this isn't a paintown level, I guess block wouldn't apply
+        virtual const Block * currentBlock();
+        /* bleh.. */
+        virtual void addEnemy(Enemy * obj);
+        virtual Object * findObject(int id);
+	virtual int getMaximumZ();
+	virtual int getMinimumZ();
+	virtual void drawMiniMaps( bool b );
+	virtual bool shouldDrawMiniMaps();
+	virtual void killAllHumans( Object * player );
+	virtual void addMessage(Network::Message m, Network::Socket from = 0);
+	virtual Network::Message createBangMessage( int x, int y, int z );
 	
 protected:
 

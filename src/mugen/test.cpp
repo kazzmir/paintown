@@ -197,6 +197,9 @@ void showStage(const string & ourFile){
 	if( keyInputManager::keyState(keys::SPACE, true)){
 	    stage.reset();
 	}
+	if( keyInputManager::keyState(keys::ENTER, false)){
+           stage.Quake( 5 );
+        }
 	
         quit |= keyInputManager::keyState(keys::ESC, true );
 	
