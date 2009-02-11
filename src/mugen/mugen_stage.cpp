@@ -618,27 +618,35 @@ void MugenStage::draw( Bitmap * work ){
     render( work );
 }
 void MugenStage::addObject( Object * o ){ }
-const bool MugenStage::finished() const { }
+const bool MugenStage::finished() const { return false; }
 void MugenStage::reloadLevel() throw( LoadException ){ }
-Script::Engine * const MugenStage::getEngine() const { }
+Script::Engine * const MugenStage::getEngine() const { return NULL; }
 /* upper left hand corner of the screen */
-int MugenStage::getX(){ getCameraX(); }
-int MugenStage::getY(){ getCameraY(); }
+int MugenStage::getX(){
+    return getCameraX();
+}
+
+int MugenStage::getY(){
+    return getCameraY();
+}
 /* this shouldn't be here */
 // I guess ignore this one
 //const deque<Bitmap*> & getScreenshots() = 0;
-const int MugenStage::levelLength(){ }
+const int MugenStage::levelLength() const { return 0; }
 // Since this isn't a paintown level, I guess block wouldn't apply
-const Block * MugenStage::currentBlock(){ }
+const Block * MugenStage::currentBlock() const { return NULL; }
 /* bleh.. */
 void MugenStage::addEnemy(Enemy * obj){ }
-Object * MugenStage::findObject(int id){ }
+Object * MugenStage::findObject(int id){ return NULL; }
 // These should be the same, but we'll see, mugen has some funny parameters
-int MugenStage::getMaximumZ(){ }
-int MugenStage::getMinimumZ(){ }
+int MugenStage::getMaximumZ(){ return 0; }
+int MugenStage::getMinimumZ(){ return 0; }
 void MugenStage::drawMiniMaps( bool b ){ }
-bool MugenStage::shouldDrawMiniMaps(){ }
+bool MugenStage::shouldDrawMiniMaps(){ return false; }
 void MugenStage::killAllHumans( Object * player ){ }
 void MugenStage::addMessage(Network::Message m, Network::Socket from){ }
-Network::Message MugenStage::createBangMessage( int x, int y, int z ){ }
+Network::Message MugenStage::createBangMessage( int x, int y, int z ){
+    Network::Message m;
+    return m;
+}
 

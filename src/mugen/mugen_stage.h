@@ -69,9 +69,9 @@ public:
         /* this shouldn't be here */
 	// I guess ignore this one
         //virtual const deque<Bitmap*> & getScreenshots() = 0;
-        virtual const int levelLength();
+        virtual const int levelLength() const;
 	// Since this isn't a paintown level, I guess block wouldn't apply
-        virtual const Block * currentBlock();
+        virtual const Block * currentBlock() const;
         /* bleh.. */
         virtual void addEnemy(Enemy * obj);
         virtual Object * findObject(int id);
