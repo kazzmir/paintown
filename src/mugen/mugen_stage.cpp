@@ -589,13 +589,12 @@ void MugenStage::logic( ){
     }
     
     // Players go in here
-    std::vector<Object *> add;
     for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-        (*it)->act( &p2objects, (World *)this, &add);
+        (*it)->act( &p2objects, (World *)this, &p1objects);
         
     }
     for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
-        (*it)->act( &p1objects, (World *)this, &add);
+        (*it)->act( &p1objects, (World *)this, &p2objects);
     }
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
