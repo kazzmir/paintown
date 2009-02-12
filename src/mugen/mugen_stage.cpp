@@ -602,6 +602,20 @@ void MugenStage::logic( ){
 	(*i)->logic( diffx, diffy );
     }
     
+    // Reset player positions
+    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
+        (*it)->setX( xaxis + p1startx );
+	(*it)->setY( yaxis + p1starty );
+	(*it)->setZ( zoffset );
+	(*it)->setFacing( Object::FACING_RIGHT );
+    }
+    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
+        (*it)->setX( xaxis + p2startx );
+	(*it)->setY( yaxis + p2starty );
+	(*it)->setZ( zoffset );
+	(*it)->setFacing( Object::FACING_LEFT );
+    }
+    
 }
 	
 void MugenStage::render( Bitmap *work ){
@@ -636,12 +650,26 @@ void MugenStage::reset( ){
 	// reset
 	(*i)->preload( xaxis, yaxis );
     }
+    
+    // Reset player positions
+    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
+        (*it)->setX( xaxis + p1startx );
+	(*it)->setY( yaxis + p1starty );
+	(*it)->setZ( zoffset );
+	(*it)->setFacing( Object::FACING_RIGHT );
+    }
+    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
+        (*it)->setX( xaxis + p2startx );
+	(*it)->setY( yaxis + p2starty );
+	(*it)->setZ( zoffset );
+	(*it)->setFacing( Object::FACING_LEFT );
+    }
 }
 
 // Add player1 people
 void MugenStage::addp1( Object * o ){
-    o->setX( p1startx );
-    o->setY( p1starty );
+    o->setX( xaxis + p1startx );
+    o->setY( yaxis + p1starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_RIGHT );
     p1objects.push_back(o);
@@ -649,8 +677,8 @@ void MugenStage::addp1( Object * o ){
 
 // Add player2 people
 void MugenStage::addp2( Object * o ){
-    o->setX( p2startx );
-    o->setY( p2starty );
+    o->setX( xaxis + p2startx );
+    o->setY( yaxis + p2starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_LEFT );
     p2objects.push_back(o);

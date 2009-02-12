@@ -25,6 +25,15 @@
 
 #include "gui/keyinput_manager.h"
 
+#include "object/object.h"
+#include "object/player.h"
+#include "game.h"
+
+
+#include "dumb/include/dumb.h"
+#include "dumb/include/aldumb.h"
+#include "loadpng/loadpng.h"
+
 using namespace std;
 
 static void showCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int color, int &start ){
@@ -168,6 +177,7 @@ void showCharacter(const string & ourFile){
 void showStage(const string & ourFile){
     set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
+    loadpng_init();
     Global::debug(0) << "Trying to load stage: " << ourFile << "..." << endl;
     MugenStage stage( ourFile );
     stage.load();
@@ -176,6 +186,19 @@ void showStage(const string & ourFile){
     
     Bitmap work( 320, 240 );
     Bitmap back( 640, 480 );
+    
+    // Get players
+    Object *p1 = new Player( "data/players/blanka/blanka.txt" );//Game::selectPlayer( false, "Pick player1" );
+    Object *p2 = new Player( "data/players/akuma/akuma.txt" );//Game::selectPlayer( false, "Pick player2" );
+    ((Player *)p1)->setInvincible( false );
+    //p1->setMap( remap );
+    ((Player *)p1)->testAnimation();
+    ((Player *)p2)->setInvincible( false );
+    //p2->setMap( remap );
+    ((Player *)p2)->testAnimation();
+    
+    stage.addp1(p1);
+    stage.addp2(p2);
     
     while( !quit ){
         keyInputManager::update();
