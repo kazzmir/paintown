@@ -604,13 +604,13 @@ void MugenStage::logic( ){
     
     // Reset player positions
     for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-        (*it)->setX( p1startx );
+        (*it)->setX( 160 + p1startx );
 	(*it)->setY( p1starty );
 	(*it)->setZ( zoffset );
 	(*it)->setFacing( Object::FACING_RIGHT );
     }
     for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
-        (*it)->setX( p2startx );
+        (*it)->setX( 160 + p2startx );
 	(*it)->setY( p2starty );
 	(*it)->setZ( zoffset );
 	(*it)->setFacing( Object::FACING_LEFT );
@@ -653,13 +653,13 @@ void MugenStage::reset( ){
     
     // Reset player positions
     for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-        (*it)->setX( p1startx );
+        (*it)->setX( 160 + p1startx );
 	(*it)->setY( p1starty );
 	(*it)->setZ( zoffset );
 	(*it)->setFacing( Object::FACING_RIGHT );
     }
     for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
-        (*it)->setX( p2startx );
+        (*it)->setX( 160 + p2startx );
 	(*it)->setY( p2starty );
 	(*it)->setZ( zoffset );
 	(*it)->setFacing( Object::FACING_LEFT );
@@ -668,7 +668,7 @@ void MugenStage::reset( ){
 
 // Add player1 people
 void MugenStage::addp1( Object * o ){
-    o->setX( p1startx );
+    o->setX( 160 + p1startx );
     o->setY( p1starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_RIGHT );
@@ -677,7 +677,7 @@ void MugenStage::addp1( Object * o ){
 
 // Add player2 people
 void MugenStage::addp2( Object * o ){
-    o->setX( p2startx );
+    o->setX( 160 + p2startx );
     o->setY( p2starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_LEFT );
