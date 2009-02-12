@@ -195,6 +195,10 @@ void MugenStage::load() throw( MugenException ){
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
+    // for backgrounds
+    int linkstartx=0, linkstarty=0;
+    double linkdeltax=0, linkdeltay=0,linksinx_amp=0, linksinx_offset=0, linksinx_period=0,linksiny_amp=0, linksiny_offset=0, linksiny_period=0,linkvelx=0,linkvely=0;
+    
     /* Extract info for our first section of our stage */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
@@ -465,6 +469,36 @@ void MugenStage::load() throw( MugenException ){
 	    temp->sprite = sprites[(unsigned int)temp->groupNumber][(unsigned int)temp->imageNumber];
 	    if( temp->layerno == 0 )backgrounds.push_back(temp);
 	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
+	    
+	    // If position link lets set to previous item
+	    if( temp->positionlink ){
+		temp->startx = linkstartx;
+		temp->starty = linkstarty;
+		temp->deltax = linkdeltax;
+		temp->deltay = linkdeltay;
+		temp->sinx_amp = linksinx_amp;
+		temp->sinx_offset = linksinx_offset;
+		temp->sinx_period = linksinx_period;
+		temp->siny_amp = linksiny_amp;
+		temp->siny_offset = linksiny_offset;
+		temp->siny_period = linksiny_period;
+		temp->velocityx = linkvelx;
+		temp->velocityy = linkvely;
+	    } 
+	    
+	    // This is so we can have our positionlink info for the next item if true
+	    linkstartx = temp->startx;
+	    linkstarty = temp->starty;
+	    linkdeltax = temp->deltax;
+	    linkdeltay = temp->deltay;
+	    linksinx_amp = temp->sinx_amp;
+	    linksinx_offset =  temp->sinx_offset;
+	    linksinx_period = temp->sinx_period;
+	    linksiny_amp = temp->siny_amp;
+	    linksiny_offset =  temp->siny_offset;
+	    linksiny_period = temp->siny_period;
+	    linkvelx = temp->velocityx;
+	    linkvely = temp->velocityy;
 	}
 	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	else if( head.find("begin action") !=std::string::npos ){

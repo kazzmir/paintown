@@ -8,7 +8,7 @@
 #include "mugen_sprite.h"
 #include "util/bitmap.h"
 
-static double pi2 = 3.14159265 * 2;
+static double pi = 3.14159265;
 
 using namespace std;
 
@@ -141,10 +141,15 @@ void MugenBackground::logic( const int &x, const int &y ){
     vely += velocityy;
     /* how much should sin_angle be incremented by each frame?
      * I think the total angle should be (ticks % sin_period) * 2pi / sin_period
+     * M (decimal) is the magnitude in pixels (amp)
+     * P (decimal) is the period in game ticks (period) 
+     * O (decimal) is the time offset in game ticks (offset)
+     * From updates.txt:  M * sine ((ticks+O)/P * 2 * Pi)
+     * sinx_amp * sin((stageTicker+sinx_offset)/sinx_period * 2 * pi)) ? useless it seems
      */
     //sin_angle += 0.00005;
-    sinx_angle += 0.00005;//= (stageTicker % sinx_period) * (pi2 / sinx_period);
-    siny_angle += 0.00005;//= (stageTicker % siny_period) * (pi2 / siny_period);
+    sinx_angle += 0.00005;
+    siny_angle += 0.00005;
     
     ticks++;
     if( ticks >= 1 ){
