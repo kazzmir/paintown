@@ -56,6 +56,12 @@ public:
 	// Reset scenario
 	void reset();
 	
+	// Add player1 people
+	virtual void addp1( Object * o );
+	
+	// Add player2 people
+	virtual void addp2( Object * o );
+	
 	// Inherited world actions
 	virtual void act();
 	virtual void draw( Bitmap * work );
@@ -308,8 +314,17 @@ protected:
 	
 	// p2 round points
 	int p2points;
+    
+    private:
 	
+	void cleanup();
 	
+	// P1 Players (left hand) addObject
+	std::vector<Object *> p1objects;
+	
+	// P2 Players (right hand) addEnemy
+	std::vector<Object *> p2objects;
+	    
 };
 
 #endif

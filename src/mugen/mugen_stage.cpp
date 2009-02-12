@@ -13,6 +13,7 @@
 
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "object/object.h"
 #include "globals.h"
 
 #include "game/adventure_world.h"
@@ -158,29 +159,7 @@ p2points(0){
 }
 
 MugenStage::~MugenStage(){
-    // Get rid of sprites
-    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }
-    
-    // Get rid of animation lists;
-    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-	if( i->second )delete i->second;
-    }
-    
-    // Get rid of background lists;
-    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
-	if( (*i) )delete (*i);
-    }
-    
-    // Get rid of foreground lists;
-    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin() ; i != foregrounds.end() ; ++i ){
-	if( (*i) )delete (*i);
-    }
-    
-    if( board ) delete board;
+    cleanup();
 }
 	
 void MugenStage::load() throw( MugenException ){
@@ -645,15 +624,36 @@ void MugenStage::reset( ){
     }
 }
 
+// Add player1 people
+void MugenStage::addp1( Object * o ){
+    o->setX( p1startx );
+    o->setY( p1starty );
+    o->setZ( p1startz );
+    o->setFacing( Object::FACING_RIGHT );
+    p1objects.push_back(o);
+}
+
+// Add player2 people
+void MugenStage::addp2( Object * o ){
+    o->setX( p2startx );
+    o->setY( p2starty );
+    o->setZ( p2startz );
+    o->setFacing( Object::FACING_LEFT );
+    p2objects.push_back(o);
+}
+
 void MugenStage::act(){
     logic();
 }
 void MugenStage::draw( Bitmap * work ){
     render( work );
 }
-void MugenStage::addObject( Object * o ){ }
+void MugenStage::addObject( Object * o ){ /* Does nothing */ }
 const bool MugenStage::finished() const { return false; }
-void MugenStage::reloadLevel() throw( LoadException ){ }
+void MugenStage::reloadLevel() throw( LoadException ){ 
+    cleanup();
+    load(); 
+}
 Script::Engine * const MugenStage::getEngine() const { return NULL; }
 /* upper left hand corner of the screen */
 int MugenStage::getX(){
@@ -670,17 +670,66 @@ const int MugenStage::levelLength() const { return 0; }
 // Since this isn't a paintown level, I guess block wouldn't apply
 const Block * MugenStage::currentBlock() const { return NULL; }
 /* bleh.. */
-void MugenStage::addEnemy(Enemy * obj){ }
-Object * MugenStage::findObject(int id){ return NULL; }
+void MugenStage::addEnemy(Enemy * obj){ /* does nothing */ }
+Object * MugenStage::findObject(int id){ 
+    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
+        Object * object = *it;
+        if (object->getObjectId() == id){
+            return object;
+        }
+    }
+    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
+        Object * object = *it;
+        if (object->getObjectId() == id){
+            return object;
+        }
+    }
+    return NULL;
+}
 // These should be the same, but we'll see, mugen has some funny parameters
-int MugenStage::getMaximumZ(){ return 0; }
-int MugenStage::getMinimumZ(){ return 0; }
-void MugenStage::drawMiniMaps( bool b ){ }
+int MugenStage::getMaximumZ(){ return zoffset; }
+int MugenStage::getMinimumZ(){ return zoffset; }
+void MugenStage::drawMiniMaps( bool b ){ /* Not likely */ }
 bool MugenStage::shouldDrawMiniMaps(){ return false; }
-void MugenStage::killAllHumans( Object * player ){ }
+void MugenStage::killAllHumans( Object * player ){ 
+    for ( vector< Object * >::iterator it = p1objects.begin(); it != p1objects.end(); it++ ){
+		Object * o = *it;
+		o->takeDamage( this, NULL, 999999 );
+    }
+    for ( vector< Object * >::iterator it = p2objects.begin(); it != p2objects.end(); it++ ){
+		Object * o = *it;
+		o->takeDamage( this, NULL, 999999 );
+    }
+}
 void MugenStage::addMessage(Network::Message m, Network::Socket from){ }
 Network::Message MugenStage::createBangMessage( int x, int y, int z ){
     Network::Message m;
     return m;
+}
+
+void MugenStage::cleanup(){
+    // Get rid of sprites
+    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
+    }
+    
+    // Get rid of animation lists;
+    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+	if( i->second )delete i->second;
+    }
+    
+    // Get rid of background lists;
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
+	if( (*i) )delete (*i);
+    }
+    
+    // Get rid of foreground lists;
+    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin() ; i != foregrounds.end() ; ++i ){
+	if( (*i) )delete (*i);
+    }
+    
+    if( board ) delete board;
 }
 
