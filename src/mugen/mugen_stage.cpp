@@ -589,6 +589,14 @@ void MugenStage::logic( ){
     }
     
     // Players go in here
+    std::vector<Object *> add;
+    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
+        (*it)->act( &p2objects, (World *)this, &add);
+        
+    }
+    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
+        (*it)->act( &p1objects, (World *)this, &add);
+    }
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
@@ -604,6 +612,12 @@ void MugenStage::render( Bitmap *work ){
     }
     
     // Players go in here
+    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
+        (*it)->draw( work, 0);
+    }
+    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
+        (*it)->draw( work, 0);
+    }
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
@@ -628,7 +642,7 @@ void MugenStage::reset( ){
 void MugenStage::addp1( Object * o ){
     o->setX( p1startx );
     o->setY( p1starty );
-    o->setZ( p1startz );
+    o->setZ( zoffset );
     o->setFacing( Object::FACING_RIGHT );
     p1objects.push_back(o);
 }
@@ -637,7 +651,7 @@ void MugenStage::addp1( Object * o ){
 void MugenStage::addp2( Object * o ){
     o->setX( p2startx );
     o->setY( p2starty );
-    o->setZ( p2startz );
+    o->setZ( zoffset );
     o->setFacing( Object::FACING_LEFT );
     p2objects.push_back(o);
 }
