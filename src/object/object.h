@@ -30,9 +30,16 @@ public:
 
     typedef unsigned int networkid_t;
 
-	/* Constructors */
+	/* Constructors
+         * alliance - team number for the object. all objects on the same
+         * team cannot hurt each other.
+         * x - x position in the world
+         * z - z position in the world
+         */
 	Object( int alliance );
-	Object( const int x, const int y, int alliance );
+	Object( const int x, const int z, int alliance );
+
+        /* copy constructor */
 	Object( const Object & copy );
 
 	/* act:
