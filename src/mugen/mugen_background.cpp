@@ -117,6 +117,8 @@ velx(0),
 vely(0),
 stageTicker( ticker ),
 ticks(0),
+x(0),
+y(0),
 sprite(0),
 spriteBmp(0),
 action(0){
@@ -158,12 +160,13 @@ void MugenBackground::logic( const int &x, const int &y ){
 	ticks = 0;
     }
     if( type == Anim ) action->logic();
+    
+    this->x = (int)(xoffset + movex + velx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
+    this->y = (int)(yoffset + movey + vely + siny_amp * sin(siny_angle*siny_period + siny_offset));
     Global::debug(1) << "x move: " << x << " | y move: " << y << endl;
 }
     
 void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
-    const int x = (int)(xoffset + movex + velx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
-    const int y = (int)(yoffset + movey + vely + siny_amp * sin(siny_angle*siny_period + siny_offset));
     switch( type ){
 	case Normal:{
 	    // Normal is a sprite
@@ -231,14 +234,14 @@ void MugenBackground::preload( const int &xaxis, const int &yaxis ){
     }
 }
 
-void MugenBackground::draw( const int &x, const int &y, Bitmap &work ){
+void MugenBackground::draw( const int &ourx, const int &oury, Bitmap &work ){
     // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
     switch( trans ){
 	case Addalpha:{
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
 	    Bitmap::transBlender( 0, 0, 0, alphalow );
             Bitmap::drawingMode( Bitmap::MODE_TRANS );
-	    spriteBmp->drawTrans( x, y, work);
+	    spriteBmp->drawTrans( ourx, oury, work);
             Bitmap::drawingMode( Bitmap::MODE_SOLID );
 	    break;
 	}
@@ -247,8 +250,8 @@ void MugenBackground::draw( const int &x, const int &y, Bitmap &work ){
 	case Sub:
 	case None:
 	default:{
-	    if( mask )spriteBmp->draw( x,y, work );
-	    else spriteBmp->Blit( x, y, work );
+	    if( mask )spriteBmp->draw( ourx,oury, work );
+	    else spriteBmp->Blit( ourx, oury, work );
 	    break;
 	}
     }

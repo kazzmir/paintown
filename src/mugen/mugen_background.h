@@ -135,6 +135,8 @@ public:
     double vely;
     const unsigned long int &stageTicker;
     int ticks;
+    int x;
+    int y;
     
     // sprite 
     MugenSprite *sprite;
@@ -148,7 +150,7 @@ public:
     void preload( const int &xaxis, const int &yaxis );
     
     // Do draw stuff
-    void draw( const int &x, const int &y, Bitmap &work );
+    void draw( const int &ourx, const int &oury, Bitmap &work );
 };
 
 #endif

@@ -76,6 +76,7 @@ botscale(1.2),*/
 screenleft(15),
 screenright(15),
 zoffset(200),
+zoffsetlink(-1),
 autoturn(true),
 resetBG(true),
 shadowIntensity(128),
@@ -294,8 +295,10 @@ void MugenStage::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
-		if ( itemhead.find("zoffset")!=std::string::npos ){
+		if ( itemhead == "zoffset" ){
 		    *content->getNext() >> zoffset;
+		} else if ( itemhead == "zoffsetlink" ){
+		    *content->getNext() >> zoffsetlink;
 		} else if ( itemhead.find("autoturn")!=std::string::npos ){
 		    *content->getNext() >> autoturn;
 		} else if ( itemhead.find("resetbg")!=std::string::npos ){
@@ -562,6 +565,23 @@ void MugenStage::load() throw( MugenException ){
 	// now load
 	(*i)->preload( xaxis, yaxis );
     }
+    
+    // zoffsetlink
+    if( zoffsetlink ){
+	// Link zoffset to id
+	zoffset = getBackground(zoffsetlink)->y;
+    }
+}
+
+MugenBackground *MugenStage::getBackground( int ID ){
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	if( (*i)->id == ID )return (*i);
+    }
+    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	if( (*i)->id == ID )return (*i);
+    }
+    
+    return 0;
 }
 
 void MugenStage::logic( ){
@@ -584,37 +604,33 @@ void MugenStage::logic( ){
     const int diffx = startx - camerax + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
     const int diffy = starty - cameray + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
     
+    //zoffsetlink
+    if(zoffsetlink)zoffset = getBackground(zoffsetlink)->y;
+    Global::debug(1) << "Zoffset: " << zoffset << endl;
+    
+    // Backgrounds
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
     }
     
     // Players go in here
+    std::vector<Object *> add;
     for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-        (*it)->act( &p2objects, (World *)this, &p1objects);
+        (*it)->act( &p2objects, (World *)this, &add);
+	(*it)->setZ( zoffset );
         
     }
+    p1objects.insert(p1objects.end(),add.begin(),add.end());
+    add.clear();
     for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
-        (*it)->act( &p1objects, (World *)this, &p2objects);
+        (*it)->act( &p1objects, (World *)this, &add);
+	(*it)->setZ( zoffset );
     }
+    p2objects.insert(p2objects.end(),add.begin(),add.end());
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
     }
-    
-    // Reset player positions
-    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-        (*it)->setX( 160 + p1startx );
-	(*it)->setY( p1starty );
-	(*it)->setZ( zoffset );
-	(*it)->setFacing( Object::FACING_RIGHT );
-    }
-    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
-        (*it)->setX( 160 + p2startx );
-	(*it)->setY( p2starty );
-	(*it)->setZ( zoffset );
-	(*it)->setFacing( Object::FACING_LEFT );
-    }
-    
 }
 	
 void MugenStage::render( Bitmap *work ){

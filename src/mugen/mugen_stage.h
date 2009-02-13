@@ -46,6 +46,9 @@ public:
 	
 	inline unsigned long int getTicks(){ return ticker; }
 	
+	// Get background by ID
+	MugenBackground *getBackground( int ID );
+	
 	// This will update ticks and controllers. When ready pass the player objects to properly allow camera to follow
 	// For now use view port, x and y screen size will be used to determine width/height
 	void logic();
@@ -193,6 +196,13 @@ protected:
 	;Up - smaller, Down - larger
 	;*** */
 	int zoffset;
+	/*
+	zoffsetlink = BG_ID ;(optional)
+	If this parameter is specified, it links the zoffset value to the y-position of a background element with ID number BG_ID. 
+	For example, you can link the value to a dummy element (refer to "Other background element types" in section III: 
+	Description of background elements) with a sin.y parameter to make the characters bob up and down in a sinusoidal fashion.
+	*/
+	int zoffsetlink;
 
 	//;Leave this at 1. It makes the players face each other
 	bool autoturn;
