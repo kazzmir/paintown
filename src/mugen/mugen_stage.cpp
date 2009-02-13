@@ -76,7 +76,7 @@ botscale(1.2),*/
 screenleft(15),
 screenright(15),
 zoffset(200),
-zoffsetlink(-1),
+zoffsetlink(-2580),
 autoturn(true),
 resetBG(true),
 shadowIntensity(128),
@@ -567,7 +567,7 @@ void MugenStage::load() throw( MugenException ){
     }
     
     // zoffsetlink
-    if( zoffsetlink ){
+    if( zoffsetlink != -2580 ){
 	// Link zoffset to id
 	zoffset = getBackground(zoffsetlink)->y;
     }
@@ -605,7 +605,7 @@ void MugenStage::logic( ){
     const int diffy = starty - cameray + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
     
     //zoffsetlink
-    if(zoffsetlink)zoffset = getBackground(zoffsetlink)->y;
+    if( zoffsetlink != -2580 )zoffset = getBackground(zoffsetlink)->y;
     Global::debug(1) << "Zoffset: " << zoffset << endl;
     
     // Backgrounds
