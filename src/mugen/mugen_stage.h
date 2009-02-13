@@ -216,6 +216,9 @@ protected:
 	;This is the shadow darkening intensity. Valid values range from
 	;0 (lightest) to 256 (darkest). Defaults to 128 if omitted.*/
 	int shadowIntensity;
+	
+	// Reflection aparently newer versions have it under shadow
+	bool reflect;
 
 	/*;This is the shadow color given in r,g,b. Valid values for each
 	;range from 0 (lightest) to 255 (darkest).

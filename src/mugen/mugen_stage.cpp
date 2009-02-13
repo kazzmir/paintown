@@ -80,6 +80,7 @@ zoffsetlink(-2580),
 autoturn(true),
 resetBG(true),
 shadowIntensity(128),
+reflect(false),
 color(Bitmap::makeColor(0,0,0)),
 yscale(0.4),
 fadeRangeHigh(0),
@@ -137,6 +138,7 @@ zoffset(200),
 autoturn(true),
 resetBG(true),
 shadowIntensity(128),
+reflect(false),
 color(Bitmap::makeColor(0,0,0)),
 yscale(0.4),
 fadeRangeHigh(0),
@@ -314,6 +316,8 @@ void MugenStage::load() throw( MugenException ){
 		MugenUtil::removeSpaces(itemhead);
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> shadowIntensity;
+		} else if ( itemhead == "reflect" ){
+		    *content->getNext() >> reflect;
 		} else if ( itemhead.find("color")!=std::string::npos ){
 		    int r,b,g;
 		    *content->getNext() >> r;
