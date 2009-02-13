@@ -61,6 +61,8 @@ public:
 	/* drawing */
 	virtual void draw( Bitmap * work, int rel_x );
 	
+	virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
+	
 	// virtual bool collision( Object * obj );
 
 	/* get a mirror image of this character */
