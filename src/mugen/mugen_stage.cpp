@@ -646,12 +646,12 @@ void MugenStage::render( Bitmap *work ){
     
     // Players go in here
     for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-        (*it)->draw( board, 0);
 	if( reflectionIntensity )(*it)->drawReflection( board, 0, reflectionIntensity );
+        (*it)->draw( board, 0);
     }
     for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
-        (*it)->draw( board, 0);
 	if( reflectionIntensity )(*it)->drawReflection( board, 0, reflectionIntensity );
+        (*it)->draw( board, 0);
     }
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){

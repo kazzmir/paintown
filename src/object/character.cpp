@@ -1556,8 +1556,11 @@ void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
     if( animation_current ){
 	Bitmap::transBlender( 0, 0, 0, intensity );
 	Bitmap::drawingMode( Bitmap::MODE_TRANS );
-	if( getFacing() == FACING_RIGHT )animation_current->getCurrentFrame()->drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRY() + getY(), *work );
-	else animation_current->getCurrentFrame()->drawTransHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRY() + getY(), *work );
+	if( getFacing() == FACING_RIGHT ){ 
+	    animation_current->getCurrentFrame()->drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
+	} else { 
+	    animation_current->getCurrentFrame()->drawTransHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
+	}
 	Bitmap::drawingMode( Bitmap::MODE_SOLID );
     }
 }
