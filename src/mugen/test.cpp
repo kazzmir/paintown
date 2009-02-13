@@ -9,6 +9,7 @@
 #include <map>
 
 #include "globals.h"
+#include "init.h"
 #include "mugen_reader.h"
 #include "mugen_section.h"
 #include "mugen_item_content.h"
@@ -174,10 +175,20 @@ void showCharacter(const string & ourFile){
 
 }
 
+static void inc_speed_counter() {
+	Global::speed_counter += 1;
+}
+END_OF_FUNCTION( inc_speed_counter );
+
 void showStage(const string & ourFile){
     set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
     loadpng_init();
+    LOCK_VARIABLE( speed_counter );
+    LOCK_FUNCTION( (void *)inc_speed_counter );
+    /* set up the timers */
+    install_int_ex( inc_speed_counter, BPS_TO_TIMER( 40 ) );
+
     Global::debug(0) << "Trying to load stage: " << ourFile << "..." << endl;
     MugenStage stage( ourFile );
     stage.load();
@@ -188,7 +199,9 @@ void showStage(const string & ourFile){
     Bitmap back( 640, 480 );
     
     // Get players
+    Global::debug(0) << "Loading player 1" << endl;
     Object *p1 = new Player( "data/players/blanka/blanka.txt" );//Game::selectPlayer( false, "Pick player1" );
+    Global::debug(0) << "Loading player 2" << endl;
     Object *p2 = new Player( "data/players/akuma/akuma.txt" );//Game::selectPlayer( false, "Pick player2" );
     ((Player *)p1)->setInvincible( false );
     //p1->setMap( remap );
@@ -199,39 +212,57 @@ void showStage(const string & ourFile){
     
     stage.addp1(p1);
     stage.addp2(p2);
+
+    double gameSpeed = 1.0;
+    double runCounter = 0;
     
     while( !quit ){
-        keyInputManager::update();
+        bool draw = false;
         
-	stage.logic();
-        
-        if( keyInputManager::keyState(keys::UP, false) ){
-           stage.moveCamera(0,-1);
+        if ( Global::speed_counter > 0 ){
+            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+            while (runCounter > 1){
+                keyInputManager::update();
+                stage.logic();
+                runCounter -= 1;
+                draw = true;
+
+                if( keyInputManager::keyState(keys::UP, false) ){
+                    stage.moveCamera(0,-1);
+                }
+                if( keyInputManager::keyState(keys::DOWN, false) ){
+                    stage.moveCamera(0,1);
+                }
+                if( keyInputManager::keyState(keys::LEFT, false)){
+                    stage.moveCamera(-1,0);
+                }
+                if( keyInputManager::keyState(keys::RIGHT, false)){
+                    stage.moveCamera(1,0);
+                }
+                if( keyInputManager::keyState('r', true)){
+                    stage.reset();
+                }
+                if( keyInputManager::keyState(keys::ENTER, false)){
+                    stage.Quake( 5 );
+                }
+
+                quit |= keyInputManager::keyState(keys::ESC, true );
+            }
+            Global::speed_counter = 0;
         }
-        if( keyInputManager::keyState(keys::DOWN, false) ){
-           stage.moveCamera(0,1);
+
+        if (draw){
+            stage.render(&work);
+            work.Stretch(back);
+            Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, stage.getCameraX(), stage.getCameraY() );
+            Font::getDefaultFont().printf( 15, 230, Bitmap::makeColor( 255, 255, 255 ), back, "Frames: %i",0, stage.getTicks() );
+            back.BlitToScreen();
         }
-        if( keyInputManager::keyState(keys::LEFT, false)){
-           stage.moveCamera(-1,0);
+
+        while (Global::speed_counter == 0){
+            Util::rest(1);
+            keyInputManager::update();
         }
-        if( keyInputManager::keyState(keys::RIGHT, false)){
-           stage.moveCamera(1,0);
-        }
-	if( keyInputManager::keyState('r', true)){
-	    stage.reset();
-	}
-	if( keyInputManager::keyState(keys::ENTER, false)){
-           stage.Quake( 5 );
-        }
-	
-        quit |= keyInputManager::keyState(keys::ESC, true );
-	
-	stage.render(&work);
-	work.Stretch(back);
-	Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, stage.getCameraX(), stage.getCameraY() );
-	Font::getDefaultFont().printf( 15, 230, Bitmap::makeColor( 255, 255, 255 ), back, "Frames: %i",0, stage.getTicks() );
-	back.BlitToScreen();
-        Util::rest(1);
     }
 
 }
