@@ -217,7 +217,7 @@ void showStage(const string & ourFile){
         if( keyInputManager::keyState(keys::RIGHT, false)){
            stage.moveCamera(1,0);
         }
-	if( keyInputManager::keyState(keys::SPACE, true)){
+	if( keyInputManager::keyState('r', true)){
 	    stage.reset();
 	}
 	if( keyInputManager::keyState(keys::ENTER, false)){
