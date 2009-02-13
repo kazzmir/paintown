@@ -52,6 +52,8 @@ public:
 	 */
 	virtual void draw( Bitmap * work, int rel_x ) = 0;
 	virtual void drawFront(Bitmap * work, int rel_x);
+        /* draw reflection. default behavior is to do nothing */
+        virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
 
 	/* print:
 	 * Print some debugging information
