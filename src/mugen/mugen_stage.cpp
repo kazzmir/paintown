@@ -600,6 +600,7 @@ void MugenStage::logic( ){
     // Run our ticker on and on like energizer bunnies (tm)
     ticker++;
     
+    // Camera boundaries
     if( camerax < boundleft ) camerax = boundleft;
     else if( camerax > boundright )camerax = boundright;
     if( cameray < boundhigh ) cameray = boundhigh;
@@ -619,16 +620,39 @@ void MugenStage::logic( ){
     
     // Players go in here
     std::vector<Object *> add;
-    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
+    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); ++it){
         (*it)->act( &p2objects, (World *)this, &add);
 	(*it)->setZ( zoffset );
-        
+	
+	if( isaPlayer( *it ) ){
+	    // Lets check their boundaries
+	    if( (*it)->getX() < leftbound ) (*it)->setX( leftbound );
+	    else if( (*it)->getX() > rightbound ) (*it)->setX( rightbound );
+	} else {
+	    if( (*it)->getHealth() <= 0 ){
+		delete (*it);
+		it = p1objects.erase( it );
+		if( it == p1objects.end() ) break;
+	    }
+	}
     }
     p1objects.insert(p1objects.end(),add.begin(),add.end());
     add.clear();
-    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
+    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); ++it){
         (*it)->act( &p1objects, (World *)this, &add);
 	(*it)->setZ( zoffset );
+	
+	if( isaPlayer( *it ) ){
+	    // Lets check their boundaries
+	    if( (*it)->getX() < leftbound ) (*it)->setX( leftbound );
+	    else if( (*it)->getX() > rightbound ) (*it)->setX( rightbound );
+	} else {
+	    if( (*it)->getHealth() <= 0 ){
+		delete (*it);
+		it = p2objects.erase( it );
+		if( it == p2objects.end() ) break;
+	    }
+	}
     }
     p2objects.insert(p2objects.end(),add.begin(),add.end());
     
@@ -694,6 +718,7 @@ void MugenStage::addp1( Object * o ){
     o->setZ( zoffset );
     o->setFacing( Object::FACING_RIGHT );
     p1objects.push_back(o);
+    players.push_back(o);
 }
 
 // Add player2 people
@@ -703,6 +728,7 @@ void MugenStage::addp2( Object * o ){
     o->setZ( zoffset );
     o->setFacing( Object::FACING_LEFT );
     p2objects.push_back(o);
+    players.push_back(o);
 }
 
 void MugenStage::act(){
@@ -794,5 +820,15 @@ void MugenStage::cleanup(){
     }
     
     if( board ) delete board;
+}
+
+bool MugenStage::isaPlayer( Object * o ){
+    for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+	if ( !(*it) )it = players.erase( it );
+        if ( (*it) == o ){
+            return true;
+        }
+    }
+    return false;
 }
 

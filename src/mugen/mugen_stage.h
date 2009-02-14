@@ -331,13 +331,16 @@ protected:
     private:
 	
 	void cleanup();
+	bool isaPlayer( Object * o );
 	
 	// P1 Players (left hand) addObject
 	std::vector<Object *> p1objects;
 	
 	// P2 Players (right hand) addEnemy
 	std::vector<Object *> p2objects;
-	    
+	
+	// player list so we can distinguish
+	std::vector<Object *> players;
 };
 
 #endif
