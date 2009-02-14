@@ -41,10 +41,10 @@ public:
 	inline const int getCameraX() { return camerax; }
 	inline const int getCameraY() { return cameray; }
 	
-	inline void setCamera( const int &x, const int &y ) { camerax = x; cameray = y; }
-	inline void moveCamera( const int &x, const int &y ) { camerax += x; cameray += y; }
-	
 	inline unsigned long int getTicks(){ return ticker; }
+	
+	void setCamera( const int &x, const int &y );
+	void moveCamera( const int &x, const int &y );
 	
 	// Get background by ID
 	MugenBackground *getBackground( int ID );
@@ -332,6 +332,9 @@ protected:
 	
 	void cleanup();
 	bool isaPlayer( Object * o );
+	
+	bool p1bound;
+	bool p2bound;
 	
 	// P1 Players (left hand) addObject
 	std::vector<Object *> p1objects;

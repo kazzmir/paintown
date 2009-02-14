@@ -200,9 +200,9 @@ void showStage(const string & ourFile){
     
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
-    Object *p1 = new Player( "data/players/blanka/blanka.txt" );//Game::selectPlayer( false, "Pick player1" );
+    Object *p1 = new Player( "data/players/wolverine/wolverine.txt", 0 );//Game::selectPlayer( false, "Pick player1" );
     Global::debug(0) << "Loading player 2" << endl;
-    Object *p2 = new Player( "data/players/akuma/akuma.txt" );//Game::selectPlayer( false, "Pick player2" );
+    Object *p2 = new Player( "data/players/venom/venom.txt", 1 );//Game::selectPlayer( false, "Pick player2" );
     ((Player *)p1)->setInvincible( false );
     //p1->setMap( remap );
     ((Player *)p1)->testAnimation();
@@ -229,17 +229,17 @@ void showStage(const string & ourFile){
                 runCounter -= 1;
                 draw = true;
 
-                if( keyInputManager::keyState(keys::UP, false) ){
-                    stage.moveCamera(0,-1);
+                if( keyInputManager::keyState('1', false) ){
+                   stage.moveCamera(0,-1);
                 }
-                if( keyInputManager::keyState(keys::DOWN, false) ){
-                    stage.moveCamera(0,1);
+                if( keyInputManager::keyState('2', false) ){
+                   stage.moveCamera(0,1);
                 }
-                if( keyInputManager::keyState(keys::LEFT, false)){
-                    stage.moveCamera(-1,0);
+                if( keyInputManager::keyState('3', false)){
+                   stage.moveCamera(-1,0);
                 }
-                if( keyInputManager::keyState(keys::RIGHT, false)){
-                    stage.moveCamera(1,0);
+                if( keyInputManager::keyState('4', false)){
+                   stage.moveCamera(1,0);
                 }
                 if( keyInputManager::keyState('r', true)){
                     stage.reset();

@@ -43,6 +43,20 @@ static void correctStageName( std::string &str ){
     }
 }
 
+static int getFurthest( const std::vector<Object *> &objs, int facing, int checkpoint ){
+    int x = checkpoint;
+    
+    for (vector<Object*>::const_iterator it = objs.begin(); it != objs.end(); ++it){
+	// left side
+	if( facing == Object::FACING_RIGHT ){
+	    if( (*it)->getX() > x )x = (*it)->getX();
+	} else {
+	    if( (*it)->getX() < x )x = (*it)->getX();
+	}
+    }
+    return x;
+}
+
 MugenStage::MugenStage( const string & s ):
 AdventureWorld(),
 location( s ),
@@ -100,7 +114,9 @@ round(1),
 totalTime(99),
 time(99),
 p1points(0),
-p2points(0){
+p2points(0),
+p1bound(false),
+p2bound(false){
 }
 
 MugenStage::MugenStage( const char * location ): AdventureWorld(),
@@ -158,7 +174,9 @@ round(1),
 totalTime(99),
 time(99),
 p1points(0),
-p2points(0){
+p2points(0),
+p1bound(false),
+p2bound(false){
 }
 
 MugenStage::~MugenStage(){
@@ -577,6 +595,23 @@ void MugenStage::load() throw( MugenException ){
     }
 }
 
+void MugenStage::setCamera( const int &x, const int &y ){ 
+    camerax = x; cameray = y; 
+    // Camera boundaries
+    if( camerax < boundleft ) camerax = boundleft;
+    else if( camerax > boundright )camerax = boundright;
+    if( cameray < boundhigh ) cameray = boundhigh;
+    else if( cameray > boundlow )cameray = boundlow;
+}
+void MugenStage::moveCamera( const int &x, const int &y ){ 
+    camerax += x; cameray += y; 
+    // Camera boundaries
+    if( camerax < boundleft ) camerax = boundleft;
+    else if( camerax > boundright )camerax = boundright;
+    if( cameray < boundhigh ) cameray = boundhigh;
+    else if( cameray > boundlow )cameray = boundlow;
+}
+
 MugenBackground *MugenStage::getBackground( int ID ){
     for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	if( (*i)->id == ID )return (*i);
@@ -600,12 +635,6 @@ void MugenStage::logic( ){
     // Run our ticker on and on like energizer bunnies (tm)
     ticker++;
     
-    // Camera boundaries
-    if( camerax < boundleft ) camerax = boundleft;
-    else if( camerax > boundright )camerax = boundright;
-    if( cameray < boundhigh ) cameray = boundhigh;
-    else if( cameray > boundlow )cameray = boundlow;
-    
     const int diffx = startx - camerax + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
     const int diffy = starty - cameray + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
     
@@ -626,8 +655,15 @@ void MugenStage::logic( ){
 	
 	if( isaPlayer( *it ) ){
 	    // Lets check their boundaries
-	    if( (*it)->getX() < leftbound ) (*it)->setX( leftbound );
-	    else if( (*it)->getX() > rightbound ) (*it)->setX( rightbound );
+	    if( (*it)->getX() <= leftbound ) (*it)->setX( leftbound );
+	    else if( (*it)->getX() >= rightbound ) (*it)->setX( rightbound );
+	    else if( (*it)->getX() <= camerax + screenleft ){ 
+		//moveCamera( -5, 0 );
+		(*it)->setX( camerax + screenleft );
+	    } else if( (*it)->getX() >= camerax + 320 - screenright ){
+		//moveCamera( 5, 0 );
+		(*it)->setX( camerax + 320 - screenright );
+	    }
 	} else {
 	    if( (*it)->getHealth() <= 0 ){
 		delete (*it);
@@ -644,8 +680,15 @@ void MugenStage::logic( ){
 	
 	if( isaPlayer( *it ) ){
 	    // Lets check their boundaries
-	    if( (*it)->getX() < leftbound ) (*it)->setX( leftbound );
-	    else if( (*it)->getX() > rightbound ) (*it)->setX( rightbound );
+	    if( (*it)->getX() <= leftbound ) (*it)->setX( leftbound );
+	    else if( (*it)->getX() >= rightbound ) (*it)->setX( rightbound );
+	    else if( (*it)->getX() <= camerax + screenleft ){ 
+		//moveCamera( -5, 0 );
+		(*it)->setX( camerax + screenleft );
+	    } else if( (*it)->getX() >= camerax + 320 - screenright ){
+		//moveCamera( 5, 0 );
+		(*it)->setX( camerax + 320 - screenright );
+	    }
 	} else {
 	    if( (*it)->getHealth() <= 0 ){
 		delete (*it);
@@ -824,7 +867,6 @@ void MugenStage::cleanup(){
 
 bool MugenStage::isaPlayer( Object * o ){
     for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
-	if ( !(*it) )it = players.erase( it );
         if ( (*it) == o ){
             return true;
         }
