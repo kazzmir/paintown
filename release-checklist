@@ -1,0 +1,14 @@
+Linux:
+  * compiles with scons
+  * compiles with cmake
+
+Windows:
+  * compiles with scons
+
+OSX:
+  * compiles with scons
+
+* Adventure mode works
+* Versus mode works
+* Options work
+* Network mode works
