@@ -8,7 +8,7 @@
 #include "mugen_sprite.h"
 #include "util/bitmap.h"
 
-static double pi = 3.14159265;
+//static double pi = 3.14159265;
 
 using namespace std;
 
@@ -20,7 +20,7 @@ static int calculateTile( int length, int width ){
     }
 }
 
-static void doParallax(Bitmap &bmp, Bitmap &work, int xscroll, int y1, float z1, int y2, float z2){
+static void doParallax(Bitmap &bmp, Bitmap &work, int xscroll, int y1, float z1, int y2, float z2, bool mask){
    if(y2 <= y1) return;
 
    // trade down the centre of the screen
@@ -34,10 +34,13 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int xscroll, int y1, float z1,
       float y = src_y / z;
       int start_x = (work.getWidth() >> 1) - z*((bmp.getWidth() >> 1) + xscroll);
       int width = bmp.getWidth()*z;
-
+//const int sourceX, const int sourceY, const int sourceWidth, const int sourceHeight, const int destX, const int destY, const int destWidth, const int destHeight
       //stretch_blit(source, dest, 0, y, source->w, 1, start_x, y1, width, 1);
-      bmp.Stretch( work, 0, y, bmp.getWidth(), 1, start_x, y1, width, 1 );
-
+      // For now until we can stretch mask
+      mask = false;
+      if( mask )bmp.drawStretched(  0, y, width, 1, work );
+      else bmp.Stretch( work, 0, y, bmp.getWidth(), 1, start_x - 160, y1, width + 320, 1 );
+   
       y1++;
       z +=  z_add;
       src_y += src_y_add;
@@ -163,7 +166,6 @@ void MugenBackground::logic( const int &x, const int &y ){
     
     this->x = (int)(xoffset + movex + velx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
     this->y = (int)(yoffset + movey + vely + siny_amp * sin(siny_angle*siny_period + siny_offset));
-    Global::debug(1) << "x move: " << x << " | y move: " << y << endl;
 }
     
 void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
@@ -201,7 +203,8 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 	}
 	case Parallax:{
 	    // This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
-	    doParallax( *spriteBmp, *work, x + 160, y - (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75);
+	    //doParallax( *spriteBmp, *work, x + 160, y - (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75);
+	    doParallax( *spriteBmp, *work, x, y - (((yscalestart + yscaledelta)/100)*movey), xscalebot * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75, mask);
 	    break;
 	}
 	case Anim:{

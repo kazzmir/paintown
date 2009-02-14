@@ -333,9 +333,6 @@ protected:
 	void cleanup();
 	bool isaPlayer( Object * o );
 	
-	bool p1bound;
-	bool p2bound;
-	
 	// P1 Players (left hand) addObject
 	std::vector<Object *> p1objects;
 	
@@ -344,6 +341,9 @@ protected:
 	
 	// player list so we can distinguish
 	std::vector<Object *> players;
+	// Hold old positions for players
+	std::map<void *, int>playerx;
+	std::map<void *, int>playery;
 };
 
 #endif

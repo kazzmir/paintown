@@ -114,9 +114,7 @@ round(1),
 totalTime(99),
 time(99),
 p1points(0),
-p2points(0),
-p1bound(false),
-p2bound(false){
+p2points(0){
 }
 
 MugenStage::MugenStage( const char * location ): AdventureWorld(),
@@ -174,9 +172,7 @@ round(1),
 totalTime(99),
 time(99),
 p1points(0),
-p2points(0),
-p1bound(false),
-p2bound(false){
+p2points(0){
 }
 
 MugenStage::~MugenStage(){
@@ -657,13 +653,29 @@ void MugenStage::logic( ){
 	    // Lets check their boundaries
 	    if( (*it)->getX() <= leftbound ) (*it)->setX( leftbound );
 	    else if( (*it)->getX() >= rightbound ) (*it)->setX( rightbound );
-	    else if( (*it)->getX() <= camerax + screenleft ){ 
-		//moveCamera( -5, 0 );
-		(*it)->setX( camerax + screenleft );
-	    } else if( (*it)->getX() >= camerax + 320 - screenright ){
-		//moveCamera( 5, 0 );
-		(*it)->setX( camerax + 320 - screenright );
+	    else if( (*it)->getX() <= screenleft ){ 
+		(*it)->setX( screenleft );
+	    } else if( (*it)->getX() >= 320 - screenright ){
+		(*it)->setX( 320 - screenright );
 	    }
+	    
+	    // Move camera
+	    Global::debug(1) << "p1 object ID: " << (*it) << endl;
+	    const int px = (*it)->getX();
+	    const int py = (*it)->getY();
+	    if( playerx[(*it)] != px ){
+		const int pdiffx = px - playerx[(*it)];
+		Global::debug(1) << "playerx: " << px << " | playerx-old: " << playerx[(*it)] <<  " | playerdiff: " << pdiffx << endl;
+		// Left side x
+		if( px < 70 && pdiffx < 0 )moveCamera(-1,0);
+		else if( px < 70 && pdiffx > 0 )moveCamera(1,0);
+		// Right side x 
+		else if( px > 250 && pdiffx < 0 )moveCamera(-1,0);
+		else if( px > 250 && pdiffx > 0 )moveCamera(1,0);
+	    }
+	    // Update old position
+	    playerx[(*it)] = px;
+	    playery[(*it)] = py;
 	} else {
 	    if( (*it)->getHealth() <= 0 ){
 		delete (*it);
@@ -682,13 +694,29 @@ void MugenStage::logic( ){
 	    // Lets check their boundaries
 	    if( (*it)->getX() <= leftbound ) (*it)->setX( leftbound );
 	    else if( (*it)->getX() >= rightbound ) (*it)->setX( rightbound );
-	    else if( (*it)->getX() <= camerax + screenleft ){ 
-		//moveCamera( -5, 0 );
-		(*it)->setX( camerax + screenleft );
-	    } else if( (*it)->getX() >= camerax + 320 - screenright ){
-		//moveCamera( 5, 0 );
-		(*it)->setX( camerax + 320 - screenright );
+	    else if( (*it)->getX() <= screenleft ){ 
+		(*it)->setX( screenleft );
+	    } else if( (*it)->getX() >= 320 - screenright ){
+		(*it)->setX( 320 - screenright );
 	    }
+	    
+	     // Move camera
+	    Global::debug(1) << "p1 object ID: " << (*it) << endl;
+	    const int px = (*it)->getX();
+	    const int py = (*it)->getY();
+	    if( playerx[(*it)] != px ){
+		const int pdiffx = px - playerx[(*it)];
+		Global::debug(1) << "playerx: " << px << " | playerx-old: " << playerx[(*it)] <<  " | playerdiff: " << pdiffx << endl;
+		// Left side x
+		if( px < 70 && pdiffx < 0 )moveCamera(-1,0);
+		else if( px < 70 && pdiffx > 0 )moveCamera(1,0);
+		// Right side x 
+		else if( px > 250 && pdiffx < 0 )moveCamera(-1,0);
+		else if( px > 250 && pdiffx > 0 )moveCamera(1,0);
+	    }
+	    // Update old position
+	    playerx[(*it)] = px;
+	    playery[(*it)] = py;
 	} else {
 	    if( (*it)->getHealth() <= 0 ){
 		delete (*it);
@@ -762,6 +790,8 @@ void MugenStage::addp1( Object * o ){
     o->setFacing( Object::FACING_RIGHT );
     p1objects.push_back(o);
     players.push_back(o);
+    playerx[o] = o->getX();
+    playery[o] = o->getY();
 }
 
 // Add player2 people
@@ -772,6 +802,8 @@ void MugenStage::addp2( Object * o ){
     o->setFacing( Object::FACING_LEFT );
     p2objects.push_back(o);
     players.push_back(o);
+    playerx[o] = o->getX();
+    playery[o] = o->getY();
 }
 
 void MugenStage::act(){

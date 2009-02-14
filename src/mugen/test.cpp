@@ -266,6 +266,9 @@ void showStage(const string & ourFile){
             keyInputManager::update();
         }
     }
+    
+    delete p1;
+    delete p2;
 
 }
 
