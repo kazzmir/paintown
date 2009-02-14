@@ -27,12 +27,13 @@ using namespace std;
 
 #define DEFAULT_LIVES 4
 
-Player::Player( const char * filename ) throw( LoadException ): 
+Player::Player( const char * filename, int config ) throw( LoadException ): 
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
 attack_bonus(0),
-invincible( false ){
+invincible( false ),
+config(config){
 	lives = DEFAULT_LIVES;
 	
 	/*
@@ -49,12 +50,13 @@ invincible( false ){
         initializeAttackGradient();
 }
 	
-Player::Player( const string & filename ) throw( LoadException ):
+Player::Player( const string & filename, int config ) throw( LoadException ):
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
 attack_bonus(0),
-invincible( false ){
+invincible( false ),
+config(config){
 
 	lives = DEFAULT_LIVES;
 	
@@ -77,7 +79,8 @@ PlayerCommon(chr),
 acts(0),
 name_id(-1),
 attack_bonus(0),
-invincible( false ){
+invincible( false ),
+config(0){
 	show_life = getHealth();
 	lives = DEFAULT_LIVES;
         initializeAttackGradient();
@@ -91,6 +94,7 @@ attack_bonus(0),
 invincible( false ){
 	show_life = getHealth();
         initializeAttackGradient();
+        config = pl.config;
 }
 
 void Player::initializeAttackGradient(){
@@ -377,7 +381,7 @@ bool Player::combo( Animation * ani ){
 */
 
 int Player::getKey( int motion, int facing ){
-	return Configuration::config( 0 ).getKey( motion, facing );
+	return Configuration::config(config).getKey( motion, facing );
 }
 
 bool Player::careAboutKey( int key ){

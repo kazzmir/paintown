@@ -12,7 +12,7 @@ class Bitmap;
 class VersusPlayer: public Player {
 public:
 	VersusPlayer( const std::string & str ) throw( LoadException );
-	VersusPlayer( int config, const Player & player ) throw( LoadException );
+	VersusPlayer( const Player & player ) throw( LoadException );
 	
 	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
 	
@@ -20,12 +20,6 @@ public:
 	virtual bool canGrab( Object * enemy );
 
 	virtual ~VersusPlayer();
-protected:
-
-	using Player::getKey;
-	virtual int getKey( int x, int facing );
-
-	int config;
 };
 
 #endif

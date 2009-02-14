@@ -115,8 +115,10 @@ void OptionVersus::run(bool &endGame){
 			enemy->setAlliance( ALLIANCE_ENEMY );
 
 			for ( int i = 0; i < 3; i += 1 ){
-				VersusPlayer en( 1, *(Player *) enemy );
-				VersusPlayer pl( 0, *(Player *) player );
+				VersusPlayer en(*(Player *) enemy );
+				VersusPlayer pl(*(Player *) player );
+                                en.setConfig(1);
+                                pl.setConfig(0);
 				Game::playVersusMode( &pl, &en, i + 1 );
 			}
 		} else {
@@ -126,7 +128,8 @@ void OptionVersus::run(bool &endGame){
 
 			for ( int i = 0; i < 3; i += 1 ){
 				VersusEnemy en( *(Player *) enemy );
-				VersusPlayer pl( 0, *(Player *) player );
+				VersusPlayer pl( *(Player *) player );
+                                pl.setConfig(0);
 				Game::playVersusMode( &pl, &en, i + 1 );
 			}
 		}

@@ -373,7 +373,6 @@ vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, Ret
 	const int selectedColor1 = Bitmap::makeColor( 0, 255, 0 );
 	const int selectedColor2 = Bitmap::makeColor( 0, 0, 255 );
 	
-	Global::speed_counter = 0;
 			
 	const int boxSize = 80;
 	const int startX = 180;
@@ -395,6 +394,9 @@ vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, Ret
 	bool player1Ready = false;
 	bool player2Ready = false;
 	bool ok = false;
+	Global::speed_counter = 0;
+        double runCounter = 0;
+        double gameSpeed = 1;
 	while ( !ok ){
 		key.poll();
 
@@ -406,8 +408,8 @@ vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, Ret
 		}
 		*/
 		if ( Global::speed_counter > 0 ){
-			double think = Global::speed_counter;
-			while ( think > 0 ){
+			runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+			while ( runCounter > 1 ){
 				clock += 1;
 
 				for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
@@ -555,7 +557,7 @@ vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, Ret
 					throw ReturnException();
 				}
 
-				think--;
+				runCounter -= 1;
 			}
 			
 			if ( player1Ready && player2Ready ){

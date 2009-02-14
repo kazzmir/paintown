@@ -20,8 +20,8 @@ struct keyState{
 class Player: public PlayerCommon {
 public:
 
-	Player( const char * filename ) throw( LoadException );
-	Player( const std::string & str ) throw( LoadException );
+	Player( const char * filename, int config = 0 ) throw( LoadException );
+	Player( const std::string & str, int config = 0 ) throw( LoadException );
 	Player( const Player & pl ) throw( LoadException );
 	Player( const Character & chr ) throw( LoadException );
 	
@@ -66,6 +66,14 @@ public:
 	virtual void deathReset();
 	
         virtual Network::Message getCreateMessage();
+
+        virtual inline void setConfig(int config){
+            this->config = config;
+        }
+
+        virtual const int getConfig() const {
+            return this->config;
+        }
         
         virtual ~Player();
 	
@@ -103,6 +111,7 @@ protected:
         int attack_gradient[num_attack_gradient];
 
 	bool invincible;
+	int config;
 
 	// int last_key;
 };

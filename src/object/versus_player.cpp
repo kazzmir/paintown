@@ -10,24 +10,18 @@
 
 using namespace std;
 
-VersusPlayer::VersusPlayer( const std::string & str ) throw( LoadException ):
-Player( str ),
-config( 0 ){
+VersusPlayer::VersusPlayer(const std::string & str) throw( LoadException ):
+Player(str, 0){
 }
 	
-VersusPlayer::VersusPlayer( int config, const Player & player ) throw( LoadException ):
-Player( player ),
-config( config ){
+VersusPlayer::VersusPlayer(const Player & player) throw( LoadException ):
+Player(player){
 }
 
 void VersusPlayer::draw( Bitmap * work, int rel_x ){
     Character::draw( work, rel_x );
 }
 
-int VersusPlayer::getKey( int motion, int facing ){
-    return Configuration::config( config ).getKey( motion, facing );
-}
-	
 bool VersusPlayer::canGrab( Object * enemy ){
     return false;
 }
