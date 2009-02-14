@@ -81,7 +81,7 @@ mark_as_advanced(CLEAR PNG_LIBRARY)
 # User setable options
 # -------------------------------------------------------
 if(NOT MSVC)
-	set(CXXFLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations -Woverloaded-virtual -Werror")
+	set(CXXFLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations -Woverloaded-virtual")
 else(NOT MSVC)
 	set(CXXFLAGS "-O2")
 endif(NOT MSVC)
