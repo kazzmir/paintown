@@ -14,6 +14,8 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
 #include "object/object.h"
+#include "object/character.h"
+#include "object/object_attack.h"
 #include "globals.h"
 
 #include "game/adventure_world.h"
@@ -659,6 +661,24 @@ void MugenStage::logic( ){
 		(*it)->setX( 320 - screenright );
 	    }
 	    
+	    // Check collisions
+	    for (vector<Object*>::iterator enem = p2objects.begin(); enem != p2objects.end(); ++enem){
+		// He collides with another push him away
+		if( (*it)->collision( (ObjectAttack*)(*enem) ) ){
+		    if( (*enem)->getX() < (*it)->getX() ){
+			(*enem)->moveLeft( ((Character *)(*it))->getSpeed() );
+		    }
+		    else if( (*enem)->getX() > (*it)->getX() ){
+			(*enem)->moveRight( ((Character *)(*it))->getSpeed() );
+		    }
+		}
+		
+		// autoturn need to do turning actions
+		/*if( autoturn ){
+		    if( ((*it)->getX() < (*it)->getX()) && (*it)->isFacing != Object::
+		}*/
+	    }
+	    
 	    // Move camera
 	    Global::debug(1) << "p1 object ID: " << (*it) << endl;
 	    const int px = (*it)->getX();
@@ -698,6 +718,19 @@ void MugenStage::logic( ){
 		(*it)->setX( screenleft );
 	    } else if( (*it)->getX() >= 320 - screenright ){
 		(*it)->setX( 320 - screenright );
+	    }
+	    
+	    // Check collisions
+	    for (vector<Object*>::iterator enem = p1objects.begin(); enem != p1objects.end(); ++enem){
+		// He collides with another push him away
+		if( (*it)->collision( (ObjectAttack*)(*enem) ) ){
+		    if( (*enem)->getX() < (*it)->getX() ){
+			(*enem)->moveLeft( ((Character *)(*it))->getSpeed() );
+		    }
+		    else if( (*enem)->getX() > (*it)->getX() ){
+			(*enem)->moveRight( ((Character *)(*it))->getSpeed() );
+		    }
+		}
 	    }
 	    
 	     // Move camera
@@ -792,6 +825,7 @@ void MugenStage::addp1( Object * o ){
     players.push_back(o);
     playerx[o] = o->getX();
     playery[o] = o->getY();
+    ((Character *)o)->setMaxJumpHeight(90);
 }
 
 // Add player2 people
@@ -804,6 +838,7 @@ void MugenStage::addp2( Object * o ){
     players.push_back(o);
     playerx[o] = o->getX();
     playery[o] = o->getY();
+    ((Character *)o)->setMaxJumpHeight(90);
 }
 
 void MugenStage::act(){
