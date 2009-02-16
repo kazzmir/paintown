@@ -648,7 +648,9 @@ void MugenStage::logic( ){
     // Players go in here
     std::vector<Object *> add;
     for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); ++it){
-        (*it)->act( &p2objects, (World *)this, &add);
+        /* use local variables more often, iterators can be easily confused */
+        Object * player = *it;
+        player->act( &p2objects, (World *)this, &add);
 	(*it)->setZ( zoffset );
 	
 	if( isaPlayer( *it ) ){
@@ -662,6 +664,10 @@ void MugenStage::logic( ){
 	    }
 	    
 	    // Check collisions
+            /* jon: be sure only to do this for players, if you do it for
+             * arbitrary objects and a projectile comes along then the upcast
+             * will crash the system
+             */
 	    for (vector<Object*>::iterator enem = p2objects.begin(); enem != p2objects.end(); ++enem){
 		// He collides with another push him away
 		if( (*it)->collision( (ObjectAttack*)(*enem) ) ){
