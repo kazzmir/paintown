@@ -648,10 +648,10 @@ void MugenStage::logic( ){
     
     // Players go in here
     std::vector<Object *> add;
-    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); ++it){
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
         /* use local variables more often, iterators can be easily confused */
         Object * player = *it;
-        player->act( &p2objects, (World *)this, &add);
+        player->act( &objects, (World *)this, &add);
 	if(zoffsetlink == -2580 )player->setZ( zoffset - cameray );
 	else player->setZ( zoffset );
 	
@@ -670,23 +670,24 @@ void MugenStage::logic( ){
              * arbitrary objects and a projectile comes along then the upcast
              * will crash the system
              */
-	    for (vector<Object*>::iterator enem = p2objects.begin(); enem != p2objects.end(); ++enem){
+	    for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
 		Object *enemy = *enem;
-		// He collides with another push him away
-		/*
-		if( player->collision( (ObjectAttack*)enemy ) ){
-		    if( enemy->getX() < player->getX() ){
-			enemy->moveLeft( ((Character *)player)->getSpeed() );
+		if( player->getAlliance() != enemy->getAlliance() ){
+		    // He collides with another push him away
+		    /*
+		    if( player->collision( (ObjectAttack*)enemy ) ){
+			if( enemy->getX() < player->getX() ){
+			    enemy->moveLeft( ((Character *)player)->getSpeed() );
+			}
+			else if( enemy->getX() > player->getX() ){
+			    enemy->moveRight( ((Character *)player)->getSpeed() );
+			}
+		    }*/
+		    // autoturn need to do turning actions
+		    if( autoturn ){
+			if( (player->getX() < enemy->getX()) && player->getFacing() != Object::FACING_RIGHT )player->setFacing(Object::FACING_RIGHT);
+			if( (player->getX() > enemy->getX()) && player->getFacing() != Object::FACING_LEFT )player->setFacing(Object::FACING_LEFT);
 		    }
-		    else if( enemy->getX() > player->getX() ){
-			enemy->moveRight( ((Character *)player)->getSpeed() );
-		    }
-		}*/
-		
-		// autoturn need to do turning actions
-		if( autoturn ){
-		    if( (player->getX() < enemy->getX()) && player->getFacing() != Object::FACING_RIGHT )player->setFacing(Object::FACING_RIGHT);
-		    if( (player->getX() > enemy->getX()) && player->getFacing() != Object::FACING_LEFT )player->setFacing(Object::FACING_LEFT);
 		}
 	    }
 	    
@@ -694,6 +695,7 @@ void MugenStage::logic( ){
 	    Global::debug(1) << "p1 object ID: " << player << endl;
 	    const int px = player->getX();
 	    const int py = player->getY();
+	    // Horizontal movement of camera
 	    if( playercoord[0][player] != px ){
 		const int pdiffx = px - playercoord[0][player];
 		Global::debug(1) << "playerx: " << px << " | playerx-old: " << playercoord[0][player] <<  " | playerdiff: " << pdiffx << endl;
@@ -704,6 +706,7 @@ void MugenStage::logic( ){
 		else if( px > (320 - tension) && pdiffx < 0 )moveCamera(-1,0);
 		else if( px > (320 - tension) && pdiffx > 0 )moveCamera(1,0);
 	    }
+	    // Vertical movement of camera
 	    if( playercoord[1][player] != py ){
 		const int pdiffy = playercoord[1][player] - py;
 		Global::debug(1) << "playery: " << py << " | playery-old: " << playercoord[1][player] << endl;
@@ -715,87 +718,17 @@ void MugenStage::logic( ){
 	    // Update old position
 	    playercoord[0][player] = px;
 	    playercoord[1][player] = py;
+	    
+	// Non players, objects, projectiles misc
 	} else {
 	    if( player->getHealth() <= 0 ){
 		delete player;
-		it = p1objects.erase( it );
-		if( it == p1objects.end() ) break;
+		it = objects.erase( it );
+		if( it == objects.end() ) break;
 	    }
 	}
     }
-    p1objects.insert(p1objects.end(),add.begin(),add.end());
-    add.clear();
-    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); ++it){
-	Object * player = *it;
-        player->act( &p1objects, (World *)this, &add);
-	if( zoffsetlink == -2580 )player->setZ( zoffset - cameray );
-	else player->setZ( zoffset );
-	
-	if( isaPlayer( player ) ){
-	    // Lets check their boundaries
-	    if( player->getX() <= leftbound ) player->setX( leftbound );
-	    else if( player->getX() >= rightbound ) player->setX( rightbound );
-	    else if( player->getX() <= screenleft ){ 
-		player->setX( screenleft );
-	    } else if( player->getX() >= 320 - screenright ){
-		player->setX( 320 - screenright );
-	    }
-	    
-	    // Check collisions
-	    for (vector<Object*>::iterator enem = p1objects.begin(); enem != p1objects.end(); ++enem){
-		Object *enemy = *enem;
-		// He collides with another push him away
-		/*
-		if( player->collision( (ObjectAttack*)enemy ) ){
-		    if( enemy->getX() < player->getX() ){
-			enemy->moveLeft( ((Character *)player)->getSpeed() );
-		    }
-		    else if( enemy->getX() > player->getX() ){
-			enemy->moveRight( ((Character *)player)->getSpeed() );
-		    }
-		}*/
-		
-		// autoturn need to do turning actions
-		if( autoturn ){
-		    if( (player->getX() < enemy->getX()) && player->getFacing() != Object::FACING_RIGHT )player->setFacing(Object::FACING_RIGHT);
-		    if( (player->getX() > enemy->getX()) && player->getFacing() != Object::FACING_LEFT )player->setFacing(Object::FACING_LEFT);
-		}
-	    }
-	    
-	     // Move camera
-	    Global::debug(1) << "p1 object ID: " << player << endl;
-	    const int px = player->getX();
-	    const int py = player->getY();
-	    if( playercoord[0][player] != px ){
-		const int pdiffx = px - playercoord[0][player];
-		Global::debug(1) << "playerx: " << px << " | playerx-old: " << playercoord[0][player] <<  " | playerdiff: " << pdiffx << endl;
-		// Left side x
-		if( px < tension && pdiffx < 0 )moveCamera(-1,0);
-		else if( px < tension && pdiffx > 0 )moveCamera(1,0);
-		// Right side x 
-		else if( px > (320 - tension) && pdiffx < 0 )moveCamera(-1,0);
-		else if( px > (320 - tension) && pdiffx > 0 )moveCamera(1,0);
-	    }
-	    if( playercoord[1][player] != py ){
-		const int pdiffy = playercoord[1][player] - py;
-		Global::debug(1) << "playery: " << py << " | playery-old: " << playercoord[1][player] << endl;
-		if( verticalfollow && py > floortension ){
-		    if( pdiffy < 0 )moveCamera( 0, -.2/verticalfollow );
-		    else if( pdiffy > 0 )moveCamera( 0, .2/verticalfollow );
-		}
-	    }
-	    // Update old position
-	    playercoord[0][player] = px;
-	    playercoord[1][player] = py;
-	} else {
-	    if( player->getHealth() <= 0 ){
-		delete player;
-		it = p2objects.erase( it );
-		if( it == p2objects.end() ) break;
-	    }
-	}
-    }
-    p2objects.insert(p2objects.end(),add.begin(),add.end());
+    objects.insert(objects.end(),add.begin(),add.end());
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
@@ -810,11 +743,7 @@ void MugenStage::render( Bitmap *work ){
     }
     
     // Players go in here
-    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-	if( reflectionIntensity )(*it)->drawReflection( board, 0, reflectionIntensity );
-        (*it)->draw( board, 0);
-    }
-    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	if( reflectionIntensity )(*it)->drawReflection( board, 0, reflectionIntensity );
         (*it)->draw( board, 0);
     }
@@ -838,27 +767,30 @@ void MugenStage::reset( ){
     }
     
     // Reset player positions
-    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-        (*it)->setX( 160 + p1startx );
-	(*it)->setY( p1starty );
-	(*it)->setZ( zoffset );
-	(*it)->setFacing( Object::FACING_RIGHT );
-    }
-    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
-        (*it)->setX( 160 + p2startx );
-	(*it)->setY( p2starty );
-	(*it)->setZ( zoffset );
-	(*it)->setFacing( Object::FACING_LEFT );
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+	Object *player = *it;
+	if( player->getAlliance() == P1SIDE ){
+	    player->setX( 160 + p1startx );
+	    player->setY( p1starty );
+	    player->setZ( zoffset );
+	    player->setFacing( Object::FACING_RIGHT );
+	} else if( player->getAlliance() == P2SIDE ){
+	    player->setX( 160 + p2startx );
+	    player->setY( p2starty );
+	    player->setZ( zoffset );
+	    player->setFacing( Object::FACING_LEFT );
+	}
     }
 }
 
 // Add player1 people
 void MugenStage::addp1( Object * o ){
+    o->setAlliance(P1SIDE);
     o->setX( 160 + p1startx );
     o->setY( p1starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_RIGHT );
-    p1objects.push_back(o);
+    objects.push_back(o);
     players.push_back(o);
     playercoord[0][o] = o->getX();
     playercoord[1][o] = o->getY();
@@ -867,11 +799,12 @@ void MugenStage::addp1( Object * o ){
 
 // Add player2 people
 void MugenStage::addp2( Object * o ){
+    o->setAlliance(P2SIDE);
     o->setX( 160 + p2startx );
     o->setY( p2starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_LEFT );
-    p2objects.push_back(o);
+    objects.push_back(o);
     players.push_back(o);
     playercoord[0][o] = o->getX();
     playercoord[1][o] = o->getY();
@@ -908,13 +841,7 @@ const Block * MugenStage::currentBlock() const { return NULL; }
 /* bleh.. */
 void MugenStage::addEnemy(Enemy * obj){ /* does nothing */ }
 Object * MugenStage::findObject(int id){ 
-    for (vector<Object*>::iterator it = p1objects.begin(); it != p1objects.end(); it++){
-        Object * object = *it;
-        if (object->getObjectId() == id){
-            return object;
-        }
-    }
-    for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); it++){
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
         Object * object = *it;
         if (object->getObjectId() == id){
             return object;
@@ -928,11 +855,7 @@ int MugenStage::getMinimumZ(){ return zoffset; }
 void MugenStage::drawMiniMaps( bool b ){ /* Not likely */ }
 bool MugenStage::shouldDrawMiniMaps(){ return false; }
 void MugenStage::killAllHumans( Object * player ){ 
-    for ( vector< Object * >::iterator it = p1objects.begin(); it != p1objects.end(); it++ ){
-		Object * o = *it;
-		o->takeDamage( this, NULL, 999999 );
-    }
-    for ( vector< Object * >::iterator it = p2objects.begin(); it != p2objects.end(); it++ ){
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
 		o->takeDamage( this, NULL, 999999 );
     }
