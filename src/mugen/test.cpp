@@ -82,8 +82,8 @@ void testPCX(){
 }
 
 void showCharacter(const string & ourFile){
-    set_color_depth(16);
-    Bitmap::setGfxModeWindowed(640, 480);
+    /*set_color_depth(16);
+    Bitmap::setGfxModeWindowed(640, 480);*/
     Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
     MugenCharacter character( ourFile );
     character.load();
@@ -181,9 +181,9 @@ static void inc_speed_counter() {
 END_OF_FUNCTION( inc_speed_counter );
 
 void showStage(const string & ourFile){
-    set_color_depth(16);
+    /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
-    loadpng_init();
+    loadpng_init();*/
     LOCK_VARIABLE( speed_counter );
     LOCK_FUNCTION( (void *)inc_speed_counter );
     /* set up the timers */
@@ -200,9 +200,11 @@ void showStage(const string & ourFile){
     
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
-    Object *p1 = new Player( "data/players/wolverine/wolverine.txt", 0 );//Game::selectPlayer( false, "Pick player1" );
+    //Object *p1 = new Player( "data/players/wolverine/wolverine.txt", 0 );//Game::selectPlayer( false, "Pick player1" );
+    Object *p1 = Game::selectPlayer( false, "Pick player1" );
     Global::debug(0) << "Loading player 2" << endl;
-    Object *p2 = new Player( "data/players/venom/venom.txt", 1 );//Game::selectPlayer( false, "Pick player2" );
+    //Object *p2 = new Player( "data/players/venom/venom.txt", 1 );//Game::selectPlayer( false, "Pick player2" );
+    Object *p2 = Game::selectPlayer( false, "Pick player2" );
     ((Player *)p1)->setInvincible( false );
     //p1->setMap( remap );
     ((Player *)p1)->testAnimation();
@@ -286,10 +288,11 @@ int main( int argc, char ** argv ){
 	std::string ourFile;
 	int configLoaded = -1;
 
-        allegro_init();
+        /*allegro_init();
         install_timer();
 	install_keyboard();
-	install_mouse();
+	install_mouse();*/
+	Global::init( GFX_AUTODETECT_WINDOWED );
 
 	for ( int q = 1; q < argc; q++ ){
 		if ( isArg( argv[ q ], FILE_ARG ) ){
