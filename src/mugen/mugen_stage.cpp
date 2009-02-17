@@ -672,7 +672,7 @@ void MugenStage::logic( ){
              */
 	    for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
 		Object *enemy = *enem;
-		if( player->getAlliance() != enemy->getAlliance() ){
+		if (player->getAlliance() != enemy->getAlliance()){
 		    // He collides with another push him away
 		    /*
 		    if( player->collision( (ObjectAttack*)enemy ) ){
@@ -684,9 +684,14 @@ void MugenStage::logic( ){
 			}
 		    }*/
 		    // autoturn need to do turning actions
-		    if( autoturn ){
-			if( (player->getX() < enemy->getX()) && player->getFacing() != Object::FACING_RIGHT )player->setFacing(Object::FACING_RIGHT);
-			if( (player->getX() > enemy->getX()) && player->getFacing() != Object::FACING_LEFT )player->setFacing(Object::FACING_LEFT);
+		    if (autoturn){
+			if (player->getX() < enemy->getX() && player->getFacing() != Object::FACING_RIGHT ){
+                            player->setFacing(Object::FACING_RIGHT);
+                        }
+
+			if (player->getX() > enemy->getX() && player->getFacing() != Object::FACING_LEFT ){
+                            player->setFacing(Object::FACING_LEFT);
+                        }
 		    }
 		}
 	    }
