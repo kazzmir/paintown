@@ -187,7 +187,7 @@ void showStage(const string & ourFile){
     LOCK_VARIABLE( speed_counter );
     LOCK_FUNCTION( (void *)inc_speed_counter );
     /* set up the timers */
-    install_int_ex( inc_speed_counter, BPS_TO_TIMER( 40 ) );
+    //install_int_ex( inc_speed_counter, BPS_TO_TIMER( 40 ) );
 
     Global::debug(0) << "Trying to load stage: " << ourFile << "..." << endl;
     MugenStage stage( ourFile );
