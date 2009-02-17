@@ -670,20 +670,23 @@ void MugenStage::logic( ){
              * will crash the system
              */
 	    for (vector<Object*>::iterator enem = p2objects.begin(); enem != p2objects.end(); ++enem){
+		Object *enemy = *enem;
 		// He collides with another push him away
-		if( player->collision( (ObjectAttack*)(*enem) ) ){
-		    if( (*enem)->getX() < player->getX() ){
-			(*enem)->moveLeft( ((Character *)player)->getSpeed() );
+		/*
+		if( player->collision( (ObjectAttack*)enemy ) ){
+		    if( enemy->getX() < player->getX() ){
+			enemy->moveLeft( ((Character *)player)->getSpeed() );
 		    }
-		    else if( (*enem)->getX() > player->getX() ){
-			(*enem)->moveRight( ((Character *)player)->getSpeed() );
+		    else if( enemy->getX() > player->getX() ){
+			enemy->moveRight( ((Character *)player)->getSpeed() );
 		    }
-		}
+		}*/
 		
 		// autoturn need to do turning actions
-		/*if( autoturn ){
-		    if( (player->getX() < player->getX()) && player->isFacing != Object::
-		}*/
+		if( autoturn ){
+		    if( (player->getX() < enemy->getX()) && player->getFacing() != Object::FACING_RIGHT )player->setFacing(Object::FACING_RIGHT);
+		    if( (player->getX() > enemy->getX()) && player->getFacing() != Object::FACING_LEFT )player->setFacing(Object::FACING_LEFT);
+		}
 	    }
 	    
 	    // Move camera
@@ -738,14 +741,22 @@ void MugenStage::logic( ){
 	    
 	    // Check collisions
 	    for (vector<Object*>::iterator enem = p1objects.begin(); enem != p1objects.end(); ++enem){
+		Object *enemy = *enem;
 		// He collides with another push him away
-		if( player->collision( (ObjectAttack*)(*enem) ) ){
-		    if( (*enem)->getX() < player->getX() ){
-			(*enem)->moveLeft( ((Character *)player)->getSpeed() );
+		/*
+		if( player->collision( (ObjectAttack*)enemy ) ){
+		    if( enemy->getX() < player->getX() ){
+			enemy->moveLeft( ((Character *)player)->getSpeed() );
 		    }
-		    else if( (*enem)->getX() > player->getX() ){
-			(*enem)->moveRight( ((Character *)player)->getSpeed() );
+		    else if( enemy->getX() > player->getX() ){
+			enemy->moveRight( ((Character *)player)->getSpeed() );
 		    }
+		}*/
+		
+		// autoturn need to do turning actions
+		if( autoturn ){
+		    if( (player->getX() < enemy->getX()) && player->getFacing() != Object::FACING_RIGHT )player->setFacing(Object::FACING_RIGHT);
+		    if( (player->getX() > enemy->getX()) && player->getFacing() != Object::FACING_LEFT )player->setFacing(Object::FACING_LEFT);
 		}
 	    }
 	    
