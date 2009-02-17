@@ -341,9 +341,8 @@ protected:
 	
 	// player list so we can distinguish
 	std::vector<Object *> players;
-	// Hold old positions for players
-	std::map<void *, int>playerx;
-	std::map<void *, int>playery;
+	// Hold old positions for players x = 0 y = 1
+	std::map<void *, int>playercoord[2];
 };
 
 #endif
