@@ -652,7 +652,8 @@ void MugenStage::logic( ){
         /* use local variables more often, iterators can be easily confused */
         Object * player = *it;
         player->act( &p2objects, (World *)this, &add);
-	player->setZ( zoffset - cameray );
+	if(!zoffsetlink)player->setZ( zoffset - cameray );
+	else player->setZ( zoffset );
 	
 	if( isaPlayer( player ) ){
 	    // Lets check their boundaries
@@ -727,7 +728,8 @@ void MugenStage::logic( ){
     for (vector<Object*>::iterator it = p2objects.begin(); it != p2objects.end(); ++it){
 	Object * player = *it;
         player->act( &p1objects, (World *)this, &add);
-	player->setZ( zoffset - cameray );
+	if(!zoffsetlink)player->setZ( zoffset - cameray );
+	else player->setZ( zoffset );
 	
 	if( isaPlayer( player ) ){
 	    // Lets check their boundaries
