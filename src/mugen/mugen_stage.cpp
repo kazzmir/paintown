@@ -193,6 +193,16 @@ void MugenStage::load() throw( MugenException ){
     const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location) );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
+    
+    std::string filesdir = "";
+    
+    size_t strloc = location.find_last_of("/");
+    if (strloc != std::string::npos){
+	filesdir = location.substr(0, strloc);
+	filesdir += "/";
+    }
+    
+    Global::debug(1) << "Got subdir: " << filesdir << endl;
      
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
@@ -375,7 +385,7 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> sffFile;
 		    Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
 		    correctStageName( sffFile );
-		    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir, sffFile), "", sprites );
+		    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir + filesdir, sffFile), "", sprites );
 		} else if ( itemhead.find("debugbg")!=std::string::npos ){
 		    *content->getNext() >> debugbg;
 		} else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
@@ -383,7 +393,7 @@ void MugenStage::load() throw( MugenException ){
 	}
 	else if( head == "music" ){ /* Ignore for now */ }
 	// This our background data definitions
-	else if( head.find("bg") !=std::string::npos ){
+	else if( head.find("bg ") !=std::string::npos ){
 	    MugenBackground *temp = new MugenBackground(ticker);
 	    head.replace(0,3,"");
 	    temp->name = head;
@@ -562,8 +572,8 @@ void MugenStage::load() throw( MugenException ){
 	    animations[h] = animation;
 	    
 	}
-	else if( head.find("BGCtrlDef") != std::string::npos ){ /* Ignore for now */ }
-	else if( head.find("BGCtrl") != std::string::npos ){ /* Ignore for now */ }
+	else if( head.find("bgctrldef") != std::string::npos ){ /* Ignore for now */ }
+	else if( head.find("bgctrl") != std::string::npos ){ /* Ignore for now */ }
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
 	
     }
