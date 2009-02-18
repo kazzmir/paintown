@@ -672,6 +672,9 @@ void MugenStage::logic( ){
              */
 	    for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
 		Object *enemy = *enem;
+		if (!isaPlayer( enemy )){
+		    continue;
+		}
 		if (player->getAlliance() != enemy->getAlliance()){
 		    // He collides with another push him away
 		    /*
@@ -799,7 +802,7 @@ void MugenStage::addp1( Object * o ){
     players.push_back(o);
     playercoord[0][o] = o->getX();
     playercoord[1][o] = o->getY();
-    ((Character *)o)->setMaxJumpHeight(150);
+    ((Character *)o)->setMaxJumpHeight(190);
 }
 
 // Add player2 people
@@ -813,7 +816,7 @@ void MugenStage::addp2( Object * o ){
     players.push_back(o);
     playercoord[0][o] = o->getX();
     playercoord[1][o] = o->getY();
-    ((Character *)o)->setMaxJumpHeight(150);
+    ((Character *)o)->setMaxJumpHeight(190);
 }
 
 void MugenStage::act(){

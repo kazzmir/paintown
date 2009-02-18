@@ -28,6 +28,8 @@
 
 #include "object/object.h"
 #include "object/player.h"
+#include "object/versus_player.h"
+#include "object/versus_enemy.h"
 #include "game.h"
 
 
@@ -213,9 +215,12 @@ void showStage(const string & ourFile){
     //p2->setMap( remap );
     ((Player *)p2)->testAnimation();
     ((Player *)p2)->setConfig(1);
+    // Make them versus players
+    VersusPlayer p1v( *(Player *) p1 );
+    VersusEnemy p2v( *(Player *) p2 );
     
-    stage.addp1(p1);
-    stage.addp2(p2);
+    stage.addp1(&p1v);
+    stage.addp2(&p2v);
 
     double gameSpeed = 1.0;
     double runCounter = 0;
