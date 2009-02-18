@@ -13,6 +13,7 @@
 
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "object/animation.h"
 #include "object/object.h"
 #include "object/character.h"
 #include "object/object_attack.h"
@@ -43,18 +44,24 @@ static void correctStageName( std::string &str ){
     }
 }
 
-static int getFurthest( const std::vector<Object *> &objs, int facing, int checkpoint ){
-    int x = checkpoint;
+static bool centerCollision( Character *p1, Character *p2 ){
+    //p1->getCurrentMovement()->getCurrentFrame();
+    const int p1width = p1->getCurrentMovement()->getCurrentFrame()->getWidth(), p1height = p1->getCurrentMovement()->getCurrentFrame()->getHeight();
+    const int p2width = p2->getCurrentMovement()->getCurrentFrame()->getWidth(), p2height = p2->getCurrentMovement()->getCurrentFrame()->getHeight();
     
-    for (vector<Object*>::const_iterator it = objs.begin(); it != objs.end(); ++it){
-	// left side
-	if( facing == Object::FACING_RIGHT ){
-	    if( (*it)->getX() > x )x = (*it)->getX();
-	} else {
-	    if( (*it)->getX() < x )x = (*it)->getX();
-	}
-    }
-    return x;
+    const int x1 = p1->getX() + ((p1width/2)/2), y1 = 0, x2 = p1->getX() + p1width - ((p1width/2)/2), y2 = p1height, 
+	      x3 = p2->getX() + ((p2width/2)/2), y3 = 0, x4 = p2->getX() + p2width - ((p2width/2)/2), y4 = p2height;
+    
+    if ( x1 < x3 && x1 < x4 &&
+	    x2 < x3 && x2 < x4 ) return false;
+    if ( x1 > x3 && x1 > x4 &&
+	    x2 > x3 && x2 > x4 ) return false;
+    if ( y1 < y3 && y1 < y4 &&
+	    y2 < y3 && y2 < y4 ) return false;
+    if ( y1 > y3 && y1 > y4 &&
+	    y2 > y3 && y2 > y4 ) return false;
+    
+    return true;
 }
 
 MugenStage::MugenStage( const string & s ):
@@ -681,15 +688,14 @@ void MugenStage::logic( ){
 		}
 		if (player->getAlliance() != enemy->getAlliance()){
 		    // He collides with another push him away
-		    /*
-		    if( player->collision( (ObjectAttack*)enemy ) ){
-			if( enemy->getX() < player->getX() ){
-			    enemy->moveLeft( ((Character *)player)->getSpeed() );
+		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Character *)player), ((Character *)enemy) ) ){
+			if ( enemy->getX() < player->getX() ){
+			    enemy->moveLeft( 2 );
 			}
-			else if( enemy->getX() > player->getX() ){
-			    enemy->moveRight( ((Character *)player)->getSpeed() );
+			else if ( enemy->getX() > player->getX() ){
+			    enemy->moveRight( 2 );
 			}
-		    }*/
+		    }
 		    // autoturn need to do turning actions
 		    if (autoturn){
 			if (player->getX() < enemy->getX() && player->getFacing() != Object::FACING_RIGHT ){
@@ -830,7 +836,7 @@ void MugenStage::addp1( Object * o ){
     players.push_back(o);
     playercoord[0][o] = o->getX();
     playercoord[1][o] = o->getY();
-    ((Character *)o)->setMaxJumpHeight(190);
+    ((Character *)o)->setJumpingYVelocity(7.2);
 }
 
 // Add player2 people
@@ -844,7 +850,7 @@ void MugenStage::addp2( Object * o ){
     players.push_back(o);
     playercoord[0][o] = o->getX();
     playercoord[1][o] = o->getY();
-    ((Character *)o)->setMaxJumpHeight(190);
+    ((Character *)o)->setJumpingYVelocity(7.2);
 }
 
 void MugenStage::act(){
