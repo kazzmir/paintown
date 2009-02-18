@@ -163,9 +163,11 @@ public:
 	}
 
 	/* should these two methods be private? probably.. */
+        /*
 	inline void setMaxJumpHeight( const int j ){
 		max_jump_height = j;
 	}
+        */
 	
 	inline void setXVelocity( const double j ){
 		moving = true;
@@ -273,9 +275,11 @@ public:
 		return status;
 	}
 
+        /*
 	inline const double getMaxJumpHeight() const{
 		return max_jump_height;
 	}
+        */
 
 	inline const double getMaxJumpingVelocity() const {
 		return jumping_starting_velocity;
@@ -414,7 +418,7 @@ protected:
 /* specific to character */
 protected:
 	
-	int max_jump_height;
+	// int max_jump_height;
 	double x_velocity;
 	double y_velocity;
 	double z_velocity;
