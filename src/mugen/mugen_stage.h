@@ -10,9 +10,6 @@
 // Implement world because raf is a kind man
 #include "world.h"
 
-/* dont extend AdventureWorld, but need it for now */
-#include "game/adventure_world.h"
-
 class Bitmap;
 class MugenItemContent;
 class MugenSprite;
@@ -20,7 +17,7 @@ class MugenSound;
 class MugenAnimation;
 class MugenBackground;
 
-class MugenStage: public AdventureWorld {
+class MugenStage: public World {
 public:
 	// Location at dataPath() + "mugen/stages/"
 	MugenStage( const string & s );
@@ -77,7 +74,7 @@ public:
 	virtual int getY();
         /* this shouldn't be here */
 	// I guess ignore this one
-        //virtual const deque<Bitmap*> & getScreenshots() = 0;
+        virtual const deque<Bitmap*> & getScreenshots();
         virtual const int levelLength() const;
 	// Since this isn't a paintown level, I guess block wouldn't apply
         virtual const Block * currentBlock() const;
@@ -332,8 +329,8 @@ protected:
 	
 	// Alliance setting
 	enum teams{
-	    P1SIDE=5,
-	    P2SIDE
+	    Player1Side=5,
+	    Player2Side
 	};
 	
 	void cleanup();
@@ -343,6 +340,9 @@ protected:
 	std::vector<Object *> players;
 	// Hold old positions for players x = 0 y = 1
 	std::map<void *, int>playercoord[2];
+	
+	// What garbage
+	deque<Bitmap*> garbage;
 };
 
 #endif

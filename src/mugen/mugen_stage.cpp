@@ -18,8 +18,6 @@
 #include "object/object_attack.h"
 #include "globals.h"
 
-#include "game/adventure_world.h"
-
 #include "mugen_animation.h"
 #include "mugen_background.h"
 #include "mugen_item.h"
@@ -60,7 +58,7 @@ static int getFurthest( const std::vector<Object *> &objs, int facing, int check
 }
 
 MugenStage::MugenStage( const string & s ):
-AdventureWorld(),
+World(),
 location( s ),
 baseDir(""),
 name(""),
@@ -119,7 +117,7 @@ p1points(0),
 p2points(0){
 }
 
-MugenStage::MugenStage( const char * location ): AdventureWorld(),
+MugenStage::MugenStage( const char * location ): World(),
 location( std::string(location) ),
 baseDir(""),
 name(""),
@@ -655,14 +653,20 @@ void MugenStage::logic( ){
 	if(zoffsetlink == -2580 )player->setZ( zoffset - cameray );
 	else player->setZ( zoffset );
 	
+	// This is to move extra in case a boundary was hit
+	int cameramovex = 0;
 	if( isaPlayer( player ) ){
 	    // Lets check their boundaries
-	    if( player->getX() <= leftbound ) player->setX( leftbound );
-	    else if( player->getX() >= rightbound ) player->setX( rightbound );
-	    else if( player->getX() <= screenleft ){ 
+	    if (player->getX() <= leftbound){
+		player->setX( leftbound );
+	    } else if (player->getX() >= rightbound){ 
+		player->setX( rightbound );
+	    } else if (player->getX() <= screenleft){ 
 		player->setX( screenleft );
-	    } else if( player->getX() >= 320 - screenright ){
+		cameramovex--;
+	    } else if (player->getX() >= 320 - screenright){
 		player->setX( 320 - screenright );
+		cameramovex++;
 	    }
 	    
 	    // Check collisions
@@ -704,15 +708,39 @@ void MugenStage::logic( ){
 	    const int px = player->getX();
 	    const int py = player->getY();
 	    // Horizontal movement of camera
-	    if( playercoord[0][player] != px ){
+	    if (playercoord[0][player] != px){
 		const int pdiffx = px - playercoord[0][player];
 		Global::debug(1) << "playerx: " << px << " | playerx-old: " << playercoord[0][player] <<  " | playerdiff: " << pdiffx << endl;
+		// 0 no move, 1 move left, 2 move right for other players so they don't float along
+		int movex = 0;
 		// Left side x
-		if( px < tension && pdiffx < 0 )moveCamera(-1,0);
-		else if( px < tension && pdiffx > 0 )moveCamera(1,0);
+		if (px < tension && pdiffx < 0){
+		    cameramovex -= (tension - px);
+		    movex = 1;
+		} else if (px < tension && pdiffx > 0){
+		    cameramovex += (tension - px);
+		    movex = 2;
+		}
 		// Right side x 
-		else if( px > (320 - tension) && pdiffx < 0 )moveCamera(-1,0);
-		else if( px > (320 - tension) && pdiffx > 0 )moveCamera(1,0);
+		else if (px > (320 - tension) && pdiffx < 0){
+		    cameramovex -= (px - (320 - tension));
+		    movex = 1;
+		} else if (px > (320 - tension) && pdiffx > 0){
+		    cameramovex += (px - (320 - tension));
+		    movex = 2;
+		}
+		// If we got camera moves lets do them
+		moveCamera(cameramovex,0);
+		if (movex){
+		    for (vector<Object*>::iterator move = objects.begin(); move != objects.end(); ++move){
+			Object *moveplayer = *move;
+			if (movex == 1){
+			    moveplayer->moveRight(abs(cameramovex));
+			} else if (movex == 2){
+			    moveplayer->moveLeft(abs(cameramovex));
+			}
+		    }
+		}
 	    }
 	    // Vertical movement of camera
 	    if( playercoord[1][player] != py ){
@@ -777,12 +805,12 @@ void MugenStage::reset( ){
     // Reset player positions
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *player = *it;
-	if( player->getAlliance() == P1SIDE ){
+	if( player->getAlliance() == Player1Side ){
 	    player->setX( 160 + p1startx );
 	    player->setY( p1starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_RIGHT );
-	} else if( player->getAlliance() == P2SIDE ){
+	} else if( player->getAlliance() == Player2Side ){
 	    player->setX( 160 + p2startx );
 	    player->setY( p2starty );
 	    player->setZ( zoffset );
@@ -793,7 +821,7 @@ void MugenStage::reset( ){
 
 // Add player1 people
 void MugenStage::addp1( Object * o ){
-    o->setAlliance(P1SIDE);
+    o->setAlliance(Player1Side);
     o->setX( 160 + p1startx );
     o->setY( p1starty );
     o->setZ( zoffset );
@@ -807,7 +835,7 @@ void MugenStage::addp1( Object * o ){
 
 // Add player2 people
 void MugenStage::addp2( Object * o ){
-    o->setAlliance(P2SIDE);
+    o->setAlliance(Player2Side);
     o->setX( 160 + p2startx );
     o->setY( p2starty );
     o->setZ( zoffset );
@@ -842,7 +870,9 @@ int MugenStage::getY(){
 }
 /* this shouldn't be here */
 // I guess ignore this one
-//const deque<Bitmap*> & getScreenshots() = 0;
+const deque<Bitmap*> & MugenStage::getScreenshots(){
+    return garbage;
+}
 const int MugenStage::levelLength() const { return 0; }
 // Since this isn't a paintown level, I guess block wouldn't apply
 const Block * MugenStage::currentBlock() const { return NULL; }
