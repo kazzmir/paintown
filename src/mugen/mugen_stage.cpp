@@ -30,6 +30,14 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 
+// Some static variables
+static const int DEFAULT_BACKGROUND_ID = -9999;
+static const int DEFAULT_OBJECT_OFFSET = 160;
+static const int DEFAULT_WIDTH = 320;
+static const int DEFAULT_HEIGHT = 240;
+static const double DEFAULT_JUMP_VEL = 7.2;
+
+
 static void correctStageName( std::string &str ){
     if( str.find( "stages/") != std::string::npos || str.find( "stages\\") != std::string::npos ){
 	size_t rem = str.find_first_of( "stages/" );
@@ -98,7 +106,7 @@ botscale(1.2),*/
 screenleft(15),
 screenright(15),
 zoffset(200),
-zoffsetlink(-2580),
+zoffsetlink(DEFAULT_BACKGROUND_ID),
 autoturn(true),
 resetBG(true),
 shadowIntensity(128),
@@ -582,7 +590,7 @@ void MugenStage::load() throw( MugenException ){
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
     // Setup board our worksurface to the proper size of the entire stage 320x240 :P
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
-    board = new Bitmap( 320, 240 );
+    board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
     camerax = xaxis = startx;
     cameray = yaxis = starty;
     
@@ -604,7 +612,7 @@ void MugenStage::load() throw( MugenException ){
     }
     
     // zoffsetlink
-    if( zoffsetlink != -2580 ){
+    if( zoffsetlink != DEFAULT_BACKGROUND_ID ){
 	// Link zoffset to id
 	zoffset = getBackground(zoffsetlink)->y;
     }
@@ -620,12 +628,12 @@ void MugenStage::setCamera( const int &x, const int &y ){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
 	Object *player = *it;
 	if (isaPlayer(player)){
-	   // player->setX(playerInfo[player].worldx + 160 - camerax);
+	   // player->setX(playerInfo[player].worldx + DEFAULT_OBJECT_OFFSET - camerax);
 	    // Left bound
 	    /*if (camerax > playerInfo[player].worldx && player->getFacing() == Object::FACING_RIGHT ){
 		camerax = playerInfo[player].worldx;
-	    } else if ((camerax + 320) < playerInfo[player].worldx && player->getFacing() == Object::FACING_LEFT ){
-		camerax = playerInfo[player].worldx - 320;
+	    } else if ((camerax + DEFAULT_WIDTH) < playerInfo[player].worldx && player->getFacing() == Object::FACING_LEFT ){
+		camerax = playerInfo[player].worldx - DEFAULT_WIDTH;
 	    }*/
 	}
     }
@@ -640,12 +648,12 @@ void MugenStage::moveCamera( const int &x, const int &y ){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
 	Object *player = *it;
 	if (isaPlayer(player)){
-	   // player->setX(playerInfo[player].worldx + 160 - camerax);
+	   // player->setX(playerInfo[player].worldx + DEFAULT_OBJECT_OFFSET - camerax);
 	    // Left bound
 	   /* if (camerax > playerInfo[player].worldx && player->getFacing() == Object::FACING_RIGHT ){
 		camerax = playerInfo[player].worldx;
-	    } else if ((camerax + 320) < playerInfo[player].worldx && player->getFacing() == Object::FACING_LEFT ){
-		camerax = playerInfo[player].worldx - 320;
+	    } else if ((camerax + DEFAULT_WIDTH) < playerInfo[player].worldx && player->getFacing() == Object::FACING_LEFT ){
+		camerax = playerInfo[player].worldx - DEFAULT_WIDTH;
 	    }*/
 	}
     }
@@ -678,7 +686,7 @@ void MugenStage::logic( ){
     const int diffy = starty - cameray + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
     
     //zoffsetlink
-    if( zoffsetlink != -2580 )zoffset = getBackground(zoffsetlink)->y;
+    if( zoffsetlink != DEFAULT_BACKGROUND_ID )zoffset = getBackground(zoffsetlink)->y;
     Global::debug(1) << "Zoffset: " << zoffset << endl;
     
     // Backgrounds
@@ -692,7 +700,7 @@ void MugenStage::logic( ){
         /* use local variables more often, iterators can be easily confused */
         Object * player = *it;
         player->act( &objects, (World *)this, &add);
-	if(zoffsetlink == -2580 )player->setZ( zoffset - cameray );
+	if(zoffsetlink == DEFAULT_BACKGROUND_ID )player->setZ( zoffset - cameray );
 	else player->setZ( zoffset );
 	
 	// This is to move extra in case a boundary was hit
@@ -753,11 +761,11 @@ void MugenStage::logic( ){
 		    movex = 2;
 		}
 		// Right side x 
-		else if (px > (320 - tension) && pdiffx < 0){
-		    cameramovex -= (px - (320 - tension));
+		else if (px > (DEFAULT_WIDTH - tension) && pdiffx < 0){
+		    cameramovex -= (px - (DEFAULT_WIDTH - tension));
 		    movex = 1;
-		} else if (px > (320 - tension) && pdiffx > 0){
-		    cameramovex += (px - (320 - tension));
+		} else if (px > (DEFAULT_WIDTH - tension) && pdiffx > 0){
+		    cameramovex += (px - (DEFAULT_WIDTH - tension));
 		    movex = 2;
 		}
 		// If we got camera moves lets do them
@@ -806,7 +814,7 @@ void MugenStage::render( Bitmap *work ){
     // Clear to magenta like big daddy mugen does
     if( debugbg )board->floodfill( 0, 0, Bitmap::makeColor(255,0,255) );
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
+	(*i)->render( (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     }
     
     // Players go in here
@@ -825,12 +833,12 @@ void MugenStage::render( Bitmap *work ){
     }
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
+	(*i)->render( (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     }
     
     
     
-    board->Blit( xaxis, yaxis, 320, 240, 0, 0, *work );
+    board->Blit( xaxis, yaxis, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
 }
 
 void MugenStage::reset( ){
@@ -848,7 +856,7 @@ void MugenStage::reset( ){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *player = *it;
 	if( player->getAlliance() == Player1Side ){
-	    player->setX( 160 + p1startx );
+	    player->setX( DEFAULT_OBJECT_OFFSET + p1startx );
 	    player->setY( p1starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_RIGHT );
@@ -856,9 +864,9 @@ void MugenStage::reset( ){
 	    playerInfo[player].oldy = player->getY();
 	    playerInfo[player].worldx = p1startx;
 	    playerInfo[player].worldy = p1starty;
-	    ((Character *)player)->setJumpingYVelocity(7.2);
+	    ((Character *)player)->setJumpingYVelocity(DEFAULT_JUMP_VEL);
 	} else if( player->getAlliance() == Player2Side ){
-	    player->setX( 160 + p2startx );
+	    player->setX( DEFAULT_OBJECT_OFFSET + p2startx );
 	    player->setY( p2starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_LEFT );
@@ -866,7 +874,7 @@ void MugenStage::reset( ){
 	    playerInfo[player].oldy = player->getY();
 	    playerInfo[player].worldx = p2startx;
 	    playerInfo[player].worldy = p2starty;
-	    ((Character *)player)->setJumpingYVelocity(7.2);
+	    ((Character *)player)->setJumpingYVelocity(DEFAULT_JUMP_VEL);
 	}
     }
 }
@@ -874,13 +882,13 @@ void MugenStage::reset( ){
 // Add player1 people
 void MugenStage::addp1( Object * o ){
     o->setAlliance(Player1Side);
-    o->setX( 160 + p1startx );
+    o->setX( DEFAULT_OBJECT_OFFSET + p1startx );
     o->setY( p1starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_RIGHT );
     objects.push_back(o);
     players.push_back(o);
-    ((Character *)o)->setJumpingYVelocity(7.2);
+    ((Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VEL);
     playerInfo[o].oldx = o->getX();
     playerInfo[o].oldy = o->getY();
     playerInfo[o].worldx = p1startx;
@@ -890,13 +898,13 @@ void MugenStage::addp1( Object * o ){
 // Add player2 people
 void MugenStage::addp2( Object * o ){
     o->setAlliance(Player2Side);
-    o->setX( 160 + p2startx );
+    o->setX( DEFAULT_OBJECT_OFFSET + p2startx );
     o->setY( p2starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_LEFT );
     objects.push_back(o);
     players.push_back(o);
-    ((Character *)o)->setJumpingYVelocity(7.2);
+    ((Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VEL);
     playerInfo[o].oldx = o->getX();
     playerInfo[o].oldy = o->getY();
     playerInfo[o].worldx = p2startx;
@@ -999,24 +1007,24 @@ bool MugenStage::isaPlayer( Object * o ){
 void MugenStage::updatePlayerX( Object *o ){
     //const int oldworldx = playerInfo[o].worldx;
    
-    const int pdiffx = playerInfo[o].oldx - o->getX();
-    playerInfo[o].worldx -= pdiffx;
+    const int pdiffx = o->getX() - playerInfo[o].oldx;
+    playerInfo[o].worldx += pdiffx;
     Global::debug(1) << "pdiffx: " << pdiffx << " | worldx: " << playerInfo[o].worldx << endl;
     /*
     if (playerInfo[o].worldx <= leftbound){
 	o->setX( screenleft );
 	//playerInfo[o].worldx = leftbound;
     } else if (playerInfo[o].worldx >= rightbound){ 
-	o->setX( 320 - screenright );
+	o->setX( DEFAULT_WIDTH - screenright );
 	//playerInfo[o].worldx = rightbound;
     }
     if (o->getX() <= screenleft){ 
 	const int screendiff = o->getX() - screenleft;
 	o->setX( screenleft );
 	//playerInfo[o].worldx -= screendiff;
-    } else if (o->getX() >= 320 - screenright){
-	const int screendiff = o->getX() - (320 - screenleft);
-	o->setX( 320 - screenright );
+    } else if (o->getX() >= DEFAULT_WIDTH - screenright){
+	const int screendiff = o->getX() - (DEFAULT_WIDTH - screenleft);
+	o->setX( DEFAULT_WIDTH - screenright );
 	//playerInfo[o].worldx -= screendiff;
     }*/
 }
