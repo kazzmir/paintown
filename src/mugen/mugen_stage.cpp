@@ -617,6 +617,18 @@ void MugenStage::setCamera( const int &x, const int &y ){
     else if( camerax > boundright )camerax = boundright;
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+	Object *player = *it;
+	if (isaPlayer(player)){
+	   // player->setX(playerInfo[player].worldx + 160 - camerax);
+	    // Left bound
+	    if (camerax > playerInfo[player].worldx && player->getFacing() == Object::FACING_RIGHT ){
+		camerax = playerInfo[player].worldx;
+	    } else if ((camerax + 320) < playerInfo[player].worldx && player->getFacing() == Object::FACING_LEFT ){
+		camerax = playerInfo[player].worldx - 320;
+	    }
+	}
+    }
 }
 void MugenStage::moveCamera( const int &x, const int &y ){ 
     camerax += x; cameray += y; 
@@ -625,6 +637,18 @@ void MugenStage::moveCamera( const int &x, const int &y ){
     else if( camerax > boundright )camerax = boundright;
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+	Object *player = *it;
+	if (isaPlayer(player)){
+	   // player->setX(playerInfo[player].worldx + 160 - camerax);
+	    // Left bound
+	    if (camerax > playerInfo[player].worldx && player->getFacing() == Object::FACING_RIGHT ){
+		camerax = playerInfo[player].worldx;
+	    } else if ((camerax + 320) < playerInfo[player].worldx && player->getFacing() == Object::FACING_LEFT ){
+		camerax = playerInfo[player].worldx - 320;
+	    }
+	}
+    }
 }
 
 MugenBackground *MugenStage::getBackground( int ID ){
@@ -691,10 +715,10 @@ void MugenStage::logic( ){
 		    // He collides with another push him away
 		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Character *)player), ((Character *)enemy) ) ){
 			if ( enemy->getX() < player->getX() ){
-			    enemy->moveLeft( 2 );
+			    //enemy->moveLeft( 2 );
 			}
 			else if ( enemy->getX() > player->getX() ){
-			    enemy->moveRight( 2 );
+			    //enemy->moveRight( 2 );
 			}
 		    }
 		    // autoturn need to do turning actions
@@ -715,9 +739,9 @@ void MugenStage::logic( ){
 	    const int px = player->getX();
 	    const int py = player->getY();
 	    // Horizontal movement of camera
-	    if (playercoord[0][player] != px){
-		const int pdiffx = px - playercoord[0][player];
-		Global::debug(1) << "playerx: " << px << " | playerx-old: " << playercoord[0][player] <<  " | playerdiff: " << pdiffx << endl;
+	    if (playerInfo[player].oldx != px){
+		const int pdiffx = px - playerInfo[player].oldx;
+		Global::debug(1) << "playerx: " << px << " | playerx-old: " << playerInfo[player].oldx <<  " | playerdiff: " << pdiffx << endl;
 		// 0 no move, 1 move left, 2 move right for other players so they don't float along
 		int movex = 0;
 		// Left side x
@@ -742,25 +766,25 @@ void MugenStage::logic( ){
 		    for (vector<Object*>::iterator move = objects.begin(); move != objects.end(); ++move){
 			Object *moveplayer = *move;
 			if (movex == 1){
-			    moveplayer->moveRight(abs(cameramovex));
+			    //moveplayer->moveRight(abs(cameramovex));
 			} else if (movex == 2){
-			    moveplayer->moveLeft(abs(cameramovex));
+			    //moveplayer->moveLeft(abs(cameramovex));
 			}
 		    }
 		}
 	    }
 	    // Vertical movement of camera
-	    if( playercoord[1][player] != py ){
-		const int pdiffy = playercoord[1][player] - py;
-		Global::debug(1) << "playery: " << py << " | playery-old: " << playercoord[1][player] << endl;
+	    if( playerInfo[player].oldy != py ){
+		const int pdiffy = playerInfo[player].oldy - py;
+		Global::debug(1) << "playery: " << py << " | playery-old: " << playerInfo[player].oldy << endl;
 		if( verticalfollow && py > floortension ){
 		    if( pdiffy < 0 )moveCamera( 0, -.2/verticalfollow );
 		    else if( pdiffy > 0 )moveCamera( 0, .2/verticalfollow );
 		}
 	    }
 	    // Update old position
-	    playercoord[0][player] = px;
-	    playercoord[1][player] = py;
+	    playerInfo[player].oldx = px;
+	    playerInfo[player].oldy = py;
 	    
 	// Non players, objects, projectiles misc
 	} else {
@@ -787,13 +811,17 @@ void MugenStage::render( Bitmap *work ){
     
     // Players go in here
     int distance = 10;
+    bool change = false;
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	if( reflectionIntensity )(*it)->drawReflection( board, 0, reflectionIntensity );
         (*it)->draw( board, 0);
-	Font::getDefaultFont().printf( 15, distance, Bitmap::makeColor( 255, 255, 255 ), *board, "Object: %i",0, (*it));
-	Font::getDefaultFont().printf( 15, distance+10, Bitmap::makeColor( 255, 255, 255 ), *board, "x: %f, y: %f",0, (*it)->getX(),(*it)->getY());
-	Font::getDefaultFont().printf( 15, distance+20, Bitmap::makeColor( 255, 255, 255 ), *board, "worldx: %f, worldy: %f",0, playerworld[0][(*it)],playerworld[1][(*it)]);
+	// Debug crap
+	int color = change ? Bitmap::makeColor( 255, 255, 255 ) : Bitmap::makeColor( 200, 200, 200 );
+	Font::getDefaultFont().printf( 15, distance, color, *board, "Object: %i",0, (*it));
+	Font::getDefaultFont().printf( 15, distance+10, color, *board, "x: %f, y: %f",0, (*it)->getX(),(*it)->getY());
+	Font::getDefaultFont().printf( 15, distance+20, color, *board, "worldx: %f, worldy: %f",0, playerInfo[(*it)].worldx,playerInfo[(*it)].worldy);
 	distance+=30;
+	change=!change;
     }
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
@@ -824,20 +852,20 @@ void MugenStage::reset( ){
 	    player->setY( p1starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_RIGHT );
-	    playercoord[0][player] = player->getX();
-	    playercoord[1][player] = player->getY();
-	    playerworld[0][player] = p1startx;
-	    playerworld[1][player] = p1starty;
+	    playerInfo[player].oldx = player->getX();
+	    playerInfo[player].oldy = player->getY();
+	    playerInfo[player].worldx = p1startx;
+	    playerInfo[player].worldy = p1starty;
 	    ((Character *)player)->setJumpingYVelocity(7.2);
 	} else if( player->getAlliance() == Player2Side ){
 	    player->setX( 160 + p2startx );
 	    player->setY( p2starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_LEFT );
-	    playercoord[0][player] = player->getX();
-	    playercoord[1][player] = player->getY();
-	    playerworld[0][player] = p1startx;
-	    playerworld[1][player] = p1starty;
+	    playerInfo[player].oldx = player->getX();
+	    playerInfo[player].oldy = player->getY();
+	    playerInfo[player].worldx = p2startx;
+	    playerInfo[player].worldy = p2starty;
 	    ((Character *)player)->setJumpingYVelocity(7.2);
 	}
     }
@@ -852,11 +880,11 @@ void MugenStage::addp1( Object * o ){
     o->setFacing( Object::FACING_RIGHT );
     objects.push_back(o);
     players.push_back(o);
-    playercoord[0][o] = o->getX();
-    playercoord[1][o] = o->getY();
-    playerworld[0][o] = p1startx;
-    playerworld[1][o] = p1starty;
     ((Character *)o)->setJumpingYVelocity(7.2);
+    playerInfo[o].oldx = o->getX();
+    playerInfo[o].oldy = o->getY();
+    playerInfo[o].worldx = p1startx;
+    playerInfo[o].worldy = p1starty;
 }
 
 // Add player2 people
@@ -868,11 +896,11 @@ void MugenStage::addp2( Object * o ){
     o->setFacing( Object::FACING_LEFT );
     objects.push_back(o);
     players.push_back(o);
-    playercoord[0][o] = o->getX();
-    playercoord[1][o] = o->getY();
-    playerworld[0][o] = p1startx;
-    playerworld[1][o] = p1starty;
     ((Character *)o)->setJumpingYVelocity(7.2);
+    playerInfo[o].oldx = o->getX();
+    playerInfo[o].oldy = o->getY();
+    playerInfo[o].worldx = p2startx;
+    playerInfo[o].worldy = p2starty;
 }
 
 void MugenStage::act(){
@@ -969,25 +997,26 @@ bool MugenStage::isaPlayer( Object * o ){
 
 
 void MugenStage::updatePlayerX( Object *o ){
-    const int oldworldx = playerworld[0][o];
-    const int pdiffx = o->getX() - playercoord[0][o];
-    playerworld[0][o] += pdiffx;
-    if (playerworld[0][o] <= leftbound){
+    //const int oldworldx = playerInfo[o].worldx;
+    /*
+    const int pdiffx = o->getX() - playerInfo[o].oldx;
+    //playerInfo[o].worldx += pdiffx;
+    if (playerInfo[o].worldx <= leftbound){
 	o->setX( screenleft );
-	playerworld[0][o] = leftbound;
-    } else if (playerworld[0][o] >= rightbound){ 
+	//playerInfo[o].worldx = leftbound;
+    } else if (playerInfo[o].worldx >= rightbound){ 
 	o->setX( 320 - screenright );
-	playerworld[0][o] = rightbound;
+	//playerInfo[o].worldx = rightbound;
     }
     if (o->getX() <= screenleft){ 
 	const int screendiff = o->getX() - screenleft;
 	o->setX( screenleft );
-	playerworld[0][o] -= screendiff;
+	//playerInfo[o].worldx -= screendiff;
     } else if (o->getX() >= 320 - screenright){
 	const int screendiff = o->getX() - (320 - screenleft);
 	o->setX( 320 - screenright );
-	playerworld[0][o] -= screendiff;
-    }
+	//playerInfo[o].worldx -= screendiff;
+    }*/
 }
 
 void MugenStage::updatePlayerY( Object *o ){

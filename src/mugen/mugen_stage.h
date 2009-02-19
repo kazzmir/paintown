@@ -17,6 +17,13 @@ class MugenSound;
 class MugenAnimation;
 class MugenBackground;
 
+struct PlayerData {
+    double worldx;
+    double worldy;
+    double oldx;
+    double oldy;
+};
+
 class MugenStage: public World {
 public:
 	// Location at dataPath() + "mugen/stages/"
@@ -338,10 +345,8 @@ protected:
 	
 	// player list so we can distinguish
 	std::vector<Object *> players;
-	// Hold old positions for players x = 0 y = 1
-	std::map<void *, double>playercoord[2];
-	// Hold world positions of players
-	std::map<void *, double>playerworld[2];
+	// Hold information for players
+	std::map<void *, PlayerData>playerInfo;
 	
 	void updatePlayerX( Object *o );
 	void updatePlayerY( Object *o );
