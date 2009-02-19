@@ -622,11 +622,11 @@ void MugenStage::setCamera( const int &x, const int &y ){
 	if (isaPlayer(player)){
 	   // player->setX(playerInfo[player].worldx + 160 - camerax);
 	    // Left bound
-	    if (camerax > playerInfo[player].worldx && player->getFacing() == Object::FACING_RIGHT ){
+	    /*if (camerax > playerInfo[player].worldx && player->getFacing() == Object::FACING_RIGHT ){
 		camerax = playerInfo[player].worldx;
 	    } else if ((camerax + 320) < playerInfo[player].worldx && player->getFacing() == Object::FACING_LEFT ){
 		camerax = playerInfo[player].worldx - 320;
-	    }
+	    }*/
 	}
     }
 }
@@ -642,11 +642,11 @@ void MugenStage::moveCamera( const int &x, const int &y ){
 	if (isaPlayer(player)){
 	   // player->setX(playerInfo[player].worldx + 160 - camerax);
 	    // Left bound
-	    if (camerax > playerInfo[player].worldx && player->getFacing() == Object::FACING_RIGHT ){
+	   /* if (camerax > playerInfo[player].worldx && player->getFacing() == Object::FACING_RIGHT ){
 		camerax = playerInfo[player].worldx;
 	    } else if ((camerax + 320) < playerInfo[player].worldx && player->getFacing() == Object::FACING_LEFT ){
 		camerax = playerInfo[player].worldx - 320;
-	    }
+	    }*/
 	}
     }
 }
@@ -761,7 +761,7 @@ void MugenStage::logic( ){
 		    movex = 2;
 		}
 		// If we got camera moves lets do them
-		moveCamera(cameramovex,0);
+		//moveCamera(cameramovex,0);
 		if (movex){
 		    for (vector<Object*>::iterator move = objects.begin(); move != objects.end(); ++move){
 			Object *moveplayer = *move;
@@ -998,9 +998,11 @@ bool MugenStage::isaPlayer( Object * o ){
 
 void MugenStage::updatePlayerX( Object *o ){
     //const int oldworldx = playerInfo[o].worldx;
+   
+    const int pdiffx = playerInfo[o].oldx - o->getX();
+    playerInfo[o].worldx -= pdiffx;
+    Global::debug(1) << "pdiffx: " << pdiffx << " | worldx: " << playerInfo[o].worldx << endl;
     /*
-    const int pdiffx = o->getX() - playerInfo[o].oldx;
-    //playerInfo[o].worldx += pdiffx;
     if (playerInfo[o].worldx <= leftbound){
 	o->setX( screenleft );
 	//playerInfo[o].worldx = leftbound;
