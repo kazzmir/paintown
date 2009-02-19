@@ -18,6 +18,7 @@
 #include "object/character.h"
 #include "object/object_attack.h"
 #include "globals.h"
+#include "factory/font_render.h"
 
 #include "mugen_animation.h"
 #include "mugen_background.h"
@@ -674,17 +675,7 @@ void MugenStage::logic( ){
 	int cameramovex = 0;
 	if( isaPlayer( player ) ){
 	    // Lets check their boundaries
-	    if (player->getX() <= leftbound){
-		player->setX( leftbound );
-	    } else if (player->getX() >= rightbound){ 
-		player->setX( rightbound );
-	    } else if (player->getX() <= screenleft){ 
-		player->setX( screenleft );
-		cameramovex--;
-	    } else if (player->getX() >= 320 - screenright){
-		player->setX( 320 - screenright );
-		cameramovex++;
-	    }
+	    updatePlayerX( player );
 	    
 	    // Check collisions
             /* jon: be sure only to do this for players, if you do it for
@@ -795,14 +786,21 @@ void MugenStage::render( Bitmap *work ){
     }
     
     // Players go in here
+    int distance = 10;
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	if( reflectionIntensity )(*it)->drawReflection( board, 0, reflectionIntensity );
         (*it)->draw( board, 0);
+	Font::getDefaultFont().printf( 15, distance, Bitmap::makeColor( 255, 255, 255 ), *board, "Object: %i",0, (*it));
+	Font::getDefaultFont().printf( 15, distance+10, Bitmap::makeColor( 255, 255, 255 ), *board, "x: %f, y: %f",0, (*it)->getX(),(*it)->getY());
+	Font::getDefaultFont().printf( 15, distance+20, Bitmap::makeColor( 255, 255, 255 ), *board, "worldx: %f, worldy: %f",0, playerworld[0][(*it)],playerworld[1][(*it)]);
+	distance+=30;
     }
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->render( (320 + (abs(boundleft) + boundright)), 240 + abs(boundhigh) + boundlow, board );
     }
+    
+    
     
     board->Blit( xaxis, yaxis, 320, 240, 0, 0, *work );
 }
@@ -826,11 +824,21 @@ void MugenStage::reset( ){
 	    player->setY( p1starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_RIGHT );
+	    playercoord[0][player] = player->getX();
+	    playercoord[1][player] = player->getY();
+	    playerworld[0][player] = p1startx;
+	    playerworld[1][player] = p1starty;
+	    ((Character *)player)->setJumpingYVelocity(7.2);
 	} else if( player->getAlliance() == Player2Side ){
 	    player->setX( 160 + p2startx );
 	    player->setY( p2starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_LEFT );
+	    playercoord[0][player] = player->getX();
+	    playercoord[1][player] = player->getY();
+	    playerworld[0][player] = p1startx;
+	    playerworld[1][player] = p1starty;
+	    ((Character *)player)->setJumpingYVelocity(7.2);
 	}
     }
 }
@@ -846,6 +854,8 @@ void MugenStage::addp1( Object * o ){
     players.push_back(o);
     playercoord[0][o] = o->getX();
     playercoord[1][o] = o->getY();
+    playerworld[0][o] = p1startx;
+    playerworld[1][o] = p1starty;
     ((Character *)o)->setJumpingYVelocity(7.2);
 }
 
@@ -860,6 +870,8 @@ void MugenStage::addp2( Object * o ){
     players.push_back(o);
     playercoord[0][o] = o->getX();
     playercoord[1][o] = o->getY();
+    playerworld[0][o] = p1startx;
+    playerworld[1][o] = p1starty;
     ((Character *)o)->setJumpingYVelocity(7.2);
 }
 
@@ -955,3 +967,29 @@ bool MugenStage::isaPlayer( Object * o ){
     return false;
 }
 
+
+void MugenStage::updatePlayerX( Object *o ){
+    const int oldworldx = playerworld[0][o];
+    const int pdiffx = o->getX() - playercoord[0][o];
+    playerworld[0][o] += pdiffx;
+    if (playerworld[0][o] <= leftbound){
+	o->setX( screenleft );
+	playerworld[0][o] = leftbound;
+    } else if (playerworld[0][o] >= rightbound){ 
+	o->setX( 320 - screenright );
+	playerworld[0][o] = rightbound;
+    }
+    if (o->getX() <= screenleft){ 
+	const int screendiff = o->getX() - screenleft;
+	o->setX( screenleft );
+	playerworld[0][o] -= screendiff;
+    } else if (o->getX() >= 320 - screenright){
+	const int screendiff = o->getX() - (320 - screenleft);
+	o->setX( 320 - screenright );
+	playerworld[0][o] -= screendiff;
+    }
+}
+
+void MugenStage::updatePlayerY( Object *o ){
+
+}

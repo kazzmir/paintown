@@ -339,7 +339,13 @@ protected:
 	// player list so we can distinguish
 	std::vector<Object *> players;
 	// Hold old positions for players x = 0 y = 1
-	std::map<void *, int>playercoord[2];
+	std::map<void *, double>playercoord[2];
+	// Hold world positions of players
+	std::map<void *, double>playerworld[2];
+	
+	void updatePlayerX( Object *o );
+	void updatePlayerY( Object *o );
+	
 	
 	// What garbage
 	deque<Bitmap*> garbage;
