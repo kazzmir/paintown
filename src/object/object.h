@@ -375,7 +375,8 @@ public:
 		max_health = h;
 	}
 
-	virtual void faceObject( const Object * o );
+        /* set this object to face obj, basically auto-turn */
+	virtual void faceObject( const Object * obj );
 
 	/* hurt:
 	 * take some damage
