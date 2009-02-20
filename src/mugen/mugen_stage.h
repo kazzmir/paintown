@@ -22,6 +22,8 @@ struct PlayerData {
     double worldy;
     double oldx;
     double oldy;
+    bool leftTension;
+    bool rightTension;
 };
 
 class MugenStage: public World {
@@ -348,9 +350,11 @@ protected:
 	// Hold information for players
 	std::map<void *, PlayerData>playerInfo;
 	
-	void updatePlayerX( Object *o );
-	void updatePlayerY( Object *o );
+	// This is for when characters are inside the tension area
+	int inleft;
+	int inright;
 	
+	void updatePlayer( Object *o );
 	
 	// What garbage
 	deque<Bitmap*> garbage;
