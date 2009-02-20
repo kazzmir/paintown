@@ -217,8 +217,8 @@ void showStage(const string & ourFile){
     ((Player *)p2)->setConfig(1);
     // Make them versus players
     VersusPlayer p1v( *(Player *) p1 );
-    //VersusEnemy p2v( *(Player *) p2 );
-    VersusPlayer p2v( *(Player *) p2 );
+    VersusEnemy p2v( *(Player *) p2 );
+    //VersusPlayer p2v( *(Player *) p2 );
     
     stage.addp1(&p1v);
     stage.addp2(&p2v);

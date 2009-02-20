@@ -764,6 +764,21 @@ void MugenStage::render( Bitmap *work ){
 	(*i)->render( (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     }
     
+    // Life bars?
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+	int p1Side = 5;
+	int p2Side = 5;
+	if (isaPlayer(*it)){
+	    Character *character = (Character*)*it;
+	    if ( character->getAlliance() == Player1Side ){
+		character->drawLifeBar( 5, p1Side, board );
+		p1Side +=10;
+	    } else if ( character->getAlliance() == Player2Side ){
+		character->drawLifeBar( 215, p2Side, board );
+		p2Side +=10;
+	    }
+	}
+    }
     
     
     board->Blit( xaxis, yaxis, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
