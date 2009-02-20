@@ -756,8 +756,7 @@ void MugenStage::render( Bitmap *work ){
 	int color = change ? Bitmap::makeColor( 255, 255, 255 ) : Bitmap::makeColor( 200, 200, 200 );
 	Font::getDefaultFont().printf( 15, distance, color, *board, "Object: %i",0, (*it));
 	Font::getDefaultFont().printf( 15, distance+10, color, *board, "x: %f, y: %f",0, (*it)->getX(),(*it)->getY());
-	Font::getDefaultFont().printf( 15, distance+20, color, *board, "worldx: %f, worldy: %f",0, playerInfo[(*it)].worldx,playerInfo[(*it)].worldy);
-	distance+=30;
+	distance+=20;
 	change=!change;
     }
     
@@ -791,8 +790,6 @@ void MugenStage::reset( ){
 	    player->setFacing( Object::FACING_RIGHT );
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
-	    playerInfo[player].worldx = p1startx;
-	    playerInfo[player].worldy = p1starty;
 	    playerInfo[player].leftTension = false;
 	    playerInfo[player].rightTension = false;
 	    ((Character *)player)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
@@ -803,8 +800,6 @@ void MugenStage::reset( ){
 	    player->setFacing( Object::FACING_LEFT );
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
-	    playerInfo[player].worldx = p2startx;
-	    playerInfo[player].worldy = p2starty;
 	    playerInfo[player].leftTension = false;
 	    playerInfo[player].rightTension = false;
 	    ((Character *)player)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
@@ -826,8 +821,6 @@ void MugenStage::addp1( Object * o ){
     ((Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
     playerInfo[o].oldx = o->getX();
     playerInfo[o].oldy = o->getY();
-    playerInfo[o].worldx = p1startx;
-    playerInfo[o].worldy = p1starty;
     playerInfo[o].leftTension = false;
     playerInfo[o].rightTension = false;
 }
@@ -844,8 +837,6 @@ void MugenStage::addp2( Object * o ){
     ((Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
     playerInfo[o].oldx = o->getX();
     playerInfo[o].oldy = o->getY();
-    playerInfo[o].worldx = p2startx;
-    playerInfo[o].worldy = p2starty;
     playerInfo[o].leftTension = false;
     playerInfo[o].rightTension = false;
 }
@@ -950,48 +941,32 @@ void MugenStage::updatePlayer( Object *o ){
     } else if (o->getX() >= DEFAULT_WIDTH - screenright){
 	o->setX( DEFAULT_WIDTH - screenright );
     }
-    
-    Global::debug(1) << "Are we in left: " << inleft << " | Are we in right: " << inright << endl;
     // Move camera
-    const int px = o->getX();
-    const int py = o->getY();
+    const double px = o->getX();
+    const double py = o->getY();
+    Global::debug(1) << "Are we in left: " << inleft << " | Are we in right: " << inright << " | pdiffx: " << px - playerInfo[o].oldx << endl;
     // Horizontal movement of camera
     if (playerInfo[o].oldx != px){
-	const int pdiffx = px - playerInfo[o].oldx;
+	const double pdiffx = px - playerInfo[o].oldx;
 	// 0 no move, 1 move left, 2 move right for other players so they don't float along
 	int movex = 0;
 	// This is to move extra in case a boundary was hit
-	int cameramovex = 0;
+	double cameramovex = 0;
 	// Left side x
 	if (px <= tension && pdiffx < 0){
-	    cameramovex -= 2;//(tension - px);
+	    cameramovex -= (tension - px);
+	    movex = 1;
 	    if ( !playerInfo[o].leftTension ){
 		playerInfo[o].leftTension = true;
 		inleft++;
 	    }
-	    else movex = 1;
-	} /*else if (px <= tension && pdiffx > 0){
-	    cameramovex += (tension - px);
-	    if ( !playerInfo[o].leftTension ){
-		playerInfo[o].leftTension = true;
-		inleft++;
-	    }
-	    else movex = 2;
-	} else if (px >= (DEFAULT_WIDTH - tension) && pdiffx < 0){
-	    cameramovex -= (px - (DEFAULT_WIDTH - tension));
+	} else if (px >= (DEFAULT_WIDTH - tension) && pdiffx > 0){
+	    cameramovex += (px - (DEFAULT_WIDTH - tension));
+	    movex = 2;
 	    if ( !playerInfo[o].rightTension ){
 		playerInfo[o].rightTension = true;
 		inright++;
 	    }
-	    else movex = 1;
-	} */
-	else if (px >= (DEFAULT_WIDTH - tension) && pdiffx > 0){
-	    cameramovex += 2;//(px - (DEFAULT_WIDTH - tension));
-	    if ( !playerInfo[o].rightTension ){
-		playerInfo[o].rightTension = true;
-		inright++;
-	    }
-	    else movex = 2;
 	} else {
 	    if ( playerInfo[o].leftTension ){
 		playerInfo[o].leftTension = false;
@@ -1002,6 +977,13 @@ void MugenStage::updatePlayer( Object *o ){
 		inright--;
 	    }
 	}
+	if (playerInfo[o].leftTension && pdiffx > 0){
+	    cameramovex += (tension - px);
+	    movex = 2;
+	} else if (playerInfo[o].rightTension && pdiffx < 0){
+	    cameramovex -= (px - (DEFAULT_WIDTH - tension));
+	    movex = 1;
+	}  
 	// If we got camera moves lets do them
 	if( !inleft || !inright ){
 	    moveCamera(cameramovex,0);
@@ -1010,11 +992,11 @@ void MugenStage::updatePlayer( Object *o ){
 		    Object *moveplayer = *move;
 		    if (movex == 1){
 			if (camerax != boundleft){
-			    moveplayer->moveRight(abs(cameramovex));
+			    moveplayer->moveRight(abs((int)cameramovex));
 			}
 		    } else if (movex == 2){
 			if (camerax != boundright){
-			    moveplayer->moveLeft(abs(cameramovex));
+			    moveplayer->moveLeft(abs((int)cameramovex));
 			}
 		    }
 		}
@@ -1023,7 +1005,7 @@ void MugenStage::updatePlayer( Object *o ){
     }
     // Vertical movement of camera
     if( playerInfo[o].oldy != py ){
-	const int pdiffy = playerInfo[o].oldy - py;
+	const double pdiffy = playerInfo[o].oldy - py;
 	if( verticalfollow && py > floortension ){
 	    if( pdiffy < 0 )moveCamera( 0, -.2/verticalfollow );
 	    else if( pdiffy > 0 )moveCamera( 0, .2/verticalfollow );

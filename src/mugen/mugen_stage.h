@@ -18,8 +18,6 @@ class MugenAnimation;
 class MugenBackground;
 
 struct PlayerData {
-    double worldx;
-    double worldy;
     double oldx;
     double oldy;
     bool leftTension;
