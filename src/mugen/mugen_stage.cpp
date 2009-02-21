@@ -690,10 +690,12 @@ void MugenStage::logic( ){
 		    // He collides with another push him away
 		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Character *)player), ((Character *)enemy) ) ){
 			if ( enemy->getX() < player->getX() ){
-			    enemy->moveLeft( 2 );
+			    enemy->moveLeft( ((Character *)player)->getSpeed() );
+			    player->moveRight( ((Character *)player)->getSpeed() );
 			}
 			else if ( enemy->getX() > player->getX() ){
-			    enemy->moveRight( 2 );
+			    enemy->moveRight( ((Character *)player)->getSpeed() );
+			    player->moveLeft( ((Character *)player)->getSpeed() );
 			}
 		    }
 		    // autoturn need to do turning actions
