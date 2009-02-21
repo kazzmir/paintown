@@ -363,8 +363,9 @@ int main( int argc, char ** argv ){
                     }
                 } else {
 		    // WHAT?
-		    showOptions();
-		    return 0;
+		    // showOptions();
+		    // return 0;
+                    Global::debug(0) << "Ignoring unrecognized option " << argv[q] << endl;
 		}
 	}
 	

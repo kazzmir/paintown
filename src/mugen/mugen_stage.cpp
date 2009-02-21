@@ -1046,9 +1046,3 @@ void MugenStage::updatePlayer( Object *o ){
 	}
     }
 }
-
-
-
-
-	
-	
