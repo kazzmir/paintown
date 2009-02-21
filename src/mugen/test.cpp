@@ -57,7 +57,7 @@ static void showOptions(){
     Global::debug(0) << "M.U.G.E.N. Config Reader:" << endl;
     Global::debug(0) << "-f <file>: Load a M.U.G.E.N. config file and output to screen." << endl;
     Global::debug(0) << "-c <name>: Load a M.U.G.E.N. character and output some data about it.\n         ie: 'data/mugen/chars/name' only pass name." << endl;
-    Global::debug(0) << "-s <name>: Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name.def' only pass name.def." << endl;
+    Global::debug(0) << "-s <name> (p1) (p2): Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name.def' only pass name.\n         (p1) and (p2) are player names and is optional." << endl;
     Global::debug(0) << "-l <level>: Set debug level." << endl;
     Global::debug(0) << endl;
 }
@@ -182,7 +182,7 @@ static void inc_speed_counter() {
 }
 END_OF_FUNCTION( inc_speed_counter );
 
-void showStage(const string & ourFile){
+void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
     loadpng_init();*/
@@ -203,10 +203,10 @@ void showStage(const string & ourFile){
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
     //Object *p1 = new Player( "data/players/wolverine/wolverine.txt", 0 );//Game::selectPlayer( false, "Pick player1" );
-    Object *p1 = Game::selectPlayer( false, "Pick player1" );
+    Object *p1 = !p1_name.empty() ? new Player(p1_name,0) : Game::selectPlayer( false, "Pick player1" );
     Global::debug(0) << "Loading player 2" << endl;
     //Object *p2 = new Player( "data/players/venom/venom.txt", 1 );//Game::selectPlayer( false, "Pick player2" );
-    Object *p2 = Game::selectPlayer( false, "Pick player2" );
+    Object *p2 = !p2_name.empty() ? new Player(p2_name,1) : Game::selectPlayer( false, "Pick player2" );
     ((Player *)p1)->setInvincible( false );
     //p1->setMap( remap );
     ((Player *)p1)->testAnimation();
@@ -293,6 +293,9 @@ int main( int argc, char ** argv ){
 	const char * STAGE_ARG = "-s";
 	std::string ourFile;
 	int configLoaded = -1;
+	
+	std::string player1_name = "";
+	std::string player2_name = "";
 
         /*allegro_init();
         install_timer();
@@ -328,6 +331,15 @@ int main( int argc, char ** argv ){
 			if ( q < argc ){
 				ourFile = std::string( argv[ q ] );
 				configLoaded = 2;
+				q += 1;
+				// player 1
+				if (q < argc ){
+				    player1_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
+				}
+				q += 1;
+				if (q < argc ){
+				    player2_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
+				}
 			}
 			else{
                             Global::debug(0) << "Error no file given!" << endl;
@@ -392,7 +404,7 @@ int main( int argc, char ** argv ){
 	}
 	else if ( configLoaded == 2 ){
 	    try{
-                showStage(ourFile);
+                showStage(ourFile, player1_name, player2_name);
             } catch( MugenException &ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
