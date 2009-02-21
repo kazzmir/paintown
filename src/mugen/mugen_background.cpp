@@ -125,7 +125,8 @@ y(0),
 sprite(0),
 spriteBmp(0),
 action(0),
-linked(0){
+linked(0),
+runLink(false){
 }
 MugenBackground::MugenBackground( const MugenBackground &copy ):
 stageTicker( copy.stageTicker ){
@@ -225,10 +226,11 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 
 void MugenBackground::preload( const int &xaxis, const int &yaxis ){
     // Do positionlink crap
-    if (positionlink){
+    if (positionlink && !runLink){
 	if (linked){
 	    linked->setPositionLink(this);
 	}
+	runLink = true;
     }
     
     if(sprite){

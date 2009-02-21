@@ -148,6 +148,7 @@ public:
     
     // Position link item
     MugenBackground *linked;
+    bool runLink;
     
     // Do any extra stuff so that it can be used
     void preload( const int &xaxis, const int &yaxis );
