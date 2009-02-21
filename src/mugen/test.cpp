@@ -332,11 +332,14 @@ int main( int argc, char ** argv ){
 				ourFile = std::string( argv[ q ] );
 				configLoaded = 2;
 				q += 1;
+				if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
 				// player 1
 				if (q < argc ){
 				    player1_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
 				}
 				q += 1;
+				if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
+				// player 2
 				if (q < argc ){
 				    player2_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
 				}
@@ -347,6 +350,7 @@ int main( int argc, char ** argv ){
 			  return 0;
 			}
 		} else if (isArg(argv[q], DEBUG_ARG)){
+		    debuglevel:
                     q += 1;
                     if (q < argc){
                         istringstream i( argv[ q ] );
