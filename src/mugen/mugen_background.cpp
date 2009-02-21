@@ -12,6 +12,10 @@
 
 using namespace std;
 
+static double interpolate(double f1, double f2, double p){
+    return (f1 * (1 - p)) + (f2 * p);
+}
+
 static int calculateTile( int length, int width ){
     int loc = 0;
     for( int i = 1; ; ++i ){
@@ -20,6 +24,20 @@ static int calculateTile( int length, int width ){
     }
 }
 
+static void doParallax(Bitmap &bmp, Bitmap &work, int x, int y, double delta, double top, double bot, bool mask){
+    const int height = bmp.getHeight();
+    const int width = bmp.getWidth();
+    int movex = 0;
+    for (int localy = 0; localy < height; ++localy ){
+	//if( mask )bmp.drawStretched( movex, y + localy, width, 1, work );
+	//else bmp.Stretch( work, 0, localy, width, 1, movex, y + localy, width, 1 );
+	double scale = interpolate(top, bot, (double)localy/height);
+	movex = (int)(delta * scale);
+	bmp.Blit(0,localy,width,1,x+movex, y + localy, work);
+    }
+}
+
+/*
 static void doParallax(Bitmap &bmp, Bitmap &work, int xscroll, int y1, float z1, int y2, float z2, bool mask){
    if(y2 <= y1) return;
 
@@ -46,6 +64,7 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int xscroll, int y1, float z1,
       src_y += src_y_add;
    }
 }
+*/
 
 static int idCounter = -9999999;
 
@@ -208,7 +227,7 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 	    // This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
 	    //doParallax( *spriteBmp, *work, x + 160, y - (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75);
 	    //doParallax( *spriteBmp, *work, x, y - (((yscalestart + yscaledelta)/550)*movey), xscalebot * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/550)*movey), xscaletop * 1.75, mask);
-	    draw( x, y, *work );
+	    doParallax( *spriteBmp, *work, x, y, deltax, xscaletop, xscalebot, mask);
 	    break;
 	}
 	case Anim:{
