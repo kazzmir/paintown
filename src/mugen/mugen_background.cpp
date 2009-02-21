@@ -4,6 +4,7 @@
 #include <ostream>
 #include <cstring>
 #include <string>
+#include <algorithm>
 #include "globals.h"
 #include "mugen_sprite.h"
 #include "util/bitmap.h"
@@ -24,7 +25,7 @@ static int calculateTile( int length, int width ){
     }
 }
 
-static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, bool mask){
+static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, int yoffset, bool mask){
     const int height = bmp.getHeight();
     const int width = bmp.getWidth();
     int movex = 0;
@@ -32,52 +33,15 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoff
     Global::debug(3) << "background leftx " << leftx << endl;
 
     for (int localy = 0; localy < height; ++localy ){
-        double range = (double)localy / (double)height;
-	double scale = interpolate(top, bot, range) - top;
-	//if( mask )bmp.drawStretched( movex, y + localy, width, 1, work );
-	//else bmp.Stretch( work, 0, localy, width, 1, movex, y + localy, width, 1 );
-	// movex = (int)(leftx * delta * scale);
-	// movex = (int)(leftx * scale);
-
-        movex = (int)(leftx + (leftx - xoffset) * scale);
-
-        /* blit one line */
-	bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
-
-        // bmp.Stretch(work, 0, localy, width, 1, width / 2 - x * scale - cx, cy+localy, width*scale, 1);
-
-	// virtual void Stretch( const Bitmap & where, const int sourceX, const int sourceY, const int sourceWidth, const int sourceHeight, const int destX, const int destY, const int destWidth, const int destHeight ) const;
+        const double range = (double)localy / (double)height;
+	const double scale = interpolate(top, bot, range) - top;
+	const int newHeight = height*((yscalestart+(yoffset*yscaledelta))/100);
+	const double yscale = 1;//(newHeight/height);
+	movex = (int)(leftx + (leftx - xoffset) * scale);
+	bmp.Stretch(work, 0, localy, width, yscale,movex, lefty+localy, width,yscale);
+	Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
     }
 }
-
-/*
-static void doParallax(Bitmap &bmp, Bitmap &work, int xscroll, int y1, float z1, int y2, float z2, bool mask){
-   if(y2 <= y1) return;
-
-   // trade down the centre of the screen
-   float z = 1.0 / z1;
-   float z_add = ((1.0 / z2) - z) / (y2 - y1);
-   float src_y = 0;
-   float src_y_add = ((float)bmp.getHeight() / z2) / (y2 - y1);
-
-   while(y1 < y2)
-   {
-      float y = src_y / z;
-      int start_x = (work.getWidth() >> 1) - z*((bmp.getWidth() >> 1) + xscroll);
-      int width = bmp.getWidth()*z;
-//const int sourceX, const int sourceY, const int sourceWidth, const int sourceHeight, const int destX, const int destY, const int destWidth, const int destHeight
-      //stretch_blit(source, dest, 0, y, source->w, 1, start_x, y1, width, 1);
-      // For now until we can stretch mask
-      mask = false;
-      if( mask )bmp.drawStretched(  0, y, width, 1, work );
-      else bmp.Stretch( work, 0, y, bmp.getWidth(), 1, start_x - 160, y1, width + 320, 1 );
-   
-      y1++;
-      z +=  z_add;
-      src_y += src_y_add;
-   }
-}
-*/
 
 static int idCounter = -9999999;
 
@@ -238,9 +202,7 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 	}
 	case Parallax:{
 	    // This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
-	    //doParallax( *spriteBmp, *work, x + 160, y - (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75);
-	    //doParallax( *spriteBmp, *work, x, y - (((yscalestart + yscaledelta)/550)*movey), xscalebot * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/550)*movey), xscaletop * 1.75, mask);
-	    doParallax( *spriteBmp, *work, x, y, xoffset, xscaletop, xscalebot, mask);
+	    doParallax( *spriteBmp, *work, x, y, xoffset, xscaletop, xscalebot, yscalestart, yscaledelta, abs((int)(movey-deltay)), mask);
 	    break;
 	}
 	case Anim:{
