@@ -675,18 +675,13 @@ void MugenStage::logic( ){
 	if(zoffsetlink == DEFAULT_BACKGROUND_ID )player->setZ( zoffset - cameray );
 	else player->setZ( zoffset );
 	
-	if( isaPlayer( player ) ){
-	    // Check collisions
-            /* jon: be sure only to do this for players, if you do it for
-             * arbitrary objects and a projectile comes along then the upcast
-             * will crash the system
-             */
-	    for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
-		Object *enemy = *enem;
-		if (!isaPlayer( enemy )){
-		    continue;
-		}
-		if (player->getAlliance() != enemy->getAlliance()){
+	
+	// Check collisions
+	for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+	    Object *enemy = *enem;
+	    if (player->getAlliance() != enemy->getAlliance()){
+		// Do stuff for players
+		if (isaPlayer( enemy )){
 		    // He collides with another push him away
 		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Character *)player), ((Character *)enemy) ) ){
 			if ( enemy->getX() < player->getX() ){
@@ -699,41 +694,43 @@ void MugenStage::logic( ){
 		    // autoturn need to do turning actions
 		    if (autoturn){
 			if (player->getX() < enemy->getX() && player->getFacing() != Object::FACING_RIGHT ){
-                            player->setFacing(Object::FACING_RIGHT);
-                        }
+			    player->setFacing(Object::FACING_RIGHT);
+			}
 
 			if (player->getX() > enemy->getX() && player->getFacing() != Object::FACING_LEFT ){
-                            player->setFacing(Object::FACING_LEFT);
-                        }
-		    }
-		    // Attacking
-		    if ( player->isAttacking() ){
-			ObjectAttack * playerAttack = (ObjectAttack *)player;
-			if ( enemy != player && enemy->isCollidable( player ) && player->isCollidable( enemy ) ){
-			    if ( player->ZDistance( enemy ) <= playerAttack->minZDistance() && enemy->collision( playerAttack ) ){ 
-				double x = 0, y = 0;
-				
-				x = enemy->getX();
-				y = enemy->getRY() - enemy->getHeight() + enemy->getHeight() / 3;
-    /*
-				if ( bang != NULL ){
-					Object * addx = bang->copy();
-					addx->setX( x );
-					addx->setY( 0 );
-					addx->setZ( y+addx->getHeight()/2 );
-					addx->setHealth( 1 );
-					added_effects.push_back( addx );
-				}
-    */
-				playerAttack->attacked(this, enemy, add );
-				enemy->collided( playerAttack, add );
-				enemy->takeDamage( this, playerAttack, playerAttack->getDamage() );
-			    }    
+			    player->setFacing(Object::FACING_LEFT);
 			}
 		    }
 		}
+		// Attacking
+		if ( player->isAttacking() ){
+		    ObjectAttack * playerAttack = (ObjectAttack *)player;
+		    if ( enemy != player && enemy->isCollidable( player ) && player->isCollidable( enemy ) ){
+			if ( player->ZDistance( enemy ) <= playerAttack->minZDistance() && enemy->collision( playerAttack ) ){ 
+			    double x = 0, y = 0;
+			    
+			    x = enemy->getX();
+			    y = enemy->getRY() - enemy->getHeight() + enemy->getHeight() / 3;
+/*
+			    if ( bang != NULL ){
+				    Object * addx = bang->copy();
+				    addx->setX( x );
+				    addx->setY( 0 );
+				    addx->setZ( y+addx->getHeight()/2 );
+				    addx->setHealth( 1 );
+				    added_effects.push_back( addx );
+			    }
+*/
+			    playerAttack->attacked(this, enemy, add );
+			    enemy->collided( playerAttack, add );
+			    enemy->takeDamage( this, playerAttack, playerAttack->getDamage() );
+			}    
+		    }
+		}
 	    }
-	    
+	}
+	
+	if ( isaPlayer(player)){
 	    // Lets check their boundaries and camera whateva
 	    updatePlayer( player );
 	    
@@ -745,14 +742,12 @@ void MugenStage::logic( ){
 	    // Update old position
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
-	    
+		
 	// Non players, objects, projectiles misc
-	} else {
-	    if( player->getHealth() <= 0 ){
-		delete player;
-		it = objects.erase( it );
-		if( it == objects.end() ) break;
-	    }
+	} else if ( !isaPlayer(player) && player->getHealth() <= 0 ){
+	    delete player;
+	    it = objects.erase( it );
+	    if( it == objects.end() ) break;
 	}
     }
     objects.insert(objects.end(),add.begin(),add.end());
