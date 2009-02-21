@@ -99,8 +99,8 @@ windowdeltax(0),
 windowdeltay(0),
 xscaletop(0),
 xscalebot(0),
-yscalestart(0),
-yscaledelta(0),
+yscalestart(100),
+yscaledelta(100),
 positionlink(false),
 velocityx(0),
 velocityy(0),
@@ -124,7 +124,8 @@ x(0),
 y(0),
 sprite(0),
 spriteBmp(0),
-action(0){
+action(0),
+linked(0){
 }
 MugenBackground::MugenBackground( const MugenBackground &copy ):
 stageTicker( copy.stageTicker ){
@@ -166,6 +167,7 @@ void MugenBackground::logic( const int &x, const int &y ){
     
     this->x = (int)(xoffset + movex + velx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
     this->y = (int)(yoffset + movey + vely + siny_amp * sin(siny_angle*siny_period + siny_offset));
+    
 }
     
 void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
@@ -204,7 +206,8 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 	case Parallax:{
 	    // This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
 	    //doParallax( *spriteBmp, *work, x + 160, y - (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/100)*movey), xscaletop * 1.75);
-	    doParallax( *spriteBmp, *work, x, y - (((yscalestart + yscaledelta)/550)*movey), xscalebot * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/550)*movey), xscaletop * 1.75, mask);
+	    //doParallax( *spriteBmp, *work, x, y - (((yscalestart + yscaledelta)/550)*movey), xscalebot * 1 , y + spriteBmp->getHeight() + (((yscalestart + yscaledelta)/550)*movey), xscaletop * 1.75, mask);
+	    draw( x, y, *work );
 	    break;
 	}
 	case Anim:{
@@ -221,8 +224,15 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 }
 
 void MugenBackground::preload( const int &xaxis, const int &yaxis ){
-    // Lets load our sprite
+    // Do positionlink crap
+    if (positionlink){
+	if (linked){
+	    linked->setPositionLink(this);
+	}
+    }
+    
     if(sprite){
+	// Lets load our sprite
 	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
 	// Set our initial offsets
 	xoffset = 160 + (xaxis - sprite->x) + startx;
@@ -259,3 +269,30 @@ void MugenBackground::draw( const int &ourx, const int &oury, Bitmap &work ){
 	}
     }
 }
+
+
+    // Lets do our positionlink stuff
+void MugenBackground::setPositionLink(MugenBackground *bg){
+    if (positionlink){
+	if (linked){
+	    linked->setPositionLink(bg);
+	    return;
+	}
+    }
+    bg->startx += startx;
+    bg->starty += starty;
+    bg->deltax = deltax;
+    bg->deltay = deltay;
+    bg->sinx_amp = sinx_amp;
+    bg->sinx_offset = sinx_offset;
+    bg->sinx_period = sinx_period;
+    bg->siny_amp = siny_amp;
+    bg->siny_offset = siny_offset;
+    bg->siny_period = siny_period;
+    bg->velocityx = velocityx;
+    bg->velocityy = velocityy;
+    
+    Global::debug(1) << "Positionlinked bg: " << bg->name << " set to x: " << bg->startx << " y: " << bg->starty << endl;
+}
+
+

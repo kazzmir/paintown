@@ -146,11 +146,18 @@ public:
     // animation
     MugenAnimation *action;
     
+    // Position link item
+    MugenBackground *linked;
+    
     // Do any extra stuff so that it can be used
     void preload( const int &xaxis, const int &yaxis );
     
     // Do draw stuff
     void draw( const int &ourx, const int &oury, Bitmap &work );
+    
+    // Lets do our positionlink stuff
+    void setPositionLink(MugenBackground *bg);
+    
 };
 
 #endif
