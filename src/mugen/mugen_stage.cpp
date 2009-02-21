@@ -203,6 +203,7 @@ void MugenStage::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
     baseDir = Util::getDataPath() + "mugen/stages/";
     Global::debug(1) << baseDir << endl;
+    location+=".def";
     const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location) );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
