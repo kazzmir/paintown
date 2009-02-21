@@ -331,6 +331,7 @@ int main( int argc, char ** argv ){
 			if ( q < argc ){
 				ourFile = std::string( argv[ q ] );
 				configLoaded = 2;
+				/*
 				q += 1;
 				if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
 				// player 1
@@ -342,7 +343,7 @@ int main( int argc, char ** argv ){
 				// player 2
 				if (q < argc ){
 				    player2_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
-				}
+				}*/
 			}
 			else{
                             Global::debug(0) << "Error no file given!" << endl;
@@ -350,7 +351,7 @@ int main( int argc, char ** argv ){
 			  return 0;
 			}
 		} else if (isArg(argv[q], DEBUG_ARG)){
-		    debuglevel:
+		    //debuglevel:
                     q += 1;
                     if (q < argc){
                         istringstream i( argv[ q ] );
