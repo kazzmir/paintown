@@ -691,11 +691,9 @@ void MugenStage::logic( ){
 		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Character *)player), ((Character *)enemy) ) ){
 			if ( enemy->getX() < player->getX() ){
 			    enemy->moveLeft( ((Character *)player)->getSpeed() );
-			    player->moveRight( ((Character *)player)->getSpeed() );
 			}
 			else if ( enemy->getX() > player->getX() ){
 			    enemy->moveRight( ((Character *)player)->getSpeed() );
-			    player->moveLeft( ((Character *)player)->getSpeed() );
 			}
 		    }
 		    // autoturn need to do turning actions
@@ -708,11 +706,41 @@ void MugenStage::logic( ){
                             player->setFacing(Object::FACING_LEFT);
                         }
 		    }
+		    // Attacking
+		    if ( player->isAttacking() ){
+			ObjectAttack * playerAttack = (ObjectAttack *)player;
+			if ( enemy != player && enemy->isCollidable( player ) && player->isCollidable( enemy ) ){
+			    if ( player->ZDistance( enemy ) <= playerAttack->minZDistance() && enemy->collision( playerAttack ) ){ 
+				double x = 0, y = 0;
+				
+				x = enemy->getX();
+				y = enemy->getRY() - enemy->getHeight() + enemy->getHeight() / 3;
+    /*
+				if ( bang != NULL ){
+					Object * addx = bang->copy();
+					addx->setX( x );
+					addx->setY( 0 );
+					addx->setZ( y+addx->getHeight()/2 );
+					addx->setHealth( 1 );
+					added_effects.push_back( addx );
+				}
+    */
+				playerAttack->attacked(this, enemy, add );
+				enemy->collided( playerAttack, add );
+				enemy->takeDamage( this, playerAttack, playerAttack->getDamage() );
+			    }    
+			}
+		    }
 		}
 	    }
 	    
 	    // Lets check their boundaries and camera whateva
 	    updatePlayer( player );
+	    
+	    // Lets put their health back on the radar until we get the stages ready for real games
+	    if ( player->getHealth() < player->getMaxHealth() ){
+		player->setHealth( player->getHealth() + 1 );
+	    }
 	    
 	    // Update old position
 	    playerInfo[player].oldx = player->getX();
