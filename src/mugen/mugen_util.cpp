@@ -198,23 +198,17 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
     
     Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
-    //map<unsigned short, map<unsigned short, MugenSprite*> > sprites;
-    
     MugenSprite *spriteIndex[totalImages + 1];
     
     // Palette related
-    char is8bitpal = 0;
     int islinked = 0;
-    char palselect[totalImages + 1];
-    bool found1st = false;
     bool useact = true;
-    bool kyara = false;
     
     unsigned char colorsave[3]; // rgb pal save
-    unsigned char palsaveD[768]; // default palette
     unsigned char palsave1[768]; // First image palette
     
     // Load in first palette
+
     FILE *act_file = fopen( palette.c_str(), "rb" );
     if( !act_file ){
 	Global::debug(1) << "Unable to open ACT file: " << palette << endl;
@@ -222,7 +216,8 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
     }
     else{
 	fseek( act_file, 0, SEEK_END );
-	if( ftell(act_file) == 768 ){ /* then it must be an ACT file. */
+	// Then it must be an act file
+	if( ftell(act_file) == 768 ){ 
 	    for( int i=0; i<256; i++ ){
 		fseek( act_file, -3*(i+1), SEEK_END );
 		// stupid fread
@@ -234,18 +229,21 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
 	    }
 	    Global::debug(1) << "Applying palette from ACT file: " << palette << endl;
 	}
-	else if( ftell(act_file) < 897 ){ /* 128-byte header + 768-byte palette + 0x0C byte = minimum 8-bit PCX file size. */
+	// 128-byte header + 768-byte palette + 0x0C byte = minimum 8-bit PCX file size.
+	else if( ftell(act_file) < 897 ){ 
             useact = false;
             Global::debug(1) << "File " << palette << " is not a valid palette file." << endl;
         }
-        else{ /* we'll assume it's a PCX file, for now. */
+	// we'll assume it's a PCX file, for now.
+        else{ 
             fseek( act_file, 0, SEEK_SET );
 	    pcx_header pcxhead;
             size_t bleh = fread( &pcxhead, sizeof(pcx_header), 1, act_file );
-            /* Check to see if the PCX file uses an 8-bit palette. */
+            // Check to see if the PCX file uses an 8-bit palette.
             if( (pcxhead.manufacturer == 10) && (pcxhead.version >= 5) && (pcxhead.BitsPerPixel == 8) && (pcxhead.NPlanes == 1) ){
                 fseek( act_file, -769, SEEK_END);
-                bleh = fread( colorsave, 1, 1, act_file ); /* No need to define another variable; colorsave will do just fine. */
+		// No need to define another variable; colorsave will do just fine.
+                bleh = fread( colorsave, 1, 1, act_file ); 
                 if( colorsave[0] == 12 ){
                     fseek( act_file, -768, SEEK_END );
                     bleh = fread( palsave1, 768, 1, act_file );
@@ -256,8 +254,8 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
                     Global::debug(1) << "File " << palette << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
                 }
             }
-            /* Add support for JASC and RIFF palette files later... */
-            /* Minimum JASC PAL size = 1,813 bytes (carriage returns are necessary). */
+            // Add support for JASC and RIFF palette files later... 
+            // Minimum JASC PAL size = 1,813 bytes (carriage returns are necessary). 
             else{
                 useact = false;
 		Global::debug(1) << "File " << palette << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
@@ -265,38 +263,6 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
         }
     }
     if( act_file )fclose( act_file );
-    
-    // Palette information
-    if( kyara){
-	for( unsigned int i = 0; i < totalImages; ++i){
-	    if( location > filesize ){
-		break;
-	    }
-	    MugenSprite * sprite = readSprite(ifile, location);    
-	    if( sprite->samePalette ){
-		if( i > 0 && palselect[i-1] == 2 ) palselect[i] = 2;
-		else palselect[i] = 1;
-	    }
-	    if( (sprite->groupNumber == 0 || sprite->groupNumber == 9000) && sprite->imageNumber == 0){
-		if( sprite->samePalette ){
-		    for( int j = i; j > 0 && palselect[j] == 1; j-- ){
-			palselect[j] = 2;
-			if( palselect[j-1] == 0 ) palselect[j-1] = 2;
-		    }
-		}
-		else palselect[i] = 2;
-	    }
-	    
-	    // Set the next file location
-	    const int temploc = location;
-	    location = sprite->next;
-	    
-	    if(sprite)delete sprite;
-	    
-	    if( !location )break;
-	    else if( location < (temploc + 32) || location > 2147483615 )break;
-	}
-    }
     
     if( location < 512 || location > 2147482717 )location = 512;
     else location = suboffset;
@@ -364,7 +330,6 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
 	// Now read in the pcx
 	// Seek to the location of the pcx data
 	ifile.seekg(sprite->location + 32, ios::beg);
-	char *tmppcx = new char[sprite->reallength];
 	if( sprite->samePalette ){
 	    // Lets give it space for the palette
 	    Global::debug(1) << "This sprite is less that 768 or has a shared palette - Group: " << sprite->groupNumber << " | Image: " << sprite->imageNumber << endl;
@@ -372,68 +337,22 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
 	    sprite->pcx = new char[sprite->newlength];
 	}
 	else sprite->pcx = new char[sprite->reallength];
-	ifile.read((char *)tmppcx, sprite->reallength);
-	
-	// Figure out palette stuff (I don't even understand half of this... borrowed from sffextract.c 
-	if( ( sprite->reallength < 129 ) || ( pcxhead.version < 5 ) || ( pcxhead.BitsPerPixel != 8 ) || ( pcxhead.NPlanes != 1 ) )is8bitpal = 0;
-	else if( ( !islinked && sprite->samePalette ) ){
-	    if( ( sprite->reallength < 897 ) || *(tmppcx + sprite->reallength - 769 ) != 12 ){
-		if( *(tmppcx + sprite->reallength - 1 ) != 12 ) is8bitpal = 0;
-		else is8bitpal = 2;
-	    }
-	    else is8bitpal = 1;
-	    
-	}
-	else if( *(tmppcx + sprite->reallength - 1 ) != 12 ){
-	    if( (sprite->reallength < 897 ) || *(tmppcx + sprite->reallength - 769 ) != 12 )is8bitpal=0;
-	    else is8bitpal = -1;
-	}
-	else is8bitpal = 1;
-	
-	 /* Skip last 768 bytes if we're about to replace the palette. */
-        /*if( is8bitpal%2 && (!sprite->samePalette || is8bitpal==-1) && !(sprite->groupNumber==9000 && sprite->imageNumber==1) && ((useact && !kyara) || (palselect[i]==2 && i!=0)) ){
-               memcpy( sprite->pcx, tmppcx, sprite->reallength );
-        }*/
-        /* Otherwise, save the whole thing. */
-        /*else*/ memcpy( sprite->pcx, tmppcx, sprite->reallength );
-	
-	// Done with tmppcx
-	delete [] tmppcx;
+	ifile.read((char *)sprite->pcx, sprite->reallength);
 	
 	if ( !islinked ){
-	    if( is8bitpal && sprite->samePalette ){
-		if( !found1st  && !useact && is8bitpal!=2 ){
-		    memcpy( palsaveD, sprite->pcx+(sprite->reallength), 768);
-		    memcpy( palsave1, palsaveD, 768);
-		    found1st = true;
+	    if ( !useact){
+		if ( sprite->samePalette ){
+		    memcpy( sprite->pcx + (sprite->reallength), palsave1, 768);
+		    Global::debug(1) << "Applying 1st palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
+		} else {
+		    memcpy( palsave1, sprite->pcx+(sprite->reallength)-768, 768);
 		}
-		else if( palselect[i] == 2 || (useact && !kyara) || is8bitpal == 2 ){
-		    if ( !(sprite->groupNumber == 9000 && sprite->imageNumber == 1 && (!sprite->samePalette || is8bitpal == -1)) || is8bitpal == 2 ){
-			memcpy( sprite->pcx + (sprite->reallength), palsave1, 768);
-			Global::debug(1) << "Applying 1st palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
-		    }
-		}
-		else if( palselect[i] == 1 || found1st ){
-		    if ( is8bitpal == 1 || !(sprite->groupNumber == 9000 && sprite->imageNumber == 1) ){
-			memcpy( sprite->pcx + (sprite->reallength), palsaveD, 768);
-			Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
-		    }
-		}
-		// Not used
-		else if( kyara ){ 
-		    if( is8bitpal == 1 || !found1st ){
-			memcpy( palsaveD, sprite->pcx+sprite->reallength, 768);
-			found1st = true;
-		    }
-		}
-		else if( !useact && is8bitpal == 1 ) {
-		    if( sprite->samePalette ){
-			memcpy( sprite->pcx + (sprite->reallength), palsaveD, 768);
-			Global::debug(1) << "Applying Default palette to Sprite: " << sprite->imageNumber << " in Group: " << sprite->groupNumber << endl;
-		    }
-		    else if( !sharedPal ){
-			memcpy( palsaveD, sprite->pcx+sprite->reallength, 768);
-		    }
+	    } else {
+		// Replace all palettes with the one supplied in act
+		if ( sprite->samePalette){
+		    memcpy( sprite->pcx + (sprite->reallength), palsave1, 768);
+		} else {
+		    memcpy( sprite->pcx + (sprite->reallength)-768, palsave1, 768);
 		}
 	    }
 	}
