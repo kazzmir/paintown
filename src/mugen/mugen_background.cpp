@@ -27,18 +27,23 @@ static int calculateTile( int length, int width ){
 
 static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, int yoffset, bool mask){
     const int height = bmp.getHeight();
-    const int width = bmp.getWidth();
+    const int w = bmp.getWidth();
     int movex = 0;
+    //double z = 1.0 / z1;
+    //const double z_add = ((1.0 / z2) - z) / (y2 - y1);
+
 
     Global::debug(3) << "background leftx " << leftx << endl;
 
     for (int localy = 0; localy < height; ++localy ){
+	//int width = bmp.getWidth()*z;
         const double range = (double)localy / (double)height;
 	const double scale = interpolate(top, bot, range) - top;
 	const int newHeight = height*((yscalestart+(yoffset*yscaledelta))/100);
-	const double yscale = 1;//(newHeight/height);
+	const double yscale = (newHeight/height);
 	movex = (int)(leftx + (leftx - xoffset) * scale);
-	bmp.Stretch(work, 0, localy, width, yscale,movex, lefty+localy, width,yscale);
+	bmp.Stretch(work, 0, localy, w, 1,movex, lefty+localy, w,1);
+	//z +=  z_add;
 	Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
     }
 }
@@ -202,7 +207,7 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 	}
 	case Parallax:{
 	    // This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
-	    doParallax( *spriteBmp, *work, x, y, xoffset, xscaletop, xscalebot, yscalestart, yscaledelta, abs((int)(movey-deltay)), mask);
+	    doParallax( *spriteBmp, *work, x, y, xoffset, xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
 	    break;
 	}
 	case Anim:{
