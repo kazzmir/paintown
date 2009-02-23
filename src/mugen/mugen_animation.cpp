@@ -133,7 +133,7 @@ const MugenFrame *MugenAnimation::getNext(){
 void MugenAnimation::logic(){
     if( frames[position]->time != -1 ){
 	ticks++;
-	if(ticks >= 15 + frames[position]->time){
+	if(ticks >= frames[position]->time){
 		ticks = 0;
 		if( position < frames.size() -1 )position++;
 		else position = loopPosition;
