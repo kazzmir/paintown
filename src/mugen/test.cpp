@@ -83,10 +83,12 @@ void testPCX(){
     Util::rest(3000);
 }
 
+/*
 static void inc_speed_counter() {
 	Global::speed_counter += 1;
 }
 END_OF_FUNCTION( inc_speed_counter );
+*/
 
 void showCharacter(const string & ourFile){
     /*set_color_depth(16);
@@ -118,8 +120,10 @@ void showCharacter(const string & ourFile){
 
      double gameSpeed = .5;
     double runCounter = 0;
+    /*
     LOCK_VARIABLE( speed_counter );
     LOCK_FUNCTION( (void *)inc_speed_counter );
+    */
 	while( !quit ){
 	    bool draw = false;
 	    
@@ -206,8 +210,10 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
     loadpng_init();*/
+    /*
     LOCK_VARIABLE( speed_counter );
     LOCK_FUNCTION( (void *)inc_speed_counter );
+    */
     /* set up the timers */
     //install_int_ex( inc_speed_counter, BPS_TO_TIMER( 40 ) );
 
