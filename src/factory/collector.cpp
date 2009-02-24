@@ -6,6 +6,7 @@
 #include "object_factory.h"
 #include "resource.h"
 #include "shadow.h"
+#include "util/bitmap.h"
 #include <iostream>
 
 using namespace std;
@@ -26,5 +27,6 @@ Collector::~Collector(){
 	HeartFactory::destroy();
 	FontFactory::destroy();
 	FontRender::destroy();
+        Bitmap::cleanupTemporaryBitmaps();
         delete resource;
 }

@@ -1569,7 +1569,8 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
     if (animation_current){
 	const double newheight = animation_current->getCurrentFrame()->getHeight() * scale;
         /* this creates a temporary frame each time which is bad.. somehow fix this */
-	Bitmap shade(animation_current->getCurrentFrame()->getWidth(), fabs(newheight));
+	// Bitmap shade(animation_current->getCurrentFrame()->getWidth(), fabs(newheight));
+        Bitmap shade = Bitmap::temporaryBitmap(animation_current->getCurrentFrame()->getWidth(), fabs(newheight));
 	animation_current->getCurrentFrame()->Stretch(shade);
 	
 	Bitmap::multiplyBlender( Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), intensity );
