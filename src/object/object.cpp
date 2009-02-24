@@ -254,6 +254,9 @@ void Object::drawFront(Bitmap * work, int rel_x){
         
 void Object::drawReflection(Bitmap * work, int rel_x, int intensity){
 }
+
+void Object::drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
+}
 	
 void Object::touch( Object * obj ){
 }

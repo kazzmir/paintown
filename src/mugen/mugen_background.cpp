@@ -54,7 +54,7 @@ BgController::BgController( ControlType ctrl, std::vector<int>ids ):
 type(ctrl),
 timestart(0),
 endtime(0),
-looptime(0),
+looptime(-1),
 ctrlID(ids){
 }
 BgController::~BgController(){
@@ -65,7 +65,7 @@ void BgController::act( std::map<int, MugenBackground *> &bgs ){
 
 MugenBgController::MugenBgController( std::string &n, std::vector<int>ids ):
 name(n),
-looptime(0),
+looptime(-1),
 ctrlID(ids){
 }
 MugenBgController::~MugenBgController(){
@@ -123,6 +123,8 @@ stageTicker( ticker ),
 ticks(0),
 x(0),
 y(0),
+visible(true),
+enabled(true),
 sprite(0),
 spriteBmp(0),
 action(0),
@@ -142,85 +144,87 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
 }
     
 void MugenBackground::logic( const int &x, const int &y ){
-    movex = movey = 0;
-    movex += x * deltax;
-    movey += y * deltay;
-    velx += velocityx;
-    vely += velocityy;
-    /* how much should sin_angle be incremented by each frame?
-     * I think the total angle should be (ticks % sin_period) * 2pi / sin_period
-     * M (decimal) is the magnitude in pixels (amp)
-     * P (decimal) is the period in game ticks (period) 
-     * O (decimal) is the time offset in game ticks (offset)
-     * From updates.txt:  M * sine ((ticks+O)/P * 2 * Pi)
-     * sinx_amp * sin((stageTicker+sinx_offset)/sinx_period * 2 * pi)) ? useless it seems
-     */
-    //sin_angle += 0.00005;
-    sinx_angle += 0.00005;
-    siny_angle += 0.00005;
-    
-    ticks++;
-    if( ticks >= 1 ){
-	// Do frame or whatever movement etc
-	// Reset
-	ticks = 0;
+    if (enabled){
+	movex = movey = 0;
+	movex += x * deltax;
+	movey += y * deltay;
+	velx += velocityx;
+	vely += velocityy;
+	/* how much should sin_angle be incremented by each frame?
+	* I think the total angle should be (ticks % sin_period) * 2pi / sin_period
+	* M (decimal) is the magnitude in pixels (amp)
+	* P (decimal) is the period in game ticks (period) 
+	* O (decimal) is the time offset in game ticks (offset)
+	* From updates.txt:  M * sine ((ticks+O)/P * 2 * Pi)
+	* sinx_amp * sin((stageTicker+sinx_offset)/sinx_period * 2 * pi)) ? useless it seems
+	*/
+	//sin_angle += 0.00005;
+	sinx_angle += 0.00005;
+	siny_angle += 0.00005;
+	
+	ticks++;
+	if( ticks >= 1 ){
+	    // Do frame or whatever movement etc
+	    // Reset
+	    ticks = 0;
+	}
+	if( type == Anim ) action->logic();
+	
+	this->x = (int)(xoffset + movex + velx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
+	this->y = (int)(yoffset + movey + vely + siny_amp * sin(siny_angle*siny_period + siny_offset));
     }
-    if( type == Anim ) action->logic();
-    
-    this->x = (int)(xoffset + movex + velx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
-    this->y = (int)(yoffset + movey + vely + siny_amp * sin(siny_angle*siny_period + siny_offset));
-    
 }
     
 void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
-    switch( type ){
-	case Normal:{
-	    // Normal is a sprite
-	    // see if we need to tile this beyatch
-	    int tilexloc = x;
-	    const int width = spriteBmp->getWidth();
-	    const int height = spriteBmp->getHeight();
-	    bool dirx = false, diry = false;
-	    // Figure out total we need to tile (this crap doesn't work needs fix)
-	    int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
-	    int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
-	    // We need to repeat and wrap
-	    for( int h = 0; h < repeath; h++ ){
-		int tileyloc = y;
-		for( int v = 0; v < repeatv; v++ ){
-		    draw( tilexloc, tileyloc, *work );
-		    if( !diry )tileyloc += height + tilespacingy;
-		    else tileyloc -= height + tilespacingy;
-		    if( tileyloc >= work->getHeight() ){
-			diry = true;
-			tileyloc = y - height + tilespacingy;
+    if (visible){
+	switch( type ){
+	    case Normal:{
+		// Normal is a sprite
+		// see if we need to tile this beyatch
+		int tilexloc = x;
+		const int width = spriteBmp->getWidth();
+		const int height = spriteBmp->getHeight();
+		bool dirx = false, diry = false;
+		// Figure out total we need to tile (this crap doesn't work needs fix)
+		int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
+		int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
+		// We need to repeat and wrap
+		for( int h = 0; h < repeath; h++ ){
+		    int tileyloc = y;
+		    for( int v = 0; v < repeatv; v++ ){
+			draw( tilexloc, tileyloc, *work );
+			if( !diry )tileyloc += height + tilespacingy;
+			else tileyloc -= height + tilespacingy;
+			if( tileyloc >= work->getHeight() ){
+			    diry = true;
+			    tileyloc = y - height + tilespacingy;
+			}
+		    }
+		    if( !dirx )tilexloc += width + tilespacingx;
+		    else tilexloc -= width + tilespacingx;
+		    if( tilexloc >= work->getWidth() ){
+			dirx = true;
+			tilexloc = x - width + tilespacingx;
 		    }
 		}
-		if( !dirx )tilexloc += width + tilespacingx;
-		else tilexloc -= width + tilespacingx;
-		if( tilexloc >= work->getWidth() ){
-		    dirx = true;
-		    tilexloc = x - width + tilespacingx;
-		}
+		break;
 	    }
-	    break;
+	    case Parallax:{
+		// This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
+		doParallax( *spriteBmp, *work, x, y, xoffset, xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
+		break;
+	    }
+	    case Anim:{
+		// there is no sprite use our action!
+		action->render( x, y, *work );
+		break;
+	    }
+	    case Dummy:
+		// Do nothing
+	    default:
+		break;
 	}
-	case Parallax:{
-	    // This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
-	    doParallax( *spriteBmp, *work, x, y, xoffset, xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
-	    break;
-	}
-	case Anim:{
-	    // there is no sprite use our action!
-	    action->render( x, y, *work );
-	    break;
-	}
-	case Dummy:
-	    // Do nothing
-	default:
-	    break;
     }
-    
 }
 
 void MugenBackground::preload( const int &xaxis, const int &yaxis ){

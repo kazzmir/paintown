@@ -111,10 +111,10 @@ autoturn(true),
 resetBG(true),
 shadowIntensity(128),
 reflect(false),
-color(Bitmap::makeColor(0,0,0)),
-yscale(0.4),
-fadeRangeHigh(0),
-fadeRangeMid(0),
+shadowColor(Bitmap::makeColor(0,0,0)),
+shadowYscale(0.4),
+shadowFadeRangeHigh(0),
+shadowFadeRangeMid(0),
 reflectionIntensity(0),
 sffFile(""),
 debugbg(false),
@@ -171,10 +171,10 @@ autoturn(true),
 resetBG(true),
 shadowIntensity(128),
 reflect(false),
-color(Bitmap::makeColor(0,0,0)),
-yscale(0.4),
-fadeRangeHigh(0),
-fadeRangeMid(0),
+shadowColor(Bitmap::makeColor(0,0,0)),
+shadowYscale(0.4),
+shadowFadeRangeHigh(0),
+shadowFadeRangeMid(0),
 reflectionIntensity(0),
 sffFile(""),
 debugbg(false),
@@ -373,12 +373,12 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> r;
 		    *content->getNext() >> g;
 		    *content->getNext() >> b;
-		    color = Bitmap::makeColor(r,g,b);
+		    shadowColor = Bitmap::makeColor(r,g,b);
 		} else if ( itemhead.find("yscale")!=std::string::npos ){
-		    *content->getNext() >> yscale;
+		    *content->getNext() >> shadowYscale;
 		} else if ( itemhead.find("fade.range")!=std::string::npos ){
-		    *content->getNext() >> fadeRangeHigh;
-		    *content->getNext() >> fadeRangeMid;
+		    *content->getNext() >> shadowFadeRangeHigh;
+		    *content->getNext() >> shadowFadeRangeMid;
 		} else throw MugenException( "Unhandled option in Shadow Section: " + itemhead );
 	    }
 	}
@@ -769,12 +769,16 @@ void MugenStage::render( Bitmap *work ){
     int distance = 10;
     bool change = false;
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-	if( reflectionIntensity )(*it)->drawReflection( board, 0, reflectionIntensity );
-        (*it)->draw( board, 0);
+	Object *obj = *it;
+	// Reflection
+	if (reflectionIntensity)obj->drawReflection( board, 0, reflectionIntensity );
+	// Shadow
+	obj->drawShade( board, 0, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+        obj->draw( board, 0);
 	// Debug crap
 	int color = change ? Bitmap::makeColor( 255, 255, 255 ) : Bitmap::makeColor( 200, 200, 200 );
-	Font::getDefaultFont().printf( 15, distance, color, *board, "Object: %i",0, (*it));
-	Font::getDefaultFont().printf( 15, distance+10, color, *board, "x: %f, y: %f",0, (*it)->getX(),(*it)->getY());
+	Font::getDefaultFont().printf( 15, distance, color, *board, "Object: %i",0, obj);
+	Font::getDefaultFont().printf( 15, distance+10, color, *board, "x: %f, y: %f",0, obj->getX(),obj->getY());
 	distance+=20;
 	change=!change;
     }

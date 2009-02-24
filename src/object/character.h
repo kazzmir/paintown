@@ -62,6 +62,7 @@ public:
 	virtual void draw( Bitmap * work, int rel_x );
 	
 	virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
+	virtual void drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
 	
 	// virtual bool collision( Object * obj );
 

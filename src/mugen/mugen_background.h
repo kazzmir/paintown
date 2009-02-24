@@ -11,19 +11,6 @@ class MugenBackground;
 class MugenStage;
 class Bitmap;
 
-enum ControlType{
-    Null = 0,
-    Visible,
-    Enabled,
-    Velset,
-    Veladd,
-    Posset,
-    PosAdd,
-    Animation,
-    Sinx,
-    Siny
-};
-
 enum BackgroundType{
     Normal = 0,
     Parallax,
@@ -37,6 +24,19 @@ enum TransType{
     Add1,
     Sub,
     Addalpha
+};
+
+enum ControlType{
+    Null = 0,
+    Visible,
+    Enabled,
+    Velset,
+    Veladd,
+    Posset,
+    PosAdd,
+    Animation,
+    Sinx,
+    Siny
 };
 
 class BgController{
@@ -77,6 +77,11 @@ public:
     MugenBackground( const unsigned long int &ticker );
     MugenBackground( const MugenBackground &copy );
     ~MugenBackground();
+    
+    inline void setVisible(const bool vis){ visible = vis; }
+    inline const bool getVisible(){ return visible; }
+    inline void setEnabled(const bool en){ enabled = visible = en; }
+    inline const bool getEnabled(){ return enabled; }
     
     MugenBackground & operator=( const MugenBackground &copy );
     
@@ -137,6 +142,8 @@ public:
     int ticks;
     int x;
     int y;
+    bool visible;
+    bool enabled;
     
     // sprite 
     MugenSprite *sprite;

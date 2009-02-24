@@ -54,7 +54,9 @@ public:
 	virtual void drawFront(Bitmap * work, int rel_x);
         /* draw reflection. default behavior is to do nothing */
         virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
-
+	/* draw shadow. default behavior is to do nothing */
+        virtual void drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
+	
 	/* print:
 	 * Print some debugging information
 	 */

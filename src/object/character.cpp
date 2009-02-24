@@ -1565,6 +1565,31 @@ void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
     }
 }
 
+void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
+    if (animation_current){
+	const double newheight = animation_current->getCurrentFrame()->getHeight() * scale;
+	Bitmap shade(animation_current->getCurrentFrame()->getWidth(),abs(newheight));
+	animation_current->getCurrentFrame()->Stretch(shade);
+	
+	Bitmap::multiplyBlender( Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), intensity );
+	Bitmap::drawingMode( Bitmap::MODE_TRANS );
+	if (scale > 0){
+	    if (getFacing() == FACING_RIGHT){ 
+		shade.drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
+	    } else { 
+		shade.drawTransHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
+	    }
+	} else if (scale < 0){
+	    if (getFacing() == FACING_RIGHT){ 
+		shade.drawTrans( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, (getRZ() - 10) + (getY() * scale), *work );
+	    } else { 
+		shade.drawTransHFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, (getRZ() - 10) + (getY() * scale), *work );
+	    }
+	}
+	Bitmap::drawingMode( Bitmap::MODE_SOLID );
+    }
+}
+
 /*
 bool Character::collision( Object * obj ){
 	cout<<"X: "<<getRX()<< " Y: "<<getRY()<<endl;

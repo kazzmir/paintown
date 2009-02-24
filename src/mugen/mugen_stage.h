@@ -17,6 +17,11 @@ class MugenSound;
 class MugenAnimation;
 class MugenBackground;
 
+/* Background controllers 
+We'll seperate this from the main FSM of characters since we aren't looking for
+complete compatability */
+
+
 struct PlayerData {
     double oldx;
     double oldy;
@@ -229,13 +234,13 @@ protected:
 	;Defaults to 0,0,0 if omitted.
 	;intensity and color's effects add up to give the final shadow
 	;result.*/
-	int color;  // this = 0,0,0 gets converted by Bitmap::makeColor
+	int shadowColor;  // this = 0,0,0 gets converted by Bitmap::makeColor
 
 	/*;This is the scale factor of the shadow. Use a big scale factor
 	;to make the shadow longer. You can use a NEGATIVE scale factor
 	;to make the shadow fall INTO the screen.
 	;Defaults to 0.4 if omitted.*/
-	double yscale;
+	double shadowYscale;
 
 	/*;This parameter lets you set the range over which the shadow is
 	;visible. The first value is the high level, and the second is
@@ -247,8 +252,8 @@ protected:
 	;ground. If omitted, defaults to no level effects (shadow is
 	;always fully visible).*/
 	//fade.range = -400,-100
-	int fadeRangeHigh;
-	int fadeRangeMid;
+	int shadowFadeRangeHigh;
+	int shadowFadeRangeMid;
 
 	/*;--------------------------------------------------------
 	[Reflection]
