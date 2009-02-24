@@ -83,6 +83,11 @@ void testPCX(){
     Util::rest(3000);
 }
 
+static void inc_speed_counter() {
+	Global::speed_counter += 1;
+}
+END_OF_FUNCTION( inc_speed_counter );
+
 void showCharacter(const string & ourFile){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);*/
@@ -111,76 +116,91 @@ void showCharacter(const string & ourFile){
     int xaxis = 260;
     int yaxis = 230;
 
-    while( !quit ){
-        work.clear();
-        keyInputManager::update();
-	if( animate ) it->second->logic();
-        
-        if( keyInputManager::keyState(keys::UP, true) ){
-            if( currentAnim < lastAnim ){
-                currentAnim++;
-                it++;
-            }
-            currentFrame = 0;
+     double gameSpeed = .5;
+    double runCounter = 0;
+    LOCK_VARIABLE( speed_counter );
+    LOCK_FUNCTION( (void *)inc_speed_counter );
+	while( !quit ){
+	    bool draw = false;
+	    
+	    if ( Global::speed_counter > 0 ){
+		runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+		while (runCounter > 1){
+		    if( animate ) it->second->logic();
+		    runCounter -= 1;
+		    draw = true;
+		    
+		    if( keyInputManager::keyState(keys::UP, true) ){
+			if( currentAnim < lastAnim ){
+			    currentAnim++;
+			    it++;
+			}
+			currentFrame = 0;
+		    }
+		    else if( keyInputManager::keyState(keys::DOWN, true) ){
+			if( currentAnim > 0 ){
+			    currentAnim--;
+			    it--;
+			}
+			currentFrame = 0;
+		    }
+		    else if( keyInputManager::keyState(keys::LEFT, true) && !animate){
+			it->second->forwardFrame();
+			currentFrame = it->second->getCurrentPosition();
+		    }
+		    else if( keyInputManager::keyState(keys::RIGHT, true) && !animate){
+			it->second->backFrame();
+			currentFrame = it->second->getCurrentPosition();
+		    }
+		    else if( keyInputManager::keyState(keys::SPACE, true) ){
+			animate = !animate;
+		    }
+		    else if( keyInputManager::keyState('a', true) ){
+			showClsn1 = !showClsn1;
+			it->second->toggleOffense();
+		    }
+		    else if( keyInputManager::keyState('d', true) ){
+			showClsn2 = !showClsn2;
+			it->second->toggleDefense();
+		    }
+		    
+		    if( mouse_b & 1 )moveImage = true;
+		    else if( !(mouse_b & 1) )moveImage = false;
+		    
+		    quit |= keyInputManager::keyState(keys::ESC, true );
+		    
+		    if( moveImage ){ xaxis=mouse_x; yaxis =mouse_y; }
+		}
+		Global::speed_counter = 0;
         }
-        else if( keyInputManager::keyState(keys::DOWN, true) ){
-            if( currentAnim > 0 ){
-                currentAnim--;
-                it--;
-            }
-            currentFrame = 0;
-        }
-        else if( keyInputManager::keyState(keys::LEFT, true) && !animate){
-	    it->second->forwardFrame();
-	    currentFrame = it->second->getCurrentPosition();
-        }
-        else if( keyInputManager::keyState(keys::RIGHT, true) && !animate){
-	    it->second->backFrame();
-	    currentFrame = it->second->getCurrentPosition();
-        }
-        else if( keyInputManager::keyState(keys::SPACE, true) ){
-            animate = !animate;
-        }
-        else if( keyInputManager::keyState('a', true) ){
-            showClsn1 = !showClsn1;
-	    it->second->toggleOffense();
-        }
-        else if( keyInputManager::keyState('d', true) ){
-            showClsn2 = !showClsn2;
-	    it->second->toggleDefense();
-        }
-	
-	if( mouse_b & 1 )moveImage = true;
-	else if( !(mouse_b & 1) )moveImage = false;
-	
-        quit |= keyInputManager::keyState(keys::ESC, true );
-	
-	if( moveImage ){ xaxis=mouse_x; yaxis =mouse_y; }
-	it->second->render( xaxis, yaxis, work );
-	
-	int start = 10;
-	if( showClsn2 )showCollision( it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ), start  );
-	if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ), start  );
-	
-        Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s), Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
-        if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->length, it->second->getCurrentFrame()->sprite->x, it->second->getCurrentFrame()->sprite->y, it->second->getCurrentFrame()->sprite->groupNumber, it->second->getCurrentFrame()->sprite->imageNumber);
-        Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->bmp->getWidth(), it->second->getCurrentFrame()->bmp->getHeight() );
-        Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
-        Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
-        Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
-	
-	show_mouse(work.getBitmap());
 
-        work.BlitToScreen();
-        Util::rest(1);
+        if (draw){
+		    work.clear();
+		    it->second->render( xaxis, yaxis, work );
+		    int start = 10;
+		    if( showClsn2 )showCollision( it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ), start  );
+		    if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ), start  );
+		    
+		    Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s), Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
+		    if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->length, it->second->getCurrentFrame()->sprite->x, it->second->getCurrentFrame()->sprite->y, it->second->getCurrentFrame()->sprite->groupNumber, it->second->getCurrentFrame()->sprite->imageNumber);
+		    Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->bmp->getWidth(), it->second->getCurrentFrame()->bmp->getHeight() );
+		    Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
+		    Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
+		    Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
+		    
+		    show_mouse(work.getBitmap());
+
+		    work.BlitToScreen();
+		    Util::rest(1);
+	}
+	
+        while (Global::speed_counter == 0){
+            Util::rest(1);
+            keyInputManager::update();
+        }
     }
 
 }
-
-static void inc_speed_counter() {
-	Global::speed_counter += 1;
-}
-END_OF_FUNCTION( inc_speed_counter );
 
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
     /*set_color_depth(16);
