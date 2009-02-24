@@ -655,8 +655,8 @@ void MugenStage::logic( ){
     // Run our ticker on and on like energizer bunnies (tm)
     ticker++;
     
-    const int diffx = startx - camerax + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
-    const int diffy = starty - cameray + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 );
+    const int diffx = startx - camerax;
+    const int diffy = starty - cameray;
     
     //zoffsetlink
     if( zoffsetlink != DEFAULT_BACKGROUND_ID )zoffset = getBackground(zoffsetlink)->y;
@@ -800,7 +800,7 @@ void MugenStage::render( Bitmap *work ){
     }
     
     
-    board->Blit( xaxis, yaxis, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
+    board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
 }
 
 void MugenStage::reset( ){
