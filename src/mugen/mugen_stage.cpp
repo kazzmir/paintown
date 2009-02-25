@@ -225,6 +225,11 @@ void MugenStage::load() throw( MugenException ){
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
+
+    struct cymk_holder{
+        cymk_holder():c(0),m(0),y(0),k(0){}
+        int c, m, y, k;
+    } shadow;
     
     // for linked position in backgrounds
     MugenBackground *prior = 0;
@@ -369,19 +374,21 @@ void MugenStage::load() throw( MugenException ){
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
 		if ( itemhead.find("intensity")!=std::string::npos ){
-		    *content->getNext() >> shadowIntensity;
+		    *content->getNext() >> shadow.k;
+		    // *content->getNext() >> shadowIntensity;
+                    // shadow.k = shadowIntensity;
 		    //reverseNumber(shadowIntensity);
 		} else if ( itemhead == "reflect" ){
 		    *content->getNext() >> reflect;
 		} else if ( itemhead.find("color")!=std::string::npos ){
-		    int r,b,g;
-		    *content->getNext() >> r;
-		    *content->getNext() >> g;
-		    *content->getNext() >> b;
+		    // int c,m,k;
+		    *content->getNext() >> shadow.c;
+		    *content->getNext() >> shadow.y;
+		    *content->getNext() >> shadow.m;
 		    //reverseNumber(r);
 		    //reverseNumber(g);
 		    //reverseNumber(b);
-		    shadowColor = Bitmap::makeColor(r,g,b);
+		    // shadowColor = Bitmap::makeColor(r,g,b);
 		} else if ( itemhead.find("yscale")!=std::string::npos ){
 		    *content->getNext() >> shadowYscale;
 		} else if ( itemhead.find("fade.range")!=std::string::npos ){
@@ -621,6 +628,18 @@ void MugenStage::load() throw( MugenException ){
 	// Link zoffset to id
 	zoffset = getBackground(zoffsetlink)->y;
     }
+
+    int r, g, b;
+    Bitmap::cymkToRGB(shadow.c, shadow.y, shadow.m, shadow.k, &r, &g, &b);
+    Global::debug(1) << "Shadow c/y/m/k " << shadow.c << " " << shadow.y << " " << shadow.m << " " << shadow.k << " r/g/b " << r << " " << g << " " << b << endl;
+    shadowColor = Bitmap::makeColor(r, g, b);
+
+    /* shadowIntensity is used as the alpha value. its some combination of the
+     * cymk components but I'm not sure what it is. This is relatively close
+     * but its definately not 100% accurate.
+     */
+    shadowIntensity = Util::min((shadow.c + shadow.y + shadow.m + shadow.k * 2) / 3, 255);
+    Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 }
 
 void MugenStage::setCamera( const int &x, const int &y ){ 

@@ -1568,9 +1568,7 @@ void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
 void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
     if (animation_current){
 	const double newheight = animation_current->getCurrentFrame()->getHeight() * scale;
-        /* this creates a temporary frame each time which is bad.. somehow fix this */
-	// Bitmap shade(animation_current->getCurrentFrame()->getWidth(), fabs(newheight));
-        LitBitmap shade = Bitmap::temporaryBitmap(animation_current->getCurrentFrame()->getWidth(), fabs(newheight));
+        Bitmap shade = Bitmap::temporaryBitmap(animation_current->getCurrentFrame()->getWidth(), fabs(newheight));
 	animation_current->getCurrentFrame()->Stretch(shade);
 	
 	/* Could be slow, but meh, lets do it for now to make it look like a real shadow */
@@ -1578,24 +1576,27 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
 	    for (int w = 0; w < shade.getWidth(); ++w){
 		int pix = shade.getPixel(w,h);
                 if (pix != Bitmap::MaskColor){
-                    shade.putPixel(w,h, Bitmap::makeColor(0,0,0));
+                    shade.putPixel(w,h, color);
                 }
 	    }
 	}
 	
-	Bitmap::transBlender( Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), intensity );
+        int i = intensity;
+        i = intensity;
 	Bitmap::drawingMode( Bitmap::MODE_TRANS );
+	// Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
+	Bitmap::transBlender(0, 0, 0, i);
 	if (scale > 0){
 	    if (getFacing() == FACING_RIGHT){ 
-		shade.drawVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
+		shade.drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
 	    } else { 
-		shade.drawHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
+		shade.drawTransHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
 	    }
 	} else if (scale < 0){
 	    if (getFacing() == FACING_RIGHT){ 
-		shade.draw( ((getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2) + 3, (getRZ() - 10) + (getY() * scale), *work );
+		shade.drawTrans( ((getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2) + 3, (getRZ() - 10) + (getY() * scale), *work );
 	    } else { 
-		shade.drawHFlip( ((getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2) - 3, (getRZ() - 10) + (getY() * scale), *work );
+		shade.drawTransHFlip( ((getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2) - 3, (getRZ() - 10) + (getY() * scale), *work );
 	    }
 	}
 	Bitmap::drawingMode( Bitmap::MODE_SOLID );
