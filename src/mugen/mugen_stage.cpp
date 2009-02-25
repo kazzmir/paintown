@@ -370,7 +370,7 @@ void MugenStage::load() throw( MugenException ){
 		MugenUtil::removeSpaces(itemhead);
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> shadowIntensity;
-		    reverseNumber(shadowIntensity);
+		    //reverseNumber(shadowIntensity);
 		} else if ( itemhead == "reflect" ){
 		    *content->getNext() >> reflect;
 		} else if ( itemhead.find("color")!=std::string::npos ){
@@ -378,9 +378,9 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> r;
 		    *content->getNext() >> g;
 		    *content->getNext() >> b;
-		    reverseNumber(r);
-		    reverseNumber(g);
-		    reverseNumber(b);
+		    //reverseNumber(r);
+		    //reverseNumber(g);
+		    //reverseNumber(b);
 		    shadowColor = Bitmap::makeColor(r,g,b);
 		} else if ( itemhead.find("yscale")!=std::string::npos ){
 		    *content->getNext() >> shadowYscale;
