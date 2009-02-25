@@ -1585,12 +1585,12 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
         i = 255 - i;
 	Bitmap::drawingMode( Bitmap::MODE_TRANS );
 	// Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
-	Bitmap::transBlender((Bitmap::getRed(color) * 77), (Bitmap::getGreen(color) * 154), (Bitmap::getBlue(color) * 25), i);
+	Bitmap::multiplyBlender((Bitmap::getRed(color) * 77 + intensity), (Bitmap::getGreen(color) * 154 + intensity), (Bitmap::getBlue(color) * 25 + intensity), i);
 	if (scale > 0){
 	    if (getFacing() == FACING_RIGHT){ 
-		shade.drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
+		shade.drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ()  + (getY() * scale), *work );
 	    } else { 
-		shade.drawTransHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
+		shade.drawTransHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ()  + (getY() * scale), *work );
 	    }
 	} else if (scale < 0){
 	    if (getFacing() == FACING_RIGHT){ 
