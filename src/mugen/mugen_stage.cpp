@@ -37,6 +37,10 @@ static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 static const double DEFAULT_JUMP_VELOCITY = 7.2;
 
+void reverseNumber(int &number){
+    // These bastards use it backwards 0 lightest 256 darkest.. lets reverse it
+    number = number > 128 ? (128 - (number - 128)) : (number < 128 ? (128 + (128 - number)) : 128);
+}
 
 static void correctStageName( std::string &str ){
     if( str.find( "stages/") != std::string::npos || str.find( "stages\\") != std::string::npos ){
@@ -366,6 +370,7 @@ void MugenStage::load() throw( MugenException ){
 		MugenUtil::removeSpaces(itemhead);
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> shadowIntensity;
+		    reverseNumber(shadowIntensity);
 		} else if ( itemhead == "reflect" ){
 		    *content->getNext() >> reflect;
 		} else if ( itemhead.find("color")!=std::string::npos ){
@@ -373,6 +378,9 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> r;
 		    *content->getNext() >> g;
 		    *content->getNext() >> b;
+		    reverseNumber(r);
+		    reverseNumber(g);
+		    reverseNumber(b);
 		    shadowColor = Bitmap::makeColor(r,g,b);
 		} else if ( itemhead.find("yscale")!=std::string::npos ){
 		    *content->getNext() >> shadowYscale;
