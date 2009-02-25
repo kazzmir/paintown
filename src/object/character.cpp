@@ -1576,16 +1576,16 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
 	    for (int w = 0; w < shade.getWidth(); ++w){
 		int pix = shade.getPixel(w,h);
                 if (pix != Bitmap::MaskColor){
-                    shade.putPixel(w,h, color);
+                    shade.putPixel(w,h, Bitmap::makeColor(0,0,0));
                 }
 	    }
 	}
 	
-        int i = intensity;
-        i = intensity;
+        int i = ((Bitmap::getRed(color) * 77 + intensity) + (Bitmap::getGreen(color) * 154 + intensity) + (Bitmap::getBlue(color) * 25 + intensity))/256;
+        i = 255 - i;
 	Bitmap::drawingMode( Bitmap::MODE_TRANS );
 	// Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
-	Bitmap::transBlender(0, 0, 0, i);
+	Bitmap::transBlender((Bitmap::getRed(color) * 77), (Bitmap::getGreen(color) * 154), (Bitmap::getBlue(color) * 25), i);
 	if (scale > 0){
 	    if (getFacing() == FACING_RIGHT){ 
 		shade.drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
