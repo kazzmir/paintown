@@ -1092,5 +1092,5 @@ void MugenStage::updatePlayer( Object *o ){
 	    }
 	}
     }
-    Global::debug(0) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
+    Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }
