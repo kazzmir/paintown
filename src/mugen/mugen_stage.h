@@ -21,6 +21,51 @@ class MugenBackground;
 We'll seperate this from the main FSM of characters since we aren't looking for
 complete compatability */
 
+enum ControlType{
+    Ctrl_Null = 0,
+    Ctrl_Visible,
+    Ctrl_Enabled,
+    Ctrl_VelSet,
+    Ctrl_VelAdd,
+    Ctrl_PosSet,
+    Ctrl_PosAdd,
+    Ctrl_Animation,
+    Ctrl_Sinx,
+    Ctrl_Siny
+};
+
+struct BgController{
+	BgController( ControlType ctrl );
+	virtual ~BgController();
+	const inline ControlType &getType() { return type; }
+	virtual void act() = 0;
+	void reset();
+	ControlType type;
+	int timestart;
+	int endtime;
+	int looptime;
+	int ownticker;
+	bool runonce;
+	std::vector<MugenBackground *> backgrounds;
+};
+
+class MugenBgController{
+    public:
+	MugenBgController( const std::string &n );
+	~MugenBgController();
+	
+	void addControl( BgController *ctrl );
+	
+	const inline std::string &getName() { return name; }
+	
+	void act();
+	
+	std::string name;
+	int looptime;
+	int ticker;
+	std::vector<MugenBackground *> backgrounds;
+	std::vector<BgController *> controls;
+};
 
 struct PlayerData {
     double oldx;
@@ -53,8 +98,8 @@ public:
 	
 	inline unsigned long int getTicks(){ return ticker; }
 	
-	void setCamera( const double &x, const double &y );
-	void moveCamera( const double &x, const double &y );
+	void setCamera( const double x, const double y );
+	void moveCamera( const double x, const double y );
 	
 	// Get background by ID
 	MugenBackground *getBackground( int ID );

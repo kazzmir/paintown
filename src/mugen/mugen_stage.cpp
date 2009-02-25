@@ -37,11 +37,6 @@ static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 static const double DEFAULT_JUMP_VELOCITY = 7.2;
 
-void reverseNumber(int &number){
-    // These bastards use it backwards 0 lightest 256 darkest.. lets reverse it
-    number = number > 128 ? (128 - (number - 128)) : (number < 128 ? (128 + (128 - number)) : 128);
-}
-
 static void correctStageName( std::string &str ){
     if( str.find( "stages/") != std::string::npos || str.find( "stages\\") != std::string::npos ){
 	size_t rem = str.find_first_of( "stages/" );
@@ -75,6 +70,64 @@ static bool centerCollision( Character *p1, Character *p2 ){
 	    y2 > y3 && y2 > y4 ) return false;
     
     return true;
+}
+
+BgController::BgController( ControlType ctrl):
+type(ctrl),
+timestart(0),
+endtime(0),
+looptime(-1),
+ownticker(0),
+runonce(false){
+}
+BgController::~BgController(){
+}
+
+/*
+Ctrl_Null = 0,
+    Ctrl_Visible,
+    Ctrl_Enabled,
+    Ctrl_VelSet,
+    Ctrl_VelAdd,
+    Ctrl_PosSet,
+    Ctrl_PosAdd,
+    Ctrl_Animation,
+    Ctrl_Sinx,
+    Ctrl_Siny
+    */
+struct NullControl : public BgController {
+    NullControl() : BgController( Ctrl_Null ){}
+    ~NullControl(){}
+    void act(){
+	/*for (std::vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
+	   We don't do jack for null :D 
+	}*/
+    }
+};
+struct VisibleControl : public BgController {
+    VisibleControl() : BgController( Ctrl_Visible ){}
+    ~VisibleControl(){}
+    void act(){
+	if (ownticker <= endtime){
+	    for (std::vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
+		
+	    }
+	}
+	ownticker++;
+    }
+};
+
+/* our controller handler */
+MugenBgController::MugenBgController(const std::string &n):
+name(n),
+looptime(-1){
+}
+MugenBgController::~MugenBgController(){
+}
+void MugenBgController::addControl( BgController *ctrl ){
+    controls.push_back(ctrl);
+}
+void MugenBgController::act(){
 }
 
 MugenStage::MugenStage( const string & s ):
@@ -381,7 +434,6 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> shadow.k;
 		    // *content->getNext() >> shadowIntensity;
                     // shadow.k = shadowIntensity;
-		    //reverseNumber(shadowIntensity);
 		} else if ( itemhead == "reflect" ){
 		    *content->getNext() >> reflect;
 		} else if ( itemhead.find("color")!=std::string::npos ){
@@ -389,9 +441,6 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> shadow.c;
 		    *content->getNext() >> shadow.y;
 		    *content->getNext() >> shadow.m;
-		    //reverseNumber(r);
-		    //reverseNumber(g);
-		    //reverseNumber(b);
 		    // shadowColor = Bitmap::makeColor(r,g,b);
 		} else if ( itemhead.find("yscale")!=std::string::npos ){
 		    *content->getNext() >> shadowYscale;
@@ -646,7 +695,7 @@ void MugenStage::load() throw( MugenException ){
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 }
 
-void MugenStage::setCamera( const double &x, const double &y ){ 
+void MugenStage::setCamera( const double x, const double y ){ 
     camerax = x; cameray = y; 
     // Camera boundaries
     if( camerax < boundleft ) camerax = boundleft;
@@ -654,7 +703,7 @@ void MugenStage::setCamera( const double &x, const double &y ){
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
 }
-void MugenStage::moveCamera( const double &x, const double &y ){ 
+void MugenStage::moveCamera( const double x, const double y ){ 
     camerax += x; cameray += y; 
     // Camera boundaries
     if( camerax < boundleft ) camerax = boundleft;

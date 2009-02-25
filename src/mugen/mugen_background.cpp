@@ -50,31 +50,6 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoff
 
 static int idCounter = -9999999;
 
-BgController::BgController( ControlType ctrl, std::vector<int>ids ):
-type(ctrl),
-timestart(0),
-endtime(0),
-looptime(-1),
-ctrlID(ids){
-}
-BgController::~BgController(){
-}
-void BgController::act( std::map<int, MugenBackground *> &bgs ){
-    // nothing
-}
-
-MugenBgController::MugenBgController( std::string &n, std::vector<int>ids ):
-name(n),
-looptime(-1),
-ctrlID(ids){
-}
-MugenBgController::~MugenBgController(){
-}
-void MugenBgController::addControl( BgController *ctrl ){
-    controls.push_back(ctrl);
-}
-void MugenBgController::act( std::map<int, MugenBackground *> &bgs ){
-}
 
 // mugen background
 MugenBackground::MugenBackground( const unsigned long int &ticker ):

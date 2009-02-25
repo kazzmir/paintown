@@ -26,51 +26,6 @@ enum TransType{
     Addalpha
 };
 
-enum ControlType{
-    Null = 0,
-    Visible,
-    Enabled,
-    Velset,
-    Veladd,
-    Posset,
-    PosAdd,
-    Animation,
-    Sinx,
-    Siny
-};
-
-class BgController{
-    public:
-	BgController( ControlType ctrl, std::vector<int>ids );
-	virtual ~BgController();
-	const inline ControlType &getType() { return type; }
-	virtual void act( std::map<int, MugenBackground *> &bgs );
-    private:
-	ControlType type;
-	int timestart;
-	int endtime;
-	int looptime;
-	std::vector<int> ctrlID;
-};
-
-class MugenBgController{
-    public:
-	MugenBgController( std::string &n, std::vector<int>ids );
-	~MugenBgController();
-	
-	void addControl( BgController *ctrl );
-	
-	const inline std::string &getName() { return name; }
-	
-	void act( std::map<int, MugenBackground *> &bgs );
-	
-    protected:
-	std::string name;
-	int looptime;
-	std::vector<int> ctrlID;
-	std::vector<BgController *> controls;
-};
-
 // mugen background
 class MugenBackground{
 public:
