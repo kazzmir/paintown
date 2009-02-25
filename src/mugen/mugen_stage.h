@@ -27,6 +27,7 @@ struct PlayerData {
     double oldy;
     bool leftTension;
     bool rightTension;
+    bool above;
 };
 
 class MugenStage: public World {
@@ -47,13 +48,13 @@ public:
             return animations;
         }
 	
-	inline const int getCameraX() { return camerax; }
-	inline const int getCameraY() { return cameray; }
+	inline const double getCameraX() { return camerax; }
+	inline const double getCameraY() { return cameray; }
 	
 	inline unsigned long int getTicks(){ return ticker; }
 	
-	void setCamera( const int &x, const int &y );
-	void moveCamera( const int &x, const int &y );
+	void setCamera( const double &x, const double &y );
+	void moveCamera( const double &x, const double &y );
 	
 	// Get background by ID
 	MugenBackground *getBackground( int ID );
@@ -310,8 +311,8 @@ protected:
 	int yaxis;
 	
 	// Camera location on stage
-	int camerax;
-	int cameray;
+	double camerax;
+	double cameray;
 	
 	// Start the stage sometime
 	bool stageStart;
@@ -356,6 +357,7 @@ protected:
 	// This is for when characters are inside the tension area
 	int inleft;
 	int inright;
+	int inabove;
 	
 	void updatePlayer( Object *o );
 	

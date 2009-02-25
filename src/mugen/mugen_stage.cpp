@@ -136,7 +136,8 @@ time(99),
 p1points(0),
 p2points(0),
 inleft(0),
-inright(0){
+inright(0),
+inabove(0){
 }
 
 MugenStage::MugenStage( const char * location ): World(),
@@ -196,7 +197,8 @@ time(99),
 p1points(0),
 p2points(0),
 inleft(0),
-inright(0){
+inright(0),
+inabove(0){
 }
 
 MugenStage::~MugenStage(){
@@ -276,6 +278,8 @@ void MugenStage::load() throw( MugenException ){
 		    //*content->getNext() >> boundlow;
 		} else if ( itemhead.find("verticalfollow")!=std::string::npos ){
 		    *content->getNext() >> verticalfollow;
+		    if (verticalfollow > 1) verticalfollow = 1;
+		    else if(verticalfollow < 0) verticalfollow = 0;
 		} else if ( itemhead.find("floortension")!=std::string::npos ){
 		    *content->getNext() >> floortension;
 		} else if ( itemhead.find("tension")!=std::string::npos ){
@@ -642,7 +646,7 @@ void MugenStage::load() throw( MugenException ){
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 }
 
-void MugenStage::setCamera( const int &x, const int &y ){ 
+void MugenStage::setCamera( const double &x, const double &y ){ 
     camerax = x; cameray = y; 
     // Camera boundaries
     if( camerax < boundleft ) camerax = boundleft;
@@ -650,7 +654,7 @@ void MugenStage::setCamera( const int &x, const int &y ){
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
 }
-void MugenStage::moveCamera( const int &x, const int &y ){ 
+void MugenStage::moveCamera( const double &x, const double &y ){ 
     camerax += x; cameray += y; 
     // Camera boundaries
     if( camerax < boundleft ) camerax = boundleft;
@@ -1069,11 +1073,24 @@ void MugenStage::updatePlayer( Object *o ){
 	}
     }
     // Vertical movement of camera
-    if( playerInfo[o].oldy != py ){
-	const double pdiffy = playerInfo[o].oldy - py;
-	if( verticalfollow && py > floortension ){
-	    if( pdiffy < 0 )moveCamera( 0, -.2/verticalfollow );
-	    else if( pdiffy > 0 )moveCamera( 0, .2/verticalfollow );
+    if (playerInfo[o].oldy != py){
+	if (verticalfollow > 0){
+	    const double pdiffy = playerInfo[o].oldy - py;
+	    if (py > floortension){
+		if (!playerInfo[o].above){
+		    playerInfo[o].above = true;
+		    inabove++;
+		}
+	    } else if ( playerInfo[o].above){
+		playerInfo[o].above = false;
+		inabove--;
+	    }
+	    if (playerInfo[o].above && pdiffy < 0){
+		moveCamera( 0, verticalfollow * -3.2 );
+	    } else if (playerInfo[o].above && pdiffy > 0){
+		moveCamera( 0, verticalfollow * 3.2 );
+	    }
 	}
     }
+    Global::debug(0) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }
