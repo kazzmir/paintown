@@ -153,20 +153,23 @@ void MugenFont::load(){
     unsigned long txtsize;
     unsigned char *pcx;
     
-    ifile.read( (char *)&pcxlocation, 4 );
-    ifile.read( (char *)&pcxsize, 4 );
-    ifile.read( (char *)&txtlocation, 4 );
-    ifile.read( (char *)&txtsize, 4 );
+    ifile.read( (char *)&pcxlocation, sizeof(unsigned long) );
+    ifile.read( (char *)&pcxsize, sizeof(unsigned long) );
+    ifile.read( (char *)&txtlocation, sizeof(unsigned long) );
+    ifile.read( (char *)&txtsize, sizeof(unsigned long) );
+    Global::debug(1) << "PCX Location: " << pcxlocation << " | PCX Size: " << pcxsize << endl;
+    Global::debug(1) << "TXT Location: " << txtlocation << " | TXT Actual location: " << pcxlocation + pcxsize << endl;
     
     // Get the pcx load our bitmap
     ifile.seekg(pcxlocation,ios::beg);
     ifile.read((char *)&pcx, pcxsize);
     
-    bmp = new Bitmap(Bitmap::memoryPCX(pcx, pcxsize));
+    bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
     
     // Get the text
+    ifile.seekg(pcxlocation+pcxsize, ios::beg);
     std::vector<std::string> ourText;
-    while( ifile.tellg() != (txtlocation + txtsize) ){
+    while( !ifile.eof() ){
 	std::string line;
 	getline( ifile, line );
 	ourText.push_back(line);
