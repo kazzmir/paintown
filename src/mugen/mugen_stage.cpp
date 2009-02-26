@@ -31,6 +31,7 @@
 #include "mugen_util.h"
 
 // Some static variables
+static const int CONTROLLER_VALUE_NOT_SET = -999999;
 static const int DEFAULT_BACKGROUND_ID = -9999;
 static const int DEFAULT_OBJECT_OFFSET = 160;
 static const int DEFAULT_WIDTH = 320;
@@ -72,62 +73,142 @@ static bool centerCollision( Character *p1, Character *p2 ){
     return true;
 }
 
-BgController::BgController( ControlType ctrl):
-type(ctrl),
+BackgroundController::BackgroundController():
+name(""),
+type(Ctrl_Null),
 timestart(0),
 endtime(0),
 looptime(-1),
-ownticker(0),
-runonce(false){
+value1(CONTROLLER_VALUE_NOT_SET),
+value2(CONTROLLER_VALUE_NOT_SET),
+value3(CONTROLLER_VALUE_NOT_SET){
 }
-BgController::~BgController(){
+BackgroundController::~BackgroundController(){
 }
 
-/*
-Ctrl_Null = 0,
-    Ctrl_Visible,
-    Ctrl_Enabled,
-    Ctrl_VelSet,
-    Ctrl_VelAdd,
-    Ctrl_PosSet,
-    Ctrl_PosAdd,
-    Ctrl_Animation,
-    Ctrl_Sinx,
-    Ctrl_Siny
-    */
-struct NullControl : public BgController {
-    NullControl() : BgController( Ctrl_Null ){}
-    ~NullControl(){}
-    void act(){
-	/*for (std::vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
-	   We don't do jack for null :D 
-	}*/
-    }
-};
-struct VisibleControl : public BgController {
-    VisibleControl() : BgController( Ctrl_Visible ){}
-    ~VisibleControl(){}
-    void act(){
-	if (ownticker <= endtime){
-	    for (std::vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
-		
+void BackgroundController::act(){
+    Global::debug(1) << "Control type: " << type << " is running" << endl;
+    // Do we run this?
+    if( ownticker >= timestart && ownticker <= endtime ){
+	for (std::vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
+	    MugenBackground *background = *i;
+	    switch (type){
+		case Ctrl_Visible:
+		    if (value1 != CONTROLLER_VALUE_NOT_SET){
+			background->setVisible(value1);
+		    }
+		    break;
+		case Ctrl_Enabled:
+		    if (value1 != CONTROLLER_VALUE_NOT_SET){
+			background->setEnabled(value1);
+		    }
+		    break;
+		case Ctrl_VelSet:
+		    if (value1 != CONTROLLER_VALUE_NOT_SET){
+			background->velocityx = value1;
+		    }
+		    if (value2 != CONTROLLER_VALUE_NOT_SET){
+			background->velocityy = value2;
+		    }
+		    break;
+		case Ctrl_VelAdd:
+		    if (value1 != CONTROLLER_VALUE_NOT_SET){
+			background->velocityx += value1;
+		    }
+		    if (value2 != CONTROLLER_VALUE_NOT_SET){
+			background->velocityy += value2;
+		    }
+		    break;
+		case Ctrl_PosSet:
+		    if (value1 != CONTROLLER_VALUE_NOT_SET){
+			background->x = value1;
+		    }
+		    if (value2 != CONTROLLER_VALUE_NOT_SET){
+			background->y = value2;
+		    }
+		    break;
+		case Ctrl_PosAdd:
+		    if (value1 != CONTROLLER_VALUE_NOT_SET){
+			background->x += value1;
+		    }
+		    if (value2 != CONTROLLER_VALUE_NOT_SET){
+			background->y += value2;
+		    }
+		    break;
+		case Ctrl_Animation:
+		    // Lets not do this for now, I can pass in the animation lists later
+		    break;
+		case Ctrl_Sinx:
+		    if (value1 != CONTROLLER_VALUE_NOT_SET){
+			background->sinx_amp = value1;
+		    }
+		    if (value2 != CONTROLLER_VALUE_NOT_SET){
+			background->sinx_offset = value2;
+		    }
+		    if (value3 != CONTROLLER_VALUE_NOT_SET){
+			background->sinx_period = value3;
+		    }
+		    break;
+		case Ctrl_Siny:
+		    if (value1 != CONTROLLER_VALUE_NOT_SET){
+			background->siny_amp = value1;
+		    }
+		    if (value2 != CONTROLLER_VALUE_NOT_SET){
+			background->siny_offset = value2;
+		    }
+		    if (value3 != CONTROLLER_VALUE_NOT_SET){
+			background->siny_period = value3;
+		    }
+		    break;
+		case Ctrl_Null:
+		default:
+		    break;
 	    }
 	}
-	ownticker++;
     }
-};
+    ownticker++;
+    // Shall we reset?
+    if( looptime != -1 && ownticker > endtime ){
+	ownticker=0;
+    }
+}
+
+void BackgroundController::reset(){
+    if( looptime == -1){
+	ownticker = 0;
+    }
+}
 
 /* our controller handler */
-MugenBgController::MugenBgController(const std::string &n):
+MugenBackgroundController::MugenBackgroundController(const std::string &n):
 name(n),
+id(DEFAULT_BACKGROUND_ID),
 looptime(-1){
 }
-MugenBgController::~MugenBgController(){
+MugenBackgroundController::~MugenBackgroundController(){
+    // Kill all controllers initiated by the load
+    for (std::vector<BackgroundController *>::iterator i = controls.begin(); i != controls.end(); ++i){
+	    if(*i)delete *i;
+    }
 }
-void MugenBgController::addControl( BgController *ctrl ){
+void MugenBackgroundController::addControl( BackgroundController *ctrl ){
     controls.push_back(ctrl);
 }
-void MugenBgController::act(){
+void MugenBackgroundController::act(){
+    // Lets act out our controllers
+    for (std::vector<BackgroundController *>::iterator i = controls.begin(); i != controls.end(); ++i){
+	    BackgroundController *ctrl = *i;
+	    ctrl->act();
+    }
+    if( looptime != -1 && ticker > looptime ){
+	// Reset itself and everybody that needs reseting
+	ticker = 0;
+	for (std::vector<BackgroundController *>::iterator i = controls.begin(); i != controls.end(); ++i){
+	    BackgroundController *ctrl = *i;
+	    ctrl->reset();
+	}
+    }
+    ticker++;
 }
 
 MugenStage::MugenStage( const string & s ):
@@ -646,8 +727,105 @@ void MugenStage::load() throw( MugenException ){
 	    animations[h] = animation;
 	    
 	}
-	else if( head.find("bgctrldef") != std::string::npos ){ /* Ignore for now */ }
-	else if( head.find("bgctrl") != std::string::npos ){ /* Ignore for now */ }
+	else if( head.find("bgctrldef") != std::string::npos ){ 
+	    head.replace(0,10,"");
+	    MugenBackgroundController *temp = new MugenBackgroundController(head);
+	    Global::debug(1) << "Found background controller definition: " << temp->name << endl;
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		Global::debug(1) << "Getting next item: " << itemhead << endl;
+		if ( itemhead.find("eventid")!=std::string::npos ){
+		    *content->getNext() >> temp->id;
+		} else if (itemhead == "looptime"){
+		    *content->getNext() >> temp->looptime;
+		} else if (itemhead == "ctrlid"){
+		    // Max 10
+		    while(content->hasItems()){
+			int id;
+			*content->getNext() >> id;
+			MugenBackground *bg = getBackground(id);
+			temp->backgrounds.push_back(bg);
+		    }
+		} else throw MugenException( "Unhandled option in BGCtrlDef " + head + " Section: " + itemhead );
+	    }
+	    // Give it all the backgrounds to make changes to
+	    if ( temp->backgrounds.empty() ){
+		temp->backgrounds.insert(temp->backgrounds.end(),backgrounds.begin(),backgrounds.end());
+		temp->backgrounds.insert(temp->backgrounds.end(),foregrounds.begin(),foregrounds.end());
+	    }
+	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
+	    controllers.push_back(temp);
+	}
+	else if( head.find("bgctrl") != std::string::npos ){ 
+	    if (controllers.empty()){
+		// This is a hack to get mugen to do some fancy controlling in a regular game
+		// to accomplish stage fatalaties and other tricks
+		Global::debug(1) << "Found a BgCtrl without a parent definition... must be hackery!" << endl;
+		continue;
+	    }
+	    // else we got ourselves some controls... under the last controller added
+	    MugenBackgroundController *control = controllers.back();
+	    head.replace(0,7,"");
+	    BackgroundController *temp = new BackgroundController();
+	    temp->name = head;
+	    Global::debug(1) << "Found background controller: " << temp->name << endl;
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		Global::debug(1) << "Getting next item: " << itemhead << endl;
+		if ( itemhead.find("type")!=std::string::npos ){
+		    std::string type;
+		    *content->getNext() >> type;
+		    MugenUtil::removeSpaces( type );
+		    Global::debug(1) << "Type after lowercase: " << type << endl;
+		    if( type == "Anim" )temp->type = Ctrl_Animation;
+		    else if( type == "Enabled" )temp->type = Ctrl_Enabled;
+		    else if( type == "Null" )temp->type = Ctrl_Null;
+		    else if( type == "PosAdd" )temp->type = Ctrl_PosAdd;
+		    else if( type == "PosSet" )temp->type = Ctrl_PosSet;
+		    else if( type == "SinX" )temp->type = Ctrl_Sinx;
+		    else if( type == "SinY" )temp->type = Ctrl_Siny;
+		    else if( type == "VelAdd" )temp->type = Ctrl_VelAdd;
+		    else if( type == "VelSet" )temp->type = Ctrl_VelSet;
+		    else if( type == "Visible" )temp->type = Ctrl_Visible;
+		} else if (itemhead == "time"){
+		    int start=0,end=0,loop=0;
+		    *content->getNext() >> start;
+		    *content->getNext() >> end;
+		    *content->getNext() >> loop;
+		    temp->timestart = start;
+		    if (end == 0)temp->timestart = start;
+		    if (loop == 0)temp->looptime = -1;
+		} else if (itemhead == "value"){
+		    *content->getNext() >> temp->value1;
+		    *content->getNext() >> temp->value2;		    
+		    *content->getNext() >> temp->value3;
+		} else if (itemhead == "x"){
+		    *content->getNext() >> temp->value1;
+		} else if (itemhead == "y"){
+		    *content->getNext() >> temp->value1;
+		} else if (itemhead == "ctrlid"){
+		    // Max 10
+		    while(content->hasItems()){
+			int id;
+			*content->getNext() >> id;
+			MugenBackground *bg = getBackground(id);
+			temp->backgrounds.push_back(bg);
+		    }
+		} else throw MugenException( "Unhandled option in BGCtrl " + head + " Section: " + itemhead );
+	    }
+	    // Does it use its own background ids? else give it the main mamas backgrounds
+	    if (temp->backgrounds.empty()){
+		temp->backgrounds.insert(temp->backgrounds.end(),control->backgrounds.begin(),control->backgrounds.end());
+	    }
+	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
+	    control->addControl(temp);
+	}
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
 	
     }
@@ -740,7 +918,7 @@ void MugenStage::logic( ){
     
     //zoffsetlink
     if( zoffsetlink != DEFAULT_BACKGROUND_ID )zoffset = getBackground(zoffsetlink)->y;
-    Global::debug(1) << "zoffsetlink ID: " <<zoffsetlink << " | zoffset: " << zoffset << endl;
+    //Global::debug(1) << "zoffsetlink ID: " <<zoffsetlink << " | zoffset: " << zoffset << endl;
     
     // Backgrounds
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
@@ -833,8 +1011,14 @@ void MugenStage::logic( ){
     }
     objects.insert(objects.end(),add.begin(),add.end());
     
+    // Foregrounds
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
+    }
+    
+    // Controllers
+    for( vector< MugenBackgroundController *>::iterator i = controllers.begin(); i != controllers.end(); ++i ){
+	(*i)->act();
     }
 }
 	
@@ -1039,6 +1223,11 @@ void MugenStage::cleanup(){
 	if( (*i) )delete (*i);
     }
     
+    // Get rid of control lists;
+    for( std::vector< MugenBackgroundController * >::iterator i = controllers.begin() ; i != controllers.end() ; ++i ){
+	if( (*i) )delete (*i);
+    }
+    
     if( board ) delete board;
 }
 
@@ -1062,7 +1251,7 @@ void MugenStage::updatePlayer( Object *o ){
     // Move camera
     const double px = o->getX();
     const double py = o->getY();
-    Global::debug(1) << "Are we in left: " << inleft << " | Are we in right: " << inright << " | pdiffx: " << px - playerInfo[o].oldx << endl;
+    //Global::debug(1) << "Are we in left: " << inleft << " | Are we in right: " << inright << " | pdiffx: " << px - playerInfo[o].oldx << endl;
     // Horizontal movement of camera
     if (playerInfo[o].oldx != px){
 	const double pdiffx = px - playerInfo[o].oldx;
@@ -1141,5 +1330,5 @@ void MugenStage::updatePlayer( Object *o ){
 	    }
 	}
     }
-    Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
+    //Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }

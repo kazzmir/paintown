@@ -34,37 +34,39 @@ enum ControlType{
     Ctrl_Siny
 };
 
-struct BgController{
-	BgController( ControlType ctrl );
-	virtual ~BgController();
-	const inline ControlType &getType() { return type; }
-	virtual void act() = 0;
+class BackgroundController{
+    public:
+	BackgroundController();
+	virtual ~BackgroundController();
+	virtual void act();
 	void reset();
+	std::string name;
 	ControlType type;
 	int timestart;
 	int endtime;
 	int looptime;
 	int ownticker;
-	bool runonce;
+	double value1;
+	double value2;
+	double value3;
 	std::vector<MugenBackground *> backgrounds;
 };
 
-class MugenBgController{
+class MugenBackgroundController{
     public:
-	MugenBgController( const std::string &n );
-	~MugenBgController();
+	MugenBackgroundController( const std::string &n );
+	~MugenBackgroundController();
 	
-	void addControl( BgController *ctrl );
-	
-	const inline std::string &getName() { return name; }
+	void addControl( BackgroundController *ctrl );
 	
 	void act();
 	
 	std::string name;
+	int id;
 	int looptime;
 	int ticker;
 	std::vector<MugenBackground *> backgrounds;
-	std::vector<BgController *> controls;
+	std::vector<BackgroundController *> controls;
 };
 
 struct PlayerData {
@@ -405,6 +407,9 @@ protected:
 	int inabove;
 	
 	void updatePlayer( Object *o );
+	
+	// Controllers
+	std::vector<MugenBackgroundController *> controllers;
 	
 	// What garbage
 	deque<Bitmap*> garbage;

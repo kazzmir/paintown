@@ -10,6 +10,7 @@ class MugenSprite;
 class MugenBackground;
 class MugenStage;
 class Bitmap;
+class BackgroundController;
 
 enum BackgroundType{
     Normal = 0,
@@ -46,6 +47,7 @@ public:
     
     // Stage be our friend
     friend class MugenStage;
+    friend class BackgroundController;
     
     protected:
     std::string name;

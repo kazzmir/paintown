@@ -44,7 +44,7 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoff
 	movex = (int)(leftx + (leftx - xoffset) * scale);
 	bmp.Stretch(work, 0, localy, w, 1,movex, lefty+localy, w,1);
 	//z +=  z_add;
-	Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
+	//Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
     }
 }
 
@@ -272,7 +272,7 @@ void MugenBackground::setPositionLink(MugenBackground *bg){
     bg->velocityx = velocityx;
     bg->velocityy = velocityy;
     
-    Global::debug(1) << "Positionlinked bg: " << bg->name << " set to x: " << bg->startx << " y: " << bg->starty << endl;
+    //Global::debug(1) << "Positionlinked bg: " << bg->name << " set to x: " << bg->startx << " y: " << bg->starty << endl;
 }
 
 
