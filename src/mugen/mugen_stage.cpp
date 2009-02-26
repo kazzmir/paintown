@@ -87,9 +87,11 @@ BackgroundController::~BackgroundController(){
 }
 
 void BackgroundController::act(){
-    Global::debug(1) << "Control type: " << type << " is running" << endl;
+    Global::debug(1) << "Control type: " << type << " is running." << endl;
+    Global::debug(1) << "ticker: " << ownticker << " Start time: " << timestart << " End Time: " << endtime << endl;
     // Do we run this?
     if( ownticker >= timestart && ownticker <= endtime ){
+	Global::debug(1) << "We have action, total backgrounds: " << backgrounds.size() << endl;
 	for (std::vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
 	    MugenBackground *background = *i;
 	    switch (type){
@@ -106,9 +108,11 @@ void BackgroundController::act(){
 		case Ctrl_VelSet:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
 			background->velocityx = value1;
+			Global::debug(1) << "	Set X velocity to: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
 			background->velocityy = value2;
+			Global::debug(1) << "	Set Y velocity to: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_VelAdd:
@@ -121,18 +125,20 @@ void BackgroundController::act(){
 		    break;
 		case Ctrl_PosSet:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
-			background->x = value1;
+			background->xoffset = value1;
+			Global::debug(1) << "	Set X position to: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
-			background->y = value2;
+			background->yoffset = value2;
+			Global::debug(1) << "	Set Y position to: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_PosAdd:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
-			background->x += value1;
+			background->xoffset += value1;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
-			background->y += value2;
+			background->yoffset += value2;
 		    }
 		    break;
 		case Ctrl_Animation:
@@ -741,6 +747,7 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> temp->id;
 		} else if (itemhead == "looptime"){
 		    *content->getNext() >> temp->looptime;
+		    if (temp->looptime == 0)temp->looptime = -1;
 		} else if (itemhead == "ctrlid"){
 		    // Max 10
 		    while(content->hasItems()){
@@ -799,8 +806,11 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> end;
 		    *content->getNext() >> loop;
 		    temp->timestart = start;
-		    if (end == 0)temp->timestart = start;
+		    if (end == 0)temp->endtime = start;
+		    else temp->endtime = end;
 		    if (loop == 0)temp->looptime = -1;
+		    else temp->looptime = loop;
+		    Global::debug(1) << "start: " << temp->timestart << " | end: " << temp->endtime << " | loop: " << temp->looptime << endl;
 		} else if (itemhead == "value"){
 		    *content->getNext() >> temp->value1;
 		    *content->getNext() >> temp->value2;		    
@@ -808,7 +818,7 @@ void MugenStage::load() throw( MugenException ){
 		} else if (itemhead == "x"){
 		    *content->getNext() >> temp->value1;
 		} else if (itemhead == "y"){
-		    *content->getNext() >> temp->value1;
+		    *content->getNext() >> temp->value2;
 		} else if (itemhead == "ctrlid"){
 		    // Max 10
 		    while(content->hasItems()){
