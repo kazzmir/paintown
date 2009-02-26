@@ -95,11 +95,12 @@ movey(0),
 velx(0),
 vely(0),
 stageTicker( ticker ),
-ticks(0),
 x(0),
 y(0),
 visible(true),
 enabled(true),
+controller_offsetx(0),
+controller_offsety(0),
 sprite(0),
 spriteBmp(0),
 action(0),
@@ -137,16 +138,10 @@ void MugenBackground::logic( const int &x, const int &y ){
 	sinx_angle += 0.00005;
 	siny_angle += 0.00005;
 	
-	ticks++;
-	if( ticks >= 1 ){
-	    // Do frame or whatever movement etc
-	    // Reset
-	    ticks = 0;
-	}
 	if( type == Anim ) action->logic();
 	
-	this->x = (int)(xoffset + movex + velx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
-	this->y = (int)(yoffset + movey + vely + siny_amp * sin(siny_angle*siny_period + siny_offset));
+	this->x = (int)(xoffset + movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
+	this->y = (int)(yoffset + movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
     }
 }
     

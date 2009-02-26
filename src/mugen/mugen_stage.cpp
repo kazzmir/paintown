@@ -87,7 +87,7 @@ BackgroundController::~BackgroundController(){
 }
 
 void BackgroundController::act(){
-    Global::debug(1) << "Control type: " << type << " is running." << endl;
+    Global::debug(1) << "Control Name: " << name << "Control type: " << type << " is running." << endl;
     Global::debug(1) << "ticker: " << ownticker << " Start time: " << timestart << " End Time: " << endtime << endl;
     // Do we run this?
     if( ownticker >= timestart && ownticker <= endtime ){
@@ -125,20 +125,22 @@ void BackgroundController::act(){
 		    break;
 		case Ctrl_PosSet:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
-			background->xoffset = value1;
+			background->controller_offsetx = value1;
 			Global::debug(1) << "	Set X position to: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
-			background->yoffset = value2;
+			background->controller_offsety = value2;
 			Global::debug(1) << "	Set Y position to: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_PosAdd:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
-			background->xoffset += value1;
+			background->controller_offsetx += value1;
+			Global::debug(1) << "	Add to Position X: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
-			background->yoffset += value2;
+			background->controller_offsety += value2;
+			Global::debug(1) << "	Add to Position Y: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_Animation:
@@ -170,18 +172,20 @@ void BackgroundController::act(){
 		default:
 		    break;
 	    }
+	    Global::debug(1) << "Background X: " << background->x << endl;
 	}
     }
     ownticker++;
     // Shall we reset?
-    if( looptime != -1 && ownticker > endtime ){
+    if( (looptime != -1) && (ownticker > endtime) ){
 	ownticker=0;
     }
 }
 
 void BackgroundController::reset(){
     if( looptime == -1){
-	ownticker = 0;
+	// I'm not totally convinced we should be doing this, but it seems to work otherwise....
+	//ownticker = 0;
     }
 }
 
@@ -206,7 +210,7 @@ void MugenBackgroundController::act(){
 	    BackgroundController *ctrl = *i;
 	    ctrl->act();
     }
-    if( looptime != -1 && ticker > looptime ){
+    if( (looptime != -1) && (ticker > looptime) ){
 	// Reset itself and everybody that needs reseting
 	ticker = 0;
 	for (std::vector<BackgroundController *>::iterator i = controls.begin(); i != controls.end(); ++i){

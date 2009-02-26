@@ -96,11 +96,12 @@ public:
     double velx;
     double vely;
     const unsigned long int &stageTicker;
-    int ticks;
     int x;
     int y;
     bool visible;
     bool enabled;
+    double controller_offsetx;
+    double controller_offsety;
     
     // sprite 
     MugenSprite *sprite;
