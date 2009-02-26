@@ -10,6 +10,7 @@ class Bitmap;
 class MugenSprite;
 class MugenSound;
 class MugenItemContent;
+class MugenSection;
 
 struct MugenUtil{
     static void fixCase( std::string &str );
@@ -21,6 +22,8 @@ struct MugenUtil{
     static MugenItemContent *parseOpt( const std::string &opt );
     static void readSprites(const string & filename, const string & palette, map<unsigned int,map<unsigned int, MugenSprite *> > & sprites) throw (MugenException);
     static void readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException);
+    // Reads and compiles collections from a string rather than using a file ( You will need to delete the MugenSection's independently if you use this
+    static std::vector< MugenSection * > configReader(  const std::vector<std::string> &configdata );
 };
 
 #endif

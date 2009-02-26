@@ -10,8 +10,8 @@ class MugenSection;
 
 class MugenReader{
 public:
-	MugenReader( const string & s );
-	MugenReader( const char * filename );
+	MugenReader( const string & file );
+	MugenReader( const char * file );
 
 	~MugenReader();
 	

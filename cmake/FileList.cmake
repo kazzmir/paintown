@@ -160,6 +160,7 @@ src/mugen/mugen_background.cpp
 src/mugen/mugen_character.cpp
 src/mugen/mugen_command.cpp
 src/mugen/mugen_exception.cpp
+src/mugen/mugen_font.cpp
 src/mugen/mugen_item.cpp
 src/mugen/mugen_item_content.cpp
 src/mugen/mugen_reader.cpp
