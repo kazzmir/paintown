@@ -156,25 +156,27 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 		const int height = spriteBmp->getHeight();
 		bool dirx = false, diry = false;
 		// Figure out total we need to tile (this crap doesn't work needs fix)
-		int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
-		int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
+		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
+		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
+		const int addw = (tilespacingx == 0 ? width : tilespacingx);
+		const int addh = (tilespacingy == 0 ? height : tilespacingy);
 		// We need to repeat and wrap
 		for( int h = 0; h < repeath; h++ ){
 		    int tileyloc = y;
 		    for( int v = 0; v < repeatv; v++ ){
 			draw( tilexloc, tileyloc, *work );
-			if( !diry )tileyloc += height + tilespacingy;
-			else tileyloc -= height + tilespacingy;
+			if( !diry )tileyloc += addh;
+			else tileyloc -= addh;
 			if( tileyloc >= work->getHeight() ){
 			    diry = true;
-			    tileyloc = y - height + tilespacingy;
+			    tileyloc = y - addh;
 			}
 		    }
-		    if( !dirx )tilexloc += width + tilespacingx;
-		    else tilexloc -= width + tilespacingx;
+		    if( !dirx )tilexloc += addw;
+		    else tilexloc -= addw;
 		    if( tilexloc >= work->getWidth() ){
 			dirx = true;
-			tilexloc = x - width + tilespacingx;
+			tilexloc = x - addw;
 		    }
 		}
 		break;
@@ -186,7 +188,36 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
 	    }
 	    case Anim:{
 		// there is no sprite use our action!
-		action->render( x, y, *work );
+		//action->render( x, y, *work );
+		// Need to tile as well
+		int tilexloc = x;
+		const int width = action->getCurrentFrame()->bmp->getWidth();
+		const int height = action->getCurrentFrame()->bmp->getHeight();
+		bool dirx = false, diry = false;
+		// Figure out total we need to tile 
+		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
+		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
+		const int addw = (tilespacingx == 0 ? width : tilespacingx);
+		const int addh = (tilespacingy == 0 ? height : tilespacingy);
+		// We need to repeat and wrap
+		for( int h = 0; h < repeath; h++ ){
+		    int tileyloc = y;
+		    for( int v = 0; v < repeatv; v++ ){
+			action->render( tilexloc, tileyloc, *work );
+			if( !diry )tileyloc += addh;
+			else tileyloc -= addh;
+			if( tileyloc >= work->getHeight() ){
+			    diry = true;
+			    tileyloc = y - addh;
+			}
+		    }
+		    if( !dirx )tilexloc += addw;
+		    else tilexloc -= addw;
+		    if( tilexloc >= work->getWidth() ){
+			dirx = true;
+			tilexloc = x - addw;
+		    }
+		}
 		break;
 	    }
 	    case Dummy:
