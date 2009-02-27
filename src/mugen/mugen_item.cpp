@@ -44,6 +44,13 @@ MugenItem & MugenItem::operator>>( int & item ){
   Global::debug(1) << "    ----- Got int: " << item << endl;
   return *this;
 }
+MugenItem & MugenItem::operator>>( char & item ){
+  //std::istringstream is ( this->name );
+  //is >> item;
+  item = name[0];
+  Global::debug(1) << "    ----- Got char: " << item << endl;
+  return *this;
+}
 MugenItem & MugenItem::operator>>( double & item ){
   std::istringstream is ( this->name );
   is >> item;

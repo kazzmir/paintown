@@ -87,11 +87,14 @@ std::string MugenUtil::fixFileName( const std::string &dir, std::string str ){
 MugenItemContent *MugenUtil::parseOpt( const std::string &opt ){
     std::string contentHolder = "";
     MugenItemContent *temp = new MugenItemContent();
-    const char * ignored = "\r\n";
+    const char * ignored = " \r\n";
     Global::debug(1) << "Parsing string to ItemContent: " << opt << endl;
     for( unsigned int i = 0; i < opt.size(); ++i ){
+	if( opt[i] == ';' )break;
 	if( opt[i] == ' ' ){
-	    continue;
+	    if( !contentHolder.empty() ) *temp << contentHolder;
+	    Global::debug(1) << "Got content: " << contentHolder << endl;
+	    contentHolder = "";
 	}
 	// We got one push back the other and reset the holder to get the next
 	else if( opt[i] == ',' ){
@@ -103,6 +106,10 @@ MugenItemContent *MugenUtil::parseOpt( const std::string &opt ){
 	else if (! strchr(ignored, opt[i])){
 		contentHolder += opt[i];
 	}
+    }
+    if( !contentHolder.empty() ){
+	*temp << contentHolder;
+	Global::debug(1) << "Got content: " << contentHolder << endl;
     }
     return temp;
 }

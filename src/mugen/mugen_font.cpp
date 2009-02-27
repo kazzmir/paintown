@@ -13,6 +13,31 @@
 #include "mugen_util.h"
 #include "globals.h"
 
+// If you use this, please delete the item after you use it, this isn't java ok
+static MugenItemContent *getOpts( const std::string &opt ){
+    std::string contentHolder = "";
+    MugenItemContent *temp = new MugenItemContent();
+    const char * ignored = " \r\n";
+    Global::debug(1) << "Parsing string to ItemContent: " << opt << endl;
+    for( unsigned int i = 0; i < opt.size(); ++i ){
+	if( opt[i] == ';' )break;
+	if( opt[i] == ' ' ){
+	    if( !contentHolder.empty() ) *temp << contentHolder;
+	    Global::debug(1) << "Got content: " << contentHolder << endl;
+	    contentHolder = "";
+	}
+	//Start grabbing our item
+	else if (! strchr(ignored, opt[i])){
+		contentHolder += opt[i];
+	}
+    }
+    if( !contentHolder.empty() ){
+	*temp << contentHolder;
+	Global::debug(1) << "Got content: " << contentHolder << endl;
+    }
+    return temp;
+}
+
 
 MugenFont::MugenFont( const string & file ):
 type(Fixed),
@@ -134,11 +159,14 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
 	    bmp->Stretch( character, loc->second.startx + offsetx, offsety, loc->second.width, height, x + offsetx, y, width, height );
 	    character.draw( x + offsetx, y, work);
 	    offsetx+=loc->second.width + spacingx;
+	    //Global::debug(1) << "Current letter: " << str[i] << endl;
 	} else{
 	    // Couldn't find a position for this character draw nothing, assume width, and skip to the next character
 	    offsetx+=width + spacingx;
 	}
     }
+    
+    bmp->draw(0, y + 40, work);
 }
 
 void MugenFont::load(){
@@ -212,22 +240,34 @@ void MugenFont::load(){
 	    }
 	}
 	if( head == "Map" ){
+	    bool beginParse = false;
 	    int locationx = 0;
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		// We go ahead and map everything else
-		int character;
+	    for (std::vector<std::string>::iterator l = ourText.begin(); l != ourText.end(); ++l){
+		std::string line = *l;
+		if (!beginParse){
+		    if (line.find("[Map]")==std::string::npos){
+			continue;
+		    } else{
+			beginParse = true;
+			continue;
+		    }
+		}
+		MugenItemContent *opt = getOpts(line);
+		char character;
 		int startx = locationx;
 		int chrwidth = width;
-		*content->getNext() >> character;
+		*opt->getNext() >> character;
 		if (type != Fixed){
-		    *content->getNext() >> startx;
-		    *content->getNext() >> width;
+		    // get other two
+		    *opt->getNext() >> locationx;
+		    *opt->getNext() >> width;
 		}
+		delete opt;
 		FontLocation loc;
 		loc.startx = startx;
 		loc.width = chrwidth;
 		positions[character] = loc;
+		locationx+=width;
 	    }
 	}
     }

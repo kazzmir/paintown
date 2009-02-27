@@ -19,6 +19,7 @@ class MugenItem{
 
     MugenItem & operator>>( std::string & item );
     MugenItem & operator>>( int & item );
+    MugenItem & operator>>( char & item );
     MugenItem & operator>>( double & item );
     MugenItem & operator>>( bool & item );
     
