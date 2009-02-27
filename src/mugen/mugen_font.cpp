@@ -155,19 +155,15 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
     for (unsigned int i = 0; i < str.size(); ++i){
 	std::map<char, FontLocation>::const_iterator loc = positions.find(str[i]);
 	if (loc!=positions.end()){
-	   /* Bitmap character = Bitmap::temporaryBitmap( loc->second.width, height);
-	    bmp->Stretch( character, loc->second.startx + offsetx, offsety, loc->second.width, height, x + workoffsetx, y, width, height );
-	    character.draw( x + offsetx, y, work);*/
-	    bmp->Blit(loc->second.startx + offsetx, offsety, loc->second.width, height, x + workoffsetx, y, work);
+	    Bitmap character = Bitmap::temporaryBitmap( loc->second.width, height);
+	    bmp->Blit( loc->second.startx + offsetx, offsety, loc->second.width, height,0,0, character );
+	    character.draw( x + workoffsetx, y, work);
 	    workoffsetx+=loc->second.width + spacingx;
-	    Global::debug(1) << "Current letter: " << str[i] << " | Printing from: " << loc->second.startx + offsetx << " | width: " << loc->second.width << endl;
 	} else{
 	    // Couldn't find a position for this character draw nothing, assume width, and skip to the next character
 	    workoffsetx+=width + spacingx;
 	}
     }
-    
-    bmp->draw(0, y + 40, work);
 }
 
 void MugenFont::load(){
@@ -237,8 +233,10 @@ void MugenFont::load(){
 		    MugenUtil::fixCase(temp);
 		    if (temp == "variable")type = Variable;
 		    else if (temp == "fixed")type = Fixed;
+		    Global::debug(1) << "Type: " << temp << endl;
 		} //else throw MugenException( "Unhandled option in Info Section: " + itemhead );
 	    }
+	    Global::debug(1) << "Size X: " << width << ", Size Y: " << height << ", Spacing X: " << spacingx << ", Spacing Y: " << spacingy << ", Colors: " << colors << ", Offset X: " << offsetx << ", Offset Y: " << offsety << endl;
 	}
 	if( head == "Map" ){
 	    bool beginParse = false;
