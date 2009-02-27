@@ -504,6 +504,7 @@ void MugenStage::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
 		if ( itemhead == "zoffset" ){
 		    *content->getNext() >> zoffset;
 		} else if ( itemhead == "zoffsetlink" ){
@@ -521,6 +522,7 @@ void MugenStage::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> shadow.k;
 		    // *content->getNext() >> shadowIntensity;
@@ -547,6 +549,7 @@ void MugenStage::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> reflectionIntensity;
 		} else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
@@ -558,6 +561,7 @@ void MugenStage::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
 		if ( itemhead.find("spr")!=std::string::npos ){
 		    *content->getNext() >> sffFile;
 		    Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
@@ -580,6 +584,7 @@ void MugenStage::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
 		Global::debug(1) << "Getting next item: " << itemhead << endl;
 		if ( itemhead.find("type")!=std::string::npos ){
 		    std::string type;
@@ -746,6 +751,7 @@ void MugenStage::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
 		Global::debug(1) << "Getting next item: " << itemhead << endl;
 		if ( itemhead.find("eventid")!=std::string::npos ){
 		    *content->getNext() >> temp->id;
@@ -788,6 +794,7 @@ void MugenStage::load() throw( MugenException ){
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
 		Global::debug(1) << "Getting next item: " << itemhead << endl;
 		if ( itemhead.find("type")!=std::string::npos ){
 		    std::string type;

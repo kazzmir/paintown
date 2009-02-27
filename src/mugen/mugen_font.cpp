@@ -155,9 +155,10 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
     for (unsigned int i = 0; i < str.size(); ++i){
 	std::map<char, FontLocation>::const_iterator loc = positions.find(str[i]);
 	if (loc!=positions.end()){
-	    Bitmap character = Bitmap::temporaryBitmap( loc->second.width, height);
+	   /* Bitmap character = Bitmap::temporaryBitmap( loc->second.width, height);
 	    bmp->Stretch( character, loc->second.startx + offsetx, offsety, loc->second.width, height, x + workoffsetx, y, width, height );
-	    character.draw( x + offsetx, y, work);
+	    character.draw( x + offsetx, y, work);*/
+	    bmp->Blit(loc->second.startx + offsetx, offsety, loc->second.width, height, x + workoffsetx, y, work);
 	    workoffsetx+=loc->second.width + spacingx;
 	    Global::debug(1) << "Current letter: " << str[i] << " | Printing from: " << loc->second.startx + offsetx << " | width: " << loc->second.width << endl;
 	} else{

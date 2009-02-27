@@ -59,7 +59,6 @@ MugenItemContent & MugenItemContent::operator<<( const std::string & item ){
     // Lets be consistent, make all headers lowercase
     if( items.empty() ){
 	std::string temp = item;
-	MugenUtil::fixCase( temp );
 	this->items.push_back( new MugenItem( temp ) );
     }
     else this->items.push_back( new MugenItem( item ) );

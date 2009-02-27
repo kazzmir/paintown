@@ -337,7 +337,7 @@ void showFont(const string & ourFile){
 
         if (draw){
 	    work.clear();
-            font.printf( 15, 10, Bitmap::makeColor( 255, 255, 255 ), work, "Hello World!",0);
+            font.printf( 15, 50, Bitmap::makeColor( 255, 255, 255 ), work, "Hello World!",0);
 	    work.Stretch(back);
             back.BlitToScreen();
         }
