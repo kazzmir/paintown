@@ -321,6 +321,9 @@ void showFont(const string & ourFile){
     double gameSpeed = 1.0;
     double runCounter = 0;
     
+    int red = 255, green = 255, blue = 255;
+    bool random = false;
+    
     while( !quit ){
         bool draw = false;
         
@@ -330,6 +333,27 @@ void showFont(const string & ourFile){
                 keyInputManager::update();
                 runCounter -= 1;
                 draw = true;
+		if( keyInputManager::keyState('1', false) ){
+                   if (red > 0)red--;
+                }
+                if( keyInputManager::keyState('2', false) ){
+                   if (red < 255)red++;
+                }
+                if( keyInputManager::keyState('3', false)){
+                   if (green > 0)green--;
+                }
+                if( keyInputManager::keyState('4', false)){
+                   if (green < 255)green++;
+                }
+                if( keyInputManager::keyState('5', false)){
+                   if (blue > 0)blue--;
+                }
+                if( keyInputManager::keyState('6', false)){
+                   if (blue < 255)blue++;
+                }
+                if( keyInputManager::keyState(keys::ENTER, false)){
+                   random = !random;
+                }
 		quit |= keyInputManager::keyState(keys::ESC, true );
             }
             Global::speed_counter = 0;
@@ -337,7 +361,8 @@ void showFont(const string & ourFile){
 
         if (draw){
 	    work.clear();
-            font.printf( 15, 50, Bitmap::makeColor( 255, 255, 255 ), work, "Hello World!",0);
+            if (!random)font.printf( 15, 50, Bitmap::makeColor( red, green, blue ), work, "Hello World!",0);
+	    else font.printf( 15, 50, Bitmap::makeColor( rand() % 255, rand() % 255, rand() % 255 ), work, "Hello World!",0);
 	    work.Stretch(back);
             back.BlitToScreen();
         }
