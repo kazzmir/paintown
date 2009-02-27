@@ -166,23 +166,6 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
 	if (loc!=positions.end()){
 	    Bitmap character = Bitmap::temporaryBitmap( loc->second.width + spacingx, height + spacingy);
 	    bmp->Blit( loc->second.startx, 0, loc->second.width + spacingx, height + spacingy,0,0, character );
-	    // Change color
-	    for ( int h = 0; h < character.getHeight(); ++h){
-		for ( int w = 0; w < character.getWidth(); ++w){
-		    int pix = character.getPixel(w,h);
-		    if (pix != Bitmap::MaskColor){
-			int r1 = Bitmap::getRed(pix), g1 = Bitmap::getGreen(pix), b1 = Bitmap::getBlue(pix);
-			int r2 = Bitmap::getRed(color), g2 = Bitmap::getGreen(color), b2 = Bitmap::getBlue(color);
-			float h1 = 0, s1 = 0, v1 = 0;
-			float h2 = 0, s2 = 0, v2 = 0;
-			Bitmap::rgbToHSV(r1,g1,b1,&h1,&s1,&v1);
-			Bitmap::rgbToHSV(r2,g2,b2,&h2,&s2,&v2);
-			// Change to our new value
-			Bitmap::hsvToRGB(h2,s2,v1,&r1,&g1,&b1);
-			character.putPixel(w,h,Bitmap::makeColor(r1,g1,b1));
-		    }
-		}
-	    }
 	    character.draw( x + workoffsetx, y, work);
 	    workoffsetx+=loc->second.width + spacingx;
 	} else{
