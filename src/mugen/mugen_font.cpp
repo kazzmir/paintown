@@ -159,7 +159,7 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
     va_end(ap);
     
     const std::string newstr(buf);
-    
+
     int workoffsetx = 0;
     for (unsigned int i = 0; i < newstr.size(); ++i){
 	std::map<char, FontLocation>::const_iterator loc = positions.find(newstr[i]);
@@ -173,12 +173,12 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
 		    if (pix != Bitmap::MaskColor){
 			int r1 = Bitmap::getRed(pix), g1 = Bitmap::getGreen(pix), b1 = Bitmap::getBlue(pix);
 			int r2 = Bitmap::getRed(color), g2 = Bitmap::getGreen(color), b2 = Bitmap::getBlue(color);
-			float h1,s1,v1;
-			float h2,s2,v2;
+			float h1 = 0, s1 = 0, v1 = 0;
+			float h2 = 0, s2 = 0, v2 = 0;
 			Bitmap::rgbToHSV(r1,g1,b1,&h1,&s1,&v1);
 			Bitmap::rgbToHSV(r2,g2,b2,&h2,&s2,&v2);
 			// Change to our new value
-			Bitmap::hsvToRGB(h2,s1,v1,&r1,&g1,&b1);
+			Bitmap::hsvToRGB(h2,s2,v1,&r1,&g1,&b1);
 			character.putPixel(w,h,Bitmap::makeColor(r1,g1,b1));
 		    }
 		}
