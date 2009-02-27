@@ -163,7 +163,7 @@ void MugenFont::load(){
     // Get the pcx load our bitmap
     ifile.seekg(pcxlocation,ios::beg);
     pcx = new unsigned char[pcxsize];
-    ifile.read((char *)&pcx, pcxsize);
+    ifile.read((char *)pcx, pcxsize);
     
     bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
     

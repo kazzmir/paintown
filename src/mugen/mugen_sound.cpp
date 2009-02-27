@@ -15,7 +15,7 @@ MugenSound::MugenSound( const MugenSound &copy ){
     this->groupNumber = copy.groupNumber;
     this->sampleNumber = copy.sampleNumber;
     this->sample = new char[this->length];
-    strncpy( this->sample, copy.sample, this->length );
+    memcpy( this->sample, copy.sample, this->length );
 }
 
 MugenSound::~MugenSound(){

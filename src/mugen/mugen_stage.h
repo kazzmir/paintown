@@ -46,6 +46,9 @@ class BackgroundController{
 	int endtime;
 	int looptime;
 	int ownticker;
+        /* what do these values represent? lets change the variable name
+         * or at least explain with a comment here.
+         */
 	double value1;
 	double value2;
 	double value3;
