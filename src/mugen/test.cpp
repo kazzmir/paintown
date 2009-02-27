@@ -361,8 +361,11 @@ void showFont(const string & ourFile){
 
         if (draw){
 	    work.clear();
-            if (!random)font.printf( 15, 50, Bitmap::makeColor( red, green, blue ), work, "Hello World!",0);
-	    else font.printf( 15, 50, Bitmap::makeColor( rand() % 255, rand() % 255, rand() % 255 ), work, "Hello World!",0);
+            if (!random){
+		font.printf( 1, 50, Bitmap::makeColor( red, green, blue ), work, "Font Colors Change me:",0);
+		font.printf( 1, 70, Bitmap::makeColor( red, green, blue ), work, "RED: %i GREEN: %i BLUE: %i",0, red, green, blue);
+	    }
+	    else font.printf( 1, 50, Bitmap::makeColor( rand() % 255, rand() % 255, rand() % 255 ), work, "Font Colors on Random!",0);
 	    work.Stretch(back);
             back.BlitToScreen();
         }
