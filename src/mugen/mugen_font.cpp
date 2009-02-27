@@ -151,18 +151,18 @@ const int MugenFont::getHeight() const{
 
 void MugenFont::printf( int x, int y, int color, const Bitmap & work, const string & str, int marker, ... ) const{
     // need to get VA List later and append it to str or whatever
-    int offsetx = 0;
+    int workoffsetx = 0;
     for (unsigned int i = 0; i < str.size(); ++i){
 	std::map<char, FontLocation>::const_iterator loc = positions.find(str[i]);
 	if (loc!=positions.end()){
 	    Bitmap character = Bitmap::temporaryBitmap( loc->second.width, height);
-	    bmp->Stretch( character, loc->second.startx + offsetx, offsety, loc->second.width, height, x + offsetx, y, width, height );
+	    bmp->Stretch( character, loc->second.startx + offsetx, offsety, loc->second.width, height, x + workoffsetx, y, width, height );
 	    character.draw( x + offsetx, y, work);
-	    offsetx+=loc->second.width + spacingx;
-	    //Global::debug(1) << "Current letter: " << str[i] << endl;
+	    workoffsetx+=loc->second.width + spacingx;
+	    Global::debug(1) << "Current letter: " << str[i] << " | Printing from: " << loc->second.startx + offsetx << " | width: " << loc->second.width << endl;
 	} else{
 	    // Couldn't find a position for this character draw nothing, assume width, and skip to the next character
-	    offsetx+=width + spacingx;
+	    workoffsetx+=width + spacingx;
 	}
     }
     
@@ -253,10 +253,13 @@ void MugenFont::load(){
 		    }
 		}
 		MugenItemContent *opt = getOpts(line);
-		char character;
+		std::string character;
 		int startx = locationx;
 		int chrwidth = width;
 		*opt->getNext() >> character;
+		if( character == "empty" ) continue;
+		if (character == "0x5b") character = "[";
+		else if (character == "0x3b") character = ";";
 		if (type != Fixed){
 		    // get other two
 		    *opt->getNext() >> locationx;
@@ -266,7 +269,9 @@ void MugenFont::load(){
 		FontLocation loc;
 		loc.startx = startx;
 		loc.width = chrwidth;
-		positions[character] = loc;
+		char code = character[0];
+		Global::debug(1) << "Storing Character: " << code << " | startx: " << loc.startx << " | width: " << loc.width << endl;
+		positions[code] = loc;
 		locationx+=width;
 	    }
 	}
