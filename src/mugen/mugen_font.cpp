@@ -182,6 +182,11 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
     }
 }
 
+/* get a pointer to a specific bank. bank numbers start from 0 */
+unsigned char * MugenFont::findBank(int bank){
+    return pcx + pcxsize - ((bank+1) * colors * 3);
+}
+
 void MugenFont::changeBank(int bank){
     if (bank < 0 || bank > (colors -1))return;
     currentBank = bank;
@@ -189,15 +194,24 @@ void MugenFont::changeBank(int bank){
     unsigned char newpal[768];
     memcpy( pal, pcx+(pcxsize)-768, 768);
     memcpy( newpal, pcx+(pcxsize)-768, 768);
+    unsigned char * newBank = findBank(bank);
 
-    /* 3 bytes per color, so multiply by 3 */
-    unsigned int start = currentBank * colors * 3;
-    Global::debug(1) << "Current bank: " << start << endl;
+    Global::debug(1) << "palette start: " << (void*)(pcx + pcxsize - 768) << ". new bank: " << (void*)newBank << endl;
+    memcpy((void*) &newpal[768 - colors*3], (void*) newBank, colors * 3);
+
+    /*
+    // 3 bytes per color, so multiply by 3
+    // unsigned int start = currentBank * colors * 3;
     for( int  i = 0; i < colors; ++i, ++start){
 	newpal[768 - i] = pal[768-start];
 	newpal[768 - i -1] = pal[768-start -1];
 	newpal[768 - i -2] = pal[768-start -2];
     }
+    */
+
+    /* we should just store the original palette instead of copying
+     * the entire sprite
+     */
     unsigned char *tmppcx = new unsigned char[pcxsize];
     memcpy(tmppcx, pcx, pcxsize);
     memcpy(tmppcx + (pcxsize - 768), newpal, 768);

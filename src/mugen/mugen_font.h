@@ -45,6 +45,9 @@ public:
     
     inline int getCurrentBank() { return currentBank; };
     inline int getTotalBanks() { return colors; };
+
+protected:
+    unsigned char * findBank(int bank);
     
 protected:
     // File
