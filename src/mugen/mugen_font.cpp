@@ -263,25 +263,26 @@ void MugenFont::load(){
 		}
 		MugenItemContent *opt = getOpts(line);
 		std::string character;
-		int startx = locationx;
+		int startx = locationx * width;
 		int chrwidth = width;
 		*opt->getNext() >> character;
-		if( character == "empty" ) continue;
-		if (character == "0x5b") character = "[";
-		else if (character == "0x3b") character = ";";
-		if (type != Fixed){
-		    // get other two
-		    *opt->getNext() >> locationx;
-		    *opt->getNext() >> width;
+		if( character != "empty" ) {
+		    if (character == "0x5b") character = "[";
+		    else if (character == "0x3b") character = ";";
+		    if (type != Fixed){
+			// get other two
+			*opt->getNext() >> startx;
+			*opt->getNext() >> chrwidth;
+		    }
+		    delete opt;
+		    FontLocation loc;
+		    loc.startx = startx;
+		    loc.width = chrwidth;
+		    char code = character[0];
+		    Global::debug(1) << "Storing Character: " << code << " | startx: " << loc.startx << " | width: " << loc.width << endl;
+		    positions[code] = loc;
 		}
-		delete opt;
-		FontLocation loc;
-		loc.startx = startx;
-		loc.width = chrwidth;
-		char code = character[0];
-		Global::debug(1) << "Storing Character: " << code << " | startx: " << loc.startx << " | width: " << loc.width << endl;
-		positions[code] = loc;
-		locationx+=width;
+		++locationx;
 	    }
 	}
     }
