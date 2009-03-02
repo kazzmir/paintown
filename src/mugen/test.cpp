@@ -321,7 +321,7 @@ void showFont(const string & ourFile){
     double gameSpeed = 1.0;
     double runCounter = 0;
     
-    int currentBank = 1;
+    int currentBank = 0;
     
     while( !quit ){
         bool draw = false;
@@ -333,13 +333,13 @@ void showFont(const string & ourFile){
                 runCounter -= 1;
                 draw = true;
 		if( keyInputManager::keyState(keys::DOWN, true) ){
-                   if (font.getCurrentBank() != 1){
+                   if (font.getCurrentBank() != 0){
 		       currentBank--;
 		       font.changeBank(currentBank);
 		   }
                 }
                 if( keyInputManager::keyState(keys::UP, true) ){
-                   if (font.getCurrentBank() != font.getTotalBanks()){
+                   if (font.getCurrentBank() != font.getTotalBanks()-1){
 		       currentBank++;
 		       font.changeBank(currentBank);
 		   }

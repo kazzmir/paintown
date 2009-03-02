@@ -52,7 +52,7 @@ offsety(0),
 bmp(0),
 pcx(0),
 pcxsize(0),
-currentBank(1){
+currentBank(0){
     Global::debug(1) << "[mugen font] Opening file '" << file << "'" << endl;
     ifile.open( std::string(Util::getDataPath() + "mugen/font/" + file).c_str() );
     if (!ifile){
@@ -75,7 +75,7 @@ offsety(0),
 bmp(0),
 pcx(0),
 pcxsize(0),
-currentBank(1){
+currentBank(0){
     Global::debug(1) << "[mugen font] Opening file '" << file << "'" << endl;
     ifile.open( std::string(Util::getDataPath() + "mugen/font/" + file).c_str() );
     if (!ifile){
@@ -183,7 +183,7 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
 }
 
 void MugenFont::changeBank(int bank){
-    if (bank < 1 || bank > colors)return;
+    if (bank < 0 || bank > (colors -1))return;
     currentBank = bank;
     unsigned char pal[768];
     unsigned char newpal[768];
