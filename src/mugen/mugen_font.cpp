@@ -12,6 +12,7 @@
 #include "mugen_reader.h"
 #include "mugen_util.h"
 #include "globals.h"
+#include "util/funcs.h"
 
 // If you use this, please delete the item after you use it, this isn't java ok
 static MugenItemContent *getOpts( const std::string &opt ){
@@ -50,7 +51,7 @@ offsetx(0),
 offsety(0),
 bmp(0){
     Global::debug(1) << "[mugen font] Opening file '" << file << "'" << endl;
-    ifile.open( file.c_str() );
+    ifile.open( std::string(Util::getDataPath() + "mugen/font/" + file).c_str() );
     if (!ifile){
         perror("cant open file");
     }
@@ -70,7 +71,7 @@ offsetx(0),
 offsety(0),
 bmp(0){
     Global::debug(1) << "[mugen font] Opening file '" << file << "'" << endl;
-    ifile.open( file );
+    ifile.open( std::string(Util::getDataPath() + "mugen/font/" + file).c_str() );
     if (!ifile){
         perror("cant open file");
     }
