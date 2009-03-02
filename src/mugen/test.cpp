@@ -321,8 +321,7 @@ void showFont(const string & ourFile){
     double gameSpeed = 1.0;
     double runCounter = 0;
     
-    int red = 255, green = 255, blue = 255;
-    bool random = false;
+    int currentBank = 1;
     
     while( !quit ){
         bool draw = false;
@@ -333,39 +332,29 @@ void showFont(const string & ourFile){
                 keyInputManager::update();
                 runCounter -= 1;
                 draw = true;
-		if( keyInputManager::keyState('1', false) ){
-                   if (red > 0)red--;
+		if( keyInputManager::keyState(keys::DOWN, true) ){
+                   if (font.getCurrentBank() != 1){
+		       currentBank--;
+		       font.changeBank(currentBank);
+		   }
                 }
-                if( keyInputManager::keyState('2', false) ){
-                   if (red < 255)red++;
+                if( keyInputManager::keyState(keys::UP, true) ){
+                   if (font.getCurrentBank() != font.getTotalBanks()){
+		       currentBank++;
+		       font.changeBank(currentBank);
+		   }
                 }
-                if( keyInputManager::keyState('3', false)){
-                   if (green > 0)green--;
-                }
-                if( keyInputManager::keyState('4', false)){
-                   if (green < 255)green++;
-                }
-                if( keyInputManager::keyState('5', false)){
-                   if (blue > 0)blue--;
-                }
-                if( keyInputManager::keyState('6', false)){
-                   if (blue < 255)blue++;
-                }
-                if( keyInputManager::keyState(keys::ENTER, false)){
-                   random = !random;
-                }
-		quit |= keyInputManager::keyState(keys::ESC, true );
+                quit |= keyInputManager::keyState(keys::ESC, true );
             }
             Global::speed_counter = 0;
         }
 
         if (draw){
 	    work.clear();
-            if (!random){
-		font.printf( 1, 50, Bitmap::makeColor( red, green, blue ), work, "Font Colors Change me:",0);
-		font.printf( 1, 70, Bitmap::makeColor( red, green, blue ), work, "RED: %i GREEN: %i BLUE: %i",0, red, green, blue);
-	    }
-	    else font.printf( 1, 50, Bitmap::makeColor( rand() % 255, rand() % 255, rand() % 255 ), work, "Font Colors on Random!",0);
+            font.printf( 1, 50, 0, work, "0123456789",0);
+	    font.printf( 1, 70, 0, work, "ABCDEFGHIJKLN",0);
+	    font.printf( 1, 90, 0, work, "MNOPQRSTUVWXYZ",0);
+	    font.printf( 1, 120, 0, work, "CURRENT BANK SET TO %i",0, currentBank);
 	    work.Stretch(back);
             back.BlitToScreen();
         }

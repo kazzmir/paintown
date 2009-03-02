@@ -41,6 +41,11 @@ public:
 
     virtual void printf( int x, int y, int color, const Bitmap & work, const string & str, int marker, ... ) const;
     
+    virtual void changeBank(int bank);
+    
+    inline int getCurrentBank() { return currentBank; };
+    inline int getTotalBanks() { return colors; };
+    
 protected:
     // File
     std::ifstream ifile;
@@ -56,8 +61,12 @@ protected:
     int offsetx;
     int offsety;
     Bitmap * bmp;
+    unsigned char *pcx;
+    unsigned long pcxsize;
     // mapping positions of font in bitmap
     std::map< char, FontLocation> positions;
+    
+    int currentBank;
     
     void load();
 };

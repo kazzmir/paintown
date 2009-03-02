@@ -49,7 +49,10 @@ spacingy(0),
 colors(0),
 offsetx(0),
 offsety(0),
-bmp(0){
+bmp(0),
+pcx(0),
+pcxsize(0),
+currentBank(1){
     Global::debug(1) << "[mugen font] Opening file '" << file << "'" << endl;
     ifile.open( std::string(Util::getDataPath() + "mugen/font/" + file).c_str() );
     if (!ifile){
@@ -69,7 +72,10 @@ spacingy(0),
 colors(0),
 offsetx(0),
 offsety(0),
-bmp(0){
+bmp(0),
+pcx(0),
+pcxsize(0),
+currentBank(1){
     Global::debug(1) << "[mugen font] Opening file '" << file << "'" << endl;
     ifile.open( std::string(Util::getDataPath() + "mugen/font/" + file).c_str() );
     if (!ifile){
@@ -176,6 +182,28 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
     }
 }
 
+void MugenFont::changeBank(int bank){
+    if (bank < 1 || bank > colors)return;
+    currentBank = bank;
+    unsigned char pal[768];
+    unsigned char newpal[768];
+    memcpy( &pal, pcx+(pcxsize)-768, 768);
+    memcpy( &newpal, pcx+(pcxsize)-768, 768);
+    unsigned int start = currentBank * colors;
+    for( int  i = 0; i < colors; ++i, ++start){
+	newpal[768 - i] = pal[768-start];
+	newpal[768 - i -1] = pal[768-start -1];
+	newpal[768 - i -2] = pal[768-start -2];
+    }
+    unsigned char *tmppcx = new unsigned char[pcxsize];
+    memcpy(tmppcx, pcx, pcxsize);
+    memcpy(tmppcx + (pcxsize - 768), &newpal, 768);
+    if (bmp){
+	delete bmp;
+    }
+    bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) tmppcx, pcxsize));
+}
+
 void MugenFont::load(){
     
     /* 16 skips the header stuff */
@@ -183,10 +211,8 @@ void MugenFont::load(){
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
     ifile.seekg(location,ios::beg);
     unsigned long pcxlocation;
-    unsigned long pcxsize;
     unsigned long txtlocation;
     unsigned long txtsize;
-    unsigned char *pcx;
     
     ifile.read( (char *)&pcxlocation, sizeof(unsigned long) );
     ifile.read( (char *)&pcxsize, sizeof(unsigned long) );
@@ -201,8 +227,6 @@ void MugenFont::load(){
     ifile.read((char *)pcx, pcxsize);
     
     bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
-    
-    delete [] pcx;
     
     // Get the text
     ifile.seekg(pcxlocation+pcxsize, ios::beg);
