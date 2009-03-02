@@ -187,9 +187,10 @@ void MugenFont::changeBank(int bank){
     currentBank = bank;
     unsigned char pal[768];
     unsigned char newpal[768];
-    memcpy( &pal, pcx+(pcxsize)-768, 768);
-    memcpy( &newpal, pcx+(pcxsize)-768, 768);
+    memcpy( pal, pcx+(pcxsize)-768, 768);
+    memcpy( newpal, pcx+(pcxsize)-768, 768);
     unsigned int start = currentBank * colors;
+    Global::debug(1) << "Current bank: " << start << endl;
     for( int  i = 0; i < colors; ++i, ++start){
 	newpal[768 - i] = pal[768-start];
 	newpal[768 - i -1] = pal[768-start -1];
@@ -197,11 +198,12 @@ void MugenFont::changeBank(int bank){
     }
     unsigned char *tmppcx = new unsigned char[pcxsize];
     memcpy(tmppcx, pcx, pcxsize);
-    memcpy(tmppcx + (pcxsize - 768), &newpal, 768);
+    memcpy(tmppcx + (pcxsize - 768), newpal, 768);
     if (bmp){
 	delete bmp;
     }
     bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) tmppcx, pcxsize));
+    delete [] tmppcx;
 }
 
 void MugenFont::load(){
