@@ -274,7 +274,6 @@ void MugenFont::load(){
 			*opt->getNext() >> startx;
 			*opt->getNext() >> chrwidth;
 		    }
-		    delete opt;
 		    FontLocation loc;
 		    loc.startx = startx;
 		    loc.width = chrwidth;
@@ -282,6 +281,7 @@ void MugenFont::load(){
 		    Global::debug(1) << "Storing Character: " << code << " | startx: " << loc.startx << " | width: " << loc.width << endl;
 		    positions[code] = loc;
 		}
+		delete opt;
 		++locationx;
 	    }
 	}
