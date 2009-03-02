@@ -189,7 +189,9 @@ void MugenFont::changeBank(int bank){
     unsigned char newpal[768];
     memcpy( pal, pcx+(pcxsize)-768, 768);
     memcpy( newpal, pcx+(pcxsize)-768, 768);
-    unsigned int start = currentBank * colors;
+
+    /* 3 bytes per color, so multiply by 3 */
+    unsigned int start = currentBank * colors * 3;
     Global::debug(1) << "Current bank: " << start << endl;
     for( int  i = 0; i < colors; ++i, ++start){
 	newpal[768 - i] = pal[768-start];
