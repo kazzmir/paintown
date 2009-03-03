@@ -21,6 +21,9 @@ DONE * better key input in network chat
 DONE * Get python scripting module in a useable state
 DONE * Be able to scale the screen to arbitrary sizes
 DONE * use CPP to define DATA_PATH
+DONE * read and tokenize basic Mugen scripts
+DONE * load sff, snd and fnt files
+DONE * Mugen fonts useable within paintown
 
 Future
 -------
@@ -40,8 +43,23 @@ Future
 * make network mode use versions
 * allow level sets to only allow explicit players
 * make a console like in quake where debug output can go
+* mugen sff files
+  - Correct issues with loading certain files like (High/Low) Resolution images and their palettes
 * mugen characters in paintown
   - replace (attack (x y w h)) with (attack (box x y w h) (box x y w h)) to support
-  multiple attack boxes. clearing attack boxes will consist of (attack).
-  - create a new MugenCharacter (either extends Character or ObjectAttack) to deal
-  with mugen things like state.
+    multiple attack boxes. clearing attack boxes will consist of (attack).
+  - create a new MugenCharacter (either extends Character or ObjectAttack) to deal 
+    with mugen things like state.
+  - Replicate Finite State Machine
+    - Expressions lexer
+  - Correct shadow CMYK (stage related?)
+* mugen stages in paintown
+  - correct camera movement
+  - correct character placement
+  - correct background controllers
+  - load in fight.def info from mugen for the stage mechanics (i.e. Round indicators, 
+    Round Ticker, Players Health and Power bars) etc.
+  - replace vs mode with mugen stages
+* mugen sound system
+  - turn MugenSound objects collected from .snd file into something useable 
+    within paintown's sound system 
