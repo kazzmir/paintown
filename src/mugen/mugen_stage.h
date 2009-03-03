@@ -100,6 +100,9 @@ public:
 	
 	inline const double getCameraX() { return camerax; }
 	inline const double getCameraY() { return cameray; }
+	inline const int getTension(){ return tension; }
+	inline const int getFloorTension(){ return floortension; }
+	inline const int getZ(){ return zoffset; }
 	
 	inline unsigned long int getTicks(){ return ticker; }
 	

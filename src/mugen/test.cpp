@@ -253,6 +253,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
     double gameSpeed = 1.0;
     double runCounter = 0;
+    double showTension = false;
     
     while( !quit ){
         bool draw = false;
@@ -283,6 +284,9 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
                 if( keyInputManager::keyState(keys::ENTER, false)){
                     stage.Quake( 5 );
                 }
+		if (keyInputManager::keyState('t', true)){
+		    showTension = !showTension;
+		}
 
                 quit |= keyInputManager::keyState(keys::ESC, true );
             }
@@ -291,10 +295,15 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
         if (draw){
             stage.render(&work);
-            work.Stretch(back);
+            if (showTension){
+		work.vLine( 0, stage.getTension(), 240, Bitmap::makeColor( 0,255,0 ));
+		work.vLine( 0, 320 - stage.getTension(), 240, Bitmap::makeColor( 0,255,0 ));
+		work.hLine( 0, stage.getZ() - stage.getFloorTension(), 320, Bitmap::makeColor( 0,255,0 ));
+	    }
+	    work.Stretch(back);
             Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, stage.getCameraX(), stage.getCameraY() );
             Font::getDefaultFont().printf( 15, 230, Bitmap::makeColor( 255, 255, 255 ), back, "Frames: %i",0, stage.getTicks() );
-            back.BlitToScreen();
+	    back.BlitToScreen();
         }
 
         while (Global::speed_counter == 0){
