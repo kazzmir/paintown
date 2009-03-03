@@ -113,6 +113,7 @@ public class FrameEvent implements AnimationEvent {
 			File[] all = dir.listFiles();
 			for ( int i = 0; i < all.length; i++ ){
 				if ( all[ i ].getName().endsWith( ".png" ) ||
+				     all[ i ].getName().endsWith( ".tga" ) ||
 				     all[ i ].getName().endsWith( ".bmp" ) ){
 				     	files.add( all[ i ].getName() );
 					// files.add( path.replaceAll("data/","") + all[ i ].getName().replaceAll("^./","") );
