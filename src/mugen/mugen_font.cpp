@@ -327,8 +327,13 @@ void MugenFont::load(){
                 int chrwidth = width;
                 *opt->getNext() >> character;
                 if( character != "empty" ) {
-                    if (character == "0x5b") character = "[";
-                    else if (character == "0x3b") character = ";";
+		    if (character.size() > 1){
+			MugenUtil::fixCase(character);
+			// 0x5b
+			if (character.compare("0x5b")==0)character = "[";
+			// 0x3b
+			else if (character.compare("0x3b")==0)character = ";";
+		    }
                     if (type != Fixed){
                         // get other two
                         *opt->getNext() >> startx;
