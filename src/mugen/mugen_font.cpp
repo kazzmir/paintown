@@ -190,12 +190,11 @@ unsigned char * MugenFont::findBank(int bank){
 void MugenFont::changeBank(int bank){
     if (bank < 0 || bank > (colors -1))return;
     currentBank = bank;
-    unsigned char pal[768];
     unsigned char newpal[768];
-    memcpy( pal, pcx+(pcxsize)-768, 768);
+    // Reset palette
+    memcpy(pcx + (pcxsize - 768), palette, 768);
     memcpy( newpal, pcx+(pcxsize)-768, 768);
     unsigned char * newBank = findBank(bank);
-
     Global::debug(1) << "palette start: " << (void*)(pcx + pcxsize - 768) << ". new bank: " << (void*)newBank << endl;
     memcpy((void*) &newpal[768 - colors*3], (void*) newBank, colors * 3);
 
@@ -217,27 +216,11 @@ void MugenFont::changeBank(int bank){
         }
     }
 
-    /*
-    // 3 bytes per color, so multiply by 3
-    // unsigned int start = currentBank * colors * 3;
-    for( int  i = 0; i < colors; ++i, ++start){
-    newpal[768 - i] = pal[768-start];
-    newpal[768 - i -1] = pal[768-start -1];
-    newpal[768 - i -2] = pal[768-start -2];
-    }
-    */
-
-    /* we should just store the original palette instead of copying
-     * the entire sprite
-     */
-    unsigned char *tmppcx = new unsigned char[pcxsize];
-    memcpy(tmppcx, pcx, pcxsize);
-    memcpy(tmppcx + (pcxsize - 768), newpal, 768);
+    memcpy(pcx + (pcxsize - 768), newpal, 768);
     if (bmp){
         delete bmp;
     }
-    bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) tmppcx, pcxsize));
-    delete [] tmppcx;
+    bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
 }
 
 void MugenFont::load(){
@@ -261,6 +244,7 @@ void MugenFont::load(){
     ifile.seekg(pcxlocation,ios::beg);
     pcx = new unsigned char[pcxsize];
     ifile.read((char *)pcx, pcxsize);
+    memcpy( palette, pcx+(pcxsize)-768, 768);
 
     bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
 

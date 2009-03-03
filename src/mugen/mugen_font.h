@@ -65,6 +65,7 @@ protected:
     int offsety;
     Bitmap * bmp;
     unsigned char *pcx;
+    unsigned char palette[768];
     unsigned long pcxsize;
     // mapping positions of font in bitmap
     std::map< char, FontLocation> positions;
