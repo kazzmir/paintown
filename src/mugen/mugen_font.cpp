@@ -199,6 +199,24 @@ void MugenFont::changeBank(int bank){
     Global::debug(1) << "palette start: " << (void*)(pcx + pcxsize - 768) << ". new bank: " << (void*)newBank << endl;
     memcpy((void*) &newpal[768 - colors*3], (void*) newBank, colors * 3);
 
+    /* hack to get around the 16-bit masking color */
+    for (int i = 768 - colors * 3; i < 768; i += 3){
+        int r = newpal[i];
+        int g = newpal[i+1];
+        int b = newpal[i+2];
+        int col = Bitmap::makeColor(r,g,b);
+        if (col == Bitmap::MaskColor){
+            int oldCol = col;
+            while (oldCol == col){
+                r -= 1;
+                oldCol = Bitmap::makeColor(r,g,b);
+            }
+            newpal[i] = r;
+            newpal[i+1] = g;
+            newpal[i+2] = b;
+        }
+    }
+
     /*
     // 3 bytes per color, so multiply by 3
     // unsigned int start = currentBank * colors * 3;
