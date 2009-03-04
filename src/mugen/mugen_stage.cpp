@@ -1316,13 +1316,21 @@ void MugenStage::updatePlayer( Object *o ){
 	    if (movex){
 		for (vector<Object*>::iterator move = objects.begin(); move != objects.end(); ++move){
 		    Object *moveplayer = *move;
-		    if (movex == 1 || movex == 3){
+		    if (movex == 1){
 			if (camerax != boundleft){
 			    moveplayer->moveRight(fabs(cameramovex));
 			}
-		    } else if (movex == 2 || movex == 4){
+		    } else if (movex == 2){
 			if (camerax != boundright){
 			    moveplayer->moveLeft(fabs(cameramovex));
+			}
+		    } else if ((movex == 3) && (o != moveplayer)){
+			if (camerax != boundleft){
+			    moveplayer->moveLeft(fabs(cameramovex));
+			}
+		    } else if ((movex == 4) && (o != moveplayer)){
+			if (camerax != boundright){
+			    moveplayer->moveRight(fabs(cameramovex));
 			}
 		    }
 		}
