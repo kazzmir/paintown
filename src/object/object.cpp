@@ -86,20 +86,32 @@ double Object::XDistance( const Object * obj ){
 	return getX() - obj->getX();
 }
 
+void Object::stimulate( const Stimulation & stim ){
+    stim.stimulate( *this );
+}
+
 /* move in an absolute direction */
 void Object::moveRight( const int x ){
-	moveX( FACING_RIGHT, x );
+    moveRight((double) x);
+}
+
+void Object::moveRight( const double x ){
+    moveX( FACING_RIGHT, x );
 }
 
 void Object::moveLeft( const int x ){
-	moveX( FACING_LEFT, x );
+    moveLeft((double) x);
 }
-	
-void Object::stimulate( const Stimulation & stim ){
-	stim.stimulate( *this );
+
+void Object::moveLeft( const double x ){
+    moveX( FACING_LEFT, x );
 }
-	
+
 void Object::moveX( int dir, const int x ){
+    moveX(dir, (double) x);
+}
+	
+void Object::moveX( int dir, const double x ){
 	if ( dir == getFacing() ){
 		moveX( x );
 	} else {

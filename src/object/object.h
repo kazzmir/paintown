@@ -261,6 +261,8 @@ public:
 
 	void moveRight( const int x );
 	void moveLeft( const int x );
+        void moveRight(const double x);
+        void moveLeft(const double x);
 
 	void moveX( const int x );
 	void moveY( const int y );
@@ -270,6 +272,7 @@ public:
 	void moveZ( const double z );
 
 	void moveX( int dir, const int x );
+        void moveX(int dir, const double x);
 
 	/*
 	inline void moveX( const int x ){
