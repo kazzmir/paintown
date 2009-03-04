@@ -1320,26 +1320,30 @@ void MugenStage::updatePlayer( Object *o ){
 	    }
 	}
 	// If we got camera moves lets do them
-	if( !inleft || !inright || movex > 2){
+	if( !inleft || !inright || movex == LeftBounds || movex == RightBounds){
 	    moveCamera(cameramovex,0);
-	    if (movex){
+	    if (movex!=None){
 		for (vector<Object*>::iterator move = objects.begin(); move != objects.end(); ++move){
 		    Object *moveplayer = *move;
-		    if (movex == Left){
+		    if (movex == Left || movex == LeftBounds){
 			if (camerax != boundleft){
+			    // Correct camera
+			    if (movex!=LeftBounds && moveplayer->getX()==screenleft){
+				moveCamera(fabs(cameramovex) * -1,0);
+			    }
 			    moveplayer->moveRight(fabs(cameramovex));
+			    // Need to trick player into not moving the camera next iteration
+			    //playerInfo[moveplayer].oldx = moveplayer->getX();
 			}
-		    } else if (movex == Right){
+		    } else if (movex == Right || movex == RightBounds){
 			if (camerax != boundright){
+			    // Correct camera
+			    if (movex!=RightBounds && moveplayer->getX()==screenright){
+				moveCamera(fabs(cameramovex),0);
+			    }
 			    moveplayer->moveLeft(fabs(cameramovex));
-			}
-		    } else if ((movex == LeftBounds) && (o != moveplayer)){
-			if (camerax != boundleft){
-			    moveplayer->moveLeft(fabs(cameramovex));
-			}
-		    } else if ((movex == RightBounds) && (o != moveplayer)){
-			if (camerax != boundright){
-			    moveplayer->moveRight(fabs(cameramovex));
+			    // Need to trick player into not moving the camera next iteration
+			    //playerInfo[moveplayer].oldx = moveplayer->getX();
 			}
 		    }
 		}
@@ -1348,8 +1352,10 @@ void MugenStage::updatePlayer( Object *o ){
     }
     if (o->getX() <= screenleft){ 
 	o->setX( screenleft );
+	playerInfo[o].oldx = o->getX();
     } else if (o->getX() >= DEFAULT_WIDTH - screenright){
 	o->setX( DEFAULT_WIDTH - screenright );
+	playerInfo[o].oldx = o->getX();
     }
     // Vertical movement of camera
     if (playerInfo[o].oldy != py){
