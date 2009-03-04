@@ -300,12 +300,13 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 		work.vLine( 0, 320 - stage.getTension(), 240, Bitmap::makeColor( 0,255,0 ));
 		work.hLine( 0, stage.getZ() - stage.getFloorTension(), 320, Bitmap::makeColor( 0,255,0 ));
 		// Players x positioning
-		work.vLine( 150, ((Object *)p1)->getX(), stage.getZ(), Bitmap::makeColor( 255, 0, 0));
-		work.vLine( 150, ((Object *)p2)->getX(), stage.getZ(), Bitmap::makeColor( 255, 0, 0));
+		work.vLine( 150, p1v.getX(), stage.getZ(), Bitmap::makeColor( 255, 0, 0));
+		work.vLine( 150, p2v.getX(), stage.getZ(), Bitmap::makeColor( 255, 0, 0));
 	    }
 	    work.Stretch(back);
             Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, stage.getCameraX(), stage.getCameraY() );
             Font::getDefaultFont().printf( 15, 230, Bitmap::makeColor( 255, 255, 255 ), back, "Frames: %i",0, stage.getTicks() );
+	    Font::getDefaultFont().printf( 15, 420, Bitmap::makeColor( 255, 255, 255 ), back, "Player1 x: %f     |      Player2 x: %f",0, p1v.getX(), p2v.getX() );
 	    back.BlitToScreen();
         }
 

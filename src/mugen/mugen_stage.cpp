@@ -1263,12 +1263,6 @@ bool MugenStage::isaPlayer( Object * o ){
 
 
 void MugenStage::updatePlayer( Object *o ){
-    
-    if (o->getX() <= screenleft){ 
-	o->setX( screenleft );
-    } else if (o->getX() >= DEFAULT_WIDTH - screenright){
-	o->setX( DEFAULT_WIDTH - screenright );
-    }
     // Move camera
     const double px = o->getX();
     const double py = o->getY();
@@ -1277,20 +1271,31 @@ void MugenStage::updatePlayer( Object *o ){
     if (playerInfo[o].oldx != px){
 	const double pdiffx = px - playerInfo[o].oldx;
 	// 0 no move, 1 move left, 2 move right for other players so they don't float along
+	// 3 move left 2 players in bounds, 4 move right 2 player in bounds
 	int movex = 0;
 	// This is to move extra in case a boundary was hit
 	double cameramovex = 0;
 	// Left side x
-	if (px <= tension && pdiffx < 0){
-	    cameramovex -= (tension - px);
-	    movex = 1;
+	if (px <= tension){
+	    if (pdiffx < 0){
+		cameramovex -= 1;//(tension - px);
+		movex = 1;
+	    } else if (pdiffx > 0){
+		cameramovex += .5;
+		movex = 4;
+	    } 
 	    if ( !playerInfo[o].leftTension ){
 		playerInfo[o].leftTension = true;
 		inleft++;
 	    }
-	} else if (px >= (DEFAULT_WIDTH - tension) && pdiffx > 0){
-	    cameramovex += (px - (DEFAULT_WIDTH - tension));
-	    movex = 2;
+	} else if (px >= (DEFAULT_WIDTH - tension)){
+	    if (pdiffx > 0){
+		cameramovex += 1;//(px - (DEFAULT_WIDTH - tension));
+		movex = 2;
+	    } else if (pdiffx < 0){
+		cameramovex -= .5;
+		movex = 3;
+	    }  
 	    if ( !playerInfo[o].rightTension ){
 		playerInfo[o].rightTension = true;
 		inright++;
@@ -1305,31 +1310,29 @@ void MugenStage::updatePlayer( Object *o ){
 		inright--;
 	    }
 	}
-	if (playerInfo[o].leftTension && pdiffx > 0){
-	    cameramovex += (tension - px);
-	    movex = 2;
-	} else if (playerInfo[o].rightTension && pdiffx < 0){
-	    cameramovex -= (px - (DEFAULT_WIDTH - tension));
-	    movex = 1;
-	}  
 	// If we got camera moves lets do them
-	if( !inleft || !inright ){
+	if( !inleft || !inright || movex > 2){
 	    moveCamera(cameramovex,0);
 	    if (movex){
 		for (vector<Object*>::iterator move = objects.begin(); move != objects.end(); ++move){
 		    Object *moveplayer = *move;
-		    if (movex == 1){
+		    if (movex == 1 || movex == 3){
 			if (camerax != boundleft){
-			    moveplayer->moveRight(abs((int)cameramovex));
+			    moveplayer->moveRight(fabs(cameramovex));
 			}
-		    } else if (movex == 2){
+		    } else if (movex == 2 || movex == 4){
 			if (camerax != boundright){
-			    moveplayer->moveLeft(abs((int)cameramovex));
+			    moveplayer->moveLeft(fabs(cameramovex));
 			}
 		    }
 		}
 	    }
 	}
+    }
+    if (o->getX() <= screenleft){ 
+	o->setX( screenleft );
+    } else if (o->getX() >= DEFAULT_WIDTH - screenright){
+	o->setX( DEFAULT_WIDTH - screenright );
     }
     // Vertical movement of camera
     if (playerInfo[o].oldy != py){
