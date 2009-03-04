@@ -1270,19 +1270,28 @@ void MugenStage::updatePlayer( Object *o ){
     // Horizontal movement of camera
     if (playerInfo[o].oldx != px){
 	const double pdiffx = px - playerInfo[o].oldx;
+
+        enum Move{
+            None = 0,
+            Left = 1,
+            Right = 2,
+            LeftBounds = 3,
+            RightBounds = 4,
+        };
+
 	// 0 no move, 1 move left, 2 move right for other players so they don't float along
 	// 3 move left 2 players in bounds, 4 move right 2 player in bounds
-	int movex = 0;
+	Move movex = None;
 	// This is to move extra in case a boundary was hit
 	double cameramovex = 0;
 	// Left side x
 	if (px <= tension){
 	    if (pdiffx < 0){
 		cameramovex -= 1;//(tension - px);
-		movex = 1;
+		movex = Left;
 	    } else if (pdiffx > 0){
 		cameramovex += .5;
-		movex = 4;
+		movex = RightBounds;
 	    } 
 	    if ( !playerInfo[o].leftTension ){
 		playerInfo[o].leftTension = true;
@@ -1291,10 +1300,10 @@ void MugenStage::updatePlayer( Object *o ){
 	} else if (px >= (DEFAULT_WIDTH - tension)){
 	    if (pdiffx > 0){
 		cameramovex += 1;//(px - (DEFAULT_WIDTH - tension));
-		movex = 2;
+		movex = Right;
 	    } else if (pdiffx < 0){
 		cameramovex -= .5;
-		movex = 3;
+		movex = LeftBounds;
 	    }  
 	    if ( !playerInfo[o].rightTension ){
 		playerInfo[o].rightTension = true;
@@ -1316,19 +1325,19 @@ void MugenStage::updatePlayer( Object *o ){
 	    if (movex){
 		for (vector<Object*>::iterator move = objects.begin(); move != objects.end(); ++move){
 		    Object *moveplayer = *move;
-		    if (movex == 1){
+		    if (movex == Left){
 			if (camerax != boundleft){
 			    moveplayer->moveRight(fabs(cameramovex));
 			}
-		    } else if (movex == 2){
+		    } else if (movex == Right){
 			if (camerax != boundright){
 			    moveplayer->moveLeft(fabs(cameramovex));
 			}
-		    } else if ((movex == 3) && (o != moveplayer)){
+		    } else if ((movex == LeftBounds) && (o != moveplayer)){
 			if (camerax != boundleft){
 			    moveplayer->moveLeft(fabs(cameramovex));
 			}
-		    } else if ((movex == 4) && (o != moveplayer)){
+		    } else if ((movex == RightBounds) && (o != moveplayer)){
 			if (camerax != boundright){
 			    moveplayer->moveRight(fabs(cameramovex));
 			}
