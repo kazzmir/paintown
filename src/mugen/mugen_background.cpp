@@ -119,7 +119,7 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     return *this;
 }
     
-void MugenBackground::logic( const int &x, const int &y ){
+void MugenBackground::logic( const int x, const int y ){
     if (enabled){
 	movex = movey = 0;
 	movex += x * deltax;
@@ -145,7 +145,7 @@ void MugenBackground::logic( const int &x, const int &y ){
     }
 }
     
-void MugenBackground::render( const int &totalLength, const int &totalHeight, Bitmap *work ){
+void MugenBackground::render( const int totalLength, const int totalHeight, Bitmap *work ){
     if (visible){
 	switch( type ){
 	    case Normal:{
@@ -228,7 +228,7 @@ void MugenBackground::render( const int &totalLength, const int &totalHeight, Bi
     }
 }
 
-void MugenBackground::preload( const int &xaxis, const int &yaxis ){
+void MugenBackground::preload( const int xaxis, const int yaxis ){
     // Do positionlink crap
     if (positionlink && !runLink){
 	if (linked){
@@ -253,7 +253,7 @@ void MugenBackground::preload( const int &xaxis, const int &yaxis ){
     }
 }
 
-void MugenBackground::draw( const int &ourx, const int &oury, Bitmap &work ){
+void MugenBackground::draw( const int ourx, const int oury, Bitmap &work ){
     // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
     switch( trans ){
 	case Addalpha:{

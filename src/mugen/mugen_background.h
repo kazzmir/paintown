@@ -41,9 +41,9 @@ public:
     
     MugenBackground & operator=( const MugenBackground &copy );
     
-    void logic( const int &x, const int &y );
+    void logic( const int x, const int y );
     
-    void render( const int &totalLength, const int &totalHeight, Bitmap *work );
+    void render( const int totalLength, const int totalHeight, Bitmap *work );
     
     // Stage be our friend
     friend class MugenStage;
@@ -116,10 +116,10 @@ public:
     bool runLink;
     
     // Do any extra stuff so that it can be used
-    void preload( const int &xaxis, const int &yaxis );
+    void preload( const int xaxis, const int yaxis );
     
     // Do draw stuff
-    void draw( const int &ourx, const int &oury, Bitmap &work );
+    void draw( const int ourx, const int oury, Bitmap &work );
     
     // Lets do our positionlink stuff
     void setPositionLink(MugenBackground *bg);

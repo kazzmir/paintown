@@ -1372,7 +1372,7 @@ void MugenStage::updatePlayer( Object *o ){
 	    }
 	    if (playerInfo[o].above && pdiffy < 0){
 		moveCamera( 0, verticalfollow * -3.2 );
-	    } else if (playerInfo[o].above && pdiffy > 0){
+	    } else if ((playerInfo[o].above && pdiffy > 0) || (!inabove && getCameraX() < 0)){
 		moveCamera( 0, verticalfollow * 3.2 );
 	    }
 	}
