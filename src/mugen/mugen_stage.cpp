@@ -13,6 +13,7 @@
 
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "game/console.h"
 #include "object/animation.h"
 #include "object/object.h"
 #include "object/character.h"
@@ -37,6 +38,7 @@ static const int DEFAULT_OBJECT_OFFSET = 160;
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 static const double DEFAULT_JUMP_VELOCITY = 7.2;
+static const int CONSOLE_SIZE = 150;
 
 static void correctStageName( std::string &str ){
     if( str.find( "stages/") != std::string::npos || str.find( "stages\\") != std::string::npos ){
@@ -279,6 +281,7 @@ totalTime(99),
 time(99),
 p1points(0),
 p2points(0),
+console(new Console(CONSOLE_SIZE)),
 inleft(0),
 inright(0),
 inabove(0){
@@ -340,6 +343,7 @@ totalTime(99),
 time(99),
 p1points(0),
 p2points(0),
+console(new Console(CONSOLE_SIZE)),
 inleft(0),
 inright(0),
 inabove(0){
@@ -892,6 +896,10 @@ void MugenStage::load() throw( MugenException ){
      */
     shadowIntensity = Util::min((shadow.c + shadow.y + shadow.m + shadow.k * 2) / 3, 255);
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
+    
+    // Console stuff
+    console->setTextHeight(10);
+    console->setTextWidth(10);
 }
 
 void MugenStage::setCamera( const double x, const double y ){ 
@@ -945,6 +953,8 @@ void MugenStage::logic( ){
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
     }
+    // Clear console so we can see our debug
+    console->clear();
     
     // Players go in here
     std::vector<Object *> add;
@@ -1029,6 +1039,9 @@ void MugenStage::logic( ){
 	    it = objects.erase( it );
 	    if( it == objects.end() ) break;
 	}
+	
+	// Debug crap put it on console
+	console->add() << "Object: " << player << " x: " << player->getX() << " y: " << player->getY();
     }
     objects.insert(objects.end(),add.begin(),add.end());
     
@@ -1041,6 +1054,10 @@ void MugenStage::logic( ){
     for( vector< MugenBackgroundController *>::iterator i = controllers.begin(); i != controllers.end(); ++i ){
 	(*i)->act();
     }
+    // Console
+    console->add() << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY();
+    console->add() << "Frames: " << getTicks();
+    console->act();
 }
 	
 void MugenStage::render( Bitmap *work ){
@@ -1051,8 +1068,6 @@ void MugenStage::render( Bitmap *work ){
     }
     
     // Players go in here
-    int distance = 10;
-    bool change = false;
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *obj = *it;
 	// Reflection
@@ -1060,12 +1075,6 @@ void MugenStage::render( Bitmap *work ){
 	// Shadow
 	obj->drawShade( board, 0, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         obj->draw( board, 0);
-	// Debug crap
-	int color = change ? Bitmap::makeColor( 255, 255, 255 ) : Bitmap::makeColor( 200, 200, 200 );
-	Font::getDefaultFont().printf( 15, distance, color, *board, "Object: %i",0, obj);
-	Font::getDefaultFont().printf( 15, distance+10, color, *board, "x: %f, y: %f",0, obj->getX(),obj->getY());
-	distance+=20;
-	change=!change;
     }
     
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
@@ -1088,6 +1097,8 @@ void MugenStage::render( Bitmap *work ){
 	}
     }
     
+    // Render console
+    console->draw( *board );
     
     board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
 }
@@ -1162,6 +1173,11 @@ void MugenStage::addp2( Object * o ){
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;
     playerInfo[o].rightTension = false;
+}
+
+// Console
+void MugenStage::toggleConsole(){ 
+    console->toggle(); 
 }
 
 void MugenStage::act(){
@@ -1249,7 +1265,9 @@ void MugenStage::cleanup(){
 	if( (*i) )delete (*i);
     }
     
-    if( board ) delete board;
+    if (board) delete board;
+    
+    if (console) delete console;
 }
 
 bool MugenStage::isaPlayer( Object * o ){
@@ -1372,10 +1390,14 @@ void MugenStage::updatePlayer( Object *o ){
 	    }
 	    if (playerInfo[o].above && pdiffy < 0){
 		moveCamera( 0, verticalfollow * -3.2 );
-	    } else if ((playerInfo[o].above && pdiffy > 0) || (!inabove && getCameraX() < 0)){
+	    } else if (playerInfo[o].above && pdiffy > 0){
 		moveCamera( 0, verticalfollow * 3.2 );
 	    }
 	}
+    }
+    // Correct camera
+    if ((verticalfollow > 0) && (!inabove && getCameraX() < 0)){
+	moveCamera( 0, verticalfollow * 3.2 );
     }
     //Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }

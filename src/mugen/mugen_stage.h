@@ -11,6 +11,7 @@
 #include "world.h"
 
 class Bitmap;
+class Console;
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
@@ -127,6 +128,9 @@ public:
 	
 	// Add player2 people
 	virtual void addp2( Object * o );
+	
+	// Console
+	virtual void toggleConsole();
 	
 	// Inherited world actions
 	virtual void act();
@@ -392,6 +396,9 @@ protected:
 	int p2points;
     
     private:
+	
+	// Our output Console
+	Console *console;
 	
 	// Alliance setting
 	enum teams{

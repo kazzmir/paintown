@@ -281,6 +281,9 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
                 if( keyInputManager::keyState('r', true)){
                     stage.reset();
                 }
+		if( keyInputManager::keyState('`', true)){
+		    stage.toggleConsole();
+		}
                 if( keyInputManager::keyState(keys::ENTER, false)){
                     stage.Quake( 5 );
                 }
@@ -304,10 +307,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 		work.vLine( 150, p2v.getX(), stage.getZ(), Bitmap::makeColor( 255, 0, 0));
 	    }
 	    work.Stretch(back);
-            Font::getDefaultFont().printf( 15, 220, Bitmap::makeColor( 255, 255, 255 ), back, "viewport x: %i  |  viewport y: %i",0, stage.getCameraX(), stage.getCameraY() );
-            Font::getDefaultFont().printf( 15, 230, Bitmap::makeColor( 255, 255, 255 ), back, "Frames: %i",0, stage.getTicks() );
-	    Font::getDefaultFont().printf( 15, 420, Bitmap::makeColor( 255, 255, 255 ), back, "Player1 x: %f     |      Player2 x: %f",0, p1v.getX(), p2v.getX() );
-	    back.BlitToScreen();
+            back.BlitToScreen();
         }
 
         while (Global::speed_counter == 0){
