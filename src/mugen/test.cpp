@@ -253,7 +253,6 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
     double gameSpeed = 1.0;
     double runCounter = 0;
-    double showTension = false;
     
     while( !quit ){
         bool draw = false;
@@ -288,7 +287,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
                     stage.Quake( 5 );
                 }
 		if (keyInputManager::keyState('t', true)){
-		    showTension = !showTension;
+		    stage.toggleDebug();
 		}
 
                 quit |= keyInputManager::keyState(keys::ESC, true );
@@ -298,14 +297,6 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
         if (draw){
             stage.render(&work);
-            if (showTension){
-		work.vLine( 0, stage.getTension(), 240, Bitmap::makeColor( 0,255,0 ));
-		work.vLine( 0, 320 - stage.getTension(), 240, Bitmap::makeColor( 0,255,0 ));
-		work.hLine( 0, stage.getZ() - stage.getFloorTension(), 320, Bitmap::makeColor( 0,255,0 ));
-		// Players x positioning
-		work.vLine( 150, p1v.getX(), stage.getZ(), Bitmap::makeColor( 255, 0, 0));
-		work.vLine( 150, p2v.getX(), stage.getZ(), Bitmap::makeColor( 255, 0, 0));
-	    }
 	    work.Stretch(back);
             back.BlitToScreen();
         }

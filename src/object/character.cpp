@@ -1567,9 +1567,10 @@ void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
 
 void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
     if (animation_current){
-	const double newheight = animation_current->getCurrentFrame()->getHeight() * scale;
-        Bitmap shade = Bitmap::temporaryBitmap(animation_current->getCurrentFrame()->getWidth(), fabs(newheight));
-	animation_current->getCurrentFrame()->Stretch(shade);
+	const Bitmap *bmp = animation_current->getCurrentFrame();
+	const double newheight = bmp->getHeight() * scale;
+        Bitmap shade = Bitmap::temporaryBitmap(bmp->getWidth(), fabs(newheight));
+	bmp->Stretch(shade);
 	
 	/* Could be slow, but meh, lets do it for now to make it look like a real shadow */
 	for (int h = 0; h < shade.getHeight(); ++h){
@@ -1588,15 +1589,15 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
 	Bitmap::multiplyBlender((Bitmap::getRed(color) * 77 + intensity), (Bitmap::getGreen(color) * 154 + intensity), (Bitmap::getBlue(color) * 25 + intensity), i);
 	if (scale > 0){
 	    if (getFacing() == FACING_RIGHT){ 
-		shade.drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ()  + (getY() * scale), *work );
+		shade.drawTransVFlip( (getRX() - rel_x) - bmp->getWidth()/2, getRZ()  + (getY() * scale), *work );
 	    } else { 
-		shade.drawTransHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ()  + (getY() * scale), *work );
+		shade.drawTransHVFlip( (getRX() - rel_x) - bmp->getWidth()/2, getRZ()  + (getY() * scale), *work );
 	    }
 	} else if (scale < 0){
 	    if (getFacing() == FACING_RIGHT){ 
-		shade.drawTrans( ((getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2) + 3, (getRZ() - 10) + (getY() * scale), *work );
+		shade.drawTrans( ((getRX() - rel_x) - bmp->getWidth()/2) + 3, (getRZ() - fabs(newheight)) + (getY() * scale), *work );
 	    } else { 
-		shade.drawTransHFlip( ((getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2) - 3, (getRZ() - 10) + (getY() * scale), *work );
+		shade.drawTransHFlip( ((getRX() - rel_x) - bmp->getWidth()/2) - 3, (getRZ() - fabs(newheight)) + (getY() * scale), *work );
 	    }
 	}
 	Bitmap::drawingMode( Bitmap::MODE_SOLID );

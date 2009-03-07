@@ -132,6 +132,9 @@ public:
 	// Console
 	virtual void toggleConsole();
 	
+	// Render debug stuff like lines and crap
+	inline void toggleDebug(){ debugMode = !debugMode; }
+	
 	// Inherited world actions
 	virtual void act();
 	virtual void draw( Bitmap * work );
@@ -399,6 +402,9 @@ protected:
 	
 	// Our output Console
 	Console *console;
+	
+	// Debug enabled?
+	bool debugMode;
 	
 	// Alliance setting
 	enum teams{

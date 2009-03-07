@@ -282,6 +282,7 @@ time(99),
 p1points(0),
 p2points(0),
 console(new Console(CONSOLE_SIZE)),
+debugMode(false),
 inleft(0),
 inright(0),
 inabove(0){
@@ -344,6 +345,7 @@ time(99),
 p1points(0),
 p2points(0),
 console(new Console(CONSOLE_SIZE)),
+debugMode(false),
 inleft(0),
 inright(0),
 inabove(0){
@@ -945,16 +947,21 @@ void MugenStage::logic( ){
     const int diffx = startx - camerax;
     const int diffy = starty - cameray;
     
+    // Clear console so we can see our debug
+    console->clear();
+    
     //zoffsetlink
-    if( zoffsetlink != DEFAULT_BACKGROUND_ID )zoffset = getBackground(zoffsetlink)->y;
-    //Global::debug(1) << "zoffsetlink ID: " <<zoffsetlink << " | zoffset: " << zoffset << endl;
+    const MugenBackground *zlinkbackground = 0;
+    if( zoffsetlink != DEFAULT_BACKGROUND_ID ){
+	zlinkbackground = getBackground(zoffsetlink);
+	zoffset = zlinkbackground->y;
+    }
+    *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << Console::endl;
     
     // Backgrounds
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy );
     }
-    // Clear console so we can see our debug
-    console->clear();
     
     // Players go in here
     std::vector<Object *> add;
@@ -962,8 +969,15 @@ void MugenStage::logic( ){
         /* use local variables more often, iterators can be easily confused */
         Object * player = *it;
         player->act( &objects, (World *)this, &add);
-	if(zoffsetlink == DEFAULT_BACKGROUND_ID )player->setZ( zoffset - cameray );
-	else player->setZ( zoffset );
+	if (zoffsetlink == DEFAULT_BACKGROUND_ID){
+	    player->setZ( zoffset - cameray );
+	} else {
+	    if (!zlinkbackground->positionlink){
+		player->setZ( zoffset - cameray );
+	    } else {
+		player->setZ( zoffset );
+	    }
+	}
 	
 	
 	// Check collisions
@@ -1094,7 +1108,19 @@ void MugenStage::render( Bitmap *work ){
 		character->drawLifeBar( 215, p2Side, board );
 		p2Side +=10;
 	    }
+	    // Player debug crap
+	    if (debugMode){
+		// Players x positioning
+		board->vLine( 150, character->getX(), character->getZ(), Bitmap::makeColor( 255, 0, 0));
+	    }
 	}
+    }
+    
+    // Debug crap?
+    if (debugMode){
+	board->vLine( 0, tension, 240, Bitmap::makeColor( 0,255,0 ));
+	board->vLine( 0, 320 - tension, 240, Bitmap::makeColor( 0,255,0 ));
+	board->hLine( 0, (zoffset - cameray) - floortension, 320, Bitmap::makeColor( 0,255,0 ));
     }
     
     // Render console
