@@ -3,6 +3,8 @@
 #include "util/font.h"
 #include "util/funcs.h"
 
+ConsoleEnd Console::endl;
+
 Console::Console(const int maxHeight):
 state(Closed),
 maxHeight(maxHeight),
@@ -80,6 +82,11 @@ void Console::toggle(){
             break;
         }
     }
+}
+    
+Console & Console::operator<<(const ConsoleEnd & e){
+    checkStream();
+    return *this;
 }
 
 void Console::clear(){

@@ -7,6 +7,13 @@
 
 class Bitmap;
 
+class ConsoleEnd{
+private:
+    friend class Console;
+    ConsoleEnd(){
+    }
+};
+
 class Console{
 public:
     Console(const int maxHeight);
@@ -17,7 +24,6 @@ public:
     virtual void toggle();
     
     virtual void clear();
-    virtual std::stringstream & add();
     
     inline int getTextHeight(){ return textHeight; };
     inline int getTextWidth(){ return textWidth; };
@@ -25,7 +31,21 @@ public:
     inline void setTextHeight(int h){ textHeight = h; };
     inline void setTextWidth(int w){ textWidth = w; };
 
+    /* for arbitrary data */
+    template<typename T> Console & operator<<(const T & x){
+        textInput << x;
+        return *this;
+    }
+
+    /* for end of line, always pass Console::endl */
+    Console & operator<<(const ConsoleEnd & e);
+
+    static ConsoleEnd endl;
+
 protected:
+
+    virtual std::stringstream & add();
+
     enum State{
         Closed,
         Open,

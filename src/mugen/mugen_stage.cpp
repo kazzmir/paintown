@@ -1039,9 +1039,9 @@ void MugenStage::logic( ){
 	    it = objects.erase( it );
 	    if( it == objects.end() ) break;
 	}
-	
+
 	// Debug crap put it on console
-	console->add() << "Object: " << player << " x: " << player->getX() << " y: " << player->getY();
+	*console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << Console::endl;
     }
     objects.insert(objects.end(),add.begin(),add.end());
     
@@ -1055,8 +1055,8 @@ void MugenStage::logic( ){
 	(*i)->act();
     }
     // Console
-    console->add() << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY();
-    console->add() << "Frames: " << getTicks();
+    *console << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY() << Console::endl;
+    *console << "Frames: " << getTicks() << Console::endl;
     console->act();
 }
 	
