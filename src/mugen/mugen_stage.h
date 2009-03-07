@@ -79,6 +79,7 @@ struct PlayerData {
     bool leftTension;
     bool rightTension;
     bool above;
+    bool jumped;
 };
 
 class MugenStage: public World {

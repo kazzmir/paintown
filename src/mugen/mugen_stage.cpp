@@ -39,6 +39,7 @@ static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 static const double DEFAULT_JUMP_VELOCITY = 7.2;
 static const int CONSOLE_SIZE = 150;
+static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 static void correctStageName( std::string &str ){
     if( str.find( "stages/") != std::string::npos || str.find( "stages\\") != std::string::npos ){
@@ -1152,7 +1153,7 @@ void MugenStage::reset( ){
 	    playerInfo[player].oldy = player->getY();
 	    playerInfo[player].leftTension = false;
 	    playerInfo[player].rightTension = false;
-	    ((Character *)player)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
+	    playerInfo[player].jumped = false;
 	} else if( player->getAlliance() == Player2Side ){
 	    player->setX( DEFAULT_OBJECT_OFFSET + p2startx );
 	    player->setY( p2starty );
@@ -1162,7 +1163,7 @@ void MugenStage::reset( ){
 	    playerInfo[player].oldy = player->getY();
 	    playerInfo[player].leftTension = false;
 	    playerInfo[player].rightTension = false;
-	    ((Character *)player)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
+	    playerInfo[player].jumped = false;
 	}
     }
     
@@ -1183,6 +1184,7 @@ void MugenStage::addp1( Object * o ){
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;
     playerInfo[o].rightTension = false;
+    playerInfo[o].jumped = false;
 }
 
 // Add player2 people
@@ -1199,6 +1201,7 @@ void MugenStage::addp2( Object * o ){
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;
     playerInfo[o].rightTension = false;
+    playerInfo[o].jumped = false;
 }
 
 // Console
@@ -1314,7 +1317,6 @@ void MugenStage::updatePlayer( Object *o ){
     // Horizontal movement of camera
     if (playerInfo[o].oldx != px){
 	const double pdiffx = px - playerInfo[o].oldx;
-
         enum Move{
             None = 0,
             Left = 1,
@@ -1322,6 +1324,29 @@ void MugenStage::updatePlayer( Object *o ){
             LeftBounds = 3,
             RightBounds = 4,
         };
+	/*
+	 // Jump velocity and other stuff
+	if (((Character *)o)->isMoving() && ((Character *)o)->isJumping() && !playerInfo[o].jumped){
+	    int xmove = 0;
+	    if (o->getFacing() == Object::FACING_LEFT){
+		if (pdiffx>0){
+		    xmove = -(DEFAULT_X_JUMP_VELOCITY);
+		} else if (pdiffx<0){
+		    xmove = DEFAULT_X_JUMP_VELOCITY;
+		}
+	    } else if (o->getFacing() == Object::FACING_RIGHT){
+		if (pdiffx<0){
+		    xmove = -(DEFAULT_X_JUMP_VELOCITY);
+		} else if (pdiffx>0){
+		    xmove = DEFAULT_X_JUMP_VELOCITY;
+		}
+	    } 
+	    ((Character *)o)->setXVelocity(xmove);
+	    ((Character *)o)->initJumpingYVelocity();
+	    playerInfo[o].jumped = true;
+	} else if (!((Character *)o)->isJumping() && playerInfo[o].jumped){
+	    playerInfo[o].jumped = false;
+	}*/
 
 	// 0 no move, 1 move left, 2 move right for other players so they don't float along
 	// 3 move left 2 players in bounds, 4 move right 2 player in bounds
