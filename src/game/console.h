@@ -16,7 +16,7 @@ private:
 
 class Console{
 public:
-    Console(const int maxHeight);
+    Console(const int maxHeight, const std::string & font = Console::DEFAULT_FONT);
     virtual ~Console();
 
     virtual void act();
@@ -31,6 +31,10 @@ public:
     inline void setTextHeight(int h){ textHeight = h; };
     inline void setTextWidth(int w){ textWidth = w; };
 
+    inline const std::string & getFont() const {
+        return font;
+    }
+
     /* for arbitrary data */
     template<typename T> Console & operator<<(const T & x){
         textInput << x;
@@ -41,6 +45,7 @@ public:
     Console & operator<<(const ConsoleEnd & e);
 
     static ConsoleEnd endl;
+    static const std::string DEFAULT_FONT;
 
 protected:
 
@@ -55,6 +60,8 @@ protected:
 
     const int maxHeight;
     int height;
+
+    std::string font;
     
     // Text height
     int textHeight;

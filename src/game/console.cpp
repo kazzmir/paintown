@@ -4,11 +4,13 @@
 #include "util/funcs.h"
 
 ConsoleEnd Console::endl;
+const std::string Console::DEFAULT_FONT = "fonts/arial.ttf";
 
-Console::Console(const int maxHeight):
+Console::Console(const int maxHeight, const std::string & font):
 state(Closed),
 maxHeight(maxHeight),
 height(0),
+font(font),
 textHeight(15),
 textWidth(15),
 offset(0){
@@ -55,7 +57,7 @@ void Console::draw(const Bitmap & work){
 	Bitmap::transBlender(0, 0, 0, 160);
         work.rectangleFill(0, 0, work.getWidth(), height, Bitmap::makeColor(200,0,0));
         work.horizontalLine(0, height, work.getWidth(), Bitmap::makeColor(200, 200, 200));
-        const Font & font = Font::getFont(Util::getDataPath() + "/fonts/arial.ttf", textWidth, textHeight);
+        const Font & font = Font::getFont(Util::getDataPath() + "/" + getFont(), textWidth, textHeight);
         //font.printf(0, height - font.getHeight(), Bitmap::makeColor(255, 255, 255), work, "Console!", 0 );
         Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	if (state == Open && !lines.empty()){
