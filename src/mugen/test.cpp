@@ -11,6 +11,8 @@
 #include "globals.h"
 #include "init.h"
 #include "configuration.h"
+#include "music.h"
+
 #include "mugen_reader.h"
 #include "mugen_section.h"
 #include "mugen_item_content.h"
@@ -209,6 +211,24 @@ void showCharacter(const string & ourFile){
 
 }
 
+char *music[15]={
+    "ryu-arranged.it",
+    "sf2-unused.mod",
+    "sakura2nd.it",
+ //   "ssf2select.it",
+    "tr3balrog.it",
+    "tr3blanka.it",
+    "tr3cammy3rd.it",
+    "tr3dahlsim.it",
+    "tr3deejay.it",
+    "tr3e-honda.it",
+    "tr3guile3rd.it",
+    "tr3ken3rd.it",
+    "tr3ryu2nd.it",
+    "tr3thawk.it",
+    "tr3vega.it"
+};
+
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
@@ -255,6 +275,12 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
     double gameSpeed = 1.0;
     double runCounter = 0;
+    
+    Music m(true);
+    if(Music::loadSong( Util::getDataPath() + "mugen/music/" + music[rand() % 13] )){
+		Music::pause();
+		Music::play();
+    }
     
     while( !quit ){
         bool draw = false;
