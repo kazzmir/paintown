@@ -986,7 +986,7 @@ void MugenStage::logic( ){
 	    Object *enemy = *enem;
 	    if (player->getAlliance() != enemy->getAlliance()){
 		// Do stuff for players
-		if (isaPlayer( enemy )){
+		if (isaPlayer( enemy ) && isaPlayer( player )){
 		    // He collides with another push him away
 		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Character *)player), ((Character *)enemy) ) ){
 			if ( enemy->getX() < player->getX() ){
