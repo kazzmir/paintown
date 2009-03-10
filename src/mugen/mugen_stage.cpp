@@ -1356,7 +1356,7 @@ void MugenStage::updatePlayer( Object *o ){
 	// Left side x
 	if (px <= tension){
 	    if (pdiffx < 0){
-		cameramovex -= 1;//(tension - px);
+		cameramovex -= fabs(((Character *)o)->getXVelocity());//(inright ? 1 :(tension - px));
 		movex = Left;
 	    } else if (pdiffx > 0){
 		cameramovex += .5;
@@ -1368,7 +1368,7 @@ void MugenStage::updatePlayer( Object *o ){
 	    }
 	} else if (px >= (DEFAULT_WIDTH - tension)){
 	    if (pdiffx > 0){
-		cameramovex += 1;//(px - (DEFAULT_WIDTH - tension));
+		cameramovex += fabs(((Character *)o)->getXVelocity());//(inleft ? 1 : (px - (DEFAULT_WIDTH - tension)));
 		movex = Right;
 	    } else if (pdiffx < 0){
 		cameramovex -= .5;

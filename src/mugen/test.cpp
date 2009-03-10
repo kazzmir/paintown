@@ -10,6 +10,7 @@
 
 #include "globals.h"
 #include "init.h"
+#include "configuration.h"
 #include "mugen_reader.h"
 #include "mugen_section.h"
 #include "mugen_item_content.h"
@@ -239,10 +240,11 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     //p1->setMap( remap );
     ((Player *)p1)->testAnimation();
     ((Player *)p1)->setConfig(0);
+    Configuration::config(0).setJump( Configuration::config(0).getUp() );
     ((Player *)p2)->setInvincible( false );
     //p2->setMap( remap );
     ((Player *)p2)->testAnimation();
-    ((Player *)p2)->setConfig(1);
+    //((Player *)p2)->setConfig(1);
     // Make them versus players
     VersusPlayer p1v( *(Player *) p1 );
     VersusEnemy p2v( *(Player *) p2 );
