@@ -211,22 +211,15 @@ void showCharacter(const string & ourFile){
 
 }
 
-char *music[15]={
-    "ryu-arranged.it",
-    "sf2-unused.mod",
-    "sakura2nd.it",
- //   "ssf2select.it",
-    "tr3balrog.it",
+const int musicHits = 6;
+
+char *music[musicHits]={
     "tr3blanka.it",
-    "tr3cammy3rd.it",
-    "tr3dahlsim.it",
     "tr3deejay.it",
     "tr3e-honda.it",
     "tr3guile3rd.it",
     "tr3ken3rd.it",
-    "tr3ryu2nd.it",
-    "tr3thawk.it",
-    "tr3vega.it"
+    "tr3ryu2nd.it"
 };
 
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
@@ -277,9 +270,11 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     double runCounter = 0;
     
     Music m(true);
-    if(Music::loadSong( Util::getDataPath() + "mugen/music/" + music[rand() % 13] )){
+    int track = rand() % (musicHits -1);
+    if(Music::loadSong( Util::getDataPath() + "mugen/music/" + music[track] )){
 		Music::pause();
 		Music::play();
+		Global::debug(0) << "Now playing track: " << music[track] << endl;
     }
     
     while( !quit ){
@@ -310,6 +305,16 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
                 }
 		if( keyInputManager::keyState('`', true)){
 		    stage.toggleConsole();
+		}
+		// Change music track
+		if( keyInputManager::keyState('5', true)){
+		    track++;
+		    if(track == musicHits)track = 0;
+		    if(Music::loadSong( Util::getDataPath() + "mugen/music/" + music[track] )){
+			Music::pause();
+			Music::play();
+			Global::debug(0) << "Now playing track: " << music[track] << endl;
+		    }
 		}
                 if( keyInputManager::keyState(keys::ENTER, false)){
                     stage.Quake( 5 );
