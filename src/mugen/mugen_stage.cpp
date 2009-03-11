@@ -986,7 +986,7 @@ void MugenStage::logic( ){
 	    Object *enemy = *enem;
 	    if (player->getAlliance() != enemy->getAlliance()){
 		// Do stuff for players
-		if (isaPlayer( enemy ) && isaPlayer( player )){
+		if (isaPlayer( enemy )){
 		    // He collides with another push him away
 		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Character *)player), ((Character *)enemy) ) ){
 			if ( enemy->getX() < player->getX() ){
@@ -1354,12 +1354,13 @@ void MugenStage::updatePlayer( Object *o ){
 	// This is to move extra in case a boundary was hit
 	double cameramovex = 0;
 	// Left side x
+	const double pmovex = ((Character *)o)->isJumping() ? fabs(((Character *)o)->getXVelocity()) : ((Character *)o)->getSpeed();
 	if (px <= tension){
 	    if (pdiffx < 0){
-		cameramovex -= fabs(((Character *)o)->getXVelocity());//(inright ? 1 :(tension - px));
+		cameramovex -= pmovex;//(inright ? 1 :(tension - px));
 		movex = Left;
 	    } else if (pdiffx > 0){
-		cameramovex += fabs(((Character *)o)->getXVelocity())/2;//.5;
+		cameramovex += pmovex/2;
 		movex = RightBounds;
 	    } 
 	    if ( !playerInfo[o].leftTension ){
@@ -1368,10 +1369,10 @@ void MugenStage::updatePlayer( Object *o ){
 	    }
 	} else if (px >= (DEFAULT_WIDTH - tension)){
 	    if (pdiffx > 0){
-		cameramovex += fabs(((Character *)o)->getXVelocity());//(inleft ? 1 : (px - (DEFAULT_WIDTH - tension)));
+		cameramovex += pmovex;//(inleft ? 1 : (px - (DEFAULT_WIDTH - tension)));
 		movex = Right;
 	    } else if (pdiffx < 0){
-		cameramovex -= fabs(((Character *)o)->getXVelocity())/2;//.5;
+		cameramovex -= pmovex/2;
 		movex = LeftBounds;
 	    }  
 	    if ( !playerInfo[o].rightTension ){
