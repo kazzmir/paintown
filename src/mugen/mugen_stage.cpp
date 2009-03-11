@@ -1354,13 +1354,13 @@ void MugenStage::updatePlayer( Object *o ){
 	// This is to move extra in case a boundary was hit
 	double cameramovex = 0;
 	// Left side x
-	const double pmovex = ((Character *)o)->isJumping() ? fabs(((Character *)o)->getXVelocity()) : ((Character *)o)->getSpeed();
+	const double playerMoveX = ((Character *)o)->isJumping() ? fabs(((Character *)o)->getXVelocity()) : ((Character *)o)->getSpeed();
 	if (px <= tension){
 	    if (pdiffx < 0){
-		cameramovex -= pmovex;//(inright ? 1 :(tension - px));
+		cameramovex -= playerMoveX;//(inright ? 1 :(tension - px));
 		movex = Left;
 	    } else if (pdiffx > 0){
-		cameramovex += pmovex/2;
+		cameramovex += playerMoveX/2;
 		movex = RightBounds;
 	    } 
 	    if ( !playerInfo[o].leftTension ){
@@ -1369,10 +1369,10 @@ void MugenStage::updatePlayer( Object *o ){
 	    }
 	} else if (px >= (DEFAULT_WIDTH - tension)){
 	    if (pdiffx > 0){
-		cameramovex += pmovex;//(inleft ? 1 : (px - (DEFAULT_WIDTH - tension)));
+		cameramovex += playerMoveX;//(inleft ? 1 : (px - (DEFAULT_WIDTH - tension)));
 		movex = Right;
 	    } else if (pdiffx < 0){
-		cameramovex -= pmovex/2;
+		cameramovex -= playerMoveX/2;
 		movex = LeftBounds;
 	    }  
 	    if ( !playerInfo[o].rightTension ){
