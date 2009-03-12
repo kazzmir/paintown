@@ -18,6 +18,7 @@
 #include "object/object.h"
 #include "object/character.h"
 #include "object/object_attack.h"
+#include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
 
@@ -38,7 +39,7 @@ static const int DEFAULT_OBJECT_OFFSET = 160;
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 static const double DEFAULT_JUMP_VELOCITY = 7.2;
-static const int CONSOLE_SIZE = 150;
+static const int CONSOLE_SIZE = 95;
 static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 static void correctStageName( std::string &str ){
@@ -965,7 +966,7 @@ void MugenStage::logic( ){
 	zlinkbackground = getBackground(zoffsetlink);
 	zoffset = zlinkbackground->y;
     }
-    *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << Console::endl;
+    *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << Console::endl;
     
     // Backgrounds
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
@@ -978,7 +979,7 @@ void MugenStage::logic( ){
         /* use local variables more often, iterators can be easily confused */
         Object * player = *it;
         player->act( &objects, (World *)this, &add);
-	if (zoffsetlink == DEFAULT_BACKGROUND_ID){
+	/*if (zoffsetlink == DEFAULT_BACKGROUND_ID){
 	    player->setZ( zoffset + abs(boundhigh) );
 	} else {
 	    if (!zlinkbackground->positionlink){
@@ -986,6 +987,11 @@ void MugenStage::logic( ){
 	    } else {
 		player->setZ( zoffset );
 	    }
+	}*/
+	if (zoffsetlink == DEFAULT_BACKGROUND_ID){
+	    player->setZ( zoffset + abs(boundhigh) );
+	} else {
+	    player->setZ( zoffset );
 	}
 	
 	// Check collisions
@@ -1005,12 +1011,14 @@ void MugenStage::logic( ){
 		    }
 		    // autoturn need to do turning actions
 		    if (autoturn){
-			if (player->getX() < enemy->getX() && player->getFacing() != Object::FACING_RIGHT ){
-			    player->setFacing(Object::FACING_RIGHT);
-			}
+			if (isaPlayer( player )){
+			    if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT ){
+				enemy->setFacing(Object::FACING_LEFT);
+			    }
 
-			if (player->getX() > enemy->getX() && player->getFacing() != Object::FACING_LEFT ){
-			    player->setFacing(Object::FACING_LEFT);
+			    if (enemy->getX() < player->getX() && enemy->getFacing() != Object::FACING_RIGHT ){
+				enemy->setFacing(Object::FACING_RIGHT);
+			    }
 			}
 		    }
 		}
@@ -1047,9 +1055,9 @@ void MugenStage::logic( ){
 	    updatePlayer( player );
 	    
 	    // Lets put their health back on the radar until we get the stages ready for real games
-	    if ( player->getHealth() < player->getMaxHealth() ){
+	    /*if ( player->getHealth() < player->getMaxHealth() ){
 		player->setHealth( player->getHealth() + 1 );
-	    }
+	    }*/
 	    
 	    // Update old position
 	    playerInfo[player].oldx = player->getX();
@@ -1103,19 +1111,10 @@ void MugenStage::render( Bitmap *work ){
 	(*i)->render( (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     }
     
-    // Life bars?
+    // Player debug
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-	int p1Side = 5;
-	int p2Side = 5;
 	if (isaPlayer(*it)){
 	    Character *character = (Character*)*it;
-	    /*if ( character->getAlliance() == Player1Side ){
-		character->drawLifeBar( 5, p1Side, board );
-		p1Side +=10;
-	    } else if ( character->getAlliance() == Player2Side ){
-		character->drawLifeBar( 215, p2Side, board );
-		p2Side +=10;
-	    }*/
 	    // Player debug crap
 	    if (debugMode){
 		// Players x positioning
@@ -1126,7 +1125,7 @@ void MugenStage::render( Bitmap *work ){
     
     // Debug crap for board coordinates
     if (debugMode){
-	board->hLine( 0, (zoffset) - floortension, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
+	board->hLine( 0, zoffset - floortension, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
     }
     
     //board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
@@ -1136,6 +1135,22 @@ void MugenStage::render( Bitmap *work ){
     if (debugMode){
 	work->vLine( 0, tension, 240, Bitmap::makeColor( 0,255,0 ));
 	work->vLine( 0, 320 - tension, 240, Bitmap::makeColor( 0,255,0 ));
+    }
+    
+    // Life bars, will eventually be changed out with mugens interface
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+	int p1Side = 5;
+	int p2Side = 5;
+	if (isaPlayer(*it)){
+	    Character *character = (Character*)*it;
+	    if ( character->getAlliance() == Player1Side ){
+		character->drawLifeBar( 5, p1Side, work );
+		p1Side +=10;
+	    } else if ( character->getAlliance() == Player2Side ){
+		character->drawLifeBar( 215, p2Side, work );
+		p2Side +=10;
+	    }
+	}
     }
     
     // Render console
@@ -1157,6 +1172,7 @@ void MugenStage::reset( ){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *player = *it;
 	if( player->getAlliance() == Player1Side ){
+	    ((Player *)player)->deathReset();
 	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p1startx );
 	    player->setY( p1starty );
 	    player->setZ( zoffset );
@@ -1169,6 +1185,7 @@ void MugenStage::reset( ){
 	    playerInfo[player].rightSide = false;
 	    playerInfo[player].jumped = false;
 	} else if( player->getAlliance() == Player2Side ){
+	    ((Player *)player)->deathReset();
 	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p2startx );
 	    player->setY( p2starty );
 	    player->setZ( zoffset );

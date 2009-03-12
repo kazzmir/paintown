@@ -288,18 +288,6 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
                 runCounter -= 1;
                 draw = true;
 
-                if( keyInputManager::keyState('1', false) ){
-                   stage.moveCamera(0,-1);
-                }
-                if( keyInputManager::keyState('2', false) ){
-                   stage.moveCamera(0,1);
-                }
-                if( keyInputManager::keyState('3', false)){
-                   stage.moveCamera(-1,0);
-                }
-                if( keyInputManager::keyState('4', false)){
-                   stage.moveCamera(1,0);
-                }
                 if( keyInputManager::keyState('r', true)){
                     stage.reset();
                 }
