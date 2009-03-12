@@ -912,18 +912,16 @@ void MugenStage::load() throw( MugenException ){
 void MugenStage::setCamera( const double x, const double y ){ 
     camerax = x; cameray = y; 
     // Camera boundaries
-    const double augment = 0;
-    if( camerax < boundleft + augment ) camerax = boundleft + augment;
-    else if( camerax > boundright + augment )camerax = boundright + augment;
+    if( camerax < boundleft ) camerax = boundleft;
+    else if( camerax > boundright )camerax = boundright;
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
 }
 void MugenStage::moveCamera( const double x, const double y ){ 
     camerax += x; cameray += y; 
     // Camera boundaries
-    const double augment = 0;
-    if( camerax < boundleft + augment ) camerax = boundleft + augment;
-    else if( camerax > boundright + augment )camerax = boundright + augment;
+    if( camerax < boundleft ) camerax = boundleft;
+    else if( camerax > boundright )camerax = boundright;
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
 }
@@ -977,15 +975,14 @@ void MugenStage::logic( ){
         Object * player = *it;
         player->act( &objects, (World *)this, &add);
 	if (zoffsetlink == DEFAULT_BACKGROUND_ID){
-	    player->setZ( zoffset - cameray );
+	    player->setZ( zoffset + abs(boundhigh) );
 	} else {
 	    if (!zlinkbackground->positionlink){
-		player->setZ( zoffset - cameray );
+		player->setZ( zoffset + abs(boundhigh) );
 	    } else {
 		player->setZ( zoffset );
 	    }
 	}
-	
 	
 	// Check collisions
 	for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
@@ -1130,7 +1127,7 @@ void MugenStage::render( Bitmap *work ){
     if (debugMode){
 	work->vLine( 0, tension, 240, Bitmap::makeColor( 0,255,0 ));
 	work->vLine( 0, 320 - tension, 240, Bitmap::makeColor( 0,255,0 ));
-	work->hLine( 0, (zoffset - cameray) - floortension, 320, Bitmap::makeColor( 0,255,0 ));
+	board->hLine( 0, (zoffset) - floortension, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
     }
     
     // Render console
@@ -1152,7 +1149,7 @@ void MugenStage::reset( ){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *player = *it;
 	if( player->getAlliance() == Player1Side ){
-	    player->setX( DEFAULT_OBJECT_OFFSET + p1startx );
+	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p1startx );
 	    player->setY( p1starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_RIGHT );
@@ -1162,7 +1159,7 @@ void MugenStage::reset( ){
 	    playerInfo[player].rightTension = false;
 	    playerInfo[player].jumped = false;
 	} else if( player->getAlliance() == Player2Side ){
-	    player->setX( DEFAULT_OBJECT_OFFSET + p2startx );
+	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p2startx );
 	    player->setY( p2starty );
 	    player->setZ( zoffset );
 	    player->setFacing( Object::FACING_LEFT );
@@ -1180,7 +1177,7 @@ void MugenStage::reset( ){
 // Add player1 people
 void MugenStage::addp1( Object * o ){
     o->setAlliance(Player1Side);
-    o->setX( xaxis + DEFAULT_OBJECT_OFFSET + p1startx );
+    o->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p1startx );
     o->setY( p1starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_RIGHT );
@@ -1197,7 +1194,7 @@ void MugenStage::addp1( Object * o ){
 // Add player2 people
 void MugenStage::addp2( Object * o ){
     o->setAlliance(Player2Side);
-    o->setX( xaxis + DEFAULT_OBJECT_OFFSET + p2startx );
+    o->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p2startx );
     o->setY( p2starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_LEFT );
@@ -1321,11 +1318,11 @@ void MugenStage::updatePlayer( Object *o ){
     const double px = o->getX();
     const double py = o->getY();
     // Check leftbound rightbound
-    if (px <= boundleft){ 
-	o->setX( boundleft );
+    if (px <= (abs(boundleft) + boundleft)){ 
+	o->setX(abs(boundleft) + boundleft );
 	playerInfo[o].oldx = px;
-    } else if (px >= boundright){
-	o->setX( boundright );
+    } else if (px >= (DEFAULT_WIDTH + abs(boundleft) + boundright)){
+	o->setX(DEFAULT_WIDTH + abs(boundleft) + boundright );
 	playerInfo[o].oldx = px;
     }
     //Global::debug(1) << "Are we in left: " << inleft << " | Are we in right: " << inright << " | pdiffx: " << px - playerInfo[o].oldx << endl;
