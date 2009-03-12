@@ -211,9 +211,7 @@ void showCharacter(const string & ourFile){
 
 }
 
-const int musicHits = 6;
-
-char *music[musicHits]={
+const char *music[] = {
     "tr3blanka.it",
     "tr3deejay.it",
     "tr3e-honda.it",
@@ -221,6 +219,8 @@ char *music[musicHits]={
     "tr3ken3rd.it",
     "tr3ryu2nd.it"
 };
+
+const int musicHits = sizeof(music) / sizeof(char*);
 
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
     /*set_color_depth(16);
