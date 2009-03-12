@@ -864,7 +864,7 @@ void MugenStage::load() throw( MugenException ){
     //board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
     // Nope we need it to be the size of the entire board... we then pan the blit so our characters will stay put without fiddling with their x coordinates
     board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
-    camerax = xaxis = startx + boundright;
+    camerax = xaxis = startx;
     cameray = yaxis = starty;
     
     // Set up the animations for those that have action numbers assigned (not -1 )
@@ -910,7 +910,7 @@ void MugenStage::load() throw( MugenException ){
 void MugenStage::setCamera( const double x, const double y ){ 
     camerax = x; cameray = y; 
     // Camera boundaries
-    const double augment = boundright;
+    const double augment = 0;
     if( camerax < boundleft + augment ) camerax = boundleft + augment;
     else if( camerax > boundright + augment )camerax = boundright + augment;
     if( cameray < boundhigh ) cameray = boundhigh;
@@ -919,7 +919,7 @@ void MugenStage::setCamera( const double x, const double y ){
 void MugenStage::moveCamera( const double x, const double y ){ 
     camerax += x; cameray += y; 
     // Camera boundaries
-    const double augment = boundright;
+    const double augment = 0;
     if( camerax < boundleft + augment ) camerax = boundleft + augment;
     else if( camerax > boundright + augment )camerax = boundright + augment;
     if( cameray < boundhigh ) cameray = boundhigh;
@@ -1106,13 +1106,13 @@ void MugenStage::render( Bitmap *work ){
 	int p2Side = 5;
 	if (isaPlayer(*it)){
 	    Character *character = (Character*)*it;
-	    if ( character->getAlliance() == Player1Side ){
+	    /*if ( character->getAlliance() == Player1Side ){
 		character->drawLifeBar( 5, p1Side, board );
 		p1Side +=10;
 	    } else if ( character->getAlliance() == Player2Side ){
 		character->drawLifeBar( 215, p2Side, board );
 		p2Side +=10;
-	    }
+	    }*/
 	    // Player debug crap
 	    if (debugMode){
 		// Players x positioning
@@ -1121,18 +1121,18 @@ void MugenStage::render( Bitmap *work ){
 	}
     }
     
+    //board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
+    board->Blit( xaxis + camerax, yaxis + cameray, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
+    
     // Debug crap?
     if (debugMode){
-	board->vLine( 0, tension, 240, Bitmap::makeColor( 0,255,0 ));
-	board->vLine( 0, 320 - tension, 240, Bitmap::makeColor( 0,255,0 ));
-	board->hLine( 0, (zoffset - cameray) - floortension, 320, Bitmap::makeColor( 0,255,0 ));
+	work->vLine( 0, tension, 240, Bitmap::makeColor( 0,255,0 ));
+	work->vLine( 0, 320 - tension, 240, Bitmap::makeColor( 0,255,0 ));
+	work->hLine( 0, (zoffset - cameray) - floortension, 320, Bitmap::makeColor( 0,255,0 ));
     }
     
     // Render console
-    console->draw( *board );
-    
-    //board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
-    board->Blit( xaxis + camerax, yaxis + cameray, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
+    console->draw( *work );
 }
 
 void MugenStage::reset( ){
@@ -1319,11 +1319,11 @@ void MugenStage::updatePlayer( Object *o ){
     const double px = o->getX();
     const double py = o->getY();
     // Check leftbound rightbound
-    if (px <= leftbound){ 
-	o->setX( leftbound );
+    if (px <= boundleft){ 
+	o->setX( boundleft );
 	playerInfo[o].oldx = px;
-    } else if (px >= rightbound){
-	o->setX( rightbound );
+    } else if (px >= boundright){
+	o->setX( boundright );
 	playerInfo[o].oldx = px;
     }
     //Global::debug(1) << "Are we in left: " << inleft << " | Are we in right: " << inright << " | pdiffx: " << px - playerInfo[o].oldx << endl;
