@@ -72,6 +72,10 @@ public:
 	/* make the character jump with an x velocity of x_ */
 	virtual void doJump( double x_, double z_ );
 	
+        /* implements the visitor OOP pattern:
+         * stimulation calls stimulate on character, then character
+         * calls stimulate on stimulation with the proper type
+         */
 	virtual void stimulate( const Stimulation & stim );
 
 	/* inherited from object */
