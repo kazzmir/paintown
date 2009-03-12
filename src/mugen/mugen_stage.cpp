@@ -1331,25 +1331,52 @@ void MugenStage::updatePlayer( Object *o ){
     } else if (px <= (abs(boundleft) + camerax)){
 	o->setX(abs(boundleft) + camerax);
 	playerInfo[o].oldx = px;
+	if (!playerInfo[o].leftTension){
+	    playerInfo[o].leftTension = true;
+	    inleft++;
+	}
     } else if (px >= (abs(boundleft) + camerax + DEFAULT_WIDTH)){
 	o->setX(abs(boundleft) + camerax + DEFAULT_WIDTH);
 	playerInfo[o].oldx = px;
+	if (!playerInfo[o].rightTension){
+	    playerInfo[o].rightTension = true;
+	    inright++;
+	}
+    } 
+    if (px >= (abs(boundleft) + camerax + tension)){
+	if (playerInfo[o].leftTension){
+	    playerInfo[o].leftTension = false;
+	    inleft--;
+	}
     }
-    //const double pdiffx = px - playerInfo[o].oldx;
+    if (px <= ((abs(boundleft) + camerax + DEFAULT_WIDTH) - tension)){
+	if (playerInfo[o].rightTension){
+	    playerInfo[o].rightTension = false;
+	    inright--;
+	}
+    }
+    
+    const double pdiffx = px - playerInfo[o].oldx;
     if ((px <= ((abs(boundleft) + camerax) + tension)) && (px != ((abs(boundleft) + camerax)))){
-	const double playerMoveX = ((Character *)o)->isJumping() ? fabs(((Character *)o)->getXVelocity()) : ((Character *)o)->getSpeed();
-	/*if (pdiffx > 0){
-	   moveCamera(playerMoveX/2, 0);
-	} else{*/
-	    moveCamera(-playerMoveX, 0);
-	//}
+	if (pdiffx < 0){
+	    if (!inright){
+		moveCamera(pdiffx,0);
+	    }
+	} else if (pdiffx > 0){
+	    if (inright){
+		moveCamera(pdiffx,0);
+	    }
+	}
     } else if ((px >= ((abs(boundleft) + camerax + DEFAULT_WIDTH) - tension)) && (px != ((abs(boundleft) + camerax + DEFAULT_WIDTH)))){
-	const double playerMoveX = ((Character *)o)->isJumping() ? fabs(((Character *)o)->getXVelocity()) : ((Character *)o)->getSpeed();
-	/*if ( pdiffx < 0 ){
-	   moveCamera(-playerMoveX/2, 0);
-	} else {*/
-	   moveCamera(playerMoveX, 0);
-	//}
+	if (pdiffx > 0){
+	    if(!inleft){
+		moveCamera(pdiffx,0);
+	    }
+	} else if (pdiffx < 0){
+	    if(inleft){
+		moveCamera(pdiffx,0);
+	    }
+	}
     }
     
     // Vertical movement of camera
