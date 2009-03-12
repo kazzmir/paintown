@@ -286,6 +286,8 @@ console(new Console(CONSOLE_SIZE)),
 debugMode(false),
 inleft(0),
 inright(0),
+onLeftSide(0),
+onRightSide(0),
 inabove(0){
 }
 
@@ -349,6 +351,8 @@ console(new Console(CONSOLE_SIZE)),
 debugMode(false),
 inleft(0),
 inright(0),
+onLeftSide(0),
+onRightSide(0),
 inabove(0){
 }
 
@@ -1161,6 +1165,8 @@ void MugenStage::reset( ){
 	    playerInfo[player].oldy = player->getY();
 	    playerInfo[player].leftTension = false;
 	    playerInfo[player].rightTension = false;
+	    playerInfo[player].leftSide = false;
+	    playerInfo[player].rightSide = false;
 	    playerInfo[player].jumped = false;
 	} else if( player->getAlliance() == Player2Side ){
 	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p2startx );
@@ -1171,11 +1177,13 @@ void MugenStage::reset( ){
 	    playerInfo[player].oldy = player->getY();
 	    playerInfo[player].leftTension = false;
 	    playerInfo[player].rightTension = false;
+	    playerInfo[player].leftSide = false;
+	    playerInfo[player].rightSide = false;
 	    playerInfo[player].jumped = false;
 	}
     }
     
-    inleft = inright = 0;
+    inleft = inright = onLeftSide = onRightSide = 0;
 }
 
 // Add player1 people
@@ -1192,6 +1200,8 @@ void MugenStage::addp1( Object * o ){
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;
     playerInfo[o].rightTension = false;
+    playerInfo[o].leftSide = false;
+    playerInfo[o].rightSide = false;
     playerInfo[o].jumped = false;
 }
 
@@ -1209,6 +1219,8 @@ void MugenStage::addp2( Object * o ){
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;
     playerInfo[o].rightTension = false;
+    playerInfo[o].leftSide = false;
+    playerInfo[o].rightSide = false;
     playerInfo[o].jumped = false;
 }
 
@@ -1321,6 +1333,7 @@ void MugenStage::updatePlayer( Object *o ){
     // Move camera
     const double px = o->getX();
     const double py = o->getY();
+    const double pdiffx = px - playerInfo[o].oldx;
     // Check leftbound rightbound
     if (px <= (abs(boundleft) + boundleft)){ 
 	o->setX(abs(boundleft) + boundleft );
@@ -1328,38 +1341,73 @@ void MugenStage::updatePlayer( Object *o ){
     } else if (px >= (DEFAULT_WIDTH + abs(boundleft) + boundright)){
 	o->setX(DEFAULT_WIDTH + abs(boundleft) + boundright );
 	playerInfo[o].oldx = px;
-    } else if (px <= (abs(boundleft) + camerax)){
-	o->setX(abs(boundleft) + camerax);
-	playerInfo[o].oldx = px;
+    } 
+    
+    // Check if in tension
+    if (px <= (abs(boundleft) + camerax + tension)){
 	if (!playerInfo[o].leftTension){
 	    playerInfo[o].leftTension = true;
 	    inleft++;
 	}
-    } else if (px >= (abs(boundleft) + camerax + DEFAULT_WIDTH)){
-	o->setX(abs(boundleft) + camerax + DEFAULT_WIDTH);
-	playerInfo[o].oldx = px;
+    } else if (px >= ((abs(boundleft) + camerax + DEFAULT_WIDTH) - tension)){
 	if (!playerInfo[o].rightTension){
 	    playerInfo[o].rightTension = true;
 	    inright++;
 	}
     } 
-    if (px >= (abs(boundleft) + camerax + tension)){
+    
+    // Release tension
+    if (px > (abs(boundleft) + camerax + tension)){
 	if (playerInfo[o].leftTension){
 	    playerInfo[o].leftTension = false;
 	    inleft--;
 	}
     }
-    if (px <= ((abs(boundleft) + camerax + DEFAULT_WIDTH) - tension)){
+    // Release tension
+    if (px < ((abs(boundleft) + camerax + DEFAULT_WIDTH) - tension)){
 	if (playerInfo[o].rightTension){
 	    playerInfo[o].rightTension = false;
 	    inright--;
 	}
     }
     
-    const double pdiffx = px - playerInfo[o].oldx;
+    // Check Screen sides
+    if (px <= (abs(boundleft) + camerax)){
+	o->setX(abs(boundleft) + camerax);
+	playerInfo[o].oldx = px;
+	if (!playerInfo[o].leftSide){
+	    playerInfo[o].leftSide = true;
+	    onLeftSide++;
+	}
+    } else if (px >= ((abs(boundleft) + camerax + DEFAULT_WIDTH))){
+	o->setX(abs(boundleft) + camerax + DEFAULT_WIDTH);
+	playerInfo[o].oldx = px;
+	if (!playerInfo[o].rightSide){
+	    playerInfo[o].rightSide = true;
+	    onRightSide++;
+	}
+    } 
+    // Release side
+    if (px > (abs(boundleft) + camerax)){
+	if (playerInfo[o].leftSide){
+	    playerInfo[o].leftSide = false;
+	    onLeftSide--;
+	}
+    }
+    // Release side
+    if (px < ((abs(boundleft) + camerax + DEFAULT_WIDTH))){
+	if (playerInfo[o].rightSide){
+	    playerInfo[o].rightSide = false;
+	    onRightSide--;
+	}
+    }
+    
+    Global::debug(0) << "Left Tension: " << inleft << " | Right Tension: "<< inright << endl;
+    Global::debug(0) << "Left Screen Edge: " << onLeftSide << " | Right Screen Edge: "<< onRightSide << endl;
+    
     if ((px <= ((abs(boundleft) + camerax) + tension)) && (px != ((abs(boundleft) + camerax)))){
 	if (pdiffx < 0){
-	    if (!inright){
+	    if (!onRightSide){
 		moveCamera(pdiffx,0);
 	    }
 	} else if (pdiffx > 0){
@@ -1369,7 +1417,7 @@ void MugenStage::updatePlayer( Object *o ){
 	}
     } else if ((px >= ((abs(boundleft) + camerax + DEFAULT_WIDTH) - tension)) && (px != ((abs(boundleft) + camerax + DEFAULT_WIDTH)))){
 	if (pdiffx > 0){
-	    if(!inleft){
+	    if(!onLeftSide){
 		moveCamera(pdiffx,0);
 	    }
 	} else if (pdiffx < 0){

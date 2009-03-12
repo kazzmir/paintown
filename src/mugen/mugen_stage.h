@@ -78,6 +78,8 @@ struct PlayerData {
     double oldy;
     bool leftTension;
     bool rightTension;
+    bool leftSide;
+    bool rightSide;
     bool above;
     bool jumped;
 };
@@ -424,6 +426,8 @@ protected:
 	// This is for when characters are inside the tension area
 	int inleft;
 	int inright;
+	int onLeftSide;
+	int onRightSide;
 	int inabove;
 	
 	void updatePlayer( Object *o );
