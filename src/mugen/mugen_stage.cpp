@@ -1055,9 +1055,9 @@ void MugenStage::logic( ){
 	    updatePlayer( player );
 	    
 	    // Lets put their health back on the radar until we get the stages ready for real games
-	    /*if ( player->getHealth() < player->getMaxHealth() ){
-		player->setHealth( player->getHealth() + 1 );
-	    }*/
+	    if ( player->getHealth() < 30){//player->getMaxHealth() ){
+		player->setHealth( player->getMaxHealth() );
+	    }
 	    
 	    // Update old position
 	    playerInfo[player].oldx = player->getX();
@@ -1172,7 +1172,7 @@ void MugenStage::reset( ){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *player = *it;
 	if( player->getAlliance() == Player1Side ){
-	    ((Player *)player)->deathReset();
+	    //((Player *)player)->deathReset();
 	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p1startx );
 	    player->setY( p1starty );
 	    player->setZ( zoffset );
@@ -1185,7 +1185,7 @@ void MugenStage::reset( ){
 	    playerInfo[player].rightSide = false;
 	    playerInfo[player].jumped = false;
 	} else if( player->getAlliance() == Player2Side ){
-	    ((Player *)player)->deathReset();
+	    //((Player *)player)->deathReset();
 	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p2startx );
 	    player->setY( p2starty );
 	    player->setZ( zoffset );
