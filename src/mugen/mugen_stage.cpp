@@ -864,8 +864,10 @@ void MugenStage::load() throw( MugenException ){
     //board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
     // Nope we need it to be the size of the entire board... we then pan the blit so our characters will stay put without fiddling with their x coordinates
     board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
-    camerax = xaxis = startx;
-    cameray = yaxis = starty;
+    camerax = startx;
+    cameray = starty;
+    xaxis = startx + abs(boundleft);
+    yaxis = starty + abs(boundhigh);
     
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
@@ -874,14 +876,14 @@ void MugenStage::load() throw( MugenException ){
 	    (*i)->action = animations[ (*i)->actionno ];
 	}
 	// now load
-	(*i)->preload( xaxis, yaxis );
+	(*i)->preload( startx, starty );
     }
     for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	if( (*i)->actionno != -1 ){
 	    (*i)->action = animations[ (*i)->actionno ];
 	}
 	// now load
-	(*i)->preload( xaxis, yaxis );
+	(*i)->preload( startx, starty );
     }
     
     // zoffsetlink
@@ -1139,11 +1141,11 @@ void MugenStage::reset( ){
     camerax = startx; cameray = starty;
     for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	// reset just reloads it to default
-	(*i)->preload( xaxis, yaxis );
+	(*i)->preload( startx, starty );
     }
     for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	// reset
-	(*i)->preload( xaxis, yaxis );
+	(*i)->preload( startx, starty );
     }
     
     // Reset player positions
@@ -1178,7 +1180,7 @@ void MugenStage::reset( ){
 // Add player1 people
 void MugenStage::addp1( Object * o ){
     o->setAlliance(Player1Side);
-    o->setX( DEFAULT_OBJECT_OFFSET + p1startx );
+    o->setX( xaxis + DEFAULT_OBJECT_OFFSET + p1startx );
     o->setY( p1starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_RIGHT );
@@ -1195,7 +1197,7 @@ void MugenStage::addp1( Object * o ){
 // Add player2 people
 void MugenStage::addp2( Object * o ){
     o->setAlliance(Player2Side);
-    o->setX( DEFAULT_OBJECT_OFFSET + p2startx );
+    o->setX( xaxis + DEFAULT_OBJECT_OFFSET + p2startx );
     o->setY( p2starty );
     o->setZ( zoffset );
     o->setFacing( Object::FACING_LEFT );
