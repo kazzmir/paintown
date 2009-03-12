@@ -1120,14 +1120,18 @@ void MugenStage::render( Bitmap *work ){
 	}
     }
     
+    // Debug crap for board coordinates
+    if (debugMode){
+	board->hLine( 0, (zoffset) - floortension, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
+    }
+    
     //board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
     board->Blit( xaxis + camerax, yaxis + cameray, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
     
-    // Debug crap?
+    // Debug crap for screen coordinates
     if (debugMode){
 	work->vLine( 0, tension, 240, Bitmap::makeColor( 0,255,0 ));
 	work->vLine( 0, 320 - tension, 240, Bitmap::makeColor( 0,255,0 ));
-	board->hLine( 0, (zoffset) - floortension, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
     }
     
     // Render console
@@ -1324,123 +1328,30 @@ void MugenStage::updatePlayer( Object *o ){
     } else if (px >= (DEFAULT_WIDTH + abs(boundleft) + boundright)){
 	o->setX(DEFAULT_WIDTH + abs(boundleft) + boundright );
 	playerInfo[o].oldx = px;
+    } else if (px <= (abs(boundleft) + camerax)){
+	o->setX(abs(boundleft) + camerax);
+	playerInfo[o].oldx = px;
+    } else if (px >= (abs(boundleft) + camerax + DEFAULT_WIDTH)){
+	o->setX(abs(boundleft) + camerax + DEFAULT_WIDTH);
+	playerInfo[o].oldx = px;
     }
-    //Global::debug(1) << "Are we in left: " << inleft << " | Are we in right: " << inright << " | pdiffx: " << px - playerInfo[o].oldx << endl;
-    // Horizontal movement of camera
-    /*
-    if (playerInfo[o].oldx != px){
-	const double pdiffx = px - playerInfo[o].oldx;
-        enum Move{
-            None = 0,
-            Left = 1,
-            Right = 2,
-            LeftBounds = 3,
-            RightBounds = 4,
-        };
-
-	 // Jump velocity and other stuff
-	if (((Character *)o)->isMoving() && ((Character *)o)->isJumping() && !playerInfo[o].jumped){
-	    int xmove = 0;
-	    if (o->getFacing() == Object::FACING_LEFT){
-		if (pdiffx>0){
-		    xmove = -(DEFAULT_X_JUMP_VELOCITY);
-		} else if (pdiffx<0){
-		    xmove = DEFAULT_X_JUMP_VELOCITY;
-		}
-	    } else if (o->getFacing() == Object::FACING_RIGHT){
-		if (pdiffx<0){
-		    xmove = -(DEFAULT_X_JUMP_VELOCITY);
-		} else if (pdiffx>0){
-		    xmove = DEFAULT_X_JUMP_VELOCITY;
-		}
-	    } 
-	    ((Character *)o)->setXVelocity(xmove);
-	    ((Character *)o)->initJumpingYVelocity();
-	    playerInfo[o].jumped = true;
-	} else if (!((Character *)o)->isJumping() && playerInfo[o].jumped){
-	    playerInfo[o].jumped = false;
-	}
-
-	// 0 no move, 1 move left, 2 move right for other players so they don't float along
-	// 3 move left 2 players in bounds, 4 move right 2 player in bounds
-	Move movex = None;
-	// This is to move extra in case a boundary was hit
-	double cameramovex = 0;
-	// Left side x
+    //const double pdiffx = px - playerInfo[o].oldx;
+    if ((px <= ((abs(boundleft) + camerax) + tension)) && (px != ((abs(boundleft) + camerax)))){
 	const double playerMoveX = ((Character *)o)->isJumping() ? fabs(((Character *)o)->getXVelocity()) : ((Character *)o)->getSpeed();
-	if (px <= tension){
-	    if (pdiffx < 0){
-		cameramovex -= playerMoveX;//(inright ? 1 :(tension - px));
-		movex = Left;
-	    } else if (pdiffx > 0){
-		cameramovex += playerMoveX/2;
-		movex = RightBounds;
-	    } 
-	    if ( !playerInfo[o].leftTension ){
-		playerInfo[o].leftTension = true;
-		inleft++;
-	    }
-	} else if (px >= (DEFAULT_WIDTH - tension)){
-	    if (pdiffx > 0){
-		cameramovex += playerMoveX;//(inleft ? 1 : (px - (DEFAULT_WIDTH - tension)));
-		movex = Right;
-	    } else if (pdiffx < 0){
-		cameramovex -= playerMoveX/2;
-		movex = LeftBounds;
-	    }  
-	    if ( !playerInfo[o].rightTension ){
-		playerInfo[o].rightTension = true;
-		inright++;
-	    }
-	} else {
-	    if ( playerInfo[o].leftTension ){
-		playerInfo[o].leftTension = false;
-		inleft--;
-	    }
-	    if ( playerInfo[o].rightTension ){
-		playerInfo[o].rightTension = false;
-		inright--;
-	    }
-	}
-	// If we got camera moves lets do them
-	if( !inleft || !inright || movex == LeftBounds || movex == RightBounds){
-	    moveCamera(cameramovex,0);
-	    if (movex!=None){
-		for (vector<Object*>::iterator move = objects.begin(); move != objects.end(); ++move){
-		    Object *moveplayer = *move;
-		    if (movex == Left || movex == LeftBounds){
-			if (camerax != boundleft){
-			    // Correct camera
-			    if (movex!=LeftBounds && moveplayer->getX()==screenleft){
-				moveCamera(fabs(cameramovex) * -1,0);
-			    }
-			    moveplayer->moveRight(fabs(cameramovex));
-			    // Need to trick player into not moving the camera next iteration
-			    //playerInfo[moveplayer].oldx = moveplayer->getX();
-			}
-		    } else if (movex == Right || movex == RightBounds){
-			if (camerax != boundright){
-			    // Correct camera
-			    if (movex!=RightBounds && moveplayer->getX()==screenright){
-				moveCamera(fabs(cameramovex),0);
-			    }
-			    moveplayer->moveLeft(fabs(cameramovex));
-			    // Need to trick player into not moving the camera next iteration
-			    //playerInfo[moveplayer].oldx = moveplayer->getX();
-			}
-		    }
-		}
-	    }
-	}
+	/*if (pdiffx > 0){
+	   moveCamera(playerMoveX/2, 0);
+	} else{*/
+	    moveCamera(-playerMoveX, 0);
+	//}
+    } else if ((px >= ((abs(boundleft) + camerax + DEFAULT_WIDTH) - tension)) && (px != ((abs(boundleft) + camerax + DEFAULT_WIDTH)))){
+	const double playerMoveX = ((Character *)o)->isJumping() ? fabs(((Character *)o)->getXVelocity()) : ((Character *)o)->getSpeed();
+	/*if ( pdiffx < 0 ){
+	   moveCamera(-playerMoveX/2, 0);
+	} else {*/
+	   moveCamera(playerMoveX, 0);
+	//}
     }
-    if (o->getX() <= screenleft){ 
-	o->setX( screenleft );
-	playerInfo[o].oldx = o->getX();
-    } else if (o->getX() >= DEFAULT_WIDTH - screenright){
-	o->setX( DEFAULT_WIDTH - screenright );
-	playerInfo[o].oldx = o->getX();
-    }
-    */
+    
     // Vertical movement of camera
     if (playerInfo[o].oldy != py){
 	if (verticalfollow > 0){
