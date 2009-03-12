@@ -861,8 +861,10 @@ void MugenStage::load() throw( MugenException ){
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
     // Setup board our worksurface to the proper size of the entire stage 320x240 :P
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
-    board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
-    camerax = xaxis = startx;
+    //board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
+    // Nope we need it to be the size of the entire board... we then pan the blit so our characters will stay put without fiddling with their x coordinates
+    board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
+    camerax = xaxis = startx + boundright;
     cameray = yaxis = starty;
     
     // Set up the animations for those that have action numbers assigned (not -1 )
@@ -908,16 +910,18 @@ void MugenStage::load() throw( MugenException ){
 void MugenStage::setCamera( const double x, const double y ){ 
     camerax = x; cameray = y; 
     // Camera boundaries
-    if( camerax < boundleft ) camerax = boundleft;
-    else if( camerax > boundright )camerax = boundright;
+    const double augment = boundright;
+    if( camerax < boundleft + augment ) camerax = boundleft + augment;
+    else if( camerax > boundright + augment )camerax = boundright + augment;
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
 }
 void MugenStage::moveCamera( const double x, const double y ){ 
     camerax += x; cameray += y; 
     // Camera boundaries
-    if( camerax < boundleft ) camerax = boundleft;
-    else if( camerax > boundright )camerax = boundright;
+    const double augment = boundright;
+    if( camerax < boundleft + augment ) camerax = boundleft + augment;
+    else if( camerax > boundright + augment )camerax = boundright + augment;
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
 }
@@ -961,7 +965,7 @@ void MugenStage::logic( ){
     
     // Backgrounds
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	(*i)->logic( diffx, diffy );
+	(*i)->logic( diffx, diffy, xaxis + camerax, yaxis + cameray );
     }
     
     // Players go in here
@@ -1062,7 +1066,7 @@ void MugenStage::logic( ){
     
     // Foregrounds
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	(*i)->logic( diffx, diffy );
+	(*i)->logic( diffx, diffy, xaxis + camerax, yaxis + cameray );
     }
     
     // Controllers
@@ -1127,7 +1131,8 @@ void MugenStage::render( Bitmap *work ){
     // Render console
     console->draw( *board );
     
-    board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
+    //board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
+    board->Blit( xaxis + camerax, yaxis + cameray, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
 }
 
 void MugenStage::reset( ){
@@ -1313,8 +1318,17 @@ void MugenStage::updatePlayer( Object *o ){
     // Move camera
     const double px = o->getX();
     const double py = o->getY();
+    // Check leftbound rightbound
+    if (px <= leftbound){ 
+	o->setX( leftbound );
+	playerInfo[o].oldx = px;
+    } else if (px >= rightbound){
+	o->setX( rightbound );
+	playerInfo[o].oldx = px;
+    }
     //Global::debug(1) << "Are we in left: " << inleft << " | Are we in right: " << inright << " | pdiffx: " << px - playerInfo[o].oldx << endl;
     // Horizontal movement of camera
+    /*
     if (playerInfo[o].oldx != px){
 	const double pdiffx = px - playerInfo[o].oldx;
         enum Move{
@@ -1324,7 +1338,7 @@ void MugenStage::updatePlayer( Object *o ){
             LeftBounds = 3,
             RightBounds = 4,
         };
-	/*
+
 	 // Jump velocity and other stuff
 	if (((Character *)o)->isMoving() && ((Character *)o)->isJumping() && !playerInfo[o].jumped){
 	    int xmove = 0;
@@ -1346,7 +1360,7 @@ void MugenStage::updatePlayer( Object *o ){
 	    playerInfo[o].jumped = true;
 	} else if (!((Character *)o)->isJumping() && playerInfo[o].jumped){
 	    playerInfo[o].jumped = false;
-	}*/
+	}
 
 	// 0 no move, 1 move left, 2 move right for other players so they don't float along
 	// 3 move left 2 players in bounds, 4 move right 2 player in bounds
@@ -1427,6 +1441,7 @@ void MugenStage::updatePlayer( Object *o ){
 	o->setX( DEFAULT_WIDTH - screenright );
 	playerInfo[o].oldx = o->getX();
     }
+    */
     // Vertical movement of camera
     if (playerInfo[o].oldy != py){
 	if (verticalfollow > 0){

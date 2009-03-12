@@ -119,7 +119,7 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     return *this;
 }
     
-void MugenBackground::logic( const int x, const int y ){
+void MugenBackground::logic( const int x, const int y, const int placementx, const int placementy ){
     if (enabled){
 	movex = movey = 0;
 	movex += x * deltax;
@@ -140,8 +140,8 @@ void MugenBackground::logic( const int x, const int y ){
 	
 	if( type == Anim ) action->logic();
 	
-	this->x = (int)(xoffset + movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
-	this->y = (int)(yoffset + movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
+	this->x = (int)(placementx + xoffset + movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
+	this->y = (int)(placementy + yoffset + movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
     }
 }
     

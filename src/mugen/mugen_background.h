@@ -41,7 +41,7 @@ public:
     
     MugenBackground & operator=( const MugenBackground &copy );
     
-    void logic( const int x, const int y );
+    void logic( const int x, const int y, const int placementx, const int placementy );
     
     void render( const int totalLength, const int totalHeight, Bitmap *work );
     
