@@ -435,6 +435,9 @@ protected:
 	// Controllers
 	std::vector<MugenBackgroundController *> controllers;
 	
+	// This is for controllers as sometimes backgrounds share IDs for this purpose
+	void getBackgrounds( std::vector<MugenBackground *> &bgs, int ID );
+	
 	// What garbage
 	deque<Bitmap*> garbage;
 };

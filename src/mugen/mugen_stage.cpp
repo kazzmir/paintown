@@ -103,7 +103,7 @@ void BackgroundController::act(const double xaxis, const double yaxis){
 	    if (!background->underControl){
 		background->underControl = true;
 	    }
-	    Global::debug(0) << "Acting on background: " << background->getName() << " | Type: " << type << endl;
+	    Global::debug(1) << "Acting on background: " << background->getName() << " | Type: " << type << endl;
 	    switch (type){
 		case Ctrl_Visible:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
@@ -118,11 +118,11 @@ void BackgroundController::act(const double xaxis, const double yaxis){
 		case Ctrl_VelSet:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
 			background->velocityx = value1;
-			Global::debug(0) << "	Set X velocity to: " << value1 << endl;
+			Global::debug(1) << "	Set X velocity to: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
 			background->velocityy = value2;
-			Global::debug(0) << "	Set Y velocity to: " << value2 << endl;
+			Global::debug(1) << "	Set Y velocity to: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_VelAdd:
@@ -136,21 +136,21 @@ void BackgroundController::act(const double xaxis, const double yaxis){
 		case Ctrl_PosSet:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
 			background->controller_offsetx = value1;
-			Global::debug(0) << "	Set X position to: " << value1 << endl;
+			Global::debug(1) << "	Set X position to: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
 			background->controller_offsety = value2;
-			Global::debug(0) << "	Set Y position to: " << value2 << endl;
+			Global::debug(1) << "	Set Y position to: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_PosAdd:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
 			background->controller_offsetx += value1;
-			Global::debug(0) << "	Add to Position X: " << value1 << endl;
+			Global::debug(1) << "	Add to Position X: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
 			background->controller_offsety += value2;
-			Global::debug(0) << "	Add to Position Y: " << value2 << endl;
+			Global::debug(1) << "	Add to Position Y: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_Animation:
@@ -217,8 +217,10 @@ void MugenBackgroundController::addControl( BackgroundController *ctrl ){
 }
 void MugenBackgroundController::act(const double xaxis, const double yaxis){
     // Lets act out our controllers
+    Global::debug(1) << "Controller Def: " << name << " | Total controls: " << controls.size() << endl;
     for (std::vector<BackgroundController *>::iterator i = controls.begin(); i != controls.end(); ++i){
 	    BackgroundController *ctrl = *i;
+	    Global::debug(1) << "Acting on Controller: " << ctrl->name << " | timestart: " << ctrl->timestart << " | endtime: " << ctrl->endtime << " | looptime" << ctrl->looptime << " | ticker: " << ctrl->ownticker << endl;
 	    ctrl->act(xaxis, yaxis);
     }
     if( (looptime != -1) && (ticker > looptime) ){
@@ -782,8 +784,7 @@ void MugenStage::load() throw( MugenException ){
 		    while(content->hasItems()){
 			int id;
 			*content->getNext() >> id;
-			MugenBackground *bg = getBackground(id);
-			temp->backgrounds.push_back(bg);
+			getBackgrounds(temp->backgrounds, id);
 		    }
 		} else throw MugenException( "Unhandled option in BGCtrlDef " + head + " Section: " + itemhead );
 	    }
@@ -854,8 +855,7 @@ void MugenStage::load() throw( MugenException ){
 		    while(content->hasItems()){
 			int id;
 			*content->getNext() >> id;
-			MugenBackground *bg = getBackground(id);
-			temp->backgrounds.push_back(bg);
+			getBackgrounds(temp->backgrounds, id);
 		    }
 		} else throw MugenException( "Unhandled option in BGCtrl " + head + " Section: " + itemhead );
 	    }
@@ -1480,3 +1480,19 @@ void MugenStage::updatePlayer( Object *o ){
     }
     //Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }
+
+// This is for controllers as sometimes backgrounds share IDs for this purpose
+void MugenStage::getBackgrounds( std::vector<MugenBackground *> &bgs, int ID ){
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	if( (*i)->id == ID ){
+	    bgs.push_back( *i );
+	}
+    }
+    for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	if( (*i)->id == ID ){
+	    bgs.push_back( *i );
+	}
+    }
+}
+
+
