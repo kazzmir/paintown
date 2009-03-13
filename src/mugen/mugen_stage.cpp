@@ -736,7 +736,27 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> frame->yoffset;
 		    *content->getNext() >> frame->time;
 		    Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
-		    // Check for flips
+		    // Check for flips and color additions
+		    while( content->hasItems() ){
+			std::string temp;
+			*content->getNext() >> temp;
+			MugenUtil::fixCase(temp);
+			if( temp.find("h") != std::string::npos )frame->flipHorizontal = true;
+			if( temp.find("v") != std::string::npos )frame->flipVertical = true;
+			if (temp[0] == 'a'){
+			    frame->colorAdd = ADD;
+			} else if (temp[0] == 's'){
+			    frame->colorAdd = SUB;
+			}
+			// Check if we have specified additions
+			if (temp.size() > 1){
+			    // Source
+			    frame->colorSource = atoi(temp.substr(2,4).c_str());
+			    // Dest
+			    frame->colorDestination = atoi(temp.substr(6,8).c_str());
+			}
+		    }
+		    /*
 		    if( content->hasItems() ){
 			std::string flip;
 			*content->getNext() >> flip;
@@ -748,9 +768,10 @@ void MugenStage::load() throw( MugenException ){
 		    if( content->hasItems() ){
 			std::string temp;
 			*content->getNext() >> temp;
-			if (temp[0] == 'A'){
+			MugenUtil::fixCase(temp);
+			if (temp[0] == 'a'){
 			    frame->colorAdd = ADD;
-			} else if (temp[0] == 'B'){
+			} else if (temp[0] == 's'){
 			    frame->colorAdd = SUB;
 			}
 			// Check if we have specified additions
@@ -761,6 +782,7 @@ void MugenStage::load() throw( MugenException ){
 			    frame->colorDestination = atoi(temp.substr(6,8).c_str());
 			}
 		    }
+		    */
 		    // Add sprite
 		    frame->sprite = sprites[(unsigned short)group][(unsigned short)spriteNumber];
                     if (frame->sprite == 0){
@@ -1137,8 +1159,7 @@ void MugenStage::render( Bitmap *work ){
 	board->hLine( 0, zoffset - floortension, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
     }
     
-    //board->Blit( xaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), yaxis + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, *work );
-    board->Blit( xaxis + camerax, yaxis + cameray, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
+    board->Blit( (xaxis + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
     
     // Debug crap for screen coordinates
     if (debugMode){
