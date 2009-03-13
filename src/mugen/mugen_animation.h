@@ -7,6 +7,12 @@
 class Bitmap;
 class MugenSprite;
 
+enum ColorType {
+    NO = 0,
+    ADD,
+    SUB
+};
+
 /*
 Collision Area
 */
@@ -63,7 +69,10 @@ class MugenFrame{
 	15,4, 0,0, 5, ,A1  ;<-- Color addition to 50% darkened dest
 	15,4, 0,0, 5, ,AS128D128 ;<-- Mix 50% source with 50% dest
 	*/
-	std::string colorAdd;
+	//std::string colorAdd;
+	ColorType colorAdd;
+	int colorSource;
+	int colorDestination;
 	
 	Bitmap *bmp;
 };

@@ -52,7 +52,9 @@ yoffset(0),
 time(0),
 flipHorizontal(false),
 flipVertical(false),
-colorAdd(""),
+colorAdd(NO),
+colorSource(255),
+colorDestination(255),
 bmp(0){
 }
 MugenFrame::MugenFrame( const MugenFrame &copy ){
@@ -64,6 +66,8 @@ MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->flipHorizontal = copy.flipHorizontal;
     this->flipVertical = copy.flipVertical;
     this->colorAdd = copy.colorAdd;
+    this->colorSource = copy.colorSource;
+    this->colorDestination = copy.colorDestination;
     if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
 
 }
@@ -77,6 +81,8 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
     this->flipHorizontal = copy.flipHorizontal;
     this->flipVertical = copy.flipVertical;
     this->colorAdd = copy.colorAdd;
+    this->colorSource = copy.colorSource;
+    this->colorDestination = copy.colorDestination;
     if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
     
     return *this;
@@ -150,16 +156,83 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
     const int placex = (xaxis - spritex ) + frames[position]->xoffset;
     const int placey = (yaxis - spritey ) + frames[position]->yoffset;
     
-    if( frames[position]->flipHorizontal && ! frames[position]->flipVertical ){
-	frames[position]->bmp->drawHFlip(placex, placey, work);
+    if (frames[position]->flipHorizontal && ! frames[position]->flipVertical){
+	switch (frames[position]->colorAdd){
+	    case ADD:
+		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
+		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		frames[position]->bmp->drawTransHFlip(placex, placey, work);
+		Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		break;
+	    case SUB:
+		Bitmap::differenceBlender( 255, 255, 255, frames[position]->colorSource );
+		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		frames[position]->bmp->drawTransHFlip(placex, placey, work);
+		Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		break;
+	    case NO:
+	    default:
+		frames[position]->bmp->drawHFlip(placex, placey, work);
+		break;
+	}
+    } else if (frames[position]->flipVertical && ! frames[position]->flipHorizontal){
+	switch (frames[position]->colorAdd){
+	    case ADD:
+		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
+		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		frames[position]->bmp->drawTransVFlip(placex, placey, work);
+		Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		break;
+	    case SUB:
+		Bitmap::differenceBlender( 255, 255, 255, frames[position]->colorSource );
+		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		frames[position]->bmp->drawTransVFlip(placex, placey, work);
+		Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		break;
+	    case NO:
+	    default:
+		frames[position]->bmp->drawVFlip(placex, placey, work);
+		break;
+	}
+    } else if ( frames[position]->flipVertical && frames[position]->flipHorizontal ){
+	switch (frames[position]->colorAdd){
+	    case ADD:
+		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
+		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		frames[position]->bmp->drawTransHVFlip(placex, placey, work);
+		Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		break;
+	    case SUB:
+		Bitmap::differenceBlender( 255, 255, 255, frames[position]->colorSource );
+		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		frames[position]->bmp->drawTransHVFlip(placex, placey, work);
+		Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		break;
+	    case NO:
+	    default:
+		frames[position]->bmp->drawHVFlip(placex, placey, work);
+		break;
+	}
+    } else{
+	switch (frames[position]->colorAdd){
+	    case ADD:
+		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
+		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		frames[position]->bmp->drawTrans(placex, placey, work);
+		Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		break;
+	    case SUB:
+		Bitmap::differenceBlender( 255, 255, 255, frames[position]->colorSource );
+		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		frames[position]->bmp->drawTrans(placex, placey, work);
+		Bitmap::drawingMode( Bitmap::MODE_SOLID );
+		break;
+	    case NO:
+	    default:
+		frames[position]->bmp->draw(placex, placey, work);
+		break;
+	}
     }
-    else if( frames[position]->flipVertical && ! frames[position]->flipHorizontal ){
-	frames[position]->bmp->drawVFlip(placex, placey, work);
-    }
-    else if( frames[position]->flipVertical && frames[position]->flipHorizontal ){
-	frames[position]->bmp->drawHVFlip(placex, placey,work);
-    }
-    else frames[position]->bmp->draw(placex, placey, work);
     
     if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
     if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
