@@ -160,15 +160,11 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		Bitmap::drawingMode( Bitmap::MODE_TRANS );
 		frames[position]->bmp->drawTransHFlip(placex, placey, work);
-		Bitmap::drawingMode( Bitmap::MODE_SOLID );
 		break;
 	    case SUB:
-		Bitmap::differenceBlender( 255, 255, 255, frames[position]->colorSource );
-		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
 		frames[position]->bmp->drawTransHFlip(placex, placey, work);
-		Bitmap::drawingMode( Bitmap::MODE_SOLID );
 		break;
 	    case NO:
 	    default:
@@ -179,15 +175,11 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		Bitmap::drawingMode( Bitmap::MODE_TRANS );
 		frames[position]->bmp->drawTransVFlip(placex, placey, work);
-		Bitmap::drawingMode( Bitmap::MODE_SOLID );
 		break;
 	    case SUB:
-		Bitmap::differenceBlender( 255, 255, 255, frames[position]->colorSource );
-		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
 		frames[position]->bmp->drawTransVFlip(placex, placey, work);
-		Bitmap::drawingMode( Bitmap::MODE_SOLID );
 		break;
 	    case NO:
 	    default:
@@ -198,15 +190,11 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		Bitmap::drawingMode( Bitmap::MODE_TRANS );
 		frames[position]->bmp->drawTransHVFlip(placex, placey, work);
-		Bitmap::drawingMode( Bitmap::MODE_SOLID );
 		break;
 	    case SUB:
-		Bitmap::differenceBlender( 255, 255, 255, frames[position]->colorSource );
-		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
 		frames[position]->bmp->drawTransHVFlip(placex, placey, work);
-		Bitmap::drawingMode( Bitmap::MODE_SOLID );
 		break;
 	    case NO:
 	    default:
@@ -217,15 +205,11 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		Bitmap::drawingMode( Bitmap::MODE_TRANS );
 		frames[position]->bmp->drawTrans(placex, placey, work);
-		Bitmap::drawingMode( Bitmap::MODE_SOLID );
 		break;
 	    case SUB:
-		Bitmap::differenceBlender( 255, 255, 255, frames[position]->colorSource );
-		Bitmap::drawingMode( Bitmap::MODE_TRANS );
+		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
 		frames[position]->bmp->drawTrans(placex, placey, work);
-		Bitmap::drawingMode( Bitmap::MODE_SOLID );
 		break;
 	    case NO:
 	    default:
