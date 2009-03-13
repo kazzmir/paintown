@@ -756,33 +756,6 @@ void MugenStage::load() throw( MugenException ){
 			    frame->colorDestination = atoi(temp.substr(6,8).c_str());
 			}
 		    }
-		    /*
-		    if( content->hasItems() ){
-			std::string flip;
-			*content->getNext() >> flip;
-			MugenUtil::fixCase( flip );
-			if( flip.find("h") != std::string::npos )frame->flipHorizontal = true;
-			if( flip.find("v") != std::string::npos )frame->flipVertical = true;
-		    }
-		    // Color add
-		    if( content->hasItems() ){
-			std::string temp;
-			*content->getNext() >> temp;
-			MugenUtil::fixCase(temp);
-			if (temp[0] == 'a'){
-			    frame->colorAdd = ADD;
-			} else if (temp[0] == 's'){
-			    frame->colorAdd = SUB;
-			}
-			// Check if we have specified additions
-			if (temp.size() > 1){
-			    // Source
-			    frame->colorSource = atoi(temp.substr(2,4).c_str());
-			    // Dest
-			    frame->colorDestination = atoi(temp.substr(6,8).c_str());
-			}
-		    }
-		    */
 		    // Add sprite
 		    frame->sprite = sprites[(unsigned short)group][(unsigned short)spriteNumber];
                     if (frame->sprite == 0){
