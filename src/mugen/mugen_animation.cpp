@@ -142,6 +142,9 @@ void MugenAnimation::logic(){
 }
 
 void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
+    if (frames[position]->sprite == 0){
+	return;
+    }
     const int spritex = frames[position]->sprite ? frames[position]->sprite->x : 0;
     const int spritey = frames[position]->sprite ? frames[position]->sprite->y : 0;
     const int placex = (xaxis - spritex ) + frames[position]->xoffset;

@@ -34,6 +34,7 @@ public:
     MugenBackground( const MugenBackground &copy );
     ~MugenBackground();
     
+    inline const std::string &getName() { return name; }
     inline void setVisible(const bool vis){ visible = vis; }
     inline const bool getVisible(){ return visible; }
     inline void setEnabled(const bool en){ enabled = visible = en; }
@@ -102,6 +103,7 @@ public:
     bool enabled;
     double controller_offsetx;
     double controller_offsety;
+    bool underControl;
     
     // sprite 
     MugenSprite *sprite;

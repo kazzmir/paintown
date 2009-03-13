@@ -39,7 +39,7 @@ class BackgroundController{
     public:
 	BackgroundController();
 	virtual ~BackgroundController();
-	virtual void act();
+	virtual void act(const double xaxis, const double yaxis);
 	void reset();
 	std::string name;
 	ControlType type;
@@ -63,7 +63,7 @@ class MugenBackgroundController{
 	
 	void addControl( BackgroundController *ctrl );
 	
-	void act();
+	void act(const double xaxis, const double yaxis);
 	
 	std::string name;
 	int id;

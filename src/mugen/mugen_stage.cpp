@@ -83,6 +83,7 @@ type(Ctrl_Null),
 timestart(0),
 endtime(0),
 looptime(-1),
+ownticker(0),
 value1(CONTROLLER_VALUE_NOT_SET),
 value2(CONTROLLER_VALUE_NOT_SET),
 value3(CONTROLLER_VALUE_NOT_SET){
@@ -90,7 +91,7 @@ value3(CONTROLLER_VALUE_NOT_SET){
 BackgroundController::~BackgroundController(){
 }
 
-void BackgroundController::act(){
+void BackgroundController::act(const double xaxis, const double yaxis){
     Global::debug(1) << "Control Name: " << name << "Control type: " << type << " is running." << endl;
     Global::debug(1) << "ticker: " << ownticker << " Start time: " << timestart << " End Time: " << endtime << endl;
     // Do we run this?
@@ -98,6 +99,11 @@ void BackgroundController::act(){
 	Global::debug(1) << "We have action, total backgrounds: " << backgrounds.size() << endl;
 	for (std::vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
 	    MugenBackground *background = *i;
+	    // Lets make sure this background is under control from a controller so it doesn't get reset
+	    if (!background->underControl){
+		background->underControl = true;
+	    }
+	    Global::debug(0) << "Acting on background: " << background->getName() << " | Type: " << type << endl;
 	    switch (type){
 		case Ctrl_Visible:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
@@ -112,11 +118,11 @@ void BackgroundController::act(){
 		case Ctrl_VelSet:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
 			background->velocityx = value1;
-			Global::debug(1) << "	Set X velocity to: " << value1 << endl;
+			Global::debug(0) << "	Set X velocity to: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
 			background->velocityy = value2;
-			Global::debug(1) << "	Set Y velocity to: " << value2 << endl;
+			Global::debug(0) << "	Set Y velocity to: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_VelAdd:
@@ -130,21 +136,21 @@ void BackgroundController::act(){
 		case Ctrl_PosSet:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
 			background->controller_offsetx = value1;
-			Global::debug(1) << "	Set X position to: " << value1 << endl;
+			Global::debug(0) << "	Set X position to: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
 			background->controller_offsety = value2;
-			Global::debug(1) << "	Set Y position to: " << value2 << endl;
+			Global::debug(0) << "	Set Y position to: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_PosAdd:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
 			background->controller_offsetx += value1;
-			Global::debug(1) << "	Add to Position X: " << value1 << endl;
+			Global::debug(0) << "	Add to Position X: " << value1 << endl;
 		    }
 		    if (value2 != CONTROLLER_VALUE_NOT_SET){
 			background->controller_offsety += value2;
-			Global::debug(1) << "	Add to Position Y: " << value2 << endl;
+			Global::debug(0) << "	Add to Position Y: " << value2 << endl;
 		    }
 		    break;
 		case Ctrl_Animation:
@@ -179,11 +185,11 @@ void BackgroundController::act(){
 	    Global::debug(1) << "Background X: " << background->x << endl;
 	}
     }
-    ownticker++;
     // Shall we reset?
     if( (looptime != -1) && (ownticker > endtime) ){
 	ownticker=0;
     }
+    ownticker++;
 }
 
 void BackgroundController::reset(){
@@ -197,7 +203,8 @@ void BackgroundController::reset(){
 MugenBackgroundController::MugenBackgroundController(const std::string &n):
 name(n),
 id(DEFAULT_BACKGROUND_ID),
-looptime(-1){
+looptime(-1),
+ticker(0){
 }
 MugenBackgroundController::~MugenBackgroundController(){
     // Kill all controllers initiated by the load
@@ -208,11 +215,11 @@ MugenBackgroundController::~MugenBackgroundController(){
 void MugenBackgroundController::addControl( BackgroundController *ctrl ){
     controls.push_back(ctrl);
 }
-void MugenBackgroundController::act(){
+void MugenBackgroundController::act(const double xaxis, const double yaxis){
     // Lets act out our controllers
     for (std::vector<BackgroundController *>::iterator i = controls.begin(); i != controls.end(); ++i){
 	    BackgroundController *ctrl = *i;
-	    ctrl->act();
+	    ctrl->act(xaxis, yaxis);
     }
     if( (looptime != -1) && (ticker > looptime) ){
 	// Reset itself and everybody that needs reseting
@@ -979,20 +986,6 @@ void MugenStage::logic( ){
         /* use local variables more often, iterators can be easily confused */
         Object * player = *it;
         player->act( &objects, (World *)this, &add);
-	/*if (zoffsetlink == DEFAULT_BACKGROUND_ID){
-	    player->setZ( zoffset + abs(boundhigh) );
-	} else {
-	    if (!zlinkbackground->positionlink){
-		player->setZ( zoffset + abs(boundhigh) );
-	    } else {
-		player->setZ( zoffset );
-	    }
-	}*/
-	if (zoffsetlink == DEFAULT_BACKGROUND_ID){
-	    player->setZ( zoffset + abs(boundhigh) );
-	} else {
-	    player->setZ( zoffset );
-	}
 	
 	// Check collisions
 	for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
@@ -1082,7 +1075,7 @@ void MugenStage::logic( ){
     
     // Controllers
     for( vector< MugenBackgroundController *>::iterator i = controllers.begin(); i != controllers.end(); ++i ){
-	(*i)->act();
+	(*i)->act(xaxis, yaxis);
     }
     // Console
     *console << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY() << Console::endl;
@@ -1161,11 +1154,17 @@ void MugenStage::reset( ){
     camerax = startx; cameray = starty;
     for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	// reset just reloads it to default
-	(*i)->preload( startx, starty );
+	MugenBackground *background = *i;
+	if (!background->underControl){
+	    background->preload( startx, starty );
+	}
     }
     for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	// reset
-	(*i)->preload( startx, starty );
+	MugenBackground *background = *i;
+	if (!background->underControl){
+	    background->preload( startx, starty );
+	}
     }
     
     // Reset player positions
@@ -1347,7 +1346,14 @@ bool MugenStage::isaPlayer( Object * o ){
 
 
 void MugenStage::updatePlayer( Object *o ){
-    // Move camera
+    // Z/Y offset
+    if (zoffsetlink == DEFAULT_BACKGROUND_ID){
+	o->setZ( zoffset + abs(boundhigh) );
+    } else {
+	o->setZ( zoffset );
+    }
+    
+    // Move X and Camera
     const double px = o->getX();
     const double py = o->getY();
     const double pdiffx = px - playerInfo[o].oldx;
