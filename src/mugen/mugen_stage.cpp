@@ -91,7 +91,7 @@ value3(CONTROLLER_VALUE_NOT_SET){
 BackgroundController::~BackgroundController(){
 }
 
-void BackgroundController::act(const double xaxis, const double yaxis){
+void BackgroundController::act(const std::map< int, MugenAnimation * > &animations){
     Global::debug(1) << "Control Name: " << name << "Control type: " << type << " is running." << endl;
     Global::debug(1) << "ticker: " << ownticker << " Start time: " << timestart << " End Time: " << endtime << endl;
     // Do we run this?
@@ -99,10 +99,6 @@ void BackgroundController::act(const double xaxis, const double yaxis){
 	Global::debug(1) << "We have action, total backgrounds: " << backgrounds.size() << endl;
 	for (std::vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
 	    MugenBackground *background = *i;
-	    // Lets make sure this background is under control from a controller so it doesn't get reset
-	    if (!background->underControl){
-		background->underControl = true;
-	    }
 	    Global::debug(1) << "Acting on background: " << background->getName() << " | Type: " << type << endl;
 	    switch (type){
 		case Ctrl_Visible:
@@ -153,8 +149,12 @@ void BackgroundController::act(const double xaxis, const double yaxis){
 			Global::debug(1) << "	Add to Position Y: " << value2 << endl;
 		    }
 		    break;
-		case Ctrl_Animation:
-		    // Lets not do this for now, I can pass in the animation lists later
+		case Ctrl_Animation:{
+			std::map< int, MugenAnimation * >::const_iterator iter = animations.find(value1);
+			if (iter != animations.end()){
+			    background->action = iter->second;
+			}
+		    }
 		    break;
 		case Ctrl_Sinx:
 		    if (value1 != CONTROLLER_VALUE_NOT_SET){
@@ -185,11 +185,11 @@ void BackgroundController::act(const double xaxis, const double yaxis){
 	    Global::debug(1) << "Background X: " << background->x << endl;
 	}
     }
+    ownticker++;
     // Shall we reset?
     if( (looptime != -1) && (ownticker > endtime) ){
 	ownticker=0;
     }
-    ownticker++;
 }
 
 void BackgroundController::reset(){
@@ -215,14 +215,15 @@ MugenBackgroundController::~MugenBackgroundController(){
 void MugenBackgroundController::addControl( BackgroundController *ctrl ){
     controls.push_back(ctrl);
 }
-void MugenBackgroundController::act(const double xaxis, const double yaxis){
+void MugenBackgroundController::act(const std::map< int, MugenAnimation * > &animations){
     // Lets act out our controllers
     Global::debug(1) << "Controller Def: " << name << " | Total controls: " << controls.size() << endl;
     for (std::vector<BackgroundController *>::iterator i = controls.begin(); i != controls.end(); ++i){
 	    BackgroundController *ctrl = *i;
 	    Global::debug(1) << "Acting on Controller: " << ctrl->name << " | timestart: " << ctrl->timestart << " | endtime: " << ctrl->endtime << " | looptime" << ctrl->looptime << " | ticker: " << ctrl->ownticker << endl;
-	    ctrl->act(xaxis, yaxis);
+	    ctrl->act(animations);
     }
+    ticker++;
     if( (looptime != -1) && (ticker > looptime) ){
 	// Reset itself and everybody that needs reseting
 	ticker = 0;
@@ -231,7 +232,6 @@ void MugenBackgroundController::act(const double xaxis, const double yaxis){
 	    ctrl->reset();
 	}
     }
-    ticker++;
 }
 
 MugenStage::MugenStage( const string & s ):
@@ -778,6 +778,8 @@ void MugenStage::load() throw( MugenException ){
 	    head.replace(0,10,"");
 	    MugenBackgroundController *temp = new MugenBackgroundController(head);
 	    Global::debug(1) << "Found background controller definition: " << temp->name << endl;
+	    // Does this one have a controlling ID
+	    bool hasID = false;
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
@@ -791,6 +793,7 @@ void MugenStage::load() throw( MugenException ){
 		    *content->getNext() >> temp->looptime;
 		    if (temp->looptime == 0)temp->looptime = -1;
 		} else if (itemhead == "ctrlid"){
+		    hasID = true;
 		    // Max 10
 		    while(content->hasItems()){
 			int id;
@@ -800,7 +803,7 @@ void MugenStage::load() throw( MugenException ){
 		} else throw MugenException( "Unhandled option in BGCtrlDef " + head + " Section: " + itemhead );
 	    }
 	    // Give it all the backgrounds to make changes to
-	    if ( temp->backgrounds.empty() ){
+	    if ( !hasID && temp->backgrounds.empty() ){
 		temp->backgrounds.insert(temp->backgrounds.end(),backgrounds.begin(),backgrounds.end());
 		temp->backgrounds.insert(temp->backgrounds.end(),foregrounds.begin(),foregrounds.end());
 	    }
@@ -1086,7 +1089,7 @@ void MugenStage::logic( ){
     
     // Controllers
     for( vector< MugenBackgroundController *>::iterator i = controllers.begin(); i != controllers.end(); ++i ){
-	(*i)->act(xaxis, yaxis);
+	(*i)->act(animations);
     }
     // Console
     *console << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY() << Console::endl;
@@ -1165,14 +1168,14 @@ void MugenStage::reset( ){
     for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	// reset just reloads it to default
 	MugenBackground *background = *i;
-	if (!background->underControl){
+	if (resetBG){
 	    background->preload( startx, starty );
 	}
     }
     for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	// reset
 	MugenBackground *background = *i;
-	if (!background->underControl){
+	if (resetBG){
 	    background->preload( startx, starty );
 	}
     }

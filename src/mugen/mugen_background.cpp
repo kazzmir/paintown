@@ -48,16 +48,13 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoff
     }
 }
 
-static int idCounter = -9999999;
-
-
 // mugen background
 MugenBackground::MugenBackground( const unsigned long int &ticker ):
 type(Normal),
 groupNumber(-1),
 imageNumber(-1),
 actionno(-1),
-id(++idCounter),
+id(0),
 layerno(0),
 startx(0),
 starty(0),
@@ -101,7 +98,6 @@ visible(true),
 enabled(true),
 controller_offsetx(0),
 controller_offsety(0),
-underControl(false),
 sprite(0),
 spriteBmp(0),
 action(0),
@@ -159,8 +155,8 @@ void MugenBackground::render( const int totalLength, const int totalHeight, Bitm
 		// Figure out total we need to tile (this crap doesn't work needs fix)
 		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
 		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
-		const int addw = (tilespacingx == 0 ? width : tilespacingx);
-		const int addh = (tilespacingy == 0 ? height : tilespacingy);
+		const int addw = width + tilespacingx;
+		const int addh = height + tilespacingy;
 		// We need to repeat and wrap
 		for( int h = 0; h < repeath; h++ ){
 		    int tileyloc = y;
@@ -198,8 +194,8 @@ void MugenBackground::render( const int totalLength, const int totalHeight, Bitm
 		// Figure out total we need to tile 
 		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
 		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
-		const int addw = (tilespacingx == 0 ? width : tilespacingx);
-		const int addh = (tilespacingy == 0 ? height : tilespacingy);
+		const int addw = tilespacingx;
+		const int addh = tilespacingy;
 		// We need to repeat and wrap
 		for( int h = 0; h < repeath; h++ ){
 		    int tileyloc = y;

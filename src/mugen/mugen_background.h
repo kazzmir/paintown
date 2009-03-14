@@ -103,7 +103,6 @@ public:
     bool enabled;
     double controller_offsetx;
     double controller_offsety;
-    bool underControl;
     
     // sprite 
     MugenSprite *sprite;
