@@ -5,7 +5,7 @@
 #include "util/load_exception.h"
 class Token;
 
-/*! Handles key reconfiguration */
+/** Handles key reconfiguration */
 class OptionVersus : public MenuOption
 {
 	public:
