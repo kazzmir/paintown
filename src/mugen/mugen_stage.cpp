@@ -617,8 +617,10 @@ void MugenStage::load() throw( MugenException ){
 		    else if( type == "parallax" )temp->type = Parallax;
 		    else if( type == "dummy" )temp->type = Dummy;
 		} else if (itemhead == "spriteno"){
-		    *content->getNext() >> temp->groupNumber;
-		    *content->getNext() >> temp->imageNumber;
+		    if (temp->type != Anim){
+			*content->getNext() >> temp->groupNumber;
+			*content->getNext() >> temp->imageNumber;
+		    }
 		} else if (itemhead == "actionno"){
 		    *content->getNext() >> temp->actionno;
 		} else if (itemhead == "id"){
@@ -837,17 +839,18 @@ void MugenStage::load() throw( MugenException ){
 		    std::string type;
 		    *content->getNext() >> type;
 		    MugenUtil::removeSpaces( type );
+		    MugenUtil::fixCase(type);
 		    Global::debug(1) << "Type after lowercase: " << type << endl;
 		    if( type == "Anim" )temp->type = Ctrl_Animation;
-		    else if( type == "Enabled" )temp->type = Ctrl_Enabled;
-		    else if( type == "Null" )temp->type = Ctrl_Null;
-		    else if( type == "PosAdd" )temp->type = Ctrl_PosAdd;
-		    else if( type == "PosSet" )temp->type = Ctrl_PosSet;
-		    else if( type == "SinX" )temp->type = Ctrl_Sinx;
-		    else if( type == "SinY" )temp->type = Ctrl_Siny;
-		    else if( type == "VelAdd" )temp->type = Ctrl_VelAdd;
-		    else if( type == "VelSet" )temp->type = Ctrl_VelSet;
-		    else if( type == "Visible" )temp->type = Ctrl_Visible;
+		    else if( type == "enabled" )temp->type = Ctrl_Enabled;
+		    else if( type == "null" )temp->type = Ctrl_Null;
+		    else if( type == "posadd" )temp->type = Ctrl_PosAdd;
+		    else if( type == "posset" )temp->type = Ctrl_PosSet;
+		    else if( type == "sinx" )temp->type = Ctrl_Sinx;
+		    else if( type == "siny" )temp->type = Ctrl_Siny;
+		    else if( type == "veladd" )temp->type = Ctrl_VelAdd;
+		    else if( type == "velset" )temp->type = Ctrl_VelSet;
+		    else if( type == "visible" )temp->type = Ctrl_Visible;
 		} else if (itemhead == "time"){
 		    int start=0,end=0,loop=0;
 		    *content->getNext() >> start;
@@ -1140,7 +1143,7 @@ void MugenStage::render( Bitmap *work ){
     
     // Debug crap for board coordinates
     if (debugMode){
-	board->hLine( 0, zoffset - floortension, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
+	board->hLine( 0, abs(boundhigh) + zoffset, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
     }
     
     board->Blit( (int)(xaxis + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);

@@ -152,9 +152,9 @@ void MugenBackground::render( const int totalLength, const int totalHeight, Bitm
 		const int width = spriteBmp->getWidth();
 		const int height = spriteBmp->getHeight();
 		bool dirx = false, diry = false;
-		// Figure out total we need to tile (this crap doesn't work needs fix)
-		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
-		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
+		// Figure out total we need to tile 
+		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( abs(x) + calculateTile( totalLength, width ) ) ) : 1 );
+		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( abs(y) + calculateTile( totalLength, height ) ) ) : 1 );
 		const int addw = width + tilespacingx;
 		const int addh = height + tilespacingy;
 		// We need to repeat and wrap
@@ -180,7 +180,7 @@ void MugenBackground::render( const int totalLength, const int totalHeight, Bitm
 	    }
 	    case Parallax:{
 		// This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
-		doParallax( *spriteBmp, *work, x, y, xoffset/2, xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
+		doParallax( *spriteBmp, *work, x, y, xoffset+((totalLength-320)/2), xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
 		break;
 	    }
 	    case Anim:{
@@ -192,8 +192,8 @@ void MugenBackground::render( const int totalLength, const int totalHeight, Bitm
 		const int height = action->getCurrentFrame()->bmp->getHeight();
 		bool dirx = false, diry = false;
 		// Figure out total we need to tile 
-		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( totalLength, width ) ) ) : 1 );
-		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( totalLength, height ) ) ) : 1 );
+		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( abs(x) + totalLength, width ) ) ) : 1 );
+		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( abs(y) + totalLength, height ) ) ) : 1 );
 		const int addw = tilespacingx;
 		const int addh = tilespacingy;
 		// We need to repeat and wrap
