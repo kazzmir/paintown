@@ -63,7 +63,7 @@ deltay(1),
 trans(None),
 alphalow(0),
 alphahigh(0),
-mask(true),
+mask(false),
 tilex(0),
 tiley(0),
 tilespacingx(0),
@@ -239,8 +239,9 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
 	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
 	// Set our initial offsets
 	xoffset = 160 + (xaxis - sprite->x) + startx;
-	yoffset = (yaxis - sprite->y) + starty;
+	yoffset = (yaxis - sprite->y) + starty; 
 	velx = vely = 0;
+	Global::debug(1) << "Using sprite. Name: " << name << " | X: " << sprite->x << " | Y: " << sprite->y << endl;
     }
     else{
 	// Set our initial offsets

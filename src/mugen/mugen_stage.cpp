@@ -697,7 +697,9 @@ void MugenStage::load() throw( MugenException ){
             Global::debug(2) << "Background " << temp->id << " has tilex " << temp->tilex << endl;
 	    // Do some fixups and necessary things
 	    // lets see where we lay
-	    temp->sprite = sprites[(unsigned int)temp->groupNumber][(unsigned int)temp->imageNumber];
+	    if ( temp->groupNumber != -1 && temp->imageNumber != -1){
+		temp->sprite = sprites[(unsigned int)temp->groupNumber][(unsigned int)temp->imageNumber];
+	    }
 	    if( temp->layerno == 0 )backgrounds.push_back(temp);
 	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
 	    
@@ -893,8 +895,8 @@ void MugenStage::load() throw( MugenException ){
     board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
     camerax = startx;
     cameray = starty;
-    xaxis = startx + abs(boundleft);
-    yaxis = starty + abs(boundhigh);
+    xaxis = abs(boundleft);
+    yaxis = abs(boundhigh);
     
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
