@@ -898,7 +898,7 @@ void MugenStage::load() throw( MugenException ){
     board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
     camerax = startx;
     cameray = starty;
-    xaxis = abs(boundleft);
+    xaxis = (abs(boundleft) + boundright + DEFAULT_WIDTH)/2;//abs(boundleft);
     yaxis = abs(boundhigh);
     
     // Set up the animations for those that have action numbers assigned (not -1 )
@@ -906,6 +906,16 @@ void MugenStage::load() throw( MugenException ){
     for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	if( (*i)->actionno != -1 ){
 	    (*i)->action = animations[ (*i)->actionno ];
+	    // Check tilespacing and mask
+	    if ((*i)->tilespacingx == 0){
+		(*i)->tilespacingx = 1;
+	    }
+	    if ((*i)->tilespacingy == 0){
+		(*i)->tilespacingy = 1;
+	    }
+	    if (!(*i)->mask){
+		(*i)->mask = true;
+	    }
 	}
 	// now load
 	(*i)->preload( startx, starty );
@@ -913,6 +923,16 @@ void MugenStage::load() throw( MugenException ){
     for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	if( (*i)->actionno != -1 ){
 	    (*i)->action = animations[ (*i)->actionno ];
+	     // Check tilespacing and mask
+	    if ((*i)->tilespacingx == 0){
+		(*i)->tilespacingx = 1;
+	    }
+	    if ((*i)->tilespacingy == 0){
+		(*i)->tilespacingy = 1;
+	    }
+	    if (!(*i)->mask){
+		(*i)->mask = true;
+	    }
 	}
 	// now load
 	(*i)->preload( startx, starty );
@@ -1144,9 +1164,10 @@ void MugenStage::render( Bitmap *work ){
     // Debug crap for board coordinates
     if (debugMode){
 	board->hLine( 0, abs(boundhigh) + zoffset, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
+	board->vLine( 0, xaxis, board->getHeight(), Bitmap::makeColor(255,0,0));
     }
     
-    board->Blit( (int)(xaxis + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
+    board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
     
     // Debug crap for screen coordinates
     if (debugMode){

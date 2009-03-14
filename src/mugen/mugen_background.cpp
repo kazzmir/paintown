@@ -238,14 +238,14 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
 	// Lets load our sprite
 	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
 	// Set our initial offsets
-	xoffset = 160 + (xaxis - sprite->x) + startx;
+	xoffset = (xaxis - sprite->x) + startx;
 	yoffset = (yaxis - sprite->y) + starty; 
 	velx = vely = 0;
 	Global::debug(1) << "Using sprite. Name: " << name << " | X: " << sprite->x << " | Y: " << sprite->y << endl;
     }
     else{
 	// Set our initial offsets
-	xoffset = 160 + (xaxis) + startx;
+	xoffset = (xaxis) + startx;
 	yoffset = (yaxis) + starty;
 	velx = vely = 0;
     }
