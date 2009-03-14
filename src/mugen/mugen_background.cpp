@@ -255,7 +255,7 @@ void MugenBackground::draw( const int ourx, const int oury, Bitmap &work ){
     switch( trans ){
 	case Addalpha:{
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
-	    Bitmap::addBlender( 255, 255, 255, alphalow );
+	    Bitmap::transBlender( 255, 255, 255, alphalow );
 	    spriteBmp->drawTrans( ourx, oury, work);
 	    break;
 	}
