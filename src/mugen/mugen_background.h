@@ -42,7 +42,7 @@ public:
     
     MugenBackground & operator=( const MugenBackground &copy );
     
-    void logic( const int x, const int y, const int placementx, const int placementy );
+    void logic( const double x, const double y, const double placementx, const double placementy );
     
     void render( const int totalLength, const int totalHeight, Bitmap *work );
     
@@ -92,8 +92,8 @@ public:
     double siny_angle;
     int xoffset;
     int yoffset;
-    int movex;
-    int movey;
+    double movex;
+    double movey;
     double velx;
     double vely;
     const unsigned long int &stageTicker;

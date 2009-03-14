@@ -25,7 +25,7 @@ static int calculateTile( int length, int width ){
     }
 }
 
-static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, int yoffset, bool mask){
+static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, double yoffset, bool mask){
     const int height = bmp.getHeight();
     const int w = bmp.getWidth();
     int movex = 0;
@@ -39,8 +39,8 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoff
 	//int width = bmp.getWidth()*z;
         const double range = (double)localy / (double)height;
 	const double scale = interpolate(top, bot, range) - top;
-	const int newHeight = height*((yscalestart+(yoffset*yscaledelta))/100);
-	const double yscale = (newHeight/height);
+	//const double newHeight = height*((yscalestart+(yoffset*yscaledelta))/100);
+	//const double yscale = (newHeight/height);
 	movex = (int)(leftx + (leftx - xoffset) * scale);
 	bmp.Stretch(work, 0, localy, w, 1,movex, lefty+localy, w,1);
 	//z +=  z_add;
@@ -116,7 +116,7 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     return *this;
 }
     
-void MugenBackground::logic( const int x, const int y, const int placementx, const int placementy ){
+void MugenBackground::logic( const double x, const double y, const double placementx, const double placementy ){
     if (enabled){
 	movex = movey = 0;
 	movex += x * deltax;
@@ -255,15 +255,28 @@ void MugenBackground::draw( const int ourx, const int oury, Bitmap &work ){
     switch( trans ){
 	case Addalpha:{
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
-	    Bitmap::transBlender( 0, 0, 0, alphalow );
-            Bitmap::drawingMode( Bitmap::MODE_TRANS );
+	    Bitmap::addBlender( 255, 255, 255, alphalow );
 	    spriteBmp->drawTrans( ourx, oury, work);
-            Bitmap::drawingMode( Bitmap::MODE_SOLID );
 	    break;
 	}
-	case Add:
-	case Add1:
-	case Sub:
+	case Add:{
+	    // this additive 100% I assume... not totally sure
+	    Bitmap::addBlender( 255, 255, 255, 255 );
+	    spriteBmp->drawTrans( ourx, oury, work);
+	    break;
+	}
+	case Add1:{
+	    // 50%
+	    Bitmap::addBlender( 128, 128, 128, 255 );
+	    spriteBmp->drawTrans( ourx, oury, work);
+	    break;
+	}
+	case Sub:{
+	    // Shadow effect
+	    Bitmap::differenceBlender( 128, 128, 128, 255 );
+	    spriteBmp->drawTrans( ourx, oury, work);
+	    break;
+	}
 	case None:
 	default:{
 	    if( mask )spriteBmp->draw( ourx,oury, work );

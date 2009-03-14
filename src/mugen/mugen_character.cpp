@@ -318,15 +318,15 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 			if( temp.find("v") != std::string::npos )frame->flipVertical = true;
 			if (temp[0] == 'a'){
 			    frame->colorAdd = ADD;
+			    // Check if we have specified additions
+			    if (temp.size() > 1){
+				// Source
+				frame->colorSource = atoi(temp.substr(2,4).c_str());
+				// Dest
+				frame->colorDestination = atoi(temp.substr(6,8).c_str());
+			    }
 			} else if (temp[0] == 's'){
 			    frame->colorAdd = SUB;
-			}
-			// Check if we have specified additions
-			if (temp.size() > 1){
-			    // Source
-			    frame->colorSource = atoi(temp.substr(2,4).c_str());
-			    // Dest
-			    frame->colorDestination = atoi(temp.substr(6,8).c_str());
 			}
 		    }
 		    // Add sprite

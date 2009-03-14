@@ -62,7 +62,7 @@ static bool centerCollision( Character *p1, Character *p2 ){
     const int p1width = p1->getCurrentMovement()->getCurrentFrame()->getWidth(), p1height = p1->getCurrentMovement()->getCurrentFrame()->getHeight();
     const int p2width = p2->getCurrentMovement()->getCurrentFrame()->getWidth(), p2height = p2->getCurrentMovement()->getCurrentFrame()->getHeight();
     
-    const int x1 = p1->getX() + ((p1width/2)/2), y1 = 0, x2 = p1->getX() + p1width - ((p1width/2)/2), y2 = p1height, 
+    const double x1 = p1->getX() + ((p1width/2)/2), y1 = 0, x2 = p1->getX() + p1width - ((p1width/2)/2), y2 = p1height, 
 	      x3 = p2->getX() + ((p2width/2)/2), y3 = 0, x4 = p2->getX() + p2width - ((p2width/2)/2), y4 = p2height;
     
     if ( x1 < x3 && x1 < x4 &&
@@ -150,7 +150,7 @@ void BackgroundController::act(const std::map< int, MugenAnimation * > &animatio
 		    }
 		    break;
 		case Ctrl_Animation:{
-			std::map< int, MugenAnimation * >::const_iterator iter = animations.find(value1);
+			std::map< int, MugenAnimation * >::const_iterator iter = animations.find((int)value1);
 			if (iter != animations.end()){
 			    background->action = iter->second;
 			}
@@ -333,6 +333,7 @@ botscale(1.2),*/
 screenleft(15),
 screenright(15),
 zoffset(200),
+zoffsetlink(DEFAULT_BACKGROUND_ID),
 autoturn(true),
 resetBG(true),
 shadowIntensity(128),
@@ -745,15 +746,15 @@ void MugenStage::load() throw( MugenException ){
 			if( temp.find("v") != std::string::npos )frame->flipVertical = true;
 			if (temp[0] == 'a'){
 			    frame->colorAdd = ADD;
+			    // Check if we have specified additions
+			    if (temp.size() > 1){
+				// Source
+				frame->colorSource = atoi(temp.substr(2,4).c_str());
+				// Dest
+				frame->colorDestination = atoi(temp.substr(6,8).c_str());
+			    }
 			} else if (temp[0] == 's'){
 			    frame->colorAdd = SUB;
-			}
-			// Check if we have specified additions
-			if (temp.size() > 1){
-			    // Source
-			    frame->colorSource = atoi(temp.substr(2,4).c_str());
-			    // Dest
-			    frame->colorDestination = atoi(temp.substr(6,8).c_str());
 			}
 		    }
 		    // Add sprite
@@ -975,8 +976,8 @@ void MugenStage::logic( ){
     // Run our ticker on and on like energizer bunnies (tm)
     ticker++;
     
-    const int diffx = startx - camerax;
-    const int diffy = starty - cameray;
+    const double diffx = startx - camerax;
+    const double diffy = starty - cameray;
     
     // Clear console so we can see our debug
     console->clear();
@@ -1082,6 +1083,11 @@ void MugenStage::logic( ){
     }
     objects.insert(objects.end(),add.begin(),add.end());
     
+    // Correct camera
+    if ((verticalfollow > 0) && !inabove && (getCameraY() < 0)){
+	moveCamera( 0, verticalfollow * 3.2 );
+    }
+    
     // Foregrounds
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	(*i)->logic( diffx, diffy, xaxis + camerax, yaxis + cameray );
@@ -1125,7 +1131,7 @@ void MugenStage::render( Bitmap *work ){
 	    // Player debug crap
 	    if (debugMode){
 		// Players x positioning
-		board->vLine( 150, character->getX(), character->getZ(), Bitmap::makeColor( 255, 0, 0));
+		board->vLine( 150, (int)character->getX(), (int)character->getZ(), Bitmap::makeColor( 255, 0, 0));
 	    }
 	}
     }
@@ -1135,7 +1141,7 @@ void MugenStage::render( Bitmap *work ){
 	board->hLine( 0, zoffset - floortension, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
     }
     
-    board->Blit( (xaxis + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
+    board->Blit( (int)(xaxis + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
     
     // Debug crap for screen coordinates
     if (debugMode){
@@ -1273,11 +1279,11 @@ void MugenStage::reloadLevel() throw( LoadException ){
 Script::Engine * const MugenStage::getEngine() const { return NULL; }
 /* upper left hand corner of the screen */
 int MugenStage::getX(){
-    return getCameraX();
+    return (int)getCameraX();
 }
 
 int MugenStage::getY(){
-    return getCameraY();
+    return (int)getCameraY();
 }
 /* this shouldn't be here */
 // I guess ignore this one
@@ -1486,10 +1492,6 @@ void MugenStage::updatePlayer( Object *o ){
 		moveCamera( 0, verticalfollow * 3.2 );
 	    }
 	}
-    }
-    // Correct camera
-    if ((verticalfollow > 0) && (!inabove && getCameraX() < 0)){
-	moveCamera( 0, verticalfollow * 3.2 );
     }
     //Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }
