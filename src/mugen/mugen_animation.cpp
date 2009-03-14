@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "init.h"
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 
@@ -139,7 +140,7 @@ const MugenFrame *MugenAnimation::getNext(){
 void MugenAnimation::logic(){
     if( frames[position]->time != -1 ){
 	ticks++;
-	if(ticks >= frames[position]->time * (90/40)){
+	if(ticks >= frames[position]->time * Global::LOGIC_MULTIPLIER){
 		ticks = 0;
 		if( position < frames.size() -1 )position++;
 		else position = loopPosition;
