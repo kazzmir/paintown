@@ -1343,22 +1343,25 @@ Network::Message MugenStage::createBangMessage( int x, int y, int z ){
     return m;
 }
 
-const std::string MugenStage::getStageName( std::string &filename ) throw (MugenException){
+const std::string MugenStage::getStageName(const std::string &filename) throw (MugenException){
     // Lets look for our def since some assholes think that all file systems are case insensitive
     std::string dir = Util::getDataPath() + "mugen/stages/";
     Global::debug(1) << dir << endl;
-    if ( filename.find(".def") == std::string::npos){
-	filename+=".def";
+    string fullname = filename;
+    if ( fullname.find(".def") == std::string::npos){
+	fullname += ".def";
     }
-    const std::string defFile = MugenUtil::fixFileName( dir, std::string(filename) );
+    const std::string defFile = MugenUtil::fixFileName( dir, std::string(fullname) );
     
-    if( defFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + filename );
+    if (defFile.empty()){
+        throw MugenException( "Cannot locate stage definition file for: " + fullname );
+    }
     
     std::string filesdir = "";
     
-    size_t strloc = filename.find_last_of("/");
+    size_t strloc = fullname.find_last_of("/");
     if (strloc != std::string::npos){
-	filesdir = filename.substr(0, strloc);
+	filesdir = fullname.substr(0, strloc);
 	filesdir += "/";
     }
     
@@ -1388,7 +1391,7 @@ const std::string MugenStage::getStageName( std::string &filename ) throw (Mugen
 	}
     }
     
-    throw MugenException( "Cannot locate stage definition file for: " + filename );
+    throw MugenException( "Cannot locate stage definition file for: " + fullname );
     return "";
 }
 
