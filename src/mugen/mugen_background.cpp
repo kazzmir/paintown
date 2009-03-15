@@ -242,27 +242,9 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
     if (sprite){
 	// Lets load our sprite
 	Global::debug(1) << "Name: " << name << " | Mask: " << mask << endl;
-	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength, mask));
-#if 0
-	if (!mask){
-	    // Restore color in case
-	    int colors = 256;
-	    int maskR = (int)sprite->pcx[sprite->newlength - colors*3 + 0];
-	    int maskG = (int)sprite->pcx[sprite->newlength - colors*3 + 1];
-	    int maskB = (int)sprite->pcx[sprite->newlength - colors*3 + 2];
-	    int mask = Bitmap::makeColor(maskR, maskG, maskB);
-	    for( int i = 0; i < spriteBmp->getHeight(); ++i ){
-                for( int j = 0; j < spriteBmp->getWidth(); ++j ){
-                    /* use getPixel/putPixel? */
-                    int pix = spriteBmp->getPixel(j,i);
-                    if (pix == Bitmap::MaskColor){
-                        spriteBmp->putPixel(j,i, mask);
-                    }
-                }
-            }
+	if( spriteBmp == 0 ){
+	    spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength, mask));
 	}
-#endif
-
 	// Set our initial offsets
 	xoffset = (xaxis - sprite->x) + startx;
 	yoffset = (yaxis - sprite->y) + starty; 
