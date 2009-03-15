@@ -239,10 +239,11 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
 	runLink = true;
     }
     
-    if(sprite){
+    if (sprite){
 	// Lets load our sprite
-	// Global::debug(0) << "Name: " << name << " | Mask: " << mask << endl;
-	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength), mask);
+	Global::debug(1) << "Name: " << name << " | Mask: " << mask << endl;
+	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength, mask));
+#if 0
 	if (!mask){
 	    // Restore color in case
 	    int colors = 256;
@@ -260,13 +261,14 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
                 }
             }
 	}
+#endif
+
 	// Set our initial offsets
 	xoffset = (xaxis - sprite->x) + startx;
 	yoffset = (yaxis - sprite->y) + starty; 
 	velx = vely = 0;
 	Global::debug(1) << "Using sprite. Name: " << name << " | X: " << sprite->x << " | Y: " << sprite->y << endl;
-    }
-    else{
+    } else {
 	// Set our initial offsets
 	xoffset = (xaxis) + startx;
 	yoffset = (yaxis) + starty;
