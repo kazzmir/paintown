@@ -913,9 +913,7 @@ void MugenStage::load() throw( MugenException ){
 	    if ((*i)->tilespacingy == 0){
 		(*i)->tilespacingy = 1;
 	    }
-	    if (!(*i)->mask){
-		(*i)->mask = true;
-	    }
+	    (*i)->mask = true;
 	}
 	// now load
 	(*i)->preload( startx, starty );
@@ -930,9 +928,7 @@ void MugenStage::load() throw( MugenException ){
 	    if ((*i)->tilespacingy == 0){
 		(*i)->tilespacingy = 1;
 	    }
-	    if (!(*i)->mask){
-		(*i)->mask = true;
-	    }
+	    (*i)->mask = true;
 	}
 	// now load
 	(*i)->preload( startx, starty );
