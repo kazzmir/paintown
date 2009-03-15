@@ -17,12 +17,52 @@ static double interpolate(double f1, double f2, double p){
     return (f1 * (1.0 - p)) + (f2 * p);
 }
 
-static int calculateTile( int length, int width ){
-    int loc = 0;
-    for( int i = 1; ; ++i ){
-	if( loc > length )return i;
-	loc+=width;
+struct Tile {
+    int start;
+    int total;
+};
+
+static Tile getTileData( int location, int length, int spacing, int total ){
+    Tile tile;
+    if (total == 0){
+	tile.start = location;
+	tile.total = 1;
+	return tile;
+    } else if (total > 1){
+	tile.start = location;
+	tile.total = total;
+	return tile;
+    } else if (total == 1){
+	// Infinite tiling.. just tile on the board
+	if (location < 0){
+	    // Less than the board itself lets get location up to that point
+	    while (location < 0){
+		location+=spacing;
+	    }
+	    // Now backup 1 so we get the wrap effect 
+	    location-=spacing;
+	} else{
+	    // Either Larger than the board or inside seek back to beginning
+	    while (location > 0){
+		location-=spacing;
+	    }
+	}
+	// Now figure out how many we need to do
+	int temp = location;
+	// Reuse total
+	total = 0;
+	while (temp < length){
+	    total++;
+	    temp+=spacing;
+	}
+	// Blammo
+	tile.start = location;
+	tile.total = total;
+	return tile;
     }
+    tile.start = 0;
+    tile.total = 0;
+    return tile;
 }
 
 static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, double yoffset, bool mask){
@@ -147,34 +187,17 @@ void MugenBackground::render( const int totalLength, const int totalHeight, Bitm
 	switch( type ){
 	    case Normal:{
 		// Normal is a sprite
-		// see if we need to tile this beyatch
-		int tilexloc = x;
-		const int width = spriteBmp->getWidth();
-		const int height = spriteBmp->getHeight();
-		bool dirx = false, diry = false;
-		// Figure out total we need to tile 
-		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( abs(x) + calculateTile( totalLength, width ) ) ) : 1 );
-		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( abs(y) + calculateTile( totalLength, height ) ) ) : 1 );
-		const int addw = width + tilespacingx;
-		const int addh = height + tilespacingy;
-		// We need to repeat and wrap
-		for( int h = 0; h < repeath; h++ ){
-		    int tileyloc = y;
-		    for( int v = 0; v < repeatv; v++ ){
-			draw( tilexloc, tileyloc, *work );
-			if( !diry )tileyloc += addh;
-			else tileyloc -= addh;
-			if( tileyloc >= work->getHeight() ){
-			    diry = true;
-			    tileyloc = y - addh;
-			}
+		// Tile it
+		const int addw = spriteBmp->getWidth() + tilespacingx;
+		const int addh = spriteBmp->getHeight() + tilespacingy;
+		Tile tilev = getTileData(y, totalHeight, addh, tiley);
+		for (int v = 0; v < tilev.total; ++v){
+		    Tile tileh = getTileData(x, totalLength, addw, tilex);
+		    for (int h = 0; h < tileh.total; ++h){
+			draw( tileh.start, tilev.start, *work);
+			tileh.start+=addw;
 		    }
-		    if( !dirx )tilexloc += addw;
-		    else tilexloc -= addw;
-		    if( tilexloc >= work->getWidth() ){
-			dirx = true;
-			tilexloc = x - addw;
-		    }
+		    tilev.start+=addh;
 		}
 		break;
 	    }
@@ -185,35 +208,17 @@ void MugenBackground::render( const int totalLength, const int totalHeight, Bitm
 	    }
 	    case Anim:{
 		// there is no sprite use our action!
-		//action->render( x, y, *work );
-		// Need to tile as well
-		int tilexloc = x;
-		const int width = action->getCurrentFrame()->bmp->getWidth();
-		const int height = action->getCurrentFrame()->bmp->getHeight();
-		bool dirx = false, diry = false;
-		// Figure out total we need to tile 
-		const int repeath = (tilex > 0 ? (tilex > 1 ? tilex : ( calculateTile( abs(x) + totalLength, width ) ) ) : 1 );
-		const int repeatv = ( tiley > 0 ? (tiley > 1 ? tiley : ( calculateTile( abs(y) + totalLength, height ) ) ) : 1 );
+		// Tiling action
 		const int addw = tilespacingx;
 		const int addh = tilespacingy;
-		// We need to repeat and wrap
-		for( int h = 0; h < repeath; h++ ){
-		    int tileyloc = y;
-		    for( int v = 0; v < repeatv; v++ ){
-			action->render( tilexloc, tileyloc, *work );
-			if( !diry )tileyloc += addh;
-			else tileyloc -= addh;
-			if( tileyloc >= work->getHeight() ){
-			    diry = true;
-			    tileyloc = y - addh;
-			}
+		Tile tilev = getTileData(y, totalHeight, addh, tiley);
+		for (int v = 0; v < tilev.total; ++v){
+		    Tile tileh = getTileData(x, totalLength, addw, tilex);
+		    for (int h = 0; h < tileh.total; ++h){
+			action->render( tileh.start, tilev.start, *work);
+			tileh.start+=addw;
 		    }
-		    if( !dirx )tilexloc += addw;
-		    else tilexloc -= addw;
-		    if( tilexloc >= work->getWidth() ){
-			dirx = true;
-			tilexloc = x - addw;
-		    }
+		    tilev.start+=addh;
 		}
 		break;
 	    }

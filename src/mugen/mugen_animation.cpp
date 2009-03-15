@@ -176,30 +176,30 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		frames[position]->bmp->drawTransVFlip(placex, placey + frames[position]->bmp->getHeight(), work);
+		frames[position]->bmp->drawTransVFlip(placex, placey - frames[position]->bmp->getHeight(), work);
 		break;
 	    case SUB:
 		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		frames[position]->bmp->drawTransVFlip(placex, placey + frames[position]->bmp->getHeight(), work);
+		frames[position]->bmp->drawTransVFlip(placex, placey - frames[position]->bmp->getHeight(), work);
 		break;
 	    case NO:
 	    default:
-		frames[position]->bmp->drawVFlip(placex, placey + frames[position]->bmp->getHeight(), work);
+		frames[position]->bmp->drawVFlip(placex, placey - frames[position]->bmp->getHeight(), work);
 		break;
 	}
     } else if ( frames[position]->flipVertical && frames[position]->flipHorizontal ){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		frames[position]->bmp->drawTransHVFlip(placex + frames[position]->bmp->getWidth(), placey + frames[position]->bmp->getHeight(), work);
+		frames[position]->bmp->drawTransHVFlip(placex + frames[position]->bmp->getWidth(), placey - frames[position]->bmp->getHeight(), work);
 		break;
 	    case SUB:
 		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		frames[position]->bmp->drawTransHVFlip(placex + frames[position]->bmp->getWidth(), placey + frames[position]->bmp->getHeight(), work);
+		frames[position]->bmp->drawTransHVFlip(placex + frames[position]->bmp->getWidth(), placey - frames[position]->bmp->getHeight(), work);
 		break;
 	    case NO:
 	    default:
-		frames[position]->bmp->drawHVFlip(placex + frames[position]->bmp->getWidth(), placey + frames[position]->bmp->getHeight(), work);
+		frames[position]->bmp->drawHVFlip(placex + frames[position]->bmp->getWidth(), placey - frames[position]->bmp->getHeight(), work);
 		break;
 	}
     } else{
