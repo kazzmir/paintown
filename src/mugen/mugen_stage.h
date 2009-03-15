@@ -165,6 +165,8 @@ public:
 	virtual void addMessage(Network::Message m, Network::Socket from = 0);
 	virtual Network::Message createBangMessage( int x, int y, int z );
 	
+	static const std::string getStageName( std::string &filename ) throw (MugenException);
+	
 protected:
 
 	/* Location is the directory passed in ctor

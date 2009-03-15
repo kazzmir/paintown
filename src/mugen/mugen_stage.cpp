@@ -1343,6 +1343,55 @@ Network::Message MugenStage::createBangMessage( int x, int y, int z ){
     return m;
 }
 
+const std::string MugenStage::getStageName( std::string &filename ) throw (MugenException){
+    // Lets look for our def since some assholes think that all file systems are case insensitive
+    std::string dir = Util::getDataPath() + "mugen/stages/";
+    Global::debug(1) << dir << endl;
+    if ( filename.find(".def") == std::string::npos){
+	filename+=".def";
+    }
+    const std::string defFile = MugenUtil::fixFileName( dir, std::string(filename) );
+    
+    if( defFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + filename );
+    
+    std::string filesdir = "";
+    
+    size_t strloc = filename.find_last_of("/");
+    if (strloc != std::string::npos){
+	filesdir = filename.substr(0, strloc);
+	filesdir += "/";
+    }
+    
+    Global::debug(1) << "Got subdir: " << filesdir << endl;
+     
+    MugenReader reader( defFile );
+    std::vector< MugenSection * > collection;
+    collection = reader.getCollection();
+
+    /* Extract info for our first section of our stage */
+    for( unsigned int i = 0; i < collection.size(); ++i ){
+	std::string head = collection[i]->getHeader();
+	MugenUtil::fixCase(head);
+	if( head == "info" ){
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		if ( itemhead.find("name")!=std::string::npos ){
+		    std::string stageName;
+		    *content->getNext() >> stageName;
+                    Global::debug(1) << "Read name '" << stageName << "'" << endl;
+		    return stageName;
+		} 
+	    }
+	}
+    }
+    
+    throw MugenException( "Cannot locate stage definition file for: " + filename );
+    return "";
+}
+
 void MugenStage::cleanup(){
     // Get rid of sprites
     for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){

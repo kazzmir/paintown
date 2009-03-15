@@ -232,6 +232,14 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     */
     /* set up the timers */
     //install_int_ex( inc_speed_counter, BPS_TO_TIMER( 40 ) );
+    
+    try{
+	std::string file = ourFile;
+	Global::debug(0) << "\"" << MugenStage::getStageName(file) << "\"" << endl;
+    } catch (MugenException &ex){
+	Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+	exit(1);
+    }
 
     Global::debug(0) << "Trying to load stage: " << ourFile << "..." << endl;
     MugenStage stage( ourFile );
