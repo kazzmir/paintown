@@ -49,6 +49,7 @@ public:
     // Stage be our friend
     friend class MugenStage;
     friend class BackgroundController;
+    friend class MugenUtil;
     
     protected:
     std::string name;
