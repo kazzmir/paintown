@@ -716,68 +716,10 @@ void MugenStage::load() throw( MugenException ){
 	}
 	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	else if( head.find("begin action") !=std::string::npos ){
-	    MugenAnimation *animation = new MugenAnimation();
 	    head.replace(0,13,"");
-	    bool setloop = false;
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Global::debug(1) << "Item Head: " << itemhead << endl;
-		if( itemhead.find("loopstart") != std::string::npos ){
-		    setloop = true;
-		}
-		// This is where we get our frame
-		else{
-		    // This is the new frame
-		    MugenFrame *frame = new MugenFrame();
-		    frame->loopstart = setloop;
-		    /* Get sprite details */
-		    int group, spriteNumber;
-		    // Need to get the parsed data and populate these above items
-		    *item >> group;
-		    *content->getNext() >> spriteNumber;
-		    *content->getNext() >> frame->xoffset;
-		    *content->getNext() >> frame->yoffset;
-		    *content->getNext() >> frame->time;
-		    Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
-		    // Check for flips and color additions
-		    while( content->hasItems() ){
-			std::string temp;
-			*content->getNext() >> temp;
-			MugenUtil::fixCase(temp);
-			if( temp.find("h") != std::string::npos )frame->flipHorizontal = true;
-			if( temp.find("v") != std::string::npos )frame->flipVertical = true;
-			if (temp[0] == 'a'){
-			    frame->colorAdd = ADD;
-			    // Check if we have specified additions
-			    if (temp.size() > 1){
-				// Source
-				frame->colorSource = atoi(temp.substr(2,4).c_str());
-				// Dest
-				frame->colorDestination = atoi(temp.substr(6,8).c_str());
-			    }
-			} else if (temp[0] == 's'){
-			    frame->colorAdd = SUB;
-			}
-		    }
-		    // Add sprite
-		    frame->sprite = sprites[(unsigned short)group][(unsigned short)spriteNumber];
-                    if (frame->sprite == 0){
-                        Global::debug(0) << "No sprite for group " << group << " number " << spriteNumber << endl;
-                    }
-		    // Add frame
-		    animation->addFrame(frame);
-		    
-		    if( setloop )setloop = false;
-		}
-	    }
 	    int h;
 	    MugenItem(head) >> h;
-	    animation->setType(MugenAnimationType(h));
-	    Global::debug(1) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(animation->getType()) << "'" << endl;
-	    animations[h] = animation;
-	    
+	    animations[h] = MugenUtil::getAnimation(collection[i], sprites);
 	}
 	else if( head.find("bgctrldef") != std::string::npos ){ 
 	    head.replace(0,10,"");

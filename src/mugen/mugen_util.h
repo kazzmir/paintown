@@ -7,6 +7,7 @@
 #include "mugen_exception.h"
 
 class Bitmap;
+class MugenAnimation;
 class MugenSprite;
 class MugenSound;
 class MugenItemContent;
@@ -24,6 +25,8 @@ struct MugenUtil{
     static void readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException);
     // Reads and compiles collections from a string rather than using a file ( You will need to delete the MugenSection's independently if you use this
     static std::vector< MugenSection * > configReader(  const std::vector<std::string> &configdata );
+    // Get animation, the animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
+    static MugenAnimation *getAnimation( MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
 };
 
 #endif
