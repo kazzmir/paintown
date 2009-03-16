@@ -38,6 +38,7 @@ Character::Character( int alliance ):
 ObjectAttack( alliance ),
 shadow( 0 ),
 icon( NULL ),
+animation_current(NULL),
 own_stuff( false ),
 x_velocity( 0 ),
 y_velocity( 0 ),
@@ -65,6 +66,7 @@ ObjectAttack( 0, 0, alliance ),
 type( 0 ),
 shadow( 0 ),
 icon( NULL ),
+animation_current(NULL),
 own_stuff( false ),
 x_velocity( 0 ),
 y_velocity( 0 ),
@@ -95,6 +97,7 @@ ObjectAttack( 0, 0, alliance ),
 type( 0 ),
 shadow( 0 ),
 icon( NULL ),
+animation_current(NULL),
 own_stuff( false ),
 x_velocity( 0 ),
 y_velocity( 0 ),
@@ -122,6 +125,7 @@ draw_shadow( true ){
 
 Character::Character( const Character & chr ) throw( LoadException ):
 ObjectAttack(chr),
+animation_current(NULL),
 own_stuff( false ),
 death( 0 ),
 thrown_status( false ),
@@ -486,7 +490,10 @@ void Character::setMap( const unsigned int x ){
 	if ( current_map < 0 ){
 		current_map = 0;
 	}
-	animation_current = getMovement( animation_current->getName() );
+
+        if (animation_current != NULL){
+            animation_current = getMovement( animation_current->getName() );
+        }
 }
 
 /* swap some colors around */
@@ -596,7 +603,9 @@ bool Character::testAnimation(){
 	vector< Object * > more;
 	act( &others, &w, &more );
         */
+    if (animation_current){
 	return animation_current->Act();
+    }
 }
 
 void Character::testReset(){

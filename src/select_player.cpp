@@ -22,9 +22,9 @@
 using namespace std;
 
 struct playerInfo{
-	Character * guy;
+	DisplayCharacter * guy;
 	string path;
-	playerInfo( Character * guy, string path ):
+	playerInfo( DisplayCharacter * guy, string path ):
 		guy( guy ),
 		path( path ){
 	}
@@ -32,22 +32,22 @@ struct playerInfo{
 
 typedef vector<playerInfo> PlayerVector;
 static PlayerVector loadPlayers( const char * path ){
-	PlayerVector players;
-	vector< string > files = Util::getFiles( Util::getDataPath() + "/" + path, "*" );
-	std::sort( files.begin(), files.end() );
-	for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
-		string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
-		Global::debug( 1 ) << "Checking " << file << endl;
-		if ( Util::exists( file ) ){
-			Global::debug( 1 ) << "Loading " << file << endl;
-			try{
-				players.push_back( playerInfo( new DisplayCharacter( file ), file ) );
-			} catch ( const LoadException & le ){
-				Global::debug( 0 ) << "Could not load " << file << " because " << le.getReason() << endl;
-			}
-		}
-	}
-	return players;
+    PlayerVector players;
+    vector< string > files = Util::getFiles( Util::getDataPath() + "/" + path, "*" );
+    std::sort( files.begin(), files.end() );
+    for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
+        string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
+        Global::debug(1) << "Checking " << file << endl;
+        if (Util::exists( file )){
+            Global::debug(1) << "Loading " << file << endl;
+            try{
+                players.push_back(playerInfo(new DisplayCharacter(file), file));
+            } catch (const LoadException & le){
+                Global::debug(0) << "Could not load " << file << " because " << le.getReason() << endl;
+            }
+        }
+    }
+    return players;
 }
 
 /*
@@ -64,12 +64,29 @@ Key getNth( const map< Key, Value > & m, int i ){
 }
 */
 
+vector<DisplayCharacter*> getCharacters(PlayerVector players){
+    vector<DisplayCharacter*> characters;
+    for (PlayerVector::iterator it = players.begin(); it != players.end(); it++){
+        characters.push_back(it->guy);
+    }
+
+    return characters;
+}
+
+/* run the loader in a separate thread */
+static void * characterLoader(void * arg){
+    DisplayCharacterLoader * loader = (DisplayCharacterLoader*) arg;
+    loader->load();
+    return NULL;
+}
+
 Object * Game::selectPlayer( bool invincibile, const string & message ) throw( LoadException, ReturnException ){
 
 	Bitmap background( Global::titleScreen() );
 
 	/* hm, it would be nice to cache this I suppose */
 	PlayerVector players = loadPlayers( "players/" );
+        DisplayCharacterLoader loader(getCharacters(players));
 	
 	Keyboard key;
 
@@ -92,12 +109,10 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 	key.setDelay( keyLeft, 300 );
 	key.setDelay( changeRemapKey, 200 );
 
-
 	/* preview box for each character */
 	Bitmap temp( 120, 120 );
 	Bitmap preview( GFX_X / 2, GFX_Y / 2 );
 	Bitmap reflection( GFX_X / 2, GFX_Y / 2 );
-	
 
 	// const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
 	// const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
@@ -133,16 +148,21 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
         double runCounter = 0;
         double gameSpeed = 1;
 	Sound beep( Util::getDataPath() + "/sounds/beep1.wav" );
+        pthread_t loadingThread;
+		
+        pthread_create(&loadingThread, NULL, characterLoader, &loader );
 
 	while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
 		key.poll();
 
-		Character * ch = (Character *) players[ current ].guy;
+                /* bad variable name */
+		DisplayCharacter * ch = players[ current ].guy;
 
 		if ( Global::speed_counter > 0 ){
 			// double think = Global::speed_counter;
                         runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
 			while ( runCounter >= 1.0 ){
+                            int old = current;
                             runCounter -= 1;
 				clock += 1;
 			
@@ -173,11 +193,16 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 					beep.play();
 				}
 
-				if ( key[ changeRemapKey ] ){
-					ch->nextMap();
-				}
+                                if (ch->isLoaded()){
+                                    if ( key[ changeRemapKey ] ){
+                                            ch->nextMap();
+                                    }
+                                }
 
 				if ( key[ Keyboard::Key_ESC ] ){
+                                        loader.stop();
+                                        pthread_join(loadingThread, NULL);
+
 					for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
 						delete it->guy;
 					}
@@ -192,9 +217,11 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 					current = players.size() - 1;
 				}
 
-				if ( ch->testAnimation() ){
-					ch->testReset();
-				}
+                                if (ch->isLoaded()){
+                                    if ( ch->testAnimation() ){
+                                            ch->testReset();
+                                    }
+                                }
 
 				while ( current < top ){
 					top -= boxesPerLine;
@@ -203,6 +230,10 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 				while ( current >= top + boxesPerLine * boxesPerColumn ){
 					top += boxesPerLine;
 				}
+
+                                if (current != old){
+                                    loader.update(players[current].guy);
+                                }
 
 				// think--;
 			}
@@ -216,42 +247,44 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 			// background.Stretch( work );
 			background.Blit( backgroundX, 0, work );
 			background.Blit( work.getWidth() + backgroundX, 0, work );
+                        const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
 
-			const int stand = 50;
-			ch->setFacing( Object::FACING_RIGHT );
-			Character copy( *ch );
-			copy.setDrawShadow( false );
-			copy.setX( preview.getWidth() / 2 );
-			copy.setY( 0 );
-			copy.setZ( preview.getHeight() - stand );
-			preview.fill( Bitmap::MaskColor );
-			reflection.fill( Bitmap::MaskColor );
-			// preview.fill( 0 );
-			// reflection.fill( 0 );
+                        if (ch->isLoaded()){
+                            const int stand = 50;
+                            ch->setFacing( Object::FACING_RIGHT );
+                            Character copy( *ch );
+                            copy.setDrawShadow( false );
+                            copy.setX( preview.getWidth() / 2 );
+                            copy.setY( 0 );
+                            copy.setZ( preview.getHeight() - stand );
+                            preview.fill( Bitmap::MaskColor );
+                            reflection.fill( Bitmap::MaskColor );
+                            // preview.fill( 0 );
+                            // reflection.fill( 0 );
 
-			copy.draw( &preview, 0 );
-			preview.drawVFlip( 0, 0, reflection );
+                            copy.draw( &preview, 0 );
+                            preview.drawVFlip( 0, 0, reflection );
 
-			Bitmap::transBlender( 0, 0, 0, 255 );
-			LitBitmap s2( reflection );
-			s2.draw( 0, preview.getHeight() - stand - stand, preview );
-			Bitmap::transBlender( 0, 0, 0, 128 );
-			reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
-			copy.draw( &preview, 0 );
+                            Bitmap::transBlender( 0, 0, 0, 255 );
+                            LitBitmap s2( reflection );
+                            s2.draw( 0, preview.getHeight() - stand - stand, preview );
+                            Bitmap::transBlender( 0, 0, 0, 128 );
+                            reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
+                            copy.draw( &preview, 0 );
 
-			// reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
-			// preview.floodfill( 0, 0, Bitmap::MaskColor );
-			// preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
+                            // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
+                            // preview.floodfill( 0, 0, Bitmap::MaskColor );
+                            // preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
 
-			// preview.draw( 60, 0, work );
-			preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
+                            // preview.draw( 60, 0, work );
+                            preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
 
-			const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
-                        for (int c = 1; c >= 0; c--){
-                            int color = 255 - c * 190;
-                            int x = 10 + 5 * c;
-                            int y = font.getHeight() + 5 + c * 5;
-                            font.printf( x, y, Bitmap::makeColor(color, color, color ), work, copy.getName(), 0 );
+                            for (int c = 1; c >= 0; c--){
+                                int color = 255 - c * 190;
+                                int x = 10 + 5 * c;
+                                int y = font.getHeight() + 5 + c * 5;
+                                font.printf( x, y, Bitmap::makeColor(color, color, color ), work, copy.getName(), 0 );
+                            }
                         }
 
 			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
@@ -262,24 +295,26 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 				temp.clear();
 				Bitmap box( work, x, y, boxSize, boxSize );
 				// int color = unselectedColor;
-				int * color = 0;
-				Character smaller( *players[ i ].guy );
+				int * color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
+                                if (players[i].guy->isLoaded()){
+                                    Character smaller( *players[ i ].guy );
 
-				color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
-				/* draw a border */
-				// box.border( 0, 3, color[ clock % maxColor ] );
+                                    /* draw a border */
+                                    // box.border( 0, 3, color[ clock % maxColor ] );
 
-				smaller.setX( temp.getWidth() / 2 );
-				smaller.setY( 0 );
-				smaller.setZ( temp.getHeight() );
-				smaller.draw( &temp, 0 );
-				temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
-				box.border( 0, 3, color[ clock % maxColor ] );
-				x += boxSize + 10;
-				if ( x + boxSize + 10 > work.getWidth() ){
-					x = startX;
-					y += (boxSize + 10);
-				}
+                                    smaller.setX( temp.getWidth() / 2 );
+                                    smaller.setY( 0 );
+                                    smaller.setZ( temp.getHeight() );
+                                    smaller.draw( &temp, 0 );
+                                }
+
+                                temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
+                                box.border( 0, 3, color[ clock % maxColor ] );
+                                x += boxSize + 10;
+                                if ( x + boxSize + 10 > work.getWidth() ){
+                                    x = startX;
+                                    y += (boxSize + 10);
+                                }
 			}
 
 			if ( top > 0 ){
@@ -303,6 +338,8 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 			Util::rest( 1 );
 		}
 	}
+        loader.stop();
+        pthread_join(loadingThread, NULL);
 
 	int remap = players[ current ].guy->getCurrentMap();
 
@@ -316,9 +353,13 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 	}
 
 	Global::debug( 1 ) << "Selected " << players[ current ].path << ". Loading.." << endl;
-	Player * player = new Player( players[ current ].path );
-	player->setInvincible( invincibile );
-	player->setMap( remap );
+	Player * player = new Player(players[ current ].path);
+	player->setInvincible(invincibile);
+	player->setMap(remap);
+
+        /* is this necessary? I dont think so.. if it is provide an
+         * explanation here.
+         */
 	player->testAnimation();
 	return player;
 }
@@ -328,6 +369,8 @@ vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, Ret
 
 	/* hm, it would be nice to cache this I suppose */
 	PlayerVector players = loadPlayers( "players/" );
+        DisplayCharacterLoader loader(getCharacters(players));
+        loader.load();
 	
 	Keyboard key;
 

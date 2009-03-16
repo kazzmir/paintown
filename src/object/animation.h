@@ -29,7 +29,7 @@ const int PAIN_KEY_JUMP = 7;
 const int PAIN_KEY_GRAB = 8;
 
 struct KeyPress{
-	vector< int > combo;
+    std::vector< int > combo;
 
 	/*
 	KeyPress & operator= ( const KeyPress & rhs ){
@@ -71,7 +71,7 @@ public:
 	/* getName:
 	 * The name of the animation
 	 */
-	inline const string & getName() const{
+	inline const std::string & getName() const{
 		return name;
 	}
 
@@ -88,13 +88,13 @@ public:
 	 */
 	void getAttackCoords( int & x, int & y );
 
-	// inline const map<string,string> & getSequences() const{
-	inline const vector<string> & getSequences() const {
+	// inline const map<std::string,string> & getSequences() const{
+	inline const std::vector<std::string> & getSequences() const {
 		return sequences;
 	}
 
 	/* returns true if previous sequence is none or seq */
-	bool properSequence( const string & seq );
+	bool properSequence( const std::string & seq );
 
 	/* this animation touched something */
 	void contacted();
@@ -103,10 +103,10 @@ public:
 	 * This method makes this animations bitmaps original, if they 
 	 * were copied
 	 */
-	void reMap( map< int, int > & colors );
+	void reMap( std::map< int, int > & colors );
 
 	/* returns true if a previous sequence is seq */
-	bool hasSequence( const string & seq );
+	bool hasSequence( const std::string & seq );
 
 	/* getWidth:
 	 * Gets the width of the current frame
@@ -174,16 +174,16 @@ public:
 	/* tell the owning object to create a projectile */
 	void createProjectile( int x, int y, Projectile * p );
 
-	void addDecommision( const string & s );
-	void addCommision( const string & s );
+	void addDecommision( const std::string & s );
+	void addCommision( const std::string & s );
 
-	const string getCurrentFramePath() const;
+	const std::string getCurrentFramePath() const;
 
-	inline const vector<string> & getDecommisions() const {
+	inline const std::vector<std::string> & getDecommisions() const {
 		return disable_animations;
 	}
 
-	inline const vector<string> & getCommisions() const {
+	inline const std::vector<std::string> & getCommisions() const {
 		return enable_animations;
 	}
 
@@ -217,15 +217,15 @@ public:
 		return status;
 	}
 
-	inline const string & getPreviousSequence() const{
+	inline const std::string & getPreviousSequence() const{
 		return prev_sequence;
 	}
 
-	inline const string & getNextSequence() const{	
+	inline const std::string & getNextSequence() const{	
 		return next_sequence;
 	}
 
-	inline const vector<KeyPress> & getKeys() const{
+	inline const std::vector<KeyPress> & getKeys() const{
 		return keys;
 	}
 
@@ -241,7 +241,7 @@ public:
 		minZDistance = x;	
 	}
 
-	void playSound( const string & path );
+	void playSound( const std::string & path );
 
 	void setFacing( const int direction );
 
@@ -253,7 +253,7 @@ public:
 	void DrawLitFlipped( int x, int y, Bitmap * work );
 	void setDelay( int _delay );
 	void setStatus( const int status );
-	void setFrame( const string & path );
+	void setFrame( const std::string & path );
 	void setFrame( const int fr );
 	void setBBox( int x1, int y1, int x2, int y2 );
 	// void setAttack( int x1, int y1, int x2, int y2 );
@@ -265,19 +265,19 @@ public:
 
 protected:
 
-	void reMap( Bitmap * work, map< int, int > & colors );
+	void reMap( Bitmap * work, std::map< int, int > & colors );
 
 	// int convertKeyPress( const string & key_name ) throw( LoadException );
-	int convertKeyPress( const string & key_name );
+	int convertKeyPress( const std::string & key_name );
 
 	// void parseObject( string str ) throw( exception );
-	void upperCase( string & who );
+	void upperCase( std::string & who );
 
 	void doDraw( int x, int y, const Bitmap & frame, Bitmap * work );
 	void doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work );
 
 protected:
-	string name;
+        std::string name;
 	bool loop;
 
 	Character * const parent;
@@ -299,15 +299,15 @@ protected:
 	/* I dont think we need range_x/range_y */
 	int range_x, range_y;
 
-	vector< AnimationEvent * > events;
-	vector< AnimationEvent * >::iterator current_event;
-	map< string, Frame * > frames;
-	vector< KeyPress > keys;
+        std::vector< AnimationEvent * > events;
+        std::vector< AnimationEvent * >::iterator current_event;
+        std::map< std::string, Frame * > frames;
+        std::vector< KeyPress > keys;
 
-	string next_sequence, prev_sequence;
+        std::string next_sequence, prev_sequence;
 
-	// map< string, string > sequences;
-	vector< string > sequences;
+	// map< std::string, std::string > sequences;
+        std::vector< std::string > sequences;
 
 	/* range of the attack in X direction */
 	int range;
@@ -321,11 +321,11 @@ protected:
 	/* can we use this animation? */
 	bool commision;
 
-	map< string, Sound * > sounds;
+        std::map< std::string, Sound * > sounds;
 	Sound * contact;
 
-	vector< string > disable_animations;
-	vector< string > enable_animations;
+        std::vector< std::string > disable_animations;
+        std::vector< std::string > enable_animations;
 
 	Attack attack;
 

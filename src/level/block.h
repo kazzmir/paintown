@@ -50,7 +50,7 @@ public:
 
 	bool empty();
 
-	vector< Heart * > createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, vector< Object * > * list );
+        std::vector< Heart * > createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, std::vector< Object * > * list );
 
 	~Block();
 
@@ -59,7 +59,7 @@ protected:
         int id;
 	bool wait;
 
-	vector< BlockObject * > objects;
+        std::vector< BlockObject * > objects;
 	int finished;
 	bool continuous;
 };

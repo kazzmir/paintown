@@ -45,12 +45,12 @@ public:
 	virtual int getY() = 0;
 
         /* this shouldn't be here */
-        virtual const deque<Bitmap*> & getScreenshots() = 0;
+        virtual const std::deque<Bitmap*> & getScreenshots() = 0;
 
         virtual const int levelLength() const = 0;
         virtual const Block * currentBlock() const = 0;
         
-        virtual inline const vector<Object*> & getObjects() const {
+        virtual inline const std::vector<Object*> & getObjects() const {
             return objects;
         }
         

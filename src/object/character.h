@@ -261,15 +261,15 @@ public:
 		death = i;
 	}
 
-	inline const int getDeath() const {
+	inline virtual const int getDeath() const {
 		return death;
 	}
 
-	inline const double getSpeed() const {
+	inline virtual const double getSpeed() const {
 		return speed;
 	}
 
-	inline const int getCurrentMap() const {
+	inline virtual const int getCurrentMap() const {
 		return current_map;
 	}
 

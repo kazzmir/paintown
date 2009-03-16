@@ -36,7 +36,6 @@ volatile int Global::second_counter = 0;
 static const int TICS_PER_SECOND = 40;
 const double Global::LOGIC_MULTIPLIER = (double) 90 / (double) TICS_PER_SECOND;
         
-
 pthread_mutex_t Global::loading_screen_mutex;
 bool Global::done_loading = false;
 

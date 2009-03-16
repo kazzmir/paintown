@@ -51,12 +51,12 @@ public:
 	virtual int getX();
 	virtual int getY();
 
-        virtual const deque<Bitmap*> & getScreenshots();
+        virtual const std::deque<Bitmap*> & getScreenshots();
 
         virtual const int levelLength() const;
         virtual const Block * currentBlock() const;
         
-        virtual inline const vector<Object*> & getObjects() const {
+        virtual inline const std::vector<Object*> & getObjects() const {
             return objects;
         }
         
@@ -104,7 +104,6 @@ protected:
 	std::vector< PlayerTracker > players;
 	Object * bang;
 	
-
 	Scene * scene;
 
 	// int min_x;
@@ -115,7 +114,7 @@ protected:
 	
 	Bitmap * mini_map;
 
-        deque<Bitmap*> screenshots;
+        std::deque<Bitmap*> screenshots;
         bool takeAScreenshot;
 };
 
