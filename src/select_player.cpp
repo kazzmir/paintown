@@ -289,6 +289,12 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
 
 			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
 
+                        if (!loader.done()){
+
+                            const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 10, 10 );
+                            font.printf(1, 1, Bitmap::makeColor(200,0,0), work, "Loading...", 0);
+                        }
+
 			int x = startX, y = startY;
 			unsigned int i;
 			for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
@@ -341,7 +347,7 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
         loader.stop();
         pthread_join(loadingThread, NULL);
 
-	int remap = players[ current ].guy->getCurrentMap();
+	int remap = players[current].guy->getCurrentMap();
 
 	/* delete all the preview characters. its ok to delete them
 	 * before looking up the selected player in the map

@@ -41,13 +41,15 @@ public:
 
     /* stop loading */
     void stop();
+    
+    /* done loading */
+    bool done();
 
     /* try to load this character immediately */
     void update(DisplayCharacter* character);
 
     virtual ~DisplayCharacterLoader();
 protected:
-    bool done();
     DisplayCharacter * nextCharacter();
 
     std::vector<DisplayCharacter*> characters;
