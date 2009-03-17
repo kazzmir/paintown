@@ -20,6 +20,8 @@
 #include "menu/option_quit.h"
 #include "globals.h"
 
+#include "menu/option_mugen_menu.h"
+
 MenuOption *getOption(Token *token){
 	Token * tok;
 	*token >> tok;
@@ -67,6 +69,9 @@ MenuOption *getOption(Token *token){
 	} else if ( *tok == "font-select" ){
 		// Invincible
 		return new OptionSelectFont(tok);
+	} else if ( *tok == "mugen" ){
+		// Invincible
+		return new OptionMugenMenu(tok);
 	} else {
 		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 		tok->print(" ");

@@ -50,6 +50,7 @@ public:
     friend class MugenStage;
     friend class BackgroundController;
     friend class MugenUtil;
+    friend class MugenMenu;
     
     protected:
     std::string name;

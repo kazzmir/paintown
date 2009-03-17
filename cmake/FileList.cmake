@@ -133,6 +133,7 @@ src/menu/option_network_host.cpp
 src/menu/option_network_join.cpp
 src/menu/option_npc_buddies.cpp
 src/menu/option_menu.cpp
+src/menu/option_mugen_menu.cpp
 src/menu/option_quit.cpp
 src/menu/option_versus.cpp
 src/menu/option_select_font.cpp

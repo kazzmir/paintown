@@ -39,16 +39,33 @@
 #include "mugen_reader.h"
 #include "mugen_sprite.h"
 #include "mugen_util.h"
+#include "mugen_font.h"
+
+const double DEFAULT_WIDTH = 320;
+const double DEFAULT_HEIGHT = 240;
+const double DEFAULT_SCREEN_X_AXIS = 160;
+const double DEFAULT_SCREEN_Y_AXIS = 0;
 
 MugenMenu::MugenMenu(const std::string &filename):
-location(filename){
+location(filename),
+spriteFile(""),
+soundFile(""),
+logoFile(""),
+introFile(""),
+selectFile(""),
+fightFile(""),
+fadeInTime(0),
+fadeOutTime(0),
+windowVisibleItems(0),
+showBoxCursor(false),
+backgroundClearColor(Bitmap::makeColor(0,0,0)),
+ticker(0){
 }
 
 void MugenMenu::load() throw (LoadException){
      // Lets look for our def since some assholes think that all file systems are case insensitive
     std::string baseDir = Util::getDataPath() + "mugen/stages/";
     Global::debug(1) << baseDir << endl;
-    location+=".def";
     const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location) );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
@@ -68,11 +85,11 @@ void MugenMenu::load() throw (LoadException){
     collection = reader.getCollection();
     
     // for linked position in backgrounds
-    //MugenBackground *prior = 0;
+    MugenBackground *prior = 0;
     
     /* Extract info for our first section of our stage */
     for( unsigned int i = 0; i < collection.size(); ++i ){
-	/*std::string head = collection[i]->getHeader();
+	std::string head = collection[i]->getHeader();
 	MugenUtil::fixCase(head);
 	if( head == "info" ){
 	    while( collection[i]->hasItems() ){
@@ -81,30 +98,164 @@ void MugenMenu::load() throw (LoadException){
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
 		if ( itemhead.find("name")!=std::string::npos ){
-		    *content->getNext() >> name;
-                    Global::debug(1) << "Read name '" << name << "'" << endl;
-		} else if ( itemhead.find("author")!=std::string::npos ){
-		    // Seems to be that some people think that author belongs in background defs
 		    std::string temp;
 		    *content->getNext() >> temp;
-                    Global::debug(1) << "Made by this guy: '" << temp << "'" << endl;
+		    setName(temp);
+                    Global::debug(1) << "Read name '" << getName() << "'" << endl;
+		} else if ( itemhead.find("author")!=std::string::npos ){
+		    std::string temp;
+		    *content->getNext() >> temp;
+                    Global::debug(1) << "Made by: '" << temp << "'" << endl;
 		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
 	    }
-	}*/
-	//else if( head == "music" ){ /* Ignore for now */ }
-	//else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
+	}
+	else if( head == "files" ){
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
+		if ( itemhead.find("spr")!=std::string::npos ){
+		    *content->getNext() >> spriteFile;
+		    Global::debug(1) << "Got Sprite File: '" << spriteFile << "'" << endl;
+		    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir + filesdir, spriteFile), "", sprites );
+		} else if ( itemhead.find("snd")!=std::string::npos ){
+		    *content->getNext() >> soundFile;
+                    Global::debug(1) << "Got Sound File: '" << soundFile << "'" << endl;
+		} else if ( itemhead.find("logo.storyboard")!=std::string::npos ){
+		    *content->getNext() >> logoFile;
+                    Global::debug(1) << "Got Logo Storyboard File: '" << logoFile << "'" << endl;
+		} else if ( itemhead.find("intro.storyboard")!=std::string::npos ){
+		    *content->getNext() >> introFile;
+                    Global::debug(1) << "Got Intro Storyboard File: '" << introFile << "'" << endl;
+		} else if ( itemhead.find("select")!=std::string::npos ){
+		    *content->getNext() >> selectFile;
+                    Global::debug(1) << "Got Select File: '" << selectFile << "'" << endl;
+		} else if ( itemhead.find("fight")!=std::string::npos ){
+		    *content->getNext() >> fightFile;
+                    Global::debug(1) << "Got Fight File: '" << fightFile << "'" << endl;
+		} else if ( itemhead.find("font")!=std::string::npos ){
+		    std::string temp;
+		    *content->getNext() >> temp;
+		    fonts.push_back(new MugenFont(temp));
+                    Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+		} else throw MugenException( "Unhandled option in Files Section: " + itemhead );
+	    }
+	}
+	else if( head == "title info" ){
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
+		if ( itemhead.find("fadein.time")!=std::string::npos ){
+		    *content->getNext() >> fadeInTime;
+		} else if ( itemhead.find("fadeout.time")!=std::string::npos ){
+		    *content->getNext() >> fadeOutTime;
+		} else if ( itemhead.find("menu.pos")!=std::string::npos ){
+		    *content->getNext() >> position.x;
+		    *content->getNext() >> position.y;
+		} else if ( itemhead.find("menu.item.font")!=std::string::npos ){
+		    *content->getNext() >> fontItem.index;
+		    *content->getNext() >> fontItem.bank;
+		    *content->getNext() >> fontItem.position;
+		} else if ( itemhead.find("menu.item.active.font")!=std::string::npos ){
+		    *content->getNext() >> fontActive.index;
+		    *content->getNext() >> fontActive.bank;
+		    *content->getNext() >> fontActive.position;
+		} else if ( itemhead.find("menu.item.spacing")!=std::string::npos ){
+		    *content->getNext() >> fontSpacing.x;
+		    *content->getNext() >> fontSpacing.y;
+		} else if ( itemhead.find("menu.itemname.")!=std::string::npos ){
+		    // Add in info to setting individual options in the menu
+		} else if ( itemhead.find("menu.window.margins.x")!=std::string::npos ){
+		    *content->getNext() >> windowMarginX.x;
+		    *content->getNext() >> windowMarginX.y;
+		} else if ( itemhead.find("menu.window.margins.y")!=std::string::npos ){
+		    *content->getNext() >> windowMarginY.x;
+		    *content->getNext() >> windowMarginY.y;
+		} else if ( itemhead.find("menu.window.visibleitems")!=std::string::npos ){
+		    *content->getNext() >> windowVisibleItems;
+		} else if ( itemhead.find("menu.boxcursor.visible")!=std::string::npos ){
+		    *content->getNext() >> showBoxCursor;
+		} else if ( itemhead.find("menu.boxcursor.coords")!=std::string::npos ){
+		    *content->getNext() >> boxCursorCoords.x1;
+		    *content->getNext() >> boxCursorCoords.y1;
+		    *content->getNext() >> boxCursorCoords.x2;
+		    *content->getNext() >> boxCursorCoords.y2;
+		} else if ( itemhead.find("cursor.move.snd")!=std::string::npos ){
+		    // Configure later
+		} else if ( itemhead.find("cursor.done.snd")!=std::string::npos ){
+		    // Configure later
+		} else if ( itemhead.find("cancel.snd")!=std::string::npos ){
+		    // Configure later
+		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
+	    }
+	}
+	else if( head == "titlebgdef" ){
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		if ( itemhead.find("bgclearcolor")!=std::string::npos ){
+		    int r,g,b;
+		    *content->getNext() >> r;
+		    *content->getNext() >> g;
+		    *content->getNext() >> b;
+		    backgroundClearColor = Bitmap::makeColor(r,g,b);
+		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
+	    }
+	}
+	// This our background data definitions for the title
+	else if( head.find("titlebg ") !=std::string::npos ){
+	    MugenBackground *temp = MugenUtil::getBackground(ticker, collection[i], sprites);
+	    // Do some fixups and necessary things
+	    // lets see where we lay
+	    backgrounds.push_back(temp);
+	    
+	    // If position link lets set to previous item
+	    if( temp->positionlink ){
+		temp->linked = prior;
+		Global::debug(1) << "Set positionlink to id: '" << prior->id << "' Position at x(" << prior->startx << ")y(" << prior->starty << ")" << endl;
+	    } 
+	    
+	    // This is so we can have our positionlink info for the next item if true
+	    prior = temp;
+	}
+	else if( head == "music" ){ /* Ignore for now */ }
+	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
+    }
+    // Set up the animations for those that have action numbers assigned (not -1 )
+    // Also do their preload
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	if( (*i)->actionno != -1 ){
+	    (*i)->action = animations[ (*i)->actionno ];
+	    // Check tilespacing and mask
+	    if ((*i)->tilespacingx == 0){
+		(*i)->tilespacingx = 1;
+	    }
+	    if ((*i)->tilespacingy == 0){
+		(*i)->tilespacingy = 1;
+	    }
+	    (*i)->mask = true;
+	}
+	// now load
+	(*i)->preload( DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
     }
 }
 
 MugenMenu::~MugenMenu(){
-    
+    // cleanup
+    cleanup();
 }
 
 void MugenMenu::run(){
-    Bitmap screen_buffer( 320, 240 );
     bool done = false;
     bool endGame = false;
-    
+    /*
     if ( menuOptions.empty() ){
 	    return;
     }
@@ -119,7 +270,7 @@ void MugenMenu::run(){
     if ( !selectSound.empty() ){
 	    MenuGlobals::setSelectSound(selectSound);
     }
-    
+    */
     double runCounter = 0;
     while( ! endGame ){
 	    Global::speed_counter = 0;
@@ -145,6 +296,7 @@ void MugenMenu::run(){
 			    draw = true;
 			    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
 			    while ( runCounter >= 1.0 ){
+				ticker++;
 				runCounter -= 1;
 				// Keys
 				
@@ -240,6 +392,11 @@ void MugenMenu::run(){
 						break;
 					}
 				}*/
+				
+				// Backgrounds
+				for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+				    (*i)->logic( 0, 0, DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
+				}
 			    }
 			    
 			    Global::speed_counter = 0;
@@ -254,14 +411,17 @@ void MugenMenu::run(){
 		    }
 	    
 		    if ( draw ){
-			    work->clear();
+			    // Clear
+			    work->fill(backgroundClearColor);
 			    // Draw
 			    
 			    // Do the background
-			    //drawBackground(work);
+			    for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+				(*i)->render( 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, work );
+			    }
 			    
 			    // Draw any misc stuff in the background of the menu of selected object 
-			    (*selectedOption)->draw(work);
+			    //(*selectedOption)->draw(work);
 			    // Draw text board
 			    //drawTextBoard(work);
 			    // Draw text
@@ -281,6 +441,7 @@ void MugenMenu::run(){
 	    }
 	    
 	    // do we got an option to run, lets do it
+	    /*
 	    if ((*selectedOption)->getState() == MenuOption::Run){
 		    try{
 			if (backSound != ""){
@@ -320,10 +481,30 @@ void MugenMenu::run(){
 			back->play();
 		    }
 	    }
+	    */
     }
     
     return;
 }
 
+
+void MugenMenu::cleanup(){
+    // Get rid of sprites
+    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
+    }
+    
+    // Get rid of animation lists;
+    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+	if( i->second )delete i->second;
+    }
+    
+    // Get rid of background lists;
+    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
+	if( (*i) )delete (*i);
+    }
+}
 
 
