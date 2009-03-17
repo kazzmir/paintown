@@ -28,7 +28,7 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
 			    std::string temp;
 			    // Filename
 			    *tok >> temp;
-			    _menu = new MugenMenu(Util::getDataPath() + "mugen/data/" + temp);
+			    _menu = new MugenMenu(temp);
 			    try {
 				_menu->load();
 			    } catch( const MugenException &ex ){

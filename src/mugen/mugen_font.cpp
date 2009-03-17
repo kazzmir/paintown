@@ -14,6 +14,23 @@
 #include "globals.h"
 #include "util/funcs.h"
 
+static std::string correctFontName( const std::string &str ){
+    std::string temp = str;
+    if( temp.find( "font/") != std::string::npos || temp.find( "font\\") != std::string::npos ){
+	size_t rem = temp.find_first_of( "font/" );
+	if( rem != std::string::npos ){
+	    temp.replace( rem, std::string("font/").size(), "" );
+	    return temp;
+	}
+	rem = temp.find_first_of( "font\\" );
+	if( rem != std::string::npos ){
+	    temp.replace( rem, std::string("font\\").size(), "" );
+	    return temp;
+	}
+    }
+    return temp;
+}
+
 // If you use this, please delete the item after you use it, this isn't java ok
 static MugenItemContent *getOpts( const std::string &opt ){
     std::string contentHolder = "";
@@ -53,12 +70,13 @@ bmp(0),
 pcx(0),
 pcxsize(0),
 currentBank(0){
-    Global::debug(1) << "[mugen font] Opening file '" << file << "'" << endl;
-    ifile.open( std::string(Util::getDataPath() + "mugen/font/" + file).c_str() );
+    std::string temp = correctFontName(file);
+    Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
+    ifile.open( std::string(Util::getDataPath() + "mugen/font/" + temp).c_str() );
     if (!ifile){
         perror("cant open file");
     }
-    myfile = file;
+    myfile = temp;
     
     load();
 }
@@ -76,12 +94,13 @@ bmp(0),
 pcx(0),
 pcxsize(0),
 currentBank(0){
-    Global::debug(1) << "[mugen font] Opening file '" << file << "'" << endl;
-    ifile.open( std::string(Util::getDataPath() + "mugen/font/" + file).c_str() );
+    std::string temp = correctFontName(std::string(file));
+    Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
+    ifile.open( std::string(Util::getDataPath() + "mugen/font/" + temp).c_str() );
     if (!ifile){
         perror("cant open file");
     }
-    myfile = string( file );
+    myfile = temp;
     
     load();
 }

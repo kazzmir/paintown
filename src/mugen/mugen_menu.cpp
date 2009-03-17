@@ -41,10 +41,10 @@
 #include "mugen_util.h"
 #include "mugen_font.h"
 
-const double DEFAULT_WIDTH = 320;
-const double DEFAULT_HEIGHT = 240;
-const double DEFAULT_SCREEN_X_AXIS = 160;
-const double DEFAULT_SCREEN_Y_AXIS = 0;
+const int DEFAULT_WIDTH = 320;
+const int DEFAULT_HEIGHT = 240;
+const int DEFAULT_SCREEN_X_AXIS = 160;
+const int DEFAULT_SCREEN_Y_AXIS = 0;
 
 MugenMenu::MugenMenu(const std::string &filename):
 location(filename),
@@ -62,13 +62,13 @@ backgroundClearColor(Bitmap::makeColor(0,0,0)),
 ticker(0){
 }
 
-void MugenMenu::load() throw (LoadException){
+void MugenMenu::load() throw (MugenException){
      // Lets look for our def since some assholes think that all file systems are case insensitive
-    std::string baseDir = Util::getDataPath() + "mugen/stages/";
+    std::string baseDir = Util::getDataPath() + "mugen/data/";
     Global::debug(1) << baseDir << endl;
     const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location) );
     
-    if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
+    if( ourDefFile.empty() )throw MugenException( "Cannot locate menu definition file for: " + location );
     
     std::string filesdir = "";
     
@@ -138,6 +138,7 @@ void MugenMenu::load() throw (LoadException){
 		} else if ( itemhead.find("font")!=std::string::npos ){
 		    std::string temp;
 		    *content->getNext() >> temp;
+		    MugenUtil::removeSpaces(temp);
 		    fonts.push_back(new MugenFont(temp));
                     Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
 		} else throw MugenException( "Unhandled option in Files Section: " + itemhead );
@@ -225,7 +226,25 @@ void MugenMenu::load() throw (LoadException){
 	    // This is so we can have our positionlink info for the next item if true
 	    prior = temp;
 	}
+	else if( head == "select info" ){ /* Ignore for now */ }
+	else if( head == "selectbgdef" ){ /* Ignore for now */ }
+	else if( head.find("selectbg ") != std::string::npos ){ /* Ignore for now */ }
 	else if( head == "music" ){ /* Ignore for now */ }
+	else if( head == "vs screen" ){ /* Ignore for now */ }
+	else if( head == "versusbgdef" ){ /* Ignore for now */ }
+	else if( head.find("versusbg " ) != std::string::npos ){ /* Ignore for now */ }
+	else if( head == "demo mode" ){ /* Ignore for now */ }
+	else if( head == "continue screen" ){ /* Ignore for now */ }
+	else if( head == "game over screen" ){ /* Ignore for now */ }
+	else if( head == "win screen" ){ /* Ignore for now */ }
+	else if( head == "default ending" ){ /* Ignore for now */ }
+	else if( head == "end credits" ){ /* Ignore for now */ }
+	else if( head == "survival results screen" ){ /* Ignore for now */ }
+	else if( head == "option info" ){ /* Ignore for now */ }
+	else if( head == "optionbgdef" ){ /* Ignore for now */ }
+	else if( head.find("optionbg ") != std::string::npos ){ /* Ignore for now */ }
+	else if( head == "music" ){ /* Ignore for now */ }
+	else if( head.find("begin action ") != std::string::npos ){ /* Ignore for now */ }
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
     // Set up the animations for those that have action numbers assigned (not -1 )

@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 
-#include "util/load_exception.h"
+#include "mugen_exception.h"
 
 #include "menu/menu.h"
 
@@ -43,7 +43,7 @@ class MugenMenu : public Menu
 	virtual ~MugenMenu();
 	
 	/*! load */
-	virtual void load() throw (LoadException);
+	virtual void load() throw (MugenException);
 	
 	/*! do logic, draw whatever */
 	virtual void run();	
