@@ -94,11 +94,11 @@ class Menu
 		//! longest menu text
 		int longestTextLength;
 		
-	private:
 		std::vector <MenuOption *> menuOptions;
 		std::vector <MenuOption *>::iterator selectedOption;
 		std::string _name;
 		
+	private:
 		// Error checker if no options do not add to menu and remove from list
 		bool hasOptions;
 		

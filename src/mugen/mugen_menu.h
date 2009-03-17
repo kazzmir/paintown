@@ -9,6 +9,8 @@
 We already have a setup for menus, might as well as utilize it to accomodate mugen
 */
 
+class MugenBackground;
+
 class MugenMenu : public Menu
 {
     public:
@@ -23,6 +25,8 @@ class MugenMenu : public Menu
 	virtual void run();	
     private:
 	std::string location;
+	
+	std::vector<MugenBackground *>backgrounds;
 };
 #endif
 

@@ -13,6 +13,8 @@
 
 #include "mugen_stage.h"
 
+#include "init.h"
+#include "resource.h"
 #include "util/funcs.h"
 #include "util/bitmap.h"
 #include "game/console.h"
@@ -23,6 +25,10 @@
 #include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
+#include "menu/menu_option.h"
+#include "menu/menu_global.h"
+#include "gui/keyinput_manager.h"
+#include "gui/keys.h"
 
 #include "mugen_animation.h"
 #include "mugen_background.h"
@@ -95,7 +101,228 @@ MugenMenu::~MugenMenu(){
 }
 
 void MugenMenu::run(){
+    Bitmap screen_buffer( 320, 240 );
+    bool done = false;
+    bool endGame = false;
     
+    if ( menuOptions.empty() ){
+	    return;
+    }
+
+    selectedOption = menuOptions.begin();
+    menuOptions.front()->setState(MenuOption::Selected);
+    
+    if ( !music.empty() ){
+	    MenuGlobals::setMusic(music);
+    }
+    
+    if ( !selectSound.empty() ){
+	    MenuGlobals::setSelectSound(selectSound);
+    }
+    
+    double runCounter = 0;
+    while( ! endGame ){
+	    Global::speed_counter = 0;
+	    Global::second_counter = 0;
+	    int game_time = 100;
+	    
+	    /*
+	    sharedFont = ourFont;
+	    sharedFontWidth = fontWidth;
+	    sharedFontHeight = fontHeight;
+	    */
+	    
+	    // Reset fade stuff
+	   // resetFadeInfo();
+	    
+	    while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
+    
+		    bool draw = false;
+		    
+		    keyInputManager::update();
+    
+		    if ( Global::speed_counter > 0 ){
+			    draw = true;
+			    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+			    while ( runCounter >= 1.0 ){
+				runCounter -= 1;
+				// Keys
+				
+				if ( keyInputManager::keyState(keys::UP, true ) ||
+					/* for vi people like me */
+				    keyInputManager::keyState('k', true )){	
+					(*selectedOption)->setState(MenuOption::Deselected);
+					if ( selectedOption > menuOptions.begin() ){
+						selectedOption--;
+					}
+					else selectedOption = menuOptions.end() -1;
+					(*selectedOption)->setState(MenuOption::Selected);
+					if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+				}
+
+				if ( keyInputManager::keyState(keys::DOWN, true ) ||
+					/* for vi people like me */
+				    keyInputManager::keyState('j', true )){
+					(*selectedOption)->setState(MenuOption::Deselected);
+					if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
+						selectedOption++;
+					}
+					else selectedOption = menuOptions.begin();
+					(*selectedOption)->setState(MenuOption::Selected);
+					if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+				}
+				
+				if ( keyInputManager::keyState(keys::LEFT, true) ||
+				    keyInputManager::keyState('h', true)){
+					if ( (*selectedOption)->leftKey()){
+					    /* ??? */
+					}
+				}
+				
+				if ( keyInputManager::keyState(keys::RIGHT, true )||
+				    keyInputManager::keyState('l', true )){
+					if ( (*selectedOption)->rightKey()){
+					    /* ??? */
+					}
+				}
+				
+				if ( keyInputManager::keyState(keys::ENTER, true ) ){
+					if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
+				}
+				
+				std::vector <MenuOption *>::iterator b = menuOptions.begin();
+				std::vector <MenuOption *>::iterator e = menuOptions.end();
+				for ( ; b != e; b++ ){
+					(*b)->logic();
+					
+					// Recalculate placement
+					//checkTextLength((*b));
+				}
+				
+				// Lets do some logic for the box with text
+				/*switch ( currentDrawState ){
+					case FadeIn : {
+
+						if ( fadeBox.position.x> backboard.position.x){
+							fadeBox.position.x -= fadeSpeed;
+						} else if ( fadeBox.position.x < backboard.position.x ){
+							fadeBox.position.x = backboard.position.x;
+						}
+
+						if ( fadeBox.position.y > backboard.position.y ){
+								fadeBox.position.y-=fadeSpeed;
+						} else if ( fadeBox.position.y<backboard.position.y ){
+								fadeBox.position.y=backboard.position.y;
+						}
+
+						if(fadeBox.position.width<backboard.position.width)fadeBox.position.width+=(fadeSpeed*2);
+						else if(fadeBox.position.width>backboard.position.width)fadeBox.position.width=backboard.position.width;
+						if(fadeBox.position.height<backboard.position.height)fadeBox.position.height+=(fadeSpeed*2);
+						else if(fadeBox.position.height>backboard.position.height)fadeBox.position.height=backboard.position.height;
+						if(fadeBox.position == backboard.position)currentDrawState = FadeInText;
+						break;
+					}
+					case FadeInText : {
+						if ( fadeAlpha<255 ){
+							fadeAlpha+=(fadeSpeed+2);
+						}
+
+						if ( fadeAlpha >= 255 ){
+							fadeAlpha=255;
+							currentDrawState = NoFade;
+						}
+						break;
+					}
+					case NoFade : {
+						break;
+					}
+					default : {
+						break;
+					}
+				}*/
+			    }
+			    
+			    Global::speed_counter = 0;
+		    }
+		    
+		    while ( Global::second_counter > 0 ){
+			    game_time--;
+			    Global::second_counter--;
+			    if ( game_time < 0 ){
+				    game_time = 0;
+			    }
+		    }
+	    
+		    if ( draw ){
+			    work->clear();
+			    // Draw
+			    
+			    // Do the background
+			    //drawBackground(work);
+			    
+			    // Draw any misc stuff in the background of the menu of selected object 
+			    (*selectedOption)->draw(work);
+			    // Draw text board
+			    //drawTextBoard(work);
+			    // Draw text
+			    //drawText(work);
+			    // Draw info text
+			    //drawInfoText(work);
+			    // Finally render to screen
+			    work->BlitToScreen();
+		    }
+    
+		    while ( Global::speed_counter < 1 ){
+			    Util::rest( 1 );
+			    keyInputManager::update();
+		    }
+    
+		    endGame = done |= keyInputManager::keyState(keys::ESC, true );
+	    }
+	    
+	    // do we got an option to run, lets do it
+	    if ((*selectedOption)->getState() == MenuOption::Run){
+		    try{
+			if (backSound != ""){
+			    Sound * ok = Resource::getSound(okSound);
+			    ok->play();
+			}
+			(*selectedOption)->run(endGame);
+		    } catch ( const ReturnException & re ){
+		    }
+		    // Reset it's state
+		    (*selectedOption)->setState(MenuOption::Selected);
+		    if ( !music.empty() ){
+			    MenuGlobals::setMusic(music);
+		    }
+		    if ( !selectSound.empty() ){
+			    MenuGlobals::setSelectSound(selectSound);
+		    }
+	    }
+
+	    if (!music.empty()){
+		    if(MenuGlobals::currentMusic() != music){
+			    MenuGlobals::popMusic();
+		    }
+	    }
+	    
+	    if (!selectSound.empty()){
+		    if(MenuGlobals::currentSelectSound() != selectSound){
+			    MenuGlobals::popSelectSound();
+		    }
+	    }
+
+	    if (endGame){
+		    // Deselect selected entry
+		    (*selectedOption)->setState(MenuOption::Deselected);
+		    if (backSound != ""){
+			Sound * back = Resource::getSound(backSound);
+			back->play();
+		    }
+	    }
+    }
+    
+    return;
 }
 
 

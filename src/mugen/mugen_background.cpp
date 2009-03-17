@@ -143,6 +143,11 @@ spriteBmp(0),
 action(0),
 linked(0),
 runLink(false){
+    // Set window to default
+    window.x1 = 0;
+    window.y1 = 0;
+    window.x2 = 319;
+    window.y2 = 239;
 }
 MugenBackground::MugenBackground( const MugenBackground &copy ):
 stageTicker( copy.stageTicker ){
@@ -182,8 +187,10 @@ void MugenBackground::logic( const double x, const double y, const double placem
     }
 }
     
-void MugenBackground::render( const int totalLength, const int totalHeight, Bitmap *work ){
+void MugenBackground::render( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work ){
     if (visible){
+	// Set clipping rect
+	work->setClipRect(windowx + window.x1, windowy + window.y1,windowx + window.x2,windowy + window.y2);
 	switch( type ){
 	    case Normal:{
 		// Normal is a sprite
@@ -227,6 +234,8 @@ void MugenBackground::render( const int totalLength, const int totalHeight, Bitm
 	    default:
 		break;
 	}
+	// Reset clip
+	work->setClipRect(0, 0,work->getWidth(),work->getHeight());
     }
 }
 

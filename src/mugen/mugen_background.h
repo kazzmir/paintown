@@ -44,7 +44,7 @@ public:
     
     void logic( const double x, const double y, const double placementx, const double placementy );
     
-    void render( const int totalLength, const int totalHeight, Bitmap *work );
+    void render( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
     
     // Stage be our friend
     friend class MugenStage;
