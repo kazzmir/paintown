@@ -1,6 +1,8 @@
 #ifndef _mugen_menu_h
 #define _mugen_menu_h
 
+#include "util/load_exception.h"
+
 #include "menu/menu.h"
 
 /*
@@ -13,6 +15,9 @@ class MugenMenu : public Menu
 	/*! ctor dtor */
 	MugenMenu(const std::string &filename);
 	virtual ~MugenMenu();
+	
+	/*! load */
+	virtual void load() throw (LoadException);
 	
 	/*! do logic, draw whatever */
 	virtual void run();	

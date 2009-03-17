@@ -36,8 +36,10 @@
 
 MugenMenu::MugenMenu(const std::string &filename):
 location(filename){
-    
-    // Lets look for our def since some assholes think that all file systems are case insensitive
+}
+
+void MugenMenu::load() throw (LoadException){
+     // Lets look for our def since some assholes think that all file systems are case insensitive
     std::string baseDir = Util::getDataPath() + "mugen/stages/";
     Global::debug(1) << baseDir << endl;
     location+=".def";
