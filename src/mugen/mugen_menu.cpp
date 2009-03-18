@@ -273,7 +273,7 @@ MugenMenu::~MugenMenu(){
 }
 
 void MugenMenu::run(){
-    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_WIDTH);
+    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool endGame = false;
     /*
