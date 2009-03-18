@@ -135,6 +135,9 @@ class MugenMenu : public Menu
 	
 	// Cleanup
 	void cleanup();
+	
+	// Draw text
+	void drawText(Bitmap *work);
 };
 #endif
 

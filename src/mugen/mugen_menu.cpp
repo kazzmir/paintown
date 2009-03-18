@@ -25,8 +25,11 @@
 #include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
+
 #include "menu/menu_option.h"
 #include "menu/menu_global.h"
+#include "menu/option_quit.h"
+
 #include "gui/keyinput_manager.h"
 #include "gui/keys.h"
 
@@ -170,7 +173,22 @@ void MugenMenu::load() throw (MugenException){
 		    *content->getNext() >> fontSpacing.x;
 		    *content->getNext() >> fontSpacing.y;
 		} else if ( itemhead.find("menu.itemname.")!=std::string::npos ){
-		    // Add in info to setting individual options in the menu
+		   if (itemhead == "menu.itemname.arcade"){
+		       
+		   } else if (itemhead == "menu.itemname.versus"){
+		   } else if (itemhead == "menu.itemname.teamarcade"){
+		   } else if (itemhead == "menu.itemname.teamcoop"){
+		   } else if (itemhead == "menu.itemname.survival"){
+		   } else if (itemhead == "menu.itemname.survivalcoop"){
+		   } else if (itemhead == "menu.itemname.training"){
+		   } else if (itemhead == "menu.itemname.watch"){
+		   } else if (itemhead == "menu.itemname.options"){
+		   } else if (itemhead == "menu.itemname.exit"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       OptionQuit *quit = new OptionQuit(temp);
+		       addOption(quit);
+		   }
 		} else if ( itemhead.find("menu.window.margins.x")!=std::string::npos ){
 		    *content->getNext() >> windowMarginX.x;
 		    *content->getNext() >> windowMarginX.y;
@@ -280,10 +298,10 @@ void MugenMenu::run(){
     if ( menuOptions.empty() ){
 	    return;
     }
-
+*/
     selectedOption = menuOptions.begin();
     menuOptions.front()->setState(MenuOption::Selected);
-    
+  /*  
     if ( !music.empty() ){
 	    MenuGlobals::setMusic(music);
     }
@@ -307,7 +325,7 @@ void MugenMenu::run(){
 	    // Reset fade stuff
 	   // resetFadeInfo();
 	    
-	    while ( ! done ){// && (*selectedOption)->getState() != MenuOption::Run ){
+	    while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
     
 		    bool draw = false;
 		    
@@ -324,43 +342,43 @@ void MugenMenu::run(){
 				if ( keyInputManager::keyState(keys::UP, true ) ||
 					/* for vi people like me */
 				    keyInputManager::keyState('k', true )){	
-					/*(*selectedOption)->setState(MenuOption::Deselected);
+					(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption > menuOptions.begin() ){
 						selectedOption--;
 					}
 					else selectedOption = menuOptions.end() -1;
 					(*selectedOption)->setState(MenuOption::Selected);
-					if(menuOptions.size() > 1)MenuGlobals::playSelectSound();*/
+					//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 				}
 
 				if ( keyInputManager::keyState(keys::DOWN, true ) ||
 					/* for vi people like me */
 				    keyInputManager::keyState('j', true )){
-					/*(*selectedOption)->setState(MenuOption::Deselected);
+					(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
 						selectedOption++;
 					}
 					else selectedOption = menuOptions.begin();
 					(*selectedOption)->setState(MenuOption::Selected);
-					if(menuOptions.size() > 1)MenuGlobals::playSelectSound();*/
+					//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 				}
 				
 				if ( keyInputManager::keyState(keys::LEFT, true) ||
 				    keyInputManager::keyState('h', true)){
-					//if ( (*selectedOption)->leftKey()){
+					if ( (*selectedOption)->leftKey()){
 					    /* ??? */
-					//}
+					}
 				}
 				
 				if ( keyInputManager::keyState(keys::RIGHT, true )||
 				    keyInputManager::keyState('l', true )){
-					//if ( (*selectedOption)->rightKey()){
+					if ( (*selectedOption)->rightKey()){
 					    /* ??? */
-					//}
+					}
 				}
 				
 				if ( keyInputManager::keyState(keys::ENTER, true ) ){
-					//if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
+					if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
 				}
 				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
@@ -446,7 +464,7 @@ void MugenMenu::run(){
 			    // Draw text board
 			    //drawTextBoard(work);
 			    // Draw text
-			    //drawText(work);
+			    drawText(&workArea);
 			    // Draw info text
 			    //drawInfoText(work);
 			    // Finally render to screen
@@ -463,26 +481,25 @@ void MugenMenu::run(){
 	    }
 	    
 	    // do we got an option to run, lets do it
-	    /*
 	    if ((*selectedOption)->getState() == MenuOption::Run){
-		    try{
-			if (backSound != ""){
+		   try{
+			/*if (backSound != ""){
 			    Sound * ok = Resource::getSound(okSound);
 			    ok->play();
-			}
+			}*/
 			(*selectedOption)->run(endGame);
 		    } catch ( const ReturnException & re ){
 		    }
 		    // Reset it's state
 		    (*selectedOption)->setState(MenuOption::Selected);
-		    if ( !music.empty() ){
+		    /*if ( !music.empty() ){
 			    MenuGlobals::setMusic(music);
 		    }
 		    if ( !selectSound.empty() ){
 			    MenuGlobals::setSelectSound(selectSound);
-		    }
+		    }*/
 	    }
-
+/*
 	    if (!music.empty()){
 		    if(MenuGlobals::currentMusic() != music){
 			    MenuGlobals::popMusic();
@@ -494,16 +511,15 @@ void MugenMenu::run(){
 			    MenuGlobals::popSelectSound();
 		    }
 	    }
-
+*/
 	    if (endGame){
 		    // Deselect selected entry
 		    (*selectedOption)->setState(MenuOption::Deselected);
-		    if (backSound != ""){
+		    /*if (backSound != ""){
 			Sound * back = Resource::getSound(backSound);
 			back->play();
-		    }
+		    }*/
 	    }
-	    */
     }
     
     return;
@@ -526,6 +542,65 @@ void MugenMenu::cleanup(){
     // Get rid of background lists;
     for( std::vector< MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
 	if( (*i) )delete (*i);
+    }
+    
+    // Get rid of items
+    for(std::vector <MenuOption *>::iterator b = menuOptions.begin();b!=menuOptions.end();++b){
+	    if ((*b)){
+		delete (*b);
+	    }
+    }
+}
+
+// Draw text
+void MugenMenu::drawText(Bitmap *work){
+    
+    int xplacement = position.x;
+    int yplacement = position.y;
+    int visibleCounter = 0;
+    for( std::vector <MenuOption *>::iterator i = menuOptions.begin(); i != menuOptions.end(); ++i){
+	MenuOption *option = *i;
+	if (option->getState() == MenuOption::Selected){
+	    MugenFont *font = fonts[fontActive.index-1];
+	    font->changeBank(fontActive.bank);
+	    int length = font->textLength(option->getText().c_str());
+	    switch (fontActive.position){
+		case -1:
+		    font->printf(xplacement - length, yplacement, 0, *work, option->getText(),0);
+		    break;
+		case 1:
+		    font->printf(xplacement, yplacement, 0, *work, option->getText(),0);
+		    break;
+		case 0:
+		default:
+		    font->printf(xplacement - (length/2), yplacement, 0, *work, option->getText(),0);
+		    break;
+	    }
+	    xplacement += fontSpacing.x;
+	    yplacement += font->getHeight() + fontSpacing.y;
+	} else {
+	    MugenFont *font = fonts[fontItem.index-1];
+	    font->changeBank(fontItem.bank);
+	    int length = font->textLength(option->getText().c_str());
+	    switch (fontActive.position){
+		case -1:
+		    font->printf(xplacement - length, yplacement, 0, *work, option->getText(),0);
+		    break;
+		case 1:
+		    font->printf(xplacement, yplacement, 0, *work, option->getText(),0);
+		    break;
+		case 0:
+		default:
+		    font->printf(xplacement - (length/2), yplacement, 0, *work, option->getText(),0);
+		    break;
+	    }
+	    xplacement += fontSpacing.x;
+	    yplacement += font->getHeight() + fontSpacing.y;
+	}
+	
+	// Visible counter
+	visibleCounter++;
+	if (visibleCounter >= windowVisibleItems)break;
     }
 }
 

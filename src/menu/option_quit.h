@@ -9,6 +9,7 @@ class Token;
 class OptionQuit : public MenuOption{
 public:
 	OptionQuit( Token *token ) throw( LoadException );
+	OptionQuit( const std::string &name ) throw( LoadException );
 
 	// Do logic before run part
 	virtual void logic();

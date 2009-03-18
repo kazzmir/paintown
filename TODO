@@ -43,6 +43,8 @@ Future
 * make network mode use versions
 * allow level sets to only allow explicit players
 * make a console like in quake where debug output can go
+* mugen config and txt files
+  - parse data using lexer
 * mugen sff files
   - Correct issues with loading certain files like (High/Low) Resolution images and their palettes
 * mugen characters in paintown
@@ -53,15 +55,20 @@ Future
   - Replicate Finite State Machine
     - Expressions lexer
   - Correct shadow CMYK (stage related?)
+* mugen backgrounds in paintown
+  DONE - correct tiling of elements
+  - correct parallax
+  - correct background controllers
+  - correct trans effects
 * mugen stages in paintown
+  - correct camera y movement
   DONE - correct camera x movement
   DONE - correct character placement
-  - correct camera y movement
-  - correct tiling of elements
-  - correct background controllers
-  - load in fight.def info from mugen for the stage mechanics (i.e. Round indicators, 
-    Round Ticker, Players Health and Power bars) etc.
   - replace vs mode with mugen stages
 * mugen sound system
   - turn MugenSound objects collected from .snd file into something useable 
     within paintown's sound system 
+* mugen main system
+  - load in menus and subsystems
+  - load in fight.def info from mugen for the stage mechanics (i.e. Round indicators, 
+    Round Ticker, Players Health and Power bars) etc.
