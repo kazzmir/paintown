@@ -223,6 +223,7 @@ void MugenMenu::load() throw (MugenException){
 		Global::debug(1) << "Set positionlink to id: '" << prior->id << "' Position at x(" << prior->startx << ")y(" << prior->starty << ")" << endl;
 	    } 
 	    
+	    Global::debug(0) << "Got background: " << collection[i]->getHeader() << endl;
 	    // This is so we can have our positionlink info for the next item if true
 	    prior = temp;
 	}
@@ -272,6 +273,7 @@ MugenMenu::~MugenMenu(){
 }
 
 void MugenMenu::run(){
+    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_WIDTH);
     bool done = false;
     bool endGame = false;
     /*
@@ -305,7 +307,7 @@ void MugenMenu::run(){
 	    // Reset fade stuff
 	   // resetFadeInfo();
 	    
-	    while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
+	    while ( ! done ){// && (*selectedOption)->getState() != MenuOption::Run ){
     
 		    bool draw = false;
 		    
@@ -322,43 +324,43 @@ void MugenMenu::run(){
 				if ( keyInputManager::keyState(keys::UP, true ) ||
 					/* for vi people like me */
 				    keyInputManager::keyState('k', true )){	
-					(*selectedOption)->setState(MenuOption::Deselected);
+					/*(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption > menuOptions.begin() ){
 						selectedOption--;
 					}
 					else selectedOption = menuOptions.end() -1;
 					(*selectedOption)->setState(MenuOption::Selected);
-					if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+					if(menuOptions.size() > 1)MenuGlobals::playSelectSound();*/
 				}
 
 				if ( keyInputManager::keyState(keys::DOWN, true ) ||
 					/* for vi people like me */
 				    keyInputManager::keyState('j', true )){
-					(*selectedOption)->setState(MenuOption::Deselected);
+					/*(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
 						selectedOption++;
 					}
 					else selectedOption = menuOptions.begin();
 					(*selectedOption)->setState(MenuOption::Selected);
-					if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+					if(menuOptions.size() > 1)MenuGlobals::playSelectSound();*/
 				}
 				
 				if ( keyInputManager::keyState(keys::LEFT, true) ||
 				    keyInputManager::keyState('h', true)){
-					if ( (*selectedOption)->leftKey()){
+					//if ( (*selectedOption)->leftKey()){
 					    /* ??? */
-					}
+					//}
 				}
 				
 				if ( keyInputManager::keyState(keys::RIGHT, true )||
 				    keyInputManager::keyState('l', true )){
-					if ( (*selectedOption)->rightKey()){
+					//if ( (*selectedOption)->rightKey()){
 					    /* ??? */
-					}
+					//}
 				}
 				
 				if ( keyInputManager::keyState(keys::ENTER, true ) ){
-					if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
+					//if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
 				}
 				
 				std::vector <MenuOption *>::iterator b = menuOptions.begin();
@@ -414,7 +416,7 @@ void MugenMenu::run(){
 				
 				// Backgrounds
 				for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-				    (*i)->logic( 0, 0, DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
+				    (*i)->logic( 0, 0, 0, 0 );
 				}
 			    }
 			    
@@ -431,12 +433,12 @@ void MugenMenu::run(){
 	    
 		    if ( draw ){
 			    // Clear
-			    work->fill(backgroundClearColor);
+			    workArea.fill(backgroundClearColor);
 			    // Draw
 			    
 			    // Do the background
 			    for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-				(*i)->render( 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, work );
+				(*i)->render( 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, &workArea );
 			    }
 			    
 			    // Draw any misc stuff in the background of the menu of selected object 
@@ -448,6 +450,7 @@ void MugenMenu::run(){
 			    // Draw info text
 			    //drawInfoText(work);
 			    // Finally render to screen
+			    workArea.Stretch(*work);
 			    work->BlitToScreen();
 		    }
     
