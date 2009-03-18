@@ -29,6 +29,7 @@
 #include "menu/menu_option.h"
 #include "menu/menu_global.h"
 #include "menu/option_quit.h"
+#include "menu/option_dummy.h"
 
 #include "gui/keyinput_manager.h"
 #include "gui/keys.h"
@@ -50,6 +51,7 @@ const int DEFAULT_SCREEN_X_AXIS = 160;
 const int DEFAULT_SCREEN_Y_AXIS = 0;
 
 MugenMenu::MugenMenu(const std::string &filename):
+optionLocation(0),
 location(filename),
 spriteFile(""),
 soundFile(""),
@@ -174,20 +176,75 @@ void MugenMenu::load() throw (MugenException){
 		    *content->getNext() >> fontSpacing.y;
 		} else if ( itemhead.find("menu.itemname.")!=std::string::npos ){
 		   if (itemhead == "menu.itemname.arcade"){
-		       
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.versus"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.teamarcade"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.teamcoop"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.survival"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.survivalcoop"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.training"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.watch"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.options"){
+		       std::string temp;
+		       *content->getNext() >> temp;
+		       if (!temp.empty()){
+			    OptionDummy *dummy = new OptionDummy(temp);
+			    addOption(dummy);
+		       }
 		   } else if (itemhead == "menu.itemname.exit"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       OptionQuit *quit = new OptionQuit(temp);
-		       addOption(quit);
+		       if (!temp.empty()){
+			    OptionQuit *quit = new OptionQuit(temp);
+			    addOption(quit);
+		       }
 		   }
 		} else if ( itemhead.find("menu.window.margins.x")!=std::string::npos ){
 		    *content->getNext() >> windowMarginX.x;
@@ -204,6 +261,8 @@ void MugenMenu::load() throw (MugenException){
 		    *content->getNext() >> boxCursorCoords.y1;
 		    *content->getNext() >> boxCursorCoords.x2;
 		    *content->getNext() >> boxCursorCoords.y2;
+		    boxCursorCoords.alpha = 128;
+		    boxCursorCoords.alphaMove = -6;
 		} else if ( itemhead.find("cursor.move.snd")!=std::string::npos ){
 		    // Configure later
 		} else if ( itemhead.find("cursor.done.snd")!=std::string::npos ){
@@ -300,6 +359,7 @@ void MugenMenu::run(){
     }
 */
     selectedOption = menuOptions.begin();
+    optionLocation = 0;
     menuOptions.front()->setState(MenuOption::Selected);
   /*  
     if ( !music.empty() ){
@@ -345,8 +405,11 @@ void MugenMenu::run(){
 					(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption > menuOptions.begin() ){
 						selectedOption--;
+						optionLocation--;
+					} else { 
+					    selectedOption = menuOptions.end() -1;
+					    optionLocation = menuOptions.size() -1;
 					}
-					else selectedOption = menuOptions.end() -1;
 					(*selectedOption)->setState(MenuOption::Selected);
 					//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 				}
@@ -357,8 +420,11 @@ void MugenMenu::run(){
 					(*selectedOption)->setState(MenuOption::Deselected);
 					if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
 						selectedOption++;
+						optionLocation++;
+					} else {
+					    selectedOption = menuOptions.begin();
+					    optionLocation = 0;
 					}
-					else selectedOption = menuOptions.begin();
 					(*selectedOption)->setState(MenuOption::Selected);
 					//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 				}
@@ -558,44 +624,64 @@ void MugenMenu::drawText(Bitmap *work){
     int xplacement = position.x;
     int yplacement = position.y;
     int visibleCounter = 0;
-    for( std::vector <MenuOption *>::iterator i = menuOptions.begin(); i != menuOptions.end(); ++i){
+    int offset = optionLocation >= windowVisibleItems ? optionLocation - windowVisibleItems + 1 : 0;
+    for( std::vector <MenuOption *>::iterator i = menuOptions.begin() + offset; i != menuOptions.end(); ++i){
 	MenuOption *option = *i;
 	if (option->getState() == MenuOption::Selected){
 	    MugenFont *font = fonts[fontActive.index-1];
 	    font->changeBank(fontActive.bank);
-	    int length = font->textLength(option->getText().c_str());
+	    const int height = font->getHeight();
+	    const int length = font->textLength(option->getText().c_str());
+	    
+	    if(showBoxCursor){
+		boxCursorCoords.alpha += boxCursorCoords.alphaMove;
+		if (boxCursorCoords.alpha <= 0){
+		    boxCursorCoords.alpha = 0;
+		    boxCursorCoords.alphaMove = 6;
+		}
+		else if (boxCursorCoords.alpha >= 128){
+		    boxCursorCoords.alpha = 128;
+		    boxCursorCoords.alphaMove = -6;
+		}
+		Bitmap::drawingMode(Bitmap::MODE_TRANS);
+		Bitmap::transBlender(0,0,0,boxCursorCoords.alpha);
+		work->rectangleFill(xplacement + boxCursorCoords.x1, yplacement + boxCursorCoords.y1, xplacement + boxCursorCoords.x2,yplacement + boxCursorCoords.y2,Bitmap::makeColor(255,255,255));
+		Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	    }
+	    
 	    switch (fontActive.position){
 		case -1:
-		    font->printf(xplacement - length, yplacement, 0, *work, option->getText(),0);
+		    font->printf(xplacement - length, yplacement - height, 0, *work, option->getText(),0);
 		    break;
 		case 1:
-		    font->printf(xplacement, yplacement, 0, *work, option->getText(),0);
+		    font->printf(xplacement, yplacement - height, 0, *work, option->getText(),0);
 		    break;
 		case 0:
 		default:
-		    font->printf(xplacement - (length/2), yplacement, 0, *work, option->getText(),0);
+		    font->printf(xplacement - (length/2), yplacement - height, 0, *work, option->getText(),0);
 		    break;
 	    }
 	    xplacement += fontSpacing.x;
-	    yplacement += font->getHeight() + fontSpacing.y;
+	    yplacement += fontSpacing.y;
 	} else {
 	    MugenFont *font = fonts[fontItem.index-1];
 	    font->changeBank(fontItem.bank);
-	    int length = font->textLength(option->getText().c_str());
+	    const int height = font->getHeight();
+	    const int length = font->textLength(option->getText().c_str());
 	    switch (fontActive.position){
 		case -1:
-		    font->printf(xplacement - length, yplacement, 0, *work, option->getText(),0);
+		    font->printf(xplacement - length, yplacement - height, 0, *work, option->getText(),0);
 		    break;
 		case 1:
-		    font->printf(xplacement, yplacement, 0, *work, option->getText(),0);
+		    font->printf(xplacement, yplacement - height, 0, *work, option->getText(),0);
 		    break;
 		case 0:
 		default:
-		    font->printf(xplacement - (length/2), yplacement, 0, *work, option->getText(),0);
+		    font->printf(xplacement - (length/2), yplacement - height, 0, *work, option->getText(),0);
 		    break;
 	    }
 	    xplacement += fontSpacing.x;
-	    yplacement += font->getHeight() + fontSpacing.y;
+	    yplacement += fontSpacing.y;
 	}
 	
 	// Visible counter

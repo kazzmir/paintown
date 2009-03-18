@@ -27,6 +27,8 @@ struct MugenMenuArea{
     int y1;
     int x2;
     int y2;
+    int alpha;
+    int alphaMove;
 };
 
 struct MugenMenuFont{
@@ -48,6 +50,9 @@ class MugenMenu : public Menu
 	/*! do logic, draw whatever */
 	virtual void run();	
     private:
+	// Option offset
+	int optionLocation;
+	
 	std::string location;
 	
 	//spr = system.sff          ;Filename of sprite data

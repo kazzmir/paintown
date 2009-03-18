@@ -18,6 +18,7 @@
 #include "menu/option_lives.h"
 #include "menu/option_npc_buddies.h"
 #include "menu/option_quit.h"
+#include "menu/option_dummy.h"
 #include "globals.h"
 
 #include "menu/option_mugen_menu.h"
@@ -72,6 +73,9 @@ MenuOption *getOption(Token *token){
 	} else if ( *tok == "mugen" ){
 		// Invincible
 		return new OptionMugenMenu(tok);
+	} else if ( *tok == "dummy" ){
+		// Invincible
+		return new OptionDummy(tok);
 	} else {
 		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 		tok->print(" ");
