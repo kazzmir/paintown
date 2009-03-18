@@ -606,6 +606,7 @@ bool Character::testAnimation(){
     if (animation_current){
 	return animation_current->Act();
     }
+    return false;
 }
 
 void Character::testReset(){
