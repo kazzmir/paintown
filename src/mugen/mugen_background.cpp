@@ -300,7 +300,7 @@ void MugenBackground::draw( const int ourx, const int oury, Bitmap &work ){
 	}
 	case Sub:{
 	    // Shadow effect
-	    Bitmap::differenceBlender( 128, 128, 128, 255 );
+	    Bitmap::multiplyBlender( 0, 0, 0, 128 );
 	    spriteBmp->drawTrans( ourx, oury, work);
 	    break;
 	}
