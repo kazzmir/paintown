@@ -10,6 +10,11 @@ def isOSX():
     import sys
     return "darwin" in sys.platform
 
+def isLinux():
+    import re
+    import sys
+    return "linux" in sys.platform
+
 def checkLex(context):
     context.Message("Checking for flex... ")
     out = context.TryAction("flex -V")
@@ -223,6 +228,9 @@ else:
     if isOSX():
         staticEnv[ 'CXX' ] = 'misc/g++'
         staticEnv[ 'CC' ] = 'misc/gcc'
+    elif isLinux():
+        staticEnv.Append(CPPDEFINES = 'LINUX')
+        env.Append(CPPDEFINES = 'LINUX')
     
     config = env.Configure(custom_tests = custom_tests)
     try:
