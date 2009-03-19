@@ -70,8 +70,15 @@ static std::string getCorrectFileLocation( const std::string &dir, const std::st
 	Global::debug(1) << "No correction needed found File: " << dir + ourFile << endl;
 	return dir + ourFile;
     } else {
+	// Descend two levels.. if not good enough screw it it doesn't exist
 	std::string tempDir = removeLastDir(dir);
 	Global::debug(1) << "Going down one dir: " << tempDir + ourFile << endl;
+	if (Util::exists(tempDir + ourFile) == true){
+	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
+	    return tempDir + ourFile;
+	} 
+	tempDir = removeLastDir(tempDir);
+	Global::debug(1) << "Going down one more dir: " << tempDir + ourFile << endl;
 	if (Util::exists(tempDir + ourFile) == true){
 	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
 	    return tempDir + ourFile;
@@ -177,7 +184,7 @@ void MugenMenu::load() throw (MugenException){
 		    std::string temp;
 		    *content->getNext() >> temp;
 		    MugenUtil::removeSpaces(temp);
-		    fonts.push_back(new MugenFont(temp));
+		    fonts.push_back(new MugenFont(getCorrectFileLocation(baseDir, temp)));
                     Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
 		} else throw MugenException( "Unhandled option in Files Section: " + itemhead );
 	    }
@@ -211,63 +218,63 @@ void MugenMenu::load() throw (MugenException){
 		   if (itemhead == "menu.itemname.arcade"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
 		   } else if (itemhead == "menu.itemname.versus"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
 		   } else if (itemhead == "menu.itemname.teamarcade"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
 		   } else if (itemhead == "menu.itemname.teamcoop"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
 		   } else if (itemhead == "menu.itemname.survival"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
 		   } else if (itemhead == "menu.itemname.survivalcoop"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
 		   } else if (itemhead == "menu.itemname.training"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
 		   } else if (itemhead == "menu.itemname.watch"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
 		   } else if (itemhead == "menu.itemname.options"){
 		       std::string temp;
 		       *content->getNext() >> temp;
-		       if (!temp.empty()){
+		       if (!temp.empty() && temp != "empty"){
 			    OptionDummy *dummy = new OptionDummy(temp);
 			    addOption(dummy);
 		       }
@@ -327,7 +334,7 @@ void MugenMenu::load() throw (MugenException){
 	    }
 	}
 	// This our background data definitions for the title
-	else if( head.find("titlebg ") !=std::string::npos ){
+	else if( head.find("titlebg") !=std::string::npos ){
 	    MugenBackground *temp = MugenUtil::getBackground(ticker, collection[i], sprites);
 	    // Do some fixups and necessary things
 	    // lets see where we lay
@@ -345,11 +352,11 @@ void MugenMenu::load() throw (MugenException){
 	}
 	else if( head == "select info" ){ /* Ignore for now */ }
 	else if( head == "selectbgdef" ){ /* Ignore for now */ }
-	else if( head.find("selectbg ") != std::string::npos ){ /* Ignore for now */ }
+	else if( head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
 	else if( head == "music" ){ /* Ignore for now */ }
 	else if( head == "vs screen" ){ /* Ignore for now */ }
 	else if( head == "versusbgdef" ){ /* Ignore for now */ }
-	else if( head.find("versusbg " ) != std::string::npos ){ /* Ignore for now */ }
+	else if( head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
 	else if( head == "demo mode" ){ /* Ignore for now */ }
 	else if( head == "continue screen" ){ /* Ignore for now */ }
 	else if( head == "game over screen" ){ /* Ignore for now */ }
@@ -359,9 +366,14 @@ void MugenMenu::load() throw (MugenException){
 	else if( head == "survival results screen" ){ /* Ignore for now */ }
 	else if( head == "option info" ){ /* Ignore for now */ }
 	else if( head == "optionbgdef" ){ /* Ignore for now */ }
-	else if( head.find("optionbg ") != std::string::npos ){ /* Ignore for now */ }
+	else if( head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
 	else if( head == "music" ){ /* Ignore for now */ }
-	else if( head.find("begin action ") != std::string::npos ){ /* Ignore for now */ }
+	else if( head.find("begin action") != std::string::npos ){
+	    head.replace(0,13,"");
+	    int h;
+	    MugenItem(head) >> h;
+	    animations[h] = MugenUtil::getAnimation(collection[i], sprites);
+	}
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
     // Set up the animations for those that have action numbers assigned (not -1 )
