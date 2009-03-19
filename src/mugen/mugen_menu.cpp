@@ -50,6 +50,37 @@ const int DEFAULT_HEIGHT = 240;
 const int DEFAULT_SCREEN_X_AXIS = 160;
 const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+static std::string removeLastDir( const std::string &dir ){
+    if (dir.find( "/") != std::string::npos){
+	std::string temp = dir;
+	size_t rem = temp.find_last_of( "/" );
+	temp.erase(rem);
+	rem = temp.find_last_of("/");
+	temp.erase(rem + 1);
+	return temp;
+    }
+    return dir;
+}
+
+static std::string getCorrectFileLocation( const std::string &dir, const std::string &file ){
+    // First check initial location else it should be in the base dir
+    std::string ourFile = file;
+    MugenUtil::removeSpaces(ourFile);
+    if (Util::exists(dir + ourFile) == true){
+	Global::debug(1) << "No correction needed found File: " << dir + ourFile << endl;
+	return dir + ourFile;
+    } else {
+	std::string tempDir = removeLastDir(dir);
+	Global::debug(1) << "Going down one dir: " << tempDir + ourFile << endl;
+	if (Util::exists(tempDir + ourFile) == true){
+	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
+	    return tempDir + ourFile;
+	} 
+    }
+    Global::debug(1) << "No correction needed File: " << dir + ourFile << endl;
+    return dir + ourFile;
+}
+
 MugenMenu::MugenMenu(const std::string &filename):
 optionLocation(0),
 location(filename),
@@ -69,9 +100,11 @@ ticker(0){
 
 void MugenMenu::load() throw (MugenException){
      // Lets look for our def since some assholes think that all file systems are case insensitive
-    std::string baseDir = Util::getDataPath() + "mugen/data/";
+    std::string baseDir = Util::getDataPath() + "mugen/data/" + MugenUtil::getFileDir(location);
+    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, MugenUtil::stripDir(location) );
+    // get real basedir
+    //baseDir = MugenUtil::getFileDir( ourDefFile );
     Global::debug(1) << baseDir << endl;
-    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location) );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate menu definition file for: " + location );
     
@@ -124,7 +157,7 @@ void MugenMenu::load() throw (MugenException){
 		if ( itemhead.find("spr")!=std::string::npos ){
 		    *content->getNext() >> spriteFile;
 		    Global::debug(1) << "Got Sprite File: '" << spriteFile << "'" << endl;
-		    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir + filesdir, spriteFile), "", sprites );
+		    MugenUtil::readSprites( getCorrectFileLocation(baseDir, spriteFile), "", sprites );
 		} else if ( itemhead.find("snd")!=std::string::npos ){
 		    *content->getNext() >> soundFile;
                     Global::debug(1) << "Got Sound File: '" << soundFile << "'" << endl;
@@ -284,7 +317,13 @@ void MugenMenu::load() throw (MugenException){
 		    *content->getNext() >> g;
 		    *content->getNext() >> b;
 		    backgroundClearColor = Bitmap::makeColor(r,g,b);
-		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
+		} else if( itemhead == "spr" ){
+		    //it has it's own sprite definition replace current
+		    cleanupSprites();
+		    *content->getNext() >> spriteFile;
+		    Global::debug(1) << "Got Sprite File for title: '" << spriteFile << "'" << endl;
+		    MugenUtil::readSprites( getCorrectFileLocation(baseDir, spriteFile), "", sprites );
+		}else throw MugenException( "Unhandled option in Info Section: " + itemhead );
 	    }
 	}
 	// This our background data definitions for the title
@@ -554,11 +593,7 @@ void MugenMenu::run(){
 
 void MugenMenu::cleanup(){
     // Get rid of sprites
-    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }
+    cleanupSprites();
     
     // Get rid of animation lists;
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
@@ -575,6 +610,15 @@ void MugenMenu::cleanup(){
 	    if ((*b)){
 		delete (*b);
 	    }
+    }
+}
+
+void MugenMenu::cleanupSprites(){
+    // Get rid of sprites
+    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
     }
 }
 
@@ -671,13 +715,13 @@ void MugenMenu::setFadeState( FadeType f){
 void MugenMenu::updateFade(){
     switch (fadeState.currentState){
 	case FADEIN:
-	    fadeState.fader-=(255/fadeInTime);
+	    fadeState.fader-=(255/(fadeInTime <= 0 ? 1 : fadeInTime));
 	    if (fadeState.fader<=0){
 		setFadeState(NOFADE);
 	    }
 	    break;
 	case FADEOUT:
-	    fadeState.fader+=(255/fadeInTime);
+	    fadeState.fader+=(255/(fadeInTime <= 0 ? 1 : fadeInTime));
 	    if (fadeState.fader>=255){
 		setFadeState(RUNFADE);
 	    }

@@ -61,7 +61,7 @@ void MugenCharacter::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
     baseDir = Util::getDataPath() + "mugen/chars/" + location + "/";
     Global::debug(1) << baseDir << endl;
-    std::string realstr = MugenUtil::getHeadDir( location );
+    std::string realstr = MugenUtil::stripDir( location );
     const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(realstr + ".def") );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );

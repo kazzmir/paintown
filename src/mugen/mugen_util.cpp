@@ -84,6 +84,21 @@ std::string MugenUtil::fixFileName( const std::string &dir, std::string str ){
     return std::string(dir + str);
 }
 
+std::string MugenUtil::getFileDir( const std::string &str ){
+    std::string temp = str;
+    if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
+	size_t rem = temp.find_last_of( "/" );
+	if( rem != std::string::npos ){
+	    return str.substr(0,rem+1);
+	}
+	rem = temp.find_last_of( "\\" );
+	if( rem != std::string::npos ){
+	    return str.substr(0,rem+1);
+	}
+    }
+    return "";
+}
+
 // If you use this, please delete the item after you use it, this isn't java ok
 MugenItemContent *MugenUtil::parseOpt( const std::string &opt ){
     std::string contentHolder = "";
