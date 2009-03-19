@@ -353,11 +353,11 @@ void MugenMenu::run(){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool endGame = false;
-    /*
+    
     if ( menuOptions.empty() ){
 	    return;
     }
-*/
+    
     selectedOption = menuOptions.begin();
     optionLocation = 0;
     menuOptions.front()->setState(MenuOption::Selected);
@@ -370,22 +370,16 @@ void MugenMenu::run(){
 	    MenuGlobals::setSelectSound(selectSound);
     }
     */
+  // Set the fade state
+  setFadeState(FADEIN);
+  
     double runCounter = 0;
     while( ! endGame ){
 	    Global::speed_counter = 0;
 	    Global::second_counter = 0;
 	    int game_time = 100;
-	    
-	    /*
-	    sharedFont = ourFont;
-	    sharedFontWidth = fontWidth;
-	    sharedFontHeight = fontHeight;
-	    */
-	    
-	    // Reset fade stuff
-	   // resetFadeInfo();
-	    
-	    while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
+	 
+	    while ( ! done && (*selectedOption)->getState() != MenuOption::Run && fadeState.currentState != RUNFADE ){
     
 		    bool draw = false;
 		    
@@ -398,105 +392,70 @@ void MugenMenu::run(){
 				ticker++;
 				runCounter -= 1;
 				// Keys
-				
-				if ( keyInputManager::keyState(keys::UP, true ) ||
-					/* for vi people like me */
-				    keyInputManager::keyState('k', true )){	
-					(*selectedOption)->setState(MenuOption::Deselected);
-					if ( selectedOption > menuOptions.begin() ){
-						selectedOption--;
-						optionLocation--;
-					} else { 
-					    selectedOption = menuOptions.end() -1;
-					    optionLocation = menuOptions.size() -1;
-					}
-					(*selectedOption)->setState(MenuOption::Selected);
-					//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
-				}
+				if (fadeState.currentState == NOFADE){
+				    if ( keyInputManager::keyState(keys::UP, true ) ||
+					    /* for vi people like me */
+					keyInputManager::keyState('k', true )){	
+					    (*selectedOption)->setState(MenuOption::Deselected);
+					    if ( selectedOption > menuOptions.begin() ){
+						    selectedOption--;
+						    optionLocation--;
+					    } else { 
+						selectedOption = menuOptions.end() -1;
+						optionLocation = menuOptions.size() -1;
+					    }
+					    (*selectedOption)->setState(MenuOption::Selected);
+					    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+				    }
 
-				if ( keyInputManager::keyState(keys::DOWN, true ) ||
-					/* for vi people like me */
-				    keyInputManager::keyState('j', true )){
-					(*selectedOption)->setState(MenuOption::Deselected);
-					if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
-						selectedOption++;
-						optionLocation++;
-					} else {
-					    selectedOption = menuOptions.begin();
-					    optionLocation = 0;
-					}
-					(*selectedOption)->setState(MenuOption::Selected);
-					//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+				    if ( keyInputManager::keyState(keys::DOWN, true ) ||
+					    /* for vi people like me */
+					keyInputManager::keyState('j', true )){
+					    (*selectedOption)->setState(MenuOption::Deselected);
+					    if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
+						    selectedOption++;
+						    optionLocation++;
+					    } else {
+						selectedOption = menuOptions.begin();
+						optionLocation = 0;
+					    }
+					    (*selectedOption)->setState(MenuOption::Selected);
+					    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+				    }
+				    
+				    if ( keyInputManager::keyState(keys::LEFT, true) ||
+					keyInputManager::keyState('h', true)){
+					    if ( (*selectedOption)->leftKey()){
+						/* ??? */
+					    }
+				    }
+				    
+				    if ( keyInputManager::keyState(keys::RIGHT, true )||
+					keyInputManager::keyState('l', true )){
+					    if ( (*selectedOption)->rightKey()){
+						/* ??? */
+					    }
+				    }
+				    
+				    if ( keyInputManager::keyState(keys::ENTER, true ) ){
+					    if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
+					    // Set the fade state
+					    setFadeState(FADEOUT);
+				    }
+				    
+				    if ( keyInputManager::keyState(keys::ESC, true ) ){
+					    endGame = done = true;
+					    // Set the fade state
+					    setFadeState(FADEOUT);
+				    }
 				}
+				// Fader
+				updateFade();
 				
-				if ( keyInputManager::keyState(keys::LEFT, true) ||
-				    keyInputManager::keyState('h', true)){
-					if ( (*selectedOption)->leftKey()){
-					    /* ??? */
-					}
-				}
-				
-				if ( keyInputManager::keyState(keys::RIGHT, true )||
-				    keyInputManager::keyState('l', true )){
-					if ( (*selectedOption)->rightKey()){
-					    /* ??? */
-					}
-				}
-				
-				if ( keyInputManager::keyState(keys::ENTER, true ) ){
-					if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
-				}
-				
-				std::vector <MenuOption *>::iterator b = menuOptions.begin();
-				std::vector <MenuOption *>::iterator e = menuOptions.end();
-				for ( ; b != e; b++ ){
+				// Options
+				for( vector< MenuOption *>::iterator b = menuOptions.begin(); b != menuOptions.end(); ++b ){
 					(*b)->logic();
-					
-					// Recalculate placement
-					//checkTextLength((*b));
 				}
-				
-				// Lets do some logic for the box with text
-				/*switch ( currentDrawState ){
-					case FadeIn : {
-
-						if ( fadeBox.position.x> backboard.position.x){
-							fadeBox.position.x -= fadeSpeed;
-						} else if ( fadeBox.position.x < backboard.position.x ){
-							fadeBox.position.x = backboard.position.x;
-						}
-
-						if ( fadeBox.position.y > backboard.position.y ){
-								fadeBox.position.y-=fadeSpeed;
-						} else if ( fadeBox.position.y<backboard.position.y ){
-								fadeBox.position.y=backboard.position.y;
-						}
-
-						if(fadeBox.position.width<backboard.position.width)fadeBox.position.width+=(fadeSpeed*2);
-						else if(fadeBox.position.width>backboard.position.width)fadeBox.position.width=backboard.position.width;
-						if(fadeBox.position.height<backboard.position.height)fadeBox.position.height+=(fadeSpeed*2);
-						else if(fadeBox.position.height>backboard.position.height)fadeBox.position.height=backboard.position.height;
-						if(fadeBox.position == backboard.position)currentDrawState = FadeInText;
-						break;
-					}
-					case FadeInText : {
-						if ( fadeAlpha<255 ){
-							fadeAlpha+=(fadeSpeed+2);
-						}
-
-						if ( fadeAlpha >= 255 ){
-							fadeAlpha=255;
-							currentDrawState = NoFade;
-						}
-						break;
-					}
-					case NoFade : {
-						break;
-					}
-					default : {
-						break;
-					}
-				}*/
 				
 				// Backgrounds
 				for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
@@ -531,8 +490,8 @@ void MugenMenu::run(){
 			    //drawTextBoard(work);
 			    // Draw text
 			    drawText(&workArea);
-			    // Draw info text
-			    //drawInfoText(work);
+			    // Do fades
+			    fade(&workArea);
 			    // Finally render to screen
 			    workArea.Stretch(*work);
 			    work->BlitToScreen();
@@ -542,8 +501,6 @@ void MugenMenu::run(){
 			    Util::rest( 1 );
 			    keyInputManager::update();
 		    }
-    
-		    endGame = done |= keyInputManager::keyState(keys::ESC, true );
 	    }
 	    
 	    // do we got an option to run, lets do it
@@ -564,6 +521,9 @@ void MugenMenu::run(){
 		    if ( !selectSound.empty() ){
 			    MenuGlobals::setSelectSound(selectSound);
 		    }*/
+		    
+		    // reset the fade state
+		    setFadeState(FADEIN);
 	    }
 /*
 	    if (!music.empty()){
@@ -619,7 +579,7 @@ void MugenMenu::cleanup(){
 }
 
 // Draw text
-void MugenMenu::drawText(Bitmap *work){
+void MugenMenu::drawText(Bitmap *bmp){
     
     int xplacement = position.x;
     int yplacement = position.y;
@@ -645,20 +605,20 @@ void MugenMenu::drawText(Bitmap *work){
 		}
 		Bitmap::drawingMode(Bitmap::MODE_TRANS);
 		Bitmap::transBlender(0,0,0,boxCursorCoords.alpha);
-		work->rectangleFill(xplacement + boxCursorCoords.x1, yplacement + boxCursorCoords.y1, xplacement + boxCursorCoords.x2,yplacement + boxCursorCoords.y2,Bitmap::makeColor(255,255,255));
+		bmp->rectangleFill(xplacement + boxCursorCoords.x1, yplacement + boxCursorCoords.y1, xplacement + boxCursorCoords.x2,yplacement + boxCursorCoords.y2,Bitmap::makeColor(255,255,255));
 		Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    }
 	    
 	    switch (fontActive.position){
 		case -1:
-		    font->printf(xplacement - length, yplacement - height, 0, *work, option->getText(),0);
+		    font->printf(xplacement - length, yplacement - height, 0, *bmp, option->getText(),0);
 		    break;
 		case 1:
-		    font->printf(xplacement, yplacement - height, 0, *work, option->getText(),0);
+		    font->printf(xplacement, yplacement - height, 0, *bmp, option->getText(),0);
 		    break;
 		case 0:
 		default:
-		    font->printf(xplacement - (length/2), yplacement - height, 0, *work, option->getText(),0);
+		    font->printf(xplacement - (length/2), yplacement - height, 0, *bmp, option->getText(),0);
 		    break;
 	    }
 	    xplacement += fontSpacing.x;
@@ -670,14 +630,14 @@ void MugenMenu::drawText(Bitmap *work){
 	    const int length = font->textLength(option->getText().c_str());
 	    switch (fontActive.position){
 		case -1:
-		    font->printf(xplacement - length, yplacement - height, 0, *work, option->getText(),0);
+		    font->printf(xplacement - length, yplacement - height, 0, *bmp, option->getText(),0);
 		    break;
 		case 1:
-		    font->printf(xplacement, yplacement - height, 0, *work, option->getText(),0);
+		    font->printf(xplacement, yplacement - height, 0, *bmp, option->getText(),0);
 		    break;
 		case 0:
 		default:
-		    font->printf(xplacement - (length/2), yplacement - height, 0, *work, option->getText(),0);
+		    font->printf(xplacement - (length/2), yplacement - height, 0, *bmp, option->getText(),0);
 		    break;
 	    }
 	    xplacement += fontSpacing.x;
@@ -689,5 +649,64 @@ void MugenMenu::drawText(Bitmap *work){
 	if (visibleCounter >= windowVisibleItems)break;
     }
 }
+void MugenMenu::setFadeState( FadeType f){
+    fadeState.lastState = fadeState.currentState;
+    fadeState.currentState = f;
+    
+    switch (fadeState.currentState){
+	case FADEIN:
+	    fadeState.fader = 255;
+	    break;
+	case FADEOUT:
+	    fadeState.fader = 0;
+	    break;
+	case NOFADE:
+	case RUNFADE:
+	default:
+	    fadeState.fader = 0;
+	    break;
+    }
+}
 
+void MugenMenu::updateFade(){
+    switch (fadeState.currentState){
+	case FADEIN:
+	    fadeState.fader-=(255/fadeInTime);
+	    if (fadeState.fader<=0){
+		setFadeState(NOFADE);
+	    }
+	    break;
+	case FADEOUT:
+	    fadeState.fader+=(255/fadeInTime);
+	    if (fadeState.fader>=255){
+		setFadeState(RUNFADE);
+	    }
+	    break;
+	case NOFADE:
+	case RUNFADE:
+	default:
+	    break;
+    }
+}
+
+void MugenMenu::fade(Bitmap *bmp){
+    switch (fadeState.currentState){
+	case FADEIN:
+	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	    Bitmap::transBlender(0,0,0,fadeState.fader);
+	    bmp->rectangleFill(0, 0, bmp->getWidth(),bmp->getHeight(),Bitmap::makeColor(0,0,0));
+	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	    break;
+	case FADEOUT:
+	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	    Bitmap::transBlender(0,0,0,fadeState.fader);
+	    bmp->rectangleFill(0, 0, bmp->getWidth(),bmp->getHeight(),Bitmap::makeColor(0,0,0));
+	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	    break;
+	case NOFADE:
+	case RUNFADE:
+	default:
+	    break;
+    }
+}
 

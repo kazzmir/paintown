@@ -17,6 +17,19 @@ class MugenBackground;
 class MugenFont;
 class MugenSprite;
 
+enum FadeType{
+    FADEIN = 0,
+    FADEOUT,
+    NOFADE,
+    RUNFADE
+};
+
+struct FadeInfo{
+    FadeType currentState;
+    FadeType lastState;
+    int fader;
+};
+
 struct MugenMenuPoint{
     int x;
     int y;
@@ -129,6 +142,8 @@ class MugenMenu : public Menu
 	// Our ticker/frames during duration of title
 	unsigned long int ticker;
 	
+	FadeInfo fadeState;
+	
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
 	
@@ -142,7 +157,16 @@ class MugenMenu : public Menu
 	void cleanup();
 	
 	// Draw text
-	void drawText(Bitmap *work);
+	void drawText(Bitmap *bmp);
+	
+	// Fade state
+	void setFadeState(FadeType f);
+	
+	// update
+	void updateFade();
+	
+	// Fade in
+	void fade(Bitmap *bmp);
 };
 #endif
 
