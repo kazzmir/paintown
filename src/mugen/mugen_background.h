@@ -39,12 +39,18 @@ public:
     inline const bool getVisible(){ return visible; }
     inline void setEnabled(const bool en){ enabled = visible = en; }
     inline const bool getEnabled(){ return enabled; }
+    inline const int getActionNumber() const { return actionno; }
     
     MugenBackground & operator=( const MugenBackground &copy );
     
     void logic( const double x, const double y, const double placementx, const double placementy );
     
     void render( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
+    
+    void setAnimation(MugenAnimation *animation);
+    
+    // Do any extra stuff so that it can be used
+    void preload( const int xaxis, const int yaxis );
     
     // Stage be our friend
     friend class MugenStage;
@@ -117,9 +123,6 @@ public:
     // Position link item
     MugenBackground *linked;
     bool runLink;
-    
-    // Do any extra stuff so that it can be used
-    void preload( const int xaxis, const int yaxis );
     
     // Do draw stuff
     void draw( const int ourx, const int oury, Bitmap &work );

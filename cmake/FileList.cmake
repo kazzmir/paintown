@@ -162,6 +162,7 @@ src/mugen/mugen_background.cpp
 src/mugen/mugen_character.cpp
 src/mugen/mugen_command.cpp
 src/mugen/mugen_exception.cpp
+src/mugen/mugen_fadetool.cpp
 src/mugen/mugen_font.cpp
 src/mugen/mugen_item.cpp
 src/mugen/mugen_item_content.cpp
@@ -171,5 +172,6 @@ src/mugen/mugen_section.cpp
 src/mugen/mugen_sound.cpp
 src/mugen/mugen_sprite.cpp
 src/mugen/mugen_stage.cpp
+src/mugen/mugen_storyboard.cpp
 src/mugen/mugen_util.cpp
 )

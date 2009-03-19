@@ -249,6 +249,20 @@ void MugenBackground::render( const double windowx, const double windowy, const 
     }
 }
 
+void MugenBackground::setAnimation( MugenAnimation *animation){
+    if( actionno != -1 ){
+	action = animation;
+	// Check tilespacing and mask
+	if (tilespacingx == 0){
+	    tilespacingx = 1;
+	}
+	if (tilespacingy == 0){
+	    tilespacingy = 1;
+	}
+	mask = true;
+    }
+}
+
 void MugenBackground::preload( const int xaxis, const int yaxis ){
     // Do positionlink crap
     if (positionlink && !runLink){

@@ -864,3 +864,41 @@ MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsign
 }
 
 
+static std::string removeLastDir( const std::string &dir ){
+    if (dir.find( "/") != std::string::npos){
+	std::string temp = dir;
+	size_t rem = temp.find_last_of( "/" );
+	temp.erase(rem);
+	rem = temp.find_last_of("/");
+	temp.erase(rem + 1);
+	return temp;
+    }
+    return dir;
+}
+
+std::string MugenUtil::getCorrectFileLocation( const std::string &dir, const std::string &file ){
+    // First check initial location else it should be in the base dir
+    std::string ourFile = file;
+    MugenUtil::removeSpaces(ourFile);
+    if (Util::exists(dir + ourFile) == true){
+	Global::debug(1) << "No correction needed found File: " << dir + ourFile << endl;
+	return dir + ourFile;
+    } else {
+	// Descend two levels.. if not good enough screw it it doesn't exist
+	std::string tempDir = removeLastDir(dir);
+	Global::debug(1) << "Going down one dir: " << tempDir + ourFile << endl;
+	if (Util::exists(tempDir + ourFile) == true){
+	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
+	    return tempDir + ourFile;
+	} 
+	tempDir = removeLastDir(tempDir);
+	Global::debug(1) << "Going down one more dir: " << tempDir + ourFile << endl;
+	if (Util::exists(tempDir + ourFile) == true){
+	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
+	    return tempDir + ourFile;
+	} 
+    }
+    Global::debug(1) << "No correction needed File: " << dir + ourFile << endl;
+    return dir + ourFile;
+}
+

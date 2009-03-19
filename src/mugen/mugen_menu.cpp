@@ -50,44 +50,6 @@ const int DEFAULT_HEIGHT = 240;
 const int DEFAULT_SCREEN_X_AXIS = 160;
 const int DEFAULT_SCREEN_Y_AXIS = 0;
 
-static std::string removeLastDir( const std::string &dir ){
-    if (dir.find( "/") != std::string::npos){
-	std::string temp = dir;
-	size_t rem = temp.find_last_of( "/" );
-	temp.erase(rem);
-	rem = temp.find_last_of("/");
-	temp.erase(rem + 1);
-	return temp;
-    }
-    return dir;
-}
-
-static std::string getCorrectFileLocation( const std::string &dir, const std::string &file ){
-    // First check initial location else it should be in the base dir
-    std::string ourFile = file;
-    MugenUtil::removeSpaces(ourFile);
-    if (Util::exists(dir + ourFile) == true){
-	Global::debug(1) << "No correction needed found File: " << dir + ourFile << endl;
-	return dir + ourFile;
-    } else {
-	// Descend two levels.. if not good enough screw it it doesn't exist
-	std::string tempDir = removeLastDir(dir);
-	Global::debug(1) << "Going down one dir: " << tempDir + ourFile << endl;
-	if (Util::exists(tempDir + ourFile) == true){
-	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
-	    return tempDir + ourFile;
-	} 
-	tempDir = removeLastDir(tempDir);
-	Global::debug(1) << "Going down one more dir: " << tempDir + ourFile << endl;
-	if (Util::exists(tempDir + ourFile) == true){
-	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
-	    return tempDir + ourFile;
-	} 
-    }
-    Global::debug(1) << "No correction needed File: " << dir + ourFile << endl;
-    return dir + ourFile;
-}
-
 MugenMenu::MugenMenu(const std::string &filename):
 optionLocation(0),
 location(filename),
@@ -97,8 +59,6 @@ logoFile(""),
 introFile(""),
 selectFile(""),
 fightFile(""),
-fadeInTime(0),
-fadeOutTime(0),
 windowVisibleItems(0),
 showBoxCursor(false),
 backgroundClearColor(Bitmap::makeColor(0,0,0)),
@@ -164,7 +124,7 @@ void MugenMenu::load() throw (MugenException){
 		if ( itemhead.find("spr")!=std::string::npos ){
 		    *content->getNext() >> spriteFile;
 		    Global::debug(1) << "Got Sprite File: '" << spriteFile << "'" << endl;
-		    MugenUtil::readSprites( getCorrectFileLocation(baseDir, spriteFile), "", sprites );
+		    MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", sprites );
 		} else if ( itemhead.find("snd")!=std::string::npos ){
 		    *content->getNext() >> soundFile;
                     Global::debug(1) << "Got Sound File: '" << soundFile << "'" << endl;
@@ -184,7 +144,7 @@ void MugenMenu::load() throw (MugenException){
 		    std::string temp;
 		    *content->getNext() >> temp;
 		    MugenUtil::removeSpaces(temp);
-		    fonts.push_back(new MugenFont(getCorrectFileLocation(baseDir, temp)));
+		    fonts.push_back(new MugenFont(MugenUtil::getCorrectFileLocation(baseDir, temp)));
                     Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
 		} else throw MugenException( "Unhandled option in Files Section: " + itemhead );
 	    }
@@ -197,9 +157,25 @@ void MugenMenu::load() throw (MugenException){
 		MugenUtil::removeSpaces(itemhead);
 		MugenUtil::fixCase(itemhead);
 		if ( itemhead.find("fadein.time")!=std::string::npos ){
-		    *content->getNext() >> fadeInTime;
+		    int time;
+		    *content->getNext() >> time;
+		    fader.setFadeInTime(time);
+		} else if ( itemhead.find("fadein.color")!=std::string::npos ){
+		    int r,g,b;
+		    *content->getNext() >> r;
+		    *content->getNext() >> g;
+		    *content->getNext() >> b;
+		    fader.setFadeInColor(Bitmap::makeColor(r,g,b));
 		} else if ( itemhead.find("fadeout.time")!=std::string::npos ){
-		    *content->getNext() >> fadeOutTime;
+		    int time;
+		    *content->getNext() >> time;
+		    fader.setFadeOutTime(time);
+		} else if ( itemhead.find("fadeout.color")!=std::string::npos ){
+		    int r,g,b;
+		    *content->getNext() >> r;
+		    *content->getNext() >> g;
+		    *content->getNext() >> b;
+		    fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
 		} else if ( itemhead.find("menu.pos")!=std::string::npos ){
 		    *content->getNext() >> position.x;
 		    *content->getNext() >> position.y;
@@ -329,7 +305,7 @@ void MugenMenu::load() throw (MugenException){
 		    cleanupSprites();
 		    *content->getNext() >> spriteFile;
 		    Global::debug(1) << "Got Sprite File for title: '" << spriteFile << "'" << endl;
-		    MugenUtil::readSprites( getCorrectFileLocation(baseDir, spriteFile), "", sprites );
+		    MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", sprites );
 		}else throw MugenException( "Unhandled option in Info Section: " + itemhead );
 	    }
 	}
@@ -346,7 +322,7 @@ void MugenMenu::load() throw (MugenException){
 		Global::debug(1) << "Set positionlink to id: '" << prior->id << "' Position at x(" << prior->startx << ")y(" << prior->starty << ")" << endl;
 	    } 
 	    
-	    Global::debug(0) << "Got background: " << collection[i]->getHeader() << endl;
+	    Global::debug(1) << "Got background: " << collection[i]->getHeader() << endl;
 	    // This is so we can have our positionlink info for the next item if true
 	    prior = temp;
 	}
@@ -422,7 +398,7 @@ void MugenMenu::run(){
     }
     */
   // Set the fade state
-  setFadeState(FADEIN);
+  fader.setState(FADEIN);
   
     double runCounter = 0;
     while( ! endGame ){
@@ -430,7 +406,7 @@ void MugenMenu::run(){
 	    Global::second_counter = 0;
 	    int game_time = 100;
 	 
-	    while ( ! done && (*selectedOption)->getState() != MenuOption::Run && fadeState.currentState != RUNFADE ){
+	    while ( ! done && (*selectedOption)->getState() != MenuOption::Run && fader.getState() != RUNFADE ){
     
 		    bool draw = false;
 		    
@@ -443,7 +419,7 @@ void MugenMenu::run(){
 				ticker++;
 				runCounter -= 1;
 				// Keys
-				if (fadeState.currentState == NOFADE){
+				if (fader.getState() == NOFADE){
 				    if ( keyInputManager::keyState(keys::UP, true ) ||
 					    /* for vi people like me */
 					keyInputManager::keyState('k', true )){	
@@ -491,17 +467,17 @@ void MugenMenu::run(){
 				    if ( keyInputManager::keyState(keys::ENTER, true ) ){
 					    if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
 					    // Set the fade state
-					    setFadeState(FADEOUT);
+					    fader.setState(FADEOUT);
 				    }
 				    
 				    if ( keyInputManager::keyState(keys::ESC, true ) ){
 					    endGame = done = true;
 					    // Set the fade state
-					    setFadeState(FADEOUT);
+					    fader.setState(FADEOUT);
 				    }
 				}
 				// Fader
-				updateFade();
+				fader.act();
 				
 				// Options
 				for( vector< MenuOption *>::iterator b = menuOptions.begin(); b != menuOptions.end(); ++b ){
@@ -542,7 +518,7 @@ void MugenMenu::run(){
 			    // Draw text
 			    drawText(&workArea);
 			    // Do fades
-			    fade(&workArea);
+			    fader.draw(&workArea);
 			    // Finally render to screen
 			    workArea.Stretch(*work);
 			    work->BlitToScreen();
@@ -574,7 +550,7 @@ void MugenMenu::run(){
 		    }*/
 		    
 		    // reset the fade state
-		    setFadeState(FADEIN);
+		    fader.setState(FADEIN);
 	    }
 /*
 	    if (!music.empty()){
@@ -705,64 +681,5 @@ void MugenMenu::drawText(Bitmap *bmp){
 	if (visibleCounter >= windowVisibleItems)break;
     }
 }
-void MugenMenu::setFadeState( FadeType f){
-    fadeState.lastState = fadeState.currentState;
-    fadeState.currentState = f;
-    
-    switch (fadeState.currentState){
-	case FADEIN:
-	    fadeState.fader = 255;
-	    break;
-	case FADEOUT:
-	    fadeState.fader = 0;
-	    break;
-	case NOFADE:
-	case RUNFADE:
-	default:
-	    fadeState.fader = 0;
-	    break;
-    }
-}
 
-void MugenMenu::updateFade(){
-    switch (fadeState.currentState){
-	case FADEIN:
-	    fadeState.fader-=(255/(fadeInTime <= 0 ? 1 : fadeInTime));
-	    if (fadeState.fader<=0){
-		setFadeState(NOFADE);
-	    }
-	    break;
-	case FADEOUT:
-	    fadeState.fader+=(255/(fadeInTime <= 0 ? 1 : fadeInTime));
-	    if (fadeState.fader>=255){
-		setFadeState(RUNFADE);
-	    }
-	    break;
-	case NOFADE:
-	case RUNFADE:
-	default:
-	    break;
-    }
-}
-
-void MugenMenu::fade(Bitmap *bmp){
-    switch (fadeState.currentState){
-	case FADEIN:
-	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
-	    Bitmap::transBlender(0,0,0,fadeState.fader);
-	    bmp->rectangleFill(0, 0, bmp->getWidth(),bmp->getHeight(),Bitmap::makeColor(0,0,0));
-	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
-	    break;
-	case FADEOUT:
-	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
-	    Bitmap::transBlender(0,0,0,fadeState.fader);
-	    bmp->rectangleFill(0, 0, bmp->getWidth(),bmp->getHeight(),Bitmap::makeColor(0,0,0));
-	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
-	    break;
-	case NOFADE:
-	case RUNFADE:
-	default:
-	    break;
-    }
-}
 

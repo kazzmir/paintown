@@ -31,6 +31,7 @@ struct MugenUtil{
     static MugenBackground *getBackground( const unsigned long int &ticker, MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
     static MugenAnimation *getAnimation( MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
+    static std::string getCorrectFileLocation( const std::string &dir, const std::string &file );
 };
 
 #endif

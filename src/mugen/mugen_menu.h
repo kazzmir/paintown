@@ -5,6 +5,7 @@
 #include <map>
 
 #include "mugen_exception.h"
+#include "mugen_fadetool.h"
 
 #include "menu/menu.h"
 
@@ -16,19 +17,6 @@ class MugenAnimation;
 class MugenBackground;
 class MugenFont;
 class MugenSprite;
-
-enum FadeType{
-    FADEIN = 0,
-    FADEOUT,
-    NOFADE,
-    RUNFADE
-};
-
-struct FadeInfo{
-    FadeType currentState;
-    FadeType lastState;
-    int fader;
-};
 
 struct MugenMenuPoint{
     int x;
@@ -88,9 +76,10 @@ class MugenMenu : public Menu
 	std::vector<MugenFont *>fonts;
 	
 	//fadein.time = 10
-	int fadeInTime;
 	//fadeout.time = 10
-	int fadeOutTime;
+	// Utilize fade tool
+	MugenFadeTool fader;
+	
 	//menu.pos = 159,158
 	MugenMenuPoint position;
 	/*menu.item.font = 3,0,0
@@ -142,8 +131,6 @@ class MugenMenu : public Menu
 	// Our ticker/frames during duration of title
 	unsigned long int ticker;
 	
-	FadeInfo fadeState;
-	
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
 	
@@ -161,15 +148,6 @@ class MugenMenu : public Menu
 	
 	// Draw text
 	void drawText(Bitmap *bmp);
-	
-	// Fade state
-	void setFadeState(FadeType f);
-	
-	// update
-	void updateFade();
-	
-	// Fade in
-	void fade(Bitmap *bmp);
 };
 #endif
 
