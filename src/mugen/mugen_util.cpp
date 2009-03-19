@@ -653,17 +653,16 @@ MugenBackground *MugenUtil::getBackground( const unsigned long int &ticker, Muge
 	    *content->getNext() >> temp->windowdeltax;
 	    *content->getNext() >> temp->windowdeltay;
 	} else if (itemhead == "xscale"){
-	    // You should only use either xscale or width but not both if width is used ignore xscale
-	    if (!temp->xscaletop && !temp->xscalebot){
-		*content->getNext() >> temp->xscaletop;
-		*content->getNext() >> temp->xscalebot;
-	    }
+	    // You should only use either xscale or width but not both  (According to kfm.def not sure what to do with width)
+	    *content->getNext() >> temp->xscaletop;
+	    *content->getNext() >> temp->xscalebot;
 	} else if (itemhead == "width"){
-	    // You should only use either xscale or width but not both if xscale is used ignore width
-	    if (!temp->xscaletop && !temp->xscalebot){
+	    // You should only use either xscale or width but not both  (According to kfm.def not sure what to do with width)
+	   /* 
+	   Not sure
 		*content->getNext() >> temp->xscaletop;
 		*content->getNext() >> temp->xscalebot;
-	    }
+	    */
 	} else if (itemhead == "yscalestart"){
 	    *content->getNext() >> temp->yscalestart;
 	} else if (itemhead == "yscaledelta"){
