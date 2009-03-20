@@ -53,7 +53,7 @@ void MugenLayer::draw(const int xaxis, const int yaxis, Bitmap *bmp){
 }
 	
 MugenScene::MugenScene():
-clearColor(Bitmap::makeColor(0,0,0)),
+clearColor(-1),
 ticker(0),
 endTime(0),
 backgroundName(""),
@@ -98,6 +98,9 @@ void MugenScene::act(){
     ticker++;
 }
 void MugenScene::draw(Bitmap *bmp){
+    if (clearColor != -1){
+	bmp->fill(clearColor);
+    }
     // backgrounds
     if (background){
 	background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT, bmp);
@@ -154,6 +157,7 @@ void MugenStoryboard::load() throw (MugenException){
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
 	MugenUtil::fixCase(head);
+	Global::debug(1) << "Name: " << head << endl;
 	if( head == "info" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
@@ -185,10 +189,13 @@ void MugenStoryboard::load() throw (MugenException){
 		} else if ( itemhead.find("startscene")!=std::string::npos ){
 		    *content->getNext() >> startscene;
                     Global::debug(1) << "Starting storyboard at: '" << startscene << "'" << endl;
-		} else throw MugenException( "Unhandled option in SceneDef Section: " + itemhead );
+		} else {
+		    //throw MugenException( "Unhandled option in SceneDef Section: " + itemhead );
+		    Global::debug(0) << "Unhandled option in SceneDef Section: '" << itemhead << "'... Continuing" << endl;
+		}
 	    }
 	}
-	else if( head == "scene " ){
+	else if( head.find("scene ") != std::string::npos ){
 	    Global::debug(1) << "Found: '" << head << "'" << endl;
 	    MugenScene *scene = new MugenScene();
 	    if (scene){
@@ -206,7 +213,7 @@ void MugenStoryboard::load() throw (MugenException){
 		    int time;
 		    *content->getNext() >> time;
 		    scene->fader.setFadeInTime(time);
-		} else if ( itemhead.find("fadein.color")!=std::string::npos ){
+		} else if ( itemhead.find("fadein.col")!=std::string::npos ){
 		    int r,g,b;
 		    *content->getNext() >> r;
 		    *content->getNext() >> g;
@@ -216,7 +223,7 @@ void MugenStoryboard::load() throw (MugenException){
 		    int time;
 		    *content->getNext() >> time;
 		    scene->fader.setFadeOutTime(time);
-		} else if ( itemhead.find("fadeout.color")!=std::string::npos ){
+		} else if ( itemhead.find("fadeout.col")!=std::string::npos ){
 		    int r,g,b;
 		    *content->getNext() >> r;
 		    *content->getNext() >> g;
@@ -229,7 +236,7 @@ void MugenStoryboard::load() throw (MugenException){
 		    *content->getNext() >> r;
 		    *content->getNext() >> g;
 		    *content->getNext() >> b;
-		    scene->clearColor = Bitmap::makeColor(r,g,b);
+		    scene->clearColor = (r == -1 ? r : Bitmap::makeColor(r,g,b));
 		} else if ( itemhead.find("end.time")!=std::string::npos ){
 		    *content->getNext() >> scene->endTime;
 		} else if ( itemhead.find("layerall.pos")!=std::string::npos ){
@@ -249,7 +256,7 @@ void MugenStoryboard::load() throw (MugenException){
 		    *content->getNext() >> scene->layers[1]->offset.y;
 		} else if ( itemhead.find("layer1.starttime")!=std::string::npos ){
 		    *content->getNext() >> scene->layers[1]->startTime;
-		} else if ( itemhead.find("layer0.anim")!=std::string::npos ){
+		} else if ( itemhead.find("layer2.anim")!=std::string::npos ){
 		    *content->getNext() >> scene->layers[2]->actionno;
 		} else if ( itemhead.find("layer2.offset")!=std::string::npos ){
 		    *content->getNext() >> scene->layers[2]->offset.x;
@@ -309,7 +316,7 @@ void MugenStoryboard::load() throw (MugenException){
 		    // do nothing
 		} else if ( itemhead.find("bgm.loop")!=std::string::npos ){
 		    // do nothing
-		} else throw MugenException( "Unhandled option in Scene Section: " + itemhead );
+		} else throw MugenException( "Unhandled option in Scene Section: " + itemhead + " -> " + head);
 	    }
 	    scenes.push_back(scene);
 	    Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "'" << endl;
@@ -320,11 +327,19 @@ void MugenStoryboard::load() throw (MugenException){
 	    MugenItem(head) >> h;
 	    animations[h] = MugenUtil::getAnimation(collection[i], sprites);
 	}
-	else if( collection[i]->getHeader().find(scenes.back()->backgroundName)  != std::string::npos ){
-	    // this is a background lets set it up
-	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,scenes.back()->ticker,&sprites);
-	    scenes.back()->background = manager;
-	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+	else if ( head.find("def")  != std::string::npos && head.find("scenedef") == std::string::npos ){
+	    Global::debug(1) << "Checking def!" << endl;
+	    if (scenes.back()){
+		MugenScene *scene = scenes.back();
+		std::string name = collection[i]->getHeader();
+		Global::debug(1) << "Checking for background: " << scene->backgroundName << " in Head: " << name << endl;
+		if (name.find(scene->backgroundName)){
+		    // this is a background lets set it up
+		    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,scenes.back()->ticker,&sprites);
+		    scenes.back()->background = manager;
+		    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+		}
+	    }
 	}
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }

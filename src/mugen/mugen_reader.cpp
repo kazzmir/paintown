@@ -134,7 +134,7 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 		}
 		// Check if this section is done, push it on the stack and reset everything
 		if( line[i] == openbracket && !checkClsn( contentHolder ) && !itemHolder->hasItems() ){
-		  if( sectionHolder->hasItems() )addSection( sectionHolder );
+		  addSection( sectionHolder );
 		  beginSection = true;
 		  state = Section;
 		  contentHolder = "";
@@ -166,7 +166,7 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
       }
   }
   // Add in last section
-  if( sectionHolder->hasItems() )addSection( sectionHolder );
+  addSection( sectionHolder );
   
   return collection;
 }
