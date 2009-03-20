@@ -22,6 +22,7 @@
 #include "mugen_sprite.h"
 #include "mugen_stage.h"
 #include "mugen_font.h"
+#include "mugen_storyboard.h"
 
 #include "util/bitmap.h"
 #include "util/funcs.h"
@@ -63,6 +64,7 @@ static void showOptions(){
     Global::debug(0) << "-c <name>: Load a M.U.G.E.N. character and output some data about it.\n         ie: 'data/mugen/chars/name' only pass name." << endl;
     Global::debug(0) << "-s <name> (p1) (p2): Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name.def' only pass name.\n         (p1) and (p2) are player names and is optional." << endl;
     Global::debug(0) << "-font <file>: Load a M.U.G.E.N. font and print out Hello World!" << endl;
+    Global::debug(0) << "-storyboard <file>: Load a M.U.G.E.N. storyboard and render it!" << endl;
     Global::debug(0) << "-l <level>: Set debug level." << endl;
     Global::debug(0) << endl;
 }
@@ -411,6 +413,7 @@ int main( int argc, char ** argv ){
         const char * DEBUG_ARG = "-l";
 	const char * STAGE_ARG = "-s";
 	const char * FONT_ARG = "-font";
+	const char * STORY_ARG = "-storyboard";
 	std::string ourFile;
 	int configLoaded = -1;
 	
@@ -475,6 +478,17 @@ int main( int argc, char ** argv ){
 			if ( q < argc ){
 				ourFile = std::string( argv[ q ] );
 				configLoaded = 3;
+			}
+			else{
+                            Global::debug(0) << "Error no file given!" << endl;
+			  showOptions();
+			  return 0;
+			}
+		} else if ( isArg( argv[ q ], STORY_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				ourFile = std::string( argv[ q ] );
+				configLoaded = 4;
 			}
 			else{
                             Global::debug(0) << "Error no file given!" << endl;
@@ -553,6 +567,21 @@ int main( int argc, char ** argv ){
 	else if ( configLoaded == 3 ){
 	    try{
                 showFont(ourFile);
+            } catch( MugenException &ex){
+                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+		return 1;
+	    } catch(...){
+		Global::debug(0) << "Unknown problem loading file" << endl;
+		return 1;
+	    }
+	}
+	else if ( configLoaded == 4 ){
+	    try{
+                MugenStoryboard story = MugenStoryboard(ourFile);
+		story.load();
+		// run it and repeat
+		Bitmap screen(640, 480);
+		story.run( &screen,true);
             } catch( MugenException &ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;

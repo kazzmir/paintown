@@ -14,6 +14,7 @@ class MugenSprite;
 class MugenSound;
 class MugenAnimation;
 class MugenBackground;
+class MugenBackgroundManager;
 
 struct MugenPoint{
     int x;
@@ -41,6 +42,10 @@ class MugenScene {
 	
 	void draw(Bitmap *bmp);
 	
+	bool isDone();
+	
+	void reset();
+	
 	MugenFadeTool fader;
 	
 	int clearColor;
@@ -51,10 +56,7 @@ class MugenScene {
 	
 	std::string backgroundName;
 	
-	// Backgrounds
-	std::vector<MugenBackground *>backgrounds;
-	
-	std::vector<MugenBackground *>foregrounds;
+	MugenBackgroundManager *background;
 	
 	// layers
 	std::vector<MugenLayer *>layers;
@@ -68,8 +70,8 @@ public:
 	~MugenStoryboard();
 	
 	void load() throw (MugenException);
-	
-	void run(Bitmap *bmp);
+	// give it the default bitmap to blit to the screen
+	void run(Bitmap *bmp, bool repeat = false);
 	
     private:
 	
@@ -85,7 +87,7 @@ public:
 	/* Animation Lists stored by action number */
 	std::map< int, MugenAnimation * > animations;
 	
-	// Backgrounds
+	// Scenes
 	std::vector<MugenScene *>scenes;
 	
 	void cleanup();

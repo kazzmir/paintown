@@ -1236,12 +1236,6 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
 }
 
 void MugenStage::cleanup(){
-    // Get rid of sprites
-    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }
     
     // Get rid of animation lists;
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
@@ -1261,6 +1255,13 @@ void MugenStage::cleanup(){
     // Get rid of control lists;
     for( std::vector< MugenBackgroundController * >::iterator i = controllers.begin() ; i != controllers.end() ; ++i ){
 	if( (*i) )delete (*i);
+    }
+    
+    // Get rid of sprites
+    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
     }
     
     if (board) delete board;

@@ -24,6 +24,9 @@
 #include "mugen_util.h"
 #include "mugen_font.h"
 
+
+#include "gui/keyinput_manager.h"
+
 const int DEFAULT_WIDTH = 320;
 const int DEFAULT_HEIGHT = 240;
 const int DEFAULT_SCREEN_X_AXIS = 160;
@@ -53,7 +56,8 @@ MugenScene::MugenScene():
 clearColor(Bitmap::makeColor(0,0,0)),
 ticker(0),
 endTime(0),
-backgroundName(""){
+backgroundName(""),
+background(0){
     for (int i = 0; i < 10; ++i){
 	// initiate the layers
 	MugenLayer *layer = new MugenLayer();
@@ -63,33 +67,25 @@ backgroundName(""){
     defaultAxis.y = 0;
 }
 MugenScene::~MugenScene(){
-    for ( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	if ((*i))delete (*i);
+    
+    if (background){
+	delete background;
     }
+    
     // layers
     for ( std::vector< MugenLayer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
-	if ((*i))delete (*i);
-    }
-    // foregrounds
-    for ( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	if ((*i))delete (*i);
     }
 }
 void MugenScene::act(){
     // backgrounds
-    for ( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	MugenBackground *background = *i;
-	background->logic( 0, 0, 0, 0 );
+    if (background){
+	background->logic(0,0,0,0);
     }
     // layers
     for ( std::vector< MugenLayer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
 	MugenLayer *layer = *i;
 	if(ticker >= layer->startTime)layer->act();
-    }
-    // foregrounds
-    for ( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	MugenBackground *foreground = *i;
-	foreground->logic( 0, 0, 0, 0 );
     }
     // Fader
     fader.act();
@@ -103,9 +99,8 @@ void MugenScene::act(){
 }
 void MugenScene::draw(Bitmap *bmp){
     // backgrounds
-    for (std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	MugenBackground *background = *i;
-	background->render( 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, bmp );
+    if (background){
+	background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT, bmp);
     }
     // layers
     for (std::vector< MugenLayer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
@@ -113,12 +108,20 @@ void MugenScene::draw(Bitmap *bmp){
 	layer->draw(defaultAxis.x,defaultAxis.y,bmp);
     }
     // foregrounds
-    for (std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	MugenBackground *foreground = *i;
-	foreground->render( 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, bmp );
+    if (background){
+	background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT, bmp);
     }
     // fader
     fader.draw(bmp);
+}
+
+bool MugenScene::isDone(){
+    return (ticker >= endTime);
+}
+
+void MugenScene::reset(){
+    ticker = 0;
+    fader.setState(FADEIN);
 }
 
 MugenStoryboard::MugenStoryboard( const string & s ):
@@ -186,7 +189,13 @@ void MugenStoryboard::load() throw (MugenException){
 	    }
 	}
 	else if( head == "scene " ){
+	    Global::debug(1) << "Found: '" << head << "'" << endl;
 	    MugenScene *scene = new MugenScene();
+	    if (scene){
+		Global::debug(1) << "Created: '" << head << "' ok!" << endl;
+	    } else {
+		Global::debug(1) << "Failed to create: '" << head << "'!" << endl;
+	    }
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
@@ -223,6 +232,9 @@ void MugenStoryboard::load() throw (MugenException){
 		    scene->clearColor = Bitmap::makeColor(r,g,b);
 		} else if ( itemhead.find("end.time")!=std::string::npos ){
 		    *content->getNext() >> scene->endTime;
+		} else if ( itemhead.find("layerall.pos")!=std::string::npos ){
+		    *content->getNext() >> scene->defaultAxis.x;
+		    *content->getNext() >> scene->defaultAxis.y;
 		} else if ( itemhead.find("layer0.anim")!=std::string::npos ){
 		    *content->getNext() >> scene->layers[0]->actionno;
 		} else if ( itemhead.find("layer0.offset")!=std::string::npos ){
@@ -300,6 +312,7 @@ void MugenStoryboard::load() throw (MugenException){
 		} else throw MugenException( "Unhandled option in Scene Section: " + itemhead );
 	    }
 	    scenes.push_back(scene);
+	    Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "'" << endl;
 	}
 	else if( head.find("begin action") != std::string::npos ){
 	    head.replace(0,13,"");
@@ -307,11 +320,11 @@ void MugenStoryboard::load() throw (MugenException){
 	    MugenItem(head) >> h;
 	    animations[h] = MugenUtil::getAnimation(collection[i], sprites);
 	}
-	else if( head.find("def") != std::string::npos ){
-	    head.replace(0,13,"");
-	    int h;
-	    MugenItem(head) >> h;
-	    animations[h] = MugenUtil::getAnimation(collection[i], sprites);
+	else if( collection[i]->getHeader().find(scenes.back()->backgroundName)  != std::string::npos ){
+	    // this is a background lets set it up
+	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,scenes.back()->ticker,&sprites);
+	    scenes.back()->background = manager;
+	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
 	}
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
@@ -320,22 +333,8 @@ void MugenStoryboard::load() throw (MugenException){
     for( std::vector< MugenScene * >::iterator s = scenes.begin(); s != scenes.end(); ++s ){
 	MugenScene *scene = *s;
 	// backgrounds
-	for( std::vector< MugenBackground * >::iterator i = scene->backgrounds.begin(); i != scene->backgrounds.end(); ++i ){
-	    MugenBackground *background = *i;
-	    if( background->getActionNumber() != -1 ){
-		background->setAnimation( animations[ background->getActionNumber() ] );
-	    }
-	    // now load
-	    background->preload( DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
-	}
-	// foregrounds
-	for( std::vector< MugenBackground * >::iterator i = scene->foregrounds.begin(); i != scene->foregrounds.end(); ++i ){
-	    MugenBackground *foreground = *i;
-	    if( foreground->getActionNumber() != -1 ){
-		foreground->setAnimation( animations[ foreground->getActionNumber() ] );
-	    }
-	    // now load
-	    foreground->preload( DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
+	if (scene->background){
+	    scene->background->preload( DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
 	}
 	// layers
 	for( std::vector< MugenLayer *>::iterator i = scene->layers.begin(); i != scene->layers.end(); ++i ){
@@ -346,7 +345,61 @@ void MugenStoryboard::load() throw (MugenException){
 	}
     }
 }
-void MugenStoryboard::run(Bitmap *bmp){
+void MugenStoryboard::run(Bitmap *bmp, bool repeat){
+    double gameSpeed = 1.0;
+    double runCounter = 0;
+    bool quit = false;
+    
+    Bitmap work( DEFAULT_WIDTH, DEFAULT_HEIGHT );
+    
+    std::vector< MugenScene * >::iterator sceneIterator = scenes.begin() + startscene;
+    
+    while( !quit ){
+        bool draw = false;
+        
+	MugenScene *scene = *sceneIterator;
+        if ( Global::speed_counter > 0 ){
+	    
+            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+            while (runCounter > 1){
+                scene->act();
+                runCounter -= 1;
+                draw = true;
+                if( keyInputManager::keyState(keys::ESC, true)){
+                    quit = true;
+		    return;
+                }
+		if (keyInputManager::keyState(keys::ESC, true)){
+		    quit = true;
+		    return;
+		}
+		if (scene->isDone()){
+		    sceneIterator++;
+		    if (sceneIterator == scenes.end()){
+			if (repeat){
+			    sceneIterator = scenes.begin();
+			} else {
+			    return;
+			}
+		    }
+		    scene = *sceneIterator;
+		    scene->reset();
+		}
+            }
+            Global::speed_counter = 0;
+        }
+
+        if (draw){
+	    scene->draw(&work);
+	    work.Stretch(*bmp);
+	    bmp->BlitToScreen();
+        }
+
+        while (Global::speed_counter == 0){
+            Util::rest(1);
+            keyInputManager::update();
+        }
+    }
 }
 void MugenStoryboard::cleanup(){
     
@@ -355,7 +408,7 @@ void MugenStoryboard::cleanup(){
 	if( i->second )delete i->second;
     }
     
-    // Get rid of background lists;
+    // Get rid of scene lists;
     for( std::vector< MugenScene * >::iterator i = scenes.begin() ; i != scenes.end() ; ++i ){
 	if( (*i) )delete (*i);
     }
