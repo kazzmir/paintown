@@ -221,6 +221,9 @@ class MugenBackgroundManager{
 	// Debug
 	bool debugbg;
 	
+	// Background clear color
+	int clearColor;
+	
 	// If it has it's own spritefile .. else it'll just use the one by it's parent
 	std::string spriteFile;
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;

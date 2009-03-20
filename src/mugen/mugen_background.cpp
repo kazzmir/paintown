@@ -521,6 +521,7 @@ MugenBackgroundManager::MugenBackgroundManager(const std::string &baseDir, const
 				std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites):
 name(""),
 debugbg(false),
+clearColor(-1),
 spriteFile(""){
     std::string head = name = collection[index]->getHeader();
     MugenUtil::fixCase(head);
@@ -554,6 +555,12 @@ spriteFile(""){
 			MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", this->sprites );
 		    } else if ( itemhead.find("debugbg")!=std::string::npos ){
 			*content->getNext() >> debugbg;
+		    } else if ( itemhead.find("bgclearcolor")!=std::string::npos ){
+			int r, g, b;
+			*content->getNext() >> r;
+			*content->getNext() >> g;
+			*content->getNext() >> b;
+			clearColor = Bitmap::makeColor(r,g,b);
 		    } else throw MugenException( "Unhandled option in Background Definition Section: " + itemhead );
 		}
 	}
@@ -752,7 +759,9 @@ void MugenBackgroundManager::logic( const double x, const double y, const double
     
 }
 void MugenBackgroundManager::renderBack( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work ){
-    if( debugbg )work->floodfill( 0, 0, Bitmap::makeColor(255,0,255) );
+    if ( clearColor != -1)work->fill(clearColor);
+	// debug overrides it
+    if ( debugbg )work->fill( Bitmap::makeColor(255,0,255) );
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->render( windowx, windowy, totalLength, totalHeight, work );
     }

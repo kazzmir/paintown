@@ -14,7 +14,7 @@ We already have a setup for menus, might as well as utilize it to accomodate mug
 */
 
 class MugenAnimation;
-class MugenBackground;
+class MugenBackgroundManager;
 class MugenFont;
 class MugenSprite;
 
@@ -125,20 +125,14 @@ class MugenMenu : public Menu
 	//cursor.done.snd = 100,1
 	//cancel.snd = 100,2
 	
-	// Clear color for the background worksurface
-	int backgroundClearColor;
-	
 	// Our ticker/frames during duration of title
 	unsigned long int ticker;
 	
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
 	
-	/* Animation Lists stored by action number */
-	std::map< int, MugenAnimation * > animations;
-	
-	// Backgrounds
-	std::vector<MugenBackground *>backgrounds;
+	// Title background
+	MugenBackgroundManager *background;
 	
 	// Cleanup
 	void cleanup();

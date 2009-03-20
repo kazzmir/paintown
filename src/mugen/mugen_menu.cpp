@@ -61,8 +61,8 @@ selectFile(""),
 fightFile(""),
 windowVisibleItems(0),
 showBoxCursor(false),
-backgroundClearColor(Bitmap::makeColor(0,0,0)),
-ticker(0){
+ticker(0),
+background(0){
 }
 
 void MugenMenu::load() throw (MugenException){
@@ -88,9 +88,6 @@ void MugenMenu::load() throw (MugenException){
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
-    
-    // for linked position in backgrounds
-    MugenBackground *prior = 0;
     
     /* Extract info for our first section of our stage */
     for( unsigned int i = 0; i < collection.size(); ++i ){
@@ -289,42 +286,10 @@ void MugenMenu::load() throw (MugenException){
 	    }
 	}
 	else if( head == "titlebgdef" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		if ( itemhead.find("bgclearcolor")!=std::string::npos ){
-		    int r,g,b;
-		    *content->getNext() >> r;
-		    *content->getNext() >> g;
-		    *content->getNext() >> b;
-		    backgroundClearColor = Bitmap::makeColor(r,g,b);
-		} else if( itemhead == "spr" ){
-		    //it has it's own sprite definition replace current
-		    cleanupSprites();
-		    *content->getNext() >> spriteFile;
-		    Global::debug(1) << "Got Sprite File for title: '" << spriteFile << "'" << endl;
-		    MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", sprites );
-		}else throw MugenException( "Unhandled option in Info Section: " + itemhead );
-	    }
-	}
-	// This our background data definitions for the title
-	else if( head.find("titlebg") !=std::string::npos ){
-	    MugenBackground *temp = MugenUtil::getBackground(ticker, collection[i], sprites);
-	    // Do some fixups and necessary things
-	    // lets see where we lay
-	    backgrounds.push_back(temp);
-	    
-	    // If position link lets set to previous item
-	    if( temp->positionlink ){
-		temp->linked = prior;
-		Global::debug(1) << "Set positionlink to id: '" << prior->id << "' Position at x(" << prior->startx << ")y(" << prior->starty << ")" << endl;
-	    } 
-	    
-	    Global::debug(1) << "Got background: " << collection[i]->getHeader() << endl;
-	    // This is so we can have our positionlink info for the next item if true
-	    prior = temp;
+	    // Background management
+	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,ticker,&sprites);
+	    background = manager;
+	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
 	}
 	else if( head == "select info" ){ /* Ignore for now */ }
 	else if( head == "selectbgdef" ){ /* Ignore for now */ }
@@ -344,31 +309,12 @@ void MugenMenu::load() throw (MugenException){
 	else if( head == "optionbgdef" ){ /* Ignore for now */ }
 	else if( head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
 	else if( head == "music" ){ /* Ignore for now */ }
-	else if( head.find("begin action") != std::string::npos ){
-	    head.replace(0,13,"");
-	    int h;
-	    MugenItem(head) >> h;
-	    animations[h] = MugenUtil::getAnimation(collection[i], sprites);
-	}
+	else if( head.find("begin action") != std::string::npos ){ /* Ignore  fornow */ }
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
-    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	if( (*i)->actionno != -1 ){
-	    (*i)->action = animations[ (*i)->actionno ];
-	    // Check tilespacing and mask
-	    if ((*i)->tilespacingx == 0){
-		(*i)->tilespacingx = 1;
-	    }
-	    if ((*i)->tilespacingy == 0){
-		(*i)->tilespacingy = 1;
-	    }
-	    (*i)->mask = true;
-	}
-	// now load
-	(*i)->preload( DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
-    }
+    if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
 }
 
 MugenMenu::~MugenMenu(){
@@ -485,9 +431,7 @@ void MugenMenu::run(){
 				}
 				
 				// Backgrounds
-				for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-				    (*i)->logic( 0, 0, 0, 0 );
-				}
+				background->logic( 0, 0, 0, 0 );
 			    }
 			    
 			    Global::speed_counter = 0;
@@ -502,21 +446,14 @@ void MugenMenu::run(){
 		    }
 	    
 		    if ( draw ){
-			    // Clear
-			    workArea.fill(backgroundClearColor);
-			    // Draw
-			    
-			    // Do the background
-			    for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-				(*i)->render( 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, &workArea );
-			    }
-			    
+			    // backgrounds
+			    background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
 			    // Draw any misc stuff in the background of the menu of selected object 
-			    //(*selectedOption)->draw(work);
-			    // Draw text board
-			    //drawTextBoard(work);
+			    (*selectedOption)->draw(work);
 			    // Draw text
 			    drawText(&workArea);
+			    // Foregrounds
+			    background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
 			    // Do fades
 			    fader.draw(&workArea);
 			    // Finally render to screen
@@ -581,15 +518,8 @@ void MugenMenu::run(){
 
 void MugenMenu::cleanup(){
     
-    // Get rid of animation lists;
-    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-	if( i->second )delete i->second;
-    }
-    
-    // Get rid of background lists;
-    for( std::vector< MugenBackground * >::iterator i = backgrounds.begin() ; i != backgrounds.end() ; ++i ){
-	if( (*i) )delete (*i);
-    }
+    //Backgrounds
+    if (background) delete background;
     
     // Get rid of items
     for(std::vector <MenuOption *>::iterator b = menuOptions.begin();b!=menuOptions.end();++b){
