@@ -31,6 +31,7 @@ class MugenLayer{
 	MugenAnimation *animation;
 	void act();
 	void draw(const int xaxis, const int yaxis, Bitmap *bmp);
+	void reset();
 };
 
 class MugenScene {

@@ -706,6 +706,7 @@ spriteFile(""){
 	}
 	else {
 	    // We are done collecting our backgrounds quit
+	    index--;
 	    break;
 	}
     }

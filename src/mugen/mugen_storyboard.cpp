@@ -51,6 +51,12 @@ void MugenLayer::draw(const int xaxis, const int yaxis, Bitmap *bmp){
 	animation->render(xaxis + offset.x, yaxis + offset.y, *bmp);
     }
 }
+
+void MugenLayer::reset(){
+    if (actionno != -1){
+	animation->reset();
+    }
+}
 	
 MugenScene::MugenScene():
 clearColor(-1),
@@ -125,6 +131,11 @@ bool MugenScene::isDone(){
 void MugenScene::reset(){
     ticker = 0;
     fader.setState(FADEIN);
+    // layers
+    for (std::vector< MugenLayer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
+	MugenLayer *layer = *i;
+	layer->reset();
+    }
 }
 
 MugenStoryboard::MugenStoryboard( const string & s ):
@@ -375,7 +386,7 @@ void MugenStoryboard::run(Bitmap *bmp, bool repeat){
 	MugenScene *scene = *sceneIterator;
         if ( Global::speed_counter > 0 ){
 	    
-            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+            runCounter += Global::speed_counter * gameSpeed * (double) 90 / (double) 60;
             while (runCounter > 1){
                 scene->act();
                 runCounter -= 1;
