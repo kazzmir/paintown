@@ -16,9 +16,7 @@ class MugenItemContent;
 class MugenSprite;
 class MugenSound;
 class MugenAnimation;
-class MugenBackground;
-class BackgroundController;
-class MugenBackgroundController;
+class MugenBackgroundManager;
 
 struct PlayerData {
     double oldx;
@@ -44,10 +42,10 @@ public:
 	inline const std::string &getName() const {
             return name;
         }
-
+/*
         inline const std::map<int, MugenAnimation*> & getAnimations() const {
             return animations;
-        }
+        }*/
 	
 	inline const double getCameraX() { return camerax; }
 	inline const double getCameraY() { return cameray; }
@@ -61,7 +59,7 @@ public:
 	void moveCamera( const double x, const double y );
 	
 	// Get background by ID
-	MugenBackground *getBackground( int ID );
+	//MugenBackground *getBackground( int ID );
 	
 	// This will update ticks and controllers. When ready pass the player objects to properly allow camera to follow
 	// For now use view port, x and y screen size will be used to determine width/height
@@ -294,24 +292,26 @@ protected:
 	/* Main background definitions.. ie [BGdef] */
 	
 	// Sprite file
-	std::string sffFile;
+	//std::string sffFile;
 	// This is debug for backgrounds probably won't use it, clears to magenta before drawing first layer 
-	bool debugbg;
+	//bool debugbg;
 	
 	/* Sprites */
-	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
+	//std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
 	
 	/* Animation Lists stored by action number, ie [Begin Action 500] */
-	std::map< int, MugenAnimation * > animations;
+	//std::map< int, MugenAnimation * > animations;
 	
 	/* Backgrounds */
-	std::vector< MugenBackground * > backgrounds;
+	//std::vector< MugenBackground * > backgrounds;
 	
 	/* Foregrounds */
-	std::vector< MugenBackground * > foregrounds;
+	//std::vector< MugenBackground * > foregrounds;
 	
 	/* Sounds */
 	//std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
+	
+	MugenBackgroundManager *background;
 	
 	/* Commands, Triggers or whatever else we come up with */
 	
@@ -382,10 +382,10 @@ protected:
 	void updatePlayer( Object *o );
 	
 	// Controllers
-	std::vector<MugenBackgroundController *> controllers;
+	//std::vector<MugenBackgroundController *> controllers;
 	
 	// This is for controllers as sometimes backgrounds share IDs for this purpose
-	void getBackgrounds( std::vector<MugenBackground *> &bgs, int ID );
+	//void getBackgrounds( std::vector<MugenBackground *> &bgs, int ID );
 	
 	// What garbage
 	deque<Bitmap*> garbage;

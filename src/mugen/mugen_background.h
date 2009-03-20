@@ -197,7 +197,7 @@ class MugenBackgroundManager{
 	/* It takes in a collection and reads the necessary crap
 	if sprites = 0 then it has it's own sprite collection and won't be bothered to use the external one
 	*/
-	MugenBackgroundManager(const std::string &baseDir, const std::vector< MugenSection * > &collection, const unsigned int index,const unsigned long int &ticker, 
+	MugenBackgroundManager(const std::string &baseDir, const std::vector< MugenSection * > &collection, unsigned int &index,const unsigned long int &ticker, 
 				std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites=0);
 	~MugenBackgroundManager();
 	void logic( const double x, const double y, const double placementx, const double placementy );
@@ -211,6 +211,9 @@ class MugenBackgroundManager{
 	
 	inline const std::string &getName() const { return name; }
 	inline const bool getDebugStatus() const { return debugbg; }
+	inline const std::map<int, MugenAnimation*> & getAnimations() const {
+            return animations;
+        }
     private:
 	// Name minus the Def part so we can grab other similar items
 	std::string name;
