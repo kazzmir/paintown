@@ -54,11 +54,12 @@ public:
     // Do any extra stuff so that it can be used
     void preload( const int xaxis, const int yaxis );
     
-    // Stage be our friend
+    // Stage be our friend This all goes away once I get the manager working
     friend class MugenStage;
     friend class BackgroundController;
     friend class MugenUtil;
     friend class MugenMenu;
+    friend class MugenBackgroundManager;
     
     protected:
     std::string name;
@@ -196,7 +197,7 @@ class MugenBackgroundManager{
 	/* It takes in a collection and reads the necessary crap
 	if sprites = 0 then it has it's own sprite collection and won't be bothered to use the external one
 	*/
-	MugenBackgroundManager(std::vector< MugenSection * > &collection,const unsigned long int &ticker, 
+	MugenBackgroundManager(std::vector< MugenSection * > &collection, unsigned const int index,const unsigned long int &ticker, 
 				std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites=0);
 	~MugenBackgroundManager();
 	void logic( const double x, const double y, const double placementx, const double placementy );
@@ -207,6 +208,10 @@ class MugenBackgroundManager{
     private:
 	// Name minus the Def part so we can grab other similar items
 	std::string name;
+	
+	// Debug
+	bool debugbg;
+	
 	// If it has it's own spritefile .. else it'll just use the one by it's parent
 	std::string spriteFile;
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;

@@ -147,9 +147,6 @@ void MugenStoryboard::load() throw (MugenException){
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
-    // for linked position in backgrounds
-    MugenBackground *prior = 0;
-    
     /* Extract info for our first section of our stage */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
@@ -305,6 +302,12 @@ void MugenStoryboard::load() throw (MugenException){
 	    scenes.push_back(scene);
 	}
 	else if( head.find("begin action") != std::string::npos ){
+	    head.replace(0,13,"");
+	    int h;
+	    MugenItem(head) >> h;
+	    animations[h] = MugenUtil::getAnimation(collection[i], sprites);
+	}
+	else if( head.find("def") != std::string::npos ){
 	    head.replace(0,13,"");
 	    int h;
 	    MugenItem(head) >> h;

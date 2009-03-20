@@ -8,6 +8,10 @@
 #include "globals.h"
 #include "mugen_sprite.h"
 #include "util/bitmap.h"
+#include "mugen_util.h"
+#include "mugen_section.h"
+#include "mugen_item_content.h"
+#include "mugen_item.h"
 
 //static double pi = 3.14159265;
 
@@ -353,10 +357,64 @@ void MugenBackground::setPositionLink(MugenBackground *bg){
 }
 
 
-MugenBackgroundManager::MugenBackgroundManager(std::vector< MugenSection * > &collection,const unsigned long int &ticker, 
+MugenBackgroundManager::MugenBackgroundManager(std::vector< MugenSection * > &collection,unsigned const int index, const unsigned long int &ticker, 
 				std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites):
 name(""),
+debugbg(false),
 spriteFile(""){
+    std::string head = name = collection[index]->getHeader();
+    MugenUtil::fixCase(head);
+    // Correct name of background manager .. this is used to get the subsequent backgrounds
+    if (head.find( "def") != std::string::npos){
+	size_t rem = head.find_last_of( "def" );
+	name.erase(rem);
+    }
+    
+    // for linked position in backgrounds
+    MugenBackground *prior = 0;
+    
+    for( unsigned int i = index; i < collection.size(); ++i ){
+	head = collection[i]->getHeader();
+	MugenUtil::fixCase(head);
+	if(head.find("def") != std::string::npos){
+	    while( collection[i]->hasItems() ){
+		    MugenItemContent *content = collection[i]->getNext();
+		    const MugenItem *item = content->getNext();
+		    std::string itemhead = item->query();
+		    MugenUtil::removeSpaces(itemhead);
+		    MugenUtil::fixCase(itemhead);
+		    if ( itemhead.find("spr")!=std::string::npos ){
+			*content->getNext() >> spriteFile;
+			Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
+			//MugenUtil::readSprites( MugenUtil::fixFileName(baseDir + filesdir, sffFile), "", sprites );
+		    } else if ( itemhead.find("debugbg")!=std::string::npos ){
+			*content->getNext() >> debugbg;
+		    } else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
+		}
+	}
+	// This our background data definitions
+	else if( head.find( std::string(name + " ")) !=std::string::npos ){
+	    MugenBackground *temp;
+	    if (!spriteFile.empty()){
+		temp = MugenUtil::getBackground(ticker, collection[i], this->sprites);
+	    } else {
+		temp = MugenUtil::getBackground(ticker, collection[i], *sprites);
+	    }
+	    // Do some fixups and necessary things
+	    // lets see where we lay
+	    if( temp->layerno == 0 )backgrounds.push_back(temp);
+	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
+	    
+	    // If position link lets set to previous item
+	    if( temp->positionlink ){
+		temp->linked = prior;
+		Global::debug(1) << "Set positionlink to id: '" << prior->id << "' Position at x(" << prior->startx << ")y(" << prior->starty << ")" << endl;
+	    } 
+	    
+	    // This is so we can have our positionlink info for the next item if true
+	    prior = temp;
+	}
+    }
 }
 MugenBackgroundManager::~MugenBackgroundManager(){
 }
