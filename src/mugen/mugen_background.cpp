@@ -538,7 +538,7 @@ spriteFile(""){
 	head = collection[index]->getHeader();
 	MugenUtil::fixCase(head);
 	Global::debug(1) <<  "Header: " << head << " | Extracted name: " << name << endl;
-	if(head.find("def") != std::string::npos){
+	if(head.find("def") != std::string::npos && head.find("ctrl") ==std::string::npos){
 	    while( collection[index]->hasItems() ){
 		    MugenItemContent *content = collection[index]->getNext();
 		    const MugenItem *item = content->getNext();
@@ -551,7 +551,7 @@ spriteFile(""){
 			MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", this->sprites );
 		    } else if ( itemhead.find("debugbg")!=std::string::npos ){
 			*content->getNext() >> debugbg;
-		    } else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
+		    } else throw MugenException( "Unhandled option in Background Definition Section: " + itemhead );
 		}
 	}
 	// This our background data definitions
