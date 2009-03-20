@@ -548,6 +548,9 @@ spriteFile(""){
 		    if ( itemhead.find("spr")!=std::string::npos ){
 			*content->getNext() >> spriteFile;
 			Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
+			// Strip it of any directory it might have
+			spriteFile = MugenUtil::stripDir(spriteFile);
+			Global::debug(1) << "Sprite File: " << spriteFile << endl;
 			MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", this->sprites );
 		    } else if ( itemhead.find("debugbg")!=std::string::npos ){
 			*content->getNext() >> debugbg;

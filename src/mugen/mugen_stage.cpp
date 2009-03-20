@@ -41,22 +41,6 @@ static const int DEFAULT_HEIGHT = 240;
 static const double DEFAULT_JUMP_VELOCITY = 7.2;
 static const int CONSOLE_SIZE = 95;
 static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
-/*
-static void correctStageName( std::string &str ){
-    if( str.find( "stages/") != std::string::npos || str.find( "stages\\") != std::string::npos ){
-	size_t rem = str.find_first_of( "stages/" );
-	if( rem != std::string::npos ){
-	    str.replace( rem, std::string("stages/").size(), "" );
-	    return;
-	}
-	rem = str.find_first_of( "stages\\" );
-	if( rem != std::string::npos ){
-	    str.replace( rem, std::string("stages\\").size(), "" );
-	    return;
-	}
-    }
-}
-*/
 
 static bool centerCollision( Character *p1, Character *p2 ){
     //p1->getCurrentMovement()->getCurrentFrame();
@@ -220,6 +204,9 @@ void MugenStage::load() throw( MugenException ){
     baseDir = Util::getDataPath() + "mugen/stages/";
     Global::debug(1) << baseDir << endl;
     location+=".def";
+    // Get correct directory
+    baseDir = MugenUtil::getFileDir(baseDir + location);
+    location = MugenUtil::stripDir(location);
     const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location) );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );

@@ -84,6 +84,23 @@ std::string MugenUtil::fixFileName( const std::string &dir, std::string str ){
     return std::string(dir + str);
 }
 
+
+std::string MugenUtil::stripDir( const std::string &str ){ 
+    std::string temp = str;
+    if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
+	size_t rem = temp.find_last_of( "/" );
+	if( rem != std::string::npos ){
+	    return str.substr(rem+1,str.size());
+	}
+	rem = temp.find_last_of( "\\" );
+	if( rem != std::string::npos ){
+	    return str.substr(rem+1,str.size());
+	}
+    }
+    return str; 
+}
+
+
 std::string MugenUtil::getFileDir( const std::string &str ){
     std::string temp = str;
     if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
