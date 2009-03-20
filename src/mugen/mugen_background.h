@@ -6,6 +6,7 @@
 #include <map>
 #include "mugen_animation.h"
 
+class MugenSection;
 class MugenSprite;
 class MugenBackground;
 class MugenStage;
@@ -40,6 +41,7 @@ public:
     inline void setEnabled(const bool en){ enabled = visible = en; }
     inline const bool getEnabled(){ return enabled; }
     inline const int getActionNumber() const { return actionno; }
+    inline const int getLayerNumber() const { return layerno; }
     
     MugenBackground & operator=( const MugenBackground &copy );
     
@@ -130,6 +132,93 @@ public:
     // Lets do our positionlink stuff
     void setPositionLink(MugenBackground *bg);
     
+};
+
+
+/* Background controllers 
+We'll seperate this from the main FSM of characters since we aren't looking for
+complete compatability */
+
+enum ControlType{
+    Ctrl_Null = 0,
+    Ctrl_Visible,
+    Ctrl_Enabled,
+    Ctrl_VelSet,
+    Ctrl_VelAdd,
+    Ctrl_PosSet,
+    Ctrl_PosAdd,
+    Ctrl_Animation,
+    Ctrl_Sinx,
+    Ctrl_Siny
+};
+
+class BackgroundController{
+    public:
+	BackgroundController();
+	virtual ~BackgroundController();
+	virtual void act(const std::map< int, MugenAnimation * > &animations);
+	void reset();
+	std::string name;
+	ControlType type;
+	int timestart;
+	int endtime;
+	int looptime;
+	int ownticker;
+        /* what do these values represent? lets change the variable name
+         * or at least explain with a comment here.
+         */
+	double value1;
+	double value2;
+	double value3;
+	std::vector<MugenBackground *> backgrounds;
+};
+
+class MugenBackgroundController{
+    public:
+	MugenBackgroundController( const std::string &n );
+	~MugenBackgroundController();
+	
+	void addControl( BackgroundController *ctrl );
+	
+	void act(const std::map< int, MugenAnimation * > &animations);
+	
+	std::string name;
+	int id;
+	int looptime;
+	int ticker;
+	std::vector<MugenBackground *> backgrounds;
+	std::vector<BackgroundController *> controls;
+};
+
+/*! Holds mugen backgrounds and foregrounds and controllers */
+class MugenBackgroundManager{
+    public:
+	/* It takes in a collection and reads the necessary crap
+	if sprites = 0 then it has it's own sprite collection and won't be bothered to use the external one
+	*/
+	MugenBackgroundManager(std::vector< MugenSection * > &collection,const unsigned long int &ticker, 
+				std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites=0);
+	~MugenBackgroundManager();
+	void logic( const double x, const double y, const double placementx, const double placementy );
+	void renderBack( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
+	void renderFront( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
+	
+	inline const std::string &getName() const { return name; }
+    private:
+	// Name minus the Def part so we can grab other similar items
+	std::string name;
+	// If it has it's own spritefile .. else it'll just use the one by it's parent
+	std::string spriteFile;
+	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
+	
+	/* Backgrounds */
+	std::vector< MugenBackground * > backgrounds;
+	
+	/* Foregrounds */
+	std::vector< MugenBackground * > foregrounds;
+	
+	// Controllers
+	std::vector<MugenBackgroundController *> controllers;
 };
 
 #endif

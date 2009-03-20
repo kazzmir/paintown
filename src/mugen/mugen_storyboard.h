@@ -20,8 +20,16 @@ struct MugenPoint{
     int y;
 };
 
-struct MugenLayer{
-    
+class MugenLayer{
+    public:
+	MugenLayer();
+	~MugenLayer();
+	MugenPoint offset;
+	int actionno;
+	int startTime;
+	MugenAnimation *animation;
+	void act();
+	void draw(const int xaxis, const int yaxis, Bitmap *bmp);
 };
 
 class MugenScene {
@@ -45,6 +53,11 @@ class MugenScene {
 	
 	// Backgrounds
 	std::vector<MugenBackground *>backgrounds;
+	
+	std::vector<MugenBackground *>foregrounds;
+	
+	// layers
+	std::vector<MugenLayer *>layers;
 };
 
 class MugenStoryboard {

@@ -17,61 +17,8 @@ class MugenSprite;
 class MugenSound;
 class MugenAnimation;
 class MugenBackground;
-
-/* Background controllers 
-We'll seperate this from the main FSM of characters since we aren't looking for
-complete compatability */
-
-enum ControlType{
-    Ctrl_Null = 0,
-    Ctrl_Visible,
-    Ctrl_Enabled,
-    Ctrl_VelSet,
-    Ctrl_VelAdd,
-    Ctrl_PosSet,
-    Ctrl_PosAdd,
-    Ctrl_Animation,
-    Ctrl_Sinx,
-    Ctrl_Siny
-};
-
-class BackgroundController{
-    public:
-	BackgroundController();
-	virtual ~BackgroundController();
-	virtual void act(const std::map< int, MugenAnimation * > &animations);
-	void reset();
-	std::string name;
-	ControlType type;
-	int timestart;
-	int endtime;
-	int looptime;
-	int ownticker;
-        /* what do these values represent? lets change the variable name
-         * or at least explain with a comment here.
-         */
-	double value1;
-	double value2;
-	double value3;
-	std::vector<MugenBackground *> backgrounds;
-};
-
-class MugenBackgroundController{
-    public:
-	MugenBackgroundController( const std::string &n );
-	~MugenBackgroundController();
-	
-	void addControl( BackgroundController *ctrl );
-	
-	void act(const std::map< int, MugenAnimation * > &animations);
-	
-	std::string name;
-	int id;
-	int looptime;
-	int ticker;
-	std::vector<MugenBackground *> backgrounds;
-	std::vector<BackgroundController *> controls;
-};
+class BackgroundController;
+class MugenBackgroundController;
 
 struct PlayerData {
     double oldx;

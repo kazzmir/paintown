@@ -353,3 +353,19 @@ void MugenBackground::setPositionLink(MugenBackground *bg){
 }
 
 
+MugenBackgroundManager::MugenBackgroundManager(std::vector< MugenSection * > &collection,const unsigned long int &ticker, 
+				std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites):
+name(""),
+spriteFile(""){
+}
+MugenBackgroundManager::~MugenBackgroundManager(){
+}
+void MugenBackgroundManager::logic( const double x, const double y, const double placementx, const double placementy ){
+}
+void MugenBackgroundManager::renderBack( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work ){
+}
+void MugenBackgroundManager::renderFront( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work ){
+}
+
+
+

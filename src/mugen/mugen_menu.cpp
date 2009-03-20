@@ -580,8 +580,6 @@ void MugenMenu::run(){
 
 
 void MugenMenu::cleanup(){
-    // Get rid of sprites
-    cleanupSprites();
     
     // Get rid of animation lists;
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
@@ -599,6 +597,9 @@ void MugenMenu::cleanup(){
 		delete (*b);
 	    }
     }
+    
+    // Get rid of sprites
+    cleanupSprites();
 }
 
 void MugenMenu::cleanupSprites(){
