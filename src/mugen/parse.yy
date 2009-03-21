@@ -8,7 +8,7 @@
 #include "ast/Value.h"
 #include "ast/Modifier.h"
 
-#define bugon(a) if (!(a)){ printf("parsing bug at %s:%d\n", __FILE__, __LINE__); }
+#define bugon(a) if ((a)){ printf("parsing bug at %s:%d\n", __FILE__, __LINE__); }
 
 extern "C" int yylex(void);
 extern "C" int yyerror(const char *);
@@ -45,26 +45,23 @@ file:
 line:
     COMMENT 
     | LINE_END
-    | section LINE_END {
+    | section end_or_comment {
     		bugon(configuration == NULL);
     		bugon(currentSection == NULL);
 		configuration->getSections().push_back(currentSection);
 	}
-    | section COMMENT {
-    		bugon(configuration == NULL);
-    		bugon(currentSection == NULL);
-		configuration->getSections().push_back(currentSection);
-	}
-    | assignment LINE_END {
+    | assignment end_or_comment {
     		bugon(currentSection == NULL);
     		bugon(currentLhs == NULL);
 		currentSection->getKeyValueMap()[currentLhs] = *currentRhs;
 	}
-    | assignment COMMENT {
-    		bugon(currentSection == NULL);
-    		bugon(currentLhs == NULL);
-		currentSection->getKeyValueMap()[currentLhs] = *currentRhs;
-	};
+    | valueList end_or_comment {
+    	printf("read a value list\n");
+    };
+
+end_or_comment:
+    LINE_END 
+  | COMMENT;
 
 section:
     BRACKETSTRING { 
@@ -156,7 +153,13 @@ int yyerror(const char *msg) {
 Ast::Configuration * mugenParse(std::string filename){
     /* lex input thing */
     extern FILE * yyin;
-    configuration = NULL;
+
+    /* todo: delete all this crap */
+    if (configuration != NULL){
+    	delete configuration;
+    }
+
+    configuration = new Ast::Configuration();
     currentSection = NULL;
     currentLhs = NULL;
     currentRhs = NULL;
