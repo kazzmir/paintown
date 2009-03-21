@@ -55,8 +55,9 @@ line:
     		bugon(currentLhs == NULL);
 		currentSection->getKeyValueMap()[currentLhs] = *currentRhs;
 	}
-    | valueList end_or_comment {
-    	printf("read a value list\n");
+    | { currentRhs = new Ast::Section::ValueList(); } valueList end_or_comment {
+    	bugon(currentSection == NULL);
+	currentSection->getActions().push_back(currentRhs);
     };
 
 end_or_comment:
