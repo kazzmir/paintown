@@ -71,6 +71,7 @@ background(0){
     }
     defaultAxis.x = -1;
     defaultAxis.y = -1;
+    fader.setState(FADEIN);
 }
 MugenScene::~MugenScene(){
     
@@ -95,9 +96,7 @@ void MugenScene::act(){
     }
     // Fader
     fader.act();
-    if (fader.getFadeInTime() <= ticker && fader.getState() != NOFADE ){
-	fader.setState(NOFADE);
-    } else if (ticker >= (fader.getFadeOutTime() - endTime) && fader.getState() != FADEOUT){
+    if (ticker == endTime - fader.getFadeOutTime()){
 	fader.setState(FADEOUT);
     }
     // tick tick
@@ -441,6 +440,9 @@ void MugenStoryboard::run(Bitmap *bmp, bool repeat){
         if (draw){
 	    scene->draw(&work);
 	    work.Stretch(*bmp);
+	    if (Global::getDebug() > 0){
+		Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor(0,255,128), *bmp, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->ticker,scene->endTime,scene->fader.getFadeInTime(),scene->fader.getFadeOutTime() );
+	    }
 	    bmp->BlitToScreen();
         }
 
