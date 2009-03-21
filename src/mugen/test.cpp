@@ -37,10 +37,11 @@
 #include "object/versus_enemy.h"
 #include "game.h"
 
-
 #include "dumb/include/dumb.h"
 #include "dumb/include/aldumb.h"
 #include "loadpng/loadpng.h"
+
+#include "ast/Configuration.h"
 
 using namespace std;
 
@@ -413,6 +414,7 @@ int main( int argc, char ** argv ){
         const char * DEBUG_ARG = "-l";
 	const char * STAGE_ARG = "-s";
 	const char * FONT_ARG = "-font";
+        const char * PARSE_ARG = "-parse";
 	const char * STORY_ARG = "-storyboard";
 	std::string ourFile;
 	int configLoaded = -1;
@@ -438,6 +440,18 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
+                } else if (isArg(argv[q], PARSE_ARG)){
+                    q += 1;
+                    if (q < argc){
+                        extern Ast::Configuration * (mugenParse)(std::string filename);
+                        string s(argv[q]);
+                        Ast::Configuration * configuration = mugenParse(s);
+                        if (!configuration){
+                            Global::debug(0) << "Could not parse " << s << endl;
+                        } else {
+                            configuration->debugExplain();
+                        }
+                    }
 		} else if ( isArg( argv[ q ], CHAR_ARG ) ){
 			q += 1;
 			if ( q < argc ){

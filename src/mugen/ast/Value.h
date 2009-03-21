@@ -6,6 +6,8 @@
 #include "Expression.h"
 #include "Modifier.h"
 
+namespace Ast{
+
 enum ValueSpecies {
 	SimpleNumber,
 	SimpleString,
@@ -94,5 +96,7 @@ private:
 	double higherNumber; // in case of a range
 	ValueSpecies species;
 };
+
+}
 
 #endif

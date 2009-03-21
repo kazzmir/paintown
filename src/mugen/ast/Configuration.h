@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include "Section.h"
 
+namespace Ast{
+
 class Configuration {
 public: // constructors and destructors
 	Configuration() {
@@ -24,5 +26,7 @@ private: // data
 
 	std::vector<Section *> sections;
 };
+
+}
 
 #endif

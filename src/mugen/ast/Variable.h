@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+namespace Ast{
+
 class Variable {
 public:
 	Variable(const char *n):
@@ -49,5 +51,7 @@ private:
 	bool numberIndexFlag;
 	bool stringIndexFlag;
 };
+
+}
 
 #endif

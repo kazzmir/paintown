@@ -7,7 +7,9 @@
 #include "Variable.h"
 #include "Value.h"
 
-class Section {
+namespace Ast{
+
+class Section{
 public: 
 	Section() {
 	}
@@ -54,5 +56,7 @@ private:
 	std::map<Variable *, std::list<Value *> > keyValueMap;
 	char *stringData;
 };
+
+}
 
 #endif

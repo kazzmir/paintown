@@ -13,12 +13,12 @@
 extern "C" int yylex(void);
 extern "C" int yyerror(const char *);
 
-static Configuration *configuration;
-static Section *currentSection;
-static Variable *currentLhs;
-static std::list<Value *> *currentRhs;
-static Value *currentValue;
-static std::list<Modifier *> *currentModifiers;
+static Ast::Configuration *configuration;
+static Ast::Section *currentSection;
+static Ast::Variable *currentLhs;
+static std::list<Ast::Value *> *currentRhs;
+static Ast::Value *currentValue;
+static std::list<Ast::Modifier *> *currentModifiers;
 
 %}
 
@@ -68,20 +68,20 @@ line:
 
 section:
     BRACKETSTRING { 
-	currentSection = new Section();
+	currentSection = new Ast::Section();
 	currentSection->setName($1);
  	};
 
 assignment:
-    lhs COMPARISON_OPERATOR { currentRhs = new std::list<Value *>(); } rhs;
+    lhs COMPARISON_OPERATOR { currentRhs = new std::list<Ast::Value *>(); } rhs;
 
 lhs: 
     variable;
 
 variable:
-    IDENTIFIER { currentLhs = new Variable($1); }
-    | IDENTIFIER '(' NUMBER ')' { currentLhs = new Variable($1, (int)$3); }
-    | IDENTIFIER '(' IDENTIFIER ')' { currentLhs = new Variable($1, $3); }
+    IDENTIFIER { currentLhs = new Ast::Variable($1); }
+    | IDENTIFIER '(' NUMBER ')' { currentLhs = new Ast::Variable($1, (int)$3); }
+    | IDENTIFIER '(' IDENTIFIER ')' { currentLhs = new Ast::Variable($1, $3); }
 
 rhs: 
     valueList;
@@ -92,23 +92,23 @@ valueList:
     | value { currentRhs->push_back(currentValue); };
 
 value:
-    NUMBER { currentValue = new Value($1); }
-    | QUOTESTRING { currentValue = new Value($1); }
-    | IDENTIFIER { currentValue = new Value(); currentValue->setIdentifier($1); }
+    NUMBER { currentValue = new Ast::Value($1); }
+    | QUOTESTRING { currentValue = new Ast::Value($1); }
+    | IDENTIFIER { currentValue = new Ast::Value(); currentValue->setIdentifier($1); }
     | modifiedIdentifier
     | expression
     | IDENTIFIER '(' valueList ')'
     | range;
 
 range:
-    '[' NUMBER ',' NUMBER ']' { currentValue = new Value($2, $4); }
-    | '[' NUMBER ',' NUMBER ')' { currentValue = new Value($2, $4); }
-    | '(' NUMBER ',' NUMBER ']' { currentValue = new Value($2, $4); }
-    | '(' NUMBER ',' NUMBER ')' { currentValue = new Value($2, $4); }
+    '[' NUMBER ',' NUMBER ']' { currentValue = new Ast::Value($2, $4); }
+    | '[' NUMBER ',' NUMBER ')' { currentValue = new Ast::Value($2, $4); }
+    | '(' NUMBER ',' NUMBER ']' { currentValue = new Ast::Value($2, $4); }
+    | '(' NUMBER ',' NUMBER ')' { currentValue = new Ast::Value($2, $4); }
 
 modifiedIdentifier:
-    modifiers { currentValue = new Value(); 
-	currentValue->setSpecies(ModifiedIdentifier); } chainedIdentifiers
+    modifiers { currentValue = new Ast::Value(); 
+	currentValue->setSpecies(Ast::ModifiedIdentifier); } chainedIdentifiers
     | chainedIdentifiers
 
 modifiers:
@@ -153,7 +153,7 @@ int yyerror(const char *msg) {
     return 0;
 }
 
-Configuration * mugenParse(std::string filename){
+Ast::Configuration * mugenParse(std::string filename){
     /* lex input thing */
     extern FILE * yyin;
     configuration = NULL;
