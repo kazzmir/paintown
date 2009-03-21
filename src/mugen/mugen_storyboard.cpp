@@ -59,7 +59,7 @@ void MugenLayer::reset(){
 }
 	
 MugenScene::MugenScene():
-clearColor(-1),
+clearColor(-2),
 ticker(0),
 endTime(0),
 backgroundName(""),
@@ -69,8 +69,8 @@ background(0){
 	MugenLayer *layer = new MugenLayer();
 	layers.push_back(layer);
     }
-    defaultAxis.x = 0;
-    defaultAxis.y = 0;
+    defaultAxis.x = -1;
+    defaultAxis.y = -1;
 }
 MugenScene::~MugenScene(){
     
@@ -104,7 +104,7 @@ void MugenScene::act(){
     ticker++;
 }
 void MugenScene::draw(Bitmap *bmp){
-    if (clearColor != -1){
+    if (clearColor != -1 && clearColor != -2){
 	bmp->fill(clearColor);
     }
     // backgrounds
@@ -354,6 +354,13 @@ void MugenStoryboard::load() throw (MugenException){
 	}
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
+    // position
+    MugenPoint positionFix;
+    positionFix.x = 0;
+    positionFix.y = 0;
+    // ClearColor
+    int clearColorFix = -1;
+    int counter = 0;
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
     for( std::vector< MugenScene * >::iterator s = scenes.begin(); s != scenes.end(); ++s ){
@@ -369,6 +376,22 @@ void MugenStoryboard::load() throw (MugenException){
 	       layer->animation = animations[ layer->actionno ];
 	   }
 	}
+	// Positioning
+	if( scene->defaultAxis.x == -1 && scene->defaultAxis.y == -1 ){
+	    scene->defaultAxis.x = positionFix.x;
+	    scene->defaultAxis.y = positionFix.y;
+	}
+	// Clear colors
+	// Not assigned set to previous scene
+	if (counter > 0 && scene->clearColor == -2){
+	    scene->clearColor = clearColorFix;
+	}
+	counter++;
+	// set position
+	positionFix.x = scene->defaultAxis.x;
+	positionFix.y = scene->defaultAxis.y;
+	// Set to previous scene
+	clearColorFix = scene->clearColor;
     }
 }
 void MugenStoryboard::run(Bitmap *bmp, bool repeat){

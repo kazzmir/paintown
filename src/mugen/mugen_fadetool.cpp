@@ -43,7 +43,7 @@ void MugenFadeTool::act(){
 	    }
 	    break;
 	case FADEOUT:
-	    fader+=(255/(fadeInTime <= 0 ? 1 : fadeOutTime));
+	    fader+=(255/(fadeOutTime <= 0 ? 1 : fadeOutTime));
 	    if (fader>=255){
 		setState(RUNFADE);
 	    }
