@@ -44,6 +44,7 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 #include "mugen_font.h"
+#include "mugen_storyboard.h"
 
 const int DEFAULT_WIDTH = 320;
 const int DEFAULT_HEIGHT = 240;
@@ -62,7 +63,9 @@ fightFile(""),
 windowVisibleItems(0),
 showBoxCursor(false),
 ticker(0),
-background(0){
+background(0),
+logo(0),
+intro(0){
 }
 
 void MugenMenu::load() throw (MugenException){
@@ -127,9 +130,24 @@ void MugenMenu::load() throw (MugenException){
                     Global::debug(1) << "Got Sound File: '" << soundFile << "'" << endl;
 		} else if ( itemhead.find("logo.storyboard")!=std::string::npos ){
 		    *content->getNext() >> logoFile;
+		    try{
+			Global::debug(0) << baseDir << " / " << logoFile << endl;
+			logo = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, logoFile));
+			logo->load();
+		    }
+		    catch (MugenException &ex){
+			throw MugenException( "Error loading logo storyboard: " + ex.getReason() );
+		    }
                     Global::debug(1) << "Got Logo Storyboard File: '" << logoFile << "'" << endl;
 		} else if ( itemhead.find("intro.storyboard")!=std::string::npos ){
 		    *content->getNext() >> introFile;
+		    try{
+			intro = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, introFile));
+			intro->load();
+		    }
+		    catch (MugenException &ex){
+			throw MugenException( "Error loading intro storyboard: " + ex.getReason() );
+		    }
                     Global::debug(1) << "Got Intro Storyboard File: '" << introFile << "'" << endl;
 		} else if ( itemhead.find("select")!=std::string::npos ){
 		    *content->getNext() >> selectFile;
@@ -345,6 +363,16 @@ void MugenMenu::run(){
     */
   // Set the fade state
   fader.setState(FADEIN);
+  
+    // Do we have logos or intros?
+    // Logo run it no repeat
+    if (logo){
+	logo->run( work,false);
+    }
+    // Intro run it no repeat
+    if (intro){
+	intro->run( work,false);
+    }
   
     double runCounter = 0;
     while( ! endGame ){

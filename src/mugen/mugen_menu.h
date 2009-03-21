@@ -17,6 +17,7 @@ class MugenAnimation;
 class MugenBackgroundManager;
 class MugenFont;
 class MugenSprite;
+class MugenStoryboard;
 
 struct MugenMenuPoint{
     int x;
@@ -133,6 +134,12 @@ class MugenMenu : public Menu
 	
 	// Title background
 	MugenBackgroundManager *background;
+	
+	// Logo
+	MugenStoryboard *logo;
+	
+	// Intro
+	MugenStoryboard *intro;
 	
 	// Cleanup
 	void cleanup();
