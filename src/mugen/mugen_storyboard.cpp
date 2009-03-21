@@ -148,7 +148,7 @@ MugenStoryboard::~MugenStoryboard(){
 }
 void MugenStoryboard::load() throw (MugenException){
      // Lets look for our def since some assholes think that all file systems are case insensitive
-    std::string baseDir = Util::getDataPath() + "mugen/data/" + MugenUtil::getFileDir(location);
+    std::string baseDir = Util::getDataPath() + "mugen/" + MugenUtil::getFileDir(location);
     const std::string ourDefFile = MugenUtil::fixFileName( baseDir, MugenUtil::stripDir(location) );
     // get real basedir
     //baseDir = MugenUtil::getFileDir( ourDefFile );
@@ -386,7 +386,7 @@ void MugenStoryboard::run(Bitmap *bmp, bool repeat){
 	MugenScene *scene = *sceneIterator;
         if ( Global::speed_counter > 0 ){
 	    
-            runCounter += Global::speed_counter * gameSpeed * (double) 90 / (double) 60;
+            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;//(double) 90 / (double) 60;
             while (runCounter > 1){
                 scene->act();
                 runCounter -= 1;
