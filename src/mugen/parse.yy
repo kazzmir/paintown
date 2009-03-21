@@ -2,20 +2,23 @@
 #include <list>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
 #include "ast/Configuration.h"
 #include "ast/Value.h"
 #include "ast/Modifier.h"
 
+#define bugon(a) if (!(a)){ printf("parsing bug at %s:%d\n", __FILE__, __LINE__); }
+
 extern "C" int yylex(void);
 extern "C" int yyerror(const char *);
 
-Configuration *configuration;
-Section *currentSection;
-Variable *currentLhs;
-std::list<Value *> *currentRhs;
-Value *currentValue;
-std::list<Modifier *> *currentModifiers;
+static Configuration *configuration;
+static Section *currentSection;
+static Variable *currentLhs;
+static std::list<Value *> *currentRhs;
+static Value *currentValue;
+static std::list<Modifier *> *currentModifiers;
 
 %}
 
@@ -43,15 +46,23 @@ line:
     COMMENT 
     | LINE_END
     | section LINE_END {
+    		bugon(configuration == NULL);
+    		bugon(currentSection == NULL);
 		configuration->getSections().push_back(currentSection);
 	}
     | section COMMENT {
+    		bugon(configuration == NULL);
+    		bugon(currentSection == NULL);
 		configuration->getSections().push_back(currentSection);
 	}
     | assignment LINE_END {
+    		bugon(currentSection == NULL);
+    		bugon(currentLhs == NULL);
 		currentSection->getKeyValueMap()[currentLhs] = *currentRhs;
 	}
     | assignment COMMENT {
+    		bugon(currentSection == NULL);
+    		bugon(currentLhs == NULL);
 		currentSection->getKeyValueMap()[currentLhs] = *currentRhs;
 	};
 
@@ -141,3 +152,23 @@ int yyerror(const char *msg) {
 	}*/
     return 0;
 }
+
+Configuration * mugenParse(std::string filename){
+    /* lex input thing */
+    extern FILE * yyin;
+    configuration = NULL;
+    currentSection = NULL;
+    currentLhs = NULL;
+    currentRhs = NULL;
+    currentValue = NULL;
+    currentModifiers = NULL;
+
+    /* the lex reader thing */
+    yyin = fopen(filename.c_str(), "r");
+    yyparse();
+    fclose(yyin);
+
+    return configuration;
+}
+
+#undef bugon

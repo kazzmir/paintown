@@ -50,6 +50,6 @@ x.append(use.Zip('scripts', scripts))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
 x.append( use.Program( 'mugentest', obj_files + ['mugen/test.cpp'] ) )
-x.append( use.Program( 'mugentest2', obj_files + ['mugen/test2.cpp'] ) )
+# x.append( use.Program( 'mugentest2', obj_files + ['mugen/test2.cpp'] ) )
 
 Return( 'x' )
