@@ -130,23 +130,27 @@ void MugenMenu::load() throw (MugenException){
                     Global::debug(1) << "Got Sound File: '" << soundFile << "'" << endl;
 		} else if ( itemhead.find("logo.storyboard")!=std::string::npos ){
 		    *content->getNext() >> logoFile;
-		    try{
-			Global::debug(0) << baseDir << " / " << logoFile << endl;
-			logo = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, logoFile));
-			logo->load();
-		    }
-		    catch (MugenException &ex){
-			throw MugenException( "Error loading logo storyboard: " + ex.getReason() );
+		    if( logoFile != "empty" ){
+			try{
+			    Global::debug(0) << baseDir << " / " << logoFile << endl;
+			    logo = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, logoFile));
+			    logo->load();
+			}
+			catch (MugenException &ex){
+			    throw MugenException( "Error loading logo storyboard: " + ex.getReason() );
+			}
 		    }
                     Global::debug(1) << "Got Logo Storyboard File: '" << logoFile << "'" << endl;
 		} else if ( itemhead.find("intro.storyboard")!=std::string::npos ){
 		    *content->getNext() >> introFile;
-		    try{
-			intro = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, introFile));
-			intro->load();
-		    }
-		    catch (MugenException &ex){
-			throw MugenException( "Error loading intro storyboard: " + ex.getReason() );
+		    if (introFile != "empty"){
+			try{
+			    intro = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, introFile));
+			    intro->load();
+			}
+			catch (MugenException &ex){
+			    throw MugenException( "Error loading intro storyboard: " + ex.getReason() );
+			}
 		    }
                     Global::debug(1) << "Got Intro Storyboard File: '" << introFile << "'" << endl;
 		} else if ( itemhead.find("select")!=std::string::npos ){
