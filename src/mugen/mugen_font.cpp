@@ -313,8 +313,8 @@ void MugenFont::load(){
                 std::string character;
                 int startx = locationx * width;
                 int chrwidth = width;
-                *opt->getNext() >> character;
-                if( character != "empty" ) {
+		if (opt->hasItems()){
+		    *opt->getNext() >> character;
 		    if (character.size() > 1){
 			MugenUtil::fixCase(character);
 			// 0x5b

@@ -129,10 +129,10 @@ void MugenMenu::load() throw (MugenException){
 		    *content->getNext() >> soundFile;
                     Global::debug(1) << "Got Sound File: '" << soundFile << "'" << endl;
 		} else if ( itemhead.find("logo.storyboard")!=std::string::npos ){
-		    *content->getNext() >> logoFile;
-		    if( logoFile != "empty" ){
+		    if( content->hasItems()){
+			*content->getNext() >> logoFile;
 			try{
-			    Global::debug(0) << baseDir << " / " << logoFile << endl;
+			    Global::debug(1) << baseDir << " / " << logoFile << endl;
 			    logo = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, logoFile));
 			    logo->load();
 			}
@@ -142,8 +142,8 @@ void MugenMenu::load() throw (MugenException){
 		    }
                     Global::debug(1) << "Got Logo Storyboard File: '" << logoFile << "'" << endl;
 		} else if ( itemhead.find("intro.storyboard")!=std::string::npos ){
-		    *content->getNext() >> introFile;
-		    if (introFile != "empty"){
+		    if (content->hasItems()){
+			*content->getNext() >> introFile;
 			try{
 			    intro = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, introFile));
 			    intro->load();
@@ -211,74 +211,94 @@ void MugenMenu::load() throw (MugenException){
 		    *content->getNext() >> fontSpacing.y;
 		} else if ( itemhead.find("menu.itemname.")!=std::string::npos ){
 		   if (itemhead == "menu.itemname.arcade"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.versus"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.teamarcade"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.teamcoop"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.survival"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.survivalcoop"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.training"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.watch"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.options"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty() && temp != "empty"){
-			    OptionDummy *dummy = new OptionDummy(temp);
-			    addOption(dummy);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
 		       }
 		   } else if (itemhead == "menu.itemname.exit"){
-		       std::string temp;
-		       *content->getNext() >> temp;
-		       if (!temp.empty()){
-			    OptionQuit *quit = new OptionQuit(temp);
-			    addOption(quit);
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionQuit *quit = new OptionQuit(temp);
+				    addOption(quit);
+			    }
 		       }
 		   }
 		} else if ( itemhead.find("menu.window.margins.x")!=std::string::npos ){
