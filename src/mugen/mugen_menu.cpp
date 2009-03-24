@@ -937,13 +937,6 @@ void MugenMenu::cleanup(){
     // Character select
     if (characterSelect) delete characterSelect;
     
-    // Get rid of items
-    for(std::vector <MenuOption *>::iterator b = menuOptions.begin();b!=menuOptions.end();++b){
-	    if ((*b)){
-		delete (*b);
-	    }
-    }
-    
     // Get rid of sprites
     cleanupSprites();
 }
