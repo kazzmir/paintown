@@ -69,6 +69,12 @@ Future
   - turn MugenSound objects collected from .snd file into something useable 
     within paintown's sound system 
 * mugen main system
-  - load in menus and subsystems
-  - load in fight.def info from mugen for the stage mechanics (i.e. Round indicators, 
+  - load in menus
+    - Character select
+    - Team Character select
+    - Option Menu (To an extent.... Mainly rely on paintowns system)
+    DONE - Storyboards
+    - load in fight.def info from mugen for the stage mechanics (i.e. Round indicators, 
     Round Ticker, Players Health and Power bars) etc.
+    DONE - Menuing system utilize paintowns menus to render itself and its options
+    - Each submenu subclass MenuOption to produce the arcade/versus/demo etc
