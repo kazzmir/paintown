@@ -61,15 +61,15 @@ struct MugenPlayerCell{
 
 class MugenCharacterSelect{
     public:
-	MugenCharacterSelect();
+	MugenCharacterSelect(const unsigned long int &ticker);
 	virtual ~MugenCharacterSelect();
 	
 	/*! load */
-	virtual void load(unsigned int &index, std::vector< MugenSection * > &collection, 
-			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites) throw (MugenException);
+	virtual void load(const std::string &selectFile, unsigned int &index, std::vector< MugenSection * > &collection, 
+			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites) throw (MugenException);
 	
 	/*! do logic, draw whatever */
-	virtual void run();	
+	virtual void run(Bitmap *work);	
     private:
 	//fadein.time = 10
 	//fadeout.time = 10
@@ -93,8 +93,10 @@ class MugenCharacterSelect{
 	int cellSpacing;
 	//cell.bg.spr = 150,0       ;Note: Don't use animation for cells
 	MugenSprite *cellBackgroundSprite;
+	Bitmap *cellBackgroundBitmap;
 	//cell.random.spr = 180,0   ;Icon for random select (don't use animation)
 	MugenSprite *cellRandomSprite;
+	Bitmap *cellRandomBitmap;
 	//cell.random.switchtime = 4;Time to wait before changing to another random portrait
 	int cellRandomSwitchTime;
 	//p1.cursor.startcell = 0,0
@@ -145,7 +147,7 @@ class MugenCharacterSelect{
 	MugenMenuPoint stagePosition;
 	MugenMenuFont stageActiveFont;
 	MugenMenuFont stageActiveFont2;
-	MugenMenuFont stageDone;
+	MugenMenuFont stageDoneFont;
 	/*
 	;Team menu
 	teammenu.move.wrapping = 1
@@ -195,6 +197,8 @@ class MugenCharacterSelect{
 	*/
 	// Select background
 	MugenBackgroundManager *background;
+	
+	const unsigned long int &selectTicker;
 };
 
 class MugenMenu : public Menu
@@ -298,6 +302,9 @@ class MugenMenu : public Menu
 	
 	// Intro
 	MugenStoryboard *intro;
+	
+	// Select Info
+	MugenCharacterSelect *characterSelect;
 	
 	// Cleanup
 	void cleanup();

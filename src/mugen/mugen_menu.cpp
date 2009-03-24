@@ -51,6 +51,308 @@ const int DEFAULT_HEIGHT = 240;
 const int DEFAULT_SCREEN_X_AXIS = 160;
 const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+MugenCharacterSelect::MugenCharacterSelect(const unsigned long int &ticker):
+cellBackgroundBitmap(0),
+cellRandomBitmap(0),
+selectTicker(ticker){
+}
+MugenCharacterSelect::~MugenCharacterSelect(){
+    if (cellBackgroundBitmap){
+	delete cellBackgroundBitmap;
+    }
+    if (cellRandomBitmap){
+	delete cellRandomBitmap;
+    }
+    if (p1Cursor.active){
+	delete p1Cursor.active;
+    }
+    if (p1Cursor.done){
+	delete p1Cursor.done;
+    }
+    if (p2Cursor.active){
+	delete p2Cursor.active;
+    }
+    if (p2Cursor.done){
+	delete p2Cursor.done;
+    }
+    if (background){
+	delete background;
+    }
+}
+void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &index, std::vector< MugenSection * > &collection, 
+			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites) throw (MugenException){
+    /* Extract info for our first section of our select screen */
+    for( ; index < collection.size(); ++index ){
+	std::string head = collection[index]->getHeader();
+	MugenUtil::fixCase(head);
+	if( head == "select info" ){ 
+	    while( collection[index]->hasItems() ){
+		MugenItemContent *content = collection[index]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		Global::debug(1) << "Got itemhead: '" << itemhead << "'" << endl;
+		if ( itemhead.find("fadein.time")!=std::string::npos ){
+		    int time;
+		    *content->getNext() >> time;
+		    fader.setFadeInTime(time);
+		} else if ( itemhead.find("fadein.color")!=std::string::npos ){
+		    int r,g,b;
+		    *content->getNext() >> r;
+		    *content->getNext() >> g;
+		    *content->getNext() >> b;
+		    fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+		} else if ( itemhead.find("fadeout.time")!=std::string::npos ){
+		    int time;
+		    *content->getNext() >> time;
+		    fader.setFadeOutTime(time);
+		} else if ( itemhead.find("fadeout.color")!=std::string::npos ){
+		    int r,g,b;
+		    *content->getNext() >> r;
+		    *content->getNext() >> g;
+		    *content->getNext() >> b;
+		    fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+		} else if ( itemhead.find("rows")!=std::string::npos ){
+		    *content->getNext() >> rows;
+		} else if ( itemhead.find("columns")!=std::string::npos ){
+		    *content->getNext() >> columns;
+		} else if ( itemhead.find("wrapping")!=std::string::npos ){
+		    *content->getNext() >> wrapping;
+		} else if ( itemhead.find("pos")!=std::string::npos ){
+		    *content->getNext() >> position.x;
+		    *content->getNext() >> position.y;
+		} else if ( itemhead.find("showemptyboxes")!=std::string::npos ){
+		    *content->getNext() >> showEmptyBoxes;
+		} else if ( itemhead.find("moveoveremptyboxes")!=std::string::npos ){
+		    *content->getNext() >> moveOverEmptyBoxes;
+		} else if ( itemhead.find("cell.size")!=std::string::npos ){
+		    *content->getNext() >> cellSize.x;
+		    *content->getNext() >> cellSize.y;
+		} else if ( itemhead.find("cell.spacing")!=std::string::npos ){
+		    *content->getNext() >> cellSpacing;
+		} else if ( itemhead.find("cell.bg.spr")!=std::string::npos ){
+		    int group, sprite;
+		    *content->getNext() >> group;
+		    *content->getNext() >> sprite;
+		    cellBackgroundSprite = sprites[group][sprite];
+		    cellBackgroundBitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) cellBackgroundSprite->pcx, cellBackgroundSprite->newlength, true));
+		} else if ( itemhead.find("cell.random.spr")!=std::string::npos ){
+		    int group, sprite;
+		    *content->getNext() >> group;
+		    *content->getNext() >> sprite;
+		    cellRandomSprite = sprites[group][sprite];
+		    cellRandomBitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) cellRandomSprite->pcx, cellRandomSprite->newlength, true));
+		} else if ( itemhead.find("cell.random.switchtime")!=std::string::npos ){
+		    *content->getNext() >> cellRandomSwitchTime;
+		} else if ( itemhead.find("p1.cursor.startcell")!=std::string::npos ){
+		    *content->getNext() >> p1Cursor.cursor.x;
+		    *content->getNext() >> p1Cursor.cursor.y;
+		} else if ( itemhead.find("p1.cursor.active.spr")!=std::string::npos ){
+		    int group, sprite;
+		    *content->getNext() >> group;
+		    *content->getNext() >> sprite;
+		    p1Cursor.cursorActiveSprite = sprites[group][sprite];
+		    p1Cursor.active = new Bitmap(Bitmap::memoryPCX((unsigned char*) p1Cursor.cursorActiveSprite->pcx, p1Cursor.cursorActiveSprite->newlength, true));
+		} else if ( itemhead.find("p1.cursor.done.spr")!=std::string::npos ){
+		    int group, sprite;
+		    *content->getNext() >> group;
+		    *content->getNext() >> sprite;
+		    p1Cursor.cursorDoneSprite = sprites[group][sprite];
+		    p1Cursor.done = new Bitmap(Bitmap::memoryPCX((unsigned char*) p1Cursor.cursorDoneSprite->pcx, p1Cursor.cursorDoneSprite->newlength, true));
+		} 
+		else if ( itemhead.find("p1.cursor.move.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("p1.cursor.done.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("p1.random.move.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("p2.cursor.startcell")!=std::string::npos ){
+		    *content->getNext() >> p2Cursor.cursor.x;
+		    *content->getNext() >> p2Cursor.cursor.y;
+		} if ( itemhead.find("p2.cursor.active.spr")!=std::string::npos ){
+		    int group, sprite;
+		    *content->getNext() >> group;
+		    *content->getNext() >> sprite;
+		    p2Cursor.cursorActiveSprite = sprites[group][sprite];
+		    p2Cursor.active = new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorActiveSprite->pcx, p2Cursor.cursorActiveSprite->newlength, true));
+		} else if ( itemhead.find("p2.cursor.done.spr")!=std::string::npos ){
+		    int group, sprite;
+		    *content->getNext() >> group;
+		    *content->getNext() >> sprite;
+		    p2Cursor.cursorDoneSprite = sprites[group][sprite];
+		    p2Cursor.done = new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorDoneSprite->pcx, p2Cursor.cursorDoneSprite->newlength, true));
+		} 
+		else if ( itemhead.find("p2.cursor.move.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("p2.cursor.done.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("p2.random.move.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("stage.move.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("stage.done.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("cancel.snd")!=std::string::npos ){ /* nothing */ }
+		else if ( itemhead.find("portrait.offset")!=std::string::npos ){
+		    *content->getNext() >> portraitOffset.x;
+		    *content->getNext() >> portraitOffset.y;
+		} else if ( itemhead.find("portrait.scale")!=std::string::npos ){
+		    *content->getNext() >> portraitScale.x;
+		    *content->getNext() >> portraitScale.y;
+		} else if ( itemhead.find("title.offset")!=std::string::npos ){
+		    *content->getNext() >> titleOffset.x;
+		    *content->getNext() >> titleOffset.y;
+		} else if ( itemhead.find("title.font")!=std::string::npos ){
+		    *content->getNext() >> titleFont.index;
+		    *content->getNext() >> titleFont.bank;
+		    *content->getNext() >> titleFont.position;
+		} else if ( itemhead.find("p1.face.offset")!=std::string::npos ){
+		    *content->getNext() >> p1Cursor.faceOffset.x;
+		    *content->getNext() >> p1Cursor.faceOffset.y;
+		} else if ( itemhead.find("p1.face.scale")!=std::string::npos ){
+		    *content->getNext() >> p1Cursor.faceScalex;
+		    *content->getNext() >> p1Cursor.faceScaley;
+		} else if ( itemhead.find("p1.face.facing")!=std::string::npos ){
+		    *content->getNext() >> p1Cursor.facing;
+		} else if ( itemhead.find("p2.face.offset")!=std::string::npos ){
+		    *content->getNext() >> p2Cursor.faceOffset.x;
+		    *content->getNext() >> p2Cursor.faceOffset.y;
+		} else if ( itemhead.find("p2.face.scale")!=std::string::npos ){
+		    *content->getNext() >> p2Cursor.faceScalex;
+		    *content->getNext() >> p2Cursor.faceScaley;
+		} else if ( itemhead.find("p2.face.facing")!=std::string::npos ){
+		    *content->getNext() >> p2Cursor.facing;
+		} else if ( itemhead.find("p1.name.offset")!=std::string::npos ){
+		    *content->getNext() >> p1Cursor.nameOffset.x;
+		    *content->getNext() >> p1Cursor.nameOffset.y;
+		}  else if ( itemhead.find("p1.name.font")!=std::string::npos ){
+		    *content->getNext() >> p1Cursor.nameFont.index;
+		    *content->getNext() >> p1Cursor.nameFont.bank;
+		    *content->getNext() >> p1Cursor.nameFont.position;
+		} else if ( itemhead.find("p2.name.offset")!=std::string::npos ){
+		    *content->getNext() >> p2Cursor.nameOffset.x;
+		    *content->getNext() >> p2Cursor.nameOffset.y;
+		} else if ( itemhead.find("p2.name.font")!=std::string::npos ){
+		    *content->getNext() >> p2Cursor.nameFont.index;
+		    *content->getNext() >> p2Cursor.nameFont.bank;
+		    *content->getNext() >> p2Cursor.nameFont.position;
+		} else if ( itemhead.find("stage.pos")!=std::string::npos ){
+		    *content->getNext() >> stagePosition.x;
+		    *content->getNext() >> stagePosition.y;
+		} else if ( itemhead.find("stage.active.font")!=std::string::npos ){
+		    *content->getNext() >> stageActiveFont.index;
+		    *content->getNext() >> stageActiveFont.bank;
+		    *content->getNext() >> stageActiveFont.position;
+		} else if ( itemhead.find("stage.active2.font")!=std::string::npos ){
+		    *content->getNext() >> stageActiveFont2.index;
+		    *content->getNext() >> stageActiveFont2.bank;
+		    *content->getNext() >> stageActiveFont2.position;
+		} else if ( itemhead.find("stage.done.font")!=std::string::npos ){
+		    *content->getNext() >> stageDoneFont.index;
+		    *content->getNext() >> stageDoneFont.bank;
+		    *content->getNext() >> stageDoneFont.position;
+		} else if ( itemhead.find("teammenu")!=std::string::npos ){ /* Ignore for now */ }
+		//else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
+	    }
+	}
+	else if( head == "selectbgdef" ){ 
+	    // Background management
+	    MugenBackgroundManager *manager = new MugenBackgroundManager(MugenUtil::getFileDir( selectFile ),collection, index,selectTicker,&sprites);
+	    background = manager;
+	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+	}
+	else {
+	    // Done collecting
+	    index--;
+	    break;
+	}
+    }
+    // Set up the animations for those that have action numbers assigned (not -1 )
+    // Also do their preload
+    if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
+}
+void MugenCharacterSelect::run(Bitmap *work){
+    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+    bool done = false;
+    
+    // Set the fade state
+    fader.setState(FADEIN);
+  
+    double runCounter = 0;
+    Global::speed_counter = 0;
+    Global::second_counter = 0;
+    int game_time = 100;
+    while ( ! done ){
+    
+	bool draw = false;
+	
+	keyInputManager::update();
+
+	if ( Global::speed_counter > 0 ){
+		draw = true;
+		runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+		while ( runCounter >= 1.0 ){
+		    runCounter -= 1;
+		    // Keys
+		    if (fader.getState() == NOFADE){
+			if ( keyInputManager::keyState(keys::UP, true ) ||
+				/* for vi people like me */
+			    keyInputManager::keyState('k', true )){
+			}
+
+			if ( keyInputManager::keyState(keys::DOWN, true ) ||
+				/* for vi people like me */
+			    keyInputManager::keyState('j', true )){
+			}
+			
+			if ( keyInputManager::keyState(keys::LEFT, true) ||
+			    keyInputManager::keyState('h', true)){
+			}
+			
+			if ( keyInputManager::keyState(keys::RIGHT, true )||
+			    keyInputManager::keyState('l', true )){
+			}
+			
+			if ( keyInputManager::keyState(keys::ENTER, true ) ){
+			    
+			}
+			
+			if ( keyInputManager::keyState(keys::ESC, true ) ){
+			    done = true;
+			}
+		    }
+		    // Fader
+		    fader.act();
+		    
+		    // Backgrounds
+		    background->logic( 0, 0, 0, 0 );
+		}
+		
+		Global::speed_counter = 0;
+	}
+		
+	while ( Global::second_counter > 0 ){
+		game_time--;
+		Global::second_counter--;
+		if ( game_time < 0 ){
+			game_time = 0;
+		}
+	}
+
+	if ( draw ){
+		// backgrounds
+		background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+		// Stuff
+		
+		// Foregrounds
+		background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+		// Do fades
+		fader.draw(&workArea);
+		// Finally render to screen
+		workArea.Stretch(*work);
+		work->BlitToScreen();
+	}
+
+	while ( Global::speed_counter < 1 ){
+		Util::rest( 1 );
+		keyInputManager::update();
+	}
+    }
+	
+}
+
 MugenMenu::MugenMenu(const std::string &filename):
 optionLocation(0),
 location(filename),
@@ -92,7 +394,7 @@ void MugenMenu::load() throw (MugenException){
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
-    /* Extract info for our first section of our stage */
+    /* Extract info for our first section of our menu */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
 	MugenUtil::fixCase(head);
@@ -333,7 +635,16 @@ void MugenMenu::load() throw (MugenException){
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
 	}
-	else if( head == "select info" ){ /* Ignore for now */ }
+	else if( head == "select info" ){ 
+	    // Pass off to selectInfo
+	    characterSelect = new MugenCharacterSelect(ticker);
+	    try{
+		characterSelect->load(selectFile,i,collection,sprites);
+	    }
+	    catch (MugenException &ex){
+		throw MugenException(ex);
+	    }
+	}
 	else if( head == "selectbgdef" ){ /* Ignore for now */ }
 	else if( head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
 	else if( head == "music" ){ /* Ignore for now */ }
@@ -527,6 +838,7 @@ void MugenMenu::run(){
 			    ok->play();
 			}*/
 			(*selectedOption)->run(endGame);
+			characterSelect->run(work);
 		    } catch ( const ReturnException & re ){
 		    }
 		    // Reset it's state
@@ -572,6 +884,9 @@ void MugenMenu::cleanup(){
     
     //Backgrounds
     if (background) delete background;
+    
+    // Character select
+    if (characterSelect) delete characterSelect;
     
     // Get rid of items
     for(std::vector <MenuOption *>::iterator b = menuOptions.begin();b!=menuOptions.end();++b){
