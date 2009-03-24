@@ -51,10 +51,11 @@ const int DEFAULT_HEIGHT = 240;
 const int DEFAULT_SCREEN_X_AXIS = 160;
 const int DEFAULT_SCREEN_Y_AXIS = 0;
 
-MugenCharacterSelect::MugenCharacterSelect(const unsigned long int &ticker):
+MugenCharacterSelect::MugenCharacterSelect(const unsigned long int &ticker, std::vector<MugenFont *> &fonts):
 cellBackgroundBitmap(0),
 cellRandomBitmap(0),
-selectTicker(ticker){
+selectTicker(ticker),
+fonts(fonts){
 }
 MugenCharacterSelect::~MugenCharacterSelect(){
     if (cellBackgroundBitmap){
@@ -77,6 +78,13 @@ MugenCharacterSelect::~MugenCharacterSelect(){
     }
     if (background){
 	delete background;
+    }
+    for (std::vector< std::vector< MugenCell *> >::iterator i = cells.begin(); i != cells.end(); ++i){
+	std::vector< MugenCell *> &row = *i;
+	for (std::vector< MugenCell *>::iterator c = row.begin(); c != row.end(); ++c){
+	    MugenCell *cell = *c;
+	    if (cell) delete cell;
+	}
     }
 }
 void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &index, std::vector< MugenSection * > &collection, 
@@ -259,11 +267,31 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 	    break;
 	}
     }
+    fonts = fonts;
+    // Set up cell table
+    MugenMenuPoint currentPosition;
+    currentPosition.y = position.y;
+    for (int row = 0; row < rows; ++row){
+	currentPosition.x = position.x;
+	std::vector< MugenCell *> cellRow;
+	for (int column = 0; column < columns; ++column){
+	    MugenCell *cell = new MugenCell;
+	    cell->position.x = currentPosition.x;
+	    cell->position.y = currentPosition.y;
+	    cell->portrait = 0;
+	    cell->random = true;
+	    cell->empty = true;
+	    cellRow.push_back(cell);
+	    currentPosition.x += cellSize.x + cellSpacing;
+	}
+	cells.push_back(cellRow);
+	currentPosition.y += cellSize.y + cellSpacing;
+    }
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
     if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
 }
-void MugenCharacterSelect::run(Bitmap *work){
+void MugenCharacterSelect::run(const std::string &title, Bitmap *work){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     
@@ -335,6 +363,9 @@ void MugenCharacterSelect::run(Bitmap *work){
 	if ( draw ){
 		// backgrounds
 		background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+		// Draw title
+		MugenFont *font = fonts[titleFont.index-1];
+		font->render(titleOffset.x, titleOffset.y, titleFont.position, titleFont.bank, workArea, title);
 		// Stuff
 		drawCursors(&workArea);
 		// Foregrounds
@@ -367,6 +398,9 @@ void MugenCharacterSelect::drawCursors(Bitmap *work){
 	}
 	currentPosition.y += cellSize.y + cellSpacing;
     }
+    
+    // Player cursors player 1
+    p1Cursor.active->draw(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.x,cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.y,*work);
 }
 
 MugenMenu::MugenMenu(const std::string &filename):
@@ -396,16 +430,6 @@ void MugenMenu::load() throw (MugenException){
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate menu definition file for: " + location );
     
-    std::string filesdir = "";
-    
-    size_t strloc = location.find_last_of("/");
-    if (strloc != std::string::npos){
-	filesdir = location.substr(0, strloc);
-	filesdir += "/";
-    }
-    
-    Global::debug(1) << "Got subdir: " << filesdir << endl;
-     
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
@@ -555,6 +579,15 @@ void MugenMenu::load() throw (MugenException){
 				    addOption(dummy);
 			    }
 		       }
+		   } else if (itemhead == "menu.itemname.teamversus"){
+		       if (content->hasItems()){
+			    std::string temp;
+			    *content->getNext() >> temp;
+			    if (!temp.empty()){
+				    OptionDummy *dummy = new OptionDummy(temp);
+				    addOption(dummy);
+			    }
+		       }
 		   } else if (itemhead == "menu.itemname.teamcoop"){
 		       if (content->hasItems()){
 			    std::string temp;
@@ -653,7 +686,7 @@ void MugenMenu::load() throw (MugenException){
 	}
 	else if( head == "select info" ){ 
 	    // Pass off to selectInfo
-	    characterSelect = new MugenCharacterSelect(ticker);
+	    characterSelect = new MugenCharacterSelect(ticker,fonts);
 	    try{
 		characterSelect->load(selectFile,i,collection,sprites);
 	    }
@@ -854,7 +887,7 @@ void MugenMenu::run(){
 			    ok->play();
 			}*/
 			(*selectedOption)->run(endGame);
-			characterSelect->run(work);
+			characterSelect->run((*selectedOption)->getText(), work);
 		    } catch ( const ReturnException & re ){
 		    }
 		    // Reset it's state
@@ -935,10 +968,6 @@ void MugenMenu::drawText(Bitmap *bmp){
 	MenuOption *option = *i;
 	if (option->getState() == MenuOption::Selected){
 	    MugenFont *font = fonts[fontActive.index-1];
-	    font->changeBank(fontActive.bank);
-	    const int height = font->getHeight();
-	    const int length = font->textLength(option->getText().c_str());
-	    
 	    if(showBoxCursor){
 		boxCursorCoords.alpha += boxCursorCoords.alphaMove;
 		if (boxCursorCoords.alpha <= 0){
@@ -954,38 +983,12 @@ void MugenMenu::drawText(Bitmap *bmp){
 		bmp->rectangleFill(xplacement + boxCursorCoords.x1, yplacement + boxCursorCoords.y1, xplacement + boxCursorCoords.x2,yplacement + boxCursorCoords.y2,Bitmap::makeColor(255,255,255));
 		Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    }
-	    
-	    switch (fontActive.position){
-		case -1:
-		    font->printf(xplacement - length, yplacement - height, 0, *bmp, option->getText(),0);
-		    break;
-		case 1:
-		    font->printf(xplacement, yplacement - height, 0, *bmp, option->getText(),0);
-		    break;
-		case 0:
-		default:
-		    font->printf(xplacement - (length/2), yplacement - height, 0, *bmp, option->getText(),0);
-		    break;
-	    }
+	    font->render(xplacement, yplacement, fontActive.position, fontActive.bank, *bmp, option->getText());
 	    xplacement += fontSpacing.x;
 	    yplacement += fontSpacing.y;
 	} else {
 	    MugenFont *font = fonts[fontItem.index-1];
-	    font->changeBank(fontItem.bank);
-	    const int height = font->getHeight();
-	    const int length = font->textLength(option->getText().c_str());
-	    switch (fontActive.position){
-		case -1:
-		    font->printf(xplacement - length, yplacement - height, 0, *bmp, option->getText(),0);
-		    break;
-		case 1:
-		    font->printf(xplacement, yplacement - height, 0, *bmp, option->getText(),0);
-		    break;
-		case 0:
-		default:
-		    font->printf(xplacement - (length/2), yplacement - height, 0, *bmp, option->getText(),0);
-		    break;
-	    }
+	    font->render(xplacement, yplacement, fontItem.position, fontItem.bank, *bmp, option->getText());
 	    xplacement += fontSpacing.x;
 	    yplacement += fontSpacing.y;
 	}

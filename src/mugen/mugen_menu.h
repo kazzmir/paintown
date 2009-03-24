@@ -54,14 +54,25 @@ struct MugenPlayerCell{
     double faceScalex;
     double faceScaley;
     int facing;
+    bool selecting;
+    bool show;
     // Name
     MugenMenuPoint nameOffset;
     MugenMenuFont nameFont;
 };
 
+struct MugenCell{
+    // Location
+    MugenMenuPoint position;
+    Bitmap *portrait;
+    std::string name;
+    bool random;
+    bool empty;
+};
+
 class MugenCharacterSelect{
     public:
-	MugenCharacterSelect(const unsigned long int &ticker);
+	MugenCharacterSelect(const unsigned long int &ticker, std::vector<MugenFont *> &fonts);
 	virtual ~MugenCharacterSelect();
 	
 	/*! load */
@@ -69,7 +80,7 @@ class MugenCharacterSelect{
 			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites) throw (MugenException);
 	
 	/*! do logic, draw whatever */
-	virtual void run(Bitmap *work);	
+	virtual void run(const std::string &title, Bitmap *work);	
     private:
 	//fadein.time = 10
 	//fadeout.time = 10
@@ -200,7 +211,11 @@ class MugenCharacterSelect{
 	
 	const unsigned long int &selectTicker;
 	
+	std::vector< std::vector< MugenCell *> > cells;
+	
 	void drawCursors(Bitmap *work);
+	
+	std::vector<MugenFont *> &fonts;
 };
 
 class MugenMenu : public Menu

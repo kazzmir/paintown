@@ -186,6 +186,24 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
     }
 }
 
+void MugenFont::render( int x, int y, int position, int bank, const Bitmap & work, const string & str ){
+    changeBank(bank);
+    const int height = getHeight();
+    const int length = textLength(str.c_str());
+    switch (position){
+	case -1:
+	    printf(x - length, y - height, 0, work, str,0);
+	    break;
+	case 1:
+	    printf(x, y - height, 0, work, str,0);
+	    break;
+	case 0:
+	default:
+	    printf(x - (length/2), y - height, 0, work, str,0);
+	    break;
+    }
+}
+
 /* get a pointer to a specific bank. bank numbers start from 0 */
 unsigned char * MugenFont::findBank(int bank){
     return pcx + pcxsize - ((bank+1) * colors * 3);

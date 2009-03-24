@@ -41,6 +41,8 @@ public:
 
     virtual void printf( int x, int y, int color, const Bitmap & work, const string & str, int marker, ... ) const;
     
+    virtual void render( int x, int y, int position, int bank, const Bitmap & work, const string & str );
+    
     virtual void changeBank(int bank);
     
     inline int getCurrentBank() { return currentBank; };
