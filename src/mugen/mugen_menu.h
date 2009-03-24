@@ -199,6 +199,8 @@ class MugenCharacterSelect{
 	MugenBackgroundManager *background;
 	
 	const unsigned long int &selectTicker;
+	
+	void drawCursors(Bitmap *work);
 };
 
 class MugenMenu : public Menu
