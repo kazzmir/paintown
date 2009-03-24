@@ -35,6 +35,7 @@ volatile int Global::second_counter = 0;
  */
 static const int TICS_PER_SECOND = 40;
 const double Global::LOGIC_MULTIPLIER = (double) 90 / (double) TICS_PER_SECOND;
+const char * Global::shutdown_message = "Shutting down..";
         
 pthread_mutex_t Global::loading_screen_mutex;
 bool Global::done_loading = false;
@@ -54,6 +55,7 @@ END_OF_FUNCTION( inc_second_counter );
 
 #ifndef ALLEGRO_WINDOWS
 static void handleSigSegV(int i, siginfo_t * sig, void * data){
+    Global::shutdown_message = "Bug! Caught a memory violation. Shutting down..";
     Bitmap::setGfxModeText();
     allegro_exit();
     /* write to a log file or something because sigsegv shouldn't
@@ -92,6 +94,10 @@ static void registerSignals(){
 	sigaction( SIGUSR1, &action, NULL );
 	*/
 #endif
+}
+
+static void say_shutdown(){
+    Global::debug(0) << Global::shutdown_message << endl;
 }
 
 static void close_paintown(){
@@ -151,6 +157,7 @@ bool Global::init( int gfx ){
         set_close_button_callback(close_paintown);
 	
         /* music */
+        atexit(say_shutdown);
 	atexit( &dumb_exit );
 	atexit( Network::closeAll );
 	dumb_register_packfiles();

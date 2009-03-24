@@ -23,6 +23,7 @@ namespace Global{
 	
 	extern const int WINDOWED;
 	extern const int FULLSCREEN;
+        extern const char * shutdown_message;
 
 	bool init( int gfx );
 }
