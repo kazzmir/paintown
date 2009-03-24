@@ -46,6 +46,7 @@ struct MugenPlayerCell{
     MugenSprite *cursorActiveSprite;
     MugenSprite *cursorDoneSprite;
     bool blink;
+    int blinkCounter;
     // The bitmaps
     Bitmap *active;
     Bitmap *done;
@@ -214,6 +215,10 @@ class MugenCharacterSelect{
 	std::vector< std::vector< MugenCell *> > cells;
 	
 	void drawCursors(Bitmap *work);
+	
+	void movePlayer1Cursor(int x, int y);
+	
+	void movePlayer2Cursor(int x, int y);
 	
 	std::vector<MugenFont *> &fonts;
 };

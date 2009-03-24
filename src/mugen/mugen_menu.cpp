@@ -186,6 +186,9 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 		    *content->getNext() >> sprite;
 		    p2Cursor.cursorDoneSprite = sprites[group][sprite];
 		    p2Cursor.done = new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorDoneSprite->pcx, p2Cursor.cursorDoneSprite->newlength, true));
+		} else if ( itemhead == "p2.cursor.blink"){
+		    *content->getNext() >> p2Cursor.blink;
+		    p2Cursor.blinkCounter = 0;
 		} 
 		else if ( itemhead == "p2.cursor.move.snd"){ /* nothing */ }
 		else if ( itemhead == "p2.cursor.done.snd"){ /* nothing */ }
@@ -318,19 +321,23 @@ void MugenCharacterSelect::run(const std::string &title, Bitmap *work){
 			if ( keyInputManager::keyState(keys::UP, true ) ||
 				/* for vi people like me */
 			    keyInputManager::keyState('k', true )){
+			    movePlayer1Cursor(-1,0);
 			}
 
 			if ( keyInputManager::keyState(keys::DOWN, true ) ||
 				/* for vi people like me */
 			    keyInputManager::keyState('j', true )){
+			    movePlayer1Cursor(1,0);
 			}
 			
 			if ( keyInputManager::keyState(keys::LEFT, true) ||
 			    keyInputManager::keyState('h', true)){
+			    movePlayer1Cursor(0,-1);
 			}
 			
 			if ( keyInputManager::keyState(keys::RIGHT, true )||
 			    keyInputManager::keyState('l', true )){
+			    movePlayer1Cursor(0,1);
 			}
 			
 			if ( keyInputManager::keyState(keys::ENTER, true ) ){
@@ -401,6 +408,221 @@ void MugenCharacterSelect::drawCursors(Bitmap *work){
     
     // Player cursors player 1
     p1Cursor.active->draw(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.x,cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.y,*work);
+    Global::debug(0) << "p1x: " << p1Cursor.cursor.x << " | p1y: " << p1Cursor.cursor.y << " | p2x: " << p2Cursor.cursor.x << "p2y: " << p2Cursor.cursor.y <<  endl;
+    // Player cursors player 2
+    if (p2Cursor.blink && ((p1Cursor.cursor.x == p2Cursor.cursor.x) && (p1Cursor.cursor.y == p2Cursor.cursor.y))){
+	if (p2Cursor.blinkCounter % 2 == 0){
+	    p2Cursor.active->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
+	}
+	p2Cursor.blinkCounter++;
+	if (p2Cursor.blinkCounter == 10){
+	    p2Cursor.blinkCounter = 0;
+	}
+    } else {
+	p2Cursor.active->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
+    }
+}
+
+void MugenCharacterSelect::movePlayer1Cursor(int x, int y){
+    if (x > 0){
+	if (moveOverEmptyBoxes){
+	    p1Cursor.cursor.x += x;
+	    if (wrapping && p1Cursor.cursor.x >= rows){
+		p1Cursor.cursor.x = 0;
+	    } else if (p1Cursor.cursor.x >= rows) {
+		p1Cursor.cursor.x = rows-1;
+	    }
+	}
+	else {
+	    int curx = p1Cursor.cursor.x;
+	    while (!cells[curx][p1Cursor.cursor.y]->empty){
+		curx+=x;
+		if (wrapping && curx >= rows){
+		    curx = 0;
+		} else if (curx >= rows) {
+		    curx = p1Cursor.cursor.x;
+		}
+		if (curx == p1Cursor.cursor.x){
+		    break;
+		}
+	    }
+	    p1Cursor.cursor.x = curx;
+	}
+    } else if (x < 0){
+	if (moveOverEmptyBoxes){
+	    p1Cursor.cursor.x += x;
+	    if (wrapping && p1Cursor.cursor.x < 0){
+		p1Cursor.cursor.x = rows-1;
+	    } else if (p1Cursor.cursor.x < 0) {
+		p1Cursor.cursor.x = 0;
+	    }
+	}
+	else {
+	    int curx = p1Cursor.cursor.x;
+	    while (!cells[curx][p1Cursor.cursor.y]->empty){
+		curx+=x;
+		if (wrapping && curx < 0){
+		    curx = rows-1;
+		} else if (curx < 0) {
+		    curx = p1Cursor.cursor.x;
+		}
+		if (curx == p1Cursor.cursor.x){
+		    break;
+		}
+	    }
+	    p1Cursor.cursor.x = curx;
+	}
+    }
+    if (y > 0){
+	if (moveOverEmptyBoxes){
+	    p1Cursor.cursor.y += y;
+	    if (wrapping && p1Cursor.cursor.y >= columns){
+		p1Cursor.cursor.y = 0;
+	    } else if (p1Cursor.cursor.y >= columns) {
+		p1Cursor.cursor.y = columns-1;
+	    }
+	}
+	else {
+	    int cury = p1Cursor.cursor.y;
+	    while (!cells[p1Cursor.cursor.x][cury]->empty){
+		cury+=y;
+		if (wrapping && cury >= columns){
+		    cury = 0;
+		} else if (cury >= columns) {
+		    cury = p1Cursor.cursor.y;
+		}
+		if (cury == p1Cursor.cursor.y){
+		    break;
+		}
+	    }
+	    p1Cursor.cursor.y = cury;
+	}
+    } else if (y < 0){
+	if (moveOverEmptyBoxes){
+	    p1Cursor.cursor.y += y;
+	    if (wrapping && p1Cursor.cursor.y < 0){
+		p1Cursor.cursor.y = columns-1;
+	    } else if (p1Cursor.cursor.y < 0) {
+		p1Cursor.cursor.y = 0;
+	    }
+	}
+	else {
+	    int cury = p1Cursor.cursor.y;
+	    while (!cells[p1Cursor.cursor.x][cury]->empty){
+		cury+=y;
+		if (wrapping && cury < 0){
+		    cury = columns-1;
+		} else if (cury < 0) {
+		    cury = p1Cursor.cursor.y;
+		}
+		if (cury == p1Cursor.cursor.y){
+		    break;
+		}
+	    }
+	    p1Cursor.cursor.y = cury;
+	}
+    }
+}
+
+void MugenCharacterSelect::movePlayer2Cursor(int x, int y){
+    if (x > 0){
+	if (moveOverEmptyBoxes){
+	    p2Cursor.cursor.x += x;
+	    if (wrapping && p2Cursor.cursor.x >= rows){
+		p2Cursor.cursor.x = 0;
+	    } else if (p2Cursor.cursor.x >= rows) {
+		p2Cursor.cursor.x = rows-1;
+	    }
+	}
+	else {
+	    int curx = p2Cursor.cursor.x;
+	    while (!cells[curx][p2Cursor.cursor.y]->empty){
+		curx+=x;
+		if (wrapping && curx >= rows){
+		    curx = 0;
+		} else if (curx >= rows) {
+		    curx = p2Cursor.cursor.x;
+		}
+		if (curx == p2Cursor.cursor.x){
+		    break;
+		}
+	    }
+	    p2Cursor.cursor.x = curx;
+	}
+    } else if (x < 0){
+	if (moveOverEmptyBoxes){
+	    p2Cursor.cursor.x += x;
+	    if (wrapping && p2Cursor.cursor.x < 0){
+		p2Cursor.cursor.x = rows-1;
+	    } else if (p2Cursor.cursor.x < 0) {
+		p2Cursor.cursor.x = 0;
+	    }
+	}
+	else {
+	    int curx = p2Cursor.cursor.x;
+	    while (!cells[curx][p2Cursor.cursor.y]->empty){
+		curx+=x;
+		if (wrapping && curx < 0){
+		    curx = rows-1;
+		} else if (curx < 0) {
+		    curx = p2Cursor.cursor.x;
+		}
+		if (curx == p2Cursor.cursor.x){
+		    break;
+		}
+	    }
+	    p2Cursor.cursor.x = curx;
+	}
+    }
+    if (y > 0){
+	if (moveOverEmptyBoxes){
+	    p2Cursor.cursor.y += y;
+	    if (wrapping && p2Cursor.cursor.y >= columns){
+		p2Cursor.cursor.y = 0;
+	    } else if (p2Cursor.cursor.y >= columns) {
+		p2Cursor.cursor.y = columns-1;
+	    }
+	}
+	else {
+	    int cury = p2Cursor.cursor.y;
+	    while (!cells[p2Cursor.cursor.x][cury]->empty){
+		cury+=y;
+		if (wrapping && cury >= columns){
+		    cury = 0;
+		} else if (cury >= columns) {
+		    cury = p2Cursor.cursor.y;
+		}
+		if (cury == p2Cursor.cursor.y){
+		    break;
+		}
+	    }
+	    p2Cursor.cursor.y = cury;
+	}
+    } else if (y < 0){
+	if (moveOverEmptyBoxes){
+	    p2Cursor.cursor.y += y;
+	    if (wrapping && p2Cursor.cursor.y < 0){
+		p2Cursor.cursor.y = columns-1;
+	    } else if (p2Cursor.cursor.y < 0) {
+		p2Cursor.cursor.y = 0;
+	    }
+	}
+	else {
+	    int cury = p2Cursor.cursor.y;
+	    while (!cells[p2Cursor.cursor.x][cury]->empty){
+		cury+=y;
+		if (wrapping && cury < 0){
+		    cury = columns-1;
+		} else if (cury < 0) {
+		    cury = p2Cursor.cursor.y;
+		}
+		if (cury == p2Cursor.cursor.y){
+		    break;
+		}
+	    }
+	    p2Cursor.cursor.y = cury;
+	}
+    }
 }
 
 MugenMenu::MugenMenu(const std::string &filename):
