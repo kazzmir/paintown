@@ -408,7 +408,6 @@ void MugenCharacterSelect::drawCursors(Bitmap *work){
     
     // Player cursors player 1
     p1Cursor.active->draw(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.x,cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.y,*work);
-    Global::debug(0) << "p1x: " << p1Cursor.cursor.x << " | p1y: " << p1Cursor.cursor.y << " | p2x: " << p2Cursor.cursor.x << "p2y: " << p2Cursor.cursor.y <<  endl;
     // Player cursors player 2
     if (p2Cursor.blink && ((p1Cursor.cursor.x == p2Cursor.cursor.x) && (p1Cursor.cursor.y == p2Cursor.cursor.y))){
 	if (p2Cursor.blinkCounter % 2 == 0){
