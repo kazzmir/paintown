@@ -63,7 +63,7 @@ static void handleSigSegV(int i, siginfo_t * sig, void * data){
     /* write to a log file or something because sigsegv shouldn't
      * normally happen.
      */
-    exit(0);
+    exit(1);
 }
 #else
 #endif
