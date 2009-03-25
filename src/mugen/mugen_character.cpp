@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "util/funcs.h"
+#include "util/bitmap.h"
 
 #include "mugen_animation.h"
 #include "mugen_item.h"
@@ -39,6 +40,13 @@ MugenCharacter::~MugenCharacter(){
      // Get rid of sprites
     for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
+    }
+    
+     // Get rid of bitmaps
+    for( std::map< unsigned int, std::map< unsigned int, Bitmap * > >::iterator i = bitmaps.begin() ; i != bitmaps.end() ; ++i ){
+      for( std::map< unsigned int, Bitmap * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }
@@ -187,6 +195,28 @@ void MugenCharacter::load() throw( MugenException ){
     Global::debug(1) << "Reading Snd (sound) Data..." << endl; 
     /* Sounds */
     MugenUtil::readSounds( MugenUtil::fixFileName( baseDir, sndFile ), sounds );
+}
+
+// Render sprite
+void MugenCharacter::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp , 
+				   const int flip, const double scalex, const double scaley ){
+    MugenSprite *sprite = sprites[group][image];
+    if (sprite){
+	Bitmap *bitmap = bitmaps[group][image];
+	if (!bitmap){
+	    bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
+	    bitmaps[group][image] = bitmap;
+	}
+	if (flip == 1){
+	    bitmap->drawStretched(x + sprite->x,y + sprite->y, (int)(bitmap->getWidth() * scalex), (int)(bitmap->getHeight() * scaley), *bmp);
+	} else if (flip == -1){
+	    // temp bitmap to flip and crap
+	    Bitmap temp = Bitmap::temporaryBitmap(bitmap->getWidth(), bitmap->getHeight());
+	    temp.fill(Bitmap::MaskColor);
+	    bitmap->drawHFlip(0,0,temp);
+	    temp.drawStretched(x + sprite->x,y + sprite->y, (int)(bitmap->getWidth() * scalex), (int)(bitmap->getHeight() * scaley), *bmp);
+	}
+    }
 }
 
 // animations

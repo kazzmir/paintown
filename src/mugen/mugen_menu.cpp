@@ -36,6 +36,7 @@
 
 #include "mugen_animation.h"
 #include "mugen_background.h"
+#include "mugen_character.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
@@ -85,6 +86,10 @@ MugenCharacterSelect::~MugenCharacterSelect(){
 	    MugenCell *cell = *c;
 	    if (cell) delete cell;
 	}
+    }
+    
+    for (std::vector< MugenCharacter *>::iterator c = characters.begin(); c != characters.end(); ++c){
+	    if (*c) delete (*c);
     }
 }
 void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &index, std::vector< MugenSection * > &collection, 
@@ -281,8 +286,8 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 	    MugenCell *cell = new MugenCell;
 	    cell->position.x = currentPosition.x;
 	    cell->position.y = currentPosition.y;
-	    cell->portrait = 0;
-	    cell->random = true;
+	    cell->character = 0;
+	    cell->random = false;
 	    cell->empty = true;
 	    cellRow.push_back(cell);
 	    currentPosition.x += cellSize.x + cellSpacing;
@@ -290,6 +295,9 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 	cells.push_back(cellRow);
 	currentPosition.y += cellSize.y + cellSpacing;
     }
+    // Now load up our characters
+    loadCharacters(selectFile);
+    
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
     if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
@@ -398,7 +406,16 @@ void MugenCharacterSelect::drawCursors(Bitmap *work){
     for (int row = 0; row < rows; ++row){
 	currentPosition.x = position.x;
 	for (int column = 0; column < columns; ++column){
-	    if (showEmptyBoxes){
+	    MugenCell *cell = cells[row][column];
+	    if (!cell->empty){
+		if (!cell->random){
+		    cell->character->renderSprite(cell->position.x,cell->position.y,9000,0,work);
+		    cellBackgroundBitmap->draw(currentPosition.x,currentPosition.y,*work);
+		} else {
+		    cellRandomBitmap->draw(cell->position.x,cell->position.y,*work);
+		    cellBackgroundBitmap->draw(currentPosition.x,currentPosition.y,*work);
+		}
+	    } else if (showEmptyBoxes){
 		cellBackgroundBitmap->draw(currentPosition.x,currentPosition.y,*work);
 	    }
 	    currentPosition.x += cellSize.x + cellSpacing;
@@ -408,6 +425,19 @@ void MugenCharacterSelect::drawCursors(Bitmap *work){
     
     // Player cursors player 1
     p1Cursor.active->draw(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.x,cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.y,*work);
+    if ( !cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->empty ){
+	MugenCell *cell = cells[p1Cursor.cursor.x][p1Cursor.cursor.y];
+	if (!cell->empty){
+	    if (!cell->random){
+		// Portrait
+		cell->character->renderSprite(p1Cursor.faceOffset.x,p1Cursor.faceOffset.y,9000,1,work,p1Cursor.facing, p1Cursor.faceScalex,p1Cursor.faceScaley);
+		// Name
+		MugenFont *font = fonts[p1Cursor.nameFont.index-1];
+		font->render(p1Cursor.nameOffset.x, p1Cursor.nameOffset.y, p1Cursor.nameFont.position, p1Cursor.nameFont.bank, *work, cell->character->getName());
+	    } else {
+	    }
+	}
+    }
     // Player cursors player 2
     if (p2Cursor.blink && ((p1Cursor.cursor.x == p2Cursor.cursor.x) && (p1Cursor.cursor.y == p2Cursor.cursor.y))){
 	if (p2Cursor.blinkCounter % 2 == 0){
@@ -419,6 +449,19 @@ void MugenCharacterSelect::drawCursors(Bitmap *work){
 	}
     } else {
 	p2Cursor.active->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
+    }
+    if ( !cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->empty ){
+	MugenCell *cell = cells[p2Cursor.cursor.x][p2Cursor.cursor.y];
+	if (!cell->empty){
+	    if (!cell->random){
+		// Portrait
+		cell->character->renderSprite(p2Cursor.faceOffset.x,p2Cursor.faceOffset.y,9000,1,work,p2Cursor.facing, p2Cursor.faceScalex,p2Cursor.faceScaley);
+		// Name
+		MugenFont *font = fonts[p2Cursor.nameFont.index-1];
+		font->render(p2Cursor.nameOffset.x, p2Cursor.nameOffset.y, p2Cursor.nameFont.position, p2Cursor.nameFont.bank, *work, cell->character->getName());
+	    } else {
+	    }
+	}
     }
 }
 
@@ -445,7 +488,7 @@ void MugenCharacterSelect::movePlayer1Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    p1Cursor.cursor.x = curx;
+	    if (!cells[curx][p1Cursor.cursor.y]->empty)p1Cursor.cursor.x = curx;
 	}
     } else if (x < 0){
 	if (moveOverEmptyBoxes){
@@ -469,7 +512,7 @@ void MugenCharacterSelect::movePlayer1Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    p1Cursor.cursor.x = curx;
+	    if (!cells[curx][p1Cursor.cursor.y]->empty)p1Cursor.cursor.x = curx;
 	}
     }
     if (y > 0){
@@ -494,7 +537,7 @@ void MugenCharacterSelect::movePlayer1Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    p1Cursor.cursor.y = cury;
+	    if (!cells[p1Cursor.cursor.x][cury]->empty)p1Cursor.cursor.y = cury;
 	}
     } else if (y < 0){
 	if (moveOverEmptyBoxes){
@@ -518,7 +561,7 @@ void MugenCharacterSelect::movePlayer1Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    p1Cursor.cursor.y = cury;
+	    if (!cells[p1Cursor.cursor.x][cury]->empty)p1Cursor.cursor.y = cury;
 	}
     }
 }
@@ -546,7 +589,7 @@ void MugenCharacterSelect::movePlayer2Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    p2Cursor.cursor.x = curx;
+	    if (!cells[curx][p2Cursor.cursor.y]->empty)p2Cursor.cursor.x = curx;
 	}
     } else if (x < 0){
 	if (moveOverEmptyBoxes){
@@ -570,7 +613,7 @@ void MugenCharacterSelect::movePlayer2Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    p2Cursor.cursor.x = curx;
+	    if (!cells[curx][p2Cursor.cursor.y]->empty)p2Cursor.cursor.x = curx;
 	}
     }
     if (y > 0){
@@ -595,7 +638,7 @@ void MugenCharacterSelect::movePlayer2Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    p2Cursor.cursor.y = cury;
+	    if (!cells[p1Cursor.cursor.x][cury]->empty)p2Cursor.cursor.y = cury;
 	}
     } else if (y < 0){
 	if (moveOverEmptyBoxes){
@@ -619,8 +662,62 @@ void MugenCharacterSelect::movePlayer2Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    p2Cursor.cursor.y = cury;
+	    if (!cells[p1Cursor.cursor.x][cury]->empty)p2Cursor.cursor.y = cury;
 	}
+    }
+}
+
+void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (MugenException){
+    std::string dir = MugenUtil::getFileDir(selectFile);
+    std::string file = MugenUtil::stripDir(selectFile);
+    MugenReader reader( MugenUtil::getCorrectFileLocation(dir,file) );
+    std::vector< MugenSection * > collection;
+    collection = reader.getCollection();
+    
+    /* Extract info for our first section of our menu */
+    for( unsigned int i = 0; i < collection.size(); ++i ){
+	std::string head = collection[i]->getHeader();
+	MugenUtil::fixCase(head);
+	if( head == "characters" ){
+	    int row = 0;
+	    int column = 0;
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		if (itemhead=="random"){
+		    // set random flag
+		    cells[row][column]->random = true;
+		    cells[row][column]->empty = false;
+		} else {
+		    // Get character
+		    MugenCharacter *character = new MugenCharacter(itemhead);
+		    try{
+			character->load();
+		    } catch (MugenException &ex){
+			throw MugenException(ex);
+		    }
+		    characters.push_back(character);
+		    // set cell 
+		    cells[row][column]->character = character;
+		    cells[row][column]->empty = false;
+		}
+		column++;
+		if (column >=columns){
+		    column = 0;
+		    row++;
+		    // Have we met our quota?
+		    if (row >= rows){
+			// can't add any more characters... breakage
+			break;
+		    }
+		}
+	    }
+	}
+	else if( head == "extrastages" ){ /* ignore for now */}
+	else if( head == "options" ){ /* ignore for now */}
+	else throw MugenException( "Unhandled Section in '" + selectFile + "': " + head ); 
     }
 }
 
@@ -909,7 +1006,7 @@ void MugenMenu::load() throw (MugenException){
 	    // Pass off to selectInfo
 	    characterSelect = new MugenCharacterSelect(ticker,fonts);
 	    try{
-		characterSelect->load(selectFile,i,collection,sprites);
+		characterSelect->load(baseDir + selectFile,i,collection,sprites);
 	    }
 	    catch (MugenException &ex){
 		throw MugenException(ex);

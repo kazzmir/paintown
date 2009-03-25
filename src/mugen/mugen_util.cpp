@@ -392,7 +392,9 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
 		if ( sprite->samePalette){
 		    memcpy( sprite->pcx + (sprite->reallength), palsave1, 768);
 		} else {
-		    memcpy( sprite->pcx + (sprite->reallength)-768, palsave1, 768);
+		    if (sprite->groupNumber != 9000){
+			memcpy( sprite->pcx + (sprite->reallength)-768, palsave1, 768);
+		    }
 		}
 	    }
 	}

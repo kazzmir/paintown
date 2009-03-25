@@ -19,6 +19,7 @@ class MugenFont;
 class MugenSprite;
 class MugenStoryboard;
 class MugenSection;
+class MugenCharacter;
 
 struct MugenMenuPoint{
     int x;
@@ -65,8 +66,7 @@ struct MugenPlayerCell{
 struct MugenCell{
     // Location
     MugenMenuPoint position;
-    Bitmap *portrait;
-    std::string name;
+    MugenCharacter *character;
     bool random;
     bool empty;
 };
@@ -214,6 +214,8 @@ class MugenCharacterSelect{
 	
 	std::vector< std::vector< MugenCell *> > cells;
 	
+	std::vector< MugenCharacter *> characters;
+	
 	void drawCursors(Bitmap *work);
 	
 	void movePlayer1Cursor(int x, int y);
@@ -221,6 +223,8 @@ class MugenCharacterSelect{
 	void movePlayer2Cursor(int x, int y);
 	
 	std::vector<MugenFont *> &fonts;
+	
+	void loadCharacters(const std::string &selectFile)throw (MugenException);
 };
 
 class MugenMenu : public Menu

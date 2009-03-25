@@ -7,6 +7,7 @@
 #include <map>
 #include "mugen_exception.h"
 
+class Bitmap;
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
@@ -24,6 +25,9 @@ public:
 	// Do code
 	
 	void load() throw( MugenException );
+	
+	void renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp, 
+			   const int flip=1, const double scalex = 1, const double scaley = 1);
 	
 	inline const std::string &getName() const {
             return name;
@@ -211,6 +215,8 @@ protected:
 
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
+	// Bitmaps of those sprites
+	std::map< unsigned int, std::map< unsigned int, Bitmap * > > bitmaps;
 	
 	/* Animation Lists stored by action number, ie [Begin Action 500] */
 	std::map< int, MugenAnimation * > animations;
