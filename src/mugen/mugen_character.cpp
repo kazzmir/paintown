@@ -207,14 +207,16 @@ void MugenCharacter::renderSprite(const int x, const int y, const unsigned int g
 	    bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
 	    bitmaps[group][image] = bitmap;
 	}
+	const int width = (int)(bitmap->getWidth() * scalex);
+	const int height =(int)(bitmap->getHeight() * scaley);
 	if (flip == 1){
-	    bitmap->drawStretched(x + sprite->x,y + sprite->y, (int)(bitmap->getWidth() * scalex), (int)(bitmap->getHeight() * scaley), *bmp);
+	    bitmap->drawStretched(x,y, width, height, *bmp);
 	} else if (flip == -1){
 	    // temp bitmap to flip and crap
 	    Bitmap temp = Bitmap::temporaryBitmap(bitmap->getWidth(), bitmap->getHeight());
 	    temp.fill(Bitmap::MaskColor);
 	    bitmap->drawHFlip(0,0,temp);
-	    temp.drawStretched(x + sprite->x,y + sprite->y, (int)(bitmap->getWidth() * scalex), (int)(bitmap->getHeight() * scaley), *bmp);
+	    temp.drawStretched(x-width,y, width, height, *bmp);
 	}
     }
 }
