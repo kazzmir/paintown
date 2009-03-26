@@ -20,6 +20,7 @@ class MugenSprite;
 class MugenStoryboard;
 class MugenSection;
 class MugenCharacter;
+class MugenStage;
 
 struct MugenMenuPoint{
     int x;
@@ -43,6 +44,7 @@ struct MugenMenuFont{
 
 struct MugenPlayerCell{
     // Cell
+    MugenMenuPoint start;
     MugenMenuPoint cursor;
     MugenSprite *cursorActiveSprite;
     MugenSprite *cursorDoneSprite;
@@ -71,6 +73,21 @@ struct MugenCell{
     bool empty;
 };
 
+struct MugenStageInfo{
+    MugenMenuPoint stagePosition;
+    MugenMenuFont stageActiveFont;
+    MugenMenuFont stageActiveFont2;
+    MugenMenuFont stageDoneFont;
+    bool selected;
+    int altCounter;
+};
+
+struct MugenSelectedChars{
+    std::vector< MugenCharacter *>team1;
+    std::vector< MugenCharacter *>team2;
+    MugenStage *selectedStage;
+};
+
 class MugenCharacterSelect{
     public:
 	MugenCharacterSelect(const unsigned long int &ticker, std::vector<MugenFont *> &fonts);
@@ -81,7 +98,7 @@ class MugenCharacterSelect{
 			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites) throw (MugenException);
 	
 	/*! do logic, draw whatever */
-	virtual void run(const std::string &title, Bitmap *work);	
+	virtual MugenSelectedChars run(const std::string &title, const int players, const bool selectStage, Bitmap *work);	
     private:
 	//fadein.time = 10
 	//fadeout.time = 10
@@ -156,10 +173,7 @@ class MugenCharacterSelect{
 	stage.active2.font = 3,2  ;Second font color for blinking
 	stage.done.font = 3,0
 	*/
-	MugenMenuPoint stagePosition;
-	MugenMenuFont stageActiveFont;
-	MugenMenuFont stageActiveFont2;
-	MugenMenuFont stageDoneFont;
+	MugenStageInfo stageInfo;
 	/*
 	;Team menu
 	teammenu.move.wrapping = 1
@@ -216,7 +230,9 @@ class MugenCharacterSelect{
 	
 	std::vector< MugenCharacter *> characters;
 	
-	void drawCursors(Bitmap *work);
+	std::vector< MugenStage *> stages;
+	
+	void drawCursors(const int players, Bitmap *work);
 	
 	void movePlayer1Cursor(int x, int y);
 	

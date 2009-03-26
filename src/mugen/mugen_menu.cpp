@@ -87,9 +87,13 @@ MugenCharacterSelect::~MugenCharacterSelect(){
 	    if (cell) delete cell;
 	}
     }
-    
+    // Characters
     for (std::vector< MugenCharacter *>::iterator c = characters.begin(); c != characters.end(); ++c){
 	    if (*c) delete (*c);
+    }
+    // STages
+    for (std::vector< MugenStage *>::iterator i = stages.begin(); i != stages.end(); ++i){
+	    if (*i) delete (*i);
     }
 }
 void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &index, std::vector< MugenSection * > &collection, 
@@ -104,6 +108,7 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
 		MugenUtil::removeSpaces(itemhead);
+		MugenUtil::fixCase(itemhead);
 		Global::debug(1) << "Got itemhead: '" << itemhead << "'" << endl;
 		if ( itemhead == "fadein.time" ){
 		    int time;
@@ -160,6 +165,8 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 		} else if ( itemhead == "p1.cursor.startcell" ){
 		    *content->getNext() >> p1Cursor.cursor.x;
 		    *content->getNext() >> p1Cursor.cursor.y;
+		    p1Cursor.start.x = p1Cursor.cursor.x;
+		    p1Cursor.start.y = p1Cursor.cursor.y;
 		} else if ( itemhead == "p1.cursor.active.spr"){
 		    int group, sprite;
 		    *content->getNext() >> group;
@@ -179,6 +186,8 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 		else if ( itemhead == "p2.cursor.startcell"){
 		    *content->getNext() >> p2Cursor.cursor.x;
 		    *content->getNext() >> p2Cursor.cursor.y;
+		    p2Cursor.start.x = p2Cursor.cursor.x;
+		    p2Cursor.start.y = p2Cursor.cursor.y;
 		} if ( itemhead == "p2.cursor.active.spr"){
 		    int group, sprite;
 		    *content->getNext() >> group;
@@ -245,20 +254,20 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 		    *content->getNext() >> p2Cursor.nameFont.bank;
 		    *content->getNext() >> p2Cursor.nameFont.position;
 		} else if ( itemhead == "stage.pos"){
-		    *content->getNext() >> stagePosition.x;
-		    *content->getNext() >> stagePosition.y;
+		    *content->getNext() >> stageInfo.stagePosition.x;
+		    *content->getNext() >> stageInfo.stagePosition.y;
 		} else if ( itemhead == "stage.active.font"){
-		    *content->getNext() >> stageActiveFont.index;
-		    *content->getNext() >> stageActiveFont.bank;
-		    *content->getNext() >> stageActiveFont.position;
+		    *content->getNext() >> stageInfo.stageActiveFont.index;
+		    *content->getNext() >> stageInfo.stageActiveFont.bank;
+		    *content->getNext() >> stageInfo.stageActiveFont.position;
 		} else if ( itemhead == "stage.active2.font"){
-		    *content->getNext() >> stageActiveFont2.index;
-		    *content->getNext() >> stageActiveFont2.bank;
-		    *content->getNext() >> stageActiveFont2.position;
+		    *content->getNext() >> stageInfo.stageActiveFont2.index;
+		    *content->getNext() >> stageInfo.stageActiveFont2.bank;
+		    *content->getNext() >> stageInfo.stageActiveFont2.position;
 		} else if ( itemhead == "stage.done.font"){
-		    *content->getNext() >> stageDoneFont.index;
-		    *content->getNext() >> stageDoneFont.bank;
-		    *content->getNext() >> stageDoneFont.position;
+		    *content->getNext() >> stageInfo.stageDoneFont.index;
+		    *content->getNext() >> stageInfo.stageDoneFont.bank;
+		    *content->getNext() >> stageInfo.stageDoneFont.position;
 		} else if ( itemhead.find("teammenu")!=std::string::npos ){ /* Ignore for now */ }
 		//else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
 	    }
@@ -298,11 +307,15 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
     // Now load up our characters
     loadCharacters(selectFile);
     
+    // Set stage info
+    stageInfo.selected = false;
+    stageInfo.altCounter = 0;
+    
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
     if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
 }
-void MugenCharacterSelect::run(const std::string &title, Bitmap *work){
+MugenSelectedChars MugenCharacterSelect::run(const std::string &title, const int players, const bool selectStage, Bitmap *work){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     
@@ -313,6 +326,27 @@ void MugenCharacterSelect::run(const std::string &title, Bitmap *work){
     Global::speed_counter = 0;
     Global::second_counter = 0;
     int game_time = 100;
+    // Set player 1 and 2 cursors
+    p1Cursor.selecting = true;
+    p1Cursor.cursor.x = p1Cursor.start.x;
+    p1Cursor.cursor.y = p1Cursor.start.y;
+    p2Cursor.selecting = true;
+    p2Cursor.cursor.x = p2Cursor.start.x;
+    p2Cursor.cursor.y = p2Cursor.start.y;
+    
+    // Stage list
+    stageInfo.selected = false;
+    stageInfo.altCounter = 0;
+    std::vector< MugenStage *> stageSelections;
+    unsigned int random = Util::rnd(0,stages.size()-1);
+    stageSelections.push_back(stages[random]);
+    for (std::vector<MugenStage *>::iterator i = stages.begin(); i != stages.end(); ++i){
+	stageSelections.push_back(*i);
+    }
+    unsigned int currentStage =  0;
+    
+    MugenSelectedChars characterList;
+    
     while ( ! done && fader.getState() != RUNFADE ){
     
 	bool draw = false;
@@ -340,16 +374,42 @@ void MugenCharacterSelect::run(const std::string &title, Bitmap *work){
 			
 			if ( keyInputManager::keyState(keys::LEFT, true) ||
 			    keyInputManager::keyState('h', true)){
-			    movePlayer1Cursor(0,-1);
+			    if (p1Cursor.selecting){
+				movePlayer1Cursor(0,-1);
+			    } else {
+				if (selectStage && !stageInfo.selected){
+				    if (currentStage > 0){
+					currentStage--;
+				    } else {
+					currentStage = stageSelections.size() -1;
+				    }
+				}
+			    }
 			}
 			
 			if ( keyInputManager::keyState(keys::RIGHT, true )||
 			    keyInputManager::keyState('l', true )){
-			    movePlayer1Cursor(0,1);
+			    if (p1Cursor.selecting){
+				movePlayer1Cursor(0,1);
+			    } else {
+				if (selectStage && !stageInfo.selected){
+				    if (currentStage < stageSelections.size()-1){
+					currentStage++;
+				    } else {
+					currentStage = 0;
+				    }
+				}
+			    }
 			}
 			
 			if ( keyInputManager::keyState(keys::ENTER, true ) ){
-			    
+			    if (!cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->empty && p1Cursor.selecting){
+				p1Cursor.selecting = false;
+				characterList.team1.push_back(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->character);
+			    } else if (!p1Cursor.selecting && selectStage && !stageInfo.selected){
+				stageInfo.selected = true;
+				characterList.selectedStage = stageSelections[currentStage];
+			    }
 			}
 			
 			if ( keyInputManager::keyState(keys::ESC, true ) ){
@@ -378,11 +438,42 @@ void MugenCharacterSelect::run(const std::string &title, Bitmap *work){
 	if ( draw ){
 		// backgrounds
 		background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+		// Stuff
+		drawCursors(players, &workArea);
 		// Draw title
 		MugenFont *font = fonts[titleFont.index-1];
 		font->render(titleOffset.x, titleOffset.y, titleFont.position, titleFont.bank, workArea, title);
-		// Stuff
-		drawCursors(&workArea);
+		// Draw stage
+		if (selectStage && (!p1Cursor.selecting || !p2Cursor.selecting)){
+		    std::string stageName = "Stage";
+		    if (currentStage == 0){
+			stageName += ": Random";
+		    } else {
+			std::stringstream s;
+			s << " " << currentStage << ": " << stageSelections[currentStage]->getName();
+			stageName += s.str();
+		    }
+		    if (!stageInfo.selected){
+			if (stageInfo.altCounter % 2 == 0){
+			    // reuse Font
+			    font = fonts[stageInfo.stageActiveFont.index-1];
+			    font->render(stageInfo.stagePosition.x, stageInfo.stagePosition.y, stageInfo.stageActiveFont.position, stageInfo.stageActiveFont.bank, workArea, stageName);
+			} else {
+			    // reuse Font
+			    font = fonts[stageInfo.stageActiveFont2.index-1];
+			    font->render(stageInfo.stagePosition.x, stageInfo.stagePosition.y, stageInfo.stageActiveFont2.position, stageInfo.stageActiveFont2.bank, workArea, stageName);
+			}
+			stageInfo.altCounter++;
+			if (stageInfo.altCounter == 10){
+			    stageInfo.altCounter = 0;
+			}
+		    } else {
+			// Done selecting
+			// reuse Font
+			font = fonts[stageInfo.stageDoneFont.index-1];
+			font->render(stageInfo.stagePosition.x, stageInfo.stagePosition.y, stageInfo.stageDoneFont.position, stageInfo.stageDoneFont.bank, workArea, stageName);
+		    }
+		}
 		// Foregrounds
 		background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
 		// Do fades
@@ -398,9 +489,10 @@ void MugenCharacterSelect::run(const std::string &title, Bitmap *work){
 	}
     }
 	
+	return characterList;
 }
 
-void MugenCharacterSelect::drawCursors(Bitmap *work){
+void MugenCharacterSelect::drawCursors(const int players, Bitmap *work){
     MugenMenuPoint currentPosition;
     currentPosition.y = position.y;
     for (int row = 0; row < rows; ++row){
@@ -424,7 +516,11 @@ void MugenCharacterSelect::drawCursors(Bitmap *work){
     }
     
     // Player cursors player 1
-    p1Cursor.active->draw(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.x,cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.y,*work);
+    if (p1Cursor.selecting){
+	p1Cursor.active->draw(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.x,cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.y,*work);
+    } else {
+	p1Cursor.done->draw(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.x,cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.y,*work);
+    }
     if ( !cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->empty ){
 	MugenCell *cell = cells[p1Cursor.cursor.x][p1Cursor.cursor.y];
 	if (!cell->empty){
@@ -439,33 +535,46 @@ void MugenCharacterSelect::drawCursors(Bitmap *work){
 	}
     }
     // Player cursors player 2
-    if (p2Cursor.blink && ((p1Cursor.cursor.x == p2Cursor.cursor.x) && (p1Cursor.cursor.y == p2Cursor.cursor.y))){
-	if (p2Cursor.blinkCounter % 2 == 0){
-	    p2Cursor.active->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
-	}
-	p2Cursor.blinkCounter++;
-	if (p2Cursor.blinkCounter == 10){
-	    p2Cursor.blinkCounter = 0;
-	}
-    } else {
-	p2Cursor.active->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
-    }
-    if ( !cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->empty ){
-	MugenCell *cell = cells[p2Cursor.cursor.x][p2Cursor.cursor.y];
-	if (!cell->empty){
-	    if (!cell->random){
-		// Portrait
-		cell->character->renderSprite(p2Cursor.faceOffset.x,p2Cursor.faceOffset.y,9000,1,work,p2Cursor.facing, p2Cursor.faceScalex,p2Cursor.faceScaley);
-		// Name
-		MugenFont *font = fonts[p2Cursor.nameFont.index-1];
-		font->render(p2Cursor.nameOffset.x, p2Cursor.nameOffset.y, p2Cursor.nameFont.position, p2Cursor.nameFont.bank, *work, cell->character->getName());
+    if (players > 1){
+	if (p2Cursor.blink && ((p1Cursor.cursor.x == p2Cursor.cursor.x) && (p1Cursor.cursor.y == p2Cursor.cursor.y))){
+	    if (p2Cursor.blinkCounter % 2 == 0){
+		if (p2Cursor.selecting){
+		    p2Cursor.active->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
+		} else {
+		    p2Cursor.done->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
+		}
+	    }
+	    p2Cursor.blinkCounter++;
+	    if (p2Cursor.blinkCounter == 10){
+		p2Cursor.blinkCounter = 0;
+	    }
+	} else {
+	    if (p2Cursor.selecting){
+		p2Cursor.active->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
 	    } else {
+		p2Cursor.done->draw(cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.x,cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->position.y,*work);
+	    }
+	}
+	if ( !cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->empty ){
+	    MugenCell *cell = cells[p2Cursor.cursor.x][p2Cursor.cursor.y];
+	    if (!cell->empty){
+		if (!cell->random){
+		    // Portrait
+		    cell->character->renderSprite(p2Cursor.faceOffset.x,p2Cursor.faceOffset.y,9000,1,work,p2Cursor.facing, p2Cursor.faceScalex,p2Cursor.faceScaley);
+		    // Name
+		    MugenFont *font = fonts[p2Cursor.nameFont.index-1];
+		    font->render(p2Cursor.nameOffset.x, p2Cursor.nameOffset.y, p2Cursor.nameFont.position, p2Cursor.nameFont.bank, *work, cell->character->getName());
+		} else {
+		}
 	    }
 	}
     }
 }
 
 void MugenCharacterSelect::movePlayer1Cursor(int x, int y){
+    if (!p1Cursor.selecting){
+	return;
+    }
     if (x > 0){
 	if (moveOverEmptyBoxes){
 	    p1Cursor.cursor.x += x;
@@ -567,6 +676,9 @@ void MugenCharacterSelect::movePlayer1Cursor(int x, int y){
 }
 
 void MugenCharacterSelect::movePlayer2Cursor(int x, int y){
+    if (!p2Cursor.selecting){
+	return;
+    }
     if (x > 0){
 	if (moveOverEmptyBoxes){
 	    p2Cursor.cursor.x += x;
@@ -674,6 +786,7 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
+    std::vector< std::string > stageNames;
     /* Extract info for our first section of our menu */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
@@ -699,9 +812,18 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
 			throw MugenException(ex);
 		    }
 		    characters.push_back(character);
+		    Global::debug(1) << "Got character: " << character->getName() << endl;
 		    // set cell 
 		    cells[row][column]->character = character;
 		    cells[row][column]->empty = false;
+		    if (content->hasItems()){
+			// Next item will be a stage lets add it to the list of stages
+			std::string temp;
+			*content->getNext() >> temp;
+			stageNames.push_back(temp);
+			Global::debug(1) << "Got stage: " << temp << endl;
+		    }
+		    // Need to add in other options and assign their respective stages to them....
 		}
 		column++;
 		if (column >=columns){
@@ -715,9 +837,30 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
 		}
 	    }
 	}
-	else if( head == "extrastages" ){ /* ignore for now */}
+	else if( head == "extrastages" ){
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		MugenUtil::removeSpaces(itemhead);
+		// Next item will be a stage lets add it to the list of stages
+		stageNames.push_back(itemhead);
+		Global::debug(1) << "Got stage: " << itemhead << endl;
+	    }
+	}
 	else if( head == "options" ){ /* ignore for now */}
 	else throw MugenException( "Unhandled Section in '" + selectFile + "': " + head ); 
+    }
+    
+    // Prepare stages
+    for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
+	MugenStage *stage = new MugenStage(*i);
+	try{
+	    stage->load();
+	} catch (MugenException &ex){
+	    throw MugenException(ex);
+	}
+	stages.push_back(stage);
     }
 }
 
@@ -1205,7 +1348,7 @@ void MugenMenu::run(){
 			    ok->play();
 			}*/
 			(*selectedOption)->run(endGame);
-			characterSelect->run((*selectedOption)->getText(), work);
+			characterSelect->run((*selectedOption)->getText(), 2, true, work);
 		    } catch ( const ReturnException & re ){
 		    }
 		    // Reset it's state

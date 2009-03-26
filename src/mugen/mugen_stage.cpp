@@ -126,7 +126,8 @@ inleft(0),
 inright(0),
 onLeftSide(0),
 onRightSide(0),
-inabove(0){
+inabove(0),
+loaded(false){
 }
 
 MugenStage::MugenStage( const char * location ): World(),
@@ -192,7 +193,8 @@ inleft(0),
 inright(0),
 onLeftSide(0),
 onRightSide(0),
-inabove(0){
+inabove(0),
+loaded(false){
 }
 
 MugenStage::~MugenStage(){
@@ -200,14 +202,17 @@ MugenStage::~MugenStage(){
 }
 	
 void MugenStage::load() throw( MugenException ){
+    if (loaded)return;
     // Lets look for our def since some assholes think that all file systems are case insensitive
     baseDir = Util::getDataPath() + "mugen/stages/";
     Global::debug(1) << baseDir << endl;
-    location+=".def";
+    if (location.find(".def")==std::string::npos){
+	location+=".def";
+    }
     // Get correct directory
     baseDir = MugenUtil::getFileDir(baseDir + location);
     location = MugenUtil::stripDir(location);
-    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(location) );
+    const std::string ourDefFile = MugenUtil::getCorrectFileLocation(baseDir, location);//MugenUtil::fixFileName( baseDir, std::string(location) );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
     
@@ -450,6 +455,9 @@ void MugenStage::load() throw( MugenException ){
     // Console stuff
     console->setTextHeight(10);
     console->setTextWidth(10);
+    
+    // Stage is loaded
+    loaded = true;
 }
 
 void MugenStage::setCamera( const double x, const double y ){ 
@@ -766,6 +774,7 @@ void MugenStage::addObject( Object * o ){ /* Does nothing */ }
 const bool MugenStage::finished() const { return false; }
 void MugenStage::reloadLevel() throw( LoadException ){ 
     cleanup();
+    loaded = false;
     load(); 
 }
 Script::Engine * const MugenStage::getEngine() const { return NULL; }

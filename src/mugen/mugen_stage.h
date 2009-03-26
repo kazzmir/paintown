@@ -379,6 +379,8 @@ protected:
 	int onRightSide;
 	int inabove;
 	
+	bool loaded;
+	
 	void updatePlayer( Object *o );
 	
 	// Controllers
