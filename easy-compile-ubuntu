@@ -8,5 +8,5 @@ echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
 echo your priveleges so that new packages can be installed on your system.
 echo When prompted for a password type the password you use to login.
 
-sudo apt-get install scons liballegro-dev libpng12-dev libfreetype6-dev
+sudo apt-get install scons liballegro-dev libpng12-dev libfreetype6-dev g++
 make
