@@ -171,6 +171,78 @@ typedef struct {
 } pcx_header;
 /* Source: ZSoft Corporation's PCX File Format Technical Reference Manual, Revision 5. */
 
+
+bool MugenUtil::readPalette(const string &filename, unsigned char *pal){
+    unsigned char colorsave[3]; // rgb pal save
+    FILE *act_file = fopen( filename.c_str(), "rb" );
+    if( !act_file ){
+	Global::debug(1) << "Unable to open ACT file: " << filename << endl;
+	if( act_file )fclose( act_file );
+	pal = 0;
+	return false;
+    }
+    else{
+	fseek( act_file, 0, SEEK_END );
+	// Then it must be an act file
+	if( ftell(act_file) == 768 ){ 
+	    for( int i=0; i<256; i++ ){
+		fseek( act_file, -3*(i+1), SEEK_END );
+		// stupid fread
+		size_t bleh = fread( colorsave, 3, 1, act_file );
+		bleh = bleh;
+		pal[3*i]=colorsave[0];
+		pal[3*i+1]=colorsave[1];
+		pal[3*i+2]=colorsave[2];
+	    }
+	    Global::debug(1) << "Applying palette from ACT file: " << filename << endl;
+	    if( act_file )fclose( act_file );
+	    return true;
+	}
+	// 128-byte header + 768-byte palette + 0x0C byte = minimum 8-bit PCX file size.
+	else if( ftell(act_file) < 897 ){ 
+            Global::debug(1) << "File " << filename << " is not a valid palette file." << endl;
+	    if( act_file )fclose( act_file );
+	    pal = 0;
+	    return false;
+        }
+	// we'll assume it's a PCX file, for now.
+        else{ 
+            fseek( act_file, 0, SEEK_SET );
+	    pcx_header pcxhead;
+            size_t bleh = fread( &pcxhead, sizeof(pcx_header), 1, act_file );
+            // Check to see if the PCX file uses an 8-bit palette.
+            if( (pcxhead.manufacturer == 10) && (pcxhead.version >= 5) && (pcxhead.BitsPerPixel == 8) && (pcxhead.NPlanes == 1) ){
+                fseek( act_file, -769, SEEK_END);
+		// No need to define another variable; colorsave will do just fine.
+                bleh = fread( colorsave, 1, 1, act_file ); 
+                if( colorsave[0] == 12 ){
+                    fseek( act_file, -768, SEEK_END );
+                    bleh = fread( pal, 768, 1, act_file );
+                    Global::debug(1) << "Applying palette from PCX file: " << filename << endl;
+		    return true;
+                }
+                else{
+                    Global::debug(1) << "File " << filename << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
+		    if( act_file )fclose( act_file );
+		    pal =0;
+		    return false;
+                }
+            }
+            // Add support for JASC and RIFF palette files later... 
+            // Minimum JASC PAL size = 1,813 bytes (carriage returns are necessary). 
+            else{
+		Global::debug(1) << "File " << filename << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
+		if( act_file )fclose( act_file );
+		pal = 0;
+		return false;;
+            }
+        }
+    }
+    if( act_file )fclose( act_file );
+    pal = 0;
+    return false;
+}
+
 // Get next sprite
 static MugenSprite * readSprite(ifstream & ifile, int & location){
     // Go to next sprite
@@ -244,65 +316,13 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
     int islinked = 0;
     bool useact = true;
     
-    unsigned char colorsave[3]; // rgb pal save
+    //unsigned char colorsave[3]; // rgb pal save
     unsigned char palsave1[768]; // First image palette
     
     // Load in first palette
-
-    FILE *act_file = fopen( palette.c_str(), "rb" );
-    if( !act_file ){
-	Global::debug(1) << "Unable to open ACT file: " << palette << endl;
-	useact = false;
+    if (readPalette(palette,palsave1)){
+	useact = true;
     }
-    else{
-	fseek( act_file, 0, SEEK_END );
-	// Then it must be an act file
-	if( ftell(act_file) == 768 ){ 
-	    for( int i=0; i<256; i++ ){
-		fseek( act_file, -3*(i+1), SEEK_END );
-		// stupid fread
-		size_t bleh = fread( colorsave, 3, 1, act_file );
-		bleh = bleh;
-		palsave1[3*i]=colorsave[0];
-		palsave1[3*i+1]=colorsave[1];
-		palsave1[3*i+2]=colorsave[2];
-	    }
-	    Global::debug(1) << "Applying palette from ACT file: " << palette << endl;
-	}
-	// 128-byte header + 768-byte palette + 0x0C byte = minimum 8-bit PCX file size.
-	else if( ftell(act_file) < 897 ){ 
-            useact = false;
-            Global::debug(1) << "File " << palette << " is not a valid palette file." << endl;
-        }
-	// we'll assume it's a PCX file, for now.
-        else{ 
-            fseek( act_file, 0, SEEK_SET );
-	    pcx_header pcxhead;
-            size_t bleh = fread( &pcxhead, sizeof(pcx_header), 1, act_file );
-            // Check to see if the PCX file uses an 8-bit palette.
-            if( (pcxhead.manufacturer == 10) && (pcxhead.version >= 5) && (pcxhead.BitsPerPixel == 8) && (pcxhead.NPlanes == 1) ){
-                fseek( act_file, -769, SEEK_END);
-		// No need to define another variable; colorsave will do just fine.
-                bleh = fread( colorsave, 1, 1, act_file ); 
-                if( colorsave[0] == 12 ){
-                    fseek( act_file, -768, SEEK_END );
-                    bleh = fread( palsave1, 768, 1, act_file );
-                    Global::debug(1) << "Applying palette from PCX file: " << palette << endl;
-                }
-                else{
-                    useact = false;
-                    Global::debug(1) << "File " << palette << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
-                }
-            }
-            // Add support for JASC and RIFF palette files later... 
-            // Minimum JASC PAL size = 1,813 bytes (carriage returns are necessary). 
-            else{
-                useact = false;
-		Global::debug(1) << "File " << palette << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
-            }
-        }
-    }
-    if( act_file )fclose( act_file );
     
     if( location < 512 || location > 2147482717 )location = 512;
     else location = suboffset;
@@ -392,9 +412,9 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
 		if ( sprite->samePalette){
 		    memcpy( sprite->pcx + (sprite->reallength), palsave1, 768);
 		} else {
-		    if (sprite->groupNumber != 9000){
+		    if (!(sprite->groupNumber == 9000 && sprite->imageNumber == 1)){
 			memcpy( sprite->pcx + (sprite->reallength)-768, palsave1, 768);
-		    }
+		    } 
 		}
 	    }
 	}

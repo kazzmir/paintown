@@ -531,11 +531,11 @@ void MugenStage::logic( ){
 		    // autoturn need to do turning actions
 		    if (autoturn){
 			if (isaPlayer( player )){
-			    if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT ){
+			    if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT && ((Character *)enemy)->getStatus() == Status_Ground){
 				enemy->setFacing(Object::FACING_LEFT);
 			    }
 
-			    if (enemy->getX() < player->getX() && enemy->getFacing() != Object::FACING_RIGHT ){
+			    if (enemy->getX() < player->getX() && enemy->getFacing() != Object::FACING_RIGHT && ((Character *)enemy)->getStatus() == Status_Ground){
 				enemy->setFacing(Object::FACING_RIGHT);
 			    }
 			}

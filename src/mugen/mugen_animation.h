@@ -209,6 +209,9 @@ class MugenAnimation{
 	// Go back a frame
 	void backFrame();
 	
+	// Reload bitmaps for things like palettes
+	void reloadBitmaps();
+	
 	inline unsigned int getCurrentPosition() { return position; }
 	inline MugenFrame *getCurrentFrame(){ return frames[position]; }
 	

@@ -175,6 +175,12 @@ void showCharacter(const string & ourFile){
 			showClsn2 = !showClsn2;
 			it->second->toggleDefense();
 		    }
+		    else if( keyInputManager::keyState('1', true) ){
+			character.priorPalette();
+		    }
+		    else if( keyInputManager::keyState('2', true) ){
+			character.nextPalette();
+		    }
 		    
 		    if( mouse_b & 1 )moveImage = true;
 		    else if( !(mouse_b & 1) )moveImage = false;

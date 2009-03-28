@@ -233,6 +233,16 @@ void MugenAnimation::backFrame(){
     else position = position = frames.size() - 1;
 }
 
+void MugenAnimation::reloadBitmaps(){
+    for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
+	MugenFrame *frame = *i;
+	if (frame->sprite){
+	    if (frame->bmp) delete frame->bmp;
+	    frame->bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) frame->sprite->pcx, frame->sprite->newlength));
+	}
+    }
+}
+
 // Get name of type of animation
 const std::string MugenAnimation::getName(const MugenAnimationType t){
     switch( t ){

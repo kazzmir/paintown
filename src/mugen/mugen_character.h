@@ -28,9 +28,21 @@ public:
 	
 	void renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp, 
 			   const int flip=1, const double scalex = 1, const double scaley = 1);
+			   
+	// Change palettes
+	void nextPalette();
+	void priorPalette();
 	
 	inline const std::string &getName() const {
             return name;
+        }
+	
+	inline const std::string &getDisplayName() const {
+            return displayName;
+        }
+	
+	inline const unsigned int &getCurrentPalette() const {
+            return currentPalette;
         }
 
         inline const std::map<int, MugenAnimation*> & getAnimations() const {
@@ -66,7 +78,8 @@ protected:
 	// Author 
 	std::string author;
 	// Palette defaults
-	int palDefaults[12];
+	std::vector< unsigned int> palDefaults;
+	unsigned int currentPalette;
 	
 	/* Relevant files */
 	
@@ -87,7 +100,7 @@ protected:
 	// Sounds
 	std::string sndFile;
 	// Palettes max 12
-	std::string palFile[12];
+	std::vector< std::string > palFile;
 	
 	// Arcade mode ( I don't think we will be using this anytime soon )
 	std::string introFile;

@@ -101,14 +101,12 @@ void MugenCharacter::load() throw( MugenException ){
 		} else if ( itemhead.find("author")!=std::string::npos ){
 		    *content->getNext() >> author;
 		} else if ( itemhead.find("pal.defaults")!=std::string::npos ){
-		    // Add parse info
-		    MugenItemContent *temp = MugenUtil::parseOpt( content->getNext()->query() );
-		    for( int pal = 0; pal < 12; ++pal ){
-			if( temp->hasItems() )*temp->getNext() >> palDefaults[pal];
-			else break;
-			Global::debug(1) << "Pal" << pal << ": " << palDefaults[pal] << endl;
+		    while (content->hasItems()){
+			int num;
+			*content->getNext() >> num;
+			palDefaults.push_back(num);
+			Global::debug(1) << "Pal" << palDefaults.size() << ": " << num << endl;
 		    }
-		    delete temp;
 		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
 	    }
 	}
@@ -153,18 +151,66 @@ void MugenCharacter::load() throw( MugenException ){
 		    *content->getNext() >> sndFile;
 		}
 		else if( itemhead.find("pal") != std::string::npos ){
-		    if (itemhead.find("pal1") != std::string::npos )*content->getNext() >> palFile[0];
-		    else if (itemhead.find("pal2") != std::string::npos )*content->getNext() >> palFile[1];
-		    else if (itemhead.find("pal3") != std::string::npos )*content->getNext() >> palFile[2];
-		    else if (itemhead.find("pal4") != std::string::npos )*content->getNext() >> palFile[3];
-		    else if (itemhead.find("pal5") != std::string::npos )*content->getNext() >> palFile[4];
-		    else if (itemhead.find("pal6") != std::string::npos )*content->getNext() >> palFile[5];
-		    else if (itemhead.find("pal7") != std::string::npos )*content->getNext() >> palFile[6];
-		    else if (itemhead.find("pal8") != std::string::npos )*content->getNext() >> palFile[7];
-		    else if (itemhead.find("pal9") != std::string::npos )*content->getNext() >> palFile[8];
-		    else if (itemhead.find("pal10") != std::string::npos )*content->getNext() >> palFile[9];
-		    else if (itemhead.find("pal11") != std::string::npos )*content->getNext() >> palFile[10];
-		    else if (itemhead.find("pal12") != std::string::npos )*content->getNext() >> palFile[11];
+		    if (itemhead == "pal1"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal2"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal3"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal4"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal5"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal6"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal7"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal8"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal9"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal10"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal11"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal12"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
 		    else throw MugenException( "Unhandled Palette File in Files Section: " + itemhead );
 		}
 		else throw MugenException( "Unhandled option in Files Section: " + itemhead );
@@ -186,9 +232,18 @@ void MugenCharacter::load() throw( MugenException ){
 	    }    
 	}
     }
+    // Current palette
+    if (palDefaults.empty()){
+	// Correct the palette defaults
+	for (unsigned int i = 0; i < palFile.size(); ++i){
+	    palDefaults.push_back(i+1);
+	}
+    }
+    currentPalette = 0;
+    Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]-1] << endl;
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
-    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir, sffFile), MugenUtil::fixFileName(baseDir, palFile[0]), sprites );
+    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir, sffFile), MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]-1]), sprites );
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
@@ -217,6 +272,64 @@ void MugenCharacter::renderSprite(const int x, const int y, const unsigned int g
 	    temp.fill(Bitmap::MaskColor);
 	    bitmap->drawHFlip(0,0,temp);
 	    temp.drawStretched(x-width,y, width, height, *bmp);
+	}
+    }
+}
+
+void MugenCharacter::nextPalette(){
+    if (currentPalette < palDefaults.size()-1){
+	currentPalette++;
+    } else currentPalette = 0;
+    Global::debug(1) << "Current pal: " << currentPalette << " | Location: " << palDefaults[currentPalette] << " | Palette File: " << palFile[palDefaults[currentPalette]-1] << endl;
+    // Now replace the palettes
+    unsigned char pal[768];
+    if (MugenUtil::readPalette(MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]-1]),pal)){
+	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+		if( j->second ){
+		    MugenSprite *sprite = j->second;
+		    if ( sprite->samePalette){
+			memcpy( sprite->pcx + (sprite->reallength), pal, 768);
+		    } else {
+			if (!(sprite->groupNumber == 9000 && sprite->imageNumber == 1)){
+			    memcpy( sprite->pcx + (sprite->reallength)-768, pal, 768);
+			} 
+		    }
+		}
+	    }
+	}
+	// Get rid of animation lists;
+	for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+	    if( i->second )i->second->reloadBitmaps();
+	}
+    }
+}
+
+void MugenCharacter::priorPalette(){
+    if (currentPalette > 0){
+	currentPalette--;
+    } else currentPalette = palDefaults.size() -1;
+    Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]-1] << endl;
+    // Now replace the palettes
+    unsigned char pal[768];
+    if (MugenUtil::readPalette(MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]-1]),pal)){
+	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+		if( j->second ){
+		    MugenSprite *sprite = j->second;
+		    if ( sprite->samePalette){
+			memcpy( sprite->pcx + (sprite->reallength), pal, 768);
+		    } else {
+			if (!(sprite->groupNumber == 9000 && sprite->imageNumber == 1)){
+			    memcpy( sprite->pcx + (sprite->reallength)-768, pal, 768);
+			} 
+		    }
+		}
+	    }
+	}
+	// Get rid of animation lists;
+	for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+	    if( i->second )i->second->reloadBitmaps();
 	}
     }
 }
