@@ -314,7 +314,7 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
     
     // Palette related
     int islinked = 0;
-    bool useact = true;
+    bool useact = false;
     
     //unsigned char colorsave[3]; // rgb pal save
     unsigned char palsave1[768]; // First image palette
