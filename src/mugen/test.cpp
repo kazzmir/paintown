@@ -49,7 +49,7 @@ static void showCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int
     int next = start;
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
-	Font::getDefaultFont().printf( 15, 310 + next, color, bmp, "CLSN: x1(%i),y1(%i),x2(%i),y2(%i)",0, vec[i].x1,vec[i].y1,vec[i].x2,vec[i].y2 );
+	Font::getDefaultFont().printf( 15, 380 + next, color, bmp, "CLSN: x1(%i),y1(%i),x2(%i),y2(%i)",0, vec[i].x1,vec[i].y1,vec[i].x2,vec[i].y2 );
 	next+=10;
     }
     start = next;
@@ -199,13 +199,14 @@ void showCharacter(const string & ourFile){
 		    if( showClsn2 )showCollision( it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ), start  );
 		    if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ), start  );
 		    
-		    Font::getDefaultFont().printf( 15, 250, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
-		    if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 270, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->length, it->second->getCurrentFrame()->sprite->x, it->second->getCurrentFrame()->sprite->y, it->second->getCurrentFrame()->sprite->groupNumber, it->second->getCurrentFrame()->sprite->imageNumber);
-		    Font::getDefaultFont().printf( 15, 280, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->bmp->getWidth(), it->second->getCurrentFrame()->bmp->getHeight() );
-		    Font::getDefaultFont().printf( 15, 290, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
-		    Font::getDefaultFont().printf( 15, 300, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
-		    Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
-		    
+		    Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str() );
+		    Font::getDefaultFont().printf( 15, 320, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
+		    if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 330, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->length, it->second->getCurrentFrame()->sprite->x, it->second->getCurrentFrame()->sprite->y, it->second->getCurrentFrame()->sprite->groupNumber, it->second->getCurrentFrame()->sprite->imageNumber);
+		    Font::getDefaultFont().printf( 15, 340, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->bmp->getWidth(), it->second->getCurrentFrame()->bmp->getHeight() );
+		    Font::getDefaultFont().printf( 15, 350, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
+		    Font::getDefaultFont().printf( 15, 360, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
+		    Font::getDefaultFont().printf( 15, 370, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
+		   
 		    show_mouse(work.getBitmap());
 
 		    work.BlitToScreen();
