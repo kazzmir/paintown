@@ -104,7 +104,7 @@ void MugenCharacter::load() throw( MugenException ){
 		    while (content->hasItems()){
 			int num;
 			*content->getNext() >> num;
-			palDefaults.push_back(num);
+			palDefaults.push_back(num-1);
 			Global::debug(1) << "Pal" << palDefaults.size() << ": " << num << endl;
 		    }
 		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
@@ -236,14 +236,30 @@ void MugenCharacter::load() throw( MugenException ){
     if (palDefaults.empty()){
 	// Correct the palette defaults
 	for (unsigned int i = 0; i < palFile.size(); ++i){
-	    palDefaults.push_back(i+1);
+	    palDefaults.push_back(i);
+	}
+    }
+    if (palDefaults.size() < palFile.size()){
+	bool setPals[palFile.size()];
+	for( int i =0;i<palFile.size();++i){
+	    setPals[i] = false;
+	}
+	// Set the ones already set
+	for (unsigned int i = 0; i < palDefaults.size(); ++i){
+	    setPals[palDefaults[i]] = true;
+	}
+	// now add the others
+	for( unsigned int i =0;i<palFile.size();++i){
+	    if(!setPals[i]){
+		palDefaults.push_back(i);
+	    }
 	}
     }
     currentPalette = 0;
-    Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]-1] << endl;
+    Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
-    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir, sffFile), MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]-1]), sprites );
+    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir, sffFile), MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]]), sprites );
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
@@ -280,10 +296,10 @@ void MugenCharacter::nextPalette(){
     if (currentPalette < palDefaults.size()-1){
 	currentPalette++;
     } else currentPalette = 0;
-    Global::debug(1) << "Current pal: " << currentPalette << " | Location: " << palDefaults[currentPalette] << " | Palette File: " << palFile[palDefaults[currentPalette]-1] << endl;
+    Global::debug(1) << "Current pal: " << currentPalette << " | Location: " << palDefaults[currentPalette] << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     // Now replace the palettes
     unsigned char pal[768];
-    if (MugenUtil::readPalette(MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]-1]),pal)){
+    if (MugenUtil::readPalette(MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
 	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
 	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 		if( j->second ){
@@ -309,10 +325,10 @@ void MugenCharacter::priorPalette(){
     if (currentPalette > 0){
 	currentPalette--;
     } else currentPalette = palDefaults.size() -1;
-    Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]-1] << endl;
+    Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     // Now replace the palettes
     unsigned char pal[768];
-    if (MugenUtil::readPalette(MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]-1]),pal)){
+    if (MugenUtil::readPalette(MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
 	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
 	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 		if( j->second ){
