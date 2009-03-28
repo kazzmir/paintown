@@ -758,9 +758,10 @@ MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsign
 	    MugenItemContent *content = section->getNext();
 	    MugenItem *item = content->getNext();
 	    std::string itemhead = item->query();
+	    MugenUtil::fixCase(itemhead);
 	    Global::debug(1) << "Item Head: " << itemhead << endl;
 	    // Attack boxes
-	    if( itemhead.find("Clsn1Default") != std::string::npos ){
+	    if( itemhead.find("clsn1default") != std::string::npos ){
 		// Get number
 		int num;
 		*content->getNext() >> num;
@@ -779,7 +780,7 @@ MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsign
 		}
 	    }
 	    // defend boxes
-	    else if( itemhead.find("Clsn2Default") != std::string::npos ){
+	    else if( itemhead.find("clsn2default") != std::string::npos ){
 		// Get number
 		int num;
 		*content->getNext() >> num;
@@ -798,7 +799,7 @@ MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsign
 		}
 	    }
 	    // defend boxes
-	    else if( itemhead.find("Clsn2") != std::string::npos ){
+	    else if( itemhead.find("clsn2") != std::string::npos ){
 		clsn2Reset = true;
 		// Get number
 		int num;
@@ -818,7 +819,7 @@ MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsign
 		}
 	    }
 	    // Attack boxes
-	    else if( itemhead.find("Clsn1") != std::string::npos ){
+	    else if( itemhead.find("clsn1") != std::string::npos ){
 		clsn1Reset = true;
 		// Get number
 		int num;
@@ -842,7 +843,7 @@ MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsign
 		setloop = true;
 	    }
 	    // This is where we get our frame
-	    else if( itemhead.find("Clsn") == std::string::npos ){
+	    else if( itemhead.find("clsn") == std::string::npos ){
 		// This is the new frame
 		MugenFrame *frame = new MugenFrame();
 		frame->defenseCollision = clsn2Holder;
