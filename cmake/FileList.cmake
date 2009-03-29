@@ -119,8 +119,9 @@ set(MENU_SRC
 src/menu/actionfactory.cpp
 src/menu/action_speed.cpp
 src/menu/menu.cpp
-src/menu/menu_global.cpp
 src/menu/menu_action.cpp
+src/menu/menu_animation.cpp
+src/menu/menu_global.cpp
 src/menu/menu_option.cpp
 src/menu/option_adventure.cpp
 src/menu/option_adventure_cpu.cpp

@@ -18,6 +18,8 @@
 
 #include "menu/menu_global.h"
 
+#include "menu/menu_animation.h"
+
 #include "gui/keyinput_manager.h"
 
 #include <queue>
@@ -156,6 +158,13 @@ void Menu::load(Token *token)throw( LoadException ){
 				ActionAct(tok);
 			} else if( *tok == "info-position" ) {
 				*tok >> infoPositionX >> infoPositionY;
+			} else if( *tok == "anim" ) {
+				MenuAnimation *animation = new MenuAnimation(tok);
+				if (animation->getLocation() == 0){
+				    backgroundAnimations.push_back(animation);
+				} else if (animation->getLocation() == 1){
+				    foregroundAnimations.push_back(animation);
+				}
 			} else {
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                                 if (Global::getDebug() >= 3){
@@ -341,6 +350,13 @@ void Menu::run(){
                                             // Recalculate placement
                                             checkTextLength((*b));
                                     }
+				    // Animations
+				    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+					(*i)->act();
+				    }
+				    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+					(*i)->act();
+				    }
                                     
                                     // Lets do some logic for the box with text
                                     switch ( currentDrawState ){
@@ -402,7 +418,10 @@ void Menu::run(){
 				
 				// Do the background
 				drawBackground(work);
-				
+				// Do background animations
+				for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+				    (*i)->draw(work);
+				}
 				// Draw any misc stuff in the background of the menu of selected object 
 				(*selectedOption)->draw(work);
 				// Draw text board
@@ -411,6 +430,10 @@ void Menu::run(){
 				drawText(work);
 				// Draw info text
 				drawInfoText(work);
+				// Draw foreground animations
+				for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+				    (*i)->draw(work);
+				}
 				// Finally render to screen
 				work->BlitToScreen();
 			}
@@ -799,4 +822,15 @@ Menu::~Menu(){
 		if((*b))delete (*b);
 	}
 	if( background )delete background;
+	
+	for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+	    if (*i){
+		delete *i;
+	    }
+	}
+	for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+	    if (*i){
+		delete *i;
+	    }
+	}
 }

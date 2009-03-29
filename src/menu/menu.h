@@ -18,6 +18,7 @@ class Font;
 class Bitmap;
 class MenuOption;
 class Token;
+class MenuAnimation;
 
 class Menu
 {
@@ -96,6 +97,9 @@ class Menu
 		
 		std::vector <MenuOption *> menuOptions;
 		std::vector <MenuOption *>::iterator selectedOption;
+		//! Animations
+		std::vector <MenuAnimation *>backgroundAnimations;
+		std::vector <MenuAnimation *>foregroundAnimations;
 		
 	private:
 	    
