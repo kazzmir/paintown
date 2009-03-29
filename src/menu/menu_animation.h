@@ -48,7 +48,7 @@ class MenuAnimation{
 	virtual void forwardFrame();
 	virtual void backFrame();
 	
-	inline void reset(){ currentFrame = 0; }
+	inline void reset(){ if (allowReset){ currentFrame = 0; } }
 	inline const int getID() const { return id; }
 	inline const int getLocation() const { return location; }
 	
@@ -58,6 +58,7 @@ class MenuAnimation{
 	int ticks;
 	unsigned int currentFrame;
 	unsigned int loop;
+	bool allowReset;
 	MenuPoint axis;
 	std::vector<MenuFrame *> frames;
 	imageMap images;

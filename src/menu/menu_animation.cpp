@@ -91,7 +91,8 @@ id(0),
 location(0),
 ticks(0),
 currentFrame(0),
-loop(0){
+loop(0),
+allowReset(true){
     axis.x = 0;
     axis.y = 0;
     if ( *token != "anim" ){
@@ -102,12 +103,14 @@ loop(0){
 	loop will begin at the subsequent frame listed after loop
 	axis is the location in which the drawing must be placed
 	location - used to render in background or foreground (0 == background [default]| 1 == foreground)
+	reset - used to allow resetting of animation (0 == no | 1 == yes [default])
 	(anim (id NUM) 
 	      (location NUM)
 	      (image NUM FILE) 
 	      (axis x y) 
 	      (frame "Read comments above in constructor") 
-	      (loop))
+	      (loop)
+	      (reset NUM))
     */
     Token tok(*token);
     while ( tok.hasTokens() ){
@@ -141,6 +144,9 @@ loop(0){
 	    } else if (*token == "loop"){
 		// start loop here
 		loop = frames.size();
+	    } else if (*token == "reset"){
+		// start loop here
+		*token >> allowReset;
 	    } else {
 		Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
 		if (Global::getDebug() >= 3){

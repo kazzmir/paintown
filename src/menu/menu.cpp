@@ -287,6 +287,14 @@ void Menu::run(){
 		// Reset fade stuff
 		resetFadeInfo();
 		
+		// Reset animations
+		for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+		    (*i)->reset();
+		}
+		for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+		    (*i)->reset();
+		}
+		
 		while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 	
 			bool draw = false;
