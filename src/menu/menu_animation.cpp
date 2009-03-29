@@ -75,7 +75,9 @@ void MenuFrame::draw(int xaxis, int yaxis, Bitmap *work){
     if (!bmp)return;
     // Set clip from the axis default is 0,0,bitmap width, bitmap height
     work->setClipRect(window.x1,window.y1,work->getWidth() + window.x2,work->getHeight() + window.y2);
-    Bitmap::transBlender( 0, 0, 0, alpha );
+    if (alpha != 255){
+	Bitmap::transBlender( 0, 0, 0, alpha );
+    }
     if (horizontalFlip && !verticalFlip){
 	bmp->drawTransHFlip(xaxis + offset.x, yaxis + offset.y, *work);
     } else if (!horizontalFlip && verticalFlip){
