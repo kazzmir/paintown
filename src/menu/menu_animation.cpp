@@ -23,6 +23,7 @@ alpha(255){
     }
     Token tok(*token);
     /* The usual setup of an animation frame is
+	// use image -1 to not draw anything, it can be used to get a blinking effect
 	(frame (image NUM) (alpha NUM) (offset x y) (hflip 0|1) (vflip 0|1) (time NUM) (window x1 y1 x2 y2))
     */
     while ( tok.hasTokens() ){
@@ -71,6 +72,7 @@ alpha(255){
 MenuFrame::~MenuFrame(){
 }
 void MenuFrame::draw(int xaxis, int yaxis, Bitmap *work){
+    if (!bmp)return;
     // Set clip from the axis default is 0,0,bitmap width, bitmap height
     work->setClipRect(window.x1,window.y1,work->getWidth() + window.x2,work->getHeight() + window.y2);
     Bitmap::transBlender( 0, 0, 0, alpha );
@@ -95,6 +97,7 @@ loop(0),
 allowReset(true){
     axis.x = 0;
     axis.y = 0;
+    images[-1] = 0;
     if ( *token != "anim" ){
 	throw LoadException("Not an animation");
     }
