@@ -3,6 +3,7 @@
 #include "util/token.h"
 #include "util/funcs.h"
 #include "globals.h"
+#include "menu/menu_animation.h"
 
 MenuOption::MenuOption(Token *token, const OptionType t) throw (LoadException):
 currentState(Deselected),
@@ -13,7 +14,6 @@ adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )),
 adjustRightColor(Bitmap::makeColor( 255, 255, 255 )),
 runnable(true),
 forRemoval(false),
-bitmapCounter(0),
 ID(0),
 parent(0){
     setType(t);
@@ -39,18 +39,10 @@ parent(0){
 		  }
 		  setInfoTextLocation(x,y);
 	      } 
-	      else if ( *token == "option-image" ){
-		  // add bitmaps to vector for use in individual options
-		  std::string temp;
-		  *token >> temp;
-		  Bitmap *bmp = new Bitmap(Util::getDataPath() + temp);
-		  if(bmp->getError()){
-		    delete bmp;
-		  }
-		  else {
-		    bitmaps.push_back(bmp);
-		  }
-	      }
+	      else if( *token == "anim" ) {
+		  MenuAnimation *animation = new MenuAnimation(token);
+		  animations.push_back(animation);
+	      } 
 	      else {
 		  Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
 		  if (Global::getDebug() >= 3){
@@ -71,22 +63,20 @@ parent(0){
 }
 
 MenuOption::~MenuOption(){
-    // Kill all bitmaps if any
-    for ( unsigned int i = 0; i < bitmaps.size(); ++i ){
-	    if(bitmaps[i])delete bitmaps[i];
+    // Kill all animations
+    for (std::vector<MenuAnimation *>::iterator i = animations.begin(); i != animations.end(); ++i){
+	if (*i){
+	    delete *i;
 	}
+    }
 }
 
 void MenuOption::draw(Bitmap *work){
-  if ( !bitmaps.empty()) {
-	    bitmaps[bitmapCounter]->Stretch(*work);
-	    bitmapCounter++;
-	    if(bitmapCounter>=bitmaps.size())bitmapCounter=0;
+    for (std::vector<MenuAnimation *>::iterator i = animations.begin(); i != animations.end(); ++i){
+	if (*i){
+	    (*i)->draw(work);
 	}
-}
-
-std::vector<Bitmap *> &MenuOption::getBitmaps() { 
-    return bitmaps;
+    }
 }
 
 // This is to pass paramaters to an option ie a bar or something
@@ -96,4 +86,20 @@ bool MenuOption::leftKey(){
 
 bool MenuOption::rightKey(){
     return false;
+}
+
+void MenuOption::resetAnimations(){
+    for (std::vector<MenuAnimation *>::iterator i = animations.begin(); i != animations.end(); ++i){
+	if (*i){
+	    (*i)->reset();
+	}
+    }
+}
+
+void MenuOption::updateAnimations(){
+    for (std::vector<MenuAnimation *>::iterator i = animations.begin(); i != animations.end(); ++i){
+	if (*i){
+	    (*i)->act();
+	}
+    }
 }

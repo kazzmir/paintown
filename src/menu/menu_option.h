@@ -9,6 +9,7 @@
 class Bitmap;
 class Token;
 class Menu;
+class MenuAnimation;
 
 class MenuOption
 {
@@ -16,7 +17,7 @@ class MenuOption
 		// Do logic before run part
 		virtual void logic()=0;
 		
-		// Do drawing or backgrounds in run part
+		// Do drawing or animations... If this is overridden need to cylce through the animations if useage is planned
 		virtual void draw(Bitmap *work);
 		
 		// Finally it has been selected, this is what shall run 
@@ -27,6 +28,12 @@ class MenuOption
 		// return true to pause key input
 		virtual bool leftKey();
 		virtual bool rightKey();
+		
+		// Reset animations
+		virtual void resetAnimations();
+		
+		// Update animations This is called regardless and only when the option is active
+		virtual void updateAnimations();
 		
 		enum state
 		{
@@ -46,7 +53,7 @@ class MenuOption
 		virtual ~MenuOption();
 
 	protected:
-		std::vector<Bitmap *> &getBitmaps();
+		// Nothing
 	private:
 		state currentState;
 		OptionType mType;
@@ -60,8 +67,7 @@ class MenuOption
 		bool forRemoval;
 		
 		// Image resource for use in individual options
-		std::vector<Bitmap *>bitmaps;
-		unsigned int bitmapCounter;
+		std::vector<MenuAnimation *>animations;
 		
 		// Stuff we don't need to be concerned with
 		friend class Menu;

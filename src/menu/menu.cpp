@@ -317,6 +317,7 @@ void Menu::run(){
                                             }
 					    else selectedOption = menuOptions.end() -1;
                                             (*selectedOption)->setState(MenuOption::Selected);
+					    (*selectedOption)->resetAnimations();
 					    if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
                                     }
 
@@ -329,6 +330,7 @@ void Menu::run(){
                                             }
 					    else selectedOption = menuOptions.begin();
                                             (*selectedOption)->setState(MenuOption::Selected);
+					    (*selectedOption)->resetAnimations();
 					    if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
                                     }
                                     
@@ -358,6 +360,10 @@ void Menu::run(){
                                             // Recalculate placement
                                             checkTextLength((*b));
                                     }
+				    
+				    // Current option animation logic
+				    (*selectedOption)->updateAnimations();
+				    
 				    // Animations
 				    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
 					(*i)->act();
