@@ -94,17 +94,19 @@ allowReset(true){
     window.x2 = 0;
     window.y2 = 0;
     images[-1] = 0;
+    std::string basedir = "";
     if ( *token != "anim" ){
 	throw LoadException("Not an animation");
     }
     /* The usual setup of an animation is
-	The images must be listed prior to listing any frames
+	The images must be listed prior to listing any frames, basedir can be used to set the directory where the images are located
 	loop will begin at the subsequent frame listed after loop
 	axis is the location in which the drawing must be placed
 	location - used to render in background or foreground (0 == background [default]| 1 == foreground)
 	reset - used to allow resetting of animation (0 == no | 1 == yes [default])
 	(anim (id NUM) 
 	      (location NUM)
+	      (basedir LOCATION)
 	      (image NUM FILE) 
 	      (axis x y) 
 	      (frame "Read comments above in constructor") 
@@ -123,12 +125,15 @@ allowReset(true){
 	    } else if (*token == "location"){
 		// get the location
 		*token >> location;
+	    } else if (*token == "basedir"){
+		// set the base directory for loading images
+		*token >> basedir;
 	    } else if (*token == "image"){
 		// add bitmaps by number to the map
 		int number;
 		std::string temp;
 		*token >> number >> temp;
-		Bitmap *bmp = new Bitmap(Util::getDataPath() + temp);
+		Bitmap *bmp = new Bitmap(Util::getDataPath() + basedir + temp);
 		if (bmp->getError()){
 		    delete bmp;
 		} else {
