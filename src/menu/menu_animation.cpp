@@ -6,6 +6,33 @@
 #include "globals.h"
 #include "util/funcs.h"
 
+// Temporary solution
+static void renderSprite(const Bitmap *bmp, const int x, const int y, const int alpha, const bool hflip, const bool vflip, Bitmap *work){
+    if (alpha != 255){
+	Bitmap::transBlender( 0, 0, 0, alpha );
+	if (hflip && !vflip){
+	    bmp->drawTransHFlip(x,y, *work);
+	} else if (!hflip && vflip){
+	    bmp->drawTransVFlip(x,y, *work);
+	} else if (hflip && vflip){
+	    bmp->drawTransHVFlip(x,y, *work);
+	} else if (!hflip && !vflip){
+	    bmp->drawTrans(x,y, *work);
+	}
+    }
+    else {
+	if (hflip && !vflip){
+	    bmp->drawHFlip(x,y, *work);
+	} else if (!hflip && vflip){
+	    bmp->drawVFlip(x,y, *work);
+	} else if (hflip && vflip){
+	    bmp->drawHVFlip(x,y, *work);
+	} else if (!hflip && !vflip){
+	    bmp->draw(x,y, *work);
+	}
+    }
+}
+
 MenuPoint::MenuPoint():x(0),y(0){}
 MenuArea::MenuArea():x1(0),y1(0),x2(0),y2(0){}
 
@@ -100,31 +127,10 @@ void MenuFrame::draw(const int xaxis, const int yaxis, Bitmap *work){
 	bmp->Blit( loc.x, scrollOffset.y, temp);
 	bmp->Blit( loc.x, loc.y, temp);
 	
-	if (alpha != 255){
-	    Bitmap::transBlender( 0, 0, 0, alpha );
-	}
-	if (horizontalFlip && !verticalFlip){
-	    temp.drawTransHFlip(xaxis + offset.x, yaxis + offset.y, *work);
-	} else if (!horizontalFlip && verticalFlip){
-	    temp.drawTransVFlip(xaxis + offset.x, yaxis + offset.y, *work);
-	} else if (horizontalFlip && verticalFlip){
-	    temp.drawTransHVFlip(xaxis + offset.x, yaxis + offset.y, *work);
-	} else if (!horizontalFlip && !verticalFlip){
-	    temp.drawTrans(xaxis + offset.x, yaxis + offset.y, *work);
-	}
+	renderSprite(&temp,xaxis+offset.x, yaxis+offset.y,alpha,horizontalFlip,verticalFlip, work);
+	
     } else {
-	if (alpha != 255){
-	    Bitmap::transBlender( 0, 0, 0, alpha );
-	}
-	if (horizontalFlip && !verticalFlip){
-	    bmp->drawTransHFlip(xaxis + offset.x, yaxis + offset.y, *work);
-	} else if (!horizontalFlip && verticalFlip){
-	    bmp->drawTransVFlip(xaxis + offset.x, yaxis + offset.y, *work);
-	} else if (horizontalFlip && verticalFlip){
-	    bmp->drawTransHVFlip(xaxis + offset.x, yaxis + offset.y, *work);
-	} else if (!horizontalFlip && !verticalFlip){
-	    bmp->drawTrans(xaxis + offset.x, yaxis + offset.y, *work);
-	}
+	renderSprite(bmp,xaxis+offset.x, yaxis+offset.y,alpha,horizontalFlip,verticalFlip, work);
     }
 }
 
