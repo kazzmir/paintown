@@ -35,7 +35,6 @@ class MenuFrame{
 	bool horizontalFlip;
 	bool verticalFlip;
 	int alpha;
-	MenuArea window;
 };
 
 class MenuAnimation{
@@ -60,6 +59,7 @@ class MenuAnimation{
 	unsigned int loop;
 	bool allowReset;
 	MenuPoint axis;
+	MenuArea window;
 	std::vector<MenuFrame *> frames;
 	imageMap images;
 };

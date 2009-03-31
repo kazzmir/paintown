@@ -14,17 +14,13 @@ verticalFlip(false),
 alpha(255){
     offset.x = 0;
     offset.y = 0;
-    window.x1 = 0;
-    window.y1 = 0;
-    window.x2 = 0;
-    window.y2 = 0;
     if ( *token != "frame" ){
 	throw LoadException("Not an frame");
     }
     Token tok(*token);
     /* The usual setup of an animation frame is
 	// use image -1 to not draw anything, it can be used to get a blinking effect
-	(frame (image NUM) (alpha NUM) (offset x y) (hflip 0|1) (vflip 0|1) (time NUM) (window x1 y1 x2 y2))
+	(frame (image NUM) (alpha NUM) (offset x y) (hflip 0|1) (vflip 0|1) (time NUM))
     */
     while ( tok.hasTokens() ){
 	try{
@@ -51,9 +47,6 @@ alpha(255){
 	    } else if (*token == "time"){
 		// time to display
 		*token >> time;
-	    } else if (*token == "window"){
-		// time to display
-		*token >> window.x1 >> window.y1 >> window.x2 >> window.y2;
 	    } else {
 		Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
 		if (Global::getDebug() >= 3){
@@ -73,8 +66,6 @@ MenuFrame::~MenuFrame(){
 }
 void MenuFrame::draw(int xaxis, int yaxis, Bitmap *work){
     if (!bmp)return;
-    // Set clip from the axis default is 0,0,bitmap width, bitmap height
-    work->setClipRect(window.x1,window.y1,work->getWidth() + window.x2,work->getHeight() + window.y2);
     if (alpha != 255){
 	Bitmap::transBlender( 0, 0, 0, alpha );
     }
@@ -87,7 +78,6 @@ void MenuFrame::draw(int xaxis, int yaxis, Bitmap *work){
     } else if (!horizontalFlip && !verticalFlip){
 	bmp->drawTrans(xaxis + offset.x, yaxis + offset.y, *work);
     }
-    work->setClipRect(0,0,work->getWidth(),work->getHeight());
 }
 
 MenuAnimation::MenuAnimation(Token *token) throw (LoadException):
@@ -99,6 +89,10 @@ loop(0),
 allowReset(true){
     axis.x = 0;
     axis.y = 0;
+    window.x1 = 0;
+    window.y1 = 0;
+    window.x2 = 0;
+    window.y2 = 0;
     images[-1] = 0;
     if ( *token != "anim" ){
 	throw LoadException("Not an animation");
@@ -115,7 +109,8 @@ allowReset(true){
 	      (axis x y) 
 	      (frame "Read comments above in constructor") 
 	      (loop)
-	      (reset NUM))
+	      (reset NUM)
+	      (window x1 y1 x2 y2))
     */
     Token tok(*token);
     while ( tok.hasTokens() ){
@@ -142,6 +137,9 @@ allowReset(true){
 	    } else if (*token == "axis"){
 		// Get the axis location it defaults to 0,0
 		*token >> axis.x >> axis.y;
+	    } else if (*token == "window"){
+		// time to display
+		*token >> window.x1 >> window.y1 >> window.x2 >> window.y2;
 	    } else if (*token == "frame"){
 		// new frame
 		MenuFrame *frame = new MenuFrame(token,images);
@@ -192,7 +190,10 @@ void MenuAnimation::act(){
     }
 }
 void MenuAnimation::draw(Bitmap *work){
+     // Set clip from the axis default is 0,0,bitmap width, bitmap height
+    work->setClipRect(window.x1,window.y1,work->getWidth() + window.x2,work->getHeight() + window.y2);
     frames[currentFrame]->draw(axis.x,axis.y,work);
+    work->setClipRect(0,0,work->getWidth(),work->getHeight());
 }
 void MenuAnimation::forwardFrame(){
     if (currentFrame < frames.size() -1){
