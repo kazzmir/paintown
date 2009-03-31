@@ -445,7 +445,7 @@ void Menu::run(){
 				    (*i)->draw(work);
 				}
 				// Draw any misc stuff in the background of the menu of selected object 
-				(*selectedOption)->draw(work);
+				(*selectedOption)->drawBelow(work);
 				// Draw text board
 				drawTextBoard(work);
 				// Draw text
@@ -456,6 +456,8 @@ void Menu::run(){
 				for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 				    (*i)->draw(work);
 				}
+				// Draw any misc stuff in the foreground of the menu of selected object 
+				(*selectedOption)->drawAbove(work);
 				// Finally render to screen
 				work->BlitToScreen();
 			}

@@ -17,8 +17,11 @@ class MenuOption
 		// Do logic before run part
 		virtual void logic()=0;
 		
-		// Do drawing or animations... If this is overridden need to cylce through the animations if useage is planned
-		virtual void draw(Bitmap *work);
+		// Do drawing or animations below text... If this is overridden need to cylce through the animations if useage is planned
+		virtual void drawBelow(Bitmap *work);
+		
+		// do draw or animations above text
+		virtual void drawAbove(Bitmap *work);
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
@@ -67,7 +70,8 @@ class MenuOption
 		bool forRemoval;
 		
 		// Image resource for use in individual options
-		std::vector<MenuAnimation *>animations;
+		std::vector<MenuAnimation *>backgroundAnimations;
+		std::vector<MenuAnimation *>foregroundAnimations;
 		
 		// Stuff we don't need to be concerned with
 		friend class Menu;
