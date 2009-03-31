@@ -26,6 +26,7 @@
 #include <map>
 
 Bitmap *Menu::work = 0;
+int Menu::clearColor = Bitmap::makeColor(0,0,0);
 
 // The top level menu, it is required to be main or whatever this set to
 static std::string parentMenu = "main";
@@ -129,6 +130,12 @@ void Menu::load(Token *token)throw( LoadException ){
                                     delete background;
 				    background = 0;
                                 }
+			} else if ( *tok == "clear-color" ) {
+				/* This is the clear color of the background if there is no background image specified within the menu
+				 * Although if this is a submenu, and parent has a background that will be used instead...*/
+				int r=0,g=0,b=0;
+				*tok >> r >> g >> b;
+				clearColor = Bitmap::makeColor(r,g,b);
 			} else if ( *tok == "position" ) {
 				// This handles the placement of the menu list and surrounding box
 				*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
@@ -186,9 +193,11 @@ void Menu::load(Token *token)throw( LoadException ){
 		throw LoadException("No name set, the menu should have a name!");
 	}
 
+	/* Since the introduction of animations... no need to enforce a background
+	 * Instead if there is no background... the background will be cleared to color defaults to black 0,0,0
 	if ( !background && getName() == parentMenu ){
 		throw LoadException("There should be at least one background in the main menu!");
-	}
+	}*/
 	
 	if (! infoPositionX || ! infoPositionY){
 		throw LoadException("The position for the menu info boxes must be set!");
@@ -427,7 +436,6 @@ void Menu::run(){
 			}
 		
 			if ( draw ){
-				work->clear();
 				// Draw
 				
 				// Do the background
@@ -620,9 +628,13 @@ void Menu::resetFadeInfo(){
 }
 
 void Menu::drawBackground(Bitmap *work){
-	if( !background ){
+	if ( !background ){
 	      Bitmap *temp = getMenu( parentMenu )->background;
-	      if( temp )temp->Stretch(*work); 
+	      if ( temp ){
+		  temp->Stretch(*work); 
+	      } else {
+		  work->fill(clearColor);
+	      }
 	}
 	else background->Stretch(*work);
 }

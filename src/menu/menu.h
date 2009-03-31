@@ -151,6 +151,9 @@ class Menu
 		//! Set background for this menu
 		Bitmap *background;
 		
+		//! Clear color only used if no background is set this is for every existant menu
+		static int clearColor;
+		
 		//! Is this an option?
 		bool option;
 };
