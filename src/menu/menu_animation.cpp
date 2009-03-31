@@ -6,14 +6,15 @@
 #include "globals.h"
 #include "util/funcs.h"
 
+MenuPoint::MenuPoint():x(0),y(0){}
+MenuArea::MenuArea():x1(0),y1(0),x2(0),y2(0){}
+
 MenuFrame::MenuFrame(Token *token, imageMap &images) throw (LoadException):
 bmp(0),
 time(0),
 horizontalFlip(false),
 verticalFlip(false),
 alpha(255){
-    offset.x = 0;
-    offset.y = 0;
     if ( *token != "frame" ){
 	throw LoadException("Not an frame");
     }
@@ -64,19 +65,66 @@ alpha(255){
 }
 MenuFrame::~MenuFrame(){
 }
-void MenuFrame::draw(int xaxis, int yaxis, Bitmap *work){
-    if (!bmp)return;
-    if (alpha != 255){
-	Bitmap::transBlender( 0, 0, 0, alpha );
+void MenuFrame::act(const double xvel, const double yvel){
+    scrollOffset.x +=xvel;
+    scrollOffset.y +=yvel;
+    if (scrollOffset.x >=bmp->getWidth()){
+	scrollOffset.x = 0;
+    } else if (scrollOffset.x <= -(bmp->getWidth())){
+	scrollOffset.x = 0;
     }
-    if (horizontalFlip && !verticalFlip){
-	bmp->drawTransHFlip(xaxis + offset.x, yaxis + offset.y, *work);
-    } else if (!horizontalFlip && verticalFlip){
-	bmp->drawTransVFlip(xaxis + offset.x, yaxis + offset.y, *work);
-    } else if (horizontalFlip && verticalFlip){
-	bmp->drawTransHVFlip(xaxis + offset.x, yaxis + offset.y, *work);
-    } else if (!horizontalFlip && !verticalFlip){
-	bmp->drawTrans(xaxis + offset.x, yaxis + offset.y, *work);
+    if (scrollOffset.y >=bmp->getHeight()){
+	scrollOffset.y = 0;
+    } else if (scrollOffset.y <= -(bmp->getHeight())){
+	scrollOffset.y = 0;
+    }
+}
+void MenuFrame::draw(const int xaxis, const int yaxis, Bitmap *work){
+    if (!bmp)return;
+    if ( scrollOffset.x != 0 || scrollOffset.y != 0){
+	// Lets do some scrolling
+	Bitmap temp = Bitmap::temporaryBitmap(bmp->getWidth(), bmp->getHeight());
+	MenuPoint loc;
+	if (scrollOffset.x < 0){
+	    loc.x = scrollOffset.x + bmp->getWidth();
+	} else if (scrollOffset.x > 0){
+	    loc.x = scrollOffset.x - bmp->getWidth();
+	}
+	if (scrollOffset.y < 0){
+	    loc.y = scrollOffset.y + bmp->getHeight();
+	} else if (scrollOffset.y > 0){
+	    loc.y = scrollOffset.y - bmp->getHeight();
+	}
+	bmp->Blit(scrollOffset.x, scrollOffset.y, temp);
+	bmp->Blit( scrollOffset.x, loc.y, temp);
+	bmp->Blit( loc.x, scrollOffset.y, temp);
+	bmp->Blit( loc.x, loc.y, temp);
+	
+	if (alpha != 255){
+	    Bitmap::transBlender( 0, 0, 0, alpha );
+	}
+	if (horizontalFlip && !verticalFlip){
+	    temp.drawTransHFlip(xaxis + offset.x, yaxis + offset.y, *work);
+	} else if (!horizontalFlip && verticalFlip){
+	    temp.drawTransVFlip(xaxis + offset.x, yaxis + offset.y, *work);
+	} else if (horizontalFlip && verticalFlip){
+	    temp.drawTransHVFlip(xaxis + offset.x, yaxis + offset.y, *work);
+	} else if (!horizontalFlip && !verticalFlip){
+	    temp.drawTrans(xaxis + offset.x, yaxis + offset.y, *work);
+	}
+    } else {
+	if (alpha != 255){
+	    Bitmap::transBlender( 0, 0, 0, alpha );
+	}
+	if (horizontalFlip && !verticalFlip){
+	    bmp->drawTransHFlip(xaxis + offset.x, yaxis + offset.y, *work);
+	} else if (!horizontalFlip && verticalFlip){
+	    bmp->drawTransVFlip(xaxis + offset.x, yaxis + offset.y, *work);
+	} else if (horizontalFlip && verticalFlip){
+	    bmp->drawTransHVFlip(xaxis + offset.x, yaxis + offset.y, *work);
+	} else if (!horizontalFlip && !verticalFlip){
+	    bmp->drawTrans(xaxis + offset.x, yaxis + offset.y, *work);
+	}
     }
 }
 
@@ -87,12 +135,6 @@ ticks(0),
 currentFrame(0),
 loop(0),
 allowReset(true){
-    axis.x = 0;
-    axis.y = 0;
-    window.x1 = 0;
-    window.y1 = 0;
-    window.x2 = 0;
-    window.y2 = 0;
     images[-1] = 0;
     std::string basedir = "";
     if ( *token != "anim" ){
@@ -104,10 +146,12 @@ allowReset(true){
 	axis is the location in which the drawing must be placed
 	location - used to render in background or foreground (0 == background [default]| 1 == foreground)
 	reset - used to allow resetting of animation (0 == no | 1 == yes [default])
+	velocity - used to get a wrapping scroll effect while animating
 	(anim (id NUM) 
 	      (location NUM)
 	      (basedir LOCATION)
 	      (image NUM FILE) 
+	      (velocity x y)
 	      (axis x y) 
 	      (frame "Read comments above in constructor") 
 	      (loop)
@@ -145,6 +189,9 @@ allowReset(true){
 	    } else if (*token == "window"){
 		// time to display
 		*token >> window.x1 >> window.y1 >> window.x2 >> window.y2;
+	    } else if (*token == "velocity"){
+		// This allows the animation to get a wrapping scroll action going on
+		*token >> velocity.x >> velocity.y;
 	    } else if (*token == "frame"){
 		// new frame
 		MenuFrame *frame = new MenuFrame(token,images);
@@ -153,7 +200,7 @@ allowReset(true){
 		// start loop here
 		loop = frames.size();
 	    } else if (*token == "reset"){
-		// start loop here
+		// Allow reset of animation
 		*token >> allowReset;
 	    } else {
 		Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
@@ -186,6 +233,10 @@ MenuAnimation::~MenuAnimation(){
     }
 }
 void MenuAnimation::act(){
+    // Used for scrolling
+    for (std::vector<MenuFrame *>::iterator i = frames.begin(); i != frames.end(); ++i){
+	(*i)->act(velocity.x, velocity.y);
+    }
     if( frames[currentFrame]->time != -1 ){
 	ticks++;
 	if(ticks >= frames[currentFrame]->time){

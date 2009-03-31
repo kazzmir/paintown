@@ -13,11 +13,13 @@ class Bitmap;
 typedef std::map< int, Bitmap *> imageMap;
 
 struct MenuPoint{
-    int x;
-    int y;
+    MenuPoint();
+    double x;
+    double y;
 };
 
 struct MenuArea{
+    MenuArea();
     int x1;
     int y1;
     int x2;
@@ -28,9 +30,11 @@ class MenuFrame{
     public:
 	MenuFrame(Token *token, imageMap &images) throw (LoadException);
 	virtual ~MenuFrame();
-	virtual void draw(int xaxis, int yaxis, Bitmap *work);
+	virtual void act(const double xvel, const double yvel);
+	virtual void draw(const int xaxis, const int yaxis, Bitmap *work);
 	Bitmap *bmp;
 	MenuPoint offset;
+	MenuPoint scrollOffset;
 	int time;
 	bool horizontalFlip;
 	bool verticalFlip;
@@ -59,6 +63,8 @@ class MenuAnimation{
 	unsigned int loop;
 	bool allowReset;
 	MenuPoint axis;
+	// This allows the frames to scroll in place
+	MenuPoint velocity;
 	MenuArea window;
 	std::vector<MenuFrame *> frames;
 	imageMap images;
