@@ -21,6 +21,7 @@
 #include "mugen_item_content.h"
 #include "mugen_section.h"
 #include "mugen_character.h"
+#include "mugen_menu.h"
 #include "mugen_sound.h"
 #include "mugen_reader.h"
 #include "mugen_sprite.h"
@@ -30,6 +31,8 @@
 
 
 static int lowerCase( int c ){ return tolower( c );}
+
+MugenCharacterSelect *MugenUtil::select = 0;
 
 void MugenUtil::fixCase( std::string &str ){
     transform( str.begin(), str.end(), str.begin(), lowerCase );
@@ -941,4 +944,8 @@ std::string MugenUtil::getCorrectFileLocation( const std::string &dir, const std
     Global::debug(1) << "No correction needed File: " << dir + ourFile << endl;
     return dir + ourFile;
 }
+
+// Register our select screen so options can access it
+void MugenUtil::registerSelect(MugenCharacterSelect *s) { select = s; }
+MugenCharacterSelect *MugenUtil::getSelect(){ return select; }
 

@@ -1150,6 +1150,8 @@ void MugenMenu::load() throw (MugenException){
 	    characterSelect = new MugenCharacterSelect(ticker,fonts);
 	    try{
 		characterSelect->load(baseDir + selectFile,i,collection,sprites);
+		// Register it for access by options that need it
+		MugenUtil::registerSelect(characterSelect);
 	    }
 	    catch (MugenException &ex){
 		throw MugenException(ex);
@@ -1339,7 +1341,7 @@ void MugenMenu::run(){
 		    while ( Global::speed_counter < 1 ){
 			    Util::rest( 1 );
 			    keyInputManager::update();
-		    }
+		    }              
 	    }
 	    
 	    // do we got an option to run, lets do it
@@ -1350,7 +1352,9 @@ void MugenMenu::run(){
 			    ok->play();
 			}*/
 			(*selectedOption)->run(endGame);
-			characterSelect->run((*selectedOption)->getText(), 2, true, work);
+			if (!endGame){
+			    //characterSelect->run((*selectedOption)->getText(), 1, true, work);
+			}
 		    } catch ( const ReturnException & re ){
 		    }
 		    // Reset it's state
