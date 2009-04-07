@@ -58,7 +58,8 @@ MugenCharacterSelect::MugenCharacterSelect(const unsigned long int &ticker, std:
 cellBackgroundBitmap(0),
 cellRandomBitmap(0),
 selectTicker(ticker),
-fonts(fonts){
+fonts(fonts),
+characterList(0){
 }
 MugenCharacterSelect::~MugenCharacterSelect(){
     if (cellBackgroundBitmap){
@@ -96,6 +97,10 @@ MugenCharacterSelect::~MugenCharacterSelect(){
     // STages
     for (std::vector< MugenStage *>::iterator i = stages.begin(); i != stages.end(); ++i){
 	    if (*i) delete (*i);
+    }
+    // Delete character select list struct
+    if (characterList){
+	delete characterList;
     }
 }
 void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &index, std::vector< MugenSection * > &collection, 
@@ -317,7 +322,7 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
     // Also do their preload
     if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
 }
-MugenSelectedChars MugenCharacterSelect::run(const std::string &title, const int players, const bool selectStage, Bitmap *work){
+MugenSelectedChars *MugenCharacterSelect::run(const std::string &title, const int players, const bool selectStage, Bitmap *work){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     
@@ -347,7 +352,11 @@ MugenSelectedChars MugenCharacterSelect::run(const std::string &title, const int
     }
     unsigned int currentStage =  0;
     
-    MugenSelectedChars characterList;
+    if (characterList){
+	delete characterList;
+    }
+    characterList = new MugenSelectedChars();
+    characterList->selectedStage = 0;
     
     while ( ! done && fader.getState() != RUNFADE ){
     
@@ -407,10 +416,10 @@ MugenSelectedChars MugenCharacterSelect::run(const std::string &title, const int
 			if ( keyInputManager::keyState(keys::ENTER, true ) ){
 			    if (!cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->empty && p1Cursor.selecting){
 				p1Cursor.selecting = false;
-				characterList.team1.push_back(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->character);
+				characterList->team1.push_back(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->character);
 			    } else if (!p1Cursor.selecting && selectStage && !stageInfo.selected){
 				stageInfo.selected = true;
-				characterList.selectedStage = stageSelections[currentStage];
+				characterList->selectedStage = stageSelections[currentStage];
 			    }
 			}
 			
@@ -503,7 +512,7 @@ MugenSelectedChars MugenCharacterSelect::run(const std::string &title, const int
 		keyInputManager::update();
 	}
     }
-	
+	if (selectStage && !stageInfo.selected)return 0;
 	return characterList;
 }
 

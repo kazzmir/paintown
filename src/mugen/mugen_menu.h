@@ -98,7 +98,7 @@ class MugenCharacterSelect{
 			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites) throw (MugenException);
 	
 	/*! do logic, draw whatever */
-	virtual MugenSelectedChars run(const std::string &title, const int players, const bool selectStage, Bitmap *work);	
+	virtual MugenSelectedChars *run(const std::string &title, const int players, const bool selectStage, Bitmap *work);	
     private:
 	//fadein.time = 10
 	//fadeout.time = 10
@@ -241,6 +241,8 @@ class MugenCharacterSelect{
 	std::vector<MugenFont *> &fonts;
 	
 	void loadCharacters(const std::string &selectFile)throw (MugenException);
+	
+	MugenSelectedChars *characterList;
 };
 
 class MugenMenu : public Menu

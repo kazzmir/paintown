@@ -49,13 +49,15 @@ void MugenOptionVersus::logic(){
 
 void MugenOptionVersus::run(bool &endGame){
     // Do select screen change back to 2 once finished testing
-    MugenSelectedChars gameInfo = MugenUtil::getSelect()->run(getText(), 1, true, Menu::work);
+    MugenSelectedChars *gameInfo = MugenUtil::getSelect()->run(getText(), 1, true, Menu::work);
+    
+    if (gameInfo == 0)return;
     
     // Load the stage
     try{
-	gameInfo.selectedStage->load();
+	gameInfo->selectedStage->load();
     }catch (MugenException &ex){
-	Global::debug(0) << "Problem with stage: " << gameInfo.selectedStage->getName() << " Problem was: " << ex.getReason() << endl;
+	Global::debug(0) << "Problem with stage: " << gameInfo->selectedStage->getName() << " Problem was: " << ex.getReason() << endl;
 	return;
     }
     
@@ -65,7 +67,7 @@ void MugenOptionVersus::run(bool &endGame){
     double runCounter = 0;
    
     // Lets reset the stage for good measure
-    gameInfo.selectedStage->reset();
+    gameInfo->selectedStage->reset();
     
     while( !quit ){
         bool draw = false;
@@ -74,7 +76,7 @@ void MugenOptionVersus::run(bool &endGame){
             runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
             while (runCounter > 1){
 		keyInputManager::update();
-		gameInfo.selectedStage->logic();
+		gameInfo->selectedStage->logic();
                 runCounter -= 1;
                 draw = true;
 		
@@ -84,7 +86,7 @@ void MugenOptionVersus::run(bool &endGame){
         }
 
         if (draw){
-            gameInfo.selectedStage->render(&work);
+            gameInfo->selectedStage->render(&work);
 	    work.Stretch(*Menu::work);
 	    Menu::work->BlitToScreen();
         }
