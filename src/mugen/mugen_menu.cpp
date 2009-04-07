@@ -47,6 +47,8 @@
 #include "mugen_font.h"
 #include "mugen_storyboard.h"
 
+#include "mugen/option_versus.h"
+
 const int DEFAULT_WIDTH = 320;
 const int DEFAULT_HEIGHT = 240;
 const int DEFAULT_SCREEN_X_AXIS = 160;
@@ -422,6 +424,19 @@ MugenSelectedChars MugenCharacterSelect::run(const std::string &title, const int
 		    
 		    // Backgrounds
 		    background->logic( 0, 0, 0, 0 );
+		    
+		    // Check status
+		    if (players == 2){
+			if (!p1Cursor.selecting && !p2Cursor.selecting && stageInfo.selected){
+			    done = true;
+			    fader.setState(FADEOUT);
+			}
+		    } else if (players == 1){
+			if (!p1Cursor.selecting && ((selectStage && stageInfo.selected) || !selectStage)){
+			    done = true;
+			    fader.setState(FADEOUT);
+			}
+		    }
 		}
 		
 		Global::speed_counter = 0;
@@ -1027,8 +1042,8 @@ void MugenMenu::load() throw (MugenException){
 			    std::string temp;
 			    *content->getNext() >> temp;
 			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
+				    MugenOptionVersus *versus = new MugenOptionVersus(temp);
+				    addOption(versus);
 			    }
 		       }
 		   } else if (itemhead == "menu.itemname.teamarcade"){
