@@ -4,6 +4,7 @@
 #include "character.h" 
 #include "player-common.h"
 #include "util/keyboard.h"
+#include "util/joystick.h"
 #include <deque>
 #include "util/load_exception.h"
 #include "network/network.h"
@@ -90,6 +91,7 @@ protected:
 	virtual int getKey( int x );
 
 	virtual bool careAboutKey( int key );
+        virtual std::vector<int> convertJoystick(JoystickInput input);
 
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
@@ -103,6 +105,7 @@ protected:
 	map< int, bool > last_key;
 	int acts;
 	Keyboard keyboard;
+        Joystick * joystick;
 	int show_life;
 
 	int name_id;

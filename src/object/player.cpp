@@ -16,6 +16,7 @@
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
+#include "util/joystick.h"
 
 // how many ticks to wait before the key cache is cleared.
 // this can probably be user defined in the future
@@ -41,6 +42,8 @@ config(config){
 		throw LoadException("No 'grab' movement");
 	}
 	*/
+
+        joystick = Joystick::create();
 
 	show_life = getHealth();
 
@@ -68,6 +71,7 @@ config(config){
 	*/
 
 	show_life = getHealth();
+        joystick = Joystick::create();
 
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
@@ -84,6 +88,7 @@ config(0){
 	show_life = getHealth();
 	lives = DEFAULT_LIVES;
         initializeAttackGradient();
+        joystick = Joystick::create();
 }
 
 Player::Player(const Player & pl) throw( LoadException ):
@@ -95,6 +100,7 @@ invincible( false ){
 	show_life = getHealth();
         initializeAttackGradient();
         config = pl.config;
+        joystick = Joystick::create();
 }
 
 void Player::initializeAttackGradient(){
@@ -103,6 +109,7 @@ void Player::initializeAttackGradient(){
 }
 
 Player::~Player(){
+    delete joystick;
 }
 
 void Player::loseLife( int l ){
@@ -130,6 +137,7 @@ void Player::fillKeyCache(){
 
         /* get the latest key presses */
 	keyboard.poll();
+        joystick->poll();
 
         /* pull off a key every once in a while */
 	if ( acts++ > GLOBAL_KEY_DELAY ){
@@ -145,16 +153,22 @@ void Player::fillKeyCache(){
 		acts = 0;
 	}
 
-	if ( keyboard.keypressed() ){
+	if (keyboard.keypressed() || joystick->pressed()){
 		// acts = 0;
 		vector< int > all_keys;
 		keyboard.readKeys( all_keys );
+                vector<int> joystick_keys = convertJoystick(joystick->readAll());
+                for (vector<int>::iterator it = joystick_keys.begin(); it != joystick_keys.end(); it++){
+                    Global::debug(1) << "Read joystick key " << *it << endl;
+                }
+                all_keys.insert(all_keys.begin(), joystick_keys.begin(), joystick_keys.end());
 		map< int, bool > new_last;
 		for ( vector<int>::iterator it = all_keys.begin(); it != all_keys.end(); it++ ){
 			int n = *it;
 			/* only process the key if this player could
 			 * possibly be worried about it
 			 */
+                        Global::debug(1) << "Checking key " << n << endl;
 			if ( careAboutKey( n ) ){
                                 /* dont repeat keys */
 				if ( ! last_key[ n ] ){
@@ -383,6 +397,44 @@ bool Player::combo( Animation * ani ){
 int Player::getKey( int motion, int facing ){
 	return Configuration::config(config).getKey( motion, facing );
 }
+        
+vector<int> Player::convertJoystick(JoystickInput input){
+    vector<int> all;
+    if (input.up){
+        all.push_back(getKey(PAIN_KEY_UP));
+    }
+    if (input.right){
+        if (getFacing() == FACING_RIGHT){
+            all.push_back(getKey(PAIN_KEY_FORWARD));
+        } else {
+            all.push_back(getKey(PAIN_KEY_BACK));
+        }
+    }
+    if (input.left){
+        if (getFacing() == FACING_RIGHT){
+            all.push_back(getKey(PAIN_KEY_BACK));
+        } else {
+            all.push_back(getKey(PAIN_KEY_FORWARD));
+        }
+    }
+    if (input.down){
+        all.push_back(getKey(PAIN_KEY_DOWN));
+    }
+    if (input.button1){
+        all.push_back(getKey(PAIN_KEY_ATTACK1));
+    }
+    if (input.button2){
+        all.push_back(getKey(PAIN_KEY_ATTACK2));
+    }
+    if (input.button3){
+        all.push_back(getKey(PAIN_KEY_ATTACK3));
+    }
+    if (input.button4){
+        all.push_back(getKey(PAIN_KEY_JUMP));
+    }
+
+    return all;
+}
 
 bool Player::careAboutKey( int key ){
 	return getKey( PAIN_KEY_FORWARD ) == key ||
@@ -595,6 +647,12 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	Character::act( others, world, add );
 
 	fillKeyCache();
+
+        JoystickInput joyinput = joystick->readAll();
+        bool key_forward = keyboard[getKey(PAIN_KEY_FORWARD)] || (getFacing() == FACING_RIGHT && joyinput.right) || (getFacing() == FACING_LEFT && joyinput.left);
+        bool key_backward = keyboard[getKey(PAIN_KEY_BACK)] || (getFacing() == FACING_RIGHT && joyinput.left) || (getFacing() == FACING_LEFT && joyinput.right);
+        bool key_up = keyboard[getKey(PAIN_KEY_UP)] || joyinput.up;
+        bool key_down = keyboard[getKey(PAIN_KEY_DOWN)] || joyinput.down;
 
 	/* special cases... */
 	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise || getStatus() == Status_Get || getStatus() == Status_Falling )
@@ -825,7 +883,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		
                 /* special cases when no animation has been chosen */
 		if ( final == NULL /* && animation_current == NULL ){ */ && getStatus() != Status_Grab ){
-			bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ];
+			bool moving = key_forward || key_up || key_down;
 			if ( getMovement( "jump" ) == NULL || animation_current != getMovement( "jump" ) ){
 				if ( !moving ){
 					if ( animation_current != getMovement( "idle" ) ){
@@ -883,13 +941,13 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;
 				double y = 0;
-				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
+				if (key_forward){
 					x = getSpeed() * 1.2;
 				}
-				if ( keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
+				if (key_down){
 					y = getSpeed() * 1.2;	
 				}
-				if ( keyboard[ getKey( PAIN_KEY_UP ) ] ){
+				if (key_up){
 					y = -getSpeed() * 1.2;	
 				}
 
@@ -907,18 +965,18 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	if ( (getStatus() == Status_Ground) && (animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" )) ){
 
 		bool moved = false;
-		if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
+		if (key_forward){
 			moveX( getSpeed() );
 			moved = true;
-		} else if ( keyboard[ getKey( PAIN_KEY_BACK ) ] ){
+		} else if (key_backward){
 			setFacing( getOppositeFacing() );
 			moved = true;
 		}
 
-		if ( keyboard[ getKey( PAIN_KEY_UP ) ] ){
+		if (key_up){
 			moveZ( -getSpeed() );
 			moved = true;
-		} else if ( keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
+		} else if (key_down){
 			moveZ( getSpeed() );
 			moved = true;
 		}
