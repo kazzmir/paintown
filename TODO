@@ -43,6 +43,7 @@ Future
 * make network mode use versions
 * allow level sets to only allow explicit players
 * make a console like in quake where debug output can go
+* port to psp/nds
 * mugen config and txt files
   - parse data using lexer
 * mugen sff files
