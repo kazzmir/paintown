@@ -7,17 +7,26 @@
 #include <map>
 #include "mugen_exception.h"
 
+// Implement object_attack
+#include "object/object_attack.h"
+#include "network/network.h"
+
 class Bitmap;
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
 class MugenAnimation;
 
-class MugenCharacter{
+using namespace Network;
+
+class MugenCharacter : public ObjectAttack{
 public:
 	// Location at dataPath() + "mugen/chars/"
 	MugenCharacter( const string & s );
 	MugenCharacter( const char * location );
+	MugenCharacter( const string & s, int alliance );
+	MugenCharacter( const string & s, const int x, const int y, int alliance );
+	MugenCharacter( const MugenCharacter &copy );
 
 	~MugenCharacter();
 	
@@ -52,6 +61,27 @@ public:
 	inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
             return sounds;
         }
+	
+	/*! This all the inherited members */
+	virtual void act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*);                       
+	virtual void draw(Bitmap*, int);                      
+	virtual void grabbed(Object*);
+	virtual void unGrab();
+	virtual bool isGrabbed();
+	virtual Object* copy();
+	virtual const std::string& getAttackName();
+	virtual bool collision(ObjectAttack*);
+	virtual int getDamage() const;
+	virtual bool isCollidable(Object*);
+	virtual bool isGettable();
+	virtual bool isGrabbable(Object*);
+	virtual bool isAttacking();
+	virtual const int getWidth() const;
+	virtual const int getHeight() const;
+	virtual Message getCreateMessage();
+	virtual void getAttackCoords(int&, int&);
+	virtual const double minZDistance() const;
+	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
 protected:
 

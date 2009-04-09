@@ -28,12 +28,28 @@
 #include "mugen_util.h"
 #include "globals.h"
 
-MugenCharacter::MugenCharacter( const string & s ){
+MugenCharacter::MugenCharacter( const string & s ):
+ObjectAttack(0){
     this->location = s;
 }
 
-MugenCharacter::MugenCharacter( const char * location ){
+MugenCharacter::MugenCharacter( const char * location ):
+ObjectAttack(0){
     this->location = std::string(location);
+}
+
+MugenCharacter::MugenCharacter( const string & s, int alliance ):
+ObjectAttack(alliance){
+    this->location = s;
+}
+
+MugenCharacter::MugenCharacter( const string & s, const int x, const int y, int alliance ):
+ObjectAttack(x,y,alliance){
+    this->location = s;
+}
+
+MugenCharacter::MugenCharacter( const MugenCharacter & copy ):
+ObjectAttack(0){
 }
 
 MugenCharacter::~MugenCharacter(){
@@ -241,7 +257,7 @@ void MugenCharacter::load() throw( MugenException ){
     }
     if (palDefaults.size() < palFile.size()){
 	bool setPals[palFile.size()];
-	for( int i =0;i<palFile.size();++i){
+	for( unsigned int i =0;i<palFile.size();++i){
 	    setPals[i] = false;
 	}
 	// Set the ones already set
@@ -368,5 +384,60 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 	Global::debug(1) << "Added Animation 'Begin Action " << h << "' : '" << animations[h]->getName(animations[h]->getType()) << "'" << endl;
     }
 }
+
+/* Inherited members */
+void MugenCharacter::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
+}
+void MugenCharacter::draw(Bitmap*, int){
+}                      
+void MugenCharacter::grabbed(Object*){
+}
+void MugenCharacter::unGrab(){
+}
+bool MugenCharacter::isGrabbed(){
+    return false;
+}
+Object* MugenCharacter::copy(){
+    return this;
+}
+const std::string& MugenCharacter::getAttackName(){
+    return getName();
+}
+bool MugenCharacter::collision(ObjectAttack*){
+    return false;
+}
+int MugenCharacter::getDamage() const{
+    return 0;
+}
+bool MugenCharacter::isCollidable(Object*){
+    return true;
+}
+bool MugenCharacter::isGettable(){
+    return false;
+}
+bool MugenCharacter::isGrabbable(Object*){
+    return true;
+}
+bool MugenCharacter::isAttacking(){
+    return false;
+}
+const int MugenCharacter::getWidth() const{
+    return groundfront;
+}
+const int MugenCharacter::getHeight() const{
+    return height;
+}
+Message MugenCharacter::getCreateMessage(){
+    return Message();
+}
+void MugenCharacter::getAttackCoords(int&, int&){
+}
+const double MugenCharacter::minZDistance() const{
+    return 0;
+}
+void MugenCharacter::attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&){
+}
+
+
 
 
