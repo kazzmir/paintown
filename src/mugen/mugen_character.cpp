@@ -49,7 +49,7 @@ ObjectAttack(x,y,alliance){
 }
 
 MugenCharacter::MugenCharacter( const MugenCharacter & copy ):
-ObjectAttack(0){
+ObjectAttack(copy){
 }
 
 MugenCharacter::~MugenCharacter(){
