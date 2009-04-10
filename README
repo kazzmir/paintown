@@ -32,9 +32,12 @@ Topics:
   
   You can use scons or cmake.
 
-  If the scons build fails because it cannot find hawknl/nl.h it may be because of this problem, http://scons.tigris.org/issues/show_bug.cgi?id=2121. Try the patch listed on that page, http://scons.tigris.org/nonav/issues/showattachment.cgi/448/bug2121_proposed_patch.  
-  Upgrading to scons 1.1.0 also fixes this issue.
-
+  If the scons build fails because it cannot find hawknl/nl.h it may be because of this problem, http://scons.tigris.org/issues/show_bug.cgi?id=2121. This error will manifest itself like so:
+  
+  build/network/network.h: 5:23: error: hawknl/nl.h: No such file or directory 
+  
+  Try the patch listed on this page, http://scons.tigris.org/nonav/issues/showattachment.cgi/448/bug2121_proposed_patch.  
+  Upgrading to scons 1.1.0 also fixes this issue. http://www.scons.org
 
   * Linux
 
