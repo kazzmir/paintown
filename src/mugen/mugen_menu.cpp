@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "mugen/mugen_menu.h"
 
 #include <fstream>
@@ -16,7 +17,6 @@
 #include "init.h"
 #include "resource.h"
 #include "util/funcs.h"
-#include "util/bitmap.h"
 #include "game/console.h"
 #include "object/animation.h"
 #include "object/object.h"

@@ -1,4 +1,11 @@
 #include <allegro.h>
+
+#ifdef _WIN32
+#define BITMAP dummyBITMAP
+#include <windows.h>
+#undef BITMAP
+#endif
+
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -615,3 +622,4 @@ int main( int argc, char ** argv ){
 	
 	return 0;
 }
+END_OF_MAIN()

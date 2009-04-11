@@ -31,6 +31,8 @@ use['YACCHXXFILESUFFIX'] = '.hh'
 def isH(name):
     return name.endswith(".hpp") or name.endswith(".hh") or name.endswith(".h")
 
+# print use['BUILDERS']
+
 lex = use.CFile('mugen/lex', 'mugen/lex.l')
 yacc = filter(lambda s: not isH(s.path), use.CXXFile('mugen/parse', 'mugen/parse.yy'))
 use.Depends(lex, yacc)

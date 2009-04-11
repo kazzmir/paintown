@@ -1,10 +1,10 @@
+#include "util/bitmap.h"
 #include "menu/option_dummy.h"
 #include "util/token.h"
 #include "menu/menu.h"
 #include "globals.h"
 #include "init.h"
 #include "util/keyboard.h"
-#include "util/bitmap.h"
 
 OptionDummy::OptionDummy(Token *token) throw( LoadException ):
 MenuOption(token, Event){

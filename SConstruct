@@ -101,7 +101,7 @@ def readExec( program ):
 def getEnvironment():
     if isCygwin():
         import SCons.Tool.zip
-        env = Environment(ENV = os.environ, tools = ['mingw'])
+        env = Environment(ENV = os.environ, tools = ['mingw','lex','yacc'])
         env['CXX'] = 'C:\\MinGW\\bin\\g++.exe'
         env['CC'] = 'C:\\MinGW\\bin\\gcc.exe'
         env['AR'] = 'C:\\MinGW\\bin\\ar.exe'
@@ -199,12 +199,21 @@ if isWindows():
 
     config = env.Configure(custom_tests = custom_tests)
     config.CheckPython()
-    config.CheckLex()
-    config.CheckYacc()
+    if not config.CheckLex():
+        print "Can't find lex"
+	Exit(1)
+    # the yacc check gets into an infinite loop when checking under
+    # cygwin, so just disable it for now
+    if False and not config.CheckYacc():
+        print "Can't find yacc"
+	Exit(1)
     env = config.Finish()
     
     staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
     env.Append( LIBS = [dumb,hawknl] )
+    
+    env.Append(LIBS = ['fl'])
+    staticEnv.Append(LIBS = ['fl'])
 
     env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
     env.Append( CPPDEFINES = 'WINDOWS' )

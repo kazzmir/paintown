@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "mugen_animation.h"
 
 #include <string>
@@ -6,8 +7,6 @@
 #include "init.h"
 #include "mugen_sprite.h"
 #include "mugen_util.h"
-
-#include "util/bitmap.h"
 
 static void renderCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int color ){
     for( unsigned int i = 0; i < vec.size(); ++i ){

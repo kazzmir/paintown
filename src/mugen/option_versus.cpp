@@ -1,6 +1,5 @@
-#include "mugen/option_versus.h"
-
 #include "util/bitmap.h"
+#include "mugen/option_versus.h"
 #include "util/font.h"
 #include "util/token.h"
 #include "configuration.h"

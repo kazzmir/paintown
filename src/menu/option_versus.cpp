@@ -1,6 +1,6 @@
+#include "menu/option_versus.h"
 #include "game.h"
 #include "globals.h"
-#include "menu/option_versus.h"
 #include "util/token.h"
 #include "util/keyboard.h"
 #include "util/load_exception.h"
