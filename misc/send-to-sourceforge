@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rsync --bwlimit=30 -avP -e ssh $* kazzmir@frs.sourceforge.net:uploads/
