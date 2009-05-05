@@ -264,14 +264,13 @@ else:
     staticEnv.Append( LIBS = [png,'z','m'] )
     staticEnv.Append( LIBS = freetype )
 
-    if False:
-        ## why doesnt this work!
-        if not config.TryCompile("int main(){ return 0; }\n", ".c"):
-            print "You need a C compiler such as gcc installed"
-            Exit( 1 )
-        if not config.TryCompile("class a{}; int main(){ a x = new a(); delete x; return 0; }\n", ".cpp" ):
-            print "You need a C++ compiler such as g++ installed"
-            Exit( 1 )
+    ## why doesnt this work!
+    if not config.TryCompile("int main(){ return 0; }\n", ".c"):
+        print "You need a C compiler such as gcc installed"
+        Exit( 1 )
+    if not config.TryCompile("class a{public: a(){} }; int main(){ a * x = new a(); delete x; return 0; }\n", ".cpp" ):
+        print "You need a C++ compiler such as g++ installed"
+        Exit( 1 )
     if not config.CheckHeader( 'allegro.h' ):
         print "You need the header files for Allegro. Get it from http://alleg.sf.net"
         Exit( 1 )
