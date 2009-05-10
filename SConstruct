@@ -108,7 +108,7 @@ def getEnvironment():
         SCons.Tool.zip.generate(env)
         return env
     elif useMingw():
-        return Environment(ENV = os.environ, tools = ['mingw'])
+        return Environment(ENV = os.environ, tools = ['mingw', 'lex', 'yacc', 'zip'])
     else:
         return Environment(ENV = os.environ)
 
