@@ -82,3 +82,4 @@ Future
 * pause mode in network play
 * fix bug with data directory, like when install-sh is used
 * network players need their health/name drawn in front of background stuff
+* allow more characters in the network host boxes (like '-')
