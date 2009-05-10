@@ -1,5 +1,5 @@
 all:
-	scons -j 2
+	@scons -j 2 || echo "Get scons at www.scons.org or read the README for compilation instructions"
 
 clean:
 	scons -c
