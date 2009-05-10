@@ -1,0 +1,22 @@
+5/9/2009 - about a month ago I tried to compile svn HEAD in windows. this went fine
+but when I ran it nothing would happen. I tried running the binary on my linux machine
+with wine and saw the lexer consuming input. Debugging in windows is a pain but
+these are the things I have tried so far:
+
+  * not use my hybrid cygwin + mingw build environment. I set up a normal mingw build
+  environment in an xp vm running in virtualbox but the issue persists. I tried using
+  visual studio but its compiler sucks too much to use. It doesn't come with stdint.h
+  nor sys/time.h and I didn't want to deal with the headache of porting my stuff to it.
+
+  * use gdb in windows to get a stack trace of where its at. unfortunately, there
+  doesn't seem to be an easy way to do this. in linux I would hit ctrl-c and type 'bt'
+  but in windows if you hit ctrl-c the program completely dies and gdb whines that
+  the program closed unexpectedly. sending signals externally doesn't look all that
+  possible, I tried pstools but that only has some kill command.
+
+  5/9/2009 
+  * since I couldn't force SIGINT via ctrl-c I added a segfault to the lexer function.
+    *(char *)0 = 0;
+  and paintown dutifully segfaults when run outside gdb. When I try running paintown
+  inside gdb nothing happens! I guess a completely different code path is being
+  taken so my segfault doesn't get a chance to run.
