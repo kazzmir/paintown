@@ -137,7 +137,9 @@ void Player::fillKeyCache(){
 
         /* get the latest key presses */
 	keyboard.poll();
-        joystick->poll();
+	if (joystick != NULL){
+		joystick->poll();
+	}
 
         /* pull off a key every once in a while */
 	if ( acts++ > GLOBAL_KEY_DELAY ){
@@ -153,15 +155,18 @@ void Player::fillKeyCache(){
 		acts = 0;
 	}
 
-	if (keyboard.keypressed() || joystick->pressed()){
+	if (keyboard.keypressed() || (joystick != NULL && joystick->pressed())){
 		// acts = 0;
 		vector< int > all_keys;
 		keyboard.readKeys( all_keys );
-                vector<int> joystick_keys = convertJoystick(joystick->readAll());
-                for (vector<int>::iterator it = joystick_keys.begin(); it != joystick_keys.end(); it++){
-                    Global::debug(1) << "Read joystick key " << *it << endl;
-                }
-                all_keys.insert(all_keys.begin(), joystick_keys.begin(), joystick_keys.end());
+
+		if (joystick != NULL){
+			vector<int> joystick_keys = convertJoystick(joystick->readAll());
+			for (vector<int>::iterator it = joystick_keys.begin(); it != joystick_keys.end(); it++){
+			    Global::debug(1) << "Read joystick key " << *it << endl;
+			}
+			all_keys.insert(all_keys.begin(), joystick_keys.begin(), joystick_keys.end());
+		}
 		map< int, bool > new_last;
 		for ( vector<int>::iterator it = all_keys.begin(); it != all_keys.end(); it++ ){
 			int n = *it;
@@ -648,7 +653,11 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 
 	fillKeyCache();
 
-        JoystickInput joyinput = joystick->readAll();
+        JoystickInput joyinput;
+        if (joystick != NULL){
+	    joyinput = joystick->readAll();
+	}
+
         bool key_forward = keyboard[getKey(PAIN_KEY_FORWARD)] || (getFacing() == FACING_RIGHT && joyinput.right) || (getFacing() == FACING_LEFT && joyinput.left);
         bool key_backward = keyboard[getKey(PAIN_KEY_BACK)] || (getFacing() == FACING_RIGHT && joyinput.left) || (getFacing() == FACING_LEFT && joyinput.right);
         bool key_up = keyboard[getKey(PAIN_KEY_UP)] || joyinput.up;
