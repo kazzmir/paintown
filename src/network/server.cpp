@@ -601,7 +601,7 @@ static void playGame( const vector< Socket > & sockets ){
 			}
 
 			debug( 1 ) << "Create network world" << endl;
-			NetworkWorld world( sockets, players, level );
+			NetworkWorld world( sockets, players, Util::getDataPath() + level );
 
 			debug( 1 ) << "Load music" << endl;
 

@@ -448,7 +448,7 @@ void realGame( const vector< Object * > & players, const string & levelFile ){
                         }
                         */
 
-			AdventureWorld world( players, *it );
+			AdventureWorld world( players, Util::getDataPath() + *it );
 
 			Music::pause();
 			Music::fadeIn( 0.3 );

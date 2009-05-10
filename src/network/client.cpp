@@ -206,7 +206,7 @@ static void playGame( Socket socket ){
 					break;
 				}
 				case World::LOAD_LEVEL : {
-					string level = next.path;
+					string level = Util::getDataPath() + next.path;
 					NetworkWorldClient world( socket, players, level, client_id );
 					Music::pause();
 					Music::fadeIn( 0.3 );
@@ -251,7 +251,7 @@ static void playGame( Socket socket ){
                     delete *it;
                 }
 	} catch ( const LoadException & le ){
-		Global::debug( 0 ) << "[client] Load exception: " + le.getReason();
+		Global::debug( 0 ) << "[client] Load exception: " + le.getReason() << endl;
 	}
 
 	stopLoading( loadingThread );

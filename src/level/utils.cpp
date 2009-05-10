@@ -16,10 +16,10 @@ vector< string > readLevels( const string & filename ){
 
 		vector< string > levels;
 		if ( *head == "levels" ){
-			while ( head->hasTokens() ){
+			while (head->hasTokens()){
 				string s;
 				*head >> s;
-				levels.push_back( Util::getDataPath() + s );
+				levels.push_back(s);
 			}
 		}
 
