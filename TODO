@@ -79,7 +79,7 @@ Future
     Round Ticker, Players Health and Power bars) etc.
     DONE - Menuing system utilize paintowns menus to render itself and its options
     - Each submenu subclass MenuOption to produce the arcade/versus/demo etc
-* pause mode in network play
-* fix bug with data directory, like when install-sh is used
+* add pause mode in network play
+DONE * fix bug with data directory in network mode, like when install-sh is used
 * network players need their health/name drawn in front of background stuff
 * allow more characters in the network host boxes (like '-')
