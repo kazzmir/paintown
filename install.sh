@@ -20,6 +20,11 @@
 data(){
 	dir=$1
 
+	if [ ! -f paintown ]; then
+		echo "You must compile paintown first. Read the README for instructions or just type make"
+		exit 0
+	fi
+
 	echo "Copying data to $dir"
 	mkdir -p $dir
 
