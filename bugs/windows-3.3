@@ -20,3 +20,12 @@ these are the things I have tried so far:
   and paintown dutifully segfaults when run outside gdb. When I try running paintown
   inside gdb nothing happens! I guess a completely different code path is being
   taken so my segfault doesn't get a chance to run.
+
+  * ok finally fixed it. the libfl.a (flex library) I was using had its own main in it.
+  This raises two questions: 1) why didn't the linker complain that main has been
+  defined twice and 2) why would a library have its own main? what the hell were the
+  developers of libfl thinking???
+
+  anyway I just removed libmain.c from the flex Makefile and now everything is fine. I
+  was using the gnuwin32 flex package from here:
+    http://gnuwin32.sourceforge.net/packages/flex.htm
