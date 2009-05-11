@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+
+# taken from
+# http://blogs.divisibleprime.com/ronin/articles/2008/03/10/command-line-gnome-notification
+
+from pynotify import *
+import sys
+
+def notify(message=""):
+    n = Notification("Paintown", message)
+    n.show()
+
+init("cli notify")
+if len(sys.argv) > 1:
+    notify(sys.argv[1])
+else:
+    notify()
+
