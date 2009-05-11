@@ -6,6 +6,7 @@
 #include "music.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"
+#include "game/input-manager.h"
 #include "util/timedifference.h"
 #include "util/funcs.h"
 #include "globals.h"
@@ -73,6 +74,7 @@ int paintown_main( int argc, char ** argv ){
 	diff.endTime();
 	diff.printTime( "Init:" );
 	
+        InputManager input;
 	Music music(music_on);
 	try{
 		Menu game;
