@@ -155,6 +155,7 @@ void Player::fillKeyCache(){
 		acts = 0;
 	}
 
+        /* use the input manager instead of most of this stuff */
 	if (keyboard.keypressed() || (joystick != NULL && joystick->pressed())){
 		// acts = 0;
 		vector< int > all_keys;
