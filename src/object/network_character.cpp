@@ -42,42 +42,42 @@ NetworkCharacter::~NetworkCharacter(){
 }
 	
 Object * NetworkCharacter::copy(){
-	return new NetworkCharacter( *this );
+    return new NetworkCharacter( *this );
 }
 
 /* player will send a grab message, network character should send a bogus message */
 Network::Message NetworkCharacter::grabMessage( unsigned int from, unsigned int who ){
-	Network::Message message;
-	message.id = 0;
-	message << World::IGNORE_MESSAGE;
-	return message;
+    Network::Message message;
+    message.id = 0;
+    message << World::IGNORE_MESSAGE;
+    return message;
 }
 
 void NetworkCharacter::interpretMessage( Network::Message & message ){
-	int type;
-	message >> type;
-	switch ( type ){
-            case CharacterMessages::ShowName : {
-                int amount;
-                message >> amount;
-                setNameTime( amount );
-                break;
-            }
-            default : {
-                message.reset();
-                Character::interpretMessage( message );
-                break;
-            }
-	}
+    int type;
+    message >> type;
+    switch ( type ){
+        case CharacterMessages::ShowName : {
+            int amount;
+            message >> amount;
+            setNameTime( amount );
+            break;
+        }
+        default : {
+            message.reset();
+            Character::interpretMessage( message );
+            break;
+        }
+    }
 }
 	
 void NetworkCharacter::setNameTime( int d ){
-	show_name_time = d;
+    show_name_time = d;
 }
 	
 void NetworkCharacter::alwaysShowName(){
-	setNameTime( -1 );
-	Global::debug( 1 ) << getId() << " name time is " << show_name_time << endl;
+    setNameTime( -1 );
+    Global::debug( 1 ) << getId() << " name time is " << show_name_time << endl;
 }
 
 void NetworkCharacter::drawFront(Bitmap * work, int rel_x){
@@ -113,37 +113,36 @@ void NetworkCharacter::draw( Bitmap * work, int rel_x ){
 
 /* just performs the current animation */
 void NetworkCharacter::act( vector< Object * > * others, World * world, vector< Object * > * add ){
-	Global::debug( 2 ) << getId() << " status is " << getStatus() << endl;
-	Character::act( others, world, add );
-	if ( (getStatus() == Status_Ground ||
-	      getStatus() == Status_Jumping) && animation_current->Act() ){
-	      	// Global::debug( 0 ) << "Reset animation" << endl;
-		if ( animation_current->getName() != "idle" &&
-		     animation_current->getName() != "walk" ){
-			animation_current = getMovement( "idle" );
-		}
-		animation_current->reset();
-	}
+    Global::debug( 2 ) << getId() << " status is " << getStatus() << endl;
+    Character::act( others, world, add );
+    if ( (getStatus() == Status_Ground ||
+                getStatus() == Status_Jumping) && animation_current->Act() ){
+        // Global::debug( 0 ) << "Reset animation" << endl;
+        if ( animation_current->getName() != "idle" &&
+                animation_current->getName() != "walk" ){
+            animation_current = getMovement( "idle" );
+        }
+        animation_current->reset();
+    }
 }
 	
 void NetworkCharacter::landed( World * world ){
-	setThrown( false );
-	switch( getStatus() ){
-		case Status_Falling : {
-			if ( landed_sound ){
-				landed_sound->play();
-			}
+    setThrown( false );
+    switch( getStatus() ){
+        case Status_Falling : {
+            if ( landed_sound ){
+                landed_sound->play();
+            }
 
-			world->Quake( (int)fabs(getYVelocity()) );
+            world->Quake( (int)fabs(getYVelocity()) );
 
-			break;
-		}
-		case Status_Fell : {
-			world->Quake( (int)fabs(getYVelocity()) );
-			break;
-		}
-	}
-
+            break;
+        }
+        case Status_Fell : {
+            world->Quake( (int)fabs(getYVelocity()) );
+            break;
+        }
+    }
 }
 	
 void NetworkCharacter::deathReset(){
