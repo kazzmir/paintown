@@ -22,7 +22,7 @@ public:
 
 public:
 	virtual Network::Message grabMessage( unsigned int from, unsigned int who );
-	virtual void draw( Bitmap * work, int rel_x );
+	virtual void drawFront(Bitmap * work, int rel_x);
 
 	virtual void setNameTime( int d );
 	virtual void alwaysShowName();

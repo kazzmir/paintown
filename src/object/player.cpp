@@ -225,7 +225,7 @@ void Player::attacked( World * world, Object * something, vector< Object * > & o
 void Player::drawLifeBar( int x, int y, Bitmap * work ){
 	drawLifeBar( x, y, show_life, work );
 }
-	
+
 void Player::drawFront( Bitmap * work, int rel_x ){
 
 	int x1, y1;
