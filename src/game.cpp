@@ -151,7 +151,7 @@ static void drawHelp( const Font & font, int x, int y, int color, Bitmap & buffe
 	font.printf( x, y, color, buffer, "Press F1 to view this help", 0 );
 }
 
-static bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
+bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
 	Keyboard key;
 	
 	key.setDelay( Keyboard::Key_F2, 100 );

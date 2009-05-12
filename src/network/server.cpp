@@ -337,6 +337,7 @@ static Network::Message removeMessage( int id ){
 	return message;
 }
 
+#if 0
 static void playLevel( World & world, const vector< Object * > & players ){
 	Keyboard key;
 	
@@ -451,6 +452,7 @@ static void playLevel( World & world, const vector< Object * > & players ){
 		}
 	}
 }
+#endif
 
 static int allAlliance = ALLIANCE_FREE_FOR_ALL;
 static int playerAlliance(){
@@ -509,6 +511,8 @@ static void playGame( const vector< Socket > & sockets ){
 	try{
             /* first the user selects his own player */
 		Object * player = Game::selectPlayer( false, "Pick a player" );
+                /* ugly cast */
+                ((Player *) player)->ignoreLives();
 		players.push_back( player );
                 /* then the user selects a set of levels to play */
 		string levelSet = Game::selectLevelSet( Util::getDataPath() + "/levels" );
@@ -559,6 +563,7 @@ static void playGame( const vector< Socket > & sockets ){
 			}
 		}
 
+                /* send all created characters to all clients */
 		for ( vector<Object *>::iterator it = players.begin(); it != players.end(); it++ ){
 			Character * c = (Character *) *it;
 			string path = c->getPath();
@@ -590,7 +595,7 @@ static void playGame( const vector< Socket > & sockets ){
 			sendToAll( sockets, loadLevel );
 
 			for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-				Player * playerX = (Player *) *it;
+				Character * playerX = (Character *) *it;
 				playerX->setY( 200 );
 				/* setMoving(false) sets all velocities to 0 */
 				playerX->setMoving( false );
@@ -619,7 +624,7 @@ static void playGame( const vector< Socket > & sockets ){
                         world.startMessageHandlers();
 
 			stopLoading( loading_screen_thread );
-			playLevel( world, players );
+                        bool played = Game::playLevel( world, players, 200 );
 
                         ObjectFactory::destroy();
                         HeartFactory::destroy();
@@ -644,6 +649,11 @@ static void playGame( const vector< Socket > & sockets ){
                         /* another ok barrier */
                         waitAllOk(sockets);
                         sendAllOk(sockets);
+
+                        /* if the server quits, then everyone quits */
+                        if (!played){
+                            break;
+                        }
 
                         /*
 			for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){

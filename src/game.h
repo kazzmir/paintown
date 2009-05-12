@@ -10,9 +10,13 @@
 class Object;
 class Character;
 class Bitmap;
+class World;
 
 namespace Game{
 
+/* play a single world */
+bool playLevel( World & world, const vector< Object * > & players, int helpTime );
+/* do the required setup to play a single level */
 void realGame( const std::vector< Object * > & players, const std::string & levelFile );
 const string selectLevelSet( const std::string & base ) throw( ReturnException );
 void fadeOut( Bitmap & work, const std::string & message );

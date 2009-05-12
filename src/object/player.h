@@ -75,7 +75,15 @@ public:
         virtual const int getConfig() const {
             return this->config;
         }
-        
+
+        virtual inline void ignoreLives(){
+            ignore_lives = true;
+        }
+
+        virtual inline const bool ignoringLives() const {
+            return ignore_lives;
+        }
+
         virtual ~Player();
 	
 protected:
@@ -115,6 +123,7 @@ protected:
 
 	bool invincible;
 	int config;
+        bool ignore_lives;
 
 	// int last_key;
 };

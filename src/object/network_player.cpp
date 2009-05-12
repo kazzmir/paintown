@@ -76,8 +76,7 @@ Network::Message NetworkPlayer::scoreMessage(){
     return m;
 }
 
-void NetworkPlayer::draw( Bitmap * work, int rel_x ){
-    Character::draw( work, rel_x );
+void NetworkPlayer::drawFront( Bitmap * work, int rel_x ){
     static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
     int x1, y1;

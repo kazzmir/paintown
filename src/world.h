@@ -75,6 +75,10 @@ protected:
 	std::vector<Object *> objects;
 
 public:
+        /* serialized actions the world can take. mostly for use with networking
+         * WARNING: changing these values (like moving them around) will break
+         * backwards compatibility.
+         */
         enum{
             /* no action, just a dummy value */
             NOTHING,
@@ -110,8 +114,14 @@ public:
             IGNORE_MESSAGE,
             /* entire game is over, time to go outside */
             GAME_OVER,
-            /* entire game is over, time to go outside */
+            /* create a player. used to differentiate between players and
+             * regular characters
+             */
             IS_PLAYER,
+            /* pause the game */
+            PAUSE,
+            /* unpause the game */
+            UNPAUSE,
         };
 };
 

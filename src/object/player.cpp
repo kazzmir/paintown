@@ -34,7 +34,8 @@ acts(0),
 name_id(-1),
 attack_bonus(0),
 invincible( false ),
-config(config){
+config(config),
+ignore_lives(false){
 	lives = DEFAULT_LIVES;
 	
 	/*
@@ -59,7 +60,8 @@ acts(0),
 name_id(-1),
 attack_bonus(0),
 invincible( false ),
-config(config){
+config(config),
+ignore_lives(false){
 
 	lives = DEFAULT_LIVES;
 	
@@ -84,7 +86,8 @@ acts(0),
 name_id(-1),
 attack_bonus(0),
 invincible( false ),
-config(0){
+config(0),
+ignore_lives(false){
 	show_life = getHealth();
 	lives = DEFAULT_LIVES;
         initializeAttackGradient();
@@ -96,8 +99,10 @@ PlayerCommon( pl ),
 acts( 0 ),
 name_id(-1),
 attack_bonus(0),
-invincible( false ){
+invincible( false ),
+ignore_lives(false){
 	show_life = getHealth();
+        ignore_lives = pl.ignore_lives;
         initializeAttackGradient();
         config = pl.config;
         joystick = Joystick::create();
@@ -113,11 +118,15 @@ Player::~Player(){
 }
 
 void Player::loseLife( int l ){
+    if (!ignoringLives()){
 	lives -= l;
+    }
 }
 
 void Player::gainLife( int l ){
+    if (!ignoringLives()){
 	lives += l;
+    }
 }
 
 void Player::debugDumpKeyCache(int level){
@@ -272,8 +281,10 @@ void Player::drawFront( Bitmap * work, int rel_x ){
 	drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
 	// cout << "Y1: " << y1 << " Height: " << player_font.getHeight() << " new y1: " << (y1 + player_font.getHeight() / 2) << endl;
 	// work->printf( hasIcon + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
-	int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
-	render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
+        if (!ignoringLives()){
+            int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
+            render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
+        }
 
 	// work->rectangle( x1, y1, x1 + 100, y1 + nameHeight + 1, Bitmap::makeColor( 255, 255, 255 ) );
 }

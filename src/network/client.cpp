@@ -11,6 +11,7 @@
 #include "world.h"
 #include "music.h"
 #include "object/character.h"
+#include "object/player.h"
 #include "object/network_character.h"
 #include "object/network_player.h"
 #include "network_world_client.h"
@@ -157,6 +158,7 @@ static void playGame( Socket socket ){
 	pthread_t loadingThread;
 	try{
 		Character * player = (Character *) Game::selectPlayer( false, "Pick a player" );
+                ((Player *) player)->ignoreLives();
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );
 	
