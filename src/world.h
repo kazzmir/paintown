@@ -53,6 +53,13 @@ public:
         virtual inline const std::vector<Object*> & getObjects() const {
             return objects;
         }
+
+        /* set to paused */
+        virtual void pause() = 0;
+        /* set to unpaused */
+        virtual void unpause() = 0;
+        /* set to paused if unpaused, or vice-versa */
+        virtual void changePause() = 0;
         
         /* bleh.. */
         virtual void addEnemy(Enemy * obj) = 0;

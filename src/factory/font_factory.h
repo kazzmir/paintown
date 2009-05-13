@@ -14,21 +14,21 @@ class FontFactory{
 private:
     friend class Collector;
     friend class Font;
-	static Font * getFont( const string & str, const int x, const int y );
-	static void destroy();
+    static Font * getFont( const string & str, const int x, const int y );
 
 private:
-	FontFactory();
-	~FontFactory();
+    FontFactory();
+    ~FontFactory();
 
-	Font * getRealFont( const string & str, const int x, const int y );
+    static void destroy();
+
+    Font * getRealFont( const string & str, const int x, const int y );
 
 private:
-	static FontFactory * my_factory;
+    static FontFactory * my_factory;
 
-	DATAFILE * my_data;
-	map< string, Font * > font_mapper;
-
+    DATAFILE * my_data;
+    map<string, Font *> font_mapper;
 };
 
 #endif

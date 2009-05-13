@@ -159,6 +159,10 @@ const int MugenFont::getHeight( const string & str ) const{
 const int MugenFont::getHeight() const{
     return height;
 }
+    
+void MugenFont::printf( int x, int y, int xSize, int ySize, int color, const Bitmap & work, const string & str, int marker, ... ) const {
+    /* call the other printf somehow.. */
+}
 
 void MugenFont::printf( int x, int y, int color, const Bitmap & work, const string & str, int marker, ... ) const{
     // Va list

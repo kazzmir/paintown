@@ -5,6 +5,7 @@
 #include "object/object_attack.h"
 #include "object/character.h"
 #include "util/load_exception.h"
+#include "util/font.h"
 #include "globals.h"
 #include "object/effect.h"
 #include "object/enemy.h"
@@ -19,11 +20,14 @@
 
 using namespace std;
 
+static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+
 AdventureWorld::AdventureWorld():
 World(),
 draw_minimaps( true ),
 mini_map( NULL ),
-takeAScreenshot(false){
+takeAScreenshot(false),
+is_paused(false){
 	scene = NULL;
 	bang = NULL;
 }
@@ -33,7 +37,8 @@ World(),
 path( path ),
 draw_minimaps( true ),
 mini_map( NULL ),
-takeAScreenshot(false){
+takeAScreenshot(false),
+is_paused(false){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -111,6 +116,18 @@ void AdventureWorld::reloadLevel() throw( LoadException ){
 		it->min_x = 0;
 	}
 	loadLevel( path );
+}
+        
+void AdventureWorld::changePause(){
+    is_paused = ! is_paused;
+}
+
+void AdventureWorld::pause(){
+    is_paused = true;
+}
+
+void AdventureWorld::unpause(){
+    is_paused = false;
 }
 	
 void AdventureWorld::loadLevel( const string & path ) throw( LoadException ){
@@ -334,6 +351,9 @@ void AdventureWorld::doLogic(){
 	}
 
 	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
+
+        /* script engine tick. Is this the right place for it? */
+        getEngine()->tick();
 }
 
 void AdventureWorld::killAllHumans( Object * player ){
@@ -363,9 +383,11 @@ int AdventureWorld::getMaximumZ(){
 }
 
 void AdventureWorld::act(){
-	if (quake_time > 0){
-		quake_time--;
-        }
+    if (quake_time > 0){
+        quake_time--;
+    }
+
+    if (!is_paused){
 		
 	doLogic();
 	
@@ -417,6 +439,7 @@ void AdventureWorld::act(){
 
 	doScene( (int) lowest, (int)(lowest + screen_size) );
 	// scene->act( min_x, min_x + screen_size, &objects );
+    }
 }
 	
 void AdventureWorld::doScene( int min_x, int max_x ){
@@ -543,6 +566,15 @@ void AdventureWorld::draw( Bitmap * work ){
             doTakeScreenshot(work);
         } else {
             takeAScreenshot = false;
+        }
+
+        if (is_paused){
+            const Font & font = Font::getFont(Util::getDataPath() + DEFAULT_FONT, 15, 15);
+            work->transBlender( 0, 0, 0, 128 );
+            work->drawingMode( Bitmap::MODE_TRANS );
+            work->rectangleFill( 0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+            work->drawingMode( Bitmap::MODE_SOLID );
+            font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
         }
 	
 	/*

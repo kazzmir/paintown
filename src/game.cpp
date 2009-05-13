@@ -151,6 +151,22 @@ static void drawHelp( const Font & font, int x, int y, int color, Bitmap & buffe
 	font.printf( x, y, color, buffer, "Press F1 to view this help", 0 );
 }
 
+static Network::Message pausedMessage(){
+    Network::Message message;
+    message.id = 0;
+    message << World::PAUSE;
+
+    return message;
+}
+
+static Network::Message unpausedMessage(){
+    Network::Message message;
+    message.id = 0;
+    message << World::UNPAUSE;
+
+    return message;
+}
+
 bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
 	Keyboard key;
 	
@@ -195,7 +211,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 	
 	bool paused = false;
 
-        /* dont put any variables after runCounter and before the while loop */
+        /* don't put any variables after runCounter and before the while loop */
 	double runCounter = 0;
 	while ( ! done ){
 
@@ -209,7 +225,6 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 				while ( runCounter >= 1.0 ){
 					draw = true;
 					world.act();
-                                        world.getEngine()->tick();
                                         console.act();
 					runCounter -= 1.0;
 
@@ -258,8 +273,13 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                         }
 
 			if ( key[ Keyboard::Key_P ] ){
-				paused = ! paused;
-				draw = true;
+                            /*
+                            paused = ! paused;
+                            world.addMessage(paused ? pausedMessage() : unpausedMessage());
+                            draw = true;
+                            */
+                            world.changePause();
+                            world.addMessage(paused ? pausedMessage() : unpausedMessage());
 			}
 
 			if ( key[ Keyboard::Key_TAB ] ){

@@ -51,18 +51,18 @@ void FontRender::destroy(){
 }
 
 void FontRender::render( Bitmap * work ){
-	for ( vector< render_message >::const_iterator it = messages.begin(); it != messages.end(); it++ ){
+	for ( vector<render_message>::iterator it = messages.begin(); it != messages.end(); it++ ){
 		const render_message & r = *it;
 		// work->printf( r.x, r.y, r.fg, r.r_font, r.str );
-		r.r_font.printf( r.x, r.y, r.fg, *work, r.str, 0 );
+		r.r_font.printf( r.x, r.y, r.sizeX, r.sizeY, r.fg, *work, r.str, 0 );
 		// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
 	}
 	messages.clear();
 }
 
 void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const string & str ){
-	render_message r( f, x, y, fg, bg, str );
-	messages.push_back( r );
+    render_message r( f, x, y, f.getSizeX(), f.getSizeY(), fg, bg, str );
+    messages.push_back( r );
 }
 
 void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const char * str, ... ){

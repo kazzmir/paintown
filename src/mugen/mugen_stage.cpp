@@ -821,6 +821,15 @@ Network::Message MugenStage::createBangMessage( int x, int y, int z ){
     Network::Message m;
     return m;
 }
+        
+void MugenStage::pause(){
+}
+
+void MugenStage::unpause(){
+}
+
+void MugenStage::changePause(){
+}
 
 const std::string MugenStage::getStageName(const std::string &filename) throw (MugenException){
     // Lets look for our def since some assholes think that all file systems are case insensitive

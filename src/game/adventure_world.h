@@ -51,6 +51,10 @@ public:
 	virtual int getX();
 	virtual int getY();
 
+        virtual void pause();
+        virtual void unpause();
+        virtual void changePause();
+
         virtual const std::deque<Bitmap*> & getScreenshots();
 
         virtual const int levelLength() const;
@@ -116,6 +120,7 @@ protected:
 
         std::deque<Bitmap*> screenshots;
         bool takeAScreenshot;
+        bool is_paused;
 };
 
 #endif

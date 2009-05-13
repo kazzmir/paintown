@@ -11,16 +11,20 @@ using namespace std;
 class Bitmap;
 
 struct render_message{
-	render_message( const Font & f, int x, int y, int fg, int bg, const string & str ):r_font( f ){
-		this->x = x;
-		this->y = y;
-		this->fg = fg;
-		this->bg = bg;
-		this->str = str;
+	render_message( const Font & f, int x, int y, int sizeX, int sizeY, int fg, int bg, const string & str ):r_font( f ){
+            this->sizeX = sizeX;
+            this->sizeY = sizeY;
+            this->x = x;
+            this->y = y;
+            this->fg = fg;
+            this->bg = bg;
+            this->str = str;
 	}
 
 	render_message( const render_message & c ):
 		r_font( c.r_font ){
+                sizeX = c.sizeX;
+                sizeY = c.sizeY;
 		x = c.x;
 		y = c.y;
 		fg = c.fg;
@@ -43,6 +47,8 @@ struct render_message{
 	}
 
 	const Font & r_font;
+        int sizeX;
+        int sizeY;
 	int x;
 	int y;
 	int fg;
@@ -66,7 +72,7 @@ private:
 
 	static FontRender * my_render;
 
-	vector< render_message > messages;
+	vector<render_message> messages;
 
 };
 

@@ -76,6 +76,10 @@ public:
 	
 	// Add player2 people
 	virtual void addp2( Object * o );
+
+        virtual void pause();
+        virtual void unpause();
+        virtual void changePause();
 	
 	// Console
 	virtual void toggleConsole();
