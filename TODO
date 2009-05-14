@@ -85,4 +85,4 @@ DONE * fix bug with data directory in network mode, like when install-sh is used
 * allow more characters in the network host boxes (like '-')
 * make "Loading Paintown" text configurable
 * make credits screen configurable
-* if there is only one level to load, skip the level selection screen
+DONE * if there is only one level to load, skip the level selection screen
