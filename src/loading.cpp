@@ -21,7 +21,8 @@ void * loadingScreen( void * arg ){
 	int load_y = 220;
 	string name = Util::getDataPath() + "/fonts/arial.ttf";
 	const Font & myFont = Font::getFont( name, 24, 24 );
-	const char * the_string = "Loading Paintown";
+        /* make this configurable */
+	const char * the_string = (arg != NULL) ? (const char *) arg : "Loading...";
 	int load_width = myFont.textLength( the_string );
 	int load_height = myFont.getHeight( the_string );
 

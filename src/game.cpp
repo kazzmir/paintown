@@ -31,6 +31,7 @@ using namespace std;
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 static int LAZY_KEY_DELAY = 300;
 static bool show_loading_screen = true;
+static const char * LOADING_TITLE = "Loading Paintown";
 
 namespace Game{
 
@@ -55,9 +56,9 @@ static void stopLoading( pthread_t thread ){
 	}
 }
 
-static void startLoading( pthread_t * thread ){
+static void startLoading(pthread_t * thread ){
 	if ( show_loading_screen ){
-		pthread_create( thread, NULL, loadingScreen, NULL );
+		pthread_create( thread, NULL, loadingScreen, (void *)LOADING_TITLE);
 	}
 }
 
@@ -513,6 +514,7 @@ void realGame( const vector< Object * > & players, const string & levelFile ){
 	// fadeOut( "You win!" );
 }
 
+/* use MenuGlobal::doLevelSet instead */
 const string selectLevelSet( const string & base ) throw( ReturnException ){
         Bitmap background( Global::titleScreen() );
 	// Bitmap::Screen->Blit( Global::titleScreen() );
@@ -529,6 +531,10 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 	if ( possible.size() == 0 ){
 		return "no-files!!!";
 	}
+
+        if (possible.size() == 1){
+            return Util::getDataPath() + possible[0];
+        }
 
 	/*
 	for ( vector< string >::iterator it = possible.begin(); it != possible.end(); it++ ){

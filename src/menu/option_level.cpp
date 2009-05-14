@@ -14,6 +14,7 @@ OptionLevel::~OptionLevel(){
 void OptionLevel::logic(){
 }
 
+/* redo this to not use global state */
 void OptionLevel::run(bool &endGame){
 	endGame = true;
 	MenuGlobals::setLevel(Util::getDataPath() + getText());
