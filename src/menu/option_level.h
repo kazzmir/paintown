@@ -3,12 +3,14 @@
 
 #include "menu_option.h"
 #include "util/load_exception.h"
+#include <string>
+
 class Token;
 
 /*! Handles key reconfiguration */
-class OptionLevel : public MenuOption{
+class OptionLevel : public MenuOption {
 public:
-	OptionLevel( Token *token ) throw( LoadException );
+	OptionLevel(Token *token, std::string * set) throw (LoadException);
 
 	// Do logic before run part
 	virtual void logic();
@@ -18,6 +20,10 @@ public:
 	virtual void run(bool &endGame);
 
 	virtual ~OptionLevel();
+
+protected:
+        /* string to set if this option is chosen */
+        std::string * update;
 };
 
 #endif

@@ -63,7 +63,11 @@ void OptionAdventure::run(bool &endGame){
 	try{
 		//string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
 		string level = MenuGlobals::doLevelMenu("/levels");
-		if( level.empty() ) return;
+
+		if (level.empty()){
+                    /* throw an error or something */
+                    return;
+                }
 		key.wait();
 		
 		player = Game::selectPlayer( MenuGlobals::getInvincible() );

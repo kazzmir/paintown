@@ -62,9 +62,10 @@ public:
 	static int getNpcBuddies();
 	static void setNpcBuddies( int i );
 	
+        /*
 	inline static void setLevel(const std::string &l){ level = l; }
-	
 	inline static const std::string &getLevel(){ return level; }
+        */
 	
 	static std::string doLevelMenu(const std::string dir);
 
@@ -81,6 +82,6 @@ private:
 	static std::priority_queue<std::string> lastPlayed;
 	static std::priority_queue<std::string> selectSound;
 	
-	static std::string level;
+	// static std::string level;
 };
 #endif

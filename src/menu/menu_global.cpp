@@ -19,7 +19,7 @@ std::priority_queue<std::string> MenuGlobals::lastPlayed;
 
 std::priority_queue<std::string> MenuGlobals::selectSound;
 
-std::string MenuGlobals::level = "";
+// std::string MenuGlobals::level = "";
 
 MenuGlobals::MenuGlobals(){
 }
@@ -154,8 +154,9 @@ std::string MenuGlobals::doLevelMenu(const std::string dir){
 
     try{
         Menu temp;
+        string level;
         for ( unsigned int i = 0; i < possible.size(); i++ ){
-            OptionLevel *opt = new OptionLevel(0);
+            OptionLevel *opt = new OptionLevel(0, &level);
             opt->setText(possible[i]);
             opt->setInfoText("Select a set of levels to play");
             temp.addOption(opt);
@@ -164,6 +165,7 @@ std::string MenuGlobals::doLevelMenu(const std::string dir){
         temp.backboard.position.height = count;
         // Run it
         temp.run();
+        return Util::getDataPath() + level;
     } catch (const TokenException & ex){
         Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
         return "";
@@ -171,11 +173,15 @@ std::string MenuGlobals::doLevelMenu(const std::string dir){
         Global::debug(0) << "There was a problem loading the level select menu. Error was:\n  " << ex.getReason() << endl;
         return "";
     }
+    throw LoadException("No level chosen!");
+
+    /*
     // Now lets get the level or return
     std::string l = level;
     level = "";
 
     return l;
+    */
 }
 
 bool MenuGlobals::freeForAll(){
