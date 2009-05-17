@@ -8,13 +8,11 @@ struct DATAFILE;
 class Font;
 class Collector;
 
-using namespace std;
-
 class FontFactory{
 private:
     friend class Collector;
     friend class Font;
-    static Font * getFont( const string & str, const int x, const int y );
+    static Font * getFont( const std::string & str, const int x, const int y );
 
 private:
     FontFactory();
@@ -22,13 +20,13 @@ private:
 
     static void destroy();
 
-    Font * getRealFont( const string & str, const int x, const int y );
+    Font * getRealFont( const std::string & str, const int x, const int y );
 
 private:
     static FontFactory * my_factory;
 
     DATAFILE * my_data;
-    map<string, Font *> font_mapper;
+    std::map<std::string, Font *> font_mapper;
 };
 
 #endif

@@ -4,21 +4,18 @@
 #include "animation_event.h"
 #include <string>
 
-using namespace std;
-
 class Animation;
 
 class AnimationEventFrame: public AnimationEvent{
 public:
-	AnimationEventFrame( const string & _path );
+	AnimationEventFrame( const std::string & _path );
 
 	virtual void Interact( Animation * animation ); 
 
 	virtual ~AnimationEventFrame();
 
 protected:
-	string path;
-
+        std::string path;
 };
 
 #endif

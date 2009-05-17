@@ -23,6 +23,8 @@
 
 #include "menu/option_mugen_menu.h"
 
+using namespace std;
+
 MenuOption *getOption(Token *token){
 	Token * tok;
 	*token >> tok;

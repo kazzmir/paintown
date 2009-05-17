@@ -4,22 +4,19 @@
 #include <exception>
 #include <string>
 
-using namespace std;
-
-class MugenException : public exception {
+class MugenException : public std::exception {
 public:
 	MugenException();
-	MugenException( const string & reason );
+	MugenException( const std::string & reason );
 
 	~MugenException() throw();
 
-	inline const string & getReason() const{
+	inline const std::string & getReason() const{
 		return reason;
 	}
 
 protected:
-	string reason;
-
+        std::string reason;
 };
 
 #endif

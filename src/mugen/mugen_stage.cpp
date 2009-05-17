@@ -32,6 +32,8 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 
+using namespace std;
+
 // Some static variables
 static const int CONTROLLER_VALUE_NOT_SET = -999999;
 static const int DEFAULT_BACKGROUND_ID = -9999;

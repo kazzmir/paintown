@@ -12,6 +12,8 @@
 
 #include "gui/box.h"
 
+using namespace std;
+
 OptionKey::keyType convertToKey(const std::string &k)
 {
 	std::string temp = k;

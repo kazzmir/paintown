@@ -34,7 +34,7 @@ private:
 class DisplayCharacterLoader{
 public:
     /* load all the characters asynchronously */
-    DisplayCharacterLoader(const vector<DisplayCharacter*> & characters);
+    DisplayCharacterLoader(const std::vector<DisplayCharacter*> & characters);
 
     /* start loading */
     void load();

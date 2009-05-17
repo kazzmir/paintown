@@ -14,6 +14,8 @@
 #include "globals.h"
 #include "util/funcs.h"
 
+using namespace std;
+
 // If you use this, please delete the item after you use it, this isn't java ok
 static MugenItemContent *getOpts( const std::string &opt ){
     std::string contentHolder = "";

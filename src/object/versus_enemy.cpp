@@ -6,9 +6,11 @@
 #include "object.h"
 #include <math.h>
 
-const int DO_NOTHING = 0;
-const int DO_WALK_FORWARD = 1;
-const int DO_WALK_BACKWARD = 2;
+using namespace std;
+
+static const int DO_NOTHING = 0;
+static const int DO_WALK_FORWARD = 1;
+static const int DO_WALK_BACKWARD = 2;
 
 VersusEnemy::VersusEnemy( const Character & chr ) throw( LoadException ):
 Enemy( chr ),

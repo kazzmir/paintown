@@ -16,6 +16,8 @@
 #include "object/cat.h"
 #include "object/item.h"
 
+using namespace std;
+
 static std::ostream & debug( int level ){
 	Global::debug( level ) << "[network-world-client] ";
 	return Global::debug( level );

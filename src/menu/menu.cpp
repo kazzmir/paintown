@@ -10,20 +10,19 @@
 #include "resource.h"
 #include "globals.h"
 #include "init.h"
+#include "configuration.h"
 #include "music.h"
 
 #include "menu/optionfactory.h"
-
 #include "menu/actionfactory.h"
-
 #include "menu/menu_global.h"
-
 #include "menu/menu_animation.h"
-
 #include "gui/keyinput_manager.h"
 
 #include <queue>
 #include <map>
+
+using namespace std;
 
 Bitmap *Menu::work = 0;
 int Menu::clearColor = Bitmap::makeColor(0,0,0);
@@ -31,23 +30,21 @@ int Menu::clearColor = Bitmap::makeColor(0,0,0);
 // The top level menu, it is required to be main or whatever this set to
 static std::string parentMenu = "main";
 
-
 static std::string sharedFont = "";
 static int sharedFontWidth = 24;
 static int sharedFontHeight = 24;
 
-const int yellow = Bitmap::makeColor( 255, 255, 0 );
-const int white = Bitmap::makeColor( 255, 255, 255 );
+const int yellow = Bitmap::makeColor(255, 255, 0);
+const int white = Bitmap::makeColor(255, 255, 255);
 
 static std::map<std::string, Menu *> menus;
 
 int Menu::fadeSpeed = 12;
 
-int fadeAlpha=0;
-
-int infoPositionX = 0;
-
-int infoPositionY = 0;
+/* why are these global? */
+static int fadeAlpha=0;
+static int infoPositionX = 0;
+static int infoPositionY = 0;
 
 // Creates unique ID's for options so that they can be flagged for removal
 static unsigned int menuOptionID = 0;
@@ -220,7 +217,8 @@ void Menu::load(Token *token)throw( LoadException ){
 	addMenu( this );
 
         if (sharedFont == ""){
-            sharedFont = "fonts/arial.ttf";
+            sharedFont = Configuration::getMenuFont();
+            // sharedFont = "fonts/arial.ttf";
         }
 	
 	// Finally lets assign list order numering and some other stuff

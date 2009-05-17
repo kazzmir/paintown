@@ -24,6 +24,8 @@
 #include "util/funcs.h"
 #include "util/keyboard.h"
 
+using namespace std;
+
 namespace Network{
 
 static std::ostream & debug( int level ){

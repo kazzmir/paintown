@@ -22,43 +22,43 @@ using namespace Network;
 class MugenCharacter : public ObjectAttack{
 public:
 	// Location at dataPath() + "mugen/chars/"
-	MugenCharacter( const string & s );
+	MugenCharacter( const std::string & s );
 	MugenCharacter( const char * location );
-	MugenCharacter( const string & s, int alliance );
-	MugenCharacter( const string & s, const int x, const int y, int alliance );
+	MugenCharacter( const std::string & s, int alliance );
+	MugenCharacter( const std::string & s, const int x, const int y, int alliance );
 	MugenCharacter( const MugenCharacter &copy );
 
-	~MugenCharacter();
+	virtual ~MugenCharacter();
 	
 	// Convert to paintown character or whatever
 	// Do code
 	
-	void load() throw( MugenException );
+	virtual void load() throw( MugenException );
 	
-	void renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp, 
+	virtual void renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp, 
 			   const int flip=1, const double scalex = 1, const double scaley = 1);
 			   
 	// Change palettes
-	void nextPalette();
-	void priorPalette();
+	virtual void nextPalette();
+	virtual void priorPalette();
 	
-	inline const std::string &getName() const {
+	virtual inline const std::string &getName() const {
             return name;
         }
 	
-	inline const std::string &getDisplayName() const {
+	virtual inline const std::string &getDisplayName() const {
             return displayName;
         }
 	
-	inline const unsigned int &getCurrentPalette() const {
+	virtual inline const unsigned int &getCurrentPalette() const {
             return currentPalette;
         }
 
-        inline const std::map<int, MugenAnimation*> & getAnimations() const {
+        virtual inline const std::map<int, MugenAnimation*> & getAnimations() const {
             return animations;
         }
 	
-	inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
+	virtual inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
             return sounds;
         }
 	
@@ -271,7 +271,7 @@ protected:
 	
     protected:
 	/* This creates the animations no need for a new class to handle this */
-	void bundleAnimations() throw( MugenException);
+	virtual void bundleAnimations() throw( MugenException);
 };
 
 #endif

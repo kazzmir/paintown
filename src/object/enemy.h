@@ -11,19 +11,17 @@
 class Object;
 class World;
 
-using namespace std;
-
 class Enemy: public Character{
 public:
 	Enemy( ); 
 	Enemy( const char * filename ) throw( LoadException );
-	Enemy( const string & filename ) throw( LoadException );
+	Enemy( const std::string & filename ) throw( LoadException );
 	Enemy( const Enemy & chr ) throw( LoadException );
 	Enemy( const Character & chr ) throw( LoadException );
 	
 	virtual Object * copy();
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
 	using Character::drawLifeBar;
 	virtual void drawLifeBar( int x, int y, Bitmap * work );
@@ -57,7 +55,7 @@ protected:
 	// void filterEnemies( vector< Object * > * mine, vector< Object * > * all );
 	void constructSelf();
 
-	const Object * findClosest( const vector< Object * > & enemies );
+	const Object * findClosest( const std::vector< Object * > & enemies );
 
 protected:
 

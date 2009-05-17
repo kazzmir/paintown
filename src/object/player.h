@@ -94,7 +94,7 @@ protected:
         void debugDumpKeyCache(int level);
         const char * keyToName(int key);
 	bool combo( Animation * ani );
-	bool combo( Animation * ani, deque< keyState >::iterator cache_cur_key, deque< keyState >::iterator end );
+	bool combo( Animation * ani, std::deque< keyState >::iterator cache_cur_key, std::deque< keyState >::iterator end );
 	virtual int getKey( int x, int facing );
 	virtual int getKey( int x );
 
@@ -109,8 +109,8 @@ protected:
 protected:
 
 	/* store key presses in a stack with two ends*/
-	deque< keyState > key_cache;
-	map< int, bool > last_key;
+        std::deque< keyState > key_cache;
+        std::map< int, bool > last_key;
 	int acts;
 	Keyboard keyboard;
         Joystick * joystick;

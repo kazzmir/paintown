@@ -32,7 +32,7 @@ struct PlayerData {
 class MugenStage: public World {
 public:
 	// Location at dataPath() + "mugen/stages/"
-	MugenStage( const string & s );
+	MugenStage( const std::string & s );
 	MugenStage( const char * location );
 
 	~MugenStage();
@@ -99,7 +99,7 @@ public:
 	virtual int getY();
         /* this shouldn't be here */
 	// I guess ignore this one
-        virtual const deque<Bitmap*> & getScreenshots();
+        virtual const std::deque<Bitmap*> & getScreenshots();
         virtual const int levelLength() const;
 	// Since this isn't a paintown level, I guess block wouldn't apply
         virtual const Block * currentBlock() const;
@@ -394,7 +394,7 @@ protected:
 	//void getBackgrounds( std::vector<MugenBackground *> &bgs, int ID );
 	
 	// What garbage
-	deque<Bitmap*> garbage;
+        std::deque<Bitmap*> garbage;
 };
 
 #endif

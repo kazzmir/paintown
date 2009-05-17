@@ -4,6 +4,8 @@
 
 #include "menu/action_speed.h"
 
+using namespace std;
+
 void ActionAct(Token *token){
 	Token * tok;
 	*token >> tok;

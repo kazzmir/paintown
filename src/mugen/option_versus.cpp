@@ -27,6 +27,8 @@
 
 #include "gui/keyinput_manager.h"
 
+using namespace std;
+
 MugenOptionVersus::MugenOptionVersus(Token *token) throw (LoadException): 
 MenuOption(token, Event){
     // notin

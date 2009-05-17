@@ -5,6 +5,8 @@
 #include "util/funcs.h"
 #include "object/effect.h"
 
+using namespace std;
+
 VersusWorld::VersusWorld( int z, Character * player1, Character * player2 ):
 AdventureWorld(),
 player1( player1 ),

@@ -6,11 +6,10 @@
 #include "util/keyboard.h"
 #include <deque>
 #include "util/load_exception.h"
+#include <vector>
 
 class Animation;
 class World;
-
-using namespace std;
 
 class BuddyPlayer: public PlayerCommon {
 public:
@@ -25,7 +24,7 @@ public:
 	
 	virtual Object * copy();
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	
 	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
 	
@@ -55,7 +54,7 @@ protected:
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
 
-	const Object * findClosest( const vector< Object * > & enemies );
+	const Object * findClosest( const std::vector< Object * > & enemies );
 	
 protected:
 

@@ -3,11 +3,11 @@
 #include "mugen_exception.h"
 	
 MugenException::MugenException():
-exception(){
+std::exception(){
 }
 
-MugenException::MugenException( const string & reason ):
-exception(){
+MugenException::MugenException( const std::string & reason ):
+std::exception(){
 	this->reason = reason;
 }
 	

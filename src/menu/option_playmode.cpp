@@ -6,6 +6,8 @@
 #include "globals.h"
 #include "init.h"
 
+using namespace std;
+
 OptionPlayMode::OptionPlayMode(Token *token) throw (LoadException):
 MenuOption(token, AdjustableOption),
 name(""),

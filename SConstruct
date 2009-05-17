@@ -110,7 +110,9 @@ def getEnvironment():
     elif useMingw():
         return Environment(ENV = os.environ, tools = ['mingw', 'lex', 'yacc', 'zip'])
     else:
-        return Environment(ENV = os.environ)
+        env = Environment(ENV = os.environ)
+        env.Tool('gch', toolpath = ['misc', '/usr/lib/scons-1.2.0/SCons/Tool'])
+        return env
 
 if isWindows():
     print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"

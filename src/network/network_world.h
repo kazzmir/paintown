@@ -7,6 +7,7 @@
 #include "object/object.h"
 #include <pthread.h>
 #include <vector>
+#include <string>
 
 struct Packet{
 	Packet( const Network::Message & m, Network::Socket s ):message(m),socket(s){}
@@ -16,7 +17,7 @@ struct Packet{
 
 class NetworkWorld: public AdventureWorld {
 public:
-	NetworkWorld( const std::vector< NLsocket > & sockets, const std::vector< Object * > & players, const string & path, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorld( const std::vector< NLsocket > & sockets, const std::vector< Object * > & players, const std::string & path, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
 	virtual void act();
@@ -43,7 +44,7 @@ public:
 protected:
 	Object * findNetworkObject( Object::networkid_t id );
 	void sendMessage( const Network::Message & message, NLsocket socket );
-	vector< Network::Message > getIncomingMessages();
+        std::vector< Network::Message > getIncomingMessages();
 	void handleMessage( Network::Message & message );
 
 	Network::Message nextBlockMessage( int block );

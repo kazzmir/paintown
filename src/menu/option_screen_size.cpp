@@ -7,6 +7,8 @@
 #include "init.h"
 #include <sstream>
 
+using namespace std;
+
 #if defined(WINDOWS) && defined(doesnt_work_yet)
 #include <windows.h>
 #include <stdio.h>

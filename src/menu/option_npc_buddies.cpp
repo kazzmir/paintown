@@ -5,6 +5,8 @@
 #include "menu/menu_global.h"
 #include "globals.h"
 
+using namespace std;
+
 OptionNpcBuddies::OptionNpcBuddies( Token * token ) throw( LoadException ):
 MenuOption(token, AdjustableOption),
 name(""),

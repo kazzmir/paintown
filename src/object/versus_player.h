@@ -14,7 +14,7 @@ public:
 	VersusPlayer( const std::string & str ) throw( LoadException );
 	VersusPlayer( const Player & player ) throw( LoadException );
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual bool canGrab( Object * enemy );

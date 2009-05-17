@@ -8,6 +8,8 @@
 #include "init.h"
 #include <sstream>
 
+using namespace std;
+
 OptionSelectFont::OptionSelectFont(Token *token) throw (LoadException):
 MenuOption(token, AdjustableOption),
 typeAdjust(fontName),

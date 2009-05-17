@@ -1,6 +1,8 @@
 #ifndef _paintown_configuration_h
 #define _paintown_configuration_h
 
+#include <string>
+
 class Token;
 
 class Configuration{
@@ -53,6 +55,8 @@ public:
         static int getScreenWidth();
         static void setScreenHeight(int i);
         static int getScreenHeight();
+        static std::string getMenuFont();
+        static void setMenuFont(const std::string & str);
 
 protected:
 	Configuration();
@@ -96,6 +100,8 @@ private:
 
         static int screen_width;
         static int screen_height;
+
+        static std::string menuFont;
 };
 
 #endif

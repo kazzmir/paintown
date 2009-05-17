@@ -6,6 +6,7 @@
 #include <map>
 #include "util/load_exception.h"
 #include "character.h"
+#include "network_character.h"
 
 class NetworkPlayer: public NetworkCharacter {
 public:
@@ -20,10 +21,10 @@ public:
 public:
 	virtual void drawFront( Bitmap * work, int rel_x );
 	virtual void interpretMessage( Network::Message & m );
-        virtual void attacked( World * world, Object * something, vector< Object * > & objects );
+        virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
 
 	/* logic */
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
 protected:
         void initializeAttackGradient();

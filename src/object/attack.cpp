@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+using namespace std;
+
 Attack::Attack():
 x1( 0 ),
 y1( 0 ),

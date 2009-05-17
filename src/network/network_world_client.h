@@ -6,11 +6,12 @@
 #include "network.h"
 #include "object/object.h"
 #include "util/load_exception.h"
+#include <vector>
 
 class NetworkWorldClient: public AdventureWorld {
 public:
 
-	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const std::string & path, Object::networkid_t id, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void act();
 
@@ -47,11 +48,11 @@ protected:
 	Object * removeObject( Object::networkid_t id );
 
 	void sendMessage( const Network::Message & message, NLsocket socket );
-        void sendMessages(const vector<Network::Message> & messages, Network::Socket socket);
+        void sendMessages(const std::vector<Network::Message> & messages, Network::Socket socket);
 
 	bool uniqueObject( Object::networkid_t id );
 	void handleMessage( Network::Message & message );
-	vector< Network::Message > getIncomingMessages();
+        std::vector< Network::Message > getIncomingMessages();
 
 private:
 	NLsocket server;

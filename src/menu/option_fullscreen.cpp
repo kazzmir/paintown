@@ -6,6 +6,8 @@
 #include "globals.h"
 #include "init.h"
 
+using namespace std;
+
 OptionFullscreen::OptionFullscreen(Token *token) throw (LoadException): MenuOption(token, AdjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
 	setRunnable(false);

@@ -29,6 +29,7 @@
 
 #include "mugen_util.h"
 
+using namespace std;
 
 static int lowerCase( int c ){ return tolower( c );}
 

@@ -3,8 +3,6 @@
 
 #include <map>
 
-using namespace std;
-
 class NamePlacer{
 public:
 
@@ -20,7 +18,7 @@ protected:
 	int cur_id;
 
 	/* id -> timer */
-	map< int, int > places;
+        std::map< int, int > places;
 
 };
 

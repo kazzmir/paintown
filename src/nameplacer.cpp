@@ -5,6 +5,8 @@
 #include "util/funcs.h"
 #include "globals.h"
 
+using namespace std;
+
 NamePlacer * NamePlacer::placer = NULL;
 void NamePlacer::getPlacement( int & x, int & y, int & id ){
 

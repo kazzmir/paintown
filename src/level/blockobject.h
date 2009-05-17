@@ -5,10 +5,7 @@
 #include "factory/object_factory.h"
 #include <string>
 
-using namespace std;
-
 class Token;
-
 
 class BlockObject{
 public:
@@ -18,7 +15,7 @@ public:
 /* getters */
 public: 
 
-	inline const string & getAlias() const {
+	inline const std::string & getAlias() const {
 		return alias;
 	}
 
@@ -26,15 +23,15 @@ public:
 		return type;
 	}
 
-	inline const string & getName() const {
+	inline const std::string & getName() const {
 		return name;
 	}
 
-	inline const string & getPath() const {
+	inline const std::string & getPath() const {
 		return path;
 	}
 
-	inline const string getStimulationType(){
+	inline const std::string getStimulationType(){
 		return stimulationType;
 	}
 
@@ -66,7 +63,7 @@ public:
 		type = l;
 	}
 
-	inline void setPath( const string & p ){
+	inline void setPath( const std::string & p ){
 		path = p;
 	}
 
@@ -74,11 +71,11 @@ public:
 		aggression = a;
 	}
 
-	inline void setName( const string & s ) {
+	inline void setName( const std::string & s ) {
 		name = s;
 	}
 
-	inline void setAlias( const string & s ) {
+	inline void setAlias( const std::string & s ) {
 		alias = s;
 	}
 
@@ -86,7 +83,7 @@ public:
 		map = m;
 	}
 
-	inline void setStimulationType( string s ){
+	inline void setStimulationType( std::string s ){
 		stimulationType = s;
 	}
 
@@ -120,9 +117,9 @@ protected:
 
 	int aggression;
 
-	string name;
-	string alias;
-	string path;
+        std::string name;
+        std::string alias;
+        std::string path;
 
 	/* the sprite to map to */
 	int map;
@@ -132,7 +129,7 @@ protected:
 	int coords_x, coords_z;
         int id;
 
-	string stimulationType;
+        std::string stimulationType;
 	int stimulationValue;
 };
 

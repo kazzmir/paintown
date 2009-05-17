@@ -1,6 +1,10 @@
 #ifndef _object_factory_h
 #define _object_factory_h
 
+#include <map>
+#include <vector>
+#include <string>
+
 class Object;
 class BlockObject;
 class Actor;
@@ -10,11 +14,6 @@ class Item;
 class Enemy;
 class NetworkCharacter;
 class NetworkPlayer;
-
-#include <map>
-#include <vector>
-
-using namespace std;
 
 /* factory class for instantiating new objects from a BlockObject */
 class ObjectFactory{
@@ -55,9 +54,9 @@ private:
 	~ObjectFactory();
 
 private:
-	map< string, Object * > cached;
+        std::map< std::string, Object * > cached;
 	static ObjectFactory * factory;
-	vector< Heart * > hearts;
+        std::vector< Heart * > hearts;
         int nextObjectId;
 };
 

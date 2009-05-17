@@ -24,9 +24,9 @@ struct MugenUtil{
     static std::string getFileDir( const std::string &dir );
     // If you use this, please delete the item after you use it, this isn't java ok
     static MugenItemContent *parseOpt( const std::string &opt );
-    static bool readPalette(const string &filename, unsigned char *pal);
-    static void readSprites(const string & filename, const string & palette, map<unsigned int,map<unsigned int, MugenSprite *> > & sprites) throw (MugenException);
-    static void readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException);
+    static bool readPalette(const std::string &filename, unsigned char *pal);
+    static void readSprites(const std::string & filename, const std::string & palette, std::map<unsigned int, std::map<unsigned int, MugenSprite *> > & sprites) throw (MugenException);
+    static void readSounds(const std::string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException);
     // Reads and compiles collections from a string rather than using a file ( You will need to delete the MugenSection's independently if you use this
     static std::vector< MugenSection * > configReader(  const std::vector<std::string> &configdata );
     // Get background: The background must be deleted if used outside of stage/menus (Note: we give the background a ticker to whatever is running it)

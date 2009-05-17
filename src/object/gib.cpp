@@ -29,7 +29,7 @@ void Gib::draw( Bitmap * work, int rel_x ){
 		Bitmap::transBlender( 0, 0, 0, 255 - fade );
 		image->drawTrans( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
 	} else {
-		for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
+		for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
 			const Point & p = *it;
 			int l = 200 + p.life * 15;
 			int red = Bitmap::makeColor( l > 255 ? 255 : l, 0, 0 );
@@ -67,7 +67,7 @@ Network::Message Gib::getCreateMessage(){
 	return m;
 }
 	
-void Gib::act( vector< Object * > * others, World * world, vector< Object * > * add ){
+void Gib::act( std::vector< Object * > * others, World * world, std::vector< Object * > * add ){
 	if ( fade > 0 ){
 		fade += 2;
 		if ( fade > 255 ){
@@ -101,7 +101,7 @@ void Gib::act( vector< Object * > * others, World * world, vector< Object * > * 
 			blood.push_back( Point( x, y, 10 ) );
 		}
 
-		for ( vector< Point >::iterator it = blood.begin(); it != blood.end(); ){
+		for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); ){
 			Point & p = *it;
 			p.life -= 1;
 			if ( p.life <= 0 ){

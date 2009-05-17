@@ -2,16 +2,13 @@
 #define _animation_event_sound_h
 
 #include "animation_event.h"
-
 #include <string>
-
-using namespace std;
 
 class Animation;
 
-class AnimationEventSound: public AnimationEvent{
+class AnimationEventSound: public AnimationEvent {
 public:
-	AnimationEventSound( const string & path );
+	AnimationEventSound( const std::string & path );
 
 	virtual void Interact( Animation * animation ); 
 
@@ -19,7 +16,7 @@ public:
 
 protected:
 
-	string path;
+        std::string path;
 
 };
 

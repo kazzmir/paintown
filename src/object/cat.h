@@ -2,6 +2,8 @@
 #define _paintown_cat_h
 
 #include <map>
+#include <string>
+#include <vector>
 #include "object_nonattack.h"
 #include "util/sound.h"
 #include "network/network.h"
@@ -11,10 +13,10 @@ class Animation;
 
 class Cat: public ObjectNonAttack {
 public:
-	Cat( const string & filename ) throw( LoadException );
+	Cat( const std::string & filename ) throw( LoadException );
 	Cat( const Cat & cat );
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
@@ -29,12 +31,12 @@ public:
 	virtual ~Cat();
 
 protected:
-	map< std::string, Animation * > animations;
+        std::map< std::string, Animation * > animations;
 	Animation * current_animation;
 
 	Sound meow;
 
-	string path;
+        std::string path;
 
 	enum State{
 		IDLE1,

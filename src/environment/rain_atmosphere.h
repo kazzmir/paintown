@@ -1,10 +1,11 @@
 #ifndef _paintown_rain_atmosphere_h
 #define _paintown_rain_atmosphere_h
 
-class Bitmap;
-
 #include "atmosphere.h"
 #include "util/sound.h"
+#include <vector>
+
+class Bitmap;
 
 struct Drop{
 	Drop( int x, int y, int length, int color ):x(x),y(y),length(length),color(color){}
@@ -23,7 +24,7 @@ public:
 	virtual void act();
 	
 protected:
-	vector< Drop * > rain_drops;
+        std::vector< Drop * > rain_drops;
 	Sound rain_sound;
 	bool playing;
 };

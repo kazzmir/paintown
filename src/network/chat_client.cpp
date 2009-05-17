@@ -12,6 +12,8 @@
 #include "gui/keyinput_manager.h"
 #include "gui/keys.h"
 
+using namespace std;
+
 static std::ostream & debug( int level ){
 	Global::debug( level ) << "[chat-client] ";
 	return Global::debug( level );

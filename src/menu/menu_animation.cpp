@@ -6,6 +6,8 @@
 #include "globals.h"
 #include "util/funcs.h"
 
+using namespace std;
+
 // Temporary solution
 static void renderSprite(const Bitmap *bmp, const int x, const int y, const int alpha, const bool hflip, const bool vflip, Bitmap *work){
     if (alpha != 255){

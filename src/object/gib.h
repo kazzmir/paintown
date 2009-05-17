@@ -3,6 +3,7 @@
 
 #include "object_nonattack.h"
 #include "network/network.h"
+#include <vector>
 
 struct Point{
 	Point( int x, int y, int life ):x(x), y(y), life(life){}
@@ -24,7 +25,7 @@ public:
 	virtual const int getHeight() const;
 	virtual Network::Message getCreateMessage();
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
 	virtual ~Gib();
 
@@ -33,7 +34,7 @@ protected:
 	int angle;
 	int fade;
 	Bitmap * image;
-	vector< Point > blood;
+        std::vector< Point > blood;
 };
 
 #endif

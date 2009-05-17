@@ -66,9 +66,9 @@ class MugenScene {
 class MugenStoryboard {
 public:
 	// Location at dataPath() + "mugen/stages/"
-	MugenStoryboard( const string & s );
+	MugenStoryboard( const std::string & s );
 
-	~MugenStoryboard();
+	virtual ~MugenStoryboard();
 	
 	void load() throw (MugenException);
 	// give it the default bitmap to blit to the screen

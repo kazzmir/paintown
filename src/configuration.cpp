@@ -83,6 +83,7 @@ attack1( config.getAttack1() ),
 attack2( config.getAttack2() ),
 attack3( config.getAttack3() ),
 jump( config.getJump() ){
+    menuFont = config.menuFont;
 }
 	
 Configuration::Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump ):
@@ -105,6 +106,7 @@ Configuration & Configuration::operator=( const Configuration & config ){
 	setAttack2( config.getAttack2() );
 	setAttack3( config.getAttack3() );
 	setJump( config.getJump() );
+        setMenuFont(config.getMenuFont());
 	return *this;
 }
 	
@@ -131,6 +133,14 @@ int Configuration::getKey( int which, int facing ){
 		case PAIN_KEY_JUMP : return jump;
 		default : return -1;
 	}
+}
+        
+std::string Configuration::getMenuFont(){
+    return menuFont;
+}
+
+void Configuration::setMenuFont(const std::string & str){
+    menuFont = str;
 }
 
 void Configuration::setRight( int i ){
@@ -275,6 +285,10 @@ void Configuration::loadConfigurations(){
 				*n >> fullscreen;
 			} else if ( *n == "lives" ){
 				*n >> lives;
+                        } else if (*n == "menu-font"){
+                            string font;
+                            *n >> font;
+                            setMenuFont(font);
 			} else if ( *n == "npc-buddies" ){
 				*n >> npc_buddies;
                         } else if (*n == "screen-size"){
@@ -354,6 +368,10 @@ void Configuration::saveConfiguration(){
         *screen << "screen-size" << Configuration::getScreenWidth() << Configuration::getScreenHeight();
         head.addToken(screen);
 
+        Token * font = new Token();
+        *font << "menu-font" << Configuration::getMenuFont();
+        head.addToken(font);
+
         Token * mode = new Token();
         string smode;
         if (Configuration::getPlayMode() == Configuration::Cooperative){
@@ -387,6 +405,7 @@ int Configuration::npc_buddies = 1;
 Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
 int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
+std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
 double Configuration::getGameSpeed(){

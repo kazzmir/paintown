@@ -15,6 +15,8 @@
 // #define debug
 #endif
 
+using namespace std;
+
 /*
 static const string dataPath( const string & str ){
 	return Util::getDataPath() + str;

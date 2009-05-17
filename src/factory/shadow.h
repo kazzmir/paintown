@@ -1,9 +1,7 @@
-#ifndef _shadow_h
-#define _shadow_h
+#ifndef _paintown_shadow_h
+#define _paintown_shadow_h
 
 #include <vector>
-
-using namespace std;
 
 class Bitmap;
 
@@ -21,7 +19,7 @@ private:
 	Shadow();
 	~Shadow();
 
-	vector< Bitmap * > shadows;
+        std::vector< Bitmap * > shadows;
 	static Shadow * my_shadow;
 };
 

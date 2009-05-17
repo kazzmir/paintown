@@ -1,6 +1,11 @@
 #ifndef _game_object_h
 #define _game_object_h
 
+#include "util/sound.h"
+#include "network/network.h"
+#include <string>
+#include <vector>
+
 class Bitmap;
 class ECollide;
 class ObjectAttack;
@@ -11,16 +16,9 @@ namespace Script{
     class Object;
 }
 
-#include "util/sound.h"
-#include "network/network.h"
-#include <string>
-#include <vector>
-
 #define MIN_(a,b) ((a) < (b) ? (a) : (b))
 #define MAX_(a,b) ((a) > (b) ? (a) : (b))
 #define MID_(a,b,c) MAX_(a,MIN_(b,c))
-
-// using namespace std;
 
 /* generic game object
  * abstract for goodness
@@ -45,7 +43,7 @@ public:
 	/* act:
 	 * Performs any logic the object wants to do
 	 */
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add ) = 0;
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add ) = 0;
 
 	/* draw:
 	 * Draws the object onto the specified Bitmap
@@ -78,7 +76,7 @@ public:
 	 */
 	virtual void touch( Object * obj );
 	
-	virtual const string & getAttackName() = 0;
+	virtual const std::string & getAttackName() = 0;
 
 	/* ZDistance:
 	 * Computes the distance in the Z coordinate between two
@@ -95,7 +93,7 @@ public:
 	/* collided
 	 * You have collided with this object. Make your time.
 	 */
-	virtual void collided( ObjectAttack * obj, vector< Object * > & objects );
+	virtual void collided( ObjectAttack * obj, std::vector< Object * > & objects );
 
 	/* send an arbitrary stimulation to an object */
 	virtual void stimulate( const Stimulation & stim );
@@ -251,7 +249,7 @@ public:
 	/* this object died. this object can add arbitrary objects
 	 * into 'objects'
 	 */
-	virtual void died( vector< Object * > & objects );
+	virtual void died( std::vector< Object * > & objects );
 
 	/* set fall velocities */
 	virtual void fall( double x_vel, double y_vel );

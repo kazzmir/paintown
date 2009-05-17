@@ -9,6 +9,8 @@
 #include "mugen_reader.h"
 #include "globals.h"
 
+using namespace std;
+
 // Check for Clsn
 static bool checkClsn( const std::string &clsn ){
   return ( clsn.find("Clsn") != std::string::npos );

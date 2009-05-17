@@ -6,6 +6,8 @@
 #include "init.h"
 #include "util/keyboard.h"
 
+using namespace std;
+
 OptionDummy::OptionDummy(Token *token) throw( LoadException ):
 MenuOption(token, Event){
 	if ( *token != "dummy" ){

@@ -7,6 +7,8 @@
 #include "util/keyboard.h"
 #include "util/bitmap.h"
 
+using namespace std;
+
 OptionQuit::OptionQuit(Token *token) throw( LoadException ):
 MenuOption(token, Event){
 	if ( *token != "quit" ){

@@ -3,16 +3,18 @@
 
 #include "object_nonattack.h"
 #include "network/network.h"
+#include <vector>
+#include <string>
 
 class Bitmap;
 class Animation;
 
 class Actor: public ObjectNonAttack {
 public:
-	Actor( const string & filename ) throw( LoadException );
+	Actor( const std::string & filename ) throw( LoadException );
 	Actor( const Actor & item );
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
@@ -26,7 +28,7 @@ public:
 	virtual ~Actor();
 
 protected:
-	vector< Animation * > animations;
+        std::vector< Animation * > animations;
 	Animation * current_animation;
 };
 

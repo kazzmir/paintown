@@ -7,8 +7,6 @@
 #include "util/load_exception.h"
 #include "network/network.h"
 
-using namespace std;
-
 class Bitmap;
 class Animation;
 
@@ -25,7 +23,7 @@ public:
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
 
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual Object * copy();
 	

@@ -2,11 +2,10 @@
 #define _scene_h
 
 #include <string>
+#include <vector>
 #include <map>
 #include <deque>
 #include "util/load_exception.h"
-
-using namespace std;
 
 class Bitmap;
 class Block;
@@ -57,7 +56,7 @@ public:
         const int totalLength() const;
 
 	int getLimit();
-	void act( int min_x, int max_x, vector< Object * > * objects );
+	void act( int min_x, int max_x, std::vector< Object * > * objects );
 
 	~Scene();
 
@@ -97,21 +96,21 @@ protected:
 
 protected:
 
-	string music;
+        std::string music;
 	Bitmap * background;
 	Bitmap * arrow;
 	int arrow_blink;
-	vector< int > order;
+        std::vector< int > order;
 	// vector< Panel * > front_panels;
 	// vector< Bitmap * > back_panels;
-	vector< Bitmap * > front_panels;
-	map< int, Panel * > panels;
+        std::vector< Bitmap * > front_panels;
+        std::map< int, Panel * > panels;
 
-	deque< Block * > level_blocks;
-        vector<Block*> old_level_blocks;
+        std::deque< Block * > level_blocks;
+        std::vector<Block*> old_level_blocks;
 
-	vector< Heart * > hearts;
-        vector<Object*> added_objects;
+        std::vector< Heart * > hearts;
+        std::vector<Object*> added_objects;
 
 	int scene_length;
 

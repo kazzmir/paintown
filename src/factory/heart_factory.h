@@ -3,8 +3,6 @@
 
 #include <vector>
 
-using namespace std;
-
 class Heart;
 
 class HeartFactory{
@@ -22,7 +20,7 @@ protected:
 	HeartFactory();
 	~HeartFactory();
 
-	vector< Heart * > hearts;
+        std::vector< Heart * > hearts;
 	static HeartFactory * my_heart;
 
 };

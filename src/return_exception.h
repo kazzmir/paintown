@@ -3,9 +3,7 @@
 
 #include <exception>
 
-using namespace std;
-
-class ReturnException: public exception{
+class ReturnException: public std::exception {
 public:
 	ReturnException():exception(){}
 

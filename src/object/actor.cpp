@@ -6,6 +6,8 @@
 #include "util/token.h"
 #include "actor.h"
 
+using namespace std;
+
 Actor::Actor( const string & filename ) throw( LoadException ):
 ObjectNonAttack( 0, 0 ){
 

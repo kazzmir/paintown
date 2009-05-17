@@ -5,6 +5,8 @@
 #include "globals.h"
 #include "menu/menu_animation.h"
 
+using namespace std;
+
 MenuOption::MenuOption(Token *token, const OptionType t) throw (LoadException):
 currentState(Deselected),
 text(""),

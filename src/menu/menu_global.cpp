@@ -15,6 +15,8 @@
 #include "configuration.h"
 #include "music.h"
 
+using namespace std;
+
 std::priority_queue<std::string> MenuGlobals::lastPlayed;
 
 std::priority_queue<std::string> MenuGlobals::selectSound;

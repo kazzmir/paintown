@@ -2,6 +2,8 @@
 #include "util/bitmap.h"
 #include "rain_atmosphere.h"
 
+using namespace std;
+
 static int screenX(){
 	return 320;
 }

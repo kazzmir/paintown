@@ -10,7 +10,7 @@ class MugenSection;
 
 class MugenReader{
 public:
-	MugenReader( const string & file );
+	MugenReader( const std::string & file );
 	MugenReader( const char * file );
 
 	~MugenReader();

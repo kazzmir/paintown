@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 struct AL_DUH_PLAYER;
 struct DUH;
 
@@ -18,10 +16,10 @@ public:
 	~Music();
 
 	static bool loadSong( const char * song );
-	static bool loadSong( const string & song );
+	static bool loadSong( const std::string & song );
 
 	/* load one of the songs in 'songs' */
-	static void loadSong( const vector< string > & songs );
+	static void loadSong( const std::vector< std::string > & songs );
 
 	static void pause();
 	static void play();

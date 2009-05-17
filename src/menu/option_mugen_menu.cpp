@@ -9,6 +9,8 @@
 #include "mugen/mugen_menu.h"
 #include "mugen/mugen_exception.h"
 
+using namespace std;
+
 OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption(token, Event), _menu(0)
 {
 	if ( *token != "mugen" ){

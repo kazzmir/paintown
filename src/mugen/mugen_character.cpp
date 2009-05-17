@@ -28,6 +28,8 @@
 #include "mugen_util.h"
 #include "globals.h"
 
+using namespace std;
+
 MugenCharacter::MugenCharacter( const string & s ):
 ObjectAttack(0){
     this->location = s;

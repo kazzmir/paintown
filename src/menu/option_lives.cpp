@@ -5,6 +5,8 @@
 #include "menu/menu_global.h"
 #include "globals.h"
 
+using namespace std;
+
 OptionLives::OptionLives( Token * token ) throw( LoadException ):
 MenuOption(token, AdjustableOption),
 name(""),

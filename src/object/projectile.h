@@ -4,6 +4,8 @@
 #include "object_attack.h"
 #include "util/load_exception.h"
 #include "network/network.h"
+#include <vector>
+#include <string>
 
 class Token;
 class Animation;
@@ -13,7 +15,7 @@ public:
 	Projectile( Token * token ) throw( LoadException );
 	Projectile( const Projectile * projectile );
 	
-	virtual void act( vector< Object * > * others, World * world, vector< Object * > * add );
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
 	virtual void grabbed( Object * obj );
@@ -32,7 +34,7 @@ public:
 	virtual const int getHeight() const;
 	virtual void getAttackCoords( int & x, int & y);
 	virtual const double minZDistance() const;
-	virtual void attacked(World * world, Object * something, vector< Object * > & objects );
+	virtual void attacked(World * world, Object * something, std::vector< Object * > & objects );
 	virtual Network::Message getCreateMessage();
 
 	virtual const int getRY() const;

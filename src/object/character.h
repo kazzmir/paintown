@@ -410,7 +410,7 @@ protected:
 
 	/* last_collide: keep track of last animation ticket that hurt us */
 	// unsigned long last_collide;
-	map< Object *, unsigned long > collision_objects;
+        std::map< Object *, unsigned long > collision_objects;
 
 	/* map from name of animation to animation */
 	// map<string,Animation *> movements;
@@ -461,7 +461,7 @@ protected:
 
 	unsigned int current_map;
 	/* map from id to map of animations */
-	map< int, std::map<std::string,Animation*> > mapper;
+        std::map< int, std::map<std::string,Animation*> > mapper;
         std::vector< Object * > projectiles;
         std::vector< BodyPart > body_parts;
 	
@@ -476,7 +476,7 @@ protected:
 
 	bool draw_shadow;
 
-	string path;
+        std::string path;
 };
 
 #endif

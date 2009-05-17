@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class World;
 
 class ObjectAttack: public Object{
@@ -22,7 +20,7 @@ public:
 	virtual const double minZDistance() const = 0;
 
 	/* this object just attached 'something' */
-	virtual void attacked( World * world, Object * something, vector< Object * > & objects ) = 0;
+	virtual void attacked( World * world, Object * something, std::vector< Object * > & objects ) = 0;
 	
 	virtual inline const unsigned int getTicket() const{
 		return attack_ticket;

@@ -24,13 +24,14 @@
 #include "mugen_util.h"
 #include "mugen_font.h"
 
-
 #include "gui/keyinput_manager.h"
 
-const int DEFAULT_WIDTH = 320;
-const int DEFAULT_HEIGHT = 240;
-const int DEFAULT_SCREEN_X_AXIS = 160;
-const int DEFAULT_SCREEN_Y_AXIS = 0;
+using namespace std;
+
+static const int DEFAULT_WIDTH = 320;
+static const int DEFAULT_HEIGHT = 240;
+static const int DEFAULT_SCREEN_X_AXIS = 160;
+static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
 MugenLayer::MugenLayer():
 actionno(-1),

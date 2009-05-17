@@ -167,7 +167,7 @@ void LineEdit::render(const Bitmap *work){
 // Keypresses
 sigslot::slot LineEdit::keyPress(const keys &k)
 {
-	debug( 5 ) << "Received key press " << k.getValue() << endl;
+	debug( 5 ) << "Received key press " << k.getValue() << std::endl;
 	if(focused)
 	{
 		if(k.isCharacter())

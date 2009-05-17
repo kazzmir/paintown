@@ -10,6 +10,8 @@
 #include "buddy_player.h"
 #include "factory/font_render.h"
 
+using namespace std;
+
 static const char * PLAYER_FONT = "/fonts/arial.ttf";
 
 static const int SPAWN_TIME = 1500;
