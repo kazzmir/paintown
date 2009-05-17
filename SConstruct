@@ -110,8 +110,12 @@ def getEnvironment():
     elif useMingw():
         return Environment(ENV = os.environ, tools = ['mingw', 'lex', 'yacc', 'zip'])
     else:
+        import sys
         env = Environment(ENV = os.environ)
-        env.Tool('gch', toolpath = ['misc', '/usr/lib/scons-1.2.0/SCons/Tool'])
+        # find the system tool path by attaching SCons/Tool to everything
+        def fix(q):
+            return q + "/SCons/Tool"
+        env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path])
         return env
 
 if isWindows():
