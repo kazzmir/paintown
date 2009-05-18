@@ -323,6 +323,14 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				debug( 0 ) << endl;
 				break;
 			}
+                        case PAUSE : {
+                            this->pause();
+                            break;
+                        }
+                        case UNPAUSE : {
+                            this->unpause();
+                            break;
+                        }
 		}
 	} else {
 		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
@@ -366,82 +374,85 @@ void NetworkWorldClient::sendMessages(const vector<Network::Message> & messages,
 
 void NetworkWorldClient::act(){
 	
-	if ( quake_time > 0 ){
-		quake_time--;
-	}
+    if ( quake_time > 0 ){
+        quake_time--;
+    }
 
-	vector< Object * > added_effects;
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		Object * o = *it;
-		o->act( &objects, this, &added_effects );
-		if ( o->getZ() < getMinimumZ() ){
-			o->setZ( getMinimumZ() );
-		}
-		if ( o->getZ() > getMaximumZ() ){
-			o->setZ( getMaximumZ() );
-		}
-	}
+    vector< Object * > added_effects;
+    if (! isPaused()){
 
-	double lowest = 9999999;
-	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		Object * player = it->player;
-		double mx = player->getX() - screen_size / 2;
-		if ( it->min_x < mx ){
-			it->min_x++;
-		}
-	
-		if ( it->min_x + screen_size >= scene->getLimit() ){
-			it->min_x = scene->getLimit() - screen_size;
-		}
+        for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+            Object * o = *it;
+            o->act( &objects, this, &added_effects );
+            if ( o->getZ() < getMinimumZ() ){
+                o->setZ( getMinimumZ() );
+            }
+            if ( o->getZ() > getMaximumZ() ){
+                o->setZ( getMaximumZ() );
+            }
+        }
 
-		if ( it->min_x < lowest ){
-			lowest = it->min_x;
-		}
-		
-		/*
-		if ( player->getX() < it->min_x ){
-			player->setX( it->min_x );
-		}
-		*/
-		if ( player->getX() < 0 ){
-			player->setX( 0 );
-		}
+        double lowest = 9999999;
+        for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+            Object * player = it->player;
+            double mx = player->getX() - screen_size / 2;
+            if ( it->min_x < mx ){
+                it->min_x++;
+            }
 
-		if ( player->getX() > scene->getLimit() ){
-			player->setX( scene->getLimit() );
-		}
-		if ( player->getZ() < getMinimumZ() ){
-			player->setZ( getMinimumZ() );
-		}
-		if ( player->getZ() > getMaximumZ() ){
-			player->setZ( getMaximumZ() );
-		}
-	}
+            if ( it->min_x + screen_size >= scene->getLimit() ){
+                it->min_x = scene->getLimit() - screen_size;
+            }
 
-	doScene( 0, 0 );
+            if ( it->min_x < lowest ){
+                lowest = it->min_x;
+            }
 
-	vector< Network::Message > messages = getIncomingMessages();
-	for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
-		handleMessage( *it );
-	}
+            /*
+               if ( player->getX() < it->min_x ){
+               player->setX( it->min_x );
+               }
+               */
+            if ( player->getX() < 0 ){
+                player->setX( 0 );
+            }
 
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
-		if ( (*it)->getHealth() <= 0 ){
-			(*it)->died( added_effects );
-			if ( ! isPlayer( *it ) ){
-				delete *it;
-			}
-			it = objects.erase( it );
-		} else ++it;
-	}
+            if ( player->getX() > scene->getLimit() ){
+                player->setX( scene->getLimit() );
+            }
+            if ( player->getZ() < getMinimumZ() ){
+                player->setZ( getMinimumZ() );
+            }
+            if ( player->getZ() > getMaximumZ() ){
+                player->setZ( getMaximumZ() );
+            }
+        }
 
-        sendMessages(outgoing, getServer());
-	outgoing.clear();
-	
-	for ( vector< Object * >::iterator it = added_effects.begin(); it != added_effects.end(); ){
-		Object * o = *it;
-		o->setId( (Object::networkid_t) -1 );
-		it++;
-	}
-	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
+        doScene( 0, 0 );
+    }
+
+    vector< Network::Message > messages = getIncomingMessages();
+    for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
+        handleMessage( *it );
+    }
+
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+        if ( (*it)->getHealth() <= 0 ){
+            (*it)->died( added_effects );
+            if ( ! isPlayer( *it ) ){
+                delete *it;
+            }
+            it = objects.erase( it );
+        } else ++it;
+    }
+
+    sendMessages(outgoing, getServer());
+    outgoing.clear();
+
+    for ( vector< Object * >::iterator it = added_effects.begin(); it != added_effects.end(); ){
+        Object * o = *it;
+        o->setId( (Object::networkid_t) -1 );
+        it++;
+    }
+    objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 }

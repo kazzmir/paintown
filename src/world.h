@@ -60,6 +60,7 @@ public:
         virtual void unpause() = 0;
         /* set to paused if unpaused, or vice-versa */
         virtual void changePause() = 0;
+        virtual bool isPaused() = 0;
         
         /* bleh.. */
         virtual void addEnemy(Enemy * obj) = 0;

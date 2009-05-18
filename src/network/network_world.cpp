@@ -153,6 +153,31 @@ Network::Message NetworkWorld::nextBlockMessage( int block ){
 	return message;
 }
 
+static Network::Message pausedMessage(){
+    Network::Message message;
+    message.id = 0;
+    message << World::PAUSE;
+
+    return message;
+}
+
+static Network::Message unpausedMessage(){
+    Network::Message message;
+    message.id = 0;
+    message << World::UNPAUSE;
+
+    return message;
+}
+
+void NetworkWorld::changePause(){
+    AdventureWorld::changePause();
+    if (isPaused()){
+        addMessage(pausedMessage());
+    } else {
+        addMessage(unpausedMessage());
+    }
+}
+
 void NetworkWorld::doScene( int min_x, int max_x ){
 	vector< Object * > obj;
 	int block = scene->getBlock();
@@ -218,6 +243,16 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 				}
 				break;
 			}
+                        case PAUSE : {
+                            this->pause();
+                            addMessage(pausedMessage());
+                            break;
+                        }
+                        case UNPAUSE : {
+                            this->unpause();
+                            addMessage(unpausedMessage());
+                            break;
+                        }
 		}
 	} else {
 		Object * o = findNetworkObject( message.id );
@@ -284,10 +319,10 @@ void NetworkWorld::flushOutgoing(){
 void NetworkWorld::act(){
 	AdventureWorld::act();
 
-	vector< Network::Message > messages = getIncomingMessages();
-	for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
-		handleMessage( *it );
-	}
+        vector< Network::Message > messages = getIncomingMessages();
+        for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
+            handleMessage( *it );
+        }
 
-	flushOutgoing();
+        flushOutgoing();
 }

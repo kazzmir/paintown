@@ -80,6 +80,7 @@ public:
         virtual void pause();
         virtual void unpause();
         virtual void changePause();
+        virtual bool isPaused();
 	
 	// Console
 	virtual void toggleConsole();

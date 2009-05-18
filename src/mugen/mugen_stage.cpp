@@ -824,6 +824,10 @@ Network::Message MugenStage::createBangMessage( int x, int y, int z ){
     return m;
 }
         
+bool MugenStage::isPaused(){
+    return false;
+}
+        
 void MugenStage::pause(){
 }
 

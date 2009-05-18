@@ -121,6 +121,10 @@ void AdventureWorld::reloadLevel() throw( LoadException ){
 void AdventureWorld::changePause(){
     is_paused = ! is_paused;
 }
+        
+bool AdventureWorld::isPaused(){
+    return is_paused;
+}
 
 void AdventureWorld::pause(){
     is_paused = true;

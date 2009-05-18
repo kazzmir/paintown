@@ -54,6 +54,7 @@ public:
         virtual void pause();
         virtual void unpause();
         virtual void changePause();
+        virtual bool isPaused();
 
         virtual const std::deque<Bitmap*> & getScreenshots();
 

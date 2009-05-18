@@ -22,6 +22,8 @@ public:
 	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
 	virtual void act();
 	virtual void doScene( int min_x, int max_x );
+        
+        virtual void changePause();
 	
 	void addIncomingMessage( const Network::Message & message, Network::Socket from );
 
