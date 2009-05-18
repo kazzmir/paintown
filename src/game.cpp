@@ -203,7 +203,10 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 	// int game_time = 100;
         int frames = 0;
         const int max_fps_index = 5;
-        double fps[max_fps_index] = {0,0,0,0,0};
+        double fps[max_fps_index];
+        for (int i = 0; i < max_fps_index; i++){
+            fps[i] = Global::TICS_PER_SECOND;
+        }
         int fps_index = 0;
         bool show_fps = false;
 	bool done = false;

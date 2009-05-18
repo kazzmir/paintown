@@ -34,8 +34,8 @@ volatile int Global::second_counter = 0;
  * LOGIC_MULTIPLIER will be used to adjust the speed counter to its
  * original value.
  */
-static const int TICS_PER_SECOND = 40;
-const double Global::LOGIC_MULTIPLIER = (double) 90 / (double) TICS_PER_SECOND;
+const int Global::TICS_PER_SECOND = 40;
+const double Global::LOGIC_MULTIPLIER = (double) 90 / (double) Global::TICS_PER_SECOND;
         
 pthread_mutex_t Global::loading_screen_mutex;
 bool Global::done_loading = false;

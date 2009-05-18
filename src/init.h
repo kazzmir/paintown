@@ -15,6 +15,7 @@ namespace Global{
 	extern volatile int second_counter;
 
         extern const double LOGIC_MULTIPLIER;
+        extern const int TICS_PER_SECOND;
 
 	extern pthread_mutex_t loading_screen_mutex;
 	extern bool done_loading;

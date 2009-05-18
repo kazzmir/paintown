@@ -221,7 +221,8 @@ static void playGame( Socket socket ){
 
 					stopLoading( loadingThread );
 					try{
-						playLevel( world, players );
+                                            vector<Object*> xplayers;
+                                            Game::playLevel( world, xplayers, 100 );
 
                                                 ObjectFactory::destroy();
                                                 HeartFactory::destroy();
