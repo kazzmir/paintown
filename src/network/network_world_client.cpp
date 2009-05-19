@@ -104,6 +104,31 @@ vector< Network::Message > NetworkWorldClient::getIncomingMessages(){
 	return m;
 }
 
+static Network::Message pausedMessage(){
+    Network::Message message;
+    message.id = 0;
+    message << World::PAUSE;
+
+    return message;
+}
+
+static Network::Message unpausedMessage(){
+    Network::Message message;
+    message.id = 0;
+    message << World::UNPAUSE;
+
+    return message;
+}
+
+void NetworkWorldClient::changePause(){
+    AdventureWorld::changePause();
+    if (isPaused()){
+        addMessage(pausedMessage());
+    } else {
+        addMessage(unpausedMessage());
+    }
+}
+
 bool NetworkWorldClient::uniqueObject( Object::networkid_t id ){
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
