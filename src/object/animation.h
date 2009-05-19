@@ -6,7 +6,10 @@
 #include <map>
 
 #include "util/load_exception.h"
+#include "game/input.h"
 #include "attack.h"
+
+/* is that crazy hat for chicken? */
 
 class AnimationEvent;
 class Bitmap;
@@ -16,18 +19,8 @@ class Character;
 class Sound;
 class Projectile;
 
-const int PAIN_KEY_FORWARD = 0;
-const int PAIN_KEY_BACK = 1;
-const int PAIN_KEY_UP = 2;
-const int PAIN_KEY_DOWN = 3;
-const int PAIN_KEY_ATTACK1 = 4;
-const int PAIN_KEY_ATTACK2 = 5;
-const int PAIN_KEY_ATTACK3 = 6;
-const int PAIN_KEY_JUMP = 7;
-const int PAIN_KEY_GRAB = 8;
-
 struct KeyPress{
-    std::vector< int > combo;
+    std::vector<PaintownInput> combo;
 
 	/*
 	KeyPress & operator= ( const KeyPress & rhs ){
@@ -266,7 +259,7 @@ protected:
 	void reMap( Bitmap * work, std::map< int, int > & colors );
 
 	// int convertKeyPress( const string & key_name ) throw( LoadException );
-	int convertKeyPress( const std::string & key_name );
+	PaintownInput convertKeyPress( const std::string & key_name );
 
 	// void parseObject( string str ) throw( exception );
 	void upperCase( std::string & who );

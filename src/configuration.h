@@ -2,6 +2,7 @@
 #define _paintown_configuration_h
 
 #include <string>
+#include "game/input.h"
 
 class Token;
 
@@ -18,7 +19,7 @@ public:
         };
 
 	/* return a Keyboard::Key_X based on some PAIN_KEY_X */
-	int getKey( int which, int facing );
+	int getKey( PaintownInput which, int facing );
 	
 	void setRight( int i );
 	void setLeft( int i );

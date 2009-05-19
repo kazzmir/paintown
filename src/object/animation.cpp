@@ -173,8 +173,8 @@ contact( NULL ){
 					// nm->print("combo ");
 					if ( !nm->hasTokens() ){
 						string key_name = nm->getName();
-						int actualKey = convertKeyPress( key_name );
-						if ( actualKey == -2 ){
+						PaintownInput actualKey = convertKeyPress( key_name );
+						if ( actualKey == Unknown ){
 							Global::debug( 0 ) << "*WARNING*: "<<key_name<<" is not valid"<<endl;
 						}
 						// cout<<"Convert "<<key_name<<" to "<<actualKey<<endl;
@@ -184,7 +184,7 @@ contact( NULL ){
 						// for ( int i = 0; i < nm->numTokens(); i++ ){
 							string key_name;
 							*nm >> key_name;
-							int actualKey = convertKeyPress( key_name );
+							PaintownInput actualKey = convertKeyPress( key_name );
 							if ( actualKey == -2 ){
 								Global::debug( 0 ) <<"*WARNING*: "<<key_name<<" is not valid"<<endl;
 							}
@@ -655,21 +655,23 @@ ECollide * Animation::getCollide( int facing ){
 }
 
 // int Animation::convertKeyPress( const string & key_name ) throw( LoadException ){
-int Animation::convertKeyPress( const string & key_name ) {
-	if ( key_name == "key_idle" ) return -1;
-	if ( key_name == "key_jump" ) return PAIN_KEY_JUMP;
-	if ( key_name == "key_forward" ) return PAIN_KEY_FORWARD;
-	if ( key_name == "key_back" ) return PAIN_KEY_BACK;
+PaintownInput Animation::convertKeyPress( const string & key_name ) {
+	if ( key_name == "key_idle" ) return Unknown;
+	if ( key_name == "key_jump" ) return Jump;
+	if ( key_name == "key_forward" ) return Forward;
+	if ( key_name == "key_back" ) return Back;
 	/* im not sure we need a grab key */
-	if ( key_name == "key_grab" ) return PAIN_KEY_GRAB;
+	if ( key_name == "key_grab" ) return Grab;
 	// if ( key_name == "key_right" ) return KEY_RIGHT;
-	if ( key_name == "key_down" ) return PAIN_KEY_DOWN;
-	if ( key_name == "key_up" ) return PAIN_KEY_UP;
-	if ( key_name == "key_attack1" ) return PAIN_KEY_ATTACK1;
-	if ( key_name == "key_attack2" ) return PAIN_KEY_ATTACK2;
-	if ( key_name == "key_attack3" ) return PAIN_KEY_ATTACK3;
+	if ( key_name == "key_down" ) return Down;
+	if ( key_name == "key_up" ) return Up;
+	if ( key_name == "key_attack1" ) return Attack1;
+	if ( key_name == "key_attack2" ) return Attack2;
+	if ( key_name == "key_attack3" ) return Attack3;
 
-	return -2;
+        Global::debug(1) << "Unknown key name '" << key_name << "'" << endl;
+
+	return Unknown;
 
 	// return KEY_ENTER;
 }

@@ -8,13 +8,14 @@
 #include <deque>
 #include "util/load_exception.h"
 #include "network/network.h"
+#include "game/input.h"
 
 class Animation;
 class World;
 
 struct keyState{
-	keyState( int key, int facing ):key(key),facing(facing){}
-	int key;
+	keyState( PaintownInput key, int facing ):key(key),facing(facing){}
+	PaintownInput key;
 	int facing;
 };
 
@@ -92,14 +93,14 @@ protected:
         void initializeAttackGradient();
 	void fillKeyCache();
         void debugDumpKeyCache(int level);
-        const char * keyToName(int key);
+        const char * keyToName(PaintownInput key);
 	bool combo( Animation * ani );
 	bool combo( Animation * ani, std::deque< keyState >::iterator cache_cur_key, std::deque< keyState >::iterator end );
-	virtual int getKey( int x, int facing );
-	virtual int getKey( int x );
+	virtual int getKey( PaintownInput x, int facing );
+	virtual int getKey( PaintownInput x );
 
-	virtual bool careAboutKey( int key );
-        virtual std::vector<int> convertJoystick(JoystickInput input);
+	virtual bool careAboutKey( PaintownInput key );
+        virtual std::vector<PaintownInput> convertJoystick(JoystickInput input);
 
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
@@ -110,7 +111,7 @@ protected:
 
 	/* store key presses in a stack with two ends*/
         std::deque< keyState > key_cache;
-        std::map< int, bool > last_key;
+        std::map< PaintownInput, bool > last_key;
 	int acts;
 	Keyboard keyboard;
         Joystick * joystick;

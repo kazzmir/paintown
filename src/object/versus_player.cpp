@@ -5,6 +5,7 @@
 #include "configuration.h"
 #include "util/funcs.h"
 #include "globals.h"
+#include "game/input.h"
 #include <string>
 #include <iostream>
 
@@ -114,7 +115,7 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 		
 		if ( final == NULL  && getStatus() != Status_Grab ){
 			// bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_UP ) ] || keyboard[ getKey( PAIN_KEY_DOWN ) ] || keyboard[ getKey( PAIN_KEY_BACK ) ];
-			bool moving = keyboard[ getKey( PAIN_KEY_FORWARD ) ] || keyboard[ getKey( PAIN_KEY_BACK ) ];
+			bool moving = keyboard[ getKey( Forward ) ] || keyboard[ getKey( Back ) ];
 			if ( getMovement( "jump" ) == NULL || animation_current != getMovement( "jump" ) ){
 				if ( !moving ){
 					animation_current = getMovement( "idle" );
@@ -161,16 +162,16 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;
 				double y = 0;
-				if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
+				if ( keyboard[ getKey( Forward ) ] ){
 					x = getSpeed() * 1.2;
 				}
-				if ( keyboard[ getKey( PAIN_KEY_BACK ) ] ){
+				if ( keyboard[ getKey( Back ) ] ){
 					x = -(getSpeed() * 1.2);
 				}
-				if ( keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
+				if ( keyboard[ getKey( Down ) ] ){
 					y = getSpeed() * 1.2;	
 				}
-				if ( keyboard[ getKey( PAIN_KEY_UP ) ] ){
+				if ( keyboard[ getKey( Up ) ] ){
 					y = -getSpeed() * 1.2;	
 				}
 
@@ -186,15 +187,15 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 	if ( (getStatus() == Status_Ground) && (animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" )) ){
 
 		// if ( keyboard[ KEY_RIGHT ] || keyboard[ KEY_LEFT ] ){
-		if ( keyboard[ getKey( PAIN_KEY_FORWARD ) ] ){
+		if ( keyboard[ getKey( Forward ) ] ){
 			moveX( getSpeed() );
-		} else if ( keyboard[ getKey( PAIN_KEY_BACK ) ] ){
+		} else if ( keyboard[ getKey( Back ) ] ){
 			moveX( -getSpeed() );
 		}
 
-		if ( keyboard[ getKey( PAIN_KEY_UP ) ] ){
+		if ( keyboard[ getKey( Up ) ] ){
 			moveZ( -getSpeed() );
-		} else if ( keyboard[ getKey( PAIN_KEY_DOWN ) ] ){
+		} else if ( keyboard[ getKey( Down ) ] ){
 			moveZ( getSpeed() );
 		}
 	} else {
