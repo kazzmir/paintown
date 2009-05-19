@@ -52,7 +52,7 @@ public:
 	Animation( Token * tok, Character * const owner ) throw( LoadException );
 	Animation( const Animation & animation, Character * const owner ) throw( LoadException );
 
-	~Animation();
+	virtual ~Animation();
 
 	/* Act:
 	 * Progress through one logic cycle

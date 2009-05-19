@@ -399,6 +399,7 @@ public:
 	 */
 	virtual ~Object();
 
+        /* make these enums */
 	static const int FACING_LEFT = 0;
 	static const int FACING_RIGHT = 1;
 

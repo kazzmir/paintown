@@ -231,7 +231,6 @@ else:
     staticEnv.Append( LIBS = [ 'pthread' ] )
 
     import sys
-    env = Environment(ENV = os.environ)
     # find the system tool path by attaching SCons/Tool to everything
     def fix(q):
         return q + "/SCons/Tool"

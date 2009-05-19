@@ -309,7 +309,7 @@ void Player::drawFront( Bitmap * work, int rel_x ){
 }
 
 /* animation keys are lists of lists of keys where inner lists
- * are a set of keys that all must pressed simaltaneously.
+ * are a set of keys that all must pressed simultaneously.
  * (f f (a1 a2)) means that the user must press
  * forward, forward and then a1 and a2 at the same time.
  */
