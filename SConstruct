@@ -110,14 +110,8 @@ def getEnvironment():
     elif useMingw():
         return Environment(ENV = os.environ, tools = ['mingw', 'lex', 'yacc', 'zip'])
     else:
-        import sys
-        env = Environment(ENV = os.environ)
-        # find the system tool path by attaching SCons/Tool to everything
-        def fix(q):
-            return q + "/SCons/Tool"
-        env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path])
-        return env
-
+        return Environment(ENV = os.environ)
+        
 if isWindows():
     print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"
     if not isCygwin():
@@ -193,7 +187,6 @@ if False:
     env.Append( CCFLAGS = '-pg' )
     env.Append( LINKFLAGS = '-pg' )
 
-staticEnv = env.Clone()
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 
@@ -202,6 +195,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckYacc" : checkYacc}
 
 if isWindows():
+    staticEnv = env.Clone()
 
     config = env.Configure(custom_tests = custom_tests)
     config.CheckPython()
@@ -232,8 +226,16 @@ if isWindows():
     staticEnv.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
     staticEnv.Append( CPPDEFINES = 'WINDOWS' )
 else:
+    staticEnv = env.Clone()
     env.Append( LIBS = [ 'pthread' ] )
     staticEnv.Append( LIBS = [ 'pthread' ] )
+
+    import sys
+    env = Environment(ENV = os.environ)
+    # find the system tool path by attaching SCons/Tool to everything
+    def fix(q):
+        return q + "/SCons/Tool"
+    env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path])
 
     try:
         dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
