@@ -12,3 +12,10 @@ OSX:
 * Versus mode works
 * Options work
 * Network mode works
+
+Files to update version
+ src/globals.cpp
+ misc/make-osx-bundle
+ misc/installer.nsi
+ README
+ website
