@@ -10,6 +10,7 @@
 
 class Bitmap;
 class Animation;
+class AnimationTrail;
 class ObjectAttack;
 class Stimulation;
 class World;
@@ -477,6 +478,9 @@ protected:
 	bool draw_shadow;
 
         std::string path;
+
+        std::vector<AnimationTrail*> trails;
+        int trail_generator;
 };
 
 #endif

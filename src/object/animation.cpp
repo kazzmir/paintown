@@ -20,6 +20,7 @@
 #include "animation_event_shadow.h"
 #include "animation_event_ticket.h"
 #include "animation_event_zdistance.h"
+#include "animation_trail.h"
 #include "attack.h"
 #include "util/bitmap.h"
 #include "util/lit_bitmap.h"
@@ -536,6 +537,10 @@ void Animation::playSound( const string & path ){
 		Sound * s = sounds[ path ];
 		s->play();
 	}
+}
+
+AnimationTrail * Animation::makeTrail(const int x, const int y, const int facing) const {
+    return new AnimationTrail(x, y, facing, *current_frame);
 }
 	
 void Animation::setFacing( const int direction ){

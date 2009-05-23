@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "animation.h"
+#include "animation_trail.h"
 #include "character.h"
 #include "globals.h"
 #include "object.h"
@@ -58,7 +59,8 @@ glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
-draw_shadow( true ){
+draw_shadow( true ),
+trail_generator(0){
 }
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
@@ -86,7 +88,8 @@ glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
-draw_shadow( true ){
+draw_shadow( true ),
+trail_generator(0){
 	name = "";
 
 	loadSelf( filename.c_str() );
@@ -117,7 +120,8 @@ glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
-draw_shadow( true ){
+draw_shadow( true ),
+trail_generator(0){
 	name = "";
 
 	loadSelf( filename );
@@ -135,7 +139,8 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 explode( false ),
-draw_shadow( true ){
+draw_shadow( true ),
+trail_generator(0){
 
 	/* these are set in object.cpp */
 	// setHealth( chr.getHealth() );
@@ -1027,6 +1032,26 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
             Script::Engine::getEngine()->objectTick(getScriptObject());
         }
 
+    if (trail_generator <= 0){
+        if (animation_current){
+            trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing()));
+        }
+        trail_generator = 30;
+    } else {
+        trail_generator -= 1;
+    }
+
+    for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); ){
+        AnimationTrail * trail = *it;
+        if (trail->act()){
+            delete trail;
+            it = trails.erase(it);
+        } else {
+            it++;
+        }
+    }
+
+
 	/*
 	if ( isJumping() ){
 		// cout<<"Jumping: "<<getJumpingYVelocity()<<endl;
@@ -1474,91 +1499,99 @@ Network::Message Character::animationMessage(){
 	return m;
 }
 
-void Character::draw( Bitmap * work, int rel_x ){	
+void Character::draw( Bitmap * work, int rel_x ){
 
-	if ( death >= 15 ){
-		if ( (death/8) % 2 == 0 ){
-			return;
-		}
-	}
+    /* this makes a character blink when they die */
+    if ( death >= 15 ){
+        if ( (death/8) % 2 == 0 ){
+            return;
+        }
+    }
 
-	if ( animation_current ){
-		if ( drawShadow() ){
-			Bitmap const * shadow = Shadow::getShadow( getShadow() );
-			// set_multiply_blender( 0, 0, 0, 164 );
-			Bitmap::multiplyBlender( 0, 0, 0, 164 );
-			shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
-		}
+    if ( animation_current ){
+        /* draw trails */
+        for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); it++){
+            AnimationTrail * trail = *it;
+            trail->draw(rel_x, work);
+        }
+
+        if ( drawShadow() ){
+            Bitmap const * shadow = Shadow::getShadow( getShadow() );
+            // set_multiply_blender( 0, 0, 0, 164 );
+            Bitmap::multiplyBlender( 0, 0, 0, 164 );
+            shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
+        }
+
+        /* draw character in different ways depending on their status */
+        if ( invincibility > 0 ){
+            // Bitmap::drawingMode( Bitmap::MODE_LIT );
+            // Bitmap::transBlender( 0, 0, (int)(sin( getInvincibility() ) * 200 + 10), 0 );
+            double f = sin( 3.14159 / 180.0 * getInvincibility() * 6 );
+            int max_white = 80;
+            int base_blue = 120;
+            int c = (int)(f * max_white);
+            if ( c < 0 ) c = 0;
+            Bitmap::transBlender( c, c, (int)(f * (255 - (max_white + base_blue)) + base_blue + c), 50 );
+            if ( getFacing() == Object::FACING_RIGHT ){
+                animation_current->DrawLit( getRX() - rel_x, getRY(), work );
+            } else {
+                animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
+            }
+        } else if (getGlowing() > 0){
+            /* hopefully this will glow yellowish or something */
+            double f = sin( 3.14159 / 180.0 * glowing * 6 );
+            int max_white = 80;
+            int base_blue = 120;
+            int c = (int)(f * max_white);
+            if ( c < 0 ) c = 0;
+            int v = (int)(f * (255 - (max_white + base_blue)) + base_blue + c);
+            Bitmap::transBlender(v, v, c, 50);
+            if ( getFacing() == Object::FACING_RIGHT ){
+                animation_current->DrawLit( getRX() - rel_x, getRY(), work );
+            } else {
+                animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
+            }
+        } else {
+
+            if ( getFacing() == Object::FACING_RIGHT ){
+                animation_current->Draw( getRX() - rel_x, getRY(), work );
+            } else {
+                animation_current->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+            }
+        }
 
 
-		// printf( "invincibility = %d\n", invincibility );
-		if ( invincibility > 0 ){
-			// Bitmap::drawingMode( Bitmap::MODE_LIT );
-			// Bitmap::transBlender( 0, 0, (int)(sin( getInvincibility() ) * 200 + 10), 0 );
-			double f = sin( 3.14159 / 180.0 * getInvincibility() * 6 );
-			int max_white = 80;
-			int base_blue = 120;
-			int c = (int)(f * max_white);
-			if ( c < 0 ) c = 0;
-			Bitmap::transBlender( c, c, (int)(f * (255 - (max_white + base_blue)) + base_blue + c), 50 );
-			if ( getFacing() == Object::FACING_RIGHT ){
-				animation_current->DrawLit( getRX() - rel_x, getRY(), work );
-			} else {
-				animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
-			}
-                } else if (getGlowing() > 0){
-                    /* hopefully this will glow yellowish or something */
-                    double f = sin( 3.14159 / 180.0 * glowing * 6 );
-                    int max_white = 80;
-                    int base_blue = 120;
-                    int c = (int)(f * max_white);
-                    if ( c < 0 ) c = 0;
-                    int v = (int)(f * (255 - (max_white + base_blue)) + base_blue + c);
-                    Bitmap::transBlender(v, v, c, 50);
-                    if ( getFacing() == Object::FACING_RIGHT ){
-                        animation_current->DrawLit( getRX() - rel_x, getRY(), work );
-                    } else {
-                        animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
-                    }
-		} else {
+        if ( Global::getDebug() > 5 ){
+            int x = (int)(getX() - rel_x);
+            int y = (int) getRY();
+            int x2 = x + animation_current->getRange();
+            if ( getFacing() == Object::FACING_LEFT ){
+                x2 = x - animation_current->getRange();
+            }
+            work->rectangle( x, y, x2, y + 1, Bitmap::makeColor(255,255,255) );
+        }
 
-			if ( getFacing() == Object::FACING_RIGHT ){
-				animation_current->Draw( getRX() - rel_x, getRY(), work );
-			} else {
-				animation_current->DrawFlipped( getRX() - rel_x, getRY(), work ); 
-			}
-		}
+        /*
+           if ( invincibility > 0 ){
+           Bitmap::drawingMode( Bitmap::MODE_SOLID );
+           }
+           */
+
+        /*
+           if ( global_debug ){
+           work->circleFill( getRX() - rel_x, (int) getZ(), 3, Bitmap::makeColor(255,255,0) );
+           }
+           */
 
 
-		if ( Global::getDebug() > 5 ){
-			int x = (int)(getX() - rel_x);
-			int y = (int) getRY();
-			int x2 = x + animation_current->getRange();
-			if ( getFacing() == Object::FACING_LEFT ){
-				x2 = x - animation_current->getRange();
-			}
-			work->rectangle( x, y, x2, y + 1, Bitmap::makeColor(255,255,255) );
-		}
+    }
 
-		/*
-		if ( invincibility > 0 ){
-			Bitmap::drawingMode( Bitmap::MODE_SOLID );
-		}
-		*/
+    // work->circleFill( getRX(), getRY(), 3, Bitmap::makeColor(255,255,0) );
 
-		/*
-		if ( global_debug ){
-			work->circleFill( getRX() - rel_x, (int) getZ(), 3, Bitmap::makeColor(255,255,0) );
-		}
-		*/
-	}
-
-	// work->circleFill( getRX(), getRY(), 3, Bitmap::makeColor(255,255,0) );
-
-	/*
-	if ( icon )
-		icon->draw( 1, 1, *work );
-	*/
+    /*
+       if ( icon )
+       icon->draw( 1, 1, *work );
+       */
 
 }
 
@@ -1681,6 +1714,10 @@ Character::~Character(){
 			}
 		}
 	}
+
+        for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); it++){
+            delete (*it);
+        }
 
 	delete die_sound;
 	delete landed_sound;

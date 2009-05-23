@@ -18,6 +18,7 @@ class Token;
 class Character;
 class Sound;
 class Projectile;
+class AnimationTrail;
 
 struct KeyPress{
     std::vector<PaintownInput> combo;
@@ -250,6 +251,8 @@ public:
 	// void setAttack( int x1, int y1, int x2, int y2 );
 	void Delay();
 	void nextTicket();
+
+        virtual AnimationTrail * makeTrail(const int x, const int y, const int facing) const;
 
 	int getDamage() const;
 	void setDamage( const int d );
