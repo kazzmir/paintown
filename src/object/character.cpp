@@ -1671,7 +1671,7 @@ ECollide * Character::getCollide() const {
 	if ( animation_current ){
 		return animation_current->getCollide( getFacing() );
 	}
-	cout<<"No animation collide"<<endl;
+        Global::debug(0) << "No animation collide"<<endl;
 	return NULL;
 }
 	
@@ -1683,13 +1683,13 @@ ECollide * Character::getNormalCollide() const {
 }
 
 void Character::print() const{
-	cout<<"Name: "<<name<<endl;
-	cout<<"Health: "<<getHealth()<<endl;
-	cout<<"Speed: "<<speed<<endl;
-	cout<<"Type: "<<type<<endl;
-	cout<<"Shadow: "<<shadow<<endl;
-	if ( icon )
-		cout<<"Icon: "<<icon->getPath()<<endl;
+    Global::debug(0) <<"Name: "<<name<<endl;
+    Global::debug(0) <<"Health: "<<getHealth()<<endl;
+    Global::debug(0) <<"Speed: "<<speed<<endl;
+    Global::debug(0) <<"Type: "<<type<<endl;
+    Global::debug(0) <<"Shadow: "<<shadow<<endl;
+    if ( icon )
+        Global::debug(0) <<"Icon: "<<icon->getPath()<<endl;
 }
 
 Character::~Character(){
