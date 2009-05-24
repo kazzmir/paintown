@@ -255,7 +255,7 @@ public class Animator extends JFrame {
                     }
 
                     public String getDescription(){
-                        return "Character files";
+                        return "Character files (*.txt)";
                     }
                 });
 

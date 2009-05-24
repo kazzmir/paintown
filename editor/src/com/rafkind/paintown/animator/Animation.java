@@ -482,6 +482,11 @@ public class Animation implements Runnable {
 		
 		Token keyToken = token.findToken( "keys" );
 		if ( keyToken != null ){
+                    for (Iterator it = keyToken.iterator(); it.hasNext(); ){
+                        String key = ((Token)it.next()).toString();
+                        keys.add(key);
+                    }
+                    /*
 			try{
 				for(int i = 0; ; i += 1 ){
 					String temp = keyToken.readString(i);
@@ -494,6 +499,7 @@ public class Animation implements Runnable {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
+                        */
 		}
 		
 		Token rangeToken = token.findToken( "range" );
