@@ -539,8 +539,8 @@ void Animation::playSound( const string & path ){
 	}
 }
 
-AnimationTrail * Animation::makeTrail(const int x, const int y, const int facing) const {
-    return new AnimationTrail(x, y, facing, *current_frame);
+AnimationTrail * Animation::makeTrail(const int x, const int y, const int facing, const int life) const {
+    return new AnimationTrail(x, y, facing, life, *current_frame);
 }
 	
 void Animation::setFacing( const int direction ){

@@ -252,7 +252,7 @@ public:
 	void Delay();
 	void nextTicket();
 
-        virtual AnimationTrail * makeTrail(const int x, const int y, const int facing) const;
+        virtual AnimationTrail * makeTrail(const int x, const int y, const int facing, const int life) const;
 
 	int getDamage() const;
 	void setDamage( const int d );

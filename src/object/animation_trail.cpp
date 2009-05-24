@@ -2,12 +2,13 @@
 #include "animation_trail.h"
 #include "object.h"
 
-AnimationTrail::AnimationTrail(const int x, const int y, const int facing, const Bitmap & sprite):
+AnimationTrail::AnimationTrail(const int x, const int y, const int facing, const int life, const Bitmap & sprite):
 sprite(sprite),
 x(x),
 y(y),
 facing(facing),
-life(100){
+max_life(life),
+life(life){
 }
 
 bool AnimationTrail::act(){
@@ -19,7 +20,7 @@ void AnimationTrail::draw(int rel_x, Bitmap * work) const {
     int w = sprite.getWidth() / 2;
     int h = sprite.getHeight();
 
-    Bitmap::transBlender(0, 0, 0, life * 255 / 100);
+    Bitmap::transBlender(0, 0, 0, life * 255 / max_life);
     if (facing == Object::FACING_RIGHT){
         sprite.drawTrans(x-w - rel_x, y-h, *work);
     } else {

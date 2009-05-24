@@ -5,7 +5,7 @@ class Bitmap;
 
 class AnimationTrail{
 public:
-    AnimationTrail(const int x, const int y, const int facing, const Bitmap & sprite);
+    AnimationTrail(const int x, const int y, const int facing, const int life, const Bitmap & sprite);
 
     virtual void draw(const int rel_x, Bitmap * work) const;
     virtual bool act();
@@ -16,6 +16,7 @@ protected:
     const Bitmap & sprite;
     const int x, y;
     const int facing;
+    const int max_life;
     int life;
 
 };

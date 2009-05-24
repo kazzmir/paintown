@@ -1034,7 +1034,7 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 
     if (trail_generator <= 0){
         if (animation_current){
-            trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing()));
+            trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing(), 30));
         }
         trail_generator = 30;
     } else {
