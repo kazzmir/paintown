@@ -72,6 +72,7 @@ src/object/animation_event_shadow.cpp
 src/object/animation_event_sound.cpp
 src/object/animation_event_status.cpp
 src/object/animation_event_ticket.cpp
+src/object/animation_event_trails.cpp
 src/object/animation_event_zdistance.cpp
 src/object/animation_trail.cpp
 src/object/buddy_player.cpp

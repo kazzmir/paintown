@@ -60,7 +60,9 @@ toughness( 10 ),
 explode( false ),
 lives( 0 ),
 draw_shadow( true ),
-trail_generator(0){
+trail_generator(0),
+trail_counter(0),
+trail_life(0){
 }
 
 Character::Character( const string & filename, int alliance ) throw( LoadException ):
@@ -89,7 +91,9 @@ toughness( 10 ),
 explode( false ),
 lives( 0 ),
 draw_shadow( true ),
-trail_generator(0){
+trail_generator(0),
+trail_counter(0),
+trail_life(0){
 	name = "";
 
 	loadSelf( filename.c_str() );
@@ -121,7 +125,9 @@ toughness( 10 ),
 explode( false ),
 lives( 0 ),
 draw_shadow( true ),
-trail_generator(0){
+trail_generator(0),
+trail_counter(0),
+trail_life(0){
 	name = "";
 
 	loadSelf( filename );
@@ -140,7 +146,9 @@ landed_sound( NULL ),
 squish_sound( NULL ),
 explode( false ),
 draw_shadow( true ),
-trail_generator(0){
+trail_generator(chr.trail_generator),
+trail_counter(chr.trail_counter),
+trail_life(chr.trail_life){
 
 	/* these are set in object.cpp */
 	// setHealth( chr.getHealth() );
@@ -880,6 +888,11 @@ void Character::landed( World * world ){
 	}
 }
 
+void Character::setTrails(const int produce, const int life){
+    trail_generator = produce;
+    trail_life = life;
+}
+
 void Character::createProjectile( Projectile * projectile ){
 	projectiles.push_back( (Object *) projectile );
 }
@@ -1032,13 +1045,15 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
             Script::Engine::getEngine()->objectTick(getScriptObject());
         }
 
-    if (trail_generator <= 0){
-        if (animation_current){
-            trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing(), 30));
+    if (trail_generator > 0){
+        if (trail_counter <= 1){
+            if (animation_current){
+                trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing(), trail_life));
+            }
+            trail_counter = trail_generator;
+        } else {
+            trail_counter -= 1;
         }
-        trail_generator = 30;
-    } else {
-        trail_generator -= 1;
     }
 
     for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); ){

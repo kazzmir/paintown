@@ -19,6 +19,7 @@
 #include "animation_event_sound.h"
 #include "animation_event_shadow.h"
 #include "animation_event_ticket.h"
+#include "animation_event_trails.h"
 #include "animation_event_zdistance.h"
 #include "animation_trail.h"
 #include "attack.h"
@@ -106,6 +107,10 @@ contact( NULL ){
 		
 		try {
 			*tok >> current1;
+
+                        /* I forgot why I copy the token object. Is it just so
+                         * that I don't have to deal with dereferencing the token?
+                         */
                         Token current(*current1);
 
 			if ( current == "name" ){
@@ -152,6 +157,20 @@ contact( NULL ){
 					/* ignore token exceptions here */
 				}
 			} else if ( current == "blast" ){
+                        } else if (current == "trail"){
+                            int produce = 0;
+                            int life = 0;
+                            while (current.hasTokens()){
+                                Token * sub;
+                                current >> sub;
+                                if (*sub == "generate"){
+                                    *sub >> produce;
+                                } else if (*sub == "length"){
+                                    *sub >> life;
+                                }
+                            }
+                            AnimationEventTrail * trail = new AnimationEventTrail(produce, life);
+                            events.push_back(trail);
 			} else if ( current == "damage" ){
 				current >> damage;
 			} else if ( current == "sequence" ){
@@ -526,6 +545,12 @@ void Animation::addDecommision( const string & s ){
 
 void Animation::addCommision( const string & s ){
 	enable_animations.push_back( s );
+}
+
+void Animation::setTrails(const int produce, const int life){
+    if (parent){
+        parent->setTrails(produce, life);
+    }
 }
 
 void Animation::Delay(){

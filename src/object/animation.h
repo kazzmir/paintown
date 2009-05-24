@@ -248,6 +248,7 @@ public:
 	void setFrame( const std::string & path );
 	void setFrame( const int fr );
 	void setBBox( int x1, int y1, int x2, int y2 );
+        virtual void setTrails(const int produce, const int life);
 	// void setAttack( int x1, int y1, int x2, int y2 );
 	void Delay();
 	void nextTicket();

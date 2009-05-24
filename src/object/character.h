@@ -211,6 +211,8 @@ public:
 	void decreaseXVelocity();
 	void decreaseZVelocity();
 
+        virtual void setTrails(const int produce, const int life);
+
 public:
 	/* for testing purposes only */
 	virtual bool testAnimation();
@@ -479,8 +481,14 @@ protected:
 
         std::string path;
 
+        /* list of faded animations that act as a trail */
         std::vector<AnimationTrail*> trails;
+        /* starting time before a trail is produced, 0 means don't produce any */
         int trail_generator;
+        /* countdown before a trail is produced */
+        int trail_counter;
+        /* lifetime for trails */
+        int trail_life;
 };
 
 #endif
