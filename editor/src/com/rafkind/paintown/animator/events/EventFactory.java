@@ -28,6 +28,7 @@ public class EventFactory{
         events.put( "next-ticket", new Lambda0(){public Object invoke(){return new TicketEvent();}});
         events.put( "offset", new Lambda0(){public Object invoke(){return new OffsetEvent();}});
         events.put( "projectile", new Lambda0(){public Object invoke(){return new ProjectileEvent();}});
+        events.put("trail", new Lambda0(){public Object invoke(){ return new TrailEvent();}});
         events.put( "shadow", new Lambda0(){public Object invoke(){return new ShadowEvent();}});
         events.put( "sound", new Lambda0(){public Object invoke(){return new SoundEvent();}});
         events.put( "status", new Lambda0(){public Object invoke(){return new StatusEvent();}});

@@ -1,0 +1,61 @@
+<panel layout="GridBagLayout">
+    <label text="Animation trail">
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="0"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+    </label>
+    <label text="Time to generate">
+        <gridbagconstraints
+            gridx="0"
+            gridy="1"
+            weightx="0"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+    </label>
+    <spinner id="generate">
+        <gridbagconstraints
+            gridx="1"
+            gridy="1"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+
+    </spinner>
+
+    <label text="Trail length">
+        <gridbagconstraints
+            gridx="0"
+            gridy="2"
+            weightx="0"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+    </label>
+    <spinner id="length">
+        <gridbagconstraints
+            gridx="1"
+            gridy="2"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+
+    </spinner>
+
+</panel>
