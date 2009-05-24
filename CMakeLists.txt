@@ -190,8 +190,8 @@ target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_
 #add_executable (menutest src/menu/menutest.cpp)
 #target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
-add_executable (mugentest src/mugen/test.cpp)
-target_link_libraries(mugentest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
+#add_executable (mugentest src/mugen/test.cpp)
+#target_link_libraries(mugentest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 # Do scrip zip only in *nix land
 if(UNIX OR LINUX OR CYGWIN)
