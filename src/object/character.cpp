@@ -716,6 +716,11 @@ void Character::fall( double x_vel, double y_vel ){
 void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
 	/* I think if death >= 1 here I should just return */
 	Object::takeDamage( world, obj, damage );
+
+        /* without this, trails might continue for all animations because the
+         * stop trail event might not be seen in the current animation
+         */
+        trail_generator = 0;
 	
 	Global::debug( 2 ) << getName() << " has " << currentDamage() << " damage" << endl;
 	if ( (currentDamage() > getToughness() || getHealth() <= 0 || getStatus() == Status_Jumping) && getStatus() != Status_Fell ){
