@@ -18,6 +18,7 @@
 #include "player.h"
 #include "util/joystick.h"
 #include "game/input.h"
+#include "game/input-manager.h"
 
 // how many ticks to wait before the key cache is cleared.
 // this can probably be user defined in the future
@@ -168,6 +169,7 @@ void Player::fillKeyCache(){
         /* use the input manager instead of most of this stuff */
 	if (keyboard.keypressed() || (joystick != NULL && joystick->pressed())){
 		// acts = 0;
+                /*
 		vector<int> all_keys;
 		keyboard.readKeys( all_keys );
 
@@ -180,6 +182,10 @@ void Player::fillKeyCache(){
 			}
 			all_keys.insert(all_keys.begin(), joystick_keys.begin(), joystick_keys.end());
 		}
+                */
+
+                vector<PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
+
 		map<PaintownInput, bool > new_last;
 		for ( vector<PaintownInput>::iterator it = real_input.begin(); it != real_input.end(); it++ ){
 			PaintownInput n = *it;
@@ -640,6 +646,7 @@ Network::Message Player::thrownMessage( unsigned int id ){
 
 void Player::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 
+    /* this is just for score */
     if (attack_bonus > 0){
         attack_bonus -= 0.02;
     } else {
