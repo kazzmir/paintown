@@ -29,6 +29,10 @@ bool VersusPlayer::canGrab( Object * enemy ){
 	
 void VersusPlayer::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 
+    /* broken for now */
+
+#if 0
+
 	if ( show_life < getHealth() ){
 		show_life++;
 	} else if ( show_life > getHealth() ){
@@ -209,6 +213,7 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 			getLink()->fall( 3.2, 5.0 );
 		}
 	}
+#endif
 }
 	
 VersusPlayer::~VersusPlayer(){

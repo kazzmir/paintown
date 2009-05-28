@@ -3,8 +3,8 @@
 
 #include "character.h" 
 #include "player-common.h"
-#include "util/keyboard.h"
-#include "util/joystick.h"
+// #include "util/keyboard.h"
+// #include "util/joystick.h"
 #include <deque>
 #include "util/load_exception.h"
 #include "network/network.h"
@@ -91,16 +91,16 @@ protected:
         Network::Message scoreMessage();
 
         void initializeAttackGradient();
-	void fillKeyCache();
+        std::vector<PaintownInput> fillKeyCache();
         void debugDumpKeyCache(int level);
         const char * keyToName(PaintownInput key);
 	bool combo( Animation * ani );
-	bool combo( Animation * ani, std::deque< keyState >::iterator cache_cur_key, std::deque< keyState >::iterator end );
+	bool combo( Animation * ani, std::deque<keyState>::iterator cache_cur_key, std::deque< keyState >::iterator end );
 	virtual int getKey( PaintownInput x, int facing );
 	virtual int getKey( PaintownInput x );
 
-	virtual bool careAboutKey( PaintownInput key );
-        virtual std::vector<PaintownInput> convertJoystick(JoystickInput input);
+	// virtual bool careAboutKey( PaintownInput key );
+        // virtual std::vector<PaintownInput> convertJoystick(JoystickInput input);
 
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
@@ -113,8 +113,8 @@ protected:
         std::deque< keyState > key_cache;
         std::map< PaintownInput, bool > last_key;
 	int acts;
-	Keyboard keyboard;
-        Joystick * joystick;
+	// Keyboard keyboard;
+        // Joystick * joystick;
 	int show_life;
 
 	int name_id;

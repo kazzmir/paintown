@@ -9,6 +9,7 @@
 #include "init.h"
 // #include "select_player.h"
 #include "game.h"
+#include "util/keyboard.h"
 #include "util/font.h"
 #include "world.h"
 #include "return_exception.h"

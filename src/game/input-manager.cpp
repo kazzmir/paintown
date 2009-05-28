@@ -67,6 +67,7 @@ static vector<PaintownInput> convertJoystick(JoystickInput input, const int faci
 
 vector<PaintownInput> InputManager::_getInput(const Configuration & configuration, const int facing){
 
+    /* polling should probably go somewhere else */
     keyboard.poll();
     if (joystick != NULL){
         joystick->poll();

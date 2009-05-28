@@ -46,8 +46,6 @@ ignore_lives(false){
 	}
 	*/
 
-        joystick = Joystick::create();
-
 	show_life = getHealth();
 
 	int x, y;
@@ -75,7 +73,6 @@ ignore_lives(false){
 	*/
 
 	show_life = getHealth();
-        joystick = Joystick::create();
 
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
@@ -93,7 +90,6 @@ ignore_lives(false){
 	show_life = getHealth();
 	lives = DEFAULT_LIVES;
         initializeAttackGradient();
-        joystick = Joystick::create();
 }
 
 Player::Player(const Player & pl) throw( LoadException ):
@@ -107,7 +103,6 @@ ignore_lives(false){
         ignore_lives = pl.ignore_lives;
         initializeAttackGradient();
         config = pl.config;
-        joystick = Joystick::create();
 }
 
 void Player::initializeAttackGradient(){
@@ -116,7 +111,6 @@ void Player::initializeAttackGradient(){
 }
 
 Player::~Player(){
-    delete joystick;
 }
 
 void Player::loseLife( int l ){
@@ -144,13 +138,15 @@ void Player::debugDumpKeyCache(int level){
     }
 }
 
-void Player::fillKeyCache(){
+vector<PaintownInput> Player::fillKeyCache(){
 
         /* get the latest key presses */
+    /*
 	keyboard.poll();
 	if (joystick != NULL){
 		joystick->poll();
 	}
+        */
 
         /* pull off a key every once in a while */
 	if ( acts++ > GLOBAL_KEY_DELAY ){
@@ -167,7 +163,7 @@ void Player::fillKeyCache(){
 	}
 
         /* use the input manager instead of most of this stuff */
-	if (keyboard.keypressed() || (joystick != NULL && joystick->pressed())){
+	// if (keyboard.keypressed() || (joystick != NULL && joystick->pressed())){
 		// acts = 0;
                 /*
 		vector<int> all_keys;
@@ -184,7 +180,8 @@ void Player::fillKeyCache(){
 		}
                 */
 
-                vector<PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
+            vector<PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
+            if (real_input.size() > 0){
 
 		map<PaintownInput, bool > new_last;
 		for ( vector<PaintownInput>::iterator it = real_input.begin(); it != real_input.end(); it++ ){
@@ -228,6 +225,8 @@ void Player::fillKeyCache(){
 	while ( key_cache.size() > KEY_CACHE_SIZE ){
 		key_cache.pop_front();
 	}
+
+        return real_input;
 }
         
 Network::Message Player::getCreateMessage(){
@@ -440,6 +439,7 @@ int Player::getKey(PaintownInput motion, int facing){
 	return Configuration::config(config).getKey( motion, facing );
 }
         
+/*
 vector<PaintownInput> Player::convertJoystick(JoystickInput input){
     vector<PaintownInput> all;
     if (input.up){
@@ -477,7 +477,9 @@ vector<PaintownInput> Player::convertJoystick(JoystickInput input){
 
     return all;
 }
+*/
 
+/*
 bool Player::careAboutKey(PaintownInput key){
 	return getKey(Forward) == key ||
 		getKey(Back) == key ||
@@ -489,6 +491,7 @@ bool Player::careAboutKey(PaintownInput key){
 		getKey(Jump) == key ||
 		getKey(Grab) == key;
 }
+*/
 
 const char * Player::keyToName(PaintownInput key){
     switch (key){
@@ -674,17 +677,35 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	/* Character handles jumping and possibly other things */
 	Character::act( others, world, add );
 
-	fillKeyCache();
+	vector<PaintownInput> input = fillKeyCache();
 
+        /*
         JoystickInput joyinput;
         if (joystick != NULL){
 	    joyinput = joystick->readAll();
 	}
+        */
 
+        /*
         bool key_forward = keyboard[getKey(Forward)] || (getFacing() == FACING_RIGHT && joyinput.right) || (getFacing() == FACING_LEFT && joyinput.left);
         bool key_backward = keyboard[getKey(Back)] || (getFacing() == FACING_RIGHT && joyinput.left) || (getFacing() == FACING_LEFT && joyinput.right);
         bool key_up = keyboard[getKey(Up)] || joyinput.up;
         bool key_down = keyboard[getKey(Down)] || joyinput.down;
+        */
+        bool key_forward = false;
+        bool key_backward = false;
+        bool key_up = false;
+        bool key_down = false;
+        for (vector<PaintownInput>::iterator it = input.begin(); it != input.end(); it++){
+            PaintownInput & key = *it;
+            switch (key){
+                case Forward : key_forward = true; break;
+                case Back : key_backward = true; break;
+                case Up : key_up = true; break;
+                case Down : key_down = true; break;
+                default : break;
+            }
+        }
 
 	/* special cases... */
 	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise || getStatus() == Status_Get || getStatus() == Status_Falling )
