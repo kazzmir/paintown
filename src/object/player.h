@@ -3,8 +3,6 @@
 
 #include "character.h" 
 #include "player-common.h"
-// #include "util/keyboard.h"
-// #include "util/joystick.h"
 #include <deque>
 #include "util/load_exception.h"
 #include "network/network.h"
@@ -99,9 +97,6 @@ protected:
 	virtual int getKey( PaintownInput x, int facing );
 	virtual int getKey( PaintownInput x );
 
-	// virtual bool careAboutKey( PaintownInput key );
-        // virtual std::vector<PaintownInput> convertJoystick(JoystickInput input);
-
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
 			
@@ -113,8 +108,6 @@ protected:
         std::deque< keyState > key_cache;
         std::map< PaintownInput, bool > last_key;
 	int acts;
-	// Keyboard keyboard;
-        // Joystick * joystick;
 	int show_life;
 
 	int name_id;

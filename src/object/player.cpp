@@ -9,14 +9,12 @@
 #include "factory/font_render.h"
 #include "configuration.h"
 #include "globals.h"
-#include "util/keyboard.h"
 #include "nameplacer.h"
 #include "util/load_exception.h"
 #include "world.h"
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
-#include "util/joystick.h"
 #include "game/input.h"
 #include "game/input-manager.h"
 
@@ -140,93 +138,65 @@ void Player::debugDumpKeyCache(int level){
 
 vector<PaintownInput> Player::fillKeyCache(){
 
-        /* get the latest key presses */
-    /*
-	keyboard.poll();
-	if (joystick != NULL){
-		joystick->poll();
-	}
-        */
+    /* get the latest key presses */
 
-        /* pull off a key every once in a while */
-	if ( acts++ > GLOBAL_KEY_DELAY ){
-		// key_cache.clear();
-		/*
-		if ( !key_cache.empty() )
-			key_cache.pop_front();
-		*/
+    /* pull off a key every once in a while */
+    if ( acts++ > GLOBAL_KEY_DELAY ){
+        // key_cache.clear();
+        
+        if (!key_cache.empty()){
+            key_cache.pop_front();
+        }
 
-		if ( !key_cache.empty() )
-			key_cache.pop_front();
+        acts = 0;
+    }
 
-		acts = 0;
-	}
+    vector<PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
+    if (real_input.size() > 0){
 
-        /* use the input manager instead of most of this stuff */
-	// if (keyboard.keypressed() || (joystick != NULL && joystick->pressed())){
-		// acts = 0;
-                /*
-		vector<int> all_keys;
-		keyboard.readKeys( all_keys );
+        map<PaintownInput, bool > new_last;
+        for ( vector<PaintownInput>::iterator it = real_input.begin(); it != real_input.end(); it++ ){
+            PaintownInput n = *it;
 
-                vector<PaintownInput> real_input = Input::convertKeyboard(Configuration::config(config), getFacing(), all_keys);
+            Global::debug(1) << "Checking key " << n << endl;
 
-		if (joystick != NULL){
-			vector<PaintownInput> joystick_keys = convertJoystick(joystick->readAll());
-			for (vector<PaintownInput>::iterator it = joystick_keys.begin(); it != joystick_keys.end(); it++){
-			    Global::debug(1) << "Read joystick key " << *it << endl;
-			}
-			all_keys.insert(all_keys.begin(), joystick_keys.begin(), joystick_keys.end());
-		}
-                */
+            /* dont repeat keys */
+            if ( ! last_key[n] ){
+                key_cache.push_back( keyState( n, getFacing() ) );
+                acts = 0;
+            }
+            new_last[ n ] = true;
 
-            vector<PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
-            if (real_input.size() > 0){
+            /* as soon as back is hit the player will turn around
+             * and then forward will be recognized resulting in
+             * the immediate sequence back - forward. this
+             * messes up the combos, so explicitly disallow
+             * forward from following back and vice-versa
+             */
+            switch (n){
+                case Forward : {
+                    new_last[Back] = true;
+                    break;
+                }
+                case Back : {
+                    new_last[Forward] = true;
+                }
+                default : break;
+            }
+            // }
+        }
 
-		map<PaintownInput, bool > new_last;
-		for ( vector<PaintownInput>::iterator it = real_input.begin(); it != real_input.end(); it++ ){
-			PaintownInput n = *it;
-			/* only process the key if this player could
-			 * possibly be worried about it
-			 */
-                        Global::debug(1) << "Checking key " << n << endl;
-			// if ( careAboutKey( n ) ){
-                                /* dont repeat keys */
-				if ( ! last_key[n] ){
-					key_cache.push_back( keyState( n, getFacing() ) );
-					acts = 0;
-				}
-				new_last[ n ] = true;
-                                /* as soon as back is hit the player will turn around
-                                 * and then forward will be recognized resulting in
-                                 * the immediate sequence back - forward. this
-                                 * messes up the combos, so explicitly disallow
-                                 * forward from following back and vice-versa
-                                 */
-                                switch (n){
-                                    case Forward : {
-                                        new_last[Back] = true;
-                                        break;
-                                    }
-                                    case Back : {
-                                        new_last[Forward] = true;
-                                    }
-                                    default : break;
-                                }
-			// }
-		}
+        /* stores the keys pressed in the last frame */
+        last_key = new_last;
+    } else {
+        last_key.clear();
+    }
 
-                /* stores the keys pressed in the last frame */
-		last_key = new_last;
-	} else {
-		last_key.clear();
-	}
+    while ( key_cache.size() > KEY_CACHE_SIZE ){
+        key_cache.pop_front();
+    }
 
-	while ( key_cache.size() > KEY_CACHE_SIZE ){
-		key_cache.pop_front();
-	}
-
-        return real_input;
+    return real_input;
 }
         
 Network::Message Player::getCreateMessage(){
@@ -439,60 +409,6 @@ int Player::getKey(PaintownInput motion, int facing){
 	return Configuration::config(config).getKey( motion, facing );
 }
         
-/*
-vector<PaintownInput> Player::convertJoystick(JoystickInput input){
-    vector<PaintownInput> all;
-    if (input.up){
-        all.push_back(Up);
-    }
-    if (input.right){
-        if (getFacing() == FACING_RIGHT){
-            all.push_back(Forward);
-        } else {
-            all.push_back(Back);
-        }
-    }
-    if (input.left){
-        if (getFacing() == FACING_RIGHT){
-            all.push_back(Back);
-        } else {
-            all.push_back(Forward);
-        }
-    }
-    if (input.down){
-        all.push_back(Down);
-    }
-    if (input.button1){
-        all.push_back(Attack1);
-    }
-    if (input.button2){
-        all.push_back(Attack2);
-    }
-    if (input.button3){
-        all.push_back(Attack3);
-    }
-    if (input.button4){
-        all.push_back(Jump);
-    }
-
-    return all;
-}
-*/
-
-/*
-bool Player::careAboutKey(PaintownInput key){
-	return getKey(Forward) == key ||
-		getKey(Back) == key ||
-		getKey(Up) == key ||
-		getKey(Down) == key ||
-		getKey(Attack1) == key ||
-		getKey(Attack2) == key ||
-		getKey(Attack3) == key ||
-		getKey(Jump) == key ||
-		getKey(Grab) == key;
-}
-*/
-
 const char * Player::keyToName(PaintownInput key){
     switch (key){
         case Forward : return "forward";
