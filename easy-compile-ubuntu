@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# If you are trying to compile paintown from source but have no idea what to do
-# try runninig this script. It will attempt to install all the dependancies you
-# need and compile paintown.
+# If you are trying to compile Paintown from source but have no idea what to do
+# try running this script. It will attempt to install all the dependencies you
+# need and compile Paintown.
 
 echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
 echo your priveleges so that new packages can be installed on your system.
