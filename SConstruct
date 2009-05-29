@@ -80,6 +80,55 @@ def checkPython(context):
     context.Result(ret)
     return ret
 
+def rubyConfigVariable(var):
+    # gets the ruby configuration stuff and expands config variables
+    import subprocess
+    code = """
+require 'mkmf'
+
+def replace(str)
+    str.gsub(/\$\(\w+\)/){|x| replace(CONFIG[x[/\w+/]]) }
+end     
+
+puts replace(CONFIG['%s'])
+    """ % var
+    try:
+        p = subprocess.Popen(["ruby", "-e", code], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        return p.stdout.readline().strip()
+    except Exception:
+        return ""
+
+def rubyDir():
+    return rubyConfigVariable('archdir')
+
+def rubyLib():
+    return rubyConfigVariable('RUBY_SO_NAME')
+
+def rubyStaticLib():
+    return rubyConfigVariable('LIBRUBY_A')
+
+def checkRuby(context):
+    context.Message("Checking if ruby is embeddable... ")
+    tmp = context.env.Clone()
+    env = context.env
+    env.Append(CPPDEFINES = ['HAVE_RUBY'])
+    env.Append(CPPPATH = [rubyDir()])
+    env.Append(LIBS = [rubyLib()])
+
+    ret = context.TryLink("""
+        #include <ruby.h>
+        int main(int argc, char ** argv){
+            ruby_init();
+            return 0;
+        }
+    """, ".c")
+
+    if not ret:
+        context.sconf.env = tmp
+
+    context.Result(ret)
+    return ret
+
 def isCygwin():
     try:
         return os.environ['CYGWIN'] == '1'
@@ -191,6 +240,7 @@ if False:
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 
 custom_tests = {"CheckPython" : checkPython,
+                "CheckRuby" : checkRuby,
                 "CheckLex" : checkLex,
                 "CheckYacc" : checkYacc}
 
@@ -199,6 +249,7 @@ if isWindows():
 
     config = env.Configure(custom_tests = custom_tests)
     config.CheckPython()
+    config.CheckRuby()
     if not config.CheckLex():
         print "Can't find lex"
 	Exit(1)
@@ -288,6 +339,7 @@ else:
         print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
         Exit( 1 )
     config.CheckPython()
+    config.CheckRuby()
     if not config.CheckLex():
         print "** Install a lex package such as flex"
         Exit(1)
