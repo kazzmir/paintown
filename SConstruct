@@ -378,7 +378,7 @@ else:
     static_config.CheckRuby()
     staticEnv = static_config.Finish()
 
-    staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
+    staticEnv.Prepend( LIBS = [hawknl_static, dumb_static] )
     env.Append( LIBS = [dumb,hawknl] )
 
 # if not isWindows():
