@@ -20,7 +20,8 @@ src/game/input-manager.cpp)
 
 set(SCRIPT_SRC
 src/script/script.cpp
-src/script/modules/python.cpp)
+src/script/modules/python.cpp
+src/script/modules/ruby.cpp)
 
 set(LEVEL_SRC
 src/level/block.cpp

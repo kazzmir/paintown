@@ -1,20 +1,16 @@
-#ifndef _paintown_python_h
-#define _paintown_python_h
+#ifndef _paintown_ruby_h
+#define _paintown_ruby_h
 
-#ifdef HAVE_PYTHON
+#ifdef HAVE_RUBY
 
-#include <Python.h>
 #include "script/script.h"
 #include <string>
 
 class World;
-/* forward declaring this doesn't work.
- * struct PyObject;
- */
 
-class PythonEngine: public Script::Engine {
+class RubyEngine: public Script::Engine {
 public:
-    PythonEngine(const std::string & path);
+    RubyEngine(const std::string & path);
 
     virtual void init();
     virtual void shutdown();
@@ -29,25 +25,9 @@ public:
     virtual void characterAttacked(void * me, void * him);
     virtual void tick();
 
-    virtual ~PythonEngine();
+    virtual ~RubyEngine();
 protected:
-    std::string path;
-    std::string module;
-    PyObject * user;
 };
-
-namespace PythonModule{
-    class AutoObject{
-    public:
-        AutoObject(PyObject*);
-        virtual ~AutoObject();
-
-        PyObject * getObject();
-
-    private:
-        PyObject * object;
-    };
-}
 
 #endif
 
