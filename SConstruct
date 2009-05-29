@@ -129,6 +129,29 @@ def checkRuby(context):
     context.Result(ret)
     return ret
 
+def checkStaticRuby(context):
+    context.Message("Checking if ruby is statically embeddable... ")
+    tmp = context.env.Clone()
+    env = context.env
+    env.Append(CPPDEFINES = ['HAVE_RUBY'])
+    env.Append(CPPPATH = [rubyDir()])
+    env.Append(LIBS = [rubyStaticLib(), 'crypt'])
+
+    ret = context.TryLink("""
+        #include <ruby.h>
+        int main(int argc, char ** argv){
+            ruby_init();
+            return 0;
+        }
+    """, ".c")
+
+    if not ret:
+        context.sconf.env = tmp
+
+    context.Result(ret)
+    return ret
+
+
 def isCygwin():
     try:
         return os.environ['CYGWIN'] == '1'
@@ -349,8 +372,10 @@ else:
 
     env = config.Finish()
 
-    static_config = staticEnv.Configure(custom_tests = {"CheckPython" : checkPython})
+    static_config = staticEnv.Configure(custom_tests = {"CheckPython" : checkPython,
+                                                        "CheckRuby" : checkStaticRuby})
     static_config.CheckPython()
+    static_config.CheckRuby()
     staticEnv = static_config.Finish()
 
     staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
