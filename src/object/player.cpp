@@ -126,10 +126,10 @@ void Player::gainLife( int l ){
 void Player::debugDumpKeyCache(int level){
     if (key_cache.size() > 0){
         ostream & out = Global::debug(level);
-        deque< keyState >::iterator cur = key_cache.begin();
+        deque<PaintownInput>::iterator cur = key_cache.begin();
         out << "[player] Key cache" << endl;
         for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
-            PaintownInput key = (*cur).key;
+            PaintownInput key = *cur;
             out << "[player]  " << keyToName(key) << endl;
         }
         out << "[player] end key cache" << endl;
@@ -162,7 +162,7 @@ vector<PaintownInput> Player::fillKeyCache(){
 
             /* dont repeat keys */
             if ( ! last_key[n] ){
-                key_cache.push_back( keyState( n, getFacing() ) );
+                key_cache.push_back(n);
                 acts = 0;
             }
             new_last[ n ] = true;
@@ -288,125 +288,48 @@ void Player::drawFront( Bitmap * work, int rel_x ){
  * (f f (a1 a2)) means that the user must press
  * forward, forward and then a1 and a2 at the same time.
  */
-bool Player::combo( Animation * ani, deque< keyState >::iterator cache_cur_key, deque< keyState >::iterator end ){
-	int startFacing = (*cache_cur_key).facing;
-			
-	// cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
-	const vector< KeyPress > & keys = ani->getKeys();
-	if ( keys.empty() ){
-		return false;
-	}
-	for ( vector<KeyPress>::const_iterator k = keys.begin(); k != keys.end(); k++ ){
-		if ( cache_cur_key == end ){
-			return false;
-		}
+bool Player::combo( Animation * ani, deque<PaintownInput>::iterator cache_cur_key, deque<PaintownInput>::iterator end ){
+    // cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
+    const vector< KeyPress > & keys = ani->getKeys();
+    if ( keys.empty() ){
+        return false;
+    }
 
-		const KeyPress & kp = *k;
-		bool all_pressed = true;
-		for ( vector<PaintownInput>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
-                    PaintownInput find_key = *cur_key;
-                    PaintownInput key = (*cache_cur_key).key;
-                    // if ( find_key == (*cache_cur_key) ){
-                    if ( find_key != key ){
-                        all_pressed = false;
-                    }
-		}
-		if ( !all_pressed ){
-			return false;
-		}
+    for ( vector<KeyPress>::const_iterator k = keys.begin(); k != keys.end(); k++ ){
+        if ( cache_cur_key == end ){
+            return false;
+        }
 
-		cache_cur_key++;
-	}
-	return true;
+        const KeyPress & kp = *k;
+        bool all_pressed = true;
+        for ( vector<PaintownInput>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
+            PaintownInput find_key = *cur_key;
+            PaintownInput key = *cache_cur_key;
+            if ( find_key != key ){
+                all_pressed = false;
+            }
+        }
+        if ( !all_pressed ){
+            return false;
+        }
 
+        cache_cur_key++;
+    }
+    return true;
 }
 
 bool Player::combo( Animation * ani ){
-
-	deque< keyState >::iterator cur = key_cache.begin();
-	for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
-		if ( combo( ani, cur, key_cache.end() ) ){
-			return true;
-		}
-	}
-	return false;
-
-	/*
-	deque< keyState >::iterator cache_cur_key = key_cache.begin();
-	if ( cache_cur_key == key_cache.end() ){
-		return false;
-	}
-	int startFacing = (*cache_cur_key).facing;
-			
-	// cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
-	const vector< KeyPress > & keys = ani->getKeys();
-	if ( keys.empty() )
-		return false;
-	for ( vector<KeyPress>::const_iterator k = keys.begin(); k != keys.end(); k++ ){
-		if ( cache_cur_key == key_cache.end() ){
-			return false;
-		}
-
-		const KeyPress & kp = *k;
-		bool all_pressed = false;
-		for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
-			int find_key = getKey( *cur_key, startFacing );
-			int key = (*cache_cur_key).key;
-			// if ( find_key == (*cache_cur_key) ){
-			if ( find_key == key ){
-				all_pressed = true;
-			}
-		}
-		if ( !all_pressed ){
-			return false;
-		}
-
-		cache_cur_key++;
-	}
-	return true;
-	*/
+    deque<PaintownInput>::iterator cur = key_cache.begin();
+    for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
+        if ( combo( ani, cur, key_cache.end() ) ){
+            return true;
+        }
+    }
+    return false;
 }
-
-/*
-bool Player::combo( Animation * ani ){
-	deque< keyState >::reverse_iterator cache_cur_key = key_cache.rbegin();
-	if ( cache_cur_key == key_cache.rend() ){
-		return false;
-	}
-	int startFacing = (*cache_cur_key).facing;
-			
-	cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
-	const vector< KeyPress > & keys = ani->getKeys();
-	if ( keys.empty() )
-		return false;
-	for ( vector<KeyPress>::const_reverse_iterator k = keys.rbegin(); k != keys.rend(); k++ ){
-		if ( cache_cur_key == key_cache.rend() ){
-			return false;
-		}
-
-		const KeyPress & kp = *k;
-		bool all_pressed = false;
-		for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
-			int find_key = getKey( *cur_key, startFacing );
-			int key = (*cache_cur_key).key;
-			// if ( find_key == (*cache_cur_key) ){
-			if ( find_key == key ){
-				all_pressed = true;
-			}
-		}
-		if ( !all_pressed ){
-			return false;
-		}
-
-		cache_cur_key++;
-	}
-	return true;
-	
-}
-*/
 
 int Player::getKey(PaintownInput motion, int facing){
-	return Configuration::config(config).getKey( motion, facing );
+    return Configuration::config(config).getKey( motion, facing );
 }
         
 const char * Player::keyToName(PaintownInput key){
@@ -484,7 +407,7 @@ bool Player::canGrab( Object * enemy ){
 	// if ( ZDistance( enemy ) < MIN_RELATIVE_DISTANCE && enemy->collision( this ) ){
 
 	// animation_current = movements[ "grab" ];
-	animation_current = getMovement( "grab" );
+	// animation_current = getMovement( "grab" );
 
 	// if ( ZDistance( enemy ) < MIN_RELATIVE_DISTANCE && realCollision( enemy ) ){
 	if ( ZDistance( enemy ) < MIN_RELATIVE_DISTANCE && XDistance( enemy ) < 30 ){

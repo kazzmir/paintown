@@ -11,12 +11,6 @@
 class Animation;
 class World;
 
-struct keyState{
-	keyState( PaintownInput key, int facing ):key(key),facing(facing){}
-	PaintownInput key;
-	int facing;
-};
-
 class Player: public PlayerCommon {
 public:
 
@@ -93,7 +87,7 @@ protected:
         void debugDumpKeyCache(int level);
         const char * keyToName(PaintownInput key);
 	bool combo( Animation * ani );
-	bool combo( Animation * ani, std::deque<keyState>::iterator cache_cur_key, std::deque< keyState >::iterator end );
+	bool combo( Animation * ani, std::deque<PaintownInput>::iterator cache_cur_key, std::deque<PaintownInput>::iterator end );
 	virtual int getKey( PaintownInput x, int facing );
 	virtual int getKey( PaintownInput x );
 
@@ -105,7 +99,7 @@ protected:
 protected:
 
 	/* store key presses in a stack with two ends*/
-        std::deque< keyState > key_cache;
+        std::deque<PaintownInput> key_cache;
         std::map< PaintownInput, bool > last_key;
 	int acts;
 	int show_life;
