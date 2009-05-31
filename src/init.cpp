@@ -20,6 +20,7 @@
 #include "dumb/include/aldumb.h"
 #include "loadpng/loadpng.h"
 #include "util/bitmap.h"
+#include "util/funcs.h"
 #include "configuration.h"
 #include "script/script.h"
 #include "music.h"
@@ -111,6 +112,7 @@ bool Global::init( int gfx ){
 
 	ostream & out = Global::debug( 0 );
 	out << "-- BEGIN init --" << endl;
+        out << "Data path is " << Util::getDataPath() << endl;
         out << "Paintown version " << Global::getVersionString() << endl;
 	out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
 	out <<"Allegro init: "<<allegro_init()<<endl;
