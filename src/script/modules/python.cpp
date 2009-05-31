@@ -342,7 +342,7 @@ path(path){
      * PyString_FromStringAndSize() and PyList_Append()
      */
     ostringstream python_string;
-    python_string << "x = \"" << (Util::getDataPath() + path) << "\"; import sys; sys.path.append(x[0:x.rfind('/')]); sys.path.append('scripts.zip/build/script/modules');";
+    python_string << "x = \"" << (Util::getDataPath() + path) << "\"; import sys; sys.path.append(x[0:x.rfind('/')]); sys.path.append('" << Util::getDataPath() << "/scripts.zip/src/script/modules');";
     Global::debug(1) << "Executing '" << python_string.str() << "'" << endl;
     Global::debug(1) << "Python: " << PyRun_SimpleString(python_string.str().c_str()) << endl;
     int from = path.rfind("/")+1;

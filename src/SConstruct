@@ -8,7 +8,7 @@ def isWindows():
 obj_files = []
 
 def addFiles( files ):
-	obj_files.append( map( lambda x: x.replace('src/', ''), files ) )
+    obj_files.append( map( lambda x: x.replace('src/', ''), files ) )
 
 import sys
 sys.path.append("../scons")
@@ -20,10 +20,6 @@ filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
 
 for i in filelist:
     addFiles(filelist[i])
-
-scripts = Split("""
-script/modules/paintown.py
-""");
 
 use.Append(YACCFLAGS = ["-d"])
 use['YACCHXXFILESUFFIX'] = '.hh'
@@ -48,7 +44,6 @@ def icon():
 
 x = []
 x.append(use.Program( 'paintown', obj_files + ['xmain.cpp'] + icon()))
-x.append(use.Zip('scripts', scripts))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
 x.append( use.Program( 'mugentest', obj_files + ['mugen/test.cpp'] ) )

@@ -392,6 +392,12 @@ shared = SConscript( 'src/SConstruct', build_dir='build', exports = ['use'] );
 use = staticEnv
 static = SConscript( 'src/SConstruct', build_dir='build-static', exports = ['use'] )
 
+scripts = Split("""
+src/script/modules/paintown.py
+""");
+
+Default(Install('data', env.Zip('scripts', scripts)))
+
 for i in shared:
     Default(env.Install( '.', i ))
 
