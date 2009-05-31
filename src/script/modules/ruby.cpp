@@ -6,11 +6,28 @@
 #include "ruby.h"
 #include "world.h"
 #include "util/funcs.h"
+#include "globals.h"
 
-RubyEngine::RubyEngine(const std::string & path){
+using namespace std;
+
+namespace PaintownLevel{
+    static VALUE _register(VALUE arg){
+        Global::debug(0) << "Registered something\n" << endl;
+        return arg;
+    }
+}
+
+RubyEngine::RubyEngine(const std::string & path):
+Script::Engine(){
     ruby_init();
     ruby_script("paintown ruby engine");
-    // ruby_load_file(Util::getDataPath() + path);
+
+    VALUE module = rb_define_module("Paintown");
+    Global::debug(1) << "Defined ruby module " << module << endl;
+    rb_define_module_function(module, "register", RUBY_METHOD_FUNC(PaintownLevel::_register), 1);
+
+    rb_load_file((Util::getDataPath() + path).c_str());
+    Global::debug(0) << "Ruby returned " << ruby_exec() << endl;
 }
 
 void RubyEngine::init(){

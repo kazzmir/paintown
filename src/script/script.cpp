@@ -1,6 +1,9 @@
 #ifdef HAVE_PYTHON
 #include "modules/python.h"
 #endif
+#ifdef HAVE_RUBY
+#include "modules/ruby.h"
+#endif
 
 #include "script.h"
 #include "globals.h"
@@ -36,6 +39,12 @@ namespace Script{
 #ifdef HAVE_PYTHON
         if (name == "python"){
             new PythonEngine(path);
+            return;
+        }
+#endif
+#ifdef HAVE_RUBY
+        if (name == "ruby"){
+            new RubyEngine(path);
             return;
         }
 #endif
