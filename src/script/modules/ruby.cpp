@@ -5,12 +5,15 @@
 /* ruby script engine interface */
 #include "ruby.h"
 #include "world.h"
+#include "util/funcs.h"
 
 RubyEngine::RubyEngine(const std::string & path){
+    ruby_init();
+    ruby_script("paintown ruby engine");
+    // ruby_load_file(Util::getDataPath() + path);
 }
 
 void RubyEngine::init(){
-    ruby_init();
 }
 
 void RubyEngine::shutdown(){

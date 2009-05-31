@@ -396,7 +396,7 @@ scripts = Split("""
 src/script/modules/paintown.py
 """);
 
-Default(Install('data', env.Zip('scripts', scripts)))
+Default(Install('data/scripts', scripts))
 
 for i in shared:
     Default(env.Install( '.', i ))
