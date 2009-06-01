@@ -394,6 +394,7 @@ static = SConscript( 'src/SConstruct', build_dir='build-static', exports = ['use
 
 scripts = Split("""
 src/script/modules/paintown.py
+src/script/modules/paintown.rb
 """);
 
 Default(Install('data/scripts', scripts))
