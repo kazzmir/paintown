@@ -246,8 +246,8 @@ bool Music::loadSong( const string & song ){
 void Music::_play(){
 	if ( playing == false && this->player != NULL ){
 		al_resume_duh( this->player );
+                playing = true;
 	}
-	playing = true;
 }
 
 void Music::play(){
@@ -434,7 +434,11 @@ bool Music::internal_loadSong( const char * path ){
 		}
 		*/
 
-		playing = true;
+                if (player != NULL){
+                    playing = true;
+                } else {
+                    Global::debug(0) << "*BUG* Could not create music player" << endl;
+                }
 	} else {
 		Global::debug( 0 )<<"Could not load "<<path<<endl;
 		return false;
