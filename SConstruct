@@ -262,7 +262,7 @@ debug = getDebug()
 dataPath = getDataPath()
 
 cflags = [ '-Wall' ]
-cppflags = [ '-fno-rtti', '-Woverloaded-virtual' ]
+cppflags = ['-Woverloaded-virtual']
 cdefines = ['DATA_PATH=\\\"%s\\\"' % dataPath]
 # cppflags = [ '-Woverloaded-virtual' ]
 
