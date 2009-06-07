@@ -33,6 +33,58 @@ def checkYacc(context):
     context.Result(ret)
     return ret
 
+rtti_counter = 0
+def checkRTTI(context):
+    global rtti_counter
+    rtti_counter += 1
+    context.Message("Checking if we need rtti... ")
+    tmp = context.env.Clone()
+    env = context.env
+    env.Append(CCFLAGS = ['-fno-rtti'])
+
+    ret = context.TryCompile("""
+      #include <exception>
+      int main(int argc, char ** argv){
+        extern void foo();
+        try{
+          foo();
+        } catch (const std::exception & e){
+          return 1;
+        }
+        return 0;
+      }
+    """, ".cpp")
+
+    s1 = context.lastTarget
+
+    ret = context.TryCompile("""
+      #include <exception>
+      void foo(){
+        throw std::exception();
+      }
+    """, ".cpp")
+
+    s2 = context.lastTarget
+
+    result = None
+    spawn = context.sconf.env['SPAWN']
+    try:
+        context.sconf.env['SPAWN'] = context.sconf.pspawn_wrapper
+        nodes = env.Program(context.sconf.confdir.File('rtti%d' % rtti_counter), [s1,s2])
+        result = context.sconf.BuildNodes(nodes)
+    finally:
+        context.sconf.env['SPAWN'] = spawn
+
+    foo = 0
+
+    if not result:
+        context.sconf.env = tmp
+        foo = 1
+
+    context.Result(foo)
+    return foo
+
+
 def checkPython(context):
     import distutils.sysconfig
     context.Message("Checking if python is embeddable... ")
@@ -264,6 +316,7 @@ if False:
 
 custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
+                "CheckRTTI" : checkRTTI,
                 "CheckLex" : checkLex,
                 "CheckYacc" : checkYacc}
 
@@ -361,6 +414,7 @@ else:
     if not config.CheckHeader( 'png.h' ):
         print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
         Exit( 1 )
+    config.CheckRTTI()
     config.CheckPython()
     config.CheckRuby()
     if not config.CheckLex():
@@ -373,9 +427,11 @@ else:
     env = config.Finish()
 
     static_config = staticEnv.Configure(custom_tests = {"CheckPython" : checkPython,
-                                                        "CheckRuby" : checkStaticRuby})
+                                                        "CheckRuby" : checkStaticRuby,
+                                                        "CheckRTTI" : checkRTTI})
     static_config.CheckPython()
     static_config.CheckRuby()
+    static_config.CheckRTTI()
     staticEnv = static_config.Finish()
 
     staticEnv.Prepend( LIBS = [hawknl_static, dumb_static] )
