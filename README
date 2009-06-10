@@ -119,6 +119,8 @@ Topics:
     * pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
     * freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
     * Python headers, usually this comes with python
+    * bison - http://gnuwin32.sourceforge.net/packages/bison.htm
+    * flex - http://gnuwin32.sourceforge.net/packages/flex.htm
 
   * Quick instructions for ubuntu
     $ sudo apt-get install python-dev libfreetype6-dev liballegro4.2 zlib1g-dev
@@ -128,6 +130,18 @@ Topics:
     For libpng/zlib see here: http://tjaden.strangesoft.net/loadpng/mingw.html
     Python 2.4.4 (yes this is old but the game is hardcoded to use it):
       http://www.python.org/download/releases/2.4.4/
+    Get freetype from http://gnuwin32.sourceforge.net/packages/freetype.htm. Copy
+     the resulting headers into your include path. Dont copy in freetype2, just the
+     path underneath it, freetype2\freetype.
+    Get unxutils for things like mv, rm, cp - http://unxutils.sf.net.
+      Find the .zip. It unzips as usr\local\wbin, so put that in your path.
+    Bison. The bison that comes with unxutils is old, so get a newer version
+      from gnuwin32. Replace the bison that comes with unxutils. 
+      http://gnuwin32.sourceforge.net/packages/bison.htm
+    Get flex from gnuwin32 as well. http://gnuwin32.sourceforge.net/packages/flex.htm
+      Get the source package and change the makefile to remove libmain.c. libflex.a
+      comes with its own main method for reasons I can't understand so you have
+      to remove this.
 
 * Thanks:
   Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	
