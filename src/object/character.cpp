@@ -276,20 +276,10 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
                 if ( *n == "name" ){
                     *n >> name;
-                    if ( name.length() > 0 && (name[0] >= 'a' && name[0] <= 'z') ){
-                        name[0] = name[0] - 'a' + 'A';
-                    }
-
+                    name = Util::upcase(name);
                 } else if ( *n == "anim" ){
 
-                    Animation * ani = NULL;
-
-                    try{
-                        ani = new Animation( n, this );
-                    } catch( const LoadException & le ){
-                        // delete ani;
-                        throw le;
-                    }
+                    Animation * ani = new Animation( n, this );
 
                     /*
                        if ( movements[ ani->getName() ] != 0 ){
@@ -351,7 +341,6 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
             }
 
             squish_sound = new Sound( dataPath( "sounds/squish.wav" ) );
-
 
             if ( getMovement( "idle" ) == NULL ){
                 throw LoadException("No 'idle' movement");
