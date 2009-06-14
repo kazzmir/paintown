@@ -9,25 +9,40 @@ namespace Level{
 
 using namespace std;
 
-vector< string > readLevels( const string & filename ){
-	try{
-		TokenReader tr( filename );
-		Token * head = tr.readToken();
+LevelInfo::LevelInfo(){
+}
 
-		vector< string > levels;
-		if ( *head == "levels" ){
-			while (head->hasTokens()){
-				string s;
-				*head >> s;
-				levels.push_back(s);
-			}
-		}
+LevelInfo::LevelInfo(const LevelInfo & info){
+    this->levels = info.levels;
+}
 
-		return levels;
-	} catch ( const TokenException & lex ){
-		Global::debug( 0 ) << "Could not load " << filename << ". Reason: " << lex.getReason() << endl;
-		return vector< string >();
-	}
+void LevelInfo::addLevel(const string & s){
+    levels.push_back(s);
+}
+    
+const vector<string> & LevelInfo::getLevels(){
+    return levels;
+}
+
+LevelInfo readLevels( const string & filename ){
+    LevelInfo info;
+    try{
+        TokenReader tr( filename );
+        Token * head = tr.readToken();
+
+        if ( *head == "levels" ){
+            while (head->hasTokens()){
+                string s;
+                *head >> s;
+                info.addLevel(s);
+            }
+        }
+        return info;
+
+    } catch ( const TokenException & lex ){
+        Global::debug( 0 ) << "Could not load " << filename << ". Reason: " << lex.getReason() << endl;
+        return info;
+    }
 }
 
 }

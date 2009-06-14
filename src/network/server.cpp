@@ -587,8 +587,8 @@ static void playGame( const vector< Socket > & sockets ){
 		sendToAll( sockets, addServer );
                 */
 
-		vector< string > levels = Level::readLevels( levelSet );
-		for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
+                Level::LevelInfo levelInfo = Level::readLevels( levelSet );
+		for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
 			string level = *it;
 			debug( 1 ) << "Sending level '" << level << "'" << endl;
 			Message loadLevel;

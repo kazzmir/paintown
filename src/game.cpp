@@ -430,12 +430,12 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
 void realGame( const vector< Object * > & players, const string & levelFile ){
 
-	vector< string > levels = Level::readLevels( levelFile );
+    Level::LevelInfo levelInfo = Level::readLevels( levelFile );
 
 	// global_debug = true;
 
 	int showHelp = 800;
-	for ( vector< string >::iterator it = levels.begin(); it != levels.end(); it++ ){
+	for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
 		Global::done_loading = false;
 		pthread_t loading_screen_thread;
 
