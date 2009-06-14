@@ -251,17 +251,17 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	try{
 		head = tr.readToken();
 	} catch( const TokenException & ex ){
-		cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
+		// cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
 		// delete head;
-		throw LoadException("Could not open character file");
+		throw LoadException(string("Could not open character file: ") + string(filename) );
 	}
 	string xls = "Load time for ";
 	xls += filename;
 
 	if ( *head != "character" ){
-		cout<<filename<< " is not a character"<<endl;
+		// cout<<filename<< " is not a character"<<endl;
 		// delete head;
-		throw LoadException("File is not a character");
+		throw LoadException(string("File is not a character: ") + string(filename));
 	}
 
 	current_map = 0;
@@ -269,88 +269,112 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	map< string, string > remaps;
 
 	Token * n = NULL;
-	try{
+        try{
 
-		while ( head->hasTokens() ){
-			*head >> n;
+            while ( head->hasTokens() ){
+                *head >> n;
 
-			if ( *n == "name" ){
-				*n >> name;
-				if ( name.length() > 0 && (name[0] >= 'a' && name[0] <= 'z') ){
-					name[0] = name[0] - 'a' + 'A';
-				}
-					
-			} else if ( *n == "anim" ){
+                if ( *n == "name" ){
+                    *n >> name;
+                    if ( name.length() > 0 && (name[0] >= 'a' && name[0] <= 'z') ){
+                        name[0] = name[0] - 'a' + 'A';
+                    }
 
-				Animation * ani = NULL;
+                } else if ( *n == "anim" ){
 
-				try{
-					ani = new Animation( n, this );
-				} catch( const LoadException & le ){
-					// delete ani;
-					throw le;
-				}
+                    Animation * ani = NULL;
 
-				/*
-				if ( movements[ ani->getName() ] != 0 ){
-					delete movements[ ani->getName() ];
-				}
-				movements[ ani->getName() ] = ani;
-				*/
+                    try{
+                        ani = new Animation( n, this );
+                    } catch( const LoadException & le ){
+                        // delete ani;
+                        throw le;
+                    }
 
-				map< string, Animation * > & cur = mapper[ current_map ];
-				if ( cur[ ani->getName() ] != 0 ){
-					delete cur[ ani->getName() ];
-				}
-				cur[ ani->getName() ] = ani;
+                    /*
+                       if ( movements[ ani->getName() ] != 0 ){
+                       delete movements[ ani->getName() ];
+                       }
+                       movements[ ani->getName() ] = ani;
+                       */
 
-			} else if ( *n == "health" ){
-				int h;
-				*n >> h;
-				setMaxHealth( h );
-				setHealth( h );
-			} else if ( *n == "jump-velocity" ){
-				double h;
-				*n >> h;
-				setJumpingYVelocity( h );
-			} else if ( *n == "hit-sound" ){
-				string _snd;
-				*n >> _snd;
-				setHit( Sound( dataPath( _snd ) ) );
-			} else if ( *n == "die-sound" ){
-				string _snd;
-				*n >> _snd;
-				die_sound = new Sound( dataPath( _snd ) );
-			} else if ( *n == "landed" ){
-				string st;
-				*n >> st;
-				landed_sound = new Sound( dataPath( st ) );
-			} else if ( *n == "speed" ){
-				*n >> speed;
-			} else if ( *n == "type" ){
-				*n >> type;
-			} else if ( *n == "shadow" ){
-				int x;
-				*n >> x;
-				setShadow( x );
-			} else if ( *n == "icon" ){
-				string icon_path;
-				*n >> icon_path;
-				// cout<<"Loading icon "<<icon_path<<endl;
-				icon = new Bitmap( dataPath( icon_path ) );
-			} else if ( *n == "remap" ){
-				string first;
-				string second;
-				*n >> first >> second;
-				remaps[ dataPath( second ) ] = dataPath( first );
-			} else {
-				cout<<"Unhandled character attribute: "<<endl;
-				n->print(" ");
-			}
+                    map< string, Animation * > & cur = mapper[ current_map ];
+                    if ( cur[ ani->getName() ] != 0 ){
+                        delete cur[ ani->getName() ];
+                    }
+                    cur[ ani->getName() ] = ani;
 
-		}
+                } else if ( *n == "health" ){
+                    int h;
+                    *n >> h;
+                    setMaxHealth( h );
+                    setHealth( h );
+                } else if ( *n == "jump-velocity" ){
+                    double h;
+                    *n >> h;
+                    setJumpingYVelocity( h );
+                } else if ( *n == "hit-sound" ){
+                    string _snd;
+                    *n >> _snd;
+                    setHit( Sound( dataPath( _snd ) ) );
+                } else if ( *n == "die-sound" ){
+                    string _snd;
+                    *n >> _snd;
+                    die_sound = new Sound( dataPath( _snd ) );
+                } else if ( *n == "landed" ){
+                    string st;
+                    *n >> st;
+                    landed_sound = new Sound( dataPath( st ) );
+                } else if ( *n == "speed" ){
+                    *n >> speed;
+                } else if ( *n == "type" ){
+                    *n >> type;
+                } else if ( *n == "shadow" ){
+                    int x;
+                    *n >> x;
+                    setShadow( x );
+                } else if ( *n == "icon" ){
+                    string icon_path;
+                    *n >> icon_path;
+                    // cout<<"Loading icon "<<icon_path<<endl;
+                    icon = new Bitmap( dataPath( icon_path ) );
+                } else if ( *n == "remap" ){
+                    string first;
+                    string second;
+                    *n >> first >> second;
+                    remaps[ dataPath( second ) ] = dataPath( first );
+                } else {
+                    cout<<"Unhandled character attribute: "<<endl;
+                    n->print(" ");
+                }
 
-	} catch( const TokenException & tex ){
+            }
+
+            squish_sound = new Sound( dataPath( "sounds/squish.wav" ) );
+
+
+            if ( getMovement( "idle" ) == NULL ){
+                throw LoadException("No 'idle' movement");
+            }
+
+            if ( getMovement( "pain" ) == NULL ){
+                throw LoadException("No 'pain' movement");
+            }
+
+            if ( getMovement( "rise" ) == NULL ){
+                throw LoadException("No 'rise' movement");
+            }
+            /*
+               if ( movements[ "grab" ] == NULL ){
+               throw LoadException("No 'grab' movement");
+               }
+               */
+
+            if ( getMovement( "fall" ) == NULL ){
+                throw LoadException("No 'fall' movement");
+            }
+
+        } catch( const TokenException & tex ){
 		cout<< "TokenException: " << tex.getReason() << endl;
 		n->print(" ");
 		cout<<"* Dumping character"<<endl;
@@ -358,13 +382,13 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 		// delete head;
 
 		throw LoadException("Error parsing character");
-	} catch( const LoadException & lex ){
-		throw lex;
+	} catch (const LoadException & lex){
+            ostringstream ss;
+            ss << "Could not load character " << filename << " because " << lex.getReason();
+            throw LoadException(ss.str());
 	}
 
 	// delete head;
-
-	squish_sound = new Sound( dataPath( "sounds/squish.wav" ) );
 
 	for ( map<string,string>::iterator it = remaps.begin(); it != remaps.end(); it++ ){
 		const string & x1 = (*it).first;
@@ -372,30 +396,9 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 		reMap( alter, x1, getMapper().size() );
 	}
 
-	if ( getMovement( "idle" ) == NULL ){
-		throw LoadException("No 'idle' movement");
-	}
-
-	if ( getMovement( "pain" ) == NULL ){
-		throw LoadException("No 'pain' movement");
-	}
-	
-	if ( getMovement( "rise" ) == NULL ){
-		throw LoadException("No 'rise' movement");
-	}
-	/*
-	if ( movements[ "grab" ] == NULL ){
-		throw LoadException("No 'grab' movement");
-	}
-	*/
-
-	if ( getMovement( "fall" ) == NULL ){
-		throw LoadException("No 'fall' movement");
-	}
-
         if (getMovement("walk") != NULL){
             if (getMovement("walk")->getKeys().size() > 0){
-                Global::debug(0) << "Warning: " << getName() << " should contain any keys for the 'walk' movement" << endl;
+                Global::debug(0) << "Warning: " << getName() << " should not contain any keys for the 'walk' movement" << endl;
             }
         }
 

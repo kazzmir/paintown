@@ -87,6 +87,8 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
     // Bitmap work( GFX_X / 2, GFX_Y / 2 );
     Bitmap work( GFX_X, GFX_Y );
+
+    /* the background should be configurable */
     Bitmap background( Global::titleScreen() );
 
     /* currently selected character */
@@ -343,13 +345,15 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 }
 
 Object * Game::selectPlayer( bool invincibile, const string & message ) throw( LoadException, ReturnException ){
-
-
     /* hm, it would be nice to cache this I suppose */
     PlayerVector players = loadPlayers( "players/" );
-    int current = choosePlayer(players, message);
 
     try{
+        int current = 0;
+        /* only run the selection screen if there is more than 1 player to choose */
+        if (players.size() > 1){
+            choosePlayer(players, message);
+        }
         int remap = players[current].guy->getCurrentMap();
 
         /* delete all the preview characters. its ok to delete them
