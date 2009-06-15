@@ -2,6 +2,7 @@
 #include <math.h>
 #include <iostream>
 
+#include "level/utils.h"
 #include "loading.h"
 #include "util/font.h"
 #include "util/funcs.h"
@@ -21,10 +22,13 @@ void * loadingScreen( void * arg ){
 	int load_y = 220;
 	string name = Util::getDataPath() + "/fonts/arial.ttf";
 	const Font & myFont = Font::getFont( name, 24, 24 );
-        /* make this configurable */
-	const char * the_string = (arg != NULL) ? (const char *) arg : "Loading...";
-	int load_width = myFont.textLength( the_string );
-	int load_height = myFont.getHeight( the_string );
+        Level::LevelInfo levelInfo;
+        if (arg != NULL){
+            levelInfo = *(Level::LevelInfo*) arg;
+        }
+	// const char * the_string = (arg != NULL) ? (const char *) arg : "Loading...";
+	int load_width = myFont.textLength(levelInfo.loadingMessage().c_str());
+	int load_height = myFont.getHeight(levelInfo.loadingMessage().c_str());
 
 	Global::debug( 2 ) << "loading screen" << endl;
 
@@ -32,7 +36,7 @@ void * loadingScreen( void * arg ){
 	Bitmap letters( load_width, load_height );
 
 	letters.fill( Bitmap::MaskColor );
-	myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, the_string, 0 ); 
+	myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, levelInfo.loadingMessage().c_str(), 0 ); 
 
 	vector< ppair > pairs;
 	/* store every pixel we need to draw */
@@ -60,7 +64,7 @@ void * loadingScreen( void * arg ){
 	Global::speed_counter = 0;
 
         { /* force scoping */
-            Bitmap background( Global::titleScreen() );
+            Bitmap background(levelInfo.loadingBackground());
             background.Blit( load_x, load_y, load_width, load_height, 0, 0, work );
             Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2 - Font::getDefaultFont().getHeight(), Bitmap::makeColor( 192, 192, 192 ), background, "Paintown version %s", 0, Global::getVersionString().c_str());
             Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), background, "Made by Jon Rafkind", 0 );

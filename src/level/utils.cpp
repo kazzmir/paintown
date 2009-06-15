@@ -9,11 +9,30 @@ namespace Level{
 
 using namespace std;
 
-LevelInfo::LevelInfo(){
+LevelInfo::LevelInfo():
+_loadingMessage("Loading Paintown"),
+_loadingBackground(Global::titleScreen()){
 }
 
 LevelInfo::LevelInfo(const LevelInfo & info){
     this->levels = info.levels;
+    this->_loadingMessage = info._loadingMessage;
+    this->_loadingBackground = info._loadingBackground;
+}
+    
+LevelInfo & LevelInfo::operator=(const LevelInfo & info){
+    this->levels = info.levels;
+    this->_loadingMessage = info._loadingMessage;
+    this->_loadingBackground = info._loadingBackground;
+    return *this;
+}
+    
+const std::string & LevelInfo::loadingMessage(){
+    return this->_loadingMessage;
+}
+
+const std::string & LevelInfo::loadingBackground(){
+    return this->_loadingBackground;
 }
 
 void LevelInfo::addLevel(const string & s){

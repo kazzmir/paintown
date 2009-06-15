@@ -31,7 +31,6 @@ using namespace std;
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
 static int LAZY_KEY_DELAY = 300;
 static bool show_loading_screen = true;
-static const char * LOADING_TITLE = "Loading Paintown";
 
 namespace Game{
 
@@ -56,9 +55,9 @@ static void stopLoading( pthread_t thread ){
 	}
 }
 
-static void startLoading(pthread_t * thread ){
+static void startLoading(pthread_t * thread, const Level::LevelInfo & info ){
 	if ( show_loading_screen ){
-		pthread_create( thread, NULL, loadingScreen, (void *)LOADING_TITLE);
+		pthread_create(thread, NULL, loadingScreen, (void *)&info);
 	}
 }
 
@@ -439,7 +438,7 @@ void realGame( const vector< Object * > & players, const string & levelFile ){
 		Global::done_loading = false;
 		pthread_t loading_screen_thread;
 
-		startLoading( &loading_screen_thread );
+		startLoading( &loading_screen_thread, levelInfo );
 
 		bool gameState = false;
 		try {
