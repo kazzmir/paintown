@@ -80,10 +80,7 @@ vector<PaintownInput> InputManager::_getInput(const Configuration & configuratio
 
     if (joystick != NULL){
         vector<PaintownInput> joystick_keys = convertJoystick(joystick->readAll(), facing);
-        for (vector<PaintownInput>::iterator it = joystick_keys.begin(); it != joystick_keys.end(); it++){
-            Global::debug(2) << "Read joystick key " << *it << endl;
-        }
-        all_keys.insert(all_keys.begin(), joystick_keys.begin(), joystick_keys.end());
+        real_input.insert(real_input.begin(), joystick_keys.begin(), joystick_keys.end());
     }
 
     return real_input;
