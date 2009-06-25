@@ -361,7 +361,7 @@ else:
     # find the system tool path by attaching SCons/Tool to everything
     def fix(q):
         return q + "/SCons/Tool"
-    env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path])
+    env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
 
     try:
         dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
