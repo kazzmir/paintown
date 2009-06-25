@@ -748,9 +748,14 @@ void Menu::drawText(Bitmap *work){
         // printf("counter %d distance %d middle %d\n", currentCounter, distance, middle);
         double normal = (double) distance / (double) fromMiddle;
         int textAlpha = (int)(255.0 - 164.0 * normal * normal);
+
 	if( textAlpha < 0 && (displayTotal == 1 || displayTotal == 2 )){
 	  textAlpha = 255;
-	} else if( textAlpha < 0) textAlpha = 25;
+	} else if (textAlpha < 0){
+            textAlpha = 25;
+        } else if (textAlpha > 255){
+            textAlpha = 255;
+        }
 
         int text_x = backboard.position.x + startx;
         int text_y = (int)(backboard.position.y + starty + i * vFont.getHeight()/spacing) + motion;
