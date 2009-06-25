@@ -284,6 +284,7 @@ void Menu::run(){
         Global::speed_counter = 0;
         Global::second_counter = 0;
         int game_time = 100;
+        motion = 0;
 
         /*
            sharedFont = ourFont;
@@ -323,12 +324,14 @@ void Menu::run(){
                             /* for vi people like me */
                             keyInputManager::keyState(vi_up, true )){	
 
+                        motion -= getFontHeight();
                         (*selectedOption)->setState(MenuOption::Deselected);
                         if (selectedOption > menuOptions.begin()){
                             selectedOption--;
                         } else {
                             selectedOption = menuOptions.end() -1;
                         }
+
                         (*selectedOption)->setState(MenuOption::Selected);
                         (*selectedOption)->resetAnimations();
 
@@ -341,6 +344,7 @@ void Menu::run(){
                             /* for vi people like me */
                             keyInputManager::keyState(vi_down, true )){
 
+                        motion += getFontHeight();
                         (*selectedOption)->setState(MenuOption::Deselected);
                         if (selectedOption < menuOptions.begin()+menuOptions.size()-1){
                             selectedOption++;
@@ -386,6 +390,17 @@ void Menu::run(){
                         // Recalculate placement
                         checkTextLength((*b));
                     }
+
+                    const int motion_speed = 2;
+                    if (motion > motion_speed - 1){
+                        motion -= motion_speed;
+                    } else if (motion < -motion_speed){
+                        motion += motion_speed;
+                    } else if (motion == -(motion_speed-1) || motion == motion_speed-1){
+                        motion = 0;
+                    }
+
+                    // motion = 0;
 
                     // Current option animation logic
                     (*selectedOption)->updateAnimations();
@@ -688,7 +703,7 @@ void Menu::drawText(Bitmap *work){
     const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
     const double spacing = 1.3;
 
-    const int displayTotal = (int)((backboard.position.height / (int)(vFont.getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont.getHeight()/spacing) - 1 : backboard.position.height / (vFont.getHeight()/spacing));
+    const int displayTotal = (int)((backboard.position.height / (int)(vFont.getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont.getHeight()/spacing) - 1 : backboard.position.height / (vFont.getHeight()/spacing)) + 2;
     const int fromMiddle = (displayTotal - 1)/2;
     const int starty = (int)((backboard.position.height/2)-(((vFont.getHeight()/spacing) * displayTotal)/2));
 
@@ -737,6 +752,9 @@ void Menu::drawText(Bitmap *work){
 	  textAlpha = 255;
 	} else if( textAlpha < 0) textAlpha = 25;
 
+        int text_x = backboard.position.x + startx;
+        int text_y = (int)(backboard.position.y + starty + i * vFont.getHeight()/spacing) + motion;
+
         switch (currentDrawState){
             case FadeIn : {
                 break;
@@ -749,7 +767,7 @@ void Menu::drawText(Bitmap *work){
                         case MenuOption::AdjustableOption : {
                             const int triangleSize = 10;
                             int cx = (backboard.position.x + startx) - 15;
-                            int cy = (int)(backboard.position.y + starty + i * (vFont.getHeight()/spacing) + (vFont.getHeight()/spacing) / 2 + 2);
+                            int cy = (int)(text_y + (vFont.getHeight()/spacing) / 2 + 2);
                             work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
 
                             cx = (backboard.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
@@ -765,7 +783,7 @@ void Menu::drawText(Bitmap *work){
 
                 int alpha = (int)(textAlpha * fadeAlpha / 255.0);
                 Bitmap::transBlender(0, 0, 0, alpha);
-                vFont.printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont.getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
+                vFont.printf(text_x, text_y, color, *work, (*iterOption)->getText(), 0 );
                 work->drawingMode( Bitmap::MODE_SOLID );
                 break;
             }
@@ -776,7 +794,7 @@ void Menu::drawText(Bitmap *work){
                         case MenuOption::AdjustableOption : {
                             const int triangleSize = 10;
                             int cx = (backboard.position.x + startx) - 15;
-                            int cy = (int)(backboard.position.y + starty + i * (vFont.getHeight()/spacing) + (vFont.getHeight()/spacing) / 2 + 2);
+                            int cy = (int)(text_y + (vFont.getHeight()/spacing) / 2 + 2);
                             work->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
 
                             cx = (backboard.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
@@ -792,7 +810,7 @@ void Menu::drawText(Bitmap *work){
 
                 Bitmap::transBlender(0, 0, 0, textAlpha);
                 work->drawingMode( Bitmap::MODE_TRANS );
-                vFont.printf( backboard.position.x + startx, int((backboard.position.y + starty) + i * vFont.getHeight()/spacing), color, *work, (*iterOption)->getText(), 0 );
+                vFont.printf(text_x, text_y, color, *work, (*iterOption)->getText(), 0 );
                 work->drawingMode( Bitmap::MODE_SOLID );
                 break;
             }
