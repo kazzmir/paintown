@@ -97,7 +97,7 @@ class Menu
 		
 		std::vector <MenuOption *> menuOptions;
 		std::vector <MenuOption *>::iterator selectedOption;
-                int motion;
+                double motion;
 		//! Animations
 		std::vector <MenuAnimation *>backgroundAnimations;
 		std::vector <MenuAnimation *>foregroundAnimations;

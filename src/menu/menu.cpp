@@ -391,12 +391,12 @@ void Menu::run(){
                         checkTextLength((*b));
                     }
 
-                    const int motion_speed = 2;
-                    if (motion > motion_speed - 1){
+                    const double motion_speed = 1.8;
+                    if (motion >= motion_speed){
                         motion -= motion_speed;
-                    } else if (motion < -motion_speed){
+                    } else if (motion <= -motion_speed){
                         motion += motion_speed;
-                    } else if (motion == -(motion_speed-1) || motion == motion_speed-1){
+                    } else {
                         motion = 0;
                     }
 
