@@ -58,6 +58,7 @@ END_OF_FUNCTION( inc_second_counter );
 static void handleSigSegV(int i, siginfo_t * sig, void * data){
     const char * message = "Bug! Caught a memory violation. Shutting down..\n";
     int dont_care = write(1, message, 48);
+    dont_care = dont_care;
     // Global::shutdown_message = "Bug! Caught a memory violation. Shutting down..";
     Bitmap::setGfxModeText();
     allegro_exit();

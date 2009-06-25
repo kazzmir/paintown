@@ -329,16 +329,6 @@ static void sendToAll( const vector< Socket > & sockets, const Message & message
 	}
 }
 
-static Network::Message removeMessage( int id ){
-	Network::Message message;
-
-	message.id = 0;
-	message << World::REMOVE;
-	message << id;
-
-	return message;
-}
-
 #if 0
 static void playLevel( World & world, const vector< Object * > & players ){
 	Keyboard key;
