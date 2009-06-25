@@ -203,6 +203,11 @@ def checkStaticRuby(context):
     context.Result(ret)
     return ret
 
+def checkRunRuby(context):
+    context.Message("Checking if we can run ruby... ")
+    (ok, stuff) = context.TryAction(Action("ruby"))
+    context.Result(ok)
+    return ok
 
 def isCygwin():
     try:
@@ -316,6 +321,7 @@ if False:
 
 custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
+		"HasRuby" : checkRunRuby,
                 "CheckRTTI" : checkRTTI,
                 "CheckLex" : checkLex,
                 "CheckYacc" : checkYacc}
@@ -325,7 +331,8 @@ if isWindows():
 
     config = env.Configure(custom_tests = custom_tests)
     config.CheckPython()
-    config.CheckRuby()
+    if config.HasRuby():
+        config.CheckRuby()
     if not config.CheckLex():
         print "Can't find lex"
 	Exit(1)
@@ -416,7 +423,8 @@ else:
         Exit( 1 )
     config.CheckRTTI()
     config.CheckPython()
-    config.CheckRuby()
+    if config.HasRuby():
+        config.CheckRuby()
     if not config.CheckLex():
         print "** Install a lex package such as flex"
         Exit(1)
@@ -428,9 +436,11 @@ else:
 
     static_config = staticEnv.Configure(custom_tests = {"CheckPython" : checkPython,
                                                         "CheckRuby" : checkStaticRuby,
+							"HasRuby" : checkRunRuby,
                                                         "CheckRTTI" : checkRTTI})
     static_config.CheckPython()
-    static_config.CheckRuby()
+    if static_config.HasRuby():
+        static_config.CheckRuby()
     static_config.CheckRTTI()
     staticEnv = static_config.Finish()
 
