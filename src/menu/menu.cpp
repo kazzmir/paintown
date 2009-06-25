@@ -305,6 +305,10 @@ void Menu::run(){
 		while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 	
 			bool draw = false;
+                        const char vi_up = 'k';
+                        const char vi_down = 'j';
+                        const char vi_left = 'h';
+                        const char vi_right = 'l';
 			
 			keyInputManager::update();
 	
@@ -317,7 +321,7 @@ void Menu::run(){
                                     
                                     if ( keyInputManager::keyState(keys::UP, true ) ||
                                             /* for vi people like me */
-                                         keyInputManager::keyState('k', true )){	
+                                         keyInputManager::keyState(vi_up, true )){	
                                             (*selectedOption)->setState(MenuOption::Deselected);
                                             if ( selectedOption > menuOptions.begin() ){
                                                     selectedOption--;
@@ -330,7 +334,7 @@ void Menu::run(){
 
                                     if ( keyInputManager::keyState(keys::DOWN, true ) ||
                                             /* for vi people like me */
-                                         keyInputManager::keyState('j', true )){
+                                         keyInputManager::keyState(vi_down, true )){
                                             (*selectedOption)->setState(MenuOption::Deselected);
                                             if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
                                                     selectedOption++;
@@ -342,14 +346,14 @@ void Menu::run(){
                                     }
                                     
                                     if ( keyInputManager::keyState(keys::LEFT, true) ||
-                                         keyInputManager::keyState('h', true)){
+                                         keyInputManager::keyState(vi_left, true)){
                                             if ( (*selectedOption)->leftKey()){
                                                 /* ??? */
                                             }
                                     }
                                     
                                     if ( keyInputManager::keyState(keys::RIGHT, true )||
-                                         keyInputManager::keyState('l', true )){
+                                         keyInputManager::keyState(vi_right, true )){
                                             if ( (*selectedOption)->rightKey()){
                                                 /* ??? */
                                             }
