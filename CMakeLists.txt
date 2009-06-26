@@ -64,6 +64,7 @@ find_package(PNG)
 find_package(ALLEGRO)
 find_package(FREETYPE)
 find_package(Threads)
+find_package(Ruby)
 include(TestForPythonEmbed)
 
 # -------------------------------------------------------
@@ -104,6 +105,13 @@ if(PYTHON_EMBEDABLE)
 	set(PY_LIBS ${PYTHON_LIBRARIES})
 	add_definitions(-DHAVE_PYTHON)
 endif(PYTHON_EMBEDABLE)
+
+# Ruby
+if(RUBY_INCLUDE_PATH)
+	set(RUBY_INCLUDE ${RUBY_INCLUDE_PATH}) 
+	set(RUBY_LIBS ${RUBY_LIBRARY})
+	add_definitions(-DHAVE_RUBY)
+endif(RUBY_INCLUDE_PATH)
 
 # -------------------------------------------------------
 # Paths and system setup
@@ -160,7 +168,7 @@ endif(MSVC)
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${PY_LIBS} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${PY_LIBS} ${RUBY_LIBS} ${WIN_LIB} ${WINSOCK})
 
 set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
 ${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC} ${GAME_SRC} ${MUGEN_SRC})
@@ -168,7 +176,7 @@ ${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC} ${
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules ${FREETYPE_INCLUDE_DIR} src/hawknl ${PY_INCLUDE})
+include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules ${FREETYPE_INCLUDE_DIR} src/hawknl ${PY_INCLUDE} ${RUBY_INCLUDE})
 
 # -------------------------------------------------------
 # Paintown and test
@@ -196,6 +204,7 @@ target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_
 # Do scrip zip only in *nix land
 if(UNIX OR LINUX OR CYGWIN)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_BINARY_DIR}/build/script/modules/paintown.py COPYONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.rb ${CMAKE_BINARY_DIR}/build/script/modules/paintown.rb COPYONLY)
   execute_process(COMMAND mkdir bin
 		  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		  OUTPUT_QUIET)
