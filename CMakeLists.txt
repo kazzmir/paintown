@@ -65,6 +65,8 @@ find_package(ALLEGRO)
 find_package(FREETYPE)
 find_package(Threads)
 find_package(Ruby)
+find_package(BISON)
+find_package(FLEX)
 include(TestForPythonEmbed)
 
 # -------------------------------------------------------
