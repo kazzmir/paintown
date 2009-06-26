@@ -352,7 +352,7 @@ Object * Game::selectPlayer( bool invincibile, const string & message ) throw( L
         int current = 0;
         /* only run the selection screen if there is more than 1 player to choose */
         if (players.size() > 1){
-            choosePlayer(players, message);
+            current = choosePlayer(players, message);
         }
         int remap = players[current].guy->getCurrentMap();
 
