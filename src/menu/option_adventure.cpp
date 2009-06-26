@@ -5,6 +5,7 @@
 #include "util/load_exception.h"
 #include "util/token.h"
 #include "util/funcs.h"
+#include "level/utils.h"
 #include "object/player.h"
 #include "object/object.h"
 #include "game.h"
@@ -65,17 +66,20 @@ void OptionAdventure::run(bool &endGame){
 		string level = MenuGlobals::doLevelMenu("/levels");
 
 		if (level.empty()){
+                    Global::debug(0) << "*bug* Level name is empty?" << endl;
                     /* throw an error or something */
                     return;
                 }
 		key.wait();
+
+                Level::LevelInfo info = Level::readLevels(level);
 		
 		player = Game::selectPlayer( MenuGlobals::getInvincible() );
                 player->setObjectId(-1);
 		((Player *)player)->setLives( MenuGlobals::getLives() );
 		vector< Object * > players;
 		players.push_back( player );
-		Game::realGame( players, level );
+		Game::realGame(players, info);
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Error while loading: " << le.getReason() << endl;
 	} catch ( const ReturnException & r ){

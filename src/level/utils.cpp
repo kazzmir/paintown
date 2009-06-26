@@ -27,11 +27,11 @@ LevelInfo & LevelInfo::operator=(const LevelInfo & info){
     return *this;
 }
     
-const std::string & LevelInfo::loadingMessage(){
+const std::string & LevelInfo::loadingMessage() const {
     return this->_loadingMessage;
 }
 
-const std::string & LevelInfo::loadingBackground(){
+const std::string & LevelInfo::loadingBackground() const {
     return this->_loadingBackground;
 }
 
@@ -39,7 +39,7 @@ void LevelInfo::addLevel(const string & s){
     levels.push_back(s);
 }
     
-const vector<string> & LevelInfo::getLevels(){
+const vector<string> & LevelInfo::getLevels() const {
     return levels;
 }
 

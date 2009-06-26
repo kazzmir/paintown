@@ -427,9 +427,9 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 	return true;
 }
 
-void realGame( const vector< Object * > & players, const string & levelFile ){
+void realGame(const vector< Object * > & players, const Level::LevelInfo & levelInfo){
 
-    Level::LevelInfo levelInfo = Level::readLevels( levelFile );
+    // Level::LevelInfo levelInfo = Level::readLevels( levelFile );
 
 	// global_debug = true;
 

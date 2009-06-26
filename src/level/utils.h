@@ -14,9 +14,9 @@ public:
     LevelInfo & operator=(const LevelInfo & info);
 
     virtual void addLevel(const std::string & s);
-    virtual const std::vector<std::string> & getLevels();
-    virtual const std::string & loadingMessage();
-    virtual const std::string & loadingBackground();
+    virtual const std::vector<std::string> & getLevels() const;
+    virtual const std::string & loadingMessage() const;
+    virtual const std::string & loadingBackground() const;
 
 protected:
     std::vector<std::string> levels;

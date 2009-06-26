@@ -7,6 +7,7 @@
 #include "object/object.h"
 #include "object/player.h"
 #include "object/buddy_player.h"
+#include "level/utils.h"
 #include "util/funcs.h"
 #include "util/keyboard.h"
 
@@ -63,7 +64,11 @@ void OptionAdventureCpu::run(bool &endGame){
 	try{
 		//string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
 		string level = MenuGlobals::doLevelMenu("/levels");
-		if( level.empty() ) return;
+		if (level.empty()){
+                    Global::debug(0) << "*bug* Level name is empty?" << endl;
+                    return;
+                }
+                Level::LevelInfo info = Level::readLevels(level);
 		key.wait();
 		player = Game::selectPlayer( MenuGlobals::getInvincible(), "Pick a player" );
                 player->setObjectId(-1);
@@ -82,7 +87,7 @@ void OptionAdventureCpu::run(bool &endGame){
                     buddies.push_back( buddy );
                     players.push_back( buddy );
                 }
-		Game::realGame( players, level );
+		Game::realGame(players, info);
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 	} catch ( const ReturnException & r ){
