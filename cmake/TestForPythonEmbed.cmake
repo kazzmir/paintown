@@ -18,8 +18,8 @@ int main(int argc, char *argv[]) {
 
 " PY_EMBED)
 	IF(PY_EMBED)
-	    MESSAGE(STATUS "Python is embeddable")
-	    SET(PYTHON_EMEDABLE TRUE)
+	    MESSAGE(STATUS "Python is embedable")
+	    SET(PYTHON_EMBEDABLE TRUE)
 	ELSE(PY_EMBED)
 	    MESSAGE(STATUS "Python is not embedable")
 	    SET(PYTHON_EMBEDABLE FALSE)
