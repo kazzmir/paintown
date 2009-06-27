@@ -17,9 +17,13 @@ public:
     virtual const std::vector<std::string> & getLevels() const;
     virtual const std::string & loadingMessage() const;
     virtual const std::string & loadingBackground() const;
+    virtual const std::string & getPlayerPath() const;
+
+    virtual ~LevelInfo();
 
 protected:
     std::vector<std::string> levels;
+    std::string playerPath;
     std::string _loadingMessage;
     std::string _loadingBackground;
 };

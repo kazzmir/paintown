@@ -73,7 +73,8 @@ static void sendDummy(Socket socket){
 static void playGame( Socket socket ){
 	pthread_t loadingThread;
 	try{
-		Character * player = (Character *) Game::selectPlayer( false, "Pick a player" );
+            /* TODO: dont hardcode players/ path */
+		Character * player = (Character *) Game::selectPlayer( false, "Pick a player", "players/" );
                 ((Player *) player)->ignoreLives();
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );

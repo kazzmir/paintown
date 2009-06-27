@@ -32,7 +32,7 @@ struct playerInfo{
 };
 
 typedef vector<playerInfo> PlayerVector;
-static PlayerVector loadPlayers( const char * path ){
+static PlayerVector loadPlayers( const string & path ){
     PlayerVector players;
     vector< string > files = Util::getFiles( Util::getDataPath() + "/" + path, "*" );
     std::sort( files.begin(), files.end() );
@@ -344,9 +344,9 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     return current;
 }
 
-Object * Game::selectPlayer( bool invincibile, const string & message ) throw( LoadException, ReturnException ){
+Object * Game::selectPlayer(bool invincibile, const string & message, const string & playerPath) throw( LoadException, ReturnException ){
     /* hm, it would be nice to cache this I suppose */
-    PlayerVector players = loadPlayers( "players/" );
+    PlayerVector players = loadPlayers(playerPath);
 
     try{
         int current = 0;

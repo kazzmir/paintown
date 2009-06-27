@@ -122,8 +122,8 @@ void OptionVersus::run(bool &endGame){
 				Game::playVersusMode( &pl, &en, i + 1 );
 			}
 		} else {
-			player = Game::selectPlayer( false, "Pick your player" );
-			enemy = Game::selectPlayer( false, "Pick enemy" );
+			player = Game::selectPlayer( false, "Pick your player", "players/" );
+			enemy = Game::selectPlayer( false, "Pick enemy", "players/" );
 			enemy->setAlliance( ALLIANCE_ENEMY );
 
 			for ( int i = 0; i < 3; i += 1 ){

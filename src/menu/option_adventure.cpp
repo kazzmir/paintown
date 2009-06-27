@@ -74,7 +74,7 @@ void OptionAdventure::run(bool &endGame){
 
                 Level::LevelInfo info = Level::readLevels(level);
 		
-		player = Game::selectPlayer( MenuGlobals::getInvincible() );
+		player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info.getPlayerPath());
                 player->setObjectId(-1);
 		((Player *)player)->setLives( MenuGlobals::getLives() );
 		vector< Object * > players;

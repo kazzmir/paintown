@@ -10,6 +10,7 @@ namespace Level{
 using namespace std;
 
 LevelInfo::LevelInfo():
+playerPath("players/"),
 _loadingMessage("Loading Paintown"),
 _loadingBackground(Global::titleScreen()){
 }
@@ -18,12 +19,14 @@ LevelInfo::LevelInfo(const LevelInfo & info){
     this->levels = info.levels;
     this->_loadingMessage = info._loadingMessage;
     this->_loadingBackground = info._loadingBackground;
+    this->playerPath = info.getPlayerPath();
 }
     
 LevelInfo & LevelInfo::operator=(const LevelInfo & info){
     this->levels = info.levels;
     this->_loadingMessage = info._loadingMessage;
     this->_loadingBackground = info._loadingBackground;
+    this->playerPath = info.getPlayerPath();
     return *this;
 }
     
@@ -35,12 +38,19 @@ const std::string & LevelInfo::loadingBackground() const {
     return this->_loadingBackground;
 }
 
+const std::string & LevelInfo::getPlayerPath() const {
+    return this->playerPath;
+}
+
 void LevelInfo::addLevel(const string & s){
     levels.push_back(s);
 }
     
 const vector<string> & LevelInfo::getLevels() const {
     return levels;
+}
+    
+LevelInfo::~LevelInfo(){
 }
 
 LevelInfo readLevels( const string & filename ){

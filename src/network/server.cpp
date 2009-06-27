@@ -502,7 +502,8 @@ static void playGame( const vector< Socket > & sockets ){
 	pthread_t loading_screen_thread;
 	try{
             /* first the user selects his own player */
-		Object * player = Game::selectPlayer( false, "Pick a player" );
+            /* TODO: dont hardcode players/ path */
+		Object * player = Game::selectPlayer( false, "Pick a player", "players/" );
                 /* ugly cast */
                 ((Player *) player)->ignoreLives();
 		players.push_back( player );
