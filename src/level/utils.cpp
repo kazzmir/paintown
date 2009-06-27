@@ -50,6 +50,10 @@ const vector<string> & LevelInfo::getLevels() const {
     return levels;
 }
     
+void LevelInfo::setPlayerPath(const std::string & s){
+    this->playerPath = s;
+}
+    
 LevelInfo::~LevelInfo(){
 }
 
@@ -61,9 +65,19 @@ LevelInfo readLevels( const string & filename ){
 
         if ( *head == "levels" ){
             while (head->hasTokens()){
-                string s;
-                *head >> s;
-                info.addLevel(s);
+                Token * next;
+                *head >> next;
+                /* old way */
+                if (!next->hasTokens()){
+                    Global::debug(1) << "Add level " << next->getName() << endl;
+                    info.addLevel(next->getName());
+                } else if (*next == "level"){
+                } else if (*next == "player-path"){
+                    string s;
+                    *next >> s;
+                    Global::debug(1) << "Set player path to " << s << endl;
+                    info.setPlayerPath(s);
+                }
             }
         }
         return info;

@@ -34,9 +34,10 @@ struct playerInfo{
 typedef vector<playerInfo> PlayerVector;
 static PlayerVector loadPlayers( const string & path ){
     PlayerVector players;
-    vector< string > files = Util::getFiles( Util::getDataPath() + "/" + path, "*" );
+    vector< string > files = Util::getFiles( Util::getDataPath() + "/" + path + "/", "*" );
     std::sort( files.begin(), files.end() );
     for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
+        Global::debug(2) << "Found file " << *it << endl;
         string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
         Global::debug(1) << "Checking " << file << endl;
         if (Util::exists( file )){

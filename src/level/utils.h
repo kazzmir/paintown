@@ -18,6 +18,7 @@ public:
     virtual const std::string & loadingMessage() const;
     virtual const std::string & loadingBackground() const;
     virtual const std::string & getPlayerPath() const;
+    virtual void setPlayerPath(const std::string & s);
 
     virtual ~LevelInfo();
 
