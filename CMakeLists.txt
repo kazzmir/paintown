@@ -1,9 +1,9 @@
 # -------------------------------------------------------
 # Paintown cmake build script. Creates makefiles for unix 
-# based systems and/or
-# project files for a given environment like MSVC.
+# based systems, cygwin(sp?) or mingw
 #
 # Written by: juvinious
+# Modified: 06/27/2009
 # -------------------------------------------------------
 
 # -------------------------------------------------------
@@ -83,13 +83,8 @@ mark_as_advanced(CLEAR PNG_LIBRARY)
 # -------------------------------------------------------
 # User setable options
 # -------------------------------------------------------
-if(NOT MSVC)
-	set(CXXFLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations -Woverloaded-virtual")
-else(NOT MSVC)
-	set(CXXFLAGS "-O2")
-endif(NOT MSVC)
-
-add_definitions(${CXXFLAGS})
+set(CMAKE_CXX_FLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations -Woverloaded-virtual")
+set(CMAKE_C_FLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations")
 
 # allegro
 if(NOT ALLEGRO_FOUND)
@@ -144,6 +139,9 @@ else(MINGW OR CYGWIN)
 	 set(CMAKE_THREAD_LIBS_INIT -lpthread)
 endif(MINGW OR CYGWIN)
 
+# -------------------------------------------------------
+# Apple OSX
+# -------------------------------------------------------
 
 if(APPLE)
 	# -------------------------------------------------------
@@ -153,42 +151,23 @@ if(APPLE)
 	add_definitions(-DMACOSX)
 endif(APPLE)
 
-# -------------------------------------------------------
-# MSVC
-# -------------------------------------------------------
-
-if(MSVC)
-	# -------------------------------------------------------
-	# Take those user options and set the necessary compile time preprocessors
-	# -------------------------------------------------------
-	add_definitions("/DWINDOWS")
-	set(CMAKE_CXX_FLAGS "/nologo /W3 /Gy")
-	set(CMAKE_CXX_FLAGS_DEBUG "/MTd /Z7 /Od")
-	set(CMAKE_CXX_FLAGS_RELEASE "/MT /O2")
-	set(CMAKE_CXX_FLAGS_MINSIZEREL "/MT /O2")
-	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MTd /Z7 /Od")
-	set(CMAKE_CONFIGURATION_TYPES "Release")
-	
-	# -------------------------------------------------------	
-	# library checks
-	# -------------------------------------------------------
-	
-	set(WIN_LIB /gdi32 /user32)
-	
-endif(MSVC)
+#Add flex files to compile
+set(FLEX_SRC ${CMAKE_SOURCE_DIR}/build/mugen/lex.yy.c ${CMAKE_SOURCE_DIR}/build/mugen/parse.cc)
+set(FLEX_INCLUDE ${CMAKE_SOURCE_DIR}/build/mugen)
+set(FLEX_LIB -lfl)
 
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${PY_LIBS} ${RUBY_LIBS} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${PY_LIBS} ${RUBY_LIBS} ${FLEX_LIB} ${WIN_LIB} ${WINSOCK})
 
 set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
-${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC} ${GAME_SRC} ${MUGEN_SRC})
+${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC} ${GAME_SRC} ${MUGEN_SRC} ${FLEX_SRC})
 
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules ${FREETYPE_INCLUDE_DIR} src/hawknl ${PY_INCLUDE} ${RUBY_INCLUDE})
+include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules ${FREETYPE_INCLUDE_DIR} src/hawknl ${PY_INCLUDE} ${RUBY_INCLUDE} ${FLEX_INCLUDE})
 
 # -------------------------------------------------------
 # Paintown and test
@@ -201,6 +180,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/hawknl)
 
+#paintown executable
 add_executable (paintown src/xmain.cpp)
 target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
@@ -210,8 +190,8 @@ target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_
 #add_executable (menutest src/menu/menutest.cpp)
 #target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
-#add_executable (mugentest src/mugen/test.cpp)
-#target_link_libraries(mugentest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
+add_executable (mugentest src/mugen/test.cpp)
+target_link_libraries(mugentest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 # Do scrip zip only in *nix land
 if(UNIX OR LINUX OR CYGWIN OR MINGW)
