@@ -222,7 +222,7 @@ void Menu::load(Token *token)throw( LoadException ){
             // sharedFont = "fonts/arial.ttf";
         }
         */
-        if (Configuration::getMenuFont() != ""){
+        if (Configuration::getMenuFont() != "" && Util::exists(Configuration::getMenuFont())){
             sharedFont = Configuration::getMenuFont();
         }
 	
