@@ -216,9 +216,14 @@ void Menu::load(Token *token)throw( LoadException ){
 	
 	addMenu( this );
 
+        /*
         if (sharedFont == ""){
             sharedFont = Configuration::getMenuFont();
             // sharedFont = "fonts/arial.ttf";
+        }
+        */
+        if (Configuration::getMenuFont() != ""){
+            sharedFont = Configuration::getMenuFont();
         }
 	
 	// Finally lets assign list order numering and some other stuff
@@ -603,6 +608,7 @@ int Menu::getFontHeight(){
 }
                 
 void Menu::setFontName(const std::string & str){
+    Configuration::setMenuFont(str);
     sharedFont = str;
     setFont(sharedFont, getFontWidth(), getFontHeight());
 }

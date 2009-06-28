@@ -405,7 +405,8 @@ int Configuration::npc_buddies = 1;
 Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
 int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
-std::string Configuration::menuFont = "fonts/arial.ttf";
+std::string Configuration::menuFont = "";
+// std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
 double Configuration::getGameSpeed(){
