@@ -25,7 +25,7 @@ void realGame(const std::vector< Object * > & players, const Level::LevelInfo & 
 const std::string selectLevelSet( const std::string & base ) throw( ReturnException );
 void fadeOut( Bitmap & work, const std::string & message );
 
-Object * selectPlayer( bool invincibile, const std::string & message, const std::string & playerPath) throw( LoadException, ReturnException );
+Object * selectPlayer( bool invincibile, const std::string & message, const Level::LevelInfo & info) throw( LoadException, ReturnException );
 
 std::vector<Object *> versusSelect( bool invincible ) throw( LoadException, ReturnException );
 

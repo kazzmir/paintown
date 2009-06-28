@@ -34,6 +34,8 @@
 #include "util/bitmap.h"
 #include "util/funcs.h"
 
+#include "level/utils.h"
+
 #include "factory/font_render.h"
 
 #include "gui/keyinput_manager.h"
@@ -270,10 +272,11 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
     //Object *p1 = new Player( "data/players/wolverine/wolverine.txt", 0 );//Game::selectPlayer( false, "Pick player1" );
-    Object *p1 = !p1_name.empty() ? new Player(p1_name,0) : Game::selectPlayer( false, "Pick player1", "players/" );
+    Level::LevelInfo info;
+    Object *p1 = !p1_name.empty() ? new Player(p1_name,0) : Game::selectPlayer( false, "Pick player1", info);
     Global::debug(0) << "Loading player 2" << endl;
     //Object *p2 = new Player( "data/players/venom/venom.txt", 1 );//Game::selectPlayer( false, "Pick player2" );
-    Object *p2 = !p2_name.empty() ? new Player(p2_name,1) : Game::selectPlayer( false, "Pick player2", "players/" );
+    Object *p2 = !p2_name.empty() ? new Player(p2_name,1) : Game::selectPlayer( false, "Pick player2", info);
     ((Player *)p1)->setInvincible( false );
     //p1->setMap( remap );
     ((Player *)p1)->testAnimation();

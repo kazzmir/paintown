@@ -11,6 +11,7 @@
 #include "game.h"
 #include "util/keyboard.h"
 #include "util/font.h"
+#include "level/utils.h"
 #include "world.h"
 #include "return_exception.h"
 #include <iostream>
@@ -345,9 +346,9 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     return current;
 }
 
-Object * Game::selectPlayer(bool invincibile, const string & message, const string & playerPath) throw( LoadException, ReturnException ){
+Object * Game::selectPlayer(bool invincibile, const string & message, const Level::LevelInfo & info) throw( LoadException, ReturnException ){
     /* hm, it would be nice to cache this I suppose */
-    PlayerVector players = loadPlayers(playerPath);
+    PlayerVector players = loadPlayers(info.getPlayerPath());
 
     try{
         int current = 0;

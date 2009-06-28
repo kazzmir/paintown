@@ -4,6 +4,7 @@
 #include "util/token.h"
 #include "util/keyboard.h"
 #include "util/load_exception.h"
+#include "level/utils.h"
 #include "object/versus_player.h"
 #include "object/versus_enemy.h"
 
@@ -122,8 +123,9 @@ void OptionVersus::run(bool &endGame){
 				Game::playVersusMode( &pl, &en, i + 1 );
 			}
 		} else {
-			player = Game::selectPlayer( false, "Pick your player", "players/" );
-			enemy = Game::selectPlayer( false, "Pick enemy", "players/" );
+                    Level::LevelInfo info;
+			player = Game::selectPlayer( false, "Pick your player", info);
+			enemy = Game::selectPlayer( false, "Pick enemy", info);
 			enemy->setAlliance( ALLIANCE_ENEMY );
 
 			for ( int i = 0; i < 3; i += 1 ){

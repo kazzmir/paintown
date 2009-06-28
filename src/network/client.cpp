@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "util/font.h"
+#include "level/utils.h"
 #include "factory/font_render.h"
 #include "factory/object_factory.h"
 #include "factory/heart_factory.h"
@@ -73,8 +74,9 @@ static void sendDummy(Socket socket){
 static void playGame( Socket socket ){
 	pthread_t loadingThread;
 	try{
-            /* TODO: dont hardcode players/ path */
-		Character * player = (Character *) Game::selectPlayer( false, "Pick a player", "players/" );
+            /* TODO: get the info from the server */
+            Level::LevelInfo info;
+		Character * player = (Character *) Game::selectPlayer( false, "Pick a player", info);
                 ((Player *) player)->ignoreLives();
 		string path = player->getPath();
 		path.erase( 0, Util::getDataPath().length() );
