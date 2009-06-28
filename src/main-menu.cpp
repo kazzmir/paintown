@@ -86,6 +86,7 @@ int paintown_main( int argc, char ** argv ){
 	} catch (const LoadException & ex){
 		Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
 		return -1;
+        } catch (const ReturnException & ex){
         }
 
 	Configuration::saveConfiguration();

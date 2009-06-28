@@ -514,7 +514,16 @@ void Menu::run(){
                 keyInputManager::update();
             }
 
-            endGame = done |= keyInputManager::keyState(keys::ESC, true );
+            // endGame |= keyInputManager::keyState(keys::ESC, true );
+            done |= endGame;
+            if (keyInputManager::keyState(keys::ESC, true )){
+                (*selectedOption)->setState(MenuOption::Deselected);
+                if (backSound != ""){
+                    Sound * back = Resource::getSound(backSound);
+                    back->play();
+                }
+                throw ReturnException();
+            }
         }
 
         // do we got an option to run, lets do it
@@ -549,6 +558,7 @@ void Menu::run(){
             }
         }
 
+        /*
         if (endGame){
             // Deselect selected entry
             (*selectedOption)->setState(MenuOption::Deselected);
@@ -557,6 +567,7 @@ void Menu::run(){
                 back->play();
             }
         }
+        */
     }
 }
 
