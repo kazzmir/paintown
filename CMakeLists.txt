@@ -115,6 +115,16 @@ if(RUBY_INCLUDE_PATH)
 	add_definitions(-DHAVE_RUBY)
 endif(RUBY_INCLUDE_PATH)
 
+# Check for bison
+if(NOT BISON_EXECUTABLE)
+	message(FATAL_ERROR "Couldn't find bison")
+endif(NOT BISON_EXECUTABLE)
+
+# Check for flex
+if(NOT FLEX_EXECUTABLE)
+	message(FATAL_ERROR "Couldn't find flex")
+endif(NOT FLEX_EXECUTABLE)
+
 # -------------------------------------------------------
 # Paths and system setup
 # -------------------------------------------------------
@@ -204,12 +214,16 @@ target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_
 #target_link_libraries(mugentest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 # Do scrip zip only in *nix land
-if(UNIX OR LINUX OR CYGWIN)
+if(UNIX OR LINUX OR CYGWIN OR MINGW)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_BINARY_DIR}/build/script/modules/paintown.py COPYONLY)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.rb ${CMAKE_BINARY_DIR}/build/script/modules/paintown.rb COPYONLY)
-  execute_process(COMMAND mkdir bin
-		  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-		  OUTPUT_QUIET)
-  execute_process(COMMAND zip -r bin/scripts build
-		  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-endif(UNIX OR LINUX OR CYGWIN)
+  execute_process(COMMAND ${BISON_EXECUTABLE} -d -o ${CMAKE_SOURCE_DIR}/build/mugen/parse.cc ${CMAKE_SOURCE_DIR}/src/mugen/parse.yy
+		 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+  execute_process(COMMAND ${FLEX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/mugen/lex.l
+		 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/mugen)
+#  execute_process(COMMAND mkdir bin
+#		  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+#		  OUTPUT_QUIET)
+#  execute_process(COMMAND zip -r bin/scripts build
+#		   WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+endif(UNIX OR LINUX OR CYGWIN OR MINGW)
