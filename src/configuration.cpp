@@ -368,9 +368,11 @@ void Configuration::saveConfiguration(){
         *screen << "screen-size" << Configuration::getScreenWidth() << Configuration::getScreenHeight();
         head.addToken(screen);
 
-        Token * font = new Token();
-        *font << "menu-font" << Configuration::getMenuFont();
-        head.addToken(font);
+        if (Configuration::getMenuFont() != ""){
+            Token * font = new Token();
+            *font << "menu-font" << Configuration::getMenuFont();
+            head.addToken(font);
+        }
 
         Token * mode = new Token();
         string smode;
