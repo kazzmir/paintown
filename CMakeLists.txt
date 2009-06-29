@@ -152,8 +152,8 @@ if(APPLE)
 endif(APPLE)
 
 #Add flex files to compile
-set(FLEX_SRC ${CMAKE_SOURCE_DIR}/build/mugen/lex.yy.c ${CMAKE_SOURCE_DIR}/build/mugen/parse.cc)
-set(FLEX_INCLUDE ${CMAKE_SOURCE_DIR}/build/mugen)
+set(FLEX_SRC ${CMAKE_BINARY_DIR}/src/mugen/lex.yy.c ${CMAKE_BINARY_DIR}/src/mugen/parse.cc)
+set(FLEX_INCLUDE ${CMAKE_SOURCE_DIR}/src/mugen ${CMAKE_BINARY_DIR}/src/mugen)
 set(FLEX_LIB -lfl)
 
 # -------------------------------------------------------
@@ -193,17 +193,13 @@ target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_
 add_executable (mugentest src/mugen/test.cpp)
 target_link_libraries(mugentest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
-# Do scrip zip only in *nix land
+# Copy scripts and setup lex files
 if(UNIX OR LINUX OR CYGWIN OR MINGW)
-  configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_BINARY_DIR}/build/script/modules/paintown.py COPYONLY)
-  configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.rb ${CMAKE_BINARY_DIR}/build/script/modules/paintown.rb COPYONLY)
-  execute_process(COMMAND ${BISON_EXECUTABLE} -d -o ${CMAKE_SOURCE_DIR}/build/mugen/parse.cc ${CMAKE_SOURCE_DIR}/src/mugen/parse.yy
+  configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_SOURCE_DIR}/data/scripts/paintown.py COPYONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/mugen)
+  execute_process(COMMAND ${BISON_EXECUTABLE} -d -o ${CMAKE_BINARY_DIR}/src/mugen/parse.cc ${CMAKE_SOURCE_DIR}/src/mugen/parse.yy
 		 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
   execute_process(COMMAND ${FLEX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/mugen/lex.l
-		 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/build/mugen)
-#  execute_process(COMMAND mkdir bin
-#		  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-#		  OUTPUT_QUIET)
-#  execute_process(COMMAND zip -r bin/scripts build
-#		   WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+		 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/mugen/)
 endif(UNIX OR LINUX OR CYGWIN OR MINGW)
