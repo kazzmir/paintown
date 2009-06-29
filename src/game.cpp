@@ -21,6 +21,7 @@
 #include "world.h"
 #include "game/adventure_world.h"
 #include "game/console.h"
+#include "game/input-manager.h"
 #include "versus_world.h"
 #include "init.h"
 #include <iostream>
@@ -204,6 +205,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
 		bool draw = false;
 		key.poll();
+                InputManager::poll();
 
 		if ( Global::speed_counter > 0 ){
 			if ( ! paused ){
@@ -379,6 +381,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 		while ( Global::speed_counter < 1 ){
 			Util::rest( 1 );
 			key.poll();
+                        InputManager::poll();
 		}
 
 		done |= key[ Keyboard::Key_ESC ] || world.finished();

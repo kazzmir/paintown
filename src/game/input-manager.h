@@ -17,11 +17,13 @@ public:
     friend int ::paintown_main(int, char**);
 
     static std::vector<PaintownInput> getInput(const Configuration & configuration, const int facing);
+    static void poll();
 protected:
     InputManager();
     virtual ~InputManager();
     
     virtual std::vector<PaintownInput> _getInput(const Configuration & configuration, const int facing);
+    virtual void _poll();
 
 private:
     static InputManager * manager;

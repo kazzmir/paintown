@@ -65,14 +65,23 @@ static vector<PaintownInput> convertJoystick(JoystickInput input, const int faci
     return all;
 }
 
-vector<PaintownInput> InputManager::_getInput(const Configuration & configuration, const int facing){
+void InputManager::poll(){
+    if (manager == 0){
+        Global::debug(0) << "*BUG* Input manager not set up" << endl;
+        exit(0);
+    }
 
-    /* polling should probably go somewhere else */
+    return manager->_poll();
+}
+
+void InputManager::_poll(){
     keyboard.poll();
     if (joystick != NULL){
         joystick->poll();
     }
+}
 
+vector<PaintownInput> InputManager::_getInput(const Configuration & configuration, const int facing){
     vector<int> all_keys;
     keyboard.readKeys( all_keys );
 
