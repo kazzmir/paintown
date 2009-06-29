@@ -136,7 +136,8 @@ Topics:
     Get unxutils for things like mv, rm, cp - http://unxutils.sf.net.
       Find the .zip. It unzips as usr\local\wbin, so put that in your path.
     Bison. The bison that comes with unxutils is old, so get a newer version
-      from gnuwin32. Replace the bison that comes with unxutils. 
+      from gnuwin32. Replace the bison that comes with unxutils. Use 2.1 for now
+      until things are fixed so 2.4.1 works.
       http://gnuwin32.sourceforge.net/packages/bison.htm
     Get flex from gnuwin32 as well. http://gnuwin32.sourceforge.net/packages/flex.htm
       Get the source package and change the makefile to remove libmain.c from
