@@ -84,6 +84,29 @@ def checkRTTI(context):
     context.Result(foo)
     return foo
 
+def checkOgg(context):
+    context.Message("Checking for ogg and vorbis... ")
+    tmp = context.env.Clone()
+    env = context.env
+    env.Append(CPPDEFINES = ['HAVE_OGG'])
+    env.ParseConfig('pkg-config vorbisfile --libs --cflags')
+
+    ret = context.TryLink("""
+        #include <vorbis/vorbisfile.h>
+        #include <stdio.h>
+        int main(int argc, char ** argv){
+          OggVorbis_File ovf;
+          FILE * f;
+          ov_open_callbacks(f, &ovf, 0, 0, OV_CALLBACKS_DEFAULT);
+          return 0;
+        }
+    """, ".c")
+
+    if not ret:
+        context.sconf.env = tmp
+
+    context.Result(ret)
+    return ret
 
 def checkPython(context):
     import distutils.sysconfig
@@ -324,6 +347,7 @@ custom_tests = {"CheckPython" : checkPython,
 		"HasRuby" : checkRunRuby,
                 "CheckRTTI" : checkRTTI,
                 "CheckLex" : checkLex,
+                "CheckOgg" : checkOgg,
                 "CheckYacc" : checkYacc}
 
 if isWindows():
@@ -423,6 +447,7 @@ else:
         Exit( 1 )
     config.CheckRTTI()
     config.CheckPython()
+    config.CheckOgg()
     if config.HasRuby():
         config.CheckRuby()
     if not config.CheckLex():
