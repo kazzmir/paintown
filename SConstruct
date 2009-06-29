@@ -89,7 +89,9 @@ def checkOgg(context):
     tmp = context.env.Clone()
     env = context.env
     env.Append(CPPDEFINES = ['HAVE_OGG'])
-    env.ParseConfig('pkg-config vorbisfile --libs --cflags')
+    (ok, stuff) = context.TryAction(Action("pkg-config"))
+    if ok:
+        env.ParseConfig('pkg-config vorbisfile --libs --cflags')
 
     ret = context.TryLink("""
         #include <vorbis/vorbisfile.h>
