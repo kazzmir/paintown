@@ -1,3 +1,5 @@
+#ifdef HAVE_OGG
+
 #include <string.h>
 #include "allegro.h"
 #include "allegro/internal/aintern.h"
@@ -264,3 +266,4 @@ void logg_destroy_stream(LOGG_Stream* s)
 	free(s);
 }
 
+#endif
