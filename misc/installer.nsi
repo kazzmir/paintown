@@ -1,6 +1,6 @@
 Name "Paintown"
 
-OutFile "paintown-win32-3.2.exe"
+OutFile "paintown-win32-3.3.exe"
 Icon "icon.ico"
 WindowIcon on
 
@@ -29,11 +29,12 @@ Section "Paintown (required)"
 	File "..\misc\freetype6.dll"
 	File "..\misc\zlib1.dll"
 	File "..\misc\libpng13.dll"
+	File "..\misc\libpng3.dll"
 	File "..\misc\mingwm10.dll"
 	File "..\misc\python24.dll"
 	File "..\misc\msvcr71.dll"
 	File "..\editor\editor.jar"
-	File /r /x .svn "..\data"
+	File /r /x .svn /x graveyard "..\data"
 	WriteUninstaller "uninstall.exe"
 SectionEnd
 
