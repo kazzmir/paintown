@@ -61,6 +61,8 @@ public class EventFactory{
     }
 
     public static Vector getNames(){
-        return new Vector( events.keySet() );
+        Object[] names = events.keySet().toArray();
+        Arrays.sort(names);
+        return new Vector(Arrays.asList(names));
     }
 }
