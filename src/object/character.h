@@ -383,10 +383,7 @@ protected:
 	// void parseObject( string object_string ) throw( exception );
 	void upperCase( std::string & who );
 
-	inline const int getInvincibility() const {
-		return invincibility;
-	}
-
+	virtual const int getInvincibility() const;
 
 	inline void setInvincibility( const int x ){
 		invincibility = x;

@@ -15,6 +15,7 @@
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
+#include "draw-glow-effect.h"
 #include "game/input.h"
 #include "game/input-manager.h"
 
@@ -366,6 +367,18 @@ void Player::hurt( int x ){
             setGlowing(100);
         }
 }
+        
+void Player::setInvincible(const bool b){
+    this->invincible = b;
+    addEffect(new DrawGlowEffect(this));
+}
+        
+const int Player::getInvincibility() const {
+    if (isInvincible()){
+        return 1;
+    }
+    return Character::getInvincibility();
+}
 
 void Player::takeDamage( World * world, ObjectAttack * obj, int x ){
 	if ( getLink() != NULL ){
@@ -439,7 +452,9 @@ void Player::deathReset(){
 	setMoving( true );
 	setStatus( Status_Falling );
 	setHealth( getMaxHealth() );
-	setInvincibility( 400 );
+        if (! isInvincible()){
+            setInvincibility( 400 );
+        }
 	setDeath( 0 );
 	animation_current = getMovement( "idle" );
 	loseLife();
@@ -509,9 +524,11 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	*/
 
 	/* isInvincible is a cheat so always set invinciblility to a positive value */
+        /*
 	if ( isInvincible() && getInvincibility() < 1 ){
 		setInvincibility( 100 );
 	}
+        */
 
 	/* Character handles jumping and possibly other things */
 	Character::act( others, world, add );

@@ -1536,6 +1536,10 @@ Network::Message Character::animationMessage(){
 
 	return m;
 }
+	
+const int Character::getInvincibility() const {
+    return invincibility;
+}
 
 void Character::draw( Bitmap * work, int rel_x ){
 

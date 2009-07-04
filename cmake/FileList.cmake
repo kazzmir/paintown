@@ -84,6 +84,7 @@ src/object/cat.cpp
 src/object/display_character.cpp
 src/object/draw-effect.cpp
 src/object/draw-normal-effect.cpp
+src/object/draw-glow-effect.cpp
 src/object/effect.cpp
 src/object/enemy.cpp
 src/object/gib.cpp

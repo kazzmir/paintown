@@ -46,9 +46,8 @@ public:
 	virtual void loseLife( int l = 1 );
 	virtual void gainLife( int l = 1 );
 
-	inline const void setInvincible( const bool b ){
-		this->invincible = b;
-	}
+        virtual void setInvincible(const bool b);
+        virtual const int getInvincibility() const;
 
 	inline const bool isInvincible() const {
 		return this->invincible;
