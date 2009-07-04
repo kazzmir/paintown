@@ -27,6 +27,8 @@ DONE * Mugen fonts useable within paintown
 
 Future
 -------
+* add tabs to menu
+  - example: (option (tabmenu (name ...) (position ...) (tab (name ...) (option ...))))
 * network versus play
 * use joystick
 * fix bug with setting max lives
