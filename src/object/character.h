@@ -16,6 +16,7 @@ class Stimulation;
 class World;
 class Sound;
 class Projectile;
+class DrawEffect;
 
 namespace Script{
     class Character;
@@ -243,7 +244,7 @@ public:
 	}
 
 	virtual bool isGettable();
-	virtual Animation * getCurrentMovement();
+	virtual Animation * getCurrentMovement() const;
 	virtual void setMovement( Animation * animation, const std::string & name );
 	virtual Animation * getMovement( const std::string & str );
 	virtual Animation * getMovement( const unsigned int x );
@@ -371,6 +372,7 @@ protected:
 
 	virtual void landed( World * world );
 
+        virtual void addEffect(DrawEffect * effect);
 
 	virtual void drawLifeBar( int x, int y, int he, Bitmap * work );
 	
@@ -489,6 +491,8 @@ protected:
         int trail_counter;
         /* lifetime for trails */
         int trail_life;
+
+        std::vector<DrawEffect*> effects;
 };
 
 #endif

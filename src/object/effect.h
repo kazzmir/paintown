@@ -1,5 +1,5 @@
-#ifndef _effect_h
-#define _effect_h
+#ifndef _paintown_effect_h
+#define _paintown_effect_h
 
 #include "object_nonattack.h"
 

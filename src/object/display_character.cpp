@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "character.h"
 #include "display_character.h"
+#include "draw-normal-effect.h"
 #include "util/load_exception.h"
 #include "util/token.h"
 #include "util/token_exception.h"
@@ -100,6 +101,8 @@ void DisplayCharacter::load() throw (LoadException) {
     }
 
     animation_current = getMovement( "idle" );
+
+    effects.push_back(new DrawNormalEffect(this));
 
     pthread_mutex_lock(&load_lock);
     loaded = true;

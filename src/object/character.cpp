@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 #include <math.h>
+#include <vector>
+#include <algorithm>
 
 #include "animation.h"
 #include "animation_trail.h"
@@ -13,6 +15,8 @@
 #include "object_messages.h"
 #include "object_attack.h"
 #include "stimulation.h"
+#include "draw-effect.h"
+#include "draw-normal-effect.h"
 #include "gib.h"
 
 #include "factory/shadow.h"
@@ -180,6 +184,11 @@ trail_life(chr.trail_life){
 	invincibility = chr.invincibility;
         glowing = chr.glowing;
 	toughness = chr.getToughness();
+
+        for (vector<DrawEffect*>::const_iterator it = chr.effects.begin(); it != chr.effects.end(); it++){
+            DrawEffect * effect = *it;
+            addEffect(effect->copy(this));
+        }
 
 	if ( chr.die_sound != NULL ) 
 		die_sound = new Sound( *(chr.die_sound) );
@@ -396,8 +405,15 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
 	body_parts = getBodyParts( getMovement( "idle" ) );
         own_stuff = true;
+        
+        addEffect(new DrawNormalEffect(this));
 
 	path = filename;
+}
+        
+void Character::addEffect(DrawEffect * effect){
+    effects.push_back(effect);
+    std::sort(effects.begin(), effects.end(), DrawEffect::compare);
 }
 
 static int nonMaskingPixels( Bitmap * bitmap ){
@@ -560,7 +576,7 @@ bool Character::isGettable(){
 	return false;
 }
 	
-Animation * Character::getCurrentMovement(){
+Animation * Character::getCurrentMovement() const {
 	return this->animation_current;
 }
 	
@@ -912,6 +928,16 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 
         if (getGlowing() > 0){
             setGlowing(getGlowing() - 1);
+        }
+
+        for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); ){
+            DrawEffect * effect = *it;
+            if (effect->act()){
+                delete effect;
+                it = effects.erase(it);
+            } else {
+                it++;
+            }
         }
 
 	for ( vector< Object * >::iterator it = projectiles.begin(); it != projectiles.end(); it++ ){
@@ -1513,12 +1539,19 @@ Network::Message Character::animationMessage(){
 
 void Character::draw( Bitmap * work, int rel_x ){
 
-    /* this makes a character blink when they die */
+    /* this makes a character blink when they die. death increases
+     * so after 15 game ticks the character will start blinking.
+     */
     if ( death >= 15 ){
         if ( (death/8) % 2 == 0 ){
             return;
         }
     }
+
+    /*
+    DrawEffect * effect;
+    effect->
+    */
 
     if ( animation_current ){
         /* draw trails */
@@ -1534,6 +1567,27 @@ void Character::draw( Bitmap * work, int rel_x ){
             shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
         }
 
+        for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
+            DrawEffect * effect = *it;
+            effect->draw(rel_x, work);
+        }
+
+        /*
+        if ( getFacing() == Object::FACING_RIGHT ){
+            animation_current->Draw( getRX() - rel_x, getRY(), work );
+        } else {
+            animation_current->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+        }
+
+        for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
+            DrawEffect * effect = *it;
+            if (effect->level() > 0){
+                effect->draw(rel_x, work);
+            }
+        }
+        */
+
+#if 0
         /* draw character in different ways depending on their status */
         if ( invincibility > 0 ){
             // Bitmap::drawingMode( Bitmap::MODE_LIT );
@@ -1565,12 +1619,17 @@ void Character::draw( Bitmap * work, int rel_x ){
             }
         } else {
 
+            Bitmap self = Bitmap::temporaryBitmap(getWidth(), getHeight());
+            self.fill(Bitmap::MaskColor);
             if ( getFacing() == Object::FACING_RIGHT ){
-                animation_current->Draw( getRX() - rel_x, getRY(), work );
+                animation_current->Draw( getWidth() / 2, getHeight(), &self );
             } else {
-                animation_current->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+                animation_current->DrawFlipped( getWidth() / 2, getHeight(), &self ); 
             }
+
+            self.draw(getRX() - rel_x - getWidth() / 2, getRY() - getHeight(), *work);
         }
+#endif
 
 
         if ( Global::getDebug() > 5 ){
@@ -1726,6 +1785,10 @@ Character::~Character(){
 	}
 
         for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); it++){
+            delete (*it);
+        }
+
+        for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
             delete (*it);
         }
 
