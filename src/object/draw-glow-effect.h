@@ -5,7 +5,7 @@
 
 class DrawGlowEffect: public DrawEffect {
 public:
-    DrawGlowEffect(const Character * owner, int startColor, int endColor);
+    DrawGlowEffect(const Character * owner, int startColor, int endColor, double period);
     virtual void draw(int x, Bitmap * work);
     virtual bool act();
     virtual DrawEffect * copy(const Character * owner) const;

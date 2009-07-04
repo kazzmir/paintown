@@ -8,16 +8,16 @@
 #include "object.h"
 #include <math.h>
 
-DrawGlowEffect::DrawGlowEffect(const Character * owner, int startColor, int endColor):
+DrawGlowEffect::DrawGlowEffect(const Character * owner, int startColor, int endColor, double period):
 DrawEffect(owner, 1),
 angle(0),
-period(0.2),
+period(period),
 startColor(startColor),
 endColor(endColor){
 }
 
 void DrawGlowEffect::draw(int x, Bitmap * work){
-    double f = fabs(sin(Util::radians(1) * angle / period));
+    double f = fabs(sin(Util::radians(180) * angle / period));
     int alpha = 50;
 
     int color_r = (Bitmap::getRed(endColor) - Bitmap::getRed(startColor)) * f + Bitmap::getRed(startColor);
@@ -42,7 +42,7 @@ bool DrawGlowEffect::act(){
 }
 
 DrawEffect * DrawGlowEffect::copy(const Character * owner) const {
-    return new DrawGlowEffect(owner, startColor, endColor);
+    return new DrawGlowEffect(owner, startColor, endColor, period);
 }
 
 DrawGlowEffect::~DrawGlowEffect(){
