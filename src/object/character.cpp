@@ -17,6 +17,8 @@
 #include "stimulation.h"
 #include "draw-effect.h"
 #include "draw-normal-effect.h"
+#include "draw-until-effect.h"
+#include "draw-glow-effect.h"
 #include "gib.h"
 
 #include "factory/shadow.h"
@@ -575,7 +577,17 @@ bool Character::isCollidable( Object * obj ){
 bool Character::isGettable(){
 	return false;
 }
-	
+
+static bool invincibility_zero(const Character * const character){
+    Global::debug(1) << "invincibility for " << character << " is " << character->getInvincibility() << endl;
+    return character->getInvincibility() <= 0;
+}
+
+void Character::setInvincibility(const int x){
+    invincibility = x;
+    addEffect(new DrawUntilEffect(new DrawGlowEffect(this, Bitmap::makeColor(10,10,250), Bitmap::makeColor(190, 190, 255), 75), invincibility_zero));
+}
+
 Animation * Character::getCurrentMovement() const {
 	return this->animation_current;
 }

@@ -5,6 +5,11 @@ owner(owner),
 level(level){
 }
 
+DrawEffect::DrawEffect():
+owner(0),
+level(0){
+}
+
 DrawEffect::~DrawEffect(){
 }
 

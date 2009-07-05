@@ -355,6 +355,8 @@ public:
 	virtual void interpretMessage( Network::Message & m );
 	
 	virtual void fall( double x_vel, double y_vel );
+	
+        virtual const int getInvincibility() const;
 
 protected:
 
@@ -383,11 +385,8 @@ protected:
 	// void parseObject( string object_string ) throw( exception );
 	void upperCase( std::string & who );
 
-	virtual const int getInvincibility() const;
 
-	inline void setInvincibility( const int x ){
-		invincibility = x;
-	}
+	virtual void setInvincibility(const int x);
 
 	virtual inline void setExplode( bool b ){
 		explode = b;

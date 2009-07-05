@@ -370,7 +370,9 @@ void Player::hurt( int x ){
         
 void Player::setInvincible(const bool b){
     this->invincible = b;
-    addEffect(new DrawGlowEffect(this, Bitmap::makeColor(10,10,250), Bitmap::makeColor(190, 190, 255), 75));
+    if (b){
+        addEffect(new DrawGlowEffect(this, Bitmap::makeColor(10,10,250), Bitmap::makeColor(190, 190, 255), 75));
+    }
 }
         
 const int Player::getInvincibility() const {

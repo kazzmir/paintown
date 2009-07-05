@@ -17,8 +17,14 @@ public:
         return level;
     }
 
+    virtual inline const Character * getOwner(){
+        return owner;
+    }
+
     static bool compare(const DrawEffect * a, const DrawEffect * b);
 protected:
+    DrawEffect();
+
     const Character * owner;
     int level;
 };
