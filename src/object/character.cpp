@@ -61,7 +61,6 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
-glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -92,7 +91,6 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
-glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -126,7 +124,6 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
-glowing(0),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -184,7 +181,6 @@ trail_life(chr.trail_life){
 	setShadow( chr.getShadow() );
 	status = chr.getStatus();
 	invincibility = chr.invincibility;
-        glowing = chr.glowing;
 	toughness = chr.getToughness();
 
         for (vector<DrawEffect*>::const_iterator it = chr.effects.begin(); it != chr.effects.end(); it++){
@@ -936,10 +932,6 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 	if ( invincibility > 0 ){
 		invincibility--;
 	}
-
-        if (getGlowing() > 0){
-            setGlowing(getGlowing() - 1);
-        }
 
         for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); ){
             DrawEffect * effect = *it;

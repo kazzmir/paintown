@@ -363,9 +363,10 @@ void Player::hurt( int x ){
 		Character::hurt( x );
 	}
 
-        /* gained health, probably through a power-up. time to glow! */
+        /* gained health, probably through a power-up. time to glow!
+         * this can probably be moved to the stimulation now that effects exist.
+         */
         if (x < 0){
-            // setGlowing(100);
             addEffect(new DrawCountdownEffect(new DrawGlowEffect(this, Bitmap::makeColor(50,50,0), Bitmap::makeColor(190, 190, 20), 50), 150));
         }
 }

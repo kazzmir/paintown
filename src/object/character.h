@@ -334,14 +334,6 @@ public:
 		draw_shadow = b;
 	}
 
-        virtual inline void setGlowing(int i){
-            glowing = i;
-        }
-
-        virtual inline const int getGlowing() const {
-            return glowing;
-        }
-        
 	virtual Network::Message getCreateMessage();
 	virtual Network::Message movedMessage();
 	virtual Network::Message explodeMessage();
@@ -470,7 +462,6 @@ protected:
 	Sound * landed_sound;
 	Sound * squish_sound;
 	int invincibility;
-        int glowing;
 	int toughness;
 	bool explode;
 	int lives;
