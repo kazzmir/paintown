@@ -16,6 +16,7 @@
 #include "object_messages.h"
 #include "player.h"
 #include "draw-glow-effect.h"
+#include "draw-countdown-effect.h"
 #include "game/input.h"
 #include "game/input-manager.h"
 
@@ -364,7 +365,8 @@ void Player::hurt( int x ){
 
         /* gained health, probably through a power-up. time to glow! */
         if (x < 0){
-            setGlowing(100);
+            // setGlowing(100);
+            addEffect(new DrawCountdownEffect(new DrawGlowEffect(this, Bitmap::makeColor(50,50,0), Bitmap::makeColor(190, 190, 20), 50), 150));
         }
 }
         

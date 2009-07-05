@@ -1563,11 +1563,6 @@ void Character::draw( Bitmap * work, int rel_x ){
         }
     }
 
-    /*
-    DrawEffect * effect;
-    effect->
-    */
-
     if ( animation_current ){
         /* draw trails */
         for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); it++){
