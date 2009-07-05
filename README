@@ -39,6 +39,9 @@ Topics:
   Try the patch listed on this page, http://scons.tigris.org/nonav/issues/showattachment.cgi/448/bug2121_proposed_patch.  
   Upgrading to scons 1.1.0 also fixes this issue. http://www.scons.org
 
+  To change the data directory using scons, give the data= argument.
+    $ scons data=my/own/path
+
   * Linux
 
     $ scons
