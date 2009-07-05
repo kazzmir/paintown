@@ -48,6 +48,7 @@ Future
 * port to psp/nds
 * mugen config and txt files
   - parse data using lexer
+  - fix parsing in windows
 * mugen sff files
   - Correct issues with loading certain files like (High/Low) Resolution images and their palettes
 * mugen characters in paintown
