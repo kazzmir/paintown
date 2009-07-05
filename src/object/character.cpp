@@ -1556,6 +1556,8 @@ void Character::draw( Bitmap * work, int rel_x ){
     }
 
     if ( animation_current ){
+        /* trails and shadows can be effects too at some point */
+
         /* draw trails */
         for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); it++){
             AnimationTrail * trail = *it;
@@ -1574,66 +1576,6 @@ void Character::draw( Bitmap * work, int rel_x ){
             effect->draw(rel_x, work);
         }
 
-        /*
-        if ( getFacing() == Object::FACING_RIGHT ){
-            animation_current->Draw( getRX() - rel_x, getRY(), work );
-        } else {
-            animation_current->DrawFlipped( getRX() - rel_x, getRY(), work ); 
-        }
-
-        for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
-            DrawEffect * effect = *it;
-            if (effect->level() > 0){
-                effect->draw(rel_x, work);
-            }
-        }
-        */
-
-#if 0
-        /* draw character in different ways depending on their status */
-        if ( invincibility > 0 ){
-            // Bitmap::drawingMode( Bitmap::MODE_LIT );
-            // Bitmap::transBlender( 0, 0, (int)(sin( getInvincibility() ) * 200 + 10), 0 );
-            double f = sin( 3.14159 / 180.0 * getInvincibility() * 6 );
-            int max_white = 80;
-            int base_blue = 120;
-            int c = (int)(f * max_white);
-            if ( c < 0 ) c = 0;
-            Bitmap::transBlender( c, c, (int)(f * (255 - (max_white + base_blue)) + base_blue + c), 50 );
-            if ( getFacing() == Object::FACING_RIGHT ){
-                animation_current->DrawLit( getRX() - rel_x, getRY(), work );
-            } else {
-                animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
-            }
-        } else if (getGlowing() > 0){
-            /* hopefully this will glow yellowish or something */
-            double f = sin( 3.14159 / 180.0 * glowing * 6 );
-            int max_white = 80;
-            int base_blue = 120;
-            int c = (int)(f * max_white);
-            if ( c < 0 ) c = 0;
-            int v = (int)(f * (255 - (max_white + base_blue)) + base_blue + c);
-            Bitmap::transBlender(v, v, c, 50);
-            if ( getFacing() == Object::FACING_RIGHT ){
-                animation_current->DrawLit( getRX() - rel_x, getRY(), work );
-            } else {
-                animation_current->DrawLitFlipped( getRX() - rel_x, getRY(), work ); 
-            }
-        } else {
-
-            Bitmap self = Bitmap::temporaryBitmap(getWidth(), getHeight());
-            self.fill(Bitmap::MaskColor);
-            if ( getFacing() == Object::FACING_RIGHT ){
-                animation_current->Draw( getWidth() / 2, getHeight(), &self );
-            } else {
-                animation_current->DrawFlipped( getWidth() / 2, getHeight(), &self ); 
-            }
-
-            self.draw(getRX() - rel_x - getWidth() / 2, getRY() - getHeight(), *work);
-        }
-#endif
-
-
         if ( Global::getDebug() > 5 ){
             int x = (int)(getX() - rel_x);
             int y = (int) getRY();
@@ -1643,29 +1585,7 @@ void Character::draw( Bitmap * work, int rel_x ){
             }
             work->rectangle( x, y, x2, y + 1, Bitmap::makeColor(255,255,255) );
         }
-
-        /*
-           if ( invincibility > 0 ){
-           Bitmap::drawingMode( Bitmap::MODE_SOLID );
-           }
-           */
-
-        /*
-           if ( global_debug ){
-           work->circleFill( getRX() - rel_x, (int) getZ(), 3, Bitmap::makeColor(255,255,0) );
-           }
-           */
-
-
     }
-
-    // work->circleFill( getRX(), getRY(), 3, Bitmap::makeColor(255,255,0) );
-
-    /*
-       if ( icon )
-       icon->draw( 1, 1, *work );
-       */
-
 }
 
 void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
