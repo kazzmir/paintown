@@ -28,10 +28,10 @@ class Menu
 		virtual ~Menu();
 		
 		/*! load */
-		void load(const std::string &filename) throw (LoadException);
+		virtual void load(const std::string &filename) throw (LoadException);
 		
 		/*! load */
-		void load(Token *token) throw (LoadException);
+		virtual void load(Token *token) throw (LoadException);
 		
 		/*! do logic, draw whatever */
 		virtual void run();

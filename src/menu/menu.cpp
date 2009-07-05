@@ -775,7 +775,7 @@ void Menu::drawText(Bitmap *work){
         }
 
         int text_x = backboard.position.x + startx;
-        int text_y = (int)(backboard.position.y + starty + i * vFont.getHeight()/spacing) + motion;
+        int text_y = (int)((backboard.position.y + starty + i * vFont.getHeight()/spacing) + motion);
 
         switch (currentDrawState){
             case FadeIn : {
