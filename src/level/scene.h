@@ -128,7 +128,7 @@ protected:
 	double backgroundParallax;
 	double foregroundParallax;
 
-	Atmosphere * atmosphere;
+        std::vector<Atmosphere*> atmospheres;
 };
 
 #endif

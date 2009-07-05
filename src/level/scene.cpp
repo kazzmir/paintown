@@ -42,8 +42,7 @@ maximum_z( 0 ),
 current_block( NULL ),
 blockNumber( 1 ),
 backgroundParallax( 5 ),
-foregroundParallax( 1.2 ),
-atmosphere( NULL ){
+foregroundParallax( 1.2 ){
 
 	TokenReader tr( filename );
 
@@ -85,9 +84,14 @@ atmosphere( NULL ){
                             *tok >> kind >> scriptPath;
                             Script::newEngine(kind, scriptPath);
 			} else if ( *tok == "atmosphere" ){
+                            while (tok->hasTokens()){
 				string s;
 				*tok >> s;
-				atmosphere = Atmosphere::createAtmosphere( s );
+				Atmosphere * atmosphere = Atmosphere::createAtmosphere(s);
+                                if (atmosphere != NULL){
+                                    atmospheres.push_back(atmosphere);
+                                }
+                            }
 			} else if ( *tok == "z" ){
 				while ( tok->hasTokens() ){
 					Token * next;
@@ -269,9 +273,10 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
         objects->insert(objects->end(), added_objects.begin(), added_objects.end());
         added_objects.clear();
 
-	if ( atmosphere ){
-		atmosphere->act();
-	}
+        for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+            Atmosphere * atmosphere = *it;
+            atmosphere->act();
+        }
 }
 
 /* draw the background */
@@ -329,9 +334,10 @@ void Scene::drawFront( int x, Bitmap * work ){
 			arrow_blink = 0;
 	}
 
-	if ( atmosphere ){
-		atmosphere->draw( work );
-	}
+        for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+            Atmosphere * atmosphere = *it;
+            atmosphere->draw(work);
+        }
 
 	/*
 	for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
@@ -386,9 +392,11 @@ Scene::~Scene(){
 	for ( map< int, Panel * >::iterator it = panels.begin(); it != panels.end(); it++ ){
 		delete (*it).second;
 	}
-	if ( atmosphere ){
-		delete atmosphere;
-	}
+
+        for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+            Atmosphere * atmosphere = *it;
+            delete atmosphere;
+        }
 
 	/*
 	for ( vector< Heart * >::iterator it = hearts.begin(); it != hearts.end(); it++ ){
