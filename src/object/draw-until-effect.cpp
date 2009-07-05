@@ -13,7 +13,6 @@ void DrawUntilEffect::draw(int x, Bitmap * work){
 }
 
 bool DrawUntilEffect::act(){
-    Global::debug(1) << "until act" << std::endl;
     effect->act();
     return end(effect->getOwner());
 }

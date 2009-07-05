@@ -579,7 +579,6 @@ bool Character::isGettable(){
 }
 
 static bool invincibility_zero(const Character * const character){
-    Global::debug(1) << "invincibility for " << character << " is " << character->getInvincibility() << endl;
     return character->getInvincibility() <= 0;
 }
 
