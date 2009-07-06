@@ -88,7 +88,7 @@ void NightAtmosphere::draw(Bitmap * work, int x){
     night->drawTrans( 0, 0, *work );
     
     drawLight(&save, work, 500 - x, 30, 50, black, 128, Bitmap::makeColor(32, 32, 0), 0);
-    drawLight(&save, work, 300 - x, 30, 50, black, 128, Bitmap::makeColor(0, 32, 192), 64);
+    drawLight(&save, work, 300 - x, 30, 70, black, 128, Bitmap::makeColor(0, 32, 192), 128);
 }
 
 void NightAtmosphere::act(){

@@ -34,7 +34,6 @@ int paintown_main( int argc, char ** argv ){
 	
 	bool music_on = true;
 	Collector janitor;
-	showOptions();
 	const char * WINDOWED_ARG = "-w";
 	const char * DATAPATH_ARG = "-d";
 	const char * DEBUG_ARG = "-l";
@@ -62,6 +61,10 @@ int paintown_main( int argc, char ** argv ){
 			}
 		}
 	}
+	
+        showOptions();
+
+        Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
 
 	TimeDifference diff;
 	diff.startTime();
