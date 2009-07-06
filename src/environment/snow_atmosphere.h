@@ -31,7 +31,7 @@ public:
 	SnowAtmosphere();	
 	virtual ~SnowAtmosphere();
 
-	virtual void draw( Bitmap * work );
+	virtual void draw(Bitmap * work, int x);
 	virtual void act();
 	
 protected:

@@ -336,7 +336,7 @@ void Scene::drawFront( int x, Bitmap * work ){
 
         for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
             Atmosphere * atmosphere = *it;
-            atmosphere->draw(work);
+            atmosphere->draw(work, x);
         }
 
 	/*

@@ -57,7 +57,7 @@ static void drawFlake0( Flake * f, Bitmap * work ){
     */
 }
 
-void SnowAtmosphere::draw( Bitmap * work ){
+void SnowAtmosphere::draw(Bitmap * work, int x){
 	for ( vector< Flake * >::iterator it = flakes.begin(); it != flakes.end(); it++ ){
 		Flake * f = *it;
 		switch ( f->type ){

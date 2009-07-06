@@ -11,8 +11,12 @@ public:
 	NightAtmosphere();	
 	virtual ~NightAtmosphere();
 
-	virtual void draw( Bitmap * work );
+	virtual void draw(Bitmap * work, int x);
 	virtual void act();
+
+protected:
+
+        void drawLight(Bitmap * original, Bitmap * work, const int x);
 
 protected:
 	Bitmap * night;
