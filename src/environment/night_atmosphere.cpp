@@ -21,11 +21,19 @@ NightAtmosphere::~NightAtmosphere(){
 	delete night;
 }
 
-void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x){
+/* lights should not overlap! the effect completely messes up if they do
+ */
+void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, const int y, const int width, const int black, const int dark_alpha, const int light, const int light_alpha){
     int center_x = x;
     // int center_x = screenX();
+    
+    /*
     const int black = Bitmap::makeColor(0,0,0);
-    int width = 50;
+    const int light = Bitmap::makeColor(32,32,0);
+    const int light_alpha = 0;
+    const int dark_alpha = 128;
+    */
+
     int where_x = center_x - width;
     int total = width * 2;
     if (where_x < 0){
@@ -45,14 +53,20 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x){
         right = width * 2;
     }
 
-    Global::debug(1) << "night at " << x << " left at " << where_x << " width was " << width * 2 << " now " << total << std::endl;
     Bitmap save(*original, where_x, 0, total, screenY());
-    Global::debug(1) << " save: w " << save.getWidth() << " h: " << save.getHeight() << std::endl;
+    Bitmap::transBlender(0, 0, 0, dark_alpha);
     Bitmap::drawingMode(Bitmap::MODE_TRANS);
+    /*
     int top = -save.getHeight() / 3;
     top = 30;
+    */
+    int top = y;
     int lamp_height = save.getHeight() - top;
-    int lamp_top = 30;
+    int upper_lamp_width = 30;
+
+    /* y = tan(theta) * x */
+    int lamp_top = ((double)width * 2.0 / (double)lamp_height) * (double)upper_lamp_width;
+
     // int top = 0;
     save.triangle(left, top, middle, top, left, save.getHeight(), black);
     save.triangle(right, top, middle, top, right, save.getHeight(), black);
@@ -62,11 +76,7 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x){
     save.rectangleFill(0, 0, right, top, black);
     Bitmap::drawingMode(Bitmap::MODE_SOLID);
     int xwidth = (double) lamp_height / ((double)(save.getHeight() - top) / (double) width);
-    save.light(middle, top, xwidth, lamp_height, lamp_top, 0, 128, Bitmap::makeColor(32,32,0), Bitmap::makeColor(0,0,0));
-    // save.light(save.getWidth() / 2, top, xwidth, lamp_height, 0, 128, Bitmap::makeColor(32,32,0), Bitmap::makeColor(0,0,0));
-    // save.light(save.getWidth() / 2, top, width, save.getHeight(), 32, 128, Bitmap::makeColor(32,32,0), Bitmap::makeColor(0,0,0));
-    // save.light(save.getWidth() / 2, 0, width, save.getHeight(), 0, 128, Bitmap::makeColor(0,0,0));
-    // save.light(save.getWidth() / 2, 0, width, save.getHeight(), 128, 255, Bitmap::makeColor(0,0,0));
+    save.light(middle, top, xwidth, lamp_height, lamp_top, light_alpha, dark_alpha, light, black);
     save.draw(where_x, 0, *work);
 }
 
@@ -77,7 +87,8 @@ void NightAtmosphere::draw(Bitmap * work, int x){
     Bitmap::transBlender(0, 0, 0, 128);
     night->drawTrans( 0, 0, *work );
     
-    drawLight(&save, work, 520 - x);
+    drawLight(&save, work, 500 - x, 30, 50, black, 128, Bitmap::makeColor(32, 32, 0), 0);
+    drawLight(&save, work, 300 - x, 30, 50, black, 128, Bitmap::makeColor(0, 32, 192), 64);
 }
 
 void NightAtmosphere::act(){

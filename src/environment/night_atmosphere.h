@@ -16,7 +16,7 @@ public:
 
 protected:
 
-        void drawLight(Bitmap * original, Bitmap * work, const int x);
+        void drawLight(Bitmap * original, Bitmap * work, const int x, const int y, const int width, const int black, const int black_alpha, const int light, const int light_alpha);
 
 protected:
 	Bitmap * night;
