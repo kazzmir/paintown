@@ -9,6 +9,10 @@ quiet:
 clean:
 	scons -c
 
+# use to build on windows
+win:
+	@scons env=mingw
+
 nsis:
 	makensis misc/installer.nsi
 
