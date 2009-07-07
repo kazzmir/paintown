@@ -394,6 +394,19 @@ public class CharacterAnimation extends JPanel {
                             int index = eventList.locationToIndex(e.getPoint());
                             AnimationEvent event = (AnimationEvent) animation.getEvents().elementAt(index);
                             JPanel editor = event.getEditor(animation);
+                            JPanel work = (JPanel) contextEditor.find("event-work");
+                            work.removeAll();
+                            GridBagConstraints constraints = new GridBagConstraints();
+                            constraints.gridx = 0;
+                            constraints.gridy = 0;
+                            constraints.weightx = 1;
+                            constraints.weighty = 1;
+                            constraints.fill = GridBagConstraints.BOTH;
+                            constraints.anchor = GridBagConstraints.NORTHWEST;
+                            work.add(editor, constraints);
+                            work.revalidate();
+                            
+                            /*
                             if ( editor != null ){
                                 JDialog dialog = new JDialog();
                                 dialog.setSize(editor.getSize());
@@ -404,12 +417,13 @@ public class CharacterAnimation extends JPanel {
                                 dialog.getContentPane().add(editor);
                                 dialog.addWindowStateListener(new WindowStateListener(){
                                     public void windowStateChanged(WindowEvent e){
-                                        /* should use a list update event here */
+                                        / * should use a list update event here * /
                                         eventList.setListData( animation.getEvents() );
                                     }
                                 });
                                 dialog.show();
                             }
+                            */
                         }
                     }
                 });
@@ -446,6 +460,19 @@ public class CharacterAnimation extends JPanel {
                     public void actionPerformed( ActionEvent event ){
                         AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
                         JPanel editor = temp.getEditor(animation);
+                        JPanel work = (JPanel) contextEditor.find("event-work");
+                        work.removeAll();
+                        GridBagConstraints constraints = new GridBagConstraints();
+                        constraints.gridx = 0;
+                        constraints.gridy = 0;
+                        constraints.weightx = 1;
+                        constraints.weighty = 1;
+                        constraints.fill = GridBagConstraints.BOTH;
+                        constraints.anchor = GridBagConstraints.NORTHWEST;
+                        work.add(editor, constraints);
+                        work.revalidate();
+
+                        /*
                         if ( editor != null ){
                             JDialog dialog = new JDialog();
                             dialog.setSize(editor.getSize());
@@ -462,6 +489,7 @@ public class CharacterAnimation extends JPanel {
                             });
                             dialog.show();
                         }
+                        */
                         int index = 0;
                         if ( eventList.getSelectedIndex() != -1 ){
                             index = animation.addEvent( temp, eventList.getSelectedIndex() + 1 );
