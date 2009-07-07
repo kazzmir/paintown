@@ -556,11 +556,26 @@ public class CharacterAnimation extends JPanel {
         final JLabel animationSpeed = (JLabel) contextEditor.find( "speed-num" );
         animationSpeed.setText( "Animation speed: " + animation.getAnimationSpeed() );
         final JSlider speed = (JSlider) contextEditor.find( "speed" );
-        speed.setValue( (int) (20 / animation.getAnimationSpeed()) );
+        final double speedNumerator = 20.0;
+        speed.setValue( (int) (speedNumerator / animation.getAnimationSpeed()) );
         speed.addChangeListener( new ChangeListener(){
             public void stateChanged( ChangeEvent e ){
-                animation.setAnimationSpeed( 20.0 / speed.getValue() );
-                animationSpeed.setText( "Animation speed: " + speed.getValue() / 20.0 );
+                animation.setAnimationSpeed(speedNumerator / speed.getValue());
+                animationSpeed.setText("Animation speed: " + speed.getValue() / speedNumerator);
+            }
+        });
+        final JButton speedIncrease = (JButton) contextEditor.find("speed:increase");
+        final JButton speedDecrease = (JButton) contextEditor.find("speed:decrease");
+
+        speedIncrease.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                adjustSlider(speed, +1);
+            }
+        });
+        
+        speedDecrease.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                adjustSlider(speed, -1);
             }
         });
 
@@ -598,11 +613,30 @@ public class CharacterAnimation extends JPanel {
             }
         });
 
+        final JButton scaleIncrease = (JButton) animEditor.find("scale:increase");
+        final JButton scaleDecrease = (JButton) animEditor.find("scale:decrease");
+
+        scaleIncrease.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                adjustSlider(scale, +1);
+            }
+        });
+        
+        scaleDecrease.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                adjustSlider(scale, -1);
+            }
+        });
+
         area.animate( animation );
 
         JPanel other = (JPanel) animEditor.find( "other" );
 
         // context.add((JComponent)contextEditor.getRootComponent());
+    }
+
+    private void adjustSlider(JSlider slider, int much){
+        slider.setValue(slider.getValue() + much);
     }
 
     private void debugSwixml( SwingEngine engine ){
