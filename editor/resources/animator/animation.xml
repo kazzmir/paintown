@@ -100,21 +100,31 @@
 				</vbox>
 				<glue size="1" />
 				<hbox>
-					<label id="speed-num" />
-					<glue />
+                                    <label id="speed-num" />
+                                    <glue />
 				</hbox>
-				<slider id="speed" minimum="1" maximum="50" />
+                                <hbox>
+                                    <button id="speed:decrease" icon="animator/minus.png" />
+                                    <slider id="speed" minimum="1" maximum="50" />
+                                    <button id="speed:increase" icon="animator/plus.png" />
+                                </hbox>
 				<glue size="1" />
 				<hbox>
-					<label id="scale-num" />
-					<glue />
+                                    <label id="scale-num" />
+                                    <glue />
 				</hbox>
-				<slider id="scale" minimum="1" maximum="20" />
+                                <hbox>
+                                    <button id="scale:decrease" icon="animator/minus.png" />
+                                    <slider id="scale" minimum="1" maximum="20" />
+                                    <button id="scale:increase" icon="animator/plus.png" />
+                                </hbox>
+                                <glue size="1" />
 				<hbox>
-					<button id="play" text="Play" />
-					<glue size="1" />
-					<button id="stop" text="Stop" />
-					<glue />
+                                    <glue size="1" />
+                                    <button id="play" text="Play" />
+                                    <glue size="1" />
+                                    <button id="stop" text="Stop" />
+                                    <glue />
 				</hbox>
 			</vbox>
 		</scrollpane>
