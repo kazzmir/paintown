@@ -80,6 +80,9 @@
 				</hbox>
 				<glue size="1" />
 				<vbox>
+                                    <panel id="event-work"
+                                           border="MatteBorder(2,2,2,2,667A63)"
+                                           layout="GridBagLayout" />
 					<label text="Events" />
 					<scrollpane>
 						<list id="events" />

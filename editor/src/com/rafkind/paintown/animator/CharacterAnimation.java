@@ -46,6 +46,7 @@ public class CharacterAnimation extends JPanel {
         return event.getButton() == MouseEvent.BUTTON3;
     }
 
+    /* load this stuff lazily, instantiate when the tab becomes viewable */
     public CharacterAnimation(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
         this.setLayout(new GridBagLayout());
 
@@ -77,7 +78,7 @@ public class CharacterAnimation extends JPanel {
         // split.setDividerLocation(0.6);
 
         // SwingEngine contextEditor = new SwingEngine ( "animator/animation.xml");
-        SwingEngine contextEditor = animEditor;
+        final SwingEngine contextEditor = animEditor;
 
         SwingEngine controlEditor = new SwingEngine( "animator/controls.xml" );
 
@@ -465,6 +466,19 @@ public class CharacterAnimation extends JPanel {
                 if( ! animation.getEvents().isEmpty()){
                     AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt( eventList.getSelectedIndex() );
                     JPanel editor = temp.getEditor(animation);
+                    JPanel work = (JPanel) contextEditor.find("event-work");
+                    work.removeAll();
+                    GridBagConstraints constraints = new GridBagConstraints();
+                    constraints.gridx = 0;
+                    constraints.gridy = 0;
+                    constraints.weightx = 1;
+                    constraints.weighty = 1;
+                    constraints.fill = GridBagConstraints.BOTH;
+                    constraints.anchor = GridBagConstraints.NORTHWEST;
+                    work.add(editor, constraints);
+                    work.revalidate();
+
+                    /*
                     if ( editor != null ){
                         JDialog dialog = new JDialog();
                         dialog.setSize(editor.getSize());
@@ -481,6 +495,7 @@ public class CharacterAnimation extends JPanel {
                         });
                         dialog.show();
                     }
+                    */
                 }
             }
         });
