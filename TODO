@@ -89,3 +89,5 @@ DONE * fix bug with data directory in network mode, like when install-sh is used
 * make "Loading Paintown" text configurable
 * make credits screen configurable
 DONE * if there is only one level to load, skip the level selection screen
+* triggers during the level. send arbitrary s-expressions to objects/anything
+  (trigger (to (object 2)) (message (increase health 20)))
