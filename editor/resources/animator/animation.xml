@@ -29,7 +29,7 @@
 				weighty="1"
 				gridheight="1"
 				anchor="GridBagConstraints.NORTHWEST"
-				fill="GridBagConstraints.BOTH"
+				fill="GridBagConstraints.HORIZONTAL"
 				/>
 
 			<vbox>
@@ -69,7 +69,7 @@
 				</hbox>
 				<hbox>
 					<label text="Base Directory" />
-					<textfield id="basedir" />
+                                        <textfield id="basedir" />
 					<button text="Change" id="change-basedir" />
 					<button text="Clear" id="clear-basedir" />
 					<glue />

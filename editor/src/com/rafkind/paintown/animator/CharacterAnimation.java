@@ -326,6 +326,11 @@ public class CharacterAnimation extends JPanel {
         sequence.setSelectedItem( animation.getSequence() );
 
         final JTextField basedirField = (JTextField) contextEditor.find( "basedir" );
+        {
+            Dimension size = basedirField.getMinimumSize();
+            size.setSize(9999999, size.getHeight());
+            basedirField.setMaximumSize(size);
+        }
         basedirField.setText( animation.getBaseDirectory() );
         JButton basedirButton = (JButton) contextEditor.find( "change-basedir" );
         basedirButton.addActionListener( new AbstractAction(){
