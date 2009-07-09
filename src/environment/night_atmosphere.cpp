@@ -3,6 +3,7 @@
 #include "night_atmosphere.h"
 #include "../globals.h"
 
+/*
 static int screenX(){
 	return 320;
 }
@@ -10,6 +11,7 @@ static int screenX(){
 static int screenY(){
 	return 240;
 }
+*/
 
 NightAtmosphere::NightAtmosphere():
 Atmosphere(){
@@ -50,7 +52,7 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
         right = width * 2;
     }
 
-    Bitmap save(*original, where_x, 0, total, screenY());
+    Bitmap save(*original, where_x, 0, total, work->getWidth());
     Bitmap::transBlender(0, 0, 0, dark_alpha);
     Bitmap::drawingMode(Bitmap::MODE_TRANS);
     /*
