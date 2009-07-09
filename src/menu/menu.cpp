@@ -571,6 +571,41 @@ void Menu::run(){
     }
 }
 
+//! draw snapshot of menu to buffer to facilitate tabs
+void Menu::drawMenuSnap(Bitmap *bmp){
+    // Resize bitmap if needed
+    RectArea temprect = backboard.position;
+    temprect.width -= 10; 
+    temprect.height -= 10;
+    if(temprect != *bmp){
+	delete bmp;
+	bmp = new Bitmap(backboard.position.width - 10, backboard.position.height - 10);
+    }
+    // Do all that we do during a regular draw sweep
+     // Do the background
+    drawBackground(work);
+    // Do background animations
+    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+	(*i)->draw(work);
+    }
+    // Draw any misc stuff in the background of the menu of selected object 
+    (*selectedOption)->drawBelow(work);
+    // Draw text board
+    drawTextBoard(work);
+    // Draw text
+    drawText(work);
+    // Draw info text
+    drawInfoText(work);
+    // Draw foreground animations
+    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+	(*i)->draw(work);
+    }
+    // Draw any misc stuff in the foreground of the menu of selected object 
+    (*selectedOption)->drawAbove(work);
+    
+    work->Blit(backboard.position.x+5,backboard.position.y+5,backboard.position.width-5,backboard.position.height-5,*bmp);
+}
+
 Menu *Menu::getMenu(const std::string &name){
 	std::map<std::string, Menu *>::iterator i = menus.find(name);
 	if ( i!=menus.end() ){

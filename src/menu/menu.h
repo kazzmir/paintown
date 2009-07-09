@@ -42,6 +42,9 @@ class Menu
 		/*! set menu name */
 		inline void setName(const std::string &n){ _name = n; };
 		
+		//! draw snapshot of menu to buffer to facilitate tabs
+		void drawMenuSnap(Bitmap *bmp);
+		
 		/*! Add options to menu */
 		void addOption(MenuOption *opt);
 		

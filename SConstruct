@@ -377,8 +377,8 @@ if isWindows():
 
     env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
     env.Append( CPPDEFINES = 'WINDOWS' )
-    env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
-    env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
+    env.Append( CCFLAGS = ['-mthreads'] )
+    env.Append( LINKFLAGS = ['-mthreads'] )
     
     #env.Append( CCFLAGS = ['-mthreads'] )
     #env.Append( LINKFLAGS = ['-mthreads'] )

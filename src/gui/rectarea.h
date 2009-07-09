@@ -1,6 +1,8 @@
 #ifndef _paintown_gui_rectarea_h
 #define _paintown_gui_rectarea_h
 
+class Bitmap;
+
 struct RectArea
 {
 	RectArea();
@@ -19,6 +21,9 @@ struct RectArea
 	inline int getX2() { return x + width; }
 	inline int getY2() { return y + height; }
 	bool operator==( const RectArea &);
+	bool operator!=( const RectArea &);
+	bool operator==( const Bitmap &);
+	bool operator!=( const Bitmap &);
 	RectArea &operator=( const RectArea &);
 };
 

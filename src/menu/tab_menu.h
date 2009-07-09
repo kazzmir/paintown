@@ -27,6 +27,8 @@ class TabMenu : public Menu
     private:
 	
 	std::string name;
+	
+	std::vector <Menu *> menus;
 	    
 };
 #endif
