@@ -14,7 +14,11 @@ public:
         /* drawn in front of all background things but before objects */
 	virtual void drawBackground(Bitmap * work, int x) = 0;
 
-        /* drawn in front of all objects */
+        /* drawn in front of all objects. you might think this method should
+         * be called drawFront, but its called drawForeground because its
+         * in front of the background. drawFront is just for drawing on
+         * what the scene calls foreground sprites.
+         */
 	virtual void drawForeground(Bitmap * work, int x) = 0;
         
         /* drawn only on the foreground */
