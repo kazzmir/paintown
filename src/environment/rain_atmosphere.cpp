@@ -33,7 +33,13 @@ RainAtmosphere::~RainAtmosphere(){
 	}
 }
 
-void RainAtmosphere::draw(Bitmap * work, int x){
+void RainAtmosphere::drawBackground(Bitmap * work, int x){
+}
+
+void RainAtmosphere::drawForeground(Bitmap * work, int x){
+}
+
+void RainAtmosphere::drawFront(Bitmap * work, int x){
 	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
 		Drop * d = *it;
 		work->line( d->x, d->y, d->x + d->length * 2 / 3, d->y + d->length, d->color );

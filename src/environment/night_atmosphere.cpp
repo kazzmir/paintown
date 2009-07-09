@@ -80,7 +80,13 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
     save.draw(where_x, 0, *work);
 }
 
-void NightAtmosphere::draw(Bitmap * work, int x){
+void NightAtmosphere::drawForeground(Bitmap * work, int x){
+}
+
+void NightAtmosphere::drawBackground(Bitmap * work, int x){
+}
+
+void NightAtmosphere::drawFront(Bitmap * work, int x){
     const int black = Bitmap::makeColor(0,0,0);
     Bitmap save = Bitmap::temporaryBitmap(work->getWidth(), work->getHeight());
     work->Blit(save);

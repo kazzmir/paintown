@@ -53,7 +53,12 @@ is_paused(false){
 
 	loadLevel( path );
 
-	mini_map = new Bitmap( screen_size, (int)((double) screen_size / 1.3333) );
+        /* 1.3333 is the aspect ratio of screen_width/screen_height when the res is any standard of
+         * 640,480 800,600, 1024,768
+         * but it should use the actual values instead of guessing since the screen size
+         * could theoretically change
+         */
+	mini_map = new Bitmap(screen_size, (int)((double) screen_size / 1.3333));
 
         for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
             PlayerTracker & tracker = *it;
@@ -235,7 +240,7 @@ Network::Message AdventureWorld::deleteMessage( unsigned int id ){
         
 const Block * AdventureWorld::currentBlock() const {
     if (scene == NULL){
-        Global::debug(-1) << "Scene is null" << endl;
+        Global::debug(-1) << "*BUG* Scene is null" << endl;
         exit(1);
     }
     return scene->currentBlock();
@@ -243,7 +248,7 @@ const Block * AdventureWorld::currentBlock() const {
         
 const int AdventureWorld::levelLength() const {
     if (scene == NULL){
-        Global::debug(-1) << "Scene is null" << endl;
+        Global::debug(-1) << "*BUG* Scene is null" << endl;
         exit(1);
     }
     return scene->totalLength();
@@ -371,19 +376,11 @@ void AdventureWorld::killAllHumans( Object * player ){
 }
 
 int AdventureWorld::getMinimumZ(){
-	return scene->getMinimumZ();
-	/*
-	const int MIN_WORLD_Z = 160;
-	return MIN_WORLD_Z;
-	*/
+    return scene->getMinimumZ();
 }
 
 int AdventureWorld::getMaximumZ(){
-	return scene->getMaximumZ();
-	/*
-	const int MAX_WORLD_Z = 232;
-	return MAX_WORLD_Z;
-	*/
+    return scene->getMaximumZ();
 }
 
 void AdventureWorld::act(){
@@ -470,6 +467,7 @@ void AdventureWorld::drawWorld( const PlayerTracker & tracker, Bitmap * where, c
 	}
 
 	scene->drawBack( min_x, where );
+
 	for ( map<int,vector<Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
 		const vector<Object *> & xx = (*it).second;
 		for ( vector<Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
@@ -477,9 +475,13 @@ void AdventureWorld::drawWorld( const PlayerTracker & tracker, Bitmap * where, c
 			(*mm)->draw( where, min_x );
 		}
 	}
+
 	scene->drawFront( min_x, where );
 
-        /* sigh, need a special case to draw object stuff in front */
+        /* need a special case to draw object stuff in front.
+         * this is things like icon/name/health, not objects that are part of
+         * the scene, and therefore the atmosphere doesn't apply to them.
+         */
         for ( map<int,vector<Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
 		const vector<Object *> & xx = (*it).second;
 		for ( vector<Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
@@ -505,6 +507,9 @@ void AdventureWorld::doTakeScreenshot(Bitmap * work){
     Global::debug(2) << "Take a screenshot" << endl;
     screenshots.push_back(new Bitmap(*work, true));
 
+    /* don't store more than 4 screenshots, so if we go above this number
+     * start throwing random ones out
+     */
     const int change = 1000;
     int position = Util::rnd(change);
     while (screenshots.size() > 4){

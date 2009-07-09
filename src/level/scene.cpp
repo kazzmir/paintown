@@ -295,65 +295,62 @@ void Scene::drawBack( int x, Bitmap * work ){
 		}
 		Bitmap * normal = cur->pic;
 		normal->draw( fx-x, 0, *work );
-		
-		/* This stuff is from beats of rage, but I probably
-		 * wont use it anymore
-		 */
-		/*
-		Bitmap * xscreen = cur->screen_overlay;
-		if ( xscreen )
-			xscreen->draw( fx-x, 0, *work );
-
-		Bitmap * neon = cur->neon;
-		if ( neon )
-			neon->draw( fx-x, 0, *work );
-		*/
-
 		fx += normal->getWidth();
-	}
-}
-
-/* draw the foreground */
-void Scene::drawFront( int x, Bitmap * work ){
-	double fx = 0;
-	if ( front_panels.size() > 0 ){
-		while ( fx < scene_length * getForegroundParallax() ){
-			for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
-				Bitmap * b = *it;
-				b->draw( (int)(fx - x * getForegroundParallax()), 0, *work );
-				fx += b->getWidth();
-			}
-		}
-	}
-
-	if ( hearts.empty() && current_block->empty() && x < getLimit() - 320 ){
-		if ( arrow_blink++ > 5 ){
-			arrow->draw( work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work );
-		}
-		if ( arrow_blink > 10 )
-			arrow_blink = 0;
 	}
 
         for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
             Atmosphere * atmosphere = *it;
-            atmosphere->draw(work, x);
+            atmosphere->drawBackground(work, x);
         }
+}
 
-	/*
-	for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
-		Bitmap * b = *it;
-		b->draw( fx - x, 0, *work );
-		fx += b->getWidth();
-	}
-	*/
-	/*
-	for ( unsigned int q = 0; q < order.size(); q++ ){
-		Panel *& cur = panels[ order[q] ];
-		Bitmap * normal = cur->pic;
-		normal->draw( fx-x, 100, *work );
-		fx += normal->getWidth();
-	}
-	*/
+/* draw the foreground */
+void Scene::drawFront( int x, Bitmap * work ){
+
+    for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+        Atmosphere * atmosphere = *it;
+        atmosphere->drawForeground(work, x);
+    }
+
+    double fx = 0;
+    if ( front_panels.size() > 0 ){
+        while ( fx < scene_length * getForegroundParallax() ){
+            for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
+                Bitmap * b = *it;
+                b->draw( (int)(fx - x * getForegroundParallax()), 0, *work );
+                fx += b->getWidth();
+            }
+        }
+    }
+
+    if ( hearts.empty() && current_block->empty() && x < getLimit() - 320 ){
+        if ( arrow_blink++ > 5 ){
+            arrow->draw( work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work );
+        }
+        if ( arrow_blink > 10 )
+            arrow_blink = 0;
+    }
+
+    for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+        Atmosphere * atmosphere = *it;
+        atmosphere->drawFront(work, x);
+    }
+
+    /*
+       for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
+       Bitmap * b = *it;
+       b->draw( fx - x, 0, *work );
+       fx += b->getWidth();
+       }
+       */
+    /*
+       for ( unsigned int q = 0; q < order.size(); q++ ){
+       Panel *& cur = panels[ order[q] ];
+       Bitmap * normal = cur->pic;
+       normal->draw( fx-x, 100, *work );
+       fx += normal->getWidth();
+       }
+       */
 }
 
 /*
