@@ -13,12 +13,9 @@ static int screenY(){
 
 NightAtmosphere::NightAtmosphere():
 Atmosphere(){
-	night = new Bitmap( screenX(), screenY() );
-	night->clear();
 }
 
 NightAtmosphere::~NightAtmosphere(){
-	delete night;
 }
 
 /* lights should not overlap! the effect completely messes up if they do
@@ -80,18 +77,23 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
     save.draw(where_x, 0, *work);
 }
 
-void NightAtmosphere::drawForeground(Bitmap * work, int x){
+void NightAtmosphere::drawFront(Bitmap * work, int x){
+    Bitmap::transBlender(0, 0, 0, 128);
+    work->applyTrans(Bitmap::makeColor(0,0,0));
 }
 
 void NightAtmosphere::drawBackground(Bitmap * work, int x){
 }
+	
+void NightAtmosphere::drawScreen(Bitmap * work, int x){
+}
 
-void NightAtmosphere::drawFront(Bitmap * work, int x){
+void NightAtmosphere::drawForeground(Bitmap * work, int x){
     const int black = Bitmap::makeColor(0,0,0);
     Bitmap save = Bitmap::temporaryBitmap(work->getWidth(), work->getHeight());
     work->Blit(save);
     Bitmap::transBlender(0, 0, 0, 128);
-    night->drawTrans( 0, 0, *work );
+    work->applyTrans(Bitmap::makeColor(0,0,0));
     
     drawLight(&save, work, 500 - x, 30, 50, black, 128, Bitmap::makeColor(32, 32, 0), 0);
     drawLight(&save, work, 300 - x, 30, 70, black, 128, Bitmap::makeColor(0, 32, 192), 128);

@@ -45,8 +45,11 @@ void FogAtmosphere::drawForeground(Bitmap * work, int x){
 
 void FogAtmosphere::drawBackground(Bitmap * work, int x){
 }
-
+	
 void FogAtmosphere::drawFront(Bitmap * work, int x){
+}
+
+void FogAtmosphere::drawScreen(Bitmap * work, int x){
 	Bitmap::transBlender( 0, 0, 0, 64 );
 	for ( vector< Fog * >::iterator it = fogs.begin(); it != fogs.end(); it++ ){
 		Fog * f = *it;

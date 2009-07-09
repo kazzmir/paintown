@@ -21,6 +21,7 @@ public:
 	virtual void drawBackground(Bitmap * work, int x);
 	virtual void drawForeground(Bitmap * work, int x);
 	virtual void drawFront(Bitmap * work, int x);
+	virtual void drawScreen(Bitmap * work, int x);
 	virtual void act();
 
 protected:

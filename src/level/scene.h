@@ -128,6 +128,8 @@ protected:
 	double backgroundParallax;
 	double foregroundParallax;
 
+        Bitmap * frontBuffer;
+
         std::vector<Atmosphere*> atmospheres;
 };
 

@@ -14,6 +14,7 @@ public:
 	virtual void drawBackground(Bitmap * work, int x) = 0;
 	virtual void drawForeground(Bitmap * work, int x) = 0;
 	virtual void drawFront(Bitmap * work, int x) = 0;
+        virtual void drawScreen(Bitmap * work, int x) = 0;
 	virtual void act() = 0;
 
 	static Atmosphere * createAtmosphere( const std::string & name );

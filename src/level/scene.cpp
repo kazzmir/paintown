@@ -42,7 +42,8 @@ maximum_z( 0 ),
 current_block( NULL ),
 blockNumber( 1 ),
 backgroundParallax( 5 ),
-foregroundParallax( 1.2 ){
+foregroundParallax( 1.2 ),
+frontBuffer(NULL){
 
 	TokenReader tr( filename );
 
@@ -302,6 +303,8 @@ void Scene::drawBack( int x, Bitmap * work ){
             Atmosphere * atmosphere = *it;
             atmosphere->drawBackground(work, x);
         }
+
+        arrow_blink = (arrow_blink + 1) % 10;
 }
 
 /* draw the foreground */
@@ -312,28 +315,44 @@ void Scene::drawFront( int x, Bitmap * work ){
         atmosphere->drawForeground(work, x);
     }
 
+    /* lazily initialize to ensure the buffer is the same size as the bitmap
+     * to be drawn on.
+     */
+    if (frontBuffer == NULL){
+        frontBuffer = new Bitmap(work->getWidth(), work->getHeight());
+    }
+
+    frontBuffer->clearToMask();
+
     double fx = 0;
     if ( front_panels.size() > 0 ){
         while ( fx < scene_length * getForegroundParallax() ){
             for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
                 Bitmap * b = *it;
-                b->draw( (int)(fx - x * getForegroundParallax()), 0, *work );
+                b->draw( (int)(fx - x * getForegroundParallax()), 0, *frontBuffer);
                 fx += b->getWidth();
             }
         }
     }
 
-    if ( hearts.empty() && current_block->empty() && x < getLimit() - 320 ){
-        if ( arrow_blink++ > 5 ){
-            arrow->draw( work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work );
-        }
-        if ( arrow_blink > 10 )
-            arrow_blink = 0;
-    }
-
+    /* just draw on the foreground */
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
-        atmosphere->drawFront(work, x);
+        atmosphere->drawFront(frontBuffer, x);
+    }
+
+    frontBuffer->draw(0, 0, *work);
+    
+    /* draw anything on the entire screen */
+    for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+        Atmosphere * atmosphere = *it;
+        atmosphere->drawScreen(work, x);
+    }
+
+    if ( hearts.empty() && current_block->empty() && x < getLimit() - 320 ){
+        if (arrow_blink > 5){
+            arrow->draw( work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work);
+        }
     }
 
     /*
@@ -375,6 +394,10 @@ Scene::~Scene(){
 	}
         for (vector<Block*>::iterator it = old_level_blocks.begin(); it != old_level_blocks.end(); it++){
             delete *it;
+        }
+
+        if (frontBuffer){
+            delete frontBuffer;
         }
 
 	if ( background )

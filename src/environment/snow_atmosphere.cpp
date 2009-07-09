@@ -62,8 +62,11 @@ void SnowAtmosphere::drawBackground(Bitmap * work, int x){
 
 void SnowAtmosphere::drawForeground(Bitmap * work, int x){
 }
-
+        
 void SnowAtmosphere::drawFront(Bitmap * work, int x){
+}
+
+void SnowAtmosphere::drawScreen(Bitmap * work, int x){
 	for ( vector< Flake * >::iterator it = flakes.begin(); it != flakes.end(); it++ ){
 		Flake * f = *it;
 		switch ( f->type ){
