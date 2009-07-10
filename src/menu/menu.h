@@ -105,6 +105,10 @@ class Menu
 		std::vector <MenuAnimation *>backgroundAnimations;
 		std::vector <MenuAnimation *>foregroundAnimations;
 		
+		
+		//! Draw background
+		void drawBackground(Bitmap *work);
+		
 	private:
 	    
 		std::string _name;
@@ -117,9 +121,6 @@ class Menu
 		
 		//! Set longest length
 		void checkTextLength(MenuOption *opt);
-		
-		//! Draw background
-		void drawBackground(Bitmap *work);
 		
 		//! Draw board
 		void drawTextBoard(Bitmap *work);

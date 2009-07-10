@@ -25,10 +25,17 @@ class TabMenu : public Menu
 	/*! do logic, draw whatever */
 	void run();
     private:
-	
-	std::string name;
-	
 	std::vector <Menu *> menus;
-	    
+	
+	RectArea tabInfo;
+	RectArea selectedTabInfo;
+	
+	std::vector<Box *>tabs;
+	std::vector<Box *>::iterator currentTab;
+	
+	void updateSnapshots();
+	
+	void drawTabs(Bitmap *work);
+	void drawSnapshots();
 };
 #endif

@@ -40,7 +40,9 @@ void TabMenu::load(Token *token)throw( LoadException ){
 			*token >> tok;
 			if ( *tok == "name" ){
 				// Set menu name
-				*tok >> name;
+				std::string temp;
+				*tok >> temp;
+				setName(temp);
 			} else if ( *tok == "position" ) {
 				// This handles the placement of the menu list and surrounding box
 				*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
@@ -54,6 +56,33 @@ void TabMenu::load(Token *token)throw( LoadException ){
 				int r,g,b;
 				*tok >> r >> g >> b >> backboard.position.borderAlpha;
 				backboard.position.border = Bitmap::makeColor(r,g,b);
+			} else if ( *tok == "tab-body" ) {
+				// This handles the body color of the menu box
+				int r,g,b;
+				*tok >> r >> g >> b >> tabInfo.bodyAlpha;
+				tabInfo.body = Bitmap::makeColor(r,g,b);
+			} else if ( *tok == "tab-border" ) {
+				// This handles the border color of the menu box
+				int r,g,b;
+				*tok >> r >> g >> b >> tabInfo.borderAlpha;
+				tabInfo.border = Bitmap::makeColor(r,g,b);
+			} else if ( *tok == "selectedtab-body" ) {
+				// This handles the body color of the menu box
+				int r,g,b;
+				*tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
+				selectedTabInfo.body = Bitmap::makeColor(r,g,b);
+			} else if ( *tok == "selectedtab-border" ) {
+				// This handles the border color of the menu box
+				int r,g,b;
+				*tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
+				selectedTabInfo.border = Bitmap::makeColor(r,g,b);
+			} else if( *tok == "anim" ) {
+				MenuAnimation *animation = new MenuAnimation(tok);
+				if (animation->getLocation() == 0){
+				    backgroundAnimations.push_back(animation);
+				} else if (animation->getLocation() == 1){
+				    foregroundAnimations.push_back(animation);
+				}
 			} else {
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                                 if (Global::getDebug() >= 3){
@@ -71,7 +100,7 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		}
 	}
 	
-	if ( name.empty() ){
+	if ( getName().empty() ){
 		throw LoadException("No name set, the menu should have a name!");
 	}
 }
@@ -93,18 +122,28 @@ void TabMenu::run(){
     bool endGame = false;
 
     if ( menus.empty() ){
-        return;
+        //return;
     }
 
     double runCounter = 0;
     Global::speed_counter = 0;
     Global::second_counter = 0;
     int game_time = 100;
+    
+    
+    // Reset animations
+    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+	(*i)->reset();
+    }
+    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+	(*i)->reset();
+    }
+    
     while ( ! done ){
 
 	bool draw = false;
-	const char vi_up = 'k';
-	const char vi_down = 'j';
+	//const char vi_up = 'k';
+	//const char vi_down = 'j';
 	const char vi_left = 'h';
 	const char vi_right = 'l';
 
@@ -116,7 +155,7 @@ void TabMenu::run(){
 	    while ( runCounter >= 1.0 ){
 		runCounter -= 1;
 		// Keys
-
+	
 		if (keyInputManager::keyState(keys::LEFT, true) ||
 		    keyInputManager::keyState(vi_left, true)){
 		    MenuGlobals::playSelectSound();
@@ -126,10 +165,29 @@ void TabMenu::run(){
 			keyInputManager::keyState(vi_right, true )){
 		    MenuGlobals::playSelectSound();
 		}
+		/*
+		if (keyInputManager::keyState(keys::DOWN, true) ||
+		    keyInputManager::keyState(vi_down, true)){
+		    MenuGlobals::playSelectSound();
+		}
 
+		if ( keyInputManager::keyState(keys::UP, true )||
+			keyInputManager::keyState(vi_up, true )){
+		    MenuGlobals::playSelectSound();
+		}
+*/
 		if ( keyInputManager::keyState(keys::ENTER, true ) ){
 		    
 		}
+		
+		 // Animations
+		for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+		    (*i)->act();
+		}
+		for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+		    (*i)->act();
+		}
+		
 	    }
 
 	    Global::speed_counter = 0;
@@ -145,6 +203,19 @@ void TabMenu::run(){
 
 	if ( draw ){
 	    // Draw
+	    drawBackground(work);
+	    
+	     // Do background animations
+	    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+		(*i)->draw(work);
+	    }
+	    
+	    // Menus
+	    
+	    // Draw foreground animations
+	    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+		(*i)->draw(work);
+	    }
 	    
 	    // Finally render to screen
 	    work->BlitToScreen();

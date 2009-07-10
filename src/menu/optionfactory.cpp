@@ -28,7 +28,7 @@ using namespace std;
 MenuOption *getOption(Token *token){
 	Token * tok;
 	*token >> tok;
-	if ( *tok == "menu" ){
+	if ( *tok == "menu" || *tok == "tabmenu" ){
 		// Create a sub menu
 		return new OptionMenu(tok);
 	} else if ( *tok == "key" ){
