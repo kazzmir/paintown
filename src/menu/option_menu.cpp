@@ -28,7 +28,7 @@ _menu(0){
     *token >> temp;
     */
 
-    if (token->numTokens() == 1){
+    if (token->numTokens() == 2){
         std::string temp;
         *token >> temp;
         _menu->load(Util::getDataPath() + temp);
