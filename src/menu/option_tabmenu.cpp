@@ -1,19 +1,19 @@
-#include "menu/option_menu.h"
-#include "menu/menu.h"
+#include "menu/option_tabmenu.h"
+#include "menu/tab_menu.h"
 #include "util/token.h"
 #include "return_exception.h"
 #include "util/token_exception.h"
 #include "util/funcs.h"
 #include "globals.h"
 
-OptionMenu::OptionMenu(Token *token) throw (LoadException):
+OptionTabMenu::OptionTabMenu(Token *token) throw (LoadException):
 MenuOption(token, Event),
 _menu(0){
     // Check whether we have a menu or tabmenu
-    if ( *token == "menu" ){
-	_menu = new Menu();
+    if (*token == "tabmenu"){
+	_menu = new TabMenu();
     } else {
-	throw LoadException("Not a menu");
+	throw LoadException("Not a tabbed menu");
     }
     // Set this menu as an option
     _menu->setAsOption(true);
@@ -39,18 +39,18 @@ _menu(0){
     if ( _menu->checkRemoval() ) setForRemoval(true);
 }
 
-OptionMenu::~OptionMenu()
+OptionTabMenu::~OptionTabMenu()
 {
 	// Delete our menu
 	if(_menu)delete _menu;
 }
 
-void OptionMenu::logic()
+void OptionTabMenu::logic()
 {
 	// Nothing
 }
 
-void OptionMenu::run(bool &endGame)
+void OptionTabMenu::run(bool &endGame)
 {
 	// Do our new menu
 	_menu->run();

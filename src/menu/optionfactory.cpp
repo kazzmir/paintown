@@ -19,6 +19,7 @@
 #include "menu/option_npc_buddies.h"
 #include "menu/option_quit.h"
 #include "menu/option_dummy.h"
+#include "menu/option_tabmenu.h"
 #include "globals.h"
 
 #include "menu/option_mugen_menu.h"
@@ -28,9 +29,12 @@ using namespace std;
 MenuOption *getOption(Token *token){
 	Token * tok;
 	*token >> tok;
-	if ( *tok == "menu" || *tok == "tabmenu" ){
+	if ( *tok == "menu" ){
 		// Create a sub menu
 		return new OptionMenu(tok);
+	} else if (*tok == "tabmenu" ){
+		// Create a tab menu
+		return new OptionTabMenu(tok);
 	} else if ( *tok == "key" ){
 		// Reconfigure a given key
 		return new OptionKey(tok);

@@ -157,6 +157,7 @@ src/menu/option_versus.cpp
 src/menu/option_select_font.cpp
 src/menu/option_screen_size.cpp
 src/menu/option_speed.cpp
+src/menu/option_tabmenu.cpp
 src/menu/optionfactory.cpp
 src/menu/tab_menu.cpp
 )
