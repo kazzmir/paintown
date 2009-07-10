@@ -41,7 +41,7 @@ parent(0){
 		  }
 		  setInfoTextLocation(x,y);
 	      } 
-	      else if( *token == "anim" ) {
+	      else if( *token == "option-anim" ) {
 		  MenuAnimation *animation = new MenuAnimation(token);
 		  if (animation->getLocation() == 0){
 		    backgroundAnimations.push_back(animation);
