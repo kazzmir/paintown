@@ -14,6 +14,16 @@ struct Drop{
 	int color;
 };
 
+struct Puddle{
+    Puddle(int x, int y, int size):
+        x(x), y(y), size(size), current(1){
+        }
+
+    int x, y;
+    int size;
+    double current;
+};
+
 class RainAtmosphere: public Atmosphere {
 public:
 
@@ -24,10 +34,11 @@ public:
 	virtual void drawForeground(Bitmap * work, int x);
 	virtual void drawFront(Bitmap * work, int x);
 	virtual void drawScreen(Bitmap * work, int x);
-	virtual void act();
+	virtual void act(const Scene & level);
 	
 protected:
-        std::vector< Drop * > rain_drops;
+        std::vector<Drop *> rain_drops;
+        std::vector<Puddle *> puddles;
 	Sound rain_sound;
 	bool playing;
 };

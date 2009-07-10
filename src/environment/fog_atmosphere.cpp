@@ -64,7 +64,7 @@ void FogAtmosphere::drawScreen(Bitmap * work, int x){
 	*/
 }
 
-void FogAtmosphere::act(){
+void FogAtmosphere::act(const Scene & level){
 	for ( vector< Fog * >::iterator it = fogs.begin(); it != fogs.end(); it++ ){
 		Fog * f = *it;
 		f->ang += 1;

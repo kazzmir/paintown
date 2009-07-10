@@ -101,5 +101,5 @@ void NightAtmosphere::drawForeground(Bitmap * work, int x){
     drawLight(&save, work, 300 - x, 30, 70, black, 128, Bitmap::makeColor(0, 32, 192), 128);
 }
 
-void NightAtmosphere::act(){
+void NightAtmosphere::act(const Scene & level){
 }

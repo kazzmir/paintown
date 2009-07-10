@@ -78,7 +78,7 @@ void SnowAtmosphere::drawScreen(Bitmap * work, int x){
 	}
 }
 
-void SnowAtmosphere::act(){
+void SnowAtmosphere::act(const Scene & level){
 	for ( vector< Flake * >::iterator it = flakes.begin(); it != flakes.end(); it++ ){
 		Flake * f = *it;
 		f->dy += 0.40;

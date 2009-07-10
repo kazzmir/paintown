@@ -22,7 +22,7 @@ public:
 	virtual void drawForeground(Bitmap * work, int x);
 	virtual void drawFront(Bitmap * work, int x);
 	virtual void drawScreen(Bitmap * work, int x);
-	virtual void act();
+	virtual void act(const Scene & level);
 
 protected:
 	Bitmap * fog;

@@ -276,7 +276,7 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 
         for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
             Atmosphere * atmosphere = *it;
-            atmosphere->act();
+            atmosphere->act(*this);
         }
 }
 

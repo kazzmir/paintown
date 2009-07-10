@@ -5,6 +5,7 @@ class Bitmap;
 
 #include <string>
 
+class Scene;
 class Atmosphere{
 protected:
 	Atmosphere();
@@ -27,7 +28,7 @@ public:
         /* drawn on the entire screen */
         virtual void drawScreen(Bitmap * work, int x) = 0;
 
-	virtual void act() = 0;
+	virtual void act(const Scene & level) = 0;
 
 	static Atmosphere * createAtmosphere( const std::string & name );
 };
