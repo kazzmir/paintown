@@ -419,56 +419,7 @@ void Menu::run(){
                     }
 
                     // Lets do some logic for the box with text
-                    switch ( currentDrawState ){
-                        case FadeIn : {
-                            if (fadeBox.position.x> backboard.position.x){
-                                fadeBox.position.x -= fadeSpeed;
-                            } else if ( fadeBox.position.x < backboard.position.x ){
-                                fadeBox.position.x = backboard.position.x;
-                            }
-
-                            if (fadeBox.position.y > backboard.position.y){
-                                fadeBox.position.y -= fadeSpeed;
-                            } else if (fadeBox.position.y<backboard.position.y){
-                                fadeBox.position.y = backboard.position.y;
-                            }
-
-                            if (fadeBox.position.width<backboard.position.width){
-                                fadeBox.position.width += (fadeSpeed*2);
-                            } else if (fadeBox.position.width>backboard.position.width){
-                                fadeBox.position.width = backboard.position.width;
-                            }
-
-                            if (fadeBox.position.height<backboard.position.height){
-                                fadeBox.position.height += (fadeSpeed*2);
-                            } else if (fadeBox.position.height>backboard.position.height){
-                                fadeBox.position.height = backboard.position.height;
-                            }
-
-                            if (fadeBox.position == backboard.position){
-                                currentDrawState = FadeInText;
-                            }
-
-                            break;
-                        }
-                        case FadeInText : {
-                            if (fadeAlpha < 255){
-                                fadeAlpha += (fadeSpeed+2);
-                            }
-
-                            if (fadeAlpha >= 255){
-                                fadeAlpha = 255;
-                                currentDrawState = NoFade;
-                            }
-                            break;
-                        }
-                        case NoFade : {
-                            break;
-                        }
-                        default : {
-                            break;
-                        }
-                    }
+                   updateFadeInfo();
                 }
 
                 Global::speed_counter = 0;
@@ -719,6 +670,61 @@ void Menu::resetFadeInfo(){
 	fadeBox.position.x = backboard.position.x+(backboard.position.width/2);
 	fadeBox.position.y = backboard.position.y+(backboard.position.height/2);
 	fadeAlpha = 0;
+}
+
+//! Do fade logic
+void Menu::updateFadeInfo(){
+     // Lets do some logic for the box with text
+    switch ( currentDrawState ){
+	case FadeIn : {
+	    if (fadeBox.position.x> backboard.position.x){
+		fadeBox.position.x -= fadeSpeed;
+	    } else if ( fadeBox.position.x < backboard.position.x ){
+		fadeBox.position.x = backboard.position.x;
+	    }
+
+	    if (fadeBox.position.y > backboard.position.y){
+		fadeBox.position.y -= fadeSpeed;
+	    } else if (fadeBox.position.y<backboard.position.y){
+		fadeBox.position.y = backboard.position.y;
+	    }
+
+	    if (fadeBox.position.width<backboard.position.width){
+		fadeBox.position.width += (fadeSpeed*2);
+	    } else if (fadeBox.position.width>backboard.position.width){
+		fadeBox.position.width = backboard.position.width;
+	    }
+
+	    if (fadeBox.position.height<backboard.position.height){
+		fadeBox.position.height += (fadeSpeed*2);
+	    } else if (fadeBox.position.height>backboard.position.height){
+		fadeBox.position.height = backboard.position.height;
+	    }
+
+	    if (fadeBox.position == backboard.position){
+		currentDrawState = FadeInText;
+	    }
+
+	    break;
+	}
+	case FadeInText : {
+	    if (fadeAlpha < 255){
+		fadeAlpha += (fadeSpeed+2);
+	    }
+
+	    if (fadeAlpha >= 255){
+		fadeAlpha = 255;
+		currentDrawState = NoFade;
+	    }
+	    break;
+	}
+	case NoFade : {
+	    break;
+	}
+	default : {
+	    break;
+	}
+    }
 }
 
 void Menu::drawBackground(Bitmap *work){

@@ -109,6 +109,15 @@ class Menu
 		//! Draw background
 		void drawBackground(Bitmap *work);
 		
+		//! Reset fade data
+		void resetFadeInfo();
+		
+		//! Do fade logic
+		void updateFadeInfo();
+		
+		//! Draw board
+		void drawTextBoard(Bitmap *work);
+		
 	private:
 	    
 		std::string _name;
@@ -121,9 +130,6 @@ class Menu
 		
 		//! Set longest length
 		void checkTextLength(MenuOption *opt);
-		
-		//! Draw board
-		void drawTextBoard(Bitmap *work);
 		
 		//! Draw text
 		void drawText(Bitmap *work);
@@ -141,9 +147,6 @@ class Menu
    			FadeInText,
       			NoFade
 		};
-		
-		//! Reset fade data
-		void resetFadeInfo();
 		
 		//! Enum containing the draw state so we can do some effects
 		menuDrawState currentDrawState;

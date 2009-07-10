@@ -130,6 +130,8 @@ void TabMenu::run(){
     Global::second_counter = 0;
     int game_time = 100;
     
+     // Reset fade stuff
+    resetFadeInfo();
     
     // Reset animations
     for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
@@ -188,6 +190,9 @@ void TabMenu::run(){
 		    (*i)->act();
 		}
 		
+		// Lets do some logic for the box with text
+		updateFadeInfo();
+		
 	    }
 
 	    Global::speed_counter = 0;
@@ -209,6 +214,9 @@ void TabMenu::run(){
 	    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
 		(*i)->draw(work);
 	    }
+	    
+	    // Draw text board
+	    drawTextBoard(work);
 	    
 	    // Menus
 	    
