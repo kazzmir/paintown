@@ -83,8 +83,15 @@ mark_as_advanced(CLEAR PNG_LIBRARY)
 # -------------------------------------------------------
 # User setable options
 # -------------------------------------------------------
-set(CMAKE_CXX_FLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations -Woverloaded-virtual")
-set(CMAKE_C_FLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations")
+option(DEBUG "Compile paintown with debug information?" OFF)
+
+if(DEBUG)
+    set(CMAKE_CXX_FLAGS "-Wall -funroll-loops -fexpensive-optimizations -Woverloaded-virtual -g3 -ggdb")
+    set(CMAKE_C_FLAGS "-Wall -funroll-loops -fexpensive-optimizations -g3 -ggdb")
+else(DEBUG)
+    set(CMAKE_CXX_FLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations -Woverloaded-virtual")
+    set(CMAKE_C_FLAGS "-O2 -Wall -funroll-loops -fexpensive-optimizations")
+endif(DEBUG)
 
 # allegro
 if(NOT ALLEGRO_FOUND)
