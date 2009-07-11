@@ -39,11 +39,17 @@ RainAtmosphere::~RainAtmosphere(){
 
 void RainAtmosphere::drawBackground(Bitmap * work, int x){
     const int bluish = Bitmap::makeColor(106, 184, 225);
-    Bitmap::transBlender(0, 0, 0, 192);
+    Bitmap::transBlender(0, 0, 0, 64);
     Bitmap::drawingMode(Bitmap::MODE_TRANS);
     for (vector<Puddle*>::iterator it = puddles.begin(); it != puddles.end(); it++){
         Puddle * puddle = *it;
-        work->circle(puddle->x, puddle->y, (int)puddle->current, bluish);
+        if (puddle->x == -1000){
+            puddle->x = x + Util::rnd(screenX() + 30) - 15;
+        }
+        // work->circle(puddle->x, puddle->y, (int)puddle->current, bluish);
+        int rx = (int) puddle->current;
+        int ry = (int)(puddle->current * 0.8);
+        work->ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
     }
     Bitmap::drawingMode(Bitmap::MODE_SOLID);
 }
@@ -80,10 +86,13 @@ void RainAtmosphere::act(const Scene & level){
         }
 
         while (puddles.size() < 20){
-            int x = Util::rnd(screenX());
+            // int x = Util::rnd(screenX());
             int y = Util::rnd(level.getMinimumZ(), level.getMaximumZ());
             int size = Util::rnd(4) + 2;
-            puddles.push_back(new Puddle(x, y, size));
+            /* supreme hack! set x to nothing and later on in the draw routine
+             * update x
+             */
+            puddles.push_back(new Puddle(-1000, y, size));
         }
 
 	for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
