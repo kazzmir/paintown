@@ -2,12 +2,22 @@
 #define _paintown_tab_menu_h
 
 #include "menu.h"
+#include "gui/box.h"
 
 class Font;
 class Bitmap;
 class MenuOption;
 class Token;
 class MenuAnimation;
+
+// Provide menus in a box
+class MenuBox : public Box
+{
+    public:
+	MenuBox();
+	virtual ~MenuBox();
+	Menu menu;
+};
 
 class TabMenu : public Menu
 {
@@ -25,13 +35,11 @@ class TabMenu : public Menu
 	/*! do logic, draw whatever */
 	void run();
     private:
-	std::vector <Menu *> menus;
-	
 	RectArea tabInfo;
 	RectArea selectedTabInfo;
 	
-	std::vector<Box *>tabs;
-	std::vector<Box *>::iterator currentTab;
+	std::vector<MenuBox *>tabs;
+	std::vector<MenuBox *>::iterator currentTab;
 	
 	void updateSnapshots();
 	

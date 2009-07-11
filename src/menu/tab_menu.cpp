@@ -24,85 +24,109 @@
 
 using namespace std;
 
+MenuBox::MenuBox(){
+    
+}
+
+MenuBox::~MenuBox(){
+    
+}
+
 TabMenu::TabMenu(){
 	
 }
 
 void TabMenu::load(Token *token)throw( LoadException ){
-	if ( *token != "tabmenu" )
-		throw LoadException("Not a tabbed menu");
-	else if ( ! token->hasTokens() )
-		return;
-	
-	while ( token->hasTokens() ){
-		try{
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "name" ){
-				// Set menu name
-				std::string temp;
-				*tok >> temp;
-				setName(temp);
-			} else if ( *tok == "position" ) {
-				// This handles the placement of the menu list and surrounding box
-				*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
-			} else if ( *tok == "position-body" ) {
-				// This handles the body color of the menu box
-				int r,g,b;
-				*tok >> r >> g >> b >> backboard.position.bodyAlpha;
-				backboard.position.body = Bitmap::makeColor(r,g,b);
-			} else if ( *tok == "position-border" ) {
-				// This handles the border color of the menu box
-				int r,g,b;
-				*tok >> r >> g >> b >> backboard.position.borderAlpha;
-				backboard.position.border = Bitmap::makeColor(r,g,b);
-			} else if ( *tok == "tab-body" ) {
-				// This handles the body color of the menu box
-				int r,g,b;
-				*tok >> r >> g >> b >> tabInfo.bodyAlpha;
-				tabInfo.body = Bitmap::makeColor(r,g,b);
-			} else if ( *tok == "tab-border" ) {
-				// This handles the border color of the menu box
-				int r,g,b;
-				*tok >> r >> g >> b >> tabInfo.borderAlpha;
-				tabInfo.border = Bitmap::makeColor(r,g,b);
-			} else if ( *tok == "selectedtab-body" ) {
-				// This handles the body color of the menu box
-				int r,g,b;
-				*tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
-				selectedTabInfo.body = Bitmap::makeColor(r,g,b);
-			} else if ( *tok == "selectedtab-border" ) {
-				// This handles the border color of the menu box
-				int r,g,b;
-				*tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
-				selectedTabInfo.border = Bitmap::makeColor(r,g,b);
-			} else if( *tok == "anim" ) {
-				MenuAnimation *animation = new MenuAnimation(tok);
-				if (animation->getLocation() == 0){
-				    backgroundAnimations.push_back(animation);
-				} else if (animation->getLocation() == 1){
-				    foregroundAnimations.push_back(animation);
-				}
-			} else {
-				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-                                if (Global::getDebug() >= 3){
-                                    tok->print(" ");
-                                }
-			}
-		} catch ( const TokenException & ex ) {
-			// delete current;
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException( m );
-		} catch ( const LoadException & ex ) {
-			// delete current;
-			throw ex;
+    if ( *token != "tabmenu" )
+	throw LoadException("Not a tabbed menu");
+    else if ( ! token->hasTokens() )
+	return;
+    
+    while ( token->hasTokens() ){
+	try{
+	    Token * tok;
+	    *token >> tok;
+	    if ( *tok == "name" ){
+		// Set menu name
+		std::string temp;
+		*tok >> temp;
+		setName(temp);
+	    } else if ( *tok == "position" ) {
+		// This handles the placement of the menu list and surrounding box
+		*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
+	    } else if ( *tok == "position-body" ) {
+		// This handles the body color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b >> backboard.position.bodyAlpha;
+		backboard.position.body = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "position-border" ) {
+		// This handles the border color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b >> backboard.position.borderAlpha;
+		backboard.position.border = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "tab-body" ) {
+		// This handles the body color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b >> tabInfo.bodyAlpha;
+		tabInfo.body = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "tab-border" ) {
+		// This handles the border color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b >> tabInfo.borderAlpha;
+		tabInfo.border = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "selectedtab-body" ) {
+		// This handles the body color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
+		selectedTabInfo.body = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "selectedtab-border" ) {
+		// This handles the border color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
+		selectedTabInfo.border = Bitmap::makeColor(r,g,b);
+	    } else if( *tok == "anim" ) {
+		MenuAnimation *animation = new MenuAnimation(tok);
+		if (animation->getLocation() == 0){
+		    backgroundAnimations.push_back(animation);
+		} else if (animation->getLocation() == 1){
+		    foregroundAnimations.push_back(animation);
 		}
+	    } else if( *tok == "menu" ) {
+		MenuBox *menu = new MenuBox();
+		if (menu){
+		    //Token *temp_tok;
+		    //*tok >> temp_tok;
+		    if (tok->numTokens() == 2){
+			std::string temp;
+			*tok >> temp;
+			menu->menu.load(Util::getDataPath() + temp);
+		    } else {
+			menu->menu.load(tok);
+		    }
+		    tabs.push_back(menu);
+		} else {
+		    throw LoadException("Problem reading menu");
+		}
+	    } else {
+		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+		if (Global::getDebug() >= 3){
+		    tok->print(" ");
+		}
+	    }
+	} catch ( const TokenException & ex ) {
+	    // delete current;
+	    string m( "Menu parse error: " );
+	    m += ex.getReason();
+	    throw LoadException( m );
+	} catch ( const LoadException & ex ) {
+	    // delete current;
+	    throw ex;
 	}
+    }
 	
-	if ( getName().empty() ){
-		throw LoadException("No name set, the menu should have a name!");
-	}
+    if ( getName().empty() ){
+	    throw LoadException("No name set, the menu should have a name!");
+    }
 }
 
 void TabMenu::load(const std::string &filename) throw (LoadException){
@@ -121,8 +145,8 @@ void TabMenu::run(){
     bool done = false;
     bool endGame = false;
 
-    if ( menus.empty() ){
-        //return;
+    if ( tabs.empty() ){
+        return;
     }
 
     double runCounter = 0;
@@ -239,24 +263,10 @@ void TabMenu::run(){
 }
 
 TabMenu::~TabMenu(){
-    /*
-	// cleanup
-	std::vector <MenuOption *>::iterator b = menuOptions.begin();
-	std::vector <MenuOption *>::iterator e = menuOptions.end();
-	for(;b!=e;++b){
-		if((*b))delete (*b);
+    // Rid menus
+    for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+	if (*i){
+	    delete *i;
 	}
-	if( background )delete background;
-	
-	for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-	    if (*i){
-		delete *i;
-	    }
-	}
-	for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-	    if (*i){
-		delete *i;
-	    }
-	}
-	*/
+    }
 }
