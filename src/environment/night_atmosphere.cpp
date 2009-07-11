@@ -2,6 +2,9 @@
 #include "util/bitmap.h"
 #include "night_atmosphere.h"
 #include "../globals.h"
+#include <vector>
+
+using namespace std;
 
 /*
 static int screenX(){
@@ -14,15 +17,22 @@ static int screenY(){
 */
 
 NightAtmosphere::NightAtmosphere():
-Atmosphere(){
+Atmosphere(),
+darkness(128){
+
+    addLight(500, 30, 50, 30, Bitmap::makeColor(32,32,0), 0);
+    addLight(300, 30, 70, 30, Bitmap::makeColor(0,32,192), 128);
 }
 
 NightAtmosphere::~NightAtmosphere(){
+    for (vector<Light*>::iterator it = lights.begin(); it != lights.end(); it++){
+        delete (*it);
+    }
 }
 
 /* lights should not overlap! the effect completely messes up if they do
  */
-void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, const int y, const int width, const int black, const int dark_alpha, const int light, const int light_alpha){
+void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const int black, const int dark_alpha, const int light, const int light_alpha){
     int center_x = x;
     // int center_x = screenX();
     
@@ -33,8 +43,8 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
     const int dark_alpha = 128;
     */
 
-    int where_x = center_x - width;
-    int total = width * 2;
+    int where_x = center_x - lower_width;
+    int total = lower_width * 2;
     if (where_x < 0){
         total += where_x;
         where_x = 0;
@@ -43,13 +53,13 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
         return;
     }
 
-    int left = total - width * 2;
-    int middle = total - width;
+    int left = total - lower_width * 2;
+    int middle = total - lower_width;
     int right = total;
-    if (center_x - width > 0){
+    if (center_x - lower_width > 0){
         left = 0;
-        middle = width;
-        right = width * 2;
+        middle = lower_width;
+        right = lower_width * 2;
     }
 
     Bitmap save(*original, where_x, 0, total, work->getWidth());
@@ -61,26 +71,25 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
     */
     int top = y;
     int lamp_height = save.getHeight() - top;
-    int upper_lamp_width = 30;
 
     /* y = tan(theta) * x */
-    int lamp_top = ((double)width * 2.0 / (double)lamp_height) * (double)upper_lamp_width;
+    int lamp_top = ((double)lower_width * 2.0 / (double)lamp_height) * (double)upper_width;
 
     // int top = 0;
     save.triangle(left, top, middle, top, left, save.getHeight(), black);
     save.triangle(right, top, middle, top, right, save.getHeight(), black);
-    int nwidth = (double) lamp_top / ((double) lamp_height / (double) width);
+    int nwidth = (double) lamp_top / ((double) lamp_height / (double) lower_width);
     save.triangle(middle, top, middle - nwidth, top + lamp_top, middle + nwidth, top + lamp_top, black);
 
     save.rectangleFill(0, 0, right, top, black);
     Bitmap::drawingMode(Bitmap::MODE_SOLID);
-    int xwidth = (double) lamp_height / ((double)(save.getHeight() - top) / (double) width);
+    int xwidth = (double) lamp_height / ((double)(save.getHeight() - top) / (double) lower_width);
     save.light(middle, top, xwidth, lamp_height, lamp_top, light_alpha, dark_alpha, light, black);
     save.draw(where_x, 0, *work);
 }
 
 void NightAtmosphere::drawFront(Bitmap * work, int x){
-    Bitmap::transBlender(0, 0, 0, 128);
+    Bitmap::transBlender(0, 0, 0, 255 - darkness);
     work->applyTrans(Bitmap::makeColor(0,0,0));
 }
 
@@ -90,15 +99,21 @@ void NightAtmosphere::drawBackground(Bitmap * work, int x){
 void NightAtmosphere::drawScreen(Bitmap * work, int x){
 }
 
+void NightAtmosphere::addLight(const int x, const int y, const int lower_width, const int upper_width, const int color, const int alpha){
+    lights.push_back(new Light(x, y, lower_width, upper_width, color, alpha));
+}
+
 void NightAtmosphere::drawForeground(Bitmap * work, int x){
     const int black = Bitmap::makeColor(0,0,0);
     Bitmap save = Bitmap::temporaryBitmap(work->getWidth(), work->getHeight());
     work->Blit(save);
-    Bitmap::transBlender(0, 0, 0, 128);
-    work->applyTrans(Bitmap::makeColor(0,0,0));
+    Bitmap::transBlender(0, 0, 0, 255 - darkness);
+    work->applyTrans(black);
     
-    drawLight(&save, work, 500 - x, 30, 50, black, 128, Bitmap::makeColor(32, 32, 0), 0);
-    drawLight(&save, work, 300 - x, 30, 70, black, 128, Bitmap::makeColor(0, 32, 192), 128);
+    for (vector<Light*>::iterator it = lights.begin(); it != lights.end(); it++){
+        Light * light = *it;
+        drawLight(&save, work, light->x - x, light->y, light->lower_width, light->upper_width, black, darkness, light->color, light->alpha);
+    }
 }
 
 void NightAtmosphere::act(const Scene & level){
