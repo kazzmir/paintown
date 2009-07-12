@@ -64,42 +64,6 @@ public class AttackEvent implements AnimationEvent {
         SwingEngine engine = new SwingEngine( "animator/eventattack.xml" );
         ((JPanel)engine.getRootComponent()).setSize(200,150);
 
-        final JButton toggle = (JButton) engine.find("toggle");
-        toggle.addActionListener(new AbstractAction(){
-            boolean toggled = false;
-            MouseInputAdapter listener = new MouseInputAdapter(){
-                public void mousePressed(MouseEvent e){
-                    x1 = (int)(e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX());
-                    y1 = (int)(e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY());
-                    interact(animation);
-                    animation.forceRedraw();
-                }
-
-                public void mouseDragged(MouseEvent e){
-                    x2 = (int)(e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX());
-                    y2 = (int)(e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY());
-                    interact(animation);
-                    animation.forceRedraw();
-                }
-            };
-
-            public void actionPerformed(ActionEvent event){
-                if (toggled){
-                    toggle.setText("Draw attack box");
-                    area.enableMovement();
-                    area.removeMouseListener(listener);
-                    area.removeMouseMotionListener(listener);
-                } else {
-                    toggle.setText("Stop drawing");
-                    area.disableMovement();
-                    area.addMouseListener(listener);
-                    area.addMouseMotionListener(listener);
-                }
-
-                toggled = ! toggled;
-            }
-        });
-
         final JSpinner x1spin = (JSpinner) engine.find( "x1" );
         x1spin.setValue(new Integer(x1));
         x1spin.addChangeListener( new ChangeListener(){
@@ -148,6 +112,46 @@ public class AttackEvent implements AnimationEvent {
         damagespin.addChangeListener( new ChangeListener(){
             public void stateChanged(ChangeEvent changeEvent){
                 damage = ((Integer)damagespin.getValue()).intValue();
+            }
+        });
+
+        final JButton toggle = (JButton) engine.find("toggle");
+        toggle.addActionListener(new AbstractAction(){
+            boolean toggled = false;
+            MouseInputAdapter listener = new MouseInputAdapter(){
+                public void mousePressed(MouseEvent e){
+                    x1 = (int)(e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX());
+                    y1 = (int)(e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY());
+                    x1spin.setValue(new Integer(x1));
+                    y1spin.setValue(new Integer(y1));
+                    interact(animation);
+                    animation.forceRedraw();
+                }
+
+                public void mouseDragged(MouseEvent e){
+                    x2 = (int)(e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX());
+                    y2 = (int)(e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY());
+                    x2spin.setValue(new Integer(x2));
+                    y2spin.setValue(new Integer(y2));
+                    interact(animation);
+                    animation.forceRedraw();
+                }
+            };
+
+            public void actionPerformed(ActionEvent event){
+                if (toggled){
+                    toggle.setText("Draw attack box");
+                    area.enableMovement();
+                    area.removeMouseListener(listener);
+                    area.removeMouseMotionListener(listener);
+                } else {
+                    toggle.setText("Stop drawing");
+                    area.disableMovement();
+                    area.addMouseListener(listener);
+                    area.addMouseMotionListener(listener);
+                }
+
+                toggled = ! toggled;
             }
         });
 
