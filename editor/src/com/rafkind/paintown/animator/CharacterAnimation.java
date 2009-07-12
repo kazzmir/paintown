@@ -75,6 +75,16 @@ public class CharacterAnimation extends JPanel {
                 final SwingEngine animEditor = new SwingEngine( "animator/animation.xml" );
                 CharacterAnimation.this.add((JPanel) animEditor.getRootComponent(), animConstraints);
 
+                final JButton hide = (JButton) animEditor.find("hide");
+                final Box upper = (Box) animEditor.find("upper");
+                hide.addActionListener(new AbstractAction(){
+                    boolean show = true;
+                    public void actionPerformed(ActionEvent event){
+                        show = ! show;
+                        upper.setVisible(show);
+                    }
+                });
+
                 // this.save = object;
 
                 final JSplitPane split = (JSplitPane) animEditor.find("split");
