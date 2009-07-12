@@ -23,6 +23,8 @@ import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.animator.events.EventFactory;
 import com.rafkind.paintown.animator.events.FrameEvent;
 
+import java.awt.geom.AffineTransform;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
@@ -72,6 +74,13 @@ public class CharacterAnimation extends JPanel {
                 animConstraints.fill = GridBagConstraints.BOTH;
                 animConstraints.anchor = GridBagConstraints.NORTHWEST;
 
+                class ObjectBox{
+                    public ObjectBox(){}
+                    public synchronized void set( Object x ){ obj = x; }
+                    public synchronized Object get(){ return obj; }
+                    private Object obj;
+                }
+
                 final SwingEngine animEditor = new SwingEngine( "animator/animation.xml" );
                 CharacterAnimation.this.add((JPanel) animEditor.getRootComponent(), animConstraints);
 
@@ -79,9 +88,78 @@ public class CharacterAnimation extends JPanel {
                 final Box upper = (Box) animEditor.find("upper");
                 hide.addActionListener(new AbstractAction(){
                     boolean show = true;
+                    final Icon original = hide.getIcon();
+                    private Icon make(final ObjectBox rotate){
+                        return new Icon(){
+                            public int getIconHeight(){
+                                return original.getIconHeight();
+                            }
+
+                            public int getIconWidth(){
+                                return original.getIconWidth();
+                            }
+                            
+                            public void paintIcon(Component c, Graphics g, int x, int y){
+                                Double d = (Double) rotate.get();
+                                Graphics2D g2 = (Graphics2D) g;
+                                /* translate back */
+                                g2.translate(x + -Math.cos(d.doubleValue()) * getIconWidth() + getIconWidth() / 2, y);
+                                /* rotate */
+                                g2.rotate(d.doubleValue());
+                                /* translate to origin */
+                                g2.translate(-x, -y);
+                                original.paintIcon(c, g, x, y);
+                            }
+                        };
+                    }
+
                     public void actionPerformed(ActionEvent event){
                         show = ! show;
                         upper.setVisible(show);
+                        double start = 0;
+                        double end = Math.PI / 2;
+                        int direction = 1;
+                        if (show){
+                            start = Math.PI / 2;
+                            end = 0;
+                            direction = -direction;
+                        }
+
+                        final ObjectBox value = new ObjectBox();
+                        value.set(new Double(start));
+
+                        hide.setIcon(make(value));
+
+                        final double x_start = start;
+                        final double x_end = end;
+                        final int x_direction = direction;
+                        final int speed = 20;
+                        new Thread(){
+                            private void rest( int m ){
+                                try{
+                                    Thread.sleep( m );
+                                } catch ( Exception e ){
+                                }
+                            }
+
+                            public void run(){
+                                boolean done = false;
+                                while (! done){
+                                    double rotate = ((Double) value.get()).doubleValue();
+                                    rotate += 0.1 * x_direction;
+                                    if (x_direction > 0 && rotate >= x_end){
+                                        done = true;
+                                        rotate = x_end;
+                                    } else if (x_direction < 0 && rotate <= x_end){
+                                        done = true;
+                                        rotate = x_end;
+                                    }
+                                    value.set(new Double(rotate));
+                                    hide.repaint();
+                                    rest(speed);
+                                }
+                            }
+                        }.start();
                     }
                 });
 
@@ -373,12 +451,7 @@ public class CharacterAnimation extends JPanel {
 
                 eventList.setListData( animation.getEvents() );
 
-                class ObjectBox{
-                    public ObjectBox(){}
-                    public synchronized void set( Object x ){ obj = x; }
-                    public synchronized Object get(){ return obj; }
-                    private Object obj;
-                }
+                
                 final ObjectBox currentEvent = new ObjectBox();
 
                 animation.addEventNotifier( new Lambda1(){
