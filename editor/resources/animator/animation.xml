@@ -37,7 +37,7 @@
                         gridx="0"
                         gridy="0"
                         weightx="0.1"
-                        weighty="0.9"
+                        weighty="0.1"
                         gridheight="1"
                         anchor="GridBagConstraints.NORTHWEST"
                         fill="GridBagConstraints.NONE"
