@@ -24,7 +24,6 @@
 
 using namespace std;
 
-Bitmap *Menu::work = 0;
 int Menu::clearColor = Bitmap::makeColor(0,0,0);
 
 // The top level menu, it is required to be main or whatever this set to
@@ -66,14 +65,12 @@ music(""),
 selectSound(""),
 longestTextLength(0),
 currentDrawState( FadeIn ),
+work(new Bitmap(GFX_X, GFX_Y)),
 _name(""),
 hasOptions(false),
 removeOption(false),
 background(0),
 option(false){
-	if ( ! work ){
-		work = new Bitmap( GFX_X, GFX_Y ); //Bitmap::Screen;
-	}
 	backboard.position.radius = 15;
 }
 
@@ -264,8 +261,6 @@ void Menu::load(const std::string &filename) throw (LoadException){
 }
 
 void Menu::run(){
-
-    Bitmap screen_buffer(320, 240);
     bool done = false;
     bool endGame = false;
 
@@ -535,7 +530,7 @@ void Menu::drawMenuSnap(Bitmap *bmp){
     (*selectedOption)->setState(MenuOption::Selected);
     currentDrawState = NoFade;
     // Do the background
-    //drawBackground(&workBmp);
+    drawBackground(&workBmp);
     // Draw text board
     drawTextBoard(&workBmp);
     // Draw text
@@ -543,7 +538,8 @@ void Menu::drawMenuSnap(Bitmap *bmp){
     
     // Create temp bitmap
     Bitmap tempBmp = Bitmap::temporaryBitmap(backboard.position.width - 10, backboard.position.height - 10);
-    workBmp.Blit(backboard.position.x+5,backboard.position.y+5,backboard.position.width-5,backboard.position.height-5,tempBmp);
+    //workBmp.Blit(backboard.position.x+5,backboard.position.y+5,backboard.position.width-5,backboard.position.height-5,tempBmp);
+    workBmp.Stretch(tempBmp);
     tempBmp.Stretch(*bmp);
 }
 
@@ -570,8 +566,9 @@ void Menu::addOption(MenuOption *opt){
   }
 }
 
-void Menu::setBitmap(Bitmap *bmp){
-	work = bmp;
+/*! Get working bitmap */
+Bitmap *Menu::getWork(){
+    return work;
 }
 
 /*! Get current background in Bitmap */
@@ -940,6 +937,10 @@ void Menu::drawInfoText ( Bitmap *bmp ){
 
 Menu::~Menu(){
 	// cleanup
+	if (work){
+	    delete work;
+	}
+	
 	std::vector <MenuOption *>::iterator b = menuOptions.begin();
 	std::vector <MenuOption *>::iterator e = menuOptions.end();
 	for(;b!=e;++b){

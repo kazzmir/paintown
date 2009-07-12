@@ -32,7 +32,7 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
 			    *tok >> temp;
 			    _menu = new MugenMenu(temp);
 			    try {
-				_menu->load();
+				_menu->loadData();
 			    } catch( const MugenException &ex ){
 				string m("Problem with loading MUGEN menu: ");
 				m += ex.getReason();

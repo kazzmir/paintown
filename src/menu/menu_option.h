@@ -122,6 +122,8 @@ class MenuOption
 		inline void setForRemoval(const bool r) { forRemoval = r; }
 		
 		inline bool scheduledForRemoval() const { return forRemoval; }
+		
+		inline Menu *getParent() const { return parent; }
 };
 
 #endif

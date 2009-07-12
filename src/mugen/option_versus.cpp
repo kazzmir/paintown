@@ -49,8 +49,9 @@ void MugenOptionVersus::logic(){
 }
 
 void MugenOptionVersus::run(bool &endGame){
+    Bitmap screen(GFX_X, GFX_Y);
     // Do select screen change back to 2 once finished testing
-    MugenSelectedChars *gameInfo = MugenUtil::getSelect()->run(getText(), 1, true, Menu::work);
+    MugenSelectedChars *gameInfo = MugenUtil::getSelect()->run(getText(), 1, true, &screen);
     
     if (gameInfo == 0)return;
     
@@ -87,9 +88,9 @@ void MugenOptionVersus::run(bool &endGame){
         }
 
         if (draw){
-            gameInfo->selectedStage->render(&work);
-	    work.Stretch(*Menu::work);
-	    Menu::work->BlitToScreen();
+            gameInfo->selectedStage->render(&screen);
+	    work.Stretch(screen);
+	    screen.BlitToScreen();
         }
 
         while (Global::speed_counter == 0){

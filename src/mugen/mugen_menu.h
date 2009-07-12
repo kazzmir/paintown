@@ -253,7 +253,7 @@ class MugenMenu : public Menu
 	virtual ~MugenMenu();
 	
 	/*! load */
-	virtual void load() throw (MugenException);
+	virtual void loadData() throw (MugenException);
 	
 	/*! do logic, draw whatever */
 	virtual void run();	

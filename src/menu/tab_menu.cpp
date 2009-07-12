@@ -146,7 +146,7 @@ void TabMenu::load(const std::string &filename) throw (LoadException){
 }
 
 void TabMenu::run(){
-    Bitmap screenBuffer(work->getWidth(), work->getHeight());
+    bool endMenu = false;
     bool done = false;
 
     if ( tabs.empty() ){
@@ -171,104 +171,114 @@ void TabMenu::run(){
     for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 	(*i)->reset();
     }
-    
-    while ( ! done ){
+    while (!endMenu){
+	bool runMenu = false;
+	while (!done && !runMenu){
 
-	bool draw = false;
-	//const char vi_up = 'k';
-	//const char vi_down = 'j';
-	const char vi_left = 'h';
-	const char vi_right = 'l';
+	    bool draw = false;
+	    //const char vi_up = 'k';
+	    //const char vi_down = 'j';
+	    const char vi_left = 'h';
+	    const char vi_right = 'l';
 
-	keyInputManager::update();
+	    keyInputManager::update();
 
-	if ( Global::speed_counter > 0 ){
-	    draw = true;
-	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-	    while ( runCounter >= 1.0 ){
-		runCounter -= 1;
-		// Keys
-	
-		if (keyInputManager::keyState(keys::LEFT, true) ||
-		    keyInputManager::keyState(vi_left, true)){
-		    MenuGlobals::playSelectSound();
-		}
+	    if ( Global::speed_counter > 0 ){
+		draw = true;
+		runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+		while ( runCounter >= 1.0 ){
+		    runCounter -= 1;
+		    // Keys
+	    
+		    if (keyInputManager::keyState(keys::LEFT, true) ||
+			keyInputManager::keyState(vi_left, true)){
+			MenuGlobals::playSelectSound();
+		    }
 
-		if ( keyInputManager::keyState(keys::RIGHT, true )||
-			keyInputManager::keyState(vi_right, true )){
-		    MenuGlobals::playSelectSound();
-		}
-		/*
-		if (keyInputManager::keyState(keys::DOWN, true) ||
-		    keyInputManager::keyState(vi_down, true)){
-		    MenuGlobals::playSelectSound();
-		}
+		    if ( keyInputManager::keyState(keys::RIGHT, true )||
+			    keyInputManager::keyState(vi_right, true )){
+			MenuGlobals::playSelectSound();
+		    }
+		    /*
+		    if (keyInputManager::keyState(keys::DOWN, true) ||
+			keyInputManager::keyState(vi_down, true)){
+			MenuGlobals::playSelectSound();
+		    }
 
-		if ( keyInputManager::keyState(keys::UP, true )||
-			keyInputManager::keyState(vi_up, true )){
-		    MenuGlobals::playSelectSound();
-		}
-*/
-		if ( keyInputManager::keyState(keys::ENTER, true ) ){
+		    if ( keyInputManager::keyState(keys::UP, true )||
+			    keyInputManager::keyState(vi_up, true )){
+			MenuGlobals::playSelectSound();
+		    }
+    */
+		    if ( keyInputManager::keyState(keys::ENTER, true ) ){
+			// Run menu
+			runMenu = true;
+		    }
+		    if (keyInputManager::keyState(keys::ESC, true )){
+			done = true;
+		    }
+		    
+		    // Animations
+		    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+			(*i)->act();
+		    }
+		    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+			(*i)->act();
+		    }
+		    
+		    // Lets do some logic for the box with text
+		    updateFadeInfo();
 		    
 		}
+
+		Global::speed_counter = 0;
+	    }
+
+	    while ( Global::second_counter > 0 ){
+		game_time--;
+		Global::second_counter--;
+		if ( game_time < 0 ){
+		    game_time = 0;
+		}
+	    }
+
+	    if ( draw ){
+		// Draw
+		drawBackground(work);
 		
-		 // Animations
+		// Do background animations
 		for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-		    (*i)->act();
+		    (*i)->draw(work);
 		}
+		
+		// Draw text board
+		drawTextBoard(work);
+		
+		// Menus
+		if (currentDrawState == NoFade){
+		    drawSnapshots(work);
+		}
+		
+		// Draw foreground animations
 		for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-		    (*i)->act();
+		    (*i)->draw(work);
 		}
 		
-		// Lets do some logic for the box with text
-		updateFadeInfo();
-		
+		// Finally render to screen
+		work->BlitToScreen();
 	    }
 
-	    Global::speed_counter = 0;
-	}
-
-	while ( Global::second_counter > 0 ){
-	    game_time--;
-	    Global::second_counter--;
-	    if ( game_time < 0 ){
-		game_time = 0;
+	    while ( Global::speed_counter < 1 ){
+		Util::rest( 1 );
+		keyInputManager::update();
 	    }
 	}
-
-	if ( draw ){
-	    // Draw
-	    drawBackground(&screenBuffer);
-	    
-	     // Do background animations
-	    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-		(*i)->draw(&screenBuffer);
-	    }
-	    
-	    // Draw text board
-	    drawTextBoard(&screenBuffer);
-	    
-	    // Menus
-	    if (currentDrawState == NoFade){
-		drawSnapshots(&screenBuffer);
-	    }
-	    
-	    // Draw foreground animations
-	    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-		(*i)->draw(&screenBuffer);
-	    }
-	    
-	    // Finally render to screen
-	    screenBuffer.BlitToScreen();
+	// Check runmenu
+	if(runMenu){
+	    // Run menu
+	    (*currentTab)->menu.run();
+	    keyInputManager::clear();
 	}
-
-	while ( Global::speed_counter < 1 ){
-	    Util::rest( 1 );
-	    keyInputManager::update();
-	}
-
-	done |= keyInputManager::keyState(keys::ESC, true );
     }
 }
 
@@ -282,7 +292,7 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	(*i)->updateSnapshot();
 	// Set clippin rectangle
-	bmp->setClipRect( backboard.position.x+8, backboard.position.y+8, (backboard.position.x+backboard.position.width)-8, (backboard.position.y+backboard.position.height)-8 );
+	bmp->setClipRect( backboard.position.x+(backboard.position.radius/2), backboard.position.y+(backboard.position.radius/2), (backboard.position.x+backboard.position.width)-(backboard.position.radius/2), (backboard.position.y+backboard.position.height)-(backboard.position.radius/2) );
 	(*i)->snap->Blit(startx,backboard.position.y, *bmp);
 	bmp->setClipRect( 0,0,bmp->getWidth(),bmp->getHeight() );
 	startx+=incrementx;

@@ -194,9 +194,9 @@ void OptionKey::run(bool &endGame)
 	dialog.position.bodyAlpha = 200;
 	dialog.position.border = Bitmap::makeColor(255,255,255);
 	dialog.position.borderAlpha = 255;
-	dialog.render(Menu::work);
-	vFont.printf( dialog.position.x+5, dialog.position.y+5, Bitmap::makeColor(255,255,255), *Menu::work, "Press a Key!", -1);
-	Menu::work->BlitToScreen();
+	dialog.render(getParent()->getWork());
+	vFont.printf( dialog.position.x+5, dialog.position.y+5, Bitmap::makeColor(255,255,255), *getParent()->getWork(), "Press a Key!", -1);
+	getParent()->getWork()->BlitToScreen();
 	Keyboard key;
 	keyCode = readKey( key );
 	setKey(player,type, keyCode);

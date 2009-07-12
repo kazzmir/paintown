@@ -907,7 +907,7 @@ logo(0),
 intro(0){
 }
 
-void MugenMenu::load() throw (MugenException){
+void MugenMenu::loadData() throw (MugenException){
      // Lets look for our def since some assholes think that all file systems are case insensitive
     std::string baseDir = Util::getDataPath() + "mugen/data/" + MugenUtil::getFileDir(location);
     const std::string ourDefFile = MugenUtil::fixFileName( baseDir, MugenUtil::stripDir(location) );

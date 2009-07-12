@@ -48,15 +48,12 @@ class Menu
 		/*! Add options to menu */
 		void addOption(MenuOption *opt);
 		
-		/*! set the bitmap */
-		static void setBitmap(Bitmap *bmp);
+		/*! get working bitmap */
+		Bitmap *getWork();
 		
 		/*! Get current background in Bitmap */
 		static Bitmap *getBackground();
 		
-		//! Our current bitmap to draw to
-		static Bitmap *work;
-
 		//! Get menu by name
 		static Menu *getMenu(const std::string &name);
 		
@@ -116,6 +113,9 @@ class Menu
 		//! Enum containing the draw state so we can do some effects
 		menuDrawState currentDrawState;
 		
+		//! Our current bitmap to draw to
+		Bitmap *work;
+		
 		//! Draw background
 		void drawBackground(Bitmap *work);
 		
@@ -129,7 +129,6 @@ class Menu
 		void drawTextBoard(Bitmap *work);
 		
 	private:
-	    
 		std::string _name;
 		
 		// Error checker if no options do not add to menu and remove from list
