@@ -14,9 +14,11 @@ class MenuAnimation;
 class MenuBox : public Box
 {
     public:
-	MenuBox();
+	MenuBox(int w, int h);
 	virtual ~MenuBox();
+	void updateSnapshot();
 	Menu menu;
+	Bitmap *snap;
 };
 
 class TabMenu : public Menu
@@ -40,10 +42,11 @@ class TabMenu : public Menu
 	
 	std::vector<MenuBox *>tabs;
 	std::vector<MenuBox *>::iterator currentTab;
+	int location;
 	
 	void updateSnapshots();
 	
-	void drawTabs(Bitmap *work);
-	void drawSnapshots();
+	void drawTabs(Bitmap *bmp);
+	void drawSnapshots(Bitmap *bmp);
 };
 #endif

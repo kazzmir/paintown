@@ -105,6 +105,16 @@ class Menu
 		std::vector <MenuAnimation *>backgroundAnimations;
 		std::vector <MenuAnimation *>foregroundAnimations;
 		
+		//! Draw states
+		enum menuDrawState
+		{
+			FadeIn = 0,
+   			FadeInText,
+      			NoFade
+		};
+		
+		//! Enum containing the draw state so we can do some effects
+		menuDrawState currentDrawState;
 		
 		//! Draw background
 		void drawBackground(Bitmap *work);
@@ -139,17 +149,6 @@ class Menu
 		
 		//! Cleanup options to remove omited items
 		void optionCleanup();
-		
-		//! Draw states
-		enum menuDrawState
-		{
-			FadeIn = 0,
-   			FadeInText,
-      			NoFade
-		};
-		
-		//! Enum containing the draw state so we can do some effects
-		menuDrawState currentDrawState;
 		
 		//! Fade speed
 		static int fadeSpeed;

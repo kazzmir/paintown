@@ -24,15 +24,22 @@
 
 using namespace std;
 
-MenuBox::MenuBox(){
-    
+MenuBox::MenuBox(int w, int h){
+    snap = new Bitmap(w,h);
 }
 
 MenuBox::~MenuBox(){
-    
+    if (snap){
+	delete snap;
+    }
 }
 
-TabMenu::TabMenu(){
+void MenuBox::updateSnapshot(){
+    menu.drawMenuSnap(snap);
+}
+
+TabMenu::TabMenu():
+location(0){
 	
 }
 
@@ -92,10 +99,8 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		    foregroundAnimations.push_back(animation);
 		}
 	    } else if( *tok == "menu" ) {
-		MenuBox *menu = new MenuBox();
+		MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
 		if (menu){
-		    //Token *temp_tok;
-		    //*tok >> temp_tok;
 		    if (tok->numTokens() == 2){
 			std::string temp;
 			*tok >> temp;
@@ -143,7 +148,6 @@ void TabMenu::load(const std::string &filename) throw (LoadException){
 void TabMenu::run(){
     Bitmap screen_buffer(320, 240);
     bool done = false;
-    bool endGame = false;
 
     if ( tabs.empty() ){
         return;
@@ -153,6 +157,9 @@ void TabMenu::run(){
     Global::speed_counter = 0;
     Global::second_counter = 0;
     int game_time = 100;
+    
+    currentTab = tabs.begin();
+    location = 0;
     
      // Reset fade stuff
     resetFadeInfo();
@@ -214,6 +221,9 @@ void TabMenu::run(){
 		    (*i)->act();
 		}
 		
+		// Do the snapshots
+		updateSnapshots();
+		
 		// Lets do some logic for the box with text
 		updateFadeInfo();
 		
@@ -243,6 +253,9 @@ void TabMenu::run(){
 	    drawTextBoard(work);
 	    
 	    // Menus
+	    if (currentDrawState == NoFade){
+		drawSnapshots(work);
+	    }
 	    
 	    // Draw foreground animations
 	    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
@@ -260,6 +273,27 @@ void TabMenu::run(){
 
 	done |= keyInputManager::keyState(keys::ESC, true );
     }
+}
+
+void TabMenu::updateSnapshots(){
+    for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+	(*i)->updateSnapshot();
+    }
+}
+
+void TabMenu::drawTabs(Bitmap *bmp){
+}
+
+void TabMenu::drawSnapshots(Bitmap *bmp){
+    const int incrementx = backboard.position.width;
+    int startx = backboard.position.x - (location * incrementx);
+    // Set clippin rectangle
+    bmp->setClipRect( backboard.position.x+8, backboard.position.y+8, (backboard.position.x+backboard.position.width)-8, (backboard.position.y+backboard.position.height)-8 );
+    for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+	(*i)->snap->Blit(startx,backboard.position.y, *bmp);
+	startx+=incrementx;
+    }
+    bmp->setClipRect( 0,0,bmp->getWidth(),bmp->getHeight() );
 }
 
 TabMenu::~TabMenu(){
