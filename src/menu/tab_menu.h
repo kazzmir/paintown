@@ -44,8 +44,6 @@ class TabMenu : public Menu
 	std::vector<MenuBox *>::iterator currentTab;
 	int location;
 	
-	void updateSnapshots();
-	
 	void drawTabs(Bitmap *bmp);
 	void drawSnapshots(Bitmap *bmp);
 };
