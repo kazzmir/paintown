@@ -20,6 +20,7 @@ public final class DrawArea extends JComponent {
     private int x = 50;
     private int y = 50;
     private double scale;
+    private boolean canMove = true;
 
     private AnimationEvent currentEvent;
     private Animation currentAnimation;
@@ -36,9 +37,11 @@ public final class DrawArea extends JComponent {
             }
 
             public void mouseDragged( MouseEvent event ){
-                setX((int)(event.getX() / getScale()));
-                setY((int)(event.getY() / getScale()));
-                DrawArea.this.repaint();
+                if (canMove){
+                    setCenterX((int)(event.getX() / getScale()));
+                    setCenterY((int)(event.getY() / getScale()));
+                    DrawArea.this.repaint();
+                }
             }
         });
 
@@ -171,12 +174,28 @@ public final class DrawArea extends JComponent {
         }
     }
 
-    public void setX(int x){
+    public void setCenterX(int x){
         this.x = x;
     }
 
-    public void setY(int y){
+    public void setCenterY(int y){
         this.y = y;
+    }
+
+    public int getCenterX(){
+        return x;
+    }
+
+    public int getCenterY(){
+        return y;
+    }
+
+    public void enableMovement(){
+        this.canMove = true;
+    }
+    
+    public void disableMovement(){
+        this.canMove = false;
     }
 
     public void animate( Animation animation ){

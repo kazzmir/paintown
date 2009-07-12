@@ -26,7 +26,7 @@ public class FrameEvent implements AnimationEvent {
 		frame = token.readString(0);
 	}
 	
-	public void interact( Animation animation ){
+	public void interact(final Animation animation){
 		String path = Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame;
 		try{
 			/*
@@ -48,7 +48,7 @@ public class FrameEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JPanel getEditor( final Animation animation ){
+	public JPanel getEditor( final Animation animation, final DrawArea area2){
 		SwingEngine engine = new SwingEngine( "animator/eventframe.xml" );
 		((JPanel)engine.getRootComponent()).setSize(350,270);
 		JPanel canvas = (JPanel)engine.find("canvas");

@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.RelativeFileChooser;
 import com.rafkind.paintown.animator.Animator;
+import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
@@ -24,7 +25,7 @@ public class TicketEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JPanel getEditor( Animation animation ){
+	public JPanel getEditor(final Animation animation, final DrawArea area){
 		JPanel j = new JPanel();
 		j.setSize( 200, 50 );
 		return j;

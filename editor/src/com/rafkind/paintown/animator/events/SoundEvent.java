@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.RelativeFileChooser;
+import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
@@ -28,7 +29,7 @@ public class SoundEvent implements AnimationEvent
 		return getToken().toString();
 	}
 	
-	public JPanel getEditor( Animation animation ){
+	public JPanel getEditor(final Animation animation, final DrawArea area){
 		final SwingEngine engine = new SwingEngine( "animator/eventsound.xml" );
 		((JPanel)engine.getRootComponent()).setSize(200,50);
 		

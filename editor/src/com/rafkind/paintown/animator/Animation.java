@@ -337,10 +337,18 @@ public class Animation implements Runnable {
 	public synchronized void setOffsetX( int x ){
 		this.offsetX = x;
 	}
+
+        public synchronized int getOffsetX(){
+            return this.offsetX;
+        }
 	
 	public synchronized void setOffsetY( int y ){
 		this.offsetY = y;
 	}
+        
+        public synchronized int getOffsetY(){
+            return this.offsetY;
+        }
 
 	public void addDrawable( JComponent draw ){
 		synchronized( drawables ){

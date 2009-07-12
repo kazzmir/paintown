@@ -9,6 +9,7 @@
 			anchor="GridBagConstraints.NORTHWEST"
 			fill="GridBagConstraints.BOTH"
 			/>
+                <button id="toggle" text="Draw attack box" />
 		<hbox>
 			<label text="Set X1" />
 			<spinner id="x1" />

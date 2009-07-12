@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.animator.Animation;
+import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
@@ -28,7 +29,7 @@ public class JumpEvent implements AnimationEvent {
 		return getToken().toString();
 	}
 	
-	public JPanel getEditor( Animation animation ){
+	public JPanel getEditor(final Animation animation, final DrawArea area){
 		SwingEngine engine = new SwingEngine( "animator/eventjump.xml" );
 		((JPanel)engine.getRootComponent()).setSize(200,150);
 		

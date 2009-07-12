@@ -388,11 +388,36 @@ public class CharacterAnimation extends JPanel {
                     }
                 });
 
+                JPanel canvas = (JPanel) animEditor.find( "canvas" );
+                final DrawArea area = new DrawArea(new Lambda0(){
+                    public Object invoke(){
+                        /*
+                        if ( eventList.getSelectedIndex() != -1 ){
+                            AnimationEvent event = (AnimationEvent) eventList.getSelectedValue();
+                            return event.getEditor(animation, );
+                        } else {
+                            return null;
+                        }
+                        */
+
+                        return null;
+                    }
+                });
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 0;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.fill = GridBagConstraints.BOTH;
+                constraints.anchor = GridBagConstraints.NORTHWEST;
+
+                canvas.add(area, constraints);
+
                 final Lambda1 doEvent = new Lambda1(){
                     final JPanel work = (JPanel) contextEditor.find("event-work");
                     public Object invoke(Object _event){
                         AnimationEvent event = (AnimationEvent) _event;
-                        JPanel editor = event.getEditor(animation);
+                        JPanel editor = event.getEditor(animation, area);
                         work.removeAll();
                         GridBagConstraints constraints = new GridBagConstraints();
                         constraints.gridx = 0;
@@ -665,27 +690,7 @@ public class CharacterAnimation extends JPanel {
 
                 // controls.add((JComponent)controlEditor.getRootComponent());
 
-                JPanel canvas = (JPanel) animEditor.find( "canvas" );
-                final DrawArea area = new DrawArea(new Lambda0(){
-                    public Object invoke(){
-                        if ( eventList.getSelectedIndex() != -1 ){
-                            AnimationEvent event = (AnimationEvent) eventList.getSelectedValue();
-                            return event.getEditor(animation);
-                        } else {
-                            return null;
-                        }
-                    }
-                });
-                GridBagConstraints constraints = new GridBagConstraints();
-                constraints.gridx = 0;
-                constraints.gridy = 0;
-                constraints.weightx = 1;
-                constraints.weighty = 1;
-                constraints.fill = GridBagConstraints.BOTH;
-                constraints.anchor = GridBagConstraints.NORTHWEST;
-
-                canvas.add(area, constraints);
-
+                
                 final JLabel scaleNum = (JLabel) animEditor.find( "scale-num" );
                 scaleNum.setText( "Scale: " + area.getScale() );
                 final JSlider scale = (JSlider) animEditor.find( "scale" );

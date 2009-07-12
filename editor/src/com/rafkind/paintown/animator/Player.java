@@ -26,44 +26,6 @@ public final class Player{
         return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField, character );
     }
 
-    private JPanel createAnimation(){
-        final JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-
-        final DrawArea drawArea = new DrawArea(new Lambda0(){
-            public Object invoke(){
-                /* yes, this should be null unless something better
-                 * can be put in the popup place
-                 */
-                return null;
-            }
-        });
-
-        panel.add(drawArea, constraints);
-
-        /*
-        final JLabel scaleNum = (JLabel) playerEditor.find( "scale-num" );
-        scaleNum.setText( "Scale: " + _drawArea.getScale() );
-        final JSlider scale = (JSlider) playerEditor.find( "scale" );
-        scale.setValue( (int)(_drawArea.getScale() * 5.0) );
-        scale.addChangeListener( new ChangeListener(){
-            public void stateChanged( ChangeEvent e ){
-                _drawArea.setScale( scale.getValue() / 5.0 );
-                scaleNum.setText( "Scale: " + _drawArea.getScale() );
-            }
-        });
-        */
-
-        return panel;
-    }
-
     public Player(final Animator animator, final CharacterStats character){
         this.character = character;
 
@@ -100,7 +62,6 @@ public final class Player{
         final JButton addAnimation = (JButton) playerEditor.find("add-animation");
         addAnimation.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
-                // animations.add("New animation", createAnimation());
                 Animation animation = new Animation();
                 character.addAnimation(animation);
                 new Thread(animation).start();
