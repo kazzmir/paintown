@@ -388,11 +388,32 @@ public class CharacterAnimation extends JPanel {
                     }
                 });
 
+                final Lambda1 doEvent = new Lambda1(){
+                    final JPanel work = (JPanel) contextEditor.find("event-work");
+                    public Object invoke(Object _event){
+                        AnimationEvent event = (AnimationEvent) _event;
+                        JPanel editor = event.getEditor(animation);
+                        work.removeAll();
+                        GridBagConstraints constraints = new GridBagConstraints();
+                        constraints.gridx = 0;
+                        constraints.gridy = 0;
+                        constraints.weightx = 1;
+                        constraints.weighty = 1;
+                        constraints.fill = GridBagConstraints.BOTH;
+                        constraints.anchor = GridBagConstraints.NORTHWEST;
+                        work.add(editor, constraints);
+                        work.revalidate();
+                        return null;
+                    }
+                };
+
                 eventList.addMouseListener( new MouseAdapter() {
                     public void mouseClicked(MouseEvent e) {
                         if ( rightClick( e ) || e.getClickCount() == 2 ){
                             int index = eventList.locationToIndex(e.getPoint());
                             AnimationEvent event = (AnimationEvent) animation.getEvents().elementAt(index);
+                            doEvent.invoke_(event);
+                            /*
                             JPanel editor = event.getEditor(animation);
                             JPanel work = (JPanel) contextEditor.find("event-work");
                             work.removeAll();
@@ -405,6 +426,7 @@ public class CharacterAnimation extends JPanel {
                             constraints.anchor = GridBagConstraints.NORTHWEST;
                             work.add(editor, constraints);
                             work.revalidate();
+                            */
                             
                             /*
                             if ( editor != null ){
@@ -459,6 +481,8 @@ public class CharacterAnimation extends JPanel {
                 eventAdd.addActionListener( new AbstractAction(){
                     public void actionPerformed( ActionEvent event ){
                         AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
+                        doEvent.invoke_(temp);
+                        /*
                         JPanel editor = temp.getEditor(animation);
                         JPanel work = (JPanel) contextEditor.find("event-work");
                         work.removeAll();
@@ -471,6 +495,7 @@ public class CharacterAnimation extends JPanel {
                         constraints.anchor = GridBagConstraints.NORTHWEST;
                         work.add(editor, constraints);
                         work.revalidate();
+                        */
 
                         /*
                         if ( editor != null ){
@@ -506,6 +531,8 @@ public class CharacterAnimation extends JPanel {
                     public void actionPerformed( ActionEvent event ){
                         if( ! animation.getEvents().isEmpty()){
                             AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt( eventList.getSelectedIndex() );
+                            doEvent.invoke_(temp);
+                            /*
                             JPanel editor = temp.getEditor(animation);
                             JPanel work = (JPanel) contextEditor.find("event-work");
                             work.removeAll();
@@ -518,6 +545,7 @@ public class CharacterAnimation extends JPanel {
                             constraints.anchor = GridBagConstraints.NORTHWEST;
                             work.add(editor, constraints);
                             work.revalidate();
+                            */
 
                             /*
                                if ( editor != null ){
