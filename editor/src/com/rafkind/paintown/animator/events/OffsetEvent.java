@@ -64,4 +64,7 @@ public class OffsetEvent implements AnimationEvent
 		
 		return temp;
 	}
+        
+        public void destroy(){
+        }
 }

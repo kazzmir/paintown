@@ -77,4 +77,7 @@ public class CoordsEvent implements AnimationEvent
 		
 		return temp;
 	}
+        
+        public void destroy(){
+        }
 }

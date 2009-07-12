@@ -59,4 +59,7 @@ public class SoundEvent implements AnimationEvent
 		
 		return temp;
 	}
+        
+        public void destroy(){
+        }
 }

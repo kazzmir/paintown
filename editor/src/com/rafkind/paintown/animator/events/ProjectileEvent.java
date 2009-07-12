@@ -139,4 +139,7 @@ public class ProjectileEvent implements AnimationEvent
 		
 		return temp;
 	}
+
+        public void destroy(){
+        }
 }

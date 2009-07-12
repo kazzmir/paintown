@@ -34,4 +34,7 @@ public class NopEvent implements AnimationEvent{
 		temp.addToken(new Token("nop"));
 		return temp;
 	}
+
+        public void destroy(){
+        }
 }

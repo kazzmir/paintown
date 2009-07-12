@@ -46,4 +46,7 @@ public class DelayEvent implements AnimationEvent {
         temp.addToken(new Token(Integer.toString(_delay)));
         return temp;
     }
+
+    public void destroy(){
+    }
 }

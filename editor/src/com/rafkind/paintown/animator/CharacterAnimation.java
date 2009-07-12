@@ -413,10 +413,16 @@ public class CharacterAnimation extends JPanel {
 
                 canvas.add(area, constraints);
 
+                final ObjectBox lastEvent = new ObjectBox();
                 final Lambda1 doEvent = new Lambda1(){
                     final JPanel work = (JPanel) contextEditor.find("event-work");
                     public Object invoke(Object _event){
+                        if (lastEvent.get() != null){
+                            AnimationEvent last = (AnimationEvent) lastEvent.get();
+                            last.destroy();
+                        }
                         AnimationEvent event = (AnimationEvent) _event;
+                        lastEvent.set(event);
                         JPanel editor = event.getEditor(animation, area);
                         work.removeAll();
                         GridBagConstraints constraints = new GridBagConstraints();

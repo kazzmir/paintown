@@ -54,4 +54,7 @@ public class StatusEvent implements AnimationEvent {
 		
 		return temp;
 	}
+        
+        public void destroy(){
+        }
 }

@@ -69,4 +69,7 @@ public class TrailEvent implements AnimationEvent {
         temp.addToken(new String[]{"length", String.valueOf(length)});
         return temp;
     }
+        
+    public void destroy(){
+    }
 }

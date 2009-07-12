@@ -101,4 +101,7 @@ public class BBoxEvent implements AnimationEvent {
 
         return temp;
     }
+
+    public void destroy(){
+    }
 }

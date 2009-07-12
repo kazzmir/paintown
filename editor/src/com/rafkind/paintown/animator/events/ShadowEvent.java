@@ -66,4 +66,7 @@ public class ShadowEvent implements AnimationEvent {
 		
 		return temp;
 	}
+        
+        public void destroy(){
+        }
 }

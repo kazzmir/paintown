@@ -53,4 +53,7 @@ public class FaceEvent implements AnimationEvent {
 		
 		return temp;
 	}
+
+        public void destroy(){
+        }
 }

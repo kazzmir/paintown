@@ -70,4 +70,7 @@ public class MoveEvent implements AnimationEvent {
 		
 		return temp;
 	}
+
+        public void destroy(){
+        }
 }

@@ -129,4 +129,7 @@ public class FrameEvent implements AnimationEvent {
 		temp.addToken( new Token( frame ) );
 		return temp;
 	}
+
+        public void destroy(){
+        }
 }

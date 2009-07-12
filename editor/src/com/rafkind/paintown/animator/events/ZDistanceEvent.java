@@ -51,4 +51,7 @@ public class ZDistanceEvent implements AnimationEvent {
 		
 		return temp;
 	}
+        
+        public void destroy(){
+        }
 }

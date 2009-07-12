@@ -13,4 +13,5 @@ public interface AnimationEvent{
     public JPanel getEditor(Animation animation, DrawArea area);
     public Token getToken();
     public void loadToken(Token token);
+    public void destroy();
 }

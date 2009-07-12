@@ -41,4 +41,7 @@ public class TicketEvent implements AnimationEvent {
 		temp.addToken(new Token("next-ticket"));
 		return temp;
 	}
+        
+        public void destroy(){
+        }
 }

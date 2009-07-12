@@ -9,6 +9,7 @@ import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.BoundingBox;
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
@@ -19,6 +20,12 @@ public class AttackEvent implements AnimationEvent {
     private int y2;
     private int damage;
     private int force;
+
+    private Lambda0 onDestroy = new Lambda0(){
+        public Object invoke(){
+            return null;
+        }
+    };
 
     public void loadToken(Token token){
         Token x1_token = token.findToken("x1");
@@ -144,11 +151,24 @@ public class AttackEvent implements AnimationEvent {
                     area.enableMovement();
                     area.removeMouseListener(listener);
                     area.removeMouseMotionListener(listener);
+                    onDestroy = new Lambda0(){
+                        public Object invoke(){
+                            return null;
+                        }
+                    };
                 } else {
                     toggle.setText("Stop drawing");
                     area.disableMovement();
                     area.addMouseListener(listener);
                     area.addMouseMotionListener(listener);
+                    onDestroy = new Lambda0(){
+                        public Object invoke(){
+                            area.removeMouseListener(listener);
+                            area.removeMouseMotionListener(listener);
+                            area.enableMovement();
+                            return null;
+                        }
+                    };
                 }
 
                 toggled = ! toggled;
@@ -156,6 +176,10 @@ public class AttackEvent implements AnimationEvent {
         });
 
         return (JPanel)engine.getRootComponent();
+    }
+    
+    public void destroy(){
+        onDestroy.invoke_();
     }
 
     public Token getToken(){
