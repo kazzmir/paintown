@@ -19,6 +19,7 @@ class MenuBox : public Box
 	void updateSnapshot();
 	Menu menu;
 	Bitmap *snap;
+	int fontColor;
 };
 
 class TabMenu : public Menu
@@ -39,6 +40,9 @@ class TabMenu : public Menu
     private:
 	RectArea tabInfo;
 	RectArea selectedTabInfo;
+	
+	int fontColor;
+	int selectedFontColor;
 	
 	std::vector<MenuBox *>tabs;
 	std::vector<MenuBox *>::iterator currentTab;

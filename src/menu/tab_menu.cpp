@@ -26,16 +26,20 @@ using namespace std;
 
 static int FONT_W = 16;
 static int FONT_H = 16;
+static int TEXT_SPACING_W = 10;
+static int TEXT_SPACING_H = 5;
 
-static void setColors (MenuBox *menu, const RectArea &info){
+static void setColors (MenuBox *menu, const RectArea &info, const int fontColor){
     menu->position.body = info.body;
     menu->position.bodyAlpha = info.bodyAlpha;
     menu->position.border = info.border;
     menu->position.borderAlpha = info.borderAlpha;
+    menu->fontColor = fontColor;
 }
 
-MenuBox::MenuBox(int w, int h){
-    snap = new Bitmap(w,h);
+MenuBox::MenuBox(int w, int h):
+snap(new Bitmap(w,h)),
+fontColor(Bitmap::makeColor(255,255,255)){
     position.radius=15;
 }
 
@@ -104,6 +108,16 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		int r,g,b;
 		*tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
 		selectedTabInfo.border = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "font-color" ) {
+		// This handles the font color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b;
+		fontColor = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "selectedfont-color" ) {
+		// This handles the font color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b;
+		selectedFontColor = Bitmap::makeColor(r,g,b);
 	    } else if( *tok == "anim" ) {
 		MenuAnimation *animation = new MenuAnimation(tok);
 		if (animation->getLocation() == 0){
@@ -124,8 +138,8 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		    tabs.push_back(menu);
 		    const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
 		    // set info on the box itself
-		    menu->position.width = vFont.textLength(menu->menu.getName().c_str());
-		    menu->position.height = vFont.getHeight();
+		    menu->position.width = vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W;
+		    menu->position.height = vFont.getHeight() + TEXT_SPACING_H;
 		} else {
 		    throw LoadException("Problem reading menu");
 		}
@@ -179,9 +193,9 @@ void TabMenu::run(){
     // Set select color
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	if (i == currentTab){
-	    setColors((*i),selectedTabInfo);
+	    setColors((*i),selectedTabInfo,selectedFontColor);
 	} else {
-	    setColors((*i),tabInfo);
+	    setColors((*i),tabInfo,fontColor);
 	}
     }
     
@@ -218,7 +232,7 @@ void TabMenu::run(){
 			keyInputManager::keyState(vi_left, true)){
 			MenuGlobals::playSelectSound();
 			// Reset color
-			setColors((*currentTab),tabInfo);
+			setColors((*currentTab),tabInfo,fontColor);
 			if (currentTab > tabs.begin()){
                             currentTab--;
 			    location--;
@@ -228,14 +242,14 @@ void TabMenu::run(){
 			    location=tabs.size()-1;
 			    targetOffset = (location*backboard.position.width) * -1;
                         }
-			setColors((*currentTab),selectedTabInfo);
+			setColors((*currentTab),selectedTabInfo,selectedFontColor);
 		    }
 
 		    if ( keyInputManager::keyState(keys::RIGHT, true )||
 			    keyInputManager::keyState(vi_right, true )){
 			MenuGlobals::playSelectSound();
 			// Reset color
-			setColors((*currentTab),tabInfo);
+			setColors((*currentTab),tabInfo,fontColor);
 			if (currentTab < tabs.begin()+tabs.size()-1){
                             currentTab++;
 			    location++;
@@ -244,7 +258,7 @@ void TabMenu::run(){
                             currentTab = tabs.begin();
 			    location= targetOffset = 0;
                         }
-			setColors((*currentTab),selectedTabInfo);
+			setColors((*currentTab),selectedTabInfo,selectedFontColor);
 		    }
 		    /*
 		    if (keyInputManager::keyState(keys::DOWN, true) ||
@@ -352,9 +366,9 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
 	bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
 	startx += incrementx;
     }
-    int tabstartx = backboard.position.x;
-    int tabstarty = backboard.position.y;
     const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
+    int tabstartx = backboard.position.x;
+    int tabstarty = backboard.position.y - (vFont.getHeight() + TEXT_SPACING_H);
     // Now draw tabs, has to be seperate from above since we need this to overlay the snaps
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	MenuBox *tab = *i;
@@ -367,7 +381,7 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
 	tab->position.y = tabstarty;
 	tab->render(bmp);
 	// Draw text
-	vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, Bitmap::makeColor(255,255,255), *bmp, tab->menu.getName(), 0 );
+	vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, tab->fontColor, *bmp, tab->menu.getName(), 0 );
 	tabstartx+=tab->position.width;
     }
 }
