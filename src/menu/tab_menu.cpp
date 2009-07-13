@@ -39,7 +39,10 @@ void MenuBox::updateSnapshot(){
 }
 
 TabMenu::TabMenu():
-location(0){
+location(0),
+scrollOffset(0),
+totalOffset(0),
+scrollSpeed(5.2){
 }
 
 void TabMenu::load(Token *token)throw( LoadException ){
@@ -145,7 +148,7 @@ void TabMenu::load(const std::string &filename) throw (LoadException){
 }
 
 void TabMenu::run(){
-    bool endMenu = false;
+    //bool endMenu = false;
     bool done = false;
 
     if ( tabs.empty() ){
@@ -169,7 +172,7 @@ void TabMenu::run(){
     for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 	(*i)->reset();
     }
-    while (!endMenu){
+    while (!done){
 	bool runMenu = false;
 	while (!done && !runMenu){
 
@@ -191,11 +194,27 @@ void TabMenu::run(){
 		    if (keyInputManager::keyState(keys::LEFT, true) ||
 			keyInputManager::keyState(vi_left, true)){
 			MenuGlobals::playSelectSound();
+			scrollOffset = -1;
+			if (currentTab > tabs.begin()){
+                            currentTab--;
+			    location--;
+                        } else {
+                            currentTab = tabs.end()-1;
+			    location=tabs.size()-1;
+                        }
 		    }
 
 		    if ( keyInputManager::keyState(keys::RIGHT, true )||
 			    keyInputManager::keyState(vi_right, true )){
 			MenuGlobals::playSelectSound();
+			scrollOffset = 1;
+			if (currentTab < tabs.begin()+tabs.size()-1){
+                            currentTab++;
+			    location++;
+                        } else {
+                            currentTab = tabs.begin();
+			    location=0;
+                        }
 		    }
 		    /*
 		    if (keyInputManager::keyState(keys::DOWN, true) ||
@@ -227,6 +246,19 @@ void TabMenu::run(){
 		    // Lets do some logic for the box with text
 		    updateFadeInfo();
 		    
+		    // Update offset
+		    if (scrollOffset == -1){
+			totalOffset-=scrollSpeed;
+			if (fabs(totalOffset) > fabs(backboard.position.width * location)){
+			    totalOffset = scrollOffset = 0;
+			}
+		    }
+		    else if (scrollOffset == 1){
+			totalOffset+=scrollSpeed;
+			if (totalOffset > (backboard.position.width * location)){
+			    totalOffset = scrollOffset = 0;
+			}
+		    }
 		}
 
 		Global::speed_counter = 0;
@@ -276,8 +308,8 @@ void TabMenu::drawTabs(Bitmap *bmp){
 }
 
 void TabMenu::drawSnapshots(Bitmap *bmp){
-    const int incrementx = backboard.position.width;
-    int startx = backboard.position.x - (location * incrementx);
+    const double incrementx = backboard.position.width;
+    double startx = backboard.position.x + totalOffset;
     
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	(*i)->updateSnapshot();
