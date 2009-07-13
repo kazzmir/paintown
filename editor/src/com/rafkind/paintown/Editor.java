@@ -38,6 +38,8 @@ public class Editor extends JFrame {
 		JMenu menuProgram = new JMenu( "Program" );
 		JMenuItem quit = new JMenuItem( "Quit" );
 		JMenuItem data = new JMenuItem( "Data path" );
+                JMenuItem animationEditor = new JMenuItem("Run character animation editor");
+                menuProgram.add(animationEditor);
 		menuProgram.add( data );
 		menuProgram.add( quit );
 		menuBar.add( menuProgram );
@@ -85,6 +87,13 @@ public class Editor extends JFrame {
 				closeHook.invoke_();
 			}
 		});
+
+                animationEditor.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        String[] args = new String[0];
+                        com.rafkind.paintown.animator.Animator.main(args);
+                    }
+                });
 
 		data.addActionListener( new ActionListener(){
 			public void actionPerformed( ActionEvent event ){

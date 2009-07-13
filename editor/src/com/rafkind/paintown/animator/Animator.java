@@ -44,10 +44,12 @@ public class Animator extends JFrame {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu menuProgram = new JMenu( "Program" );
+        JMenuItem levelEditor = new JMenuItem("Run the level editor");
         JMenuItem quit = new JMenuItem( "Quit" );
         JMenuItem clearCache = new JMenuItem( "Clear image cache" );
         JMenuItem data = new JMenuItem( "Data path" );
         JMenuItem closeTab = new JMenuItem( "Close Tab" );
+        menuProgram.add(levelEditor);
         menuProgram.add( data );
         menuProgram.add( clearCache );
         menuProgram.add( clearCache );
@@ -110,6 +112,13 @@ public class Animator extends JFrame {
 
         this.setJMenuBar( menuBar );
         this.addWindowListener( new CloseHook( closeHook ) );		
+
+        levelEditor.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                String[] args = new String[0];
+                com.rafkind.paintown.Editor.main(args);
+            }
+        });
 
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -427,12 +436,16 @@ public class Animator extends JFrame {
         }
     }
 
-    public static void main(String [] args) throws Exception {
-        final Animator animator = new Animator();
-        SwingUtilities.invokeLater( new Runnable(){
-            public void run(){
-                animator.setVisible( true );
-            }
-        });
+    public static void main(String [] args){
+        try{
+            final Animator animator = new Animator();
+            SwingUtilities.invokeLater( new Runnable(){
+                public void run(){
+                    animator.setVisible( true );
+                }
+            });
+        } catch (Exception e){
+            System.err.println(e);
+        }
     }
 }
