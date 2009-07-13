@@ -26,7 +26,7 @@
 
 using namespace std;
 
-MenuOption *getOption(Token *token){
+MenuOption * OptionFactory::getOption(Token *token){
 	Token * tok;
 	*token >> tok;
 	if ( *tok == "menu" ){

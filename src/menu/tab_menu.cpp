@@ -40,7 +40,6 @@ void MenuBox::updateSnapshot(){
 
 TabMenu::TabMenu():
 location(0){
-	
 }
 
 void TabMenu::load(Token *token)throw( LoadException ){
@@ -98,7 +97,7 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		} else if (animation->getLocation() == 1){
 		    foregroundAnimations.push_back(animation);
 		}
-	    } else if( *tok == "menu" ) {
+	    } else if (*tok == "menu"){
 		MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
 		if (menu){
 		    if (tok->numTokens() == 2){
@@ -282,12 +281,12 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
     
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	(*i)->updateSnapshot();
-	// Set clippin rectangle
+	/* Set clipping rectangle */
         int x1 = backboard.position.x+(backboard.position.radius/2);
         int y1 = backboard.position.y+(backboard.position.radius/2);
         int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
         int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
-	bmp->setClipRect( x1, y1, x2, y2);
+	bmp->setClipRect(x1, y1, x2, y2);
 	(*i)->snap->Blit(startx,backboard.position.y, *bmp);
 	bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
 	startx += incrementx;

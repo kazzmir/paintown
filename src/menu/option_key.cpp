@@ -36,7 +36,7 @@ OptionKey::keyType convertToKey(const std::string &k)
 	return OptionKey::invalidkey;
 }
 
-int getKey(int player, OptionKey::keyType k)
+static int getKey(int player, OptionKey::keyType k)
 {
 	switch(k)
 	{
@@ -74,7 +74,7 @@ int getKey(int player, OptionKey::keyType k)
 	return 0;
 }
 
-void setKey(int player, OptionKey::keyType k, int key)
+static void setKey(int player, OptionKey::keyType k, int key)
 {
 	switch(k)
 	{
@@ -166,6 +166,10 @@ OptionKey::OptionKey(Token *token) throw (LoadException): MenuOption(token, Even
 	if(name.empty())throw LoadException("No name set, this option should have a name!");
 	if(type == invalidkey)throw LoadException("Invalid key, should be up, down, left, right, up, down, jump, attack1-6!");
 	if(player == -1)throw LoadException("Player not specified in key configuration");
+	
+        char temp[255];
+	sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
+	setText(std::string(temp));
 }
 
 OptionKey::~OptionKey()
@@ -173,8 +177,7 @@ OptionKey::~OptionKey()
 	// Nothing
 }
 
-void OptionKey::logic()
-{
+void OptionKey::logic(){
 	char temp[255];
 	sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
 	setText(std::string(temp));

@@ -151,8 +151,8 @@ void Menu::load(Token *token)throw( LoadException ){
                             *tok >> str >> sharedFontWidth >> sharedFontHeight; 
                             sharedFont = Util::getDataPath() + str;
 			} else if( *tok == "option" ) {
-				MenuOption *temp = getOption(tok);
-				if(temp){
+				MenuOption *temp = OptionFactory::getOption(tok);
+				if (temp){
 				    addOption(temp);
 				}
 			} else if( *tok == "action" ) {
@@ -520,6 +520,7 @@ void Menu::run(){
 //! draw snapshot of menu to buffer to facilitate tabs
 void Menu::drawMenuSnap(Bitmap *bmp){
     Bitmap workBmp(work->getWidth(),work->getHeight());
+    // workBmp.fill(Bitmap::makeColor(255,0,0));
     // Do all that we do during a regular draw sweep
     for (std::vector <MenuOption *>::iterator b = menuOptions.begin() ; b != menuOptions.end(); ++b ){
 	// Recalculate placement
@@ -538,9 +539,14 @@ void Menu::drawMenuSnap(Bitmap *bmp){
     
     // Create temp bitmap
     Bitmap tempBmp = Bitmap::temporaryBitmap(backboard.position.width - 10, backboard.position.height - 10);
-    //workBmp.Blit(backboard.position.x+5,backboard.position.y+5,backboard.position.width-5,backboard.position.height-5,tempBmp);
-    workBmp.Stretch(tempBmp);
+    workBmp.Blit(backboard.position.x+5,backboard.position.y+5,backboard.position.width-5,backboard.position.height-5, 0, 0, tempBmp);
+    /*
+    workBmp.BlitToScreen();
+    Util::rest(1000);
+    */
+    // workBmp.Stretch(tempBmp);
     tempBmp.Stretch(*bmp);
+    // bmp->fill(Bitmap::makeColor(255,0,0));
 }
 
 Menu *Menu::getMenu(const std::string &name){
@@ -557,7 +563,7 @@ std::string &Menu::getParentMenu(){
 
 /*! Add options to menu */
 void Menu::addOption(MenuOption *opt){
-  if(opt){
+  if (opt){
       menuOptionID++;
       opt->setID(menuOptionID);
       opt->parent = this;
@@ -774,6 +780,7 @@ void Menu::drawText(Bitmap *bmp){
     if ( currentCounter < 0 ){
         currentCounter = (menuOptions.size()) + currentCounter;
     }
+
     // Set clipping so that text won't go beyond it's boundaries
     bmp->setClipRect(backboard.position.x+2, backboard.position.y+2,backboard.position.getX2()-2,backboard.position.getY2()-2);
     for (int i=0;i<displayTotal;++i){

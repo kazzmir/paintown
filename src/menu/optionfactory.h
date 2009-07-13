@@ -4,7 +4,9 @@
 class MenuOption;
 class Token;
 
-MenuOption *getOption(Token *token);
+namespace OptionFactory{
+MenuOption * getOption(Token *token);
+}
 
 #endif
 
