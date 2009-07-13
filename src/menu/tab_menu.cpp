@@ -24,8 +24,19 @@
 
 using namespace std;
 
+static int FONT_W = 16;
+static int FONT_H = 16;
+
+static void setColors (MenuBox *menu, const RectArea &info){
+    menu->position.body = info.body;
+    menu->position.bodyAlpha = info.bodyAlpha;
+    menu->position.border = info.border;
+    menu->position.borderAlpha = info.borderAlpha;
+}
+
 MenuBox::MenuBox(int w, int h){
     snap = new Bitmap(w,h);
+    position.radius=15;
 }
 
 MenuBox::~MenuBox(){
@@ -111,6 +122,10 @@ void TabMenu::load(Token *token)throw( LoadException ){
 			menu->menu.load(tok);
 		    }
 		    tabs.push_back(menu);
+		    const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
+		    // set info on the box itself
+		    menu->position.width = vFont.textLength(menu->menu.getName().c_str());
+		    menu->position.height = vFont.getHeight();
 		} else {
 		    throw LoadException("Problem reading menu");
 		}
@@ -161,6 +176,14 @@ void TabMenu::run(){
     
     currentTab = tabs.begin();
     location = targetOffset = totalOffset = 0;
+    // Set select color
+    for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+	if (i == currentTab){
+	    setColors((*i),selectedTabInfo);
+	} else {
+	    setColors((*i),tabInfo);
+	}
+    }
     
      // Reset fade stuff
     resetFadeInfo();
@@ -194,6 +217,8 @@ void TabMenu::run(){
 		    if (keyInputManager::keyState(keys::LEFT, true) ||
 			keyInputManager::keyState(vi_left, true)){
 			MenuGlobals::playSelectSound();
+			// Reset color
+			setColors((*currentTab),tabInfo);
 			if (currentTab > tabs.begin()){
                             currentTab--;
 			    location--;
@@ -203,11 +228,14 @@ void TabMenu::run(){
 			    location=tabs.size()-1;
 			    targetOffset = (location*backboard.position.width) * -1;
                         }
+			setColors((*currentTab),selectedTabInfo);
 		    }
 
 		    if ( keyInputManager::keyState(keys::RIGHT, true )||
 			    keyInputManager::keyState(vi_right, true )){
 			MenuGlobals::playSelectSound();
+			// Reset color
+			setColors((*currentTab),tabInfo);
 			if (currentTab < tabs.begin()+tabs.size()-1){
                             currentTab++;
 			    location++;
@@ -216,8 +244,8 @@ void TabMenu::run(){
                             currentTab = tabs.begin();
 			    location= targetOffset = 0;
                         }
+			setColors((*currentTab),selectedTabInfo);
 		    }
-		    Global::debug(0) << "targetOffset: " << targetOffset << endl;
 		    /*
 		    if (keyInputManager::keyState(keys::DOWN, true) ||
 			keyInputManager::keyState(vi_down, true)){
@@ -306,24 +334,41 @@ void TabMenu::run(){
     }
 }
 
-void TabMenu::drawTabs(Bitmap *bmp){
-}
-
 void TabMenu::drawSnapshots(Bitmap *bmp){
     const double incrementx = backboard.position.width;
     double startx = backboard.position.x + totalOffset;
     
+    // Drawing snapshots
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
-	(*i)->updateSnapshot();
+	MenuBox *tab = *i;
+	tab->updateSnapshot();
 	/* Set clipping rectangle */
         int x1 = backboard.position.x+(backboard.position.radius/2);
         int y1 = backboard.position.y+(backboard.position.radius/2);
         int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
         int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
 	bmp->setClipRect(x1, y1, x2, y2);
-	(*i)->snap->Blit(startx,backboard.position.y, *bmp);
+	tab->snap->Blit(startx,backboard.position.y, *bmp);
 	bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
 	startx += incrementx;
+    }
+    int tabstartx = backboard.position.x;
+    int tabstarty = backboard.position.y;
+    const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
+    // Now draw tabs, has to be seperate from above since we need this to overlay the snaps
+    for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+	MenuBox *tab = *i;
+	const int tabWidth = tab->position.width;
+	if ((tabstartx + tabWidth) > (backboard.position.x + backboard.position.width)){
+	    tabstartx = backboard.position.x;
+	    tabstarty += tab->position.height;
+	}
+	tab->position.x = tabstartx;
+	tab->position.y = tabstarty;
+	tab->render(bmp);
+	// Draw text
+	vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, Bitmap::makeColor(255,255,255), *bmp, tab->menu.getName(), 0 );
+	tabstartx+=tab->position.width;
     }
 }
 

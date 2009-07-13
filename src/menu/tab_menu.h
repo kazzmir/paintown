@@ -49,7 +49,6 @@ class TabMenu : public Menu
 	double totalOffset;
 	double scrollSpeed;
 	
-	void drawTabs(Bitmap *bmp);
 	void drawSnapshots(Bitmap *bmp);
 };
 #endif
