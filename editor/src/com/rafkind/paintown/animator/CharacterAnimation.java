@@ -24,6 +24,9 @@ import com.rafkind.paintown.animator.events.EventFactory;
 import com.rafkind.paintown.animator.events.FrameEvent;
 
 import java.awt.geom.AffineTransform;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
+import javax.activation.DataHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -448,9 +451,137 @@ public class CharacterAnimation extends JPanel {
                 });
 
                 final JList eventList = (JList) contextEditor.find( "events");
+                eventList.setDragEnabled(true);
+                eventList.setListData(animation.getEvents());
+                eventList.setDropMode(DropMode.ON);
+                eventList.setTransferHandler(new TransferHandler(){
+                    private int toRemove = -1;
+                    /*
+                    public boolean canImport(JComponent comp, DataFlavor[] transferFlavors){
+                        System.out.println("Can I import " + transferFlavors);
+                        return true;
+                    }
+                    */
 
-                eventList.setListData( animation.getEvents() );
+                    public boolean canImport(TransferHandler.TransferSupport support){
+                        // System.out.println("Can I import " + support);
+                        /* bleh */
+                        return true;
+                    }
 
+                    /*
+                    public void exportAsDrag(JComponent component, InputEvent event, int action){
+                        System.out.println("export event " + event + " action " + action + " move is " + TransferHandler.MOVE);
+                        super.exportAsDrag(component, event, action);
+                    }
+                    */
+
+                    protected void exportDone(JComponent source, Transferable data, int action){
+                        // System.out.println("did export action was " + action);
+                        if (action == TransferHandler.MOVE){
+                            /*
+                            System.out.println("Transfered " + data);
+
+                            int index = 0;
+                            if (eventList.getSelectedIndex() != -1){
+                                AnimationEvent event = 
+                                animation.removeEvent(eventList.getSelectedIndex() );
+                                index = animation.addEvent(temp, eventList.getSelectedIndex() + 1);
+                            }
+                            eventList.setListData( animation.getEvents() );
+                            eventList.setSelectedIndex( index );
+                            */
+                            // System.out.println("Removing event " + toRemove);
+                            animation.removeEvent(toRemove);
+                            eventList.setListData(animation.getEvents());
+                        }
+                    }
+
+                    public int getSourceActions(JComponent component){
+                        // System.out.println("What are my actions? " + TransferHandler.MOVE);
+                        return TransferHandler.MOVE;
+                    }
+
+                    protected Transferable createTransferable(JComponent component){
+                        // System.out.println("make a transferable");
+                        return new Transferable(){
+                            final Object index = eventList.getSelectedValue();
+                            public Object getTransferData(DataFlavor flavor){
+                                return index;
+                            }
+
+                            public DataFlavor[] getTransferDataFlavors(){
+                                try{
+                                    DataFlavor[] flavors = new DataFlavor[1];
+                                    flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType);
+                                    return flavors;
+                                } catch (ClassNotFoundException ex){
+                                    System.out.println(ex);
+                                    return null;
+                                }
+                            }
+
+                            public boolean isDataFlavorSupported(DataFlavor flavor){
+                                return true;
+                            }
+                        };
+                        /*
+                        return new DataHandler(new Integer(eventList.getSelectedIndex()), "event-list");
+                        */
+                    }
+
+                    public boolean importData(TransferSupport supp) {
+                        // System.out.println("Try to import " + supp);
+                        if (!canImport(supp)) {
+                            return false;
+                        }
+
+                        try{
+                            JList.DropLocation location = (JList.DropLocation) supp.getDropLocation();
+                            // System.out.println("Drop location to " + location);
+                            toRemove = eventList.getSelectedIndex();
+                            int index = location.getIndex();
+                            if (index < toRemove){
+                                toRemove += 1;
+                            }
+                            AnimationEvent event = (AnimationEvent) supp.getTransferable().getTransferData(new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType));
+                            animation.addEvent(event, index);
+                            eventList.setListData(animation.getEvents());
+                            eventList.setSelectedIndex(index);
+                        } catch (ClassNotFoundException exception){
+                            System.err.println(exception);
+                        } catch (java.awt.datatransfer.UnsupportedFlavorException exception){
+                            System.err.println(exception);
+                        } catch (IOException exception){
+                            System.err.println(exception);
+                        }
+
+                        /*
+                        int index = 0;
+                        if (eventList.getSelectedIndex() != -1){
+                            AnimationEvent event = animation.removeEvent(eventList.getSelectedIndex() );
+                            index = animation.addEvent(temp, eventList.getSelectedIndex() + 1);
+                        }
+                        eventList.setListData( animation.getEvents() );
+                        eventList.setSelectedIndex( index );
+                        */
+
+                        /*
+                        // Fetch the Transferable and its data
+                        Transferable t = supp.getTransferable();
+                        String data = t.getTransferData(stringFlavor);
+
+                        // Fetch the drop location
+                        DropLocation loc = supp.getDropLocation();
+
+                        // Insert the data at this location
+                        insertAt(loc, data);
+                        */
+
+                        return true;
+                    }
+                                
+                });
                 
                 final ObjectBox currentEvent = new ObjectBox();
 
