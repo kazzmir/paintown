@@ -39,6 +39,8 @@ public class Animator extends JFrame {
         super("Paintown Animator");
         this.setSize( (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 100, (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 100 );
 
+        Closer.open();
+
         animator = this;
 
         JMenuBar menuBar = new JMenuBar();
@@ -82,7 +84,7 @@ public class Animator extends JFrame {
 
         final Lambda0 closeHook = new Lambda0(){
             public Object invoke(){
-                System.exit( 0 );
+                Closer.close();
                 return null;
             }
         };
@@ -122,7 +124,7 @@ public class Animator extends JFrame {
 
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                System.exit(0);
+                closeHook.invoke_();
             }
         });
 

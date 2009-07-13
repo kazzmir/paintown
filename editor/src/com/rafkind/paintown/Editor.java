@@ -34,6 +34,8 @@ public class Editor extends JFrame {
 		super( "Paintown Editor" );
 		this.setSize( 900, 500 );
 
+                Closer.open();
+
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuProgram = new JMenu( "Program" );
 		JMenuItem quit = new JMenuItem( "Quit" );
@@ -47,8 +49,8 @@ public class Editor extends JFrame {
 		menuBar.add( menuLevel );
 		final Lambda0 closeHook = new Lambda0(){
 			public Object invoke(){
-				System.exit( 0 );
-				return null;
+                            Closer.close();
+                            return null;
 			}
 		};
 		JMenuItem newLevel = new JMenuItem( "New Level" );
