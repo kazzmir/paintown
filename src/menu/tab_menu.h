@@ -43,8 +43,8 @@ class TabMenu : public Menu
 	std::vector<MenuBox *>tabs;
 	std::vector<MenuBox *>::iterator currentTab;
 	int location;
-	// -1 going backwards 1 going forwards 0 centered
-	double scrollOffset;
+	// Our actual targetOffset
+	double targetOffset;
 	// Actual offset
 	double totalOffset;
 	double scrollSpeed;

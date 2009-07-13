@@ -40,9 +40,9 @@ void MenuBox::updateSnapshot(){
 
 TabMenu::TabMenu():
 location(0),
-scrollOffset(0),
+targetOffset(0),
 totalOffset(0),
-scrollSpeed(5.2){
+scrollSpeed(8.5){
 }
 
 void TabMenu::load(Token *token)throw( LoadException ){
@@ -160,7 +160,7 @@ void TabMenu::run(){
     Global::second_counter = 0;
     
     currentTab = tabs.begin();
-    location = 0;
+    location = targetOffset = totalOffset = 0;
     
      // Reset fade stuff
     resetFadeInfo();
@@ -194,28 +194,30 @@ void TabMenu::run(){
 		    if (keyInputManager::keyState(keys::LEFT, true) ||
 			keyInputManager::keyState(vi_left, true)){
 			MenuGlobals::playSelectSound();
-			scrollOffset = -1;
 			if (currentTab > tabs.begin()){
                             currentTab--;
 			    location--;
+			    targetOffset+=backboard.position.width;
                         } else {
-                            currentTab = tabs.end()-1;
+			    currentTab = tabs.end()-1;
 			    location=tabs.size()-1;
+			    targetOffset = (location*backboard.position.width) * -1;
                         }
 		    }
 
 		    if ( keyInputManager::keyState(keys::RIGHT, true )||
 			    keyInputManager::keyState(vi_right, true )){
 			MenuGlobals::playSelectSound();
-			scrollOffset = 1;
 			if (currentTab < tabs.begin()+tabs.size()-1){
                             currentTab++;
 			    location++;
+			    targetOffset-=backboard.position.width;
                         } else {
                             currentTab = tabs.begin();
-			    location=0;
+			    location= targetOffset = 0;
                         }
 		    }
+		    Global::debug(0) << "targetOffset: " << targetOffset << endl;
 		    /*
 		    if (keyInputManager::keyState(keys::DOWN, true) ||
 			keyInputManager::keyState(vi_down, true)){
@@ -247,16 +249,16 @@ void TabMenu::run(){
 		    updateFadeInfo();
 		    
 		    // Update offset
-		    if (scrollOffset == -1){
+		    if (totalOffset > targetOffset){
 			totalOffset-=scrollSpeed;
-			if (fabs(totalOffset) > fabs(backboard.position.width * location)){
-			    totalOffset = scrollOffset = 0;
+			if (totalOffset < targetOffset){
+			    totalOffset = targetOffset;
 			}
 		    }
-		    else if (scrollOffset == 1){
+		    else if (totalOffset < targetOffset){
 			totalOffset+=scrollSpeed;
-			if (totalOffset > (backboard.position.width * location)){
-			    totalOffset = scrollOffset = 0;
+			if (totalOffset > targetOffset){
+			    totalOffset = targetOffset;
 			}
 		    }
 		}
@@ -299,7 +301,7 @@ void TabMenu::run(){
 	if(runMenu){
 	    // Run menu
 	    (*currentTab)->menu.run();
-	    keyInputManager::clear();
+	    throw ReturnException();
 	}
     }
 }
