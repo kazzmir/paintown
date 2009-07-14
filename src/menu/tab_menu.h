@@ -52,7 +52,11 @@ class TabMenu : public Menu
 	// Actual offset
 	double totalOffset;
 	double scrollSpeed;
+	// Total lines from options
+	int totalLines;
 	
 	void drawSnapshots(Bitmap *bmp);
+	
+	void calculateTabLines();
 };
 #endif

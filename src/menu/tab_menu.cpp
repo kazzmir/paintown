@@ -57,7 +57,8 @@ TabMenu::TabMenu():
 location(0),
 targetOffset(0),
 totalOffset(0),
-scrollSpeed(8.5){
+scrollSpeed(8.5),
+totalLines(1){
 }
 
 void TabMenu::load(Token *token)throw( LoadException ){
@@ -165,6 +166,9 @@ void TabMenu::load(Token *token)throw( LoadException ){
     if ( getName().empty() ){
 	    throw LoadException("No name set, the menu should have a name!");
     }
+    
+    // Set totalLines
+    calculateTabLines();
 }
 
 void TabMenu::load(const std::string &filename) throw (LoadException){
@@ -370,7 +374,7 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
     }
     const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
     int tabstartx = backboard.position.x;
-    int tabstarty = backboard.position.y - (vFont.getHeight() + TEXT_SPACING_H);
+    int tabstarty = backboard.position.y - ((vFont.getHeight() + TEXT_SPACING_H) * totalLines);
     // Now draw tabs, has to be seperate from above since we need this to overlay the snaps
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	MenuBox *tab = *i;
@@ -384,6 +388,20 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
 	tab->render(bmp);
 	// Draw text
 	vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, tab->fontColor, *bmp, tab->menu.getName(), 0 );
+	tabstartx+=tab->position.width;
+    }
+}
+
+// Calculate the amount of lines per tabs
+void TabMenu::calculateTabLines(){
+    int tabstartx = backboard.position.x;
+    for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+	MenuBox *tab = *i;
+	const int tabWidth = tab->position.width;
+	if ((tabstartx + tabWidth) > (backboard.position.x + backboard.position.width)){
+	    tabstartx = backboard.position.x;
+	    totalLines++;
+	}
 	tabstartx+=tab->position.width;
     }
 }
