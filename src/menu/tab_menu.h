@@ -17,11 +17,10 @@ class MenuBox : public Box
 	MenuBox(int w, int h);
 	virtual ~MenuBox();
 	void updateSnapshot();
-	void checkVisible(const RectArea &area);
+	bool checkVisible(const RectArea &area);
 	Menu menu;
 	Bitmap *snap;
 	int fontColor;
-	bool visible;
 	RectArea snapPosition;
 };
 

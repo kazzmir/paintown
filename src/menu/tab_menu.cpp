@@ -41,8 +41,7 @@ static void setColors (MenuBox *menu, const RectArea &info, const int fontColor)
 
 MenuBox::MenuBox(int w, int h):
 snap(new Bitmap(w,h)),
-fontColor(Bitmap::makeColor(255,255,255)),
-visible(false){
+fontColor(Bitmap::makeColor(255,255,255)){
     position.radius=15;
     snapPosition.width = w;
     snapPosition.height = h;
@@ -58,8 +57,8 @@ void MenuBox::updateSnapshot(){
     menu.drawMenuSnap(snap);
 }
 
-void MenuBox::checkVisible(const RectArea &area){
-    visible = (snapPosition.x <= area.x + area.width
+bool MenuBox::checkVisible(const RectArea &area){
+    return (snapPosition.x <= area.x + area.width
 	    && snapPosition.x + snapPosition.width >= area.x
 	    && snapPosition.y <= area.y + area.height
 	    && snapPosition.y + snapPosition.height >= area.y);
@@ -381,8 +380,7 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
 	MenuBox *tab = *i;
 	tab->snapPosition.x = startx;
 	tab->snapPosition.y = backboard.position.y;
-	tab->checkVisible(backboard.position);
-	if (tab->visible){
+	if (tab->checkVisible(backboard.position)){
 	    tab->updateSnapshot();
 	    /* Set clipping rectangle */
 	    int x1 = backboard.position.x+(backboard.position.radius/2);
