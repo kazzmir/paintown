@@ -42,6 +42,8 @@ snap(new Bitmap(w,h)),
 fontColor(Bitmap::makeColor(255,255,255)),
 visible(false){
     position.radius=15;
+    snapPosition.width = w;
+    snapPosition.height = h;
 }
 
 MenuBox::~MenuBox(){
@@ -55,10 +57,10 @@ void MenuBox::updateSnapshot(){
 }
 
 void MenuBox::checkVisible(const RectArea &area){
-    visible = (position.x <= area.x + area.width
-	    && position.x + position.width >= area.x
-	    && position.y <= area.y + area.height
-	    && position.y + position.height >= area.y);
+    visible = (snapPosition.x <= area.x + area.width
+	    && snapPosition.x + snapPosition.width >= area.x
+	    && snapPosition.y <= area.y + area.height
+	    && snapPosition.y + snapPosition.height >= area.y);
 }
 
 TabMenu::TabMenu():
@@ -369,6 +371,8 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
     // Drawing snapshots
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	MenuBox *tab = *i;
+	tab->snapPosition.x = startx;
+	tab->snapPosition.y = backboard.position.y;
 	tab->checkVisible(backboard.position);
 	if (tab->visible){
 	    tab->updateSnapshot();
@@ -378,7 +382,7 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
 	    int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
 	    int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
 	    bmp->setClipRect(x1, y1, x2, y2);
-	    tab->snap->Blit(startx,backboard.position.y, *bmp);
+	    tab->snap->Blit(tab->snapPosition.x,tab->snapPosition.y, *bmp);
 	    bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
 	}
 	startx += incrementx;

@@ -22,6 +22,7 @@ class MenuBox : public Box
 	Bitmap *snap;
 	int fontColor;
 	bool visible;
+	RectArea snapPosition;
 };
 
 class TabMenu : public Menu
