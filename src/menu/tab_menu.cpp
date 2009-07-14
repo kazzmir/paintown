@@ -28,6 +28,8 @@ static int FONT_W = 16;
 static int FONT_H = 16;
 static int TEXT_SPACING_W = 10;
 static int TEXT_SPACING_H = 5;
+static int DEFAULT_SCROLL_SPEED = 8.5;
+static int SCROLL_SPEED_MODIFIER = 1.2;
 
 static void setColors (MenuBox *menu, const RectArea &info, const int fontColor){
     menu->position.body = info.body;
@@ -67,7 +69,7 @@ TabMenu::TabMenu():
 location(0),
 targetOffset(0),
 totalOffset(0),
-scrollSpeed(8.5),
+scrollSpeed(DEFAULT_SCROLL_SPEED),
 totalLines(1){
 }
 
@@ -309,14 +311,20 @@ void TabMenu::run(){
 		    // Update offset
 		    if (totalOffset > targetOffset){
 			totalOffset-=scrollSpeed;
+			// Modify scrollspeed so we can get acceleration
+			scrollSpeed+=SCROLL_SPEED_MODIFIER;
 			if (totalOffset < targetOffset){
 			    totalOffset = targetOffset;
+			    scrollSpeed = DEFAULT_SCROLL_SPEED;
 			}
 		    }
 		    else if (totalOffset < targetOffset){
 			totalOffset+=scrollSpeed;
+			// Modify scrollspeed so we can get acceleration
+			scrollSpeed+=SCROLL_SPEED_MODIFIER;
 			if (totalOffset > targetOffset){
 			    totalOffset = targetOffset;
+			    scrollSpeed = DEFAULT_SCROLL_SPEED;
 			}
 		    }
 		}
