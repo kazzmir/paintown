@@ -58,10 +58,10 @@ void MenuBox::updateSnapshot(){
 }
 
 bool MenuBox::checkVisible(const RectArea &area){
-    return (snapPosition.x <= area.x + area.width
-	    && snapPosition.x + snapPosition.width >= area.x
-	    && snapPosition.y <= area.y + area.height
-	    && snapPosition.y + snapPosition.height >= area.y);
+    return (snapPosition.x < area.x + area.width
+	    && snapPosition.x + snapPosition.width > area.x
+	    && snapPosition.y < area.y + area.height
+	    && snapPosition.y + snapPosition.height > area.y);
 }
 
 TabMenu::TabMenu():
