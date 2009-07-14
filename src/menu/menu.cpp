@@ -519,34 +519,22 @@ void Menu::run(){
 
 //! draw snapshot of menu to buffer to facilitate tabs
 void Menu::drawMenuSnap(Bitmap *bmp){
-    Bitmap workBmp(work->getWidth(),work->getHeight());
-    // workBmp.fill(Bitmap::makeColor(255,0,0));
     // Do all that we do during a regular draw sweep
-    for (std::vector <MenuOption *>::iterator b = menuOptions.begin() ; b != menuOptions.end(); ++b ){
-	// Recalculate placement
-	checkTextLength((*b));
-    }
     // Set the selector
     selectedOption = menuOptions.begin();
     (*selectedOption)->setState(MenuOption::Selected);
     currentDrawState = NoFade;
     // Do the background
-    drawBackground(&workBmp);
+    drawBackground(work);
     // Draw text board
-    drawTextBoard(&workBmp);
+    drawTextBoard(work);
     // Draw text
-    drawText(&workBmp);
+    drawText(work);
     
     // Create temp bitmap
     Bitmap tempBmp = Bitmap::temporaryBitmap(backboard.position.width - 10, backboard.position.height - 10);
-    workBmp.Blit(backboard.position.x+5,backboard.position.y+5,backboard.position.width-5,backboard.position.height-5, 0, 0, tempBmp);
-    /*
-    workBmp.BlitToScreen();
-    Util::rest(1000);
-    */
-    // workBmp.Stretch(tempBmp);
+    work->Blit(backboard.position.x+5,backboard.position.y+5,backboard.position.width-5,backboard.position.height-5, 0, 0, tempBmp);
     tempBmp.Stretch(*bmp);
-    // bmp->fill(Bitmap::makeColor(255,0,0));
 }
 
 Menu *Menu::getMenu(const std::string &name){
