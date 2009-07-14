@@ -64,6 +64,7 @@ Menu::Menu():
 music(""),
 selectSound(""),
 longestTextLength(0),
+motion(0),
 currentDrawState( FadeIn ),
 work(new Bitmap(GFX_X, GFX_Y)),
 _name(""),
@@ -72,6 +73,9 @@ removeOption(false),
 background(0),
 option(false){
 	backboard.position.radius = 15;
+        if (work->getError()){
+            Global::debug(-1) << "*BUG* Could not allocate bitmap for menu" << endl;
+        }
 }
 
 void Menu::load(Token *token)throw( LoadException ){
@@ -530,6 +534,17 @@ void Menu::drawMenuSnap(Bitmap *bmp){
     drawTextBoard(work);
     // Draw text
     drawText(work);
+
+    /* debug stuff
+    if (keyInputManager::keyState(keys::F5, true)){
+        Bitmap t = Bitmap::temporaryBitmap(GFX_X, GFX_Y);
+        t.fill(Bitmap::makeColor(32,32,32));
+        t.BlitToScreen();
+        Util::rest(100);
+        work->BlitToScreen();
+        Util::rest(3000);
+    }
+    */
     
     // Create temp bitmap
     Bitmap tempBmp = Bitmap::temporaryBitmap(backboard.position.width - 10, backboard.position.height - 10);
@@ -771,6 +786,7 @@ void Menu::drawText(Bitmap *bmp){
 
     // Set clipping so that text won't go beyond it's boundaries
     bmp->setClipRect(backboard.position.x+2, backboard.position.y+2,backboard.position.getX2()-2,backboard.position.getY2()-2);
+
     for (int i=0;i<displayTotal;++i){
         std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter % menuOptions.size();
         const int startx = (backboard.position.width/2)-(vFont.textLength((*iterOption)->getText().c_str())/2);
@@ -852,6 +868,8 @@ void Menu::drawText(Bitmap *bmp){
                         }
                     }
                 }
+
+                // Global::debug(1) << "menu option '" << (*iterOption)->getText() << "' at " << text_x << ", " << text_y << " in color " << color << " alpha " << textAlpha << endl;
 
                 Bitmap::transBlender(0, 0, 0, textAlpha);
                 bmp->drawingMode( Bitmap::MODE_TRANS );
