@@ -128,6 +128,8 @@ void TabMenu::load(Token *token)throw( LoadException ){
 	    } else if (*tok == "menu"){
 		MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
 		if (menu){
+		    // To avoid issues
+		    menu->menu.setAsOption(true);
 		    if (tok->numTokens() == 1){
 			std::string temp;
 			*tok >> temp;
