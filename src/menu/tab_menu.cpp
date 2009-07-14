@@ -39,7 +39,8 @@ static void setColors (MenuBox *menu, const RectArea &info, const int fontColor)
 
 MenuBox::MenuBox(int w, int h):
 snap(new Bitmap(w,h)),
-fontColor(Bitmap::makeColor(255,255,255)){
+fontColor(Bitmap::makeColor(255,255,255)),
+visible(false){
     position.radius=15;
 }
 
@@ -51,6 +52,13 @@ MenuBox::~MenuBox(){
 
 void MenuBox::updateSnapshot(){
     menu.drawMenuSnap(snap);
+}
+
+void MenuBox::checkVisible(const RectArea &area){
+    visible = (position.x <= area.x + area.width
+	    && position.x + position.width >= area.x
+	    && position.y <= area.y + area.height
+	    && position.y + position.height >= area.y);
 }
 
 TabMenu::TabMenu():
@@ -361,15 +369,18 @@ void TabMenu::drawSnapshots(Bitmap *bmp){
     // Drawing snapshots
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	MenuBox *tab = *i;
-	tab->updateSnapshot();
-	/* Set clipping rectangle */
-        int x1 = backboard.position.x+(backboard.position.radius/2);
-        int y1 = backboard.position.y+(backboard.position.radius/2);
-        int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
-        int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
-	bmp->setClipRect(x1, y1, x2, y2);
-	tab->snap->Blit(startx,backboard.position.y, *bmp);
-	bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
+	tab->checkVisible(backboard.position);
+	if (tab->visible){
+	    tab->updateSnapshot();
+	    /* Set clipping rectangle */
+	    int x1 = backboard.position.x+(backboard.position.radius/2);
+	    int y1 = backboard.position.y+(backboard.position.radius/2);
+	    int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
+	    int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
+	    bmp->setClipRect(x1, y1, x2, y2);
+	    tab->snap->Blit(startx,backboard.position.y, *bmp);
+	    bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
+	}
 	startx += incrementx;
     }
     const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
