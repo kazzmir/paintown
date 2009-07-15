@@ -157,6 +157,10 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		} else {
 		    throw LoadException("Problem reading menu");
 		}
+	    } else if( *tok == "menuinfo" ){
+		*tok >> menuInfo;
+	    } else if( *tok == "menuinfo-position" ){
+		*tok >> menuInfoLocation.x >> menuInfoLocation.y;
 	    } else {
 		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 		if (Global::getDebug() >= 3){
@@ -176,6 +180,12 @@ void TabMenu::load(Token *token)throw( LoadException ){
 	
     if ( getName().empty() ){
 	    throw LoadException("No name set, the menu should have a name!");
+    }
+    
+    if (!menuInfo.empty()){
+	if (! menuInfoLocation.x || ! menuInfoLocation.y){
+	    throw LoadException("The position for the menu info box in \"" + getName() + "\" must be set since there menuinfo is set!"); 
+	}
     }
     
     // Set totalLines
@@ -347,6 +357,8 @@ void TabMenu::run(){
 		if (currentDrawState == NoFade){
 		    drawSnapshots(work);
 		}
+		
+		drawInfoText(work);
 		
 		// Draw foreground animations
 		for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){

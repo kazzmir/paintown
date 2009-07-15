@@ -42,8 +42,6 @@ int Menu::fadeSpeed = 12;
 
 /* why are these global? */
 static int fadeAlpha=0;
-static int infoPositionX = 0;
-static int infoPositionY = 0;
 
 // Creates unique ID's for options so that they can be flagged for removal
 static unsigned int menuOptionID = 0;
@@ -60,6 +58,14 @@ static void addMenu( Menu * m ) throw( LoadException ){
 	}
 }
 
+Point::Point():
+x(0),
+y(0){
+}
+
+Point::~Point(){
+}
+
 Menu::Menu():
 music(""),
 selectSound(""),
@@ -68,6 +74,7 @@ motion(0),
 currentDrawState( FadeIn ),
 work(new Bitmap(GFX_X, GFX_Y)),
 _name(""),
+menuInfo(""),
 hasOptions(false),
 removeOption(false),
 background(0),
@@ -162,7 +169,11 @@ void Menu::load(Token *token)throw( LoadException ){
 			} else if( *tok == "action" ) {
 				ActionAct(tok);
 			} else if( *tok == "info-position" ) {
-				*tok >> infoPositionX >> infoPositionY;
+				*tok >> optionInfoTextLocation.x >> optionInfoTextLocation.y;
+			} else if( *tok == "menuinfo" ){
+			    *tok >> menuInfo;
+			} else if( *tok == "menuinfo-position" ){
+			    *tok >> menuInfoLocation.x >> menuInfoLocation.y;
 			} else if( *tok == "anim" ) {
 				MenuAnimation *animation = new MenuAnimation(tok);
 				if (animation->getLocation() == 0){
@@ -197,8 +208,14 @@ void Menu::load(Token *token)throw( LoadException ){
 		throw LoadException("There should be at least one background in the main menu!");
 	}*/
 	
-	if (! infoPositionX || ! infoPositionY){
-		throw LoadException("The position for the menu info boxes must be set!");
+	if (! optionInfoTextLocation.x || ! optionInfoTextLocation.y){
+	    throw LoadException("The position for the option info box in \"" + getName() + "\" must be set!"); 
+	}
+	
+	if (!menuInfo.empty()){
+	    if (! menuInfoLocation.x || ! menuInfoLocation.y){
+		throw LoadException("The position for the menu info box in \"" + getName() + "\" must be set since there menuinfo is set!"); 
+	    }
 	}
 
 	if ( backboard.position.empty() ){
@@ -447,8 +464,10 @@ void Menu::run(){
                 drawTextBoard(work);
                 // Draw text
                 drawText(work);
-                // Draw info text
-                drawInfoText(work);
+                // Draw option info text
+                drawOptionInfoText(work);
+		// Draw menu info text
+		drawInfoText(work);
                 // Draw foreground animations
                 for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
                     (*i)->draw(work);
@@ -890,7 +909,7 @@ void Menu::drawText(Bitmap *bmp){
 }
 
 // Draw info text
-void Menu::drawInfoText ( Bitmap *bmp ){
+void Menu::drawOptionInfoText ( Bitmap *bmp ){
     if ( (*selectedOption)->getInfoText().empty() ) return;
     const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
     switch ( currentDrawState ){
@@ -925,8 +944,8 @@ void Menu::drawInfoText ( Bitmap *bmp ){
             }
             area.position.width = maxWidth;
             area.position.height = height + 20;
-            area.position.x = area.position.x !=0 ? area.position.x - (area.position.width / 2) : infoPositionX - (area.position.width / 2);
-            area.position.y = area.position.y !=0 ? area.position.y - (area.position.height / 2) : infoPositionY - (area.position.height / 2);
+            area.position.x = area.position.x !=0 ? area.position.x - (area.position.width / 2) : optionInfoTextLocation.x - (area.position.width / 2);
+            area.position.y = area.position.y !=0 ? area.position.y - (area.position.height / 2) : optionInfoTextLocation.y - (area.position.height / 2);
             // area.position.body = backboard.position.body;
             area.position.body = Bitmap::makeColor(32,32,0);
             area.position.bodyAlpha = backboard.position.bodyAlpha;
@@ -938,6 +957,65 @@ void Menu::drawInfoText ( Bitmap *bmp ){
 
             // Draw text
             int sy = area.position.y + 10;
+            for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
+                string & str = *it;
+                vFont.printf(area.position.x + 5, sy, white, *bmp, str, 0 );
+                sy += vFont.getHeight();
+            }
+            break;
+        }
+    }
+}
+
+// Info text
+void Menu::drawInfoText ( Bitmap *bmp ){
+    if ( menuInfo.empty() ) return;
+    const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
+    switch ( currentDrawState ){
+        case FadeIn :
+            break;
+        case FadeInText :
+            break;
+        case NoFade:
+        default: {
+            Box area;
+            vector<string> strings;
+            size_t start = 0;
+            size_t last = 0;
+            const string & optionText = menuInfo;
+            start = optionText.find("\n");
+            while (start != string::npos){
+                strings.push_back(optionText.substr(last, start - last));
+                last = start + 1;
+                start = optionText.find("\n", last);
+            }
+            strings.push_back(optionText.substr(last));
+
+            area.position.radius = 15;
+            int maxWidth = 0;
+            int height = 0;
+            for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
+                int w = vFont.textLength((*it).c_str()) + 10;
+                if (w > maxWidth){
+                    maxWidth = w;
+                }
+                height += vFont.getHeight();
+            }
+            area.position.width = maxWidth;
+            area.position.height = height;
+            area.position.x = menuInfoLocation.x - (area.position.width / 2);
+            area.position.y = menuInfoLocation.y - (area.position.height / 2);
+            // area.position.body = backboard.position.body;
+            area.position.body = Bitmap::makeColor(32,32,0);
+            area.position.bodyAlpha = backboard.position.bodyAlpha;
+            area.position.border = backboard.position.border;
+            area.position.borderAlpha = backboard.position.borderAlpha;
+
+            // Draw box
+            area.render(bmp);
+
+            // Draw text
+            int sy = area.position.y - 5;
             for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
                 string & str = *it;
                 vFont.printf(area.position.x + 5, sy, white, *bmp, str, 0 );

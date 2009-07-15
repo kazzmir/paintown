@@ -20,6 +20,14 @@ class MenuOption;
 class Token;
 class MenuAnimation;
 
+class Point{
+    public:
+    int x;
+    int y;
+    Point();
+    ~Point();
+};
+
 class Menu
 {
 	public:
@@ -82,6 +90,8 @@ class Menu
 		
 		inline bool isOption() const { return option; }
 		
+		inline void setInfoText(const std::string &text) { menuInfo = text; }
+		
 		//! Area for placement of option list
 		Box backboard;
 		
@@ -128,6 +138,15 @@ class Menu
 		//! Draw board
 		void drawTextBoard(Bitmap *work);
 		
+		//! Draw info text
+		void drawInfoText(Bitmap *work);
+		
+		//! General text about the menu, similar to info about options if empty it draws nothing it also borrows the colors of the main menu box
+		std::string menuInfo;
+		
+		//! menu info location
+		Point menuInfoLocation;
+		
 	private:
 		std::string _name;
 		
@@ -143,8 +162,8 @@ class Menu
 		//! Draw text
 		void drawText(Bitmap *work);
 		
-		//! Draw info text
-		void drawInfoText(Bitmap *work);
+		//! Draw option info text
+		void drawOptionInfoText(Bitmap *work);
 		
 		//! Cleanup options to remove omited items
 		void optionCleanup();
@@ -162,5 +181,9 @@ class Menu
 		
 		//! Is this an option?
 		bool option;
+		
+		//! This is the location of the option info text
+		Point optionInfoTextLocation;
+		
 };
 #endif
