@@ -41,11 +41,14 @@ static std::map<std::string, Menu *> menus;
 int Menu::fadeSpeed = 12;
 
 /* why are these global? */
-static int fadeAlpha=0;
+static int fadeAlpha = 0;
 
 // Creates unique ID's for options so that they can be flagged for removal
 static unsigned int menuOptionID = 0;
 
+/* what is addMenu() for?
+ * when a menu is deleted, what happens to its entry in the menus map?
+ */
 static void addMenu( Menu * m ) throw( LoadException ){
 	std::map<std::string, Menu *>::iterator i = menus.find(m->getName());
 	if ( i == menus.end() ){
@@ -536,6 +539,9 @@ void Menu::run(){
 
 //! draw snapshot of menu to buffer to facilitate tabs
 void Menu::drawMenuSnap(Bitmap *bmp){
+    /* most of this code is similar to the drawing code in the run() method.
+     * can the shared code be moved to a single function?
+     */
     // Do all that we do during a regular draw sweep
     // Set the selector
     selectedOption = menuOptions.begin();

@@ -124,6 +124,7 @@ class Menu
 		menuDrawState currentDrawState;
 		
 		//! Our current bitmap to draw to
+                /* can't this be passed in instead of created for every menu? */
 		Bitmap *work;
 		
 		//! Draw background
