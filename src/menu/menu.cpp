@@ -73,13 +73,17 @@ longestTextLength(0),
 motion(0),
 currentDrawState( FadeIn ),
 work(new Bitmap(GFX_X, GFX_Y)),
-_name(""),
 menuInfo(""),
+_name(""),
 hasOptions(false),
 removeOption(false),
 background(0),
 option(false){
 	backboard.position.radius = 15;
+	optionInfoTextLocation.x = 320;
+	optionInfoTextLocation.y = 100;
+	menuInfoLocation.x = 320;
+	menuInfoLocation.y = 465;
         if (work->getError()){
             Global::debug(-1) << "*BUG* Could not allocate bitmap for menu" << endl;
         }
@@ -208,16 +212,6 @@ void Menu::load(Token *token)throw( LoadException ){
 		throw LoadException("There should be at least one background in the main menu!");
 	}*/
 	
-	if (! optionInfoTextLocation.x || ! optionInfoTextLocation.y){
-	    throw LoadException("The position for the option info box in \"" + getName() + "\" must be set!"); 
-	}
-	
-	if (!menuInfo.empty()){
-	    if (! menuInfoLocation.x || ! menuInfoLocation.y){
-		throw LoadException("The position for the menu info box in \"" + getName() + "\" must be set since there menuinfo is set!"); 
-	    }
-	}
-
 	if ( backboard.position.empty() ){
 		throw LoadException("The position for the menu list must be set!");
 	}
