@@ -358,8 +358,6 @@ void TabMenu::run(){
 		    drawSnapshots(work);
 		}
 		
-		drawInfoText(work);
-		
 		// Draw foreground animations
 		for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 		    (*i)->draw(work);

@@ -190,8 +190,8 @@ void OptionKey::run(bool &endGame)
 	Box dialog;
 	dialog.position.width = vFont.textLength("Press a Key!") + 10;
 	dialog.position.height = vFont.getHeight() + 10;
-	dialog.position.x = (Menu::getBackground()->getWidth()/2) - (dialog.position.width/2);
-	dialog.position.y = (Menu::getBackground()->getHeight()/2) - (dialog.position.height/2);
+	dialog.position.x = (getParent()->getWork()->getWidth()/2) - (dialog.position.width/2);
+	dialog.position.y = (getParent()->getWork()->getHeight()/2) - (dialog.position.height/2);
 	dialog.position.radius = 10;
 	dialog.position.body = Bitmap::makeColor(0,0,0);
 	dialog.position.bodyAlpha = 200;

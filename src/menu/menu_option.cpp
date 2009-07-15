@@ -16,7 +16,6 @@ adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )),
 adjustRightColor(Bitmap::makeColor( 255, 255, 255 )),
 runnable(true),
 forRemoval(false),
-ID(0),
 parent(0){
     setType(t);
 
@@ -28,18 +27,11 @@ parent(0){
 	      Token * token;
 	      tok >> token;
 	      if ( *token == "info" ){
-		  // get info text and location and add to option
+		  // get info text add to option
 		  std::string temp;
 		  int x=0, y=0;
 		  *token >> temp;
 		  setInfoText(temp);
-		  try{
-		      *token >> x >> y;
-		  } catch (const TokenException & ex){
-		      x = 0;
-		      y = 0;
-		  }
-		  setInfoTextLocation(x,y);
 	      } 
 	      else if( *token == "option-anim" ) {
 		  MenuAnimation *animation = new MenuAnimation(token);

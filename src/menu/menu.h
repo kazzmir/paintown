@@ -59,15 +59,6 @@ class Menu
 		/*! get working bitmap */
 		Bitmap *getWork();
 		
-		/*! Get current background in Bitmap */
-		static Bitmap *getBackground();
-		
-		//! Get menu by name
-		static Menu *getMenu(const std::string &name);
-		
-		//! Get top level menu name
-		static std::string &getParentMenu();
-		
 		//! get font
 		static std::string &getFont();
 		
@@ -139,8 +130,8 @@ class Menu
 		//! Draw board
 		void drawTextBoard(Bitmap *work);
 		
-		//! Draw info text
-		void drawInfoText(Bitmap *work);
+		//! Draw info box
+		void drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp );
 		
 		//! General text about the menu, similar to info about options if empty it draws nothing it also borrows the colors of the main menu box
 		std::string menuInfo;
@@ -163,14 +154,14 @@ class Menu
 		//! Draw text
 		void drawText(Bitmap *work);
 		
-		//! Draw option info text
-		void drawOptionInfoText(Bitmap *work);
-		
 		//! Cleanup options to remove omited items
 		void optionCleanup();
 		
+		//! Fade alpha
+		int fadeAlpha;
+		
 		//! Fade speed
-		static int fadeSpeed;
+		int fadeSpeed;
 
 		Box fadeBox;
 		
@@ -178,7 +169,7 @@ class Menu
 		Bitmap *background;
 		
 		//! Clear color only used if no background is set this is for every existant menu
-		static int clearColor;
+		int clearColor;
 		
 		//! Is this an option?
 		bool option;

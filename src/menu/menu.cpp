@@ -24,42 +24,12 @@
 
 using namespace std;
 
-int Menu::clearColor = Bitmap::makeColor(0,0,0);
-
-// The top level menu, it is required to be main or whatever this set to
-static std::string parentMenu = "main";
-
 static std::string sharedFont = "";
 static int sharedFontWidth = 24;
 static int sharedFontHeight = 24;
 
 const int yellow = Bitmap::makeColor(255, 255, 0);
 const int white = Bitmap::makeColor(255, 255, 255);
-
-static std::map<std::string, Menu *> menus;
-
-int Menu::fadeSpeed = 12;
-
-/* why are these global? */
-static int fadeAlpha = 0;
-
-// Creates unique ID's for options so that they can be flagged for removal
-static unsigned int menuOptionID = 0;
-
-/* what is addMenu() for?
- * when a menu is deleted, what happens to its entry in the menus map?
- */
-static void addMenu( Menu * m ) throw( LoadException ){
-	std::map<std::string, Menu *>::iterator i = menus.find(m->getName());
-	if ( i == menus.end() ){
-		// ignore level selector
-		if (m->getName() == "level-select" )return;
-		menus[m->getName()] = m; 
-		
-	} else {
-		throw LoadException("A menu by the name of \""+m->getName()+"\" already exists!"); 
-	}
-}
 
 Point::Point():
 x(0),
@@ -80,7 +50,10 @@ menuInfo(""),
 _name(""),
 hasOptions(false),
 removeOption(false),
+fadeAlpha(0),
+fadeSpeed(12),
 background(0),
+clearColor(Bitmap::makeColor(0,0,0)),
 option(false){
 	backboard.position.radius = 15;
 	optionInfoTextLocation.x = 320;
@@ -208,35 +181,16 @@ void Menu::load(Token *token)throw( LoadException ){
 	if ( _name.empty() ){
 		throw LoadException("No name set, the menu should have a name!");
 	}
-
-	/* Since the introduction of animations... no need to enforce a background
-	 * Instead if there is no background... the background will be cleared to color defaults to black 0,0,0
-	if ( !background && getName() == parentMenu ){
-		throw LoadException("There should be at least one background in the main menu!");
-	}*/
 	
 	if ( backboard.position.empty() ){
 		throw LoadException("The position for the menu list must be set!");
 	}
-	
+	// Omit menu if no options are available
 	if ( ! hasOptions ) {
-		if( getName() == parentMenu ){
-		    throw LoadException("This is the main menu, it is required that it has options!");
-		} else{
-		  Global::debug(0) << "The menu \"" << getName() << "\" has no options & will be omitted from the top level menu!" << endl;
-		    removeOption = true;
-		  return;
-		}
+		Global::debug(0) << "The menu \"" << getName() << "\" has no options & will be omitted from the top level menu!" << endl;
+		removeOption = true;
 	}
-	
-	addMenu( this );
-
-        /*
-        if (sharedFont == ""){
-            sharedFont = Configuration::getMenuFont();
-            // sharedFont = "fonts/arial.ttf";
-        }
-        */
+	// Set the sharedFont
         if (Configuration::getMenuFont() != "" && Util::exists(Configuration::getMenuFont())){
             sharedFont = Configuration::getMenuFont();
         }
@@ -266,12 +220,6 @@ void Menu::load(const std::string &filename) throw (LoadException){
         TokenReader tr( filename );
         Token * token = tr.readToken();
         load(token);
-	
-	if( !option){
-	    if( !getMenu(parentMenu) ){
-	      throw LoadException("\"main\" menu not found, the top level directory must be named \"main\"!");
-	    }
-	}
 	
     } catch (const TokenException & e){
         throw LoadException(e.getReason());
@@ -462,9 +410,9 @@ void Menu::run(){
                 // Draw text
                 drawText(work);
                 // Draw option info text
-                drawOptionInfoText(work);
+                drawInfoBox((*selectedOption)->getInfoText(), optionInfoTextLocation, work);
 		// Draw menu info text
-		drawInfoText(work);
+		drawInfoBox(menuInfo, menuInfoLocation, work);
                 // Draw foreground animations
                 for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
                     (*i)->draw(work);
@@ -571,23 +519,9 @@ void Menu::drawMenuSnap(Bitmap *bmp){
     tempBmp.Stretch(*bmp);
 }
 
-Menu *Menu::getMenu(const std::string &name){
-	std::map<std::string, Menu *>::iterator i = menus.find(name);
-	if ( i!=menus.end() ){
-			  return i->second;
-	}
-	return 0;
-}
-
-std::string &Menu::getParentMenu(){
-	return parentMenu;
-}
-
 /*! Add options to menu */
 void Menu::addOption(MenuOption *opt){
   if (opt){
-      menuOptionID++;
-      opt->setID(menuOptionID);
       opt->parent = this;
       hasOptions = true;
       menuOptions.push_back(opt);
@@ -597,12 +531,6 @@ void Menu::addOption(MenuOption *opt){
 /*! Get working bitmap */
 Bitmap *Menu::getWork(){
     return work;
-}
-
-/*! Get current background in Bitmap */
-Bitmap *Menu::getBackground()
-{
-	return getMenu(parentMenu)->background;
 }
 
 std::string &Menu::getFont(){
@@ -644,12 +572,12 @@ void Menu::setFontHeight(int h){
 //! set new font menu wide
 void Menu::setFont(const std::string &font, int w, int h){
     if ( Util::exists(font) == true){
-        std::map<std::string, Menu *>::iterator begin = menus.begin();
+        /*std::map<std::string, Menu *>::iterator begin = menus.begin();
         std::map<std::string, Menu *>::iterator end = menus.end();
 
         for ( ;begin!=end;++begin ){
             begin->second->longestTextLength = Font::getFont(font, w, h).textLength(begin->second->menuOptions[0]->getText().c_str());
-        }
+        }*/
         sharedFont = font;
         sharedFontWidth = w;
         sharedFontHeight = h;
@@ -744,14 +672,10 @@ void Menu::updateFadeInfo(){
 
 void Menu::drawBackground(Bitmap *bmp){
 	if ( !background ){
-	      Bitmap *temp = getMenu( parentMenu )->background;
-	      if ( temp ){
-		  temp->Stretch(*bmp); 
-	      } else {
-		  bmp->fill(clearColor);
-	      }
+	      bmp->fill(clearColor);
+	} else {
+	    background->Stretch(*bmp);
 	}
-	else background->Stretch(*bmp);
 }
 
 //! Draw board
@@ -908,68 +832,9 @@ void Menu::drawText(Bitmap *bmp){
     bmp->setClipRect(0, 0, bmp->getWidth(), bmp->getHeight());
 }
 
-// Draw info text
-void Menu::drawOptionInfoText ( Bitmap *bmp ){
-    if ( (*selectedOption)->getInfoText().empty() ) return;
-    const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
-    switch ( currentDrawState ){
-        case FadeIn :
-            break;
-        case FadeInText :
-            break;
-        case NoFade:
-        default: {
-            Box area = (*selectedOption)->getInfoTextLocation();
-            vector<string> strings;
-            size_t start = 0;
-            size_t last = 0;
-            const string & optionText = (*selectedOption)->getInfoText();
-            start = optionText.find("\n");
-            while (start != string::npos){
-                strings.push_back(optionText.substr(last, start - last));
-                last = start + 1;
-                start = optionText.find("\n", last);
-            }
-            strings.push_back(optionText.substr(last));
-
-            area.position.radius = 15;
-            int maxWidth = 0;
-            int height = 0;
-            for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
-                int w = vFont.textLength((*it).c_str()) + 10;
-                if (w > maxWidth){
-                    maxWidth = w;
-                }
-                height += vFont.getHeight();
-            }
-            area.position.width = maxWidth;
-            area.position.height = height + 20;
-            area.position.x = area.position.x !=0 ? area.position.x - (area.position.width / 2) : optionInfoTextLocation.x - (area.position.width / 2);
-            area.position.y = area.position.y !=0 ? area.position.y - (area.position.height / 2) : optionInfoTextLocation.y - (area.position.height / 2);
-            // area.position.body = backboard.position.body;
-            area.position.body = Bitmap::makeColor(32,32,0);
-            area.position.bodyAlpha = backboard.position.bodyAlpha;
-            area.position.border = backboard.position.border;
-            area.position.borderAlpha = backboard.position.borderAlpha;
-
-            // Draw box
-            area.render(bmp);
-
-            // Draw text
-            int sy = area.position.y + 10;
-            for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
-                string & str = *it;
-                vFont.printf(area.position.x + 5, sy, white, *bmp, str, 0 );
-                sy += vFont.getHeight();
-            }
-            break;
-        }
-    }
-}
-
-// Info text
-void Menu::drawInfoText ( Bitmap *bmp ){
-    if ( menuInfo.empty() ) return;
+// Draw info box
+void Menu::drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp ){
+    if ( info.empty() ) return;
     const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
     switch ( currentDrawState ){
         case FadeIn :
@@ -982,14 +847,13 @@ void Menu::drawInfoText ( Bitmap *bmp ){
             vector<string> strings;
             size_t start = 0;
             size_t last = 0;
-            const string & optionText = menuInfo;
-            start = optionText.find("\n");
+            start = info.find("\n");
             while (start != string::npos){
-                strings.push_back(optionText.substr(last, start - last));
+                strings.push_back(info.substr(last, start - last));
                 last = start + 1;
-                start = optionText.find("\n", last);
+                start = info.find("\n", last);
             }
-            strings.push_back(optionText.substr(last));
+            strings.push_back(info.substr(last));
 
             area.position.radius = 15;
             int maxWidth = 0;
@@ -1003,8 +867,8 @@ void Menu::drawInfoText ( Bitmap *bmp ){
             }
             area.position.width = maxWidth;
             area.position.height = height;
-            area.position.x = menuInfoLocation.x - (area.position.width / 2);
-            area.position.y = menuInfoLocation.y - (area.position.height / 2);
+            area.position.x = location.x - (area.position.width / 2);
+            area.position.y = location.y - (area.position.height / 2);
             // area.position.body = backboard.position.body;
             area.position.body = Bitmap::makeColor(32,32,0);
             area.position.bodyAlpha = backboard.position.bodyAlpha;

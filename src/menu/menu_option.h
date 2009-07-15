@@ -10,6 +10,7 @@ class Bitmap;
 class Token;
 class Menu;
 class MenuAnimation;
+class Point;
 
 class MenuOption
 {
@@ -62,7 +63,6 @@ class MenuOption
 		OptionType mType;
 		std::string text;
 		std::string infoText;
-		Box infoTextLocation;
 		Bitmap *bmp;
 		int adjustLeftColor;
 		int adjustRightColor;
@@ -75,9 +75,6 @@ class MenuOption
 		
 		// Stuff we don't need to be concerned with
 		friend class Menu;
-		int ID;
-		inline void setID(int id){ ID = id; }
-		inline int getID(){ return ID; }
 		
 		// This is the owner of this option
 		Menu *parent;
@@ -98,10 +95,6 @@ class MenuOption
 		inline void setInfoText(const std::string &t) { infoText = t; }
 		
 		inline std::string getInfoText() const { return infoText; }
-		
-		inline void setInfoTextLocation(int x, int y) { infoTextLocation.position.x = x; infoTextLocation.position.y = y; }
-		
-		inline Box getInfoTextLocation() const { return infoTextLocation; }
 		
 		inline void setBitmap(Bitmap *b) { bmp = b; }
 		
