@@ -23,6 +23,16 @@ static bool isArg( const char * s1, const char * s2[], int num){
             return true;
         }
     }
+
+    for (int i = 0; i < num; i++){
+        if (strlen(s2[i]) > 2){
+            int distance = Util::levenshtein(s1, s2[i]);
+            if (distance != -1 && distance < 3){
+                Global::debug(0) << "You gave option '" << s1 << "' did you mean '" << s2[i] << "'?" << endl;
+            }
+        }
+    }
+
     return false;
 }
 	
@@ -66,7 +76,9 @@ int paintown_main( int argc, char ** argv ){
 				i >> f;
 				Global::setDebug( f );
 			}
-		}
+		} else {
+                    Global::debug(0) << "I don't recognize option '" << argv[q] << "'" << endl;
+                }
 	}
 #undef NUM_ARGS
 	
