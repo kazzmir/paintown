@@ -91,3 +91,4 @@ DONE * fix bug with data directory in network mode, like when install-sh is used
 DONE * if there is only one level to load, skip the level selection screen
 * triggers during the level. send arbitrary s-expressions to objects/anything
   (trigger (to (object 2)) (message (increase health 20)))
+* bitmaps should be able to swap themselves out on demand. if memory is constrained then save to disk or completely unload some bitmaps. when those bitmaps need to be used again reload them. this can be done for sounds as well.
