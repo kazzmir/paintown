@@ -13,9 +13,34 @@
 #include "configuration.h"
 #include "init.h"
 
+#include <vector>
+
 using namespace std;
 
 static int gfx = Global::WINDOWED;
+
+static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
+static const char * DATAPATH_ARG[] = {"-d", "data", "datapath", "data-path", "path"};
+static const char * DEBUG_ARG[] = {"-l", "debug"};
+static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
+
+static const char * closestMatch(const char * s1, vector<const char *> args){
+
+    const char * good = NULL;
+    int minimum = -1;
+    for (vector<const char *>::iterator it = args.begin(); it != args.end(); it++){
+        const char * compare = *it;
+        if (strlen(compare) > 2){
+            int distance = Util::levenshtein(s1, compare);
+            if (distance != -1 && (minimum == -1 || distance < minimum)){
+                minimum = distance;
+                good = compare;
+            }
+        }
+    }
+
+    return good;
+}
 
 static bool isArg( const char * s1, const char * s2[], int num){
     for (int i = 0; i < num; i++){
@@ -24,22 +49,8 @@ static bool isArg( const char * s1, const char * s2[], int num){
         }
     }
 
-    for (int i = 0; i < num; i++){
-        if (strlen(s2[i]) > 2){
-            int distance = Util::levenshtein(s1, s2[i]);
-            if (distance != -1 && distance < 3){
-                Global::debug(0) << "You gave option '" << s1 << "' did you mean '" << s2[i] << "'?" << endl;
-            }
-        }
-    }
-
     return false;
 }
-	
-static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
-static const char * DATAPATH_ARG[] = {"-d", "data", "datapath", "data-path", "path"};
-static const char * DEBUG_ARG[] = {"-l", "debug"};
-static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 
 static void showOptions(){
 	Global::debug( 0 ) << "Paintown by Jon Rafkind" << endl;
@@ -50,14 +61,28 @@ static void showOptions(){
 	Global::debug( 0 ) << endl;
 }
 
+static void addArgs(vector<const char *> & args, const char * strings[], int num){
+    for (int i = 0; i < num; i++){
+        args.push_back(strings[i]);
+    }
+}
+
 int paintown_main( int argc, char ** argv ){
 	
 	bool music_on = true;
 	Collector janitor;
 
 	Global::setDebug( 0 );
+        vector<const char *> all_args;
 	
 #define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
+#define ADD_ARGS(args) addArgs(all_args, args, NUM_ARGS(args))
+        ADD_ARGS(WINDOWED_ARG);
+        ADD_ARGS(DATAPATH_ARG);
+        ADD_ARGS(DEBUG_ARG);
+        ADD_ARGS(MUSIC_ARG);
+#undef ADD_ARGS
+
 	for ( int q = 1; q < argc; q++ ){
 		if ( isArg( argv[ q ], WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG) ) ){
 			gfx = Global::FULLSCREEN;
@@ -77,7 +102,13 @@ int paintown_main( int argc, char ** argv ){
 				Global::setDebug( f );
 			}
 		} else {
-                    Global::debug(0) << "I don't recognize option '" << argv[q] << "'" << endl;
+                    const char * arg = argv[q];
+                    const char * closest = closestMatch(arg, all_args);
+                    if (closest == NULL){
+                        Global::debug(0) << "I don't recognize option '" << arg << "'" << endl;
+                    } else {
+                        Global::debug(0) << "You gave option '" << arg << "'. Did you mean '" << closest << "'?" << endl;
+                    }
                 }
 	}
 #undef NUM_ARGS
