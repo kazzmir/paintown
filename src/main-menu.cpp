@@ -17,9 +17,19 @@ using namespace std;
 
 static int gfx = Global::WINDOWED;
 
-static bool isArg( const char * s1, const char * s2 ){
-	return strcasecmp( s1, s2 ) == 0;
+static bool isArg( const char * s1, const char * s2[], int num){
+    for (int i = 0; i < num; i++){
+        if (strcasecmp(s1, s2[i]) == 0){
+            return true;
+        }
+    }
+    return false;
 }
+	
+static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
+static const char * DATAPATH_ARG[] = {"-d", "data", "datapath", "data-path", "path"};
+static const char * DEBUG_ARG[] = {"-l", "debug"};
+static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 
 static void showOptions(){
 	Global::debug( 0 ) << "Paintown by Jon Rafkind" << endl;
@@ -34,24 +44,21 @@ int paintown_main( int argc, char ** argv ){
 	
 	bool music_on = true;
 	Collector janitor;
-	const char * WINDOWED_ARG = "-w";
-	const char * DATAPATH_ARG = "-d";
-	const char * DEBUG_ARG = "-l";
-	const char * MUSIC_ARG = "-m";
 
 	Global::setDebug( 0 );
 	
+#define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
 	for ( int q = 1; q < argc; q++ ){
-		if ( isArg( argv[ q ], WINDOWED_ARG ) ){
+		if ( isArg( argv[ q ], WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG) ) ){
 			gfx = Global::FULLSCREEN;
-		} else if ( isArg( argv[ q ], DATAPATH_ARG ) ){
+		} else if ( isArg( argv[ q ], DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG) ) ){
 			q += 1;
 			if ( q < argc ){
 				Util::setDataPath( argv[ q ] );
 			}
-		} else if ( isArg( argv[ q ], MUSIC_ARG ) ){
+		} else if ( isArg( argv[ q ], MUSIC_ARG, NUM_ARGS(MUSIC_ARG) ) ){
 			music_on = false;
-		} else if ( isArg( argv[ q ], DEBUG_ARG ) ){
+		} else if ( isArg( argv[ q ], DEBUG_ARG, NUM_ARGS(DEBUG_ARG) ) ){
 			q += 1;
 			if ( q < argc ){
 				istringstream i( argv[ q ] );
@@ -61,6 +68,7 @@ int paintown_main( int argc, char ** argv ){
 			}
 		}
 	}
+#undef NUM_ARGS
 	
         showOptions();
 
