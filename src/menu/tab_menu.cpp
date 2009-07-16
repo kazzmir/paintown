@@ -375,8 +375,14 @@ void TabMenu::run(){
 	// Check runmenu
 	if(runMenu){
 	    // Run menu
-	    (*currentTab)->menu.run();
-	    throw ReturnException();
+	    try {
+		(*currentTab)->menu.run();
+	    }
+	    catch(ReturnException &ex)
+	    {
+		// Lol what did we do
+		resetFadeInfo();
+	    }
 	}
     }
 }
