@@ -56,7 +56,7 @@ class TabMenu : public Menu
 	double targetOffset;
 	// Actual offset
 	double totalOffset;
-	double scrollSpeed;
+	// double scrollSpeed;
 	// Total lines from options
 	int totalLines;
 	
