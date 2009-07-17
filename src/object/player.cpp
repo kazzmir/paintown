@@ -15,10 +15,10 @@
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
-#include "draw-glow-effect.h"
-#include "draw-countdown-effect.h"
 #include "game/input.h"
 #include "game/input-manager.h"
+#include "draw-glow-effect.h"
+#include "draw-countdown-effect.h"
 
 // how many ticks to wait before the key cache is cleared.
 // this can probably be user defined in the future
@@ -359,16 +359,9 @@ Object * Player::copy(){
 }
 	
 void Player::hurt( int x ){
-	if ( ! isInvincible() ){
-		Character::hurt( x );
-	}
-
-        /* gained health, probably through a power-up. time to glow!
-         * this can probably be moved to the stimulation now that effects exist.
-         */
-        if (x < 0){
-            addEffect(new DrawCountdownEffect(new DrawGlowEffect(this, Bitmap::makeColor(50,50,0), Bitmap::makeColor(190, 190, 20), 50), 150));
-        }
+    if (! isInvincible()){
+        Character::hurt(x);
+    }
 }
         
 void Player::setInvincible(const bool b){

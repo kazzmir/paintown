@@ -349,6 +349,8 @@ public:
 	virtual void fall( double x_vel, double y_vel );
 	
         virtual const int getInvincibility() const;
+        
+        virtual void addEffect(DrawEffect * effect);
 
 protected:
 
@@ -365,8 +367,6 @@ protected:
         std::vector< BodyPart > getBodyParts( Animation * animation );
 
 	virtual void landed( World * world );
-
-        virtual void addEffect(DrawEffect * effect);
 
 	virtual void drawLifeBar( int x, int y, int he, Bitmap * work );
 	

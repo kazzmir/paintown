@@ -1,6 +1,9 @@
+#include "util/bitmap.h"
 #include "stimulation.h"
 #include "health_stimulation.h"
 #include "character.h"
+#include "draw-glow-effect.h"
+#include "draw-countdown-effect.h"
 
 HealthStimulation::HealthStimulation( int value ):
 value( value ){
@@ -16,6 +19,7 @@ void HealthStimulation::stimulate( Object & o ) const {
 void HealthStimulation::stimulate( Character & c ) const {
 	/* cause negative hurt */
 	c.hurt( - value );
+        c.addEffect(new DrawCountdownEffect(new DrawGlowEffect(&c, Bitmap::makeColor(50,50,0), Bitmap::makeColor(190, 190, 20), 50), 150));
 }
 
 void HealthStimulation::createMessage( Network::Message & message ) const {
