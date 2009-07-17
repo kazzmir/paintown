@@ -422,7 +422,10 @@ void Menu::run(){
                 // Draw text board
                 drawTextBoard(work);
                 // Draw text
+                // Set clipping so that text won't go beyond it's boundaries
+                work->setClipRect(backboard.position.x+2, backboard.position.y+2,backboard.position.getX2()-2,backboard.position.getY2()-2);
                 drawText(backboard, work);
+                work->setClipRect(0, 0, work->getWidth(), work->getHeight());
                 // Draw option info text
                 drawInfoBox((*selectedOption)->getInfoText(), optionInfoTextLocation, work);
 		// Draw menu info text
@@ -707,8 +710,6 @@ void Menu::drawText(const Box &area, Bitmap *bmp){
         currentCounter = (menuOptions.size()) + currentCounter;
     }
 
-    // Set clipping so that text won't go beyond it's boundaries
-    bmp->setClipRect(area.position.x+2, area.position.y+2,area.position.getX2()-2,area.position.getY2()-2);
 
     for (int i=0;i<displayTotal;++i){
         std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter % menuOptions.size();
@@ -809,7 +810,6 @@ void Menu::drawText(const Box &area, Bitmap *bmp){
         if ( optionAlpha >= 250 ){optionAlphaIncrements -= optionAlphaIncrements*2;optionAlpha=250;}
         */
     }
-    bmp->setClipRect(0, 0, bmp->getWidth(), bmp->getHeight());
 }
 
 // Draw info box
