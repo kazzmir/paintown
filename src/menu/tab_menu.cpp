@@ -343,7 +343,8 @@ void TabMenu::run(){
 		    if (totalOffset > targetOffset){
 			totalOffset-=scrollSpeed;
 			// Modify scrollspeed so we can get acceleration
-			scrollSpeed+=SCROLL_SPEED_MODIFIER;
+			//scrollSpeed+=SCROLL_SPEED_MODIFIER;
+			scrollSpeed = fabs(totalOffset + targetOffset)/6 < 1 ? 1 : fabs(totalOffset + targetOffset)/6;
 			if (totalOffset < targetOffset){
 			    totalOffset = targetOffset;
 			    scrollSpeed = DEFAULT_SCROLL_SPEED;
@@ -352,7 +353,8 @@ void TabMenu::run(){
 		    else if (totalOffset < targetOffset){
 			totalOffset+=scrollSpeed;
 			// Modify scrollspeed so we can get acceleration
-			scrollSpeed+=SCROLL_SPEED_MODIFIER;
+			//scrollSpeed+=SCROLL_SPEED_MODIFIER;
+			scrollSpeed = fabs(totalOffset + targetOffset)/6 < 1 ? 1 : fabs(totalOffset + targetOffset)/6;
 			if (totalOffset > targetOffset){
 			    totalOffset = targetOffset;
 			    scrollSpeed = DEFAULT_SCROLL_SPEED;
