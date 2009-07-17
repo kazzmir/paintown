@@ -1418,7 +1418,7 @@ void MugenMenu::run(){
 	    }
     }
     
-    return;
+    throw ReturnException();
 }
 
 

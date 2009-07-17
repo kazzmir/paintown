@@ -436,6 +436,8 @@ void TabMenu::run(){
 	    keyInputManager::update();
 	}
     }
+    
+    throw ReturnException();
 }
 
 void TabMenu::drawMenus(Bitmap *bmp){
