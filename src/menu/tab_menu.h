@@ -10,6 +10,21 @@ class MenuOption;
 class Token;
 class MenuAnimation;
 
+// Provides a buffer for going between two colors
+class ColorBuffer{
+    public:
+	ColorBuffer(int color1, int color2);
+	~ColorBuffer();
+	int r1,g1,b1;
+	int r2,g2,b2;
+	int r3,g3,b3;
+	bool forward;
+	
+	int update();
+	
+	void reset();
+};
+
 // Provide menus in a box
 class MenuBox : public Box
 {

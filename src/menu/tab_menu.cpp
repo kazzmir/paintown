@@ -39,6 +39,82 @@ static void setColors (MenuBox *menu, const RectArea &info, const int fontColor)
     menu->fontColor = fontColor;
 }
 
+static void setColors (MenuBox *menu, const int bodyColor, const int borderColor, const int fontColor){
+    menu->position.body = bodyColor;
+    menu->position.border = borderColor;
+    menu->fontColor = fontColor;
+}
+
+ColorBuffer::ColorBuffer(int color1, int color2):
+r1(Bitmap::getRed(color1)),
+g1(Bitmap::getGreen(color1)),
+b1(Bitmap::getBlue(color1)),
+r2(Bitmap::getRed(color2)),
+g2(Bitmap::getGreen(color2)),
+b2(Bitmap::getBlue(color2)),
+r3(Bitmap::getRed(color1)),
+g3(Bitmap::getGreen(color1)),
+b3(Bitmap::getBlue(color1)),
+forward(true){
+}
+
+ColorBuffer::~ColorBuffer(){
+}
+
+int ColorBuffer::update(){
+    // Going to color2 from color1
+    if (forward){
+	if (r3!=r2 && g3!=g2 && b3!=b2){
+	    if (r3<r2){
+		r3++;
+	    } else if (r3>r2){
+		r3--;
+	    }
+	    if (g3<g2){
+		g3++;
+	    } else if (g3>g2){
+		g3--;
+	    }
+	    if (b3<b2){
+		b3++;
+	    } else if (b3>b2){
+		b3--;
+	    }
+	} else {
+	    forward=!forward;
+	}
+    } else {
+	// Going to color1 from color2
+	if (r3!=r1 && g3!=g1 && b3!=b1){
+	    if (r3<r1){
+		r3++;
+	    } else if (r3>r1){
+		r3--;
+	    }
+	    if (g3<g1){
+		g3++;
+	    } else if (g3>g1){
+		g3--;
+	    }
+	    if (b3<b1){
+		b3++;
+	    } else if (b3>b1){
+		b3--;
+	    }
+	} else {
+	    forward=!forward;
+	}
+    }
+    
+    return Bitmap::makeColor(r3,g3,b3);
+}
+
+void ColorBuffer::reset(){
+    r3 = r1;
+    g3 = g1;
+    b3 = b1;
+}
+
 MenuBox::MenuBox(int w, int h):
 fontColor(Bitmap::makeColor(255,255,255)),
 running(false){
@@ -230,6 +306,11 @@ void TabMenu::run(){
     Global::second_counter = 0;
     int scrollCounter = 0;
     
+    // Color effects
+    ColorBuffer fontBuffer(selectedFontColor,runningFontColor);
+    ColorBuffer borderBuffer(selectedTabInfo.border,runningTabInfo.border);
+    ColorBuffer backgroundBuffer(selectedTabInfo.body,runningTabInfo.body);
+    
     currentTab = tabs.begin();
     location = targetOffset = totalOffset = 0;
     // Set select color
@@ -315,10 +396,14 @@ void TabMenu::run(){
 			if ( keyInputManager::keyState(keys::ENTER, true ) ){
 			    // Run menu
 			    (*currentTab)->running = true;
-			    setColors((*currentTab),runningTabInfo,runningFontColor);
+			    backgroundBuffer.reset();
+			    borderBuffer.reset();
+			    fontBuffer.reset();
+			    //setColors((*currentTab),runningTabInfo,runningFontColor);
 			}
 		    } else {
 			(*currentTab)->menu.act();
+			setColors((*currentTab),backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
 		    }
 		    if (keyInputManager::keyState(keys::ESC, true )){
 			if (!(*currentTab)->running){
