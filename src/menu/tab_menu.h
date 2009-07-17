@@ -15,7 +15,8 @@ class ColorBuffer{
     public:
 	ColorBuffer(int color1, int color2);
 	~ColorBuffer();
-	int colors[100];
+        static const int maxColors = 100;
+	int colors[maxColors];
 	int index;
 	bool forward;
 	

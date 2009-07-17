@@ -32,22 +32,22 @@ static int TEXT_SPACING_H = 5;
 ColorBuffer::ColorBuffer(int color1, int color2):
 index(0),
 forward(true){
-    Util::blend_palette(colors,100,color1,color2);
+    Util::blend_palette(colors,maxColors,color1,color2);
 }
 
 ColorBuffer::~ColorBuffer(){
 }
 
 int ColorBuffer::update(){
-    // Going to color2 from color1
+    // Going to color1 from color2
     if (forward){
-	if (index<99){
+	if (index<maxColors-1){
 	    index++;
 	} else {
 	    forward=!forward;
 	}
     } else {
-	// Going to color1 from color2
+	// Going to color2 from color1
 	if (index>0){
 	    index--;
 	} else {
