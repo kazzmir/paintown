@@ -43,7 +43,7 @@ class Menu
 		virtual void load(Token *token) throw (LoadException);
 		
 		/*! Logic */
-		virtual void act();
+		virtual void act(bool &endGame);
 		
 		/*! Draw */
 		virtual void draw(const Box &area, Bitmap *bmp);

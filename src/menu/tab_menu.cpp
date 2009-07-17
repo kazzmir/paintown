@@ -293,149 +293,147 @@ void TabMenu::run(){
 	(*i)->reset();
     }
     while (!done){
-	while (!done){
 
-	    bool draw = false;
-	    //const char vi_up = 'k';
-	    //const char vi_down = 'j';
-	    const char vi_left = 'h';
-	    const char vi_right = 'l';
+	bool draw = false;
+	//const char vi_up = 'k';
+	//const char vi_down = 'j';
+	const char vi_left = 'h';
+	const char vi_right = 'l';
 
-	    keyInputManager::update();
+	keyInputManager::update();
 
-	    if ( Global::speed_counter > 0 ){
-		draw = true;
-		runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-		while ( runCounter >= 1.0 ){
-		    runCounter -= 1;
-		    // Keys
-		    if (!(*currentTab)->running){
-			if (keyInputManager::keyState(keys::LEFT, true) ||
-			    keyInputManager::keyState(vi_left, true)){
-			    MenuGlobals::playSelectSound();
-			    // Reset color
-			    (*currentTab)->setColors(tabInfo,fontColor);
-			    if (currentTab > tabs.begin()){
-				currentTab--;
-				location--;
-				targetOffset+=backboard.position.width;
-			    } else {
-				currentTab = tabs.end()-1;
-				location=tabs.size()-1;
-				targetOffset = (location*backboard.position.width) * -1;
-			    }
-			    (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
-			}
-
-			if ( keyInputManager::keyState(keys::RIGHT, true )||
-				keyInputManager::keyState(vi_right, true )){
-			    MenuGlobals::playSelectSound();
-			    // Reset color
-			    (*currentTab)->setColors(tabInfo,fontColor);
-			    if (currentTab < tabs.begin()+tabs.size()-1){
-				currentTab++;
-				location++;
-				targetOffset-=backboard.position.width;
-			    } else {
-				currentTab = tabs.begin();
-				location= targetOffset = 0;
-			    }
-			    (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
-			}
-			/*
-			if (keyInputManager::keyState(keys::DOWN, true) ||
-			    keyInputManager::keyState(vi_down, true)){
-			    MenuGlobals::playSelectSound();
-			}
-
-			if ( keyInputManager::keyState(keys::UP, true )||
-				keyInputManager::keyState(vi_up, true )){
-			    MenuGlobals::playSelectSound();
-			}
-	*/
-			if ( keyInputManager::keyState(keys::ENTER, true ) ){
-			    // Run menu
-			    (*currentTab)->running = true;
-			    backgroundBuffer.reset();
-			    borderBuffer.reset();
-			    fontBuffer.reset();
-			}
-		    } else {
-			(*currentTab)->menu.act();
-			(*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
-		    }
-		    if (keyInputManager::keyState(keys::ESC, true )){
-			if (!(*currentTab)->running){
-			    done = true;
-			} else {
-			    (*currentTab)->running = false;
-			    (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
-			}
-		    }
-		    
-		    // Animations
-		    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-			(*i)->act();
-		    }
-		    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-			(*i)->act();
-		    }
-		    
-		    // Lets do some logic for the box with text
-		    updateFadeInfo();
-
-                    if (scrollCounter == 0 && totalOffset != targetOffset){
-                        totalOffset = (totalOffset + targetOffset) / 2;
-                        /* not sure if this is stricly necessary */
-                        if (fabs(targetOffset - totalOffset) < 5){
-                            totalOffset = targetOffset;
-                        }
-                    }
-                    /* higher values of % X slow down scrolling */
-                    scrollCounter = (scrollCounter + 1) % 5;
-		  
-		}
-
-		Global::speed_counter = 0;
-	    }
-
-	    if ( draw ){
-		// Draw
-		drawBackground(work);
-		
-		// Do background animations
-		for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-		    (*i)->draw(work);
-		}
-		
-		// Draw text board
-		drawTextBoard(work);
-		
-		// Menus
-		if (currentDrawState == NoFade){
-		    drawMenus(work);
-		}
-		
-		// Draw menu info text
+	if ( Global::speed_counter > 0 ){
+	    draw = true;
+	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+	    while ( runCounter >= 1.0 ){
+		runCounter -= 1;
+		// Keys
 		if (!(*currentTab)->running){
-		    drawInfoBox(menuInfo, menuInfoLocation, work);
+		    if (keyInputManager::keyState(keys::LEFT, true) ||
+			keyInputManager::keyState(vi_left, true)){
+			MenuGlobals::playSelectSound();
+			// Reset color
+			(*currentTab)->setColors(tabInfo,fontColor);
+			if (currentTab > tabs.begin()){
+			    currentTab--;
+			    location--;
+			    targetOffset+=backboard.position.width;
+			} else {
+			    currentTab = tabs.end()-1;
+			    location=tabs.size()-1;
+			    targetOffset = (location*backboard.position.width) * -1;
+			}
+			(*currentTab)->setColors(selectedTabInfo,selectedFontColor);
+		    }
+
+		    if ( keyInputManager::keyState(keys::RIGHT, true )||
+			    keyInputManager::keyState(vi_right, true )){
+			MenuGlobals::playSelectSound();
+			// Reset color
+			(*currentTab)->setColors(tabInfo,fontColor);
+			if (currentTab < tabs.begin()+tabs.size()-1){
+			    currentTab++;
+			    location++;
+			    targetOffset-=backboard.position.width;
+			} else {
+			    currentTab = tabs.begin();
+			    location= targetOffset = 0;
+			}
+			(*currentTab)->setColors(selectedTabInfo,selectedFontColor);
+		    }
+		    /*
+		    if (keyInputManager::keyState(keys::DOWN, true) ||
+			keyInputManager::keyState(vi_down, true)){
+			MenuGlobals::playSelectSound();
+		    }
+
+		    if ( keyInputManager::keyState(keys::UP, true )||
+			    keyInputManager::keyState(vi_up, true )){
+			MenuGlobals::playSelectSound();
+		    }
+    */
+		    if ( keyInputManager::keyState(keys::ENTER, true ) ){
+			// Run menu
+			(*currentTab)->running = true;
+			backgroundBuffer.reset();
+			borderBuffer.reset();
+			fontBuffer.reset();
+		    }
 		} else {
-		    drawInfoBox(runningInfo, menuInfoLocation, work);
+		    (*currentTab)->menu.act(done);
+		    (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
+		}
+		if (keyInputManager::keyState(keys::ESC, true )){
+		    if (!(*currentTab)->running){
+			done = true;
+		    } else {
+			(*currentTab)->running = false;
+			(*currentTab)->setColors(selectedTabInfo,selectedFontColor);
+		    }
 		}
 		
-		// Draw foreground animations
+		// Animations
+		for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+		    (*i)->act();
+		}
 		for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-		    (*i)->draw(work);
+		    (*i)->act();
 		}
 		
-		// Finally render to screen
-		work->BlitToScreen();
+		// Lets do some logic for the box with text
+		updateFadeInfo();
+
+		if (scrollCounter == 0 && totalOffset != targetOffset){
+		    totalOffset = (totalOffset + targetOffset) / 2;
+		    /* not sure if this is stricly necessary */
+		    if (fabs(targetOffset - totalOffset) < 5){
+			totalOffset = targetOffset;
+		    }
+		}
+		/* higher values of % X slow down scrolling */
+		scrollCounter = (scrollCounter + 1) % 5;
+		
 	    }
 
-	    while ( Global::speed_counter < 1 ){
-		Util::rest( 1 );
-		keyInputManager::update();
+	    Global::speed_counter = 0;
+	}
+
+	if ( draw ){
+	    // Draw
+	    drawBackground(work);
+	    
+	    // Do background animations
+	    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+		(*i)->draw(work);
 	    }
+	    
+	    // Draw text board
+	    drawTextBoard(work);
+	    
+	    // Menus
+	    if (currentDrawState == NoFade){
+		drawMenus(work);
+	    }
+	    
+	    // Draw menu info text
+	    if (!(*currentTab)->running){
+		drawInfoBox(menuInfo, menuInfoLocation, work);
+	    } else {
+		drawInfoBox(runningInfo, menuInfoLocation, work);
+	    }
+	    
+	    // Draw foreground animations
+	    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+		(*i)->draw(work);
+	    }
+	    
+	    // Finally render to screen
+	    work->BlitToScreen();
+	}
+
+	while ( Global::speed_counter < 1 ){
+	    Util::rest( 1 );
+	    keyInputManager::update();
 	}
     }
 }

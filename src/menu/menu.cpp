@@ -237,7 +237,7 @@ void Menu::load(const std::string &filename) throw (LoadException){
 }
 
 /*! Logic */
-void Menu::act(){
+void Menu::act(bool &endGame){
     // Keys
     const char vi_up = 'k';
     const char vi_down = 'j';
@@ -302,6 +302,15 @@ void Menu::act(){
     if ( keyInputManager::keyState(keys::ENTER, true ) ){
 	if ((*selectedOption)->isRunnable()){
 	    (*selectedOption)->setState(MenuOption::Run);
+	    // lets run it
+	    try{
+		if (backSound != ""){
+		    Sound * ok = Resource::getSound(okSound);
+		    ok->play();
+		}
+		(*selectedOption)->run(endGame);
+	    } catch ( const ReturnException & re ){
+	    }
 	}
     }
     
@@ -394,7 +403,7 @@ void Menu::run(){
                 runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
                 while ( runCounter >= 1.0 ){
                     runCounter -= 1;
-                    act();
+                    act(endGame);
                 }
 
                 Global::speed_counter = 0;
@@ -408,7 +417,7 @@ void Menu::run(){
                 }
             }
 
-            if ( draw ){
+            if ( draw && (*selectedOption)->getState() != MenuOption::Run ){
                 // Draw
 
                 // Do the background
@@ -456,49 +465,27 @@ void Menu::run(){
                 throw ReturnException();
             }
         }
+	
+	// Reset it's state
+	(*selectedOption)->setState(MenuOption::Selected);
+	if ( !music.empty() ){
+	    MenuGlobals::setMusic(music);
+	}
+	if ( !selectSound.empty() ){
+	    MenuGlobals::setSelectSound(selectSound);
+	}
 
-        // do we got an option to run, lets do it
-        if ((*selectedOption)->getState() == MenuOption::Run){
-            try{
-                if (backSound != ""){
-                    Sound * ok = Resource::getSound(okSound);
-                    ok->play();
-                }
-                (*selectedOption)->run(endGame);
-            } catch ( const ReturnException & re ){
-            }
-            // Reset it's state
-            (*selectedOption)->setState(MenuOption::Selected);
-            if ( !music.empty() ){
-                MenuGlobals::setMusic(music);
-            }
-            if ( !selectSound.empty() ){
-                MenuGlobals::setSelectSound(selectSound);
-            }
-        }
+	if (!music.empty()){
+	    if(MenuGlobals::currentMusic() != music){
+		MenuGlobals::popMusic();
+	    }
+	}
 
-        if (!music.empty()){
-            if(MenuGlobals::currentMusic() != music){
-                MenuGlobals::popMusic();
-            }
-        }
-
-        if (!selectSound.empty()){
-            if(MenuGlobals::currentSelectSound() != selectSound){
-                MenuGlobals::popSelectSound();
-            }
-        }
-
-        /*
-        if (endGame){
-            // Deselect selected entry
-            (*selectedOption)->setState(MenuOption::Deselected);
-            if (backSound != ""){
-                Sound * back = Resource::getSound(backSound);
-                back->play();
-            }
-        }
-        */
+	if (!selectSound.empty()){
+	    if(MenuGlobals::currentSelectSound() != selectSound){
+		MenuGlobals::popSelectSound();
+	    }
+	}
     }
 }
 
