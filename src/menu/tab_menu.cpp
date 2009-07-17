@@ -366,6 +366,7 @@ void TabMenu::run(){
 		if (keyInputManager::keyState(keys::ESC, true )){
 		    if (!(*currentTab)->running){
 			done = true;
+			throw ReturnException();
 		    } else {
 			(*currentTab)->running = false;
 			(*currentTab)->setColors(selectedTabInfo,selectedFontColor);
@@ -436,8 +437,6 @@ void TabMenu::run(){
 	    keyInputManager::update();
 	}
     }
-    
-    throw ReturnException();
 }
 
 void TabMenu::drawMenus(Bitmap *bmp){

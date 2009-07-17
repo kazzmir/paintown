@@ -1321,6 +1321,7 @@ void MugenMenu::run(){
 					    endGame = done = true;
 					    // Set the fade state
 					    fader.setState(FADEOUT);
+					    throw ReturnException();
 				    }
 				}
 				// Fader
@@ -1417,8 +1418,6 @@ void MugenMenu::run(){
 		    }*/
 	    }
     }
-    
-    throw ReturnException();
 }
 
 
