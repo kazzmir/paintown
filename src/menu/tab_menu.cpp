@@ -228,6 +228,7 @@ void TabMenu::run(){
     double runCounter = 0;
     Global::speed_counter = 0;
     Global::second_counter = 0;
+    int scrollCounter = 0;
     
     currentTab = tabs.begin();
     location = targetOffset = totalOffset = 0;
@@ -338,13 +339,24 @@ void TabMenu::run(){
 		    
 		    // Lets do some logic for the box with text
 		    updateFadeInfo();
+
+                    if (scrollCounter == 0 && totalOffset != targetOffset){
+                        totalOffset = (totalOffset + targetOffset) / 2;
+                        /* not sure if this is stricly necessary */
+                        if (fabs(targetOffset - totalOffset) < 5){
+                            totalOffset = targetOffset;
+                        }
+                    }
+                    /* higher values of % X slow down scrolling */
+                    scrollCounter = (scrollCounter + 1) % 5;
 		    
+                    /*
 		    // Update offset
 		    if (totalOffset > targetOffset){
 			totalOffset-=scrollSpeed;
 			// Modify scrollspeed so we can get acceleration
 			//scrollSpeed+=SCROLL_SPEED_MODIFIER;
-			scrollSpeed = fabs(totalOffset + targetOffset)/6 < 1 ? 1 : fabs(totalOffset + targetOffset)/6;
+			scrollSpeed = fabs(targetOffset - totalOffset)/6 < 1 ? 1 : fabs(totalOffset + targetOffset)/6;
 			if (totalOffset < targetOffset){
 			    totalOffset = targetOffset;
 			    scrollSpeed = DEFAULT_SCROLL_SPEED;
@@ -354,12 +366,13 @@ void TabMenu::run(){
 			totalOffset+=scrollSpeed;
 			// Modify scrollspeed so we can get acceleration
 			//scrollSpeed+=SCROLL_SPEED_MODIFIER;
-			scrollSpeed = fabs(totalOffset + targetOffset)/6 < 1 ? 1 : fabs(totalOffset + targetOffset)/6;
+			scrollSpeed = fabs(targetOffset - totalOffset)/6 < 1 ? 1 : fabs(totalOffset + targetOffset)/6;
 			if (totalOffset > targetOffset){
 			    totalOffset = targetOffset;
 			    scrollSpeed = DEFAULT_SCROLL_SPEED;
 			}
 		    }
+                    */
 		}
 
 		Global::speed_counter = 0;
