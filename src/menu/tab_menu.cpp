@@ -28,34 +28,11 @@ static int FONT_W = 16;
 static int FONT_H = 16;
 static int TEXT_SPACING_W = 10;
 static int TEXT_SPACING_H = 5;
-// static int DEFAULT_SCROLL_SPEED = 8.5;
-// static int SCROLL_SPEED_MODIFIER = 1.2;
-
-static void setColors (MenuBox *menu, const RectArea &info, const int fontColor){
-    menu->position.body = info.body;
-    menu->position.bodyAlpha = info.bodyAlpha;
-    menu->position.border = info.border;
-    menu->position.borderAlpha = info.borderAlpha;
-    menu->fontColor = fontColor;
-}
-
-static void setColors (MenuBox *menu, const int bodyColor, const int borderColor, const int fontColor){
-    menu->position.body = bodyColor;
-    menu->position.border = borderColor;
-    menu->fontColor = fontColor;
-}
 
 ColorBuffer::ColorBuffer(int color1, int color2):
-r1(Bitmap::getRed(color1)),
-g1(Bitmap::getGreen(color1)),
-b1(Bitmap::getBlue(color1)),
-r2(Bitmap::getRed(color2)),
-g2(Bitmap::getGreen(color2)),
-b2(Bitmap::getBlue(color2)),
-r3(Bitmap::getRed(color1)),
-g3(Bitmap::getGreen(color1)),
-b3(Bitmap::getBlue(color1)),
+index(0),
 forward(true){
+    Util::blend_palette(colors,100,color1,color2);
 }
 
 ColorBuffer::~ColorBuffer(){
@@ -64,55 +41,25 @@ ColorBuffer::~ColorBuffer(){
 int ColorBuffer::update(){
     // Going to color2 from color1
     if (forward){
-	if (r3!=r2 && g3!=g2 && b3!=b2){
-	    if (r3<r2){
-		r3++;
-	    } else if (r3>r2){
-		r3--;
-	    }
-	    if (g3<g2){
-		g3++;
-	    } else if (g3>g2){
-		g3--;
-	    }
-	    if (b3<b2){
-		b3++;
-	    } else if (b3>b2){
-		b3--;
-	    }
+	if (index<99){
+	    index++;
 	} else {
 	    forward=!forward;
 	}
     } else {
 	// Going to color1 from color2
-	if (r3!=r1 && g3!=g1 && b3!=b1){
-	    if (r3<r1){
-		r3++;
-	    } else if (r3>r1){
-		r3--;
-	    }
-	    if (g3<g1){
-		g3++;
-	    } else if (g3>g1){
-		g3--;
-	    }
-	    if (b3<b1){
-		b3++;
-	    } else if (b3>b1){
-		b3--;
-	    }
+	if (index>0){
+	    index--;
 	} else {
 	    forward=!forward;
 	}
     }
     
-    return Bitmap::makeColor(r3,g3,b3);
+    return colors[index];
 }
 
 void ColorBuffer::reset(){
-    r3 = r1;
-    g3 = g1;
-    b3 = b1;
+    index=0;
 }
 
 MenuBox::MenuBox(int w, int h):
@@ -133,6 +80,20 @@ bool MenuBox::checkVisible(const RectArea &area){
 	    && snapPosition.position.y + snapPosition.position.height > area.y);
 }
 
+void MenuBox::setColors (const RectArea &info, const int fontColor){
+    position.body = info.body;
+    position.bodyAlpha = info.bodyAlpha;
+    position.border = info.border;
+    position.borderAlpha = info.borderAlpha;
+    this->fontColor = fontColor;
+}
+
+void MenuBox::setColors (const int bodyColor, const int borderColor, const int fontColor){
+    position.body = bodyColor;
+    position.border = borderColor;
+    this->fontColor = fontColor;
+}
+
 TabMenu::TabMenu():
 fontColor(Bitmap::makeColor(150,150,150)),
 selectedFontColor(Bitmap::makeColor(0,255,255)),
@@ -141,7 +102,6 @@ runningInfo(""),
 location(0),
 targetOffset(0),
 totalOffset(0),
-// scrollSpeed(DEFAULT_SCROLL_SPEED),
 totalLines(1){
 }
 
@@ -316,9 +276,9 @@ void TabMenu::run(){
     // Set select color
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	if (i == currentTab){
-	    setColors((*i),selectedTabInfo,selectedFontColor);
+	    (*i)->setColors(selectedTabInfo,selectedFontColor);
 	} else {
-	    setColors((*i),tabInfo,fontColor);
+	    (*i)->setColors(tabInfo,fontColor);
 	}
     }
     
@@ -354,7 +314,7 @@ void TabMenu::run(){
 			    keyInputManager::keyState(vi_left, true)){
 			    MenuGlobals::playSelectSound();
 			    // Reset color
-			    setColors((*currentTab),tabInfo,fontColor);
+			    (*currentTab)->setColors(tabInfo,fontColor);
 			    if (currentTab > tabs.begin()){
 				currentTab--;
 				location--;
@@ -364,14 +324,14 @@ void TabMenu::run(){
 				location=tabs.size()-1;
 				targetOffset = (location*backboard.position.width) * -1;
 			    }
-			    setColors((*currentTab),selectedTabInfo,selectedFontColor);
+			    (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
 			}
 
 			if ( keyInputManager::keyState(keys::RIGHT, true )||
 				keyInputManager::keyState(vi_right, true )){
 			    MenuGlobals::playSelectSound();
 			    // Reset color
-			    setColors((*currentTab),tabInfo,fontColor);
+			    (*currentTab)->setColors(tabInfo,fontColor);
 			    if (currentTab < tabs.begin()+tabs.size()-1){
 				currentTab++;
 				location++;
@@ -380,7 +340,7 @@ void TabMenu::run(){
 				currentTab = tabs.begin();
 				location= targetOffset = 0;
 			    }
-			    setColors((*currentTab),selectedTabInfo,selectedFontColor);
+			    (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
 			}
 			/*
 			if (keyInputManager::keyState(keys::DOWN, true) ||
@@ -399,18 +359,17 @@ void TabMenu::run(){
 			    backgroundBuffer.reset();
 			    borderBuffer.reset();
 			    fontBuffer.reset();
-			    //setColors((*currentTab),runningTabInfo,runningFontColor);
 			}
 		    } else {
 			(*currentTab)->menu.act();
-			setColors((*currentTab),backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
+			(*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
 		    }
 		    if (keyInputManager::keyState(keys::ESC, true )){
 			if (!(*currentTab)->running){
 			    done = true;
 			} else {
 			    (*currentTab)->running = false;
-			    setColors((*currentTab),selectedTabInfo,selectedFontColor);
+			    (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
 			}
 		    }
 		    
@@ -434,30 +393,7 @@ void TabMenu::run(){
                     }
                     /* higher values of % X slow down scrolling */
                     scrollCounter = (scrollCounter + 1) % 5;
-		    
-                    /*
-		    // Update offset
-		    if (totalOffset > targetOffset){
-			totalOffset-=scrollSpeed;
-			// Modify scrollspeed so we can get acceleration
-			//scrollSpeed+=SCROLL_SPEED_MODIFIER;
-			scrollSpeed = fabs(targetOffset - totalOffset)/6 < 1 ? 1 : fabs(totalOffset + targetOffset)/6;
-			if (totalOffset < targetOffset){
-			    totalOffset = targetOffset;
-			    scrollSpeed = DEFAULT_SCROLL_SPEED;
-			}
-		    }
-		    else if (totalOffset < targetOffset){
-			totalOffset+=scrollSpeed;
-			// Modify scrollspeed so we can get acceleration
-			//scrollSpeed+=SCROLL_SPEED_MODIFIER;
-			scrollSpeed = fabs(targetOffset - totalOffset)/6 < 1 ? 1 : fabs(totalOffset + targetOffset)/6;
-			if (totalOffset > targetOffset){
-			    totalOffset = targetOffset;
-			    scrollSpeed = DEFAULT_SCROLL_SPEED;
-			}
-		    }
-                    */
+		  
 		}
 
 		Global::speed_counter = 0;

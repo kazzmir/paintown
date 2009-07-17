@@ -15,9 +15,8 @@ class ColorBuffer{
     public:
 	ColorBuffer(int color1, int color2);
 	~ColorBuffer();
-	int r1,g1,b1;
-	int r2,g2,b2;
-	int r3,g3,b3;
+	int colors[100];
+	int index;
 	bool forward;
 	
 	int update();
@@ -32,6 +31,8 @@ class MenuBox : public Box
 	MenuBox(int w, int h);
 	virtual ~MenuBox();
 	bool checkVisible(const RectArea &area);
+	void setColors(const RectArea &info, const int fontColor);
+	void setColors(const int bodyColor, const int borderColor, const int fontColor);
 	Menu menu;
 	int fontColor;
 	Box snapPosition;
