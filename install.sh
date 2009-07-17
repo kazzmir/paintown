@@ -57,18 +57,20 @@ do
 done
 
 if [ "x$install_data" = "x" ]; then
-	echo "Give a directory to install the data to: [/usr/share/games/paintown]"
+	default_data=/usr/share/games/paintown-$version
+	echo "Give a directory to install the data to: [$default_data]"
 	read install_data
 	if [ "x$install_data" = "x" ]; then
-		install_data=/usr/share/games/paintown-$version
+		install_data=$default_data
 	fi
 fi
 
 if [ "x$install_bin" = "x" ]; then
-	echo "Give a directory to create the paintown script in: [/usr/games]"
+	default_bin=/usr/games
+	echo "Give a directory to create the paintown script in: [$default_bin]"
 	read install_bin
 	if [ "x$install_bin" = "x" ]; then
-		install_bin=/usr/games
+		install_bin=$default_bin
 	fi
 fi
 
