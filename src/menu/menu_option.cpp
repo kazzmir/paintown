@@ -29,7 +29,6 @@ parent(0){
 	      if ( *token == "info" ){
 		  // get info text add to option
 		  std::string temp;
-		  int x=0, y=0;
 		  *token >> temp;
 		  setInfoText(temp);
 	      } 

@@ -36,6 +36,11 @@ x(0),
 y(0){
 }
 
+Point::Point(int x, int y):
+x(x),
+y(y){
+}
+
 Point::~Point(){
 }
 
@@ -44,7 +49,7 @@ music(""),
 selectSound(""),
 longestTextLength(0),
 motion(0),
-currentDrawState( FadeIn ),
+currentDrawState( NoFade ),
 work(new Bitmap(GFX_X, GFX_Y)),
 menuInfo(""),
 _name(""),
@@ -208,10 +213,15 @@ void Menu::load(Token *token)throw( LoadException ){
 	      }
 	      else optBegin++;
 	}
-
+	
+	// Figure out text length
 	for( unsigned int i = 0; i < menuOptions.size(); i++ ){
 		checkTextLength(menuOptions[i]);
 	}
+	
+	// Set initial location
+	selectedOption = menuOptions.begin();
+	menuOptions.front()->setState(MenuOption::Selected);
 }
 
 void Menu::load(const std::string &filename) throw (LoadException){
@@ -224,6 +234,110 @@ void Menu::load(const std::string &filename) throw (LoadException){
     } catch (const TokenException & e){
         throw LoadException(e.getReason());
     }
+}
+
+/*! Logic */
+void Menu::act(){
+    // Keys
+    const char vi_up = 'k';
+    const char vi_down = 'j';
+    const char vi_left = 'h';
+    const char vi_right = 'l';
+    if ( keyInputManager::keyState(keys::UP, true ) ||
+	    /* for vi people like me */
+	    keyInputManager::keyState(vi_up, true )){	
+
+	motion -= getFontHeight();
+	(*selectedOption)->setState(MenuOption::Deselected);
+	if (selectedOption > menuOptions.begin()){
+	    selectedOption--;
+	} else {
+	    selectedOption = menuOptions.end() -1;
+	}
+
+	(*selectedOption)->setState(MenuOption::Selected);
+	(*selectedOption)->resetAnimations();
+
+	if (menuOptions.size() > 1){
+	    MenuGlobals::playSelectSound();
+	}
+    }
+
+    if ( keyInputManager::keyState(keys::DOWN, true ) ||
+	    /* for vi people like me */
+	    keyInputManager::keyState(vi_down, true )){
+
+	motion += getFontHeight();
+	(*selectedOption)->setState(MenuOption::Deselected);
+	if (selectedOption < menuOptions.begin()+menuOptions.size()-1){
+	    selectedOption++;
+	} else {
+	    selectedOption = menuOptions.begin();
+	}
+
+	(*selectedOption)->setState(MenuOption::Selected);
+	(*selectedOption)->resetAnimations();
+
+	if (menuOptions.size() > 1){
+	    MenuGlobals::playSelectSound();
+	}
+    }
+
+    if (keyInputManager::keyState(keys::LEFT, true) ||
+	keyInputManager::keyState(vi_left, true)){
+
+	if ((*selectedOption)->leftKey()){
+	    /* ??? */
+	}
+    }
+
+    if ( keyInputManager::keyState(keys::RIGHT, true )||
+	    keyInputManager::keyState(vi_right, true )){
+
+	if ((*selectedOption)->rightKey()){
+	    /* ??? */
+	}
+    }
+
+    if ( keyInputManager::keyState(keys::ENTER, true ) ){
+	if ((*selectedOption)->isRunnable()){
+	    (*selectedOption)->setState(MenuOption::Run);
+	}
+    }
+    
+    for ( std::vector <MenuOption *>::iterator b = menuOptions.begin() ; b != menuOptions.end(); b++ ){
+	(*b)->logic();
+	// Recalculate placement
+	checkTextLength((*b));
+    }
+
+    const double motion_speed = 1.8;
+    if (motion >= motion_speed){
+	motion -= motion_speed;
+    } else if (motion <= -motion_speed){
+	motion += motion_speed;
+    } else {
+	motion = 0;
+    }
+
+    // motion = 0;
+
+    // Current option animation logic
+    (*selectedOption)->updateAnimations();
+
+    // Animations
+    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+	(*i)->act();
+    }
+    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+	(*i)->act();
+    }
+
+    // Lets do some logic for the box with text
+    updateFadeInfo();
+}
+
+void Menu::draw(const Box &area, Bitmap *bmp){
 }
 
 void Menu::run(){
@@ -272,10 +386,6 @@ void Menu::run(){
         while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 
             bool draw = false;
-            const char vi_up = 'k';
-            const char vi_down = 'j';
-            const char vi_left = 'h';
-            const char vi_right = 'l';
 
             keyInputManager::update();
 
@@ -284,103 +394,7 @@ void Menu::run(){
                 runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
                 while ( runCounter >= 1.0 ){
                     runCounter -= 1;
-                    // Keys
-
-                    if ( keyInputManager::keyState(keys::UP, true ) ||
-                            /* for vi people like me */
-                            keyInputManager::keyState(vi_up, true )){	
-
-                        motion -= getFontHeight();
-                        (*selectedOption)->setState(MenuOption::Deselected);
-                        if (selectedOption > menuOptions.begin()){
-                            selectedOption--;
-                        } else {
-                            selectedOption = menuOptions.end() -1;
-                        }
-
-                        (*selectedOption)->setState(MenuOption::Selected);
-                        (*selectedOption)->resetAnimations();
-
-                        if (menuOptions.size() > 1){
-                            MenuGlobals::playSelectSound();
-                        }
-                    }
-
-                    if ( keyInputManager::keyState(keys::DOWN, true ) ||
-                            /* for vi people like me */
-                            keyInputManager::keyState(vi_down, true )){
-
-                        motion += getFontHeight();
-                        (*selectedOption)->setState(MenuOption::Deselected);
-                        if (selectedOption < menuOptions.begin()+menuOptions.size()-1){
-                            selectedOption++;
-                        } else {
-                            selectedOption = menuOptions.begin();
-                        }
-
-                        (*selectedOption)->setState(MenuOption::Selected);
-                        (*selectedOption)->resetAnimations();
-
-                        if (menuOptions.size() > 1){
-                            MenuGlobals::playSelectSound();
-                        }
-                    }
-
-                    if (keyInputManager::keyState(keys::LEFT, true) ||
-                        keyInputManager::keyState(vi_left, true)){
-
-                        if ((*selectedOption)->leftKey()){
-                            /* ??? */
-                        }
-                    }
-
-                    if ( keyInputManager::keyState(keys::RIGHT, true )||
-                         keyInputManager::keyState(vi_right, true )){
-
-                        if ((*selectedOption)->rightKey()){
-                            /* ??? */
-                        }
-                    }
-
-                    if ( keyInputManager::keyState(keys::ENTER, true ) ){
-                        if ((*selectedOption)->isRunnable()){
-                            (*selectedOption)->setState(MenuOption::Run);
-                        }
-                    }
-
-                    std::vector <MenuOption *>::iterator b = menuOptions.begin();
-                    std::vector <MenuOption *>::iterator e = menuOptions.end();
-                    for ( ; b != e; b++ ){
-                        (*b)->logic();
-
-                        // Recalculate placement
-                        checkTextLength((*b));
-                    }
-
-                    const double motion_speed = 1.8;
-                    if (motion >= motion_speed){
-                        motion -= motion_speed;
-                    } else if (motion <= -motion_speed){
-                        motion += motion_speed;
-                    } else {
-                        motion = 0;
-                    }
-
-                    // motion = 0;
-
-                    // Current option animation logic
-                    (*selectedOption)->updateAnimations();
-
-                    // Animations
-                    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-                        (*i)->act();
-                    }
-                    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-                        (*i)->act();
-                    }
-
-                    // Lets do some logic for the box with text
-                   updateFadeInfo();
+                    act();
                 }
 
                 Global::speed_counter = 0;
@@ -408,7 +422,7 @@ void Menu::run(){
                 // Draw text board
                 drawTextBoard(work);
                 // Draw text
-                drawText(work);
+                drawText(backboard, work);
                 // Draw option info text
                 drawInfoBox((*selectedOption)->getInfoText(), optionInfoTextLocation, work);
 		// Draw menu info text
@@ -483,40 +497,6 @@ void Menu::run(){
         }
         */
     }
-}
-
-//! draw snapshot of menu to buffer to facilitate tabs
-void Menu::drawMenuSnap(Bitmap *bmp){
-    /* most of this code is similar to the drawing code in the run() method.
-     * can the shared code be moved to a single function?
-     */
-    // Do all that we do during a regular draw sweep
-    // Set the selector
-    selectedOption = menuOptions.begin();
-    (*selectedOption)->setState(MenuOption::Selected);
-    currentDrawState = NoFade;
-    // Do the background
-    drawBackground(work);
-    // Draw text board
-    drawTextBoard(work);
-    // Draw text
-    drawText(work);
-
-    /* debug stuff
-    if (keyInputManager::keyState(keys::F5, true)){
-        Bitmap t = Bitmap::temporaryBitmap(GFX_X, GFX_Y);
-        t.fill(Bitmap::makeColor(32,32,32));
-        t.BlitToScreen();
-        Util::rest(100);
-        work->BlitToScreen();
-        Util::rest(3000);
-    }
-    */
-    
-    // Create temp bitmap
-    Bitmap tempBmp = Bitmap::temporaryBitmap(backboard.position.width - 10, backboard.position.height - 10);
-    work->Blit(backboard.position.x+5,backboard.position.y+5,backboard.position.width-5,backboard.position.height-5, 0, 0, tempBmp);
-    tempBmp.Stretch(*bmp);
 }
 
 /*! Add options to menu */
@@ -696,13 +676,13 @@ void Menu::drawTextBoard(Bitmap *bmp){
 }
 
 //! Draw text
-void Menu::drawText(Bitmap *bmp){
+void Menu::drawText(const Box &area, Bitmap *bmp){
     const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
     const double spacing = 1.3;
 
-    const int displayTotal = (int)((backboard.position.height / (int)(vFont.getHeight()/spacing)) % 2 ==0 ? backboard.position.height / (vFont.getHeight()/spacing) - 1 : backboard.position.height / (vFont.getHeight()/spacing)) + 2;
+    const int displayTotal = (int)((area.position.height / (int)(vFont.getHeight()/spacing)) % 2 ==0 ? area.position.height / (vFont.getHeight()/spacing) - 1 : backboard.position.height / (vFont.getHeight()/spacing)) + 2;
     const int fromMiddle = (displayTotal - 1)/2;
-    const int starty = (int)((backboard.position.height/2)-(((vFont.getHeight()/spacing) * displayTotal)/2));
+    const int starty = (int)((area.position.height/2)-(((vFont.getHeight()/spacing) * displayTotal)/2));
 
     std::vector <MenuOption *>::iterator beginIter = menuOptions.begin();
     std::vector <MenuOption *>::iterator endIter = menuOptions.end();
@@ -728,11 +708,11 @@ void Menu::drawText(Bitmap *bmp){
     }
 
     // Set clipping so that text won't go beyond it's boundaries
-    bmp->setClipRect(backboard.position.x+2, backboard.position.y+2,backboard.position.getX2()-2,backboard.position.getY2()-2);
+    bmp->setClipRect(area.position.x+2, area.position.y+2,area.position.getX2()-2,area.position.getY2()-2);
 
     for (int i=0;i<displayTotal;++i){
         std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter % menuOptions.size();
-        const int startx = (backboard.position.width/2)-(vFont.textLength((*iterOption)->getText().c_str())/2);
+        const int startx = (area.position.width/2)-(vFont.textLength((*iterOption)->getText().c_str())/2);
         const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
 
         int distance;
@@ -756,8 +736,8 @@ void Menu::drawText(Bitmap *bmp){
             textAlpha = 255;
         }
 
-        int text_x = backboard.position.x + startx;
-        int text_y = (int)((backboard.position.y + starty + i * vFont.getHeight()/spacing) + motion);
+        int text_x = area.position.x + startx;
+        int text_y = (int)((area.position.y + starty + i * vFont.getHeight()/spacing) + motion);
 
         switch (currentDrawState){
             case FadeIn : {
@@ -770,11 +750,11 @@ void Menu::drawText(Bitmap *bmp){
                     switch((*iterOption)->getType()) {
                         case MenuOption::AdjustableOption : {
                             const int triangleSize = 10;
-                            int cx = (backboard.position.x + startx) - 15;
+                            int cx = (area.position.x + startx) - 15;
                             int cy = (int)(text_y + (vFont.getHeight()/spacing) / 2 + 2);
                             bmp->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
 
-                            cx = (backboard.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
+                            cx = (area.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
                             bmp->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getRightAdjustColor() );
                             break;
                             }
@@ -797,11 +777,11 @@ void Menu::drawText(Bitmap *bmp){
                     switch((*iterOption)->getType()) {
                         case MenuOption::AdjustableOption : {
                             const int triangleSize = 10;
-                            int cx = (backboard.position.x + startx) - 15;
+                            int cx = (area.position.x + startx) - 15;
                             int cy = (int)(text_y + (vFont.getHeight()/spacing) / 2 + 2);
                             bmp->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
 
-                            cx = (backboard.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
+                            cx = (area.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
                             bmp->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getRightAdjustColor() );
                             break;
                         }

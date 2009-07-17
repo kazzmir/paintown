@@ -40,31 +40,27 @@ static void setColors (MenuBox *menu, const RectArea &info, const int fontColor)
 }
 
 MenuBox::MenuBox(int w, int h):
-snap(new Bitmap(w,h)),
-fontColor(Bitmap::makeColor(255,255,255)){
+fontColor(Bitmap::makeColor(255,255,255)),
+running(false){
     position.radius=15;
-    snapPosition.width = w;
-    snapPosition.height = h;
+    snapPosition.position.width = w;
+    snapPosition.position.height = h;
 }
 
 MenuBox::~MenuBox(){
-    if (snap){
-	delete snap;
-    }
-}
-
-void MenuBox::updateSnapshot(){
-    menu.drawMenuSnap(snap);
 }
 
 bool MenuBox::checkVisible(const RectArea &area){
-    return (snapPosition.x < area.x + area.width
-	    && snapPosition.x + snapPosition.width > area.x
-	    && snapPosition.y < area.y + area.height
-	    && snapPosition.y + snapPosition.height > area.y);
+    return (snapPosition.position.x < area.x + area.width
+	    && snapPosition.position.x + snapPosition.position.width > area.x
+	    && snapPosition.position.y < area.y + area.height
+	    && snapPosition.position.y + snapPosition.position.height > area.y);
 }
 
 TabMenu::TabMenu():
+fontColor(Bitmap::makeColor(150,150,150)),
+selectedFontColor(Bitmap::makeColor(0,255,255)),
+runningFontColor(Bitmap::makeColor(255,255,0)),
 location(0),
 targetOffset(0),
 totalOffset(0),
@@ -120,6 +116,16 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		int r,g,b;
 		*tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
 		selectedTabInfo.border = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "runningtab-body" ) {
+		// This handles the body color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
+		runningTabInfo.body = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "runningtab-border" ) {
+		// This handles the border color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
+		runningTabInfo.border = Bitmap::makeColor(r,g,b);
 	    } else if ( *tok == "font-color" ) {
 		// This handles the font color of the menu box
 		int r,g,b;
@@ -130,6 +136,11 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		int r,g,b;
 		*tok >> r >> g >> b;
 		selectedFontColor = Bitmap::makeColor(r,g,b);
+	    } else if ( *tok == "runningfont-color" ) {
+		// This handles the font color of the menu box
+		int r,g,b;
+		*tok >> r >> g >> b;
+		runningFontColor = Bitmap::makeColor(r,g,b);
 	    } else if( *tok == "anim" ) {
 		MenuAnimation *animation = new MenuAnimation(tok);
 		if (animation->getLocation() == 0){
@@ -237,8 +248,7 @@ void TabMenu::run(){
 	(*i)->reset();
     }
     while (!done){
-	bool runMenu = false;
-	while (!done && !runMenu){
+	while (!done){
 
 	    bool draw = false;
 	    //const char vi_up = 'k';
@@ -254,56 +264,65 @@ void TabMenu::run(){
 		while ( runCounter >= 1.0 ){
 		    runCounter -= 1;
 		    // Keys
-	    
-		    if (keyInputManager::keyState(keys::LEFT, true) ||
-			keyInputManager::keyState(vi_left, true)){
-			MenuGlobals::playSelectSound();
-			// Reset color
-			setColors((*currentTab),tabInfo,fontColor);
-			if (currentTab > tabs.begin()){
-                            currentTab--;
-			    location--;
-			    targetOffset+=backboard.position.width;
-                        } else {
-			    currentTab = tabs.end()-1;
-			    location=tabs.size()-1;
-			    targetOffset = (location*backboard.position.width) * -1;
-                        }
-			setColors((*currentTab),selectedTabInfo,selectedFontColor);
-		    }
+		    if (!(*currentTab)->running){
+			if (keyInputManager::keyState(keys::LEFT, true) ||
+			    keyInputManager::keyState(vi_left, true)){
+			    MenuGlobals::playSelectSound();
+			    // Reset color
+			    setColors((*currentTab),tabInfo,fontColor);
+			    if (currentTab > tabs.begin()){
+				currentTab--;
+				location--;
+				targetOffset+=backboard.position.width;
+			    } else {
+				currentTab = tabs.end()-1;
+				location=tabs.size()-1;
+				targetOffset = (location*backboard.position.width) * -1;
+			    }
+			    setColors((*currentTab),selectedTabInfo,selectedFontColor);
+			}
 
-		    if ( keyInputManager::keyState(keys::RIGHT, true )||
-			    keyInputManager::keyState(vi_right, true )){
-			MenuGlobals::playSelectSound();
-			// Reset color
-			setColors((*currentTab),tabInfo,fontColor);
-			if (currentTab < tabs.begin()+tabs.size()-1){
-                            currentTab++;
-			    location++;
-			    targetOffset-=backboard.position.width;
-                        } else {
-                            currentTab = tabs.begin();
-			    location= targetOffset = 0;
-                        }
-			setColors((*currentTab),selectedTabInfo,selectedFontColor);
-		    }
-		    /*
-		    if (keyInputManager::keyState(keys::DOWN, true) ||
-			keyInputManager::keyState(vi_down, true)){
-			MenuGlobals::playSelectSound();
-		    }
+			if ( keyInputManager::keyState(keys::RIGHT, true )||
+				keyInputManager::keyState(vi_right, true )){
+			    MenuGlobals::playSelectSound();
+			    // Reset color
+			    setColors((*currentTab),tabInfo,fontColor);
+			    if (currentTab < tabs.begin()+tabs.size()-1){
+				currentTab++;
+				location++;
+				targetOffset-=backboard.position.width;
+			    } else {
+				currentTab = tabs.begin();
+				location= targetOffset = 0;
+			    }
+			    setColors((*currentTab),selectedTabInfo,selectedFontColor);
+			}
+			/*
+			if (keyInputManager::keyState(keys::DOWN, true) ||
+			    keyInputManager::keyState(vi_down, true)){
+			    MenuGlobals::playSelectSound();
+			}
 
-		    if ( keyInputManager::keyState(keys::UP, true )||
-			    keyInputManager::keyState(vi_up, true )){
-			MenuGlobals::playSelectSound();
-		    }
-    */
-		    if ( keyInputManager::keyState(keys::ENTER, true ) ){
-			// Run menu
-			runMenu = true;
+			if ( keyInputManager::keyState(keys::UP, true )||
+				keyInputManager::keyState(vi_up, true )){
+			    MenuGlobals::playSelectSound();
+			}
+	*/
+			if ( keyInputManager::keyState(keys::ENTER, true ) ){
+			    // Run menu
+			    (*currentTab)->running = true;
+			    setColors((*currentTab),runningTabInfo,runningFontColor);
+			}
+		    } else {
+			(*currentTab)->menu.act();
 		    }
 		    if (keyInputManager::keyState(keys::ESC, true )){
-			done = true;
+			if (!(*currentTab)->running){
+			    done = true;
+			} else {
+			    (*currentTab)->running = false;
+			    setColors((*currentTab),selectedTabInfo,selectedFontColor);
+			}
 		    }
 		    
 		    // Animations
@@ -355,7 +374,7 @@ void TabMenu::run(){
 		
 		// Menus
 		if (currentDrawState == NoFade){
-		    drawSnapshots(work);
+		    drawMenus(work);
 		}
 		
 		// Draw foreground animations
@@ -372,39 +391,26 @@ void TabMenu::run(){
 		keyInputManager::update();
 	    }
 	}
-	// Check runmenu
-	if(runMenu){
-	    // Run menu
-	    try {
-		(*currentTab)->menu.run();
-	    }
-	    catch(ReturnException &ex)
-	    {
-		// Lol what did we do
-		resetFadeInfo();
-	    }
-	}
     }
 }
 
-void TabMenu::drawSnapshots(Bitmap *bmp){
+void TabMenu::drawMenus(Bitmap *bmp){
     const double incrementx = backboard.position.width;
     double startx = backboard.position.x + totalOffset;
     
-    // Drawing snapshots
+    // Drawing menus
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
 	MenuBox *tab = *i;
-	tab->snapPosition.x = startx;
-	tab->snapPosition.y = backboard.position.y;
+	tab->snapPosition.position.x = startx;
+	tab->snapPosition.position.y = backboard.position.y;
 	if (tab->checkVisible(backboard.position)){
-	    tab->updateSnapshot();
-	    /* Set clipping rectangle */
+	    /* Set clipping rectangle need to know why text isn't clipping */
 	    int x1 = backboard.position.x+(backboard.position.radius/2);
 	    int y1 = backboard.position.y+(backboard.position.radius/2);
 	    int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
 	    int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
 	    bmp->setClipRect(x1, y1, x2, y2);
-	    tab->snap->Blit(tab->snapPosition.x,tab->snapPosition.y, *bmp);
+	    tab->menu.drawText(tab->snapPosition,bmp);
 	    bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
 	}
 	startx += incrementx;

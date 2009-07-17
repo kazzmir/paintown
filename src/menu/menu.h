@@ -25,6 +25,7 @@ class Point{
     int x;
     int y;
     Point();
+    Point(int x, int y);
     ~Point();
 };
 
@@ -41,7 +42,16 @@ class Menu
 		/*! load */
 		virtual void load(Token *token) throw (LoadException);
 		
-		/*! do logic, draw whatever */
+		/*! Logic */
+		virtual void act();
+		
+		/*! Draw */
+		virtual void draw(const Box &area, Bitmap *bmp);
+		
+		//! Draw text
+		void drawText(const Box &area, Bitmap *bmp);
+		
+		/*! run as it's own menu */
 		virtual void run();
 		
 		/*! get menu name */
@@ -49,9 +59,6 @@ class Menu
 		
 		/*! set menu name */
 		inline void setName(const std::string &n){ _name = n; };
-		
-		//! draw snapshot of menu to buffer to facilitate tabs
-		void drawMenuSnap(Bitmap *bmp);
 		
 		/*! Add options to menu */
 		void addOption(MenuOption *opt);
@@ -150,9 +157,6 @@ class Menu
 		
 		//! Set longest length
 		void checkTextLength(MenuOption *opt);
-		
-		//! Draw text
-		void drawText(Bitmap *work);
 		
 		//! Cleanup options to remove omited items
 		void optionCleanup();

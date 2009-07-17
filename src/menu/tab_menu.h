@@ -16,12 +16,11 @@ class MenuBox : public Box
     public:
 	MenuBox(int w, int h);
 	virtual ~MenuBox();
-	void updateSnapshot();
 	bool checkVisible(const RectArea &area);
 	Menu menu;
-	Bitmap *snap;
 	int fontColor;
-	RectArea snapPosition;
+	Box snapPosition;
+	bool running;
 };
 
 class TabMenu : public Menu
@@ -42,9 +41,11 @@ class TabMenu : public Menu
     private:
 	RectArea tabInfo;
 	RectArea selectedTabInfo;
+	RectArea runningTabInfo;
 	
 	int fontColor;
 	int selectedFontColor;
+	int runningFontColor;
 	
 	std::vector<MenuBox *>tabs;
 	std::vector<MenuBox *>::iterator currentTab;
@@ -57,7 +58,7 @@ class TabMenu : public Menu
 	// Total lines from options
 	int totalLines;
 	
-	void drawSnapshots(Bitmap *bmp);
+	void drawMenus(Bitmap *bmp);
 	
 	void calculateTabLines();
 };
