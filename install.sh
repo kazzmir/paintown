@@ -14,7 +14,7 @@
 ## You will probably need to use 'sudo' to install into /usr anywhere
 ## sudo ./install.sh -d /usr/games -b /usr/bin
 
-## Default data directory is /usr/share/games
+## Default data directory is /usr/share/games/paintown-x.x
 ## Default bin directory is /usr/games
 
 data(){
@@ -44,6 +44,7 @@ bin(){
 echo "./install.sh -d <data> -b <bin>"
 echo "Install data to <data> and the executable script in <bin>"
 
+version=3.2
 install_data=
 install_bin=
 
@@ -59,7 +60,7 @@ if [ "x$install_data" = "x" ]; then
 	echo "Give a directory to install the data to: [/usr/share/games/paintown]"
 	read install_data
 	if [ "x$install_data" = "x" ]; then
-		install_data=/usr/share/games/paintown
+		install_data=/usr/share/games/paintown-$version
 	fi
 fi
 

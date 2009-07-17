@@ -94,11 +94,14 @@ Topics:
   $ ./install.sh -d <data> -b <bin>
 
   Copy the data directory to <data> and put a script in <bin>.
-  Default <data> directory is /usr/share/games/paintown
-  Default <bin> directory is /usr/games
-
+  Default <data> directory is '/usr/share/games/paintown-x.x' where x.x is the version.
+  Default <bin> directory is '/usr/games'
+  
   The script will prompt you to input these directories if you do not
   give -d and/or -b.
+
+  After running install.sh (assuming default values for <data> and <bin>) you can run
+  $ /usr/games/paintown
 
   * Anything other than Linux
     Copy the binary and data somewhere. Otherwise use the prepackaged installers.

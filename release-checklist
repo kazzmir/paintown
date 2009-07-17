@@ -15,6 +15,7 @@ OSX:
 
 Files to update version
  src/globals.cpp
+ install.sh
  misc/make-osx-bundle
  misc/installer.nsi
  README
