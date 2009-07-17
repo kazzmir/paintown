@@ -311,6 +311,11 @@ void Menu::act(bool &endGame){
 		(*selectedOption)->run(endGame);
 	    } catch ( const ReturnException & re ){
 	    }
+
+            /* hack to make sure the current menu is drawn properly */
+            (*selectedOption)->setState(MenuOption::Selected);
+            (*selectedOption)->resetAnimations();
+            resetFadeInfo();
 	}
     }
     
