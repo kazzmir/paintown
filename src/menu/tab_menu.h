@@ -47,6 +47,8 @@ class TabMenu : public Menu
 	int selectedFontColor;
 	int runningFontColor;
 	
+	std::string runningInfo;
+	
 	std::vector<MenuBox *>tabs;
 	std::vector<MenuBox *>::iterator currentTab;
 	int location;

@@ -61,6 +61,7 @@ TabMenu::TabMenu():
 fontColor(Bitmap::makeColor(150,150,150)),
 selectedFontColor(Bitmap::makeColor(0,255,255)),
 runningFontColor(Bitmap::makeColor(255,255,0)),
+runningInfo(""),
 location(0),
 targetOffset(0),
 totalOffset(0),
@@ -172,6 +173,8 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		*tok >> menuInfo;
 	    } else if( *tok == "menuinfo-position" ){
 		*tok >> menuInfoLocation.x >> menuInfoLocation.y;
+	    } else if( *tok == "runninginfo" ){
+		*tok >> runningInfo;
 	    } else {
 		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 		if (Global::getDebug() >= 3){
@@ -375,6 +378,13 @@ void TabMenu::run(){
 		// Menus
 		if (currentDrawState == NoFade){
 		    drawMenus(work);
+		}
+		
+		// Draw menu info text
+		if (!(*currentTab)->running){
+		    drawInfoBox(menuInfo, menuInfoLocation, work);
+		} else {
+		    drawInfoBox(runningInfo, menuInfoLocation, work);
 		}
 		
 		// Draw foreground animations
