@@ -30,10 +30,10 @@ Future
 * add tabs to menu
   - example: (option (tabmenu (name ...) (position ...) (menu (name ...) (option ...))))
 * network versus play
-* use joystick
+90% * use joystick
 * fix bug with setting max lives
 * separate z planes for each block
-* level lighting. lamps/objects can make the level brighter as the user gets close to them
+70% * level lighting. lamps/objects can make the level brighter as the user gets close to them
 * infinite enemy mode like in super smash brothers
 * breakable inanimate objects like boxes and trash cans
 * RPG mode???
@@ -44,7 +44,7 @@ Future
 * give enemies 'behaviors' which model how they act
 * make network mode use versions
 * allow level sets to only allow explicit players
-* make a console like in quake where debug output can go
+10% * make a console like in quake where debug output can go
 * port to psp/nds
 * mugen config and txt files
   - parse data using lexer
