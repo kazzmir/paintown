@@ -304,7 +304,7 @@ void Menu::act(bool &endGame){
 	    (*selectedOption)->setState(MenuOption::Run);
 	    // lets run it
 	    try{
-		if (backSound != ""){
+		if (okSound != ""){
 		    Sound * ok = Resource::getSound(okSound);
 		    ok->play();
 		}
@@ -312,6 +312,10 @@ void Menu::act(bool &endGame){
 	    } catch ( const ReturnException & re ){
                 /* hack to make sure the current menu is drawn properly */
                 resetFadeInfo();
+                if (backSound != ""){
+                    Sound * back = Resource::getSound(backSound);
+                    back->play();
+                }
 	    }
             (*selectedOption)->setState(MenuOption::Selected);
             (*selectedOption)->resetAnimations();
@@ -462,10 +466,12 @@ void Menu::run(){
             done |= endGame;
             if (keyInputManager::keyState(keys::ESC, true )){
                 (*selectedOption)->setState(MenuOption::Deselected);
+                /*
                 if (backSound != ""){
                     Sound * back = Resource::getSound(backSound);
                     back->play();
                 }
+                */
                 throw ReturnException();
             }
         }
