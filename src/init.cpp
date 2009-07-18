@@ -8,6 +8,7 @@
 #include <string.h>
 #endif
 
+/* don't be a boring tuna */
 #warning you are ugly
 
 #include "globals.h"
@@ -44,13 +45,16 @@ bool Global::done_loading = false;
 const int Global::WINDOWED = GFX_AUTODETECT_WINDOWED;
 const int Global::FULLSCREEN = GFX_AUTODETECT_FULLSCREEN;
 
-void inc_speed_counter() {
-	Global::speed_counter += 1;
+/* game counter, controls FPS */
+void inc_speed_counter(){
+    /* probably put input polling here, InputManager::poll() */
+    Global::speed_counter += 1;
 }
 END_OF_FUNCTION( inc_speed_counter );
 
+/* if you need to count seconds for some reason.. */
 void inc_second_counter() {
-	Global::second_counter += 1;
+    Global::second_counter += 1;
 }
 END_OF_FUNCTION( inc_second_counter );
 
