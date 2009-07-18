@@ -24,11 +24,14 @@ DONE * use CPP to define DATA_PATH
 DONE * read and tokenize basic Mugen scripts
 DONE * load sff, snd and fnt files
 DONE * Mugen fonts useable within paintown
+DONE * add pause mode in network play
+DONE * fix bug with data directory in network mode, like when install-sh is used
+DONE * if there is only one level to load, skip the level selection screen
+DONE * add tabs to menu - example: (option (tabmenu (name ...) (position ...) (menu (name ...) (option ...))))
+
 
 Future
 -------
-* add tabs to menu
-  - example: (option (tabmenu (name ...) (position ...) (menu (name ...) (option ...))))
 * network versus play
 90% * use joystick
 * fix bug with setting max lives
@@ -82,13 +85,10 @@ Future
     Round Ticker, Players Health and Power bars) etc.
     DONE - Menuing system utilize paintowns menus to render itself and its options
     - Each submenu subclass MenuOption to produce the arcade/versus/demo etc
-DONE * add pause mode in network play
-DONE * fix bug with data directory in network mode, like when install-sh is used
 * network players need their health/name drawn in front of background stuff
 * allow more characters in the network host boxes (like '-')
 * make "Loading Paintown" text configurable
 * make credits screen configurable
-DONE * if there is only one level to load, skip the level selection screen
 * triggers during the level. send arbitrary s-expressions to objects/anything
   (trigger (to (object 2)) (message (increase health 20)))
 * bitmaps should be able to swap themselves out on demand. if memory is constrained then save to disk or completely unload some bitmaps. when those bitmaps need to be used again reload them. this can be done for sounds as well.
