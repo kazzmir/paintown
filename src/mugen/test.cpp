@@ -30,7 +30,7 @@
 #include "mugen_stage.h"
 #include "mugen_font.h"
 #include "mugen_storyboard.h"
-#include "parser/parser.h"
+#include "parser/parsers.h"
 
 #include "util/bitmap.h"
 #include "util/funcs.h"
@@ -433,7 +433,8 @@ int main( int argc, char ** argv ){
 	const char * STAGE_ARG = "-s";
 	const char * FONT_ARG = "-font";
         const char * PARSE_ARG = "-parse";
-        const char * PARSE2_ARG = "-parse2";
+        const char * PARSE_AIR_ARG = "-parse-air";
+        const char * PARSE_CNS_ARG = "-parse-cns";
 	const char * STORY_ARG = "-storyboard";
 	std::string ourFile;
 	int configLoaded = -1;
@@ -458,11 +459,16 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
-                } else if (isArg(argv[q], PARSE2_ARG)){
+                } else if (isArg(argv[q], PARSE_AIR_ARG)){
                     q += 1;
                     if (q < argc){
-                        Mugen::Parser parser;
-                        parser.parse(argv[q]);
+                        Mugen::parseAir(argv[q]);
+                        return 0;
+                    }
+                } else if (isArg(argv[q], PARSE_CNS_ARG)){
+                    q += 1;
+                    if (q < argc){
+                        Mugen::parseCns(argv[q]);
                         return 0;
                     }
                     /*

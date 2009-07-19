@@ -46,6 +46,7 @@ def parser(name):
     return [yacc, lex]
 
 obj_files.append(parser('air'))
+obj_files.append(parser('cns'))
 
 def icon():
     if isWindows():

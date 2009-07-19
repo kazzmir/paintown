@@ -6,3 +6,7 @@ extern int yywrap(void);
 int airwrap(void){
     return yywrap();
 }
+
+int cnswrap(void){
+    return yywrap();
+}
