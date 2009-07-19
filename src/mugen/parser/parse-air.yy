@@ -7,6 +7,7 @@
 #include "../ast/Configuration.h"
 #include "../ast/Value.h"
 #include "../ast/Modifier.h"
+#include "globals.h"
 
 #define bugon(a) if ((a)){ printf("parsing bug at %s:%d\n", __FILE__, __LINE__); }
 
@@ -60,6 +61,7 @@ end_or_comment:
 section:
     LBRACKET AIR_BEGIN AIR_ACTION NUMBER RBRACKET { 
         double value = $4;
+	Global::debug(0) << "Read section number " << value << std::endl;
 	currentSection = new Ast::Section();
 	// currentSection->setName($1);
  	};
@@ -75,6 +77,15 @@ int yyerror(const char *msg) {
 	    printf("%d, ", yytext[i]);
 	}*/
     return 0;
+}
+
+#include "parsers.h"
+
+void Mugen::parseAir(const std::string & filename){
+    extern FILE * airin;
+    airin = fopen(filename.c_str(), "r");
+    yyparse();
+    fclose(airin);
 }
 
 #if 0

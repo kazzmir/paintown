@@ -3,6 +3,8 @@
 #include <string>
 #include <fstream>
 
+#include "parsers.h"
+
 using namespace std;
 
 namespace Mugen{
@@ -17,8 +19,11 @@ Parser::Parser(){
 }
 
 void Parser::parse(const string & path){
+    Mugen::parseAir(path);
+    /*
     ifstream file(path.c_str());
     parse(file);
+    */
 }
 
 static void removeComments(string & str){
