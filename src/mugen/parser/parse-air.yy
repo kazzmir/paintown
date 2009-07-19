@@ -13,6 +13,7 @@
 
 extern "C" int yylex(void);
 extern "C" int yyerror(const char *);
+extern "C" int airget_lineno();
 
 static Ast::Configuration *configuration;
 static Ast::Section *currentSection;
@@ -35,8 +36,24 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token LBRACKET
 %token RBRACKET
 
+%token AIR_COLLISION_ATTACK_DEFAULT
+%token AIR_COLLISION_ATTACK
+%token AIR_COLLISION_DEFENSE_DEFAULT
+%token AIR_COLLISION_DEFENSE
+
+%token AIR_LOOPSTART
+
 %token COMMENT
 %token LINE_END
+
+%token AIR_HORIZONTAL
+%token AIR_VERTICAL
+%token AIR_VERTICAL_HORIZONTAL
+
+%token AIR_ALPHA_BLEND
+
+%token AIR_COLOR_ADDITION
+%token AIR_COLOR_SUBTRACT
 
 %error-verbose
 %%
@@ -48,11 +65,38 @@ line:
     COMMENT 
     | LINE_END
     | section end_or_comment {
+    	/*
     		bugon(configuration == NULL);
     		bugon(currentSection == NULL);
 		configuration->getSections().push_back(currentSection);
+		*/
 	}
+    | collision ':' NUMBER end_or_comment {
+    }
+    | collision_box ':' NUMBER end_or_comment {
+    }
+    | collision_box LBRACKET NUMBER RBRACKET '=' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER end_or_comment{
+    }
+    | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip end_or_comment
+    | AIR_LOOPSTART end_or_comment
     ;
+
+maybe_flip:
+    ',' flip
+    |
+
+flip:
+    AIR_HORIZONTAL
+    | AIR_VERTICAL
+    | AIR_VERTICAL_HORIZONTAL
+
+collision:
+    AIR_COLLISION_ATTACK_DEFAULT
+    | AIR_COLLISION_DEFENSE_DEFAULT
+
+collision_box:
+    AIR_COLLISION_DEFENSE
+    | AIR_COLLISION_ATTACK
 
 end_or_comment:
     LINE_END 
@@ -67,11 +111,11 @@ section:
  	};
 
 %%
-extern int yylineno;
+// extern int yylineno;
 extern char *yytext;
 
 int yyerror(const char *msg) {
-    printf("%d: %s at \'%s\'\n", yylineno, msg, yytext);
+    printf("Parse error at line %d: %s at \'%s\'\n", airget_lineno(), msg, yytext);
     /*if (yytext)
 	for (int i = 0; i < strlen(yytext); i++) {
 	    printf("%d, ", yytext[i]);
@@ -86,6 +130,7 @@ void Mugen::parseAir(const std::string & filename){
     airin = fopen(filename.c_str(), "r");
     yyparse();
     fclose(airin);
+    Global::debug(0) << "Successfully parsed " << filename << std::endl;
 }
 
 #if 0
