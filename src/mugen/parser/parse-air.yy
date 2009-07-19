@@ -13,7 +13,6 @@
 
 extern "C" int yylex(void);
 extern "C" int yyerror(const char *);
-extern "C" int airget_lineno();
 
 static Ast::Configuration *configuration;
 static Ast::Section *currentSection;
@@ -111,11 +110,11 @@ section:
  	};
 
 %%
-// extern int yylineno;
+extern int yylineno;
 extern char *yytext;
 
 int yyerror(const char *msg) {
-    printf("Parse error at line %d: %s at \'%s\'\n", airget_lineno(), msg, yytext);
+    printf("Parse error at line %d: %s at \'%s\'\n", yylineno, msg, yytext);
     /*if (yytext)
 	for (int i = 0; i < strlen(yytext); i++) {
 	    printf("%d, ", yytext[i]);
