@@ -9,6 +9,17 @@
 // #define LEX_VAL(p) LEX_PREFIX##p
 #define LEX_VAL(p) air##p
 
+/*
+only flex 2.5.25 can handle (?). windows can't do it so just give up
+(?i:begin) { yydebug; return AIR_BEGIN; }
+(?i:action) { yydebug; return AIR_ACTION; }
+(?i:clsn2default) { return AIR_COLLISION_DEFENSE_DEFAULT; }
+(?i:clsn2) { return AIR_COLLISION_DEFENSE; }
+(?i:clsn1default) { return AIR_COLLISION_ATTACK_DEFAULT; }
+(?i:clsn1) { return AIR_COLLISION_ATTACK; }
+(?i:loopstart) { return AIR_LOOPSTART; }
+*/
+
 %}
 
 %option yylineno
@@ -24,14 +35,13 @@
 
 \"[^"\n\r]*[^\\]\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
 
-(?i:begin) { yydebug; return AIR_BEGIN; }
-(?i:action) { yydebug; return AIR_ACTION; }
-(?i:clsn2default) { return AIR_COLLISION_DEFENSE_DEFAULT; }
-(?i:clsn2) { return AIR_COLLISION_DEFENSE; }
-(?i:clsn1default) { return AIR_COLLISION_ATTACK_DEFAULT; }
-(?i:clsn1) { return AIR_COLLISION_ATTACK; }
-
-(?i:loopstart) { return AIR_LOOPSTART; }
+(b|B)(e|E)(g|G)(i|I)(n|N) { yydebug; return AIR_BEGIN; }
+(a|A)(c|C)(t|T)(i|I)(o|O)(n|N) { yydebug; return AIR_ACTION; }
+(c|C)(l|L)(s|S)(n|N)(2|2)(d|D)(e|E)(f|F)(a|A)(u|U)(l|L)(t|T) { return AIR_COLLISION_DEFENSE_DEFAULT; }
+(c|C)(l|L)(s|S)(n|N)(2|2) { return AIR_COLLISION_DEFENSE; }
+(c|C)(l|L)(s|S)(n|N)(1|1)(d|D)(e|E)(f|F)(a|A)(u|U)(l|L)(t|T) { return AIR_COLLISION_ATTACK_DEFAULT; }
+(c|C)(l|L)(s|S)(n|N)(1|1) { return AIR_COLLISION_ATTACK; }
+(l|L)(o|O)(o|O)(p|P)(s|S)(t|T)(a|A)(r|R)(t|T) { return AIR_LOOPSTART; }
 
 H { return AIR_HORIZONTAL; }
 V { return AIR_VERTICAL; }
