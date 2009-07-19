@@ -110,11 +110,11 @@ section:
  	};
 
 %%
-extern int yylineno;
-extern char *yytext;
+extern int airlineno;
+extern char *airtext;
 
 int yyerror(const char *msg) {
-    printf("Parse error at line %d: %s at \'%s\'\n", yylineno, msg, yytext);
+    printf("Parse error at line %d: %s at \'%s\'\n", airlineno, msg, airtext);
     /*if (yytext)
 	for (int i = 0; i < strlen(yytext); i++) {
 	    printf("%d, ", yytext[i]);
@@ -127,9 +127,13 @@ int yyerror(const char *msg) {
 void Mugen::parseAir(const std::string & filename){
     extern FILE * airin;
     airin = fopen(filename.c_str(), "r");
-    yyparse();
+    int success = yyparse();
     fclose(airin);
-    Global::debug(0) << "Successfully parsed " << filename << std::endl;
+    if (success == 0){
+        Global::debug(0) << "Successfully parsed " << filename << std::endl;
+    } else {
+    	Global::debug(0) << "Failed to parse " << filename << std::endl;
+    }
 }
 
 #if 0

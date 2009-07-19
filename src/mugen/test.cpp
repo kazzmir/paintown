@@ -465,6 +465,7 @@ int main( int argc, char ** argv ){
                         parser.parse(argv[q]);
                         return 0;
                     }
+                    /*
                 } else if (isArg(argv[q], PARSE_ARG)){
                     q += 1;
                     if (q < argc){
@@ -477,6 +478,7 @@ int main( int argc, char ** argv ){
                             configuration->debugExplain();
                         }
                     }
+                    */
 		} else if ( isArg( argv[ q ], CHAR_ARG ) ){
 			q += 1;
 			if ( q < argc ){
