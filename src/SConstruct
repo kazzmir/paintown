@@ -36,13 +36,16 @@ use.Depends(lex, yacc)
 #obj_files.append(use.CXXFile('mugen/lex', 'mugen/lex.ll'))
 obj_files.append([yacc, lex])
 
-air_env = use.Clone()
-air_env.Append(YACCFLAGS = ["-p air"])
-air_env.Append(LEXFLAGS = ["-P air"])
-air_lex = air_env.CFile('mugen/parser/lex-air', 'mugen/parser/lex-air.l')
-air_yacc = filter(lambda s: not isH(s.path), air_env.CXXFile('mugen/parser/parse-air', 'mugen/parser/parse-air.yy'))
-air_env.Depends(air_lex, air_yacc)
-obj_files.append([air_yacc, air_lex])
+def parser(name):
+    env = use.Clone()
+    env.Append(YACCFLAGS = ["-p %s" % name])
+    env.Append(LEXFLAGS = ["-P %s" % name])
+    lex = env.CFile('mugen/parser/lex-%s' % name, 'mugen/parser/lex-%s.l' % name)
+    yacc = filter(lambda s: not isH(s.path), env.CXXFile('mugen/parser/parse-%s' % name, 'mugen/parser/parse-%s.yy' % name))
+    env.Depends(lex, yacc)
+    return [yacc, lex]
+
+obj_files.append(parser('air'))
 
 def icon():
     if isWindows():
