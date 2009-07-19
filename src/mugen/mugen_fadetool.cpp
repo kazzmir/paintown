@@ -75,4 +75,3 @@ void MugenFadeTool::draw(Bitmap *bmp){
 	    break;
     }
 }
-	

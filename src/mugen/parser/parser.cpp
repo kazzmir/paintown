@@ -7,6 +7,12 @@ using namespace std;
 
 namespace Mugen{
 
+class Section{
+public:
+    Section();
+    virtual ~Section();
+};
+
 Parser::Parser(){
 }
 
