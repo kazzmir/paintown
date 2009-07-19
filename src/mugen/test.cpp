@@ -30,6 +30,7 @@
 #include "mugen_stage.h"
 #include "mugen_font.h"
 #include "mugen_storyboard.h"
+#include "parser/parser.h"
 
 #include "util/bitmap.h"
 #include "util/funcs.h"
@@ -432,6 +433,7 @@ int main( int argc, char ** argv ){
 	const char * STAGE_ARG = "-s";
 	const char * FONT_ARG = "-font";
         const char * PARSE_ARG = "-parse";
+        const char * PARSE2_ARG = "-parse2";
 	const char * STORY_ARG = "-storyboard";
 	std::string ourFile;
 	int configLoaded = -1;
@@ -443,7 +445,6 @@ int main( int argc, char ** argv ){
         install_timer();
 	install_keyboard();
 	install_mouse();*/
-	Global::init( GFX_AUTODETECT_WINDOWED );
 
 	for ( int q = 1; q < argc; q++ ){
 		if ( isArg( argv[ q ], FILE_ARG ) ){
@@ -457,6 +458,13 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
+                } else if (isArg(argv[q], PARSE2_ARG)){
+                    q += 1;
+                    if (q < argc){
+                        Mugen::Parser parser;
+                        parser.parse(argv[q]);
+                        return 0;
+                    }
                 } else if (isArg(argv[q], PARSE_ARG)){
                     q += 1;
                     if (q < argc){
@@ -544,6 +552,8 @@ int main( int argc, char ** argv ){
                     Global::debug(0) << "Ignoring unrecognized option " << argv[q] << endl;
 		}
 	}
+	
+        Global::init( GFX_AUTODETECT_WINDOWED );
 	
 	if( configLoaded == 0 ){
 	    MugenReader reader( ourFile );

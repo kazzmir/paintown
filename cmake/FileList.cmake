@@ -193,4 +193,5 @@ src/mugen/mugen_stage.cpp
 src/mugen/mugen_storyboard.cpp
 src/mugen/mugen_util.cpp
 src/mugen/option_versus.cpp
+src/mugen/parser/parser.cpp
 )
