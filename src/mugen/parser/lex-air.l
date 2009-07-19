@@ -23,11 +23,13 @@ int airwrap(void){
 
 [\n\r] { yydebug; return LINE_END; }
 
-\[[^0-9][^]\n\r]*[^\\]\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return BRACKETSTRING; }
+\[ { return LBRACKET; }
+\] { return RBRACKET; }
 
 \"[^"\n\r]*[^\\]\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
 
-=|<|>|<=|>=|!= { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return COMPARISON_OPERATOR; }
+(?i:begin) { yydebug; return AIR_BEGIN; }
+(?i:action) { yydebug; return AIR_ACTION; }
 
 ([a-zA-Z_][a-zA-Z0-9_\.-]*)([ ][XYxy])? { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return IDENTIFIER; }
 

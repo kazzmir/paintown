@@ -27,11 +27,12 @@ static std::list<Ast::Modifier *> *currentModifiers;
     char *stringValue;
 }
 %token <stringValue> QUOTESTRING 
-%token <stringValue> BRACKETSTRING 
 %token <numberValue> NUMBER 
 %token <stringValue> IDENTIFIER
-%token <stringValue> COMMAND
-%token <stringValue> COMPARISON_OPERATOR
+%token AIR_BEGIN
+%token AIR_ACTION
+%token LBRACKET
+%token RBRACKET
 
 %token COMMENT
 %token LINE_END
@@ -50,93 +51,18 @@ line:
     		bugon(currentSection == NULL);
 		configuration->getSections().push_back(currentSection);
 	}
-    | assignment end_or_comment {
-    		bugon(currentSection == NULL);
-    		bugon(currentLhs == NULL);
-		currentSection->getKeyValueMap()[currentLhs] = *currentRhs;
-	}
-    | { currentRhs = new Ast::Section::ValueList(); } valueList end_or_comment {
-    	bugon(currentSection == NULL);
-	currentSection->getActions().push_back(currentRhs);
-    };
+    ;
 
 end_or_comment:
     LINE_END 
   | COMMENT;
 
 section:
-    BRACKETSTRING { 
+    LBRACKET AIR_BEGIN AIR_ACTION NUMBER RBRACKET { 
+        double value = $4;
 	currentSection = new Ast::Section();
-	currentSection->setName($1);
+	// currentSection->setName($1);
  	};
-
-assignment:
-    lhs COMPARISON_OPERATOR { currentRhs = new std::list<Ast::Value *>(); } rhs;
-
-lhs: 
-    variable;
-
-variable:
-    IDENTIFIER { currentLhs = new Ast::Variable($1); }
-    | IDENTIFIER '(' NUMBER ')' { currentLhs = new Ast::Variable($1, (int)$3); }
-    | IDENTIFIER '(' IDENTIFIER ')' { currentLhs = new Ast::Variable($1, $3); }
-
-rhs: 
-    valueList;
-
-valueList:
-    value ',' { currentRhs->push_back(currentValue); } valueList
-    | ',' { currentRhs->push_back(NULL); } valueList
-    | value { currentRhs->push_back(currentValue); };
-
-value:
-    NUMBER { currentValue = new Ast::Value($1); }
-    | QUOTESTRING { currentValue = new Ast::Value($1); }
-    | IDENTIFIER { currentValue = new Ast::Value(); currentValue->setIdentifier($1); }
-    | modifiedIdentifier
-    | expression
-    | IDENTIFIER '(' valueList ')'
-    | range;
-
-range:
-    '[' NUMBER ',' NUMBER ']' { currentValue = new Ast::Value($2, $4); }
-    | '[' NUMBER ',' NUMBER ')' { currentValue = new Ast::Value($2, $4); }
-    | '(' NUMBER ',' NUMBER ']' { currentValue = new Ast::Value($2, $4); }
-    | '(' NUMBER ',' NUMBER ')' { currentValue = new Ast::Value($2, $4); }
-
-modifiedIdentifier:
-    modifiers { currentValue = new Ast::Value(); 
-	currentValue->setSpecies(Ast::ModifiedIdentifier); } chainedIdentifiers
-    | chainedIdentifiers
-
-modifiers:
-    modifier modifiers
-    | modifier
-
-modifier:
-    '/' | '~' | '~' NUMBER | '$' | '>'
-
-chainedIdentifiers:
-    IDENTIFIER { printf("    %s\n", $1); } '+' chainedIdentifiers
-    | IDENTIFIER { printf("    %s\n", $1); };
-
-expression:
-    | booleanExpression
-    | mathExpression;
-
-booleanExpression:
-    value COMPARISON_OPERATOR value
-    | '(' booleanExpression ')'
-    | value '|' '|' value
-    | value '&' '&' value
-    | '!' value;
-
-mathExpression:
-    value '+' value
-    | value '-' value
-    | value '*' value
-    | value '/' value
-    | '(' mathExpression ')'
 
 %%
 extern int yylineno;
