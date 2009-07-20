@@ -92,3 +92,4 @@ Future
 * triggers during the level. send arbitrary s-expressions to objects/anything
   (trigger (to (object 2)) (message (increase health 20)))
 * bitmaps should be able to swap themselves out on demand. if memory is constrained then save to disk or completely unload some bitmaps. when those bitmaps need to be used again reload them. this can be done for sounds as well.
+* turn around animations. when a character is facing left and turns right, instead of just instantly facing right there should be a "turn" animation in between.
