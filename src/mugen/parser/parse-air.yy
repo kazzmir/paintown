@@ -30,29 +30,24 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token <stringValue> QUOTESTRING 
 %token <numberValue> NUMBER 
 %token <stringValue> IDENTIFIER
+
 %token AIR_BEGIN
-%token AIR_ACTION
-%token LBRACKET
-%token RBRACKET
-
-%token AIR_COLLISION_ATTACK_DEFAULT
-%token AIR_COLLISION_ATTACK
-%token AIR_COLLISION_DEFENSE_DEFAULT
-%token AIR_COLLISION_DEFENSE
-
-%token AIR_LOOPSTART
-
-%token COMMENT
-%token LINE_END
-
-%token AIR_HORIZONTAL
-%token AIR_VERTICAL
-%token AIR_VERTICAL_HORIZONTAL
-
-%token AIR_ALPHA_BLEND
-
-%token AIR_COLOR_ADDITION
-%token AIR_COLOR_SUBTRACT
+       AIR_ACTION
+       LBRACKET
+       RBRACKET
+       AIR_COLLISION_ATTACK_DEFAULT
+       AIR_COLLISION_ATTACK
+       AIR_COLLISION_DEFENSE_DEFAULT
+       AIR_COLLISION_DEFENSE
+       AIR_LOOPSTART
+       COMMENT
+       LINE_END
+       AIR_HORIZONTAL
+       AIR_VERTICAL
+       AIR_VERTICAL_HORIZONTAL
+       AIR_ALPHA_BLEND
+       AIR_COLOR_ADDITION
+       AIR_COLOR_SUBTRACT
 
 %error-verbose
 %%
