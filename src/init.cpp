@@ -119,6 +119,7 @@ bool Global::init( int gfx ){
 	out << "-- BEGIN init --" << endl;
         out << "Data path is " << Util::getDataPath() << endl;
         out << "Paintown version " << Global::getVersionString() << endl;
+        out << "Build date " << __DATE__ << " " << __TIME__ << endl;
 	out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
 	out <<"Allegro init: "<<allegro_init()<<endl;
 	out <<"Install timer: "<<install_timer()<<endl;
