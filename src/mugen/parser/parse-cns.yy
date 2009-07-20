@@ -33,6 +33,10 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token LBRACKET
 %token RBRACKET
 
+%token CNS_DATA
+       CNS_STATEDEF
+       CNS_STATE
+
 %token COMMENT
 %token LINE_END
 
@@ -52,14 +56,42 @@ line:
 		configuration->getSections().push_back(currentSection);
 		*/
 	}
+    | assignment end_or_comment
     ;
+
+assignment:
+    lhs '=' rhs
+
+lhs:
+    variable
+
+rhs:
+    valueList
+
+valueList:
+    value ',' valueList
+    | ',' valueList
+    | value
+    ;
+
+value:
+    NUMBER
+    | QUOTESTRING
+    | variable
+    ;
+
+variable:
+     IDENTIFIER '.' variable
+     | IDENTIFIER
 
 end_or_comment:
     LINE_END 
   | COMMENT;
 
 section:
-    LBRACKET RBRACKET { 
+    LBRACKET CNS_STATEDEF NUMBER RBRACKET
+    | LBRACKET CNS_STATE NUMBER ',' value RBRACKET
+    | LBRACKET IDENTIFIER RBRACKET { 
         /*
         double value = $4;
 	Global::debug(0) << "Read section number " << value << std::endl;
@@ -73,7 +105,7 @@ extern int cnslineno;
 extern char *cnstext;
 
 int yyerror(const char *msg) {
-    printf("Parse error at line %d: %s at \'%s\'\n", cnslineno, msg, cnstext);
+    printf("Parse error at line %d: %s at \n  \'%s\'\n", cnslineno, msg, cnstext);
     /*if (yytext)
 	for (int i = 0; i < strlen(yytext); i++) {
 	    printf("%d, ", yytext[i]);

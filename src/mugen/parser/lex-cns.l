@@ -9,6 +9,8 @@
 // #define LEX_VAL(p) LEX_PREFIX##p
 #define LEX_VAL(p) cns##p
 
+// (d|D)(a|A)(t|T)(a|A) { return CNS_DATA; }
+
 %}
 
 %option yylineno
@@ -24,7 +26,12 @@
 
 \"[^"\n\r]*[^\\]\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
 
+(s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CNS_STATEDEF; }
+(s|S)(t|T)(a|A)(t|T)(e|E) { return CNS_STATE; }
+
 ([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
+
+[a-zA-Z_][a-zA-Z0-9_]* { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return IDENTIFIER; }
 
 [ \t]* { ; }
 
