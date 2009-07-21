@@ -1,3 +1,8 @@
 #!/bin/sh
 
+if [ "x$1" = "x" ]; then
+	echo "Give some files as arguments"
+	exit 0
+fi
+
 rsync --bwlimit=30 -avP -e ssh $* kazzmir@frs.sourceforge.net:uploads/
