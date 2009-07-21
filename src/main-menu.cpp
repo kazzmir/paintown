@@ -19,6 +19,7 @@ using namespace std;
 
 static int gfx = Global::WINDOWED;
 
+#define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
 static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
 static const char * DATAPATH_ARG[] = {"-d", "data", "datapath", "data-path", "path"};
 static const char * DEBUG_ARG[] = {"-l", "debug"};
@@ -52,12 +53,26 @@ static bool isArg( const char * s1, const char * s2[], int num){
     return false;
 }
 
+static const char * all(const char * args[], const int num, const char separate = ','){
+    static char buffer[1<<10];
+    strcpy(buffer, "");
+    for (int i = 0; i < num; i++){
+        char fuz[10];
+        sprintf(fuz, "%c ", separate);
+        strcat(buffer, args[i]);
+        if (i != num - 1){
+            strcat(buffer, fuz);
+        }
+    }
+    return buffer;
+}
+
 static void showOptions(){
 	Global::debug( 0 ) << "Paintown by Jon Rafkind" << endl;
-	Global::debug( 0 ) << "-w : Fullscreen mode" << endl;
-	Global::debug( 0 ) << "-d <path> : Use data path of <path>. Default is " << Util::getDataPath() << endl;
-	Global::debug( 0 ) << "-l # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
-	Global::debug( 0 ) << "-m : Turn off music" << endl;
+	Global::debug( 0 ) << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
+	Global::debug( 0 ) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath() << endl;
+	Global::debug( 0 ) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
+	Global::debug( 0 ) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
 	Global::debug( 0 ) << endl;
 }
 
@@ -75,7 +90,6 @@ int paintown_main( int argc, char ** argv ){
 	Global::setDebug( 0 );
         vector<const char *> all_args;
 	
-#define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
 #define ADD_ARGS(args) addArgs(all_args, args, NUM_ARGS(args))
         ADD_ARGS(WINDOWED_ARG);
         ADD_ARGS(DATAPATH_ARG);
