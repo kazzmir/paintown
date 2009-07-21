@@ -31,6 +31,18 @@
 
 ([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 
+!= { return CNS_NOTEQ; }
+>= { return CNS_GREATERTHANEQ; }
+\<= { return CNS_LESSTHANEQ; }
+> { return CNS_GREATERTHAN; }
+\< { return CNS_LESSTHAN; }
+
+M { return CNS_MISS; }
+D { return CNS_DODGE; }
+
+&& { return CNS_AND; }
+\|\| { return CNS_OR; }
+
 [a-zA-Z_][a-zA-Z0-9_]* { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return IDENTIFIER; }
 
 [ \t]* { ; }

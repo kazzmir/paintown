@@ -36,6 +36,15 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token CNS_DATA
        CNS_STATEDEF
        CNS_STATE
+       CNS_AND
+       CNS_OR
+       CNS_NOTEQ
+       CNS_GREATERTHANEQ
+       CNS_LESSTHANEQ
+       CNS_GREATERTHAN
+       CNS_LESSTHAN
+       CNS_MISS
+       CNS_DODGE
 
 %token COMMENT
 %token LINE_END
@@ -64,21 +73,62 @@ assignment:
 
 lhs:
     variable
+    | variable '(' value ')'
 
 rhs:
-    valueList
+   expression_list
 
-valueList:
-    value ',' valueList
-    | ',' valueList
+expression:
+    expression1 CNS_AND expression
+    | expression1 CNS_OR expression
+    | expression1
+
+expression1:
+    expression2 '=' expression1
+    | expression2 CNS_NOTEQ expression1
+    | expression2 CNS_GREATERTHANEQ expression1
+    | expression2 CNS_LESSTHANEQ expression1
+    | expression2 CNS_GREATERTHAN expression1
+    | expression2 CNS_LESSTHAN expression1
+    | expression2
+
+expression2:
+    | expression3 '+' expression2
+    | expression3 '-' expression2
+    | expression3
+
+expression3:
+    | expression4 '*' expression3
+    | expression4 '/' expression3
+    | expression4
+
+expression4:
+    '(' expression ')'
+    | '!' value
     | value
-    ;
+    | multiple_values
+
+expression_list:
+    expression
+    | expression ',' expression_list
+
+multiple_values:
+    value
+    | value multiple_values
 
 value:
     NUMBER
     | QUOTESTRING
+    | variable '(' expression_list ')'
     | variable
+    | miss_dodge
     ;
+
+miss_dodge:
+    CNS_MISS
+    | CNS_MISS '-'
+    | CNS_DODGE
+    | CNS_DODGE '-'
 
 variable:
      IDENTIFIER '.' variable
@@ -88,9 +138,32 @@ end_or_comment:
     LINE_END 
   | COMMENT;
 
+anything:
+    any_value anything
+    | any_value
+
+any_value:
+    value
+    | any_token
+    | '?'
+    | '-'
+
+any_token:
+    CNS_DATA
+    | CNS_STATEDEF
+    | CNS_STATE
+    | CNS_AND
+    | CNS_OR
+    | CNS_NOTEQ
+    | CNS_GREATERTHANEQ
+    | CNS_LESSTHANEQ
+    | CNS_GREATERTHAN
+    | CNS_LESSTHAN
+
+
 section:
     LBRACKET CNS_STATEDEF NUMBER RBRACKET
-    | LBRACKET CNS_STATE NUMBER ',' value RBRACKET
+    | LBRACKET CNS_STATE NUMBER ',' anything RBRACKET
     | LBRACKET IDENTIFIER RBRACKET { 
         /*
         double value = $4;
