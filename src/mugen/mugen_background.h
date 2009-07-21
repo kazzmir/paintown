@@ -61,7 +61,6 @@ public:
     friend class MugenMenu;
     friend class MugenBackgroundManager;
     
-    protected:
     std::string name;
     
     BackgroundType type;

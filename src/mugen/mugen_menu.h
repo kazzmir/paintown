@@ -256,7 +256,11 @@ class MugenMenu : public Menu
 	virtual void loadData() throw (MugenException);
 	
 	/*! do logic, draw whatever */
-	virtual void run();	
+	virtual void run();
+	
+	/*! get character select */
+	inline MugenCharacterSelect *getSelect() { return characterSelect; }
+	
     private:
 	// Option offset
 	int optionLocation;

@@ -148,10 +148,10 @@ MugenStoryboard::~MugenStoryboard(){
 }
 void MugenStoryboard::load() throw (MugenException){
      // Lets look for our def since some assholes think that all file systems are case insensitive
-    std::string baseDir = MugenUtil::getFileDir(location);
-    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, MugenUtil::stripDir(location) );
+    std::string baseDir = Mugen::Util::getFileDir(location);
+    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
     // get real basedir
-    //baseDir = MugenUtil::getFileDir( ourDefFile );
+    //baseDir = Mugen::Util::getFileDir( ourDefFile );
     Global::debug(1) << baseDir << endl;
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate storyboard definition file for: " + location );
@@ -167,14 +167,14 @@ void MugenStoryboard::load() throw (MugenException){
     /* Extract info for our first section of our stage */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
-	MugenUtil::fixCase(head);
+	Mugen::Util::fixCase(head);
 	Global::debug(1) << "Name: " << head << endl;
 	if( head == "info" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find("name")!=std::string::npos ){
 		    std::string temp;
 		    *content->getNext() >> temp;
@@ -191,12 +191,12 @@ void MugenStoryboard::load() throw (MugenException){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		if ( itemhead.find("spr")!=std::string::npos ){
 		    *content->getNext() >> spriteFile;
 		    Global::debug(1) << "Got Sprite File: '" << spriteFile << "'" << endl;
-		    MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", sprites );
+		    Mugen::Util::readSprites( Mugen::Util::getCorrectFileLocation(baseDir, spriteFile), "", sprites );
 		} else if ( itemhead.find("startscene")!=std::string::npos ){
 		    *content->getNext() >> startscene;
                     Global::debug(1) << "Starting storyboard at: '" << startscene << "'" << endl;
@@ -218,8 +218,8 @@ void MugenStoryboard::load() throw (MugenException){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		if ( itemhead.find("fadein.time")!=std::string::npos ){
 		    int time;
 		    *content->getNext() >> time;
@@ -336,7 +336,7 @@ void MugenStoryboard::load() throw (MugenException){
 	    head.replace(0,13,"");
 	    int h;
 	    MugenItem(head) >> h;
-	    animations[h] = MugenUtil::getAnimation(collection[i], sprites);
+	    animations[h] = Mugen::Util::getAnimation(collection[i], sprites);
 	}
 	else if ( head.find("def")  != std::string::npos && head.find("scenedef") == std::string::npos ){
 	    Global::debug(1) << "Checking def!" << endl;

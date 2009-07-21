@@ -33,13 +33,11 @@ using namespace std;
 
 static int lowerCase( int c ){ return tolower( c );}
 
-MugenCharacterSelect *MugenUtil::select = 0;
-
-void MugenUtil::fixCase( std::string &str ){
+void Mugen::Util::fixCase( std::string &str ){
     transform( str.begin(), str.end(), str.begin(), lowerCase );
 }
 
-void MugenUtil::removeSpaces( std::string &str ){
+void Mugen::Util::removeSpaces( std::string &str ){
     if( str.find(' ') != std::string::npos ){
 	Global::debug(1) << "Removing spaces from: " << str << endl;
 	for( int i = str.size()-1; i>-1; --i){
@@ -49,7 +47,7 @@ void MugenUtil::removeSpaces( std::string &str ){
     }
 }
 
-void MugenUtil::invertSlashes( std::string &str ){
+void Mugen::Util::invertSlashes( std::string &str ){
     if( str.find('\\') != std::string::npos ){
 	for( int i = str.size()-1; i>-1; --i){
 	    if( str[i] == '\\' )str[i] = '/';
@@ -57,25 +55,25 @@ void MugenUtil::invertSlashes( std::string &str ){
     }
 }
 /*
-std:string MugenUtil::getHeadDir( const std::string & dir ){
+std:string getHeadDir( const std::string & dir ){
     return dir.substr( ( dir.find_lastof( '/' ) != std::string::npos ? dir.find_lastof( '/' ) : 0 ), lastslash,dir.size() );
 }*/
 
-std::string MugenUtil::fixFileName( const std::string &dir, std::string str ){
+std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
     Global::debug(1) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
-    removeSpaces( str );
+    Mugen::Util::removeSpaces( str );
     // Fixes stupid windows users shit
-    invertSlashes( str );
+    Mugen::Util::invertSlashes( str );
     // Lets check if we need to fix anything first
-    if( Util::exists( dir + str ) == false ){
+    if( ::Util::exists( dir + str ) == false ){
 	Global::debug(1) << "Couldn't find file: " << str << endl;
 	std::string returnString = "";
-	std::vector< string > files = Util::getFiles( dir, "*" );
+	std::vector< string > files = ::Util::getFiles( dir, "*" );
 	Global::debug(1) << "Correcting file: " << str << ", in directory: "<< dir <<".\nGot " << files.size() << " files." << endl;
 	for( unsigned int i = 0; i < files.size(); ++i ){
 	    std::string temp = files[i].c_str();
-	    fixCase( temp );
+	    Mugen::Util::fixCase( temp );
 	    if( std::string( dir + str ) == temp ){
 		// We got number one chinese retaurant
 		returnString = files[i];
@@ -89,7 +87,7 @@ std::string MugenUtil::fixFileName( const std::string &dir, std::string str ){
 }
 
 
-std::string MugenUtil::stripDir( const std::string &str ){ 
+std::string Mugen::Util::stripDir( const std::string &str ){ 
     std::string temp = str;
     if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
 	size_t rem = temp.find_last_of( "/" );
@@ -105,7 +103,7 @@ std::string MugenUtil::stripDir( const std::string &str ){
 }
 
 
-std::string MugenUtil::getFileDir( const std::string &str ){
+std::string Mugen::Util::getFileDir( const std::string &str ){
     std::string temp = str;
     if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
 	size_t rem = temp.find_last_of( "/" );
@@ -121,7 +119,7 @@ std::string MugenUtil::getFileDir( const std::string &str ){
 }
 
 // If you use this, please delete the item after you use it, this isn't java ok
-MugenItemContent *MugenUtil::parseOpt( const std::string &opt ){
+MugenItemContent *Mugen::Util::parseOpt( const std::string &opt ){
     std::string contentHolder = "";
     MugenItemContent *temp = new MugenItemContent();
     const char * ignored = " \r\n";
@@ -176,7 +174,7 @@ typedef struct {
 /* Source: ZSoft Corporation's PCX File Format Technical Reference Manual, Revision 5. */
 
 
-bool MugenUtil::readPalette(const string &filename, unsigned char *pal){
+bool Mugen::Util::readPalette(const string &filename, unsigned char *pal){
     unsigned char colorsave[3]; // rgb pal save
     FILE *act_file = fopen( filename.c_str(), "rb" );
     if( !act_file ){
@@ -248,7 +246,7 @@ bool MugenUtil::readPalette(const string &filename, unsigned char *pal){
 }
 
 // Get next sprite
-static MugenSprite * readSprite(ifstream & ifile, int & location){
+static MugenSprite *readSprite(ifstream & ifile, int & location){
     // Go to next sprite
     ifile.seekg(location, ios::beg);
     // next sprite
@@ -276,7 +274,7 @@ static MugenSprite * readSprite(ifstream & ifile, int & location){
     return temp;
 }
 
-void MugenUtil::readSprites(const string & filename, const string & palette, map<unsigned int,map<unsigned int, MugenSprite *> > & sprites) throw (MugenException){
+void Mugen::Util::readSprites(const string & filename, const string & palette, map<unsigned int,map<unsigned int, MugenSprite *> > & sprites) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
@@ -324,7 +322,7 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
     unsigned char palsave1[768]; // First image palette
     
     // Load in first palette
-    if (readPalette(palette,palsave1)){
+    if (Mugen::Util::readPalette(palette,palsave1)){
 	useact = true;
     }
     
@@ -459,7 +457,7 @@ void MugenUtil::readSprites(const string & filename, const string & palette, map
     //return sprites;
 }
 
-void MugenUtil::readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException){
+void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
@@ -512,7 +510,7 @@ enum SearchState{
     ContentGet
 };
 
-std::vector< MugenSection * > MugenUtil::configReader(  const std::vector<std::string> &configdata ){
+std::vector< MugenSection * > Mugen::Util::configReader(  const std::vector<std::string> &configdata ){
    
     std::vector< MugenSection * > collection;
    std::string line;
@@ -640,7 +638,7 @@ std::vector< MugenSection * > MugenUtil::configReader(  const std::vector<std::s
     
 }
 
-MugenBackground *MugenUtil::getBackground( const unsigned long int &ticker, MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
+MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenBackground *temp = new MugenBackground(ticker);
     std::string head = section->getHeader();
     head.replace(0,3,"");
@@ -650,13 +648,13 @@ MugenBackground *MugenUtil::getBackground( const unsigned long int &ticker, Muge
 	MugenItemContent *content = section->getNext();
 	const MugenItem *item = content->getNext();
 	std::string itemhead = item->query();
-	MugenUtil::removeSpaces(itemhead);
-	MugenUtil::fixCase(itemhead);
+	Mugen::Util::removeSpaces(itemhead);
+	Mugen::Util::fixCase(itemhead);
 	Global::debug(1) << "Getting next item: " << itemhead << endl;
 	if ( itemhead.find("type")!=std::string::npos ){
 	    std::string type;
 	    *content->getNext() >> type;
-	    MugenUtil::removeSpaces( type );
+	    Mugen::Util::removeSpaces( type );
 	    if( type == "normal" )temp->type = Normal;
 	    else if( type == "anim" )temp->type = Anim;
 	    else if( type == "parallax" )temp->type = Parallax;
@@ -681,7 +679,7 @@ MugenBackground *MugenUtil::getBackground( const unsigned long int &ticker, Muge
 	} else if (itemhead == "trans"){
 	    std::string type;
 	    *content->getNext() >> type;
-	    MugenUtil::removeSpaces( type );
+	    Mugen::Util::removeSpaces( type );
 	    if( type == "none" )temp->trans = None;
 	    else if( type == "add" )temp->trans = Add;
 	    else if( type == "add1" )temp->trans = Add1;
@@ -749,7 +747,7 @@ MugenBackground *MugenUtil::getBackground( const unsigned long int &ticker, Muge
     return temp;
 }
 
-MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
+MugenAnimation *Mugen::Util::getAnimation( MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenAnimation *animation = new MugenAnimation();
     std::string head = section->getHeader();
     head.replace(0,13,"");
@@ -762,7 +760,7 @@ MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsign
 	    MugenItemContent *content = section->getNext();
 	    MugenItem *item = content->getNext();
 	    std::string itemhead = item->query();
-	    MugenUtil::fixCase(itemhead);
+	    Mugen::Util::fixCase(itemhead);
 	    Global::debug(1) << "Item Head: " << itemhead << endl;
 	    // Attack boxes
 	    if( itemhead.find("clsn1default") != std::string::npos ){
@@ -865,7 +863,7 @@ MugenAnimation *MugenUtil::getAnimation( MugenSection *section, std::map< unsign
 		while( content->hasItems() ){
 		    std::string temp;
 		    *content->getNext() >> temp;
-		    MugenUtil::fixCase(temp);
+		    Mugen::Util::fixCase(temp);
 		    if( temp.find("h") != std::string::npos )frame->flipHorizontal = true;
 		    if( temp.find("v") != std::string::npos )frame->flipVertical = true;
 		    if (temp[0] == 'a'){
@@ -920,24 +918,24 @@ static std::string removeLastDir( const std::string &dir ){
     return dir;
 }
 
-std::string MugenUtil::getCorrectFileLocation( const std::string &dir, const std::string &file ){
+std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, const std::string &file ){
     // First check initial location else it should be in the base dir
     std::string ourFile = file;
-    MugenUtil::removeSpaces(ourFile);
-    if (Util::exists(dir + ourFile) == true){
+    Mugen::Util::removeSpaces(ourFile);
+    if (::Util::exists(dir + ourFile) == true){
 	Global::debug(1) << "No correction needed found File: " << dir + ourFile << endl;
 	return dir + ourFile;
     } else {
 	// Descend two levels.. if not good enough screw it it doesn't exist
 	std::string tempDir = removeLastDir(dir);
 	Global::debug(1) << "Going down one dir: " << tempDir + ourFile << endl;
-	if (Util::exists(tempDir + ourFile) == true){
+	if (::Util::exists(tempDir + ourFile) == true){
 	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
 	    return tempDir + ourFile;
 	} 
 	tempDir = removeLastDir(tempDir);
 	Global::debug(1) << "Going down one more dir: " << tempDir + ourFile << endl;
-	if (Util::exists(tempDir + ourFile) == true){
+	if (::Util::exists(tempDir + ourFile) == true){
 	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
 	    return tempDir + ourFile;
 	} 
@@ -945,8 +943,4 @@ std::string MugenUtil::getCorrectFileLocation( const std::string &dir, const std
     Global::debug(1) << "No correction needed File: " << dir + ourFile << endl;
     return dir + ourFile;
 }
-
-// Register our select screen so options can access it
-void MugenUtil::registerSelect(MugenCharacterSelect *s) { select = s; }
-MugenCharacterSelect *MugenUtil::getSelect(){ return select; }
 

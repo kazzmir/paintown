@@ -87,8 +87,8 @@ void MugenCharacter::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
     baseDir = Util::getDataPath() + "mugen/chars/" + location + "/";
     Global::debug(1) << baseDir << endl;
-    std::string realstr = MugenUtil::stripDir( location );
-    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, std::string(realstr + ".def") );
+    std::string realstr = Mugen::Util::stripDir( location );
+    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, std::string(realstr + ".def") );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );
      
@@ -104,9 +104,9 @@ void MugenCharacter::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		MugenUtil::fixCase( itemhead );
+		Mugen::Util::fixCase( itemhead );
 		if ( itemhead.find("name")!=std::string::npos ){
 		    *content->getNext() >> name;
                     Global::debug(1) << "Read name '" << name << "'" << endl;
@@ -133,7 +133,7 @@ void MugenCharacter::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces( itemhead);
+		Mugen::Util::removeSpaces( itemhead);
 		if( itemhead.find("cmd")!=std::string::npos ){
 		    *content->getNext() >> cmdFile;
 		}
@@ -141,7 +141,7 @@ void MugenCharacter::load() throw( MugenException ){
 		    *content->getNext() >> constantsFile;
 		}
 		else if ( itemhead.find("st")!=std::string::npos ){
-		    MugenUtil::removeSpaces(itemhead);
+		    Mugen::Util::removeSpaces(itemhead);
 		    if (itemhead.find("st0") !=std::string::npos )*content->getNext() >> stFile[0];
 		    else if (itemhead.find("st1") !=std::string::npos )*content->getNext() >> stFile[1];
 		    else if (itemhead.find("st2")!=std::string::npos )*content->getNext() >> stFile[2];
@@ -239,7 +239,7 @@ void MugenCharacter::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces( itemhead);
+		Mugen::Util::removeSpaces( itemhead);
 		if( itemhead.find("intro.storyboard") != std::string::npos ){
 		    *content->getNext() >> introFile;
 		}
@@ -277,13 +277,13 @@ void MugenCharacter::load() throw( MugenException ){
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
-    MugenUtil::readSprites( MugenUtil::fixFileName(baseDir, sffFile), MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]]), sprites );
+    Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]), sprites );
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
     Global::debug(1) << "Reading Snd (sound) Data..." << endl; 
     /* Sounds */
-    MugenUtil::readSounds( MugenUtil::fixFileName( baseDir, sndFile ), sounds );
+    Mugen::Util::readSounds( Mugen::Util::fixFileName( baseDir, sndFile ), sounds );
 }
 
 // Render sprite
@@ -317,7 +317,7 @@ void MugenCharacter::nextPalette(){
     Global::debug(1) << "Current pal: " << currentPalette << " | Location: " << palDefaults[currentPalette] << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     // Now replace the palettes
     unsigned char pal[768];
-    if (MugenUtil::readPalette(MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
+    if (Mugen::Util::readPalette(Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
 	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
 	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 		if( j->second ){
@@ -346,7 +346,7 @@ void MugenCharacter::priorPalette(){
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     // Now replace the palettes
     unsigned char pal[768];
-    if (MugenUtil::readPalette(MugenUtil::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
+    if (Mugen::Util::readPalette(Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
 	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
 	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 		if( j->second ){
@@ -370,7 +370,7 @@ void MugenCharacter::priorPalette(){
 
 // animations
 void MugenCharacter::bundleAnimations() throw( MugenException){
-    MugenReader reader( MugenUtil::fixFileName(baseDir, airFile) );
+    MugenReader reader( Mugen::Util::fixFileName(baseDir, airFile) );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
@@ -382,7 +382,7 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 	head.replace(0,13,"");
 	int h;
 	MugenItem(head) >> h;
-	animations[h] = MugenUtil::getAnimation(collection[i], sprites);
+	animations[h] = Mugen::Util::getAnimation(collection[i], sprites);
 	Global::debug(1) << "Added Animation 'Begin Action " << h << "' : '" << animations[h]->getName(animations[h]->getType()) << "'" << endl;
     }
 }

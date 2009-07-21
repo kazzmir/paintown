@@ -212,9 +212,9 @@ void MugenStage::load() throw( MugenException ){
 	location+=".def";
     }
     // Get correct directory
-    baseDir = MugenUtil::getFileDir(baseDir + location);
-    location = MugenUtil::stripDir(location);
-    const std::string ourDefFile = MugenUtil::getCorrectFileLocation(baseDir, location);//MugenUtil::fixFileName( baseDir, std::string(location) );
+    baseDir = Mugen::Util::getFileDir(baseDir + location);
+    location = Mugen::Util::stripDir(location);
+    const std::string ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, location);//Mugen::Util::fixFileName( baseDir, std::string(location) );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
     
@@ -240,13 +240,13 @@ void MugenStage::load() throw( MugenException ){
     /* Extract info for our first section of our stage */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
-	MugenUtil::fixCase(head);
+	Mugen::Util::fixCase(head);
 	if( head == "info" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find("name")!=std::string::npos ){
 		    *content->getNext() >> name;
                     Global::debug(1) << "Read name '" << name << "'" << endl;
@@ -263,7 +263,7 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find("startx")!=std::string::npos ){
 		    *content->getNext() >> startx;
 		} else if ( itemhead.find("starty")!=std::string::npos ){
@@ -293,7 +293,7 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find("p1startx")!=std::string::npos ){
 		    *content->getNext() >> p1startx;
 		} else if ( itemhead.find("p1starty")!=std::string::npos ){
@@ -329,7 +329,7 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find("topz")!=std::string::npos ){
 		    *content->getNext() >> topz;
 		} else if ( itemhead.find("botz")!=std::string::npos ){
@@ -347,7 +347,7 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find("screenleft")!=std::string::npos ){
 		    *content->getNext() >> screenleft;
 		} else if ( itemhead.find("screenright")!=std::string::npos ){
@@ -360,8 +360,8 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		if ( itemhead == "zoffset" ){
 		    *content->getNext() >> zoffset;
 		} else if ( itemhead == "zoffsetlink" ){
@@ -378,8 +378,8 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> shadow.k;
 		    // *content->getNext() >> shadowIntensity;
@@ -405,8 +405,8 @@ void MugenStage::load() throw( MugenException ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		if ( itemhead.find("intensity")!=std::string::npos ){
 		    *content->getNext() >> reflectionIntensity;
 		} else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
@@ -845,7 +845,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     if ( fullname.find(".def") == std::string::npos){
 	fullname += ".def";
     }
-    const std::string defFile = MugenUtil::fixFileName( dir, std::string(fullname) );
+    const std::string defFile = Mugen::Util::fixFileName( dir, std::string(fullname) );
     
     if (defFile.empty()){
         throw MugenException( "Cannot locate stage definition file for: " + fullname );
@@ -868,13 +868,13 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     /* Extract info for our first section of our stage */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
-	MugenUtil::fixCase(head);
+	Mugen::Util::fixCase(head);
 	if( head == "info" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find("name")!=std::string::npos ){
 		    std::string stageName;
 		    *content->getNext() >> stageName;

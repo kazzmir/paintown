@@ -56,7 +56,7 @@ pcx(0),
 pcxsize(0),
 currentBank(0){
     std::string temp = file;
-    MugenUtil::invertSlashes(temp);
+    Mugen::Util::invertSlashes(temp);
     Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
     ifile.open( temp.c_str() );
     if (!ifile){
@@ -81,7 +81,7 @@ pcx(0),
 pcxsize(0),
 currentBank(0){
     std::string temp = file;
-    MugenUtil::invertSlashes(temp);
+    Mugen::Util::invertSlashes(temp);
     Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
     ifile.open( temp.c_str() );
     if (!ifile){
@@ -285,7 +285,7 @@ void MugenFont::load(){
         ourText.push_back(line);
     }
 
-    std::vector< MugenSection * > collection = MugenUtil::configReader( ourText );
+    std::vector< MugenSection * > collection = Mugen::Util::configReader( ourText );
 
     for( unsigned int i = 0; i < collection.size(); ++i ){
         const std::string &head = collection[i]->getHeader();
@@ -294,9 +294,9 @@ void MugenFont::load(){
                 MugenItemContent *content = collection[i]->getNext();
                 const MugenItem *item = content->getNext();
                 std::string itemhead = item->query();
-                MugenUtil::removeSpaces(itemhead);
+                Mugen::Util::removeSpaces(itemhead);
                 // This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-                MugenUtil::fixCase( itemhead );
+                Mugen::Util::fixCase( itemhead );
                 if ( itemhead.find("size")!=std::string::npos ){
                     *content->getNext() >> width;
                     *content->getNext() >> height;
@@ -311,8 +311,8 @@ void MugenFont::load(){
                 } else if ( itemhead.find("type")!=std::string::npos ){
                     std::string temp;
                     *content->getNext() >> temp;
-                    MugenUtil::removeSpaces(temp);
-                    MugenUtil::fixCase(temp);
+                    Mugen::Util::removeSpaces(temp);
+                    Mugen::Util::fixCase(temp);
                     if (temp == "variable")type = Variable;
                     else if (temp == "fixed")type = Fixed;
                     Global::debug(1) << "Type: " << temp << endl;
@@ -340,7 +340,7 @@ void MugenFont::load(){
 		if (opt->hasItems()){
 		    *opt->getNext() >> character;
 		    if (character.size() > 1){
-			MugenUtil::fixCase(character);
+			Mugen::Util::fixCase(character);
 			// 0x5b
 			if (character.compare("0x5b")==0)character = "[";
 			// 0x3b

@@ -110,14 +110,14 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
     /* Extract info for our first section of our select screen */
     for( ; index < collection.size(); ++index ){
 	std::string head = collection[index]->getHeader();
-	MugenUtil::fixCase(head);
+	Mugen::Util::fixCase(head);
 	if( head == "select info" ){ 
 	    while( collection[index]->hasItems() ){
 		MugenItemContent *content = collection[index]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		Global::debug(1) << "Got itemhead: '" << itemhead << "'" << endl;
 		if ( itemhead == "fadein.time" ){
 		    int time;
@@ -283,7 +283,7 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 	}
 	else if( head == "selectbgdef" ){ 
 	    // Background management
-	    MugenBackgroundManager *manager = new MugenBackgroundManager(MugenUtil::getFileDir( selectFile ),collection, index,selectTicker,&sprites);
+	    MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir( selectFile ),collection, index,selectTicker,&sprites);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
 	}
@@ -806,9 +806,9 @@ void MugenCharacterSelect::movePlayer2Cursor(int x, int y){
 }
 
 void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (MugenException){
-    std::string dir = MugenUtil::getFileDir(selectFile);
-    std::string file = MugenUtil::stripDir(selectFile);
-    MugenReader reader( MugenUtil::getCorrectFileLocation(dir,file) );
+    std::string dir = Mugen::Util::getFileDir(selectFile);
+    std::string file = Mugen::Util::stripDir(selectFile);
+    MugenReader reader( Mugen::Util::getCorrectFileLocation(dir,file) );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
@@ -816,7 +816,7 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
     /* Extract info for our first section of our menu */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
-	MugenUtil::fixCase(head);
+	Mugen::Util::fixCase(head);
 	if( head == "characters" ){
 	    int row = 0;
 	    int column = 0;
@@ -824,7 +824,7 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if (itemhead=="random"){
 		    // set random flag
 		    cells[row][column]->random = true;
@@ -868,7 +868,7 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		// Next item will be a stage lets add it to the list of stages
 		stageNames.push_back(itemhead);
 		Global::debug(1) << "Got stage: " << itemhead << endl;
@@ -909,10 +909,10 @@ intro(0){
 
 void MugenMenu::loadData() throw (MugenException){
      // Lets look for our def since some assholes think that all file systems are case insensitive
-    std::string baseDir = Util::getDataPath() + "mugen/data/" + MugenUtil::getFileDir(location);
-    const std::string ourDefFile = MugenUtil::fixFileName( baseDir, MugenUtil::stripDir(location) );
+    std::string baseDir = Util::getDataPath() + "mugen/data/" + Mugen::Util::getFileDir(location);
+    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
     // get real basedir
-    //baseDir = MugenUtil::getFileDir( ourDefFile );
+    //baseDir = Mugen::Util::getFileDir( ourDefFile );
     Global::debug(1) << baseDir << endl;
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate menu definition file for: " + location );
@@ -924,13 +924,13 @@ void MugenMenu::loadData() throw (MugenException){
     /* Extract info for our first section of our menu */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
-	MugenUtil::fixCase(head);
+	Mugen::Util::fixCase(head);
 	if( head == "info" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find("name")!=std::string::npos ){
 		    std::string temp;
 		    *content->getNext() >> temp;
@@ -948,12 +948,12 @@ void MugenMenu::loadData() throw (MugenException){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		if ( itemhead.find("spr")!=std::string::npos ){
 		    *content->getNext() >> spriteFile;
 		    Global::debug(1) << "Got Sprite File: '" << spriteFile << "'" << endl;
-		    MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", sprites );
+		    Mugen::Util::readSprites( Mugen::Util::getCorrectFileLocation(baseDir, spriteFile), "", sprites );
 		} else if ( itemhead.find("snd")!=std::string::npos ){
 		    *content->getNext() >> soundFile;
                     Global::debug(1) << "Got Sound File: '" << soundFile << "'" << endl;
@@ -962,7 +962,7 @@ void MugenMenu::loadData() throw (MugenException){
 			*content->getNext() >> logoFile;
 			try{
 			    Global::debug(1) << baseDir << " / " << logoFile << endl;
-			    logo = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, logoFile));
+			    logo = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, logoFile));
 			    logo->load();
 			}
 			catch (MugenException &ex){
@@ -974,7 +974,7 @@ void MugenMenu::loadData() throw (MugenException){
 		    if (content->hasItems()){
 			*content->getNext() >> introFile;
 			try{
-			    intro = new MugenStoryboard(MugenUtil::getCorrectFileLocation(baseDir, introFile));
+			    intro = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, introFile));
 			    intro->load();
 			}
 			catch (MugenException &ex){
@@ -991,8 +991,8 @@ void MugenMenu::loadData() throw (MugenException){
 		} else if ( itemhead.find("font")!=std::string::npos ){
 		    std::string temp;
 		    *content->getNext() >> temp;
-		    MugenUtil::removeSpaces(temp);
-		    fonts.push_back(new MugenFont(MugenUtil::getCorrectFileLocation(baseDir, temp)));
+		    Mugen::Util::removeSpaces(temp);
+		    fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
                     Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
 		} else throw MugenException( "Unhandled option in Files Section: " + itemhead );
 	    }
@@ -1002,8 +1002,8 @@ void MugenMenu::loadData() throw (MugenException){
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		if ( itemhead.find("fadein.time")!=std::string::npos ){
 		    int time;
 		    *content->getNext() >> time;
@@ -1176,8 +1176,6 @@ void MugenMenu::loadData() throw (MugenException){
 	    characterSelect = new MugenCharacterSelect(ticker,fonts);
 	    try{
 		characterSelect->load(baseDir + selectFile,i,collection,sprites);
-		// Register it for access by options that need it
-		MugenUtil::registerSelect(characterSelect);
 	    }
 	    catch (MugenException &ex){
 		throw MugenException(ex);

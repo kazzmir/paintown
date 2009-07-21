@@ -524,12 +524,12 @@ debugbg(false),
 clearColor(-1),
 spriteFile(""){
     std::string head = name = collection[index]->getHeader();
-    MugenUtil::fixCase(head);
+    Mugen::Util::fixCase(head);
     // Correct name of background manager .. this is used to get the subsequent backgrounds
     if (head.find( "def") != std::string::npos){
 	size_t rem = head.find_last_of( "def" );
 	name.erase(rem-2);
-	MugenUtil::fixCase(name);
+	Mugen::Util::fixCase(name);
     }
     
     // for linked position in backgrounds
@@ -537,22 +537,22 @@ spriteFile(""){
     
     for( ; index < collection.size(); ++index ){
 	head = collection[index]->getHeader();
-	MugenUtil::fixCase(head);
+	Mugen::Util::fixCase(head);
 	Global::debug(1) <<  "Header: " << head << " | Extracted name: " << name << endl;
 	if(head.find("def") != std::string::npos && head.find("ctrl") ==std::string::npos){
 	    while( collection[index]->hasItems() ){
 		    MugenItemContent *content = collection[index]->getNext();
 		    const MugenItem *item = content->getNext();
 		    std::string itemhead = item->query();
-		    MugenUtil::removeSpaces(itemhead);
-		    MugenUtil::fixCase(itemhead);
+		    Mugen::Util::removeSpaces(itemhead);
+		    Mugen::Util::fixCase(itemhead);
 		    if ( itemhead.find("spr")!=std::string::npos ){
 			*content->getNext() >> spriteFile;
 			Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
 			// Strip it of any directory it might have
-			spriteFile = MugenUtil::stripDir(spriteFile);
+			spriteFile = Mugen::Util::stripDir(spriteFile);
 			Global::debug(1) << "Sprite File: " << spriteFile << endl;
-			MugenUtil::readSprites( MugenUtil::getCorrectFileLocation(baseDir, spriteFile), "", this->sprites );
+			Mugen::Util::readSprites( Mugen::Util::getCorrectFileLocation(baseDir, spriteFile), "", this->sprites );
 		    } else if ( itemhead.find("debugbg")!=std::string::npos ){
 			*content->getNext() >> debugbg;
 		    } else if ( itemhead.find("bgclearcolor")!=std::string::npos ){
@@ -568,9 +568,9 @@ spriteFile(""){
 	else if( head.find( std::string(name + " ")) !=std::string::npos ){
 	    MugenBackground *temp;
 	    if (!spriteFile.empty()){
-		temp = MugenUtil::getBackground(ticker, collection[index], this->sprites);
+		temp = Mugen::Util::getBackground(ticker, collection[index], this->sprites);
 	    } else {
-		temp = MugenUtil::getBackground(ticker, collection[index], *sprites);
+		temp = Mugen::Util::getBackground(ticker, collection[index], *sprites);
 	    }
 	    // Do some fixups and necessary things
 	    // lets see where we lay
@@ -592,9 +592,9 @@ spriteFile(""){
 	    int h;
 	    MugenItem(head) >> h;
 	    if (!spriteFile.empty()){
-		animations[h] = MugenUtil::getAnimation(collection[index], this->sprites);
+		animations[h] = Mugen::Util::getAnimation(collection[index], this->sprites);
 	    } else {
-		animations[h] = MugenUtil::getAnimation(collection[index], *sprites);
+		animations[h] = Mugen::Util::getAnimation(collection[index], *sprites);
 	    }
 	}
 	else if( head.find("bgctrldef") != std::string::npos ){ 
@@ -607,8 +607,8 @@ spriteFile(""){
 		MugenItemContent *content = collection[index]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		Global::debug(1) << "Getting next item: " << itemhead << endl;
 		if ( itemhead.find("eventid")!=std::string::npos ){
 		    *content->getNext() >> temp->id;
@@ -650,14 +650,14 @@ spriteFile(""){
 		MugenItemContent *content = collection[index]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		MugenUtil::removeSpaces(itemhead);
-		MugenUtil::fixCase(itemhead);
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
 		Global::debug(1) << "Getting next item: " << itemhead << endl;
 		if ( itemhead.find("type")!=std::string::npos ){
 		    std::string type;
 		    *content->getNext() >> type;
-		    MugenUtil::removeSpaces( type );
-		    MugenUtil::fixCase(type);
+		    Mugen::Util::removeSpaces( type );
+		    Mugen::Util::fixCase(type);
 		    Global::debug(1) << "Type after lowercase: " << type << endl;
 		    if( type == "Anim" )temp->type = Ctrl_Animation;
 		    else if( type == "enabled" )temp->type = Ctrl_Enabled;
