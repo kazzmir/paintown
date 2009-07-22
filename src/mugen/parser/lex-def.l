@@ -65,7 +65,7 @@ S { return DEF_COLOR_SUBTRACT; }
 
 ([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 
-[a-zA-Z_][a-zA-Z0-9_]* { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return IDENTIFIER; }
+[a-zA-Z_\\\/\_\-][a-zA-Z\\\/\_\-0-9_]* { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return IDENTIFIER; }
 
 [ \t]* { ; }
 
