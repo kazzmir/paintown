@@ -55,21 +55,25 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %error-verbose
 %%
 file: 
-    line file
+    line ends file
+    | ends file
     | line
+    | ends
+
+ends:
+    end_or_comment ends
+    | end_or_comment
 
 line:
-    COMMENT 
-    | LINE_END
-    | info end_or_comment
-    | files end_or_comment
-    | data end_or_comment
-    | arcade end_or_comment
-    | scene end_or_comment
-    | action end_or_comment
-    | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip end_or_comment
-    | DEF_LOOPSTART end_or_comment
-    | assignment end_or_comment
+    info
+    | files
+    | data
+    | arcade
+    | scene
+    | action
+    | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
+    | DEF_LOOPSTART
+    | assignment
     ;
 
 assignment:
@@ -113,7 +117,8 @@ variable:
 
 end_or_comment:
     LINE_END 
-  | COMMENT;
+  | COMMENT
+  ;
 
 info:
    LBRACKET DEF_INFO RBRACKET
