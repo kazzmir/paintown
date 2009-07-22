@@ -436,6 +436,7 @@ int main( int argc, char ** argv ){
         const char * PARSE_AIR_ARG = "-parse-air";
         const char * PARSE_CNS_ARG = "-parse-cns";
         const char * PARSE_CMD_ARG = "-parse-cmd";
+        const char * PARSE_DEF_ARG = "-parse-def";
 	const char * STORY_ARG = "-storyboard";
 	std::string ourFile;
 	int configLoaded = -1;
@@ -476,6 +477,12 @@ int main( int argc, char ** argv ){
                     q += 1;
                     if (q < argc){
                         Mugen::parseCmd(argv[q]);
+                        return 0;
+                    }
+                } else if (isArg(argv[q], PARSE_DEF_ARG)){
+                    q += 1;
+                    if (q < argc){
+                        Mugen::parseDef(argv[q]);
                         return 0;
                     }
                     /*

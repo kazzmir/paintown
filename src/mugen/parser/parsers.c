@@ -14,3 +14,7 @@ int cnswrap(void){
 int cmdwrap(void){
     return yywrap();
 }
+
+int defwrap(void){
+    return yywrap();
+}
