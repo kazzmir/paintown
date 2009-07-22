@@ -4,6 +4,7 @@
 namespace Mugen{
   void parseAir(const std::string & filename);
   void parseCns(const std::string & filename);
+  void parseCmd(const std::string & filename);
 }
 
 #endif

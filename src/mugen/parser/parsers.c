@@ -10,3 +10,7 @@ int airwrap(void){
 int cnswrap(void){
     return yywrap();
 }
+
+int cmdwrap(void){
+    return yywrap();
+}

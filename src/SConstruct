@@ -47,6 +47,7 @@ def parser(name):
 
 obj_files.append(parser('air'))
 obj_files.append(parser('cns'))
+obj_files.append(parser('cmd'))
 
 def icon():
     if isWindows():
