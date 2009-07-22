@@ -53,6 +53,8 @@ static bool isArg( const char * s1, const char * s2[], int num){
     return false;
 }
 
+/* {"a", "b", "c"}, 3, ',' => "a, b, c"
+ */
 static const char * all(const char * args[], const int num, const char separate = ','){
     static char buffer[1<<10];
     strcpy(buffer, "");

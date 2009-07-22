@@ -138,32 +138,9 @@ end_or_comment:
     LINE_END 
   | COMMENT;
 
-anything:
-    any_value anything
-    | any_value
-
-any_value:
-    value
-    | any_token
-    | '?'
-    | '-'
-
-any_token:
-    CNS_DATA
-    | CNS_STATEDEF
-    | CNS_STATE
-    | CNS_AND
-    | CNS_OR
-    | CNS_NOTEQ
-    | CNS_GREATERTHANEQ
-    | CNS_LESSTHANEQ
-    | CNS_GREATERTHAN
-    | CNS_LESSTHAN
-
-
 section:
     LBRACKET CNS_STATEDEF NUMBER RBRACKET
-    | LBRACKET CNS_STATE NUMBER ',' anything RBRACKET
+    | CNS_STATE
     | LBRACKET IDENTIFIER RBRACKET { 
         /*
         double value = $4;

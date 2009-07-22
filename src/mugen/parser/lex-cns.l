@@ -10,6 +10,10 @@
 #define LEX_VAL(p) cns##p
 
 // (d|D)(a|A)(t|T)(a|A) { return CNS_DATA; }
+// (s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CNS_STATEDEF; }
+// (s|S)(t|T)(a|A)(t|T)(e|E) { return CNS_STATE; }
+
+// \[\s*(s|S)(t|T)(a|A)(t|T)(e|E)\s+\d+\s*(,[^\]]*)?\] {
 
 %}
 
@@ -21,13 +25,18 @@
 
 [\n\r] { yydebug; return LINE_END; }
 
-\[ { return LBRACKET; }
-\] { return RBRACKET; }
+\[ { yydebug; return LBRACKET; }
+\] { yydebug; return RBRACKET; }
 
 \"[^"\n\r]*[^\\]\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
 
+\[[ \t]*(s|S)(t|T)(a|A)(t|T)(e|E)[ \t]*-?[0-9]+(,[^\]]*)?\] {
+	yydebug;
+	LEX_VAL(lval).stringValue = strdup(yytext);
+	return CNS_STATE;
+}
+
 (s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CNS_STATEDEF; }
-(s|S)(t|T)(a|A)(t|T)(e|E) { return CNS_STATE; }
 
 ([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 
