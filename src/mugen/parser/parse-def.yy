@@ -33,18 +33,21 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token LBRACKET
 %token RBRACKET
 
-%token CNS_DATA
-       CNS_STATEDEF
-       CNS_STATE
-       CNS_AND
-       CNS_OR
-       CNS_NOTEQ
-       CNS_GREATERTHANEQ
-       CNS_LESSTHANEQ
-       CNS_GREATERTHAN
-       CNS_LESSTHAN
-       CNS_MISS
-       CNS_DODGE
+%token DEF_INFO
+       DEF_DATA
+       DEF_FILES
+       DEF_ARCADE
+       DEF_SCENEDEF
+       DEF_SCENE
+       DEF_BEGIN
+       DEF_ACTION
+       DEF_LOOPSTART
+       DEF_HORIZONTAL
+       DEF_VERTICAL
+       DEF_VERTICAL_HORIZONTAL
+       DEF_ALPHA_BLEND
+       DEF_COLOR_ADDITION
+       DEF_COLOR_SUBTRACT
 
 %token COMMENT
 %token LINE_END
@@ -58,13 +61,14 @@ file:
 line:
     COMMENT 
     | LINE_END
-    | section end_or_comment {
-    	/*
-    		bugon(configuration == NULL);
-    		bugon(currentSection == NULL);
-		configuration->getSections().push_back(currentSection);
-		*/
-	}
+    | info end_or_comment
+    | files end_or_comment
+    | data end_or_comment
+    | arcade end_or_comment
+    | scene end_or_comment
+    | action end_or_comment
+    | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip end_or_comment
+    | DEF_LOOPSTART end_or_comment
     | assignment end_or_comment
     ;
 
@@ -79,30 +83,10 @@ rhs:
    expression_list
 
 expression:
-    expression1 CNS_AND expression
-    | expression1 CNS_OR expression
+    variable '=' value
     | expression1
 
 expression1:
-    expression2 '=' expression1
-    | expression2 CNS_NOTEQ expression1
-    | expression2 CNS_GREATERTHANEQ expression1
-    | expression2 CNS_LESSTHANEQ expression1
-    | expression2 CNS_GREATERTHAN expression1
-    | expression2 CNS_LESSTHAN expression1
-    | expression2
-
-expression2:
-    | expression3 '+' expression2
-    | expression3 '-' expression2
-    | expression3
-
-expression3:
-    | expression4 '*' expression3
-    | expression4 '/' expression3
-    | expression4
-
-expression4:
     '(' expression ')'
     | '!' value
     | value
@@ -121,14 +105,7 @@ value:
     | QUOTESTRING
     | variable '(' expression_list ')'
     | variable
-    | miss_dodge
     ;
-
-miss_dodge:
-    CNS_MISS
-    | CNS_MISS '-'
-    | CNS_DODGE
-    | CNS_DODGE '-'
 
 variable:
      IDENTIFIER '.' variable
@@ -138,18 +115,44 @@ end_or_comment:
     LINE_END 
   | COMMENT;
 
-section:
-    LBRACKET CNS_STATEDEF NUMBER RBRACKET
-    | CNS_STATE
-    | LBRACKET IDENTIFIER RBRACKET { 
-        /*
-        double value = $4;
+info:
+   LBRACKET DEF_INFO RBRACKET
+   ;
+   
+files:
+   LBRACKET DEF_FILES RBRACKET
+   ;
+   
+data:
+   LBRACKET DEF_DATA RBRACKET
+   ;
+   
+arcade:
+   LBRACKET DEF_ARCADE RBRACKET
+   ;
+   
+scene:
+   LBRACKET DEF_SCENEDEF RBRACKET
+   | DEF_SCENE
+   ;
+   
+action:
+    LBRACKET DEF_BEGIN DEF_ACTION NUMBER RBRACKET { 
+	double value = $4;
 	Global::debug(0) << "Read section number " << value << std::endl;
-	*/
 	currentSection = new Ast::Section();
 	// currentSection->setName($1);
- 	};
+	};
 
+maybe_flip:
+   ',' flip
+   |
+
+flip:
+    DEF_HORIZONTAL
+    | DEF_VERTICAL
+    | DEF_VERTICAL_HORIZONTAL
+   
 %%
 
 int yyerror(const char *msg) {

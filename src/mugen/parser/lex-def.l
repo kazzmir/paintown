@@ -30,27 +30,33 @@
 
 \"[^"\n\r]*[^\\]\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
 
-\[[ \t]*(s|S)(t|T)(a|A)(t|T)(e|E)[ \t]*-?[0-9]+(,[^\]]*)?\] {
+(i|I)(n|N)(f|F)(o|O) { yydebug; return DEF_INFO; }
+(d|D)(a|A)(t|T)(a|A) { yydebug; return DEF_DATA; }
+(f|F)(i|I)(l|L)(e|E)(s|S) { yydebug; return DEF_FILES; }
+(a|A)(r|R)(c|C)(a|A)(d|D)(e|E) { yydebug; return DEF_ARCADE; }
+
+\[[ \t]*(s|S)(c|C)(e|E)(n|N)(e|E)[ \t]*-?[0-9]+(,[^\]]*)?\] {
 	yydebug;
 	LEX_VAL(lval).stringValue = strdup(yytext);
-	return CNS_STATE;
+	return DEF_SCENE;
 }
 
-(s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CNS_STATEDEF; }
+(s|S)(c|C)(e|E)(n|N)(e|E)(d|D)(e|E)(f|F) { return DEF_SCENEDEF; }
+
+(b|B)(e|E)(g|G)(i|I)(n|N) { yydebug; return DEF_BEGIN; }
+(a|A)(c|C)(t|T)(i|I)(o|O)(n|N) { yydebug; return DEF_ACTION; }
+(l|L)(o|O)(o|O)(p|P)(s|S)(t|T)(a|A)(r|R)(t|T) { return DEF_LOOPSTART; }
+
+H { return DEF_HORIZONTAL; }
+V { return DEF_VERTICAL; }
+VH|HV { return DEF_VERTICAL_HORIZONTAL; }
+
+AS[0-9]+D[0-9]+ { return DEF_ALPHA_BLEND; }
+
+A { return DEF_COLOR_ADDITION; }
+S { return DEF_COLOR_SUBTRACT; }
 
 ([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
-
-!= { return CNS_NOTEQ; }
->= { return CNS_GREATERTHANEQ; }
-\<= { return CNS_LESSTHANEQ; }
-> { return CNS_GREATERTHAN; }
-\< { return CNS_LESSTHAN; }
-
-M { return CNS_MISS; }
-D { return CNS_DODGE; }
-
-&& { return CNS_AND; }
-\|\| { return CNS_OR; }
 
 [a-zA-Z_][a-zA-Z0-9_]* { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return IDENTIFIER; }
 
