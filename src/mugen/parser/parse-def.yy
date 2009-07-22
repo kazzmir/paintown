@@ -48,6 +48,16 @@ static std::list<Ast::Modifier *> *currentModifiers;
        DEF_ALPHA_BLEND
        DEF_COLOR_ADDITION
        DEF_COLOR_SUBTRACT
+       DEF_CAMERA
+       DEF_PLAYERINFO
+       DEF_SCALING
+       DEF_REFLECTION
+       DEF_BOUND
+       DEF_STAGEINFO
+       DEF_SHADOW
+       DEF_MUSIC
+       DEF_BGDEF
+       DEF_BG       
 
 %token COMMENT
 %token LINE_END
@@ -70,10 +80,21 @@ line:
     | data
     | arcade
     | scene
+    | camera
+    | playerinfo
+    | scaling
+    | reflection
+    | bound
+    | stageinfo
+    | shadow
+    | music
+    | bgdef
+    | bg
     | action
     | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
     | DEF_LOOPSTART
     | assignment
+    | assign_none
     ;
 
 assignment:
@@ -85,6 +106,9 @@ lhs:
 
 rhs:
    expression_list
+   
+assign_none:
+    lhs '=' LINE_END
 
 expression:
     variable '=' value
@@ -121,20 +145,16 @@ end_or_comment:
   ;
 
 info:
-   LBRACKET DEF_INFO RBRACKET
-   ;
+   LBRACKET DEF_INFO RBRACKET;
    
 files:
-   LBRACKET DEF_FILES RBRACKET
-   ;
+   LBRACKET DEF_FILES RBRACKET;
    
 data:
-   LBRACKET DEF_DATA RBRACKET
-   ;
+   LBRACKET DEF_DATA RBRACKET;
    
 arcade:
-   LBRACKET DEF_ARCADE RBRACKET
-   ;
+   LBRACKET DEF_ARCADE RBRACKET;
    
 scene:
    LBRACKET DEF_SCENEDEF RBRACKET
@@ -163,6 +183,37 @@ flip:
     DEF_HORIZONTAL
     | DEF_VERTICAL
     | DEF_VERTICAL_HORIZONTAL
+    
+/* Implement properly later */
+camera:
+    LBRACKET DEF_CAMERA RBRACKET;
+    
+playerinfo:
+    LBRACKET DEF_PLAYERINFO RBRACKET;
+
+scaling:
+    LBRACKET DEF_SCALING RBRACKET;
+
+reflection:
+    LBRACKET DEF_REFLECTION RBRACKET;
+
+bound:
+    LBRACKET DEF_BOUND RBRACKET;
+
+stageinfo:
+    LBRACKET DEF_STAGEINFO RBRACKET;
+
+shadow:
+    LBRACKET DEF_SHADOW RBRACKET;
+
+music:
+    LBRACKET DEF_MUSIC RBRACKET;
+
+bgdef:
+    LBRACKET DEF_BGDEF RBRACKET;
+
+bg:
+    DEF_BG;
    
 %%
 
