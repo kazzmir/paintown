@@ -25,6 +25,8 @@
 
 [\n\r] { yydebug; return LINE_END; }
 
+^[\n\r] { yydebug; return EMPTY_LINE; }
+
 \[ { yydebug; return LBRACKET; }
 \] { yydebug; return RBRACKET; }
 

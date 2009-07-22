@@ -61,6 +61,7 @@ static std::list<Ast::Modifier *> *currentModifiers;
 
 %token COMMENT
 %token LINE_END
+%token EMPTY_LINE
 
 %error-verbose
 %%
@@ -71,8 +72,9 @@ file:
     | ends
 
 ends:
-    end_or_comment ends
+    EMPTY_LINE end_or_comment ends
     | end_or_comment
+    | EMPTY_LINE
 
 line:
     info
