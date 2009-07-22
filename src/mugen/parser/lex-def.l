@@ -35,13 +35,9 @@
 (f|F)(i|I)(l|L)(e|E)(s|S) { yydebug; return DEF_FILES; }
 (a|A)(r|R)(c|C)(a|A)(d|D)(e|E) { yydebug; return DEF_ARCADE; }
 
-\[[ \t]*(s|S)(c|C)(e|E)(n|N)(e|E)[ \t]*-?[0-9]+(,[^\]]*)?\] {
-	yydebug;
-	LEX_VAL(lval).stringValue = strdup(yytext);
-	return DEF_SCENE;
-}
+(s|S)(c|C)(e|E)(n|N)(e|E) { yydebug; return DEF_SCENE; }
 
-(s|S)(c|C)(e|E)(n|N)(e|E)(d|D)(e|E)(f|F) { return DEF_SCENEDEF; }
+(s|S)(c|C)(e|E)(n|N)(e|E)(d|D)(e|E)(f|F) { yydebug; return DEF_SCENEDEF; }
 
 (b|B)(e|E)(g|G)(i|I)(n|N) { yydebug; return DEF_BEGIN; }
 (a|A)(c|C)(t|T)(i|I)(o|O)(n|N) { yydebug; return DEF_ACTION; }

@@ -138,13 +138,19 @@ arcade:
    
 scene:
    LBRACKET DEF_SCENEDEF RBRACKET
-   | DEF_SCENE
+   | scene_num
    ;
+   
+scene_num:
+    LBRACKET DEF_SCENE NUMBER RBRACKET {
+	double value = $3;
+	Global::debug(0) << "Read Scene number " << value << std::endl;
+    };
    
 action:
     LBRACKET DEF_BEGIN DEF_ACTION NUMBER RBRACKET { 
 	double value = $4;
-	Global::debug(0) << "Read section number " << value << std::endl;
+	Global::debug(0) << "Read Action number " << value << std::endl;
 	currentSection = new Ast::Section();
 	// currentSection->setName($1);
 	};
