@@ -91,6 +91,20 @@
 (b|B)(g|G)(c|C)(t|T)(r|R)(l|L)(d|D)(e|E)(f|F) { yydebug; return DEF_BGCTRLDEF; }
 \[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_BGCTRL; }
 
+(s|S)(i|I)(m|M)(u|U)(l|L) { yydebug; return DEF_SIMUL; }
+(t|T)(u|U)(r|R)(n|N)(s|S) { yydebug; return DEF_TURNS; }
+(l|L)(i|I)(f|F)(e|E)(b|B)(a|A)(r|R) { yydebug; return DEF_LIFEBAR; }
+(p|P)(o|O)(w|W)(e|E)(r|R)(b|B)(a|A)(r|R) { yydebug; return DEF_POWERBAR; }
+(f|F)(a|A)(c|C)(e|E) { yydebug; return DEF_FACE; }
+(n|N)(a|A)(m|M)(e|E) { yydebug; return DEF_NAME; }
+(t|T)(i|I)(m|M)(e|E) { yydebug; return DEF_TIME; }
+(c|C)(o|O)(m|M)(b|B)(o|O) { yydebug; return DEF_COMBO; }
+(r|R)(o|O)(u|U)(n|N)(d|D) { yydebug; return DEF_ROUND; }
+(w|W)(i|I)(n|N)(i|I)(c|C)(o|O)(n|N) { yydebug; return DEF_WINICON; }
+(c|C)(h|H)(a|A)(r|R)(a|A)(c|C)(t|T)(e|E)(r|R)(s|S) { yydebug; return DEF_CHARACTERS; }
+(e|E)(x|X)(t|T)(r|R)(a|A)(s|S)(t|T)(a|A)(g|G)(e|E)(s|S) { yydebug; return DEF_EXTRA_STAGES; }
+(o|O)(p|P)(t|T)(i|I)(o|O)(n|N)(s|S) { yydebug; return DEF_OPTIONS; }
+
 (h|H) { return DEF_HORIZONTAL; }
 (v|V) { return DEF_VERTICAL; }
 (vh|hv|VH|HV) { return DEF_VERTICAL_HORIZONTAL; }

@@ -57,10 +57,23 @@ static std::list<Ast::Modifier *> *currentModifiers;
        DEF_SHADOW
        DEF_MUSIC
        DEF_BGDEF
-
 %token <stringValue> DEF_BG
 %token DEF_BGCTRLDEF
 %token <stringValue> DEF_BGCTRL
+%token DEF_SIMUL
+       DEF_TURNS
+       DEF_LIFEBAR
+       DEF_POWERBAR
+       DEF_FACE
+       DEF_NAME
+       DEF_TIME
+       DEF_COMBO
+       DEF_ROUND
+       DEF_WINICON
+       DEF_CHARACTERS
+       DEF_EXTRA_STAGES
+       DEF_OPTIONS
+       
 
 %token COMMENT
 %token LINE_END
@@ -103,6 +116,7 @@ line:
     | action
     | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
     | DEF_LOOPSTART
+    | others
     | assignment
     | assign_none
     ;
@@ -252,6 +266,26 @@ bgctrldef_ident:
     | NUMBER{
 	Global::debug(0) << "Got BgCtrlDef: " << $1 << std::endl;
     };
+
+/* these are for quickly parsing system files, correct when needed */
+others:
+    LBRACKET DEF_LIFEBAR RBRACKET
+    | LBRACKET DEF_SIMUL DEF_LIFEBAR RBRACKET
+    | LBRACKET DEF_TURNS DEF_LIFEBAR RBRACKET
+    | LBRACKET DEF_POWERBAR RBRACKET
+    | LBRACKET DEF_FACE RBRACKET
+    | LBRACKET DEF_SIMUL DEF_FACE RBRACKET
+    | LBRACKET DEF_TURNS DEF_FACE RBRACKET
+    | LBRACKET DEF_NAME RBRACKET
+    | LBRACKET DEF_SIMUL DEF_NAME RBRACKET
+    | LBRACKET DEF_TURNS DEF_NAME RBRACKET
+    | LBRACKET DEF_TIME RBRACKET
+    | LBRACKET DEF_COMBO RBRACKET
+    | LBRACKET DEF_ROUND RBRACKET
+    | LBRACKET DEF_WINICON RBRACKET
+    | LBRACKET DEF_CHARACTERS RBRACKET
+    | LBRACKET DEF_EXTRA_STAGES RBRACKET
+    | LBRACKET DEF_OPTIONS RBRACKET
     
 %%
 
