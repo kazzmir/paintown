@@ -136,7 +136,14 @@ value:
     | key
     | variable '(' expression_list ')'
     | variable
+    | range
     ;
+
+range:
+    LBRACKET NUMBER ',' NUMBER RBRACKET
+    | LBRACKET NUMBER ',' NUMBER ')'
+    | '(' NUMBER ',' NUMBER RBRACKET
+    | '(' NUMBER ',' NUMBER ')'
 
 key:
    key_modifiers plain_key
