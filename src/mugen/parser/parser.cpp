@@ -2,6 +2,7 @@
 #include "globals.h"
 #include <string>
 #include <fstream>
+#include "util/funcs.h"
 
 #include "parsers.h"
 
@@ -86,4 +87,8 @@ void Parser::parse(ifstream & file){
 Parser::~Parser(){
 }
 
+}
+
+extern "C" int parser_get_pipe(int files[2]){
+    Util::getPipe(files);
 }

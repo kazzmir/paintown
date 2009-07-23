@@ -48,7 +48,8 @@
     // printf("Switching to a new buffer\n");
     // we have to close this stuff somehow 
     int files[2];
-    if (pipe(files) == -1){
+    extern int parser_get_pipe(int[2]);
+    if (parser_get_pipe(files) == -1){
       perror("lex switch buffer");
       exit(-1);
     }
