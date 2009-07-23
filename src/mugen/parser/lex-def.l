@@ -56,7 +56,7 @@
     write(files[1], "\n", 1);
     close(files[1]);
     FILE * buffer = fdopen(files[0], "r");
-    YY_BUFFER_STATE state = yy_create_buffer(buffer, 1);
+    YY_BUFFER_STATE state = yy_create_buffer(buffer, YY_BUF_SIZE);
     // yypush_buffer_state(state);
 
     // yy_flush_buffer(state);
