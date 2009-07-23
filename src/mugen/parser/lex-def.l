@@ -15,13 +15,23 @@
 
 // \[\s*(s|S)(t|T)(a|A)(t|T)(e|E)\s+\d+\s*(,[^\]]*)?\] {
 
+/*
+
+;[^\n\r]*[\n\r] { yydebug; return COMMENT; }
+*/
+
 %}
 
+%x xCOMMENT
 %option yylineno
 
 %%
 
-;[^\n\r]*[\n\r] { yydebug; return COMMENT; }
+; { yydebug; BEGIN(xCOMMENT); }
+
+<xCOMMENT>. { ; }
+
+<xCOMMENT>[\n\r] { BEGIN(INITIAL); return COMMENT; }
 
 [\n\r] { yydebug; return LINE_END; }
 
@@ -29,6 +39,30 @@
 \] { yydebug; return RBRACKET; }
 
 \"[^"\n\r]*[^\\]\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
+
+<xCOMMENT><<EOF>> {
+  static int in_eof = 0;
+  if (!in_eof){
+    in_eof = 1;
+    static char newline[2] = "\n";
+    // printf("Switching to a new buffer\n");
+    // we have to close this stuff somehow 
+    int files[2];
+    if (pipe(files) == -1){
+      perror("lex switch buffer");
+      exit(-1);
+    }
+    write(files[1], "\n", 1);
+    close(files[1]);
+    FILE * buffer = fdopen(files[0], "r");
+    YY_BUFFER_STATE state = yy_create_buffer(buffer, 1);
+    // yypush_buffer_state(state);
+
+    // yy_flush_buffer(state);
+    yy_switch_to_buffer(state);
+  }
+}
+
 
 (i|I)(n|N)(f|F)(o|O) { yydebug; return DEF_INFO; }
 (d|D)(a|A)(t|T)(a|A) { yydebug; return DEF_DATA; }
@@ -71,5 +105,5 @@
 
 [ \t]* { ; }
 
-. { return yytext[0]; }
+. { yydebug; return yytext[0]; }
 %%
