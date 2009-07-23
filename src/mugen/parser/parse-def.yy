@@ -57,7 +57,11 @@ static std::list<Ast::Modifier *> *currentModifiers;
        DEF_SHADOW
        DEF_MUSIC
        DEF_BGDEF
-       DEF_BG       
+
+%token <stringValue> DEF_BG
+
+%token DEF_BGCTRLDEF
+       DEF_BGCTRL
 
 %token COMMENT
 %token LINE_END
@@ -95,6 +99,8 @@ line:
     | music
     | bgdef
     | bg
+    | bgctrldef
+    | bgctrl
     | action
     | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
     | DEF_LOOPSTART
@@ -218,8 +224,32 @@ bgdef:
     LBRACKET DEF_BGDEF RBRACKET;
 
 bg:
-    DEF_BG;
-   
+    DEF_BG {
+	Global::debug(0) << "Got Bg: " << $1 << std::endl;
+    };
+
+bgctrldef:
+    LBRACKET DEF_BGCTRLDEF bgctrldef_ident RBRACKET;
+
+bgctrl:
+    LBRACKET DEF_BGCTRL bgctrl_ident RBRACKET;
+    
+bgctrldef_ident:
+    IDENTIFIER{
+	Global::debug(0) << "Got BgCtrlDef: " << $1 << std::endl;
+	}
+    | NUMBER{
+	Global::debug(0) << "Got BgCtrlDef: " << $1 << std::endl;
+    };
+
+bgctrl_ident:
+    IDENTIFIER{
+	Global::debug(0) << "Got BgCtrl: " << $1 << std::endl;
+	}
+    | NUMBER{
+	Global::debug(0) << "Got BgCtrl: " << $1 << std::endl;
+    };
+    
 %%
 
 int yyerror(const char *msg) {
