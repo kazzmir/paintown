@@ -46,8 +46,21 @@
 > { return CMD_GREATERTHAN; }
 \< { return CMD_LESSTHAN; }
 
-M { return CMD_MISS; }
-D { return CMD_DODGE; }
+D { return CMD_KEY_DOWN; }
+F { return CMD_KEY_FORWARD; }
+DF { return CMD_KEY_DOWN_FORWARD; }
+B { return CMD_KEY_BACK; }
+DB { return CMD_KEY_DOWN_BACK; }
+UF { return CMD_KEY_UP_FORWARD; }
+U { return CMD_KEY_UP; }
+UB { return CMD_KEY_UP_BACK; }
+
+a { return CMD_BUTTON_A; }
+b { return CMD_BUTTON_B; }
+c { return CMD_BUTTON_C; }
+x { return CMD_BUTTON_X; }
+y { return CMD_BUTTON_Y; }
+z { return CMD_BUTTON_Z; }
 
 && { return CMD_AND; }
 \|\| { return CMD_OR; }

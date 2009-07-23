@@ -43,8 +43,22 @@ static std::list<Ast::Modifier *> *currentModifiers;
        CMD_LESSTHANEQ
        CMD_GREATERTHAN
        CMD_LESSTHAN
-       CMD_MISS
-       CMD_DODGE
+
+%token CMD_KEY_DOWN
+       CMD_KEY_FORWARD
+       CMD_KEY_DOWN_FORWARD
+       CMD_KEY_BACK
+       CMD_KEY_DOWN_BACK
+       CMD_KEY_UP_FORWARD
+       CMD_KEY_UP
+       CMD_KEY_UP_BACK
+
+%token CMD_BUTTON_A
+       CMD_BUTTON_B
+       CMD_BUTTON_C
+       CMD_BUTTON_X
+       CMD_BUTTON_Y
+       CMD_BUTTON_Z
 
 %token COMMENT
 %token LINE_END
@@ -119,16 +133,41 @@ multiple_values:
 value:
     NUMBER
     | QUOTESTRING
+    | key
     | variable '(' expression_list ')'
     | variable
-    | miss_dodge
     ;
 
-miss_dodge:
-    CMD_MISS
-    | CMD_MISS '-'
-    | CMD_DODGE
-    | CMD_DODGE '-'
+key:
+   key_modifiers plain_key
+
+key_modifiers:
+   key_modifier key_modifiers
+   |
+   ;
+
+key_modifier:
+   '~'
+   | '/'
+   | '$'
+   | '>'
+   ;
+
+plain_key:
+   CMD_KEY_DOWN
+   | CMD_KEY_FORWARD
+   | CMD_KEY_DOWN_FORWARD
+   | CMD_KEY_BACK
+   | CMD_KEY_DOWN_BACK
+   | CMD_KEY_UP_FORWARD
+   | CMD_KEY_UP
+   | CMD_KEY_UP_BACK
+   | CMD_BUTTON_A
+   | CMD_BUTTON_B
+   | CMD_BUTTON_C
+   | CMD_BUTTON_X
+   | CMD_BUTTON_Y
+   | CMD_BUTTON_Z
 
 variable:
      IDENTIFIER '.' variable
