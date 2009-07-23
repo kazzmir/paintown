@@ -119,7 +119,7 @@ rhs:
    expression_list
    
 assign_none:
-    lhs '=' LINE_END
+    lhs '='
 
 expression:
     variable '=' value

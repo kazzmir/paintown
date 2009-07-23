@@ -9,9 +9,9 @@
 // #define LEX_VAL(p) LEX_PREFIX##p
 #define LEX_VAL(p) cmd##p
 
-// (d|D)(a|A)(t|T)(a|A) { return CNS_DATA; }
-// (s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CNS_STATEDEF; }
-// (s|S)(t|T)(a|A)(t|T)(e|E) { return CNS_STATE; }
+// (d|D)(a|A)(t|T)(a|A) { return CMD_DATA; }
+// (s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CMD_STATEDEF; }
+// (s|S)(t|T)(a|A)(t|T)(e|E) { return CMD_STATE; }
 
 // \[\s*(s|S)(t|T)(a|A)(t|T)(e|E)\s+\d+\s*(,[^\]]*)?\] {
 
@@ -33,24 +33,24 @@
 \[[ \t]*(s|S)(t|T)(a|A)(t|T)(e|E)[ \t]*-?[0-9]+(,[^\]]*)?\] {
 	yydebug;
 	LEX_VAL(lval).stringValue = strdup(yytext);
-	return CNS_STATE;
+	return CMD_STATE;
 }
 
-(s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CNS_STATEDEF; }
+(s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CMD_STATEDEF; }
 
 ([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 
-!= { return CNS_NOTEQ; }
->= { return CNS_GREATERTHANEQ; }
-\<= { return CNS_LESSTHANEQ; }
-> { return CNS_GREATERTHAN; }
-\< { return CNS_LESSTHAN; }
+!= { return CMD_NOTEQ; }
+>= { return CMD_GREATERTHANEQ; }
+\<= { return CMD_LESSTHANEQ; }
+> { return CMD_GREATERTHAN; }
+\< { return CMD_LESSTHAN; }
 
-M { return CNS_MISS; }
-D { return CNS_DODGE; }
+M { return CMD_MISS; }
+D { return CMD_DODGE; }
 
-&& { return CNS_AND; }
-\|\| { return CNS_OR; }
+&& { return CMD_AND; }
+\|\| { return CMD_OR; }
 
 [a-zA-Z_][a-zA-Z0-9_]* { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return IDENTIFIER; }
 

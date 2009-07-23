@@ -33,18 +33,18 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token LBRACKET
 %token RBRACKET
 
-%token CNS_DATA
-       CNS_STATEDEF
-       CNS_STATE
-       CNS_AND
-       CNS_OR
-       CNS_NOTEQ
-       CNS_GREATERTHANEQ
-       CNS_LESSTHANEQ
-       CNS_GREATERTHAN
-       CNS_LESSTHAN
-       CNS_MISS
-       CNS_DODGE
+%token CMD_DATA
+       CMD_STATEDEF
+       CMD_STATE
+       CMD_AND
+       CMD_OR
+       CMD_NOTEQ
+       CMD_GREATERTHANEQ
+       CMD_LESSTHANEQ
+       CMD_GREATERTHAN
+       CMD_LESSTHAN
+       CMD_MISS
+       CMD_DODGE
 
 %token COMMENT
 %token LINE_END
@@ -79,17 +79,17 @@ rhs:
    expression_list
 
 expression:
-    expression1 CNS_AND expression
-    | expression1 CNS_OR expression
+    expression1 CMD_AND expression
+    | expression1 CMD_OR expression
     | expression1
 
 expression1:
     expression2 '=' expression1
-    | expression2 CNS_NOTEQ expression1
-    | expression2 CNS_GREATERTHANEQ expression1
-    | expression2 CNS_LESSTHANEQ expression1
-    | expression2 CNS_GREATERTHAN expression1
-    | expression2 CNS_LESSTHAN expression1
+    | expression2 CMD_NOTEQ expression1
+    | expression2 CMD_GREATERTHANEQ expression1
+    | expression2 CMD_LESSTHANEQ expression1
+    | expression2 CMD_GREATERTHAN expression1
+    | expression2 CMD_LESSTHAN expression1
     | expression2
 
 expression2:
@@ -125,10 +125,10 @@ value:
     ;
 
 miss_dodge:
-    CNS_MISS
-    | CNS_MISS '-'
-    | CNS_DODGE
-    | CNS_DODGE '-'
+    CMD_MISS
+    | CMD_MISS '-'
+    | CMD_DODGE
+    | CMD_DODGE '-'
 
 variable:
      IDENTIFIER '.' variable
@@ -139,8 +139,8 @@ end_or_comment:
   | COMMENT;
 
 section:
-    LBRACKET CNS_STATEDEF NUMBER RBRACKET
-    | CNS_STATE
+    LBRACKET CMD_STATEDEF NUMBER RBRACKET
+    | CMD_STATE
     | LBRACKET IDENTIFIER RBRACKET { 
         /*
         double value = $4;
