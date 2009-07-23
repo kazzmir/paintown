@@ -59,9 +59,8 @@ static std::list<Ast::Modifier *> *currentModifiers;
        DEF_BGDEF
 
 %token <stringValue> DEF_BG
-
 %token DEF_BGCTRLDEF
-       DEF_BGCTRL
+%token <stringValue> DEF_BGCTRL
 
 %token COMMENT
 %token LINE_END
@@ -187,13 +186,25 @@ action:
 	};
 
 maybe_flip:
-   ',' flip
+   ','
+   | ',' flip color_sub
+   | ',' color_sub flip
+   | ',' color_sub
+   | ',' flip
    |
 
 flip:
     DEF_HORIZONTAL
     | DEF_VERTICAL
     | DEF_VERTICAL_HORIZONTAL
+    | ','
+    
+color_sub:
+    DEF_COLOR_ADDITION
+    | DEF_COLOR_SUBTRACT
+    | DEF_ALPHA_BLEND
+    | ','
+    
     
 /* Implement properly later */
 camera:
@@ -232,7 +243,9 @@ bgctrldef:
     LBRACKET DEF_BGCTRLDEF bgctrldef_ident RBRACKET;
 
 bgctrl:
-    LBRACKET DEF_BGCTRL bgctrl_ident RBRACKET;
+    DEF_BGCTRL{
+	Global::debug(0) << "Got BgCtrl: " << $1 << std::endl;
+    };
     
 bgctrldef_ident:
     IDENTIFIER{
@@ -240,14 +253,6 @@ bgctrldef_ident:
 	}
     | NUMBER{
 	Global::debug(0) << "Got BgCtrlDef: " << $1 << std::endl;
-    };
-
-bgctrl_ident:
-    IDENTIFIER{
-	Global::debug(0) << "Got BgCtrl: " << $1 << std::endl;
-	}
-    | NUMBER{
-	Global::debug(0) << "Got BgCtrl: " << $1 << std::endl;
     };
     
 %%

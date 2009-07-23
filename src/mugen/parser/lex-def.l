@@ -52,18 +52,18 @@
 (m|M)(u|U)(s|S)(i|I)(c|C) { yydebug; return DEF_MUSIC; }
 
 (b|B)(g|G)(d|D)(e|E)(f|F) { yydebug; return DEF_BGDEF; }
-\[(b|B)(g|G)[ ].*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_BG; }
+\[(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_BG; }
 (b|B)(g|G)(c|C)(t|T)(r|R)(l|L)(d|D)(e|E)(f|F) { yydebug; return DEF_BGCTRLDEF; }
-(b|B)(g|G)(c|C)(t|T)(r|R)(l|L) { yydebug; return DEF_BGCTRL; }
+\[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; return DEF_BGCTRL; }
 
-H { return DEF_HORIZONTAL; }
-V { return DEF_VERTICAL; }
-VH|HV { return DEF_VERTICAL_HORIZONTAL; }
+(h|H) { return DEF_HORIZONTAL; }
+(v|V) { return DEF_VERTICAL; }
+(vh|hv|VH|HV) { return DEF_VERTICAL_HORIZONTAL; }
 
-AS[0-9]+D[0-9]+ { return DEF_ALPHA_BLEND; }
+(as|AS)[0-9]+(d|D)[0-9]+ { return DEF_ALPHA_BLEND; }
 
-A { return DEF_COLOR_ADDITION; }
-S { return DEF_COLOR_SUBTRACT; }
+(a|A) { return DEF_COLOR_ADDITION; }
+(s|S) { return DEF_COLOR_SUBTRACT; }
 
 ([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 
