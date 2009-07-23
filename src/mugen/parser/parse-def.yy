@@ -61,20 +61,23 @@ static std::list<Ast::Modifier *> *currentModifiers;
 
 %token COMMENT
 %token LINE_END
-%token EMPTY_LINE
 
 %error-verbose
 %%
 file: 
-    line ends file
-    | ends file
+    end_or_comment file
+    | stuff
+    |
+    ;
+
+stuff:
+    line ends stuff
+    | line ends
     | line
-    | ends
 
 ends:
-    EMPTY_LINE end_or_comment ends
+    end_or_comment ends
     | end_or_comment
-    | EMPTY_LINE
 
 line:
     info
