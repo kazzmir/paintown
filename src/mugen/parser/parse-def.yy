@@ -186,11 +186,9 @@ action:
 	};
 
 maybe_flip:
-   ','
-   | ',' flip color_sub
-   | ',' color_sub flip
-   | ',' color_sub
    | ',' flip
+   | ',' flip ',' color_sub
+   | ',' ',' color_sub
    |
 
 flip:

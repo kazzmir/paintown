@@ -54,7 +54,7 @@
 (b|B)(g|G)(d|D)(e|E)(f|F) { yydebug; return DEF_BGDEF; }
 \[(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_BG; }
 (b|B)(g|G)(c|C)(t|T)(r|R)(l|L)(d|D)(e|E)(f|F) { yydebug; return DEF_BGCTRLDEF; }
-\[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; return DEF_BGCTRL; }
+\[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_BGCTRL; }
 
 (h|H) { return DEF_HORIZONTAL; }
 (v|V) { return DEF_VERTICAL; }
