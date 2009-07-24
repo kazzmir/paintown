@@ -42,29 +42,25 @@
 \"[^"\n\r]*[^\\]\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
 
 <xCOMMENT><<EOF>> {
-  static int in_eof = 0;
-  if (!in_eof){
-    in_eof = 1;
-    static char newline[2] = "\n";
-    // printf("Switching to a new buffer\n");
-    // we have to close this stuff somehow 
-    int files[2];
-    extern int parser_get_pipe(int[2]);
-    if (parser_get_pipe(files) == -1){
-      perror("lex switch buffer");
-      exit(-1);
-    }
-    write(files[1], "\n", 1);
-    // close(files[1]);
-    int extra = fcntl(files[0], F_DUPFD, files[0]);
-    parser_close_pipe(files);
-    FILE * buffer = fdopen(extra, "r");
-    YY_BUFFER_STATE state = yy_create_buffer(buffer, YY_BUF_SIZE);
-    // yypush_buffer_state(state);
-
-    // yy_flush_buffer(state);
-    yy_switch_to_buffer(state);
+  static char newline[2] = "\n";
+  // printf("Switching to a new buffer\n");
+  // we have to close this stuff somehow 
+  int files[2];
+  extern int parser_get_pipe(int[2]);
+  if (parser_get_pipe(files) == -1){
+    perror("lex switch buffer");
+    exit(-1);
   }
+  write(files[1], "\n", 1);
+  // close(files[1]);
+  int extra = fcntl(files[0], F_DUPFD, files[0]);
+  parser_close_pipe(files);
+  FILE * buffer = fdopen(extra, "r");
+  YY_BUFFER_STATE state = yy_create_buffer(buffer, YY_BUF_SIZE);
+  // yypush_buffer_state(state);
+
+  // yy_flush_buffer(state);
+  yy_switch_to_buffer(state);
 }
 
 
