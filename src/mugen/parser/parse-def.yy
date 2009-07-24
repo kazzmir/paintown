@@ -278,6 +278,10 @@ int yyerror(const char *msg) {
 void Mugen::parseDef(const std::string & filename){
     extern FILE * defin;
     defin = fopen(filename.c_str(), "r");
+    if (defin == NULL){
+    	Global::debug(0) << "Could not open " << filename << std::endl;
+	return;
+    }
     int success = yyparse();
     fclose(defin);
     if (success == 0){
