@@ -92,7 +92,3 @@ Parser::~Parser(){
 extern "C" int parser_get_pipe(int files[2]){
     return Util::getPipe(files);
 }
-
-extern "C" int parser_close_pipe(int files[2]){
-    return Util::closePipe(files);
-}
