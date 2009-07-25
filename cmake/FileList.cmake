@@ -124,7 +124,8 @@ src/util/allegro-joystick.cpp
 src/util/system.cpp
 src/util/linux_joystick.cpp
 src/util/load_exception.cpp
-src/windows/funcs.cpp)
+src/windows/funcs.cpp
+src/windows/system.cpp)
 
 set(LOADPNG_SRC
 src/loadpng/loadpng.c
