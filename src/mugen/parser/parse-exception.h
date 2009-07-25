@@ -15,7 +15,7 @@ public:
 
     virtual ~ParserException() throw ();
 protected:
-    const std::string & reason;
+    const std::string reason;
 };
 
 }

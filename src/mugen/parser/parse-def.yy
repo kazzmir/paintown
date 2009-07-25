@@ -7,6 +7,7 @@
 #include "../ast/Configuration.h"
 #include "../ast/Value.h"
 #include "../ast/Modifier.h"
+#include "util/system.h"
 #include "globals.h"
 #include "parse-exception.h"
 
@@ -278,6 +279,11 @@ int yyerror(const char *msg) {
 
 void Mugen::parseDef(const std::string & filename) throw (Mugen::ParserException) {
     extern FILE * defin;
+
+    if (!System::readableFile(filename)){
+    	throw ParserException(std::string("Cannot open ") + filename + " for reading");
+    }
+
     defin = fopen(filename.c_str(), "r");
     if (defin == NULL){
     	throw ParserException(std::string("Could not open ") + filename);
