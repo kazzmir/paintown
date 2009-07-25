@@ -196,4 +196,5 @@ src/mugen/mugen_util.cpp
 src/mugen/option_versus.cpp
 src/mugen/parser/parser.cpp
 src/mugen/parser/parsers.c
+src/mugen/parser/parse-exception.cpp
 )
