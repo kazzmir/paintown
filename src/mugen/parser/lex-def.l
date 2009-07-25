@@ -59,32 +59,7 @@
   // yy_flush_buffer(state);
   yy_switch_to_buffer(state);
 }
-
-
-(i|I)(n|N)(f|F)(o|O) { yydebug; return DEF_INFO; }
-(d|D)(a|A)(t|T)(a|A) { yydebug; return DEF_DATA; }
-(f|F)(i|I)(l|L)(e|E)(s|S) { yydebug; return DEF_FILES; }
-(a|A)(r|R)(c|C)(a|A)(d|D)(e|E) { yydebug; return DEF_ARCADE; }
-
-(s|S)(c|C)(e|E)(n|N)(e|E) { yydebug; return DEF_SCENE; }
-(s|S)(c|C)(e|E)(n|N)(e|E)(d|D)(e|E)(f|F) { yydebug; return DEF_SCENEDEF; }
-
-(b|B)(e|E)(g|G)(i|I)(n|N) { yydebug; return DEF_BEGIN; }
-(a|A)(c|C)(t|T)(i|I)(o|O)(n|N) { yydebug; return DEF_ACTION; }
-(l|L)(o|O)(o|O)(p|P)(s|S)(t|T)(a|A)(r|R)(t|T) { return DEF_LOOPSTART; }
-
-(c|C)(a|A)(m|M)(e|E)(r|R)(a|A) { yydebug; return DEF_CAMERA; }
-(p|P)(l|L)(a|A)(y|Y)(e|E)(r|R)(i|I)(n|N)(f|F)(o|O) { yydebug; return DEF_PLAYERINFO; }
-(s|S)(c|C)(a|A)(l|L)(i|I)(n|N)(g|G) { yydebug; return DEF_SCALING; }
-(r|R)(e|E)(f|F)(l|L)(e|E)(c|C)(t|T)(i|I)(o|O)(n|N) { yydebug; return DEF_REFLECTION; }
-(b|B)(o|O)(u|U)(n|N)(d|D) { yydebug; return DEF_BOUND; }
-(s|S)(t|T)(a|A)(g|G)(e|E)(i|I)(n|N)(f|F)(o|O) { yydebug; return DEF_STAGEINFO; }
-(s|S)(h|H)(a|A)(d|D)(o|O)(w|W) { yydebug; return DEF_SHADOW; }
-(m|M)(u|U)(s|S)(i|I)(c|C) { yydebug; return DEF_MUSIC; }
-
-(b|B)(g|G)(d|D)(e|E)(f|F) { yydebug; return DEF_BGDEF; }
 \[(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_BG; }
-(b|B)(g|G)(c|C)(t|T)(r|R)(l|L)(d|D)(e|E)(f|F) { yydebug; return DEF_BGCTRLDEF; }
 \[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_BGCTRL; }
 
 (h|H) { return DEF_HORIZONTAL; }

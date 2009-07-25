@@ -35,30 +35,13 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token LBRACKET
 %token RBRACKET
 
-%token DEF_INFO
-       DEF_DATA
-       DEF_FILES
-       DEF_ARCADE
-       DEF_SCENEDEF
-       DEF_SCENE
-       DEF_BEGIN
-       DEF_ACTION
-       DEF_LOOPSTART
+%token DEF_LOOPSTART
        DEF_HORIZONTAL
        DEF_VERTICAL
        DEF_VERTICAL_HORIZONTAL
        DEF_ALPHA_BLEND
        DEF_COLOR_ADDITION
        DEF_COLOR_SUBTRACT
-       DEF_CAMERA
-       DEF_PLAYERINFO
-       DEF_SCALING
-       DEF_REFLECTION
-       DEF_BOUND
-       DEF_STAGEINFO
-       DEF_SHADOW
-       DEF_MUSIC
-       DEF_BGDEF
 %token <stringValue> DEF_BG
 %token DEF_BGCTRLDEF
 %token <stringValue> DEF_BGCTRL
@@ -85,27 +68,20 @@ ends:
     | end_or_comment
 
 line:
-    info
-    | files
-    | data
-    | arcade
-    | scene
-    | camera
-    | playerinfo
-    | scaling
-    | reflection
-    | bound
-    | stageinfo
-    | shadow
-    | music
-    | bgdef
+    section1
+    | section2
+    | section3
+    | section4
+    | section5
+    | section6
+    | section7
+    | section8
+    | section9
+    | section10
     | bg
-    | bgctrldef
     | bgctrl
-    | action
     | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
     | DEF_LOOPSTART
-    | others
     | assignment
     | assign_none
     ;
@@ -157,36 +133,41 @@ end_or_comment:
   | COMMENT
   ;
 
-info:
-   LBRACKET DEF_INFO RBRACKET;
-   
-files:
-   LBRACKET DEF_FILES RBRACKET;
-   
-data:
-   LBRACKET DEF_DATA RBRACKET;
-   
-arcade:
-   LBRACKET DEF_ARCADE RBRACKET;
-   
-scene:
-   LBRACKET DEF_SCENEDEF RBRACKET
-   | scene_num
-   ;
-   
-scene_num:
-    LBRACKET DEF_SCENE NUMBER RBRACKET {
-	double value = $3;
-	Global::debug(0) << "Read Scene number " << value << std::endl;
-    };
-   
-action:
-    LBRACKET DEF_BEGIN DEF_ACTION NUMBER RBRACKET { 
-	double value = $4;
-	Global::debug(0) << "Read Action number " << value << std::endl;
-	currentSection = new Ast::Section();
-	// currentSection->setName($1);
-	};
+section1:
+    LBRACKET IDENTIFIER RBRACKET;
+
+section2:
+    LBRACKET NUMBER RBRACKET;
+
+section3:
+    LBRACKET IDENTIFIER IDENTIFIER RBRACKET;
+
+section4: 
+    LBRACKET IDENTIFIER NUMBER RBRACKET;
+    
+section5:
+    LBRACKET NUMBER NUMBER RBRACKET;
+
+section6:
+    LBRACKET IDENTIFIER IDENTIFIER IDENTIFIER RBRACKET;
+
+section7:
+    LBRACKET IDENTIFIER NUMBER IDENTIFIER RBRACKET;
+
+section8:
+    LBRACKET IDENTIFIER IDENTIFIER NUMBER RBRACKET;
+    
+section9:
+    LBRACKET IDENTIFIER NUMBER NUMBER RBRACKET;
+
+section10:
+    LBRACKET NUMBER NUMBER NUMBER RBRACKET;
+    
+ident_num:
+    IDENTIFIER RBRACKET
+    | NUMBER RBRACKET
+    | IDENTIFIER NUMBER RBRACKET
+    | NUMBER IDENTIFIER RBRACKET
 
 maybe_flip:
    | ',' flip
@@ -208,59 +189,15 @@ color_sub:
     
     
 /* Implement properly later */
-camera:
-    LBRACKET DEF_CAMERA RBRACKET;
-    
-playerinfo:
-    LBRACKET DEF_PLAYERINFO RBRACKET;
-
-scaling:
-    LBRACKET DEF_SCALING RBRACKET;
-
-reflection:
-    LBRACKET DEF_REFLECTION RBRACKET;
-
-bound:
-    LBRACKET DEF_BOUND RBRACKET;
-
-stageinfo:
-    LBRACKET DEF_STAGEINFO RBRACKET;
-
-shadow:
-    LBRACKET DEF_SHADOW RBRACKET;
-
-music:
-    LBRACKET DEF_MUSIC RBRACKET;
-
-bgdef:
-    LBRACKET DEF_BGDEF RBRACKET;
-
 bg:
     DEF_BG {
 	Global::debug(0) << "Got Bg: " << $1 << std::endl;
     };
 
-bgctrldef:
-    LBRACKET DEF_BGCTRLDEF bgctrldef_ident RBRACKET;
-
 bgctrl:
     DEF_BGCTRL{
 	Global::debug(0) << "Got BgCtrl: " << $1 << std::endl;
     };
-    
-bgctrldef_ident:
-    IDENTIFIER{
-	Global::debug(0) << "Got BgCtrlDef: " << $1 << std::endl;
-	}
-    | NUMBER{
-	Global::debug(0) << "Got BgCtrlDef: " << $1 << std::endl;
-    };
-
-/* these are for quickly parsing system files, correct when needed */
-others:
-    LBRACKET IDENTIFIER RBRACKET
-    | LBRACKET IDENTIFIER IDENTIFIER RBRACKET
-    | LBRACKET IDENTIFIER NUMBER RBRACKET
     
 %%
 
