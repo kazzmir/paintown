@@ -121,6 +121,7 @@ src/util/funcs.cpp
 src/util/ebox.cpp
 src/util/joystick.cpp
 src/util/allegro-joystick.cpp
+src/util/system.cpp
 src/util/linux_joystick.cpp
 src/util/load_exception.cpp
 src/windows/funcs.cpp)

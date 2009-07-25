@@ -8,6 +8,7 @@
 #include "../ast/Value.h"
 #include "../ast/Modifier.h"
 #include "globals.h"
+#include "parse-exception.h"
 
 #define bugon(a) if ((a)){ printf("parsing bug at %s:%d\n", __FILE__, __LINE__); }
 
@@ -275,19 +276,18 @@ int yyerror(const char *msg) {
 
 #include "parsers.h"
 
-void Mugen::parseDef(const std::string & filename){
+void Mugen::parseDef(const std::string & filename) throw (Mugen::ParserException) {
     extern FILE * defin;
     defin = fopen(filename.c_str(), "r");
     if (defin == NULL){
-    	Global::debug(0) << "Could not open " << filename << std::endl;
-	return;
+    	throw ParserException(std::string("Could not open ") + filename);
     }
     int success = yyparse();
     fclose(defin);
     if (success == 0){
         Global::debug(0) << "Successfully parsed " << filename << std::endl;
     } else {
-    	Global::debug(0) << "Failed to parse " << filename << std::endl;
+    	throw ParserException(std::string("Failed to parse ") + filename);
     }
 }
 
