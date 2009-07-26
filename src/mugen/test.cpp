@@ -483,11 +483,14 @@ int main( int argc, char ** argv ){
                 } else if (isArg(argv[q], PARSE_DEF_ARG)){
                     q += 1;
                     if (q < argc){
-                        try{
-                            Mugen::parseDef(argv[q]);
-                        } catch (const Mugen::ParserException & p){
-                            Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                        }
+                        // for (int i = 0; ; i++){
+                            // printf("%d\n", i);
+                            try{
+                                Mugen::parseDef(argv[q]);
+                            } catch (const Mugen::ParserException & p){
+                                Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                            }
+                        // }
                         return 0;
                     }
                     /*

@@ -119,14 +119,14 @@ multiple_values:
 
 value:
     NUMBER
-    | QUOTESTRING
+    | QUOTESTRING { free($1); }
     | variable '(' expression_list ')'
     | variable
     ;
 
 variable:
-     IDENTIFIER '.' variable
-     | IDENTIFIER
+     IDENTIFIER '.' variable { free($1); }
+     | IDENTIFIER { free($1); }
 
 end_or_comment:
     LINE_END 
@@ -134,40 +134,40 @@ end_or_comment:
   ;
 
 section1:
-    LBRACKET IDENTIFIER RBRACKET;
+    LBRACKET IDENTIFIER RBRACKET { free($2); }
 
 section2:
     LBRACKET NUMBER RBRACKET;
 
 section3:
-    LBRACKET IDENTIFIER IDENTIFIER RBRACKET;
+    LBRACKET IDENTIFIER IDENTIFIER RBRACKET { free($2); }
 
 section4: 
-    LBRACKET IDENTIFIER NUMBER RBRACKET;
+    LBRACKET IDENTIFIER NUMBER RBRACKET { free($2); }
     
 section5:
     LBRACKET NUMBER NUMBER RBRACKET;
 
 section6:
-    LBRACKET IDENTIFIER IDENTIFIER IDENTIFIER RBRACKET;
+    LBRACKET IDENTIFIER IDENTIFIER IDENTIFIER RBRACKET { free($2); free($3); free($4); }
 
 section7:
-    LBRACKET IDENTIFIER NUMBER IDENTIFIER RBRACKET;
+    LBRACKET IDENTIFIER NUMBER IDENTIFIER RBRACKET { free($2); free($4); }
 
 section8:
-    LBRACKET IDENTIFIER IDENTIFIER NUMBER RBRACKET;
+    LBRACKET IDENTIFIER IDENTIFIER NUMBER RBRACKET { free($2); free($3); }
     
 section9:
-    LBRACKET IDENTIFIER NUMBER NUMBER RBRACKET;
+    LBRACKET IDENTIFIER NUMBER NUMBER RBRACKET { free($2); }
 
 section10:
     LBRACKET NUMBER NUMBER NUMBER RBRACKET;
     
 ident_num:
-    IDENTIFIER RBRACKET
+    IDENTIFIER RBRACKET { free($1); }
     | NUMBER RBRACKET
-    | IDENTIFIER NUMBER RBRACKET
-    | NUMBER IDENTIFIER RBRACKET
+    | IDENTIFIER NUMBER RBRACKET { free($1); }
+    | NUMBER IDENTIFIER RBRACKET { free($2); }
 
 maybe_flip:
    | ',' flip
@@ -192,11 +192,13 @@ color_sub:
 bg:
     DEF_BG {
 	Global::debug(0) << "Got Bg: " << $1 << std::endl;
+	free($1);
     };
 
 bgctrl:
     DEF_BGCTRL{
 	Global::debug(0) << "Got BgCtrl: " << $1 << std::endl;
+	free($1);
     };
     
 %%
@@ -213,9 +215,17 @@ int yyerror(const char *msg) {
 }
 
 #include "parsers.h"
+    
+extern "C" void def_lex_reset();
+
+static void reset(){
+    def_lex_reset();
+}
 
 void Mugen::parseDef(const std::string & filename) throw (Mugen::ParserException) {
     extern FILE * defin;
+
+    reset();
 
     if (!System::readableFile(filename)){
     	throw ParserException(std::string("Cannot open ") + filename + " for reading");
@@ -227,6 +237,7 @@ void Mugen::parseDef(const std::string & filename) throw (Mugen::ParserException
     }
     int success = yyparse();
     fclose(defin);
+    defin = 0;
     if (success == 0){
         Global::debug(0) << "Successfully parsed " << filename << std::endl;
     } else {

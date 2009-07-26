@@ -8,6 +8,22 @@
 #define LEX_PREFIX def
 // #define LEX_VAL(p) LEX_PREFIX##p
 #define LEX_VAL(p) def##p
+  
+FILE * def_open_file = 0;
+YY_BUFFER_STATE def_buffer_state = 0;
+
+void def_lex_reset(){
+    yylineno = 1;
+    if (def_buffer_state){
+    	yy_delete_buffer(def_buffer_state);
+	def_buffer_state = 0;
+    }
+    if (def_open_file != 0){
+    	fclose(def_open_file);
+	def_open_file = 0;
+    }
+    // deflex_destroy();
+}
 
 // (d|D)(a|A)(t|T)(a|A) { return CNS_DATA; }
 // (s|S)(t|T)(a|A)(t|T)(e|E)(d|D)(e|E)(f|F) { return CNS_STATEDEF; }
@@ -52,12 +68,14 @@
   }
   write(files[1], "\n", 1);
   close(files[1]);
-  FILE * buffer = fdopen(files[0], "r");
-  YY_BUFFER_STATE state = yy_create_buffer(buffer, YY_BUF_SIZE);
-  // yypush_buffer_state(state);
+  def_open_file = fdopen(files[0], "r");
+  def_buffer_state = yy_create_buffer(def_open_file, YY_BUF_SIZE);
 
+  /* push not available in flex 2.5.4a */
+  // yypush_buffer_state(state);
   // yy_flush_buffer(state);
-  yy_switch_to_buffer(state);
+
+  yy_switch_to_buffer(def_buffer_state);
 }
 \[(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_BG; }
 \[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_BGCTRL; }
