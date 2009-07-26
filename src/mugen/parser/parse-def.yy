@@ -201,25 +201,25 @@ color_sub:
 /* Implement properly later */
 bg:
     DEF_BG {
-	Global::debug(0) << "Got Bg: " << $1 << std::endl;
+	Global::debug(1) << "Got Bg: " << $1 << std::endl;
 	free($1);
     };
     
 selectbg:
     DEF_SELECTBG {
-	Global::debug(0) << "Got Select Bg: " << $1 << std::endl;
+	Global::debug(1) << "Got Select Bg: " << $1 << std::endl;
 	free($1);
     };
 
 bgctrl:
     DEF_BGCTRL{
-	Global::debug(0) << "Got BgCtrl: " << $1 << std::endl;
+	Global::debug(1) << "Got BgCtrl: " << $1 << std::endl;
 	free($1);
     };
     
 selectbgctrl:
     DEF_SELECTBGCTRL{
-	Global::debug(0) << "Got Select BgCtrl: " << $1 << std::endl;
+	Global::debug(1) << "Got Select BgCtrl: " << $1 << std::endl;
 	free($1);
     };    
 %%
