@@ -71,9 +71,9 @@ DIGIT [0-9]
 (c|C)(l|L)(s|S)(n|N)(1|1) { return AIR_COLLISION_ATTACK; }
 (l|L)(o|O)(o|O)(p|P)(s|S)(t|T)(a|A)(r|R)(t|T) { return AIR_LOOPSTART; }
 
-H { return AIR_HORIZONTAL; }
-V { return AIR_VERTICAL; }
-VH|HV { return AIR_VERTICAL_HORIZONTAL; }
+(h|H) { return AIR_HORIZONTAL; }
+(v|V) { return AIR_VERTICAL; }
+((v|V)(h|H))|((h|H)(v|V)) { return AIR_VERTICAL_HORIZONTAL; }
 
 (a|A)(s|S){DIGIT}+(d|D){DIGIT}+ { return AIR_ALPHA_BLEND; }
 (a{DIGIT}|A{DIGIT}) { return AIR_ALPHA_BLEND_SHORTHAND; }

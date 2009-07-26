@@ -82,9 +82,12 @@ DIGIT [0-9]
 \[(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_BG; }
 \[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_BGCTRL; }
 
+\[(s|S)(e|E)(l|L)(e|E)(c|C)(t|T)(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_SELECTBG; }
+\[(s|S)(e|E)(l|L)(e|E)(c|C)(t|T)(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_SELECTBGCTRL; }
+
 (h|H) { return DEF_HORIZONTAL; }
 (v|V) { return DEF_VERTICAL; }
-(vh|hv|VH|HV) { return DEF_VERTICAL_HORIZONTAL; }
+((v|V)(h|H))|((h|H)(v|V)) { return DEF_VERTICAL_HORIZONTAL; }
 
 (a|A)(s|S){DIGIT}+(d|D){DIGIT}+ { return DEF_ALPHA_BLEND; }
 (a{DIGIT}|A{DIGIT}) { return DEF_ALPHA_BLEND_SHORTHAND; }

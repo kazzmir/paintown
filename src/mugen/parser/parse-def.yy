@@ -45,8 +45,9 @@ static std::list<Ast::Modifier *> *currentModifiers;
        DEF_COLOR_ADDITION
        DEF_COLOR_SUBTRACT
 %token <stringValue> DEF_BG
-%token DEF_BGCTRLDEF
 %token <stringValue> DEF_BGCTRL
+%token <stringValue> DEF_SELECTBG
+%token <stringValue> DEF_SELECTBGCTRL
        
 
 %token COMMENT
@@ -83,6 +84,8 @@ line:
     | section10
     | bg
     | bgctrl
+    | selectbg
+    | selectbgctrl
     | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
     | DEF_LOOPSTART
     | assignment
@@ -201,6 +204,12 @@ bg:
 	Global::debug(0) << "Got Bg: " << $1 << std::endl;
 	free($1);
     };
+    
+selectbg:
+    DEF_SELECTBG {
+	Global::debug(0) << "Got Select Bg: " << $1 << std::endl;
+	free($1);
+    };
 
 bgctrl:
     DEF_BGCTRL{
@@ -208,6 +217,11 @@ bgctrl:
 	free($1);
     };
     
+selectbgctrl:
+    DEF_SELECTBGCTRL{
+	Global::debug(0) << "Got Select BgCtrl: " << $1 << std::endl;
+	free($1);
+    };    
 %%
 
 int yyerror(const char *msg) {
