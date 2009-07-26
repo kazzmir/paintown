@@ -22,11 +22,37 @@ only flex 2.5.25 can handle (?). windows can't do it so just give up
 
 %}
 
+%x xCOMMENT
 %option yylineno
 
 %%
 
-;[^\n\r]*[\n\r] { yydebug; return COMMENT; }
+; { yydebug; BEGIN(xCOMMENT); }
+
+<xCOMMENT>. { ; }
+
+<xCOMMENT>[\n\r] { BEGIN(INITIAL); return COMMENT; }
+
+<xCOMMENT><<EOF>> {
+  static char newline[2] = "\n";
+  // printf("Switching to a new buffer\n");
+  // we have to close this stuff somehow 
+  int files[2];
+  extern int parser_get_pipe(int[2]);
+  if (parser_get_pipe(files) == -1){
+    perror("lex switch buffer");
+    exit(-1);
+  }
+  write(files[1], "\n", 1);
+  close(files[1]);
+  FILE * buffer = fdopen(files[0], "r");
+  YY_BUFFER_STATE state = yy_create_buffer(buffer, YY_BUF_SIZE);
+  // yypush_buffer_state(state);
+
+  // yy_flush_buffer(state);
+  yy_switch_to_buffer(state);
+}
+
 
 [\n\r] { yydebug; return LINE_END; }
 
