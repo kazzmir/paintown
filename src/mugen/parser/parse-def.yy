@@ -74,16 +74,7 @@ ends:
 
 line:
     unquoted_text
-    | section1
-    | section2
-    | section3
-    | section4
-    | section5
-    | section6
-    | section7
-    | section8
-    | section9
-    | section10
+    | section
     | DEF_BLANK
     | bg
     | bgctrl
@@ -154,6 +145,7 @@ value:
 
 variable:
      IDENTIFIER '.' variable { free($1); }
+     | NUMBER '.' variable
      | IDENTIFIER { free($1); }
 
 end_or_comment:
@@ -164,35 +156,18 @@ end_or_comment:
 unquoted_text:
     DEF_TEXT;
     
-section1:
+section:
     LBRACKET IDENTIFIER RBRACKET { free($2); }
-
-section2:
-    LBRACKET NUMBER RBRACKET;
-
-section3:
-    LBRACKET IDENTIFIER IDENTIFIER RBRACKET { free($2); }
-
-section4: 
-    LBRACKET IDENTIFIER NUMBER RBRACKET { free($2); }
-    
-section5:
-    LBRACKET NUMBER NUMBER RBRACKET;
-
-section6:
-    LBRACKET IDENTIFIER IDENTIFIER IDENTIFIER RBRACKET { free($2); free($3); free($4); }
-
-section7:
-    LBRACKET IDENTIFIER NUMBER IDENTIFIER RBRACKET { free($2); free($4); }
-
-section8:
-    LBRACKET IDENTIFIER IDENTIFIER NUMBER RBRACKET { free($2); free($3); }
-    
-section9:
-    LBRACKET IDENTIFIER NUMBER NUMBER RBRACKET { free($2); }
-
-section10:
-    LBRACKET NUMBER NUMBER NUMBER RBRACKET;
+    | LBRACKET IDENTIFIER NUMBER ',' IDENTIFIER RBRACKET { free($2); free($5); }
+    | LBRACKET NUMBER RBRACKET
+    | LBRACKET IDENTIFIER IDENTIFIER RBRACKET { free($2); }
+    | LBRACKET IDENTIFIER NUMBER RBRACKET { free($2); }
+    | LBRACKET NUMBER NUMBER RBRACKET
+    | LBRACKET IDENTIFIER IDENTIFIER IDENTIFIER RBRACKET { free($2); free($3); free($4); }
+    | LBRACKET IDENTIFIER NUMBER IDENTIFIER RBRACKET { free($2); free($4); }
+    | LBRACKET IDENTIFIER IDENTIFIER NUMBER RBRACKET { free($2); free($3); }
+    | LBRACKET IDENTIFIER NUMBER NUMBER RBRACKET { free($2); }
+    | LBRACKET NUMBER NUMBER NUMBER RBRACKET
     
 ident_num:
     IDENTIFIER RBRACKET { free($1); }
