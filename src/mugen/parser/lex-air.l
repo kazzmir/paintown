@@ -25,6 +25,8 @@ only flex 2.5.25 can handle (?). windows can't do it so just give up
 %x xCOMMENT
 %option yylineno
 
+DIGIT [0-9]
+
 %%
 
 ; { yydebug; BEGIN(xCOMMENT); }
@@ -73,12 +75,12 @@ H { return AIR_HORIZONTAL; }
 V { return AIR_VERTICAL; }
 VH|HV { return AIR_VERTICAL_HORIZONTAL; }
 
-AS[0-9]+D[0-9]+ { return AIR_ALPHA_BLEND; }
+AS{DIGIT}+D{DIGIT}+ { return AIR_ALPHA_BLEND; }
 
 A { return AIR_COLOR_ADDITION; }
 S { return AIR_COLOR_SUBTRACT; }
 
-([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
+([-+])?({DIGIT}+|{DIGIT}*\.{DIGIT}+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 
 [ \t]* { ; }
 
