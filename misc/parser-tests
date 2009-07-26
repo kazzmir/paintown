@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+root_dir = 'data/mugen'
+parser = './mugentest'
+passed = 0
+failed = 0
+
+def get_files(kind):
+    import os
+    all = []
+    for root, dirs, files in os.walk(root_dir):
+        more = [root + '/' + f for f in files if f.endswith(kind)]
+        all.extend(more)
+    return all
+
+def run_parse(arg, file):
+    global passed, failed
+    import subprocess
+    n = subprocess.call([parser, arg, file])
+    if n == 0:
+        passed += 1
+    else:
+        failed += 1
+
+def do_all(kind, func):
+    for i in get_files(kind):
+        run_parse(func, i)
+
+do_all('def', '-parse-def')
+do_all('air', '-parse-air')
+do_all('cmd', '-parse-cmd')
+do_all('cns', '-parse-cns')
+
+print "%d passed. %d failed" % (passed, failed)
