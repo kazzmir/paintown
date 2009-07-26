@@ -75,10 +75,11 @@ H { return AIR_HORIZONTAL; }
 V { return AIR_VERTICAL; }
 VH|HV { return AIR_VERTICAL_HORIZONTAL; }
 
-AS{DIGIT}+D{DIGIT}+ { return AIR_ALPHA_BLEND; }
+(a|A)(s|S){DIGIT}+(d|D){DIGIT}+ { return AIR_ALPHA_BLEND; }
+(a{DIGIT}|A{DIGIT}) { return AIR_ALPHA_BLEND_SHORTHAND; }
 
-A { return AIR_COLOR_ADDITION; }
-S { return AIR_COLOR_SUBTRACT; }
+(a|A) { return AIR_COLOR_ADDITION; }
+(s|S) { return AIR_COLOR_SUBTRACT; }
 
 ([-+])?({DIGIT}+|{DIGIT}*\.{DIGIT}+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 

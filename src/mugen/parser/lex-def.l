@@ -41,6 +41,8 @@ void def_lex_reset(){
 %x xCOMMENT
 %option yylineno
 
+DIGIT [0-9]
+
 %%
 
 ; { yydebug; BEGIN(xCOMMENT); }
@@ -84,12 +86,15 @@ void def_lex_reset(){
 (v|V) { return DEF_VERTICAL; }
 (vh|hv|VH|HV) { return DEF_VERTICAL_HORIZONTAL; }
 
-(as|AS)[0-9]+(d|D)[0-9]+ { return DEF_ALPHA_BLEND; }
+(a|A)(s|S){DIGIT}+(d|D){DIGIT}+ { return DEF_ALPHA_BLEND; }
+(a{DIGIT}|A{DIGIT}) { return DEF_ALPHA_BLEND_SHORTHAND; }
 
 (a|A) { return DEF_COLOR_ADDITION; }
 (s|S) { return DEF_COLOR_SUBTRACT; }
 
-([-+])?([0-9]+|[0-9]*\.[0-9]+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
+^.*(=|,).*$ { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_TEXT; }
+
+([-+])?({DIGIT}+|{DIGIT}*\.{DIGIT}+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 
 [a-zA-Z_\\\/\_\-][a-zA-Z\\\/\_\-0-9_]* { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return IDENTIFIER; }
 

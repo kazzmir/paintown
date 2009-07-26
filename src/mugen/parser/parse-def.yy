@@ -35,11 +35,13 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token LBRACKET
 %token RBRACKET
 
-%token DEF_LOOPSTART
+%token DEF_TEXT
+       DEF_LOOPSTART
        DEF_HORIZONTAL
        DEF_VERTICAL
        DEF_VERTICAL_HORIZONTAL
        DEF_ALPHA_BLEND
+       DEF_ALPHA_BLEND_SHORTHAND
        DEF_COLOR_ADDITION
        DEF_COLOR_SUBTRACT
 %token <stringValue> DEF_BG
@@ -68,7 +70,8 @@ ends:
     | end_or_comment
 
 line:
-    section1
+    unquoted_text
+    | section1
     | section2
     | section3
     | section4
@@ -133,6 +136,9 @@ end_or_comment:
   | COMMENT
   ;
 
+unquoted_text:
+    DEF_TEXT;
+    
 section1:
     LBRACKET IDENTIFIER RBRACKET { free($2); }
 
@@ -185,6 +191,7 @@ color_sub:
     DEF_COLOR_ADDITION
     | DEF_COLOR_SUBTRACT
     | DEF_ALPHA_BLEND
+    | DEF_ALPHA_BLEND_SHORTHAND
     | ','
     
     

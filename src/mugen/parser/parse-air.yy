@@ -46,6 +46,7 @@ static std::list<Ast::Modifier *> *currentModifiers;
        AIR_VERTICAL
        AIR_VERTICAL_HORIZONTAL
        AIR_ALPHA_BLEND
+       AIR_ALPHA_BLEND_SHORTHAND
        AIR_COLOR_ADDITION
        AIR_COLOR_SUBTRACT
 
@@ -85,13 +86,23 @@ line:
     ;
 
 maybe_flip:
-    ',' flip
-    |
+   | ',' flip
+   | ',' flip ',' color_sub
+   | ',' ',' color_sub
+   |
 
 flip:
     AIR_HORIZONTAL
     | AIR_VERTICAL
     | AIR_VERTICAL_HORIZONTAL
+    | ','
+    
+color_sub:
+    AIR_COLOR_ADDITION
+    | AIR_COLOR_SUBTRACT
+    | AIR_ALPHA_BLEND
+    | AIR_ALPHA_BLEND_SHORTHAND
+    | ','
 
 collision:
     AIR_COLLISION_ATTACK_DEFAULT
