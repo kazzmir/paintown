@@ -34,6 +34,7 @@ void def_lex_reset(){
 /*
 
 ;[^\n\r]*[\n\r] { yydebug; return COMMENT; }
+FILENAME_CHAR [^\/, \t\n\r]
 */
 
 %}
@@ -44,6 +45,8 @@ void def_lex_reset(){
 DIGIT [0-9]
 TEXT (t|T)(e|E)(x|X)(t|T)
 SPACE [ \t]
+FILENAME_CHAR [^\/,=\n\r]
+FILENAME_CHAR2 [^\/, \t\n\r]
 
 %%
 
@@ -81,11 +84,12 @@ SPACE [ \t]
 
   yy_switch_to_buffer(def_buffer_state);
 }
-\[(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_BG; }
-\[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_BGCTRL; }
 
-\[(s|S)(e|E)(l|L)(e|E)(c|C)(t|T)(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_SELECTBG; }
+\[(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_BGCTRL; }
+\[(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_BG; }
+
 \[(s|S)(e|E)(l|L)(e|E)(c|C)(t|T)(b|B)(g|G)(c|C)(t|T)(r|R)(l|L).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_SELECTBGCTRL; }
+\[(s|S)(e|E)(l|L)(e|E)(c|C)(t|T)(b|B)(g|G).*\] { yydebug; LEX_VAL(lval).stringValue = strdup(yytext);  return DEF_SELECTBG; }
 
 (h|H) { return DEF_HORIZONTAL; }
 (v|V) { return DEF_VERTICAL; }
@@ -104,7 +108,7 @@ SPACE [ \t]
 
 ^.*{TEXT}{SPACE}*=.*$ { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_TEXT; }
 
-[^\/, \t\n\r]+(\/[^\/, \t\n\r]+)+ { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_FILENAME; }
+{FILENAME_CHAR}+(\/{FILENAME_CHAR}+)+ { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_FILENAME; }
 
 ([-+])?({DIGIT}+|{DIGIT}*\.{DIGIT}+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 

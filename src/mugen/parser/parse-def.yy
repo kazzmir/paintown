@@ -114,9 +114,9 @@ data_list_rest:
     | data
 
 data:
-    IDENTIFIER
+    IDENTIFIER { free($1); }
     | DEF_FILENAME { free($1); }
-    | assignment
+    | IDENTIFIER '=' value { free($1); }
    
 assign_none:
     lhs '='
