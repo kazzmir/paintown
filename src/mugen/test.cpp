@@ -466,7 +466,7 @@ int main( int argc, char ** argv ){
                     q += 1;
                     if (q < argc){
                         try{
-                        Mugen::parseAir(argv[q]);
+                            Mugen::parseAir(argv[q]);
                         } catch (const Mugen::ParserException & p){
                             Global::debug(0) << "Error parsing: " << p.getReason() << endl;
                             return -1;
@@ -476,7 +476,12 @@ int main( int argc, char ** argv ){
                 } else if (isArg(argv[q], PARSE_CNS_ARG)){
                     q += 1;
                     if (q < argc){
-                        Mugen::parseCns(argv[q]);
+                        try{
+                            Mugen::parseCns(argv[q]);
+                        } catch (const Mugen::ParserException & p){
+                            Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                            return -1;
+                        }
                         return 0;
                     }
                 } else if (isArg(argv[q], PARSE_CMD_ARG)){
