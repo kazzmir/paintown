@@ -42,6 +42,8 @@ void def_lex_reset(){
 %option yylineno
 
 DIGIT [0-9]
+TEXT (t|T)(e|E)(x|X)(t|T)
+SPACE [ \t]
 
 %%
 
@@ -92,10 +94,17 @@ DIGIT [0-9]
 (a|A)(s|S){DIGIT}+(d|D){DIGIT}+ { return DEF_ALPHA_BLEND; }
 (a{DIGIT}|A{DIGIT}) { return DEF_ALPHA_BLEND_SHORTHAND; }
 
+(l|L)(o|O)(o|O)(p|P)(s|S)(t|T)(a|A)(r|R)(t|T) { return DEF_LOOPSTART; }
+
+(b|B)(l|L)(a|A)(n|N)(k|K) { return DEF_BLANK; }
+=*(b|B)(l|L)(a|A)(n|N)(k|K)=* { return DEF_BLANK; }
+
 (a|A) { return DEF_COLOR_ADDITION; }
 (s|S) { return DEF_COLOR_SUBTRACT; }
 
-^.*(=|,).*$ { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_TEXT; }
+^.*{TEXT}{SPACE}*=.*$ { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_TEXT; }
+
+[^\/, \t\n\r]+(\/[^\/, \t\n\r]+)+ { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return DEF_FILENAME; }
 
 ([-+])?({DIGIT}+|{DIGIT}*\.{DIGIT}+) { yydebug; LEX_VAL(lval).numberValue = atof(yytext); return NUMBER; }
 

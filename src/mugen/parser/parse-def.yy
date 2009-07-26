@@ -36,6 +36,7 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %token RBRACKET
 
 %token DEF_TEXT
+       DEF_BLANK
        DEF_LOOPSTART
        DEF_HORIZONTAL
        DEF_VERTICAL
@@ -44,12 +45,13 @@ static std::list<Ast::Modifier *> *currentModifiers;
        DEF_ALPHA_BLEND_SHORTHAND
        DEF_COLOR_ADDITION
        DEF_COLOR_SUBTRACT
+
 %token <stringValue> DEF_BG
 %token <stringValue> DEF_BGCTRL
 %token <stringValue> DEF_SELECTBG
 %token <stringValue> DEF_SELECTBGCTRL
+%token <stringValue> DEF_FILENAME
        
-
 %token COMMENT
 %token LINE_END
 
@@ -82,8 +84,10 @@ line:
     | section8
     | section9
     | section10
+    | DEF_BLANK
     | bg
     | bgctrl
+    | data_list
     | selectbg
     | selectbgctrl
     | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
@@ -101,6 +105,18 @@ lhs:
 
 rhs:
    expression_list
+
+data_list:
+    IDENTIFIER ',' data_list_rest
+
+data_list_rest:
+    data ',' data_list_rest
+    | data
+
+data:
+    IDENTIFIER
+    | DEF_FILENAME { free($1); }
+    | assignment
    
 assign_none:
     lhs '='
@@ -128,6 +144,7 @@ value:
     | QUOTESTRING { free($1); }
     | variable '(' expression_list ')'
     | variable
+    | DEF_FILENAME { free($1); }
     ;
 
 variable:
