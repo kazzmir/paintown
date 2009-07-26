@@ -61,7 +61,7 @@ FILENAME_CHAR2 [^\/, \t\n\r]
 \[ { yydebug; return LBRACKET; }
 \] { yydebug; return RBRACKET; }
 
-\"[^"\n\r]*[^\\]\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
+\"[^"\n\r]*[^\\]?\" { yydebug; LEX_VAL(lval).stringValue = strdup(yytext); return QUOTESTRING; }
 
 <xCOMMENT><<EOF>> {
   static char newline[2] = "\n";
