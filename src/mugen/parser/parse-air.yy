@@ -52,8 +52,19 @@ static std::list<Ast::Modifier *> *currentModifiers;
 %error-verbose
 %%
 file: 
-    line file
+    end_or_comment file
+    | stuff
+    |
+    ;
+
+stuff:
+    line ends stuff
+    | line ends
     | line
+
+ends:
+    end_or_comment ends
+    | end_or_comment
 
 line:
     COMMENT 
