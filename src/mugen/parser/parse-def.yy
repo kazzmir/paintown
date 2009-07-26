@@ -79,6 +79,7 @@ line:
     | bg
     | bgctrl
     | data_list
+    | DEF_FILENAME { free($1); }
     | selectbg
     | selectbgctrl
     | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
