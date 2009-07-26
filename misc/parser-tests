@@ -5,7 +5,7 @@ parser = './mugentest'
 passed = 0
 failed = 0
 
-def get_files(kind):
+def get_files(root_dir, kind):
     import os
     all = []
     for root, dirs, files in os.walk(root_dir):
@@ -23,7 +23,7 @@ def run_parse(arg, file):
         failed += 1
 
 def do_all(kind, func):
-    for i in get_files(kind):
+    for i in get_files(root_dir, kind) + get_files('src/mugen/parser', kind):
         run_parse(func, i)
 
 do_all('def', '-parse-def')
