@@ -101,7 +101,8 @@ FILENAME_CHAR2 [^\/, \t\n\r]
 (l|L)(o|O)(o|O)(p|P)(s|S)(t|T)(a|A)(r|R)(t|T) { return DEF_LOOPSTART; }
 
 (b|B)(l|L)(a|A)(n|N)(k|K) { return DEF_BLANK; }
-=*(b|B)(l|L)(a|A)(n|N)(k|K)=* { return DEF_BLANK; }
+
+^=.*$ { return COMMENT; }
 
 (a|A) { return DEF_COLOR_ADDITION; }
 (s|S) { return DEF_COLOR_SUBTRACT; }
