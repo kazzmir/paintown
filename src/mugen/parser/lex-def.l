@@ -45,7 +45,7 @@ FILENAME_CHAR [^\/, \t\n\r]
 DIGIT [0-9]
 TEXT (t|T)(e|E)(x|X)(t|T)
 SPACE [ \t]
-FILENAME_CHAR [^\/,=\n\r]
+FILENAME_CHAR [^\/,=;\n\r]
 FILENAME_CHAR2 [^\/, \t\n\r]
 
 %%
