@@ -67,23 +67,21 @@ ends:
     | end_or_comment
 
 line:
-    COMMENT 
-    | LINE_END
-    | section end_or_comment {
+    section {
     	/*
     		bugon(configuration == NULL);
     		bugon(currentSection == NULL);
 		configuration->getSections().push_back(currentSection);
 		*/
 	}
-    | collision ':' NUMBER end_or_comment {
+    | collision ':' NUMBER {
     }
-    | collision_box ':' NUMBER end_or_comment {
+    | collision_box ':' NUMBER {
     }
-    | collision_box LBRACKET NUMBER RBRACKET '=' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER end_or_comment{
+    | collision_box LBRACKET NUMBER RBRACKET '=' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER {
     }
-    | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip end_or_comment
-    | AIR_LOOPSTART end_or_comment
+    | NUMBER ',' NUMBER ',' NUMBER ',' NUMBER ',' NUMBER maybe_flip
+    | AIR_LOOPSTART
     ;
 
 maybe_flip:
