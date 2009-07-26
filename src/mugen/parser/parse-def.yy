@@ -132,8 +132,13 @@ expression1:
     | multiple_values
 
 expression_list:
-    expression
+    expression maybe_comma
     | expression ',' expression_list
+
+maybe_comma:
+    ','
+    |
+    ;
 
 multiple_values:
     value

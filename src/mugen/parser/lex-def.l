@@ -103,6 +103,7 @@ FILENAME_CHAR2 [^\/, \t\n\r]
 (b|B)(l|L)(a|A)(n|N)(k|K) { return DEF_BLANK; }
 
 ^=.*$ { return COMMENT; }
+^-.*$ { return COMMENT; }
 
 (a|A) { return DEF_COLOR_ADDITION; }
 (s|S) { return DEF_COLOR_SUBTRACT; }
