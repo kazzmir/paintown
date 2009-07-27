@@ -343,6 +343,7 @@ void MugenStoryboard::load() throw (MugenException){
 	    if (scenes.back()){
 		MugenScene *scene = scenes.back();
 		std::string name = collection[i]->getHeader();
+		Mugen::Util::fixCase(name);
 		Global::debug(1) << "Checking for background: " << scene->backgroundName << " in Head: " << name << endl;
 		if (name.find(scene->backgroundName)){
 		    // this is a background lets set it up
