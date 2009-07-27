@@ -9,6 +9,9 @@ def nextVar():
     next_var += 1;
     return next_var
 
+def newResult():
+    return "result_%d" % nextVar()
+
 def indent(s):
     space = '    '
     return s.replace('\n', '\n%s' % space)
@@ -26,7 +29,7 @@ class PatternNot(Pattern):
         self.next = next
 
     def generate(self, result):
-        my_result = "result_%d" % nextVar()
+        my_result = newResult()
         data = """
 Result %s = 0;
 %s
@@ -53,6 +56,7 @@ class PatternRepeatOnce(Pattern):
         self.next = next
 
     def generate(self, result):
+        result = newResult()
         data = """
         """
 
@@ -65,7 +69,10 @@ class PatternRepeatMany(Pattern):
 
     def generate(self, result):
         data = """
-        """
+do{
+    %s;
+} while (%s.ok());
+        """ % (indent(self.next.generate(result).strip()), result)
         return data
 
 class PatternVerbatim(Pattern):
@@ -85,7 +92,7 @@ class Rule:
         self.patterns = patterns
 
     def generate(self):
-        result = "result_%d" % nextVar()
+        result = newResult()
         data = """
 static Result rule_%s(){
     Result %s = 0;
@@ -122,7 +129,7 @@ def generate(peg):
 def test():
     rules = [
         Rule("s", [PatternNot(PatternVerbatim("hello"))]),
-        Rule("blah", [PatternRule("s")])
+        Rule("blah", [PatternRepeatMany(PatternRule("s"))])
     ]
     peg = Peg("s", rules)
     generate(peg)
