@@ -110,6 +110,20 @@ class PatternNot(Pattern):
         Pattern.__init__(self)
         self.next = next
 
+    def generate_python(self, result, stream, failure):
+        my_result = newResult()
+        my_fail = lambda : "raise PegError"
+        data = """
+%s = Result(%s);
+try:
+    %s
+except PegError:
+    %s
+        """ % (my_result, result, indent(self.next.generate_python(my_result, stream, my_fail).strip()), failure())
+
+        return data
+
+
     def generate(self, result, stream, failure):
         not_label = "not_%d" % nextVar()
         my_result = newResult()
@@ -128,6 +142,15 @@ class PatternRule(Pattern):
         Pattern.__init__(self)
         self.rule = rule
 
+    def generate_python(self, result, stream, failure):
+        data = """
+%s = rule_%s(%s, %s.getPosition())
+if %s == None:
+    %s
+""" % (result, self.rule, stream, result, result, failure())
+
+        return data
+
     def generate(self, result, stream, failure):
         data = """
 %s = rule_%s(%s, %s.getPosition());
@@ -142,6 +165,18 @@ class PatternSequence(Pattern):
     def __init__(self, patterns):
         Pattern.__init__(self)
         self.patterns = patterns
+
+    def generate_python(self, result, stream, failure):
+        data = ""
+        for pattern in self.patterns:
+            my_result = newResult()
+            data += """
+%s = Result(%s.getPosition())
+%s
+%s.addResult(%s);
+""" % (my_result, result, pattern.generate_python(my_result, stream, failure), result, my_result)
+
+        return data
 
     def generate(self, result, stream, failure):
         data = ""
@@ -160,6 +195,23 @@ class PatternRepeatOnce(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
         self.next = next
+
+    def generate_python(self, result, stream, failure):
+        loop_done = "loop_%d" % nextVar()
+        my_fail = lambda : "raise PegError"
+        my_result = newResult()
+        data = """
+try:
+    while True:
+        %s = Result(%s.getPosition());
+        %s
+        %s.addResult(%s);
+except PegError:
+    if %s.matches() == 0:
+        %s
+        """ % (my_result, result, indent(indent(self.next.generate_python(my_result, stream, my_fail).strip())), result, my_result, result, failure())
+
+        return data
 
     def generate(self, result, stream, failure):
         loop_done = "loop_%d" % nextVar()
@@ -185,6 +237,17 @@ class PatternAction(Pattern):
         self.before = before
         self.code = code
 
+    def generate_python(self, result, stream, failure):
+        data = """
+%s
+if True:
+    value = None
+    %s
+    %s.setValue(value)
+""" % (self.before.generate_python(result, stream, failure).strip(), indent(self.code.strip()), result)
+
+        return data
+
     def generate(self, result, stream, failure):
         data = """
 %s
@@ -201,6 +264,22 @@ class PatternRepeatMany(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
         self.next = next
+
+    def generate_python(self, result, stream, failure):
+        my_fail = lambda : "raise PegError"
+        my_result = newResult()
+        data = """
+try:
+    while True:
+        %s = Result(%s.getPosition());
+        %s
+        %s.addResult(%s);
+except PegError:
+    pass
+        """ % (my_result, result, indent(indent(self.next.generate_python(my_result, stream, my_fail).strip())), result, my_result)
+
+        return data
+
 
     def generate(self, result, stream, failure):
         loop_done = "loop_%d" % nextVar()
@@ -247,6 +326,17 @@ class PatternVerbatim(Pattern):
         Pattern.__init__(self)
         self.letters = letters
 
+    def generate_python(self, result, stream, failure):
+        data = """
+for letter in '%s':
+    if letter == %s.get(%s.getPosition()):
+        %s.nextPosition()
+    else:
+        %s
+""" % (self.letters, stream, result, result, failure())
+        return data
+
+
     def generate(self, result, stream, failure):
         data = """
 %s = "%s";
@@ -283,6 +373,33 @@ class Rule:
         self.name = name
         self.patterns = patterns
 
+    def generate_python(self):
+        def newPattern(pattern, stream, position):
+            result = newResult()
+
+            def fail():
+                return "raise PegError"
+            data = """
+try:
+    %s = Result(%s)
+    %s
+    %s.update(%s)
+    return %s
+except PegError:
+    pass
+            """ % (result, position, indent(pattern.generate_python(result, stream, fail).strip()), stream, result, result)
+            return data
+
+        stream = "stream"
+        position = "position"
+        data = """
+def rule_%s(%s, %s):
+    %s
+    return None
+""" % (self.name, stream, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
+
+        return data
+
     def generate(self):
         def newPattern(pattern, stream, position):
             result = newResult()
@@ -317,6 +434,23 @@ class Peg:
         self.namespace = namespace
         self.start = start
         self.rules = rules
+
+    def generate_python(self):
+        data = """
+import peg
+
+%s
+
+def parse(file):
+    stream = Stream(file)
+    done = rule_%s(stream, 0)
+    if (done.error()):
+        print "Error parsing " + file
+    else:
+        return done.getValues()
+""" % ('\n'.join([rule.generate_python() for rule in self.rules]), self.start)
+
+        return data
 
     def generate(self):
         def prototype(rule):
@@ -367,6 +501,12 @@ value = (void *) 2;
     peg = Peg("Peg", "s", rules)
     generate(peg)
 
+def create_peg(name, peg):
+    import imp
+    module = imp.new_module(name)
+    exec peg.generate_python() in module.__dict__
+    return module.parse
+
 def test2():
     start_code_abc = """
 std::cout << "Parsed abc!" << std::endl;
@@ -391,5 +531,26 @@ std::cout << "Parsed def!" << std::endl;
     peg = Peg("Peg", "start", rules)
     generate(peg)
 
+def make_peg_parser():
+    start_code_abc = """
+print "parsed abc"
+"""
+    s_code = """
+print "s code"
+"""
+    rules = [
+        Rule("start", [
+            PatternAction(PatternSequence([PatternRule("a"),PatternRule("b"), PatternRule("c")]), start_code_abc),
+            ]),
+        Rule("s", [
+            PatternNot(PatternVerbatim("hello")), PatternAction(PatternVerbatim("cheese"), s_code),
+            PatternRepeatOnce(PatternVerbatim("once"))]),
+        Rule("blah", [PatternRepeatMany(PatternRule("s"))]),
+        ]
+    peg = Peg("*peg*", "start", rules)
+    print peg.generate_python()
+
 # test()
-test2()
+# test2()
+
+make_peg_parser()
