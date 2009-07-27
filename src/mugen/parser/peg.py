@@ -69,16 +69,26 @@ private:
 
 class Stream{
 public:
-    Stream(){
+    Stream(const std::string & filename){
+        stream.open(filename.c_str());
     }
 
     char get(const int position){
         char z;
+        stream.seekg(position, std::ios_base::beg);
         stream >> z;
         return z;
     }
 
     void update(const Result & result){
+    }
+
+    bool hasResult(const int position){
+        return false;
+    }
+
+    Result result(const int position){
+        return Result(-1);
     }
 
 private:
@@ -292,37 +302,51 @@ return %s;
         position = "position"
         data = """
 Result rule_%s(Stream & %s, const int %s){
+    if (%s.hasResult(%s)){
+        return %s.result(%s);
+    }
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
+        """ % (self.name, stream, position, stream, position, stream, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
 
         return data
     
 class Peg:
-    def __init__(self, start, rules):
+    def __init__(self, namespace, start, rules):
+        self.namespace = namespace
         self.start = start
         self.rules = rules
 
     def generate(self):
-        namespace = "Peg"
+        def prototype(rule):
+            return "Result rule_%s(Stream &, const int);" % rule.name
+
         data = """
 #include <vector>
+#include <string>
 #include <fstream>
+#include <iostream>
 
 namespace %s{
     %s
 
     %s
 
-Result main(){
-    Stream stream;
+    %s
+
+std::vector<void *> main(const std::string & filename){
+    Stream stream(filename);
     errorResult.setError();
-    return rule_%s(stream, 0);
+    Result done = rule_%s(stream, 0);
+    if (done.error()){
+        std::cout << "Could not parse" << std::endl;
+    }
+    return done.getValues();
 }
 
 }
-        """ % (namespace, start_code, '\n'.join([rule.generate() for rule in self.rules]), self.start)
+        """ % (self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in self.rules])), '\n'.join([rule.generate() for rule in self.rules]), self.start)
 
         return data
 
@@ -340,7 +364,32 @@ value = (void *) 2;
         Rule("or", [PatternOr([PatternVerbatim("joe"), PatternVerbatim("bob"), PatternVerbatim("sally")])]),
         Rule("all", [PatternSequence([PatternVerbatim("abc"), PatternVerbatim("def"), PatternVerbatim("ghi")])]),
     ]
-    peg = Peg("s", rules)
+    peg = Peg("Peg", "s", rules)
     generate(peg)
 
-test()
+def test2():
+    start_code_abc = """
+std::cout << "Parsed abc!" << std::endl;
+"""
+    start_code_def = """
+std::cout << "Parsed def!" << std::endl;
+"""
+    rules = [
+        Rule("start", [
+            PatternAction(PatternSequence([PatternRule("a"),PatternRule("b"), PatternRule("c")]), start_code_abc),
+            PatternAction(PatternSequence([PatternRule("d"),PatternRule("e"), PatternRule("f")]), start_code_def),
+        ]),
+        Rule("a", [PatternVerbatim("a")]),
+        Rule("b", [PatternVerbatim("b")]),
+        Rule("c", [PatternVerbatim("c")]),
+
+        Rule("d", [PatternVerbatim("d")]),
+        Rule("e", [PatternVerbatim("e")]),
+        Rule("f", [PatternVerbatim("f")]),
+    ]
+
+    peg = Peg("Peg", "start", rules)
+    generate(peg)
+
+# test()
+test2()
