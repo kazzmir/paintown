@@ -19,6 +19,75 @@ def indent(s):
     space = '    '
     return s.replace('\n', '\n%s' % space)
 
+start_code = """
+class Result{
+public:
+    Result(const int position):
+    position(position),
+    isError(false){
+    }
+
+    inline const int getPosition() const {
+        return position;
+    }
+
+    inline bool error(){
+        return isError;
+    }
+
+    inline void nextPosition(){
+        position += 1;
+    }
+
+    void setError(){
+        isError = true;
+    }
+
+    void setValue(void * value){
+        this->values.push_back(value);
+    }
+
+    const int matches() const {
+        return this->values.size();
+    }
+
+    const std::vector<void *> & getValues() const {
+        return values;
+    }
+
+    void addResult(const Result & result){
+        const std::vector<void *> & his = result.getValues();
+        this->values.insert(this->values.end(), his.begin(), his.end());
+        this->position = result.getPosition();
+    }
+
+private:
+    int position;
+    bool isError;
+    std::vector<void *> values;
+};
+
+class Stream{
+public:
+    Stream(){
+    }
+
+    char get(const int position){
+        char z;
+        stream >> z;
+        return z;
+    }
+
+    void update(const Result & result){
+    }
+
+private:
+    std::ifstream stream;
+};
+
+Result errorResult(-1);
+"""
+
 class Pattern:
     def __init__(self):
         pass
@@ -33,12 +102,14 @@ class PatternNot(Pattern):
 
     def generate(self, result, stream, failure):
         not_label = "not_%d" % nextVar()
+        my_result = newResult()
         my_fail = lambda : "goto %s;" % not_label
         data = """
+Result %s(%s);
 %s
 %s
 %s:
-        """ % (self.next.generate(result, stream, my_fail).strip(), failure(), not_label)
+        """ % (my_result, result, self.next.generate(my_result, stream, my_fail).strip(), failure(), not_label)
 
         return data
 
@@ -55,6 +126,24 @@ if (%s.error()){
 }
 """ % (result, self.rule, stream, result, result, failure())
 
+        return data
+
+class PatternSequence(Pattern):
+    def __init__(self, patterns):
+        Pattern.__init__(self)
+        self.patterns = patterns
+
+    def generate(self, result, stream, failure):
+        data = ""
+        for pattern in self.patterns:
+            my_result = newResult()
+            data += """
+{
+Result %s(%s.getPosition());
+%s
+%s.addResult(%s);
+}
+""" % (my_result, result, pattern.generate(my_result, stream, failure), result, my_result)
         return data
 
 class PatternRepeatOnce(Pattern):
@@ -132,9 +221,11 @@ class PatternOr(Pattern):
             if pattern == self.patterns[-1]:
                 fail = failure
             data += """
-Result %s(%s);
+{
+Result %s(%s.getPosition());
 %s
 %s = %s;
+}
 goto %s;
 %s:
 """ % (my_result, result, pattern.generate(my_result, stream, fail).strip(), result, my_result, success, out)
@@ -200,7 +291,7 @@ return %s;
         stream = "stream"
         position = "position"
         data = """
-static Result rule_%s(Stream & %s, const int %s){
+Result rule_%s(Stream & %s, const int %s){
     %s
     return errorResult;
 }
@@ -216,15 +307,22 @@ class Peg:
     def generate(self):
         namespace = "Peg"
         data = """
+#include <vector>
+#include <fstream>
+
 namespace %s{
     %s
 
+    %s
+
 Result main(){
-    return rule_%s();
+    Stream stream;
+    errorResult.setError();
+    return rule_%s(stream, 0);
 }
 
 }
-        """ % (namespace, '\n'.join([rule.generate() for rule in self.rules]), self.start)
+        """ % (namespace, start_code, '\n'.join([rule.generate() for rule in self.rules]), self.start)
 
         return data
 
@@ -234,12 +332,13 @@ def generate(peg):
 def test():
     s_code = """
 printf("parsed cheese\\n");
-value = 2;
+value = (void *) 2;
 """
     rules = [
         Rule("s", [PatternNot(PatternVerbatim("hello")), PatternAction(PatternVerbatim("cheese"), s_code), PatternRepeatOnce(PatternVerbatim("once"))]),
         Rule("blah", [PatternRepeatMany(PatternRule("s"))]),
         Rule("or", [PatternOr([PatternVerbatim("joe"), PatternVerbatim("bob"), PatternVerbatim("sally")])]),
+        Rule("all", [PatternSequence([PatternVerbatim("abc"), PatternVerbatim("def"), PatternVerbatim("ghi")])]),
     ]
     peg = Peg("s", rules)
     generate(peg)
