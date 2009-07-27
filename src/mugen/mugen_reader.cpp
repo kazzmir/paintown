@@ -76,6 +76,9 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
       bool breakLoop = false;
       bool inQuote = false;
       bool getExpression = false;
+      bool startComment = false;
+      
+      Global::debug(0) << line << endl;
       
       for( unsigned int i = 0; i < line.size(); ++i ){
 	    // Go to work
@@ -107,14 +110,7 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 	      default:{
 		// Done with this
 		if( line[i] == comment ){
-		  if( itemHolder->hasItems() ){
-		    if( !contentHolder.empty() ){
-		      *itemHolder << contentHolder;
-		    }
-		    *sectionHolder << itemHolder;
-		  }
-		  breakLoop = true;
-		  break;
+		  startComment = true;
 		}
 		// Check if we are near the end to kill it
 		if( i+1 == line.size() && !contentHolder.empty() ){
@@ -144,7 +140,9 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 		}
 		// We got one push back the other and reset the holder to get the next
 		else if( line[i] == colon || line[i] == seperator ){
-		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
+		  if( !contentHolder.empty() && !strchr(ignored, contentHolder[0]) ){
+		      *itemHolder << contentHolder;
+		  }
 		  contentHolder = "";
 		}
 		// Equal
@@ -158,7 +156,7 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 		  inQuote = !inQuote;
 		}
 		//Start grabbing our item
-		else if (! strchr(ignored, line[i])){
+		else if (!startComment && !strchr(ignored, line[i])){
                     contentHolder += line[i];
                 }
 	      }
@@ -166,6 +164,14 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 	    }
 	    if( breakLoop )break;
       }
+      if (state == ContentGet){
+	    if( itemHolder->hasItems() ){
+		if( !contentHolder.empty() && !strchr(ignored, contentHolder[0]) ){
+		    *itemHolder << contentHolder;
+		}
+		*sectionHolder << itemHolder;
+	    }
+	}
   }
   // Add in last section
   addSection( sectionHolder );
