@@ -31,6 +31,18 @@ Result %s = 0;
 
         return data
 
+class PatternRule(Pattern):
+    def __init__(self, rule):
+        Pattern.__init__(self)
+        self.rule = rule
+
+    def generate(self, result):
+        data = """
+%s = rule_%s();
+        """ % (result, self.rule)
+
+        return data
+
 class PatternVerbatim(Pattern):
     def __init__(self, letters):
         Pattern.__init__(self)
@@ -84,6 +96,7 @@ def generate(peg):
 def test():
     rules = [
         Rule("s", [PatternNot(PatternVerbatim("hello"))]),
+        Rule("blah", [PatternRule("s")])
     ]
     peg = Peg("s", rules)
     generate(peg)
