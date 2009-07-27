@@ -12,6 +12,9 @@ def nextVar():
 def newResult():
     return "result_%d" % nextVar()
 
+def newOut():
+    return "out_%d" % nextVar()
+
 def indent(s):
     space = '    '
     return s.replace('\n', '\n%s' % space)
@@ -20,7 +23,7 @@ class Pattern:
     def __init__(self):
         pass
 
-    def generate(self, result):
+    def generate(self, result, stream, failure):
         pass
 
 class PatternNot(Pattern):
@@ -28,13 +31,14 @@ class PatternNot(Pattern):
         Pattern.__init__(self)
         self.next = next
 
-    def generate(self, result):
-        my_result = newResult()
+    def generate(self, result, stream, failure):
+        not_label = "not_%d" % nextVar()
+        my_fail = lambda : "goto %s;" % not_label
         data = """
-Result %s = 0;
 %s
-%s = ! %s;
-        """ % (my_result, self.next.generate(my_result).strip(), result, my_result)
+%s
+%s:
+        """ % (self.next.generate(result, stream, my_fail).strip(), failure(), not_label)
 
         return data
 
@@ -43,10 +47,10 @@ class PatternRule(Pattern):
         Pattern.__init__(self)
         self.rule = rule
 
-    def generate(self, result):
+    def generate(self, result, stream, failure):
         data = """
-%s = rule_%s();
-        """ % (result, self.rule)
+%s = rule_%s(%s.getPosition());
+        """ % (result, self.rule, result)
 
         return data
 
@@ -55,10 +59,28 @@ class PatternRepeatOnce(Pattern):
         Pattern.__init__(self)
         self.next = next
 
-    def generate(self, result):
+    def generate(self, result, stream, failure):
         result = newResult()
         data = """
         """
+
+        return data
+
+class PatternAction(Pattern):
+    def __init__(self, before, code):
+        Pattern.__init__(self)
+        self.before = before
+        self.code = code
+
+    def generate(self, result, stream, failure):
+        data = """
+%s
+{
+    void * value = 0;
+    %s
+    %s.setValue(value);
+}
+        """ % (self.before.generate(result, stream, failure).strip(), indent(self.code.strip()), result)
 
         return data
 
@@ -67,12 +89,15 @@ class PatternRepeatMany(Pattern):
         Pattern.__init__(self)
         self.next = next
 
-    def generate(self, result):
+    def generate(self, result, stream, failure):
+        my_result = newResult()
         data = """
 do{
-    %s;
+    Result %s(%s.getPosition());
+    %s
+    %s.addResult(%s);
 } while (%s.ok());
-        """ % (indent(self.next.generate(result).strip()), result)
+        """ % (my_result, result, indent(self.next.generate(my_result, stream, failure).strip()), result, my_result, result)
         return data
 
 class PatternVerbatim(Pattern):
@@ -80,10 +105,35 @@ class PatternVerbatim(Pattern):
         Pattern.__init__(self)
         self.letters = letters
 
-    def generate(self, result):
+    def generate(self, result, stream, failure):
         data = """
 %s = "%s";
         """ % (result, self.letters)
+
+        data = ""
+
+        for letter in self.letters[::-1]:
+            newdata = """
+if (%s.get(%s.getPosition()) == '%s'){
+    %s.nextPosition();
+    %s
+} else {
+    %s
+}
+""" % (stream, result, letter, result, indent(data), failure())
+            data = newdata
+
+        # return data
+
+        data = """
+for (int i = 0; i < %d; i++){
+    if ("%s"[i] == %s.get(%s.getPosition())){
+        %s.nextPosition();
+    } else {
+        %s
+    }
+}
+""" % (len(self.letters), self.letters, stream, result, result, failure())
         return data
 
 class Rule:
@@ -92,14 +142,27 @@ class Rule:
         self.patterns = patterns
 
     def generate(self):
-        result = newResult()
+        def newPattern(pattern, stream, position):
+            result = newResult()
+            out = newOut()
+            def failure():
+                return "goto %s;" % out
+            data = """
+Result %s(%s);
+%s
+%s.update(%s);
+return %s;
+%s:
+            """ % (result, position, pattern.generate(result, stream, failure).strip(), stream, result, result, out)
+            return data
+
+        stream = "stream"
+        position = "position"
         data = """
-static Result rule_%s(){
-    Result %s = 0;
+static Result rule_%s(Stream & %s, const int %s){
     %s
-    return %s;
 }
-        """ % (self.name, result, indent('\n'.join([pattern.generate(result).strip() for pattern in self.patterns])), result)
+        """ % (self.name, stream, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
 
         return data
     
@@ -127,8 +190,12 @@ def generate(peg):
     print peg.generate()
 
 def test():
+    s_code = """
+printf("parsed cheese\\n");
+value = 2;
+"""
     rules = [
-        Rule("s", [PatternNot(PatternVerbatim("hello"))]),
+        Rule("s", [PatternNot(PatternVerbatim("hello")), PatternAction(PatternVerbatim("cheese"), s_code)]),
         Rule("blah", [PatternRepeatMany(PatternRule("s"))])
     ]
     peg = Peg("s", rules)
