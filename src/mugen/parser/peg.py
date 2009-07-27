@@ -49,8 +49,11 @@ class PatternRule(Pattern):
 
     def generate(self, result, stream, failure):
         data = """
-%s = rule_%s(%s.getPosition());
-        """ % (result, self.rule, result)
+%s = rule_%s(%s, %s.getPosition());
+if (%s.error()){
+    %s
+}
+""" % (result, self.rule, stream, result, result, failure())
 
         return data
 
@@ -60,9 +63,20 @@ class PatternRepeatOnce(Pattern):
         self.next = next
 
     def generate(self, result, stream, failure):
-        result = newResult()
+        loop_done = "loop_%d" % nextVar()
+        my_fail = lambda : "goto %s;" % loop_done
+        my_result = newResult()
         data = """
-        """
+do{
+    Result %s(%s.getPosition());
+    %s
+    %s.addResult(%s);
+} while (true);
+%s:
+if (%s.matches() == 0){
+    %s
+}
+        """ % (my_result, result, indent(self.next.generate(my_result, stream, my_fail).strip()), result, my_result, loop_done, result, failure())
 
         return data
 
@@ -90,14 +104,41 @@ class PatternRepeatMany(Pattern):
         self.next = next
 
     def generate(self, result, stream, failure):
+        loop_done = "loop_%d" % nextVar()
+        my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
         data = """
 do{
     Result %s(%s.getPosition());
     %s
     %s.addResult(%s);
-} while (%s.ok());
-        """ % (my_result, result, indent(self.next.generate(my_result, stream, failure).strip()), result, my_result, result)
+} while (true);
+%s:
+        """ % (my_result, result, indent(self.next.generate(my_result, stream, my_fail).strip()), result, my_result, loop_done)
+        return data
+
+class PatternOr(Pattern):
+    def __init__(self, patterns):
+        Pattern.__init__(self)
+        self.patterns = patterns
+
+    def generate(self, result, stream, failure):
+        data = ""
+        success = "success_%d" % nextVar()
+        for pattern in self.patterns:
+            out = "or_%d" % nextVar()
+            my_result = newResult()
+            fail = lambda : "goto %s;" % out
+            if pattern == self.patterns[-1]:
+                fail = failure
+            data += """
+Result %s(%s);
+%s
+%s = %s;
+goto %s;
+%s:
+""" % (my_result, result, pattern.generate(my_result, stream, fail).strip(), result, my_result, success, out)
+        data += "%s:\n" % success
         return data
 
 class PatternVerbatim(Pattern):
@@ -161,6 +202,7 @@ return %s;
         data = """
 static Result rule_%s(Stream & %s, const int %s){
     %s
+    return errorResult;
 }
         """ % (self.name, stream, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
 
@@ -195,8 +237,9 @@ printf("parsed cheese\\n");
 value = 2;
 """
     rules = [
-        Rule("s", [PatternNot(PatternVerbatim("hello")), PatternAction(PatternVerbatim("cheese"), s_code)]),
-        Rule("blah", [PatternRepeatMany(PatternRule("s"))])
+        Rule("s", [PatternNot(PatternVerbatim("hello")), PatternAction(PatternVerbatim("cheese"), s_code), PatternRepeatOnce(PatternVerbatim("once"))]),
+        Rule("blah", [PatternRepeatMany(PatternRule("s"))]),
+        Rule("or", [PatternOr([PatternVerbatim("joe"), PatternVerbatim("bob"), PatternVerbatim("sally")])]),
     ]
     peg = Peg("s", rules)
     generate(peg)
