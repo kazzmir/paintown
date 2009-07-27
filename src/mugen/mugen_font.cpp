@@ -285,7 +285,9 @@ void MugenFont::load(){
         ourText.push_back(line);
     }
 
-    std::vector< MugenSection * > collection = Mugen::Util::configReader( ourText );
+    MugenReader reader( ourText );
+    
+    std::vector< MugenSection * > collection = reader.getCollection();
 
     for( unsigned int i = 0; i < collection.size(); ++i ){
         const std::string &head = collection[i]->getHeader();

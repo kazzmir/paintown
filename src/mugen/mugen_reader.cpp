@@ -11,12 +11,8 @@
 
 using namespace std;
 
-// Check for Clsn
-static bool checkClsn( const std::string &clsn ){
-  return ( clsn.find("Clsn") != std::string::npos );
-}
-
-MugenReader::MugenReader( const char * file ){
+MugenReader::MugenReader( const char * file ):
+usingText(false){
     Global::debug(1) << "[mugen reader] Opening file '" << file << "'" << endl;
     ifile.open( file );
     if (!ifile){
@@ -25,7 +21,8 @@ MugenReader::MugenReader( const char * file ){
     myfile = string( file );
 }
 
-MugenReader::MugenReader( const string & file ){
+MugenReader::MugenReader( const string & file ):
+usingText(false){
     Global::debug(1) << "[mugen reader] Opening file '" << file << "'" << endl;
     ifile.open( file.c_str() );
     if (!ifile){
@@ -34,8 +31,15 @@ MugenReader::MugenReader( const string & file ){
     myfile = file;
 }
 
+MugenReader::MugenReader( const std::vector<std::string> &text ):
+usingText(false){
+    configData = text;
+}
+
 MugenReader::~MugenReader(){
-    ifile.close();
+    if(!usingText){
+	ifile.close();
+    }
 
     for( std::vector< MugenSection * >::iterator i = collection.begin() ; i != collection.end() ; ++i ){
         if(*i)delete (*i);
@@ -44,143 +48,189 @@ MugenReader::~MugenReader(){
 }
 
 const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenException){
-  
-  if ( !ifile ){
-      throw MugenException( std::string("Could not open file: ") + myfile );
-  }
-  
-  std::string line;
-  
-  const char openbracket = '[';
-  const char closebracket = ']';
-  const char comment = ';';
-  const char seperator = ',';
-  const char colon = ':';
-  const char equal = '=';
-  const char quote = '"';
-  const char * ignored = "\r\n";
-  
-  SearchState state = Section;
-  // Our section and items
-  MugenSection * sectionHolder = 0;
-  // Marker for areas
-  bool beginSection = false;
-      
-  while( !ifile.eof() ){
-      getline( ifile, line );
-      // Use to hold section or content in the options
-      std::string contentHolder = "";
-      // Place holder to put back all the grabbed content
-      MugenItemContent *itemHolder = new MugenItemContent();
-      // Needed to kill loop
-      bool breakLoop = false;
-      bool inQuote = false;
-      bool getExpression = false;
-      bool startComment = false;
-      
-      Global::debug(0) << line << endl;
-      
-      for( unsigned int i = 0; i < line.size(); ++i ){
-	    // Go to work
-	    switch( state ){
-	      case Section:{
-		// Done with this
-		if( line[i] == comment ){
-		  breakLoop = true;
-		  break;
-		}
-		else if ( line[i] == ' ' && !beginSection )continue;
-		//Start grabbing our section
-		else if( line[i] == openbracket){
-		  beginSection = true;
-		}
-		//End of our section store and go to ContentGet
-		else if( line[i] == closebracket){
-		  sectionHolder = new MugenSection();
-		  sectionHolder->setHeader( contentHolder );
-		  state = ContentGet;
-		  beginSection = false;
-		  breakLoop = true;
-		  break;
-		}
-		else if( beginSection )contentHolder += line[i];
-	      }
-	      break;
-	      case ContentGet:
-	      default:{
-		// Done with this
-		if( line[i] == comment ){
-		  startComment = true;
-		}
-		// Check if we are near the end to kill it
-		if( i+1 == line.size() && !contentHolder.empty() ){
-		    if (line[i] != ' ' && !strchr(ignored, line[i])){
-                        contentHolder += line[i];
-                    }
-		    *itemHolder << contentHolder;
-		    *sectionHolder << itemHolder;
-		    breakLoop = true;
-		    break;
-		}
-		// Buh bye spaces
-		if( line[i] == ' ' && !inQuote ){
-		  continue;
-		}
-		// Start getting expression
-		if( line[i] != ' ' && getExpression ){
-		  inQuote = true;
-		}
-		// Check if this section is done, push it on the stack and reset everything
-		if( line[i] == openbracket && !checkClsn( contentHolder ) && !itemHolder->hasItems() ){
-		  addSection( sectionHolder );
-		  beginSection = true;
-		  state = Section;
-		  contentHolder = "";
-		  break;
-		}
-		// We got one push back the other and reset the holder to get the next
-		else if( line[i] == colon || line[i] == seperator ){
-		  if( !contentHolder.empty() && !strchr(ignored, contentHolder[0]) ){
-		      *itemHolder << contentHolder;
-		  }
-		  contentHolder = "";
-		}
-		// Equal
-		else if(line[i] == equal && !inQuote ){
-		  if( !contentHolder.empty() ) *itemHolder << contentHolder;
-		  getExpression = true;
-		  contentHolder = "";
-		}
-		// We has a quote begin or end it
-		else if( line[i] == quote ){
-		  inQuote = !inQuote;
-		}
-		//Start grabbing our item
-		else if (!startComment && !strchr(ignored, line[i])){
-                    contentHolder += line[i];
-                }
-	      }
-	      break;
-	    }
-	    if( breakLoop )break;
-      }
-      if (state == ContentGet){
-	    if( itemHolder->hasItems() ){
-		if( !contentHolder.empty() && !strchr(ignored, contentHolder[0]) ){
-		    *itemHolder << contentHolder;
-		}
-		*sectionHolder << itemHolder;
-	    }
+    if ( configData.empty() && !ifile ){
+	throw MugenException( std::string("Could not open file: \"") + myfile + std::string("\" or Read Text!") );
+    }
+    
+    // get lines
+    std::vector<std::string> temp;
+    if (ifile && !usingText){
+	std::string line;
+	while( !ifile.eof() ){
+	    std::string line;
+	    getline( ifile, line );
+	    temp.push_back(line);
 	}
-  }
-  // Add in last section
-  addSection( sectionHolder );
-  
-  return collection;
+    } else {
+	temp = configData;
+    }
+    
+    for( std::vector<std::string>::const_iterator i = temp.begin(); i != temp.end(); ++i ){
+	// get line
+	const std::string line = *i;
+	
+	if (isSection(line)){
+	    // Grab section and add it to the stack
+	    addSection(extractSection(line));
+	} else if (hasContent(line)){
+	    // Extract the content add it to the stack
+	    addContent(extractContent(line));
+	}
+    }
+    return collection;
 }
 
 void MugenReader::addSection( MugenSection * section ){
-  collection.push_back ( section );
+    collection.push_back ( section );
 }
 
+void MugenReader::addContent( MugenItemContent *content ){
+    *collection.back() << content;
+}
 
+bool MugenReader::isSection( const std::string &line ){
+    const char comment = ';';
+    const char openbracket = '[';
+    const char closebracket = ']';
+    bool foundSection = false;
+    int charCount = 0;
+    
+    for (unsigned int i = 0; i < line.size(); ++i){
+	if ( line[i] == ' ' && !foundSection ){ 
+	    continue;
+	} else if ( line[i] == openbracket){
+	    // Check if we have characters if so we might have clsn
+	    if (charCount){
+		return false;
+	    }
+	    // Found start of a section
+	    foundSection = true;
+	} else if ( foundSection && line[i] == closebracket){
+	    // Found close of section it's a section
+	    return true;
+	} else if ( line[i] == comment ){
+	    // oops comment before a closebracket, there is no section
+	    return false;
+	} else {
+	    // Found something other than a bracket this isn't a section
+	    charCount++;
+	}
+    }
+    // No section here
+    return false;
+}
+
+bool MugenReader::hasContent( const std::string &line ){
+    const char comment = ';';
+    const char * eol = "\r\n";
+    bool foundContent = false;
+    for (unsigned int i = 0; i < line.size(); ++i){
+	if ( line[i] == ' ' ){ 
+	    continue;
+	} else if ( !foundContent && line[i] == comment ){
+	    // oops comment before content, there is no content
+	    return false;
+	} else if ( !foundContent && strchr(eol, line[i]) ){
+	    // Found end of line and nothing else, no content
+	    return false;
+	} else {
+	    // There's something usefull allow to be parsed
+	    return true;
+	}
+    }
+    // No content here
+    return false;
+}
+	
+MugenSection *MugenReader::extractSection( const std::string &line ){
+    Global::debug(1) << line << endl;
+    const char comment = ';';
+    const char openbracket = '[';
+    const char closebracket = ']';
+    bool foundSection = false;
+    std::string contentHolder = "";
+    
+    for (unsigned int i = 0; i < line.size(); ++i){
+	if ( line[i] == ' ' && !foundSection ){ 
+	    continue;
+	} else if ( line[i] == openbracket){
+	    // Found start of a section
+	    foundSection = true;
+	} else if ( foundSection && line[i] == closebracket){
+	    // Found close of section it's a section make a new one and return it
+	    MugenSection *temp = new MugenSection();
+	    temp->setHeader( contentHolder );
+	    return temp;
+	} else if ( line[i] == comment ){
+	    // oops shouldn't happen, but return 0 anyhow
+	    return 0;
+	} else {
+	    // Grab our section name
+	    contentHolder += line[i];
+	}
+    }
+    
+    return 0;
+}
+
+MugenItemContent *MugenReader::extractContent( const std::string &line ){
+    Global::debug(1) << line << endl;
+    const char openbracket = '[';
+    const char closebracket = ']';
+    const char comment = ';';
+    const char seperator = ',';
+    const char colon = ':';
+    const char equal = '=';
+    const char quote = '"';
+    const char * ignored = "\r\n";
+    
+    // Use to hold content
+    std::string contentHolder = "";
+    // Place holder to put grabbed content
+    MugenItemContent *itemHolder = new MugenItemContent();
+    
+    bool inQuote = false;
+    
+    for (unsigned int i = 0; i < line.size(); ++i){
+	if (line[i] == ' ' && !inQuote){ 
+	    continue;
+	} else if (line[i] == comment){
+	    // found comment... store what remains and get out
+	    if( !contentHolder.empty() ){
+		*itemHolder << contentHolder;
+	    }
+	    return itemHolder;
+	} else if ( strchr(ignored, line[i]) ){
+	    // Found end of line.. as above store what remains and get out
+	    if( !contentHolder.empty() ){
+		*itemHolder << contentHolder;
+	    }
+	    return itemHolder;
+	} else if( line[i] == equal && !inQuote ){
+	    if( !contentHolder.empty() ){
+		*itemHolder << contentHolder;
+	    }
+	    contentHolder = "";
+	} else if( line[i] == quote ){
+	    inQuote = !inQuote;
+	} else if( line[i] == colon || line[i] == seperator ){
+	    // Grab an item
+	    if( !contentHolder.empty() ){
+		*itemHolder << contentHolder;
+	    }
+	    contentHolder = "";
+	} else {
+	    contentHolder+=line[i];
+	}
+    }
+    
+    if (!contentHolder.empty()){
+	*itemHolder << contentHolder;
+    }
+    
+    if (itemHolder->hasItems()){
+	return itemHolder;
+    }
+    
+    return 0;
+}
