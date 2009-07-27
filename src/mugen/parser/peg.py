@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# Packrat PEG (parsing expression grammar) generator
+# http://pdos.csail.mit.edu/~baford/packrat/
+
 next_var = 0
 def nextVar():
     global next_var;
