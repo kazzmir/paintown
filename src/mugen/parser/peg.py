@@ -50,9 +50,9 @@ class Rule:
 static Result rule_%s(){
     Result %s = 0;
     %s
-    return Result;
+    return %s;
 }
-        """ % (self.name, result, '\n'.join([pattern.generate(result) for pattern in self.patterns]))
+        """ % (self.name, result, '\n'.join([pattern.generate(result) for pattern in self.patterns]), result)
 
         return data
     
