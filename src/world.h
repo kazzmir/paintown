@@ -44,6 +44,8 @@ public:
 	virtual int getX() = 0;
 	virtual int getY() = 0;
 
+        virtual double ticks(const double in) const;
+
         /* this shouldn't be here */
         virtual const std::deque<Bitmap*> & getScreenshots() = 0;
 

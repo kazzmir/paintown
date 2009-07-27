@@ -27,7 +27,8 @@ World(),
 draw_minimaps( true ),
 mini_map( NULL ),
 takeAScreenshot(false),
-is_paused(false){
+is_paused(false),
+slowmotion(0){
 	scene = NULL;
 	bang = NULL;
 }
@@ -38,7 +39,8 @@ path( path ),
 draw_minimaps( true ),
 mini_map( NULL ),
 takeAScreenshot(false),
-is_paused(false){
+is_paused(false),
+slowmotion(0){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -263,6 +265,10 @@ void AdventureWorld::addEnemy(Enemy * obj){
     }
 }
         
+void AdventureWorld::enterSlowMotion(const int amount){
+    slowmotion = amount;
+}
+
 Object * AdventureWorld::findObject(int id){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
         Object * object = *it;
@@ -275,6 +281,10 @@ Object * AdventureWorld::findObject(int id){
 
 void AdventureWorld::doLogic(){
 
+    if (slowmotion > 0){
+        slowmotion -= 1;
+    }
+
 	vector< Object * > added_effects;
 	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * good = *it;
@@ -286,8 +296,7 @@ void AdventureWorld::doLogic(){
 		if ( good->getZ() > getMaximumZ() ){
 			good->setZ( getMaximumZ() );
 		}
-
-		/* Check for collisions */
+/* Check for collisions */
 		if ( good->isAttacking() ){
 			// ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
 			ObjectAttack * o_good = (ObjectAttack *)good;
@@ -322,6 +331,9 @@ void AdventureWorld::doLogic(){
 							(*fight)->collided( o_good, added_effects );
 							addMessage( (*fight)->collidedMessage() );
 							(*fight)->takeDamage( this, o_good, o_good->getDamage() );
+                                                        if ((*fight)->getHealth() <= 0){
+                                                            enterSlowMotion(100);
+                                                        }
 
                                                         takeScreenshot();
 						// }
@@ -612,6 +624,14 @@ void AdventureWorld::draw( Bitmap * work ){
 	}
 	scene->drawFront( min_x, work );
 	*/
+}
+        
+double AdventureWorld::ticks(const double in) const{
+    if (slowmotion > 0){
+        return in / 2.0;
+    } else {
+        return in;
+    }
 }
 
 int AdventureWorld::getX(){

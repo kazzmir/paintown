@@ -12,3 +12,7 @@ World::~World(){
 void World::Quake( int q ){
     quake_time += q;
 }
+        
+double World::ticks(const double in) const {
+    return in;
+}

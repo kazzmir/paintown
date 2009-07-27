@@ -209,7 +209,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
 		if ( Global::speed_counter > 0 ){
 			if ( ! paused ){
-				runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+				runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
 
 				while ( runCounter >= 1.0 ){
 					draw = true;

@@ -76,6 +76,8 @@ public:
 
 	virtual void drawMiniMaps( bool b );
 	virtual bool shouldDrawMiniMaps();
+        
+        virtual double ticks(const double in) const;
 
 	void killAllHumans( Object * player );
 
@@ -83,6 +85,8 @@ public:
 	Network::Message createBangMessage( int x, int y, int z );
 
 protected:
+
+        void enterSlowMotion(const int amount);
 
 	Network::Message deleteMessage( unsigned int id );
 	void loadLevel( const std::string & path ) throw( LoadException );
@@ -122,6 +126,7 @@ protected:
         std::deque<Bitmap*> screenshots;
         bool takeAScreenshot;
         bool is_paused;
+        int slowmotion;
 };
 
 #endif
