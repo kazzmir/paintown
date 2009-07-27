@@ -32,8 +32,8 @@ usingText(false){
 }
 
 MugenReader::MugenReader( const std::vector<std::string> &text ):
-usingText(false){
-    configData = text;
+configData(text),
+usingText(true){
 }
 
 MugenReader::~MugenReader(){
@@ -62,7 +62,7 @@ const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenEx
 	    temp.push_back(line);
 	}
     } else {
-	temp = configData;
+	temp.assign(configData.begin(),configData.end());
     }
     
     for( std::vector<std::string>::const_iterator i = temp.begin(); i != temp.end(); ++i ){

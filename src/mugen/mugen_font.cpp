@@ -366,11 +366,6 @@ void MugenFont::load(){
         }
     }
 
-    // Time to get rid of collection
-    for( std::vector< MugenSection * >::iterator i = collection.begin() ; i != collection.end() ; ++i ){
-        if(*i)delete (*i);
-    }
-
     ifile.close();
 
 }
