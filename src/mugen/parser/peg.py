@@ -9,6 +9,10 @@ def nextVar():
     next_var += 1;
     return next_var
 
+def indent(s):
+    space = '    '
+    return s.replace('\n', '\n%s' % space)
+
 class Pattern:
     def __init__(self):
         pass
@@ -27,7 +31,7 @@ class PatternNot(Pattern):
 Result %s = 0;
 %s
 %s = ! %s;
-        """ % (my_result, self.next.generate(my_result), result, my_result)
+        """ % (my_result, self.next.generate(my_result).strip(), result, my_result)
 
         return data
 
@@ -41,6 +45,27 @@ class PatternRule(Pattern):
 %s = rule_%s();
         """ % (result, self.rule)
 
+        return data
+
+class PatternRepeatOnce(Pattern):
+    def __init__(self, next):
+        Pattern.__init__(self)
+        self.next = next
+
+    def generate(self, result):
+        data = """
+        """
+
+        return data
+
+class PatternRepeatMany(Pattern):
+    def __init__(self, next):
+        Pattern.__init__(self)
+        self.next = next
+
+    def generate(self, result):
+        data = """
+        """
         return data
 
 class PatternVerbatim(Pattern):
@@ -67,7 +92,7 @@ static Result rule_%s(){
     %s
     return %s;
 }
-        """ % (self.name, result, '\n'.join([pattern.generate(result) for pattern in self.patterns]), result)
+        """ % (self.name, result, indent('\n'.join([pattern.generate(result).strip() for pattern in self.patterns])), result)
 
         return data
     
@@ -82,9 +107,10 @@ class Peg:
 namespace %s{
     %s
 
-    Result main(){
-        return rule_%s();
-    }
+Result main(){
+    return rule_%s();
+}
+
 }
         """ % (namespace, '\n'.join([rule.generate() for rule in self.rules]), self.start)
 
