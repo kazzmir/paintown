@@ -433,6 +433,19 @@ goto %s;
         data += "%s:\n" % success
         return data
 
+class PatternBind(Pattern):
+    def __init__(self, variable, pattern):
+        Pattern.__init__(self)
+        self.variable = variable
+        self.pattern = pattern
+
+    def generate_python(self, result, stream, failure):
+        data = """
+%s
+%s = %s.getValues()
+""" % (self.pattern.generate_python(result, stream, failure).strip(), self.variable, result)
+        return data
+
 class PatternRange(Pattern):
     def __init__(self, range):
         Pattern.__init__(self)
@@ -737,26 +750,28 @@ value = ''.join(values)
         Rule("rule", [
             PatternAction(PatternSequence([
                 PatternRule("spaces"),
-                PatternRule("word"),
+                PatternBind("name", PatternRule("word")),
                 PatternRule("spaces"),
                 PatternVerbatim("="),
                 PatternRule("spaces"),
-                PatternRepeatMany(PatternRule("pattern")),
+                PatternBind("pattern1", PatternRepeatMany(PatternRule("pattern"))),
                 PatternRule("newlines"),
-                PatternRepeatMany(PatternAction(PatternSequence([
-                    PatternRule("spaces"),
-                    PatternVerbatim("|"),
-                    PatternRule("spaces"),
-                    PatternRepeatMany(PatternRule("pattern")),
-                    PatternRule("newlines")]),
-                    """
-value = values[3]
+                PatternBind("patterns",
+                    PatternRepeatMany(PatternAction(PatternSequence([
+                        PatternRule("spaces"),
+                        PatternVerbatim("|"),
+                        PatternRule("spaces"),
+                        PatternBind("pattern", PatternRepeatMany(PatternRule("pattern"))),
+                        PatternRule("newlines")]),
+                        """
+# value = values[3]
+value = pattern
 """
-                ))]),
+)))]),
                 """
-name = values[1]
-pattern1 = values[5]
-patterns = values[7]
+# name = values[1]
+# pattern1 = values[5]
+# patterns = values[7]
 #print "pattern name is " + str(name)
 #print "first pattern is " + str(pattern1)
 #print "other patterns are " + str(patterns)
@@ -846,6 +861,7 @@ value = values[2]
 if __name__ == '__main__':
     import sys
     parser = make_peg_parser()
+    # out = parser('peg.in.x')
     if len(sys.argv) > 1:
         out = parser(sys.argv[1])
-        # print out.generate()
+        print out.generate()
