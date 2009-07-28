@@ -187,6 +187,12 @@ class Pattern:
     def generate(self, result, stream, failure):
         pass
 
+    def parens(self, pattern, str):
+        if pattern.contains() > 1:
+            return "(%s)" % str
+        else:
+            return str
+
 class PatternNot(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
@@ -227,6 +233,9 @@ class PatternRule(Pattern):
     def __init__(self, rule):
         Pattern.__init__(self)
         self.rule = rule
+
+    def contains(self):
+        return 1
 
     def generate_bnf(self):
         return self.rule
@@ -270,8 +279,11 @@ class PatternSequence(Pattern):
         Pattern.__init__(self)
         self.patterns = patterns
 
+    def contains(self):
+        return len(self.patterns)
+
     def generate_bnf(self):
-        return "(%s)" % " ".join([p.generate_bnf() for p in self.patterns])
+        return "%s" % " ".join([p.generate_bnf() for p in self.patterns])
 
     def generate_python(self, result, stream, failure):
         data = ""
@@ -304,7 +316,7 @@ class PatternRepeatOnce(Pattern):
         self.next = next
 
     def generate_bnf(self):
-        return self.next.generate_bnf() + "+"
+        return self.parens(self.next, self.next.generate_bnf()) + "+"
 
     def generate_python(self, result, stream, failure):
         my_fail = lambda : "raise PegError"
@@ -385,7 +397,7 @@ class PatternRepeatMany(Pattern):
         self.next = next
 
     def generate_bnf(self):
-        return self.next.generate_bnf() + "*"
+        return self.parens(self.next, self.next.generate_bnf()) + "*"
 
     def generate_python(self, result, stream, failure):
         my_fail = lambda : "raise PegError"
@@ -433,6 +445,9 @@ class PatternMaybe(Pattern):
     def __init__(self, pattern):
         Pattern.__init__(self)
         self.pattern = pattern
+
+    def generate_bnf(self):
+        return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
 
     def generate_python(self, result, stream, failure):
         save = "save_%d" % nextVar()
@@ -525,6 +540,9 @@ class PatternVerbatim(Pattern):
     def __init__(self, letters):
         Pattern.__init__(self)
         self.letters = letters
+
+    def contains(self):
+        return 1
 
     def generate_bnf(self):
         return '"%s"' % self.letters
