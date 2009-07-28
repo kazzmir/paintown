@@ -3,6 +3,11 @@
 # Packrat PEG (parsing expression grammar) generator
 # http://pdos.csail.mit.edu/~baford/packrat/
 
+# Python parser:
+# 1. 171397b / 45.216s = 3790.62721160651 b/s
+# 2. 171397b / 36.751s = 4663.73704116895 b/s
+# 3. 171397b / 8.630s = 19860.6025492468 b/s
+
 next_var = 0
 def nextVar():
     global next_var;
@@ -111,8 +116,8 @@ class Result:
     def getPosition(self):
         return self.position
 
-    def nextPosition(self):
-        self.position += 1
+    def nextPosition(self, amount = 1):
+        self.position += amount
 
     def setValue(self, value):
         self.values = value
@@ -134,12 +139,30 @@ class Result:
 class Stream:
     def __init__(self, filename):
         self.file = open(filename, 'r')
+        self.position = 0
+        self.limit = 100
+        self.all = self.file.read()
+        print "Read " + str(len(self.all))
 
     def close(self):
         self.file.close()
 
-    def get(self, position):
-        self.file.seek(position)
+    def get(self, position, number = 1):
+        if position + number > self.limit:
+            print (position + number)
+            self.limit += 5000
+        if position + number >= len(self.all):
+            return chr(0)
+        # print "stream: %s" % self.all[position:position+number]
+        return self.all[position:position+number]
+
+    def get2(self, position):
+        if position != self.position:
+            self.file.seek(position)
+        self.position = position + 1
+        if position > self.limit:
+            print position
+            self.limit += 5000
         return self.file.read(1)
 
     def update(self, result):
@@ -198,7 +221,7 @@ class PatternRule(Pattern):
 
     def generate_python(self, result, stream, failure):
         data = """
-print "Trying rule " + '%s'
+# print "Trying rule " + '%s'
 %s = rule_%s(%s, %s.getPosition())
 if %s == None:
     %s
@@ -358,6 +381,20 @@ class PatternOr(Pattern):
         Pattern.__init__(self)
         self.patterns = patterns
 
+    def generate_python(self, result, stream, failure):
+        data = ""
+        fail = failure
+        for pattern in self.patterns[::-1]:
+            my_result = newResult()
+            data = """
+%s = Result(%s.getPosition())
+%s
+if %s != None:
+    %s = %s
+""" % (my_result, result, pattern.generate_python(my_result, stream, fail).strip(), my_result, result, my_result)
+            fail = lambda : indent(data)
+        return data
+
     def generate(self, result, stream, failure):
         data = ""
         success = "success_%d" % nextVar()
@@ -379,12 +416,30 @@ goto %s;
         data += "%s:\n" % success
         return data
 
+class PatternRange(Pattern):
+    def __init__(self, range):
+        Pattern.__init__(self)
+        self.range = range
+
+    def generate_python(self, result, stream, failure):
+        letter = "letter_%d" % nextVar()
+        data = """
+%s = %s.get(%s.getPosition())
+if %s in '%s':
+    %s.nextPosition()
+    %s.setValue(%s)
+else:
+    %s
+""" % (letter, stream, result, letter, self.range, result, result, letter, failure())
+
+        return data
+
 class PatternVerbatim(Pattern):
     def __init__(self, letters):
         Pattern.__init__(self)
         self.letters = letters
 
-    def generate_python(self, result, stream, failure):
+    def generate_python2(self, result, stream, failure):
         data = """
 for letter in '%s':
     if letter == %s.get(%s.getPosition()):
@@ -395,6 +450,18 @@ for letter in '%s':
 """ % (self.letters, stream, result, result, failure(), result, self.letters)
         return data
 
+    def generate_python(self, result, stream, failure):
+        length = len(self.letters)
+        if self.letters == "\\n" or self.letters == "\\t":
+            length = 1
+        data = """
+if '%s' == %s.get(%s.getPosition(), %s):
+    %s.nextPosition(%s)
+else:
+    %s
+%s.setValue('%s')
+""" % (self.letters, stream, result, length, result, length, failure(), result, self.letters)
+        return data
 
     def generate(self, result, stream, failure):
         data = """
@@ -635,10 +702,10 @@ value = peg.Peg('xx', start_symbol, rules)
             ]),
         Rule("word", [
             PatternAction(PatternRepeatOnce(PatternRule("any_char")), """
-print "all start symbol values " + str(values)
+# print "all start symbol values " + str(values)
 # print "values[0] " + str(values[0])
 value = ''.join(values)
-print "got word " + value
+# print "got word " + value
 """)
             ]),
         Rule("rules", [
@@ -673,27 +740,49 @@ value = values[3]
 name = values[1]
 pattern1 = values[5]
 patterns = values[7]
-print "pattern name is " + str(name)
-print "first pattern is " + str(pattern1)
-print "other patterns are " + str(patterns)
+#print "pattern name is " + str(name)
+#print "first pattern is " + str(pattern1)
+#print "other patterns are " + str(patterns)
 value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] + patterns)])
 """)
             ]),
         Rule("pattern", [
             PatternAction(PatternSequence([
-                PatternRule("word"),
+                PatternOr([
+                    PatternRule("x_word"),
+                    PatternRule("string"),]),
                 PatternRule("spaces")]),
                 """
-value = peg.PatternVerbatim(values[0])
-print "Pattern is " + str(value)
+# value = peg.PatternRule(values[0])
+value = values[0]
+# print "Pattern is " + str(value)
 """)
             ]),
+        Rule("string", [
+            PatternAction(PatternSequence([
+                PatternVerbatim("\""),
+                PatternRule('word'),
+                PatternVerbatim("\""),
+                ]), """
+value = peg.PatternVerbatim(values[1])
+"""),
+            ]),
+        Rule("x_word", [
+            PatternAction(PatternRule("word"), """
+value = peg.PatternRule(values[0])
+"""),
+            ]),
         Rule("start_symbol", [
-            PatternAction(PatternSequence([PatternVerbatim("start-symbol:"), PatternRepeatMany(PatternRule("space")), PatternRule("word")]), "value = values[2]; print 'start symbol is ' + str(value);")
+            PatternAction(PatternSequence([PatternVerbatim("start-symbol:"), PatternRepeatMany(PatternRule("space")), PatternRule("word")]), """
+value = values[2]
+# print 'start symbol is ' + str(value)
+""")
             ]),
         Rule("spaces", [PatternRepeatMany(PatternRule("space"))]),
+        # Rule("space", [PatternRange(' \t')]),
         Rule("space", [PatternVerbatim(" "), PatternVerbatim("\\t")]),
-        Rule("any_char", [PatternVerbatim(letter) for letter in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']),
+        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')]),
+        # Rule("any_char", [PatternVerbatim(letter) for letter in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']),
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
@@ -701,9 +790,10 @@ print "Pattern is " + str(value)
     # print peg.generate_python()
     parser = create_peg(peg)
     # print parser
+    return parser
     answer = parser('peg.in')
     print "Got " + str(answer)
-    print answer.generate()
+    # print answer.generate()
     # module = compile(peg.generate_python(), peg.namespace, 'exec')
     # print module
 
@@ -712,4 +802,8 @@ print "Pattern is " + str(value)
 
 # make_peg_parser()
 if __name__ == '__main__':
-    make_peg_parser()
+    import sys
+    parser = make_peg_parser()
+    if len(sys.argv) > 1:
+        out = parser(sys.argv[1])
+        print out.generate_python()

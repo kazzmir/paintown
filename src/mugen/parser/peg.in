@@ -1,6 +1,9 @@
 start-symbol: start
 
 rules:
+	start = a
+	      | fail
+
 	a = abc foo
-	  | ddd eee
+	  | "ddd" eee
 	  | fff ggg
