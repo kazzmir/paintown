@@ -220,6 +220,9 @@ class PatternRule(Pattern):
         Pattern.__init__(self)
         self.rule = rule
 
+    def generate_bnf(self):
+        return self.rule
+
     def generate_python(self, result, stream, failure):
         data = """
 # print "Trying rule " + '%s'
@@ -259,6 +262,9 @@ class PatternSequence(Pattern):
         Pattern.__init__(self)
         self.patterns = patterns
 
+    def generate_bnf(self):
+        return "(%s)" % " ".join([p.generate_bnf() for p in self.patterns])
+
     def generate_python(self, result, stream, failure):
         data = ""
         for pattern in self.patterns:
@@ -288,6 +294,9 @@ class PatternRepeatOnce(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
         self.next = next
+
+    def generate_bnf(self):
+        return self.next.generate_bnf() + "+"
 
     def generate_python(self, result, stream, failure):
         my_fail = lambda : "raise PegError"
@@ -359,6 +368,9 @@ class PatternRepeatMany(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
         self.next = next
+
+    def generate_bnf(self):
+        return self.next.generate_bnf() + "*"
 
     def generate_python(self, result, stream, failure):
         my_fail = lambda : "raise PegError"
@@ -453,6 +465,9 @@ class PatternBind(Pattern):
         self.variable = variable
         self.pattern = pattern
 
+    def generate_bnf(self):
+        return "%s:%s" % (self.variable, self.pattern.generate_bnf())
+
     def generate_python(self, result, stream, failure):
         data = """
 %s
@@ -482,6 +497,9 @@ class PatternVerbatim(Pattern):
     def __init__(self, letters):
         Pattern.__init__(self)
         self.letters = letters
+
+    def generate_bnf(self):
+        return '"%s"' % self.letters
 
     def generate_python2(self, result, stream, failure):
         data = """
@@ -542,6 +560,12 @@ class Rule:
     def __init__(self, name, patterns):
         self.name = name
         self.patterns = patterns
+
+    def generate_bnf(self):
+        data = """
+%s = %s
+""" % (self.name, (('\n%s | ') % (' ' * len(self.name))).join([p.generate_bnf() for p in self.patterns]))
+        return data
 
     def generate_python(self):
         def newPattern(pattern, stream, position):
@@ -625,6 +649,14 @@ def parse(file):
         return done.getValues()
 """ % (start_python, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
+        return data
+
+    def generate_bnf(self):
+        data = """
+start-symbol: %s
+rules:
+    %s
+""" % (self.start, indent('\n'.join([rule.generate_bnf() for rule in self.rules]).strip()))
         return data
 
     def generate(self):
@@ -796,23 +828,27 @@ value = pattern
 #print "first pattern is " + str(pattern1)
 #print "other patterns are " + str(patterns)
 value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] + patterns)])
+# print "Patterns are " + str([pattern1] + patterns)
+# value = peg.Rule(name, [pattern1] + patterns)
 """)
             ]),
         Rule("pattern", [
             PatternAction(PatternSequence([
-                PatternOr([
-                    PatternRule("bind"),
-                    PatternRule("x_word"),
-                    PatternRule("string"),
-                    PatternRule("sub_pattern")]),
-                PatternMaybe(PatternRule("modifier")),
+                PatternBind("bind", PatternMaybe(PatternRule("bind"))),
+                PatternBind("pattern",
+                    PatternOr([
+                        PatternRule("x_word"),
+                        PatternRule("string"),
+                        PatternRule("sub_pattern")])),
+                PatternBind("modifier", PatternMaybe(PatternRule("modifier"))),
                 PatternRule("spaces")]),
                 """
 # value = peg.PatternRule(values[0])
-modifier = values[1]
-value = values[0]
 if modifier != None:
-    value = modifier(value)
+    pattern = modifier(pattern)
+if bind != None:
+    pattern = bind(pattern)
+value = pattern
 # print "Pattern is " + str(value)
 """)
             ]),
@@ -829,9 +865,8 @@ value = peg.PatternSequence(values[1])
             PatternAction(PatternSequence([
                 PatternBind("name", PatternRule("word")),
                 PatternVerbatim(":"),
-                PatternBind("pattern", PatternRule("pattern"))
                 ]),"""
-value = peg.PatternBind(name, pattern)
+value = lambda p: peg.PatternBind(name, p)
 """),
             ]),
         Rule("string", [
@@ -895,4 +930,4 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         out = parser(sys.argv[1])
         print out
-        print out.generate_python()
+        print out.generate_bnf()
