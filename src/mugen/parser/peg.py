@@ -630,7 +630,7 @@ print "s code"
             PatternAction(PatternSequence([PatternRule("start_symbol"), PatternRule("newlines"), PatternRule("rules")]), """
 start_symbol = values[0]
 rules = values[2]
-value = rules
+value = peg.Peg('xx', start_symbol, rules)
 """)
             ]),
         Rule("word", [
@@ -676,7 +676,7 @@ patterns = values[7]
 print "pattern name is " + str(name)
 print "first pattern is " + str(pattern1)
 print "other patterns are " + str(patterns)
-value = [pattern1] + patterns
+value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] + patterns)])
 """)
             ]),
         Rule("pattern", [
@@ -684,7 +684,7 @@ value = [pattern1] + patterns
                 PatternRule("word"),
                 PatternRule("spaces")]),
                 """
-value = values[0]
+value = peg.PatternVerbatim(values[0])
 print "Pattern is " + str(value)
 """)
             ]),
@@ -701,7 +701,9 @@ print "Pattern is " + str(value)
     # print peg.generate_python()
     parser = create_peg(peg)
     # print parser
-    print "Got " + str(parser('peg.in'))
+    answer = parser('peg.in')
+    print "Got " + str(answer)
+    print answer.generate()
     # module = compile(peg.generate_python(), peg.namespace, 'exec')
     # print module
 

@@ -1,0 +1,6 @@
+start-symbol: start
+
+rules:
+	a = abc foo
+	  | ddd eee
+	  | fff ggg
