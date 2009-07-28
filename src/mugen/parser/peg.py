@@ -109,6 +109,10 @@ class PegError(Exception):
     def __init__(self):
         Exception.__init__(self)
 
+class NotError(Exception):
+    def __init__(self):
+        Exception.__init__(self)
+
 class Result:
     def __init__(self, position):
         self.position = position
@@ -193,14 +197,15 @@ class PatternNot(Pattern):
 
     def generate_python(self, result, stream, failure):
         my_result = newResult()
-        my_fail = lambda : "raise PegError"
+        my_fail = lambda : "raise NotError"
         data = """
-%s = Result(%s);
+%s = Result(%s.getPosition());
 try:
     %s
-except PegError:
     %s
-        """ % (my_result, result, indent(self.next.generate_python(my_result, stream, my_fail).strip()), failure())
+except NotError:
+    %s.setValue(None)
+        """ % (my_result, result, indent(self.next.generate_python(my_result, stream, my_fail).strip()), failure(), result)
 
         return data
 
@@ -343,6 +348,13 @@ class PatternAction(Pattern):
         self.before = before
         self.code = code
 
+    def generate_bnf(self):
+        data = """%s {
+    %s
+}
+""" % (self.before.generate_bnf(), self.code)
+        return data
+
     def generate_python(self, result, stream, failure):
         data = """
 %s
@@ -404,6 +416,17 @@ do{
 } while (true);
 %s:
         """ % (my_result, result, indent(self.next.generate(my_result, stream, my_fail).strip()), result, my_result, loop_done)
+        return data
+
+class PatternAny(Pattern):
+    def __init__(self):
+        Pattern.__init__(self)
+
+    def generate_python(self, result, stream, failure):
+        data = """
+%s.setValue(%s.get(%s.getPosition()))
+%s.nextPosition()
+""" % (result, stream, result, result)
         return data
 
 class PatternMaybe(Pattern):
@@ -841,14 +864,33 @@ value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] 
             PatternAction(PatternSequence([
                 PatternBind("bind", PatternMaybe(PatternRule("bind"))),
                 PatternBind("item", PatternRule("item")),
-                PatternRule("spaces")]),
+                PatternRule("spaces"),
+                PatternBind("code", PatternMaybe(PatternRule("code"))),
+                PatternRule("spaces"),]),
                 """
 # value = peg.PatternRule(values[0])
 if bind != None:
     item = bind(item)
+if code != None:
+    item = code(item)
 value = item
 # print "Pattern is " + str(value)
 """)
+            ]),
+        Rule("code", [
+            PatternAction(PatternSequence([
+                PatternVerbatim("{"),
+                PatternRepeatOnce(PatternAction(PatternSequence([
+                    PatternNot(PatternVerbatim("}")),
+                    PatternAny(),
+                    ]),
+                    """
+value = values[1]
+""")),
+                PatternVerbatim("}"),
+                ]), """
+value = lambda p: peg.PatternAction(p, ''.join(values[1]))
+"""),
             ]),
         Rule("item", [
             PatternAction(PatternSequence([
