@@ -240,6 +240,20 @@ if (%s.error()){
 
         return data
 
+class PatternEof(Pattern):
+    def __init__(self):
+        Pattern.__init__(self)
+
+    def generate_python(self, result, stream, failure):
+        data = """
+if chr(0) == %s.get(%s.getPosition()):
+    %s.nextPosition()
+    %s.setValue(chr(0))
+else:
+    %s
+""" % (stream, result, result, result, failure())
+        return data
+
 class PatternSequence(Pattern):
     def __init__(self, patterns):
         Pattern.__init__(self)
@@ -724,7 +738,13 @@ print "s code"
 
     rules = [
         Rule("start", [
-            PatternAction(PatternSequence([PatternRule("start_symbol"), PatternRule("newlines"), PatternRule("rules")]), """
+            PatternAction(PatternSequence([
+                PatternRule("start_symbol"),
+                PatternRule("newlines"),
+                PatternRule("rules"),
+                PatternRule("newlines"),
+                PatternEof(),
+                ]), """
 start_symbol = values[0]
 rules = values[2]
 value = peg.Peg('xx', start_symbol, rules)
@@ -781,6 +801,7 @@ value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] 
         Rule("pattern", [
             PatternAction(PatternSequence([
                 PatternOr([
+                    PatternRule("bind"),
                     PatternRule("x_word"),
                     PatternRule("string"),
                     PatternRule("sub_pattern")]),
@@ -802,6 +823,15 @@ if modifier != None:
                 PatternVerbatim(")"),
                 ]),"""
 value = peg.PatternSequence(values[1])
+"""),
+            ]),
+        Rule("bind", [
+            PatternAction(PatternSequence([
+                PatternBind("name", PatternRule("word")),
+                PatternVerbatim(":"),
+                PatternBind("pattern", PatternRule("pattern"))
+                ]),"""
+value = peg.PatternBind(name, pattern)
 """),
             ]),
         Rule("string", [
@@ -826,7 +856,7 @@ value = lambda p: peg.PatternRepeatOnce(p)
             ]),
         Rule("x_word", [
             PatternAction(PatternRule("word"), """
-value = peg.PatternRule(values[0])
+value = peg.PatternRule(values)
 """),
             ]),
         Rule("start_symbol", [
@@ -864,4 +894,5 @@ if __name__ == '__main__':
     # out = parser('peg.in.x')
     if len(sys.argv) > 1:
         out = parser(sys.argv[1])
-        print out.generate()
+        print out
+        print out.generate_python()
