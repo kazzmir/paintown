@@ -98,6 +98,56 @@ private:
 Result errorResult(-1);
 """
 
+start_python = """
+class PegError(Exception):
+    def __init__(self):
+        Exception.__init__(self)
+
+class Result:
+    def __init__(self, position):
+        self.position = position
+        self.values = []
+
+    def getPosition(self):
+        return self.position
+
+    def nextPosition(self):
+        self.position += 1
+
+    def setValue(self, value):
+        self.values = [value]
+    
+    def matches(self):
+        return len(self.values)
+
+    def getValues(self):
+        return self.values
+
+    def addResult(self, him):
+        self.values.extend(him.values)
+        self.position = him.position
+
+class Stream:
+    def __init__(self, filename):
+        self.file = open(filename, 'r')
+
+    def close(self):
+        self.file.close()
+
+    def get(self, position):
+        self.file.seek(position)
+        return self.file.read(1)
+
+    def update(self, result):
+        pass
+
+    def hasResult(self, position):
+        return false
+
+    def result(self, position):
+        return Result(-1)
+"""
+
 class Pattern:
     def __init__(self):
         pass
@@ -441,14 +491,19 @@ import peg
 
 %s
 
+%s
+
 def parse(file):
+    # print "Parsing " + file
     stream = Stream(file)
     done = rule_%s(stream, 0)
-    if (done.error()):
+    stream.close()
+    if done == None:
         print "Error parsing " + file
+        return []
     else:
         return done.getValues()
-""" % ('\n'.join([rule.generate_python() for rule in self.rules]), self.start)
+""" % (start_python, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
         return data
 
@@ -501,10 +556,19 @@ value = (void *) 2;
     peg = Peg("Peg", "s", rules)
     generate(peg)
 
-def create_peg(name, peg):
-    import imp
-    module = imp.new_module(name)
-    exec peg.generate_python() in module.__dict__
+def create_peg(peg):
+    # import imp
+    # module = imp.new_module(peg.namespace)
+    # exec peg.generate_python() in module.__dict__
+    # return module.parse
+
+    name = "peg_" + peg.namespace
+    out = open(name + ".py", 'w')
+    out.write(peg.generate_python())
+    out.close()
+    module = __import__(name, globals(), locals(), ['parse'])
+    # print module
+    # print dir(module)
     return module.parse
 
 def test2():
@@ -542,15 +606,26 @@ print "s code"
         Rule("start", [
             PatternAction(PatternSequence([PatternRule("a"),PatternRule("b"), PatternRule("c")]), start_code_abc),
             ]),
+        Rule("a", [PatternVerbatim("a")]),
+        Rule("b", [PatternVerbatim("b")]),
+        Rule("c", [PatternVerbatim("c")]),
+
         Rule("s", [
             PatternNot(PatternVerbatim("hello")), PatternAction(PatternVerbatim("cheese"), s_code),
             PatternRepeatOnce(PatternVerbatim("once"))]),
         Rule("blah", [PatternRepeatMany(PatternRule("s"))]),
         ]
-    peg = Peg("*peg*", "start", rules)
-    print peg.generate_python()
+    peg = Peg("peg", "start", rules)
+    # print peg.generate_python()
+    parser = create_peg(peg)
+    # print parser
+    print "Got " + str(parser('peg.in'))
+    # module = compile(peg.generate_python(), peg.namespace, 'exec')
+    # print module
 
 # test()
 # test2()
 
-make_peg_parser()
+# make_peg_parser()
+if __name__ == '__main__':
+    make_peg_parser()
