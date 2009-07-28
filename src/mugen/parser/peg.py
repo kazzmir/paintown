@@ -3,10 +3,11 @@
 # Packrat PEG (parsing expression grammar) generator
 # http://pdos.csail.mit.edu/~baford/packrat/
 
-# Python parser:
+# Python BNF parser:
 # 1. 171397b / 45.216s = 3790.62721160651 b/s
 # 2. 171397b / 36.751s = 4663.73704116895 b/s
 # 3. 171397b / 8.630s = 19860.6025492468 b/s
+# 4. 171397b / 10.539s = 16263.1179428788 b/s
 
 next_var = 0
 def nextVar():
@@ -374,6 +375,22 @@ do{
 } while (true);
 %s:
         """ % (my_result, result, indent(self.next.generate(my_result, stream, my_fail).strip()), result, my_result, loop_done)
+        return data
+
+class PatternMaybe(Pattern):
+    def __init__(self, pattern):
+        Pattern.__init__(self)
+        self.pattern = pattern
+
+    def generate_python(self, result, stream, failure):
+        save = "save_%d" % nextVar()
+        data = """
+%s = %s.getPosition()
+%s
+if %s == None:
+    %s = Result(%s)
+    %s.setValue(None)
+""" % (save, result, self.pattern.generate_python(result, stream, lambda : "pass"), result, result, save, result)
         return data
 
 class PatternOr(Pattern):
@@ -750,13 +767,27 @@ value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] 
             PatternAction(PatternSequence([
                 PatternOr([
                     PatternRule("x_word"),
-                    PatternRule("string"),]),
+                    PatternRule("string"),
+                    PatternRule("sub_pattern")]),
+                PatternMaybe(PatternRule("modifier")),
                 PatternRule("spaces")]),
                 """
 # value = peg.PatternRule(values[0])
+modifier = values[1]
 value = values[0]
+if modifier != None:
+    value = modifier(value)
 # print "Pattern is " + str(value)
 """)
+            ]),
+        Rule("sub_pattern", [
+            PatternAction(PatternSequence([
+                PatternVerbatim("("),
+                PatternRepeatOnce(PatternRule("pattern")),
+                PatternVerbatim(")"),
+                ]),"""
+value = peg.PatternSequence(values[1])
+"""),
             ]),
         Rule("string", [
             PatternAction(PatternSequence([
@@ -765,6 +796,17 @@ value = values[0]
                 PatternVerbatim("\""),
                 ]), """
 value = peg.PatternVerbatim(values[1])
+"""),
+            ]),
+        Rule("modifier", [
+            PatternAction(PatternVerbatim("*"),"""
+value = lambda p: peg.PatternRepeatMany(p)
+"""),
+            PatternAction(PatternVerbatim("?"),"""
+value = lambda p: peg.PatternMaybe(p)
+"""),
+            PatternAction(PatternVerbatim("+"),"""
+value = lambda p: peg.PatternRepeatOnce(p)
 """),
             ]),
         Rule("x_word", [
@@ -806,4 +848,4 @@ if __name__ == '__main__':
     parser = make_peg_parser()
     if len(sys.argv) > 1:
         out = parser(sys.argv[1])
-        print out.generate_python()
+        # print out.generate()
