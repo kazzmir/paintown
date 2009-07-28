@@ -349,9 +349,9 @@ class PatternAction(Pattern):
         self.code = code
 
     def generate_bnf(self):
-        data = """%s {
+        data = """%s {{
     %s
-}
+}}
 """ % (self.before.generate_bnf(), self.code)
         return data
 
@@ -879,15 +879,15 @@ value = item
             ]),
         Rule("code", [
             PatternAction(PatternSequence([
-                PatternVerbatim("{"),
+                PatternVerbatim("{{"),
                 PatternRepeatOnce(PatternAction(PatternSequence([
-                    PatternNot(PatternVerbatim("}")),
+                    PatternNot(PatternVerbatim("}}")),
                     PatternAny(),
                     ]),
                     """
 value = values[1]
 """)),
-                PatternVerbatim("}"),
+                PatternVerbatim("}}"),
                 ]), """
 value = lambda p: peg.PatternAction(p, ''.join(values[1]))
 """),
