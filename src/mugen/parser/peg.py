@@ -194,10 +194,11 @@ class PatternRule(Pattern):
 
     def generate_python(self, result, stream, failure):
         data = """
+print "Trying rule " + '%s'
 %s = rule_%s(%s, %s.getPosition())
 if %s == None:
     %s
-""" % (result, self.rule, stream, result, result, failure())
+""" % (self.rule, result, self.rule, stream, result, result, failure())
 
         return data
 
@@ -271,7 +272,7 @@ except PegError:
 do{
     Result %s(%s.getPosition());
     %s
-    %s.addResult(%s);
+    %s.extendResult(%s);
 } while (true);
 %s:
 if (%s.matches() == 0){
@@ -292,9 +293,10 @@ class PatternAction(Pattern):
 %s
 if True:
     value = None
+    values = %s.getValues()
     %s
     %s.setValue(value)
-""" % (self.before.generate_python(result, stream, failure).strip(), indent(self.code.strip()), result)
+""" % (self.before.generate_python(result, stream, failure).strip(), result, indent(self.code.strip()), result)
 
         return data
 
@@ -383,7 +385,8 @@ for letter in '%s':
         %s.nextPosition()
     else:
         %s
-""" % (self.letters, stream, result, result, failure())
+%s.setValue('%s')
+""" % (self.letters, stream, result, result, failure(), result, self.letters)
         return data
 
 
@@ -615,6 +618,25 @@ print "s code"
             PatternRepeatOnce(PatternVerbatim("once"))]),
         Rule("blah", [PatternRepeatMany(PatternRule("s"))]),
         ]
+
+    rules = [
+        Rule("start", [
+            PatternAction(PatternSequence([PatternRule("start_symbol"), PatternRule("newlines")]), "value = values[0]")
+            ]),
+        Rule("word", [
+            PatternAction(PatternRepeatOnce(PatternRule("any_char")), """
+print "all start symbol values " + str(values)
+value = ''.join(values)
+""")
+            ]),
+        Rule("start_symbol", [
+            PatternAction(PatternSequence([PatternVerbatim("start-symbol:"), PatternRepeatMany(PatternRule("space")), PatternRule("word")]), "value = values[2]; print 'start symbol is ' + str(value);")
+            ]),
+        Rule("space", [PatternVerbatim(" ")]),
+        Rule("any_char", [PatternVerbatim(letter) for letter in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']),
+        Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
+    ]
+
     peg = Peg("peg", "start", rules)
     # print peg.generate_python()
     parser = create_peg(peg)
