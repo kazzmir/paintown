@@ -115,7 +115,7 @@ class Result:
         self.position += 1
 
     def setValue(self, value):
-        self.values = [value]
+        self.values = value
     
     def matches(self):
         return len(self.values)
@@ -124,6 +124,10 @@ class Result:
         return self.values
 
     def addResult(self, him):
+        self.values.append(him.values)
+        self.position = him.position
+    
+    def extendResult(self, him):
         self.values.extend(him.values)
         self.position = him.position
 
@@ -248,9 +252,9 @@ class PatternRepeatOnce(Pattern):
         self.next = next
 
     def generate_python(self, result, stream, failure):
-        loop_done = "loop_%d" % nextVar()
         my_fail = lambda : "raise PegError"
         my_result = newResult()
+        my_result2 = newResult()
         data = """
 try:
     while True:
@@ -264,6 +268,7 @@ except PegError:
 
         return data
 
+
     def generate(self, result, stream, failure):
         loop_done = "loop_%d" % nextVar()
         my_fail = lambda : "goto %s;" % loop_done
@@ -272,7 +277,7 @@ except PegError:
 do{
     Result %s(%s.getPosition());
     %s
-    %s.extendResult(%s);
+    %s.addResult(%s);
 } while (true);
 %s:
 if (%s.matches() == 0){
@@ -331,6 +336,7 @@ except PegError:
         """ % (my_result, result, indent(indent(self.next.generate_python(my_result, stream, my_fail).strip())), result, my_result)
 
         return data
+
 
 
     def generate(self, result, stream, failure):
@@ -621,18 +627,72 @@ print "s code"
 
     rules = [
         Rule("start", [
-            PatternAction(PatternSequence([PatternRule("start_symbol"), PatternRule("newlines")]), "value = values[0]")
+            PatternAction(PatternSequence([PatternRule("start_symbol"), PatternRule("newlines"), PatternRule("rules")]), """
+start_symbol = values[0]
+rules = values[2]
+value = rules
+""")
             ]),
         Rule("word", [
             PatternAction(PatternRepeatOnce(PatternRule("any_char")), """
 print "all start symbol values " + str(values)
+# print "values[0] " + str(values[0])
 value = ''.join(values)
+print "got word " + value
+""")
+            ]),
+        Rule("rules", [
+            PatternAction(
+                PatternSequence([
+                    PatternVerbatim("rules:"),
+                    PatternRule("newlines"),
+                    PatternRepeatMany(PatternRule("rule"))
+                    ]),
+                """value = values[2]""")
+            ]),
+        Rule("rule", [
+            PatternAction(PatternSequence([
+                PatternRule("spaces"),
+                PatternRule("word"),
+                PatternRule("spaces"),
+                PatternVerbatim("="),
+                PatternRule("spaces"),
+                PatternRepeatMany(PatternRule("pattern")),
+                PatternRule("newlines"),
+                PatternRepeatMany(PatternAction(PatternSequence([
+                    PatternRule("spaces"),
+                    PatternVerbatim("|"),
+                    PatternRule("spaces"),
+                    PatternRepeatMany(PatternRule("pattern")),
+                    PatternRule("newlines")]),
+                    """
+value = values[3]
+"""
+                ))]),
+                """
+name = values[1]
+pattern1 = values[5]
+patterns = values[7]
+print "pattern name is " + str(name)
+print "first pattern is " + str(pattern1)
+print "other patterns are " + str(patterns)
+value = [pattern1] + patterns
+""")
+            ]),
+        Rule("pattern", [
+            PatternAction(PatternSequence([
+                PatternRule("word"),
+                PatternRule("spaces")]),
+                """
+value = values[0]
+print "Pattern is " + str(value)
 """)
             ]),
         Rule("start_symbol", [
             PatternAction(PatternSequence([PatternVerbatim("start-symbol:"), PatternRepeatMany(PatternRule("space")), PatternRule("word")]), "value = values[2]; print 'start symbol is ' + str(value);")
             ]),
-        Rule("space", [PatternVerbatim(" ")]),
+        Rule("spaces", [PatternRepeatMany(PatternRule("space"))]),
+        Rule("space", [PatternVerbatim(" "), PatternVerbatim("\\t")]),
         Rule("any_char", [PatternVerbatim(letter) for letter in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']),
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
