@@ -198,6 +198,9 @@ class PatternNot(Pattern):
         Pattern.__init__(self)
         self.next = next
 
+    def ensureRules(self, find):
+        self.next.ensureRules(find)
+
     def generate_bnf(self):
         return "!" + self.next.generate_bnf()
 
@@ -237,6 +240,10 @@ class PatternRule(Pattern):
     def contains(self):
         return 1
 
+    def ensureRules(self, find):
+        if not find(self.rule):
+            print "*warning* could not find rule " + self.rule
+
     def generate_bnf(self):
         return self.rule
 
@@ -264,6 +271,9 @@ class PatternEof(Pattern):
     def __init__(self):
         Pattern.__init__(self)
 
+    def ensureRules(self, find):
+        pass
+
     def generate_python(self, result, stream, failure):
         data = """
 if chr(0) == %s.get(%s.getPosition()):
@@ -281,6 +291,10 @@ class PatternSequence(Pattern):
 
     def contains(self):
         return len(self.patterns)
+
+    def ensureRules(self, find):
+        for pattern in self.patterns:
+            pattern.ensureRules(find)
 
     def generate_bnf(self):
         return "%s" % " ".join([p.generate_bnf() for p in self.patterns])
@@ -314,6 +328,9 @@ class PatternRepeatOnce(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
         self.next = next
+
+    def ensureRules(self, find):
+        self.next.ensureRules(find)
 
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "+"
@@ -360,6 +377,9 @@ class PatternAction(Pattern):
         self.before = before
         self.code = code
 
+    def ensureRules(self, find):
+        self.before.ensureRules(find)
+
     def generate_bnf(self):
         data = """%s {{
     %s
@@ -394,6 +414,9 @@ class PatternRepeatMany(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
         self.next = next
+
+    def ensureRules(self, find):
+        self.next.ensureRules(find)
 
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "*"
@@ -433,6 +456,9 @@ class PatternAny(Pattern):
     def __init__(self):
         Pattern.__init__(self)
 
+    def ensureRules(self, find):
+        pass
+
     def generate_python(self, result, stream, failure):
         data = """
 %s.setValue(%s.get(%s.getPosition()))
@@ -444,6 +470,9 @@ class PatternMaybe(Pattern):
     def __init__(self, pattern):
         Pattern.__init__(self)
         self.pattern = pattern
+
+    def ensureRules(self, find):
+        self.pattern.ensureRules(find)
 
     def generate_bnf(self):
         return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
@@ -465,6 +494,10 @@ class PatternOr(Pattern):
     def __init__(self, patterns):
         Pattern.__init__(self)
         self.patterns = patterns
+
+    def ensureRules(self, find):
+        for pattern in self.patterns:
+            pattern.ensureRules(find)
 
     def generate_python(self, result, stream, failure):
         data = ""
@@ -507,6 +540,9 @@ class PatternBind(Pattern):
         self.variable = variable
         self.pattern = pattern
 
+    def ensureRules(self, find):
+        self.pattern.ensureRules(find)
+
     def generate_bnf(self):
         return "%s:%s" % (self.variable, self.pattern.generate_bnf())
 
@@ -521,6 +557,9 @@ class PatternRange(Pattern):
     def __init__(self, range):
         Pattern.__init__(self)
         self.range = range
+
+    def ensureRules(self, find):
+        pass
 
     def generate_python(self, result, stream, failure):
         letter = "letter_%d" % nextVar()
@@ -539,6 +578,9 @@ class PatternVerbatim(Pattern):
     def __init__(self, letters):
         Pattern.__init__(self)
         self.letters = letters
+
+    def ensureRules(self, find):
+        pass
 
     def contains(self):
         return 1
@@ -612,6 +654,10 @@ class Rule:
 """ % (self.name, (('\n%s | ') % (' ' * len(self.name))).join([p.generate_bnf() for p in self.patterns]))
         return data
 
+    def ensureRules(self, find):
+        for pattern in self.patterns:
+            pattern.ensureRules(find)
+
     def generate_python(self):
         def newPattern(pattern, stream, position):
             result = newResult()
@@ -673,6 +719,9 @@ class Peg:
         self.namespace = namespace
         self.start = start
         self.rules = rules
+
+        for rule in self.rules:
+            rule.ensureRules(lambda r: r in [r2.name for r2 in self.rules])
 
     def generate_python(self):
         data = """
