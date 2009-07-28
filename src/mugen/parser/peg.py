@@ -363,8 +363,7 @@ class PatternAction(Pattern):
     def generate_bnf(self):
         data = """%s {{
     %s
-}}
-""" % (self.before.generate_bnf(), self.code)
+}}""" % (self.before.generate_bnf(), self.code)
         return data
 
     def generate_python(self, result, stream, failure):
