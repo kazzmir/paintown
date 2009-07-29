@@ -13,13 +13,13 @@ next_var = 0
 def nextVar():
     global next_var;
     next_var += 1;
-    return next_var
+    return "peg_%d" % next_var
 
 def newResult():
-    return "result_%d" % nextVar()
+    return "result_%s" % nextVar()
 
 def newOut():
-    return "out_%d" % nextVar()
+    return "out_%s" % nextVar()
 
 def indent(s):
     space = '    '
@@ -318,7 +318,7 @@ except NotError:
 
 
     def generate_cpp(self, result, stream, failure):
-        not_label = "not_%d" % nextVar()
+        not_label = "not_%s" % nextVar()
         my_result = newResult()
         my_fail = lambda : "goto %s;" % not_label
         data = """
@@ -465,7 +465,7 @@ except PegError:
 
 
     def generate_cpp(self, result, stream, failure):
-        loop_done = "loop_%d" % nextVar()
+        loop_done = "loop_%s" % nextVar()
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
         data = """
@@ -556,7 +556,7 @@ except PegError:
         return data
 
     def generate_cpp(self, result, stream, failure):
-        loop_done = "loop_%d" % nextVar()
+        loop_done = "loop_%s" % nextVar()
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
         data = """
@@ -595,7 +595,7 @@ class PatternMaybe(Pattern):
         return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
 
     def generate_python(self, result, stream, failure):
-        save = "save_%d" % nextVar()
+        save = "save_%s" % nextVar()
         fail = lambda : """
 %s = Result(%s)
 %s.setValue(None)
@@ -608,7 +608,7 @@ class PatternMaybe(Pattern):
         return data
 
     def generate_cpp(self, result, stream, failure):
-        save = "save_%d" % nextVar()
+        save = "save_%s" % nextVar()
         fail = lambda : """
 %s = Result(%s);
 %s.setValue((void*) 0);
@@ -644,9 +644,9 @@ if %s != None:
 
     def generate_cpp(self, result, stream, failure):
         data = ""
-        success = "success_%d" % nextVar()
+        success = "success_%s" % nextVar()
         for pattern in self.patterns:
-            out = "or_%d" % nextVar()
+            out = "or_%s" % nextVar()
             my_result = newResult()
             fail = lambda : "goto %s;" % out
             if pattern == self.patterns[-1]:
@@ -698,7 +698,7 @@ class PatternRange(Pattern):
         pass
 
     def generate_cpp(self, result, stream, failure):
-        letter = "letter_%d" % nextVar()
+        letter = "letter_%s" % nextVar()
         data = """
 char %s = %s.get(%s.getPosition());
 if (strchr("%s", %s) != NULL){
@@ -711,7 +711,7 @@ if (strchr("%s", %s) != NULL){
         return data
 
     def generate_python(self, result, stream, failure):
-        letter = "letter_%d" % nextVar()
+        letter = "letter_%s" % nextVar()
         data = """
 %s = %s.get(%s.getPosition())
 if %s in '%s':
@@ -940,7 +940,7 @@ const void * main(const std::string & filename){
 }
 
 }
-        """ % (self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in self.rules])), rule_numbers, '\n'.join([rule.generate_cpp() for rule in self.rules]), self.start)
+        """ % (self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in self.rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp() for rule in self.rules]), self.start)
 
         return data
 
