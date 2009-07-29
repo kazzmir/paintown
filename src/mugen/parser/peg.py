@@ -26,11 +26,78 @@ def indent(s):
     return s.replace('\n', '\n%s' % space)
 
 start_code = """
+struct Value{
+    Value():
+        which(1){
+    }
+
+    Value(const Value & him){
+        which = him.which;
+        value = him.value;
+        values = him.values;
+    }
+
+    Value(void * value):
+        which(0),
+        value(value){
+    }
+
+    Value & operator=(const Value & him){
+        which = him.which;
+        value = him.value;
+        values = him.values;
+        return *this;
+    }
+
+    int which; // 0 is value, 1 is values
+
+    inline const bool isList() const {
+        return which == 1;
+    }
+
+    inline const bool isData() const {
+        return which == 0;
+    }
+
+    inline const void * getValue() const {
+        return value;
+    }
+
+    inline void setValue(void * value){
+        which = 0;
+        this->value = value;
+    }
+
+    inline const std::vector<Value> & getValues() const {
+        return values;
+    }
+
+    inline void setValues(std::vector<Value> values){
+        which = 1;
+        values = values;
+    }
+
+    void * value;
+    std::vector<Value> values;
+};
+
 class Result{
 public:
     Result(const int position):
     position(position),
     isError(false){
+    }
+
+    Result(const Result & r){
+        position = r.position;
+        isError = r.position;
+        value = r.value;
+    }
+
+    Result & operator=(const Result & r){
+        position = r.position;
+        isError = r.position;
+        value = r.value;
     }
 
     inline const int getPosition() const {
@@ -49,28 +116,36 @@ public:
         isError = true;
     }
 
-    void setValue(void * value){
-        this->values.push_back(value);
+    void setValue(const Value & value){
+        this->value = value;
     }
 
     const int matches() const {
-        return this->values.size();
+        if (value.isList()){
+            return this->value.values.size();
+        } else {
+            return 1;
+        }
     }
 
-    const std::vector<void *> & getValues() const {
-        return values;
+    const Value & getValues() const {
+        return this->value;
     }
 
     void addResult(const Result & result){
-        const std::vector<void *> & his = result.getValues();
-        this->values.insert(this->values.end(), his.begin(), his.end());
-        this->position = result.getPosition();
+        if (this->value.isList()){
+            std::vector<Value> & mine = this->value.values;
+            mine.push_back(result.getValues());
+            this->position = result.getPosition();
+        } else {
+            std::cout << "Error: trying to add results to a single value" << std::endl; 
+        }
     }
 
 private:
     int position;
     bool isError;
-    std::vector<void *> values;
+    Value value;
 };
 
 class Stream{
@@ -80,6 +155,11 @@ public:
     }
 
     char get(const int position){
+        const int max = 10000;
+        if (position > max){
+            return '\\0';
+        }
+
         char z;
         stream.seekg(position, std::ios_base::beg);
         stream >> z;
@@ -137,9 +217,9 @@ class Result:
         self.values.append(him.values)
         self.position = him.position
     
-    def extendResult(self, him):
-        self.values.extend(him.values)
-        self.position = him.position
+    #def extendResult(self, him):
+    #    self.values.extend(him.values)
+    #    self.position = him.position
 
 class Stream:
     def __init__(self, filename):
@@ -147,14 +227,14 @@ class Stream:
         self.position = 0
         self.limit = 100
         self.all = self.file.read()
-        print "Read " + str(len(self.all))
+        # print "Read " + str(len(self.all))
 
     def close(self):
         self.file.close()
 
     def get(self, position, number = 1):
         if position + number > self.limit:
-            print (position + number)
+            # print (position + number)
             self.limit += 5000
         if position + number >= len(self.all):
             return chr(0)
@@ -225,7 +305,8 @@ Result %s(%s);
 %s
 %s
 %s:
-        """ % (my_result, result, self.next.generate_cpp(my_result, stream, my_fail).strip(), failure(), not_label)
+%s.setValue((void*)0);
+        """ % (my_result, result, self.next.generate_cpp(my_result, stream, my_fail).strip(), failure(), not_label, result)
 
         return data
 
@@ -260,7 +341,7 @@ if %s == None:
 if (%s.error()){
     %s
 }
-""" % (result, self.rule, stream, result, result, failure())
+""" % (result, self.rule, stream, result, result, indent(failure()))
 
         return data
 
@@ -314,11 +395,11 @@ class PatternSequence(Pattern):
             my_result = newResult()
             data += """
 {
-Result %s(%s.getPosition());
-%s
-%s.addResult(%s);
+    Result %s(%s.getPosition());
+    %s
+    %s.addResult(%s);
 }
-""" % (my_result, result, pattern.generate_cpp(my_result, stream, failure), result, my_result)
+""" % (my_result, result, indent(pattern.generate_cpp(my_result, stream, failure).strip()), result, my_result)
         return data
 
 class PatternRepeatOnce(Pattern):
@@ -364,7 +445,7 @@ do{
 if (%s.matches() == 0){
     %s
 }
-        """ % (my_result, result, indent(self.next.generate_cpp(my_result, stream, my_fail).strip()), result, my_result, loop_done, result, failure())
+        """ % (my_result, result, indent(self.next.generate_cpp(my_result, stream, my_fail).strip()), result, my_result, loop_done, result, indent(failure()))
 
         return data
 
@@ -399,11 +480,12 @@ if True:
         data = """
 %s
 {
-    void * value = 0;
+    Value value((void*) 0);
+    Value values = %s.getValues();
     %s
     %s.setValue(value);
 }
-        """ % (self.before.generate_cpp(result, stream, failure).strip(), indent(self.code.strip()), result)
+        """ % (self.before.generate_cpp(result, stream, failure).strip(), result, indent(self.code.strip()), result)
 
         return data
 
@@ -486,7 +568,16 @@ class PatternMaybe(Pattern):
         return data
 
     def generate_cpp(self, result, stream, failure):
-        return "todo: maybe"
+        save = "save_%d" % nextVar()
+        fail = lambda : """
+%s = Result(%s);
+%s.setValue((void*) 0);
+""" % (result, save, result)
+        data = """
+int %s = %s.getPosition();
+%s
+""" % (save, result, self.pattern.generate_cpp(result, stream, fail))
+        return data
 
 class PatternOr(Pattern):
     def __init__(self, patterns):
@@ -542,7 +633,11 @@ class PatternBind(Pattern):
         self.pattern.ensureRules(find)
 
     def generate_cpp(self, result, stream, failure):
-        return "todo: bind"
+        data = """
+%s
+Value %s = %s.getValues();
+""" % (self.pattern.generate_cpp(result, stream, failure).strip(), self.variable, result)
+        return data
 
     def generate_bnf(self):
         return "%s:%s" % (self.variable, self.pattern.generate_bnf())
@@ -771,14 +866,14 @@ namespace %s{
 
     %s
 
-std::vector<void *> main(const std::string & filename){
+const void * main(const std::string & filename){
     Stream stream(filename);
     errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
     }
-    return done.getValues();
+    return done.getValues().getValue();
 }
 
 }
@@ -898,14 +993,15 @@ value = ''.join(values)
                 PatternRule("spaces"),
                 PatternVerbatim("="),
                 PatternRule("spaces"),
-                PatternBind("pattern1", PatternRepeatMany(PatternRule("pattern"))),
+                PatternBind("pattern1", PatternRule("pattern_line")),
                 PatternRule("newlines"),
                 PatternBind("patterns",
                     PatternRepeatMany(PatternAction(PatternSequence([
                         PatternRule("spaces"),
                         PatternVerbatim("|"),
                         PatternRule("spaces"),
-                        PatternBind("pattern", PatternRepeatMany(PatternRule("pattern"))),
+                        PatternBind("pattern", PatternRule("pattern_line")),
+                        # PatternBind("pattern", PatternRepeatMany(PatternRule("pattern"))),
                         PatternRule("newlines")]),
                         """
 # value = values[3]
@@ -919,24 +1015,33 @@ value = pattern
 #print "pattern name is " + str(name)
 #print "first pattern is " + str(pattern1)
 #print "other patterns are " + str(patterns)
-value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] + patterns)])
+# value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] + patterns)])
+value = peg.Rule(name, [pattern1] + patterns)
 # print "Patterns are " + str([pattern1] + patterns)
 # value = peg.Rule(name, [pattern1] + patterns)
 """)
+            ]),
+        Rule("pattern_line",[
+            PatternAction(PatternSequence([
+                PatternBind("patterns", PatternRepeatMany(PatternRule("pattern"))),
+                PatternRule("spaces"),
+                PatternBind("code", PatternMaybe(PatternRule("code"))),
+                ]), """
+if code != None:
+    value = code(peg.PatternSequence(patterns))
+else:
+    value = peg.PatternAction(peg.PatternSequence(patterns), "value = values;")
+"""),
             ]),
         Rule("pattern", [
             PatternAction(PatternSequence([
                 PatternBind("bind", PatternMaybe(PatternRule("bind"))),
                 PatternBind("item", PatternRule("item")),
-                PatternRule("spaces"),
-                PatternBind("code", PatternMaybe(PatternRule("code"))),
                 PatternRule("spaces"),]),
                 """
 # value = peg.PatternRule(values[0])
 if bind != None:
     item = bind(item)
-if code != None:
-    item = code(item)
 value = item
 # print "Pattern is " + str(value)
 """)
@@ -1049,5 +1154,5 @@ if __name__ == '__main__':
     # out = parser('peg.in.x')
     if len(sys.argv) > 1:
         out = parser(sys.argv[1])
-        print out
+        # print out
         print out.generate_cpp()
