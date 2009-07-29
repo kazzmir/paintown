@@ -84,19 +84,16 @@ struct Value{
 class Result{
 public:
     Result(const int position):
-    position(position),
-    isError(false){
+    position(position){
     }
 
     Result(const Result & r){
         position = r.position;
-        isError = r.position;
         value = r.value;
     }
 
     Result & operator=(const Result & r){
         position = r.position;
-        isError = r.position;
         value = r.value;
     }
 
@@ -105,7 +102,7 @@ public:
     }
 
     inline bool error(){
-        return isError;
+        return position < 0;
     }
 
     inline void nextPosition(){
@@ -113,7 +110,7 @@ public:
     }
 
     void setError(){
-        isError = true;
+        position = -1;
     }
 
     void setValue(const Value & value){
@@ -144,26 +141,34 @@ public:
 
 private:
     int position;
-    bool isError;
     Value value;
 };
 
 class Stream{
 public:
     Stream(const std::string & filename){
+        std::ifstream stream;
         stream.open(filename.c_str());
+        stream.seekg(0, std::ios_base::end);
+        max = stream.tellg();
+        stream.seekg(0, std::ios_base::beg);
+        buffer = new char[max];
+        stream.read(buffer, max);
+        stream.close();
     }
 
     char get(const int position){
-        const int max = 10000;
-        if (position > max){
+        if (position >= max || position < 0){
             return '\\0';
         }
 
+        return buffer[position];
+        /*
         char z;
         stream.seekg(position, std::ios_base::beg);
         stream >> z;
         return z;
+        */
     }
 
     void update(const Result & result){
@@ -178,7 +183,8 @@ public:
     }
 
 private:
-    std::ifstream stream;
+    char * buffer;
+    int max;
 };
 
 Result errorResult(-1);
@@ -476,6 +482,13 @@ if True:
 
         return data
 
+    def fixup_cpp(self, code):
+        import re
+        fix = re.compile("\$(\d+)")
+        return re.sub(fix, r"values.getValues()[\1-1]", code)
+        #if fix.match(code):
+        #    return code.sub("$1", "values.getValues()[0]")
+
     def generate_cpp(self, result, stream, failure):
         data = """
 %s
@@ -485,7 +498,7 @@ if True:
     %s
     %s.setValue(value);
 }
-        """ % (self.before.generate_cpp(result, stream, failure).strip(), result, indent(self.code.strip()), result)
+        """ % (self.before.generate_cpp(result, stream, failure).strip(), result, self.fixup_cpp(indent(self.code.strip())), result)
 
         return data
 
@@ -736,7 +749,8 @@ for (int i = 0; i < %d; i++){
         %s
     }
 }
-""" % (len(self.letters), self.letters, stream, result, result, failure())
+%s.setValue((void*) "%s");
+""" % (len(self.letters), self.letters, stream, result, result, indent(indent(failure())), result, self.letters)
         return data
 
 class Rule:
