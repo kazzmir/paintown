@@ -794,7 +794,7 @@ for (int i = 0; i < %d; i++){
         return data
 
 class Rule:
-    def __init__(self, name, patterns):
+    def __init__(self, name, patterns, inline = False):
         self.name = name
         self.patterns = patterns
 
@@ -1052,6 +1052,8 @@ value = ''.join(values)
         Rule("rule", [
             PatternAction(PatternSequence([
                 PatternRule("spaces"),
+                PatternBind("inline", PatternMaybe(PatternVerbatim("inline"))),
+                PatternRule("spaces"),
                 PatternBind("name", PatternRule("word")),
                 PatternRule("spaces"),
                 PatternVerbatim("="),
@@ -1079,7 +1081,7 @@ value = pattern
 #print "first pattern is " + str(pattern1)
 #print "other patterns are " + str(patterns)
 # value = peg.Rule(name, [peg.PatternSequence(pattern) for pattern in ([pattern1] + patterns)])
-value = peg.Rule(name, [pattern1] + patterns)
+value = peg.Rule(name, [pattern1] + patterns, inline = (inline != None))
 # print "Patterns are " + str([pattern1] + patterns)
 # value = peg.Rule(name, [pattern1] + patterns)
 """)
