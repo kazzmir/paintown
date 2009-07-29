@@ -83,6 +83,10 @@ struct Value{
 
 class Result{
 public:
+    Result():
+    position(-1){
+    }
+
     Result(const int position):
     position(position){
     }
@@ -171,19 +175,21 @@ public:
         */
     }
 
-    void update(const Result & result){
+    void update(const int rule, const int position, const Result & result){
+        memo[rule][position] = result;
     }
 
-    bool hasResult(const int position){
-        return false;
+    bool hasResult(const int rule, const int position){
+        return ! memo[rule][position].error();
     }
 
-    Result result(const int position){
-        return Result(-1);
+    Result result(const int rule, const int position){
+        return memo[rule][position];
     }
 
 private:
     char * buffer;
+    std::map<const int, std::map<const int, Result> > memo;
     int max;
 };
 
@@ -365,7 +371,19 @@ if chr(0) == %s.get(%s.getPosition()):
     %s.setValue(chr(0))
 else:
     %s
-""" % (stream, result, result, result, failure())
+""" % (stream, result, result, result, indent(failure()))
+        return data
+
+    def generate_cpp(self, result, stream, failure):
+        data = """
+if ('\\0' == %s.get(%s.getPosition())){
+    %s.nextPosition();
+    %s.setValue((void *) '\\0');
+} else {
+    %s
+}
+""" % (stream, result, result, result, indent(failure()))
+
         return data
 
 class PatternSequence(Pattern):
@@ -670,6 +688,19 @@ class PatternRange(Pattern):
     def ensureRules(self, find):
         pass
 
+    def generate_cpp(self, result, stream, failure):
+        letter = "letter_%d" % nextVar()
+        data = """
+char %s = %s.get(%s.getPosition());
+if (strchr("%s", %s) != NULL){
+    %s.nextPosition();
+    %s.setValue((void*) %s);
+} else {
+    %s
+}
+""" % (letter, stream, result, self.range, letter, result, result, letter, indent(failure()))
+        return data
+
     def generate_python(self, result, stream, failure):
         letter = "letter_%d" % nextVar()
         data = """
@@ -679,7 +710,7 @@ if %s in '%s':
     %s.setValue(%s)
 else:
     %s
-""" % (letter, stream, result, letter, self.range, result, result, letter, failure())
+""" % (letter, stream, result, letter, self.range, result, result, letter, indent(failure()))
 
         return data
 
@@ -796,6 +827,7 @@ def rule_%s(%s, %s):
         return data
 
     def generate_cpp(self):
+        rule_number = "RULE_%s" % self.name
         def newPattern(pattern, stream, position):
             result = newResult()
             out = newOut()
@@ -804,23 +836,23 @@ def rule_%s(%s, %s):
             data = """
 Result %s(%s);
 %s
-%s.update(%s);
+%s.update(%s, %s, %s);
 return %s;
 %s:
-            """ % (result, position, pattern.generate_cpp(result, stream, failure).strip(), stream, result, result, out)
+            """ % (result, position, pattern.generate_cpp(result, stream, failure).strip(), stream, rule_number, position, result, result, out)
             return data
 
         stream = "stream"
         position = "position"
         data = """
 Result rule_%s(Stream & %s, const int %s){
-    if (%s.hasResult(%s)){
-        return %s.result(%s);
+    if (%s.hasResult(%s, %s)){
+        return %s.result(%s, %s);
     }
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, stream, position, stream, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
+        """ % (self.name, stream, position, stream, rule_number,position, stream, rule_number, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
 
         return data
     
@@ -848,7 +880,7 @@ def parse(file):
     stream.close()
     if done == None:
         print "Error parsing " + file
-        return []
+        return None
     else:
         return done.getValues()
 """ % (start_python, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
@@ -867,13 +899,20 @@ rules:
         def prototype(rule):
             return "Result rule_%s(Stream &, const int);" % rule.name
 
+        r = 0
+        rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(self.rules, range(0, len(self.rules)))])
+
         data = """
 #include <vector>
 #include <string>
+#include <map>
 #include <fstream>
 #include <iostream>
+#include <string.h>
 
 namespace %s{
+    %s
+
     %s
 
     %s
@@ -891,7 +930,7 @@ const void * main(const std::string & filename){
 }
 
 }
-        """ % (self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in self.rules])), '\n'.join([rule.generate_cpp() for rule in self.rules]), self.start)
+        """ % (self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in self.rules])), rule_numbers, '\n'.join([rule.generate_cpp() for rule in self.rules]), self.start)
 
         return data
 
@@ -1081,6 +1120,8 @@ value = lambda p: peg.PatternAction(p, ''.join(values[1]))
                 PatternBind("pattern",
                     PatternOr([
                         PatternRule("x_word"),
+                        PatternRule("eof"),
+                        PatternRule("range"),
                         PatternRule("string"),
                         PatternRule("sub_pattern")])),
                     PatternBind("modifier", PatternMaybe(PatternRule("modifier")))]), """
@@ -1089,6 +1130,21 @@ if modifier != None:
 if pnot != None:
     pattern = peg.PatternNot(pattern)
 value = pattern
+"""),
+            ]),
+        Rule("eof", [
+            PatternAction(PatternVerbatim("<eof>"),"""value = peg.PatternEof()""")
+            ]),
+        Rule("range", [
+            PatternAction(PatternSequence([
+                PatternVerbatim("["),
+                PatternRepeatMany(PatternAction(PatternSequence([
+                    PatternNot(PatternVerbatim("]")),
+                    PatternAny(),
+                    ]),"value = values[1]")),
+                PatternVerbatim("]"),
+                ]),"""
+value = peg.PatternRange(''.join(values[1]))
 """),
             ]),
         Rule("sub_pattern", [
@@ -1111,10 +1167,13 @@ value = lambda p: peg.PatternBind(name, p)
         Rule("string", [
             PatternAction(PatternSequence([
                 PatternVerbatim("\""),
-                PatternRule('word'),
+                PatternRepeatMany(PatternAction(PatternSequence([
+                    PatternNot(PatternVerbatim("\"")),
+                    PatternAny(),
+                    ]),"value = values[1]")),
                 PatternVerbatim("\""),
                 ]), """
-value = peg.PatternVerbatim(values[1])
+value = peg.PatternVerbatim(''.join(values[1]))
 """),
             ]),
         Rule("modifier", [
@@ -1142,7 +1201,7 @@ value = values[2]
         Rule("spaces", [PatternRepeatMany(PatternRule("space"))]),
         # Rule("space", [PatternRange(' \t')]),
         Rule("space", [PatternVerbatim(" "), PatternVerbatim("\\t")]),
-        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')]),
+        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')]),
         # Rule("any_char", [PatternVerbatim(letter) for letter in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']),
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
@@ -1169,4 +1228,5 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         out = parser(sys.argv[1])
         # print out
-        print out.generate_cpp()
+        if out != None:
+            print out.generate_cpp()
