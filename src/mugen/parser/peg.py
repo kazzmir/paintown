@@ -84,7 +84,7 @@ struct Value{
 class Result{
 public:
     Result():
-    position(-1){
+    position(-2){
     }
 
     Result(const int position):
@@ -106,7 +106,11 @@ public:
     }
 
     inline bool error(){
-        return position < 0;
+        return position == -1;
+    }
+
+    inline bool calculated(){
+        return position != -2;
     }
 
     inline void nextPosition(){
@@ -150,7 +154,8 @@ private:
 
 class Stream{
 public:
-    Stream(const std::string & filename){
+    Stream(const std::string & filename):
+    buffer(0){
         std::ifstream stream;
         stream.open(filename.c_str());
         stream.seekg(0, std::ios_base::end);
@@ -180,11 +185,15 @@ public:
     }
 
     bool hasResult(const int rule, const int position){
-        return ! memo[rule][position].error();
+        return memo[rule][position].calculated();
     }
 
     Result result(const int rule, const int position){
         return memo[rule][position];
+    }
+
+    ~Stream(){
+        delete[] buffer;
     }
 
 private:
@@ -850,9 +859,10 @@ Result rule_%s(Stream & %s, const int %s){
         return %s.result(%s, %s);
     }
     %s
+    %s.update(%s, %s, errorResult);
     return errorResult;
 }
-        """ % (self.name, stream, position, stream, rule_number,position, stream, rule_number, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
+        """ % (self.name, stream, position, stream, rule_number, position, stream, rule_number, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, rule_number, position)
 
         return data
     
