@@ -63,7 +63,7 @@ struct Value{
         return value;
     }
 
-    inline void setValue(void * value){
+    inline void setValue(const void * value){
         which = 0;
         this->value = value;
     }
@@ -77,7 +77,7 @@ struct Value{
         values = values;
     }
 
-    void * value;
+    const void * value;
     std::vector<Value> values;
 };
 
