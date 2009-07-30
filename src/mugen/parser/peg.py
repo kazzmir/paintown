@@ -254,6 +254,7 @@ class Stream:
         self.file = open(filename, 'r')
         self.position = 0
         self.limit = 100
+        self.furthest = 0
         self.all = self.file.read()
         # print "Read " + str(len(self.all))
 
@@ -278,7 +279,27 @@ class Stream:
             self.limit += 5000
         return self.file.read(1)
 
+    def reportError(self):
+        line = 1
+        column = 1
+        for i in xrange(0, self.furthest):
+            if self.all[i] == '\\n':
+                line += 1
+                column = 1
+            else:
+                column += 1
+        left = self.furthest - 10
+        right = self.furthest + 10
+        if left < 0:
+            left = 0
+        if right > len(self.all):
+            right = len(self.all)
+        print "Read up till line %d, column %d" % (line, column)
+        print "'%s'" % self.all[left:right]
+
     def update(self, result):
+        if result.getPosition() > self.furthest:
+            self.furthest = result.getPosition()
         pass
 
     def hasResult(self, position):
@@ -906,6 +927,7 @@ def parse(file):
     stream.close()
     if done == None:
         print "Error parsing " + file
+        stream.reportError()
         return None
     else:
         return done.getValues()
@@ -1247,8 +1269,24 @@ value = values[2]
 # test()
 # test2()
 
+def help_syntax():
+    print "start-symbol: <name>"
+    print "rules:"
+    print "  <name> = <pattern> | <pattern> ... "
+    print
+    print "A Pattern can be:"
+    print "  \"<literal>\""
+    print "  <name of rule>"
+    print "  pattern*"
+    print "  pattern?"
+    print "  pattern+"
+    print "  [<characters>]"
+    print "  <eof>"
+
 def help():
+    print "Options:"
     print "-h,--help,help : Print this help"
+    print "--help-syntax : Explain syntax of BNF for grammar files"
     print "--bnf : Generate BNF (grammar language)"
     print "--python : Generate python parser"
     print "--cpp,--c++ : Generate c++ parser"
@@ -1260,6 +1298,7 @@ if __name__ == '__main__':
     # out = parser('peg.in.x')
     doit = []
     file = None
+    helped = 0
     for arg in sys.argv[1:]:
         if arg == '--bnf':
             doit.append(lambda p: p.generate_bnf())
@@ -1267,8 +1306,11 @@ if __name__ == '__main__':
             doit.append(lambda p: p.generate_cpp())
         elif arg == '--python':
             doit.append(lambda p: p.generate_python())
+        elif arg == "--help-syntax":
+            help_syntax()
         elif arg == '-h' or arg == '--help' or arg == 'help':
             help()
+            helped = 1
         else:
             file = arg
 
@@ -1284,6 +1326,7 @@ if __name__ == '__main__':
         else:
             print "Uh oh, couldn't parse " + file + ". Are you sure its using BNF format?"
     else:
-        help()
-        print "Give a grammar file as an argument"
+        if helped == 0:
+            help()
+            print "Give a BNF grammar file as an argument"
 
