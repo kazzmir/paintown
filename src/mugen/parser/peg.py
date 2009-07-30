@@ -380,6 +380,9 @@ class PatternEof(Pattern):
     def ensureRules(self, find):
         pass
 
+    def generate_bnf(self):
+        return "<eof>"
+
     def generate_python(self, result, stream, failure):
         data = """
 if chr(0) == %s.get(%s.getPosition()):
@@ -704,6 +707,9 @@ class PatternRange(Pattern):
     def ensureRules(self, find):
         pass
 
+    def generate_bnf(self):
+        return "[%s]" % self.range
+
     def generate_cpp(self, result, stream, failure):
         letter = "letter_%s" % nextVar()
         data = """
@@ -804,12 +810,15 @@ class Rule:
     def __init__(self, name, patterns, inline = False):
         self.name = name
         self.patterns = patterns
+        self.inline = inline
 
     def generate_bnf(self):
         data = """
 %s = %s
 """ % (self.name, (('\n%s | ') % (' ' * len(self.name))).join([p.generate_bnf() for p in self.patterns]))
-        return data
+        if self.inline:
+            return "inline " + data.strip() + "\n"
+        return data.strip() + "\n"
 
     def ensureRules(self, find):
         for pattern in self.patterns:
@@ -1247,4 +1256,4 @@ if __name__ == '__main__':
         out = parser(sys.argv[1])
         # print out
         if out != None:
-            print out.generate_cpp()
+            print out.generate_bnf()
