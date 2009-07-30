@@ -288,14 +288,16 @@ class Stream:
                 column = 1
             else:
                 column += 1
-        left = self.furthest - 10
-        right = self.furthest + 10
+        context = 10
+        left = self.furthest - context
+        right = self.furthest + context
         if left < 0:
             left = 0
         if right > len(self.all):
             right = len(self.all)
         print "Read up till line %d, column %d" % (line, column)
-        print "'%s'" % self.all[left:right]
+        print "'%s'" % self.all[left:right].replace("\\n", "\\\\n").replace("\\t", "\\\\t")
+        print "%s^" % (' ' * context)
 
     def update(self, result):
         if result.getPosition() > self.furthest:

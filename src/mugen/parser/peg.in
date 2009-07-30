@@ -6,4 +6,4 @@ rules:
 
 	a = abc foo
 	  | "ddd" eee
-	  | fff ggg
+	  | fff ggg &
