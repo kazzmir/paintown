@@ -10,8 +10,8 @@
 # 4. 171397b / 10.539s = 16263.1179428788 b/s
 
 # Todo (finished items at bottom)
-# memoize in python parsers
 # fix binding variables in c++ (move declaration the top of the function)
+# error reporting for c++
 
 next_var = 0
 def nextVar():
@@ -260,6 +260,7 @@ class Stream:
         self.limit = 100
         self.furthest = 0
         self.all = self.file.read()
+        self.memo = {}
         # print "Read " + str(len(self.all))
 
     def close(self):
@@ -303,15 +304,35 @@ class Stream:
         print "'%s'" % self.all[left:right].replace("\\n", "\\\\n").replace("\\t", "\\\\t")
         print "%s^" % (' ' * context)
 
-    def update(self, result):
+    def update(self, rule, position, result):
         if result.getPosition() > self.furthest:
             self.furthest = result.getPosition()
 
-    def hasResult(self, position):
-        return false
+        for_rule = None
+        try:
+            for_rule = self.memo[rule]
+        except KeyError:
+            self.memo[rule] = {}
+            for_rule = self.memo[rule]
+        
+        for_position = None
+        try:
+            for_position = for_rule[position]
+        except KeyError:
+            for_rule[position] = None
 
-    def result(self, position):
-        return Result(-1)
+        for_rule[position] = result
+
+    def hasResult(self, rule, position):
+        try:
+            x = self.memo[rule][position]
+            return True
+        except KeyError:
+            return False
+
+    def result(self, rule, position):
+        return self.memo[rule][position]
+
 """
 
 class Pattern:
@@ -929,20 +950,22 @@ class Rule:
 try:
     %s = Result(%s)
     %s
-    %s.update(%s)
+    %s.update(%s, %s, %s)
     return %s
 except PegError:
     pass
-            """ % (result, position, indent(pattern.generate_python(result, stream, fail).strip()), stream, result, result)
+            """ % (result, position, indent(pattern.generate_python(result, stream, fail).strip()), stream, "RULE_%s" % self.name, position, result, result)
             return data
 
         stream = "stream"
         position = "position"
         data = """
 def rule_%s(%s, %s):
+    if %s.hasResult(%s, %s):
+        return %s.result(%s, %s)
     %s
     return None
-""" % (self.name, stream, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
+""" % (self.name, stream, position, stream, "RULE_%s" % self.name, position, stream, "RULE_%s" % self.name, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
 
         return data
 
@@ -993,8 +1016,14 @@ class Peg:
         return None
 
     def generate_python(self):
+        # use_rules = [rule for rule in self.rules if not rule.isInline()]
+        use_rules = self.rules
+        rule_numbers = '\n'.join(["RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
+
         data = """
 import peg
+
+%s
 
 %s
 
@@ -1011,7 +1040,7 @@ def parse(file):
         return None
     else:
         return done.getValues()
-""" % (start_python, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
+""" % (start_python, rule_numbers, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
         return data
 
@@ -1422,3 +1451,6 @@ if __name__ == '__main__':
             help()
             print "Give a BNF grammar file as an argument"
 
+
+# Done
+# memoize in python parsers
