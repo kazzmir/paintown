@@ -386,14 +386,38 @@ if %s == None:
         return data
 
     def generate_cpp(self, peg, result, stream, failure):
-        data = """
-%s = rule_%s(%s, %s.getPosition());
-if (%s.error()){
-    %s
-}
-""" % (result, self.rule, stream, result, result, indent(failure()))
+        rule = peg.getRule(self.rule)
+        if rule != None and rule.isInline():
+            def newPattern(pattern, stream, result, success):
+                my_result = newResult()
+                out = newOut()
+                def fail():
+                    return "goto %s;" % out
+                data = """
+Result %s(%s.getPosition());
+%s
+%s = %s;
+%s
+%s:
+                """ % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail).strip(), result, my_result, success, out)
+                return data
 
-        return data
+            success_out = 'success_%s' % nextVar()
+            data = """
+%s
+%s
+%s:
+""" % ('\n'.join([newPattern(pattern, stream, result, "goto %s;" % success_out).strip() for pattern in rule.patterns]), failure(), success_out)
+            return data
+        else:
+            data = """
+    %s = rule_%s(%s, %s.getPosition());
+    if (%s.error()){
+        %s
+    }
+    """ % (result, self.rule, stream, result, result, indent(failure()))
+
+            return data
 
 class PatternEof(Pattern):
     def __init__(self):
@@ -834,6 +858,9 @@ class Rule:
         self.patterns = patterns
         self.inline = inline
 
+    def isInline(self):
+        return self.inline
+
     def generate_bnf(self):
         data = """
 %s = %s
@@ -913,6 +940,12 @@ class Peg:
         for rule in self.rules:
             rule.ensureRules(lambda r: r in [r2.name for r2 in self.rules])
 
+    def getRule(self, name):
+        for rule in self.rules:
+            if rule.name == name:
+                return rule
+        return None
+
     def generate_python(self):
         data = """
 import peg
@@ -949,7 +982,8 @@ rules:
             return "Result rule_%s(Stream &, const int);" % rule.name
 
         r = 0
-        rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(self.rules, range(0, len(self.rules)))])
+        use_rules = [rule for rule in self.rules if not rule.isInline()]
+        rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
 
         data = """
 #include <vector>
@@ -979,7 +1013,7 @@ const void * main(const std::string & filename){
 }
 
 }
-        """ % (self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in self.rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self) for rule in self.rules]), self.start)
+        """ % (self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in use_rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self) for rule in use_rules]), self.start)
 
         return data
 
