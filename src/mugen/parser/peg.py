@@ -180,6 +180,13 @@ public:
         */
     }
 
+    bool find(const char * str, const int position){
+        if (position >= max || position < 0){
+            return false;
+        }
+        return strncmp(&buffer[position], str, max - position) == 0;
+    }
+
     void update(const int rule, const int position, const Result & result){
         memo[rule][position] = result;
     }
@@ -1214,7 +1221,6 @@ value = values[2]
         # Rule("space", [PatternRange(' \t')]),
         Rule("space", [PatternVerbatim(" "), PatternVerbatim("\\t")]),
         Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')]),
-        # Rule("any_char", [PatternVerbatim(letter) for letter in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']),
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
