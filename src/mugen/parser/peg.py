@@ -9,6 +9,10 @@
 # 3. 171397b / 8.630s = 19860.6025492468 b/s
 # 4. 171397b / 10.539s = 16263.1179428788 b/s
 
+# Todo (finished items at bottom)
+# memoize in python parsers
+# fix binding variables in c++ (move declaration the top of the function)
+
 next_var = 0
 def nextVar():
     global next_var;
@@ -1247,7 +1251,9 @@ value = lambda p: peg.PatternAction(p, ''.join(values[1]))
                 PatternBind("pattern",
                     PatternOr([
                         PatternRule("x_word"),
-                        PatternAction(PatternVerbatim("."), """value = peg.PatternAny()"""),
+                        PatternRule("any"),
+                        # Actions inside an Or don't work
+                        # PatternAction(PatternVerbatim("."), """value = peg.PatternAny()"""),
                         PatternRule("eof"),
                         PatternRule("range"),
                         PatternRule("string"),
@@ -1331,6 +1337,9 @@ value = values[2]
         # Rule("space", [PatternRange(' \t')]),
         Rule("space", [PatternVerbatim(" "), PatternVerbatim("\\t")]),
         Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')]),
+        Rule("any", [PatternAction(PatternVerbatim("."), """
+value = peg.PatternAny()
+""")]),
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
