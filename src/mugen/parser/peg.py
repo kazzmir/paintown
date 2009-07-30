@@ -572,6 +572,9 @@ class PatternAction(Pattern):
         self.before = before
         self.code = code
 
+    def contains(self):
+        return 1
+
     def ensureRules(self, find):
         self.before.ensureRules(find)
 
@@ -662,6 +665,9 @@ class PatternAny(Pattern):
     def __init__(self):
         Pattern.__init__(self)
 
+    def generate_bnf(self):
+        return "."
+
     def ensureRules(self, find):
         pass
 
@@ -716,6 +722,9 @@ class PatternOr(Pattern):
     def ensureRules(self, find):
         for pattern in self.patterns:
             pattern.ensureRules(find)
+
+    def generate_bnf(self):
+        return "or"
 
     def generate_python(self, result, stream, failure):
         data = ""
@@ -1103,7 +1112,7 @@ std::cout << "Parsed def!" << std::endl;
     peg = Peg("Peg", "start", rules)
     print peg.generate_cpp()
 
-def make_peg_parser():
+def peg_bnf():
     start_code_abc = """
 print "parsed abc"
 """
@@ -1238,6 +1247,7 @@ value = lambda p: peg.PatternAction(p, ''.join(values[1]))
                 PatternBind("pattern",
                     PatternOr([
                         PatternRule("x_word"),
+                        PatternAction(PatternVerbatim("."), """value = peg.PatternAny()"""),
                         PatternRule("eof"),
                         PatternRule("range"),
                         PatternRule("string"),
@@ -1315,7 +1325,6 @@ value = peg.PatternRule(values)
         Rule("start_symbol", [
             PatternAction(PatternSequence([PatternVerbatim("start-symbol:"), PatternRepeatMany(PatternRule("space")), PatternRule("word")]), """
 value = values[2]
-# print 'start symbol is ' + str(value)
 """)
             ]),
         Rule("spaces", [PatternRepeatMany(PatternRule("space"))]),
@@ -1327,11 +1336,12 @@ value = values[2]
 
     peg = Peg("peg", "start", rules)
     # print peg.generate_python()
-    parser = create_peg(peg)
-    # print parser
-    return parser
-    answer = parser('peg.in')
-    print "Got " + str(answer)
+    return peg
+
+def make_peg_parser():
+    return create_peg(peg_bnf())
+    # answer = parser('peg.in')
+    # print "Got " + str(answer)
     # print answer.generate()
     # module = compile(peg.generate_python(), peg.namespace, 'exec')
     # print module
@@ -1352,6 +1362,9 @@ def help_syntax():
     print "  pattern+"
     print "  [<characters>]"
     print "  <eof>"
+    print
+    print "BNF grammar for a peg grammar"
+    print peg_bnf().generate_bnf()
 
 def help():
     print "Options:"
