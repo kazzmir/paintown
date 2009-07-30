@@ -1247,13 +1247,43 @@ value = values[2]
 # test()
 # test2()
 
+def help():
+    print "-h,--help,help : Print this help"
+    print "--bnf : Generate BNF (grammar language)"
+    print "--python : Generate python parser"
+    print "--cpp,--c++ : Generate c++ parser"
+
 # make_peg_parser()
 if __name__ == '__main__':
     import sys
     parser = make_peg_parser()
     # out = parser('peg.in.x')
-    if len(sys.argv) > 1:
-        out = parser(sys.argv[1])
+    doit = []
+    file = None
+    for arg in sys.argv[1:]:
+        if arg == '--bnf':
+            doit.append(lambda p: p.generate_bnf())
+        elif arg == '--cpp' or arg == '-c++':
+            doit.append(lambda p: p.generate_cpp())
+        elif arg == '--python':
+            doit.append(lambda p: p.generate_python())
+        elif arg == '-h' or arg == '--help' or arg == 'help':
+            help()
+        else:
+            file = arg
+
+    if file != None:
+        out = parser(file)
         # print out
         if out != None:
-            print out.generate_bnf()
+            if len(doit) == 0:
+                print "Grammar file looks good!. Use some options to generate code"
+            else:
+                for generate in doit:
+                    print generate(out)
+        else:
+            print "Uh oh, couldn't parse " + file + ". Are you sure its using BNF format?"
+    else:
+        help()
+        print "Give a grammar file as an argument"
+
