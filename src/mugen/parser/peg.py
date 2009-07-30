@@ -12,6 +12,7 @@
 # Todo (finished items at bottom)
 # fix binding variables in c++ (move declaration the top of the function)
 # error reporting for c++
+# include arbitrary code at the top of the file (python, c++, bnf)
 
 next_var = 0
 def nextVar():
