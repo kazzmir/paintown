@@ -1127,14 +1127,13 @@ print "s code"
     rules = [
         Rule("start", [
             PatternAction(PatternSequence([
-                PatternRule("start_symbol"),
                 PatternRule("newlines"),
-                PatternRule("rules"),
+                PatternBind("start_symbol", PatternRule("start_symbol")),
+                PatternRule("newlines"),
+                PatternBind("rules", PatternRule("rules")),
                 PatternRule("newlines"),
                 PatternEof(),
                 ]), """
-start_symbol = values[0]
-rules = values[2]
 value = peg.Peg('xx', start_symbol, rules)
 """)
             ]),
