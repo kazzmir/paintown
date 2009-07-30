@@ -394,9 +394,11 @@ if %s == None:
                 def fail():
                     return "goto %s;" % out
                 data = """
+{
 Result %s(%s.getPosition());
 %s
 %s = %s;
+}
 %s
 %s:
                 """ % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail).strip(), result, my_result, success, out)
