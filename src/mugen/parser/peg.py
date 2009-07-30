@@ -320,6 +320,33 @@ class Pattern:
         else:
             return str
 
+class PatternEnsure(Pattern):
+    def __init__(self, next):
+        Pattern.__init__(self)
+        self.next = next
+
+    def ensureRules(self, find):
+        self.next.ensureRules(find)
+
+    def generate_bnf(self):
+        return "&" + self.next.generate_bnf()
+
+    def generate_python(self, result, stream, failure):
+        my_result = newResult()
+        data = """
+%s = Result(%s.getPosition())
+%s
+""" % (my_result, result, self.next.generate_python(my_result, stream, failure).strip())
+        return data
+
+    def generate_cpp(self, peg, result, stream, failure):
+        my_result = newResult()
+        data = """
+Result %s(%s.getPosition());
+%s
+""" % (my_result, result, self.next.generate_cpp(peg, my_result, stream, failure).strip())
+        return data
+
 class PatternNot(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
@@ -344,7 +371,6 @@ except NotError:
         """ % (my_result, result, indent(self.next.generate_python(my_result, stream, my_fail).strip()), failure(), result)
 
         return data
-
 
     def generate_cpp(self, peg, result, stream, failure):
         not_label = "not_%s" % nextVar()
@@ -1208,6 +1234,7 @@ value = lambda p: peg.PatternAction(p, ''.join(values[1]))
             ]),
         Rule("item", [
             PatternAction(PatternSequence([
+                PatternBind("ensure", PatternMaybe(PatternVerbatim("&"))),
                 PatternBind("pnot", PatternMaybe(PatternVerbatim("!"))),
                 PatternBind("pattern",
                     PatternOr([
@@ -1221,6 +1248,8 @@ if modifier != None:
     pattern = modifier(pattern)
 if pnot != None:
     pattern = peg.PatternNot(pattern)
+if ensure != None:
+    pattern = peg.PatternEnsure(pattern)
 value = pattern
 """),
             ]),
