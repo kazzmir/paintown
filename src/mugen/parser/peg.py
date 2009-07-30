@@ -302,7 +302,6 @@ class Stream:
     def update(self, result):
         if result.getPosition() > self.furthest:
             self.furthest = result.getPosition()
-        pass
 
     def hasResult(self, position):
         return false
