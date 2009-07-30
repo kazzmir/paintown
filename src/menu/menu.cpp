@@ -52,6 +52,7 @@ motion(0),
 currentDrawState( NoFade ),
 work(new Bitmap(GFX_X, GFX_Y)),
 menuInfo(""),
+parent(0),
 _name(""),
 hasOptions(false),
 removeOption(false),
@@ -499,10 +500,23 @@ void Menu::run(){
     }
 }
 
+/*! set parent */
+void Menu::setParent(Menu *menu){
+    this->parent = menu;
+}
+
+/*! get background */
+Bitmap *Menu::getBackground(){
+    if (!background){
+	return getParent()->getBackground();
+    }
+    return background;
+}
+
 /*! Add options to menu */
 void Menu::addOption(MenuOption *opt){
   if (opt){
-      opt->parent = this;
+      opt->setParent(this);
       hasOptions = true;
       menuOptions.push_back(opt);
   }
@@ -651,11 +665,12 @@ void Menu::updateFadeInfo(){
 }
 
 void Menu::drawBackground(Bitmap *bmp){
-	if ( !background ){
-	      bmp->fill(clearColor);
-	} else {
-	    background->Stretch(*bmp);
-	}
+    Bitmap *temp = getBackground();
+    if ( !temp ){
+	    bmp->fill(clearColor);
+    } else {
+	temp->Stretch(*bmp);
+    }
 }
 
 //! Draw board

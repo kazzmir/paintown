@@ -8,6 +8,7 @@
 using namespace std;
 
 MenuOption::MenuOption(Token *token, const OptionType t) throw (LoadException):
+parent(0),
 currentState(Deselected),
 text(""),
 infoText(""),
@@ -15,8 +16,7 @@ bmp(0),
 adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )),
 adjustRightColor(Bitmap::makeColor( 255, 255, 255 )),
 runnable(true),
-forRemoval(false),
-parent(0){
+forRemoval(false){
     setType(t);
 
     if(token){
@@ -123,3 +123,8 @@ void MenuOption::updateAnimations(){
 	}
     }
 }
+
+void MenuOption::setParent(Menu *menu){
+    this->parent = menu;
+}
+

@@ -18,11 +18,13 @@ class OptionMenu : public MenuOption
 		virtual void run(bool &endGame);
 		
 		OptionMenu(Token *token)throw( LoadException );
+		
+		virtual  void setParent(Menu *menu);
 	
 		virtual ~OptionMenu();
 		
 	private:
-		Menu *_menu;
+		Menu *menu;
 };
 
 #endif

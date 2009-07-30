@@ -49,10 +49,19 @@ class Menu
 		virtual void draw(const Box &area, Bitmap *bmp);
 		
 		//! Draw text
-		void drawText(const Box &area, Bitmap *bmp);
+		virtual void drawText(const Box &area, Bitmap *bmp);
 		
 		/*! run as it's own menu */
 		virtual void run();
+		
+		/*! Parent */
+		virtual void setParent(Menu *menu);
+		
+		/*! get parent */
+		inline Menu *getParent() { return parent; }
+		
+		/*! get background */
+		virtual Bitmap *getBackground();
 		
 		/*! get menu name */
 		inline const std::string &getName() const { return _name; };
@@ -145,6 +154,9 @@ class Menu
 		
 		//! menu info location
 		Point menuInfoLocation;
+		
+		//! parent menu
+		Menu *parent;
 		
 	private:
 		std::string _name;

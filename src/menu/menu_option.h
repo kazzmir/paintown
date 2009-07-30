@@ -39,6 +39,9 @@ class MenuOption
 		// Update animations This is called regardless and only when the option is active
 		virtual void updateAnimations();
 		
+		//! Set parent
+		virtual  void setParent(Menu *menu);
+		
 		enum state
 		{
 			Selected = 0,
@@ -57,7 +60,9 @@ class MenuOption
 		virtual ~MenuOption();
 
 	protected:
-		// Nothing
+		
+		//! This is the owner of this option
+		Menu *parent;
 	private:
 		state currentState;
 		OptionType mType;
@@ -72,12 +77,6 @@ class MenuOption
 		// Image resource for use in individual options
 		std::vector<MenuAnimation *>backgroundAnimations;
 		std::vector<MenuAnimation *>foregroundAnimations;
-		
-		// Stuff we don't need to be concerned with
-		friend class Menu;
-		
-		// This is the owner of this option
-		Menu *parent;
 	public:
 		
 		inline void setState(const state s) { currentState = s; }

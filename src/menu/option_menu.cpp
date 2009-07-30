@@ -8,15 +8,15 @@
 
 OptionMenu::OptionMenu(Token *token) throw (LoadException):
 MenuOption(token, Event),
-_menu(0){
+menu(0){
     // Check whether we have a menu or tabmenu
     if ( *token == "menu" ){
-	_menu = new Menu();
+	menu = new Menu();
     } else {
 	throw LoadException("Not a menu");
     }
     // Set this menu as an option
-    _menu->setAsOption(true);
+    menu->setAsOption(true);
     
     /*
     // Lets try loading from a file
@@ -28,21 +28,21 @@ _menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         *token >> temp;
-        _menu->load(Util::getDataPath() + temp);
+        menu->load(Util::getDataPath() + temp);
     } else {
-        _menu->load(token);
+        menu->load(token);
     }
 
-    this->setText(_menu->getName());
+    this->setText(menu->getName());
     
     // Lets check if this menu is going bye bye
-    if ( _menu->checkRemoval() ) setForRemoval(true);
+    if ( menu->checkRemoval() ) setForRemoval(true);
 }
 
 OptionMenu::~OptionMenu()
 {
 	// Delete our menu
-	if(_menu)delete _menu;
+	if(menu)delete menu;
 }
 
 void OptionMenu::logic()
@@ -53,6 +53,11 @@ void OptionMenu::logic()
 void OptionMenu::run(bool &endGame)
 {
 	// Do our new menu
-	_menu->run();
+	menu->run();
+}
+
+void OptionMenu::setParent(Menu *menu){
+    this->parent = menu;
+    this->menu->setParent(menu);
 }
 
