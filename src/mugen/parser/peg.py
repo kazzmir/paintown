@@ -555,6 +555,11 @@ class PatternAction(Pattern):
 }}""" % (self.before.generate_bnf(), self.code)
         return data
 
+    def fixup_python(self, code):
+        import re
+        fix = re.compile("\$(\d+)")
+        return re.sub(fix, r"values[\1-1]", code)
+
     def generate_python(self, result, stream, failure):
         data = """
 %s
@@ -563,7 +568,7 @@ if True:
     values = %s.getValues()
     %s
     %s.setValue(value)
-""" % (self.before.generate_python(result, stream, failure).strip(), result, indent(self.code.strip()), result)
+""" % (self.before.generate_python(result, stream, failure).strip(), result, self.fixup_python(indent(self.code.strip())), result)
 
         return data
 
