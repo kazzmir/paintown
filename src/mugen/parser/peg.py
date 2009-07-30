@@ -605,9 +605,7 @@ class PatternAction(Pattern):
         self.before.ensureRules(find)
 
     def generate_bnf(self):
-        data = """%s {{
-%s
-}}""" % (self.before.generate_bnf(), self.code)
+        data = """%s {{%s}}""" % (self.before.generate_bnf(), self.code)
         return data
 
     def fixup_python(self, code):
