@@ -1444,15 +1444,22 @@ def help():
     print "--bnf : Generate BNF (grammar language)"
     print "--python : Generate python parser"
     print "--cpp,--c++ : Generate c++ parser"
+    print "--save=filename : Save all generated parser output to a file, 'filename'"
 
 # make_peg_parser()
 if __name__ == '__main__':
     import sys
+    import re
     parser = make_peg_parser()
     # out = parser('peg.in.x')
     doit = []
     file = None
     helped = 0
+    save_re = re.compile('--save=(.*)')
+    def print_it(p):
+        print p
+    do_output = print_it
+    do_close = lambda : 0
     for arg in sys.argv[1:]:
         if arg == '--bnf':
             doit.append(lambda p: p.generate_bnf())
@@ -1462,6 +1469,13 @@ if __name__ == '__main__':
             doit.append(lambda p: p.generate_python())
         elif arg == "--help-syntax":
             help_syntax()
+        elif save_re.match(arg):
+            all = save_re.match(arg)
+            fout = open(all.group(1), 'w')
+            do_close = lambda : fout.close()
+            def save(p):
+                fout.write(p)
+            do_output = save
         elif arg == '-h' or arg == '--help' or arg == 'help':
             help()
             helped = 1
@@ -1476,13 +1490,15 @@ if __name__ == '__main__':
                 print "Grammar file looks good!. Use some options to generate code"
             else:
                 for generate in doit:
-                    print generate(out)
+                    do_output(generate(out))
         else:
             print "Uh oh, couldn't parse " + file + ". Are you sure its using BNF format?"
     else:
         if helped == 0:
             help()
             print "Give a BNF grammar file as an argument"
+
+    do_close()
 
 
 # Done
