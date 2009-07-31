@@ -129,7 +129,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
 }
 
-std::string MenuGlobals::doLevelMenu(const std::string dir){
+std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
     std::vector<std::string> possible = Util::getFiles( Util::getDataPath() + dir + "/", "*.txt" );
 
     /* count is the number of pixels the menu can be. try not to hard code
@@ -156,6 +156,7 @@ std::string MenuGlobals::doLevelMenu(const std::string dir){
 
     try{
         Menu temp;
+	temp.setParent(parent);
         string level;
         for ( unsigned int i = 0; i < possible.size(); i++ ){
             OptionLevel *opt = new OptionLevel(0, &level);

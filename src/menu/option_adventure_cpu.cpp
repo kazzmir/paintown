@@ -63,7 +63,7 @@ void OptionAdventureCpu::run(bool &endGame){
 	vector< Object * > buddies;
 	try{
 		//string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
-		string level = MenuGlobals::doLevelMenu("/levels");
+		string level = MenuGlobals::doLevelMenu("/levels",parent);
 		if (level.empty()){
                     Global::debug(0) << "*bug* Level name is empty?" << endl;
                     return;

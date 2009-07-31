@@ -67,7 +67,7 @@ public:
 	inline static const std::string &getLevel(){ return level; }
         */
 	
-	static std::string doLevelMenu(const std::string dir);
+	static std::string doLevelMenu(const std::string dir, Menu *parent);
 
         /* free for all lets players attack each other in network mode.
          * cooperative means they are on the same team.
