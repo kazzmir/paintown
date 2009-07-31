@@ -30,7 +30,7 @@ def indent(s):
     space = '    '
     return s.replace('\n', '\n%s' % space)
 
-start_code = """
+start_cpp_code = """
 struct Value{
     Value():
         which(1){
@@ -157,6 +157,8 @@ private:
     Value value;
 };
 
+%s
+
 class Stream{
 public:
     Stream(const std::string & filename):
@@ -192,6 +194,11 @@ public:
         return strncmp(&buffer[position], str, max - position) == 0;
     }
 
+    Column & getColumn(const int position){
+        return memo[position];
+    }
+
+    /*
     void update(const int rule, const int position, const Result & result){
         memo[rule][position] = result;
     }
@@ -203,6 +210,7 @@ public:
     Result result(const int rule, const int position){
         return memo[rule][position];
     }
+    */
 
     ~Stream(){
         delete[] buffer;
@@ -210,7 +218,7 @@ public:
 
 private:
     char * buffer;
-    std::map<const int, std::map<const int, Result> > memo;
+    std::map<const int, Column> memo;
     int max;
 };
 
@@ -968,36 +976,73 @@ def rule_%s(%s, %s):
 
         return data
 
-    def generate_cpp(self, peg):
+    def generate_cpp(self, peg, chunk_accessor):
         rule_number = "RULE_%s" % self.name
+        stream = "stream"
+        position = "position"
+
+        def updateChunk(new):
+            data = """
+{
+    Column & column = %s.getColumn(%s);
+    if (%s == 0){
+        %s = new %s();
+    }
+    %s = %s;
+}
+""" % (stream, position, chunk_accessor.getChunk("column"), chunk_accessor.getChunk("column"), chunk_accessor.getType(), chunk_accessor.getValue(chunk_accessor.getChunk("column")), new)
+            return data
+
+        hasChunk = """
+{
+    Column & column = %s.getColumn(%s);
+    if (%s != 0 && %s.calculated()){
+        return %s;
+    }
+}
+""" % (stream, position, chunk_accessor.getChunk("column"), chunk_accessor.getValue(chunk_accessor.getChunk("column")), chunk_accessor.getValue(chunk_accessor.getChunk("column")))
+
         def newPattern(pattern, stream, position):
             result = newResult()
             out = newOut()
             def failure():
                 return "goto %s;" % out
+            
             data = """
 Result %s(%s);
 %s
-%s.update(%s, %s, %s);
+%s
 return %s;
 %s:
-            """ % (result, position, pattern.generate_cpp(peg, result, stream, failure).strip(), stream, rule_number, position, result, result, out)
+            """ % (result, position, pattern.generate_cpp(peg, result, stream, failure).strip(), updateChunk(result), result, out)
             return data
 
-        stream = "stream"
-        position = "position"
         data = """
 Result rule_%s(Stream & %s, const int %s){
-    if (%s.hasResult(%s, %s)){
-        return %s.result(%s, %s);
-    }
     %s
-    %s.update(%s, %s, errorResult);
+    %s
+    %s
     return errorResult;
 }
-        """ % (self.name, stream, position, stream, rule_number, position, stream, rule_number, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, rule_number, position)
+        """ % (self.name, stream, position, indent(hasChunk), indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), indent(updateChunk("errorResult")))
 
         return data
+
+class Accessor:
+    def __init__(self, chunk, value, type, rule):
+        self.chunk = chunk
+        self.value = value
+        self.rule = rule
+        self.type = type
+
+    def getChunk(self, code):
+        return code + self.chunk
+
+    def getType(self):
+        return self.type
+
+    def getValue(self, code):
+        return code + self.value
     
 class Peg:
     def __init__(self, start, code, module, rules):
@@ -1072,6 +1117,55 @@ rules:
         use_rules = [rule for rule in self.rules if not rule.isInline()]
         rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
 
+
+        chunk_accessors = []
+        def findAccessor(rule):
+            for accessor in chunk_accessors:
+                if accessor.rule == rule:
+                    return accessor
+            raise Exception("Cannot find accessor for " + rule.name)
+
+        def makeChunks(rules):
+            import math
+
+            values_per_chunk = 5
+            #values_per_chunk = int(math.sqrt(len(rules)))
+            #if values_per_chunk < 5:
+            #    values_per_chunk = 5
+            all = []
+            pre = ""
+            for i in xrange(0,int(math.ceil(float(len(rules)) / values_per_chunk))):
+                values = rules[i*values_per_chunk:(i+1)*values_per_chunk]
+                name = "Chunk%d" % i
+                chunk_accessors.extend([Accessor(".%s" % name.lower(), "->chunk_%s" % rule.name, name, rule) for rule in values])
+
+                value_data = """
+struct %s{
+    %s
+};
+""" % (name, indent("\n".join(["Result chunk_%s;" % rule.name for rule in values])))
+                all.append(name)
+                pre += value_data
+
+            data = """
+%s
+struct Column{
+    Column():
+        %s{
+    }
+
+    %s
+
+    ~Column(){
+        %s
+    }
+};
+""" % (pre, indent(indent("\n,".join(["%s(0)" % x.lower() for x in all]))), indent("\n".join(["%s * %s;" % (x, x.lower()) for x in all])), indent(indent("\n".join(["delete %s;" % x.lower() for x in all]))))
+
+            return data
+
+        chunks = makeChunks(use_rules)
+
         more = ""
         if self.code != None:
             more = self.code
@@ -1106,7 +1200,7 @@ const void * main(const std::string & filename){
 }
 
 }
-        """ % (more, '::'.join(self.module), start_code, indent('\n'.join([prototype(rule) for rule in use_rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self) for rule in use_rules]), self.start)
+        """ % (more, '::'.join(self.module), start_cpp_code % chunks, indent('\n'.join([prototype(rule) for rule in use_rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start)
 
         return data
 
