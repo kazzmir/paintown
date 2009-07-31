@@ -1004,10 +1004,7 @@ class Peg:
         self.namespace = namespace
         self.start = start
         self.rules = rules
-        if code == None:
-            self.code = ""
-        else:
-            self.code = code
+        self.code = code
 
         for rule in self.rules:
             rule.ensureRules(lambda r: r in [r2.name for r2 in self.rules])
@@ -1022,6 +1019,10 @@ class Peg:
         # use_rules = [rule for rule in self.rules if not rule.isInline()]
         use_rules = self.rules
         rule_numbers = '\n'.join(["RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
+
+        more = ""
+        if self.code != None:
+            more = self.code
 
         data = """
 import peg
@@ -1045,16 +1046,20 @@ def parse(file):
         return None
     else:
         return done.getValues()
-""" % (self.code, start_python, rule_numbers, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
+""" % (more, start_python, rule_numbers, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
         return data
 
     def generate_bnf(self):
+        more = ""
+        if self.code != None:
+            more = """include: {{%s}}""" % self.code
         data = """
 start-symbol: %s
+%s
 rules:
     %s
-""" % (self.start, indent('\n'.join([rule.generate_bnf() for rule in self.rules]).strip()))
+""" % (self.start, more, indent('\n'.join([rule.generate_bnf() for rule in self.rules]).strip()))
         return data
 
     def generate_cpp(self):
@@ -1064,6 +1069,10 @@ rules:
         r = 0
         use_rules = [rule for rule in self.rules if not rule.isInline()]
         rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
+
+        more = ""
+        if self.code != None:
+            more = self.code
 
         data = """
 %s
@@ -1095,7 +1104,7 @@ const void * main(const std::string & filename){
 }
 
 }
-        """ % (self.code, self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in use_rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self) for rule in use_rules]), self.start)
+        """ % (more, self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in use_rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self) for rule in use_rules]), self.start)
 
         return data
 
