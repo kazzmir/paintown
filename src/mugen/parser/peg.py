@@ -12,6 +12,7 @@
 # Todo (finished items at bottom)
 # fix binding variables in c++ (move declaration the top of the function)
 # error reporting for c++
+# add generator for ruby, scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
 
 next_var = 0
 def nextVar():
