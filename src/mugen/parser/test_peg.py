@@ -72,14 +72,14 @@ def do_cpp(name, grammar, input):
 
 using namespace std;
 
-namespace xx{
+namespace Parser{
     struct Value;
     const void * main(const std::string & filename);
 }
 
 int main(int argc, char ** argv){
     if (argc >= 2){
-        const void * result = xx::main(argv[1]);
+        const void * result = Parser::main(argv[1]);
         cout << "got " << (int) result << endl << endl;
     } else {
         cout << "Give an argument" << endl;
