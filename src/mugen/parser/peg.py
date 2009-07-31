@@ -1000,10 +1000,14 @@ Result rule_%s(Stream & %s, const int %s){
         return data
     
 class Peg:
-    def __init__(self, namespace, start, rules):
+    def __init__(self, namespace, start, code, rules):
         self.namespace = namespace
         self.start = start
         self.rules = rules
+        if code == None:
+            self.code = ""
+        else:
+            self.code = code
 
         for rule in self.rules:
             rule.ensureRules(lambda r: r in [r2.name for r2 in self.rules])
@@ -1028,6 +1032,8 @@ import peg
 
 %s
 
+%s
+
 def parse(file):
     # print "Parsing " + file
     stream = Stream(file)
@@ -1039,7 +1045,7 @@ def parse(file):
         return None
     else:
         return done.getValues()
-""" % (start_python, rule_numbers, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
+""" % (self.code, start_python, rule_numbers, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
         return data
 
@@ -1060,6 +1066,8 @@ rules:
         rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
 
         data = """
+%s
+
 #include <vector>
 #include <string>
 #include <map>
@@ -1087,7 +1095,7 @@ const void * main(const std::string & filename){
 }
 
 }
-        """ % (self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in use_rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self) for rule in use_rules]), self.start)
+        """ % (self.code, self.namespace, start_code, indent('\n'.join([prototype(rule) for rule in use_rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self) for rule in use_rules]), self.start)
 
         return data
 
@@ -1171,12 +1179,23 @@ print "s code"
                 PatternRule("newlines"),
                 PatternBind("start_symbol", PatternRule("start_symbol")),
                 PatternRule("newlines"),
+                PatternBind('include', PatternMaybe(PatternRule("include"))),
+                PatternRule("newlines"),
                 PatternBind("rules", PatternRule("rules")),
                 PatternRule("newlines"),
                 PatternEof(),
                 ]), """
-value = peg.Peg('xx', start_symbol, rules)
+value = peg.Peg('xx', start_symbol, include, rules)
 """)
+            ]),
+        Rule("include", [
+            PatternAction(PatternSequence([
+                PatternVerbatim("include:"),
+                PatternRule("spaces"),
+                PatternBind("code", PatternRule("code")),
+                ]), """
+value = code(None).code
+"""),
             ]),
         Rule("word", [
             PatternAction(PatternRepeatOnce(PatternRule("any_char")), """
@@ -1371,7 +1390,7 @@ value = peg.PatternAny()
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
-    peg = Peg("peg", "start", rules)
+    peg = Peg("peg", "start", None, rules)
     # print peg.generate_python()
     return peg
 

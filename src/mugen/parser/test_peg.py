@@ -12,6 +12,17 @@ def write(data, file):
     f.write(data)
     f.close()
 
+def rootPath():
+    return ".test"
+
+file_count = 0
+def newFile(suffix = ""):
+    import os
+    global file_count
+    file_count += 1
+    return "file%d%s" % (file_count, suffix)
+    # return os.path.join(rootPath(), "file%d%s" % (file_count, suffix))
+
 def do_bnf(name, grammar):
     import subprocess
     print "[%s] Test bnf.." % name
@@ -99,6 +110,18 @@ def test_all(name, grammar, input):
     erase(grammar_file)
     erase(input_file)
 
+def test_cpp(name, grammar, input):
+    grammar_file = newFile()
+    input_file = newFile()
+    
+    write(grammar, grammar_file)
+    write(input, input_file)
+
+    do_cpp(name, grammar_file, input_file)
+
+    erase(grammar_file)
+    erase(input_file)
+
 def test1():
     grammar = """
 start-symbol: start
@@ -119,6 +142,29 @@ rules:
 
     test_all('test2', grammar, input)
 
+def test3():
+    grammar = """
+start-symbol: start
+include: {{
+#include <iostream>
+static void got_a(){
+    std::cout << "Got an 'aa'!" << std::endl;
+}
+}}
+rules:
+    start = a* b "\\n"* <eof>
+    a = "aa" {{
+        got_a();
+    }}
+    b = "b"
+"""
+    input = """aaaab"""
+
+    test_cpp('test3', grammar, input)
+    
+import sys
+# add rootPath to sys path
 
 test1()
 test2()
+test3()
