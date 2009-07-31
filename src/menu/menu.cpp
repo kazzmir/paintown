@@ -508,7 +508,12 @@ void Menu::setParent(Menu *menu){
 /*! get background */
 Bitmap *Menu::getBackground(){
     if (!background){
-	return getParent()->getBackground();
+	Menu *p = getParent();
+	if (p){
+	    return p->getBackground();
+	} else {
+	    return 0;
+	}
     }
     return background;
 }
