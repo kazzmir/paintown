@@ -194,7 +194,7 @@ public:
         return strncmp(&buffer[position], str, max - position) == 0;
     }
 
-    Column & getColumn(const int position){
+    inline Column & getColumn(const int position){
         return memo[position];
     }
 
@@ -421,9 +421,10 @@ Result %s(%s);
         return data
 
 class PatternRule(Pattern):
-    def __init__(self, rule):
+    def __init__(self, rule, parameters = None):
         Pattern.__init__(self)
         self.rule = rule
+        self.parameters = parameters
 
     def contains(self):
         return 1
@@ -1258,26 +1259,6 @@ std::cout << "Parsed def!" << std::endl;
     print peg.generate_cpp()
 
 def peg_bnf():
-    start_code_abc = """
-print "parsed abc"
-"""
-    s_code = """
-print "s code"
-"""
-    rules = [
-        Rule("start", [
-            PatternAction(PatternSequence([PatternRule("a"),PatternRule("b"), PatternRule("c")]), start_code_abc),
-            ]),
-        Rule("a", [PatternVerbatim("a")]),
-        Rule("b", [PatternVerbatim("b")]),
-        Rule("c", [PatternVerbatim("c")]),
-
-        Rule("s", [
-            PatternNot(PatternVerbatim("hello")), PatternAction(PatternVerbatim("cheese"), s_code),
-            PatternRepeatOnce(PatternVerbatim("once"))]),
-        Rule("blah", [PatternRepeatMany(PatternRule("s"))]),
-        ]
-
     rules = [
         Rule("start", [
             PatternAction(PatternSequence([
@@ -1480,10 +1461,47 @@ value = lambda p: peg.PatternRepeatOnce(p)
 """),
             ]),
         Rule("x_word", [
-            PatternAction(PatternRule("word"), """
-value = peg.PatternRule(values)
+            PatternAction(PatternSequence([
+                PatternBind('name', PatternRule("word")),
+                PatternBind('parameters', PatternMaybe(PatternRule('parameters'))),
+                ]), """
+print "Parameters are " + str(parameters)
+value = peg.PatternRule(name, parameters)
 """),
             ]),
+        Rule('parameters', [
+            PatternAction(PatternSequence([
+                PatternVerbatim("("),
+                PatternRule("spaces"),
+                PatternBind('param1', PatternRule('dollar')),
+                PatternBind('params', PatternRepeatMany(PatternAction(PatternSequence([
+                    PatternRule('spaces'),
+                    PatternVerbatim(','),
+                    PatternRule('spaces'),
+                    PatternBind('exp', PatternRule('dollar')),
+                    ]), """
+value = exp
+"""))),
+                PatternRule("spaces"),
+                PatternVerbatim(")"),
+                ]), """
+value = [param1] + params
+"""),
+            ]),
+        Rule('dollar', [
+            PatternAction(PatternSequence([
+                PatternVerbatim("$"),
+                PatternBind('number', PatternRule("number")),
+                ]), """
+value = "$%s" % number
+"""),
+            ]),
+        Rule('number', [
+            PatternAction(PatternRepeatOnce(PatternRule('digit')), """
+value = ''.join(values)
+"""),
+            ]),
+        Rule('digit', [PatternRange('0123456789')]),
         Rule("start_symbol", [
             PatternAction(PatternSequence([PatternVerbatim("start-symbol:"), PatternRepeatMany(PatternRule("space")), PatternRule("word")]), """
 value = values[2]
@@ -1492,7 +1510,7 @@ value = values[2]
         Rule("spaces", [PatternRepeatMany(PatternRule("space"))]),
         # Rule("space", [PatternRange(' \t')]),
         Rule("space", [PatternVerbatim(" "), PatternVerbatim("\\t")]),
-        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')]),
+        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_')]),
         Rule("any", [PatternAction(PatternVerbatim("."), """
 value = peg.PatternAny()
 """)]),
