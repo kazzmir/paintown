@@ -22,6 +22,12 @@ def nextVar():
     next_var += 1;
     return "peg_%d" % next_var
 
+def gensym(what = None):
+    if what == None:
+        return "temp_%s" % nextVar()
+    else:
+        return "%s_%s" % (what, nextVar())
+
 def newResult():
     return "result_%s" % nextVar()
 
@@ -736,10 +742,15 @@ class PatternAny(Pattern):
         pass
 
     def generate_python(self, result, stream, failure):
+        temp = gensym()
         data = """
-%s.setValue(%s.get(%s.getPosition()))
-%s.nextPosition()
-""" % (result, stream, result, result)
+%s = %s.get(%s.getPosition())
+if %s != chr(0):
+    %s.setValue(%s)
+    %s.nextPosition()
+else:
+    %s
+""" % (temp, stream, result, temp, result, temp, result, indent(failure()))
         return data
 
 class PatternMaybe(Pattern):
@@ -1350,10 +1361,13 @@ value = ''.join(values)
             PatternAction(
                 PatternSequence([
                     PatternVerbatim("rules:"),
-                    PatternRule("newlines"),
-                    PatternRepeatMany(PatternRule("rule"))
+                    PatternRule("whitespace"),
+                    PatternBind("rules", PatternRepeatMany(PatternAction(PatternSequence([
+                        PatternRule("rule"),
+                        PatternRule("whitespace"),
+                        ]), """value = $1"""))),
                     ]),
-                """value = values[2]""")
+                """value = rules""")
             ]),
         Rule("rule", [
             PatternAction(PatternSequence([
@@ -1366,7 +1380,7 @@ value = ''.join(values)
                 PatternVerbatim("="),
                 PatternRule("spaces"),
                 PatternBind("pattern1", PatternRule("pattern_line")),
-                PatternRule("newlines"),
+                PatternRule("whitespace"),
                 PatternBind("patterns",
                     PatternRepeatMany(PatternAction(PatternSequence([
                         PatternRule("spaces"),
@@ -1374,7 +1388,7 @@ value = ''.join(values)
                         PatternRule("spaces"),
                         PatternBind("pattern", PatternRule("pattern_line")),
                         # PatternBind("pattern", PatternRepeatMany(PatternRule("pattern"))),
-                        PatternRule("newlines")]),
+                        PatternRule("whitespace")]),
                         """value = pattern"""
 )))]),
                 """
@@ -1583,6 +1597,7 @@ value = values[2]
         Rule("any", [PatternAction(PatternVerbatim("."), """
 value = peg.PatternAny()
 """)]),
+        Rule("whitespace", [PatternRepeatMany(PatternRange(" \\t\\n"))]),
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 

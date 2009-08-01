@@ -219,7 +219,21 @@ rules:
     input = """1+(2-3)*9/(2+2*32)-3232342+91"""
     test_cpp('test4', grammar, input)
 
+def test5():
+    grammar = """
+start-symbol: start
+rules:
+    start = a:a b:b {{value = a;}}
+    a = "a"
+    b = "b"
+"""
+
+    input = "ab"
+
+    test_all('test5', grammar, input)
+
 test1()
 test2()
 test3()
 test4()
+test5()
