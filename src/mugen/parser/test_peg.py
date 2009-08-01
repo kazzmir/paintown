@@ -81,6 +81,7 @@ int main(int argc, char ** argv){
     if (argc >= 2){
         const void * result = Parser::main(argv[1]);
         cout << "got " << (int) result << endl << endl;
+        return (int) result;
     } else {
         cout << "Give an argument" << endl;
     }
@@ -165,6 +166,60 @@ rules:
 import sys
 # add rootPath to sys path
 
+def test4():
+    grammar = """
+start-symbol: start
+include: {{
+static Value add(const Value & a, const Value & b){
+    return Value((void*)((int) a.getValue() + (int) b.getValue()));
+}
+
+static Value sub(const Value & a, const Value & b){
+    return Value((void*)((int) a.getValue() - (int) b.getValue()));
+}
+
+static Value multiply(const Value & a, const Value & b){
+    return Value((void*)((int) a.getValue() * (int) b.getValue()));
+}
+
+static Value divide(const Value & a, const Value & b){
+    return Value((void*)((int) a.getValue() / (int) b.getValue()));
+}
+
+}}
+
+rules:
+        start = expression sw <eof> {{ value = $1; }}
+        expression = expression2 expression1_rest({{$1}}) {{ value = $2; }}
+        expression1_rest(a) = "+" expression2 expression1_rest({{add(a, $2)}}) {{ value = $3; }}
+                            | "-" expression2 expression1_rest({{sub(a, $2)}}) {{ value = $3; }}
+                            | <void> {{ value = a; }}
+
+        expression2 = expression3 expression2_rest({{$1}}) {{ value = $2; }}
+        expression2_rest(a) = "*" expression3 expression2_rest({{multiply(a,$2)}}) {{ value = $3; }}
+                            | "/" expression3 expression2_rest({{divide(a,$2)}}) {{ value = $3; }}
+                            | <void> {{ value = a; }}
+
+        expression3 = number {{ value = $1; }}
+                    | "(" expression ")" {{ value = $2; }}
+
+        inline number = digit+ {{
+            int total = 0;
+            for (std::vector<Value>::const_iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
+                const Value & v = *it;
+                char letter = (char) (int) v.getValue();
+                total = (total * 10) + letter - '0';
+            }
+            value = (void*) total;
+        }}
+        inline sw = "\\n"*
+        inline digit = [0123456789] {{ value = $1; }}
+"""
+
+    input = """1+(2-3)*9/(2+2*32)-3232342+91"""
+    test_cpp('test4', grammar, input)
+
 test1()
 test2()
 test3()
+test4()
