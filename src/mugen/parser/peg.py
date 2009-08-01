@@ -373,12 +373,12 @@ class PatternEnsure(Pattern):
 """ % (my_result, result, self.next.generate_python(my_result, stream, failure).strip())
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         my_result = newResult()
         data = """
 Result %s(%s.getPosition());
 %s
-""" % (my_result, result, self.next.generate_cpp(peg, my_result, stream, failure).strip())
+""" % (my_result, result, self.next.generate_cpp(peg, my_result, result, stream, failure).strip())
         return data
 
 class PatternNot(Pattern):
@@ -406,7 +406,7 @@ except NotError:
 
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         not_label = "not_%s" % nextVar()
         my_result = newResult()
         my_fail = lambda : "goto %s;" % not_label
@@ -416,7 +416,7 @@ Result %s(%s);
 %s
 %s:
 %s.setValue((void*)0);
-        """ % (my_result, result, self.next.generate_cpp(peg, my_result, stream, my_fail).strip(), failure(), not_label, result)
+        """ % (my_result, result, self.next.generate_cpp(peg, my_result, result, stream, my_fail).strip(), failure(), not_label, result)
 
         return data
 
@@ -437,16 +437,19 @@ class PatternRule(Pattern):
         return self.rule
 
     def generate_python(self, result, stream, failure):
+        parameters = ""
+        if self.parameters != None:
+            parameters = ",%s" % ",".join(self.parameters)
         data = """
 # print "Trying rule " + '%s'
-%s = rule_%s(%s, %s.getPosition())
+%s = rule_%s(%s, %s.getPosition()%s)
 if %s == None:
     %s
-""" % (self.rule, result, self.rule, stream, result, result, indent(failure()))
+""" % (self.rule, result, self.rule, stream, result, parameters, result, indent(failure()))
 
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         rule = peg.getRule(self.rule)
         if rule != None and rule.isInline():
             def newPattern(pattern, stream, result, success):
@@ -462,7 +465,7 @@ Result %s(%s.getPosition());
 }
 %s
 %s:
-                """ % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail).strip(), result, my_result, success, out)
+                """ % (my_result, result, pattern.generate_cpp(peg, my_result, result, stream, fail).strip(), result, my_result, success, out)
                 return data
 
             success_out = 'success_%s' % nextVar()
@@ -473,14 +476,40 @@ Result %s(%s.getPosition());
 """ % ('\n'.join([newPattern(pattern, stream, result, "goto %s;" % success_out).strip() for pattern in rule.patterns]), failure(), success_out)
             return data
         else:
+            def fix_param(code):
+                import re
+                fix = re.compile("\$(\d+)")
+                to = "%s.getValues().getValues()[\\1-1]" % previous_result
+                return re.sub(fix, to, code)
+
+            parameters = ""
+            if self.parameters != None:
+                # parameters = ", %s" % ", ".join([fix_param(p) for p in self.parameters])
+                parameters = ", %s" % fix_param(self.parameters)
             data = """
-    %s = rule_%s(%s, %s.getPosition());
+    %s = rule_%s(%s, %s.getPosition()%s);
     if (%s.error()){
         %s
     }
-    """ % (result, self.rule, stream, result, result, indent(failure()))
+    """ % (result, self.rule, stream, result, parameters, result, indent(failure()))
 
             return data
+
+class PatternVoid(Pattern):
+    def __init__(self):
+        Pattern.__init__(self)
+
+    def ensureRules(self, find):
+        pass
+
+    def generate_bnf(self):
+        return "<bnf>"
+
+    def generate_python(self, result, stream, failure):
+        return ""
+    
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
+        return ""
 
 class PatternEof(Pattern):
     def __init__(self):
@@ -502,7 +531,7 @@ else:
 """ % (stream, result, result, result, indent(failure()))
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = """
 if ('\\0' == %s.get(%s.getPosition())){
     %s.nextPosition();
@@ -541,7 +570,7 @@ class PatternSequence(Pattern):
 
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = ""
         for pattern in self.patterns:
             my_result = newResult()
@@ -551,7 +580,7 @@ class PatternSequence(Pattern):
     %s
     %s.addResult(%s);
 }
-""" % (my_result, result, indent(pattern.generate_cpp(peg, my_result, stream, failure).strip()), result, my_result)
+""" % (my_result, result, indent(pattern.generate_cpp(peg, my_result, result, stream, failure).strip()), result, my_result)
         return data
 
 class PatternRepeatOnce(Pattern):
@@ -583,7 +612,7 @@ except PegError:
         return data
 
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         loop_done = "loop_%s" % nextVar()
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
@@ -597,7 +626,7 @@ do{
 if (%s.matches() == 0){
     %s
 }
-        """ % (my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail).strip()), result, my_result, loop_done, result, indent(failure()))
+        """ % (my_result, result, indent(self.next.generate_cpp(peg, my_result, result, stream, my_fail).strip()), result, my_result, loop_done, result, indent(failure()))
 
         return data
 
@@ -641,7 +670,7 @@ if True:
         #if fix.match(code):
         #    return code.sub("$1", "values.getValues()[0]")
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = """
 %s
 {
@@ -650,7 +679,7 @@ if True:
     %s
     %s.setValue(value);
 }
-        """ % (self.before.generate_cpp(peg, result, stream, failure).strip(), result, self.fixup_cpp(indent(self.code.strip())), result)
+        """ % (self.before.generate_cpp(peg, result, previous_result, stream, failure).strip(), result, self.fixup_cpp(indent(self.code.strip())), result)
 
         return data
 
@@ -680,7 +709,7 @@ except PegError:
 
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         loop_done = "loop_%s" % nextVar()
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
@@ -691,7 +720,7 @@ do{
     %s.addResult(%s);
 } while (true);
 %s:
-        """ % (my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail).strip()), result, my_result, loop_done)
+        """ % (my_result, result, indent(self.next.generate_cpp(peg, my_result, result, stream, my_fail).strip()), result, my_result, loop_done)
         return data
 
 class PatternAny(Pattern):
@@ -735,7 +764,7 @@ class PatternMaybe(Pattern):
 """ % (save, result, self.pattern.generate_python(result, stream, fail))
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         save = "save_%s" % nextVar()
         fail = lambda : """
 %s = Result(%s);
@@ -744,7 +773,7 @@ class PatternMaybe(Pattern):
         data = """
 int %s = %s.getPosition();
 %s
-""" % (save, result, self.pattern.generate_cpp(peg, result, stream, fail))
+""" % (save, result, self.pattern.generate_cpp(peg, result, previous_result, stream, fail))
         return data
 
 class PatternOr(Pattern):
@@ -773,7 +802,7 @@ if %s != None:
             fail = lambda : data
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = ""
         success = "success_%s" % nextVar()
         for pattern in self.patterns:
@@ -790,7 +819,7 @@ Result %s(%s.getPosition());
 }
 goto %s;
 %s:
-""" % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail).strip(), result, my_result, success, out)
+""" % (my_result, result, pattern.generate_cpp(peg, my_result, result, stream, fail).strip(), result, my_result, success, out)
         data += "%s:\n" % success
         return data
 
@@ -803,11 +832,11 @@ class PatternBind(Pattern):
     def ensureRules(self, find):
         self.pattern.ensureRules(find)
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = """
 %s
 Value %s = %s.getValues();
-""" % (self.pattern.generate_cpp(peg, result, stream, failure).strip(), self.variable, result)
+""" % (self.pattern.generate_cpp(peg, result, previous_result, stream, failure).strip(), self.variable, result)
         return data
 
     def generate_bnf(self):
@@ -831,7 +860,7 @@ class PatternRange(Pattern):
     def generate_bnf(self):
         return "[%s]" % self.range
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         letter = "letter_%s" % nextVar()
         data = """
 char %s = %s.get(%s.getPosition());
@@ -895,7 +924,7 @@ else:
 """ % (self.letters, stream, result, length, result, length, result, self.letters, indent(failure()))
         return data
 
-    def generate_cpp(self, peg, result, stream, failure):
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = """
 %s = "%s";
         """ % (result, self.letters)
@@ -928,10 +957,11 @@ for (int i = 0; i < %d; i++){
         return data
 
 class Rule:
-    def __init__(self, name, patterns, inline = False):
+    def __init__(self, name, patterns, inline = False, parameters = None):
         self.name = name
         self.patterns = patterns
         self.inline = inline
+        self.parameters = parameters
 
     def isInline(self):
         return self.inline
@@ -1015,17 +1045,21 @@ Result %s(%s);
 %s
 return %s;
 %s:
-            """ % (result, position, pattern.generate_cpp(peg, result, stream, failure).strip(), updateChunk(result), result, out)
+            """ % (result, position, pattern.generate_cpp(peg, result, None, stream, failure).strip(), updateChunk(result), result, out)
             return data
 
+        parameters = ""
+        if self.parameters != None:
+            parameters = ", " + ", ".join(["const Value & %s" % p for p in self.parameters])
+
         data = """
-Result rule_%s(Stream & %s, const int %s){
+Result rule_%s(Stream & %s, const int %s%s){
     %s
     %s
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, indent(hasChunk), indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), indent(updateChunk("errorResult")))
+        """ % (self.name, stream, position, parameters, indent(hasChunk), indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), indent(updateChunk("errorResult")))
 
         return data
 
@@ -1112,7 +1146,10 @@ rules:
 
     def generate_cpp(self):
         def prototype(rule):
-            return "Result rule_%s(Stream &, const int);" % rule.name
+            parameters = ""
+            if rule.parameters != None:
+                parameters = ", " + ", ".join(["const Value & %s" % p for p in rule.parameters])
+            return "Result rule_%s(Stream &, const int%s);" % (rule.name, parameters)
 
         r = 0
         use_rules = [rule for rule in self.rules if not rule.isInline()]
@@ -1322,6 +1359,7 @@ value = ''.join(values)
                 PatternBind("inline", PatternMaybe(PatternVerbatim("inline"))),
                 PatternRule("spaces"),
                 PatternBind("name", PatternRule("word")),
+                PatternBind("parameters", PatternMaybe(PatternRule('rule_parameters'))),
                 PatternRule("spaces"),
                 PatternVerbatim("="),
                 PatternRule("spaces"),
@@ -1338,7 +1376,7 @@ value = ''.join(values)
                         """value = pattern"""
 )))]),
                 """
-value = peg.Rule(name, [pattern1] + patterns, inline = (inline != None))
+value = peg.Rule(name, [pattern1] + patterns, inline = (inline != None), parameters = parameters)
 """)
             ]),
         Rule("pattern_line",[
@@ -1366,6 +1404,13 @@ value = item
 # print "Pattern is " + str(value)
 """)
             ]),
+        Rule('raw_code', [PatternAction(PatternSequence([
+            PatternVerbatim("("),
+            PatternRule("spaces"),
+            PatternBind("code", PatternRule('code')),
+            PatternRule("spaces"),
+            PatternVerbatim(")"),
+            ]), """value = code(None).code""")]),
         Rule("code", [
             PatternAction(PatternSequence([
                 PatternVerbatim("{{"),
@@ -1392,6 +1437,7 @@ value = lambda p: peg.PatternAction(p, ''.join(values[1]))
                         # Actions inside an Or don't work
                         # PatternAction(PatternVerbatim("."), """value = peg.PatternAny()"""),
                         PatternRule("eof"),
+                        PatternRule("void"),
                         PatternRule("range"),
                         PatternRule("string"),
                         PatternRule("sub_pattern")])),
@@ -1408,6 +1454,7 @@ value = pattern
         Rule("eof", [
             PatternAction(PatternVerbatim("<eof>"),"""value = peg.PatternEof()""")
             ]),
+        Rule("void", [PatternAction(PatternVerbatim("<void>"), """value = peg.PatternVoid()""")]),
         Rule("range", [
             PatternAction(PatternSequence([
                 PatternVerbatim("["),
@@ -1463,12 +1510,32 @@ value = lambda p: peg.PatternRepeatOnce(p)
         Rule("x_word", [
             PatternAction(PatternSequence([
                 PatternBind('name', PatternRule("word")),
-                PatternBind('parameters', PatternMaybe(PatternRule('parameters'))),
+                # PatternBind('parameters', PatternMaybe(PatternRule('parameters'))),
+                PatternBind('parameters', PatternMaybe(PatternRule('raw_code'))),
                 ]), """
-print "Parameters are " + str(parameters)
 value = peg.PatternRule(name, parameters)
 """),
             ]),
+        Rule('rule_parameters', [
+            PatternAction(PatternSequence([
+                PatternVerbatim("("),
+                PatternRule("spaces"),
+                PatternBind('param1', PatternRule('word')),
+                PatternBind('params', PatternRepeatMany(PatternAction(PatternSequence([
+                    PatternRule('spaces'),
+                    PatternVerbatim(','),
+                    PatternRule('spaces'),
+                    PatternBind('exp', PatternRule('word')),
+                    ]), """
+value = exp
+"""))),
+                PatternRule("spaces"),
+                PatternVerbatim(")"),
+                ]), """
+value = [param1] + params
+"""),
+            ]),
+
         Rule('parameters', [
             PatternAction(PatternSequence([
                 PatternVerbatim("("),
