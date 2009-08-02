@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+class TestException(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
 def erase(file):
     import os
     try:
@@ -23,15 +27,25 @@ def newFile(suffix = ""):
     return "file%d%s" % (file_count, suffix)
     # return os.path.join(rootPath(), "file%d%s" % (file_count, suffix))
 
-def do_bnf(name, grammar):
+def get_peg_output(option, grammar):
     import subprocess
-    print "[%s] Test bnf.." % name
-    peg_out = subprocess.Popen(['./peg.py', '--bnf', grammar], stdout = subprocess.PIPE)
+    peg_out = subprocess.Popen(['./peg.py', option, grammar], stdout = subprocess.PIPE)
+    code = peg_out.wait()
     out, err = peg_out.communicate()
+    if code != 0:
+        raise TestException(out)
+    return out
+
+def do_bnf(name, grammar):
+    print "[%s] Test bnf.." % name
+    # peg_out = subprocess.Popen(['./peg.py', '--bnf', grammar], stdout = subprocess.PIPE)
+    # out, err = peg_out.communicate()
+    out = get_peg_output('--bnf', grammar)
     g2 = ".bnf2"
     write(out, g2)
-    peg_out2 = subprocess.Popen(['./peg.py', '--bnf', g2], stdout = subprocess.PIPE)
-    out2, err2 = peg_out2.communicate()
+    out2 = get_peg_output('--bnf', g2)
+    # peg_out2 = subprocess.Popen(['./peg.py', '--bnf', g2], stdout = subprocess.PIPE)
+    # out2, err2 = peg_out2.communicate()
     erase(g2)
     if out != out2:
         print "error with bnf generation!!"
@@ -42,10 +56,11 @@ def do_bnf(name, grammar):
     return True
 
 def do_python(name, grammar, input):
-    import subprocess
+    # import subprocess
     print "[%s] Test python.." % name
-    peg_out = subprocess.Popen(['./peg.py', '--python', grammar], stdout = subprocess.PIPE)
-    out, err = peg_out.communicate()
+    out = get_peg_output('--python', grammar)
+    # peg_out = subprocess.Popen(['./peg.py', '--python', grammar], stdout = subprocess.PIPE)
+    # out, err = peg_out.communicate()
     file = 'test_python.py'
     write(out, file)
     x = __import__('test_python')
@@ -60,8 +75,7 @@ def do_python(name, grammar, input):
 def do_cpp(name, grammar, input):
     import subprocess
     print "[%s] Test c++.." % name
-    peg_out = subprocess.Popen(['./peg.py', '--cpp', grammar], stdout = subprocess.PIPE)
-    out, err = peg_out.communicate()
+    out = get_peg_output("--cpp", grammar)
     cpp = '.test_cpp.cpp'
     write(out, cpp)
     driver = '.driver.cpp'
@@ -190,14 +204,14 @@ static Value divide(const Value & a, const Value & b){
 
 rules:
         start = expression sw <eof> {{ value = $1; }}
-        expression = expression2 expression1_rest({{$1}}) {{ value = $2; }}
-        expression1_rest(a) = "+" expression2 expression1_rest({{add(a, $2)}}) {{ value = $3; }}
-                            | "-" expression2 expression1_rest({{sub(a, $2)}}) {{ value = $3; }}
+        expression = expression2 expression1_rest($1) {{ value = $2; }}
+        expression1_rest(a) = "+" expression2 e:{{value = add(a,$2);}} expression1_rest(e) {{ value = $3; }}
+                            | "-" expression2 e::{{value = sub(a,$2);}} expression1_rest(e) {{ value = $3; }}
                             | <void> {{ value = a; }}
 
-        expression2 = expression3 expression2_rest({{$1}}) {{ value = $2; }}
-        expression2_rest(a) = "*" expression3 expression2_rest({{multiply(a,$2)}}) {{ value = $3; }}
-                            | "/" expression3 expression2_rest({{divide(a,$2)}}) {{ value = $3; }}
+        expression2 = expression3 expression2_rest($}) {{ value = $2; }}
+        expression2_rest(a) = "*" expression3 e:{{value = multiply(a,$2);}} expression2_rest(e) {{ value = $3; }}
+                            | "/" expression3 e:{{value = divide(a,$2);}} expression2_rest(e) {{ value = $3; }}
                             | <void> {{ value = a; }}
 
         expression3 = number {{ value = $1; }}
@@ -236,7 +250,13 @@ tests = [test1, test2, test3, test4, test5]
 import sys
 if len(sys.argv) > 1:
     num = int(sys.argv[1]) - 1
-    tests[num]()
+    try:
+        tests[num]()
+    except TestException as t:
+        print t
 else:
     for test in tests:
-        test()
+        try:
+            test()
+        except TestException as t:
+            print t

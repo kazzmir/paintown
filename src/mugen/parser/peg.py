@@ -1774,6 +1774,7 @@ if __name__ == '__main__':
         print p
     do_output = print_it
     do_close = lambda : 0
+    return_code = 0
     for arg in sys.argv[1:]:
         if arg == '--bnf':
             doit.append(lambda p: p.generate_bnf())
@@ -1807,12 +1808,14 @@ if __name__ == '__main__':
                     do_output(generate(out))
         else:
             print "Uh oh, couldn't parse " + file + ". Are you sure its using BNF format?"
+            return_code = 1
     else:
         if helped == 0:
             help()
             print "Give a BNF grammar file as an argument"
 
     do_close()
+    exit(return_code)
 
 
 # Done
