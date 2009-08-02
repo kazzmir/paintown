@@ -216,7 +216,7 @@ rules:
         inline digit = [0123456789] {{ value = $1; }}
 """
 
-    input = """1+(2-3)*9/(2+2*32)-3232342+91"""
+    input = """1+(3-2)*9/(2+2*32)-3232342+91"""
     test_cpp('test4', grammar, input)
 
 def test5():
@@ -232,8 +232,11 @@ rules:
 
     test_all('test5', grammar, input)
 
-test1()
-test2()
-test3()
-test4()
-test5()
+tests = [test1, test2, test3, test4, test5]
+import sys
+if len(sys.argv) > 1:
+    num = int(sys.argv[1]) - 1
+    tests[num]()
+else:
+    for test in tests:
+        test()
