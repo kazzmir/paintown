@@ -10,7 +10,6 @@
 # 4. 171397b / 10.539s = 16263.1179428788 b/s
 
 # Todo (finished items at bottom)
-# fix binding variables in c++ (move declaration the top of the function)
 # error reporting for c++
 # add generator for ruby, scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
 # add helper function section
@@ -1790,3 +1789,4 @@ if __name__ == '__main__':
 # Done
 # memoize in python parsers
 # include arbitrary code at the top of the file (python, c++, bnf)
+# fix binding variables in c++ (move declaration the top of the function)
