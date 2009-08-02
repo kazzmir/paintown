@@ -90,7 +90,7 @@ int main(int argc, char ** argv){
     write(driver_code, driver)
 
     exe = './.cpp-test'
-    subprocess.call(["g++", cpp, driver, "-o", exe])
+    subprocess.call(["g++", "-g3", cpp, driver, "-o", exe])
     subprocess.call([exe, input])
 
     erase(driver)
@@ -169,7 +169,7 @@ import sys
 def test4():
     grammar = """
 start-symbol: start
-include: {{
+code: {{
 static Value add(const Value & a, const Value & b){
     return Value((void*)((int) a.getValue() + (int) b.getValue()));
 }

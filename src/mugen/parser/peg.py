@@ -949,13 +949,13 @@ class PatternRange(Pattern):
         letter = gensym("letter")
         data = """
 char %s = %s.get(%s.getPosition());
-if (strchr("%s", %s) != NULL){
+if (%s != '\\0' && strchr("%s", %s) != NULL){
     %s.nextPosition();
     %s.setValue((void*) %s);
 } else {
     %s
 }
-""" % (letter, stream, result, self.range, letter, result, result, letter, indent(failure()))
+""" % (letter, stream, result, letter, self.range, letter, result, result, letter, indent(failure()))
         return data
 
     def generate_python(self, result, stream, failure):
@@ -1034,6 +1034,9 @@ if (%s.get(%s.getPosition()) == '%s'){
 
         # return data
 
+        length = len(self.letters)
+        if self.letters == "\\n" or self.letters == "\\t":
+            length = 1
         data = """
 for (int i = 0; i < %d; i++){
     if ("%s"[i] == %s.get(%s.getPosition())){
@@ -1043,7 +1046,7 @@ for (int i = 0; i < %d; i++){
     }
 }
 %s.setValue((void*) "%s");
-""" % (len(self.letters), self.letters, stream, result, result, indent(indent(failure())), result, self.letters)
+""" % (length, self.letters, stream, result, result, indent(indent(failure())), result, self.letters)
         return data
 
 class Rule:
@@ -1182,10 +1185,11 @@ class Accessor:
         return code + self.value
     
 class Peg:
-    def __init__(self, start, code, module, rules):
+    def __init__(self, start, include_code, more_code, module, rules):
         self.start = start
         self.rules = rules
-        self.code = code
+        self.include_code = include_code
+        self.more_code = more_code
         self.module = module
         if self.module == None:
             self.module = ['Parser']
@@ -1204,9 +1208,9 @@ class Peg:
         use_rules = self.rules
         rule_numbers = '\n'.join(["RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
 
-        more = ""
-        if self.code != None:
-            more = self.code
+        top_code = ""
+        if self.include_code != None:
+            top_code = self.include_code
 
         data = """
 import peg
@@ -1230,20 +1234,24 @@ def parse(file):
         return None
     else:
         return done.getValues()
-""" % (more, start_python, rule_numbers, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
+""" % (top_code, start_python, rule_numbers, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
         return data
 
     def generate_bnf(self):
         more = ""
-        if self.code != None:
-            more = """include: {{%s}}""" % self.code
+        if self.include_code != None:
+            more = """include: {{%s}}""" % self.include_code
+        code = ""
+        if self.more_code != None:
+            code = """code: {{%s}}""" % self.more_code
         data = """
 start-symbol: %s
 %s
+%s
 rules:
     %s
-""" % (self.start, more, indent('\n'.join([rule.generate_bnf() for rule in self.rules]).strip()))
+""" % (self.start, more, code, indent('\n'.join([rule.generate_bnf() for rule in self.rules]).strip()))
         return data
 
     def generate_cpp(self):
@@ -1255,7 +1263,7 @@ rules:
 
         r = 0
         use_rules = [rule for rule in self.rules if not rule.isInline()]
-        rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
+        # rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
 
 
         chunk_accessors = []
@@ -1306,9 +1314,12 @@ struct Column{
 
         chunks = makeChunks(use_rules)
 
-        more = ""
-        if self.code != None:
-            more = self.code
+        top_code = ""
+        if self.include_code != None:
+            top_code = self.include_code
+        more_code = ""
+        if self.more_code != None:
+            more_code = self.more_code
 
         data = """
 %s
@@ -1321,13 +1332,14 @@ struct Column{
 #include <string.h>
 
 namespace %s{
-    %s
 
-    %s
+%s
 
-    %s
+%s
 
-    %s
+%s
+
+%s
 
 const void * main(const std::string & filename){
     Stream stream(filename);
@@ -1340,7 +1352,7 @@ const void * main(const std::string & filename){
 }
 
 }
-        """ % (more, '::'.join(self.module), start_cpp_code % chunks, indent('\n'.join([prototype(rule) for rule in use_rules])), indent(rule_numbers), '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start)
+        """ % (top_code, '::'.join(self.module), start_cpp_code % chunks, '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start)
 
         return data
 
@@ -1402,17 +1414,25 @@ def peg_bnf():
         Rule("start", [
             PatternAction(PatternSequence([
                 PatternRule("newlines"),
+                PatternRule("whitespace"),
                 PatternBind("start_symbol", PatternRule("start_symbol")),
                 PatternRule("newlines"),
+                PatternRule("whitespace"),
                 PatternBind("module", PatternMaybe(PatternRule("module"))),
                 PatternRule("newlines"),
+                PatternRule("whitespace"),
                 PatternBind('include', PatternMaybe(PatternRule("include"))),
                 PatternRule("newlines"),
+                PatternRule("whitespace"),
+                PatternBind("code", PatternMaybe(PatternRule("more_code"))),
+                PatternRule("newlines"),
+                PatternRule("whitespace"),
                 PatternBind("rules", PatternRule("rules")),
                 PatternRule("newlines"),
+                PatternRule("whitespace"),
                 PatternEof(),
                 ]), """
-value = peg.Peg(start_symbol, include, module, rules)
+value = peg.Peg(start_symbol, include, code, module, rules)
 """)
             ]),
         Rule('module', [
@@ -1432,6 +1452,15 @@ value = [name] + rest
         Rule("include", [
             PatternAction(PatternSequence([
                 PatternVerbatim("include:"),
+                PatternRule("spaces"),
+                PatternBind("code", PatternRule("code")),
+                ]), """
+value = code(None).code
+"""),
+            ]),
+        Rule("more_code", [
+            PatternAction(PatternSequence([
+                PatternVerbatim("code:"),
                 PatternRule("spaces"),
                 PatternBind("code", PatternRule("code")),
                 ]), """
@@ -1690,7 +1719,7 @@ value = peg.PatternAny()
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
-    peg = Peg("start", None, ['peg'], rules)
+    peg = Peg("start", None, None, ['peg'], rules)
     # print peg.generate_python()
     return peg
 
