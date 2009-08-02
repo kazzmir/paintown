@@ -28,10 +28,10 @@ def gensym(what = None):
         return "%s_%s" % (what, nextVar())
 
 def newResult():
-    return "result_%s" % nextVar()
+    return gensym("result")
 
 def newOut():
-    return "out_%s" % nextVar()
+    return gensym("out")
 
 def flatten(lst):
     if isinstance(lst, list):
@@ -437,7 +437,7 @@ except NotError:
         return data
 
     def generate_cpp(self, peg, result, previous_result, stream, failure):
-        not_label = "not_%s" % nextVar()
+        not_label = gensym("not")
         my_result = newResult()
         my_fail = lambda : "goto %s;" % not_label
         data = """
@@ -503,7 +503,7 @@ Result %s(%s.getPosition());
                 """ % (my_result, result, pattern.generate_cpp(peg, my_result, result, stream, fail).strip(), result, my_result, success, out)
                 return data
 
-            success_out = 'success_%s' % nextVar()
+            success_out = gensym('success')
             data = """
 %s
 %s
@@ -672,7 +672,7 @@ except PegError:
 
 
     def generate_cpp(self, peg, result, previous_result, stream, failure):
-        loop_done = "loop_%s" % nextVar()
+        loop_done = gensym("loop")
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
         data = """
@@ -783,7 +783,7 @@ except PegError:
         return data
 
     def generate_cpp(self, peg, result, previous_result, stream, failure):
-        loop_done = "loop_%s" % nextVar()
+        loop_done = gensym("loop")
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
         data = """
@@ -830,7 +830,7 @@ class PatternMaybe(Pattern):
         return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
 
     def generate_python(self, result, stream, failure):
-        save = "save_%s" % nextVar()
+        save = gensym("save")
         fail = lambda : """
 %s = Result(%s)
 %s.setValue(None)
@@ -843,7 +843,7 @@ class PatternMaybe(Pattern):
         return data
 
     def generate_cpp(self, peg, result, previous_result, stream, failure):
-        save = "save_%s" % nextVar()
+        save = gensym("save")
         fail = lambda : """
 %s = Result(%s);
 %s.setValue((void*) 0);
@@ -882,9 +882,9 @@ if %s != None:
 
     def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = ""
-        success = "success_%s" % nextVar()
+        success = gensym("success")
         for pattern in self.patterns:
-            out = "or_%s" % nextVar()
+            out = gensym("or")
             my_result = newResult()
             fail = lambda : "goto %s;" % out
             if pattern == self.patterns[-1]:
@@ -946,7 +946,7 @@ class PatternRange(Pattern):
         return "[%s]" % self.range
 
     def generate_cpp(self, peg, result, previous_result, stream, failure):
-        letter = "letter_%s" % nextVar()
+        letter = gensym("letter")
         data = """
 char %s = %s.get(%s.getPosition());
 if (strchr("%s", %s) != NULL){
@@ -959,7 +959,7 @@ if (strchr("%s", %s) != NULL){
         return data
 
     def generate_python(self, result, stream, failure):
-        letter = "letter_%s" % nextVar()
+        letter = gensym("letter")
         data = """
 %s = %s.get(%s.getPosition())
 if %s in '%s':
