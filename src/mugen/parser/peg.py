@@ -34,6 +34,14 @@ def newResult():
 def newOut():
     return "out_%s" % nextVar()
 
+def flatten(lst):
+    if isinstance(lst, list):
+        out = []
+        for x in lst:
+            out.extend(flatten(x))
+        return out
+    return [lst]
+
 def indent(s):
     space = '    '
     return s.replace('\n', '\n%s' % space)
@@ -41,7 +49,8 @@ def indent(s):
 start_cpp_code = """
 struct Value{
     Value():
-        which(1){
+        which(1),
+        value(0){
     }
 
     Value(const Value & him){
@@ -370,6 +379,13 @@ class PatternEnsure(Pattern):
     def ensureRules(self, find):
         self.next.ensureRules(find)
 
+    def find(self, proc):
+        def me():
+            if proc(self):
+                return [self]
+            return []
+        return me() + self.next.find(proc)
+
     def generate_bnf(self):
         return "&" + self.next.generate_bnf()
 
@@ -396,6 +412,13 @@ class PatternNot(Pattern):
 
     def ensureRules(self, find):
         self.next.ensureRules(find)
+
+    def find(self, proc):
+        def me():
+            if proc(self):
+                return [self]
+            return []
+        return me() + self.next.find(proc)
 
     def generate_bnf(self):
         return "!" + self.next.generate_bnf()
@@ -436,6 +459,11 @@ class PatternRule(Pattern):
 
     def contains(self):
         return 1
+
+    def find(self, proc):
+        if proc(self):
+            return [self]
+        return []
 
     def ensureRules(self, find):
         if not find(self.rule):
@@ -510,6 +538,11 @@ class PatternVoid(Pattern):
     def ensureRules(self, find):
         pass
 
+    def find(self, proc):
+        if proc(self):
+            return [self]
+        return []
+
     def generate_bnf(self):
         return "<bnf>"
 
@@ -525,6 +558,11 @@ class PatternEof(Pattern):
 
     def ensureRules(self, find):
         pass
+
+    def find(self, proc):
+        if proc(self):
+            return [self]
+        return []
 
     def generate_bnf(self):
         return "<eof>"
@@ -558,6 +596,13 @@ class PatternSequence(Pattern):
 
     def contains(self):
         return len(self.patterns)
+
+    def find(self, proc):
+        def me():
+            if proc(self):
+                return [self]
+            return []
+        return flatten([p.find(proc) for p in self.patterns]) + me()
 
     def ensureRules(self, find):
         for pattern in self.patterns:
@@ -598,6 +643,13 @@ class PatternRepeatOnce(Pattern):
 
     def ensureRules(self, find):
         self.next.ensureRules(find)
+
+    def find(self, proc):
+        def me():
+            if proc(self):
+                return [self]
+            return []
+        return me() + self.next.find(proc)
 
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "+"
@@ -646,6 +698,13 @@ class PatternAction(Pattern):
 
     def contains(self):
         return 1
+
+    def find(self, proc):
+        def me():
+            if proc(self):
+                return [self]
+            return []
+        return self.before.find(proc) + me()
 
     def ensureRules(self, find):
         self.before.ensureRules(find)
@@ -698,6 +757,13 @@ class PatternRepeatMany(Pattern):
 
     def ensureRules(self, find):
         self.next.ensureRules(find)
+
+    def find(self, proc):
+        def me():
+            if proc(self):
+                return [self]
+            return []
+        return me() + self.next.find(proc)
 
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "*"
@@ -845,10 +911,17 @@ class PatternBind(Pattern):
     def ensureRules(self, find):
         self.pattern.ensureRules(find)
 
+    def find(self, proc):
+        def me():
+            if proc(self):
+                return [self]
+            return []
+        return me() + self.pattern.find(proc)
+
     def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = """
 %s
-Value %s = %s.getValues();
+%s = %s.getValues();
 """ % (self.pattern.generate_cpp(peg, result, previous_result, stream, failure).strip(), self.variable, result)
         return data
 
@@ -906,6 +979,11 @@ class PatternVerbatim(Pattern):
 
     def ensureRules(self, find):
         pass
+
+    def find(self, proc):
+        if proc(self):
+            return [self]
+        return []
 
     def contains(self):
         return 1
@@ -1065,14 +1143,26 @@ return %s;
         if self.parameters != None:
             parameters = ", " + ", ".join(["const Value & %s" % p for p in self.parameters])
 
+        def findVars():
+            def isBind(pattern):
+                return isinstance(pattern, PatternBind)
+            bind_patterns = flatten([p.find(isBind) for p in self.patterns])
+            return [p.variable for p in bind_patterns]
+
+        def declareVar(var):
+            return "Value %s;" % var
+
+        vars = "\n".join([declareVar(v) for v in findVars()])
+
         data = """
 Result rule_%s(Stream & %s, const int %s%s){
     %s
     %s
     %s
+    %s
     return errorResult;
 }
-        """ % (self.name, stream, position, parameters, indent(hasChunk), indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), indent(updateChunk("errorResult")))
+        """ % (self.name, stream, position, parameters, indent(hasChunk), indent(vars), indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), indent(updateChunk("errorResult")))
 
         return data
 
