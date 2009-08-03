@@ -598,7 +598,7 @@ class PatternVoid(Pattern):
         return []
 
     def generate_bnf(self):
-        return "<bnf>"
+        return "<void>"
 
     def generate_python(self, result, stream, failure):
         return ""
