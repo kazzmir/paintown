@@ -2,6 +2,8 @@
 
 # Packrat PEG (parsing expression grammar) generator
 # http://pdos.csail.mit.edu/~baford/packrat/
+# Optimizations (like chunks) and other inspiration: Rats!
+# http://cs.nyu.edu/rgrimm/xtc/rats.html
 
 # Python BNF parser:
 # 1. 171397b / 45.216s = 3790.62721160651 b/s
@@ -1221,6 +1223,7 @@ Result rule_%s(Stream & %s, const int %s%s){
 
         return data
 
+# Getting values from chunks
 class Accessor:
     def __init__(self, chunk, value, type, rule):
         self.chunk = chunk
@@ -1890,6 +1893,6 @@ if __name__ == '__main__':
 # Done
 # memoize in python parsers
 # include arbitrary code at the top of the file (python, c++, bnf)
-# fix binding variables in c++ (move declaration the top of the function)
+# fix binding variables in c++ (move declaration to the top of the function)
 # make intra-pattern actions work
 # add helper function section
