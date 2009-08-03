@@ -107,8 +107,8 @@ int main(int argc, char ** argv){
     subprocess.call(["g++", "-g3", cpp, driver, "-o", exe])
     subprocess.call([exe, input])
 
-    erase(driver)
-    erase(cpp)
+    # erase(driver)
+    # erase(cpp)
     return True
 
 def test_all(name, grammar, input):
@@ -204,20 +204,20 @@ static Value divide(const Value & a, const Value & b){
 
 rules:
         start = expression sw <eof> {{ value = $1; }}
-        expression = expression2 expression1_rest($1) {{ value = $2; }}
-        expression1_rest(a) = "+" expression2 e:{{value = add(a,$2);}} expression1_rest(e) {{ value = $4; }}
-                            | "-" expression2 e:{{value = sub(a,$2);}} expression1_rest(e) {{ value = $4; }}
+        expression = expression2 expression1_rest($1)
+        expression1_rest(a) = "+" expression2 e:{{value = add(a,$2);}} expression1_rest(e)
+                            | "-" expression2 e:{{value = sub(a,$2);}} expression1_rest(e)
                             | <void> {{ value = a; }}
 
-        expression2 = expression3 expression2_rest($1) {{ value = $2; }}
-        expression2_rest(a) = "*" expression3 e:{{value = multiply(a,$2);}} expression2_rest(e) {{ value = $4; }}
-                            | "/" expression3 e:{{value = divide(a,$2);}} expression2_rest(e) {{ value = $4; }}
+        expression2 = expression3 expression2_rest($1)
+        expression2_rest(a) = "*" expression3 e:{{value = multiply(a,$2);}} expression2_rest(e)
+                            | "/" expression3 e:{{value = divide(a,$2);}} expression2_rest(e)
                             | <void> {{ value = a; }}
 
-        expression3 = number {{ value = $1; }}
+        expression3 = number
                     | "(" expression ")" {{ value = $2; }}
 
-        inline number = digit+ {{
+        number = digit+ {{
             int total = 0;
             for (std::vector<Value>::const_iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
                 const Value & v = *it;
@@ -226,8 +226,8 @@ rules:
             }
             value = (void*) total;
         }}
-        inline sw = "\\n"*
-        inline digit = [0123456789] {{ value = $1; }}
+        sw = "\\n"*
+        digit = [0123456789]
 """
 
     input = """1+(3-2)*9/(2+2*32)-3232342+91"""
