@@ -287,6 +287,11 @@ class Result:
 
     def setValue(self, value):
         self.values = value
+
+    def getLastValue(self):
+        if self.values is list:
+            return self.values[-1]
+        return self.values
     
     def matches(self):
         return len(self.values)
@@ -319,7 +324,7 @@ class Stream:
         if position + number > self.limit:
             # print (position + number)
             self.limit += 5000
-        if position + number >= len(self.all):
+        if position + number > len(self.all):
             return chr(0)
         # print "stream: %s" % self.all[position:position+number]
         return self.all[position:position+number]
@@ -351,7 +356,7 @@ class Stream:
             right = len(self.all)
         print "Read up till line %d, column %d" % (line, column)
         print "'%s'" % self.all[left:right].replace("\\n", "\\\\n").replace("\\t", "\\\\t")
-        print "%s^" % (' ' * context)
+        print "%s^" % (' ' * (column - left))
 
     def update(self, rule, position, result):
         if result != None and result.getPosition() > self.furthest:
@@ -1214,11 +1219,12 @@ class Rule:
 try:
     %s = Result(%s)
     %s
+    %s.setValue(%s.getLastValue())
     %s.update(%s, %s, %s)
     return %s
 except PegError:
     pass
-            """ % (result, position, indent(pattern.generate_python(result, stream, fail).strip()), stream, "RULE_%s" % self.name, position, result, result)
+            """ % (result, position, indent(pattern.generate_python(result, stream, fail).strip()), result, result, stream, "RULE_%s" % self.name, position, result, result)
             return data
 
         stream = "stream"
