@@ -1,0 +1,6 @@
+start-symbol: start
+module: Mugen
+rules:
+	start = line* <eof>
+	line = comment
+	comment = ";" (!"\n" .)*

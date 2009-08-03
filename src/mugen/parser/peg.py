@@ -855,11 +855,30 @@ class PatternAny(Pattern):
     def __init__(self):
         Pattern.__init__(self)
 
+    def find(self, proc):
+        if proc(self):
+            return [self]
+        return []
+
     def generate_bnf(self):
         return "."
 
     def ensureRules(self, find):
         pass
+
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
+        temp = gensym()
+        data = """
+char %s = %s.get(%s.getPosition());
+if (%s != '\\0'){
+    %s.setValue((void*) %s);
+    %s.nextPosition();
+} else {
+    %s
+}
+""" % (temp, stream, result, temp, result, temp, result, indent(failure()))
+        return data
+
 
     def generate_python(self, result, stream, failure):
         temp = gensym()
