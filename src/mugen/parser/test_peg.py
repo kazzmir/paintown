@@ -205,13 +205,13 @@ static Value divide(const Value & a, const Value & b){
 rules:
         start = expression sw <eof> {{ value = $1; }}
         expression = expression2 expression1_rest($1) {{ value = $2; }}
-        expression1_rest(a) = "+" expression2 e:{{value = add(a,$2);}} expression1_rest(e) {{ value = $3; }}
-                            | "-" expression2 e::{{value = sub(a,$2);}} expression1_rest(e) {{ value = $3; }}
+        expression1_rest(a) = "+" expression2 e:{{value = add(a,$2);}} expression1_rest(e) {{ value = $4; }}
+                            | "-" expression2 e:{{value = sub(a,$2);}} expression1_rest(e) {{ value = $4; }}
                             | <void> {{ value = a; }}
 
-        expression2 = expression3 expression2_rest($}) {{ value = $2; }}
-        expression2_rest(a) = "*" expression3 e:{{value = multiply(a,$2);}} expression2_rest(e) {{ value = $3; }}
-                            | "/" expression3 e:{{value = divide(a,$2);}} expression2_rest(e) {{ value = $3; }}
+        expression2 = expression3 expression2_rest($1) {{ value = $2; }}
+        expression2_rest(a) = "*" expression3 e:{{value = multiply(a,$2);}} expression2_rest(e) {{ value = $4; }}
+                            | "/" expression3 e:{{value = divide(a,$2);}} expression2_rest(e) {{ value = $4; }}
                             | <void> {{ value = a; }}
 
         expression3 = number {{ value = $1; }}

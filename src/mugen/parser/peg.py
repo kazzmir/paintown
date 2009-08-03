@@ -12,8 +12,6 @@
 # Todo (finished items at bottom)
 # error reporting for c++
 # add generator for ruby, scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
-# add helper function section
-# make intra-pattern actions work
 
 next_var = 0
 def nextVar():
@@ -40,6 +38,13 @@ def flatten(lst):
             out.extend(flatten(x))
         return out
     return [lst]
+
+def unique(lst):
+    x = []
+    for item in lst:
+        if not item in x:
+            x.append(item)
+    return x
 
 def indent(s):
     space = '    '
@@ -404,6 +409,54 @@ Result %s(%s.getPosition());
 """ % (my_result, result, self.next.generate_cpp(peg, my_result, result, stream, failure).strip())
         return data
 
+class PatternCode(Pattern):
+    def __init__(self, code):
+        Pattern.__init__(self)
+        self.code = code
+
+    def ensureRules(self, find):
+        pass
+
+    def find(self, proc):
+        if proc(self):
+            return [self]
+        return []
+
+    def generate_bnf(self):
+        return "{{%s}}" % self.code
+
+    def fixup_python(self, code):
+        import re
+        fix = re.compile("\$(\d+)")
+        return re.sub(fix, r"values[\1-1]", code)
+
+    def generate_python(self, result, stream, failure):
+        data = """
+if True:
+    value = None
+    values = %s.getValues()
+    %s
+    %s.setValue(value)
+""" % (result, self.fixup_python(indent(self.code.strip())), result)
+        return data
+
+    def fixup_cpp(self, code):
+        import re
+        fix = re.compile("\$(\d+)")
+        return re.sub(fix, r"values.getValues()[\1-1]", code)
+
+    def generate_cpp(self, peg, result, previous_result, stream, failure):
+        data = """
+{
+    Value value((void*) 0);
+    Value values = %s.getValues();
+    %s
+    %s.setValue(value);
+}
+        """ % (previous_result, self.fixup_cpp(indent(self.code.strip())), result)
+
+        return data
+
 class PatternNot(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
@@ -519,8 +572,8 @@ Result %s(%s.getPosition());
 
             parameters = ""
             if self.parameters != None:
-                # parameters = ", %s" % ", ".join([fix_param(p) for p in self.parameters])
-                parameters = ", %s" % fix_param(self.parameters)
+                parameters = ", %s" % ", ".join([fix_param(p) for p in self.parameters])
+                # parameters = ", %s" % fix_param(self.parameters)
             data = """
     %s = rule_%s(%s, %s.getPosition()%s);
     if (%s.error()){
@@ -1149,7 +1202,7 @@ return %s;
             def isBind(pattern):
                 return isinstance(pattern, PatternBind)
             bind_patterns = flatten([p.find(isBind) for p in self.patterns])
-            return [p.variable for p in bind_patterns]
+            return unique([p.variable for p in bind_patterns])
 
         def declareVar(var):
             return "Value %s;" % var
@@ -1584,6 +1637,18 @@ if ensure != None:
     pattern = peg.PatternEnsure(pattern)
 value = pattern
 """),
+            PatternAction(PatternSequence([
+                PatternBind("code", PatternRule("code")),
+                PatternRule("spaces"),
+                PatternNot(PatternVerbatim("{{")),
+                PatternEnsure(PatternRule("item")),
+                # PatternNot(PatternOr([
+                #     PatternRule("code"),
+                #     PatternRule("newlines_one"),
+                #     ])),
+                ]), """
+value = peg.PatternCode(code(None).code)
+"""),
             ]),
         Rule("eof", [
             PatternAction(PatternVerbatim("<eof>"),"""value = peg.PatternEof()""")
@@ -1644,8 +1709,7 @@ value = lambda p: peg.PatternRepeatOnce(p)
         Rule("x_word", [
             PatternAction(PatternSequence([
                 PatternBind('name', PatternRule("word")),
-                # PatternBind('parameters', PatternMaybe(PatternRule('parameters'))),
-                PatternBind('parameters', PatternMaybe(PatternRule('raw_code'))),
+                PatternBind('parameters', PatternMaybe(PatternRule('parameters'))),
                 ]), """
 value = peg.PatternRule(name, parameters)
 """),
@@ -1674,12 +1738,12 @@ value = [param1] + params
             PatternAction(PatternSequence([
                 PatternVerbatim("("),
                 PatternRule("spaces"),
-                PatternBind('param1', PatternRule('dollar')),
+                PatternBind('param1', PatternRule('word_or_dollar')),
                 PatternBind('params', PatternRepeatMany(PatternAction(PatternSequence([
                     PatternRule('spaces'),
                     PatternVerbatim(','),
                     PatternRule('spaces'),
-                    PatternBind('exp', PatternRule('dollar')),
+                    PatternBind('exp', PatternRule('word_or_dollar')),
                     ]), """
 value = exp
 """))),
@@ -1688,6 +1752,10 @@ value = exp
                 ]), """
 value = [param1] + params
 """),
+            ]),
+        Rule('word_or_dollar', [
+            PatternRule('word'),
+            PatternRule('dollar'),
             ]),
         Rule('dollar', [
             PatternAction(PatternSequence([
@@ -1716,6 +1784,7 @@ value = values[2]
 value = peg.PatternAny()
 """)]),
         Rule("whitespace", [PatternRepeatMany(PatternRange(" \\t\\n"))]),
+        Rule("newlines_one", [PatternRepeatOnce(PatternVerbatim("\\n"))]),
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
@@ -1822,3 +1891,5 @@ if __name__ == '__main__':
 # memoize in python parsers
 # include arbitrary code at the top of the file (python, c++, bnf)
 # fix binding variables in c++ (move declaration the top of the function)
+# make intra-pattern actions work
+# add helper function section
