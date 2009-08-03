@@ -1,3 +1,4 @@
+# mugen def parser
 start-symbol: start
 module: Mugen
 rules:

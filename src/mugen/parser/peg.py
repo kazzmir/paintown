@@ -337,7 +337,7 @@ class Stream:
         print "%s^" % (' ' * context)
 
     def update(self, rule, position, result):
-        if result.getPosition() > self.furthest:
+        if result != None and result.getPosition() > self.furthest:
             self.furthest = result.getPosition()
 
         for_rule = None
@@ -943,16 +943,18 @@ class PatternOr(Pattern):
     def generate_python(self, result, stream, failure):
         data = ""
         fail = failure
+        save = gensym("save")
         for pattern in self.patterns[::-1]:
             my_result = newResult()
             data = """
-%s = Result(%s.getPosition())
+%s = Result(%s)
 %s
-if %s != None:
-    %s = %s
-""" % (my_result, result, pattern.generate_python(my_result, stream, fail).strip(), my_result, result, my_result)
+""" % (result, save, pattern.generate_python(result, stream, fail).strip())
             fail = lambda : data
-        return data
+        return """
+%s = %s.getPosition()
+%s
+""" % (save, result, data)
 
     def generate_cpp(self, peg, result, previous_result, stream, failure):
         data = ""
@@ -1007,6 +1009,12 @@ class PatternBind(Pattern):
 %s = %s.getValues()
 """ % (self.pattern.generate_python(result, stream, failure).strip(), self.variable, result)
         return data
+
+def PatternUntil(pattern):
+    return PatternRepeatMany(PatternSequence([
+        PatternNot(pattern),
+        PatternAny()
+        ]))
 
 class PatternRange(Pattern):
     def __init__(self, range):
@@ -1169,8 +1177,9 @@ def rule_%s(%s, %s):
     if %s.hasResult(%s, %s):
         return %s.result(%s, %s)
     %s
+    %s.update(%s, %s, %s)
     return None
-""" % (self.name, stream, position, stream, "RULE_%s" % self.name, position, stream, "RULE_%s" % self.name, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])))
+""" % (self.name, stream, position, stream, "RULE_%s" % self.name, position, stream, "RULE_%s" % self.name, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, "RULE_%s" % self.name, position, "None")
 
         return data
 
@@ -1805,7 +1814,18 @@ value = values[2]
         Rule("any", [PatternAction(PatternVerbatim("."), """
 value = peg.PatternAny()
 """)]),
-        Rule("whitespace", [PatternRepeatMany(PatternRange(" \\t\\n"))]),
+        Rule("whitespace", [
+            PatternRepeatMany(PatternOr([
+                PatternRange(" \\t\\n"),
+                PatternRule("comment"),
+                ])),
+            ]),
+        Rule("comment", [
+            PatternSequence([
+                PatternVerbatim("#"),
+                PatternUntil(PatternVerbatim("\\n")),
+                ]),
+            ]),
         Rule("newlines_one", [PatternRepeatOnce(PatternVerbatim("\\n"))]),
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
