@@ -525,6 +525,8 @@ if %s == None:
     def generate_cpp(self, peg, result, previous_result, stream, failure, tail):
         rule = peg.getRule(self.rule)
         if rule != None and rule.isInline():
+            if tail != None:
+                raise Exception("Do not combine inlined rules that use tail recursion")
             def newPattern(pattern, stream, result, success):
                 my_result = newResult()
                 out = newOut()

@@ -217,7 +217,7 @@ rules:
         expression3 = number
                     | "(" expression ")" {{ value = $2; }}
 
-        number = digit+ {{
+        inline number = digit+ {{
             int total = 0;
             for (std::vector<Value>::const_iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
                 const Value & v = *it;
@@ -226,8 +226,8 @@ rules:
             }
             value = (void*) total;
         }}
-        sw = "\\n"*
-        digit = [0123456789]
+        inline sw = "\\n"*
+        inline digit = [0123456789]
 """
 
     input = """1+(3-2)*9/(2+2*32)-3232342+91"""
