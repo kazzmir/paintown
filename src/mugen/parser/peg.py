@@ -61,8 +61,12 @@ struct Value{
 
     Value(const Value & him){
         which = him.which;
-        value = him.value;
-        values = him.values;
+        if (him.isData()){
+            value = him.value;
+        }
+        if (him.isList()){
+            values = him.values;
+        }
     }
 
     Value(void * value):
