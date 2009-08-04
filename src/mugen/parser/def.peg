@@ -2,6 +2,34 @@
 start-symbol: start
 module: Mugen
 rules:
-	start = line* <eof>
+	start = (line newline whitespace)* <eof>
 	line = comment
+	     | section
+	     | characters
+	     | attribute
+	newline = "\n"
+	whitespace = sw*
+	sw = " "
+	   | "\t"
+	   | "\n"
+	s = space*
+	space = " "
+	      | "\t"
 	comment = ";" (!"\n" .)*
+	section = "[" s name s "]" 
+	name = letter+ {{
+	   std::ostringstream out;
+	   for (std::vector<Value>::const_iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
+	   	out << (char) (long) (*it).getValue();
+	   }
+	   std::cout << "Name " << out.str() << std::endl;
+	}}
+	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]
+	characters = name s "," s filename
+	filename = filename_char*
+	filename_char = !"," !"\n" .
+	attribute = identifier s "=" s valuelist
+	identifier = name ("." name)*
+	valuelist = number (s "," s number)*
+	number = digit+
+	digit = [0123456789]

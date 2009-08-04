@@ -646,7 +646,7 @@ Result %s(%s.getPosition());
                 return re.sub(fix, to, code)
 
             if tail != None:
-                return '\n'.join(["%s = %s;" % (q[0], q[1]) for q in zip(tail, self.parameters)])
+                return '\n'.join(["%s = %s;" % (q[0], fix_param(q[1])) for q in zip(tail, self.parameters)])
             else:
                 parameters = ""
                 if self.parameters != None:
@@ -1341,6 +1341,7 @@ def rule_%s(%s, %s):
         stream = "stream"
         position = "position"
         tail_loop = gensym("tail");
+        debug = False
 
         def updateChunk(new):
             data = """
@@ -1380,13 +1381,17 @@ goto %s;
 %s:
 """ % (result, position, pattern.generate_cpp(peg, result, None, stream, failure, tail_vars).strip(), position, result, tail_loop, out)
             else:
+                debugging = ""
+                if debug:
+                    debugging = """std::cout << "Trying rule %s alternative: %s" << std::endl;""" % (self.name, pattern.generate_bnf().replace("\\n","\\\\n").replace("\\t","\\\\t").replace("\"", "\\\""))
                 data = """
 Result %s(%s);
 %s
 %s
+%s
 return %s;
 %s:
-            """ % (result, position, pattern.generate_cpp(peg, result, None, stream, failure, None).strip(), updateChunk(result), result, out)
+            """ % (result, position, debugging, pattern.generate_cpp(peg, result, None, stream, failure, None).strip(), updateChunk(result), result, out)
 
             return data
 
