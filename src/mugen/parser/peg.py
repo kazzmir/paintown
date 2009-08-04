@@ -1879,7 +1879,7 @@ value = peg.PatternRule(name, parameters)
                 PatternRepeatOnce(PatternRule('digit')),
                 PatternCode("""value = ''.join(values[0])""")]),
             ]),
-        Rule('digit', [PatternSequence([PatternRange('0123456789')])]),
+        Rule('digit', [PatternRange('0123456789')]),
         Rule("start_symbol", [
             PatternSequence([
                 PatternVerbatim("start-symbol:"),
@@ -1890,7 +1890,7 @@ value = peg.PatternRule(name, parameters)
         Rule("spaces", [PatternSequence([PatternRepeatMany(PatternRule("space"))])]),
         # Rule("space", [PatternRange(' \t')]),
         Rule("space", [PatternSequence([PatternVerbatim(" ")]), PatternSequence([PatternVerbatim("\\t")])]),
-        Rule("any_char", [PatternSequence([PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_')])]),
+        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_')]),
         Rule("any", [PatternSequence([
             PatternVerbatim("."),
             PatternCode("""value = peg.PatternAny()""")]),
@@ -1909,8 +1909,8 @@ value = peg.PatternRule(name, parameters)
                 PatternUntil(PatternVerbatim("\\n")),
                 ]),
             ]),
-        Rule("newlines_one", [PatternSequence([PatternRepeatOnce(PatternVerbatim("\\n"))])]),
-        Rule("newlines", [PatternSequence([PatternRepeatMany(PatternVerbatim("\\n"))])]),
+        Rule("newlines_one", [PatternRepeatOnce(PatternVerbatim("\\n"))]),
+        Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
     peg = Peg("start", None, None, ['peg'], rules)
