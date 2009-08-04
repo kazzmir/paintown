@@ -72,8 +72,12 @@ struct Value{
 
     Value & operator=(const Value & him){
         which = him.which;
-        value = him.value;
-        values = him.values;
+        if (him.isData()){
+            value = him.value;
+        }
+        if (him.isList()){
+            values = him.values;
+        }
         return *this;
     }
 
@@ -204,12 +208,23 @@ public:
         stream.read(temp, max);
         buffer = temp;
         stream.close();
+
+        createMemo();
     }
 
     Stream(const char * in):
     temp(0),
     buffer(in){
         max = strlen(buffer);
+        createMemo();
+    }
+
+    void createMemo(){
+        memo_size = 1024;
+        memo = new Column*[memo_size];
+        for (int i = 0; i < memo_size; i++){
+            memo[i] = new Column();
+        }
     }
 
     char get(const int position){
@@ -233,8 +248,23 @@ public:
         return strncmp(&buffer[position], str, max - position) == 0;
     }
 
+    void growMemo(){
+        int newSize = memo_size * 2;
+        Column ** newMemo = new Column*[newSize];
+        memcpy(newMemo, memo, sizeof(Column*) * memo_size);
+        for (int i = memo_size; i < newSize; i++){
+            newMemo[i] = new Column();
+        }
+        delete[] memo;
+        memo = newMemo;
+        memo_size = newSize;
+    }
+
     inline Column & getColumn(const int position){
-        return memo[position];
+        if (position >= memo_size){
+            growMemo();
+        }
+        return *(memo[position]);
     }
 
     /*
@@ -253,12 +283,19 @@ public:
 
     ~Stream(){
         delete[] temp;
+        for (int i = 0; i < memo_size; i++){
+            delete memo[i];
+        }
+        delete[] memo;
     }
 
 private:
     char * temp;
     const char * buffer;
-    std::map<const int, Column> memo;
+    // std::map<const int, Column> memo;
+    Column ** memo;
+    int memo_size;
+    // std::vector<Column> memo;
     int max;
 };
 
