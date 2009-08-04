@@ -107,8 +107,8 @@ int main(int argc, char ** argv){
     subprocess.call(["g++", "-g3", cpp, driver, "-o", exe])
     subprocess.call([exe, input])
 
-    # erase(driver)
-    # erase(cpp)
+    erase(driver)
+    erase(cpp)
     return True
 
 def test_all(name, grammar, input):

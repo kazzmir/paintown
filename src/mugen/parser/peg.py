@@ -289,8 +289,11 @@ class Result:
         self.values = value
 
     def getLastValue(self):
-        if self.values is list:
-            return self.values[-1]
+        if type(self.values) is list:
+            if len(self.values) > 0:
+                return self.values[-1]
+            else:
+                return None
         return self.values
     
     def matches(self):
@@ -420,12 +423,12 @@ class PatternEnsure(Pattern):
     def generate_bnf(self):
         return "&" + self.next.generate_bnf()
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         my_result = newResult()
         data = """
 %s = Result(%s.getPosition())
 %s
-""" % (my_result, result, self.next.generate_python(my_result, stream, failure).strip())
+""" % (my_result, result, self.next.generate_python(my_result, result, stream, failure).strip())
         return data
 
     def generate_cpp(self, peg, result, previous_result, stream, failure, tail):
@@ -454,7 +457,7 @@ class PatternNot(Pattern):
     def generate_bnf(self):
         return "!" + self.next.generate_bnf()
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         my_result = newResult()
         my_fail = lambda : "raise NotError"
         data = """
@@ -464,7 +467,7 @@ try:
     %s
 except NotError:
     %s.setValue(None)
-        """ % (my_result, result, indent(self.next.generate_python(my_result, stream, my_fail).strip()), failure(), result)
+        """ % (my_result, result, indent(self.next.generate_python(my_result, result, stream, my_fail).strip()), failure(), result)
 
         return data
 
@@ -506,7 +509,7 @@ class PatternRule(Pattern):
     def generate_bnf(self):
         return self.rule
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         parameters = ""
         if self.parameters != None:
             parameters = ",%s" % ",".join(self.parameters)
@@ -583,7 +586,7 @@ class PatternVoid(Pattern):
     def generate_bnf(self):
         return "<void>"
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         return ""
     
     def generate_cpp(self, peg, result, previous_result, stream, failure, tail):
@@ -604,7 +607,7 @@ class PatternEof(Pattern):
     def generate_bnf(self):
         return "<eof>"
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         data = """
 if chr(0) == %s.get(%s.getPosition()):
     %s.nextPosition()
@@ -651,7 +654,7 @@ class PatternSequence(Pattern):
     def generate_bnf(self):
         return "%s" % " ".join([p.generate_bnf() for p in self.patterns])
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         data = ""
         for pattern in self.patterns:
             my_result = newResult()
@@ -659,9 +662,11 @@ class PatternSequence(Pattern):
 %s = Result(%s.getPosition())
 %s
 %s.addResult(%s);
-""" % (my_result, result, pattern.generate_python(my_result, stream, failure), result, my_result)
+""" % (my_result, result, pattern.generate_python(my_result, result, stream, failure), result, my_result)
 
-        return data
+        return data + """
+%s.setValue(%s.getLastValue())
+""" % (result, result)
 
     def generate_cpp(self, peg, result, previous_result, stream, failure, tail):
         data = ""
@@ -677,7 +682,9 @@ class PatternSequence(Pattern):
     %s.addResult(%s);
 }
 """ % (my_result, result, indent(pattern.generate_cpp(peg, my_result, result, stream, failure, do_tail).strip()), result, my_result)
-        return data
+        return data + """
+%s.setValue(%s.getLastValue());
+""" % (result, result)
 
 class PatternRepeatOnce(Pattern):
     def __init__(self, next):
@@ -697,7 +704,7 @@ class PatternRepeatOnce(Pattern):
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "+"
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         my_fail = lambda : "raise PegError"
         my_result = newResult()
         my_result2 = newResult()
@@ -710,7 +717,7 @@ try:
 except PegError:
     if %s.matches() == 0:
         %s
-        """ % (my_result, result, indent(indent(self.next.generate_python(my_result, stream, my_fail).strip())), result, my_result, result, failure())
+        """ % (my_result, result, indent(indent(self.next.generate_python(my_result, result, stream, my_fail).strip())), result, my_result, result, failure())
 
         return data
 
@@ -757,13 +764,13 @@ class PatternCode(Pattern):
         fix = re.compile("\$(\d+)")
         return re.sub(fix, r"values[\1-1]", code)
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         data = """
 value = None
 values = %s.getValues()
 %s
 %s.setValue(value)
-""" % (result, self.fixup_python(indent(self.code.strip())), result)
+""" % (previous_result, self.fixup_python(self.code.strip()), result)
 
         return data
 
@@ -785,7 +792,7 @@ values = %s.getValues()
 
         return data
 
-class PatternAction(Pattern):
+class PatternAction2(Pattern):
     def __init__(self, before, code):
         Pattern.__init__(self)
         self.before = before
@@ -813,7 +820,7 @@ class PatternAction(Pattern):
         fix = re.compile("\$(\d+)")
         return re.sub(fix, r"values[\1-1]", code)
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         data = """
 %s
 if True:
@@ -821,7 +828,7 @@ if True:
     values = %s.getValues()
     %s
     %s.setValue(value)
-""" % (self.before.generate_python(result, stream, failure).strip(), result, self.fixup_python(indent(self.code.strip())), result)
+""" % (self.before.generate_python(result, previous_result, stream, failure).strip(), result, self.fixup_python(indent(self.code.strip())), result)
 
         return data
 
@@ -863,7 +870,7 @@ class PatternRepeatMany(Pattern):
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "*"
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         my_fail = lambda : "raise PegError"
         my_result = newResult()
         data = """
@@ -874,7 +881,7 @@ try:
         %s.addResult(%s);
 except PegError:
     pass
-        """ % (my_result, result, indent(indent(self.next.generate_python(my_result, stream, my_fail).strip())), result, my_result)
+        """ % (my_result, result, indent(indent(self.next.generate_python(my_result, result, stream, my_fail).strip())), result, my_result)
 
         return data
 
@@ -921,7 +928,7 @@ if (%s != '\\0'){
         return data
 
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         temp = gensym()
         data = """
 %s = %s.get(%s.getPosition())
@@ -951,7 +958,7 @@ class PatternMaybe(Pattern):
     def generate_bnf(self):
         return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         save = gensym("save")
         fail = lambda : """
 %s = Result(%s)
@@ -961,7 +968,7 @@ class PatternMaybe(Pattern):
         data = """
 %s = %s.getPosition()
 %s
-""" % (save, result, self.pattern.generate_python(result, stream, fail))
+""" % (save, result, self.pattern.generate_python(result, previous_result, stream, fail))
         return data
 
     def generate_cpp(self, peg, result, previous_result, stream, failure, tail):
@@ -991,7 +998,7 @@ class PatternOr(Pattern):
     def generate_bnf(self):
         return "or"
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         data = ""
         fail = failure
         save = gensym("save")
@@ -1000,7 +1007,7 @@ class PatternOr(Pattern):
             data = """
 %s = Result(%s)
 %s
-""" % (result, save, pattern.generate_python(result, stream, fail).strip())
+""" % (result, save, pattern.generate_python(result, previous_result, stream, fail).strip())
             fail = lambda : data
         return """
 %s = %s.getPosition()
@@ -1054,11 +1061,11 @@ class PatternBind(Pattern):
     def generate_bnf(self):
         return "%s:%s" % (self.variable, self.pattern.generate_bnf())
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         data = """
 %s
 %s = %s.getValues()
-""" % (self.pattern.generate_python(result, stream, failure).strip(), self.variable, result)
+""" % (self.pattern.generate_python(result, previous_result, stream, failure).strip(), self.variable, result)
         return data
 
 def PatternUntil(pattern):
@@ -1096,7 +1103,7 @@ if (%s != '\\0' && strchr("%s", %s) != NULL){
 """ % (letter, stream, result, letter, self.range, letter, result, result, letter, indent(failure()))
         return data
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         letter = gensym("letter")
         data = """
 %s = %s.get(%s.getPosition())
@@ -1128,7 +1135,7 @@ class PatternVerbatim(Pattern):
     def generate_bnf(self):
         return '"%s"' % self.letters
 
-    def generate_python2(self, result, stream, failure):
+    def generate_python2(self, result, previous_result, stream, failure):
         data = """
 for letter in '%s':
     if letter == %s.get(%s.getPosition()):
@@ -1139,7 +1146,7 @@ for letter in '%s':
 """ % (self.letters, stream, result, result, failure(), result, self.letters)
         return data
 
-    def generate_python(self, result, stream, failure):
+    def generate_python(self, result, previous_result, stream, failure):
         length = len(self.letters)
         if self.letters == "\\n" or self.letters == "\\t":
             length = 1
@@ -1219,12 +1226,11 @@ class Rule:
 try:
     %s = Result(%s)
     %s
-    %s.setValue(%s.getLastValue())
     %s.update(%s, %s, %s)
     return %s
 except PegError:
     pass
-            """ % (result, position, indent(pattern.generate_python(result, stream, fail).strip()), result, result, stream, "RULE_%s" % self.name, position, result, result)
+            """ % (result, position, indent(pattern.generate_python(result, None, stream, fail).strip()), stream, "RULE_%s" % self.name, position, result, result)
             return data
 
         stream = "stream"
@@ -1286,11 +1292,10 @@ goto %s;
                 data = """
 Result %s(%s);
 %s
-%s.setValue(%s.getLastValue());
 %s
 return %s;
 %s:
-            """ % (result, position, pattern.generate_cpp(peg, result, None, stream, failure, None).strip(), result, result, updateChunk(result), result, out)
+            """ % (result, position, pattern.generate_cpp(peg, result, None, stream, failure, None).strip(), updateChunk(result), result, out)
 
             return data
 
@@ -1579,7 +1584,7 @@ std::cout << "Parsed def!" << std::endl;
 def peg_bnf():
     rules = [
         Rule("start", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternRule("newlines"),
                 PatternRule("whitespace"),
                 PatternBind("start_symbol", PatternRule("start_symbol")),
@@ -1598,64 +1603,64 @@ def peg_bnf():
                 PatternRule("newlines"),
                 PatternRule("whitespace"),
                 PatternEof(),
-                ]), """
-value = peg.Peg(start_symbol, include, code, module, rules)
-""")
+                PatternCode("""value = peg.Peg(start_symbol, include, code, module, rules)""")
+                ]),
             ]),
         Rule('module', [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("module:"),
                 PatternRule("spaces"),
                 PatternBind("name", PatternRule("word")),
                 PatternBind("rest", 
-                    PatternRepeatMany(PatternAction(PatternSequence([
+                    PatternRepeatMany(PatternSequence([
                         PatternVerbatim("."),
                         PatternRule("word"),
-                        ]), """value = $2"""))),
-                    ]),"""
-value = [name] + rest
-"""),
+                        PatternCode("""value = $2"""),
+                        ]))),
+                    PatternCode("""value = [name] + rest"""),
+                    ]),
             ]),
         Rule("include", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("include:"),
                 PatternRule("spaces"),
                 PatternBind("code", PatternRule("code")),
-                ]), """
-value = code.code
-"""),
+                PatternCode("value = code.code"),
+                ]),
             ]),
         Rule("more_code", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("code:"),
                 PatternRule("spaces"),
                 PatternBind("code", PatternRule("code")),
-                ]), """
-value = code.code
-"""),
+                PatternCode("""value = code.code"""),
+                ]),
             ]),
         Rule("word", [
-            PatternAction(PatternRepeatOnce(PatternRule("any_char")), """
+            PatternSequence([
+                PatternRepeatOnce(PatternRule("any_char")),
+                PatternCode("""
 # print "all start symbol values " + str(values)
 # print "values[0] " + str(values[0])
-value = ''.join(values)
+value = ''.join(values[0])
 # print "got word " + value
 """)
+                ]),
             ]),
         Rule("rules", [
-            PatternAction(
-                PatternSequence([
-                    PatternVerbatim("rules:"),
+            PatternSequence([
+                PatternVerbatim("rules:"),
+                PatternRule("whitespace"),
+                PatternBind("rules", PatternRepeatMany(PatternSequence([
+                    PatternRule("rule"),
                     PatternRule("whitespace"),
-                    PatternBind("rules", PatternRepeatMany(PatternAction(PatternSequence([
-                        PatternRule("rule"),
-                        PatternRule("whitespace"),
-                        ]), """value = $1"""))),
-                    ]),
-                """value = rules""")
+                    PatternCode("""value = $1"""),
+                    ]))),
+                PatternCode("""value = rules"""),
+                ]),
             ]),
         Rule("rule", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternRule("spaces"),
                 PatternBind("inline", PatternMaybe(PatternVerbatim("inline"))),
                 PatternRule("spaces"),
@@ -1667,67 +1672,70 @@ value = ''.join(values)
                 PatternBind("pattern1", PatternRule("pattern_line")),
                 PatternRule("whitespace"),
                 PatternBind("patterns",
-                    PatternRepeatMany(PatternAction(PatternSequence([
+                    PatternRepeatMany(PatternSequence([
                         PatternRule("spaces"),
                         PatternVerbatim("|"),
                         PatternRule("spaces"),
                         PatternBind("pattern", PatternRule("pattern_line")),
                         # PatternBind("pattern", PatternRepeatMany(PatternRule("pattern"))),
-                        PatternRule("whitespace")]),
-                        """value = pattern"""
-)))]),
-                """
-value = peg.Rule(name, [pattern1] + patterns, inline = (inline != None), parameters = parameters)
-""")
+                        PatternRule("whitespace"),
+                        PatternCode("""value = pattern"""),
+                        ]),
+                        )
+                    ),
+                PatternCode("""
+value = peg.Rule(name, [pattern1] + patterns, inline = (inline != None), parameters = parameters)"""),
+                ]),
             ]),
         Rule("pattern_line",[
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternBind("patterns", PatternRepeatMany(PatternRule("pattern"))),
-                ]), """
+                PatternCode("""
 value = peg.PatternSequence(patterns)
 #if code != None:
 #    value = code(peg.PatternSequence(patterns))
 #else:
 #    value = peg.PatternAction(peg.PatternSequence(patterns), "value = values;")
 """),
+                ]),
             ]),
         Rule("pattern", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternBind("bind", PatternMaybe(PatternRule("bind"))),
                 PatternBind("item", PatternRule("item")),
-                PatternRule("spaces"),]),
-                """
+                PatternRule("spaces"),
+                PatternCode("""
 # value = peg.PatternRule(values[0])
 if bind != None:
     item = bind(item)
 value = item
 # print "Pattern is " + str(value)
-""")
+"""),
+                ]),
             ]),
-        Rule('raw_code', [PatternAction(PatternSequence([
+        Rule('raw_code', [PatternSequence([
             PatternVerbatim("("),
             PatternRule("spaces"),
             PatternBind("code", PatternRule('code')),
             PatternRule("spaces"),
             PatternVerbatim(")"),
-            ]), """value = code.code""")]),
+            PatternCode("""value = code.code"""),
+            ]),
+        ]),
         Rule("code", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("{{"),
-                PatternRepeatOnce(PatternAction(PatternSequence([
+                PatternRepeatOnce(PatternSequence([
                     PatternNot(PatternVerbatim("}}")),
                     PatternAny(),
-                    ]),
-                    """
-value = values[1]
-""")),
+                    PatternCode("""value = values[1]""")
+                    ])),
                 PatternVerbatim("}}"),
-                ]), """
-value = peg.PatternCode(''.join(values[1]))
-"""),
+                PatternCode("""value = peg.PatternCode(''.join(values[1]))"""),
+                ]),
             ]),
         Rule("item", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternBind("ensure", PatternMaybe(PatternVerbatim("&"))),
                 PatternBind("pnot", PatternMaybe(PatternVerbatim("!"))),
                 PatternBind("pattern",
@@ -1742,7 +1750,8 @@ value = peg.PatternCode(''.join(values[1]))
                         PatternRule("string"),
                         PatternRule("sub_pattern"),
                         PatternRule("code")])),
-                    PatternBind("modifier", PatternMaybe(PatternRule("modifier")))]), """
+                    PatternBind("modifier", PatternMaybe(PatternRule("modifier"))),
+                    PatternCode("""
 if modifier != None:
     pattern = modifier(pattern)
 if pnot != None:
@@ -1750,146 +1759,149 @@ if pnot != None:
 if ensure != None:
     pattern = peg.PatternEnsure(pattern)
 value = pattern
-"""),
+""")]),
             ]),
         Rule("eof", [
-            PatternAction(PatternVerbatim("<eof>"),"""value = peg.PatternEof()""")
+            PatternSequence([
+                PatternVerbatim("<eof>"),
+                PatternCode("""value = peg.PatternEof()""")
+                ]),
             ]),
-        Rule("void", [PatternAction(PatternVerbatim("<void>"), """value = peg.PatternVoid()""")]),
+        Rule("void", [PatternSequence([
+            PatternVerbatim("<void>"),
+            PatternCode("""value = peg.PatternVoid()""")])
+            ]),
         Rule("range", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("["),
-                PatternRepeatMany(PatternAction(PatternSequence([
+                PatternRepeatMany(PatternSequence([
                     PatternNot(PatternVerbatim("]")),
                     PatternAny(),
-                    ]),"value = values[1]")),
+                    PatternCode("value = values[1]")])),
                 PatternVerbatim("]"),
-                ]),"""
+                PatternCode("""
 value = peg.PatternRange(''.join(values[1]))
-"""),
+""")]),
             ]),
         Rule("sub_pattern", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("("),
                 PatternRepeatOnce(PatternRule("pattern")),
                 PatternVerbatim(")"),
-                ]),"""
+                PatternCode("""
 value = peg.PatternSequence(values[1])
-"""),
+""")]),
             ]),
         Rule("bind", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternBind("name", PatternRule("word")),
                 PatternVerbatim(":"),
-                ]),"""
+                PatternCode("""
 value = lambda p: peg.PatternBind(name, p)
-"""),
+""")]),
             ]),
         Rule("string", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("\""),
-                PatternRepeatMany(PatternAction(PatternSequence([
+                PatternRepeatMany(PatternSequence([
                     PatternNot(PatternVerbatim("\"")),
                     PatternAny(),
-                    ]),"value = values[1]")),
+                    PatternCode("value = values[1]")])),
                 PatternVerbatim("\""),
-                ]), """
+                PatternCode("""
 value = peg.PatternVerbatim(''.join(values[1]))
-"""),
+""")]),
             ]),
         Rule("modifier", [
-            PatternAction(PatternVerbatim("*"),"""
+            PatternSequence([PatternVerbatim("*"),
+            PatternCode("""
 value = lambda p: peg.PatternRepeatMany(p)
-"""),
-            PatternAction(PatternVerbatim("?"),"""
+""")]),
+            PatternSequence([PatternVerbatim("?"),
+            PatternCode("""
 value = lambda p: peg.PatternMaybe(p)
-"""),
-            PatternAction(PatternVerbatim("+"),"""
+""")]),
+            PatternSequence([PatternVerbatim("+"),
+            PatternCode("""
 value = lambda p: peg.PatternRepeatOnce(p)
-"""),
+""")]),
             ]),
         Rule("x_word", [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternBind('name', PatternRule("word")),
                 PatternBind('parameters', PatternMaybe(PatternRule('parameters'))),
-                ]), """
+                PatternCode("""
 value = peg.PatternRule(name, parameters)
-"""),
+""")]),
             ]),
         Rule('rule_parameters', [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("("),
                 PatternRule("spaces"),
                 PatternBind('param1', PatternRule('word')),
-                PatternBind('params', PatternRepeatMany(PatternAction(PatternSequence([
+                PatternBind('params', PatternRepeatMany(PatternSequence([
                     PatternRule('spaces'),
                     PatternVerbatim(','),
                     PatternRule('spaces'),
                     PatternBind('exp', PatternRule('word')),
-                    ]), """
-value = exp
-"""))),
+                    PatternCode("""value = exp""")]))),
                 PatternRule("spaces"),
                 PatternVerbatim(")"),
-                ]), """
-value = [param1] + params
-"""),
+                PatternCode("""value = [param1] + params""")]),
             ]),
-
         Rule('parameters', [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("("),
                 PatternRule("spaces"),
                 PatternBind('param1', PatternRule('word_or_dollar')),
-                PatternBind('params', PatternRepeatMany(PatternAction(PatternSequence([
+                PatternBind('params', PatternRepeatMany(PatternSequence([
                     PatternRule('spaces'),
                     PatternVerbatim(','),
                     PatternRule('spaces'),
                     PatternBind('exp', PatternRule('word_or_dollar')),
-                    ]), """
-value = exp
-"""))),
+                    PatternCode("""value = exp""")]))),
                 PatternRule("spaces"),
                 PatternVerbatim(")"),
-                ]), """
-value = [param1] + params
-"""),
+                PatternCode("""value = [param1] + params""")]),
             ]),
         Rule('word_or_dollar', [
             PatternRule('word'),
             PatternRule('dollar'),
             ]),
         Rule('dollar', [
-            PatternAction(PatternSequence([
+            PatternSequence([
                 PatternVerbatim("$"),
                 PatternBind('number', PatternRule("number")),
-                ]), """
-value = "$%s" % number
-"""),
+                PatternCode("""value = "$%s" % number""")]),
             ]),
         Rule('number', [
-            PatternAction(PatternRepeatOnce(PatternRule('digit')), """
-value = ''.join(values)
-"""),
+            PatternSequence([
+                PatternRepeatOnce(PatternRule('digit')),
+                PatternCode("""value = ''.join(values[0])""")]),
             ]),
-        Rule('digit', [PatternRange('0123456789')]),
+        Rule('digit', [PatternSequence([PatternRange('0123456789')])]),
         Rule("start_symbol", [
-            PatternAction(PatternSequence([PatternVerbatim("start-symbol:"), PatternRepeatMany(PatternRule("space")), PatternRule("word")]), """
-value = values[2]
-""")
+            PatternSequence([
+                PatternVerbatim("start-symbol:"),
+                PatternRepeatMany(PatternRule("space")),
+                PatternRule("word"),
+                PatternCode("""value = values[2]""")]),
             ]),
-        Rule("spaces", [PatternRepeatMany(PatternRule("space"))]),
+        Rule("spaces", [PatternSequence([PatternRepeatMany(PatternRule("space"))])]),
         # Rule("space", [PatternRange(' \t')]),
-        Rule("space", [PatternVerbatim(" "), PatternVerbatim("\\t")]),
-        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_')]),
-        Rule("any", [PatternAction(PatternVerbatim("."), """
-value = peg.PatternAny()
-""")]),
+        Rule("space", [PatternSequence([PatternVerbatim(" ")]), PatternSequence([PatternVerbatim("\\t")])]),
+        Rule("any_char", [PatternSequence([PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_')])]),
+        Rule("any", [PatternSequence([
+            PatternVerbatim("."),
+            PatternCode("""value = peg.PatternAny()""")]),
+            ]),
         Rule("whitespace", [
-            PatternRepeatMany(PatternOr([
-                PatternRange(" \\t\\n"),
-                PatternRule("comment"),
-                ])),
+            PatternSequence([
+                PatternRepeatMany(PatternOr([
+                    PatternRange(" \\t\\n"),
+                    PatternRule("comment"),
+                    ])),
+                ]),
             ]),
         Rule("comment", [
             PatternSequence([
@@ -1897,8 +1909,8 @@ value = peg.PatternAny()
                 PatternUntil(PatternVerbatim("\\n")),
                 ]),
             ]),
-        Rule("newlines_one", [PatternRepeatOnce(PatternVerbatim("\\n"))]),
-        Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
+        Rule("newlines_one", [PatternSequence([PatternRepeatOnce(PatternVerbatim("\\n"))])]),
+        Rule("newlines", [PatternSequence([PatternRepeatMany(PatternVerbatim("\\n"))])]),
     ]
 
     peg = Peg("start", None, None, ['peg'], rules)
