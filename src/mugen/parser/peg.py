@@ -12,7 +12,6 @@
 # 4. 171397b / 10.539s = 16263.1179428788 b/s
 
 # Todo (finished items at bottom)
-# error reporting for c++
 # add generator for ruby, scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
 
 next_var = 0
@@ -163,6 +162,9 @@ public:
 
     Value getLastValue() const {
         if (value.isList()){
+            if (value.values.size() == 0){
+                std::cout << "[peg] No last value to get!" << std::endl;
+            }
             return value.values[value.values.size()-1];
         } else {
             return value;
@@ -202,7 +204,8 @@ class Stream{
 public:
     Stream(const std::string & filename):
     temp(0),
-    buffer(0){
+    buffer(0),
+    farthest(0){
         std::ifstream stream;
         stream.open(filename.c_str());
         stream.seekg(0, std::ios_base::end);
@@ -218,7 +221,8 @@ public:
 
     Stream(const char * in):
     temp(0),
-    buffer(in){
+    buffer(in),
+    farthest(0){
         max = strlen(buffer);
         createMemo();
     }
@@ -264,6 +268,56 @@ public:
         memo_size = newSize;
     }
 
+    void reportError(){
+        int line = 1;
+        int column = 1;
+        for (int i = 0; i < farthest; i++){
+            if (buffer[i] == '\\n'){
+                line += 1;
+                column = 1;
+            } else {
+                column += 1;
+            }
+        }
+        int context = 10;
+        int left = farthest - context;
+        int right = farthest + context;
+        if (left < 0){
+            left = 0;
+        }
+        if (right >= max){
+            right = max;
+        }
+        std::cout << "Read up till line " << line << " column " << column << std::endl;
+        std::ostringstream show;
+        for (int i = left; i < right; i++){
+            char c = buffer[i];
+            switch (buffer[i]){
+                case '\\n' : {
+                    show << '\\\\';
+                    show << 'n';
+                    break;
+                }
+                case '\\r' : {
+                    show << '\\\\';
+                    show << 'r';
+                    break;
+                }
+                case '\\t' : {
+                    show << '\\\\';
+                    show << 't';
+                    break;
+                }
+                default : show << c; break;
+            }
+        }
+        std::cout << "'" << show.str() << "'" << std::endl;
+        for (int i = 0; i < farthest - left; i++){
+            std::cout << " ";
+        }
+        std::cout << "^" << std::endl;
+    }
+
     inline Column & getColumn(const int position){
         if (position >= memo_size){
             growMemo();
@@ -271,19 +325,11 @@ public:
         return *(memo[position]);
     }
 
-    /*
-    void update(const int rule, const int position, const Result & result){
-        memo[rule][position] = result;
+    void update(const int position){
+        if (position > farthest){
+            farthest = position;
+        }
     }
-
-    bool hasResult(const int rule, const int position){
-        return memo[rule][position].calculated();
-    }
-
-    Result result(const int rule, const int position){
-        return memo[rule][position];
-    }
-    */
 
     ~Stream(){
         delete[] temp;
@@ -301,6 +347,7 @@ private:
     int memo_size;
     // std::vector<Column> memo;
     int max;
+    int farthest;
 };
 
 Result errorResult(-1);
@@ -400,7 +447,7 @@ class Stream:
             right = len(self.all)
         print "Read up till line %d, column %d" % (line, column)
         print "'%s'" % self.all[left:right].replace("\\n", "\\\\n").replace("\\t", "\\\\t")
-        print "%s^" % (' ' * (column - left))
+        print "%s^" % (' ' * (self.furthest - left))
 
     def update(self, rule, position, result):
         if result != None and result.getPosition() > self.furthest:
@@ -1303,8 +1350,9 @@ def rule_%s(%s, %s):
         %s = new %s();
     }
     %s = %s;
+    %s.update(%s.getPosition());
 }
-""" % (stream, position, chunk_accessor.getChunk("column"), chunk_accessor.getChunk("column"), chunk_accessor.getType(), chunk_accessor.getValue(chunk_accessor.getChunk("column")), new)
+""" % (stream, position, chunk_accessor.getChunk("column"), chunk_accessor.getChunk("column"), chunk_accessor.getType(), chunk_accessor.getValue(chunk_accessor.getChunk("column")), new, stream, new)
             return data
 
         hasChunk = """
@@ -1533,6 +1581,7 @@ struct Column{
 #include <string>
 #include <map>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <string.h>
 
@@ -1552,6 +1601,7 @@ const void * main(const std::string & filename){
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
+        stream.reportError();
     }
     return done.getValues().getValue();
 }
@@ -1562,6 +1612,7 @@ const void * main(const char * in){
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
+        stream.reportError();
     }
     return done.getValues().getValue();
 }
@@ -2061,3 +2112,4 @@ if __name__ == '__main__':
 # fix binding variables in c++ (move declaration to the top of the function)
 # make intra-pattern actions work
 # add helper function section
+# error reporting for c++
