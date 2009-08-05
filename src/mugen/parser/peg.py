@@ -646,7 +646,10 @@ Result %s(%s.getPosition());
                 return re.sub(fix, to, code)
 
             if tail != None:
-                return '\n'.join(["%s = %s;" % (q[0], fix_param(q[1])) for q in zip(tail, self.parameters)])
+                if len(tail) == 0:
+                    return ""
+                else:
+                    return '\n'.join(["%s = %s;" % (q[0], fix_param(q[1])) for q in zip(tail, self.parameters)])
             else:
                 parameters = ""
                 if self.parameters != None:
@@ -1373,6 +1376,8 @@ def rule_%s(%s, %s):
             
             if pattern.tailRecursive(self):
                 tail_vars = self.parameters
+                if tail_vars == None:
+                    tail_vars = []
                 data = """
 Result %s(%s);
 %s
