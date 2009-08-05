@@ -156,7 +156,7 @@ public:
         position = -1;
     }
 
-    void setValue(const Value & value){
+    inline void setValue(const Value & value){
         this->value = value;
     }
 
@@ -171,7 +171,7 @@ public:
         }
     }
 
-    const int matches() const {
+    inline const int matches() const {
         if (value.isList()){
             return this->value.values.size();
         } else {
@@ -179,7 +179,7 @@ public:
         }
     }
 
-    const Value & getValues() const {
+    inline const Value & getValues() const {
         return this->value;
     }
 
@@ -629,6 +629,14 @@ Result %s(%s.getPosition());
 %s
 %s:
                 """ % (my_result, result, pattern.generate_cpp(peg, my_result, result, stream, fail, tail).strip(), result, my_result, success, out)
+
+                data = """
+{
+    %s
+}
+%s
+%s:
+""" % (indent(pattern.generate_cpp(peg, result, previous_result, stream, fail, tail)), success, out)
                 return data
 
             success_out = gensym('success')
@@ -992,6 +1000,7 @@ do{
     %s.addResult(%s);
 } while (true);
 %s:
+;
         """ % (my_result, result, indent(self.next.generate_cpp(peg, my_result, result, stream, my_fail, tail).strip()), result, my_result, loop_done)
         return data
 
