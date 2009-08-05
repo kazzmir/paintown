@@ -762,20 +762,23 @@ class PatternSequence(Pattern):
 """ % (result, result)
 
     def generate_cpp(self, peg, result, previous_result, stream, failure, tail):
-        data = ""
-        for pattern in self.patterns:
-            my_result = newResult()
-            do_tail = None
-            if pattern == self.patterns[-1]:
-                do_tail = tail
-            data += """
+        if len(self.patterns) == 1:
+            return self.patterns[0].generate_cpp(peg, result, previous_result, stream, failure, tail)
+        else:
+            data = ""
+            for pattern in self.patterns:
+                my_result = newResult()
+                do_tail = None
+                if pattern == self.patterns[-1]:
+                    do_tail = tail
+                data += """
 {
     Result %s(%s.getPosition());
     %s
     %s.addResult(%s);
 }
 """ % (my_result, result, indent(pattern.generate_cpp(peg, my_result, result, stream, failure, do_tail).strip()), result, my_result)
-        return data + """
+            return data + """
 %s.setValue(%s.getLastValue());
 """ % (result, result)
 
