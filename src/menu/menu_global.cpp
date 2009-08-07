@@ -17,8 +17,6 @@
 
 using namespace std;
 
-std::string MenuGlobals::currentSong("");
-
 std::priority_queue<std::string> MenuGlobals::selectSound;
 
 // std::string MenuGlobals::level = "";
@@ -34,10 +32,6 @@ void MenuGlobals::setMusic(const std::string &file){
 	Music::pause();
 	Music::play();
     }
-}
-
-const std::string MenuGlobals::currentMusic(){
-	return currentSong;
 }
 
 void MenuGlobals::setSelectSound(const std::string &file){

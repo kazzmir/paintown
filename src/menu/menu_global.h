@@ -9,16 +9,13 @@ class Sound;
 class Menu;
 
 class MenuGlobals{
-public:
+    public:
 	/*! ctor dtor */
 	MenuGlobals();
 	virtual ~MenuGlobals();
 	
 	/*! set the music */
 	static void setMusic(const std::string &file);
-	
-	/*! get current music */
-	static const std::string currentMusic();
 	
 	/*! set the select sound */
 	static void setSelectSound(const std::string &file);
@@ -75,8 +72,7 @@ public:
         static void setCooperative();
 	
 private:
-		
-	static std::string currentSong;
+	
 	static std::priority_queue<std::string> selectSound;
 	
 	// static std::string level;
