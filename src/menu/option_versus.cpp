@@ -141,7 +141,7 @@ void OptionVersus::run(bool &endGame){
 		    We'll reset the music so that menu is tricked into kicking the music back into service
 		    Until we have some kind of Resource to handle music
 		*/
-		MenuGlobals::setMusic( "" );
+		MenuGlobals::resetMusic();
 		key.wait();
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;

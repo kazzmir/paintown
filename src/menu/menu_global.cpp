@@ -44,6 +44,10 @@ void MenuGlobals::setMusic(const std::string &file){
     }
 }
 
+void MenuGlobals::resetMusic(){
+    setMusic("");
+}
+
 const std::string MenuGlobals::currentMusic(){
 	return currentSong;
 }

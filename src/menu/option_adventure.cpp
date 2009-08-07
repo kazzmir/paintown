@@ -84,7 +84,7 @@ void OptionAdventure::run(bool &endGame){
 		    We'll reset the music so that menu is tricked into kicking the music back into service
 		    Until we have some kind of Resource to handle music
 		*/
-		MenuGlobals::setMusic( "" );
+		MenuGlobals::resetMusic();
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Error while loading: " << le.getReason() << endl;
 	} catch ( const ReturnException & r ){

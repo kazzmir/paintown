@@ -65,7 +65,7 @@ void OptionNetworkJoin::run(bool &endGame){
 		We'll reset the music so that menu is tricked into kicking the music back into service
 		Until we have some kind of Resource to handle music
 	    */
-	    MenuGlobals::setMusic( "" );
+	    MenuGlobals::resetMusic();
         } catch (const ReturnException &r){
         }
 

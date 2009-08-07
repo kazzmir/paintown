@@ -320,6 +320,10 @@ void Menu::act(bool &endGame){
 	    }
             (*selectedOption)->setState(MenuOption::Selected);
             (*selectedOption)->resetAnimations();
+	    // Reset music
+	    if ( !music.empty() ){
+		MenuGlobals::setMusic(music);
+	    }
 	}
     }
     

@@ -17,6 +17,9 @@ public:
 	/*! set the music */
 	static void setMusic(const std::string &file);
 	
+	/*! reset music */
+	static void resetMusic();
+	
 	/*! get current music */
 	static const std::string currentMusic();
 	
