@@ -44,7 +44,8 @@ Music::Music( bool on ):
 playing( false ),
 fading( 0 ),
 player( NULL ),
-music_file( NULL ){
+music_file( NULL ),
+currentSong(""){
 
 	if ( instance != NULL ){
 		cerr << "Trying to instantiate music object twice!" << endl;
@@ -375,6 +376,13 @@ static const char * typeToExtension( int i ){
 bool Music::internal_loadSong( const char * path ){
 
 	// cout << "Trying to load '" << path << "'" << endl;
+	
+	// Check current song and/or set it
+	if (currentSong.compare(std::string(path))==0){
+	    return true;
+	} else {
+	    currentSong = std::string(path);
+	}
 
 	if ( player != NULL ){
 		al_stop_duh( player );

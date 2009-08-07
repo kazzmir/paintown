@@ -88,11 +88,6 @@ void OptionAdventureCpu::run(bool &endGame){
                     players.push_back( buddy );
                 }
 		Game::realGame(players, info);
-		/* Since the music had been changed outside menu and the menu isn't notified of it
-		    We'll reset the music so that menu is tricked into kicking the music back into service
-		    Until we have some kind of Resource to handle music
-		*/
-		MenuGlobals::resetMusic();
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
 	} catch ( const ReturnException & r ){

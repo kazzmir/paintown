@@ -30,22 +30,10 @@ MenuGlobals::~MenuGlobals(){
 }
 
 void MenuGlobals::setMusic(const std::string &file){
-    Global::debug(1) << "Preparing to play: " << file << endl;
-    if (currentSong.compare(file) != 0){
-	Global::debug(1) << "Song doesn't match current: " << currentSong << " ... Setting to song: " << file << endl;
-	currentSong = file;
-	
-	if (!currentSong.empty()){
-	    if(Music::loadSong( Util::getDataPath() + currentSong )){
-		    Music::pause();
-		    Music::play();
-	    }
-	}
+    if(Music::loadSong( Util::getDataPath() + file )){
+	Music::pause();
+	Music::play();
     }
-}
-
-void MenuGlobals::resetMusic(){
-    setMusic("");
 }
 
 const std::string MenuGlobals::currentMusic(){

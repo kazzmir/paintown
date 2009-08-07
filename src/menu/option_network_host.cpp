@@ -8,8 +8,6 @@
 #include "network/server.h"
 #include "globals.h"
 
-#include "menu/menu_global.h"
-
 #include <iostream>
 
 using namespace std;
@@ -59,11 +57,6 @@ void OptionNetworkHost::run(bool &endGame){
 	Keyboard key;
         try{
             Network::networkServer();
-	    /* Since the music had been changed outside menu and the menu isn't notified of it
-		We'll reset the music so that menu is tricked into kicking the music back into service
-		Until we have some kind of Resource to handle music
-	    */
-	    MenuGlobals::resetMusic();
         } catch (const ReturnException &e){
         }
 	key.clear();

@@ -52,6 +52,8 @@ protected:
 
 	AL_DUH_PLAYER * player;
 	DUH * music_file;
+	
+	std::string currentSong;
 };
 
 #endif
