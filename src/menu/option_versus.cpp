@@ -8,6 +8,8 @@
 #include "object/versus_player.h"
 #include "object/versus_enemy.h"
 
+#include "menu/menu_global.h"
+
 using namespace std;
 
 OptionVersus::OptionVersus( Token *token ) throw( LoadException ):
@@ -135,6 +137,11 @@ void OptionVersus::run(bool &endGame){
 				Game::playVersusMode( &pl, &en, i + 1 );
 			}
 		}
+		/* Since the music had been changed outside menu and the menu isn't notified of it
+		    We'll reset the music so that menu is tricked into kicking the music back into service
+		    Until we have some kind of Resource to handle music
+		*/
+		MenuGlobals::setMusic( "" );
 		key.wait();
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;

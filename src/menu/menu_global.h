@@ -20,9 +20,6 @@ public:
 	/*! get current music */
 	static const std::string currentMusic();
 	
-	/*! pop music */
-	static void popMusic();
-	
 	/*! set the select sound */
 	static void setSelectSound(const std::string &file);
 	
@@ -79,7 +76,7 @@ public:
 	
 private:
 		
-	static std::priority_queue<std::string> lastPlayed;
+	static std::string currentSong;
 	static std::priority_queue<std::string> selectSound;
 	
 	// static std::string level;

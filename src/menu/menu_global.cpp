@@ -17,7 +17,7 @@
 
 using namespace std;
 
-std::priority_queue<std::string> MenuGlobals::lastPlayed;
+std::string MenuGlobals::currentSong("");
 
 std::priority_queue<std::string> MenuGlobals::selectSound;
 
@@ -30,27 +30,22 @@ MenuGlobals::~MenuGlobals(){
 }
 
 void MenuGlobals::setMusic(const std::string &file){
-	lastPlayed.push(file);
-	if(Music::loadSong( Util::getDataPath() + file )){
-		Music::pause();
-		Music::play();
+    Global::debug(1) << "Preparing to play: " << file << endl;
+    if (currentSong.compare(file) != 0){
+	Global::debug(1) << "Song doesn't match current: " << currentSong << " ... Setting to song: " << file << endl;
+	currentSong = file;
+	
+	if (!currentSong.empty()){
+	    if(Music::loadSong( Util::getDataPath() + currentSong )){
+		    Music::pause();
+		    Music::play();
+	    }
 	}
+    }
 }
 
 const std::string MenuGlobals::currentMusic(){
-	if(!lastPlayed.empty()){
-		return lastPlayed.top();
-	}
-	else return std::string();
-}
-
-void MenuGlobals::popMusic(){
-	if(!lastPlayed.empty()){
-		lastPlayed.pop();
-		Music::pause();
-		Music::loadSong( Util::getDataPath() + lastPlayed.top() );
-		Music::play();
-	}
+	return currentSong;
 }
 
 void MenuGlobals::setSelectSound(const std::string &file){

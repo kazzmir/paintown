@@ -369,10 +369,6 @@ void Menu::run(){
     selectedOption = menuOptions.begin();
     menuOptions.front()->setState(MenuOption::Selected);
 
-    if ( !music.empty() ){
-        MenuGlobals::setMusic(music);
-    }
-
     if ( !selectSound.empty() ){
         MenuGlobals::setSelectSound(selectSound);
     }
@@ -384,12 +380,6 @@ void Menu::run(){
         int game_time = 100;
         motion = 0;
 
-        /*
-           sharedFont = ourFont;
-           sharedFontWidth = fontWidth;
-           sharedFontHeight = fontHeight;
-           */
-
         // Reset fade stuff
         resetFadeInfo();
 
@@ -400,6 +390,11 @@ void Menu::run(){
         for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
             (*i)->reset();
         }
+	
+	// Set music
+	if ( !music.empty() ){
+	    MenuGlobals::setMusic(music);
+	}
 
         while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 
@@ -479,17 +474,8 @@ void Menu::run(){
 	
 	// Reset it's state
 	(*selectedOption)->setState(MenuOption::Selected);
-	if ( !music.empty() ){
-	    MenuGlobals::setMusic(music);
-	}
 	if ( !selectSound.empty() ){
 	    MenuGlobals::setSelectSound(selectSound);
-	}
-
-	if (!music.empty()){
-	    if(MenuGlobals::currentMusic() != music){
-		MenuGlobals::popMusic();
-	    }
 	}
 
 	if (!selectSound.empty()){
