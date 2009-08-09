@@ -491,7 +491,7 @@ class Pattern:
         import re
         fix = re.compile("\$(\d+)")
         # return re.sub(fix, r"values.getValues()[\1-1]", code)
-        return re.sub(fix, lambda obj: args[int(obj.group(1))] + ".getValues()", code)
+        return re.sub(fix, lambda obj: args(int(obj.group(1))) + ".getValues()", code)
 
     def parens(self, pattern, str):
         if pattern.contains() > 1:
@@ -773,22 +773,38 @@ class PatternSequence(Pattern):
         if len(self.patterns) == 1:
             return self.patterns[0].generate_cpp(peg, result, stream, failure, tail, peg_args)
         else:
-            data = ""
-            args = {}
-            arg_num = 1
+            # for each pattern, save the result in a temporary variable. only create
+            # temporaries if the result is used. looking up a variable through the
+            # 'args' accessor tells the code generator to generate the variable
+            data = []
+            def invalid(d):
+                raise Exception("Invalid result %s" % d)
+            args = invalid
+            use_args = []
+            arg_num = 0
             for pattern in self.patterns:
                 my_result = newResult()
+                use_args.append("")
                 do_tail = None
                 if pattern == self.patterns[-1]:
                     do_tail = tail
                 else:
-                    args[arg_num] = my_result
+                    # lexical scope is broken so we need another function here
+                    def make(n, old_arg):
+                        def get(d):
+                            # print "Looking for %s arg_num is %d. previous is %s" % (d, n, old_arg)
+                            if d == n:
+                                use_args[n-1] = "Result %s = %s;" % (my_result, result)
+                                return my_result
+                            return old_arg(d)
+                        return get
                     arg_num += 1
-                data += """
+                    args = make(arg_num, args)
+
+                data.append("""
 %s
-Result %s = %s;
-""" % (indent(pattern.generate_cpp(peg, result, stream, failure, do_tail, args).strip()), my_result, result)
-            return "{\n%s\n}" % indent(data)
+""" % (indent(pattern.generate_cpp(peg, result, stream, failure, do_tail, args).strip())))
+            return "{\n%s\n}" % indent('\n'.join(["%s\n%s" % (x[0], x[1]) for x in zip(data, use_args)]))
 
 class PatternRepeatOnce(Pattern):
     def __init__(self, next):
@@ -1372,6 +1388,9 @@ def rule_%s(%s, %s):
             def failure():
                 return "goto %s;" % out
             
+            def invalid_arg(d):
+                raise Exception("No results available")
+
             if pattern.tailRecursive(self):
                 tail_vars = self.parameters
                 if tail_vars == None:
@@ -1382,7 +1401,7 @@ Result %s(%s);
 %s = %s.getPosition();
 goto %s;
 %s:
-""" % (result, position, pattern.generate_cpp(peg, result, stream, failure, tail_vars, {}).strip(), position, result, tail_loop, out)
+    """ % (result, position, pattern.generate_cpp(peg, result, stream, failure, tail_vars, invalid_arg).strip(), position, result, tail_loop, out)
             else:
                 debugging = ""
                 if debug:
@@ -1394,7 +1413,7 @@ Result %s(%s);
 %s
 return %s;
 %s:
-            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, {}).strip(), updateChunk(result), result, out)
+            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result), result, out)
 
             return data
 
