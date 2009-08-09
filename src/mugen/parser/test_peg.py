@@ -107,7 +107,7 @@ int main(int argc, char ** argv){
     subprocess.call(["g++", "-g3", cpp, driver, "-o", exe])
     subprocess.call([exe, input])
 
-    erase(driver)
+    # erase(driver)
     # erase(cpp)
     return True
 
