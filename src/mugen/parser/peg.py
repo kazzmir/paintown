@@ -103,17 +103,19 @@ struct Value{
         this->value = value;
     }
 
-    inline const std::vector<Value> & getValues() const {
+    inline const std::list<Value> & getValues() const {
         return values;
     }
 
-    inline void setValues(std::vector<Value> values){
+    /*
+    inline void setValues(std::list<Value> values){
         which = 1;
         values = values;
     }
+    */
 
     const void * value;
-    std::vector<Value> values;
+    std::list<Value> values;
 };
 
 class Result{
@@ -160,6 +162,7 @@ public:
         this->value = value;
     }
 
+    /*
     Value getLastValue() const {
         if (value.isList()){
             if (value.values.size() == 0){
@@ -170,6 +173,7 @@ public:
             return value;
         }
     }
+    */
 
     inline const int matches() const {
         if (value.isList()){
@@ -185,7 +189,7 @@ public:
 
     void addResult(const Result & result){
         if (this->value.isList()){
-            std::vector<Value> & mine = this->value.values;
+            std::list<Value> & mine = this->value.values;
             mine.push_back(result.getValues());
             this->position = result.getPosition();
         } else {
@@ -1604,7 +1608,7 @@ struct Column{
         data = """
 %s
 
-#include <vector>
+#include <list>
 #include <string>
 #include <map>
 #include <fstream>
