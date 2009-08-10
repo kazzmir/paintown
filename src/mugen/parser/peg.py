@@ -190,13 +190,10 @@ public:
     }
 
     void addResult(const Result & result){
-        if (this->value.isList()){
-            std::list<Value> & mine = this->value.values;
-            mine.push_back(result.getValues());
-            this->position = result.getPosition();
-        } else {
-            std::cout << "Error: trying to add results to a single value" << std::endl; 
-        }
+        std::list<Value> & mine = this->value.values;
+        mine.push_back(result.getValues());
+        this->position = result.getPosition();
+        this->value.which = 1;
     }
 
 private:

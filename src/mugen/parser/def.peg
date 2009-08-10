@@ -19,7 +19,7 @@ rules:
 	section = "[" s name s "]" 
 	name = letter+ {{
 	   std::ostringstream out;
-	   for (std::vector<Value>::const_iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
+	   for (Value::iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
 	   	out << (char) (long) (*it).getValue();
 	   }
 	   std::cout << "Name " << out.str() << std::endl;
