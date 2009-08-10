@@ -219,7 +219,7 @@ rules:
 
         inline number = digit+ {{
             int total = 0;
-            for (std::vector<Value>::const_iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
+            for (Value::iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
                 const Value & v = *it;
                 char letter = (char) (int) v.getValue();
                 total = (total * 10) + letter - '0';

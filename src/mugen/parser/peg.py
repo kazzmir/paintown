@@ -53,6 +53,8 @@ def indent(s):
 
 start_cpp_code = """
 struct Value{
+    typedef std::list<Value>::const_iterator iterator;
+
     Value():
         which(1),
         value(0){
