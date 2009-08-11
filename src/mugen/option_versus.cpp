@@ -88,7 +88,7 @@ void MugenOptionVersus::run(bool &endGame){
         }
 
         if (draw){
-            gameInfo->selectedStage->render(&screen);
+            gameInfo->selectedStage->render(&work);
 	    work.Stretch(screen);
 	    screen.BlitToScreen();
         }

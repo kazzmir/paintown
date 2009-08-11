@@ -881,11 +881,13 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
     // Prepare stages
     for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
 	MugenStage *stage = new MugenStage(*i);
-	try{
+	// No need to load them.... Load only when using the stage...
+	/*try{
 	    stage->load();
 	} catch (MugenException &ex){
 	    throw MugenException(ex);
-	}
+	}*/
+	
 	stages.push_back(stage);
     }
 }
