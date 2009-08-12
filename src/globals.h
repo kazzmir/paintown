@@ -22,6 +22,8 @@ extern const char * DEFAULT_FONT;
 const int getVersion();
 std::string getVersionString();
 
+bool shutdown();
+
 void setDebug( int i );
 const int getDebug();
 std::ostream & debug( int i );

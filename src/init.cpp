@@ -111,7 +111,15 @@ static void close_paintown(){
     allegro_exit();
     exit(0);
 }
-END_OF_FUNCTION(close_paintown)
+
+namespace Global{
+    extern int do_shutdown;
+}
+
+static void close_window(){
+    Global::do_shutdown += 1;
+}
+END_OF_FUNCTION(close_window)
 
 bool Global::init( int gfx ){
 
@@ -162,8 +170,8 @@ bool Global::init( int gfx ){
 	set_display_switch_mode(SWITCH_BACKGROUND);
 
         /* close window when the X is pressed */
-        LOCK_FUNCTION(close_paintown);
-        set_close_button_callback(close_paintown);
+        LOCK_FUNCTION(close_window);
+        set_close_button_callback(close_window);
 	
         /* music */
 	atexit( &dumb_exit );

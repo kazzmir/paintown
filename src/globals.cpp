@@ -56,6 +56,14 @@ void Global::setDebug( int i ){
 	global_debug_level = i;
 }
 
+namespace Global{
+    int do_shutdown = 0;
+}
+
+bool Global::shutdown(){
+    return do_shutdown > 0;
+}
+
 const int Global::getVersion(){
     return major_version * 100 + minor_version;
 }

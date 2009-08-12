@@ -12,6 +12,7 @@
 #include "init.h"
 #include "configuration.h"
 #include "music.h"
+#include "shutdown_exception.h"
 
 #include "menu/optionfactory.h"
 #include "menu/actionfactory.h"
@@ -403,6 +404,10 @@ void Menu::run(){
         while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 
             bool draw = false;
+
+            if (Global::shutdown()){
+                throw ShutdownException();
+            }
 
             keyInputManager::update();
 
