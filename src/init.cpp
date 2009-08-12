@@ -118,6 +118,9 @@ namespace Global{
 
 static void close_window(){
     Global::do_shutdown += 1;
+    if (Global::do_shutdown == 2){
+        close_paintown();
+    }
 }
 END_OF_FUNCTION(close_window)
 

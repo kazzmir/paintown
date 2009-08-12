@@ -16,6 +16,7 @@
 #include "util/keyboard.h"
 #include "globals.h"
 #include "script/script.h"
+#include "shutdown_exception.h"
 #include "loading.h"
 #include "network/network.h"
 #include "world.h"
@@ -206,6 +207,10 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 		bool draw = false;
 		key.poll();
                 InputManager::poll();
+
+                if (Global::shutdown()){
+                    throw ShutdownException();
+                }
 
 		if ( Global::speed_counter > 0 ){
 			if ( ! paused ){
