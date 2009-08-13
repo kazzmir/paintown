@@ -24,7 +24,7 @@ rules:
 	   for (Value::iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
 	   	out << (char) (long) (*it).getValue();
 	   }
-	   std::cout << "Name " << out.str() << std::endl;
+	   // std::cout << "Name " << out.str() << std::endl;
 	}}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]
 	characters = name s "," s filename

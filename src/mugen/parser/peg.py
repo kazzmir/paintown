@@ -353,6 +353,19 @@ private:
     int farthest;
 };
 
+class ParseException: std::exception {
+public:
+    ParseException();
+    virtual ~ParseException() throw();
+};
+
+ParseException::ParseException():
+std::exception(){
+}
+
+ParseException::~ParseException() throw (){
+}
+
 Result errorResult(-1);
 """
 
@@ -1625,24 +1638,26 @@ namespace %s{
 
 %s
 
-const void * main(const std::string & filename){
+const void * main(const std::string & filename) throw (ParseException){
     Stream stream(filename);
     errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
         stream.reportError();
+        throw ParseException();
     }
     return done.getValues().getValue();
 }
 
-const void * main(const char * in){
+const void * main(const char * in) throw (ParseException){
     Stream stream(in);
     errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
         stream.reportError();
+        throw ParseException();
     }
     return done.getValues().getValue();
 }
