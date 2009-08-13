@@ -884,7 +884,7 @@ do{
 if (%s.matches() == 0){
     %s
 }
-        """ % (my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done, result, indent(failure()))
+""" % (my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done, result, indent(failure()))
 
         return data
 
@@ -1432,16 +1432,20 @@ goto %s;
     """ % (result, position, pattern.generate_cpp(peg, result, stream, failure, tail_vars, invalid_arg).strip(), position, result, tail_loop, out)
             else:
                 debugging = ""
+                debug_result = ""
                 if debug:
-                    debugging = """std::cout << "Trying rule %s alternative: %s" << std::endl;""" % (self.name, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
+                    debugging = """std::cout << "Trying rule %s at " << %s << " alternative: %s" << std::endl;""" % (self.name, position, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
+                if 'debug2' in peg.options:
+                    debug_result = """std::cout << "Succeeded rule %s at position " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 data = """
 Result %s(%s);
 %s
 %s
 %s
+%s
 return %s;
 %s:
-            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result), result, out)
+            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result), debug_result, result, out)
 
             return data
 
