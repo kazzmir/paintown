@@ -8,9 +8,11 @@ rules:
 	     | characters
 	     | attribute
 	newline = "\n"
+	        | "\r"
 	whitespace = sw*
 	sw = " "
 	   | "\t"
+	   | "\r"
 	   | "\n"
 	s = space*
 	space = " "
