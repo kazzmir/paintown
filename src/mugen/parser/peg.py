@@ -40,6 +40,12 @@ def flatten(lst):
         return out
     return [lst]
 
+def special_escape(s):
+    return s.replace("\\n", "\\\\n").replace("\\t", "\\\\t").replace("\"", "\\\"").replace("\\r", "\\\\r")
+
+def special_char(s):
+    return s in ["\\n", "\\t", "\\r"]
+
 def unique(lst):
     x = []
     for item in lst:
@@ -462,7 +468,7 @@ class Stream:
         if right > len(self.all):
             right = len(self.all)
         print "Read up till line %d, column %d" % (line, column)
-        print "'%s'" % self.all[left:right].replace("\\n", "\\\\n").replace("\\t", "\\\\t")
+        print "'%s'" % special_escape(self.all[left:right])
         print "%s^" % (' ' * (self.furthest - left))
 
     def update(self, rule, position, result):
@@ -1271,7 +1277,7 @@ for letter in '%s':
 
     def generate_python(self, result, previous_result, stream, failure):
         length = len(self.letters)
-        if self.letters == "\\n" or self.letters == "\\t":
+        if special_char(self.letters):
             length = 1
         data = """
 if '%s' == %s.get(%s.getPosition(), %s):
@@ -1303,7 +1309,7 @@ if (%s.get(%s.getPosition()) == '%s'){
         # return data
 
         length = len(self.letters)
-        if self.letters == "\\n" or self.letters == "\\t":
+        if special_char(self.letters):
             length = 1
         data = """
 for (int i = 0; i < %d; i++){
@@ -1421,7 +1427,7 @@ goto %s;
             else:
                 debugging = ""
                 if debug:
-                    debugging = """std::cout << "Trying rule %s alternative: %s" << std::endl;""" % (self.name, pattern.generate_bnf().replace("\\n","\\\\n").replace("\\t","\\\\t").replace("\"", "\\\""))
+                    debugging = """std::cout << "Trying rule %s alternative: %s" << std::endl;""" % (self.name, special_escape(pattern.generate_bnf()))
                 data = """
 Result %s(%s);
 %s
