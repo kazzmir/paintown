@@ -249,6 +249,8 @@ public:
             return '\\0';
         }
 
+        // std::cout << "Read char '" << buffer[position] << "'" << std::endl;
+
         return buffer[position];
         /*
         char z;
@@ -376,6 +378,10 @@ Result errorResult(-1);
 """
 
 start_python = """
+
+def special_escape(s):
+    return s.replace("\\\\n", "\\\\\\\\n").replace("\\\\t", "\\\\\\\\t").replace("\\\"", '\\\\\\\"').replace("\\\\r", "\\\\\\\\r")
+
 class PegError(Exception):
     def __init__(self):
         Exception.__init__(self)
@@ -1380,7 +1386,7 @@ def rule_%s(%s, %s):
         stream = "stream"
         position = "position"
         tail_loop = gensym("tail");
-        debug = False
+        debug = "debug1" in peg.options
 
         def updateChunk(new):
             data = """
@@ -1427,7 +1433,7 @@ goto %s;
             else:
                 debugging = ""
                 if debug:
-                    debugging = """std::cout << "Trying rule %s alternative: %s" << std::endl;""" % (self.name, special_escape(pattern.generate_bnf()))
+                    debugging = """std::cout << "Trying rule %s alternative: %s" << std::endl;""" % (self.name, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 data = """
 Result %s(%s);
 %s
@@ -1487,12 +1493,13 @@ class Accessor:
         return code + self.value
     
 class Peg:
-    def __init__(self, start, include_code, more_code, module, rules):
+    def __init__(self, start, include_code, more_code, module, rules, options):
         self.start = start
         self.rules = rules
         self.include_code = include_code
         self.more_code = more_code
         self.module = module
+        self.options = options
         if self.module == None:
             self.module = ['Parser']
 
@@ -1735,6 +1742,9 @@ def peg_bnf():
                 PatternBind("start_symbol", PatternRule("start_symbol")),
                 PatternRule("newlines"),
                 PatternRule("whitespace"),
+                PatternBind("options", PatternRule("options")),
+                PatternRule("newlines"),
+                PatternRule("whitespace"),
                 PatternBind("module", PatternMaybe(PatternRule("module"))),
                 PatternRule("newlines"),
                 PatternRule("whitespace"),
@@ -1748,7 +1758,7 @@ def peg_bnf():
                 PatternRule("newlines"),
                 PatternRule("whitespace"),
                 PatternEof(),
-                PatternCode("""value = peg.Peg(start_symbol, include, code, module, rules)""")
+                PatternCode("""value = peg.Peg(start_symbol, include, code, module, rules, options)""")
                 ]),
             ]),
         Rule('module', [
@@ -1779,6 +1789,39 @@ def peg_bnf():
                 PatternRule("spaces"),
                 PatternBind("code", PatternRule("code")),
                 PatternCode("""value = code.code"""),
+                ]),
+            ]),
+        Rule("options", [
+                PatternSequence([
+                    PatternVerbatim("options:"),
+                    PatternRule("spaces"),
+                    PatternBind("option1", PatternRule("option")),
+                    PatternBind("option_rest", PatternRepeatMany(PatternSequence([
+                        PatternRule("spaces"),
+                        PatternVerbatim(","),
+                        PatternRule("spaces"),
+                        PatternRule("option"),
+                        ]))),
+                    PatternCode("""
+value = []
+for option in ([option1] + option_rest):
+    import re
+    debug = re.compile("debug(\d+)")
+    out = debug.match(option)
+    if out != None:
+        num = int(out.group(1))
+        for x in xrange(1,num+1):
+            value.append('debug%d' % x)
+"""),
+                    ]),
+            ]),
+        Rule("option", [
+            PatternSequence([
+                PatternVerbatim("debug"),
+                PatternBind('number', PatternRule("number")),
+                PatternCode("""
+value = 'debug%s' % number
+"""),
                 ]),
             ]),
         Rule("word", [
@@ -2058,7 +2101,7 @@ value = peg.PatternRule(name, parameters)
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
-    peg = Peg("start", None, None, ['peg'], rules)
+    peg = Peg("start", None, None, ['peg'], rules, [])
     # print peg.generate_python()
     return peg
 
