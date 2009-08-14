@@ -30,7 +30,7 @@ rules:
 	   // std::cout << "Name " << out.str() << std::endl;
 	   */
 	}}
-	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]
+	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
 	characters = name s "," s filename
@@ -39,10 +39,13 @@ rules:
 	attribute = identifier s "=" s valuelist
 	          | identifier s "=" s filename
 		  | identifier s "(" s number s ")" s "=" s valuelist
+		  | identifier_list s "=" s valuelist
 	identifier = name ("." name)*
+	identifier_list = identifier (s "," s filename)+
 	valuelist = number (s "," s value?)*
 	value = number
-	      | "S"
+	      | [sS]
+	      | [hH]
 	number = sign? float_or_integer
 	inline sign = "+"
 	            | "-"
