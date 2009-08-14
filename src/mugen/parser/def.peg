@@ -9,9 +9,12 @@ rules:
 	     | s characters
 	     | s attribute
 	     | s valuelist
+	     | s loopstart
 	     | space+
 	newline = "\n"
 	        | "\r"
+	# probably needs to be case insensitive
+	loopstart = "Loopstart"
 	whitespace = sw*
 	sw = " "
 	   | "\t"
@@ -20,6 +23,7 @@ rules:
 	space = " "
 	      | "\t"
 	comment = ";" (!"\n" .)*
+	        | "="+
 	section = "[" s (!"]" .)+ s "]" 
 	name = letter alpha_digit* {{
 		/*
@@ -46,6 +50,7 @@ rules:
 	value = number
 	      | [sS]
 	      | [hH]
+	      | [aA] number
 	number = sign? float_or_integer
 	inline sign = "+"
 	            | "-"
