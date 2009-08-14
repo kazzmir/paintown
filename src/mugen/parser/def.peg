@@ -1,37 +1,46 @@
 # mugen def parser
 start-symbol: start
+options: debug0
 module: Mugen
 rules:
-	start = (line newline whitespace)* <eof>
-	line = comment
-	     | section
-	     | characters
-	     | attribute
+	start = whitespace newline* (line whitespace newline*)* <eof>
+	line = s comment
+	     | s section
+	     | s characters
+	     | s attribute
+	     | s valuelist
+	     | space+
 	newline = "\n"
 	        | "\r"
 	whitespace = sw*
 	sw = " "
 	   | "\t"
-	   | "\r"
-	   | "\n"
+	   | comment
 	s = space*
 	space = " "
 	      | "\t"
 	comment = ";" (!"\n" .)*
-	section = "[" s name s "]" 
-	name = letter+ {{
+	section = "[" s (!"]" .)+ s "]" 
+	name = letter alpha_digit* {{
+		/*
 	   std::ostringstream out;
 	   for (Value::iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
 	   	out << (char) (long) (*it).getValue();
 	   }
 	   // std::cout << "Name " << out.str() << std::endl;
+	   */
 	}}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]
+	alpha_digit = letter
+	            | digit
 	characters = name s "," s filename
 	filename = filename_char*
 	filename_char = !"," !"\n" .
 	attribute = identifier s "=" s valuelist
+	          | identifier s "=" s filename
 	identifier = name ("." name)*
 	valuelist = number (s "," s number)*
-	number = digit+
+	number = "-"? float_or_integer
+	float_or_integer = digit* "." digit+
+	                 | digit+
 	digit = [0123456789]
