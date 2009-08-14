@@ -24,6 +24,7 @@ rules:
 	      | "\t"
 	comment = ";" (!"\n" .)*
 	        | "="+
+		| "-"+
 	section = "[" s (!"]" .)+ s "]" 
 	name = letter alpha_digit* {{
 		/*
@@ -50,7 +51,7 @@ rules:
 	value = number
 	      | [sS]
 	      | [hH]
-	      | [aA] number
+	      | [aA] number?
 	number = sign? float_or_integer
 	inline sign = "+"
 	            | "-"
