@@ -1338,7 +1338,7 @@ for (int i = 0; i < %d; i++){
     }
 }
 %s.setValue((void*) "%s");
-""" % (length, self.letters, stream, result, result, indent(indent(failure())), result, self.letters)
+""" % (length, self.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, self.letters.replace('"', '\\"'))
         return data
 
 class Rule:
@@ -2017,6 +2017,10 @@ value = lambda p: peg.PatternBind(name, p)
                 PatternCode("""
 value = peg.PatternVerbatim(''.join(values[1]))
 """)]),
+            PatternSequence([
+                PatternVerbatim("<quote>"),
+                PatternCode("""value = peg.PatternVerbatim('"')"""),
+                ]),
             ]),
         Rule("modifier", [
             PatternSequence([PatternVerbatim("*"),

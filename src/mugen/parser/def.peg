@@ -38,7 +38,7 @@ rules:
 	alpha_digit = letter
 	            | digit
 	characters = name s "," s filename
-	filename = filename_char*
+	filename = !<quote> filename_char*
 	filename_char = !"," !"\n" .
 	attribute = identifier s "=" s valuelist
 	          | identifier s "=" s filename
@@ -46,11 +46,13 @@ rules:
 		  | identifier_list s "=" s valuelist
 	identifier = name ("." name)*
 	identifier_list = identifier (s "," s filename)+
-	valuelist = number (s "," s value?)*
+	valuelist = value (s "," s value?)*
 	value = number
-	      | [sS]
-	      | [hH]
-	      | [aA] number?
+	      | string
+	      | [sS] !letter !"."
+	      | [hH] !letter !"."
+	      | [aA] number? !letter
+	string = <quote> (!<quote> !"\n" .)* <quote>
 	number = sign? float_or_integer
 	inline sign = "+"
 	            | "-"
