@@ -47,5 +47,5 @@ rules:
 	inline sign = "+"
 	            | "-"
 	float_or_integer = digit* "." digit+
-	                 | digit+
+	                 | digit+ !"."
 	digit = [0123456789]
