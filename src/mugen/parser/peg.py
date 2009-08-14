@@ -92,6 +92,12 @@ struct Value{
         return *this;
     }
 
+    void reset(){
+        this->value = 0;
+        this->values.clear();
+        this->which = 1;
+    }
+
     int which; // 0 is value, 1 is values
 
     inline const bool isList() const {
@@ -144,6 +150,10 @@ public:
     Result & operator=(const Result & r){
         position = r.position;
         value = r.value;
+    }
+
+    void reset(){
+        value.reset();
     }
 
     inline const int getPosition() const {
@@ -875,6 +885,7 @@ except PegError:
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
         data = """
+%s.reset();
 do{
     Result %s(%s.getPosition());
     %s
@@ -884,7 +895,7 @@ do{
 if (%s.matches() == 0){
     %s
 }
-""" % (my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done, result, indent(failure()))
+""" % (result, my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done, result, indent(failure()))
 
         return data
 
@@ -1024,6 +1035,7 @@ except PegError:
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
         data = """
+%s.reset();
 do{
     Result %s(%s.getPosition());
     %s
@@ -1031,7 +1043,7 @@ do{
 } while (true);
 %s:
 ;
-        """ % (my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done)
+        """ % (result, my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done)
         return data
 
 class PatternAny(Pattern):
@@ -1434,7 +1446,7 @@ goto %s;
                 debugging = ""
                 debug_result = ""
                 if debug:
-                    debugging = """std::cout << "Trying rule %s at " << %s << " alternative: %s" << std::endl;""" % (self.name, position, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
+                    debugging = """std::cout << "Trying rule %s at " << %s << " '" << %s.get(%s.getPosition()) << "' alternative: %s" << std::endl;""" % (self.name, position, stream, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 if 'debug2' in peg.options:
                     debug_result = """std::cout << "Succeeded rule %s at position " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 data = """
@@ -1504,6 +1516,8 @@ class Peg:
         self.more_code = more_code
         self.module = module
         self.options = options
+        if options == None:
+                self.options = []
         if self.module == None:
             self.module = ['Parser']
 
@@ -1746,7 +1760,7 @@ def peg_bnf():
                 PatternBind("start_symbol", PatternRule("start_symbol")),
                 PatternRule("newlines"),
                 PatternRule("whitespace"),
-                PatternBind("options", PatternRule("options")),
+                PatternBind("options", PatternMaybe(PatternRule("options"))),
                 PatternRule("newlines"),
                 PatternRule("whitespace"),
                 PatternBind("module", PatternMaybe(PatternRule("module"))),
