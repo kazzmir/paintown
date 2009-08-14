@@ -179,6 +179,7 @@ src/gui/widget.cpp
 )
 
 set(MUGEN_SRC
+src/mugen/characterhud.cpp
 src/mugen/mugen_animation.cpp
 src/mugen/mugen_background.cpp
 src/mugen/mugen_character.cpp
