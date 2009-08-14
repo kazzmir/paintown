@@ -13,8 +13,7 @@ rules:
 	     | space+
 	newline = "\n"
 	        | "\r"
-	# probably needs to be case insensitive
-	loopstart = "Loopstart"
+	loopstart = [lL][oO][oO][pP][sS][tT][aA][rR][tT]
 	whitespace = sw*
 	sw = " "
 	   | "\t"
