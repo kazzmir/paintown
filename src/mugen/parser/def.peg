@@ -39,8 +39,12 @@ rules:
 	attribute = identifier s "=" s valuelist
 	          | identifier s "=" s filename
 	identifier = name ("." name)*
-	valuelist = number (s "," s number)*
-	number = "-"? float_or_integer
+	valuelist = number (s "," s value?)*
+	value = number
+	      | "S"
+	number = sign? float_or_integer
+	inline sign = "+"
+	            | "-"
 	float_or_integer = digit* "." digit+
 	                 | digit+
 	digit = [0123456789]
