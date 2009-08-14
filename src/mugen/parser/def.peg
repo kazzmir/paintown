@@ -6,7 +6,7 @@ rules:
 	start = whitespace newline* (line whitespace newline*)* <eof>
 	line = s comment
 	     | s section
-	     | s characters
+	     # | s characters
 	     | s attribute
 	     | s valuelist
 	     | s loopstart
@@ -22,9 +22,9 @@ rules:
 	space = " "
 	      | "\t"
 	comment = ";" (!"\n" .)*
-	        | "="+
+	        | "=" (!"\n" .)*
 		| "-"+
-	section = "[" s (!"]" .)+ s "]" 
+	section = "[" s (!"]" .)+ s "]"
 	name = letter alpha_digit* {{
 		/*
 	   std::ostringstream out;
@@ -37,8 +37,8 @@ rules:
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
-	characters = name s "," s filename
-	filename = !<quote> filename_char*
+	# characters = name s "," s filename
+	filename = !<quote> filename_char+
 	filename_char = !"," !"\n" .
 	attribute = identifier s "=" s valuelist
 	          | identifier s "=" s filename
@@ -52,6 +52,7 @@ rules:
 	      | [sS] !letter !"."
 	      | [hH] !letter !"."
 	      | [aA] number? !letter
+              | filename
 	string = <quote> (!<quote> !"\n" .)* <quote>
 	number = sign? float_or_integer
 	inline sign = "+"
