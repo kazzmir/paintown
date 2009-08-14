@@ -38,6 +38,7 @@ rules:
 	filename_char = !"," !"\n" .
 	attribute = identifier s "=" s valuelist
 	          | identifier s "=" s filename
+		  | identifier s "(" s number s ")" s "=" s valuelist
 	identifier = name ("." name)*
 	valuelist = number (s "," s value?)*
 	value = number
