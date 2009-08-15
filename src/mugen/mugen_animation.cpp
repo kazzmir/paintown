@@ -147,7 +147,7 @@ void MugenAnimation::logic(){
     }
 }
 
-void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
+void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, double scaley ){
     if (frames[position]->sprite == 0){
 	return;
     }
@@ -156,70 +156,92 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work ){
     const int placex = (xaxis - spritex ) + frames[position]->xoffset;
     const int placey = (yaxis - spritey ) + frames[position]->yoffset;
     
+    Bitmap *image = frames[position]->bmp;
+    // temp for scaling
+    Bitmap modImage = Bitmap::temporaryBitmap(image->getWidth() * scalex, image->getHeight() * scaley);
+    image->Stretch(modImage);
+    
     if (frames[position]->flipHorizontal && ! frames[position]->flipVertical){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		frames[position]->bmp->drawTransHFlip(placex + frames[position]->bmp->getWidth(), placey, work);
+		modImage.drawTransHFlip(placex + modImage.getWidth(), placey, work);
 		break;
 	    case SUB:
 		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		frames[position]->bmp->drawTransHFlip(placex + frames[position]->bmp->getWidth(), placey, work);
+		modImage.drawTransHFlip(placex + modImage.getWidth(), placey, work);
 		break;
 	    case NO:
 	    default:
-		frames[position]->bmp->drawHFlip(placex + frames[position]->bmp->getWidth(), placey, work);
+		modImage.drawHFlip(placex + modImage.getWidth(), placey, work);
 		break;
 	}
     } else if (frames[position]->flipVertical && ! frames[position]->flipHorizontal){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		frames[position]->bmp->drawTransVFlip(placex, placey - frames[position]->bmp->getHeight(), work);
+		modImage.drawTransVFlip(placex, placey - modImage.getHeight(), work);
 		break;
 	    case SUB:
 		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		frames[position]->bmp->drawTransVFlip(placex, placey - frames[position]->bmp->getHeight(), work);
+		modImage.drawTransVFlip(placex, placey - modImage.getHeight(), work);
 		break;
 	    case NO:
 	    default:
-		frames[position]->bmp->drawVFlip(placex, placey - frames[position]->bmp->getHeight(), work);
+		modImage.drawVFlip(placex, placey - modImage.getHeight(), work);
 		break;
 	}
     } else if ( frames[position]->flipVertical && frames[position]->flipHorizontal ){
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		frames[position]->bmp->drawTransHVFlip(placex + frames[position]->bmp->getWidth(), placey - frames[position]->bmp->getHeight(), work);
+		modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
 		break;
 	    case SUB:
 		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		frames[position]->bmp->drawTransHVFlip(placex + frames[position]->bmp->getWidth(), placey - frames[position]->bmp->getHeight(), work);
+		modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
 		break;
 	    case NO:
 	    default:
-		frames[position]->bmp->drawHVFlip(placex + frames[position]->bmp->getWidth(), placey - frames[position]->bmp->getHeight(), work);
+		modImage.drawHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
 		break;
 	}
     } else{
 	switch (frames[position]->colorAdd){
 	    case ADD:
 		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		frames[position]->bmp->drawTrans(placex, placey, work);
+		modImage.drawTrans(placex, placey, work);
 		break;
 	    case SUB:
 		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		frames[position]->bmp->drawTrans(placex, placey, work);
+		modImage.drawTrans(placex, placey, work);
 		break;
 	    case NO:
 	    default:
-		frames[position]->bmp->draw(placex, placey, work);
+		modImage.draw(placex, placey, work);
 		break;
 	}
     }
     
     if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
     if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
+}
+
+void MugenAnimation::render( const int facing, const int vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex, const double scaley ){
+    if (frames[position]->sprite == 0){
+	return;
+    }
+    // Override flip and set back to original when done
+    const bool horizontal = frames[position]->flipHorizontal;
+    const bool vertical = frames[position]->flipVertical;
+    frames[position]->flipHorizontal = (facing ? false : true);
+    frames[position]->flipVertical = (vfacing ? false : true);
+    // Now render
+    render(xaxis,yaxis,work,scalex,scaley);
+    // Set original setting
+    frames[position]->flipHorizontal = horizontal;
+    frames[position]->flipVertical = vertical;
+    
 }
 
 void MugenAnimation::forwardFrame(){

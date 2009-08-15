@@ -24,10 +24,11 @@ class Element{
 	virtual ~Element();
 	
 	virtual void act();
-	virtual void render(const int xaxis, const int yaxis, Bitmap *);
+	virtual void render(const int xaxis, const int yaxis, Bitmap &);
 	
 	enum ElementType{
-	    IS_ACTION =0,
+	    IS_NOTSET =0,
+	    IS_ACTION,
 	    IS_SPRITE,
 	    IS_FONT,
 	    IS_SOUND
@@ -39,21 +40,30 @@ class Element{
 	virtual void setFont(MugenFont *);
 	virtual inline void setOffset(const int x, const int y) { offset = DisplayPoint(x,y); }
 	virtual inline void setDisplayTime(const int t) { displaytime = t; }
-	virtual inline void setLayerNo(const int i) { layerno = i; }
-	virtual inline void setScale(const int x, const int y) { scale = DisplayPoint(x,y); }
+	virtual inline void setFacing(const int f) { facing = f; }
+	virtual inline void setVFacing(const int f) { vfacing = f; }
+	virtual inline void setLayer(const int i) { layerno = i; }
+	virtual inline void setScale(const double x, const double y) { scalex = x, scaley = y; }
 	virtual inline void setText(const std::string &t) { text = t; }
+	
+	virtual inline int getLayer() { return layerno; }
 	
     private:
 	ElementType type;
 	MugenAnimation *action;
 	MugenSprite *sprite;
+	Bitmap *spriteBmp;
 	MugenFont *font;
 	DisplayPoint offset;
 	int displaytime;
 	int facing;
+	int vfacing;
 	int layerno;
-	DisplayPoint scale;
+	double scalex;
+	double scaley;
 	std::string text;
+	
+	void renderSprite(const int xaxis, const int yaxis, Bitmap &);
 	
 };
 
@@ -70,7 +80,7 @@ class Bar{
 	virtual void setFront(Element *);
 	
 	virtual void act();
-	virtual void render(const int xaxis, const int yaxis, Bitmap *);
+	virtual void render(const int xaxis, const int yaxis, Bitmap &);
 	
     private:
 	DisplayPoint position;

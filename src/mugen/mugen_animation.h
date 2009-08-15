@@ -201,8 +201,11 @@ class MugenAnimation{
 	// Update logic | go through frames
 	void logic();
 	
-	// Render current frame
-	void render( int xaxis, int yaxis, Bitmap &work );
+	// Render current frame optionally scale defaults to 1
+	void render( int xaxis, int yaxis, Bitmap &work, double scalex=1, double scaley=1 );
+	
+	// Render current frame overriding flipping
+	void render( const int facing, const int vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex=1, const double scaley=1  );
 	
 	// Go forward a frame 
 	void forwardFrame();
