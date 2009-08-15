@@ -371,6 +371,21 @@ private:
     int farthest;
 };
 
+static inline bool compareChar(const char a, const char b){
+    return a == b;
+}
+
+static inline char lower(const char x){
+    if (x >= 'A' && x <= 'Z'){
+        return x - 'A' + 'a';
+    }
+    return x;
+}
+
+static inline bool compareCharCase(const char a, const char b){
+    return lower(a) == lower(b);
+}
+
 class ParseException: std::exception {
 public:
     ParseException();
@@ -1264,9 +1279,10 @@ else:
         return data
 
 class PatternVerbatim(Pattern):
-    def __init__(self, letters):
+    def __init__(self, letters, options = None):
         Pattern.__init__(self)
         self.letters = letters
+        self.options = options
 
     def ensureRules(self, find):
         pass
@@ -1329,16 +1345,19 @@ if (%s.get(%s.getPosition()) == '%s'){
         length = len(self.letters)
         if special_char(self.letters):
             length = 1
+        comparison = "compareChar"
+        if self.options == "{case}":
+            comparison = "compareCharCase"
         data = """
 for (int i = 0; i < %d; i++){
-    if ("%s"[i] == %s.get(%s.getPosition())){
+    if (%s("%s"[i], %s.get(%s.getPosition()))){
         %s.nextPosition();
     } else {
         %s
     }
 }
 %s.setValue((void*) "%s");
-""" % (length, self.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, self.letters.replace('"', '\\"'))
+""" % (length, comparison, self.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, self.letters.replace('"', '\\"'))
         return data
 
 class Rule:
@@ -2014,8 +2033,9 @@ value = lambda p: peg.PatternBind(name, p)
                     PatternAny(),
                     PatternCode("value = values[1]")])),
                 PatternVerbatim("\""),
+                PatternBind("options", PatternMaybe(PatternVerbatim("{case}"))),
                 PatternCode("""
-value = peg.PatternVerbatim(''.join(values[1]))
+value = peg.PatternVerbatim(''.join(values[1]), options)
 """)]),
             PatternSequence([
                 PatternVerbatim("<quote>"),

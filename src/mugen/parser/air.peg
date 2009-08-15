@@ -2,4 +2,45 @@ start-symbol: start
 options: debug0
 module: Mugen
 rules:
-	start = <eof>
+	start = whitespace newline* (line whitespace line_end)* <eof>
+	line = s comment
+	     | s action_section
+	     | s collision_default
+	     | s collision
+	     | s valuelist
+	     | s loopstart
+	     | space+
+	line_end = newline+
+	         | &<eof> <void>
+	newline = "\n"
+	        | "\r"
+	loopstart = "Loopstart"{case}
+	whitespace = sw*
+	sw = " "
+	   | "\t"
+	   | comment
+	s = space*
+	space = " "
+	      | "\t"
+	comment = ";" (!"\n" .)*
+	        | "=" (!"\n" .)*
+		| "-" "-"+
+	collision_default = "Clsn2Default:"{case} s integer
+	                  | "Clsn1Default:"{case} s integer
+	                  | "Clsn2:"{case} s integer
+			  | "Clsn1:"{case} s integer
+	collision = "Clsn2"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
+	          | "Clsn1"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
+	action_section = "[" s "Begin"{case} s "Action"{case} s integer s "]"
+	digit = [0123456789]
+	integer = sign? digit+
+	sign = "-"
+	     | "+"
+	valuelist = value (s "," s valuev)*
+	value = integer
+	      | "a"{case}
+	      | "v"{case}
+	      | "h"{case}
+	      | "vh"{case}
+	valuev = value
+	       | <void>
