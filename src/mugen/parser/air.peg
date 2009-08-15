@@ -1,0 +1,5 @@
+start-symbol: start
+options: debug0
+module: Mugen
+rules:
+	start = <eof>
