@@ -38,9 +38,11 @@ rules:
 	     | "+"
 	valuelist = value (s "," s valuev)*
 	value = integer
+	      | "a"{case} integer+
 	      | "a"{case}
+	      | "vh"{case}
+	      | "hv"{case}
 	      | "v"{case}
 	      | "h"{case}
-	      | "vh"{case}
 	valuev = value
 	       | <void>
