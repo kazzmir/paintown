@@ -16,12 +16,12 @@ rules:
 	        | "\r"
 	loopstart = "Loopstart"{case}
 	whitespace = sw*
-	sw = " "
-	   | "\t"
+	sw = space
 	   | comment
 	s = space*
 	space = " "
 	      | "\t"
+	      | <ascii 255>
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		| "-" "-"+

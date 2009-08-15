@@ -1323,32 +1323,14 @@ else:
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        data = """
-%s = "%s";
-        """ % (result, self.letters)
-
-        data = ""
-
-        for letter in self.letters[::-1]:
-            newdata = """
-if (%s.get(%s.getPosition()) == '%s'){
-    %s.nextPosition();
-    %s
-} else {
-    %s
-}
-""" % (stream, result, letter, result, indent(data), failure())
-            data = newdata
-
-        # return data
-
-        length = len(self.letters)
-        if special_char(self.letters):
-            length = 1
-        comparison = "compareChar"
-        if self.options == "{case}":
-            comparison = "compareCharCase"
-        data = """
+        def doString():
+            length = len(self.letters)
+            if special_char(self.letters):
+                length = 1
+            comparison = "compareChar"
+            if self.options == "{case}":
+                comparison = "compareCharCase"
+            data = """
 for (int i = 0; i < %d; i++){
     if (%s("%s"[i], %s.get(%s.getPosition()))){
         %s.nextPosition();
@@ -1357,8 +1339,25 @@ for (int i = 0; i < %d; i++){
     }
 }
 %s.setValue((void*) "%s");
-""" % (length, comparison, self.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, self.letters.replace('"', '\\"'))
-        return data
+    """ % (length, comparison, self.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, self.letters.replace('"', '\\"'))
+            return data
+        def doAscii():
+            data = """
+if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
+    %s.nextPosition();
+} else {
+    %s
+}
+%s.setValue((void*) %s);
+"""
+            return data % (stream, result, self.letters, result, indent(failure()), result, self.letters)
+
+        if type(self.letters) == type('x'):
+            return doString()
+        elif type(self.letters) == type(0):
+            return doAscii()
+        else:
+            raise Exception("unknown verbatim value %s" % self.letters)
 
 class Rule:
     def __init__(self, name, patterns, inline = False, parameters = None):
@@ -1973,6 +1972,7 @@ value = item
                         PatternRule("void"),
                         PatternRule("range"),
                         PatternRule("string"),
+                        PatternRule("ascii"),
                         PatternRule("sub_pattern"),
                         PatternRule("code")])),
                     PatternBind("modifier", PatternMaybe(PatternRule("modifier"))),
@@ -1985,6 +1985,16 @@ if ensure != None:
     pattern = peg.PatternEnsure(pattern)
 value = pattern
 """)]),
+            ]),
+        Rule("ascii", [
+            PatternSequence([
+                PatternVerbatim("<ascii"),
+                PatternRule("spaces"),
+                PatternBind('num', PatternRule("number")),
+                PatternRule("spaces"),
+                PatternVerbatim(">"),
+                PatternCode("""value = peg.PatternVerbatim(int(num))"""),
+                ]),
             ]),
         Rule("eof", [
             PatternSequence([
