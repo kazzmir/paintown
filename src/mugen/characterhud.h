@@ -3,12 +3,90 @@
 
 #include <string>
 
+class Bitmap;
+class MugenSprite;
+class MugenAnimation;
+class MugenFont;
+
+class DisplayPoint{
+    public:
+	int x;
+	int y;
+	DisplayPoint();
+	DisplayPoint(int x, int y);
+	DisplayPoint &operator=(const DisplayPoint &p);
+	~DisplayPoint();
+};
+
+class Element{
+    public:
+	Element();
+	virtual ~Element();
+	
+	virtual void act();
+	virtual void render(const int xaxis, const int yaxis, Bitmap *);
+	
+	enum ElementType{
+	    IS_ACTION =0,
+	    IS_SPRITE,
+	    IS_FONT,
+	    IS_SOUND
+	};
+	
+	virtual inline void setType(ElementType t){ type = t; }
+	virtual void setAction(MugenAnimation *);
+	virtual void setSprite(MugenSprite *);
+	virtual void setFont(MugenFont *);
+	virtual inline void setOffset(const int x, const int y) { offset = DisplayPoint(x,y); }
+	virtual inline void setDisplayTime(const int t) { displaytime = t; }
+	virtual inline void setLayerNo(const int i) { layerno = i; }
+	virtual inline void setScale(const int x, const int y) { scale = DisplayPoint(x,y); }
+	virtual inline void setText(const std::string &t) { text = t; }
+	
+    private:
+	ElementType type;
+	MugenAnimation *action;
+	MugenSprite *sprite;
+	MugenFont *font;
+	DisplayPoint offset;
+	int displaytime;
+	int facing;
+	int layerno;
+	DisplayPoint scale;
+	std::string text;
+	
+};
+
+class Bar{
+    public:
+	Bar();
+	Bar(const int x, const int y);
+	virtual ~Bar();
+	
+	virtual void setBack0(Element *);
+	virtual void setBack1(Element *);
+	virtual void setBack2(Element *);
+	virtual void setMiddle(Element *);
+	virtual void setFront(Element *);
+	
+	virtual void act();
+	virtual void render(const int xaxis, const int yaxis, Bitmap *);
+	
+    private:
+	DisplayPoint position;
+	Element *back0;
+	Element *back1;
+	Element *back2;
+	Element *middle;
+	Element *front;
+};
+
 /*! Character HUD ... lifebar, face, etc */
 class MugenCharacterHUD
 {
     public:
-		MugenCharacterHUD();
-		virtual ~MugenCharacterHUD();
+	MugenCharacterHUD();
+	virtual ~MugenCharacterHUD();
 	
     private:
 	/*
