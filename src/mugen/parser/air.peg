@@ -38,8 +38,10 @@ rules:
 	     | "+"
 	valuelist = value (s "," s valuev)*
 	value = integer
-	      | "a"{case} integer+
+	      | "as"{case} integer "d"{case} integer
+	      | "a"{case} integer
 	      | "a"{case}
+	      | "s"{case}
 	      | "vh"{case}
 	      | "hv"{case}
 	      | "v"{case}
