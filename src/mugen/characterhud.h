@@ -52,7 +52,6 @@ class Element{
 	ElementType type;
 	MugenAnimation *action;
 	MugenSprite *sprite;
-	Bitmap *spriteBmp;
 	MugenFont *font;
 	DisplayPoint offset;
 	int displaytime;
@@ -62,9 +61,6 @@ class Element{
 	double scalex;
 	double scaley;
 	std::string text;
-	
-	void renderSprite(const int xaxis, const int yaxis, Bitmap &);
-	
 };
 
 class Bar{

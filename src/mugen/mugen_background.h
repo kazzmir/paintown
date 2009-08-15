@@ -117,7 +117,7 @@ public:
     // sprite 
     MugenSprite *sprite;
     
-    Bitmap *spriteBmp;
+    //Bitmap *spriteBmp;
     
     // animation
     MugenAnimation *action;

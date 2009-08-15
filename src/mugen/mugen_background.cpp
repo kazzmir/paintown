@@ -146,7 +146,7 @@ enabled(true),
 controller_offsetx(0),
 controller_offsety(0),
 sprite(0),
-spriteBmp(0),
+//spriteBmp(0),
 action(0),
 linked(0),
 runLink(false){
@@ -161,7 +161,7 @@ stageTicker( copy.stageTicker ){
 }
 MugenBackground::~MugenBackground(){
     // Kill the bmp
-    if( spriteBmp )delete spriteBmp;
+    //if( spriteBmp )delete spriteBmp;
 }
 MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     
@@ -202,8 +202,8 @@ void MugenBackground::render( const double windowx, const double windowy, const 
 	    case Normal:{
 		// Normal is a sprite
 		// Tile it
-		const int addw = spriteBmp->getWidth() + tilespacingx;
-		const int addh = spriteBmp->getHeight() + tilespacingy;
+		const int addw = sprite->getWidth() + tilespacingx;
+		const int addh = sprite->getHeight() + tilespacingy;
 		Tile tilev = getTileData(y, totalHeight, addh, tiley);
 		for (int v = 0; v < tilev.total; ++v){
 		    Tile tileh = getTileData(x, totalLength, addw, tilex);
@@ -217,13 +217,13 @@ void MugenBackground::render( const double windowx, const double windowy, const 
 	    }
 	    case Parallax:{
 		// This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
-		const int addw = spriteBmp->getWidth() + tilespacingx;
-		const int addh = spriteBmp->getHeight() + tilespacingy;
+		const int addw = sprite->getWidth() + tilespacingx;
+		const int addh = sprite->getHeight() + tilespacingy;
 		Tile tilev = getTileData(y, totalHeight, addh, tiley);
 		for (int v = 0; v < tilev.total; ++v){
 		    Tile tileh = getTileData(x, totalLength, addw, tilex);
 		    for (int h = 0; h < tileh.total; ++h){
-			doParallax( *spriteBmp, *work, tileh.start, tilev.start, xoffset+((totalLength)/2), xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
+			doParallax( *sprite->getBitmap(), *work, tileh.start, tilev.start, xoffset+((totalLength)/2), xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
 			tileh.start+=addw;
 		    }
 		    tilev.start+=addh;
@@ -282,14 +282,14 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
     if (sprite){
 	// Lets load our sprite
 	Global::debug(1) << "Name: " << name << " | Mask: " << mask << endl;
-	if( spriteBmp == 0 ){
+	/*if( spriteBmp == 0 ){
 	    spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength, mask));
-	}
+	}*/
 	// Set our initial offsets
-	xoffset = (xaxis - sprite->x) + startx;
-	yoffset = (yaxis - sprite->y) + starty; 
+	xoffset = (xaxis - sprite->getX()) + startx;
+	yoffset = (yaxis - sprite->getY()) + starty; 
 	velx = vely = 0;
-	Global::debug(1) << "Using sprite. Name: " << name << " | X: " << sprite->x << " | Y: " << sprite->y << endl;
+	Global::debug(1) << "Using sprite. Name: " << name << " | X: " << sprite->getX() << " | Y: " << sprite->getY() << endl;
     } else {
 	// Set our initial offsets
 	xoffset = (xaxis) + startx;
@@ -304,31 +304,31 @@ void MugenBackground::draw( const int ourx, const int oury, Bitmap &work ){
 	case Addalpha:{
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
 	    Bitmap::transBlender( 255, 255, 255, alphalow );
-	    spriteBmp->drawTrans( ourx, oury, work);
+	    sprite->getBitmap()->drawTrans( ourx, oury, work);
 	    break;
 	}
 	case Add:{
 	    // this additive 100% I assume... not totally sure
 	    Bitmap::addBlender( 255, 255, 255, 255 );
-	    spriteBmp->drawTrans( ourx, oury, work);
+	    sprite->getBitmap()->drawTrans( ourx, oury, work);
 	    break;
 	}
 	case Add1:{
 	    // 50%
 	    Bitmap::addBlender( 128, 128, 128, 255 );
-	    spriteBmp->drawTrans( ourx, oury, work);
+	    sprite->getBitmap()->drawTrans( ourx, oury, work);
 	    break;
 	}
 	case Sub:{
 	    // Shadow effect
 	    Bitmap::multiplyBlender( 0, 0, 0, 128 );
-	    spriteBmp->drawTrans( ourx, oury, work);
+	    sprite->getBitmap()->drawTrans( ourx, oury, work);
 	    break;
 	}
 	case None:
 	default:{
-	    if( mask )spriteBmp->draw( ourx,oury, work );
-	    else spriteBmp->Blit( ourx, oury, work );
+	    if( mask )sprite->getBitmap()->draw( ourx,oury, work );
+	    else sprite->getBitmap()->Blit( ourx, oury, work );
 	    break;
 	}
     }

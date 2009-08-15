@@ -54,8 +54,8 @@ flipHorizontal(false),
 flipVertical(false),
 colorAdd(NO),
 colorSource(255),
-colorDestination(255),
-bmp(0){
+colorDestination(255){
+//bmp(0){
 }
 MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->loopstart = copy.loopstart;
@@ -68,7 +68,7 @@ MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->colorAdd = copy.colorAdd;
     this->colorSource = copy.colorSource;
     this->colorDestination = copy.colorDestination;
-    if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
+    //if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
 
 }
 
@@ -83,7 +83,7 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
     this->colorAdd = copy.colorAdd;
     this->colorSource = copy.colorSource;
     this->colorDestination = copy.colorDestination;
-    if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
+    //if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
     
     return *this;
 
@@ -91,7 +91,7 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
 
 MugenFrame::~MugenFrame(){
     // Kill bitmap
-    if( bmp )delete bmp;
+    //if( bmp )delete bmp;
 }
 
 /*
@@ -121,10 +121,10 @@ MugenAnimation::~MugenAnimation(){
 
 void MugenAnimation::addFrame( MugenFrame *frame ){
     // This gets deleted by frame, so don't worry, be happy
-    if( !frame->bmp ){
+    /*if( !frame->bmp ){
 	if( frame->sprite )frame->bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) frame->sprite->pcx, frame->sprite->newlength));
 	else frame->bmp = new Bitmap();
-    }
+    }*/
     if( frame->loopstart ) loopPosition = frames.size();
     frames.push_back( frame );
 }
@@ -151,12 +151,12 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
     if (frames[position]->sprite == 0){
 	return;
     }
-    const int spritex = frames[position]->sprite ? frames[position]->sprite->x : 0;
-    const int spritey = frames[position]->sprite ? frames[position]->sprite->y : 0;
-    const int placex = (xaxis - spritex ) + frames[position]->xoffset;
-    const int placey = (yaxis - spritey ) + frames[position]->yoffset;
+    //const int spritex = frames[position]->sprite ? frames[position]->sprite->x : 0;
+    //const int spritey = frames[position]->sprite ? frames[position]->sprite->y : 0;
+    const int placex = (xaxis - frames[position]->sprite->getX() ) + frames[position]->xoffset;
+    const int placey = (yaxis - frames[position]->sprite->getY() ) + frames[position]->yoffset;
     
-    Bitmap *image = frames[position]->bmp;
+    Bitmap *image = frames[position]->sprite->getBitmap();//frames[position]->bmp;
     // temp for scaling
     Bitmap modImage = Bitmap::temporaryBitmap(image->getWidth() * scalex, image->getHeight() * scaley);
     image->Stretch(modImage);
@@ -258,8 +258,9 @@ void MugenAnimation::reloadBitmaps(){
     for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
 	MugenFrame *frame = *i;
 	if (frame->sprite){
-	    if (frame->bmp) delete frame->bmp;
-	    frame->bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) frame->sprite->pcx, frame->sprite->newlength));
+	   // if (frame->bmp) delete frame->bmp;
+	    //frame->bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) frame->sprite->pcx, frame->sprite->newlength));
+	    frame->sprite->reload();
 	}
     }
 }

@@ -64,7 +64,7 @@ fonts(fonts),
 characterList(0){
 }
 MugenCharacterSelect::~MugenCharacterSelect(){
-    if (cellBackgroundBitmap){
+    /*if (cellBackgroundBitmap){
 	delete cellBackgroundBitmap;
     }
     if (cellRandomBitmap){
@@ -81,7 +81,7 @@ MugenCharacterSelect::~MugenCharacterSelect(){
     }
     if (p2Cursor.done){
 	delete p2Cursor.done;
-    }
+    }*/
     if (background){
 	delete background;
     }
@@ -162,13 +162,15 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 		    *content->getNext() >> group;
 		    *content->getNext() >> sprite;
 		    cellBackgroundSprite = sprites[group][sprite];
-		    cellBackgroundBitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) cellBackgroundSprite->pcx, cellBackgroundSprite->newlength, true));
+		    cellBackgroundSprite->load();
+		    cellBackgroundBitmap = cellBackgroundSprite->getBitmap();//= new Bitmap(Bitmap::memoryPCX((unsigned char*) cellBackgroundSprite->pcx, cellBackgroundSprite->newlength, true));
 		} else if ( itemhead == "cell.random.spr" ){
 		    int group, sprite;
 		    *content->getNext() >> group;
 		    *content->getNext() >> sprite;
 		    cellRandomSprite = sprites[group][sprite];
-		    cellRandomBitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) cellRandomSprite->pcx, cellRandomSprite->newlength, true));
+		    cellRandomSprite->load();
+		    cellRandomBitmap = cellRandomSprite->getBitmap();// = new Bitmap(Bitmap::memoryPCX((unsigned char*) cellRandomSprite->pcx, cellRandomSprite->newlength, true));
 		} else if ( itemhead == "cell.random.switchtime" ){
 		    *content->getNext() >> cellRandomSwitchTime;
 		} else if ( itemhead == "p1.cursor.startcell" ){
@@ -181,13 +183,15 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 		    *content->getNext() >> group;
 		    *content->getNext() >> sprite;
 		    p1Cursor.cursorActiveSprite = sprites[group][sprite];
-		    p1Cursor.active = new Bitmap(Bitmap::memoryPCX((unsigned char*) p1Cursor.cursorActiveSprite->pcx, p1Cursor.cursorActiveSprite->newlength, true));
+		    p1Cursor.cursorActiveSprite->load();
+		    p1Cursor.active = p1Cursor.cursorActiveSprite->getBitmap();//new Bitmap(Bitmap::memoryPCX((unsigned char*) p1Cursor.cursorActiveSprite->pcx, p1Cursor.cursorActiveSprite->newlength, true));
 		} else if ( itemhead == "p1.cursor.done.spr"){
 		    int group, sprite;
 		    *content->getNext() >> group;
 		    *content->getNext() >> sprite;
 		    p1Cursor.cursorDoneSprite = sprites[group][sprite];
-		    p1Cursor.done = new Bitmap(Bitmap::memoryPCX((unsigned char*) p1Cursor.cursorDoneSprite->pcx, p1Cursor.cursorDoneSprite->newlength, true));
+		    p1Cursor.cursorDoneSprite->load();
+		    p1Cursor.done = p1Cursor.cursorDoneSprite->getBitmap();//new Bitmap(Bitmap::memoryPCX((unsigned char*) p1Cursor.cursorDoneSprite->pcx, p1Cursor.cursorDoneSprite->newlength, true));
 		} 
 		else if ( itemhead == "p1.cursor.move.snd" ){ /* nothing */ }
 		else if ( itemhead == "p1.cursor.done.snd"){ /* nothing */ }
@@ -202,13 +206,15 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 		    *content->getNext() >> group;
 		    *content->getNext() >> sprite;
 		    p2Cursor.cursorActiveSprite = sprites[group][sprite];
-		    p2Cursor.active = new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorActiveSprite->pcx, p2Cursor.cursorActiveSprite->newlength, true));
+		    p2Cursor.cursorActiveSprite->load();
+		    p2Cursor.active = p2Cursor.cursorActiveSprite->getBitmap();//new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorActiveSprite->pcx, p2Cursor.cursorActiveSprite->newlength, true));
 		} else if ( itemhead == "p2.cursor.done.spr"){
 		    int group, sprite;
 		    *content->getNext() >> group;
 		    *content->getNext() >> sprite;
 		    p2Cursor.cursorDoneSprite = sprites[group][sprite];
-		    p2Cursor.done = new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorDoneSprite->pcx, p2Cursor.cursorDoneSprite->newlength, true));
+		    p2Cursor.cursorDoneSprite->load();
+		    p2Cursor.done = p2Cursor.cursorDoneSprite->getBitmap();// = new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorDoneSprite->pcx, p2Cursor.cursorDoneSprite->newlength, true));
 		} else if ( itemhead == "p2.cursor.blink"){
 		    *content->getNext() >> p2Cursor.blink;
 		    p2Cursor.blinkCounter = 0;

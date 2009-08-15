@@ -74,7 +74,7 @@ class MugenFrame{
 	int colorSource;
 	int colorDestination;
 	
-	Bitmap *bmp;
+	//Bitmap *bmp;
 };
 
 

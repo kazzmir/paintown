@@ -1,10 +1,10 @@
+#include "util/bitmap.h"
+
 #include "mugen/characterhud.h"
 
 #include "mugen/mugen_sprite.h"
 #include "mugen/mugen_animation.h"
 #include "mugen/mugen_font.h"
-
-#include "util/bitmap.h"
 
 using namespace std;
 
@@ -31,7 +31,6 @@ Element::Element():
 type(IS_NOTSET),
 action(0),
 sprite(0),
-spriteBmp(0),
 font(0),
 offset(0,0),
 displaytime(0),
@@ -43,9 +42,7 @@ scaley(1),
 text(""){
 }
 Element::~Element(){
-    if (spriteBmp){
-	delete spriteBmp;
-    }
+
 }
 
 void Element::act(){
@@ -68,7 +65,7 @@ void Element::render(const int xaxis, const int yaxis, Bitmap &bmp){
 	    action->render(facing,vfacing,xaxis,yaxis,bmp,scalex,scaley);
 	    break;
 	case IS_SPRITE:
-	    renderSprite(xaxis,yaxis,bmp);
+	    sprite->render(facing,vfacing,xaxis,yaxis,bmp,scalex,scaley);
 	    break;
 	case IS_FONT:
 	    break;
@@ -89,34 +86,12 @@ void Element::setSprite(MugenSprite *spr){
     if (spr){
 	setType(IS_SPRITE);
 	sprite = spr;
-	spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
     }
 }
 void Element::setFont(MugenFont *fnt){
     if (fnt){
 	setType(IS_FONT);
 	font = fnt;
-    }
-}
-
-void Element::renderSprite(const int xaxis, const int yaxis, Bitmap &where){
-    const int placex = (xaxis - sprite->x );
-    const int placey = (yaxis - sprite->y );
-    // temp for scaling
-    Bitmap modImage = Bitmap::temporaryBitmap(spriteBmp->getWidth() * scalex, spriteBmp->getHeight() * scaley);
-    spriteBmp->Stretch(modImage);
-    
-    if (!facing && vfacing){
-	modImage.drawHFlip(placex + modImage.getWidth(), placey, where);
-	
-    } else if (!vfacing && facing){
-	modImage.drawVFlip(placex, placey - modImage.getHeight(), where);
-	
-    } else if ( !vfacing && !facing ){
-	modImage.drawHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), where);
-	
-    } else{
-	modImage.draw(placex, placey, where);
     }
 }
 

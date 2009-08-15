@@ -291,11 +291,11 @@ void MugenCharacter::renderSprite(const int x, const int y, const unsigned int g
 				   const int flip, const double scalex, const double scaley ){
     MugenSprite *sprite = sprites[group][image];
     if (sprite){
-	Bitmap *bitmap = bitmaps[group][image];
-	if (!bitmap){
+	Bitmap *bitmap = sprite->getBitmap();//bitmaps[group][image];
+	/*if (!bitmap){
 	    bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
 	    bitmaps[group][image] = bitmap;
-	}
+	}*/
 	const int width = (int)(bitmap->getWidth() * scalex);
 	const int height =(int)(bitmap->getHeight() * scaley);
 	if (flip == 1){
@@ -315,6 +315,7 @@ void MugenCharacter::nextPalette(){
 	currentPalette++;
     } else currentPalette = 0;
     Global::debug(1) << "Current pal: " << currentPalette << " | Location: " << palDefaults[currentPalette] << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
+   /*
     // Now replace the palettes
     unsigned char pal[768];
     if (Mugen::Util::readPalette(Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
@@ -332,11 +333,12 @@ void MugenCharacter::nextPalette(){
 		}
 	    }
 	}
-	// Get rid of animation lists;
+	// reload with new palette
 	for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
 	    if( i->second )i->second->reloadBitmaps();
 	}
     }
+    */
 }
 
 void MugenCharacter::priorPalette(){
@@ -345,7 +347,7 @@ void MugenCharacter::priorPalette(){
     } else currentPalette = palDefaults.size() -1;
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     // Now replace the palettes
-    unsigned char pal[768];
+    /*unsigned char pal[768];
     if (Mugen::Util::readPalette(Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
 	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
 	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
@@ -365,7 +367,7 @@ void MugenCharacter::priorPalette(){
 	for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
 	    if( i->second )i->second->reloadBitmaps();
 	}
-    }
+    }*/
 }
 
 // animations
