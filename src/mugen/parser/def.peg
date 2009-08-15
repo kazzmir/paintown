@@ -3,7 +3,7 @@ start-symbol: start
 options: debug0
 module: Mugen
 rules:
-	start = whitespace newline* (line whitespace newline*)* <eof>
+	start = whitespace newline* (line whitespace line_end)* <eof>
 	line = s comment
 	     | s section
 	     # | s characters
@@ -11,6 +11,8 @@ rules:
 	     | s valuelist
 	     | s loopstart
 	     | space+
+	line_end = newline+
+	         | &<eof> <void>
 	newline = "\n"
 	        | "\r"
 	loopstart = [lL][oO][oO][pP][sS][tT][aA][rR][tT]
@@ -23,7 +25,7 @@ rules:
 	      | "\t"
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
-		| "-"+
+		| "-" "-"+
 	section = "[" s (!"]" .)+ s "]"
 	name = letter alpha_digit* {{
 		/*
@@ -47,12 +49,14 @@ rules:
 	identifier = name ("." name)*
 	identifier_list = identifier (s "," s filename)+
 	valuelist = value (s "," s value?)*
-	value = number
-	      | string
+	value = string
+	      | date
+	      | number
 	      | [sS] !letter !"."
 	      | [hH] !letter !"."
 	      | [aA] number? !letter
               | filename
+	date = digit+ "." digit+ "." digit+
 	string = <quote> (!<quote> !"\n" .)* <quote>
 	number = sign? float_or_integer
 	inline sign = "+"
