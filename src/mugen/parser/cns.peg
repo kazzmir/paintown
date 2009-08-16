@@ -95,6 +95,15 @@ rules:
 		 | "gethitvar"{case} s "(" s expr_c s ")"
 		 | "floor"{case} s "(" s expr_c s ")"
 		 | "ceil"{case} s "(" s expr_c s ")"
+		 | "sysvar"{case} s "(" s integer s ")"
+		 | "var"{case} s "(" s integer s ")"
+		 | "numexplod"{case} s "(" s integer s ")"
+		 | "numhelper"{case} s "(" s integer s ")"
+		 | "numprojid"{case} s "(" s integer s ")"
+		 | "helper"{case} s "(" s integer s ")"
+		 | "fvar"{case} s "(" s integer s ")"
+		 | "target"{case} s "(" s integer s ")"
+		 | "ishelper"{case} s "(" s integer s ")"
 		 | "animelemtime"{case} s "(" s integer s ")"
 		 | "animelemno"{case} s "(" s integer s ")"
 	valuelist = expr_c (s "," s expr_c)*
@@ -103,44 +112,49 @@ rules:
 	      | integer
 	      | string
 	      | range
-	      | "changeanim2"{case}
-	      | "changeanim"{case}
-	      | "changestate"{case}
-	      | "command"{case}
-	      | "animtime"{case}
-	      | "animtype"{case}
-	      | "animelem"{case}
-	      | "anim"{case}
-	      | "velset"{case}
-	      | "velmul"{case}
-	      | "timemod"{case}
-	      | "time"{case}
-	      | "nt"{case}
-	      | "screenpos"{case} s "x"{case}
-	      | "screenpos"{case} s "y"{case}
-	      | "p2dist"{case} s "x"{case}
-	      | "p2dist"{case} s "y"{case}
-	      | "p2bodydist"{case} s "x"{case}
-	      | "p2bodydist"{case} s "y"{case}
-	      | "p1dist"{case} s "x"{case}
-	      | "p1dist"{case} s "y"{case}
-	      | "parentdist"{case} s "x"{case}
-	      | "parentdist"{case} s "y"{case}
-	      | "p1bodydist"{case} s "x"{case}
-	      | "p1bodydist"{case} s "y"{case}
-	      | "rootdist"{case} s "x"{case}
-	      | "rootdist"{case} s "y"{case}
-	      | "pos"{case} s "x"{case}
-	      | "pos"{case} s "y"{case}
-	      | "vel"{case} s "x"{case}
-	      | "vel"{case} s "y"{case}
-	      | "m-"{case}
-	      | "ma-"{case}
-	      | "maf+"{case}
-	      | "s"{case} !alpha_digit
-	      | "c"{case} !alpha_digit
-	      | identifier s "(" s integer s ")"
-	      | identifier
+	      | keyword
+	      # | identifier s "(" s integer s ")"
+	      | !keyword identifier
+	keyword = keyword_real !alpha_digit
+	keyword_real = "changeanim2"{case}
+	        | "changeanim"{case}
+	        | "changestate"{case}
+	        | "command"{case}
+	        | "animtime"{case}
+	        | "animtype"{case}
+	        | "animelem"{case}
+	        | "anim"{case}
+	        | "velset"{case}
+	        | "velmul"{case}
+	        | "timemod"{case}
+	        | "time"{case}
+	        | "nt"{case}
+	        | "screenpos"{case} s "x"{case}
+	        | "screenpos"{case} s "y"{case}
+	        | "p2dist"{case} s "x"{case}
+	        | "p2dist"{case} s "y"{case}
+	        | "p2bodydist"{case} s "x"{case}
+	        | "p2bodydist"{case} s "y"{case}
+	        | "p1dist"{case} s "x"{case}
+	        | "p1dist"{case} s "y"{case}
+	        | "parentdist"{case} s "x"{case}
+	        | "parentdist"{case} s "y"{case}
+	        | "p1bodydist"{case} s "x"{case}
+	        | "p1bodydist"{case} s "y"{case}
+	        | "rootdist"{case} s "x"{case}
+	        | "rootdist"{case} s "y"{case}
+	        | "pos"{case} s "x"{case}
+	        | "pos"{case} s "y"{case}
+	        | "vel"{case} s "x"{case}
+	        | "vel"{case} s "y"{case}
+	        | "m-"{case}
+		| "a-"{case}
+		| "m+"{case}
+	        | "ma-"{case}
+	        | "maf+"{case}
+	        | "s"{case} !alpha_digit
+	        | "c"{case} !alpha_digit
+
 	integer = sign? digit+
 	string = <quote> (!<quote> !"\n" .)* <quote>
 	float = sign? digit* "." digit+
