@@ -1,0 +1,20 @@
+Organization for games:
+  Any directory in data/games would be considered a complete game
+
+  data/games/paintown
+  
+  or
+
+  data/games/whatever
+
+  The root directory will still be 'data' so all paths will be in the form of
+    'games/whatever/blah'
+
+  Generic stuff can stay in the 'data' directory like fonts and whatnot. Games can
+  also have their own versions of any common directory
+    games/whatever/fonts
+    games/whatever/menu
+
+  Question: when paintown starts up how will it know which game to select? Maybe
+  do something like quake where you choose a mod. To change to a different game
+  there will be a menu selection that lists all the games available.
