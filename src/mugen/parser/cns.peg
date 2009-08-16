@@ -29,36 +29,62 @@ rules:
 	alpha_digit = letter
 	            | digit
 	digit = [0123456789]
-	expr = expr2 expr_rest !(s ",")
+	expr = expr_c !(s ",")
 	     | valuelist
 	expr_c = expr2 expr_rest
-	expr_rest = s "&&" s expr2 expr_rest
-	          | s "||" s expr2 expr_rest
-	          | s "|" s expr2 expr_rest
-		  | <void>
+	       # I dont think this is right
+	       | expr2_rest
+	
 	expr2 = expr3 expr2_rest
-	expr2_rest = s compare s expr3 expr2_rest
+	expr3 = expr4 expr3_rest
+	expr4 = expr5 expr4_rest
+	expr5 = expr6 expr5_rest
+	expr6 = expr7 expr6_rest
+	expr7 = expr8 expr7_rest
+	expr8 = expr9 expr8_rest
+	expr9 = expr10 expr9_rest
+	expr10 = expr11 expr10_rest
+	expr11 = expr12 expr11_rest
+	expr12 = expr13 expr12_rest
+	expr13 = unary* expr13_real
+
+	expr_rest = s "||" s expr2 expr_rest
+	          | <void>
+	expr2_rest = s "^^" s expr3 expr2_rest
+	           | <void>
+	expr3_rest = s "&&" s expr4 expr3_rest
+	           | <void>
+	expr4_rest = s "|" s expr5 expr4_rest
+	           | <void>
+	expr5_rest = s "^" s expr6 expr5_rest
+	           | <void>
+	expr6_rest = s "&" s expr7 expr6_rest
+	           | <void>
+	expr7_rest = s ":=" s expr8 expr7_rest
+	           | <void>
+	# todo: fix expr8_rest
+	expr8_rest = s "=" s expr9 expr8_rest
+	           | s "!=" s expr9 expr8_rest
+		   # todo: intervals
+	           | <void>
+	expr9_rest = s compare s expr10 expr9_rest
 	           | <void>
 	compare = "<="
 		| ">="
 		| "<"
 	        | ">"
-		| "="
-		| "!="
-		| ":="
-	expr3 = expr4 expr3_rest
-	expr3_rest = s "+" s expr4 expr3_rest
-	           | s "-" s expr4 expr3_rest
-		   | <void>
-	expr4 = expr5 expr4_rest
-	expr4_rest = s "*" s expr5 expr4_rest
-	           | s "/" s expr5 expr4_rest
-	           | s "%" s expr5 expr4_rest
-		   | <void>
-	expr5 = unary? expr5_real
+	expr10_rest = s "+" s expr11 expr10_rest
+	            | s "-" s expr11 expr10_rest
+		    | <void>
+	expr11_rest = s "*" s expr12 expr11_rest
+	            | s "/" s expr12 expr11_rest
+	            | s "%" s expr12 expr11_rest
+		    | <void>
+	expr12_rest = s "**" s expr13 expr12_rest
+	            | <void>
 	unary = "!"
 	      | "-"
-	expr5_real = function
+	expr13_real = function
 	      | value
 	      | "(" s expr s ")"
 	function = "abs"{case} s "(" s expr s ")"
@@ -94,10 +120,12 @@ rules:
 	      | "p2bodydist"{case} s "y"{case}
 	      | "p1dist"{case} s "x"{case}
 	      | "p1dist"{case} s "y"{case}
+	      | "parentdist"{case} s "x"{case}
+	      | "parentdist"{case} s "y"{case}
 	      | "p1bodydist"{case} s "x"{case}
 	      | "p1bodydist"{case} s "y"{case}
-	      | "rootdist"{case} "x"{case}
-	      | "rootdist"{case} "y"{case}
+	      | "rootdist"{case} s "x"{case}
+	      | "rootdist"{case} s "y"{case}
 	      | "pos"{case} s "x"{case}
 	      | "pos"{case} s "y"{case}
 	      | "vel"{case} s "x"{case}
@@ -111,6 +139,7 @@ rules:
 	integer = sign? digit+
 	string = <quote> (!<quote> !"\n" .)* <quote>
 	float = sign? digit* "." digit+
+	      | sign? digit+ "."
 	sign = "-"
 	     | "+"
 	range = "[" s valuelist s "]"
