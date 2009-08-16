@@ -94,7 +94,7 @@ rules:
 		 | "ifelse"{case} s "(" s expr_c s "," s expr_c s "," s expr_c s ")"
 		 | "gethitvar"{case} s "(" s expr_c s ")"
 		 | "floor"{case} s "(" s expr_c s ")"
-		 | "ciel"{case} s "(" s expr_c s ")"
+		 | "ceil"{case} s "(" s expr_c s ")"
 		 | "animelemtime"{case} s "(" s integer s ")"
 		 | "animelemno"{case} s "(" s integer s ")"
 	valuelist = expr_c (s "," s expr_c)*
