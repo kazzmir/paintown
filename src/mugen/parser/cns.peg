@@ -1,0 +1,20 @@
+start-symbol: start
+options: debug0
+module: Mugen
+rules:
+	start = whitespace newline* (line whitespace line_end)* <eof>
+	line = s comment
+	     | space+
+	line_end = newline+
+	         | &<eof> <void>
+	newline = "\n"
+	        | "\r"
+	whitespace = sw*
+	sw = space
+	   | comment
+	s = space*
+	space = " "
+	      | "\t"
+	comment = ";" (!"\n" .)*
+	        | "=" (!"\n" .)*
+		| "-" "-"+
