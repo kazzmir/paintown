@@ -153,7 +153,7 @@ bool Global::init( int gfx ){
 	out<<"Install mouse: "<<install_mouse()<<endl;
 	out<<"Install joystick: "<<install_joystick(JOY_TYPE_AUTODETECT)<<endl;
         /* 16 bit color depth */
-	set_color_depth( 16 );
+	set_color_depth(16);
 
         /* set up the screen */
 	out<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, sx, sy ) <<endl;

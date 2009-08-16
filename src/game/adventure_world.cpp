@@ -331,9 +331,13 @@ void AdventureWorld::doLogic(){
 							(*fight)->collided( o_good, added_effects );
 							addMessage( (*fight)->collidedMessage() );
 							(*fight)->takeDamage( this, o_good, o_good->getDamage() );
+
+
+                                                        /* TODO: enter slow motion for bosses
                                                         if ((*fight)->getHealth() <= 0){
                                                             enterSlowMotion(100);
                                                         }
+                                                        */
 
                                                         takeScreenshot();
 						// }
