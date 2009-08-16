@@ -4,6 +4,8 @@ module: Mugen
 rules:
 	start = whitespace newline* (line whitespace line_end)* <eof>
 	line = s comment
+	     | s section
+	     | s assignment
 	     | space+
 	line_end = newline+
 	         | &<eof> <void>
@@ -18,3 +20,20 @@ rules:
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		| "-" "-"+
+	section = "[" s (!"]" .)+ "]"
+	assignment = identifier s "=" s expr
+	identifier = name ("." name)*
+	name = letter alpha_digit*
+	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
+	alpha_digit = letter
+	            | digit
+	digit = [0123456789]
+	expr = valuelist
+	     | value
+	valuelist = value (s "," s value)*
+	value = float
+	      | integer
+	integer = sign? digit+
+	float = sign? digit* "." digit+
+	sign = "-"
+	     | "+"
