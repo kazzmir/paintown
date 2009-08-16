@@ -84,6 +84,7 @@ rules:
 	            | <void>
 	unary = "!"
 	      | "-"
+	      | "~"
 	expr13_real = function
 	      | value
 	      | "(" s expr s ")"
@@ -93,6 +94,9 @@ rules:
 		 | "ifelse"{case} s "(" s expr_c s "," s expr_c s "," s expr_c s ")"
 		 | "gethitvar"{case} s "(" s expr_c s ")"
 		 | "floor"{case} s "(" s expr_c s ")"
+		 | "ciel"{case} s "(" s expr_c s ")"
+		 | "animelemtime"{case} s "(" s integer s ")"
+		 | "animelemno"{case} s "(" s integer s ")"
 	valuelist = expr_c (s "," s expr_c)*
 	          | s "," s expr_c ("," s expr_c)*
 	value = float
@@ -131,6 +135,7 @@ rules:
 	      | "vel"{case} s "x"{case}
 	      | "vel"{case} s "y"{case}
 	      | "m-"{case}
+	      | "ma-"{case}
 	      | "maf+"{case}
 	      | "s"{case} !alpha_digit
 	      | "c"{case} !alpha_digit
