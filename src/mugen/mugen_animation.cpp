@@ -52,7 +52,7 @@ yoffset(0),
 time(0),
 flipHorizontal(false),
 flipVertical(false),
-colorAdd(NO),
+colorAdd(C_NO),
 colorSource(255),
 colorDestination(255){
 //bmp(0){
@@ -153,75 +153,96 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
     }
     //const int spritex = frames[position]->sprite ? frames[position]->sprite->x : 0;
     //const int spritey = frames[position]->sprite ? frames[position]->sprite->y : 0;
-    const int placex = (xaxis - frames[position]->sprite->getX() ) + frames[position]->xoffset;
-    const int placey = (yaxis - frames[position]->sprite->getY() ) + frames[position]->yoffset;
+    //const int placex = (xaxis - frames[position]->sprite->getX() ) + frames[position]->xoffset;
+    //const int placey = (yaxis - frames[position]->sprite->getY() ) + frames[position]->yoffset;
     
-    Bitmap *image = frames[position]->sprite->getBitmap();//frames[position]->bmp;
+    /*Bitmap *image = frames[position]->sprite->getBitmap();//frames[position]->bmp;
     // temp for scaling
     Bitmap modImage = Bitmap::temporaryBitmap(image->getWidth() * scalex, image->getHeight() * scaley);
-    image->Stretch(modImage);
+    image->Stretch(modImage);*/
+    
+    Effects effect;
     
     if (frames[position]->flipHorizontal && ! frames[position]->flipVertical){
+	effect.facing = -1;
+	effect.vfacing = 1;
 	switch (frames[position]->colorAdd){
-	    case ADD:
-		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		modImage.drawTransHFlip(placex + modImage.getWidth(), placey, work);
+	    case C_ADD:
+		//Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
+		//modImage.drawTransHFlip(placex + modImage.getWidth(), placey, work);
+		effect.trans = ADD;
 		break;
-	    case SUB:
-		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		modImage.drawTransHFlip(placex + modImage.getWidth(), placey, work);
+	    case C_SUB:
+		//Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
+		//modImage.drawTransHFlip(placex + modImage.getWidth(), placey, work);
+		effect.trans = SUB;
 		break;
-	    case NO:
+	    case C_NO:
 	    default:
-		modImage.drawHFlip(placex + modImage.getWidth(), placey, work);
+		//modImage.drawHFlip(placex + modImage.getWidth(), placey, work);
 		break;
 	}
     } else if (frames[position]->flipVertical && ! frames[position]->flipHorizontal){
+	effect.facing = 1;
+	effect.vfacing = -1;
 	switch (frames[position]->colorAdd){
-	    case ADD:
-		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		modImage.drawTransVFlip(placex, placey - modImage.getHeight(), work);
+	    case C_ADD:
+		//Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
+		//modImage.drawTransVFlip(placex, placey - modImage.getHeight(), work);
+		effect.trans = ADD;
 		break;
-	    case SUB:
-		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		modImage.drawTransVFlip(placex, placey - modImage.getHeight(), work);
+	    case C_SUB:
+		//Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
+		//modImage.drawTransVFlip(placex, placey - modImage.getHeight(), work);
+		effect.trans = SUB;
 		break;
-	    case NO:
+	    case C_NO:
 	    default:
-		modImage.drawVFlip(placex, placey - modImage.getHeight(), work);
+		//modImage.drawVFlip(placex, placey - modImage.getHeight(), work);
 		break;
 	}
     } else if ( frames[position]->flipVertical && frames[position]->flipHorizontal ){
+	effect.facing = -1;
+	effect.vfacing = -1;
 	switch (frames[position]->colorAdd){
-	    case ADD:
-		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
+	    case C_ADD:
+		//Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
+		//modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
+		effect.trans = ADD;
 		break;
-	    case SUB:
-		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
+	    case C_SUB:
+		//Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
+		//modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
+		effect.trans = SUB;
 		break;
-	    case NO:
+	    case C_NO:
 	    default:
-		modImage.drawHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
+		//modImage.drawHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
 		break;
 	}
     } else{
+	effect.facing = 1;
+	effect.vfacing = 1;
 	switch (frames[position]->colorAdd){
-	    case ADD:
-		Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		modImage.drawTrans(placex, placey, work);
+	    case C_ADD:
+		//Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
+		//modImage.drawTrans(placex, placey, work);
+		effect.trans = ADD;
 		break;
-	    case SUB:
-		Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		modImage.drawTrans(placex, placey, work);
+	    case C_SUB:
+		//Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
+		//modImage.drawTrans(placex, placey, work);
+		effect.trans = SUB;
 		break;
-	    case NO:
+	    case C_NO:
 	    default:
-		modImage.draw(placex, placey, work);
+		//modImage.draw(placex, placey, work);
 		break;
 	}
     }
+    const int placex = xaxis+frames[position]->xoffset;
+    const int placey = yaxis+frames[position]->yoffset;
+    frames[position]->sprite->render(placex,placey,work,effect);
     
     if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
     if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );

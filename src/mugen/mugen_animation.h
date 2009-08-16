@@ -8,9 +8,9 @@ class Bitmap;
 class MugenSprite;
 
 enum ColorType {
-    NO = 0,
-    ADD,
-    SUB
+    C_NO = 0,
+    C_ADD,
+    C_SUB
 };
 
 /*

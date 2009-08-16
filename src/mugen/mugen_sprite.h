@@ -7,6 +7,29 @@
 
 class Bitmap;
 
+enum TransType{
+    NONE = 0,
+    ADD,
+    ADD1,
+    SUB,
+    ADDALPHA
+};
+
+class Effects{
+    public:
+	Effects();
+	const Effects &operator=(const Effects &e);
+	~Effects();
+	TransType trans;
+	int alphalow;
+	int alphahigh;
+	bool mask;
+	int facing;
+	int vfacing;
+	int scalex;
+	int scaley;
+};
+
 class MugenSprite{
     public:
 	MugenSprite();
@@ -21,12 +44,13 @@ class MugenSprite{
 	void read(std::ifstream & ifile, const int loc);
 	
 	// Render sprite
-	void render(const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
-	void render(int facing, int vfacing, const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
+	//void render(const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
+	//void render(int facing, int vfacing, const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
+	void render(const int xaxis, const int yaxis, Bitmap &where, Effects &effects);
 	
 	// load/reload sprite
-	void load();
-	void reload();
+	void load(bool mask=true);
+	void reload(bool mask=true);
 	
 	// get sprite
 	Bitmap *getBitmap();
@@ -76,7 +100,7 @@ class MugenSprite{
 	char comments[13];
 	char * pcx;
 	
-	Bitmap *sprite;
+	Bitmap *bitmap;
 };
 
 #endif

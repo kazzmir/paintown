@@ -707,7 +707,7 @@ MugenAnimation *Mugen::Util::getAnimation( MugenSection *section, std::map< unsi
 		    if( temp.find("h") != std::string::npos )frame->flipHorizontal = true;
 		    if( temp.find("v") != std::string::npos )frame->flipVertical = true;
 		    if (temp[0] == 'a'){
-			frame->colorAdd = ADD;
+			frame->colorAdd = C_ADD;
 			// Check if we have specified additions
 			if (temp.size() > 2){
 			    // Source
@@ -716,7 +716,7 @@ MugenAnimation *Mugen::Util::getAnimation( MugenSection *section, std::map< unsi
 			    frame->colorDestination = atoi(temp.substr(6,8).c_str());
 			}
 		    } else if (temp[0] == 's'){
-			frame->colorAdd = SUB;
+			frame->colorAdd = C_SUB;
 		    }
 		}
 		// Add sprite

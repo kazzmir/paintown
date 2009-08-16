@@ -65,7 +65,8 @@ void Element::render(const int xaxis, const int yaxis, Bitmap &bmp){
 	    action->render(facing,vfacing,xaxis,yaxis,bmp,scalex,scaley);
 	    break;
 	case IS_SPRITE:
-	    sprite->render(facing,vfacing,xaxis,yaxis,bmp,scalex,scaley);
+	    
+	    //sprite->render(facing,vfacing,xaxis,yaxis,bmp,scalex,scaley);
 	    break;
 	case IS_FONT:
 	    break;

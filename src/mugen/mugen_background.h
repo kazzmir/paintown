@@ -20,7 +20,7 @@ enum BackgroundType{
     Dummy
 };
 
-enum TransType{
+enum Trans{
     None = 0,
     Add,
     Add1,
@@ -74,7 +74,7 @@ public:
     int starty;
     double deltax;
     double deltay;
-    TransType trans;
+    Trans trans;
     int alphalow;
     int alphahigh;
     bool mask;

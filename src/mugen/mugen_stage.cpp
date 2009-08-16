@@ -544,14 +544,14 @@ void MugenStage::logic( ){
 		    }
 		}
 		// Attacking
-		if ( player->isAttacking() ){
+		/*if ( player->isAttacking() ){
 		    ObjectAttack * playerAttack = (ObjectAttack *)player;
 		    if ( enemy != player && enemy->isCollidable( player ) && player->isCollidable( enemy ) ){
 			if ( player->ZDistance( enemy ) <= playerAttack->minZDistance() && enemy->collision( playerAttack ) ){ 
 			    double x = 0, y = 0;
 			    
 			    x = enemy->getX();
-			    y = enemy->getRY() - enemy->getHeight() + enemy->getHeight() / 3;
+			    y = enemy->getRY() - enemy->getHeight() + enemy->getHeight() / 3;*/
 /*
 			    if ( bang != NULL ){
 				    Object * addx = bang->copy();
@@ -562,12 +562,13 @@ void MugenStage::logic( ){
 				    added_effects.push_back( addx );
 			    }
 */
+/*
 			    playerAttack->attacked(this, enemy, add );
 			    enemy->collided( playerAttack, add );
 			    enemy->takeDamage( this, playerAttack, playerAttack->getDamage() );
 			}    
 		    }
-		}
+		}*/
 	    }
 	}
 	

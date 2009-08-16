@@ -213,7 +213,7 @@ void showCharacter(const string & ourFile){
 		    Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str() );
 		    Font::getDefaultFont().printf( 15, 320, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(MugenAnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
 		    if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 330, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->getLength(), it->second->getCurrentFrame()->sprite->getX(), it->second->getCurrentFrame()->sprite->getY(), it->second->getCurrentFrame()->sprite->getGroupNumber(), it->second->getCurrentFrame()->sprite->getImageNumber());
-		    Font::getDefaultFont().printf( 15, 340, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getBitmap()->getWidth(), it->second->getCurrentFrame()->sprite->getBitmap()->getHeight() );
+		    Font::getDefaultFont().printf( 15, 340, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight() );
 		    Font::getDefaultFont().printf( 15, 350, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
 		    Font::getDefaultFont().printf( 15, 360, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
 		    Font::getDefaultFont().printf( 15, 370, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
@@ -283,7 +283,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     //p1->setMap( remap );
     ((Player *)p1)->testAnimation();
     ((Player *)p1)->setConfig(0);
-    Configuration::config(0).setJump( Configuration::config(0).getUp() );
+    //Configuration::config(0).setJump( Configuration::config(0).getUp() );
     ((Player *)p2)->setInvincible( false );
     //p2->setMap( remap );
     ((Player *)p2)->testAnimation();
