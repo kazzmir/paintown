@@ -106,6 +106,7 @@ rules:
 		 | "ishelper"{case} s "(" s integer s ")"
 		 | "animelemtime"{case} s "(" s integer s ")"
 		 | "animelemno"{case} s "(" s integer s ")"
+		 | "animexist"{case} s "(" s integer s ")"
 	valuelist = expr_c (s "," s expr_c)*
 	          | s "," s expr_c ("," s expr_c)*
 	value = float
