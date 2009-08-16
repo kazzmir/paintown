@@ -22,18 +22,82 @@ rules:
 		| "-" "-"+
 	section = "[" s (!"]" .)+ "]"
 	assignment = identifier s "=" s expr
+	           | identifier s "(" s integer s ")" s "=" s expr
 	identifier = name ("." name)*
 	name = letter alpha_digit*
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
 	digit = [0123456789]
-	expr = valuelist
-	     | value
-	valuelist = value (s "," s value)*
+	expr = expr2 expr_rest !(s ",")
+	     | valuelist
+	expr_c = expr2 expr_rest
+	expr_rest = s "&&" s expr2 expr_rest
+	          | s "||" s expr2 expr_rest
+		  | <void>
+	expr2 = expr3 expr2_rest
+	expr2_rest = s compare s expr3 expr2_rest
+	           | <void>
+	compare = "<="
+		| ">="
+		| "<"
+	        | ">"
+		| "="
+		| "!="
+	expr3 = expr4 expr3_rest
+	expr3_rest = s "+" s expr4 expr3_rest
+	           | s "-" s expr4 expr3_rest
+		   | <void>
+	expr4 = expr5 expr4_rest
+	expr4_rest = s "*" s expr5 expr4_rest
+	           | s "/" s expr5 expr4_rest
+	           | s "%" s expr5 expr4_rest
+		   | <void>
+	expr5 = unary? expr5_real
+	unary = "!"
+	      | "-"
+	expr5_real = function
+	      | value
+	      | "(" s expr s ")"
+	function = "abs"{case} s "(" s expr s ")"
+	         | "const"{case} s "(" s expr s ")"
+		 | "selfanimexist"{case} s "(" s expr s ")"
+		 | "ifelse"{case} s "(" s expr_c s "," s expr_c s "," s expr_c s ")"
+		 | "gethitvar"{case} s "(" s expr_c s ")"
+		 | "floor"{case} s "(" s expr_c s ")"
+	valuelist = expr_c (s "," s expr_c)*
+	          | s "," s expr_c ("," s expr_c)*
 	value = float
 	      | integer
+	      | string
+	      | range
+	      | "changeanim"{case}
+	      | "changestate"{case}
+	      | "command"{case}
+	      | "animtime"{case}
+	      | "animtype"{case}
+	      | "animelem"{case}
+	      | "anim"{case}
+	      | "velset"{case}
+	      | "velmul"{case}
+	      | "timemod"{case}
+	      | "time"{case}
+	      | "nt"{case}
+	      | "p2dist"{case} s "x"{case}
+	      | "p2bodydist"{case} s "x"{case}
+	      | "p1dist"{case} s "x"{case}
+	      | "p1bodydist"{case} s "x"{case}
+	      | "pos"{case} s "x"{case}
+	      | "pos"{case} s "y"{case}
+	      | "vel"{case} s "x"{case}
+	      | "vel"{case} s "y"{case}
+	      | "s"{case} !alpha_digit
+	      | "c"{case} !alpha_digit
+	      | identifier s "(" s integer s ")"
+	      | identifier
 	integer = sign? digit+
+	string = <quote> (!<quote> !"\n" .)* <quote>
 	float = sign? digit* "." digit+
 	sign = "-"
 	     | "+"
+	range = "[" s valuelist s "]"
