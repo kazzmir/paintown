@@ -18,3 +18,7 @@ Organization for games:
   Question: when paintown starts up how will it know which game to select? Maybe
   do something like quake where you choose a mod. To change to a different game
   there will be a menu selection that lists all the games available.
+
+  Store the current selected game in the configuration file. Allow games to be put into
+  a directory the user has access to (like ~/.paintown). Games played over the network
+  will automatically download content and place it in that user directory.
