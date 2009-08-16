@@ -34,6 +34,7 @@ rules:
 	expr_c = expr2 expr_rest
 	expr_rest = s "&&" s expr2 expr_rest
 	          | s "||" s expr2 expr_rest
+	          | s "|" s expr2 expr_rest
 		  | <void>
 	expr2 = expr3 expr2_rest
 	expr2_rest = s compare s expr3 expr2_rest
@@ -44,6 +45,7 @@ rules:
 	        | ">"
 		| "="
 		| "!="
+		| ":="
 	expr3 = expr4 expr3_rest
 	expr3_rest = s "+" s expr4 expr3_rest
 	           | s "-" s expr4 expr3_rest
@@ -71,6 +73,7 @@ rules:
 	      | integer
 	      | string
 	      | range
+	      | "changeanim2"{case}
 	      | "changeanim"{case}
 	      | "changestate"{case}
 	      | "command"{case}
@@ -83,14 +86,24 @@ rules:
 	      | "timemod"{case}
 	      | "time"{case}
 	      | "nt"{case}
+	      | "screenpos"{case} s "x"{case}
+	      | "screenpos"{case} s "y"{case}
 	      | "p2dist"{case} s "x"{case}
+	      | "p2dist"{case} s "y"{case}
 	      | "p2bodydist"{case} s "x"{case}
+	      | "p2bodydist"{case} s "y"{case}
 	      | "p1dist"{case} s "x"{case}
+	      | "p1dist"{case} s "y"{case}
 	      | "p1bodydist"{case} s "x"{case}
+	      | "p1bodydist"{case} s "y"{case}
+	      | "rootdist"{case} "x"{case}
+	      | "rootdist"{case} "y"{case}
 	      | "pos"{case} s "x"{case}
 	      | "pos"{case} s "y"{case}
 	      | "vel"{case} s "x"{case}
 	      | "vel"{case} s "y"{case}
+	      | "m-"{case}
+	      | "maf+"{case}
 	      | "s"{case} !alpha_digit
 	      | "c"{case} !alpha_digit
 	      | identifier s "(" s integer s ")"
