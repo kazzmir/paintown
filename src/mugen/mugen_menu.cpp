@@ -1361,7 +1361,7 @@ void MugenMenu::run(){
 			    // Draw any misc stuff in the background of the menu of selected object 
 			    (*selectedOption)->drawBelow(work);
 			    // Draw text
-			    drawText(&workArea);
+			    renderText(&workArea);
 			    // Foregrounds
 			    background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
 			    // Draw any misc stuff in the foreground of the menu of selected object 
@@ -1451,7 +1451,7 @@ void MugenMenu::cleanupSprites(){
 }
 
 // Draw text
-void MugenMenu::drawText(Bitmap *bmp){
+void MugenMenu::renderText(Bitmap *bmp){
     
     int xplacement = position.x;
     int yplacement = position.y;

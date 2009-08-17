@@ -722,6 +722,14 @@ spriteFile(""){
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
 }
 MugenBackgroundManager::~MugenBackgroundManager(){
+    if (!spriteFile.empty()){
+	// Get rid of sprites
+	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+		if( j->second )delete j->second;
+	    }
+	}
+    }
     // Get rid of animation lists;
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
 	if( i->second )delete i->second;
@@ -740,14 +748,6 @@ MugenBackgroundManager::~MugenBackgroundManager(){
     // Get rid of control lists;
     for( std::vector< MugenBackgroundController * >::iterator i = controllers.begin() ; i != controllers.end() ; ++i ){
 	if( (*i) )delete (*i);
-    }
-    if (!spriteFile.empty()){
-	// Get rid of sprites
-	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-		if( j->second )delete j->second;
-	    }
-	}
     }
 }
 void MugenBackgroundManager::logic( const double x, const double y, const double placementx, const double placementy ){

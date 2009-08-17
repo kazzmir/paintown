@@ -361,7 +361,7 @@ class MugenMenu : public Menu
 	void cleanupSprites();
 	
 	// Draw text
-	void drawText(Bitmap *bmp);
+	void renderText(Bitmap *bmp);
 };
 #endif
 
