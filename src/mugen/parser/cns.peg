@@ -73,6 +73,9 @@ rules:
 		| ">="
 		| "<"
 	        | ">"
+	all_compare = compare
+	            | "="
+		    | "!="
 	expr10_rest = s "+" s expr11 expr10_rest
 	            | s "-" s expr11 expr10_rest
 		    | <void>
@@ -107,6 +110,12 @@ rules:
 		 | "animelemtime"{case} s "(" s integer s ")"
 		 | "animelemno"{case} s "(" s integer s ")"
 		 | "animexist"{case} s "(" s integer s ")"
+		 | "projcontact"{case} s "=" s integer function_rest
+		 | "projcontact"{case} s "(" s integer s ")"
+		 | "animelem"{case} s "=" s integer function_rest
+		 | "numhelper"{case} s "(" s expr_c s ")"
+		 | "helper"{case} s "(" s expr_c s ")"
+	function_rest = s "," s all_compare s integer
 	valuelist = expr_c (s "," s expr_c)*
 	          | s "," s expr_c ("," s expr_c)*
 	value = float
@@ -150,6 +159,8 @@ rules:
 	        | "vel"{case} s "y"{case}
 	        | "m-"{case}
 		| "a-"{case}
+		| "af-"{case}
+		| "mf-"{case}
 		| "m+"{case}
 	        | "ma-"{case}
 	        | "maf+"{case}
