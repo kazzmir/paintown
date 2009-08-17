@@ -31,6 +31,9 @@ rules:
 	sign = "-"
 	     | "+"
 	range = "[" s valuelist s "]"
+	      | "(" s valuelist s ")"
+	      | "(" s valuelist s "]"
+	      | "[" s valuelist s ")"
 	name = letter alpha_digit*
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
@@ -116,8 +119,8 @@ rules:
 		 | "target"{case} s "(" s integer s ")"
 		 | "ishelper"{case} s "(" s integer s ")"
 		 | "animelemtime"{case} s "(" s integer s ")"
-		 | "animelemno"{case} s "(" s integer s ")"
-		 | "animexist"{case} s "(" s integer s ")"
+		 | "animelemno"{case} s "(" s expr_c s ")"
+		 | "animexist"{case} s "(" s expr_c s ")"
 
 	key = key_real key_rest
 	key_rest = s "+" key_real key_rest
@@ -143,7 +146,8 @@ rules:
 		 | "z"
 		 | "s"
 
-	value = integer
+	value = float
+	      | integer
 	      | keyword
 	      | !keyword identifier
 	      | range
