@@ -95,7 +95,7 @@ rules:
 	            | <void>
 	unary = "!"
 	      | "-"
-	      | "~"
+	      | "~" !key !digit
 	expr13_real = function
 	      | value
 	      | "(" s expr s ")"
@@ -127,14 +127,14 @@ rules:
 	             | "$"
 		     | "/"
 		     | ">"
-	key_name = "B"
-	         | "DB"
-		 | "D"
+	key_name = "DB"
+		 | "B"
 		 | "DF"
+		 | "D"
 		 | "F"
 		 | "UF"
-		 | "U"
 		 | "UB"
+		 | "U"
 		 | "a"
 		 | "b"
 		 | "c"
