@@ -17,6 +17,7 @@
 #include "globals.h"
 #include "script/script.h"
 #include "shutdown_exception.h"
+#include "util/file-system.h"
 #include "loading.h"
 #include "network/network.h"
 #include "world.h"
@@ -341,7 +342,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 			FontRender * render = FontRender::getInstance();
 			render->render( &screen_buffer );
 	
-			const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+			const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 20, 20 );
 
 			if ( helpTime > 0 ){
 				int x = 100;
@@ -396,7 +397,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
         if (!force_quit){
             work.clear();
-            Sound snapshot(Util::getDataPath() + "/sounds/snapshot.wav");
+            Sound snapshot(Filesystem::find("/sounds/snapshot.wav"));
             for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
                 Bitmap * shot = *it;
                 int angle = Util::rnd(13) - 6;
@@ -462,11 +463,11 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
                         }
                         */
 
-			AdventureWorld world( players, Util::getDataPath() + *it );
+			AdventureWorld world( players, Filesystem::find(*it));
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
-			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+			Music::loadSong( Util::getFiles( Filesystem::find("/music/"), "*" ) );
 			Music::play();
 
 			for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
@@ -514,11 +515,14 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 
 	// Bitmap background( Util::getDataPath() + "/paintown-title.png" );
 	int fontY = 20;
-	const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, fontY );
+	const Font & font = Font::getFont( Filesystem::find(DEFAULT_FONT), 20, fontY );
 	vector<string> possible = Util::getFiles( base + "/", "*.txt" );
         for ( vector<string>::iterator it = possible.begin(); it != possible.end(); it++ ){
             string & path = *it;
+            /*
             path.erase(0, Util::getDataPath().length() + 1);
+            */
+            path = Filesystem::cleanse(path);
         }
 
 	if ( possible.size() == 0 ){
@@ -526,7 +530,7 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 	}
 
         if (possible.size() == 1){
-            return Util::getDataPath() + possible[0];
+            return Filesystem::find(possible[0]);
         }
 
 	/*
@@ -576,7 +580,7 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 				}
 
 				if ( key[ Keyboard::Key_ENTER ] ){
-					return Util::getDataPath() + "/" + possible[ choose ];
+					return Filesystem::find(possible[ choose ]);
 				}
 
 				if ( key[ Keyboard::Key_ESC ] ){
@@ -613,7 +617,7 @@ void fadeOut( Bitmap & work, const string & message ){
 
 	dark.drawTrans( 0, 0, work );
 	
-	const Font & f = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 50, 50 );
+	const Font & f = Font::getFont( Filesystem::find(DEFAULT_FONT), 50, 50 );
 	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );
         work.BlitToScreen();
 
@@ -642,13 +646,13 @@ void playVersusMode( Character * player1, Character * player2, int round ) throw
 	double gameSpeed = startingGameSpeed();
 
 	vector< Background > backgrounds;
-	backgrounds = readBackgrounds( Util::getDataPath() + "/bgs/versus/" );
+	backgrounds = readBackgrounds( Filesystem::find("/bgs/versus/"));
 
 	Bitmap background( 640, 480 );
 	int z = 400;
 	if ( backgrounds.size() != 0 ){
 		Background use = backgrounds[ Util::rnd( backgrounds.size() ) ];
-		Bitmap b( Util::getDataPath() + "/" + use.path );
+		Bitmap b(Filesystem::find(use.path));
 		b.Stretch( background );
 		z = use.z;
 	}
@@ -661,7 +665,7 @@ void playVersusMode( Character * player1, Character * player2, int round ) throw
 
 	Music::pause();
 	Music::fadeIn( 0.3 );
-	Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+	Music::loadSong( Util::getFiles( Filesystem::find("/music/"), "*" ) );
 	Music::play();
 
 	int roundColors[ 120 ];
@@ -739,7 +743,7 @@ void playVersusMode( Character * player1, Character * player2, int round ) throw
 		*/
 	
 		if ( draw ){
-			const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT );
+			const Font & font = Font::getFont( Filesystem::find(DEFAULT_FONT));
 
 			background.Blit( work );
 			world.draw( &work );
@@ -889,7 +893,7 @@ void playVersusMode( Character * player1, Character * player2, int round ) throw
 				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
 				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
 				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
-				const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT );
+				const Font & font = Font::getFont( Filesystem::find(DEFAULT_FONT));
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
 

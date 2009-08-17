@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "util/font.h"
+#include "util/file-system.h"
 #include "level/utils.h"
 #include "factory/font_render.h"
 #include "factory/object_factory.h"
@@ -78,8 +79,8 @@ static void playGame( Socket socket ){
             Level::LevelInfo info;
 		Character * player = (Character *) Game::selectPlayer( false, "Pick a player", info);
                 ((Player *) player)->ignoreLives();
-		string path = player->getPath();
-		path.erase( 0, Util::getDataPath().length() );
+		string path = Filesystem::cleanse(player->getPath());
+		// path.erase( 0, Util::getDataPath().length() );
 	
 		startLoading( &loadingThread );
 
@@ -119,7 +120,7 @@ static void playGame( Socket socket ){
 					next >> id >> alliance;
 					if ( uniqueId( players, id ) ){
                                             Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
-						Character * c = new NetworkPlayer( Util::getDataPath() + next.path, alliance);
+						Character * c = new NetworkPlayer(Filesystem::find(next.path), alliance);
 						c->setId( id );
 						((NetworkCharacter *)c)->alwaysShowName();
 						players.push_back( c );
@@ -127,11 +128,11 @@ static void playGame( Socket socket ){
 					break;
 				}
 				case World::LOAD_LEVEL : {
-					string level = Util::getDataPath() + next.path;
+					string level = Filesystem::find(next.path);
 					NetworkWorldClient world( socket, players, level, client_id );
 					Music::pause();
 					Music::fadeIn( 0.3 );
-					Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+					Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
 					Music::play();
 
                                         waitForServer(socket);
@@ -296,7 +297,7 @@ void networkClient(){
 		NAME, HOST, PORT, CONNECT, BACK
 	};
 			
-	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
 
 	Bitmap work( GFX_X, GFX_Y );
 	

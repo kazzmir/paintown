@@ -4,6 +4,7 @@
 #include "return_exception.h"
 #include "util/token_exception.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "globals.h"
 
 OptionTabMenu::OptionTabMenu(Token *token) throw (LoadException):
@@ -28,7 +29,7 @@ _menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         *token >> temp;
-        _menu->load(Util::getDataPath() + temp);
+        _menu->load(Filesystem::find(temp));
     } else {
         _menu->load(token);
     }

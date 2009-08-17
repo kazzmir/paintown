@@ -6,13 +6,10 @@
 #include "util/token_exception.h"
 #include "util/token.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "globals.h"
 
 using namespace std;
-
-static const string dataPath( const string & str ){
-	return Util::getDataPath() + str;
-}
 
 BlockObject::BlockObject():
 type(ObjectFactory::NoneType),
@@ -73,7 +70,7 @@ stimulationValue( 0 ){
 			} else if ( *current == "path" ){
 				string n;
 				*current >> n;
-				setPath( dataPath( n ) );
+				setPath(Filesystem::find(n));
 			} else if ( *current == "aggression" ){
 				int a;
 				*current >> a;

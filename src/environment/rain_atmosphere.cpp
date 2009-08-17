@@ -1,5 +1,6 @@
-#include "util/funcs.h"
 #include "util/bitmap.h"
+#include "util/funcs.h"
+#include "util/file-system.h"
 #include "rain_atmosphere.h"
 #include "level/scene.h"
 
@@ -17,7 +18,7 @@ RainAtmosphere::RainAtmosphere():
 Atmosphere(),
 playing( false ){
 
-	rain_sound = Sound( Util::getDataPath() + "sounds/rain.wav" );
+	rain_sound = Sound(Filesystem::find("sounds/rain.wav"));
 
 	int colors[ 2 ];
 	colors[ 0 ] = Bitmap::makeColor( 0x22, 0x66, 0x66 );

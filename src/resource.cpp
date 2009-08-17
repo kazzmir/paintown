@@ -4,6 +4,7 @@
 #include "util/funcs.h"
 #include "util/sound.h"
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include <string>
 #include <vector>
 
@@ -11,11 +12,11 @@ using namespace std;
 
 Resource * Resource::resource = NULL;
 Sound * Resource::getSound(const std::string & path) throw (LoadException){
-    return resource->_getSound(Util::getDataPath() + path);
+    return resource->_getSound(Filesystem::find(path));
 }
 
 Bitmap * Resource::getBitmap(const std::string & path) throw (LoadException){
-    return resource->_getBitmap(Util::getDataPath() + path);
+    return resource->_getBitmap(Filesystem::find(path));
 }
 
 /* the resource is created in the Collector */

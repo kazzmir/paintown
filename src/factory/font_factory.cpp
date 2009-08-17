@@ -3,6 +3,7 @@
 #include <map>
 #include "util/font.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "font_factory.h"
 
 #include "fonts.h"
@@ -50,7 +51,7 @@ Font * FontFactory::getRealFont( const string & str, const int x, const int y ){
 }
 
 FontFactory::FontFactory(){
-	my_data = load_datafile( (Util::getDataPath() + "/fonts.dat").c_str() );
+	my_data = load_datafile(Filesystem::find("/fonts.dat").c_str() );
 	font_mapper[ "bios" ] = new AllegroFont( ::font );
 }
 

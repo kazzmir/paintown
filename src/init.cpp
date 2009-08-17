@@ -22,6 +22,7 @@
 #include "loadpng/loadpng.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "configuration.h"
 #include "script/script.h"
 #include "music.h"
@@ -128,7 +129,7 @@ bool Global::init( int gfx ){
 
 	ostream & out = Global::debug( 0 );
 	out << "-- BEGIN init --" << endl;
-        out << "Data path is " << Util::getDataPath() << endl;
+        out << "Data path is " << Util::getDataPath2() << endl;
         out << "Paintown version " << Global::getVersionString() << endl;
         out << "Build date " << __DATE__ << " " << __TIME__ << endl;
 	out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;

@@ -1,6 +1,7 @@
 #include "shadow.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include <vector>
 
 using namespace std;
@@ -37,7 +38,7 @@ void Shadow::destroy(){
 
 Shadow::Shadow(){
 	for ( int x = 1; x <= 6; x++ ){
-		string s = Util::getDataPath() + "/sprites/shadow/shadow";
+		string s = Filesystem::find("/sprites/shadow/shadow");
 		s += (char)(x+'0');
 		s += ".png";
 		shadows.push_back( new Bitmap( s ) );

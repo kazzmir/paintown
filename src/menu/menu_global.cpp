@@ -8,6 +8,7 @@
 #include "util/keyboard.h"
 #include "util/sound.h"
 #include "util/token.h"
+#include "util/file-system.h"
 #include "util/tokenreader.h"
 #include "globals.h"
 #include "resource.h"
@@ -28,7 +29,7 @@ MenuGlobals::~MenuGlobals(){
 }
 
 void MenuGlobals::setMusic(const std::string &file){
-    if(Music::loadSong( Util::getDataPath() + file )){
+    if(Music::loadSong(Filesystem::find(file))){
 	Music::pause();
 	Music::play();
     }
@@ -111,7 +112,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 }
 
 std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
-    std::vector<std::string> possible = Util::getFiles( Util::getDataPath() + dir + "/", "*.txt" );
+    std::vector<std::string> possible = Util::getFiles(Filesystem::find(dir + "/"), "*.txt" );
 
     /* count is the number of pixels the menu can be. try not to hard code
      * if possible. it should probably be based on the size of the font.
@@ -119,7 +120,10 @@ std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
     int count = 0;
     for ( vector<string>::iterator it = possible.begin(); it != possible.end(); it++ ){
         string & path = *it;
+        path = Filesystem::cleanse(path);
+        /*
         path.erase(0, Util::getDataPath().length() + 1);
+        */
         count += 60;
     }
 
@@ -132,7 +136,7 @@ std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
     }
 
     if (possible.size() == 1){
-        return Util::getDataPath() + possible[0];
+        return Filesystem::find(possible[0]);
     }
 
     try{
@@ -145,11 +149,11 @@ std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
             opt->setInfoText("Select a set of levels to play");
             temp.addOption(opt);
         }
-        temp.load(Util::getDataPath() + "menu/level_select.txt");
+        temp.load(Filesystem::find("menu/level_select.txt"));
         temp.backboard.position.height = count;
         // Run it
         temp.run();
-        return Util::getDataPath() + level;
+        return Filesystem::find(level);
     } catch (const TokenException & ex){
         Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
         return "";

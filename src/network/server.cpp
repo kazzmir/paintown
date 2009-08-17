@@ -22,6 +22,7 @@
 #include <sstream>
 #include "util/font.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "util/keyboard.h"
 
 using namespace std;
@@ -166,7 +167,7 @@ static int getServerPort(){
 	const int drawY = 250;
 	{
 		// background.BlitToScreen();
-		const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+		const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
 		Bitmap black( 300, font.getHeight() * 4 );
 		black.clear();
 		black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
@@ -226,7 +227,7 @@ static int getServerPort(){
 			}
 			pressed.clear();
 			work.clear();
-			const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+			const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
 			font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
 			work.Blit( 100, drawY, background );
                         background.BlitToScreen();
@@ -508,7 +509,7 @@ static void playGame( const vector< Socket > & sockets ){
                 ((Player *) player)->ignoreLives();
 		players.push_back( player );
                 /* then the user selects a set of levels to play */
-		string levelSet = Game::selectLevelSet( Util::getDataPath() + "/levels" );
+		string levelSet = Game::selectLevelSet(Filesystem::find("/levels"));
 		
                 /* show the loading screen */
 		startLoading( &loading_screen_thread );
@@ -536,7 +537,7 @@ static void playGame( const vector< Socket > & sockets ){
 			message >> type;
                         if ( type == World::CREATE_CHARACTER ){
                             int alliance = playerAlliance();
-                            Character * client_character = new NetworkPlayer(Util::getDataPath() + message.path, alliance);
+                            Character * client_character = new NetworkPlayer(Filesystem::find(message.path), alliance);
                             /* Don't need this line now that NetworkPlayer exists.
                              * take it out at some point.
                              */
@@ -559,8 +560,8 @@ static void playGame( const vector< Socket > & sockets ){
                 /* send all created characters to all clients */
 		for ( vector<Object *>::iterator it = players.begin(); it != players.end(); it++ ){
 			Character * c = (Character *) *it;
-			string path = c->getPath();
-			path.erase( 0, Util::getDataPath().length() );
+			string path = Filesystem::cleanse(c->getPath());
+			// path.erase( 0, Util::getDataPath().length() );
 			Message add;
 			add << World::CREATE_CHARACTER;
 			add << c->getId();
@@ -599,13 +600,13 @@ static void playGame( const vector< Socket > & sockets ){
 			}
 
 			debug( 1 ) << "Create network world" << endl;
-			NetworkWorld world( sockets, players, Util::getDataPath() + level );
+			NetworkWorld world( sockets, players, Filesystem::find(level));
 
 			debug( 1 ) << "Load music" << endl;
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
-			Music::loadSong( Util::getFiles( Util::getDataPath() + "/music/", "*" ) );
+			Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
 			Music::play();
 
                         /* wait for an ok from all the clients, then send another
@@ -714,7 +715,7 @@ void networkServer(){
 
 	debug( 1 ) << "Port is " << port << endl;
 
-	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
 	try{
 		/*
 #ifdef _WIN32

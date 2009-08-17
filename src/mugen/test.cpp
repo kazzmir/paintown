@@ -35,6 +35,7 @@
 
 #include "util/bitmap.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 
 #include "level/utils.h"
 
@@ -301,7 +302,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     
     Music m(true);
     int track = rand() % (musicHits -1);
-    if(Music::loadSong( Util::getDataPath() + "mugen/music/" + music[track] )){
+    if(Music::loadSong( Filesystem::find(string("mugen/music/") + music[track]) )){
 		Music::pause();
 		Music::play();
 		Global::debug(0) << "Now playing track: " << music[track] << endl;
@@ -328,7 +329,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 		if( keyInputManager::keyState('5', true)){
 		    track++;
 		    if(track == musicHits)track = 0;
-		    if(Music::loadSong( Util::getDataPath() + "mugen/music/" + music[track] )){
+		    if(Music::loadSong( Filesystem::find(string("mugen/music/") + music[track]) )){
 			Music::pause();
 			Music::play();
 			Global::debug(0) << "Now playing track: " << music[track] << endl;
@@ -365,7 +366,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
 void showFont(const string & ourFile){
     Global::debug(0) << "Trying to load font: " << ourFile << "..." << endl;
-    MugenFont font( Util::getDataPath() + "mugen/font/" + ourFile );
+    MugenFont font( Filesystem::find("mugen/font/" + ourFile ));
     Global::debug(0) << "Loaded font: \"" << ourFile << "\" successfully." << endl;
     
     bool quit = false;

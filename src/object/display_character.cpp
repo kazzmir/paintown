@@ -7,6 +7,7 @@
 #include "util/token_exception.h"
 #include "util/tokenreader.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "animation.h"
 #include <string>
 #include <vector>
@@ -24,10 +25,6 @@ static Token * findNameToken( Token * token ){
 		}
 	}
 	return NULL;
-}
-
-static const string dataPath( const string & str ){
-	return Util::getDataPath() + str;
 }
 
 DisplayCharacter::DisplayCharacter(const string & path) throw (LoadException):
@@ -82,7 +79,7 @@ void DisplayCharacter::load() throw (LoadException) {
                 string first;
                 string second;
                 *current >> first >> second;
-                remaps[ dataPath( second ) ] = dataPath( first );
+                remaps[Filesystem::find(second)] = Filesystem::find(first);
             }
         }
 

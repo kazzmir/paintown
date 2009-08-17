@@ -10,6 +10,7 @@
 #include "shutdown_exception.h"
 #include "util/timedifference.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "globals.h"
 #include "configuration.h"
 #include "init.h"
@@ -73,7 +74,7 @@ static const char * all(const char * args[], const int num, const char separate 
 static void showOptions(){
 	Global::debug( 0 ) << "Paintown by Jon Rafkind" << endl;
 	Global::debug( 0 ) << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
-	Global::debug( 0 ) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath() << endl;
+	Global::debug( 0 ) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2() << endl;
 	Global::debug( 0 ) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
 	Global::debug( 0 ) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
 	Global::debug( 0 ) << endl;
@@ -149,7 +150,7 @@ int paintown_main( int argc, char ** argv ){
 	Music music(music_on);
 	try{
 		Menu game;
-		game.load(Util::getDataPath() + "/menu/main.txt");
+		game.load(Filesystem::find("/menu/main.txt"));
 		game.run();
 	} catch (const TokenException & ex){
 		Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;

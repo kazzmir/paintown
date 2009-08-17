@@ -7,6 +7,7 @@
 #include "util/font.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
+#include "util/file-system.h"
 #include "resource.h"
 #include "globals.h"
 #include "init.h"
@@ -116,9 +117,9 @@ void Menu::load(Token *token)throw( LoadException ){
 				if ( background ){
 					delete background;
 				}
-				background = new Bitmap(Util::getDataPath() +temp);
+				background = new Bitmap(Filesystem::find(temp));
 				if ( background->getError() ){
-				    Global::debug(0) << "Problem loading Bitmap: " << Util::getDataPath() + temp << endl;
+				    Global::debug(0) << "Problem loading Bitmap: " << Filesystem::find(temp) << endl;
                                     delete background;
 				    background = 0;
                                 }
@@ -147,7 +148,7 @@ void Menu::load(Token *token)throw( LoadException ){
 			} else if ( *tok == "font" ) {
                             string str;
                             *tok >> str >> sharedFontWidth >> sharedFontHeight; 
-                            sharedFont = Util::getDataPath() + str;
+                            sharedFont = Filesystem::find(str);
 			} else if( *tok == "option" ) {
 				MenuOption *temp = OptionFactory::getOption(tok);
 				if (temp){

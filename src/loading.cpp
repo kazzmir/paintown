@@ -4,6 +4,7 @@
 
 #include "level/utils.h"
 #include "loading.h"
+#include "util/file-system.h"
 #include "util/font.h"
 #include "util/funcs.h"
 #include "globals.h"
@@ -20,7 +21,7 @@ typedef struct pair{
 void * loadingScreen( void * arg ){
 	int load_x = 80;
 	int load_y = 220;
-	string name = Util::getDataPath() + "/fonts/arial.ttf";
+	string name = Filesystem::find("/fonts/arial.ttf");
 	const Font & myFont = Font::getFont( name, 24, 24 );
         Level::LevelInfo levelInfo;
         if (arg != NULL){

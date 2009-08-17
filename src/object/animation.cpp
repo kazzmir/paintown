@@ -32,16 +32,13 @@
 #include "projectile.h"
 #include "util/load_exception.h"
 #include "object.h"
+#include "util/file-system.h"
 #include "util/sound.h"
 #include "util/timedifference.h"
 #include "util/token.h"
 #include "util/token_exception.h"
 
 using namespace std;
-
-static const string dataPath( const string & str ){
-	return Util::getDataPath() + str;
-}
 
 Frame::Frame( Bitmap * p, ECollide * e ){
 	pic = p;
@@ -183,7 +180,7 @@ contact( NULL ){
 			} else if ( current == "contact" ){
 				string st;
 				current >> st;
-				contact = new Sound( dataPath( st ) );
+				contact = new Sound(Filesystem::find(st));
 			} else if ( current == "keys" ){
 
 				while ( current.hasTokens() ){
@@ -290,7 +287,7 @@ contact( NULL ){
 				current >> st;
 
 				if ( sounds.find( st ) == sounds.end() ){
-					Sound * sp = new Sound( dataPath( st ) );
+					Sound * sp = new Sound(Filesystem::find(st));
 					sounds[ st ] = sp;
 				}
 
@@ -352,10 +349,10 @@ contact( NULL ){
 			} else if ( current == "frame" ){
 				string path;
 				current >> path;
-				path = dataPath( basedir + path );
-				if ( frames.find( path ) == frames.end() ){
-					Bitmap * pic = new Bitmap( path );
-					ECollide * collide = new ECollide( pic );
+				path = Filesystem::find(basedir + path);
+				if (frames.find(path) == frames.end()){
+					Bitmap * pic = new Bitmap(path);
+					ECollide * collide = new ECollide(pic);
 					Frame * f = new Frame( pic, collide );
 					frames[ path ] = f;
 					if ( pic->getError() ){

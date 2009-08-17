@@ -2,6 +2,7 @@
 #include <streambuf>
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "util/file-system.h"
 #include <iostream>
 #include <sstream>
 
@@ -84,5 +85,5 @@ void Global::showTitleScreen(){
 }
 
 const std::string Global::titleScreen(){
-	return Util::getDataPath() + "/menu/paintown.png";
+	return Filesystem::find("/menu/paintown.png");
 }

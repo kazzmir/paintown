@@ -6,6 +6,7 @@
 #include "util/funcs.h"
 #include "util/keyboard.h"
 #include "util/font.h"
+#include "util/file-system.h"
 #include "return_exception.h"
 #include "globals.h"
 #include "init.h"
@@ -232,7 +233,7 @@ enterPressed( false ){
 	
 	lineEdit->setText("Hi!");
 	// lineEdit->setFont(Menu::getFont());
-	lineEdit->setFont(& Font::getFont(Util::getDataPath() + Global::DEFAULT_FONT, 20, 20));
+	lineEdit->setFont(& Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20));
 	keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
 	keyInputManager::pressed.connect(this,&ChatServer::keyPress);
 	keyInputManager::released.connect(this,&ChatServer::keyRelease);
@@ -555,7 +556,7 @@ bool ChatServer::needToDraw(){
 }
 
 void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
-	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
 
 	work.drawingMode( Bitmap::MODE_TRANS );
 	Bitmap::transBlender( 0, 0, 0, 128 );
@@ -598,7 +599,7 @@ int ChatServer::focusColor( Focus f ){
 void ChatServer::draw( const Bitmap & work ){
 	int start_x = 20;
 	int start_y = 20;
-	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, 20 );
+	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
 	background->Blit( work );
 	messages.draw( start_x, start_y, work, font );
 		

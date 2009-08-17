@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "level/blockobject.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "object/object.h"
 #include "object/player.h"
 #include "factory/object_factory.h"
@@ -143,7 +144,7 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 	int alliance;
         Object::networkid_t id;
 	int map;
-	string path = Util::getDataPath() + "/" + message.path;
+	string path = Filesystem::find(message.path);
 	message >> alliance >> id >> map;
 	if ( uniqueObject( id ) ){
 		bool found = false;
@@ -191,7 +192,7 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
     Object::networkid_t id;
 	message >> id;
 	if ( uniqueObject( id ) ){
-		string path = Util::getDataPath() + "/" + message.path;
+		string path = Filesystem::find(message.path);
 		BlockObject block;
 		block.setType( ObjectFactory::CatType );
 		block.setPath( path );
@@ -233,7 +234,7 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
 		int x, z;
 		int value;
 		message >> x >> z >> value;
-		string path = Util::getDataPath() + "/" + message.path;
+		string path = Filesystem::find(message.path);
 		BlockObject block;
 		block.setType( ObjectFactory::ItemType );
 		block.setPath( path );

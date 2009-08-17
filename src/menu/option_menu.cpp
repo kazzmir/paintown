@@ -4,6 +4,7 @@
 #include "return_exception.h"
 #include "util/token_exception.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "globals.h"
 
 OptionMenu::OptionMenu(Token *token) throw (LoadException):
@@ -28,7 +29,7 @@ menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         *token >> temp;
-        menu->load(Util::getDataPath() + temp);
+        menu->load(Filesystem::find(temp));
     } else {
         menu->load(token);
     }

@@ -118,6 +118,7 @@ src/util/bitmap.cpp
 src/util/font.cpp
 src/util/ftalleg.cpp
 src/util/funcs.cpp
+src/util/file-system.cpp
 src/util/ebox.cpp
 src/util/joystick.cpp
 src/util/allegro-joystick.cpp

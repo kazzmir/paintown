@@ -12,6 +12,7 @@
 #include "mugen_stage.h"
 
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "util/bitmap.h"
 #include "game/console.h"
 #include "object/animation.h"
@@ -206,7 +207,7 @@ MugenStage::~MugenStage(){
 void MugenStage::load() throw( MugenException ){
     if (loaded)return;
     // Lets look for our def since some assholes think that all file systems are case insensitive
-    baseDir = Util::getDataPath() + "mugen/stages/";
+    baseDir = Filesystem::find("mugen/stages/");
     Global::debug(1) << baseDir << endl;
     if (location.find(".def")==std::string::npos){
 	location+=".def";
@@ -840,7 +841,7 @@ void MugenStage::changePause(){
 
 const std::string MugenStage::getStageName(const std::string &filename) throw (MugenException){
     // Lets look for our def since some assholes think that all file systems are case insensitive
-    std::string dir = Util::getDataPath() + "mugen/stages/";
+    std::string dir = Filesystem::find("mugen/stages/");
     Global::debug(1) << dir << endl;
     string fullname = filename;
     if ( fullname.find(".def") == std::string::npos){

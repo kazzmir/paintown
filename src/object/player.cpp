@@ -12,6 +12,7 @@
 #include "nameplacer.h"
 #include "util/load_exception.h"
 #include "world.h"
+#include "util/file-system.h"
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
@@ -248,7 +249,7 @@ void Player::drawFront( Bitmap * work, int rel_x ){
 
 	// Font * player_font = FontFactory::getFont( NAME_FONT );
 	// const Font & player_font = Font::getFont( NAME_FONT );
-	const Font & player_font = Font::getFont( Util::getDataPath() + PLAYER_FONT, 20, 20 );
+	const Font & player_font = Font::getFont(Filesystem::find(PLAYER_FONT), 20, 20 );
 	const string & name = getName();
 	int nameHeight = player_font.getHeight( name ) / 2;
 	nameHeight = 20 / 2;

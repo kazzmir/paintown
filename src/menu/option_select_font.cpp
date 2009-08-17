@@ -3,6 +3,7 @@
 #include "menu/option_select_font.h"
 #include "util/token.h"
 #include "menu/menu.h"
+#include "util/file-system.h"
 #include "configuration.h"
 #include "globals.h"
 #include "init.h"
@@ -52,8 +53,8 @@ rgreen(255){
     
     // Find and set fonts now
    if( typeAdjust == fontName ){
-	vector<string>temp1 = Util::getFiles(Util::getDataPath() + "fonts/", "*.ttf");
-	vector<string>temp2 = Util::getFiles(Util::getDataPath() + "fonts/", "*.otf");
+	vector<string>temp1 = Util::getFiles(Filesystem::find("fonts/"), "*.ttf");
+	vector<string>temp2 = Util::getFiles(Filesystem::find("fonts/"), "*.otf");
 	std::back_insert_iterator< std::vector<string> > p ( fonts );
 	copy ( temp1.begin(), temp1.end(), p);
 	copy ( temp2.begin(), temp2.begin(), p);

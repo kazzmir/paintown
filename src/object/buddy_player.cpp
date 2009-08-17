@@ -8,6 +8,7 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "buddy_player.h"
+#include "util/file-system.h"
 #include "factory/font_render.h"
 
 using namespace std;
@@ -45,7 +46,7 @@ void BuddyPlayer::draw( Bitmap * work, int rel_x ){
 		show_life = 0;
 	}
 
-	const Font & player_font = Font::getFont( Util::getDataPath() + PLAYER_FONT, 20, 20 );
+	const Font & player_font = Font::getFont(Filesystem::find(PLAYER_FONT), 20, 20 );
 	const string & name = getName();
 	int nameHeight = player_font.getHeight( name ) / 2;
 	nameHeight = 20 / 2;

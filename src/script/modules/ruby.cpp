@@ -6,6 +6,7 @@
 #include "ruby.h"
 #include "world.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "globals.h"
 
 using namespace std;
@@ -26,9 +27,9 @@ Script::Engine(){
     VALUE module = rb_define_module("PaintownInternal");
     Global::debug(1) << "Defined ruby module " << module << endl;
     rb_define_module_function(module, "register", RUBY_METHOD_FUNC(PaintownLevel::_register), 1);
-    ruby_incpush((Util::getDataPath() + "scripts").c_str());
+    ruby_incpush(Filesystem::find("scripts").c_str());
 
-    rb_load_file((Util::getDataPath() + path).c_str());
+    rb_load_file(Filesystem::find(path).c_str());
     int result = ruby_exec();
     if (result != 0){
         Global::debug(0) << "Ruby returned " << result << endl;

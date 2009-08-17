@@ -2,6 +2,7 @@
 #include "versus_world.h"
 #include "object/character.h"
 #include "util/bitmap.h"
+#include "util/file-system.h"
 #include "util/funcs.h"
 #include "object/effect.h"
 
@@ -15,7 +16,7 @@ z( z ){
 	this->addObject( player1 );
 	this->addObject( player2 );
 
-	string bang_path( Util::getDataPath() + "/misc/flash/flash.txt" );
+	string bang_path(Filesystem::find("/misc/flash/flash.txt"));
 	Object * effect = new Effect( bang_path.c_str() );
 	if ( bang != NULL ){
 		delete bang;

@@ -17,6 +17,7 @@
 #include "init.h"
 #include "resource.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "game/console.h"
 #include "object/animation.h"
 #include "object/object.h"
@@ -916,8 +917,8 @@ intro(0){
 }
 
 void MugenMenu::loadData() throw (MugenException){
-     // Lets look for our def since some assholes think that all file systems are case insensitive
-    std::string baseDir = Util::getDataPath() + "mugen/data/" + Mugen::Util::getFileDir(location);
+     // Lets look for our def since some people think that all file systems are case insensitive
+    std::string baseDir = Filesystem::find("mugen/data/" + Mugen::Util::getFileDir(location));
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
     // get real basedir
     //baseDir = Mugen::Util::getFileDir( ourDefFile );

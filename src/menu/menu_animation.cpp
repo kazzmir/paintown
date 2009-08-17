@@ -5,6 +5,7 @@
 #include "util/bitmap.h"
 #include "globals.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 
 using namespace std;
 
@@ -185,7 +186,7 @@ allowReset(true){
 		int number;
 		std::string temp;
 		*token >> number >> temp;
-		Bitmap *bmp = new Bitmap(Util::getDataPath() + basedir + temp);
+		Bitmap *bmp = new Bitmap(Filesystem::find(basedir + temp));
 		if (bmp->getError()){
 		    delete bmp;
 		} else {

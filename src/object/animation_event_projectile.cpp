@@ -6,13 +6,10 @@
 #include "util/token_exception.h"
 #include "util/tokenreader.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include <iostream>
 
 using namespace std;
-
-static const string dataPath( const string & str ){
-	return Util::getDataPath() + str;
-}
 
 AnimationEventProjectile::AnimationEventProjectile( Token * token ) throw( LoadException ):
 projectile( NULL ),
@@ -36,13 +33,13 @@ life( 0 ){
 		} else if ( *current == "path" ){
 			string path;
 			*current >> path;
-			TokenReader reader( dataPath( path ) );
+			TokenReader reader(Filesystem::find(path));
 			try{
 				projectile = new Projectile( reader.readToken() );
 			} catch ( const TokenException & ex ){
-				cerr<< "Could not read " << dataPath( path ) <<" : " << ex.getReason() << endl;
+				cerr<< "Could not read " << Filesystem::find(path) <<" : " << ex.getReason() << endl;
 				// delete head;
-				throw LoadException( "Could not open projectile file: " + dataPath( path ) );
+				throw LoadException("Could not open projectile file: " + Filesystem::find(path));
 			}
 		} else if ( *current == "life" ){
 			int life;

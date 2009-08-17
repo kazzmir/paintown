@@ -31,15 +31,12 @@
 #include "util/timedifference.h"
 #include "util/token.h"
 #include "util/token_exception.h"
+#include "util/file-system.h"
 #include "util/tokenreader.h"
 #include "script/script.h"
 #include "world.h"
 
 using namespace std;
-
-static const string dataPath( const string & str ){
-	return Util::getDataPath() + str;
-}
 
 Character::Character( int alliance ):
 ObjectAttack( alliance ),
@@ -240,9 +237,11 @@ Network::Message Character::getCreateMessage(){
 	message << getId();
 	message << getCurrentMap();
 	Global::debug( 1 ) << "Character create id " << getId() << endl;
-	string path = getPath();
-	Global::debug( 1 ) << "Character create path: '" << path << "'" << endl;
+	Global::debug( 1 ) << "Character create path: '" << getPath() << "'" << endl;
+	string path = Filesystem::cleanse(getPath());
+        /*
 	path.erase( 0, Util::getDataPath().length() );
+        */
 	Global::debug( 1 ) << "Character create sending: '" << path << "'" << endl;
 	message << path;
 
@@ -313,15 +312,15 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
                 } else if ( *n == "hit-sound" ){
                     string _snd;
                     *n >> _snd;
-                    setHit( Sound( dataPath( _snd ) ) );
+                    setHit(Sound(Filesystem::find(_snd)));
                 } else if ( *n == "die-sound" ){
                     string _snd;
                     *n >> _snd;
-                    die_sound = new Sound( dataPath( _snd ) );
+                    die_sound = new Sound(Filesystem::find(_snd));
                 } else if ( *n == "landed" ){
                     string st;
                     *n >> st;
-                    landed_sound = new Sound( dataPath( st ) );
+                    landed_sound = new Sound(Filesystem::find(st));
                 } else if ( *n == "speed" ){
                     *n >> speed;
                 } else if ( *n == "type" ){
@@ -334,12 +333,12 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
                     string icon_path;
                     *n >> icon_path;
                     // cout<<"Loading icon "<<icon_path<<endl;
-                    icon = new Bitmap( dataPath( icon_path ) );
+                    icon = new Bitmap(Filesystem::find(icon_path));
                 } else if ( *n == "remap" ){
                     string first;
                     string second;
                     *n >> first >> second;
-                    remaps[ dataPath( second ) ] = dataPath( first );
+                    remaps[Filesystem::find(second)] = Filesystem::find(first);
                 } else {
                     cout<<"Unhandled character attribute: "<<endl;
                     n->print(" ");
@@ -347,7 +346,7 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
             }
 
-            squish_sound = new Sound( dataPath( "sounds/squish.wav" ) );
+            squish_sound = new Sound(Filesystem::find("sounds/squish.wav"));
 
             if ( getMovement( "idle" ) == NULL ){
                 throw LoadException("No 'idle' movement");
@@ -472,7 +471,7 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
 				"/misc/body/torso.png" };
 
 	for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i++ ){
-		replacePart( parts, new Bitmap( dataPath( more[ i ] ) ) );	
+		replacePart(parts, new Bitmap(Filesystem::find(more[ i ])));	
 	}
 
 	return parts;

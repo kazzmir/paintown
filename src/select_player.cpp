@@ -12,6 +12,7 @@
 #include "util/keyboard.h"
 #include "util/font.h"
 #include "level/utils.h"
+#include "util/file-system.h"
 #include "world.h"
 #include "return_exception.h"
 #include <iostream>
@@ -35,7 +36,7 @@ struct playerInfo{
 typedef vector<playerInfo> PlayerVector;
 static PlayerVector loadPlayers( const string & path ){
     PlayerVector players;
-    vector< string > files = Util::getFiles( Util::getDataPath() + "/" + path + "/", "*" );
+    vector< string > files = Util::getFiles(Filesystem::find(path + "/"), "*" );
     std::sort( files.begin(), files.end() );
     for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
         Global::debug(2) << "Found file " << *it << endl;
@@ -147,7 +148,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     unsigned int clock = 0;
     double runCounter = 0;
     double gameSpeed = 1;
-    Sound beep( Util::getDataPath() + "/sounds/beep1.wav" );
+    Sound beep(Filesystem::find("/sounds/beep1.wav"));
     pthread_t loadingThread;
 
     pthread_create(&loadingThread, NULL, characterLoader, &loader );
@@ -243,7 +244,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
             // background.Stretch( work );
             background.Blit( backgroundX, 0, work );
             background.Blit( work.getWidth() + backgroundX, 0, work );
-            const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
+            const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT));
 
             if (ch->isLoaded()){
                 const int stand = 50;
@@ -287,7 +288,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
             if (!loader.done()){
 
-                const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf", 10, 10 );
+                const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 10, 10 );
                 font.printf(1, 1, Bitmap::makeColor(200,0,0), work, "Loading...", 0);
             }
 
@@ -648,7 +649,7 @@ vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, Ret
 
 			copy1.draw( &preview1, 0 );
 			preview1.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
-			const Font & font = Font::getFont( Util::getDataPath() + "/fonts/arial.ttf" );
+			const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT));
 			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy1.getName(), 0 );
 			
 			ch2->setMap(remap2[current2]);

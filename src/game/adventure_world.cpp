@@ -6,6 +6,7 @@
 #include "object/character.h"
 #include "util/load_exception.h"
 #include "util/font.h"
+#include "util/file-system.h"
 #include "globals.h"
 #include "object/effect.h"
 #include "object/enemy.h"
@@ -159,7 +160,7 @@ void AdventureWorld::loadLevel( const string & path ) throw( LoadException ){
 	}
 	scene = s;
 	
-	string bang_path( Util::getDataPath() + "/misc/flash/flash.txt" );
+	string bang_path(Filesystem::find("/misc/flash/flash.txt"));
 	Object * effect = new Effect( bang_path.c_str() );
 	if ( bang != NULL ){
 		delete bang;
@@ -594,7 +595,7 @@ void AdventureWorld::draw( Bitmap * work ){
         }
 
         if (is_paused){
-            const Font & font = Font::getFont(Util::getDataPath() + DEFAULT_FONT, 15, 15);
+            const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 15, 15);
             work->transBlender( 0, 0, 0, 128 );
             work->drawingMode( Bitmap::MODE_TRANS );
             work->rectangleFill( 0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor( 0, 0, 0 ) );

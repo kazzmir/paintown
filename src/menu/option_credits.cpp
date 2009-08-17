@@ -8,6 +8,7 @@
 #include "util/keyboard.h"
 #include "util/token.h"
 #include "util/token_exception.h"
+#include "util/file-system.h"
 #include "util/font.h"
 
 using namespace std;
@@ -66,7 +67,7 @@ title(Bitmap::makeColor(0,255,255)){
 				if ( background ){
 					delete background;
 				}
-				background = new Bitmap(Util::getDataPath() +temp);
+				background = new Bitmap(Filesystem::find(temp));
 				if ( background->getError() ){
 					delete background;
 					background = NULL;

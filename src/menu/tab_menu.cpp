@@ -7,6 +7,7 @@
 #include "util/font.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
+#include "util/file-system.h"
 #include "resource.h"
 #include "globals.h"
 #include "init.h"
@@ -193,7 +194,7 @@ void TabMenu::load(Token *token)throw( LoadException ){
 		    if (tok->numTokens() == 1){
 			std::string temp;
 			*tok >> temp;
-			menu->menu.load(Util::getDataPath() + temp);
+			menu->menu.load(Filesystem::find(temp));
 		    } else {
 			menu->menu.load(tok);
 		    }

@@ -13,14 +13,11 @@
 #include "globals.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
+#include "util/file-system.h"
 #include "environment/atmosphere.h"
 #include "script/script.h"
 
 using namespace std;
-
-static const string dataPath( const string & str ){
-	return Util::getDataPath() + str;
-}
 
 Panel::Panel( Bitmap * _pic, Bitmap * _neon, Bitmap * _my_screen ){
 	pic = _pic;
@@ -70,7 +67,7 @@ frontBuffer(NULL){
 			} else if ( *tok == "background" ){
 				string n;
 				*tok >> n;
-				background = new Bitmap( dataPath( n ) );
+				background = new Bitmap(Filesystem::find(n));
 			} else if ( *tok == "background-parallax" ){
 				double d;
 				*tok >> d;
@@ -116,7 +113,7 @@ frontBuffer(NULL){
 				Bitmap * x_neon = NULL;
 				Bitmap * x_screen = NULL;
 				if ( normal != "none" ){
-					x_normal = new Bitmap( dataPath( normal ) );
+					x_normal = new Bitmap(Filesystem::find(normal));
 				}
 				x_neon = new Bitmap();
 				x_screen = new Bitmap();
@@ -137,7 +134,7 @@ frontBuffer(NULL){
 			} else if ( *tok == "frontpanel" ){
 				string file;
 				*tok >> file;
-				Bitmap * front = new Bitmap( dataPath( file ) );
+				Bitmap * front = new Bitmap(Filesystem::find(file));
 				front_panels.push_back( front );
 			} else if ( *tok == "order" ){
 				// *tok >> order;
@@ -168,7 +165,7 @@ frontBuffer(NULL){
 	current_block = level_blocks.front();
 	level_blocks.pop_front();
 
-	arrow = new Bitmap( Util::getDataPath() + "/sprites/arrow.png" );
+	arrow = new Bitmap(Filesystem::find("/sprites/arrow.png"));
 	arrow_blink = 0;
 
 	// delete current;

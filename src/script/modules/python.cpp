@@ -9,6 +9,7 @@
 #include <string>
 #include "globals.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "world.h"
 #include "level/blockobject.h"
 #include "factory/object_factory.h"
@@ -64,7 +65,7 @@ namespace PaintownLevel{
             string spath(path);
             BlockObject block;
             block.setType(ObjectFactory::EnemyType);
-            block.setPath(Util::getDataPath() + spath);
+            block.setPath(Filesystem::find(spath));
             Enemy * enemy = (Enemy*) ObjectFactory::createObject(&block);
             delete enemy;
         }
@@ -89,7 +90,7 @@ namespace PaintownLevel{
             string spath(path);
             string sname(name);
             BlockObject block;
-            block.setPath(Util::getDataPath() + spath);
+            block.setPath(Filesystem::find(spath));
             block.setName(sname);
             block.setAlias(sname);
             block.setMap(map);
@@ -342,7 +343,7 @@ path(path){
      * PyString_FromStringAndSize() and PyList_Append()
      */
     ostringstream python_string;
-    python_string << "x = \"" << (Util::getDataPath() + path) << "\"; import sys; sys.path.append(x[0:x.rfind('/')]); sys.path.append('" << Util::getDataPath() << "scripts');";
+    python_string << "x = \"" << Filesystem::find(path) << "\"; import sys; sys.path.append(x[0:x.rfind('/')]); sys.path.append('" << Filesystem::find("scripts") << "');";
     Global::debug(1) << "Executing '" << python_string.str() << "'" << endl;
     Global::debug(1) << "Python: " << PyRun_SimpleString(python_string.str().c_str()) << endl;
     int from = path.rfind("/")+1;

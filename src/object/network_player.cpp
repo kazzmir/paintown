@@ -10,6 +10,7 @@
 #include <sstream>
 #include "util/bitmap.h"
 #include "util/font.h"
+#include "util/file-system.h"
 #include "util/funcs.h"
 #include <vector>
 #include "world.h"
@@ -87,7 +88,7 @@ void NetworkPlayer::drawFront( Bitmap * work, int rel_x ){
 
     int hasIcon = icon ? icon->getWidth() : 0;
 
-    const Font & player_font = Font::getFont( Util::getDataPath() + PLAYER_FONT, 20, 20 );
+    const Font & player_font = Font::getFont(Filesystem::find(PLAYER_FONT), 20, 20 );
     const string & name = getName();
     int nameHeight = player_font.getHeight( name ) / 2;
     nameHeight = 20 / 2;

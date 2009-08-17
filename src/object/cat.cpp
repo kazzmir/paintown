@@ -7,6 +7,7 @@
 #include "world.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
+#include "util/file-system.h"
 #include <math.h>
 #include "cat.h"
 
@@ -45,7 +46,7 @@ state( IDLE1 ){
 	}
 	current_animation = animations[ "idle1" ];
 
-	meow = Sound( Util::getDataPath() + "/misc/cat/meow.wav" );
+	meow = Sound(Filesystem::find("/misc/cat/meow.wav"));
 }
 
 Cat::Cat( const Cat & cat ):
@@ -236,9 +237,11 @@ Network::Message Cat::getCreateMessage(){
 	message << World::CREATE_CAT;
 	message << getId();
 
-	string mypath = path;
+	string mypath = Filesystem::cleanse(path);
+        /*
 	mypath.erase( 0, Util::getDataPath().length() );
 	message << mypath;
+        */
 
 	return message;
 }

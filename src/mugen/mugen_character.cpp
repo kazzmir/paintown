@@ -16,6 +16,7 @@
 
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "util/file-system.h"
 
 #include "mugen_animation.h"
 #include "mugen_item.h"
@@ -85,9 +86,9 @@ MugenCharacter::~MugenCharacter(){
 
 void MugenCharacter::load() throw( MugenException ){
     // Lets look for our def since some assholes think that all file systems are case insensitive
-    baseDir = Util::getDataPath() + "mugen/chars/" + location + "/";
+    baseDir = Filesystem::find("mugen/chars/" + location + "/");
     Global::debug(1) << baseDir << endl;
-    std::string realstr = Mugen::Util::stripDir( location );
+    std::string realstr = Mugen::Util::stripDir(location);
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, std::string(realstr + ".def") );
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );
