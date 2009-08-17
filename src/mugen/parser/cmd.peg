@@ -87,6 +87,9 @@ rules:
 		| ">="
 		| "<"
 	        | ">"
+	all_compare = compare
+	            | "="
+		    | "!="
 	expr10_rest = s "+" s expr11 expr10_rest
 	            | s "-" s expr11 expr10_rest
 		    | <void>
@@ -121,6 +124,12 @@ rules:
 		 | "animelemtime"{case} s "(" s integer s ")"
 		 | "animelemno"{case} s "(" s expr_c s ")"
 		 | "animexist"{case} s "(" s expr_c s ")"
+		 | "projguarded"{case} s "(" s expr_c s ")"
+		 | "projcontact"{case} s "=" s integer function_rest
+		 | "animelem"{case} s "=" s integer function_rest
+		 | "numhelper"{case} s "(" s expr_c s ")"
+		 | "helper"{case} s "(" s expr_c s ")"
+	function_rest = s "," s all_compare s integer
 
 	key = key_real key_rest
 	key_rest = s "+" key_real key_rest
