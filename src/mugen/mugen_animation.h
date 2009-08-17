@@ -5,13 +5,8 @@
 #include <vector>
 
 class Bitmap;
+class Effects;
 class MugenSprite;
-
-enum ColorType {
-    C_NO = 0,
-    C_ADD,
-    C_SUB
-};
 
 /*
 Collision Area
@@ -51,10 +46,11 @@ class MugenFrame{
 	int yoffset;
 	// Time in ticks to display -1 for infinite
 	int time;
+	// flips moved to Effects
 	// Flip horizontal?
-	bool flipHorizontal;
+	//bool flipHorizontal;
 	// Flip Vertical
-	bool flipVertical;
+	//bool flipVertical; 
 	/*Color addition (need to decipher their shorthand crap like A1)
 	15,4, 0,0, 5, ,A   ;<-- Color addition (flip parameter omitted)
 	15,4, 0,0, 5, H, S ;<-- Flips horizontally and does color subtraction
@@ -70,11 +66,9 @@ class MugenFrame{
 	15,4, 0,0, 5, ,AS128D128 ;<-- Mix 50% source with 50% dest
 	*/
 	//std::string colorAdd;
-	ColorType colorAdd;
-	int colorSource;
-	int colorDestination;
-	
-	//Bitmap *bmp;
+	Effects *effects;
+	//int colorSource;
+	//int colorDestination;
 };
 
 

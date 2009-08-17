@@ -7,6 +7,7 @@
 #include "mugen_animation.h"
 
 class MugenSection;
+class Effects;
 class MugenSprite;
 class MugenBackground;
 class MugenStage;
@@ -18,14 +19,6 @@ enum BackgroundType{
     Parallax,
     Anim,
     Dummy
-};
-
-enum Trans{
-    None = 0,
-    Add,
-    Add1,
-    Sub,
-    Addalpha
 };
 
 // mugen background
@@ -74,9 +67,7 @@ public:
     int starty;
     double deltax;
     double deltay;
-    Trans trans;
-    int alphalow;
-    int alphahigh;
+    Effects *effects;
     bool mask;
     int tilex;
     int tiley;
@@ -116,8 +107,6 @@ public:
     
     // sprite 
     MugenSprite *sprite;
-    
-    //Bitmap *spriteBmp;
     
     // animation
     MugenAnimation *action;

@@ -161,65 +161,42 @@ void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, Effect
     if (!bitmap){
 	load();
     }
+    
+    // temp for scaling
+    Bitmap modImage = Bitmap::temporaryBitmap(bitmap->getWidth() * effects.scalex, bitmap->getHeight() * effects.scaley);
+    bitmap->Stretch(modImage);
+    
     // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
     switch( effects.trans ){
 	case ADDALPHA:{
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
 	    Bitmap::transBlender( 255, 255, 255, effects.alphalow );
+	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}
 	case ADD:{
 	    // this additive 100% I assume... not totally sure
 	    Bitmap::addBlender( 255, 255, 255, 255 );
+	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}
 	case ADD1:{
 	    // 50%
 	    Bitmap::addBlender( 128, 128, 128, 255 );
+	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}
 	case SUB:{
 	    // Shadow effect
 	    Bitmap::multiplyBlender( 0, 0, 0, 128 );
+	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}
 	case NONE:
 	default:{
+	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}
-    }
-    
-    const int placex = (xaxis - this->x );
-    const int placey = (yaxis - this->y );
-    // temp for scaling
-    Bitmap modImage = Bitmap::temporaryBitmap(bitmap->getWidth() * effects.scalex, bitmap->getHeight() * effects.scaley);
-    bitmap->Stretch(modImage);
-    
-    if ( (effects.facing == -1) && (effects.vfacing == 1)){
-	if (effects.trans != NONE){
-	    modImage.drawTransHFlip(placex + modImage.getWidth(), placey, where);
-	} else {
-	    modImage.drawHFlip(placex + modImage.getWidth(), placey, where);
-	}
-	
-    } else if ( (effects.vfacing == -1) && (effects.facing == 1)){
-	if (effects.trans != NONE){
-	    modImage.drawTransVFlip(placex, placey - modImage.getHeight(), where);
-	} else {
-	    modImage.drawVFlip(placex, placey - modImage.getHeight(), where);
-	}
-    } else if ( (effects.vfacing == -1) && (effects.facing == -1) ){
-	if (effects.trans != NONE){
-	    modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), where);
-	} else {
-	    modImage.drawHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), where);
-	}
-    } else{
-	//if( effects.mask ){
-	    modImage.draw( placex,placey, where );
-	//} else {
-	//    modImage.Blit( placex, placey, where );
-//	}
     }
 }
 
@@ -286,6 +263,42 @@ void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsi
 		} 
 	    }
 	}
+    }
+}
+
+void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Effects &effects){
+    const int placex = (xaxis - this->x );
+    const int placey = (yaxis - this->y );
+    
+    if ( (effects.facing == -1) && (effects.vfacing == 1)){
+	if (effects.trans != NONE){
+	    bmp.drawTransHFlip(placex + bmp.getWidth(), placey, where);
+	} else {
+	    bmp.drawHFlip(placex + bmp.getWidth(), placey, where);
+	}
+	
+    } else if ( (effects.vfacing == -1) && (effects.facing == 1)){
+	if (effects.trans != NONE){
+	    bmp.drawTransVFlip(placex, placey - bmp.getHeight(), where);
+	} else {
+	    bmp.drawVFlip(placex, placey - bmp.getHeight(), where);
+	}
+    } else if ( (effects.vfacing == -1) && (effects.facing == -1) ){
+	if (effects.trans != NONE){
+	    bmp.drawTransHVFlip(placex + bmp.getWidth(), placey - bmp.getHeight(), where);
+	} else {
+	    bmp.drawHVFlip(placex + bmp.getWidth(), placey - bmp.getHeight(), where);
+	}
+    } else{
+	//if( effects.mask ){
+	if (effects.trans != NONE){
+	    bmp.drawTrans( placex,placey, where );
+	} else {
+	    bmp.draw( placex,placey, where );
+	}
+	//} else {
+	//    bmp.Blit( placex, placey, where );
+//	}
     }
 }
 

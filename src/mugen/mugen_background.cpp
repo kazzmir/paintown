@@ -107,9 +107,6 @@ startx(0),
 starty(0),
 deltax(1),
 deltay(1),
-trans(None),
-alphalow(0),
-alphahigh(0),
 mask(false),
 tilex(0),
 tiley(0),
@@ -146,7 +143,6 @@ enabled(true),
 controller_offsetx(0),
 controller_offsety(0),
 sprite(0),
-//spriteBmp(0),
 action(0),
 linked(0),
 runLink(false){
@@ -155,13 +151,16 @@ runLink(false){
     window.y1 = 0;
     window.x2 = 319;
     window.y2 = 239;
+    
+    effects = new Effects();
 }
 MugenBackground::MugenBackground( const MugenBackground &copy ):
 stageTicker( copy.stageTicker ){
 }
 MugenBackground::~MugenBackground(){
-    // Kill the bmp
-    //if( spriteBmp )delete spriteBmp;
+    if (effects){
+	delete effects;
+    }
 }
 MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     
@@ -279,68 +278,14 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
 	runLink = true;
     }
     
-    if (sprite){
-	// Lets load our sprite
-	Global::debug(1) << "Name: " << name << " | Mask: " << mask << endl;
-	/*if( spriteBmp == 0 ){
-	    spriteBmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength, mask));
-	}*/
-	// Set our initial offsets
-	xoffset = xaxis+startx;//(xaxis - sprite->getX()) + startx;
-	yoffset = yaxis+starty;//(yaxis - sprite->getY()) + starty; 
-	velx = vely = 0;
-	Global::debug(1) << "Using sprite. Name: " << name << " | X: " << sprite->getX() << " | Y: " << sprite->getY() << endl;
-    } else {
-	// Set our initial offsets
-	xoffset = (xaxis) + startx;
-	yoffset = (yaxis) + starty;
-	velx = vely = 0;
-    }
+    // Set our initial offsets
+    xoffset = (xaxis) + startx;
+    yoffset = (yaxis) + starty;
+    velx = vely = 0;
 }
 
 void MugenBackground::draw( const int ourx, const int oury, Bitmap &work ){
-    // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
-    
-    Effects effect;
-    effect.alphalow = alphalow;
-    effect.alphahigh = alphahigh;
-    switch( trans ){
-	case Addalpha:{
-	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
-	    //Bitmap::transBlender( 255, 255, 255, alphalow );
-	    //sprite->getBitmap()->drawTrans( ourx, oury, work);
-	    effect.trans = ADDALPHA;
-	    break;
-	}
-	case Add:{
-	    // this additive 100% I assume... not totally sure
-	    //Bitmap::addBlender( 255, 255, 255, 255 );
-	    //sprite->getBitmap()->drawTrans( ourx, oury, work);
-	    effect.trans = ADD;
-	    break;
-	}
-	case Add1:{
-	    // 50%
-	    //Bitmap::addBlender( 128, 128, 128, 255 );
-	    //sprite->getBitmap()->drawTrans( ourx, oury, work);
-	    effect.trans = ADD1;
-	    break;
-	}
-	case Sub:{
-	    // Shadow effect
-	    //Bitmap::multiplyBlender( 0, 0, 0, 128 );
-	    //sprite->getBitmap()->drawTrans( ourx, oury, work);
-	    effect.trans = SUB;
-	    break;
-	}
-	case None:
-	default:{
-	    //if( mask )sprite->getBitmap()->draw( ourx,oury, work );
-	    //else sprite->getBitmap()->Blit( ourx, oury, work );
-	    break;
-	}
-    }
-    sprite->render(ourx,oury,work,effect);
+    sprite->render(ourx,oury,work,*effects);
 }
 
 

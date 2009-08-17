@@ -520,14 +520,14 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Mu
 	    std::string type;
 	    *content->getNext() >> type;
 	    Mugen::Util::removeSpaces( type );
-	    if( type == "none" )temp->trans = None;
-	    else if( type == "add" )temp->trans = Add;
-	    else if( type == "add1" )temp->trans = Add1;
-	    else if( type == "sub" )temp->trans = Sub;
-	    else if( type == "addalpha" )temp->trans = Addalpha;
+	    if( type == "none" )temp->effects->trans = NONE;
+	    else if( type == "add" )temp->effects->trans =  ADD;
+	    else if( type == "add1" )temp->effects->trans = ADD1;
+	    else if( type == "sub" )temp->effects->trans = SUB;
+	    else if( type == "addalpha" )temp->effects->trans = ADDALPHA;
 	} else if (itemhead == "alpha"){
-	    *content->getNext() >> temp->alphalow;
-	    *content->getNext() >> temp->alphahigh;
+	    *content->getNext() >> temp->effects->alphalow;
+	    *content->getNext() >> temp->effects->alphahigh;
 	} else if (itemhead == "mask"){
 	    *content->getNext() >> temp->mask;
 	} else if (itemhead == "tile"){
@@ -704,19 +704,27 @@ MugenAnimation *Mugen::Util::getAnimation( MugenSection *section, std::map< unsi
 		    std::string temp;
 		    *content->getNext() >> temp;
 		    Mugen::Util::fixCase(temp);
-		    if( temp.find("h") != std::string::npos )frame->flipHorizontal = true;
-		    if( temp.find("v") != std::string::npos )frame->flipVertical = true;
+		    if( temp.find("h") != std::string::npos ){
+			//frame->flipHorizontal = true;
+			frame->effects->facing = -1;
+		    }
+		    if( temp.find("v") != std::string::npos ){
+			//frame->flipVertical = true;
+			frame->effects->vfacing = -1;
+		    }
 		    if (temp[0] == 'a'){
-			frame->colorAdd = C_ADD;
+			frame->effects->trans = ADD;
 			// Check if we have specified additions
 			if (temp.size() > 2){
 			    // Source
-			    frame->colorSource = atoi(temp.substr(2,4).c_str());
+			    //frame->colorSource = atoi(temp.substr(2,4).c_str());
+			    frame->effects->alphalow = atoi(temp.substr(2,4).c_str());
 			    // Dest
-			    frame->colorDestination = atoi(temp.substr(6,8).c_str());
+			    //frame->colorDestination = atoi(temp.substr(6,8).c_str());
+			    frame->effects->alphahigh = atoi(temp.substr(6,8).c_str());
 			}
 		    } else if (temp[0] == 's'){
-			frame->colorAdd = C_SUB;
+			frame->effects->trans = SUB;
 		    }
 		}
 		// Add sprite

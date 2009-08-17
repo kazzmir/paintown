@@ -49,13 +49,8 @@ loopstart(false),
 sprite(0),
 xoffset(0),
 yoffset(0),
-time(0),
-flipHorizontal(false),
-flipVertical(false),
-colorAdd(C_NO),
-colorSource(255),
-colorDestination(255){
-//bmp(0){
+time(0){
+    effects = new Effects();
 }
 MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->loopstart = copy.loopstart;
@@ -63,12 +58,7 @@ MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->xoffset = copy.xoffset;
     this->yoffset = copy.yoffset;
     this->time = copy.time;
-    this->flipHorizontal = copy.flipHorizontal;
-    this->flipVertical = copy.flipVertical;
-    this->colorAdd = copy.colorAdd;
-    this->colorSource = copy.colorSource;
-    this->colorDestination = copy.colorDestination;
-    //if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
+    this->effects = copy.effects;
 
 }
 
@@ -78,20 +68,16 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
     this->xoffset = copy.xoffset;
     this->yoffset = copy.yoffset;
     this->time = copy.time;
-    this->flipHorizontal = copy.flipHorizontal;
-    this->flipVertical = copy.flipVertical;
-    this->colorAdd = copy.colorAdd;
-    this->colorSource = copy.colorSource;
-    this->colorDestination = copy.colorDestination;
-    //if( copy.bmp )this->bmp = new Bitmap(*copy.bmp);
+    this->effects = copy.effects;
     
     return *this;
 
 }
 
 MugenFrame::~MugenFrame(){
-    // Kill bitmap
-    //if( bmp )delete bmp;
+    if (effects){
+	delete effects;
+    }
 }
 
 /*
@@ -120,12 +106,9 @@ MugenAnimation::~MugenAnimation(){
 }
 
 void MugenAnimation::addFrame( MugenFrame *frame ){
-    // This gets deleted by frame, so don't worry, be happy
-    /*if( !frame->bmp ){
-	if( frame->sprite )frame->bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) frame->sprite->pcx, frame->sprite->newlength));
-	else frame->bmp = new Bitmap();
-    }*/
-    if( frame->loopstart ) loopPosition = frames.size();
+    if (frame->loopstart){
+	loopPosition = frames.size();
+    }
     frames.push_back( frame );
 }
 
@@ -151,98 +134,10 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
     if (frames[position]->sprite == 0){
 	return;
     }
-    //const int spritex = frames[position]->sprite ? frames[position]->sprite->x : 0;
-    //const int spritey = frames[position]->sprite ? frames[position]->sprite->y : 0;
-    //const int placex = (xaxis - frames[position]->sprite->getX() ) + frames[position]->xoffset;
-    //const int placey = (yaxis - frames[position]->sprite->getY() ) + frames[position]->yoffset;
-    
-    /*Bitmap *image = frames[position]->sprite->getBitmap();//frames[position]->bmp;
-    // temp for scaling
-    Bitmap modImage = Bitmap::temporaryBitmap(image->getWidth() * scalex, image->getHeight() * scaley);
-    image->Stretch(modImage);*/
-    
-    Effects effect;
-    
-    if (frames[position]->flipHorizontal && ! frames[position]->flipVertical){
-	effect.facing = -1;
-	effect.vfacing = 1;
-	switch (frames[position]->colorAdd){
-	    case C_ADD:
-		//Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		//modImage.drawTransHFlip(placex + modImage.getWidth(), placey, work);
-		effect.trans = ADD;
-		break;
-	    case C_SUB:
-		//Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		//modImage.drawTransHFlip(placex + modImage.getWidth(), placey, work);
-		effect.trans = SUB;
-		break;
-	    case C_NO:
-	    default:
-		//modImage.drawHFlip(placex + modImage.getWidth(), placey, work);
-		break;
-	}
-    } else if (frames[position]->flipVertical && ! frames[position]->flipHorizontal){
-	effect.facing = 1;
-	effect.vfacing = -1;
-	switch (frames[position]->colorAdd){
-	    case C_ADD:
-		//Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		//modImage.drawTransVFlip(placex, placey - modImage.getHeight(), work);
-		effect.trans = ADD;
-		break;
-	    case C_SUB:
-		//Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		//modImage.drawTransVFlip(placex, placey - modImage.getHeight(), work);
-		effect.trans = SUB;
-		break;
-	    case C_NO:
-	    default:
-		//modImage.drawVFlip(placex, placey - modImage.getHeight(), work);
-		break;
-	}
-    } else if ( frames[position]->flipVertical && frames[position]->flipHorizontal ){
-	effect.facing = -1;
-	effect.vfacing = -1;
-	switch (frames[position]->colorAdd){
-	    case C_ADD:
-		//Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		//modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
-		effect.trans = ADD;
-		break;
-	    case C_SUB:
-		//Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		//modImage.drawTransHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
-		effect.trans = SUB;
-		break;
-	    case C_NO:
-	    default:
-		//modImage.drawHVFlip(placex + modImage.getWidth(), placey - modImage.getHeight(), work);
-		break;
-	}
-    } else{
-	effect.facing = 1;
-	effect.vfacing = 1;
-	switch (frames[position]->colorAdd){
-	    case C_ADD:
-		//Bitmap::addBlender( 255, 255, 255, frames[position]->colorSource );
-		//modImage.drawTrans(placex, placey, work);
-		effect.trans = ADD;
-		break;
-	    case C_SUB:
-		//Bitmap::differenceBlender( 128, 128, 128, frames[position]->colorSource );
-		//modImage.drawTrans(placex, placey, work);
-		effect.trans = SUB;
-		break;
-	    case C_NO:
-	    default:
-		//modImage.draw(placex, placey, work);
-		break;
-	}
-    }
+    // Modify with frame adjustment
     const int placex = xaxis+frames[position]->xoffset;
     const int placey = yaxis+frames[position]->yoffset;
-    frames[position]->sprite->render(placex,placey,work,effect);
+    frames[position]->sprite->render(placex,placey,work,*frames[position]->effects);
     
     if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
     if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
@@ -253,15 +148,15 @@ void MugenAnimation::render( const int facing, const int vfacing, const int xaxi
 	return;
     }
     // Override flip and set back to original when done
-    const bool horizontal = frames[position]->flipHorizontal;
-    const bool vertical = frames[position]->flipVertical;
-    frames[position]->flipHorizontal = (facing ? false : true);
-    frames[position]->flipVertical = (vfacing ? false : true);
+    const int horizontal = frames[position]->effects->facing;
+    const int vertical = frames[position]->effects->vfacing;
+    frames[position]->effects->facing = (facing ? -1 : 1);
+    frames[position]->effects->vfacing = (vfacing ? -1 : 1);
     // Now render
     render(xaxis,yaxis,work,scalex,scaley);
     // Set original setting
-    frames[position]->flipHorizontal = horizontal;
-    frames[position]->flipVertical = vertical;
+    frames[position]->effects->facing = horizontal;
+    frames[position]->effects->vfacing = vertical;
     
 }
 

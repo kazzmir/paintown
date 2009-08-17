@@ -101,6 +101,8 @@ class MugenSprite{
 	char * pcx;
 	
 	Bitmap *bitmap;
+	
+	void draw(const Bitmap &, const int xaxis, const int yaxis, const Bitmap &, const Effects &);
 };
 
 #endif
