@@ -3,20 +3,12 @@
 
 #include <string>
 
+#include "mugen/mugen_util.h"
+
 class Bitmap;
 class MugenSprite;
 class MugenAnimation;
 class MugenFont;
-
-class DisplayPoint{
-    public:
-	int x;
-	int y;
-	DisplayPoint();
-	DisplayPoint(int x, int y);
-	DisplayPoint &operator=(const DisplayPoint &p);
-	~DisplayPoint();
-};
 
 class Element{
     public:
@@ -38,7 +30,7 @@ class Element{
 	virtual void setAction(MugenAnimation *);
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *);
-	virtual inline void setOffset(const int x, const int y) { offset = DisplayPoint(x,y); }
+	virtual inline void setOffset(const int x, const int y) { offset = Mugen::Point(x,y); }
 	virtual inline void setDisplayTime(const int t) { displaytime = t; }
 	virtual inline void setFacing(const int f) { facing = f; }
 	virtual inline void setVFacing(const int f) { vfacing = f; }
@@ -53,7 +45,7 @@ class Element{
 	MugenAnimation *action;
 	MugenSprite *sprite;
 	MugenFont *font;
-	DisplayPoint offset;
+	Mugen::Point offset;
 	int displaytime;
 	int facing;
 	int vfacing;
@@ -79,7 +71,7 @@ class Bar{
 	virtual void render(const int xaxis, const int yaxis, Bitmap &);
 	
     private:
-	DisplayPoint position;
+	Mugen::Point position;
 	Element *back0;
 	Element *back1;
 	Element *back2;

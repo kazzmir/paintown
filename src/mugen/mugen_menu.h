@@ -9,6 +9,8 @@
 
 #include "menu/menu.h"
 
+#include "mugen/mugen_util.h"
+
 /*
 We already have a setup for menus, might as well as utilize it to accomodate mugen
 */
@@ -21,11 +23,6 @@ class MugenStoryboard;
 class MugenSection;
 class MugenCharacter;
 class MugenStage;
-
-struct MugenMenuPoint{
-    int x;
-    int y;
-};
 
 struct MugenMenuArea{
     int x1;
@@ -44,8 +41,8 @@ struct MugenMenuFont{
 
 struct MugenPlayerCell{
     // Cell
-    MugenMenuPoint start;
-    MugenMenuPoint cursor;
+    Mugen::Point start;
+    Mugen::Point cursor;
     MugenSprite *cursorActiveSprite;
     MugenSprite *cursorDoneSprite;
     bool blink;
@@ -54,27 +51,27 @@ struct MugenPlayerCell{
     Bitmap *active;
     Bitmap *done;
     //Facing
-    MugenMenuPoint faceOffset;
+    Mugen::Point faceOffset;
     double faceScalex;
     double faceScaley;
     int facing;
     bool selecting;
     bool show;
     // Name
-    MugenMenuPoint nameOffset;
+    Mugen::Point nameOffset;
     MugenMenuFont nameFont;
 };
 
 struct MugenCell{
     // Location
-    MugenMenuPoint position;
+    Mugen::Point position;
     MugenCharacter *character;
     bool random;
     bool empty;
 };
 
 struct MugenStageInfo{
-    MugenMenuPoint stagePosition;
+    Mugen::Point stagePosition;
     MugenMenuFont stageActiveFont;
     MugenMenuFont stageActiveFont2;
     MugenMenuFont stageDoneFont;
@@ -111,13 +108,13 @@ class MugenCharacterSelect{
 	//wrapping = 1              ;1 to let cursor wrap around
 	bool wrapping;
 	//pos = 17,24               ;Position to draw to
-	MugenMenuPoint position;
+	Mugen::Point position;
 	//showEmptyBoxes = 1
 	bool showEmptyBoxes;
 	//moveOverEmptyBoxes = 1
 	bool moveOverEmptyBoxes;
 	//cell.size = 27,27         ;x,y size of each cell (in pixels)
-	MugenMenuPoint cellSize;
+	Mugen::Point cellSize;
 	//cell.spacing = 2          ;space between each cell
 	int cellSpacing;
 	//cell.bg.spr = 150,0       ;Note: Don't use animation for cells
@@ -148,11 +145,11 @@ class MugenCharacterSelect{
 	//stage.done.snd = 100,1
 	//cancel.snd = 100,2
 	//portrait.offset = 0,0
-	MugenMenuPoint portraitOffset;
+	Mugen::Point portraitOffset;
 	//portrait.scale = 1,1
-	MugenMenuPoint portraitScale;
+	Mugen::Point portraitScale;
 	//title.offset = 159,13     ;Position of title (Arcade Mode, etc)
-	MugenMenuPoint titleOffset;
+	Mugen::Point titleOffset;
 	//title.font = 3,0,0        ;Font of title (-1 for none)
 	MugenMenuFont titleFont;
 	/*;Big portraits
@@ -292,14 +289,14 @@ class MugenMenu : public Menu
 	MugenFadeTool fader;
 	
 	//menu.pos = 159,158
-	MugenMenuPoint position;
+	Mugen::Point position;
 	/*menu.item.font = 3,0,0
 	//menu.item.active.font = 3,5,0
 	//menu.item.spacing = 0, 13
 	*/
 	MugenMenuFont fontItem;
 	MugenMenuFont fontActive;
-	MugenMenuPoint fontSpacing;
+	Mugen::Point fontSpacing;
 	/*
 	; Names for each of the items in the menu. Names must be in quotes.
 	; Use "" to disable an item. If all are disabled, goes straight to demo mode
@@ -323,8 +320,8 @@ class MugenMenu : public Menu
 	; These parameters define the window in which the items are visible
 	; in.*/
 	//menu.window.margins.y = 12, 8 I can only assume there is an X version of this as well
-	MugenMenuPoint windowMarginX;
-	MugenMenuPoint windowMarginY;
+	Mugen::Point windowMarginX;
+	Mugen::Point windowMarginY;
 	//menu.window.visibleitems = 5
 	int windowVisibleItems;
 	//menu.boxcursor.visible = 1     ;Set to 0 to disable default cursor display

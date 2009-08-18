@@ -792,3 +792,22 @@ std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, const s
     return dir + ourFile;
 }
 
+Mugen::Point::Point():
+x(0),
+y(0){
+}
+
+Mugen::Point::Point(int x, int y):
+x(x),
+y(y){
+}
+
+Mugen::Point &Mugen::Point::operator=(const Mugen::Point &p){
+    this->x = p.x;
+    this->y = p.y;
+    return *this;
+}
+
+Mugen::Point::~Point(){
+}
+

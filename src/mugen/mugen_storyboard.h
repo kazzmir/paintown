@@ -5,8 +5,9 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "mugen_exception.h"
-#include "mugen_fadetool.h"
+#include "mugen/mugen_exception.h"
+#include "mugen/mugen_fadetool.h"
+#include "mugen/mugen_util.h"
 
 class Bitmap;
 class MugenItemContent;
@@ -16,16 +17,11 @@ class MugenAnimation;
 class MugenBackground;
 class MugenBackgroundManager;
 
-struct MugenPoint{
-    int x;
-    int y;
-};
-
 class MugenLayer{
     public:
 	MugenLayer();
 	~MugenLayer();
-	MugenPoint offset;
+	Mugen::Point offset;
 	int actionno;
 	int startTime;
 	MugenAnimation *animation;
@@ -53,7 +49,7 @@ class MugenScene {
 	int ticker;
 	int endTime;
 	
-	MugenPoint defaultAxis;
+	Mugen::Point defaultAxis;
 	
 	std::string backgroundName;
 	

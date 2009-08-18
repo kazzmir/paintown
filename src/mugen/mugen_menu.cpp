@@ -302,7 +302,7 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
     }
     fonts = fonts;
     // Set up cell table
-    MugenMenuPoint currentPosition;
+    Mugen::Point currentPosition;
     currentPosition.y = position.y;
     for (int row = 0; row < rows; ++row){
 	currentPosition.x = position.x;
@@ -526,7 +526,7 @@ MugenSelectedChars *MugenCharacterSelect::run(const std::string &title, const in
 }
 
 void MugenCharacterSelect::drawCursors(const int players, Bitmap *work){
-    MugenMenuPoint currentPosition;
+    Mugen::Point currentPosition;
     currentPosition.y = position.y;
     for (int row = 0; row < rows; ++row){
 	currentPosition.x = position.x;

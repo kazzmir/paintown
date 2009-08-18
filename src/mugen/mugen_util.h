@@ -34,6 +34,17 @@ namespace Util{
     MugenAnimation *getAnimation( MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
     std::string getCorrectFileLocation( const std::string &dir, const std::string &file );
 }
+
+class Point{
+    public:
+	int x;
+	int y;
+	Point();
+	Point(int x, int y);
+	Point &operator=(const Point &p);
+	~Point();
+};
+
 }
 
 #endif

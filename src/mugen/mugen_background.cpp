@@ -196,7 +196,7 @@ void MugenBackground::logic( const double x, const double y, const double placem
 void MugenBackground::render( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work ){
     if (visible){
 	// Set clipping rect
-	work->setClipRect(windowx + window.x1, windowy + window.y1,windowx + window.x2,windowy + window.y2);
+	work->setClipRect(int(windowx + window.x1), int(windowy + window.y1),int(windowx + window.x2),int(windowy + window.y2));
 	switch( type ){
 	    case Normal:{
 		// Normal is a sprite

@@ -8,25 +8,6 @@
 
 using namespace std;
 
-DisplayPoint::DisplayPoint():
-x(0),
-y(0){
-}
-
-DisplayPoint::DisplayPoint(int x, int y):
-x(x),
-y(y){
-}
-
-DisplayPoint &DisplayPoint::operator=(const DisplayPoint &p){
-    this->x = p.x;
-    this->y = p.y;
-    return *this;
-}
-
-DisplayPoint::~DisplayPoint(){
-}
-
 Element::Element():
 type(IS_NOTSET),
 action(0),

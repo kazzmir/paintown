@@ -356,7 +356,7 @@ void MugenStoryboard::load() throw (MugenException){
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
     // position
-    MugenPoint positionFix;
+    Mugen::Point positionFix;
     positionFix.x = 0;
     positionFix.y = 0;
     // ClearColor
