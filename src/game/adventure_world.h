@@ -84,7 +84,11 @@ public:
 	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
 	Network::Message createBangMessage( int x, int y, int z );
         
-        virtual void dyingObject(const Object & obj);
+        /* overloading virtual methods requires that all the original methods
+         * are in scope. 'using' forces this.
+         */
+        using World::dyingObject;
+        // virtual void dyingObject(const Object & obj);
         virtual void dyingObject(const Player & obj);
         
 protected:
