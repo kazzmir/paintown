@@ -177,6 +177,7 @@ shadowFadeRangeMid(0),
 reflectionIntensity(0),
 //sffFile(""),
 //debugbg(false),
+background(0),
 board(0),
 xaxis(0),
 yaxis(0),
@@ -892,12 +893,22 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
 }
 
 void MugenStage::cleanup(){
-    
-    if (background) delete background;
-    
-    if (board) delete board;
-    
-    if (console) delete console;
+    if (loaded){
+	if (background){
+	    delete background;
+	    background = 0;
+	}
+	
+	if (board){
+	    delete board;
+	    board = 0;
+	}
+	
+	if (console){
+	    delete console;
+	    console = 0;
+	}
+    }
 }
 
 bool MugenStage::isaPlayer( Object * o ){
