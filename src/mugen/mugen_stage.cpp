@@ -131,6 +131,24 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false){
+    try{
+	std::string str = this->location;
+	// Lets look for our def since some assholes think that all file systems are case insensitive
+	baseDir = Filesystem::find("mugen/stages/");
+	Global::debug(1) << baseDir << endl;
+	if (str.find(".def")==std::string::npos){
+	    str+=".def";
+	}
+	// Get correct directory
+	baseDir = Mugen::Util::getFileDir(baseDir + str);
+	str = Mugen::Util::stripDir(str);
+	const std::string ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, str);
+	// Set name of map
+	name = Mugen::Util::probeDef(ourDefFile, "info", "name");
+    } catch (MugenException &ex){
+	Global::debug(1) << "Couldn't find the name of the map!" << endl;
+	Global::debug(1) << "Error was: " << ex.getReason() << endl;
+    }
 }
 
 MugenStage::MugenStage( const char * location ): World(),
@@ -199,6 +217,24 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false){
+    try{
+	std::string str = this->location;
+	// Lets look for our def since some assholes think that all file systems are case insensitive
+	baseDir = Filesystem::find("mugen/stages/");
+	Global::debug(1) << baseDir << endl;
+	if (str.find(".def")==std::string::npos){
+	    str+=".def";
+	}
+	// Get correct directory
+	baseDir = Mugen::Util::getFileDir(baseDir + str);
+	str = Mugen::Util::stripDir(str);
+	const std::string ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, str);
+	// Set name of map
+	name = Mugen::Util::probeDef(ourDefFile, "info", "name");
+    } catch (MugenException &ex){
+	Global::debug(1) << "Couldn't find the name of the map!" << endl;
+	Global::debug(1) << "Error was: " << ex.getReason() << endl;
+    }
 }
 
 MugenStage::~MugenStage(){

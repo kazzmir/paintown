@@ -33,6 +33,9 @@ namespace Util{
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
     MugenAnimation *getAnimation( MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
     std::string getCorrectFileLocation( const std::string &dir, const std::string &file );
+    // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
+    // Usefull for getting names of maps, characters, etc without loading the entire Object....
+    const std::string probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException);
 }
 
 class Point{

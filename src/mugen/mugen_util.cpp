@@ -792,6 +792,39 @@ std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, const s
     return dir + ourFile;
 }
 
+const std::string Mugen::Util::probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException){
+    
+    MugenReader reader( file );
+    std::vector< MugenSection * > collection;
+    collection = reader.getCollection();
+    std::string ourSection = section;
+    std::string ourSearch = search;
+    Mugen::Util::fixCase(ourSection);
+    Mugen::Util::fixCase(ourSearch);
+    for( unsigned int i = 0; i < collection.size(); ++i ){
+	std::string head = collection[i]->getHeader();
+	Mugen::Util::fixCase(head);
+	if( head.compare(ourSection) == 0 ){
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		Mugen::Util::removeSpaces(itemhead);
+		if ( itemhead.find(ourSearch)!=std::string::npos ){
+		    std::string foundText;
+		    *content->getNext() >> foundText;
+                    Global::debug(1) << "Found '" << search << "' in Section '" << section << "' in Definition file '" << file << "'" << endl;
+		    return foundText;
+		}
+	    }
+	}
+    }
+    
+    // Couldn't find search item throw exception
+    throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file + "'");
+}
+
+
 Mugen::Point::Point():
 x(0),
 y(0){
