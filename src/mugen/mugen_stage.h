@@ -396,6 +396,9 @@ protected:
 	
 	// What garbage
         std::deque<Bitmap*> garbage;
+	
+	
+	void setName();
 };
 
 #endif
