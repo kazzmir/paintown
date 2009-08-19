@@ -7,6 +7,7 @@
 #include "util/load_exception.h"
 #include "network/network.h"
 #include "game/input.h"
+#include "game/adventure_world.h"
 
 class Animation;
 class World;
@@ -29,7 +30,7 @@ public:
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	
-	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
+	virtual void takeDamage(World & world, ObjectAttack * obj, int x);
 	
 	virtual void hurt( int x );
 	

@@ -727,7 +727,7 @@ void Character::fall( double x_vel, double y_vel ){
 	setYVelocity( y_vel );
 }
 	
-void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
+void Character::takeDamage( World & world, ObjectAttack * obj, int damage ){
 	/* I think if death >= 1 here I should just return */
 	Object::takeDamage( world, obj, damage );
 
@@ -741,7 +741,7 @@ void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
 
 		if ( currentDamage() > getToughness() && getHealth() <= 0 ){
 			setExplode( true );
-			world->addMessage( explodeMessage() );
+			world.addMessage( explodeMessage() );
 		}
 
 		reduceDamage( currentDamage() );
@@ -754,7 +754,7 @@ void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
 		*/
 
 		fall( -1.7, 4.4 );
-		world->addMessage( fallMessage( -1.7, 4.4 ) );
+		world.addMessage( fallMessage( -1.7, 4.4 ) );
 	} else	{
 		animation_current = getMovement( "pain" );
 		if ( getStatus() != Status_Grabbed ){
@@ -774,8 +774,8 @@ void Character::takeDamage( World * world, ObjectAttack * obj, int damage ){
 		}
 	}
 
-	world->addMessage( animationMessage() );
-	world->addMessage( healthMessage() );
+	world.addMessage( animationMessage() );
+	world.addMessage( healthMessage() );
 }
 	
 void Character::died( vector< Object * > & objects ){
@@ -866,7 +866,7 @@ void Character::landed( World * world ){
 		
 			double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
 			// cout<<getName()<<" taking "<<cur<<" from falling. Health = "<<getHealth()<<endl;
-			Object::takeDamage( world, NULL, (int)cur );
+			Object::takeDamage(*world, NULL, (int)cur );
 
 			world->Quake( (int)fabs(getYVelocity()) );
 

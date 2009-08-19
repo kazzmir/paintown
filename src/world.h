@@ -2,6 +2,7 @@
 #define _paintown_world_h
 
 class Object;
+class Player;
 class Scene;
 class Bitmap;
 class Block;
@@ -63,6 +64,10 @@ public:
         /* set to paused if unpaused, or vice-versa */
         virtual void changePause() = 0;
         virtual bool isPaused() = 0;
+
+        /* an object has notified us that it is dying */
+        virtual void dyingObject(const Object & obj);
+        virtual void dyingObject(const Player & obj);
         
         /* bleh.. */
         virtual void addEnemy(Enemy * obj) = 0;

@@ -16,3 +16,9 @@ void World::Quake( int q ){
 double World::ticks(const double in) const {
     return in;
 }
+
+void World::dyingObject(const Object & obj){
+}
+
+void World::dyingObject(const Player & obj){
+}

@@ -229,9 +229,11 @@ void BuddyPlayer::deathReset(){
 	animation_current = getMovement( "idle" );
 }
 	
+/*
 void BuddyPlayer::takeDamage( World * world, ObjectAttack * obj, int x ){
 	Character::takeDamage( world, obj, x );
 }
+*/
 	
 void BuddyPlayer::hurt( int x ){
 	if ( ! isInvincible() ){

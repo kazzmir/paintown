@@ -279,6 +279,13 @@ Object * AdventureWorld::findObject(int id){
     }
     return NULL;
 }
+        
+void AdventureWorld::dyingObject(const Player & obj){
+    /* 60 comes from character.cpp:act(), but I should probably use a function
+     * that returns the number instead
+     */
+    enterSlowMotion(60);
+}
 
 void AdventureWorld::doLogic(){
 
@@ -286,100 +293,102 @@ void AdventureWorld::doLogic(){
         slowmotion -= 1;
     }
 
-	vector< Object * > added_effects;
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		Object * good = *it;
-		good->act( &objects, this, &added_effects );
+    vector< Object * > added_effects;
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+        Object * good = *it;
+        good->act( &objects, this, &added_effects );
 
-		if ( good->getZ() < getMinimumZ() ){
-			good->setZ( getMinimumZ() );
-		}
-		if ( good->getZ() > getMaximumZ() ){
-			good->setZ( getMaximumZ() );
-		}
-/* Check for collisions */
-		if ( good->isAttacking() ){
-			// ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
-			ObjectAttack * o_good = (ObjectAttack *)good;
-			for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
-				if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
-					Global::debug( 2 ) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
+        if ( good->getZ() < getMinimumZ() ){
+            good->setZ( getMinimumZ() );
+        }
+        if ( good->getZ() > getMaximumZ() ){
+            good->setZ( getMaximumZ() );
+        }
+        /* Check for collisions */
+        if ( good->isAttacking() ){
+            // ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
+            ObjectAttack * o_good = (ObjectAttack *)good;
+            for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
+                if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
+                    Global::debug( 2 ) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
 
-					// cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
-					// cout << "Collision: " << (*fight)->collision( o_good ) << endl;
-					if ( good->ZDistance( *fight ) <= o_good->minZDistance() && (*fight)->collision( o_good ) ){ 
+                    // cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
+                    // cout << "Collision: " << (*fight)->collision( o_good ) << endl;
+                    if ( good->ZDistance( *fight ) <= o_good->minZDistance() && (*fight)->collision( o_good ) ){ 
 
-						// cout << "There was a collision" << endl;
-						// cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;
+                        // cout << "There was a collision" << endl;
+                        // cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;
 
-						// if ( good->isAttacking() ){
-							double x = 0, y = 0;
-							// o_good->getAttackCoords(x,y);
-							x = (*fight)->getX();
-							y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
-							
-							if ( bang != NULL ){
-								Object * addx = bang->copy();
-								addx->setX( x );
-								addx->setY( 0 );
-								addx->setZ( y+addx->getHeight()/2 );
-								addx->setHealth( 1 );
-								added_effects.push_back( addx );
-								addMessage( createBangMessage( (int) x, 0, (int) y + addx->getHeight() / 2 ) );
-							}
+                        // if ( good->isAttacking() ){
+                        double x = 0, y = 0;
+                        // o_good->getAttackCoords(x,y);
+                        x = (*fight)->getX();
+                        y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
 
-							o_good->attacked(this, *fight, added_effects );
-							(*fight)->collided( o_good, added_effects );
-							addMessage( (*fight)->collidedMessage() );
-							(*fight)->takeDamage( this, o_good, o_good->getDamage() );
+                        if ( bang != NULL ){
+                            Object * addx = bang->copy();
+                            addx->setX( x );
+                            addx->setY( 0 );
+                            addx->setZ( y+addx->getHeight()/2 );
+                            addx->setHealth( 1 );
+                            added_effects.push_back( addx );
+                            addMessage( createBangMessage( (int) x, 0, (int) y + addx->getHeight() / 2 ) );
+                        }
+
+                        o_good->attacked(this, *fight, added_effects );
+                        (*fight)->collided( o_good, added_effects );
+                        addMessage( (*fight)->collidedMessage() );
+                        (*fight)->takeDamage(*this, o_good, o_good->getDamage() );
 
 
-                                                        /* TODO: enter slow motion for bosses
-                                                        if ((*fight)->getHealth() <= 0){
-                                                            enterSlowMotion(100);
-                                                        }
-                                                        */
+                        /* TODO: enter slow motion for bosses
+                           if ((*fight)->getHealth() <= 0){
+                           enterSlowMotion(100);
+                           }
+                           */
 
-                                                        takeScreenshot();
-						// }
-					}
-				}
-			}
-		}
-	}
+                        takeScreenshot();
+                        // }
+                    }
+                }
+            }
+        }
+    }
 
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
-		if ( (*it)->getHealth() <= 0 ){
-			(*it)->died( added_effects );
-			if ( ! isPlayer( *it ) ){
-				delete *it;
-			}
-			it = objects.erase( it );
-		} else ++it;
-	}
+    for ( vector<Object *>::iterator it = objects.begin(); it != objects.end(); ){
+        if ( (*it)->getHealth() <= 0 ){
+            (*it)->died( added_effects );
+            if ( ! isPlayer( *it ) ){
+                delete *it;
+            }
+            it = objects.erase(it);
+        } else {
+            ++it;
+        }
+    }
 
-	/* special case for getting items */
-	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		Character * const cplayer = (Character *) it->player; 
-		if ( cplayer->getStatus() == Status_Get ){
-			for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
-				Object * const o = *it;
-				if ( o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision( cplayer ) ){
-					o->touch( cplayer );
-					addMessage( deleteMessage( o->getId() ) );
-					/* hack */
-					addMessage( cplayer->healthMessage() );
-					delete o;
-					it = objects.erase( it );
-				} else ++it;
-			}
-		}
-	}
+    /* special case for getting items */
+    for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+        Character * const cplayer = (Character *) it->player; 
+        if ( cplayer->getStatus() == Status_Get ){
+            for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+                Object * const o = *it;
+                if ( o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision( cplayer ) ){
+                    o->touch( cplayer );
+                    addMessage( deleteMessage( o->getId() ) );
+                    /* hack */
+                    addMessage( cplayer->healthMessage() );
+                    delete o;
+                    it = objects.erase( it );
+                } else ++it;
+            }
+        }
+    }
 
-	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
+    objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 
-        /* script engine tick. Is this the right place for it? */
-        getEngine()->tick();
+    /* script engine tick. Is this the right place for it? */
+    getEngine()->tick();
 }
 
 void AdventureWorld::killAllHumans( Object * player ){
@@ -387,7 +396,7 @@ void AdventureWorld::killAllHumans( Object * player ){
 		Object * o = *it;
 		if ( o != player ){
 			// o->takeDamage( o->getMaxHealth() * 2 );
-			o->takeDamage( this, NULL, 999999 );
+			o->takeDamage(*this, NULL, 999999 );
 		}
 	}
 }

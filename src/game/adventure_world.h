@@ -83,9 +83,11 @@ public:
 
 	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
 	Network::Message createBangMessage( int x, int y, int z );
-
+        
+        virtual void dyingObject(const Player & obj);
+        
 protected:
-
+        /* number of ticks to be in slow-motion */
         void enterSlowMotion(const int amount);
 
 	Network::Message deleteMessage( unsigned int id );

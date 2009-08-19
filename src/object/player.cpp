@@ -379,17 +379,20 @@ const int Player::getInvincibility() const {
     return Character::getInvincibility();
 }
 
-void Player::takeDamage( World * world, ObjectAttack * obj, int x ){
-	if ( getLink() != NULL ){
-		getLink()->unGrab();
-		unGrab();
-	}
+void Player::takeDamage( World & world, ObjectAttack * obj, int x ){
+    if ( getLink() != NULL ){
+        getLink()->unGrab();
+        unGrab();
+    }
 
-        attack_bonus = 0;
+    attack_bonus = 0;
 
-	Character::takeDamage( world, obj, x );
+    Character::takeDamage(world, obj, x);
+    if (getDeath() > 0){
+        world.dyingObject(*this);
+    }
 
-	// cout<<"Player taking "<<x<<" damage"<<endl;
+    // cout<<"Player taking "<<x<<" damage"<<endl;
 }
 
 /* check to see if the player is close enough to an enemy */

@@ -100,7 +100,7 @@ public:
 	virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
 
 	/* obj hurt you, take some damage */
-	virtual void takeDamage( World * world, ObjectAttack * obj, int x );
+	virtual void takeDamage( World & world, ObjectAttack * obj, int x );
 
 	/* make the character jump! */
 	virtual void jump();

@@ -817,7 +817,7 @@ bool MugenStage::shouldDrawMiniMaps(){ return false; }
 void MugenStage::killAllHumans( Object * player ){ 
     for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
 		Object * o = *it;
-		o->takeDamage( this, NULL, 999999 );
+		o->takeDamage(*this, NULL, 999999 );
     }
 }
 void MugenStage::addMessage(Network::Message m, Network::Socket from){ }
