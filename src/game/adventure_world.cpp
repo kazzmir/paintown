@@ -280,6 +280,9 @@ Object * AdventureWorld::findObject(int id){
     return NULL;
 }
         
+void AdventureWorld::dyingObject(const Object & obj){
+}
+        
 void AdventureWorld::dyingObject(const Player & obj){
     /* 60 comes from character.cpp:act(), but I should probably use a function
      * that returns the number instead
