@@ -5,30 +5,9 @@
 #include <fstream>
 #include <iostream>
 
+#include "mugen/mugen_util.h"
+
 class Bitmap;
-
-enum TransType{
-    NONE = 0,
-    ADD,
-    ADD1,
-    SUB,
-    ADDALPHA
-};
-
-class Effects{
-    public:
-	Effects();
-	const Effects &operator=(const Effects &e);
-	~Effects();
-	TransType trans;
-	int alphalow;
-	int alphahigh;
-	bool mask;
-	int facing;
-	int vfacing;
-	int scalex;
-	int scaley;
-};
 
 class MugenSprite{
     public:
@@ -46,7 +25,7 @@ class MugenSprite{
 	// Render sprite
 	//void render(const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
 	//void render(int facing, int vfacing, const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
-	void render(const int xaxis, const int yaxis, Bitmap &where, Effects &effects);
+	void render(const int xaxis, const int yaxis, Bitmap &where, Mugen::Effects &effects);
 	
 	// load/reload sprite
 	void load(bool mask=true);
@@ -102,7 +81,7 @@ class MugenSprite{
 	
 	Bitmap *bitmap;
 	
-	void draw(const Bitmap &, const int xaxis, const int yaxis, const Bitmap &, const Effects &);
+	void draw(const Bitmap &, const int xaxis, const int yaxis, const Bitmap &, const Mugen::Effects &);
 };
 
 #endif

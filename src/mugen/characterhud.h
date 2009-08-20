@@ -34,10 +34,10 @@ class Element{
 	virtual void setFont(MugenFont *);
 	virtual inline void setOffset(const int x, const int y) { offset = Mugen::Point(x,y); }
 	virtual inline void setDisplayTime(const int t) { displaytime = t; }
-	virtual inline void setFacing(const int f) { facing = f; }
-	virtual inline void setVFacing(const int f) { vfacing = f; }
+	virtual inline void setFacing(const int f) { effects.facing = f; }
+	virtual inline void setVFacing(const int f) { effects.vfacing = f; }
 	virtual inline void setLayer(const int i) { layerno = i; }
-	virtual inline void setScale(const double x, const double y) { scalex = x, scaley = y; }
+	virtual inline void setScale(const double x, const double y) { effects.scalex = x, effects.scaley = y; }
 	virtual inline void setText(const std::string &t) { text = t; }
 	
 	virtual inline int getLayer() { return layerno; }
@@ -49,11 +49,12 @@ class Element{
 	MugenFont *font;
 	Mugen::Point offset;
 	int displaytime;
-	int facing;
-	int vfacing;
+	Effects effects;
+	//int facing;
+	//int vfacing;
 	int layerno;
-	double scalex;
-	double scaley;
+	//double scalex;
+	//double scaley;
 	std::string text;
 };
 

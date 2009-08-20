@@ -131,7 +131,7 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false){
-    initiateName();
+    initializeName();
 }
 
 MugenStage::MugenStage( const char * location ): World(),
@@ -200,7 +200,7 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false){
-    initiateName();
+    initializeName();
 }
 
 MugenStage::~MugenStage(){
@@ -1055,7 +1055,7 @@ void MugenStage::updatePlayer( Object *o ){
     //Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }
 
-void MugenStage::initiateName(){
+void MugenStage::initializeName(){
     try{
 	std::string str = this->location;
 	// Lets look for our def since some assholes think that all file systems are case insensitive

@@ -4,8 +4,9 @@
 #include <string>
 #include <vector>
 
+#include "mugen_util.h"
+
 class Bitmap;
-class Effects;
 class MugenSprite;
 
 /*
@@ -66,7 +67,7 @@ class MugenFrame{
 	15,4, 0,0, 5, ,AS128D128 ;<-- Mix 50% source with 50% dest
 	*/
 	//std::string colorAdd;
-	Effects *effects;
+	Mugen::Effects effects;
 	//int colorSource;
 	//int colorDestination;
 };

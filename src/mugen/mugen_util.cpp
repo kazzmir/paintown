@@ -520,14 +520,14 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Mu
 	    std::string type;
 	    *content->getNext() >> type;
 	    Mugen::Util::removeSpaces( type );
-	    if( type == "none" )temp->effects->trans = NONE;
-	    else if( type == "add" )temp->effects->trans =  ADD;
-	    else if( type == "add1" )temp->effects->trans = ADD1;
-	    else if( type == "sub" )temp->effects->trans = SUB;
-	    else if( type == "addalpha" )temp->effects->trans = ADDALPHA;
+	    if( type == "none" )temp->effects.trans = NONE;
+	    else if( type == "add" )temp->effects.trans =  ADD;
+	    else if( type == "add1" )temp->effects.trans = ADD1;
+	    else if( type == "sub" )temp->effects.trans = SUB;
+	    else if( type == "addalpha" )temp->effects.trans = ADDALPHA;
 	} else if (itemhead == "alpha"){
-	    *content->getNext() >> temp->effects->alphalow;
-	    *content->getNext() >> temp->effects->alphahigh;
+	    *content->getNext() >> temp->effects.alphalow;
+	    *content->getNext() >> temp->effects.alphahigh;
 	} else if (itemhead == "mask"){
 	    *content->getNext() >> temp->mask;
 	} else if (itemhead == "tile"){
@@ -706,25 +706,25 @@ MugenAnimation *Mugen::Util::getAnimation( MugenSection *section, std::map< unsi
 		    Mugen::Util::fixCase(temp);
 		    if( temp.find("h") != std::string::npos ){
 			//frame->flipHorizontal = true;
-			frame->effects->facing = -1;
+			frame->effects.facing = -1;
 		    }
 		    if( temp.find("v") != std::string::npos ){
 			//frame->flipVertical = true;
-			frame->effects->vfacing = -1;
+			frame->effects.vfacing = -1;
 		    }
 		    if (temp[0] == 'a'){
-			frame->effects->trans = ADD;
+			frame->effects.trans = ADD;
 			// Check if we have specified additions
 			if (temp.size() > 2){
 			    // Source
 			    //frame->colorSource = atoi(temp.substr(2,4).c_str());
-			    frame->effects->alphalow = atoi(temp.substr(2,4).c_str());
+			    frame->effects.alphalow = atoi(temp.substr(2,4).c_str());
 			    // Dest
 			    //frame->colorDestination = atoi(temp.substr(6,8).c_str());
-			    frame->effects->alphahigh = atoi(temp.substr(6,8).c_str());
+			    frame->effects.alphahigh = atoi(temp.substr(6,8).c_str());
 			}
 		    } else if (temp[0] == 's'){
-			frame->effects->trans = SUB;
+			frame->effects.trans = SUB;
 		    }
 		}
 		// Add sprite
@@ -842,5 +842,30 @@ Mugen::Point &Mugen::Point::operator=(const Mugen::Point &p){
 }
 
 Mugen::Point::~Point(){
+}
+
+
+Mugen::Effects::Effects():
+trans(NONE),
+alphalow(255),
+alphahigh(255),
+mask(false),
+facing(1),
+vfacing(1),
+scalex(1),
+scaley(1){
+}
+const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
+    this->trans = e.trans;
+    this->alphalow = e.alphalow;
+    this->alphahigh = e.alphahigh;
+    this->mask = e.mask;
+    this->facing = e.facing;
+    this->vfacing = e.vfacing;
+    this->scalex = e.scalex;
+    this->scaley = e.scaley;
+    return *this;
+}
+Mugen::Effects::~Effects(){
 }
 

@@ -16,15 +16,14 @@ sprite(0),
 font(0),
 offset(0,0),
 displaytime(0),
-facing(1),
-vfacing(1),
+//facing(1),
+//vfacing(1),
 layerno(0),
-scalex(1),
-scaley(1),
+//scalex(1),
+//scaley(1),
 text(""){
 }
 Element::~Element(){
-
 }
 
 void Element::act(){
@@ -44,10 +43,10 @@ void Element::act(){
 void Element::render(const int xaxis, const int yaxis, Bitmap &bmp){
     switch (type){
 	case IS_ACTION:
-	    action->render(facing,vfacing,xaxis,yaxis,bmp,scalex,scaley);
+	    action->render(effects.facing,effects.vfacing,xaxis,yaxis,bmp,effects.scalex,effects.scaley);
 	    break;
 	case IS_SPRITE:
-	    
+	    sprite->render(xaxis,yaxis,bmp,effects);
 	    //sprite->render(facing,vfacing,xaxis,yaxis,bmp,scalex,scaley);
 	    break;
 	case IS_FONT:

@@ -398,7 +398,7 @@ protected:
         std::deque<Bitmap*> garbage;
 	
 	
-	void initiateName();
+	void initializeName();
 };
 
 #endif

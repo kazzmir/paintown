@@ -5,9 +5,9 @@
 #include <vector>
 #include <map>
 #include "mugen_animation.h"
+#include "mugen_util.h"
 
 class MugenSection;
-class Effects;
 class MugenSprite;
 class MugenBackground;
 class MugenStage;
@@ -67,7 +67,7 @@ public:
     int starty;
     double deltax;
     double deltay;
-    Effects *effects;
+    Mugen::Effects effects;
     bool mask;
     int tilex;
     int tiley;

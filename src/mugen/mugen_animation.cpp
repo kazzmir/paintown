@@ -50,7 +50,6 @@ sprite(0),
 xoffset(0),
 yoffset(0),
 time(0){
-    effects = new Effects();
 }
 MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->loopstart = copy.loopstart;
@@ -75,9 +74,6 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
 }
 
 MugenFrame::~MugenFrame(){
-    if (effects){
-	delete effects;
-    }
 }
 
 /*
@@ -137,7 +133,7 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
     // Modify with frame adjustment
     const int placex = xaxis+frames[position]->xoffset;
     const int placey = yaxis+frames[position]->yoffset;
-    frames[position]->sprite->render(placex,placey,work,*frames[position]->effects);
+    frames[position]->sprite->render(placex,placey,work,frames[position]->effects);
     
     if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
     if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
@@ -148,15 +144,15 @@ void MugenAnimation::render( const int facing, const int vfacing, const int xaxi
 	return;
     }
     // Override flip and set back to original when done
-    const int horizontal = frames[position]->effects->facing;
-    const int vertical = frames[position]->effects->vfacing;
-    frames[position]->effects->facing = (facing ? -1 : 1);
-    frames[position]->effects->vfacing = (vfacing ? -1 : 1);
+    const int horizontal = frames[position]->effects.facing;
+    const int vertical = frames[position]->effects.vfacing;
+    frames[position]->effects.facing = (facing ? -1 : 1);
+    frames[position]->effects.vfacing = (vfacing ? -1 : 1);
     // Now render
     render(xaxis,yaxis,work,scalex,scaley);
     // Set original setting
-    frames[position]->effects->facing = horizontal;
-    frames[position]->effects->vfacing = vertical;
+    frames[position]->effects.facing = horizontal;
+    frames[position]->effects.vfacing = vertical;
     
 }
 

@@ -48,6 +48,29 @@ class Point{
 	~Point();
 };
 
+enum TransType{
+    NONE = 0,
+    ADD,
+    ADD1,
+    SUB,
+    ADDALPHA
+};
+
+class Effects{
+    public:
+	Effects();
+	const Effects &operator=(const Effects &e);
+	~Effects();
+	TransType trans;
+	int alphalow;
+	int alphahigh;
+	bool mask;
+	int facing;
+	int vfacing;
+	int scalex;
+	int scaley;
+};
+
 }
 
 #endif

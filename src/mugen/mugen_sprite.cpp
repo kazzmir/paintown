@@ -5,30 +5,7 @@
 #include "globals.h"
 
 using namespace std;
-
-Effects::Effects():
-trans(NONE),
-alphalow(255),
-alphahigh(255),
-mask(false),
-facing(1),
-vfacing(1),
-scalex(1),
-scaley(1){
-}
-const Effects &Effects::operator=(const Effects &e){
-    this->trans = e.trans;
-    this->alphalow = e.alphalow;
-    this->alphahigh = e.alphahigh;
-    this->mask = e.mask;
-    this->facing = e.facing;
-    this->vfacing = e.vfacing;
-    this->scalex = e.scalex;
-    this->scaley = e.scaley;
-    return *this;
-}
-Effects::~Effects(){
-}
+using namespace Mugen;
 
 MugenSprite::MugenSprite():
 next(0),
@@ -157,7 +134,7 @@ void MugenSprite::render(int facing, int vfacing, const int xaxis, const int yax
     }
 }
 */
-void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, Effects &effects){
+void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, Mugen::Effects &effects){
     if (!bitmap){
 	load();
     }
@@ -266,7 +243,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsi
     }
 }
 
-void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Effects &effects){
+void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
     const int placex = (xaxis - this->x );
     const int placey = (yaxis - this->y );
     

@@ -151,16 +151,11 @@ runLink(false){
     window.y1 = 0;
     window.x2 = 319;
     window.y2 = 239;
-    
-    effects = new Effects();
 }
 MugenBackground::MugenBackground( const MugenBackground &copy ):
 stageTicker( copy.stageTicker ){
 }
 MugenBackground::~MugenBackground(){
-    if (effects){
-	delete effects;
-    }
 }
 MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     
@@ -285,7 +280,7 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
 }
 
 void MugenBackground::draw( const int ourx, const int oury, Bitmap &work ){
-    sprite->render(ourx,oury,work,*effects);
+    sprite->render(ourx,oury,work,effects);
 }
 
 
