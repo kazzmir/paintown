@@ -10,6 +10,8 @@ class MugenSprite;
 class MugenAnimation;
 class MugenFont;
 
+namespace Mugen{
+
 class Element{
     public:
 	Element();
@@ -80,11 +82,11 @@ class Bar{
 };
 
 /*! Character HUD ... lifebar, face, etc */
-class MugenCharacterHUD
+class CharacterHUD
 {
     public:
-	MugenCharacterHUD();
-	virtual ~MugenCharacterHUD();
+	CharacterHUD();
+	virtual ~CharacterHUD();
 	
     private:
 	/*
@@ -313,6 +315,8 @@ p2.name.font = 3,0, -1
 	*/
 	    
 };
+
+}
 
 #endif
 

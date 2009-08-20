@@ -7,6 +7,7 @@
 #include "mugen/mugen_font.h"
 
 using namespace std;
+using namespace Mugen;
 
 Element::Element():
 type(IS_NOTSET),
@@ -77,11 +78,11 @@ void Element::setFont(MugenFont *fnt){
     }
 }
 
-MugenCharacterHUD::MugenCharacterHUD(){
+CharacterHUD::CharacterHUD(){
     // notin
 }
 
-MugenCharacterHUD::~MugenCharacterHUD(){
+CharacterHUD::~CharacterHUD(){
 }
 
 
