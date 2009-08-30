@@ -135,6 +135,7 @@ rules:
 	        | "animtype"{case}
 	        | "animelem"{case}
 	        | "anim"{case}
+		| "enemynear"{case}
 	        | "velset"{case}
 	        | "velmul"{case}
 	        | "timemod"{case}
