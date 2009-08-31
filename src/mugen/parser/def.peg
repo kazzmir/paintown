@@ -1,7 +1,7 @@
 # mugen def parser
 start-symbol: start
 options: debug0
-module: Mugen
+module: Mugen.Def
 rules:
 	start = whitespace newline* (line whitespace line_end)* <eof>
 	line = s comment

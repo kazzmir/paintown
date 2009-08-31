@@ -40,6 +40,9 @@ def flatten(lst):
         return out
     return [lst]
 
+def reverse(lst):
+    return lst[::-1]
+
 def special_escape(s):
     return s.replace("\\n", "\\\\n").replace("\\t", "\\\\t").replace("\"", "\\\"").replace("\\r", "\\\\r")
 
@@ -1666,6 +1669,18 @@ struct Column{
         if self.more_code != None:
             more_code = self.more_code
 
+        namespace_start = ""
+        namespace_end = ""
+        for module in reverse(self.module):
+            namespace_start = """
+namespace %s{
+%s
+""" % (module, indent(namespace_start))
+            namespace_end = """
+%s
+} /* %s */
+""" % (indent(namespace_end), module)
+
         data = """
 %s
 
@@ -1677,7 +1692,7 @@ struct Column{
 #include <iostream>
 #include <string.h>
 
-namespace %s{
+%s
 
 %s
 
@@ -1711,8 +1726,8 @@ const void * main(const char * in) throw (ParseException){
     return done.getValues().getValue();
 }
 
-}
-        """ % (top_code, '::'.join(self.module), start_cpp_code % chunks, '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, self.start)
+%s
+        """ % (top_code, namespace_start, start_cpp_code % chunks, '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, self.start, namespace_end)
 
         return data
 
