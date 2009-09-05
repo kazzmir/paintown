@@ -79,7 +79,7 @@ struct Value{
         }
     }
 
-    Value(void * value):
+    Value(const void * value):
         which(0),
         value(value){
     }

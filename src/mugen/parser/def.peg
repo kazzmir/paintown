@@ -6,14 +6,14 @@ include: {{
 #include "../ast/Section.h"
 }}
 rules:
-	start = {{ std::list<Ast::Section> * sections = new std::list<Ast::Section>(); value = (void*) sections; }} list:{{value = $1;}} whitespace newline* (line(list) whitespace line_end)* <eof> {{ value = (void*) $1.getValue(); }}
-	line(current) = s comment
-	     | s section
+	start = {{ std::list<Ast::Section> * sections = new std::list<Ast::Section>(); value = (void*) sections; }} current:{{value = $1;}} whitespace newline* (line(current) {{current = $1;}} whitespace line_end)* <eof> {{ value = $1; }}
+	line(current) = s comment {{ value = current; }}
+	     | s section {{ value = current; }}
 	     # | s characters
-	     | s attribute
-	     | s valuelist
-	     | s loopstart
-	     | space+
+	     | s attribute {{ value = current; }}
+	     | s valuelist {{ value = current; }}
+	     | s loopstart {{ value = current; }}
+	     | space+ {{ value = current; }}
 	line_end = newline+
 	         | &<eof> <void>
 	inline newline = "\n"
