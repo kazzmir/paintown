@@ -706,6 +706,7 @@ Result %s(%s.getPosition());
 %s
 %s
 %s:
+;
 """ % ('\n'.join([newPattern(pattern, stream, result, "goto %s;" % success_out).strip() for pattern in rule.patterns]), failure(), success_out)
             return data
         else:

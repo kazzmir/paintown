@@ -13,7 +13,7 @@ rules:
 	     | space+
 	line_end = newline+
 	         | &<eof> <void>
-	newline = "\n"
+	inline newline = "\n"
 	        | "\r"
 	loopstart = [lL][oO][oO][pP][sS][tT][aA][rR][tT]
 	whitespace = sw*
@@ -21,9 +21,9 @@ rules:
 	   | "\t"
 	   | comment
 	s = space*
-	space = " "
+	inline space = " "
 	      | "\t"
-	comment = ";" (!"\n" .)*
+	inline comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		| "-" "-"+
 	section = "[" s (!"]" .)+ s "]"
@@ -63,4 +63,4 @@ rules:
 	            | "-"
 	float_or_integer = digit* "." digit+
 	                 | digit+ !"."
-	digit = [0123456789]
+	inline digit = [0123456789]
