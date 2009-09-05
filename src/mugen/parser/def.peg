@@ -2,9 +2,12 @@
 start-symbol: start
 options: debug0
 module: Mugen.Def
+include: {{
+#include "../ast/Section.h"
+}}
 rules:
-	start = whitespace newline* (line whitespace line_end)* <eof>
-	line = s comment
+	start = {{ std::list<Ast::Section> * sections = new std::list<Ast::Section>(); value = (void*) sections; }} list:{{value = $1;}} whitespace newline* (line(list) whitespace line_end)* <eof> {{ value = (void*) $1.getValue(); }}
+	line(current) = s comment
 	     | s section
 	     # | s characters
 	     | s attribute
@@ -15,7 +18,7 @@ rules:
 	         | &<eof> <void>
 	inline newline = "\n"
 	        | "\r"
-	loopstart = [lL][oO][oO][pP][sS][tT][aA][rR][tT]
+	loopstart = "loopstart"{case}
 	whitespace = sw*
 	sw = " "
 	   | "\t"

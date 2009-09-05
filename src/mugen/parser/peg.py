@@ -840,23 +840,22 @@ class PatternSequence(Pattern):
             use_args = []
             arg_num = 0
             for pattern in self.patterns:
-                my_result = newResult()
                 use_args.append("")
                 do_tail = None
                 if pattern == self.patterns[-1]:
                     do_tail = tail
                 else:
                     # lexical scope is broken so we need another function here
-                    def make(n, old_arg):
+                    def make(n, old_arg, my_result):
                         def get(d):
-                            # print "Looking for %s arg_num is %d. previous is %s" % (d, n, old_arg)
+                            # print "Looking for %s arg_num is %d result is %s. previous is %s" % (d, n, my_result, old_arg)
                             if d == n:
                                 use_args[n-1] = "Result %s = %s;" % (my_result, result)
                                 return my_result
                             return old_arg(d)
                         return get
                     arg_num += 1
-                    args = make(arg_num, args)
+                    args = make(arg_num, args, newResult())
 
                 data.append("""
 %s
