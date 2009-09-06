@@ -15,9 +15,18 @@ public:
     name(name),
     value(value){
     }
+    
+    AttributeSimple(const Identifier * name):
+    name(name),
+    value(0){
+    }
 
     void debugExplain(){
-        std::cout << name->toString() << " = " << value->toString() << std::endl;
+        if (value != 0){
+            std::cout << name->toString() << " = " << value->toString() << std::endl;
+        } else {
+            std::cout << name->toString() << " = " << std::endl;
+        }
     }
 
     virtual ~AttributeSimple(){

@@ -50,6 +50,10 @@ Ast::Attribute * makeAttribute(const Value & id, const Value & data){
     return new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
 }
 
+Ast::Attribute * makeAttribute(const Value & id){
+    return new Ast::AttributeSimple(as<Ast::Identifier*>(id));
+}
+
 Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
     return new Ast::Attribute();
 }
@@ -129,10 +133,13 @@ rules:
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
+    line_end_or_comment = line_end
+                        | comment
 	# characters = name s "," s filename
 	filename = !<quote> filename_char+
 	filename_char = !"," !"\n" !"[" .
-	attribute = id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); }}
+	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); }}
+              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); }}
 	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); }}
 		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
 		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
