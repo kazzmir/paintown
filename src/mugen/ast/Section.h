@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <map>
 #include <list>
+#include <string>
+#include <iostream>
 #include "Variable.h"
 #include "Value.h"
 
@@ -13,7 +15,11 @@ class Section{
 public: 
     typedef std::list<Value*> ValueList;
 
-    Section() {
+    Section(){
+    }
+
+    Section(const std::string & name):
+    stringData(name){
     }
 
     std::map<Variable *, std::list<Value *> > &getKeyValueMap() { return keyValueMap; }
@@ -26,11 +32,21 @@ public:
             return keyValueMap[variable];
         }
 
-    void setName(char *n) { stringData = n; }
-    const char *getName() { return stringData; }
+    void setName(char *n){
+        stringData = n;
+    }
+
+    void setName(const std::string & n){
+        stringData = n;
+    }
+
+    const std::string & getName(){
+        return stringData;
+    }
 
     void debugExplain() {
-        printf("[%s]\n", stringData);
+        // printf("[%s]\n", stringData.c_str());
+        std::cout << "[" << stringData << "]" << std::endl;
 
         std::map<Variable *, std::list<Value *> >::iterator iter;
 
@@ -78,7 +94,7 @@ public:
 private:
     std::map<Variable *, std::list<Value *> > keyValueMap;
     std::list<ValueList*> actions;
-    char *stringData;
+    std::string stringData;
 };
 
 }

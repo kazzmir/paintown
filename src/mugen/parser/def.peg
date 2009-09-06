@@ -10,17 +10,41 @@ code: {{
 void addSection(const Value & section_list_value, const Value & section_value){
   SectionList * sections = (SectionList*) section_list_value.getValue();
   Ast::Section * section = (Ast::Section*) section_value.getValue();
+  if (section == 0){
+    std::cerr << "Cannot add null section" << std::endl;
+    throw ParseException();
+  }
   sections->push_back(section);
 }
 
-Ast::Section * makeSection(){
-  return new Ast::Section();
+Ast::Section * makeSection(const Value & str){
+  std::string * data = (std::string*) str.getValue();
+  Ast::Section * section = new Ast::Section(*data);
+  delete data;
+  return section;
+}
+
+SectionList * makeSectionList(){
+  return new SectionList();
+}
+
+std::string * toString(const Value & input){
+  std::ostringstream out;
+  for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
+    out << (char) (long) (*it).getValue();
+  }
+  return new std::string(out.str());
 }
 }}
 rules:
-	start = {{ SectionList * sections = new SectionList(); value = (void*) sections; }} current:{{value = $1;}} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = $1; }}
+	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = $1; }}
+    # start = current real_start($1)
+    # real_start(c) = blah ... <eof>
+    #               | {{ delete c; }} <error>
+    # or
+    # start = current{{..}} blah .. <eof> <fail>{{ delete current.getValue(); }}
 	line(current) = s comment
-	              | s section {{ addSection(current, $1); }}
+	              | s section {{ addSection(current, $2); }}
 	     # | s characters
 	     #| s attribute {{ value = current; }}
 	     #| s valuelist {{ value = current; }}
@@ -41,13 +65,13 @@ rules:
 	inline comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		| "-" "-"+
-	section = section_start ast:{{value = makeSection();}} whitespace line_end+ (section_line whitespace line_end)* {{ value = ast; }}
+	section = section_start ast:{{value = makeSection($1);}} whitespace line_end+ (section_line whitespace line_end)* {{ value = ast; }}
     section_line = s comment
                  | s attribute
                  | s valuelist
                  | s loopstart
                  | space+ !"["
-    section_start = "[" s (!"]" .)+ s "]"
+    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); }}
 	name = letter alpha_digit* {{
 		/*
 	   std::ostringstream out;
