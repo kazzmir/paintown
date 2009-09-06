@@ -1,5 +1,5 @@
-#ifndef _VALUE_H_
-#define _VALUE_H_
+#ifndef _paintown_value_h
+#define _paintown_value_h
 
 #include <list>
 #include <stdio.h>
@@ -73,20 +73,21 @@ public:
 				break;
 			case Range: printf("<%g - %g>", number, higherNumber);
 				break;
-                        case ParameterizedIdentifier: {
-                            break;
-                        }
-                        case ModifiedIdentifier: {
-                            break;
-                        }
-                        case SimpleExpression: {
-                            break;
-                        }
-                        case SimpleIdentifier: {
-                            break;
-                        }
-		}
-	}
+            case ParameterizedIdentifier: {
+                break;
+            }
+            case ModifiedIdentifier: {
+                break;
+            }
+            case SimpleExpression: {
+                break;
+            }
+            case SimpleIdentifier: {
+                break;
+            }
+        }
+    }
+
 private:
 	double number;
 	const char *stringData;

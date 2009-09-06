@@ -1,100 +1,64 @@
-#ifndef _SECTION_H_
-#define _SECTION_H_
+#ifndef _paintown_section_h_
+#define _paintown_section_h_
 
 #include <stdio.h>
 #include <map>
 #include <list>
 #include <string>
 #include <iostream>
-#include "Variable.h"
+#include <stdlib.h>
+#include "attribute.h"
 #include "Value.h"
 
 namespace Ast{
 
 class Section{
 public: 
-    typedef std::list<Value*> ValueList;
-
-    Section(){
-    }
-
-    Section(const std::string & name):
-    stringData(name){
-    }
-
-    std::map<Variable *, std::list<Value *> > &getKeyValueMap() { return keyValueMap; }
-
-    std::list<ValueList*> & getActions(){
-        return actions;
-    }
-
-        std::list<Value *> &get(Variable *variable) {
-            return keyValueMap[variable];
+    Section(const std::string * name):
+    name(name){
+        if (name == 0){
+            std::cerr << "[" << __FILE__ << ": " << __LINE__ << "] Cannot create a section with an empty name" << std::endl;
+            exit(-1);
         }
-
-    void setName(char *n){
-        stringData = n;
     }
 
-    void setName(const std::string & n){
-        stringData = n;
+    void addAttribute(Attribute * attribute){
+        attributes.push_back(attribute);
     }
 
-    const std::string & getName(){
-        return stringData;
+    void addValue(Value * value){
+        values.push_back(value);
     }
 
     void debugExplain() {
         // printf("[%s]\n", stringData.c_str());
-        std::cout << "[" << stringData << "]" << std::endl;
+        std::cout << "[" << *name << "]" << std::endl;
 
-        std::map<Variable *, std::list<Value *> >::iterator iter;
-
-        for (iter = keyValueMap.begin(); 
-                iter != keyValueMap.end();
-                iter++) {
-            iter->first->debugExplain();
-            printf(" = ");
-
-            std::list<Value *>::iterator iter2;
-            bool first = true;
-            for (iter2 = iter->second.begin();
-                    iter2 != iter->second.end();
-                    iter2++) {
-                if (!first) {
-                    printf(", ");
-                } else {
-                    first = false;
-                }
-                if ((*iter2) != NULL) {
-                    (*iter2)->debugExplain();
-                }
-            }
-            printf("\n");
+        for (std::list<Attribute*>::iterator it = attributes.begin(); it != attributes.end(); it++){
+            Attribute * attribute = *it;
+            attribute->debugExplain();
         }
-
-        for (std::list<ValueList*>::iterator it = actions.begin(); it != actions.end(); it++){
-            bool first = false;
-            for (ValueList::iterator val = (*it)->begin(); val != (*it)->end(); val++){
-                (*val)->debugExplain();
-                printf(", ");
-                /*
-                if (!first){
-                    printf(", ");
-                } else {
-                    first = false;
-                }
-                */
-            }
-            printf("\n");
+        
+        for (std::list<Value*>::iterator it = values.begin(); it != values.end(); it++){
+            Value * value = *it;
+            value->debugExplain();
         }
+    }
 
+    ~Section(){
+        delete name;
+        for (std::list<Attribute*>::iterator it = attributes.begin(); it != attributes.end(); it++){
+            delete *it;
+        }
+        for (std::list<Value*>::iterator it = values.begin(); it != values.end(); it++){
+            delete *it;
+        }
     }
 
 private:
-    std::map<Variable *, std::list<Value *> > keyValueMap;
-    std::list<ValueList*> actions;
-    std::string stringData;
+    const std::string * name;
+    std::list<Attribute *> attributes;
+    std::list<Value *> values;
 };
 
 }

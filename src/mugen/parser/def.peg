@@ -4,8 +4,11 @@ options: debug0
 module: Mugen.Def
 include: {{
 #include "../ast/Section.h"
+#include "../ast/attribute.h"
+#include "../ast/Value.h"
 typedef std::list<Ast::Section*> SectionList;
 }}
+
 code: {{
 void addSection(const Value & section_list_value, const Value & section_value){
   SectionList * sections = (SectionList*) section_list_value.getValue();
@@ -19,9 +22,7 @@ void addSection(const Value & section_list_value, const Value & section_value){
 
 Ast::Section * makeSection(const Value & str){
   std::string * data = (std::string*) str.getValue();
-  Ast::Section * section = new Ast::Section(*data);
-  delete data;
-  return section;
+  return new Ast::Section(data);
 }
 
 SectionList * makeSectionList(){
@@ -35,7 +36,47 @@ std::string * toString(const Value & input){
   }
   return new std::string(out.str());
 }
+
+std::string * toString(char front, const Value & input){
+  std::string * str = toString(input);
+  str->insert(str->begin(), front);
+  return str;
+}
+
+Ast::Attribute * makeAttribute(const Value & id, const Value & data){
+    return new Ast::Attribute();
+}
+
+Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
+    return new Ast::Attribute();
+}
+
+Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
+    return new Ast::Attribute();
+}
+
+Ast::Attribute * makeAttributes(const Value & id, const Value & data){
+    return new Ast::Attribute();
+}
+
+Ast::Value * makeValue(){
+    return new Ast::Value(1.0);
+}
+
+Ast::Section * asSection(const Value & value){
+    return (Ast::Section*) value.getValue();
+}
+
+Ast::Attribute * asAttribute(const Value & value){
+    return (Ast::Attribute*) value.getValue();
+}
+
+Ast::Value * asValue(const Value & value){
+    return (Ast::Value*) value.getValue();
+}
+
 }}
+
 rules:
 	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = $1; }}
     # start = current real_start($1)
@@ -54,7 +95,6 @@ rules:
 	         | &<eof> <void>
 	inline newline = "\n"
                    | "\r"
-	loopstart = "loopstart"{case}
 	whitespace = sw*
 	sw = " "
 	   | "\t"
@@ -63,44 +103,37 @@ rules:
 	inline space = " "
 	             | "\t"
 	inline comment = ";" (!"\n" .)*
-	        | "=" (!"\n" .)*
-		| "-" "-"+
-	section = section_start ast:{{value = makeSection($1);}} whitespace line_end+ (section_line whitespace line_end)* {{ value = ast; }}
-    section_line = s comment
-                 | s attribute
-                 | s valuelist
-                 | s loopstart
-                 | space+ !"["
+	               | "=" (!"\n" .)*
+		           | "-" "-"+
+	section = section_start ast:{{value = makeSection($1);}} whitespace line_end+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
+    section_line(section) = s comment
+                          | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
+                          | s data:valuelist {{ asSection(section)->addValue(asValue(data)); }}
+                          | s data:loopstart {{ asSection(section)->addValue(asValue(data)); }}
+                          | space+ !"["
     section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); }}
-	name = letter alpha_digit* {{
-		/*
-	   std::ostringstream out;
-	   for (Value::iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
-	   	out << (char) (long) (*it).getValue();
-	   }
-	   // std::cout << "Name " << out.str() << std::endl;
-	   */
-	}}
+	loopstart = "loopstart"{case} {{ value = makeValue(); }}
+	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
 	# characters = name s "," s filename
 	filename = !<quote> filename_char+
 	filename_char = !"," !"\n" !"[" .
-	attribute = identifier s "=" s valuelist
-	          | identifier s "=" s filename
-		  | identifier s "(" s number s ")" s "=" s valuelist
-		  | identifier_list s "=" s valuelist
+	attribute = id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); }}
+	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); }}
+		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
+		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
 	identifier = name ("." name)*
 	identifier_list = identifier (s "," s filename)+
-	valuelist = value (s "," s value?)*
+	valuelist = value (s "," s value?)* {{ value = makeValue(); }}
 	value = string
 	      | date
 	      | number
 	      | "s"{case} !letter !"."
 	      | "h"{case} !letter !"."
 	      | "a"{case} number? !letter
-              | filename
+          | filename
 	date = digit+ "." digit+ "." digit+
 	string = <quote> (!<quote> !"\n" .)* <quote>
 	number = sign? float_or_integer
