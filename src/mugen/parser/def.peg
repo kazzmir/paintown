@@ -4,20 +4,32 @@ options: debug0
 module: Mugen.Def
 include: {{
 #include "../ast/Section.h"
+typedef std::list<Ast::Section*> SectionList;
+}}
+code: {{
+void addSection(const Value & section_list_value, const Value & section_value){
+  SectionList * sections = (SectionList*) section_list_value.getValue();
+  Ast::Section * section = (Ast::Section*) section_value.getValue();
+  sections->push_back(section);
+}
+
+Ast::Section * makeSection(){
+  return new Ast::Section();
+}
 }}
 rules:
-	start = {{ std::list<Ast::Section> * sections = new std::list<Ast::Section>(); value = (void*) sections; }} current:{{value = $1;}} whitespace newline* (line(current) {{current = $1;}} whitespace line_end)* <eof> {{ value = $1; }}
-	line(current) = s comment {{ value = current; }}
-	     | s section {{ value = current; }}
+	start = {{ SectionList * sections = new SectionList(); value = (void*) sections; }} current:{{value = $1;}} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = $1; }}
+	line(current) = s comment
+	              | s section {{ addSection(current, $1); }}
 	     # | s characters
-	     | s attribute {{ value = current; }}
-	     | s valuelist {{ value = current; }}
-	     | s loopstart {{ value = current; }}
-	     | space+ {{ value = current; }}
+	     #| s attribute {{ value = current; }}
+	     #| s valuelist {{ value = current; }}
+	     #| s loopstart {{ value = current; }}
+	              | space+
 	line_end = newline+
 	         | &<eof> <void>
 	inline newline = "\n"
-	        | "\r"
+                   | "\r"
 	loopstart = "loopstart"{case}
 	whitespace = sw*
 	sw = " "
@@ -25,11 +37,17 @@ rules:
 	   | comment
 	s = space*
 	inline space = " "
-	      | "\t"
+	             | "\t"
 	inline comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		| "-" "-"+
-	section = "[" s (!"]" .)+ s "]"
+	section = section_start ast:{{value = makeSection();}} whitespace line_end+ (section_line whitespace line_end)* {{ value = ast; }}
+    section_line = s comment
+                 | s attribute
+                 | s valuelist
+                 | s loopstart
+                 | space+ !"["
+    section_start = "[" s (!"]" .)+ s "]"
 	name = letter alpha_digit* {{
 		/*
 	   std::ostringstream out;
@@ -44,7 +62,7 @@ rules:
 	            | digit
 	# characters = name s "," s filename
 	filename = !<quote> filename_char+
-	filename_char = !"," !"\n" .
+	filename_char = !"," !"\n" !"[" .
 	attribute = identifier s "=" s valuelist
 	          | identifier s "=" s filename
 		  | identifier s "(" s number s ")" s "=" s valuelist
