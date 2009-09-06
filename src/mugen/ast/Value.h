@@ -88,6 +88,10 @@ public:
         }
     }
 
+    std::string toString() const {
+        return "";
+    }
+
 private:
 	double number;
 	const char *stringData;

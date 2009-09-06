@@ -3,13 +3,17 @@ start-symbol: start
 options: debug0
 module: Mugen.Def
 include: {{
-#include "../ast/Section.h"
-#include "../ast/attribute.h"
-#include "../ast/Value.h"
+#include "../ast/all.h"
 typedef std::list<Ast::Section*> SectionList;
 }}
 
 code: {{
+
+template<class X>
+X as(const Value & value){
+    return (X) value.getValue();
+}
+
 void addSection(const Value & section_list_value, const Value & section_value){
   SectionList * sections = (SectionList*) section_list_value.getValue();
   Ast::Section * section = (Ast::Section*) section_value.getValue();
@@ -21,8 +25,7 @@ void addSection(const Value & section_list_value, const Value & section_value){
 }
 
 Ast::Section * makeSection(const Value & str){
-  std::string * data = (std::string*) str.getValue();
-  return new Ast::Section(data);
+  return new Ast::Section(as<std::string*>(str));
 }
 
 SectionList * makeSectionList(){
@@ -44,7 +47,7 @@ std::string * toString(char front, const Value & input){
 }
 
 Ast::Attribute * makeAttribute(const Value & id, const Value & data){
-    return new Ast::Attribute();
+    return new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
 }
 
 Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
@@ -63,16 +66,25 @@ Ast::Value * makeValue(){
     return new Ast::Value(1.0);
 }
 
+Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
+    std::list<std::string*> ids;
+    ids.push_back(as<std::string*>(front));
+    for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
+        ids.push_back(as<std::string*>((*it).getValue()));
+    }
+    return new Ast::Identifier(ids);
+}
+
 Ast::Section * asSection(const Value & value){
-    return (Ast::Section*) value.getValue();
+    return as<Ast::Section*>(value);
 }
 
 Ast::Attribute * asAttribute(const Value & value){
-    return (Ast::Attribute*) value.getValue();
+    return as<Ast::Attribute*>(value);
 }
 
 Ast::Value * asValue(const Value & value){
-    return (Ast::Value*) value.getValue();
+    return as<Ast::Value*>(value);
 }
 
 }}
@@ -124,7 +136,7 @@ rules:
 	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); }}
 		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
 		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
-	identifier = name ("." name)*
+	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); }}
 	identifier_list = identifier (s "," s filename)+
 	valuelist = value (s "," s value?)* {{ value = makeValue(); }}
 	value = string
