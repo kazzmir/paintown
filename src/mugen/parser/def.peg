@@ -97,9 +97,9 @@ rules:
 	value = string
 	      | date
 	      | number
-	      | [sS] !letter !"."
-	      | [hH] !letter !"."
-	      | [aA] number? !letter
+	      | "s"{case} !letter !"."
+	      | "h"{case} !letter !"."
+	      | "a"{case} number? !letter
               | filename
 	date = digit+ "." digit+ "." digit+
 	string = <quote> (!<quote> !"\n" .)* <quote>
