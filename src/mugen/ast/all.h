@@ -12,5 +12,6 @@
 #include "Variable.h"
 #include "value-list.h"
 #include "number.h"
+#include "string.h"
 
 #endif

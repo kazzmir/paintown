@@ -129,6 +129,10 @@ Ast::Value * makeNumber(const Value & sign, const Value & number){
     return new Ast::Number(value);
 }
 
+Ast::String * makeString(const Value & value){
+    return new Ast::String(toString(value));
+}
+
 Ast::Section * asSection(const Value & value){
     return as<Ast::Section*>(value);
 }
@@ -196,15 +200,22 @@ rules:
 	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); }}
 	identifier_list = identifier (s "," s filename)+
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
-	value = string {{ value = 0; }}
+	value = string
 	      | date {{ value = 0; }}
-	      | number {{ value = $1; }}
+	      | number
+          | keyword {{ value = 0; }}
 	      | "s"{case} !letter !"." {{ value = 0; }}
 	      | "h"{case} !letter !"." {{ value = 0; }}
 	      | "a"{case} number? !letter {{ value = 0; }}
           | filename
+    keyword = "normal"
+            | "parallax"
+            | "addalpha"
+            | "add"
+            | "add1"
+            | "sub"
 	date = digit+ "." digit+ "." digit+
-	string = <quote> (!<quote> !"\n" .)* <quote>
+	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); save(value); }}
 	number = sign? float_or_integer {{ value = makeNumber($1,$2); save(value); }}
 	inline sign = "+"
 	            | "-"
