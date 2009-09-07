@@ -86,11 +86,15 @@ Ast::Attribute * makeAttribute(const Value & id){
 }
 
 Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
-    return new Ast::Attribute();
+    return makeAttribute(id, data);
 }
 
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
     return new Ast::Attribute();
+}
+
+Ast::Keyword * makeKeyword(const Value & value){
+    return new Ast::Keyword(as<char*>(value));
 }
 
 Ast::Attribute * makeAttributes(const Value & id, const Value & data){
@@ -148,7 +152,7 @@ Ast::Value * asValue(const Value & value){
 }}
 
 rules:
-	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = $1; }}
+	start = current:{{ value = makeSectionList(); save(value); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; }}
     # start = current real_start($1)
     # real_start(c) = blah ... <eof>
     #               | {{ delete c; }} <error>
@@ -175,35 +179,35 @@ rules:
 	inline comment = ";" (!"\n" .)*
 	               | "=" (!"\n" .)*
 		           | "-" "-"+
-	section = section_start ast:{{value = makeSection($1);}} whitespace line_end+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
+	section = section_start ast:{{value = makeSection($1); save(value); }} whitespace line_end+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
     section_line(section) = s comment
                           | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
                           | s data:valuelist {{ asSection(section)->addValue(asValue(data)); }}
                           | s data:loopstart {{ asSection(section)->addValue(asValue(data)); }}
                           | space+ !"["
-    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); }}
-	loopstart = "loopstart"{case} {{ value = makeValue(); }}
-	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
+    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); save(value); }}
+	loopstart = "loopstart"{case} {{ value = makeValue(); save(value); }}
+	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); save(value); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
     line_end_or_comment = line_end
                         | comment
 	# characters = name s "," s filename
-	filename = !<quote> filename_char+
+	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); save(value); }}
 	filename_char = !"," !"\n" !"[" .
-	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); }}
-              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); }}
-	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); }}
-		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
-		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
-	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); }}
+	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); save(value); }}
+              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); save(value); }}
+	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); save(value); }}
+		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); save(value); }}
+		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); save(value); }}
+	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); save(value); }}
 	identifier_list = identifier (s "," s filename)+
-	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
+	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); save(value); }}
 	value = string
 	      | date {{ value = 0; }}
 	      | number
-          | keyword {{ value = 0; }}
+          | keyword {{ value = makeKeyword($1); save(value); }}
 	      | "s"{case} !letter !"." {{ value = 0; }}
 	      | "h"{case} !letter !"." {{ value = 0; }}
 	      | "a"{case} number? !letter {{ value = 0; }}

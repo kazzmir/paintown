@@ -1,22 +1,22 @@
-#ifndef _paintown_ast_string_h_
-#define _paintown_ast_string_h_
+#ifndef _paintown_ast_filename_h_
+#define _paintown_ast_filename_h_
 
 #include "Value.h"
 #include <string>
 
 namespace Ast{
 
-class String: public Value{
+class Filename: public Value{
 public:
-    String(const std::string * str):
+    Filename(const std::string * str):
     str(str){
     }
 
     virtual std::string toString() const {
-        return "\"" + *str + "\"";
+        return *str;
     }
 
-    virtual ~String(){
+    virtual ~Filename(){
         delete str;
     }
 

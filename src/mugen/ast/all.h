@@ -13,5 +13,7 @@
 #include "value-list.h"
 #include "number.h"
 #include "string.h"
+#include "keyword.h"
+#include "filename.h"
 
 #endif
