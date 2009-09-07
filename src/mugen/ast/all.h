@@ -10,5 +10,7 @@
 #include "Section.h"
 #include "Value.h"
 #include "Variable.h"
+#include "value-list.h"
+#include "number.h"
 
 #endif

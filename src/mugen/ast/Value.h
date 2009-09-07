@@ -88,8 +88,11 @@ public:
         }
     }
 
-    std::string toString() const {
+    virtual std::string toString() const {
         return "";
+    }
+
+    virtual ~Value(){
     }
 
 private:

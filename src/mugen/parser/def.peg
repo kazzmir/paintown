@@ -9,6 +9,8 @@ typedef std::list<Ast::Section*> SectionList;
 
 code: {{
 
+static std::list<void*> saved_pointers;
+
 template<class X>
 X as(const Value & value){
     return (X) value.getValue();
@@ -28,6 +30,11 @@ Ast::Section * makeSection(const Value & str){
   return new Ast::Section(as<std::string*>(str));
 }
 
+void save(const Value & value){
+    void * pointer = as<void*>(value);
+    saved_pointers.push_back(pointer);
+}
+
 SectionList * makeSectionList(){
   return new SectionList();
 }
@@ -39,6 +46,30 @@ std::string * toString(const Value & input){
   }
   return new std::string(out.str());
 }
+
+class Number{
+public:
+    Number(const Value & value){
+        std::string * str = toString(value);
+        std::istringstream get(*str);
+        get >> number;
+        delete str;
+    }
+
+    Number(const Value & left, const Value & right){
+        std::string * str1 = toString(left);
+        std::string * str2 = toString(right);
+        std::istringstream get(*str1 + "." + *str2);
+        get >> number;
+        delete str1;
+        delete str2;
+    }
+
+    double get(){ return number; }
+
+protected:
+    double number;
+};
 
 std::string * toString(char front, const Value & input){
   std::string * str = toString(input);
@@ -70,6 +101,16 @@ Ast::Value * makeValue(){
     return new Ast::Value(1.0);
 }
 
+Ast::Value * makeValueList(const Value & front, const Value & rest){
+    std::list<Ast::Value*> values;
+    values.push_back(as<Ast::Value*>(front));
+    for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
+        Ast::Value * value = as<Ast::Value*>((*it).getValue());
+        values.push_back(value);
+    }
+    return new Ast::ValueList(values);
+}
+
 Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
     std::list<std::string*> ids;
     ids.push_back(as<std::string*>(front));
@@ -77,6 +118,15 @@ Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
         ids.push_back(as<std::string*>((*it).getValue()));
     }
     return new Ast::Identifier(ids);
+}
+
+Ast::Value * makeNumber(const Value & sign, const Value & number){
+    double value = as<Number*>(number)->get();
+    if (sign.getValue() != 0){
+        value = -value;
+    }
+
+    return new Ast::Number(value);
 }
 
 Ast::Section * asSection(const Value & value){
@@ -145,19 +195,19 @@ rules:
 		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
 	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); }}
 	identifier_list = identifier (s "," s filename)+
-	valuelist = value (s "," s value?)* {{ value = makeValue(); }}
-	value = string
-	      | date
-	      | number
-	      | "s"{case} !letter !"."
-	      | "h"{case} !letter !"."
-	      | "a"{case} number? !letter
+	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
+	value = string {{ value = 0; }}
+	      | date {{ value = 0; }}
+	      | number {{ value = $1; }}
+	      | "s"{case} !letter !"." {{ value = 0; }}
+	      | "h"{case} !letter !"." {{ value = 0; }}
+	      | "a"{case} number? !letter {{ value = 0; }}
           | filename
 	date = digit+ "." digit+ "." digit+
 	string = <quote> (!<quote> !"\n" .)* <quote>
-	number = sign? float_or_integer
+	number = sign? float_or_integer {{ value = makeNumber($1,$2); save(value); }}
 	inline sign = "+"
 	            | "-"
-	float_or_integer = digit* "." digit+
-	                 | digit+ !"."
+	float_or_integer = left:digit* "." right:digit+ {{ value = new Number(left,right); save(value); }}
+	                 | digit+ !"." {{ value = new Number($1); save(value); }}
 	inline digit = [0123456789]
