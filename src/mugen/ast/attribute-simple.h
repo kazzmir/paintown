@@ -20,6 +20,12 @@ public:
     name(name),
     value(0){
     }
+    
+    virtual bool referenced(const void * value) const {
+        return Attribute::referenced(value) ||
+               name->referenced(value) ||
+               (this->value != 0 && this->value->referenced(value));
+    }
 
     void debugExplain(){
         if (value != 0){

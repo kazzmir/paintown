@@ -45,6 +45,30 @@ public:
         }
     }
 
+    virtual bool referenced(const void * value) const {
+        if (value == this){
+            return true;
+        }
+
+        if (value == name){
+            return true;
+        }
+
+        for (std::list<Attribute*>::const_iterator it = attributes.begin(); it != attributes.end(); it++){
+            Attribute * attribute = *it;
+            if (attribute->referenced(value)){
+                return true;
+            }
+        }
+        for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
+            Value * v = *it;
+            if (v->referenced(value)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     ~Section(){
         delete name;
         for (std::list<Attribute*>::iterator it = attributes.begin(); it != attributes.end(); it++){

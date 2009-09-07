@@ -9,7 +9,16 @@ typedef std::list<Ast::Section*> SectionList;
 
 code: {{
 
-static std::list<void*> saved_pointers;
+/* poor man's garbage collection.
+ * after parsing every pointer stored in this list is checked to see if it
+ * is stored in the resulting AST. If the AST does not know about the pointer
+ * then no one else does and the pointer should be deleted.
+ *
+ * void* doesn't work because it doesn't call the destructor. instead use
+ * a new class, Collectable, with constructors and fields for every class
+ * that is allocated. Collectable will call the appropriate destructor.
+ */
+static std::list<Ast::Collectable> saved_pointers;
 
 template<class X>
 X as(const Value & value){
@@ -30,9 +39,9 @@ Ast::Section * makeSection(const Value & str){
   return new Ast::Section(as<std::string*>(str));
 }
 
-void save(const Value & value){
-    void * pointer = as<void*>(value);
-    saved_pointers.push_back(pointer);
+template<class X>
+void save(const X x){
+    saved_pointers.push_back(Ast::Collectable(x));
 }
 
 SectionList * makeSectionList(){
@@ -47,29 +56,25 @@ std::string * toString(const Value & input){
   return new std::string(out.str());
 }
 
-class Number{
-public:
-    Number(const Value & value){
-        std::string * str = toString(value);
-        std::istringstream get(*str);
-        get >> number;
-        delete str;
-    }
+double * parseDouble(const Value & value){
+    std::string * str = toString(value);
+    std::istringstream get(*str);
+    double * number = new double;
+    get >> *number;
+    delete str;
+    return number;
+}
 
-    Number(const Value & left, const Value & right){
-        std::string * str1 = toString(left);
-        std::string * str2 = toString(right);
-        std::istringstream get(*str1 + "." + *str2);
-        get >> number;
-        delete str1;
-        delete str2;
-    }
-
-    double get(){ return number; }
-
-protected:
-    double number;
-};
+double * parseDouble(const Value & left, const Value & right){
+    std::string * str1 = toString(left);
+    std::string * str2 = toString(right);
+    std::istringstream get(*str1 + "." + *str2);
+    double * number = new double;
+    get >> *number;
+    delete str1;
+    delete str2;
+    return number;
+}
 
 std::string * toString(char front, const Value & input){
   std::string * str = toString(input);
@@ -102,7 +107,7 @@ Ast::Attribute * makeAttributes(const Value & id, const Value & data){
 }
 
 Ast::Value * makeValue(){
-    return new Ast::Value(1.0);
+    return new Ast::Value();
 }
 
 Ast::Value * makeValueList(const Value & front, const Value & rest){
@@ -125,7 +130,7 @@ Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
 }
 
 Ast::Value * makeNumber(const Value & sign, const Value & number){
-    double value = as<Number*>(number)->get();
+    double value = *(as<double*>(number));
     if (sign.getValue() != 0){
         value = -value;
     }
@@ -149,10 +154,36 @@ Ast::Value * asValue(const Value & value){
     return as<Ast::Value*>(value);
 }
 
+bool referenced(SectionList * list, const void * value){
+    if (value == list){
+        return true;
+    }
+    for (SectionList::iterator it = list->begin(); it != list->end(); it++){
+        Ast::Section * section = *it;
+        if (section->referenced(value)){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/* garbage collection */
+void cleanup(const Value & value){
+    SectionList * list = as<SectionList*>(value);
+    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
+        Ast::Collectable & collect = *it;
+        if (! referenced(list, collect.pointer())){
+            collect.destroy();
+        }
+    }
+    saved_pointers.clear();
+}
+
 }}
 
 rules:
-	start = current:{{ value = makeSectionList(); save(value); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; }}
+	start = current:{{ value = makeSectionList(); save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; cleanup(value); }}
     # start = current real_start($1)
     # real_start(c) = blah ... <eof>
     #               | {{ delete c; }} <error>
@@ -179,35 +210,35 @@ rules:
 	inline comment = ";" (!"\n" .)*
 	               | "=" (!"\n" .)*
 		           | "-" "-"+
-	section = section_start ast:{{value = makeSection($1); save(value); }} whitespace line_end+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
+	section = section_start ast:{{value = makeSection($1); save(as<Ast::Section*>(value)); }} whitespace line_end+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
     section_line(section) = s comment
                           | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
                           | s data:valuelist {{ asSection(section)->addValue(asValue(data)); }}
                           | s data:loopstart {{ asSection(section)->addValue(asValue(data)); }}
                           | space+ !"["
-    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); save(value); }}
-	loopstart = "loopstart"{case} {{ value = makeValue(); save(value); }}
-	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); save(value); }}
+    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); save(as<std::string*>(value)); }}
+	loopstart = "loopstart"{case} {{ value = makeValue(); save(as<Ast::Value*>(value)); }}
+	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); save(as<std::string*>(value)); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
     line_end_or_comment = line_end
                         | comment
 	# characters = name s "," s filename
-	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); save(value); }}
+	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); save(as<Ast::Filename*>(value)); }}
 	filename_char = !"," !"\n" !"[" .
-	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); save(value); }}
-              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); save(value); }}
-	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); save(value); }}
-		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); save(value); }}
-		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); save(value); }}
-	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); save(value); }}
+	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); save(as<Ast::Value*>(value)); }}
+              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); save(as<Ast::Value*>(value)); }}
+	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); save(as<Ast::Value*>(value)); }}
+		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); save(as<Ast::Value*>(value)); }}
+		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); save(as<Ast::Value*>(value)); }}
+	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); save(as<Ast::Identifier*>(value)); }}
 	identifier_list = identifier (s "," s filename)+
-	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); save(value); }}
+	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); save(as<Ast::Value*>(value)); }}
 	value = string
 	      | date {{ value = 0; }}
 	      | number
-          | keyword {{ value = makeKeyword($1); save(value); }}
+          | keyword {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
 	      | "s"{case} !letter !"." {{ value = 0; }}
 	      | "h"{case} !letter !"." {{ value = 0; }}
 	      | "a"{case} number? !letter {{ value = 0; }}
@@ -219,10 +250,10 @@ rules:
             | "add1"
             | "sub"
 	date = digit+ "." digit+ "." digit+
-	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); save(value); }}
-	number = sign? float_or_integer {{ value = makeNumber($1,$2); save(value); }}
+	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); save(as<Ast::String*>(value)); }}
+	number = sign? float_or_integer {{ value = makeNumber($1,$2); save(as<Ast::Value*>(value)); }}
 	inline sign = "+"
 	            | "-"
-	float_or_integer = left:digit* "." right:digit+ {{ value = new Number(left,right); save(value); }}
-	                 | digit+ !"." {{ value = new Number($1); save(value); }}
+	float_or_integer = left:digit* "." right:digit+ {{ value = parseDouble(left,right); save(as<double*>(value)); }}
+	                 | digit+ !"." {{ value = parseDouble($1); save(as<double*>(value)); }}
 	inline digit = [0123456789]

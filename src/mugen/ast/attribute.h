@@ -11,6 +11,10 @@ public:
     virtual void debugExplain(){
     }
 
+    virtual bool referenced(const void * value) const {
+        return value == this;
+    }
+
     virtual ~Attribute(){
     }
 };

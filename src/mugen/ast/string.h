@@ -15,6 +15,11 @@ public:
     virtual std::string toString() const {
         return "\"" + *str + "\"";
     }
+    
+    virtual bool referenced(const void * value) const {
+        return Value::referenced(value) ||
+               str == value;
+    }
 
     virtual ~String(){
         delete str;

@@ -30,6 +30,20 @@ public:
         }
         return out.str();
     }
+    
+    virtual bool referenced(const void * value) const {
+        if (Value::referenced(value)){
+            return true;
+        }
+        
+        for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
+            if ((*it)->referenced(value)){
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     virtual ~ValueList(){
         for (std::list<Value*>::iterator it = values.begin(); it != values.end(); it++){

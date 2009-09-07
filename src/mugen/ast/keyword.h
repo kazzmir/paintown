@@ -8,6 +8,7 @@ namespace Ast{
 
 class Keyword: public Value{
 public:
+    /* str is not allocated!!! */
     Keyword(const char * str):
     str(str){
     }
@@ -15,9 +16,11 @@ public:
     virtual std::string toString() const {
         return std::string(str);
     }
-
+    
     virtual ~Keyword(){
+        /* don't delete str */
     }
+
 protected:
     const char * str;
 };

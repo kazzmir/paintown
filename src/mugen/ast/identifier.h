@@ -27,6 +27,20 @@ public:
         }
         return out.str();
     }
+    
+    virtual bool referenced(const void * value) const {
+        if (value == this){
+            return true;
+        }
+        
+        for (std::list<std::string*>::const_iterator it = names.begin(); it != names.end(); it++){
+            if (value == *it){
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     virtual ~Identifier(){
         for (std::list<std::string*>::iterator it = names.begin(); it != names.end(); it++){

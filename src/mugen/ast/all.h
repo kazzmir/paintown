@@ -15,5 +15,6 @@
 #include "string.h"
 #include "keyword.h"
 #include "filename.h"
+#include "collectable.h"
 
 #endif
