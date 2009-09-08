@@ -168,15 +168,26 @@ bool referenced(SectionList * list, const void * value){
     return false;
 }
 
+bool referenced(const std::list<Ast::Collectable> & list, Ast::Collectable & collect){
+    for (std::list<Ast::Collectable>::const_iterator it = list.begin(); it != list.end(); it++){
+        const Ast::Collectable & collect2 = *it;
+        if (&collect != &collect2 && collect2.referenced(collect.pointer())){
+            return true;
+        }
+    }
+    return false;
+}
+
 /* garbage collection */
 void cleanup(const Value & value){
     SectionList * list = as<SectionList*>(value);
     for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
         Ast::Collectable & collect = *it;
-        if (! referenced(list, collect.pointer())){
+        if (! referenced(list, collect.pointer()) && ! referenced(saved_pointers, collect)){
             collect.destroy();
         }
     }
+    // std::cout << "Destroying everything" << std::endl;
     saved_pointers.clear();
 }
 
@@ -210,7 +221,7 @@ rules:
 	inline comment = ";" (!"\n" .)*
 	               | "=" (!"\n" .)*
 		           | "-" "-"+
-	section = section_start ast:{{value = makeSection($1); save(as<Ast::Section*>(value)); }} whitespace line_end+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
+	section = section_start ast:{{value = makeSection($1); save(as<Ast::Section*>(value)); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
     section_line(section) = s comment
                           | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
                           | s data:valuelist {{ asSection(section)->addValue(asValue(data)); }}
@@ -227,11 +238,11 @@ rules:
 	# characters = name s "," s filename
 	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); save(as<Ast::Filename*>(value)); }}
 	filename_char = !"," !"\n" !"[" .
-	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); save(as<Ast::Value*>(value)); }}
-              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); save(as<Ast::Value*>(value)); }}
-	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); save(as<Ast::Value*>(value)); }}
+	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); save(as<Ast::Attribute*>(value)); }}
+              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); save(as<Ast::Attribute*>(value)); }}
+	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); save(as<Ast::Attribute*>(value)); }}
 		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); save(as<Ast::Value*>(value)); }}
-		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); save(as<Ast::Value*>(value)); }}
+		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); save(as<Ast::Attribute*>(value)); }}
 	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); save(as<Ast::Identifier*>(value)); }}
 	identifier_list = identifier (s "," s filename)+
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); save(as<Ast::Value*>(value)); }}
@@ -246,8 +257,8 @@ rules:
     keyword = "normal"
             | "parallax"
             | "addalpha"
-            | "add"
             | "add1"
+            | "add"
             | "sub"
 	date = digit+ "." digit+ "." digit+
 	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); save(as<Ast::String*>(value)); }}
