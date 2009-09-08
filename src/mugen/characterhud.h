@@ -33,6 +33,7 @@ class Element{
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *);
 	virtual inline void setOffset(const int x, const int y) { offset = Mugen::Point(x,y); }
+	virtual inline void setRange(const int x, const int y) { range = Mugen::Point(x,y); }
 	virtual inline void setDisplayTime(const int t) { displaytime = t; }
 	virtual inline void setFacing(const int f) { effects.facing = f; }
 	virtual inline void setVFacing(const int f) { effects.vfacing = f; }
@@ -48,6 +49,7 @@ class Element{
 	MugenSprite *sprite;
 	MugenFont *font;
 	Mugen::Point offset;
+	Mugen::Point range;
 	int displaytime;
 	Effects effects;
 	//int facing;
@@ -69,6 +71,8 @@ class Bar{
 	virtual void setBack2(Element *);
 	virtual void setMiddle(Element *);
 	virtual void setFront(Element *);
+	virtual void setCounter(Element *);
+	virtual void setSound(Element *);
 	
 	virtual void act();
 	virtual void render(const int xaxis, const int yaxis, Bitmap &);
@@ -80,6 +84,33 @@ class Bar{
 	Element *back2;
 	Element *middle;
 	Element *front;
+	Element *counter;
+	Element *sound;
+};
+
+class Face{
+    public:
+	Face();
+	Face(const int x, const int y);
+	virtual ~Face();
+	
+	virtual void act();
+	virtual void render();
+    private:
+	Mugen::Point position;
+	Mugen::Point spacing;
+	Element background;
+	Element face;
+};
+
+class Name{
+    public:
+	Name();
+	virtual ~Name();
+	
+    private:
+	Mugen::Point position;
+	Element *font;
 };
 
 /*! Character HUD ... lifebar, face, etc */

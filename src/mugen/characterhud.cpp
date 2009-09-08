@@ -15,12 +15,9 @@ action(0),
 sprite(0),
 font(0),
 offset(0,0),
+range(0,0),
 displaytime(0),
-//facing(1),
-//vfacing(1),
 layerno(0),
-//scalex(1),
-//scaley(1),
 text(""){
 }
 Element::~Element(){
@@ -76,6 +73,30 @@ void Element::setFont(MugenFont *fnt){
 	font = fnt;
     }
 }
+
+Bar::Bar(const int x, const int y){
+}
+Bar::~Bar(){
+}
+void Bar::setBack0(Element *){
+}
+void Bar::setBack1(Element *){
+}
+void Bar::setBack2(Element *){
+}
+void Bar::setMiddle(Element *){
+}
+void Bar::setFront(Element *){
+}
+void Bar::setCounter(Element *){
+}
+void Bar::setSound(Element *){
+}
+void Bar::act(){
+}
+void Bar::render(const int xaxis, const int yaxis, Bitmap &){
+}
+
 
 CharacterHUD::CharacterHUD(){
     // notin
