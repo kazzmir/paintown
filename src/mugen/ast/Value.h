@@ -1,6 +1,8 @@
 #ifndef _paintown_value_h
 #define _paintown_value_h
 
+#include <iostream>
+
 namespace Ast{
 
 class Value {
@@ -15,6 +17,7 @@ public:
     }
 
     virtual void debugExplain(){
+        std::cout << toString() << std::endl;
     }
 
     virtual bool referenced(const void * value) const {

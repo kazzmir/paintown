@@ -154,6 +154,10 @@ Ast::Value * asValue(const Value & value){
     return as<Ast::Value*>(value);
 }
 
+Ast::Value * makeDate(const Value & month, const Value & day, const Value & year){
+    return new Ast::Value();
+}
+
 bool referenced(SectionList * list, const void * value){
     if (value == list){
         return true;
@@ -260,7 +264,7 @@ rules:
             | "add1"
             | "add"
             | "sub"
-	date = digit+ "." digit+ "." digit+
+	date = digit+ "." digit+ "." digit+ {{ value = makeDate($1,$2,$3); save(as<Ast::Value*>(value)); }}
 	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); save(as<Ast::String*>(value)); }}
 	number = sign? float_or_integer {{ value = makeNumber($1,$2); save(as<Ast::Value*>(value)); }}
 	inline sign = "+"
