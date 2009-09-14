@@ -11,6 +11,8 @@
 #include "util/timedifference.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "util/tokenreader.h"
+#include "util/token.h"
 #include "globals.h"
 #include "configuration.h"
 #include "init.h"
@@ -86,84 +88,107 @@ static void addArgs(vector<const char *> & args, const char * strings[], int num
     }
 }
 
-int paintown_main( int argc, char ** argv ){
-	
-	bool music_on = true;
-	Collector janitor;
+static string mainMenuPath() throw (TokenException, LoadException){
+    string file = Filesystem::find(Configuration::getCurrentGame() + "/" + Configuration::getCurrentGame() + ".txt");
+    TokenReader tr(file);
+    Token * head = tr.readToken();
+    Token * menu = head->findToken("game/menu");
+    if (menu == NULL){
+        throw LoadException(file + " does not contain a game/menu token");
+    }
+    string path;
+    *menu >> path;
+    // string path = "/menu/main.txt"
+    return Filesystem::find(path);
+}
 
-	Global::setDebug( 0 );
-        vector<const char *> all_args;
-	
+int paintown_main( int argc, char ** argv ){
+
+    bool music_on = true;
+    Collector janitor;
+
+    Global::setDebug( 0 );
+    vector<const char *> all_args;
+
 #define ADD_ARGS(args) addArgs(all_args, args, NUM_ARGS(args))
-        ADD_ARGS(WINDOWED_ARG);
-        ADD_ARGS(DATAPATH_ARG);
-        ADD_ARGS(DEBUG_ARG);
-        ADD_ARGS(MUSIC_ARG);
+    ADD_ARGS(WINDOWED_ARG);
+    ADD_ARGS(DATAPATH_ARG);
+    ADD_ARGS(DEBUG_ARG);
+    ADD_ARGS(MUSIC_ARG);
 #undef ADD_ARGS
 
-	for ( int q = 1; q < argc; q++ ){
-		if ( isArg( argv[ q ], WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG) ) ){
-			gfx = Global::FULLSCREEN;
-		} else if ( isArg( argv[ q ], DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG) ) ){
-			q += 1;
-			if ( q < argc ){
-				Util::setDataPath( argv[ q ] );
-			}
-		} else if ( isArg( argv[ q ], MUSIC_ARG, NUM_ARGS(MUSIC_ARG) ) ){
-			music_on = false;
-		} else if ( isArg( argv[ q ], DEBUG_ARG, NUM_ARGS(DEBUG_ARG) ) ){
-			q += 1;
-			if ( q < argc ){
-				istringstream i( argv[ q ] );
-				int f;
-				i >> f;
-				Global::setDebug( f );
-			}
-		} else {
-                    const char * arg = argv[q];
-                    const char * closest = closestMatch(arg, all_args);
-                    if (closest == NULL){
-                        Global::debug(0) << "I don't recognize option '" << arg << "'" << endl;
-                    } else {
-                        Global::debug(0) << "You gave option '" << arg << "'. Did you mean '" << closest << "'?" << endl;
-                    }
-                }
-	}
-#undef NUM_ARGS
-	
-        showOptions();
-
-        Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
-
-	TimeDifference diff;
-	diff.startTime();
-	if ( ! Global::init( gfx ) ){
-		Global::debug( 0 ) << "Could not initialize system" << endl;
-		return -1;
-	} else {
-		MenuGlobals::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
-	}
-	diff.endTime();
-	diff.printTime( "Init:" );
-	
-        InputManager input;
-	Music music(music_on);
-	try{
-		Menu game;
-		game.load(Filesystem::find("/menu/main.txt"));
-		game.run();
-	} catch (const TokenException & ex){
-		Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
-		return -1;
-	} catch (const LoadException & ex){
-		Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
-		return -1;
-        } catch (const ReturnException & ex){
-        } catch (const ShutdownException & shutdown){
-                Global::debug(1) << "Forced a shutdown. Cya!" << endl;
+    for ( int q = 1; q < argc; q++ ){
+        if ( isArg( argv[ q ], WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG) ) ){
+            gfx = Global::FULLSCREEN;
+        } else if ( isArg( argv[ q ], DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG) ) ){
+            q += 1;
+            if ( q < argc ){
+                Util::setDataPath( argv[ q ] );
+            }
+        } else if ( isArg( argv[ q ], MUSIC_ARG, NUM_ARGS(MUSIC_ARG) ) ){
+            music_on = false;
+        } else if ( isArg( argv[ q ], DEBUG_ARG, NUM_ARGS(DEBUG_ARG) ) ){
+            q += 1;
+            if ( q < argc ){
+                istringstream i( argv[ q ] );
+                int f;
+                i >> f;
+                Global::setDebug( f );
+            }
+        } else {
+            const char * arg = argv[q];
+            const char * closest = closestMatch(arg, all_args);
+            if (closest == NULL){
+                Global::debug(0) << "I don't recognize option '" << arg << "'" << endl;
+            } else {
+                Global::debug(0) << "You gave option '" << arg << "'. Did you mean '" << closest << "'?" << endl;
+            }
         }
+    }
+#undef NUM_ARGS
 
-	Configuration::saveConfiguration();
-	
-	return 0;
+    showOptions();
+
+    Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
+
+    /* time how long init takes */
+    TimeDifference diff;
+    diff.startTime();
+    /* init initializes practically everything including
+     *  graphics
+     *  sound
+     *  input
+     *  network
+     *  configuration
+     *  ...
+     */
+    if (! Global::init(gfx)){
+        Global::debug( 0 ) << "Could not initialize system" << endl;
+        return -1;
+    } else {
+        MenuGlobals::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
+    }
+    diff.endTime();
+    diff.printTime("Init:");
+
+    InputManager input;
+    Music music(music_on);
+    try{
+        Menu game;
+        game.load(mainMenuPath());
+        game.run();
+    } catch (const TokenException & ex){
+        Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
+        return -1;
+    } catch (const LoadException & ex){
+        Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
+        return -1;
+    } catch (const ReturnException & ex){
+    } catch (const ShutdownException & shutdown){
+        Global::debug(1) << "Forced a shutdown. Cya!" << endl;
+    }
+
+    Configuration::saveConfiguration();
+
+    return 0;
 }

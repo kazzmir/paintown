@@ -230,10 +230,10 @@ void Menu::load(Token *token)throw( LoadException ){
 void Menu::load(const std::string &filename) throw (LoadException){
     // Must check for initial token, menu
     try{
+        Global::debug(1) << "Loading menu " << filename << endl;
         TokenReader tr( filename );
         Token * token = tr.readToken();
         load(token);
-	
     } catch (const TokenException & e){
         throw LoadException(e.getReason());
     }
