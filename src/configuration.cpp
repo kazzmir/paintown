@@ -16,6 +16,32 @@
 #include <shlobj.h>
 #endif
 
+/* text that appears in the config file */
+#define define_config(n,str) static const char * config_##n = str
+define_config(attack1, "attack1");
+define_config(attack2, "attack2");
+define_config(attack3, "attack3");
+define_config(configuration, "configuration");
+define_config(cooperative, "cooperative");
+define_config(current_game, "current-game");
+define_config(down, "down");
+define_config(free_for_all, "free-for-all");
+define_config(fullscreen, "fullscreen");
+define_config(game_speed, "game-speed");
+define_config(invincible, "invincible");
+define_config(jump, "jump");
+define_config(keyboard_configuration, "keyboard-configuration");
+define_config(left, "left");
+define_config(lives, "lives");
+define_config(menu_font, "menu-font");
+define_config(npc_buddies, "npc-buddies");
+define_config(number, "number");
+define_config(play_mode, "play-mode");
+define_config(right, "right");
+define_config(screen_size, "screen-size");
+define_config(up, "up");
+#undef def_config
+
 using namespace std;
 
 Configuration Configuration::defaultPlayer1Keys(){
@@ -214,6 +240,15 @@ int Configuration::getAttack3() const {
 int Configuration::getJump() const {
 	return jump;
 }
+    
+string Configuration::getCurrentGame(){
+    return currentGameDir;
+}
+
+/* assumes the directory is readable and has a dir/dir.txt in it */
+void Configuration::setCurrentGame(const std::string & str){
+    currentGameDir = str;
+}
 
 #ifdef _WIN32
 static string configFile(){
@@ -232,98 +267,106 @@ static string configFile(){
 #endif
 
 void Configuration::loadConfigurations(){
-	try{
-		string file = configFile();
-		TokenReader tr( file );
-		Token * head = tr.readToken();
-		if ( *head != "configuration" ){
-			throw LoadException( string("Config file ") + configFile() + " does not use the configuration format" );
-		}
-		while ( head->hasTokens() ){
-			Token * n;
-			*head >> n;
-			/* these operate on the global vars directly
-			 * to avoid calling saveConfiguration
-			 * if setFoo() was called
-			 */
-			if ( *n == "keyboard-configuration" ){
-				int number = -1;
-				int right = 0, left = 0, down = 0, up = 0;
-				int attack1 = 0, attack2 = 0, attack3 = 0, jump = 0;
-				while ( n->hasTokens() ){
-					Token * thing;
-					*n >> thing;
-					if ( *thing == "number" ){
-						*thing >> number;
-					} else if ( *thing == "left" ){
-						*thing >> left;
-					} else if ( *thing == "right" ){
-						*thing >> right;
-					} else if ( *thing == "down" ){
-						*thing >> down;
-					} else if ( *thing == "up" ){
-						*thing >> up;
-					} else if ( *thing == "attack1" ){
-						*thing >> attack1;
-					} else if ( *thing == "attack2" ){
-						*thing >> attack2;
-					} else if ( *thing == "attack3" ){
-						*thing >> attack3;
-					} else if ( *thing == "jump" ){
-						*thing >> jump;
-					}
-				}
-				if ( number == -1 ){
-					throw LoadException( string("Config file ") + configFile() + " does not specifiy (number #) for a keyboard-configuration" );
-				}
-				configs[ number ] = new Configuration( right, left, up, down, attack1, attack2, attack3, jump );
-			} else if ( *n == "game-speed" ){
-				*n >> gamespeed;
-			} else if ( *n == "invincible" ){
-				*n >> invincible;
-			} else if ( *n == "fullscreen" ){
-				*n >> fullscreen;
-			} else if ( *n == "lives" ){
-				*n >> lives;
-                        } else if (*n == "menu-font"){
-                            string font;
-                            *n >> font;
-                            setMenuFont(font);
-			} else if ( *n == "npc-buddies" ){
-				*n >> npc_buddies;
-                        } else if (*n == "screen-size"){
-                            int w, h;
-                            *n >> w >> h;
-                            Configuration::setScreenWidth(w);
-                            Configuration::setScreenHeight(h);
-			} else if (*n == "play-mode"){
-                            string mode;
-                            *n >> mode;
-                            if (mode == "cooperative"){
-                                Configuration::setPlayMode(Configuration::Cooperative);
-                            } else if (mode == "free-for-all"){
-                                Configuration::setPlayMode(Configuration::FreeForAll);
-                            }
-                        }
-		}
-	} catch ( const LoadException & le ){
-		Global::debug( 0 ) << "Could not load configuration file " << configFile() << ": " << le.getReason() << endl;
-	} catch ( const TokenException & t ){
-		Global::debug( 0 ) << "Error loading configuration file '" << configFile() << "': " << t.getReason() << endl;
-	}
+    try{
+        string file = configFile();
+        TokenReader tr( file );
+        Token * head = tr.readToken();
+        if (*head != config_configuration){
+            throw LoadException( string("Config file ") + configFile() + " does not use the configuration format" );
+        }
+        while ( head->hasTokens() ){
+            Token * n;
+            *head >> n;
+            /* these operate on the global vars directly
+             * to avoid calling saveConfiguration
+             * if setFoo() was called
+             */
+            if ( *n == config_keyboard_configuration ){
+                int number = -1;
+                int right = 0, left = 0, down = 0, up = 0;
+                int attack1 = 0, attack2 = 0, attack3 = 0, jump = 0;
+                while ( n->hasTokens() ){
+                    Token * thing;
+                    *n >> thing;
+                    if ( *thing == config_number){
+                        *thing >> number;
+                    } else if ( *thing == config_left){
+                        *thing >> left;
+                    } else if ( *thing == config_right){
+                        *thing >> right;
+                    } else if ( *thing == config_down){
+                        *thing >> down;
+                    } else if ( *thing == config_up){
+                        *thing >> up;
+                    } else if ( *thing == config_attack1){
+                        *thing >> attack1;
+                    } else if ( *thing == config_attack2){
+                        *thing >> attack2;
+                    } else if ( *thing == config_attack3){
+                        *thing >> attack3;
+                    } else if ( *thing == config_jump){
+                        *thing >> jump;
+                    }
+                }
+                if ( number == -1 ){
+                    /* should use config_number here */
+                    throw LoadException( string("Config file ") + configFile() + " does not specifiy (number #) for a keyboard-configuration" );
+                }
+                configs[ number ] = new Configuration( right, left, up, down, attack1, attack2, attack3, jump );
+            } else if ( *n == config_game_speed){
+                *n >> gamespeed;
+            } else if ( *n == config_invincible){
+                *n >> invincible;
+            } else if ( *n == config_fullscreen){
+                *n >> fullscreen;
+            } else if (*n == config_lives){
+                *n >> lives;
+            } else if (*n == config_menu_font){
+                string font;
+                *n >> font;
+                setMenuFont(font);
+            } else if (*n == config_current_game){
+                string game;
+                *n >> game;
+                setCurrentGame(game);
+            } else if ( *n == config_npc_buddies){
+                *n >> npc_buddies;
+            } else if (*n == config_screen_size){
+                int w, h;
+                *n >> w >> h;
+                Configuration::setScreenWidth(w);
+                Configuration::setScreenHeight(h);
+            } else if (*n == config_play_mode){
+                string mode;
+                *n >> mode;
+                if (mode == config_cooperative){
+                    Configuration::setPlayMode(Configuration::Cooperative);
+                } else if (mode == config_free_for_all){
+                    Configuration::setPlayMode(Configuration::FreeForAll);
+                }
+            }
+        }
+    } catch ( const LoadException & le ){
+        Global::debug( 0 ) << "Could not load configuration file " << configFile() << ": " << le.getReason() << endl;
+    } catch ( const TokenException & t ){
+        Global::debug( 0 ) << "Error loading configuration file '" << configFile() << "': " << t.getReason() << endl;
+    }
 }
 
 typedef int (Configuration::*get_func)() const;
 Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
 	Token * config = new Token();
 
-	config->addToken( new Token( "keyboard-configuration", false ) );
+	config->addToken( new Token(config_keyboard_configuration, false ) );
 	Token * number = new Token();
-	*number << "number";
+	*number << config_number;
 	config->addToken( number );
 	*number << num;
 
-	const char * func_names[] = {"left","right","up","down","attack1","attack2","attack3","jump"};
+	const char * func_names[] = {config_left, config_right,
+                                 config_up, config_down,
+                                 config_attack1, config_attack2,
+                                 config_attack3, config_jump};
 	get_func funcs[] = {&Configuration::getLeft,
 	                    &Configuration::getRight,
 	                    &Configuration::getUp,
@@ -345,7 +388,7 @@ Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
 
 void Configuration::saveConfiguration(){
 	Token head;
-	head << "configuration";
+	head << config_configuration;
 	for ( map< int, Configuration * >::iterator it = configs.begin(); it != configs.end(); it++ ){
 		int num = it->first;
 		Configuration * configuration = it->second;
@@ -353,43 +396,47 @@ void Configuration::saveConfiguration(){
 	}
 
 	Token * speed = new Token();
-	*speed << "game-speed" << Configuration::getGameSpeed();
+	*speed << config_game_speed << Configuration::getGameSpeed();
 	head.addToken( speed );
 
 	Token * invincible = new Token();
-	*invincible << "invincible" << Configuration::getInvincible();
+	*invincible << config_invincible << Configuration::getInvincible();
 	head.addToken( invincible );
 
 	Token * fullscreen = new Token();
-	*fullscreen << "fullscreen" << Configuration::getFullscreen();
+	*fullscreen << config_fullscreen << Configuration::getFullscreen();
 	head.addToken( fullscreen );
 
         Token * screen = new Token();
-        *screen << "screen-size" << Configuration::getScreenWidth() << Configuration::getScreenHeight();
+        *screen << config_screen_size << Configuration::getScreenWidth() << Configuration::getScreenHeight();
         head.addToken(screen);
 
         if (Configuration::getMenuFont() != ""){
             Token * font = new Token();
-            *font << "menu-font" << Configuration::getMenuFont();
+            *font << config_menu_font << Configuration::getMenuFont();
             head.addToken(font);
         }
 
         Token * mode = new Token();
         string smode;
         if (Configuration::getPlayMode() == Configuration::Cooperative){
-            smode = "cooperative";
+            smode = config_cooperative;
         } else if (Configuration::getPlayMode() == Configuration::FreeForAll){
-            smode = "free-for-all";
+            smode = config_free_for_all;
         }
-        *mode << "play-mode" << smode;
+        *mode << config_play_mode << smode;
         head.addToken(mode);
 
 	Token * lives = new Token();
-	*lives << "lives" << Configuration::getLives();
-	head.addToken( lives );
+	*lives << config_lives << Configuration::getLives();
+	head.addToken(lives);
+
+    Token * game = new Token();
+    *game << config_current_game << Configuration::getCurrentGame();
+    head.addToken(game);
 
 	Token * npc = new Token();
-	*npc << "npc-buddies" << Configuration::getNpcBuddies();
+	*npc << config_npc_buddies << Configuration::getNpcBuddies();
 	head.addToken( npc );
 
 	ofstream out( configFile().c_str(), ios::trunc | ios::out );
@@ -408,6 +455,7 @@ Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
 int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
 std::string Configuration::menuFont = "";
+std::string Configuration::currentGameDir = "paintown";
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 

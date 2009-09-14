@@ -50,14 +50,16 @@ public:
 	static void setLives(int l);
 	static int getNpcBuddies();
 	static void setNpcBuddies( int i );
-        static PlayMode getPlayMode();
-        static void setPlayMode(PlayMode mode);
-        static void setScreenWidth(int i);
-        static int getScreenWidth();
-        static void setScreenHeight(int i);
-        static int getScreenHeight();
-        static std::string getMenuFont();
-        static void setMenuFont(const std::string & str);
+    static PlayMode getPlayMode();
+    static void setPlayMode(PlayMode mode);
+    static void setScreenWidth(int i);
+    static int getScreenWidth();
+    static void setScreenHeight(int i);
+    static int getScreenHeight();
+    static std::string getMenuFont();
+    static void setMenuFont(const std::string & str);
+    static std::string getCurrentGame();
+    static void setCurrentGame(const std::string & str);
 
 protected:
 	Configuration();
@@ -96,13 +98,16 @@ private:
 	//! Lives
 	static int lives;
 
-	static int npc_buddies;
-        static PlayMode play_mode;
+    static int npc_buddies;
+    static PlayMode play_mode;
 
-        static int screen_width;
-        static int screen_height;
+    static int screen_width;
+    static int screen_height;
 
-        static std::string menuFont;
+    static std::string menuFont;
+
+    /* directory of current game/mod */
+    static std::string currentGameDir;
 };
 
 #endif
