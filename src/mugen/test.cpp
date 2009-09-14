@@ -463,7 +463,9 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
-                } else if (isArg(argv[q], PARSE_AIR_ARG)){
+
+#if 0
+        } else if (isArg(argv[q], PARSE_AIR_ARG)){
                     q += 1;
                     if (q < argc){
                         try{
@@ -510,6 +512,7 @@ int main( int argc, char ** argv ){
                         // }
                         return 0;
                     }
+#endif
                     /*
                 } else if (isArg(argv[q], PARSE_ARG)){
                     q += 1;

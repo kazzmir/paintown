@@ -21,8 +21,6 @@
 
 using namespace std;
 
-static const char * DEFAULT_FONT = "/fonts/arial.ttf";
-
 AdventureWorld::AdventureWorld():
 World(),
 draw_minimaps( true ),
@@ -604,7 +602,7 @@ void AdventureWorld::draw( Bitmap * work ){
         }
 
         if (is_paused){
-            const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 15, 15);
+            const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
             work->transBlender( 0, 0, 0, 128 );
             work->drawingMode( Bitmap::MODE_TRANS );
             work->rectangleFill( 0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor( 0, 0, 0 ) );

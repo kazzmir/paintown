@@ -222,6 +222,7 @@ Network::Message Player::scoreMessage(){
         
 void Player::attacked( World * world, Object * something, vector< Object * > & objects ){
     Character::attacked(world, something, objects);
+    /* maybe factor score/attack bonus into a function */
     increaseScore((int)(85 * (1 + attack_bonus)));
     attack_bonus += 1;
     Global::debug(1) << "Attack bonus : " << attack_bonus << endl;
@@ -905,7 +906,10 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 			Object * link = getLink();
 			link->setFacing( getOppositeFacing() );
 			link->thrown();
-			world->addMessage( link->movedMessage() );
+            increaseScore((int)(20 * (1 + attack_bonus)));
+            attack_bonus += 1;
+            world->addMessage(scoreMessage());
+			world->addMessage(link->movedMessage());
 			/* TODO: the fall distance could be defined in the player
 			 * file instead of hard-coded.
 			 */

@@ -12,3 +12,5 @@ Build it with cmake
  $ make
  $ make install
  $ ls ../install/bin/gccxml
+
+Put gccxml in your path (symlink or change $PATH)
