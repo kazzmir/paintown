@@ -28,10 +28,10 @@ MenuGlobals::MenuGlobals(){
 MenuGlobals::~MenuGlobals(){
 }
 
-void MenuGlobals::setMusic(const std::string &file){
-    if(Music::loadSong(Filesystem::find(file))){
-	Music::pause();
-	Music::play();
+void MenuGlobals::setMusic(const std::string &file) throw (Filesystem::NotFound){
+    if (Music::loadSong(Filesystem::find(file))){
+        Music::pause();
+        Music::play();
     }
 }
 
@@ -111,7 +111,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
 }
 
-std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
+std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw (LoadException, Filesystem::NotFound) {
     std::vector<std::string> possible = Util::getFiles(Filesystem::find(dir + "/"), "*.txt" );
 
     /* count is the number of pixels the menu can be. try not to hard code
@@ -141,7 +141,7 @@ std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
 
     try{
         Menu temp;
-	temp.setParent(parent);
+        temp.setParent(parent);
         string level;
         for ( unsigned int i = 0; i < possible.size(); i++ ){
             OptionLevel *opt = new OptionLevel(0, &level);
@@ -159,6 +159,8 @@ std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
         return "";
     } catch (const LoadException & ex){
         Global::debug(0) << "There was a problem loading the level select menu. Error was:\n  " << ex.getReason() << endl;
+        return "";
+    } catch (const Filesystem::NotFound & ex){
         return "";
     }
     throw LoadException("No level chosen!");

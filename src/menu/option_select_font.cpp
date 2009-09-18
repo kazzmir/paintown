@@ -50,14 +50,14 @@ rgreen(255){
             throw ex;
         }
     }
-    
+
     // Find and set fonts now
-   if( typeAdjust == fontName ){
-	vector<string>temp1 = Util::getFiles(Filesystem::find("fonts/"), "*.ttf");
-	vector<string>temp2 = Util::getFiles(Filesystem::find("fonts/"), "*.otf");
-	std::back_insert_iterator< std::vector<string> > p ( fonts );
-	copy ( temp1.begin(), temp1.end(), p);
-	copy ( temp2.begin(), temp2.begin(), p);
+    if (typeAdjust == fontName){
+        vector<string>temp1 = Util::getFiles(Filesystem::find("fonts/"), "*.ttf");
+        vector<string>temp2 = Util::getFiles(Filesystem::find("fonts/"), "*.otf");
+        std::back_insert_iterator< std::vector<string> > p ( fonts );
+        copy ( temp1.begin(), temp1.end(), p);
+        copy ( temp2.begin(), temp2.begin(), p);
     }
 }
 

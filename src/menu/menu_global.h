@@ -4,6 +4,7 @@
 #include <string>
 #include <queue>
 #include "util/load_exception.h"
+#include "util/file-system.h"
 
 class Sound;
 class Menu;
@@ -15,7 +16,7 @@ class MenuGlobals{
 	virtual ~MenuGlobals();
 	
 	/*! set the music */
-	static void setMusic(const std::string &file);
+	static void setMusic(const std::string &file) throw (Filesystem::NotFound);
 	
 	/*! set the select sound */
 	static void setSelectSound(const std::string &file);
@@ -61,7 +62,7 @@ class MenuGlobals{
 	inline static const std::string &getLevel(){ return level; }
         */
 	
-	static std::string doLevelMenu(const std::string dir, Menu *parent);
+	static std::string doLevelMenu(const std::string dir, Menu *parent) throw (Filesystem::NotFound, LoadException);
 
         /* free for all lets players attack each other in network mode.
          * cooperative means they are on the same team.

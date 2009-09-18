@@ -88,7 +88,7 @@ static void addArgs(vector<const char *> & args, const char * strings[], int num
     }
 }
 
-static string mainMenuPath() throw (TokenException, LoadException){
+static string mainMenuPath() throw (TokenException, LoadException, Filesystem::NotFound){
     string file = Filesystem::find(Configuration::getCurrentGame() + "/" + Configuration::getCurrentGame() + ".txt");
     TokenReader tr(file);
     Token * head = tr.readToken();
@@ -177,6 +177,8 @@ int paintown_main( int argc, char ** argv ){
         Menu game;
         game.load(mainMenuPath());
         game.run();
+    } catch (const Filesystem::NotFound & ex){
+        Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
     } catch (const TokenException & ex){
         Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
         return -1;

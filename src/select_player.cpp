@@ -84,7 +84,7 @@ static void * characterLoader(void * arg){
     return NULL;
 }
 
-static int choosePlayer(const PlayerVector & players, const string & message){
+static int choosePlayer(const PlayerVector & players, const string & message) throw (ReturnException){
     DisplayCharacterLoader loader(getCharacters(players));
     Keyboard key;
 
@@ -153,193 +153,197 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
     pthread_create(&loadingThread, NULL, characterLoader, &loader );
 
-    while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
-        key.poll();
-
-        /* bad variable name */
-        DisplayCharacter * ch = players[ current ].guy;
-
-        if ( Global::speed_counter > 0 ){
-            // double think = Global::speed_counter;
-            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
-            while ( runCounter >= 1.0 ){
-                int old = current;
-                runCounter -= 1;
-                clock += 1;
-
-                if ( clock % 5 == 0 ){
-                    backgroundX -= 1;
-                    if ( backgroundX < - work.getWidth() ){
-                        backgroundX = 0;
-                    }
-                }
-
-                if ( key[ keyLeft ] ){
-                    current = current - 1;
-                    beep.play();
-                }
-
-                if ( key[ keyRight ] ){
-                    current = current + 1;
-                    beep.play();
-                }
-
-                if ( key[ keyUp ] ){
-                    current = current - boxesPerLine;
-                    beep.play();
-                }
-
-                if ( key[ keyDown ] ){
-                    current = current + boxesPerLine;
-                    beep.play();
-                }
-
-                if (ch->isLoaded()){
-                    if ( key[ changeRemapKey ] ){
-                        ch->nextMap();
-                    }
-                }
-
-                if ( key[ Keyboard::Key_ESC ] ){
-                    loader.stop();
-                    pthread_join(loadingThread, NULL);
-                    throw ReturnException();
-                }
-
-                if ( current < 0 ){
-                    current = 0;
-                }
-
-                if ( current >= (signed) players.size() ){
-                    current = players.size() - 1;
-                }
-
-                if (ch->isLoaded()){
-                    if ( ch->testAnimation() ){
-                        ch->testReset();
-                    }
-                }
-
-                while ( current < top ){
-                    top -= boxesPerLine;
-                }
-
-                while ( current >= top + boxesPerLine * boxesPerColumn ){
-                    top += boxesPerLine;
-                }
-
-                if (current != old){
-                    loader.update(players[current].guy);
-                }
-
-                // think--;
-            }
-
-            Global::speed_counter = 0;
-            draw = true;
-        }
-
-        if ( draw ){
-
-            // background.Stretch( work );
-            background.Blit( backgroundX, 0, work );
-            background.Blit( work.getWidth() + backgroundX, 0, work );
-            const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT));
-
-            if (ch->isLoaded()){
-                const int stand = 50;
-                ch->setFacing( Object::FACING_RIGHT );
-                Character copy( *ch );
-                copy.setDrawShadow( false );
-                copy.setX( preview.getWidth() / 2 );
-                copy.setY( 0 );
-                copy.setZ( preview.getHeight() - stand );
-                preview.fill( Bitmap::MaskColor );
-                reflection.fill( Bitmap::MaskColor );
-                // preview.fill( 0 );
-                // reflection.fill( 0 );
-
-                copy.draw( &preview, 0 );
-                preview.drawVFlip( 0, 0, reflection );
-
-                Bitmap::transBlender( 0, 0, 0, 255 );
-                LitBitmap s2( reflection );
-                s2.draw( 0, preview.getHeight() - stand - stand, preview );
-                Bitmap::transBlender( 0, 0, 0, 128 );
-                reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
-                copy.draw( &preview, 0 );
-
-                // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
-                // preview.floodfill( 0, 0, Bitmap::MaskColor );
-                // preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
-
-                // preview.draw( 60, 0, work );
-                preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
-
-                for (int c = 1; c >= 0; c--){
-                    int color = 255 - c * 190;
-                    int x = 10 + 5 * c;
-                    int y = font.getHeight() + 5 + c * 5;
-                    font.printf( x, y, Bitmap::makeColor(color, color, color ), work, copy.getName(), 0 );
-                }
-            }
-
-            font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
-
-            if (!loader.done()){
-
-                const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 10, 10 );
-                font.printf(1, 1, Bitmap::makeColor(200,0,0), work, "Loading...", 0);
-            }
-
-            int x = startX, y = startY;
-            unsigned int i;
-            for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
-                temp.clear();
-                Bitmap box( work, x, y, boxSize, boxSize );
-                // int color = unselectedColor;
-                int * color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
-                if (players[i].guy->isLoaded()){
-                    Character smaller( *players[ i ].guy );
-
-                    /* draw a border */
-                    // box.border( 0, 3, color[ clock % maxColor ] );
-
-                    smaller.setX( temp.getWidth() / 2 );
-                    smaller.setY( 0 );
-                    smaller.setZ( temp.getHeight() );
-                    smaller.draw( &temp, 0 );
-                }
-
-                temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
-                box.border( 0, 3, color[ clock % maxColor ] );
-                x += boxSize + 10;
-                if ( x + boxSize + 10 > work.getWidth() ){
-                    x = startX;
-                    y += (boxSize + 10);
-                }
-            }
-
-            if ( top > 0 ){
-                int x1 = 80;
-                int x2 = 140;
-                work.triangle( startX + x1, 8, startX + x2, 8, startX + (x1 + x2) / 2, 3, gradient[ clock % maxGradient ] );
-            }
-
-            if ( i < players.size() ){
-                int x1 = 80;
-                int x2 = 140;
-                work.triangle( startX + x1, GFX_Y - 8, startX + x2, GFX_Y - 8, startX + (x1 + x2) / 2, GFX_Y - 3, gradient[ clock % maxGradient ] );
-            }
-
-            work.BlitToScreen();
-            draw = false;
-        }
-
-        while ( Global::speed_counter == 0 ){
+    try{
+        while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
             key.poll();
-            Util::rest( 1 );
+
+            /* bad variable name */
+            DisplayCharacter * ch = players[ current ].guy;
+
+            if ( Global::speed_counter > 0 ){
+                // double think = Global::speed_counter;
+                runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+                while ( runCounter >= 1.0 ){
+                    int old = current;
+                    runCounter -= 1;
+                    clock += 1;
+
+                    if ( clock % 5 == 0 ){
+                        backgroundX -= 1;
+                        if ( backgroundX < - work.getWidth() ){
+                            backgroundX = 0;
+                        }
+                    }
+
+                    if ( key[ keyLeft ] ){
+                        current = current - 1;
+                        beep.play();
+                    }
+
+                    if ( key[ keyRight ] ){
+                        current = current + 1;
+                        beep.play();
+                    }
+
+                    if ( key[ keyUp ] ){
+                        current = current - boxesPerLine;
+                        beep.play();
+                    }
+
+                    if ( key[ keyDown ] ){
+                        current = current + boxesPerLine;
+                        beep.play();
+                    }
+
+                    if (ch->isLoaded()){
+                        if ( key[ changeRemapKey ] ){
+                            ch->nextMap();
+                        }
+                    }
+
+                    if ( key[ Keyboard::Key_ESC ] ){
+                        loader.stop();
+                        pthread_join(loadingThread, NULL);
+                        throw ReturnException();
+                    }
+
+                    if ( current < 0 ){
+                        current = 0;
+                    }
+
+                    if ( current >= (signed) players.size() ){
+                        current = players.size() - 1;
+                    }
+
+                    if (ch->isLoaded()){
+                        if ( ch->testAnimation() ){
+                            ch->testReset();
+                        }
+                    }
+
+                    while ( current < top ){
+                        top -= boxesPerLine;
+                    }
+
+                    while ( current >= top + boxesPerLine * boxesPerColumn ){
+                        top += boxesPerLine;
+                    }
+
+                    if (current != old){
+                        loader.update(players[current].guy);
+                    }
+
+                    // think--;
+                }
+
+                Global::speed_counter = 0;
+                draw = true;
+            }
+
+            if ( draw ){
+
+                // background.Stretch( work );
+                background.Blit( backgroundX, 0, work );
+                background.Blit( work.getWidth() + backgroundX, 0, work );
+                const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT));
+
+                if (ch->isLoaded()){
+                    const int stand = 50;
+                    ch->setFacing( Object::FACING_RIGHT );
+                    Character copy( *ch );
+                    copy.setDrawShadow( false );
+                    copy.setX( preview.getWidth() / 2 );
+                    copy.setY( 0 );
+                    copy.setZ( preview.getHeight() - stand );
+                    preview.fill( Bitmap::MaskColor );
+                    reflection.fill( Bitmap::MaskColor );
+                    // preview.fill( 0 );
+                    // reflection.fill( 0 );
+
+                    copy.draw( &preview, 0 );
+                    preview.drawVFlip( 0, 0, reflection );
+
+                    Bitmap::transBlender( 0, 0, 0, 255 );
+                    LitBitmap s2( reflection );
+                    s2.draw( 0, preview.getHeight() - stand - stand, preview );
+                    Bitmap::transBlender( 0, 0, 0, 128 );
+                    reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
+                    copy.draw( &preview, 0 );
+
+                    // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
+                    // preview.floodfill( 0, 0, Bitmap::MaskColor );
+                    // preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
+
+                    // preview.draw( 60, 0, work );
+                    preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
+
+                    for (int c = 1; c >= 0; c--){
+                        int color = 255 - c * 190;
+                        int x = 10 + 5 * c;
+                        int y = font.getHeight() + 5 + c * 5;
+                        font.printf( x, y, Bitmap::makeColor(color, color, color ), work, copy.getName(), 0 );
+                    }
+                }
+
+                font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
+
+                if (!loader.done()){
+
+                    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 10, 10 );
+                    font.printf(1, 1, Bitmap::makeColor(200,0,0), work, "Loading...", 0);
+                }
+
+                int x = startX, y = startY;
+                unsigned int i;
+                for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
+                    temp.clear();
+                    Bitmap box( work, x, y, boxSize, boxSize );
+                    // int color = unselectedColor;
+                    int * color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
+                    if (players[i].guy->isLoaded()){
+                        Character smaller( *players[ i ].guy );
+
+                        /* draw a border */
+                        // box.border( 0, 3, color[ clock % maxColor ] );
+
+                        smaller.setX( temp.getWidth() / 2 );
+                        smaller.setY( 0 );
+                        smaller.setZ( temp.getHeight() );
+                        smaller.draw( &temp, 0 );
+                    }
+
+                    temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
+                    box.border( 0, 3, color[ clock % maxColor ] );
+                    x += boxSize + 10;
+                    if ( x + boxSize + 10 > work.getWidth() ){
+                        x = startX;
+                        y += (boxSize + 10);
+                    }
+                }
+
+                if ( top > 0 ){
+                    int x1 = 80;
+                    int x2 = 140;
+                    work.triangle( startX + x1, 8, startX + x2, 8, startX + (x1 + x2) / 2, 3, gradient[ clock % maxGradient ] );
+                }
+
+                if ( i < players.size() ){
+                    int x1 = 80;
+                    int x2 = 140;
+                    work.triangle( startX + x1, GFX_Y - 8, startX + x2, GFX_Y - 8, startX + (x1 + x2) / 2, GFX_Y - 3, gradient[ clock % maxGradient ] );
+                }
+
+                work.BlitToScreen();
+                draw = false;
+            }
+
+            while ( Global::speed_counter == 0 ){
+                key.poll();
+                Util::rest( 1 );
+            }
         }
+    } catch (const Filesystem::NotFound & ex){
+        Global::debug(0) << "Error during select player screen: " << ex.getReason() << endl;
     }
     loader.stop();
     pthread_join(loadingThread, NULL);
@@ -386,13 +390,13 @@ Object * Game::selectPlayer(bool invincibile, const string & message, const Leve
     }
 }
 
-vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, ReturnException ){
+vector<Object *> Game::versusSelect( bool invincible ) throw (LoadException, ReturnException){
 	Bitmap background( Global::titleScreen() );
 
 	/* hm, it would be nice to cache this I suppose */
 	PlayerVector players = loadPlayers( "players/" );
-        DisplayCharacterLoader loader(getCharacters(players));
-        loader.load();
+    DisplayCharacterLoader loader(getCharacters(players));
+    loader.load();
 	
 	Keyboard key;
 
@@ -460,8 +464,8 @@ vector<Object *> Game::versusSelect( bool invincible ) throw( LoadException, Ret
 	bool player2Ready = false;
 	bool ok = false;
 	Global::speed_counter = 0;
-        double runCounter = 0;
-        double gameSpeed = 1;
+    double runCounter = 0;
+    double gameSpeed = 1;
 	while ( !ok ){
 		key.poll();
 

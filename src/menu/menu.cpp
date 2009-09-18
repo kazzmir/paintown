@@ -73,7 +73,7 @@ option(false){
         }
 }
 
-void Menu::load(Token *token)throw( LoadException ){
+void Menu::load(Token *token) throw (LoadException){
 	if ( *token != "menu" )
 		throw LoadException("Not a menu");
 	else if ( ! token->hasTokens() )
@@ -120,7 +120,7 @@ void Menu::load(Token *token)throw( LoadException ){
 				background = new Bitmap(Filesystem::find(temp));
 				if ( background->getError() ){
 				    Global::debug(0) << "Problem loading Bitmap: " << Filesystem::find(temp) << endl;
-                                    delete background;
+                    delete background;
 				    background = 0;
                                 }
 			} else if ( *tok == "clear-color" ) {
@@ -183,7 +183,9 @@ void Menu::load(Token *token)throw( LoadException ){
 		} catch ( const LoadException & ex ) {
 			// delete current;
 			throw ex;
-		}
+		} catch (const Filesystem::NotFound & ex){
+            throw LoadException(ex.getReason());
+        }
 	}
 	
 	if ( _name.empty() ){
