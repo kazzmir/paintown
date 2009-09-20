@@ -112,7 +112,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
 }
 
-Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw (LoadException, Filesystem::NotFound) {
+Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw (LoadException, Filesystem::NotFound, ReturnException) {
     std::vector<std::string> possible = Util::getFiles(Filesystem::find(dir + "/"), "*.txt" );
 
     /* count is the number of pixels the menu can be. try not to hard code
