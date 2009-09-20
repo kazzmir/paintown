@@ -10,6 +10,7 @@
 #include "util/token.h"
 #include "util/file-system.h"
 #include "util/tokenreader.h"
+#include "game/mod.h"
 #include "level/utils.h"
 #include "globals.h"
 #include "resource.h"
@@ -113,6 +114,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 }
 
 Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw (LoadException, Filesystem::NotFound, ReturnException) {
+#if 0
     std::vector<std::string> possible = Util::getFiles(Filesystem::find(dir + "/"), "*.txt" );
 
     /* count is the number of pixels the menu can be. try not to hard code
@@ -139,14 +141,31 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) t
     if (possible.size() == 1){
         return Level::readLevels(Filesystem::find(possible[0]));
     }
+#endif
+    
+    vector<Level::LevelInfo> & possible = Paintown::Mod::getCurrentMod()->getLevels();
+    if (possible.size() == 0){
+        throw LoadException("No level sets defined!");
+    }
+
+    if (possible.size() == 1){
+        return possible[0];
+    }
+
+    /* don't hardcode 60, base it on the size of the font */
+    int count = possible.size() * 60;
+    /* what is 250?? */
+    if (count > 250){
+        count = 250;
+    }
 
     try{
         Menu temp;
         temp.setParent(parent);
-        string level;
+        int index;
         for ( unsigned int i = 0; i < possible.size(); i++ ){
-            OptionLevel *opt = new OptionLevel(0, &level);
-            opt->setText(possible[i]);
+            OptionLevel *opt = new OptionLevel(0, &index, i);
+            opt->setText(possible[i].getName());
             opt->setInfoText("Select a set of levels to play");
             temp.addOption(opt);
         }
@@ -154,7 +173,7 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) t
         temp.backboard.position.height = count;
         // Run it
         temp.run();
-        return Level::readLevels(Filesystem::find(level));
+        return possible[index];
     } catch (const TokenException & ex){
         Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
         throw LoadException("Could not load levels " + ex.getReason());

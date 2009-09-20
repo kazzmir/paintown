@@ -25,15 +25,23 @@ Mod::Mod(const string & path) throw (LoadException){
         }
         *token_menu >> menu;
 
+        vector<Token*> token_level = head->findTokens("game/level-set");
+        Global::debug(1) << "Found " << token_level.size() << " level sets" << endl;
+        for (vector<Token*>::iterator it = token_level.begin(); it != token_level.end(); it++){
+            Token * set = *it;
+            levels.push_back(Level::readLevel(set));
+        }
+
     } catch (const TokenException & e){
         Global::debug(0) << "Error while reading mod " << path << ":" << e.getReason() << endl;
     }
 }
 
 Mod::~Mod(){
-    for (vector<Level::LevelInfo *>::iterator it = levels.begin(); it != levels.end(); it++){
-        delete (*it);
-    }
+}
+    
+vector<Level::LevelInfo> & Mod::getLevels(){
+    return levels;
 }
     
 const string & Mod::getMenu(){

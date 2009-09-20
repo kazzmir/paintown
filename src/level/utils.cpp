@@ -11,6 +11,7 @@ using namespace std;
 
 LevelInfo::LevelInfo():
 playerPath("players/"),
+name("Level set"),
 _loadingMessage("Loading Paintown"),
 _loadingBackground(Global::titleScreen()){
 }
@@ -20,6 +21,7 @@ LevelInfo::LevelInfo(const LevelInfo & info){
     this->_loadingMessage = info._loadingMessage;
     this->_loadingBackground = info._loadingBackground;
     this->playerPath = info.getPlayerPath();
+    this->name = info.getName();
 }
     
 LevelInfo & LevelInfo::operator=(const LevelInfo & info){
@@ -27,6 +29,7 @@ LevelInfo & LevelInfo::operator=(const LevelInfo & info){
     this->_loadingMessage = info._loadingMessage;
     this->_loadingBackground = info._loadingBackground;
     this->playerPath = info.getPlayerPath();
+    this->name = info.getName();
     return *this;
 }
     
@@ -54,18 +57,44 @@ void LevelInfo::setPlayerPath(const std::string & s){
     this->playerPath = s;
 }
     
+void LevelInfo::setName(const std::string & s){
+    this->name = s;
+}
+    
+const string & LevelInfo::getName() const {
+    return name;
+}
+    
 LevelInfo::~LevelInfo(){
 }
 
-static void readName(LevelInfo * info, Token * name){
+LevelInfo readLevel(Token * level){
+    LevelInfo info;
+
+    try{
+        Token * token_name = level->findToken("level-set/name");
+        Token * token_levels = level->findToken("level-set/levels");
+        Token * token_player = level->findToken("level-set/player-path");
+
+        string name;
+        *token_name >> name;
+        info.setName(name);
+
+        while (token_levels->hasTokens()){
+            Token * next;
+            *token_levels >> next;
+            Global::debug(1) << "Add level " << next->getName() << endl;
+            info.addLevel(next->getName());
+        }
+
+    } catch (const TokenException & e){
+        Global::debug( 0 ) << "Error while reading level set: " << e.getReason() << endl;
+    }
+
+    return info;
 }
 
-static void readLevels(LevelInfo * info, Token * levels){
-}
-
-static void readPlayerPath(LevelInfo * info, Token * path){
-}
-
+#if 0
 LevelInfo readLevels( const string & filename ){
     LevelInfo info;
     try{
@@ -103,5 +132,6 @@ LevelInfo readLevels( const string & filename ){
         return info;
     }
 }
+#endif
 
 }

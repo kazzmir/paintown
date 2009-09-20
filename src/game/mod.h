@@ -20,13 +20,15 @@ public:
 
     const std::string & getMenu();
 
+    std::vector<Level::LevelInfo> & getLevels();
+
     ~Mod();
 
     static void loadMod(const std::string & path) throw (LoadException, Filesystem::NotFound);
     static Mod * getCurrentMod();
     
 protected:
-    std::vector<Level::LevelInfo *> levels;
+    std::vector<Level::LevelInfo> levels;
     std::string menu;
 
     static Mod * currentMod;

@@ -10,7 +10,7 @@ class Token;
 /*! Handles key reconfiguration */
 class OptionLevel : public MenuOption {
 public:
-	OptionLevel(Token *token, std::string * set) throw (LoadException);
+	OptionLevel(Token *token, int * set, int value) throw (LoadException);
 
 	// Do logic before run part
 	virtual void logic();
@@ -22,8 +22,9 @@ public:
 	virtual ~OptionLevel();
 
 protected:
-        /* string to set if this option is chosen */
-        std::string * update;
+    /* integer to set if this option is chosen */
+    int * set;
+    int value;
 };
 
 #endif
