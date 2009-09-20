@@ -123,6 +123,7 @@ src/util/ebox.cpp
 src/util/joystick.cpp
 src/util/allegro-joystick.cpp
 src/util/system.cpp
+src/util/message-queue.cpp
 src/util/linux_joystick.cpp
 src/util/load_exception.cpp
 src/windows/funcs.cpp

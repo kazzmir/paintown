@@ -5,9 +5,10 @@
 
 using namespace std;
 	
-Messages::Messages( int width, int height ):
-width( width ),
-height( height ){
+Messages::Messages( int width, int height, int opaque ):
+width(width),
+height(height),
+opaque(opaque){
 }
 
 static vector< string > wrapStrings( const string & left, const string & right, const Font & font, int max, vector< string > accum ){
@@ -53,12 +54,15 @@ void Messages::addMessage( const std::string & s ){
 	
 void Messages::draw( int x, int y, const Bitmap & work, const Font & font ){
 	work.drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::transBlender( 0, 0, 0, 128 );
+	Bitmap::transBlender(0, 0, 0, this->opaque);
 	work.rectangleFill( x, y, x + width, y + height, Bitmap::makeColor( 0, 0, 0 ) );
 	work.drawingMode( Bitmap::MODE_SOLID );
-	work.rectangle( x, y, x + width, y + height, Bitmap::makeColor( 255, 255, 255 ) );
+	// work.rectangle( x, y, x + width-1, y + height-1, Bitmap::makeColor( 255, 255, 255 ) );
+    work.border(0, 1, Bitmap::makeColor(200, 200, 200));
 
-	Bitmap area( work, x, y, width, height );
+    /* fast because its a sub-bitmap */
+	Bitmap area(work, x, y, width, height);
+
 	int current_y = height - font.getHeight() - 1;
 	// int max_length = area.getWidth() / font.textLength( "E" );
 	for ( vector< string >::reverse_iterator it = messages.rbegin(); it != messages.rend(); it++ ){

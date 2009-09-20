@@ -9,7 +9,7 @@ class Font;
 
 class Messages{
 public:
-	Messages( int width, int height );
+	Messages(int width, int height, int opaque = 128);
 
 	virtual inline const int getHeight() const {
 		return height;
@@ -28,6 +28,7 @@ public:
 protected:
 	int width;
 	int height;
+    int opaque;
 	std::vector< std::string > messages;
 };
 

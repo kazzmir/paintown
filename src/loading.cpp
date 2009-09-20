@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "level/utils.h"
+#include "network/messages.h"
 #include "loading.h"
 #include "util/file-system.h"
 #include "util/font.h"
@@ -19,92 +20,109 @@ typedef struct pair{
 } ppair;
 
 void * loadingScreen( void * arg ){
-	int load_x = 80;
-	int load_y = 220;
-	string name = Filesystem::find("/fonts/arial.ttf");
-	const Font & myFont = Font::getFont( name, 24, 24 );
-        Level::LevelInfo levelInfo;
-        if (arg != NULL){
-            levelInfo = *(Level::LevelInfo*) arg;
+    const int load_x = 80;
+    const int load_y = 220;
+    const int infobox_width = 200;
+    const int infobox_height = 150;
+    string name = Filesystem::find("/fonts/arial.ttf");
+    const Font & myFont = Font::getFont( name, 24, 24 );
+    const Font & infoFont = Font::getFont(name, 24, 24);
+    Level::LevelInfo levelInfo;
+    if (arg != NULL){
+        levelInfo = *(Level::LevelInfo*) arg;
+    }
+    // const char * the_string = (arg != NULL) ? (const char *) arg : "Loading...";
+    int load_width = myFont.textLength(levelInfo.loadingMessage().c_str());
+    int load_height = myFont.getHeight(levelInfo.loadingMessage().c_str());
+
+    const int infobox_x = load_x;
+    const int infobox_y = load_y + load_height * 2;
+
+    Global::debug( 2 ) << "loading screen" << endl;
+
+    Bitmap work( load_width, load_height );
+    Bitmap letters( load_width, load_height );
+
+    Messages infobox(infobox_width, infobox_height);
+    Bitmap infoWork(infobox_width, infobox_height);
+    Bitmap infoBackground(infobox_width, infobox_height);
+
+    infobox.addMessage("testing");
+
+    letters.fill( Bitmap::MaskColor );
+    myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, levelInfo.loadingMessage().c_str(), 0 ); 
+
+    vector< ppair > pairs;
+    /* store every pixel we need to draw */
+    for ( int x = 0; x < letters.getWidth(); x++ ){
+        for ( int y = 0; y < letters.getHeight(); y++ ){
+            int pixel = letters.getPixel( x, y );
+            if ( pixel != Bitmap::MaskColor ){
+                ppair p;
+                p.x = x;
+                p.y = y;
+                pairs.push_back( p );
+            }
         }
-	// const char * the_string = (arg != NULL) ? (const char *) arg : "Loading...";
-	int load_width = myFont.textLength(levelInfo.loadingMessage().c_str());
-	int load_height = myFont.getHeight(levelInfo.loadingMessage().c_str());
+    }
 
-	Global::debug( 2 ) << "loading screen" << endl;
+    const int MAX_COLOR = 200;
 
-	Bitmap work( load_width, load_height );
-	Bitmap letters( load_width, load_height );
+    int colors[ MAX_COLOR ];
+    int c1 = Bitmap::makeColor( 16, 16, 16 );
+    int c2 = Bitmap::makeColor( 192, 8, 8 );
+    /* blend from dark grey to light red */
+    Util::blend_palette( colors, MAX_COLOR / 2, c1, c2 );
+    Util::blend_palette( colors + MAX_COLOR / 2, MAX_COLOR / 2, c2, c1 );
 
-	letters.fill( Bitmap::MaskColor );
-	myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, levelInfo.loadingMessage().c_str(), 0 ); 
+    Global::speed_counter = 0;
 
-	vector< ppair > pairs;
-	/* store every pixel we need to draw */
-	for ( int x = 0; x < letters.getWidth(); x++ ){
-		for ( int y = 0; y < letters.getHeight(); y++ ){
-			int pixel = letters.getPixel( x, y );
-			if ( pixel != Bitmap::MaskColor ){
-				ppair p;
-				p.x = x;
-				p.y = y;
-				pairs.push_back( p );
-			}
-		}
-	}
+    { /* force scoping */
+        Bitmap background(levelInfo.loadingBackground());
+        background.Blit( load_x, load_y, load_width, load_height, 0, 0, work );
+        Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2 - Font::getDefaultFont().getHeight(), Bitmap::makeColor( 192, 192, 192 ), background, "Paintown version %s", 0, Global::getVersionString().c_str());
+        Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), background, "Made by Jon Rafkind", 0 );
+        background.BlitToScreen();
+        background.Blit(infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), 0, 0, infoBackground);
+    }
+    bool quit = false;
 
-	const int MAX_COLOR = 200;
-	
-	int colors[ MAX_COLOR ];
-	int c1 = Bitmap::makeColor( 16, 16, 16 );
-	int c2 = Bitmap::makeColor( 192, 8, 8 );
-	/* blend from dark grey to light red */
-	Util::blend_palette( colors, MAX_COLOR / 2, c1, c2 );
-	Util::blend_palette( colors + MAX_COLOR / 2, MAX_COLOR / 2, c2, c1 );
+    /* keeps the colors moving */
+    static unsigned mover = 0;
 
-	Global::speed_counter = 0;
+    while ( ! quit ){
 
-        { /* force scoping */
-            Bitmap background(levelInfo.loadingBackground());
-            background.Blit( load_x, load_y, load_width, load_height, 0, 0, work );
-            Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2 - Font::getDefaultFont().getHeight(), Bitmap::makeColor( 192, 192, 192 ), background, "Paintown version %s", 0, Global::getVersionString().c_str());
-            Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), background, "Made by Jon Rafkind", 0 );
-            background.BlitToScreen();
+        bool draw = false;
+        if ( Global::speed_counter > 0 ){
+            double think = Global::speed_counter;	
+            Global::speed_counter = 0;
+            draw = true;
+            while ( think > 0 ){
+                mover = (mover + 1) % MAX_COLOR;
+                think -= 1;
+            }
+        } else {
+            Util::rest( 1 );
         }
-	bool quit = false;
 
-	/* keeps the colors moving */
-	static unsigned mover = 0;
+        if ( draw ){
+            for ( vector< ppair >::iterator it = pairs.begin(); it != pairs.end(); it++ ){
+                int color = colors[ (it->x - mover + MAX_COLOR) % MAX_COLOR ];
+                work.putPixel( it->x, it->y, color );
+            }
 
-	while ( ! quit ){
+            infoBackground.Blit(infoWork);
+            infobox.draw(0, 0, infoWork, infoFont);
+            /* work already contains the correct background */
+            // work.Blit( load_x, load_y, *Bitmap::Screen );
+            work.BlitAreaToScreen( load_x, load_y );
+            infoWork.BlitAreaToScreen(infobox_x, infobox_y);
+        }
 
-		bool draw = false;
-		if ( Global::speed_counter > 0 ){
-			double think = Global::speed_counter;	
-			Global::speed_counter = 0;
-			draw = true;
-			while ( think > 0 ){
-				mover = (mover + 1) % MAX_COLOR;
-				think -= 1;
-			}
-		} else {
-			Util::rest( 1 );
-		}
+        pthread_mutex_lock( &Global::loading_screen_mutex );
+        quit = Global::done_loading;
+        pthread_mutex_unlock( &Global::loading_screen_mutex );
+    }
 
-		if ( draw ){
-			for ( vector< ppair >::iterator it = pairs.begin(); it != pairs.end(); it++ ){
-				int color = colors[ (it->x - mover + MAX_COLOR) % MAX_COLOR ];
-				work.putPixel( it->x, it->y, color );
-			}
-			/* work already contains the correct background */
-			// work.Blit( load_x, load_y, *Bitmap::Screen );
-                        work.BlitAreaToScreen( load_x, load_y );
-		}
-
-		pthread_mutex_lock( &Global::loading_screen_mutex );
-		quit = Global::done_loading;
-		pthread_mutex_unlock( &Global::loading_screen_mutex );
-	}
-
-	return NULL;
+    return NULL;
 }
