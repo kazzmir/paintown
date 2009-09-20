@@ -309,7 +309,7 @@ void Scene::drawFront( int x, Bitmap * work ){
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
-        atmosphere->drawForeground(work, x);
+        atmosphere->drawForeground(work, x * getForegroundParallax());
     }
 
     /* lazily initialize to ensure the buffer is the same size as the bitmap
