@@ -15,6 +15,7 @@ src/versus_world.cpp)
 set(GAME_SRC
 src/game/console.cpp
 src/game/adventure_world.cpp
+src/game/mod.cpp
 src/game/input.cpp
 src/game/input-manager.cpp)
 

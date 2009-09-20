@@ -7,6 +7,7 @@
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "game/input-manager.h"
+#include "game/mod.h"
 #include "shutdown_exception.h"
 #include "util/timedifference.h"
 #include "util/funcs.h"
@@ -89,7 +90,10 @@ static void addArgs(vector<const char *> & args, const char * strings[], int num
 }
 
 static string mainMenuPath() throw (TokenException, LoadException, Filesystem::NotFound){
-    string file = Filesystem::find(Configuration::getCurrentGame() + "/" + Configuration::getCurrentGame() + ".txt");
+    string menu = Paintown::Mod::getCurrentMod()->getMenu();
+    return Filesystem::find(menu);
+    /*
+    string file = Filesystem::find(currentMod());
     TokenReader tr(file);
     Token * head = tr.readToken();
     Token * menu = head->findToken("game/menu");
@@ -100,6 +104,7 @@ static string mainMenuPath() throw (TokenException, LoadException, Filesystem::N
     *menu >> path;
     // string path = "/menu/main.txt"
     return Filesystem::find(path);
+    */
 }
 
 int paintown_main( int argc, char ** argv ){
@@ -170,6 +175,8 @@ int paintown_main( int argc, char ** argv ){
     }
     diff.endTime();
     diff.printTime("Init:");
+
+    Paintown::Mod::loadMod(Configuration::getCurrentGame());
 
     InputManager input;
     Music music(music_on);

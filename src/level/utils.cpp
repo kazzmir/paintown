@@ -57,17 +57,31 @@ void LevelInfo::setPlayerPath(const std::string & s){
 LevelInfo::~LevelInfo(){
 }
 
+static void readName(LevelInfo * info, Token * name){
+}
+
+static void readLevels(LevelInfo * info, Token * levels){
+}
+
+static void readPlayerPath(LevelInfo * info, Token * path){
+}
+
 LevelInfo readLevels( const string & filename ){
     LevelInfo info;
     try{
         TokenReader tr( filename );
         Token * head = tr.readToken();
 
+        readName(&info, head->findToken("level-set/name"));
+        readLevels(&info, head->findToken("level-set/levels"));
+        readPlayerPath(&info, head->findToken("level-set/player-path"));
+
+        /*
         if ( *head == "levels" ){
             while (head->hasTokens()){
                 Token * next;
                 *head >> next;
-                /* old way */
+                / * old way * /
                 if (!next->hasTokens()){
                     Global::debug(1) << "Add level " << next->getName() << endl;
                     info.addLevel(next->getName());
@@ -80,6 +94,8 @@ LevelInfo readLevels( const string & filename ){
                 }
             }
         }
+        */
+
         return info;
 
     } catch ( const TokenException & lex ){
