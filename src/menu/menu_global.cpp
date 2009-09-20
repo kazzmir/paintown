@@ -10,6 +10,7 @@
 #include "util/token.h"
 #include "util/file-system.h"
 #include "util/tokenreader.h"
+#include "level/utils.h"
 #include "globals.h"
 #include "resource.h"
 #include "init.h"
@@ -111,7 +112,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
 }
 
-std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw (LoadException, Filesystem::NotFound) {
+Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw (LoadException, Filesystem::NotFound) {
     std::vector<std::string> possible = Util::getFiles(Filesystem::find(dir + "/"), "*.txt" );
 
     /* count is the number of pixels the menu can be. try not to hard code
@@ -131,12 +132,12 @@ std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw 
         count = 250;
     }
 
-    if ( possible.size() == 0 ){
-        return "no-files";
+    if (possible.size() == 0){
+        throw LoadException("No level files found");
     }
 
     if (possible.size() == 1){
-        return Filesystem::find(possible[0]);
+        return Level::readLevels(Filesystem::find(possible[0]));
     }
 
     try{
@@ -153,15 +154,10 @@ std::string MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw 
         temp.backboard.position.height = count;
         // Run it
         temp.run();
-        return Filesystem::find(level);
+        return Level::readLevels(Filesystem::find(level));
     } catch (const TokenException & ex){
         Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
-        return "";
-    } catch (const LoadException & ex){
-        Global::debug(0) << "There was a problem loading the level select menu. Error was:\n  " << ex.getReason() << endl;
-        return "";
-    } catch (const Filesystem::NotFound & ex){
-        return "";
+        throw LoadException("Could not load levels " + ex.getReason());
     }
     throw LoadException("No level chosen!");
 

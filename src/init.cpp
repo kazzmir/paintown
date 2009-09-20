@@ -127,71 +127,71 @@ END_OF_FUNCTION(close_window)
 
 bool Global::init( int gfx ){
 
-	ostream & out = Global::debug( 0 );
-	out << "-- BEGIN init --" << endl;
-        out << "Data path is " << Util::getDataPath2() << endl;
-        out << "Paintown version " << Global::getVersionString() << endl;
-        out << "Build date " << __DATE__ << " " << __TIME__ << endl;
-	out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
-	out <<"Allegro init: "<<allegro_init()<<endl;
-	out <<"Install timer: "<<install_timer()<<endl;
-	
-	set_volume_per_voice( 0 );
-	out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
-	
-        /* png */
-	loadpng_init();
-        
-        Bitmap::SCALE_X = GFX_X;
-        Bitmap::SCALE_Y = GFX_Y;
-	
-        Configuration::loadConfigurations();
+    ostream & out = Global::debug( 0 );
+    out << "-- BEGIN init --" << endl;
+    out << "Data path is " << Util::getDataPath2() << endl;
+    out << "Paintown version " << Global::getVersionString() << endl;
+    out << "Build date " << __DATE__ << " " << __TIME__ << endl;
+    out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
+    out << "Allegro init: " <<allegro_init()<<endl;
+    out << "Install timer: " <<install_timer()<<endl;
 
-        const int sx = Configuration::getScreenWidth();
-        const int sy = Configuration::getScreenHeight();
+    set_volume_per_voice( 0 );
+    out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
 
-	out<<"Install keyboard: "<<install_keyboard()<<endl;
+    /* png */
+    loadpng_init();
+
+    Bitmap::SCALE_X = GFX_X;
+    Bitmap::SCALE_Y = GFX_Y;
+
+    Configuration::loadConfigurations();
+
+    const int sx = Configuration::getScreenWidth();
+    const int sy = Configuration::getScreenHeight();
+
+    out<<"Install keyboard: "<<install_keyboard()<<endl;
     /* do we need the mouse?? */
-	// out<<"Install mouse: "<<install_mouse()<<endl;
-	out<<"Install joystick: "<<install_joystick(JOY_TYPE_AUTODETECT)<<endl;
-        /* 16 bit color depth */
-	set_color_depth(16);
+    // out<<"Install mouse: "<<install_mouse()<<endl;
+    out<<"Install joystick: "<<install_joystick(JOY_TYPE_AUTODETECT)<<endl;
+    /* 16 bit color depth */
+    set_color_depth(16);
 
-        /* set up the screen */
-	out<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, sx, sy ) <<endl;
+    /* set up the screen */
+    out<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, sx, sy ) <<endl;
 
-	LOCK_VARIABLE( speed_counter );
-	LOCK_VARIABLE( second_counter );
-	LOCK_FUNCTION( (void *)inc_speed_counter );
-	LOCK_FUNCTION( (void *)inc_second_counter );
-        /* set up the timers */
-	out<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
-	out<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
-	out << "Initialize random number generator" << endl;
-        /* initialize random number generator */
-	srand( time( NULL ) );
+    LOCK_VARIABLE( speed_counter );
+    LOCK_VARIABLE( second_counter );
+    LOCK_FUNCTION( (void *)inc_speed_counter );
+    LOCK_FUNCTION( (void *)inc_second_counter );
+    /* set up the timers */
+    out<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
+    out<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
+    out << "Initialize random number generator" << endl;
+    /* initialize random number generator */
+    srand( time( NULL ) );
 
-        /* keep running in the background */
-	set_display_switch_mode(SWITCH_BACKGROUND);
+    /* keep running in the background */
+    set_display_switch_mode(SWITCH_BACKGROUND);
 
-        /* close window when the X is pressed */
-        LOCK_FUNCTION(close_window);
-        set_close_button_callback(close_window);
-	
-        /* music */
-	atexit( &dumb_exit );
-	atexit( Network::closeAll );
-	dumb_register_packfiles();
+    /* close window when the X is pressed */
+    LOCK_FUNCTION(close_window);
+    set_close_button_callback(close_window);
 
-	registerSignals();
+    /* music */
+    atexit( &dumb_exit );
+    atexit( Network::closeAll );
+    dumb_register_packfiles();
 
-	out << "Initialize network" << endl;
-	Network::init();
+    registerSignals();
 
-        /* this mutex is used to show the loading screen while the game loads */
-	pthread_mutex_init( &Global::loading_screen_mutex, NULL );
-	
-	out<<"-- END init --"<<endl;
+    out << "Initialize network" << endl;
+    Network::init();
 
-	return true;
+    /* this mutex is used to show the loading screen while the game loads */
+    pthread_mutex_init( &Global::loading_screen_mutex, NULL );
+
+    out<<"-- END init --"<<endl;
+
+    return true;
 }

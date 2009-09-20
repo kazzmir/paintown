@@ -59,34 +59,34 @@ void OptionAdventure::logic(){
 }
 
 void OptionAdventure::run(bool &endGame){
-	Keyboard key;
-	Object * player = NULL;
-	try{
-		//string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
-		string level = MenuGlobals::doLevelMenu("/levels",parent);
+    Keyboard key;
+    Object * player = NULL;
+    try{
+        //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
+        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels",parent);
 
-		if (level.empty()){
-                    Global::debug(0) << "*bug* Level name is empty?" << endl;
-                    /* throw an error or something */
-                    return;
-                }
-		key.wait();
+        /*
+        if (level.empty()){
+            Global::debug(0) << "*bug* Level name is empty?" << endl;
+            throw an error or something
+            return;
+        */
+        key.wait();
 
-                Level::LevelInfo info = Level::readLevels(level);
-		
-		player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info);
-                player->setObjectId(-1);
-		((Player *)player)->setLives( MenuGlobals::getLives() );
-		vector< Object * > players;
-		players.push_back( player );
-		Game::realGame(players, info);
-	} catch ( const LoadException & le ){
-		Global::debug( 0 ) << "Error while loading: " << le.getReason() << endl;
-	} catch ( const ReturnException & r ){
-		key.wait();
-	}
+        player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info);
+        player->setObjectId(-1);
+        ((Player *)player)->setLives( MenuGlobals::getLives() );
+        vector< Object * > players;
+        players.push_back( player );
+        Game::realGame(players, info);
+    } catch ( const LoadException & le ){
+        Global::debug( 0 ) << "Error while loading: " << le.getReason() << endl;
+    } catch ( const ReturnException & r ){
+        key.wait();
+    }
 
-	if ( player != NULL ){
-		delete player;
-	}
+    /* player will be null if an exception occurred before selectPlayer was called */
+    if ( player != NULL ){
+        delete player;
+    }
 }
