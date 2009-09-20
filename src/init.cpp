@@ -151,7 +151,8 @@ bool Global::init( int gfx ){
         const int sy = Configuration::getScreenHeight();
 
 	out<<"Install keyboard: "<<install_keyboard()<<endl;
-	out<<"Install mouse: "<<install_mouse()<<endl;
+    /* do we need the mouse?? */
+	// out<<"Install mouse: "<<install_mouse()<<endl;
 	out<<"Install joystick: "<<install_joystick(JOY_TYPE_AUTODETECT)<<endl;
         /* 16 bit color depth */
 	set_color_depth(16);

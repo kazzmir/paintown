@@ -265,11 +265,11 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, m
      * start at the 16th byte
      */
     ifile.seekg(location,ios::beg);
-    unsigned long totalGroups;
-    unsigned long totalImages;
-    unsigned long suboffset;
-    unsigned long subhead;
-    unsigned int sharedPal;
+    unsigned long totalGroups = 0;
+    unsigned long totalImages = 0;
+    unsigned long suboffset = 0;
+    unsigned long subhead = 0;
+    unsigned int sharedPal = 0;
     
     /* this probably isn't endian safe.. */
     ifile.read((char *)&totalGroups, sizeof(unsigned long));
