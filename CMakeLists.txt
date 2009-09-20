@@ -65,8 +65,8 @@ find_package(ALLEGRO)
 find_package(FREETYPE)
 find_package(Threads)
 find_package(Ruby)
-find_package(BISON)
-find_package(FLEX)
+#find_package(BISON)
+#find_package(FLEX)
 include(TestForPythonEmbed)
 
 # -------------------------------------------------------
@@ -118,14 +118,14 @@ if(RUBY_INCLUDE_PATH)
 endif(RUBY_INCLUDE_PATH)
 
 # Check for bison
-if(NOT BISON_EXECUTABLE)
-	message(FATAL_ERROR "Couldn't find bison")
-endif(NOT BISON_EXECUTABLE)
-
-# Check for flex
-if(NOT FLEX_EXECUTABLE)
-	message(FATAL_ERROR "Couldn't find flex")
-endif(NOT FLEX_EXECUTABLE)
+# if(NOT BISON_EXECUTABLE)
+# 	message(FATAL_ERROR "Couldn't find bison")
+# endif(NOT BISON_EXECUTABLE)
+# 
+# # Check for flex
+# if(NOT FLEX_EXECUTABLE)
+# 	message(FATAL_ERROR "Couldn't find flex")
+# endif(NOT FLEX_EXECUTABLE)
 
 # -------------------------------------------------------
 # Paths and system setup
@@ -159,14 +159,14 @@ if(APPLE)
 endif(APPLE)
 
 #Add flex files to compile
-set(FLEX_SRC ${CMAKE_BINARY_DIR}/src/mugen/lex.yy.c ${CMAKE_BINARY_DIR}/src/mugen/parse.cc)
-set(FLEX_INCLUDE ${CMAKE_SOURCE_DIR}/src/mugen ${CMAKE_BINARY_DIR}/src/mugen)
-set(FLEX_LIB -lfl)
+#set(FLEX_SRC ${CMAKE_BINARY_DIR}/src/mugen/lex.yy.c ${CMAKE_BINARY_DIR}/src/mugen/parse.cc)
+#set(FLEX_INCLUDE ${CMAKE_SOURCE_DIR}/src/mugen ${CMAKE_BINARY_DIR}/src/mugen)
+#set(FLEX_LIB -lfl)
 
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${PY_LIBS} ${RUBY_LIBS} ${FLEX_LIB} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${PY_LIBS} ${RUBY_LIBS} ${WIN_LIB} ${WINSOCK})
 
 set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
 ${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC} ${GAME_SRC} ${MUGEN_SRC} ${FLEX_SRC} ${OGG_SRC})
@@ -205,8 +205,8 @@ if(UNIX OR LINUX OR CYGWIN OR MINGW)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_SOURCE_DIR}/data/scripts/paintown.py COPYONLY)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/mugen)
-  execute_process(COMMAND ${BISON_EXECUTABLE} -d -o ${CMAKE_BINARY_DIR}/src/mugen/parse.cc ${CMAKE_SOURCE_DIR}/src/mugen/parse.yy
-		 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-  execute_process(COMMAND ${FLEX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/mugen/lex.l
-		 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/mugen/)
+  #  execute_process(COMMAND ${BISON_EXECUTABLE} -d -o ${CMAKE_BINARY_DIR}/src/mugen/parse.cc ${CMAKE_SOURCE_DIR}/src/mugen/parse.yy
+  #		 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+  #  execute_process(COMMAND ${FLEX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/mugen/lex.l
+  #		 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/mugen/)
 endif(UNIX OR LINUX OR CYGWIN OR MINGW)
