@@ -113,11 +113,13 @@ void * loadingScreen( void * arg ){
 
     /* keeps the colors moving */
     static unsigned mover = 0;
+    bool firstDraw = true;
 
     while ( ! quit ){
 
         bool draw = false;
-        bool drawInfo = false;
+        bool drawInfo = firstDraw;
+        firstDraw = false;
         if ( Global::speed_counter > 0 ){
             double think = Global::speed_counter;	
             Global::speed_counter = 0;
