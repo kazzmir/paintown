@@ -174,8 +174,6 @@ int paintown_main( int argc, char ** argv ){
     InputManager input;
     Music music(music_on);
     try{
-        extern void * loadingScreen(void *);
-        loadingScreen(NULL);
         Menu game;
         game.load(mainMenuPath());
         game.run();

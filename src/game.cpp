@@ -464,7 +464,9 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
                         }
                         */
 
+            Global::info("Setting up world");
 			AdventureWorld world( players, Filesystem::find(*it));
+            Global::info("World setup");
 
 			Music::pause();
 			Music::fadeIn( 0.3 );
@@ -482,9 +484,10 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
 				playerX->setStatus( Status_Falling );
 			}
 
+            Global::info("Go!");
 			stopLoading( loading_screen_thread );
 
-                        gameState = playLevel( world, players, showHelp );
+            gameState = playLevel( world, players, showHelp );
 			showHelp = 0;
 
 		} catch ( const LoadException & le ){

@@ -58,7 +58,7 @@ continuous( false ){
 					BlockObject * so = new BlockObject( current );
 
 					/* cache the object in the factory */
-					Object * tmp = ObjectFactory::createObject( so );
+					Object * tmp = ObjectFactory::createObject(so);
 					if ( tmp == NULL ){
 						current->print(" ");
 						delete so;

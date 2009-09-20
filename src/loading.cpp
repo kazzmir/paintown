@@ -73,8 +73,6 @@ void * loadingScreen( void * arg ){
     Bitmap infoWork(infobox_width, infobox_height);
     Bitmap infoBackground(infobox_width, infobox_height);
 
-    // infobox.addMessage("testing");
-
     letters.fill( Bitmap::MaskColor );
     myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, levelInfo.loadingMessage().c_str(), 0 ); 
 
@@ -124,10 +122,6 @@ void * loadingScreen( void * arg ){
             double think = Global::speed_counter;	
             Global::speed_counter = 0;
             draw = true;
-
-            if (Util::rnd(10) == 0){
-                Global::info("hello world!");
-            }
 
             while ( think > 0 ){
                 mover = (mover + 1) % MAX_COLOR;
