@@ -1,7 +1,8 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
 #include "night_atmosphere.h"
-#include "../globals.h"
+#include "util/file-system.h"
+#include "globals.h"
 #include <vector>
 
 using namespace std;
@@ -20,6 +21,7 @@ NightAtmosphere::NightAtmosphere():
 Atmosphere(),
 darkness(128){
 
+    lamp = new Bitmap(Filesystem::find("sprites/lamp.png"));
     addLight(500, 30, 50, 30, Bitmap::makeColor(32,32,0), 0);
     addLight(300, 30, 70, 30, Bitmap::makeColor(0,32,192), 128);
 }
@@ -28,6 +30,7 @@ NightAtmosphere::~NightAtmosphere(){
     for (vector<Light*>::iterator it = lights.begin(); it != lights.end(); it++){
         delete (*it);
     }
+    delete lamp;
 }
 
 /* lights should not overlap! the effect completely messes up if they do
@@ -85,6 +88,7 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
     Bitmap::drawingMode(Bitmap::MODE_SOLID);
     int xwidth = (double) lamp_height / ((double)(save.getHeight() - top) / (double) lower_width);
     save.light(middle, top, xwidth, lamp_height, lamp_top, light_alpha, dark_alpha, light, black);
+    lamp->draw(middle - 8, top, save);
     save.draw(where_x, 0, *work);
 }
 
@@ -112,7 +116,9 @@ void NightAtmosphere::drawForeground(Bitmap * work, int x){
     
     for (vector<Light*>::iterator it = lights.begin(); it != lights.end(); it++){
         Light * light = *it;
-        drawLight(&save, work, light->x - x, light->y, light->lower_width, light->upper_width, black, darkness, light->color, light->alpha);
+        int my_x = light->x - x;
+        int my_y = light->y;
+        drawLight(&save, work, my_x, my_y, light->lower_width, light->upper_width, black, darkness, light->color, light->alpha);
     }
 }
 
