@@ -11,6 +11,7 @@
 #include "globals.h"
 #include <vector>
 #include <pthread.h>
+#include "util/message-queue.h"
 #include "init.h"
 
 using namespace std;
@@ -19,11 +20,36 @@ typedef struct pair{
 	int x, y;
 } ppair;
 
+class Info{
+public:
+    Info(){
+        Global::registerInfo(&messages);
+    }
+
+    bool transferMessages(Messages & box){
+        bool did = false;
+        while (messages.hasAny()){
+            const string & str = messages.get();
+            box.addMessage(str);
+            did = true;
+        }
+        return did;
+    }
+
+    ~Info(){
+        Global::unregisterInfo(&messages);
+    }
+
+private:
+    MessageQueue messages;
+};
+
 void * loadingScreen( void * arg ){
     const int load_x = 80;
     const int load_y = 220;
     const int infobox_width = 200;
     const int infobox_height = 150;
+    Info info;
     string name = Filesystem::find("/fonts/arial.ttf");
     const Font & myFont = Font::getFont( name, 24, 24 );
     const Font & infoFont = Font::getFont(name, 24, 24);
@@ -47,7 +73,7 @@ void * loadingScreen( void * arg ){
     Bitmap infoWork(infobox_width, infobox_height);
     Bitmap infoBackground(infobox_width, infobox_height);
 
-    infobox.addMessage("testing");
+    // infobox.addMessage("testing");
 
     letters.fill( Bitmap::MaskColor );
     myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, levelInfo.loadingMessage().c_str(), 0 ); 
@@ -93,14 +119,21 @@ void * loadingScreen( void * arg ){
     while ( ! quit ){
 
         bool draw = false;
+        bool drawInfo = false;
         if ( Global::speed_counter > 0 ){
             double think = Global::speed_counter;	
             Global::speed_counter = 0;
             draw = true;
+
+            if (Util::rnd(10) == 0){
+                Global::info("hello world!");
+            }
+
             while ( think > 0 ){
                 mover = (mover + 1) % MAX_COLOR;
                 think -= 1;
             }
+            drawInfo = info.transferMessages(infobox);
         } else {
             Util::rest( 1 );
         }
@@ -111,12 +144,14 @@ void * loadingScreen( void * arg ){
                 work.putPixel( it->x, it->y, color );
             }
 
-            infoBackground.Blit(infoWork);
-            infobox.draw(0, 0, infoWork, infoFont);
+            if (drawInfo){
+                infoBackground.Blit(infoWork);
+                infobox.draw(0, 0, infoWork, infoFont);
+                infoWork.BlitAreaToScreen(infobox_x, infobox_y);
+            }
             /* work already contains the correct background */
             // work.Blit( load_x, load_y, *Bitmap::Screen );
             work.BlitAreaToScreen( load_x, load_y );
-            infoWork.BlitAreaToScreen(infobox_x, infobox_y);
         }
 
         pthread_mutex_lock( &Global::loading_screen_mutex );

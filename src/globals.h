@@ -5,6 +5,7 @@
 #include <string>
 
 class Bitmap;
+class MessageQueue;
 
 extern const int ALLIANCE_NONE;
 extern const int ALLIANCE_PLAYER;
@@ -30,6 +31,10 @@ std::ostream & debug( int i );
 
 void showTitleScreen();
 const std::string titleScreen();
+
+void registerInfo(MessageQueue *);
+void unregisterInfo(MessageQueue *);
+void info(const std::string & str);
 
 }
 

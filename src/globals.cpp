@@ -3,6 +3,7 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
 #include "util/file-system.h"
+#include "util/message-queue.h"
 #include <iostream>
 #include <sstream>
 
@@ -86,4 +87,26 @@ void Global::showTitleScreen(){
 
 const std::string Global::titleScreen(){
 	return Filesystem::find("/menu/paintown.png");
+}
+
+namespace Global{
+
+/* should support infinite queues eventually */
+static MessageQueue * current = NULL;
+void registerInfo(MessageQueue * queue){
+    current = queue;
+}
+
+void unregisterInfo(MessageQueue * queue){
+    if (current == queue){
+        current = NULL;
+    }
+}
+
+void info(const std::string & str){
+    if (current != NULL){
+        current->add(str);
+    }
+}
+
 }
