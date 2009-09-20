@@ -46,12 +46,11 @@ Future
 * allow characters to block
 * give enemies 'behaviors' which model how they act
 * make network mode use versions
-* allow level sets to only allow explicit players
+10% * allow level sets to only allow explicit players
 10% * make a console like in quake where debug output can go
 * port to psp/nds
 * mugen config and txt files
-  - parse data using lexer
-  - fix parsing in windows
+20%  - parse data using lexer
 * mugen sff files
   - Correct issues with loading certain files like (High/Low) Resolution images and their palettes
 * mugen characters in paintown
@@ -85,11 +84,18 @@ Future
     Round Ticker, Players Health and Power bars) etc.
     DONE - Menuing system utilize paintowns menus to render itself and its options
     - Each submenu subclass MenuOption to produce the arcade/versus/demo etc
-* network players need their health/name drawn in front of background stuff
+maybe done? * network players need their health/name drawn in front of background stuff
 * allow more characters in the network host boxes (like '-')
-* make "Loading Paintown" text configurable
+DONE * make "Loading Paintown" text configurable
 * make credits screen configurable
 * triggers during the level. send arbitrary s-expressions to objects/anything
   (trigger (to (object 2)) (message (increase health 20)))
 * bitmaps should be able to swap themselves out on demand. if memory is constrained then save to disk or completely unload some bitmaps. when those bitmaps need to be used again reload them. this can be done for sounds as well.
 * turn around animations. when a character is facing left and turns right, instead of just instantly facing right there should be a "turn" animation in between.
+
+For 3.3
+-------
+finish lamp lighting
+make console useable
+parse mugen files
+implement at least partially working mugen
