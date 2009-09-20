@@ -18,6 +18,7 @@
 #include "script/script.h"
 #include "shutdown_exception.h"
 #include "util/file-system.h"
+#include "menu/menu_global.h"
 #include "loading.h"
 #include "network/network.h"
 #include "world.h"
@@ -508,8 +509,11 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
 	// fadeOut( "You win!" );
 }
 
-/* use MenuGlobal::doLevelSet instead */
-const string selectLevelSet( const string & base ) throw( ReturnException ){
+/* use MenuGlobal::doLevelMenu instead */
+const Level::LevelInfo selectLevelSet( const string & base ) throw (LoadException, Filesystem::NotFound){
+    return MenuGlobals::doLevelMenu(base, NULL);
+
+#if 0
         Bitmap background( Global::titleScreen() );
 	// Bitmap::Screen->Blit( Global::titleScreen() );
 
@@ -608,6 +612,7 @@ const string selectLevelSet( const string & base ) throw( ReturnException ){
 	}
 
 	return "nothing-selected";
+#endif
 }
 
 void fadeOut( Bitmap & work, const string & message ){

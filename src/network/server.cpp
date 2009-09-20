@@ -499,197 +499,196 @@ static void sendAllOk(const vector<Socket> & sockets){
 }
 
 static void playGame( const vector< Socket > & sockets ){
-	vector< Object * > players;
-	pthread_t loading_screen_thread;
-	try{
-            /* first the user selects his own player */
-            Level::LevelInfo info;
-		Object * player = Game::selectPlayer( false, "Pick a player", info);
-                /* ugly cast */
-                ((Player *) player)->ignoreLives();
-		players.push_back( player );
-                /* then the user selects a set of levels to play */
-		string levelSet = Game::selectLevelSet(Filesystem::find("/levels"));
-		
-                /* show the loading screen */
-		startLoading( &loading_screen_thread );
+    vector< Object * > players;
+    pthread_t loading_screen_thread;
+    try{
+        /* first the user selects his own player */
+        Level::LevelInfo info;
+        Object * player = Game::selectPlayer( false, "Pick a player", info);
+        /* ugly cast */
+        ((Player *) player)->ignoreLives();
+        players.push_back( player );
+        /* then the user selects a set of levels to play */
+        Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
 
-                /* reset the alliance settings */
-                allAlliance = ALLIANCE_FREE_FOR_ALL;
+        /* show the loading screen */
+        startLoading( &loading_screen_thread );
 
-                /* the server player is network id 1 */
-                Object::networkid_t id = 1;
-		player->setId( id );
-                /* the server's player alliance can just be ALLIANCE_PLAYER, so no
-                 * need to change it
+        /* reset the alliance settings */
+        allAlliance = ALLIANCE_FREE_FOR_ALL;
+
+        /* the server player is network id 1 */
+        Object::networkid_t id = 1;
+        player->setId( id );
+        /* the server's player alliance can just be ALLIANCE_PLAYER, so no
+         * need to change it
+         */
+
+        id += 1;
+        /* all other players will send their chosen character as a
+         * CREATE_CHARACTER message. after receiving it, send back the
+         * network id for that character.
+         */
+        for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+            const Socket & socket = *it;
+            debug( 1 ) << "Read character path from " << id << endl;
+            Message message( socket );
+            int type;
+            message >> type;
+            if ( type == World::CREATE_CHARACTER ){
+                int alliance = playerAlliance();
+                Character * client_character = new NetworkPlayer(Filesystem::find(message.path), alliance);
+                /* Don't need this line now that NetworkPlayer exists.
+                 * take it out at some point.
                  */
+                ((NetworkCharacter *)client_character)->alwaysShowName();
 
-		id += 1;
-                /* all other players will send their chosen character as a
-                 * CREATE_CHARACTER message. after receiving it, send back the
-                 * network id for that character.
-                 */
-		for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-			const Socket & socket = *it;
-			debug( 1 ) << "Read character path from " << id << endl;
-			Message message( socket );
-			int type;
-			message >> type;
-                        if ( type == World::CREATE_CHARACTER ){
-                            int alliance = playerAlliance();
-                            Character * client_character = new NetworkPlayer(Filesystem::find(message.path), alliance);
-                            /* Don't need this line now that NetworkPlayer exists.
-                             * take it out at some point.
-                             */
-                            ((NetworkCharacter *)client_character)->alwaysShowName();
+                players.push_back(client_character);
+                client_character->setLives(1);
+                client_character->setId(id);
+                Message clientId;
+                clientId << World::SET_ID;
+                clientId << id;
+                clientId << alliance;
+                clientId.send( socket );
+                id += 1;
+            } else {
+                debug( 0 ) << "Got a bogus message: " << type << endl;
+            }
+        }
 
-                            players.push_back(client_character);
-                            client_character->setLives(1);
-                            client_character->setId(id);
-                            Message clientId;
-                            clientId << World::SET_ID;
-                            clientId << id;
-                            clientId << alliance;
-                            clientId.send( socket );
-                            id += 1;
-                        } else {
-				debug( 0 ) << "Got a bogus message: " << type << endl;
-			}
-		}
+        /* send all created characters to all clients */
+        for ( vector<Object *>::iterator it = players.begin(); it != players.end(); it++ ){
+            Character * c = (Character *) *it;
+            string path = Filesystem::cleanse(c->getPath());
+            // path.erase( 0, Util::getDataPath().length() );
+            Message add;
+            add << World::CREATE_CHARACTER;
+            add << c->getId();
+            add << c->getAlliance();
+            add.path = path;
+            sendToAll( sockets, add );
+        }
 
-                /* send all created characters to all clients */
-		for ( vector<Object *>::iterator it = players.begin(); it != players.end(); it++ ){
-			Character * c = (Character *) *it;
-			string path = Filesystem::cleanse(c->getPath());
-			// path.erase( 0, Util::getDataPath().length() );
-			Message add;
-			add << World::CREATE_CHARACTER;
-			add << c->getId();
-                        add << c->getAlliance();
-			add.path = path;
-			sendToAll( sockets, add );
-		}
+        /*
+           Message addServer;
+           addServer << World::CREATE_CHARACTER;
+           addServer << player->getId();
+           addServer << player->getAlliance();
+           addServer << ((Character *)player)->getPath().substr( Util::getDataPath().length() );
+           sendToAll( sockets, addServer );
+           */
 
-                /*
-		Message addServer;
-		addServer << World::CREATE_CHARACTER;
-		addServer << player->getId();
-		addServer << player->getAlliance();
-		addServer << ((Character *)player)->getPath().substr( Util::getDataPath().length() );
-		sendToAll( sockets, addServer );
-                */
+        for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
+            string level = *it;
+            debug( 1 ) << "Sending level '" << level << "'" << endl;
+            Message loadLevel;
+            loadLevel << World::LOAD_LEVEL;
+            loadLevel.path = level;
+            sendToAll( sockets, loadLevel );
 
-                Level::LevelInfo levelInfo = Level::readLevels( levelSet );
-		for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
-			string level = *it;
-			debug( 1 ) << "Sending level '" << level << "'" << endl;
-			Message loadLevel;
-			loadLevel << World::LOAD_LEVEL;
-			loadLevel.path = level;
-			sendToAll( sockets, loadLevel );
+            for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+                Character * playerX = (Character *) *it;
+                playerX->setY( 200 );
+                /* setMoving(false) sets all velocities to 0 */
+                playerX->setMoving( false );
+                /* but the player is falling so set it back to true */
+                playerX->setMoving( true );
 
-			for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-				Character * playerX = (Character *) *it;
-				playerX->setY( 200 );
-				/* setMoving(false) sets all velocities to 0 */
-				playerX->setMoving( false );
-				/* but the player is falling so set it back to true */
-				playerX->setMoving( true );
+                playerX->setStatus( Status_Falling );
+            }
 
-				playerX->setStatus( Status_Falling );
-			}
+            debug( 1 ) << "Create network world" << endl;
+            NetworkWorld world( sockets, players, Filesystem::find(level));
 
-			debug( 1 ) << "Create network world" << endl;
-			NetworkWorld world( sockets, players, Filesystem::find(level));
+            debug( 1 ) << "Load music" << endl;
 
-			debug( 1 ) << "Load music" << endl;
+            Music::pause();
+            Music::fadeIn( 0.3 );
+            Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
+            Music::play();
 
-			Music::pause();
-			Music::fadeIn( 0.3 );
-			Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
-			Music::play();
+            /* wait for an ok from all the clients, then send another
+             * ok to continue
+             */
+            waitAllOk(sockets);
+            sendAllOk(sockets);
 
-                        /* wait for an ok from all the clients, then send another
-                         * ok to continue
-                         */
-                        waitAllOk(sockets);
-                        sendAllOk(sockets);
+            world.startMessageHandlers();
 
-                        world.startMessageHandlers();
+            stopLoading( loading_screen_thread );
+            bool played = Game::playLevel( world, players, 200 );
 
-			stopLoading( loading_screen_thread );
-                        bool played = Game::playLevel( world, players, 200 );
+            ObjectFactory::destroy();
+            HeartFactory::destroy();
 
-                        ObjectFactory::destroy();
-                        HeartFactory::destroy();
+            world.stopRunning();
+            startLoading( &loading_screen_thread );
+            Message finish;
+            finish << World::FINISH;
+            finish.id = 0;
+            Global::debug(1) << "Sending finish message to all clients" << endl;
+            sendToAll(sockets, finish);
+            world.waitForHandlers();
 
-			world.stopRunning();
-			startLoading( &loading_screen_thread );
-			Message finish;
-			finish << World::FINISH;
-			finish.id = 0;
-                        Global::debug(1) << "Sending finish message to all clients" << endl;
-			sendToAll(sockets, finish);
-                        world.waitForHandlers();
+            waitAllFinish(sockets);
 
-                        waitAllFinish(sockets);
+            Message ignore;
+            ignore << World::IGNORE_MESSAGE;
+            ignore.id = 0;
+            Global::debug(1) << "Sending ignore to all clients" << endl;
+            sendToAll(sockets, ignore);
 
-                        Message ignore;
-                        ignore << World::IGNORE_MESSAGE;
-                        ignore.id = 0;
-                        Global::debug(1) << "Sending ignore to all clients" << endl;
-                        sendToAll(sockets, ignore);
+            /* another ok barrier */
+            waitAllOk(sockets);
+            sendAllOk(sockets);
 
-                        /* another ok barrier */
-                        waitAllOk(sockets);
-                        sendAllOk(sockets);
+            /* if the server quits, then everyone quits */
+            if (!played){
+                break;
+            }
 
-                        /* if the server quits, then everyone quits */
-                        if (!played){
-                            break;
-                        }
+            /*
+               for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+               Socket s = *it;
+               bool done = false;
+               while ( ! done ){
+               Message ok( s );
+               int type;
+               ok >> type;
+               if ( type == World::OK ){
+               Global::debug(1) << "Received ok from client " << s << endl;
+               done = true;
+               }
+               }
 
-                        /*
-			for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-				Socket s = *it;
-				bool done = false;
-				while ( ! done ){
-					Message ok( s );
-					int type;
-					ok >> type;
-					if ( type == World::OK ){
-                                            Global::debug(1) << "Received ok from client " << s << endl;
-						done = true;
-					}
-				}
+               Message ok;
+               ok << World::OK;
+               ok.send( s );
+               }
+               */
+        }
+        Network::Message gameOver;
+        gameOver.id = 0;
+        gameOver << World::GAME_OVER;
+        sendToAll( sockets, gameOver );
 
-				Message ok;
-				ok << World::OK;
-				ok.send( s );
-			}
-                        */
-		}
-		Network::Message gameOver;
-		gameOver.id = 0;
-		gameOver << World::GAME_OVER;
-		sendToAll( sockets, gameOver );
+    } catch ( const LoadException & le ){
+        debug( 0 ) << "Load exception: " + le.getReason() << endl;
+    } catch ( const ReturnException & re ){
+    } catch ( const NetworkException & ne ){
+        debug( 0 ) << "Network excetion: " + ne.getMessage() << endl;
+    }
 
-	} catch ( const LoadException & le ){
-		debug( 0 ) << "Load exception: " + le.getReason() << endl;
-	} catch ( const ReturnException & re ){
-	} catch ( const NetworkException & ne ){
-		debug( 0 ) << "Network excetion: " + ne.getMessage() << endl;
-	}
+    for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+        delete *it;
+    }
 
-	for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
-		delete *it;
-	}
+    for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+        Network::close( *it );
+    }
 
-	for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-		Network::close( *it );
-	}
-
-	stopLoading( loading_screen_thread );
+    stopLoading( loading_screen_thread );
 }
 
 static void popup( const Font & font, const string & message ){
