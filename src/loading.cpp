@@ -47,12 +47,12 @@ private:
 void * loadingScreen( void * arg ){
     const int load_x = 80;
     const int load_y = 220;
-    const int infobox_width = 200;
+    const int infobox_width = 300;
     const int infobox_height = 150;
     Info info;
-    string name = Filesystem::find("/fonts/arial.ttf");
-    const Font & myFont = Font::getFont( name, 24, 24 );
-    const Font & infoFont = Font::getFont(name, 24, 24);
+    string fontName = Filesystem::find("/fonts/arial.ttf");
+    const Font & myFont = Font::getFont(fontName, 24, 24);
+    const Font & infoFont = Font::getFont(fontName, 24, 24);
     Level::LevelInfo levelInfo;
     if (arg != NULL){
         levelInfo = *(Level::LevelInfo*) arg;
@@ -140,7 +140,13 @@ void * loadingScreen( void * arg ){
 
             if (drawInfo){
                 infoBackground.Blit(infoWork);
+
+                /* cheesy hack to change the font size. the font
+                 * should store the size and change it on its own
+                 */
+                Font::getFont(fontName, 13, 13);
                 infobox.draw(0, 0, infoWork, infoFont);
+                Font::getFont(fontName, 24, 24);
                 infoWork.BlitAreaToScreen(infobox_x, infobox_y);
             }
             /* work already contains the correct background */
