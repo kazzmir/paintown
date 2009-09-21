@@ -3,6 +3,7 @@
 
 class Bitmap;
 
+#include "util/token_exception.h"
 #include "atmosphere.h"
 #include <vector>
 
@@ -36,6 +37,7 @@ public:
 protected:
 
     void drawLight(Bitmap * original, Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const int black, const int black_alpha, const int light, const int light_alpha);
+    void processLight(Token * token) throw (TokenException);
 
     std::vector<Light*> lights;
 

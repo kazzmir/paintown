@@ -23,8 +23,10 @@ Atmosphere(),
 darkness(128){
 
     lamp = new Bitmap(Filesystem::find("sprites/lamp.png"));
+    /*
     addLight(500, 30, 50, 30, Bitmap::makeColor(32,32,0), 0);
     addLight(300, 30, 70, 30, Bitmap::makeColor(0,32,192), 128);
+    */
 }
 
 NightAtmosphere::~NightAtmosphere(){
@@ -125,6 +127,24 @@ void NightAtmosphere::drawForeground(Bitmap * work, int x){
 
 void NightAtmosphere::act(const Scene & level){
 }
+
+void NightAtmosphere::processLight(Token * token) throw (TokenException) {
+    int x;
+    *token >> x;
+    addLight(x, 30, 50, 30, Bitmap::makeColor(32,32,0), 0);
+}
     
 void NightAtmosphere::interpret(Token * message){
+    Token * night = message->findToken("message/night");
+    if (night != NULL){
+        vector<Token*> lights = night->findTokens("night/lamp");
+        for (vector<Token*>::iterator it = lights.begin(); it != lights.end(); it++){
+            Token * token = *it;
+            try{
+                processLight(token);
+            } catch (const TokenException & e){
+                Global::debug(0) << "Could not add light to night atmosphere: " << e.getReason() << endl;
+            }
+        }
+    }
 }

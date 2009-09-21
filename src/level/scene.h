@@ -99,6 +99,9 @@ protected:
 	/* erase dead hearts */
 	void clearHearts();
 
+    /* try to execute the triggers */
+    void doTriggers();
+
 protected:
 
         std::string music;

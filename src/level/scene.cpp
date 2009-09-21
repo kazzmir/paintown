@@ -262,23 +262,38 @@ void Scene::addEnemy(Enemy * obj){
     added_objects.push_back(obj);
 }
 
-void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
-	clearHearts();
-
-	if ( canContinue( min_x ) ){
-		advanceBlocks( blockNumber + 1 );
-		Global::debug( 3 ) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
-	}
-
-	vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
-	hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
-        objects->insert(objects->end(), added_objects.begin(), added_objects.end());
-        added_objects.clear();
-
-        for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
-            Atmosphere * atmosphere = *it;
-            atmosphere->act(*this);
+void Scene::doTriggers(){
+    for (vector<Trigger*>::iterator it = triggers.begin(); it != triggers.end(); /**/){
+        Trigger * trigger = *it;
+        if (trigger->shouldExecute()){
+            trigger->execute(this);
+            delete trigger;
+            it = triggers.erase(it);
+        } else {
+            it++;
         }
+    }
+}
+
+void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
+    clearHearts();
+
+    if ( canContinue( min_x ) ){
+        advanceBlocks( blockNumber + 1 );
+        Global::debug( 3 ) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
+    }
+
+    doTriggers();
+
+    vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
+    hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
+    objects->insert(objects->end(), added_objects.begin(), added_objects.end());
+    added_objects.clear();
+
+    for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+        Atmosphere * atmosphere = *it;
+        atmosphere->act(*this);
+    }
 }
 
 /* draw the background */
