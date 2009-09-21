@@ -36,7 +36,7 @@ Future
 90% * use joystick
 * fix bug with setting max lives
 * separate z planes for each block
-90% * level lighting. lamps/objects can make the level brighter as the user gets close to them
+100% * level lighting. lamps/objects can make the level brighter as the user gets close to them
 * infinite enemy mode like in super smash brothers
 * breakable inanimate objects like boxes and trash cans
 * RPG mode???
@@ -95,7 +95,7 @@ DONE * make "Loading Paintown" text configurable
 
 For 3.3
 -------
-finish lamp lighting
+done * finish lamp lighting
 make console useable
 parse mugen files
 implement at least partially working mugen
