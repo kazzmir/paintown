@@ -4,25 +4,26 @@
 #include <vector>
 
 class Bitmap;
+class Token;
 
 #include "atmosphere.h"
 
 struct Flake{
-	Flake(int x, int y, int type, int angle ):
-		x(x),
-		y(y),
-		dx(x),
-		dy(y),
-                angle(angle),
-		type(type),
-		dir(0),
-                spin(0){}
-	int x, y;
-	double dx, dy;
-        int angle;
-	int type;
-	int dir;
-        int spin;
+    Flake(int x, int y, int type, int angle ):
+        x(x),
+        y(y),
+        dx(x),
+        dy(y),
+        angle(angle),
+        type(type),
+        dir(0),
+        spin(0){}
+    int x, y;
+    double dx, dy;
+    int angle;
+    int type;
+    int dir;
+    int spin;
 };
 
 class SnowAtmosphere: public Atmosphere {
@@ -31,14 +32,15 @@ public:
 	SnowAtmosphere();	
 	virtual ~SnowAtmosphere();
 
-        virtual void drawBackground(Bitmap * work, int x);
+    virtual void drawBackground(Bitmap * work, int x);
 	virtual void drawForeground(Bitmap * work, int x);
 	virtual void drawFront(Bitmap * work, int x);
-        virtual void drawScreen(Bitmap * work, int x);
+    virtual void drawScreen(Bitmap * work, int x);
 	virtual void act(const Scene & level);
+    virtual void interpret(Token * message);
 	
 protected:
-        std::vector< Flake * > flakes;
+    std::vector< Flake * > flakes;
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include <vector>
 
 class Bitmap;
+class Token;
 
 struct Drop{
 	Drop( int x, int y, int length, int color ):x(x),y(y),length(length),color(color){}
@@ -35,6 +36,7 @@ public:
 	virtual void drawFront(Bitmap * work, int x);
 	virtual void drawScreen(Bitmap * work, int x);
 	virtual void act(const Scene & level);
+    virtual void interpret(Token * message);
 	
 protected:
         std::vector<Drop *> rain_drops;

@@ -1,5 +1,6 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "util/token.h"
 #include "fog_atmosphere.h"
 #include <math.h>
 
@@ -69,4 +70,7 @@ void FogAtmosphere::act(const Scene & level){
 		Fog * f = *it;
 		f->ang += 1;
 	}
+}
+    
+void FogAtmosphere::interpret(Token * message){
 }

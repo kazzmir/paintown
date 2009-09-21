@@ -6,6 +6,8 @@ class Bitmap;
 #include "atmosphere.h"
 #include <vector>
 
+class Token;
+
 struct Light{
     Light(const int x, const int y, const int lower_width, const int upper_width, const int color, const int alpha):
         x(x), y(y), lower_width(lower_width), upper_width(upper_width),
@@ -29,6 +31,7 @@ public:
     virtual void drawScreen(Bitmap * work, int x);
     virtual void act(const Scene & level);
     virtual void addLight(const int x, const int y, const int lower_width, const int upper_width, const int color, const int alpha);
+    virtual void interpret(Token * message);
 
 protected:
 

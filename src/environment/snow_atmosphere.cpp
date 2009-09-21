@@ -1,6 +1,7 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
 #include "snow_atmosphere.h"
+#include "util/token.h"
 #include <math.h>
 
 using namespace std;
@@ -109,4 +110,7 @@ void SnowAtmosphere::act(const Scene & level){
 			f->dx = f->x;
 		}
 	}
+}
+
+void SnowAtmosphere::interpret(Token * message){
 }

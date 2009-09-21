@@ -3,6 +3,7 @@
 #include "util/file-system.h"
 #include "rain_atmosphere.h"
 #include "level/scene.h"
+#include "util/token.h"
 
 using namespace std;
 
@@ -59,6 +60,9 @@ void RainAtmosphere::drawForeground(Bitmap * work, int x){
 }
 	
 void RainAtmosphere::drawFront(Bitmap * work, int x){
+}
+    
+void RainAtmosphere::interpret(Token * message){
 }
 
 void RainAtmosphere::drawScreen(Bitmap * work, int x){

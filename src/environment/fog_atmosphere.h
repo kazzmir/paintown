@@ -6,6 +6,8 @@ class Bitmap;
 #include "atmosphere.h"
 #include <vector>
 
+class Token;
+
 struct Fog{
 	Fog( int x, int y, unsigned int ang ):x(x),y(y),ang(ang){}
 	int x, y;
@@ -23,6 +25,7 @@ public:
 	virtual void drawFront(Bitmap * work, int x);
 	virtual void drawScreen(Bitmap * work, int x);
 	virtual void act(const Scene & level);
+    virtual void interpret(Token * message);
 
 protected:
 	Bitmap * fog;

@@ -46,15 +46,19 @@ public:
 		return blockNumber;
 	}
 
-        inline Block * currentBlock() const {
-            return current_block;
-        }
+    inline Block * currentBlock() const {
+        return current_block;
+    }
 
-        void addEnemy(Enemy * obj);
+    void addEnemy(Enemy * obj);
 
 	void advanceBlocks( int n );
 
-        const int totalLength() const;
+    inline const std::vector<Atmosphere*> & getAtmospheres() const {
+        return atmospheres;
+    }
+
+    const int totalLength() const;
 
 	int getLimit();
 	void act( int min_x, int max_x, std::vector< Object * > * objects );

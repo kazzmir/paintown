@@ -4,6 +4,7 @@
 #include "util/token_exception.h"
 
 class Token;
+class Scene;
 
 /* design goals of a trigger
  * 1. can contain arbitrary code (possibly scheme since we are
@@ -20,8 +21,10 @@ class Trigger{
 public:
     Trigger();
 
-    /* do something */
-    virtual void execute() = 0;
+    /* do something
+     * should a World object be passed in?
+     */ 
+    virtual void execute(Scene * level) = 0;
 
     /* whether or not this trigger should execute */
     virtual bool shouldExecute() const = 0;

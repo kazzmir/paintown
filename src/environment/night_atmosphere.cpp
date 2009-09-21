@@ -2,6 +2,7 @@
 #include "util/bitmap.h"
 #include "night_atmosphere.h"
 #include "util/file-system.h"
+#include "util/token.h"
 #include "globals.h"
 #include <vector>
 
@@ -123,4 +124,7 @@ void NightAtmosphere::drawForeground(Bitmap * work, int x){
 }
 
 void NightAtmosphere::act(const Scene & level){
+}
+    
+void NightAtmosphere::interpret(Token * message){
 }
