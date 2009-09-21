@@ -1,6 +1,10 @@
 #ifndef _paintown_trigger_h
 #define _paintown_trigger_h
 
+#include "util/token_exception.h"
+
+class Token;
+
 /* design goals of a trigger
  * 1. can contain arbitrary code (possibly scheme since we are
  * already using s-expressions)
@@ -17,12 +21,14 @@ public:
     Trigger();
 
     /* do something */
-    void execute() = 0;
+    virtual void execute() = 0;
 
     /* whether or not this trigger should execute */
-    bool shouldExecute() const = 0;
+    virtual bool shouldExecute() const = 0;
 
     virtual ~Trigger();
+
+    static Trigger * parse(Token * token) throw (TokenException);
 };
 
 #endif

@@ -16,6 +16,7 @@
 #include "util/file-system.h"
 #include "environment/atmosphere.h"
 #include "script/script.h"
+#include "trigger/trigger.h"
 
 using namespace std;
 
@@ -128,6 +129,9 @@ frontBuffer(NULL){
 				Panel * p = new Panel( x_normal, x_neon, x_screen );
 				panels[ num ] = p;
 				// panel_num++;
+            } else if (*tok == "trigger"){
+                Trigger * trigger = Trigger::parse(tok);
+                triggers.push_back(trigger);
 			} else if ( *tok == "block" ){
 				Block * b = new Block( tok );
 				level_blocks.push_back( b );
@@ -410,10 +414,15 @@ Scene::~Scene(){
 		delete (*it).second;
 	}
 
-        for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
-            Atmosphere * atmosphere = *it;
-            delete atmosphere;
-        }
+    for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+        Atmosphere * atmosphere = *it;
+        delete atmosphere;
+    }
+
+    for (vector<Trigger*>::iterator it = triggers.begin(); it != triggers.end(); it++){
+        Trigger * trigger = *it;
+        delete trigger;
+    }
 
 	/*
 	for ( vector< Heart * >::iterator it = hearts.begin(); it != hearts.end(); it++ ){

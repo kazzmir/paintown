@@ -203,3 +203,7 @@ src/mugen/option_versus.cpp
 src/mugen/parser/parsers.c
 src/mugen/parser/parse-exception.cpp
 )
+
+set(TRIGGER_SRC
+src/trigger/trigger.cpp
+)

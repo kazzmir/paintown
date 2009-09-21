@@ -13,6 +13,7 @@ class Heart;
 class Object;
 class Atmosphere;
 class Enemy;
+class Trigger;
 
 struct Panel{
 	Bitmap * pic;
@@ -128,9 +129,10 @@ protected:
 	double backgroundParallax;
 	double foregroundParallax;
 
-        Bitmap * frontBuffer;
+    Bitmap * frontBuffer;
 
-        std::vector<Atmosphere*> atmospheres;
+    std::vector<Atmosphere*> atmospheres;
+    std::vector<Trigger*> triggers;
 };
 
 #endif
