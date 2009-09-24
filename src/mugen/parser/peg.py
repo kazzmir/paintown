@@ -536,6 +536,26 @@ class Stream:
 
 """
 
+class CodeGenerator:
+    def __init__(self):
+        pass
+
+class CppGenerator(CodeGenerator):
+    def generate_not(me, pattern, peg, result, stream, failure, tail, peg_args):
+        not_label = gensym("not")
+        my_result = newResult()
+        my_fail = lambda : "goto %s;" % not_label
+        data = """
+Result %s(%s);
+%s
+%s
+%s:
+%s.setValue((void*)0);
+        """ % (my_result, result, pattern.next.generate_cpp(peg, my_result, stream, my_fail, None, peg_args).strip(), failure(), not_label, result)
+
+        return data
+
+
 class Pattern:
     def __init__(self):
         pass
@@ -622,19 +642,8 @@ except NotError:
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        not_label = gensym("not")
-        my_result = newResult()
-        my_fail = lambda : "goto %s;" % not_label
-        data = """
-Result %s(%s);
-%s
-%s
-%s:
-%s.setValue((void*)0);
-        """ % (my_result, result, self.next.generate_cpp(peg, my_result, stream, my_fail, None, peg_args).strip(), failure(), not_label, result)
-
-        return data
-
+        return CppGenerator().generate_not(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternRule(Pattern):
     def __init__(self, rule, parameters = None):
         Pattern.__init__(self)
