@@ -76,14 +76,14 @@ Future
     within paintown's sound system 
 * mugen main system
   - load in menus
-    - Character select
-    - Team Character select
+    DONE - Character select
+    DONE - Team Character select
     - Option Menu (To an extent.... Mainly rely on paintowns system)
     DONE - Storyboards
-    - load in fight.def info from mugen for the stage mechanics (i.e. Round indicators, 
+    50% - load in fight.def info from mugen for the stage mechanics (i.e. Round indicators, 
     Round Ticker, Players Health and Power bars) etc.
     DONE - Menuing system utilize paintowns menus to render itself and its options
-    - Each submenu subclass MenuOption to produce the arcade/versus/demo etc
+    DONE - Each submenu subclass MenuOption to produce the arcade/versus/demo etc
 maybe done? * network players need their health/name drawn in front of background stuff
 * allow more characters in the network host boxes (like '-')
 DONE * make "Loading Paintown" text configurable
