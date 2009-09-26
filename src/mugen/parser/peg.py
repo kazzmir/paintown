@@ -570,20 +570,84 @@ Result %s(%s.getPosition());
 """ % (my_result, result, pattern.next.generate_cpp(peg, my_result, stream, failure, None, peg_args).strip())
         return data
 
+    def generate_rule(me, pattern, peg, result, stream, failure, tail, peg_args):
+        rule = peg.getRule(pattern.rule)
+        if rule != None and rule.isInline():
+            if tail != None:
+                raise Exception("Do not combine inlined rules that use tail recursion")
+            def newPattern(pattern, stream, result, success):
+                my_result = newResult()
+                out = newOut()
+                def fail():
+                    return "goto %s;" % out
+                data = """
+{
+Result %s(%s.getPosition());
+%s
+%s = %s;
+}
+%s
+%s:
+                """ % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip(), result, my_result, success, out)
+
+                data = """
+{
+    %s
+}
+%s
+%s:
+""" % (indent(pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)), success, out)
+                return data
+
+            success_out = gensym('success')
+            data = """
+%s
+%s
+%s:
+;
+""" % ('\n'.join([newPattern(pattern, stream, result, "goto %s;" % success_out).strip() for pattern in rule.patterns]), failure(), success_out)
+            return data
+        else:
+            if tail != None:
+                if len(tail) == 0:
+                    return ""
+                else:
+                    return '\n'.join(["%s = %s;" % (q[0], pattern.fixup_cpp(q[1], peg_args)) for q in zip(tail, pattern.parameters)])
+            else:
+                parameters = ""
+                if pattern.parameters != None:
+                    parameters = ", %s" % ", ".join([pattern.fixup_cpp(p, peg_args) for p in pattern.parameters])
+                    # parameters = ", %s" % fix_param(pattern.parameters)
+                data = """
+%s = rule_%s(%s, %s.getPosition()%s);
+if (%s.error()){
+    %s
+}
+""" % (result, pattern.rule, stream, result, parameters, result, indent(failure()))
+
+                return data
 
 class Pattern:
     def __init__(self):
         pass
     
+    # true if this pattern is a at the end of a sequence and calls a rule
     def tailRecursive(self, rule):
         return False
 
+    # generic code generation method. visitor should be a subclass of
+    # CodeGenerator
+    def generate(self, visitor, peg, result, stream, failure, tail, peg_args):
+        raise Exception("Sub-classes must override the `generate' method generate code")
+
+    # move this to the CppGenerator
     def fixup_cpp(self, code, args):
         import re
         fix = re.compile("\$(\d+)")
         # return re.sub(fix, r"values.getValues()[\1-1]", code)
         return re.sub(fix, lambda obj: args(int(obj.group(1))) + ".getValues()", code)
 
+    # utility method, probably move it elsewhere
     def parens(self, pattern, str):
         if pattern.contains() > 1:
             return "(%s)" % str
@@ -692,62 +756,8 @@ if %s == None:
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        rule = peg.getRule(self.rule)
-        if rule != None and rule.isInline():
-            if tail != None:
-                raise Exception("Do not combine inlined rules that use tail recursion")
-            def newPattern(pattern, stream, result, success):
-                my_result = newResult()
-                out = newOut()
-                def fail():
-                    return "goto %s;" % out
-                data = """
-{
-Result %s(%s.getPosition());
-%s
-%s = %s;
-}
-%s
-%s:
-                """ % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip(), result, my_result, success, out)
-
-                data = """
-{
-    %s
-}
-%s
-%s:
-""" % (indent(pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)), success, out)
-                return data
-
-            success_out = gensym('success')
-            data = """
-%s
-%s
-%s:
-;
-""" % ('\n'.join([newPattern(pattern, stream, result, "goto %s;" % success_out).strip() for pattern in rule.patterns]), failure(), success_out)
-            return data
-        else:
-            if tail != None:
-                if len(tail) == 0:
-                    return ""
-                else:
-                    return '\n'.join(["%s = %s;" % (q[0], self.fixup_cpp(q[1], peg_args)) for q in zip(tail, self.parameters)])
-            else:
-                parameters = ""
-                if self.parameters != None:
-                    parameters = ", %s" % ", ".join([self.fixup_cpp(p, peg_args) for p in self.parameters])
-                    # parameters = ", %s" % fix_param(self.parameters)
-                data = """
-%s = rule_%s(%s, %s.getPosition()%s);
-if (%s.error()){
-    %s
-}
-""" % (result, self.rule, stream, result, parameters, result, indent(failure()))
-
-                return data
-
+        return CppGenerator().generate_rule(self, peg, result, stream, failure, tail, peg_args)
+    
 class PatternVoid(Pattern):
     def __init__(self):
         Pattern.__init__(self)
