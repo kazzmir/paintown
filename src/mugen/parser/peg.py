@@ -627,6 +627,20 @@ if (%s.error()){
 
                 return data
 
+    def generate_void(me, pattern, peg, result, stream, failure, tail, peg_args):
+        return ""
+
+    def generate_eof(me, pattern, peg, result, stream, failure, tail, peg_args):
+        data = """
+if ('\\0' == %s.get(%s.getPosition())){
+    %s.nextPosition();
+    %s.setValue((void *) '\\0');
+} else {
+    %s
+}
+""" % (stream, result, result, result, indent(failure()))
+        return data
+
 class Pattern:
     def __init__(self):
         pass
@@ -777,7 +791,7 @@ class PatternVoid(Pattern):
         return ""
     
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        return ""
+        return CppGenerator().generate_void(self, peg, result, stream, failure, tail, peg_args)
 
 class PatternEof(Pattern):
     def __init__(self):
@@ -805,17 +819,8 @@ else:
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        data = """
-if ('\\0' == %s.get(%s.getPosition())){
-    %s.nextPosition();
-    %s.setValue((void *) '\\0');
-} else {
-    %s
-}
-""" % (stream, result, result, result, indent(failure()))
-
-        return data
-
+        return CppGenerator().generate_eof(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternSequence(Pattern):
     def __init__(self, patterns):
         Pattern.__init__(self)
