@@ -641,6 +641,43 @@ if ('\\0' == %s.get(%s.getPosition())){
 """ % (stream, result, result, result, indent(failure()))
         return data
 
+    def generate_sequence(me, pattern, peg, result, stream, failure, tail, peg_args):
+        if len(pattern.patterns) == 1:
+            return pattern.patterns[0].generate_cpp(peg, result, stream, failure, tail, peg_args)
+        else:
+            # for each pattern, save the result in a temporary variable. only create
+            # temporaries if the result is used. looking up a variable through the
+            # 'args' accessor tells the code generator to generate the variable
+            data = []
+            def invalid(d):
+                raise Exception("Invalid result %s" % d)
+            args = invalid
+            use_args = []
+            arg_num = 0
+            for apattern in pattern.patterns:
+                use_args.append("")
+                do_tail = None
+                if apattern == pattern.patterns[-1]:
+                    do_tail = tail
+                else:
+                    # lexical scope is broken so we need another function here
+                    def make(n, old_arg, my_result):
+                        def get(d):
+                            # print "Looking for %s arg_num is %d result is %s. previous is %s" % (d, n, my_result, old_arg)
+                            if d == n:
+                                use_args[n-1] = "Result %s = %s;" % (my_result, result)
+                                return my_result
+                            return old_arg(d)
+                        return get
+                    arg_num += 1
+                    args = make(arg_num, args, newResult())
+
+                data.append("""
+%s
+""" % (indent(apattern.generate_cpp(peg, result, stream, failure, do_tail, args).strip())))
+            return "{\n%s\n}" % indent('\n'.join(["%s\n%s" % (x[0], x[1]) for x in zip(data, use_args)]))
+
+
 class Pattern:
     def __init__(self):
         pass
@@ -861,41 +898,8 @@ class PatternSequence(Pattern):
 """ % (result, result)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        if len(self.patterns) == 1:
-            return self.patterns[0].generate_cpp(peg, result, stream, failure, tail, peg_args)
-        else:
-            # for each pattern, save the result in a temporary variable. only create
-            # temporaries if the result is used. looking up a variable through the
-            # 'args' accessor tells the code generator to generate the variable
-            data = []
-            def invalid(d):
-                raise Exception("Invalid result %s" % d)
-            args = invalid
-            use_args = []
-            arg_num = 0
-            for pattern in self.patterns:
-                use_args.append("")
-                do_tail = None
-                if pattern == self.patterns[-1]:
-                    do_tail = tail
-                else:
-                    # lexical scope is broken so we need another function here
-                    def make(n, old_arg, my_result):
-                        def get(d):
-                            # print "Looking for %s arg_num is %d result is %s. previous is %s" % (d, n, my_result, old_arg)
-                            if d == n:
-                                use_args[n-1] = "Result %s = %s;" % (my_result, result)
-                                return my_result
-                            return old_arg(d)
-                        return get
-                    arg_num += 1
-                    args = make(arg_num, args, newResult())
-
-                data.append("""
-%s
-""" % (indent(pattern.generate_cpp(peg, result, stream, failure, do_tail, args).strip())))
-            return "{\n%s\n}" % indent('\n'.join(["%s\n%s" % (x[0], x[1]) for x in zip(data, use_args)]))
-
+        return CppGenerator().generate_sequence(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternRepeatOnce(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
