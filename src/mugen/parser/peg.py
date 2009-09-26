@@ -536,10 +536,17 @@ class Stream:
 
 """
 
+def _not_used_by_anything_or_anyone_please_ignore_me():
+    pass
+
 class CodeGenerator:
     def __init__(self):
         pass
 
+# all the self parameters are named me because the code was originally
+# copied from another class and to ensure that copy/paste errors don't
+# occur I have changed the name from 'self' to 'me'
+# that is, 'self' in the original code is now the parameter 'pattern'
 class CppGenerator(CodeGenerator):
     def generate_not(me, pattern, peg, result, stream, failure, tail, peg_args):
         not_label = gensym("not")
@@ -553,6 +560,14 @@ Result %s(%s);
 %s.setValue((void*)0);
         """ % (my_result, result, pattern.next.generate_cpp(peg, my_result, stream, my_fail, None, peg_args).strip(), failure(), not_label, result)
 
+        return data
+
+    def generate_ensure(me, pattern, peg, result, stream, failure, tail, peg_args):
+        my_result = newResult()
+        data = """
+Result %s(%s.getPosition());
+%s
+""" % (my_result, result, pattern.next.generate_cpp(peg, my_result, stream, failure, None, peg_args).strip())
         return data
 
 
@@ -602,13 +617,8 @@ class PatternEnsure(Pattern):
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        my_result = newResult()
-        data = """
-Result %s(%s.getPosition());
-%s
-""" % (my_result, result, self.next.generate_cpp(peg, my_result, stream, failure, None, peg_args).strip())
-        return data
-
+        return CppGenerator().generate_ensure(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternNot(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
