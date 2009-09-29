@@ -677,6 +677,35 @@ if ('\\0' == %s.get(%s.getPosition())){
 """ % (indent(apattern.generate_cpp(peg, result, stream, failure, do_tail, args).strip())))
             return "{\n%s\n}" % indent('\n'.join(["%s\n%s" % (x[0], x[1]) for x in zip(data, use_args)]))
 
+    def generate_repeat_once(me, pattern, peg, result, stream, failure, tail, peg_args):
+        loop_done = gensym("loop")
+        my_fail = lambda : "goto %s;" % loop_done
+        my_result = newResult()
+        data = """
+%s.reset();
+do{
+    Result %s(%s.getPosition());
+    %s
+    %s.addResult(%s);
+} while (true);
+%s:
+if (%s.matches() == 0){
+    %s
+}
+""" % (result, my_result, result, indent(pattern.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done, result, indent(failure()))
+
+        return data
+
+    def generate_code(me, pattern, peg, result, stream, failure, tail, peg_args):
+        data = """
+{
+    Value value((void*) 0);
+    %s
+    %s.setValue(value);
+}
+        """ % (pattern.fixup_cpp(indent(pattern.code.strip()), peg_args), result)
+
+        return data
 
 class Pattern:
     def __init__(self):
@@ -937,24 +966,8 @@ except PegError:
 
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        loop_done = gensym("loop")
-        my_fail = lambda : "goto %s;" % loop_done
-        my_result = newResult()
-        data = """
-%s.reset();
-do{
-    Result %s(%s.getPosition());
-    %s
-    %s.addResult(%s);
-} while (true);
-%s:
-if (%s.matches() == 0){
-    %s
-}
-""" % (result, my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done, result, indent(failure()))
-
-        return data
-
+        return CppGenerator().generate_repeat_once(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternCode(Pattern):
     def __init__(self, code):
         Pattern.__init__(self)
@@ -990,16 +1003,8 @@ values = %s.getValues()
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        data = """
-{
-    Value value((void*) 0);
-    %s
-    %s.setValue(value);
-}
-        """ % (self.fixup_cpp(indent(self.code.strip()), peg_args), result)
-
-        return data
-
+        return CppGenerator().generate_code(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternAction2(Pattern):
     def __init__(self, before, code):
         Pattern.__init__(self)
