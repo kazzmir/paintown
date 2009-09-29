@@ -707,6 +707,125 @@ if (%s.matches() == 0){
 
         return data
 
+    def generate_repeat_many(me, pattern, peg, result, stream, failure, tail, peg_args):
+        loop_done = gensym("loop")
+        my_fail = lambda : "goto %s;" % loop_done
+        my_result = newResult()
+        data = """
+%s.reset();
+do{
+    Result %s(%s.getPosition());
+    %s
+    %s.addResult(%s);
+} while (true);
+%s:
+;
+        """ % (result, my_result, result, indent(pattern.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done)
+        return data
+
+    def generate_any(me, pattern, peg, result, stream, failure, tail, peg_args):
+        temp = gensym()
+        data = """
+char %s = %s.get(%s.getPosition());
+if (%s != '\\0'){
+    %s.setValue((void*) %s);
+    %s.nextPosition();
+} else {
+    %s
+}
+""" % (temp, stream, result, temp, result, temp, result, indent(failure()))
+        return data
+
+    def generate_maybe(me, pattern, peg, result, stream, failure, tail, peg_args):
+        save = gensym("save")
+        fail = lambda : """
+%s = Result(%s);
+%s.setValue((void*) 0);
+""" % (result, save, result)
+        data = """
+int %s = %s.getPosition();
+%s
+""" % (save, result, pattern.pattern.generate_cpp(peg, result, stream, fail, tail, peg_args))
+        return data
+
+    def generate_or(me, pattern, peg, result, stream, failure, tail, peg_args):
+        data = ""
+        success = gensym("success")
+        for pattern in pattern.patterns:
+            out = gensym("or")
+            my_result = newResult()
+            fail = lambda : "goto %s;" % out
+            if pattern == pattern.patterns[-1]:
+                fail = failure
+            data += """
+{
+Result %s(%s.getPosition());
+%s
+%s = %s;
+}
+goto %s;
+%s:
+""" % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip(), result, my_result, success, out)
+        data += "%s:\n" % success
+        return data
+
+    def generate_bind(me, pattern, peg, result, stream, failure, tail, peg_args):
+        data = """
+%s
+%s = %s.getValues();
+""" % (pattern.pattern.generate_cpp(peg, result, stream, failure, tail, peg_args).strip(), pattern.variable, result)
+        return data
+
+    def generate_range(me, pattern, peg, result, stream, failure, tail, peg_args):
+        letter = gensym("letter")
+        data = """
+char %s = %s.get(%s.getPosition());
+if (%s != '\\0' && strchr("%s", %s) != NULL){
+    %s.nextPosition();
+    %s.setValue((void*) %s);
+} else {
+    %s
+}
+""" % (letter, stream, result, letter, pattern.range, letter, result, result, letter, indent(failure()))
+        return data
+
+    def generate_verbatim(me, pattern, peg, result, stream, failure, tail, peg_args):
+        def doString():
+            length = len(pattern.letters)
+            if special_char(pattern.letters):
+                length = 1
+            comparison = "compareChar"
+            if pattern.options == "{case}":
+                comparison = "compareCharCase"
+            data = """
+for (int i = 0; i < %d; i++){
+    if (%s("%s"[i], %s.get(%s.getPosition()))){
+        %s.nextPosition();
+    } else {
+        %s
+    }
+}
+%s.setValue((void*) "%s");
+    """ % (length, comparison, pattern.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, pattern.letters.replace('"', '\\"'))
+            return data
+        def doAscii():
+            data = """
+if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
+    %s.nextPosition();
+} else {
+    %s
+}
+%s.setValue((void*) %s);
+"""
+            return data % (stream, result, pattern.letters, result, indent(failure()), result, pattern.letters)
+
+        if type(pattern.letters) == type('x'):
+            return doString()
+        elif type(pattern.letters) == type(0):
+            return doAscii()
+        else:
+            raise Exception("unknown verbatim value %s" % pattern.letters)
+
 class Pattern:
     def __init__(self):
         pass
@@ -1004,59 +1123,6 @@ values = %s.getValues()
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_code(self, peg, result, stream, failure, tail, peg_args)
-        
-class PatternAction2(Pattern):
-    def __init__(self, before, code):
-        Pattern.__init__(self)
-        self.before = before
-        self.code = code
-
-    def contains(self):
-        return 1
-
-    def find(self, proc):
-        def me():
-            if proc(self):
-                return [self]
-            return []
-        return self.before.find(proc) + me()
-
-    def ensureRules(self, find):
-        self.before.ensureRules(find)
-
-    def generate_bnf(self):
-        data = """%s {{%s}}""" % (self.before.generate_bnf(), self.code)
-        return data
-
-    def fixup_python(self, code):
-        import re
-        fix = re.compile("\$(\d+)")
-        return re.sub(fix, r"values[\1-1]", code)
-
-    def generate_python(self, result, previous_result, stream, failure):
-        data = """
-%s
-if True:
-    value = None
-    values = %s.getValues()
-    %s
-    %s.setValue(value)
-""" % (self.before.generate_python(result, previous_result, stream, failure).strip(), result, self.fixup_python(indent(self.code.strip())), result)
-
-        return data
-
-    def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        data = """
-%s
-{
-    Value value((void*) 0);
-    Value values = %s.getValues();
-    %s
-    %s.setValue(value);
-}
-        """ % (self.before.generate_cpp(peg, result, stream, failure, tail, peg_args).strip(), result, self.fixup_cpp(indent(self.code.strip()), peg_args), result)
-
-        return data
 
 class PatternRepeatMany(Pattern):
     def __init__(self, next):
@@ -1092,21 +1158,8 @@ except PegError:
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        loop_done = gensym("loop")
-        my_fail = lambda : "goto %s;" % loop_done
-        my_result = newResult()
-        data = """
-%s.reset();
-do{
-    Result %s(%s.getPosition());
-    %s
-    %s.addResult(%s);
-} while (true);
-%s:
-;
-        """ % (result, my_result, result, indent(self.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done)
-        return data
-
+        return CppGenerator().generate_repeat_many(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternAny(Pattern):
     def __init__(self):
         Pattern.__init__(self)
@@ -1123,18 +1176,7 @@ class PatternAny(Pattern):
         pass
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        temp = gensym()
-        data = """
-char %s = %s.get(%s.getPosition());
-if (%s != '\\0'){
-    %s.setValue((void*) %s);
-    %s.nextPosition();
-} else {
-    %s
-}
-""" % (temp, stream, result, temp, result, temp, result, indent(failure()))
-        return data
-
+        return CppGenerator().generate_any(self, peg, result, stream, failure, tail, peg_args)
 
     def generate_python(self, result, previous_result, stream, failure):
         temp = gensym()
@@ -1180,17 +1222,8 @@ class PatternMaybe(Pattern):
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        save = gensym("save")
-        fail = lambda : """
-%s = Result(%s);
-%s.setValue((void*) 0);
-""" % (result, save, result)
-        data = """
-int %s = %s.getPosition();
-%s
-""" % (save, result, self.pattern.generate_cpp(peg, result, stream, fail, tail, peg_args))
-        return data
-
+        return CppGenerator().generate_maybe(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternOr(Pattern):
     def __init__(self, patterns):
         Pattern.__init__(self)
@@ -1223,26 +1256,8 @@ class PatternOr(Pattern):
 """ % (save, result, data)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        data = ""
-        success = gensym("success")
-        for pattern in self.patterns:
-            out = gensym("or")
-            my_result = newResult()
-            fail = lambda : "goto %s;" % out
-            if pattern == self.patterns[-1]:
-                fail = failure
-            data += """
-{
-Result %s(%s.getPosition());
-%s
-%s = %s;
-}
-goto %s;
-%s:
-""" % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip(), result, my_result, success, out)
-        data += "%s:\n" % success
-        return data
-
+        return CppGenerator().generate_or(self, peg, result, stream, failure, tail, peg_args)
+        
 class PatternBind(Pattern):
     def __init__(self, variable, pattern):
         Pattern.__init__(self)
@@ -1260,12 +1275,8 @@ class PatternBind(Pattern):
         return me() + self.pattern.find(proc)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        data = """
-%s
-%s = %s.getValues();
-""" % (self.pattern.generate_cpp(peg, result, stream, failure, tail, peg_args).strip(), self.variable, result)
-        return data
-
+        return CppGenerator().generate_bind(self, peg, result, stream, failure, tail, peg_args)
+        
     def generate_bnf(self):
         return "%s:%s" % (self.variable, self.pattern.generate_bnf())
 
@@ -1299,18 +1310,8 @@ class PatternRange(Pattern):
         return "[%s]" % self.range
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        letter = gensym("letter")
-        data = """
-char %s = %s.get(%s.getPosition());
-if (%s != '\\0' && strchr("%s", %s) != NULL){
-    %s.nextPosition();
-    %s.setValue((void*) %s);
-} else {
-    %s
-}
-""" % (letter, stream, result, letter, self.range, letter, result, result, letter, indent(failure()))
-        return data
-
+        return CppGenerator().generate_range(self, peg, result, stream, failure, tail, peg_args)
+        
     def generate_python(self, result, previous_result, stream, failure):
         letter = gensym("letter")
         data = """
@@ -1369,42 +1370,8 @@ else:
         return data
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
-        def doString():
-            length = len(self.letters)
-            if special_char(self.letters):
-                length = 1
-            comparison = "compareChar"
-            if self.options == "{case}":
-                comparison = "compareCharCase"
-            data = """
-for (int i = 0; i < %d; i++){
-    if (%s("%s"[i], %s.get(%s.getPosition()))){
-        %s.nextPosition();
-    } else {
-        %s
-    }
-}
-%s.setValue((void*) "%s");
-    """ % (length, comparison, self.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, self.letters.replace('"', '\\"'))
-            return data
-        def doAscii():
-            data = """
-if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
-    %s.nextPosition();
-} else {
-    %s
-}
-%s.setValue((void*) %s);
-"""
-            return data % (stream, result, self.letters, result, indent(failure()), result, self.letters)
-
-        if type(self.letters) == type('x'):
-            return doString()
-        elif type(self.letters) == type(0):
-            return doAscii()
-        else:
-            raise Exception("unknown verbatim value %s" % self.letters)
-
+        return CppGenerator().generate_verbatim(self, peg, result, stream, failure, tail, peg_args)
+        
 class Rule:
     def __init__(self, name, patterns, inline = False, parameters = None):
         self.name = name
