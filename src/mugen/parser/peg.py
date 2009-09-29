@@ -602,6 +602,12 @@ class CodeGenerator:
 # occur I have changed the name from 'self' to 'me'
 # that is, 'self' in the original code is now the parameter 'pattern'
 class CppGenerator(CodeGenerator):
+    def fixup_cpp(self, code, args):
+        import re
+        fix = re.compile("\$(\d+)")
+        # return re.sub(fix, r"values.getValues()[\1-1]", code)
+        return re.sub(fix, lambda obj: args(int(obj.group(1))) + ".getValues()", code)
+
     def generate_not(me, pattern, peg, result, stream, failure, tail, peg_args):
         not_label = gensym("not")
         my_result = newResult()
@@ -666,11 +672,11 @@ Result %s(%s.getPosition());
                 if len(tail) == 0:
                     return ""
                 else:
-                    return '\n'.join(["%s = %s;" % (q[0], pattern.fixup_cpp(q[1], peg_args)) for q in zip(tail, pattern.parameters)])
+                    return '\n'.join(["%s = %s;" % (q[0], me.fixup_cpp(q[1], peg_args)) for q in zip(tail, pattern.parameters)])
             else:
                 parameters = ""
                 if pattern.parameters != None:
-                    parameters = ", %s" % ", ".join([pattern.fixup_cpp(p, peg_args) for p in pattern.parameters])
+                    parameters = ", %s" % ", ".join([me.fixup_cpp(p, peg_args) for p in pattern.parameters])
                     # parameters = ", %s" % fix_param(pattern.parameters)
                 data = """
 %s = rule_%s(%s, %s.getPosition()%s);
@@ -757,7 +763,7 @@ if (%s.matches() == 0){
     %s
     %s.setValue(value);
 }
-        """ % (pattern.fixup_cpp(indent(pattern.code.strip()), peg_args), result)
+        """ % (me.fixup_cpp(indent(pattern.code.strip()), peg_args), result)
 
         return data
 
@@ -892,13 +898,6 @@ class Pattern:
     # CodeGenerator
     def generate(self, visitor, peg, result, stream, failure, tail, peg_args):
         raise Exception("Sub-classes must override the `generate' method generate code")
-
-    # move this to the CppGenerator
-    def fixup_cpp(self, code, args):
-        import re
-        fix = re.compile("\$(\d+)")
-        # return re.sub(fix, r"values.getValues()[\1-1]", code)
-        return re.sub(fix, lambda obj: args(int(obj.group(1))) + ".getValues()", code)
 
     # utility method, probably move it elsewhere
     def parens(self, pattern, str):
