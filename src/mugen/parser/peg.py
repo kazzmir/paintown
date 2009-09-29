@@ -543,6 +543,60 @@ class CodeGenerator:
     def __init__(self):
         pass
 
+    def fail(self):
+        raise Exception("this method has not been implemented yet")
+
+    def generate_not(self, *args):
+        self.fail();
+    
+    def generate_ensure(self, *args):
+        self.fail()
+
+    def generate_not(self, *args):
+        self.fail()
+
+    def generate_ensure(self, *args):
+        self.fail()
+
+    def generate_rule(self, *args):
+        self.fail()
+
+    def generate_void(self, *args):
+        self.fail()
+
+    def generate_eof(self, *args):
+        self.fail()
+
+    def generate_sequence(self, *args):
+        self.fail()
+
+    def generate_repeat_once(self, *args):
+        self.fail()
+
+    def generate_code(self, *args):
+        self.fail()
+
+    def generate_repeat_many(self, *args):
+        self.fail()
+
+    def generate_any(self, *args):
+        self.fail()
+
+    def generate_maybe(self, *args):
+        self.fail()
+
+    def generate_or(self, *args):
+        self.fail()
+
+    def generate_bind(self, *args):
+        self.fail()
+
+    def generate_range(self, *args):
+        self.fail()
+
+    def generate_verbatim(self, *args):
+        self.fail()
+
 # all the self parameters are named me because the code was originally
 # copied from another class and to ensure that copy/paste errors don't
 # occur I have changed the name from 'self' to 'me'
