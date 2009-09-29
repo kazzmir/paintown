@@ -547,12 +547,6 @@ class CodeGenerator:
         raise Exception("this method has not been implemented yet")
 
     def generate_not(self, *args):
-        self.fail();
-    
-    def generate_ensure(self, *args):
-        self.fail()
-
-    def generate_not(self, *args):
         self.fail()
 
     def generate_ensure(self, *args):
