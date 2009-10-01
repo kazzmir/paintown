@@ -105,12 +105,12 @@ def generate(env):
     Builder = SCons.Builder.Builder
     splitext = SCons.Util.splitext
 
-    env['GCHFROMHCOM'] = (
-            '$CXX $_CPPDEFFLAGS $_CPPINCFLAGS -x c++ -c -o ${TARGETS[0]} $SOURCE')
+    env['GCHFROMHCOM'] = ('$CXX $_CPPDEFFLAGS $_CPPINCFLAGS -x c++ -c -o ${TARGETS[0]} $SOURCE')
+    env['GCHFROMHCOMSTR'] = ('$CXX $_CPPDEFFLAGS $_CPPINCFLAGS -x c++ -c -o ${TARGETS[0]} $SOURCE')
 
     gchBld = Builder(action={}, prefix={}, suffix={})
     for h in header_extensions:
-        gchBld.add_action(h, '$GCHFROMHCOM')
+        gchBld.add_action(h, Action('$GCHFROMHCOM', '$GCHFROMHCOMSTR'))
         gchBld.prefix[h] = ''
         gchBld.suffix[h] = h+'.gch'
 

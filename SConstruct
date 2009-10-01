@@ -252,19 +252,42 @@ def readExec( program ):
     except OSError:
         return ""
 
+def getDebug():
+    try:
+        return int(os.environ[ 'DEBUG' ])
+    except KeyError:
+        return 0
+
+def less_verbose(env):
+    env['CCCOMSTR'] = 'Compiling c file $SOURCE'
+    env['SHCCCOMSTR'] = 'Compiling c file $SOURCE'
+    env['CXXCOMSTR'] = 'Compiling c++ file $SOURCE'
+    env['SHCXXCOMSTR'] = 'Compiling c++ file $SOURCE'
+    env['GCHFROMHCOMSTR'] = 'Compiling header $SOURCE'
+    env['LINKCOMSTR'] = 'Linking $TARGET'
+    env['SHLINKCOMSTR'] = 'Linking $TARGET'
+    env['ARCOMSTR'] = 'Building library $TARGET'
+    env['RANLIBCOMSTR'] = 'Indexing library $TARGET'
+    return env
+
 def getEnvironment():
-    if isCygwin():
-        import SCons.Tool.zip
-        env = Environment(ENV = os.environ, tools = ['mingw','lex','yacc'])
-        env['CXX'] = 'C:\\MinGW\\bin\\g++.exe'
-        env['CC'] = 'C:\\MinGW\\bin\\gcc.exe'
-        env['AR'] = 'C:\\MinGW\\bin\\ar.exe'
-        SCons.Tool.zip.generate(env)
-        return env
-    elif useMingw():
-        return Environment(ENV = os.environ, tools = ['mingw', 'lex', 'yacc', 'zip'])
+    def raw():
+        if isCygwin():
+            import SCons.Tool.zip
+            env = Environment(ENV = os.environ, tools = ['mingw','lex','yacc'])
+            env['CXX'] = 'C:\\MinGW\\bin\\g++.exe'
+            env['CC'] = 'C:\\MinGW\\bin\\gcc.exe'
+            env['AR'] = 'C:\\MinGW\\bin\\ar.exe'
+            SCons.Tool.zip.generate(env)
+            return env
+        elif useMingw():
+            return Environment(ENV = os.environ, tools = ['mingw', 'lex', 'yacc', 'zip'])
+        else:
+            return Environment(ENV = os.environ)
+    if not getDebug():
+        return less_verbose(raw())
     else:
-        return Environment(ENV = os.environ)
+        return raw()
         
 if isWindows():
     print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"
@@ -275,12 +298,6 @@ if isWindows():
         print "Cygwin detected"
     
 env = getEnvironment()
-
-def getDebug():
-    try:
-        return int(os.environ[ 'DEBUG' ])
-    except KeyError:
-        return 0
 
 def getDataPath():
     try:
@@ -477,12 +494,6 @@ else:
 # if not isWindows():
 #    env.Append(CCFLAGS = ['-Werror'])
 # staticEnv.Append(CCFLAGS = ['-Werror'])
-
-if not debug:
-    env['CCCOMSTR'] = 'Compiling $SOURCE'
-    env['CXXCOMSTR'] = 'Compiling $SOURCE'
-    staticEnv['CCCOMSTR'] = 'Compiling $SOURCE'
-    staticEnv['CXXCOMSTR'] = 'Compiling $SOURCE'
 
 use = env
 shared = SConscript( 'src/SConstruct', build_dir='build', exports = ['use'] );
