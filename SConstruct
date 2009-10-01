@@ -274,14 +274,14 @@ def getEnvironment():
     def raw():
         if isCygwin():
             import SCons.Tool.zip
-            env = Environment(ENV = os.environ, tools = ['mingw','lex','yacc'])
+            env = Environment(ENV = os.environ, tools = ['mingw'])
             env['CXX'] = 'C:\\MinGW\\bin\\g++.exe'
             env['CC'] = 'C:\\MinGW\\bin\\gcc.exe'
             env['AR'] = 'C:\\MinGW\\bin\\ar.exe'
             SCons.Tool.zip.generate(env)
             return env
         elif useMingw():
-            return Environment(ENV = os.environ, tools = ['mingw', 'lex', 'yacc', 'zip'])
+            return Environment(ENV = os.environ, tools = ['mingw', 'zip'])
         else:
             return Environment(ENV = os.environ)
     if not getDebug():
