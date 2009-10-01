@@ -69,7 +69,7 @@ public:
         return false;
     }
 
-    ~Section(){
+    virtual ~Section(){
         delete name;
         for (std::list<Attribute*>::iterator it = attributes.begin(); it != attributes.end(); it++){
             delete *it;
