@@ -478,6 +478,11 @@ else:
 #    env.Append(CCFLAGS = ['-Werror'])
 # staticEnv.Append(CCFLAGS = ['-Werror'])
 
+if not debug:
+    env['CCCOMSTR'] = 'Compiling $SOURCE'
+    env['CXXCOMSTR'] = 'Compiling $SOURCE'
+    staticEnv['CCCOMSTR'] = 'Compiling $SOURCE'
+    staticEnv['CXXCOMSTR'] = 'Compiling $SOURCE'
 
 use = env
 shared = SConscript( 'src/SConstruct', build_dir='build', exports = ['use'] );
