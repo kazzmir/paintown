@@ -1,5 +1,5 @@
 # -------------------------------------------------------
-# Paintown cmake build script. Creates makefiles for unix 
+# Paintown cmake build script. Creates makefiles for unix
 # based systems, cygwin(sp?) or mingw
 #
 # Written by: juvinious
@@ -18,7 +18,7 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt)
 endif(EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt)
 if(EXISTS ${CMAKE_BINARY_DIR}/Makefile)
 	file(REMOVE ${CMAKE_BINARY_DIR}/Makefile)
-endif(EXISTS ${CMAKE_BINARY_DIR}/Makefile)	
+endif(EXISTS ${CMAKE_BINARY_DIR}/Makefile)
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	if(UNIX AND NOT CYGWIN)
 		message(FATAL_ERROR "Oops. Don't do an in-source build. Create an extra directory change into it and run cmake pointing to the base directory. IE: \nmkdir mybuild && cd mybuild && cmake ../ && make\nYou may need to remove CMakeCache.txt and the CMakeFiles directory in ${CMAKE_SOURCE_DIR} if you can't get rid of this error.")
@@ -39,7 +39,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # -------------------------------------------------------
-# Add in uninstall target 
+# Add in uninstall target
 # -------------------------------------------------------
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
@@ -65,8 +65,6 @@ find_package(ALLEGRO)
 find_package(FREETYPE)
 find_package(Threads)
 find_package(Ruby)
-#find_package(BISON)
-#find_package(FLEX)
 include(TestForPythonEmbed)
 
 # -------------------------------------------------------
@@ -105,27 +103,17 @@ endif(NOT FREETYPE_FOUND)
 
 # Python
 if(PYTHON_EMBEDABLE)
-	set(PY_INCLUDE ${PYTHON_INCLUDE_PATH}) 
+	set(PY_INCLUDE ${PYTHON_INCLUDE_PATH})
 	set(PY_LIBS ${PYTHON_LIBRARIES})
 	add_definitions(-DHAVE_PYTHON)
 endif(PYTHON_EMBEDABLE)
 
 # Ruby
 if(RUBY_INCLUDE_PATH)
-	set(RUBY_INCLUDE ${RUBY_INCLUDE_PATH}) 
+	set(RUBY_INCLUDE ${RUBY_INCLUDE_PATH})
 	set(RUBY_LIBS ${RUBY_LIBRARY})
 	add_definitions(-DHAVE_RUBY)
 endif(RUBY_INCLUDE_PATH)
-
-# Check for bison
-# if(NOT BISON_EXECUTABLE)
-# 	message(FATAL_ERROR "Couldn't find bison")
-# endif(NOT BISON_EXECUTABLE)
-# 
-# # Check for flex
-# if(NOT FLEX_EXECUTABLE)
-# 	message(FATAL_ERROR "Couldn't find flex")
-# endif(NOT FLEX_EXECUTABLE)
 
 # -------------------------------------------------------
 # Paths and system setup
@@ -158,11 +146,6 @@ if(APPLE)
 	add_definitions(-DMACOSX)
 endif(APPLE)
 
-#Add flex files to compile
-#set(FLEX_SRC ${CMAKE_BINARY_DIR}/src/mugen/lex.yy.c ${CMAKE_BINARY_DIR}/src/mugen/parse.cc)
-#set(FLEX_INCLUDE ${CMAKE_SOURCE_DIR}/src/mugen ${CMAKE_BINARY_DIR}/src/mugen)
-#set(FLEX_LIB -lfl)
-
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
@@ -175,7 +158,7 @@ ${GAME_SRC} ${MUGEN_SRC} ${OGG_SRC} ${TRIGGER_SRC})
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules ${FREETYPE_INCLUDE_DIR} src/hawknl ${PY_INCLUDE} ${RUBY_INCLUDE} ${FLEX_INCLUDE})
+include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules ${FREETYPE_INCLUDE_DIR} src/hawknl ${PY_INCLUDE} ${RUBY_INCLUDE})
 
 # -------------------------------------------------------
 # Paintown and test
@@ -205,9 +188,4 @@ target_link_libraries(mugentest main_module dumb_module hawknl_module ${REQUIRED
 if(UNIX OR LINUX OR CYGWIN OR MINGW)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_SOURCE_DIR}/data/scripts/paintown.py COPYONLY)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
-  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/mugen)
-  #  execute_process(COMMAND ${BISON_EXECUTABLE} -d -o ${CMAKE_BINARY_DIR}/src/mugen/parse.cc ${CMAKE_SOURCE_DIR}/src/mugen/parse.yy
-  #		 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-  #  execute_process(COMMAND ${FLEX_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/mugen/lex.l
-  #		 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/mugen/)
 endif(UNIX OR LINUX OR CYGWIN OR MINGW)

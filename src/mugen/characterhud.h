@@ -52,11 +52,7 @@ class Element{
 	Mugen::Point range;
 	int displaytime;
 	Effects effects;
-	//int facing;
-	//int vfacing;
 	int layerno;
-	//double scalex;
-	//double scaley;
 	std::string text;
 };
 
