@@ -263,7 +263,6 @@ def less_verbose(env):
     env['SHCCCOMSTR'] = 'Compiling c file $SOURCE'
     env['CXXCOMSTR'] = 'Compiling c++ file $SOURCE'
     env['SHCXXCOMSTR'] = 'Compiling c++ file $SOURCE'
-    env['GCHFROMHCOMSTR'] = 'Compiling header $SOURCE'
     env['LINKCOMSTR'] = 'Linking $TARGET'
     env['SHLINKCOMSTR'] = 'Linking $TARGET'
     env['ARCOMSTR'] = 'Building library $TARGET'
@@ -412,6 +411,7 @@ else:
     def fix(q):
         return q + "/SCons/Tool"
     env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
+    env['GCHFROMHCOMSTR'] = 'Compiling header $SOURCE'
 
     try:
         dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
