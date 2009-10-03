@@ -11,6 +11,7 @@ clean:
 
 # use to build on windows
 win:
+	@echo Building windows..
 	@scons env=mingw
 
 nsis:
