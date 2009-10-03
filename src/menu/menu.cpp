@@ -171,9 +171,9 @@ void Menu::load(Token *token) throw (LoadException){
 				}
 			} else {
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-                                if (Global::getDebug() >= 3){
-                                    tok->print(" ");
-                                }
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
 			}
 		} catch ( const TokenException & ex ) {
 			// delete current;
@@ -200,24 +200,25 @@ void Menu::load(Token *token) throw (LoadException){
 		Global::debug(0) << "The menu \"" << getName() << "\" has no options & will be omitted from the top level menu!" << endl;
 		removeOption = true;
 	}
-	// Set the sharedFont
-        if (Configuration::getMenuFont() != "" && Util::exists(Configuration::getMenuFont())){
-            sharedFont = Configuration::getMenuFont();
-        }
+
+    // Set the sharedFont
+    if (Configuration::getMenuFont() != "" && Util::exists(Configuration::getMenuFont())){
+        sharedFont = Configuration::getMenuFont();
+    }
 	
 	// Finally lets assign list order numering and some other stuff
 	// First length
 	longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
 	
 	// Before we finish lets get rid of the cruft
-	for( std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); ){
-	      if( (*optBegin)->scheduledForRemoval() ){
-		Global::debug(0) << "Removed option: " << (*optBegin)->getText() << endl;
-		delete (*optBegin);
-		optBegin = menuOptions.erase(optBegin);
-	      }
-	      else optBegin++;
-	}
+    for (std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); /**/){
+        if( (*optBegin)->scheduledForRemoval() ){
+            Global::debug(0) << "Removed option: " << (*optBegin)->getText() << endl;
+            delete (*optBegin);
+            optBegin = menuOptions.erase(optBegin);
+        }
+        else optBegin++;
+    }
 	
 	// Figure out text length
 	for( unsigned int i = 0; i < menuOptions.size(); i++ ){
@@ -243,6 +244,16 @@ void Menu::load(const std::string &filename) throw (LoadException){
 
 /*! Logic */
 void Menu::act(bool &endGame){
+
+    /* use an input map to abstract raw input over abstract actions
+     * something like
+     * map.put(key('k'), UP)
+     * map.put(key(key_up), UP)
+     * map.put(joystick(joy_up), UP)
+     *
+     * this way any arbitrary input method can be used for controlling menus
+     */
+
     // Keys
     const char vi_up = 'k';
     const char vi_down = 'j';

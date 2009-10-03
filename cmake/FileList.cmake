@@ -149,6 +149,7 @@ src/menu/option_credits.cpp
 src/menu/option_dummy.cpp
 src/menu/option_fullscreen.cpp
 src/menu/option_invincible.cpp
+src/menu/option_change_mod.cpp
 src/menu/option_key.cpp
 src/menu/option_level.cpp
 src/menu/option_lives.cpp

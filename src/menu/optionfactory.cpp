@@ -1,25 +1,26 @@
 #include "util/token.h"
-#include "menu/optionfactory.h"
-#include "menu/menu_option.h"
-#include "menu/option_adventure.h"
-#include "menu/option_adventure_cpu.h"
-#include "menu/option_credits.h"
-#include "menu/option_invincible.h"
-#include "menu/option_key.h"
-#include "menu/option_menu.h"
-#include "menu/option_playmode.h"
-#include "menu/option_network_host.h"
-#include "menu/option_network_join.h"
-#include "menu/option_versus.h"
-#include "menu/option_select_font.h"
-#include "menu/option_screen_size.h"
-#include "menu/option_speed.h"
-#include "menu/option_fullscreen.h"
-#include "menu/option_lives.h"
-#include "menu/option_npc_buddies.h"
-#include "menu/option_quit.h"
-#include "menu/option_dummy.h"
-#include "menu/option_tabmenu.h"
+#include "optionfactory.h"
+#include "menu_option.h"
+#include "option_adventure.h"
+#include "option_adventure_cpu.h"
+#include "option_credits.h"
+#include "option_invincible.h"
+#include "option_key.h"
+#include "option_menu.h"
+#include "option_playmode.h"
+#include "option_change_mod.h"
+#include "option_network_host.h"
+#include "option_network_join.h"
+#include "option_versus.h"
+#include "option_select_font.h"
+#include "option_screen_size.h"
+#include "option_speed.h"
+#include "option_fullscreen.h"
+#include "option_lives.h"
+#include "option_npc_buddies.h"
+#include "option_quit.h"
+#include "option_dummy.h"
+#include "option_tabmenu.h"
 #include "globals.h"
 
 #include "menu/option_mugen_menu.h"
@@ -48,6 +49,8 @@ MenuOption * OptionFactory::getOption(Token *token){
 		return new OptionVersus(tok);
 	} else if ( *tok == "network-host" ){
 		return new OptionNetworkHost(tok);
+    } else if (*tok == "change-mod"){
+        return new OptionChangeMod(tok);
 	} else if ( *tok == "network-join" ){
 		return new OptionNetworkJoin(tok);
         } else if (*tok == "screen-size"){
@@ -83,7 +86,7 @@ MenuOption * OptionFactory::getOption(Token *token){
 		// Invincible
 		return new OptionDummy(tok);
 	} else {
-		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+		Global::debug(0) <<"Unhandled menu attribute: "<<endl;
 		tok->print(" ");
 	}
 	return 0;

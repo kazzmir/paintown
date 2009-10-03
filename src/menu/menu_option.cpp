@@ -7,7 +7,7 @@
 
 using namespace std;
 
-MenuOption::MenuOption(Token *token, const OptionType t) throw (LoadException):
+MenuOption::MenuOption(Token *token, const OptionType type) throw (LoadException):
 parent(0),
 currentState(Deselected),
 text(""),
@@ -17,7 +17,7 @@ adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )),
 adjustRightColor(Bitmap::makeColor( 255, 255, 255 )),
 runnable(true),
 forRemoval(false){
-    setType(t);
+    setType(type);
 
     if(token){
       Token tok(*token);
