@@ -9,6 +9,7 @@ class Bitmap;
 class MugenSprite;
 class MugenAnimation;
 class MugenFont;
+class Token;
 
 namespace Mugen{
 
@@ -113,235 +114,33 @@ class Name{
 class CharacterHUD
 {
     public:
-	CharacterHUD();
+	CharacterHUD(Token *token);
 	virtual ~CharacterHUD();
 	
     private:
-	/*
-	[Lifebar]
-;Player 1
-p1.pos    = 140,12
-p1.bg0.anim = 10
-p1.bg1.spr = 11,0
-p1.mid.spr = 12,0
-p1.front.spr = 13,0
-p1.range.x  = 0,-127
-;Player 2
-p2.pos    = 178,12
-p2.bg0.anim = 10
-p2.bg0.facing = -1
-p2.bg1.spr = 11,0
-p2.bg1.facing = -1
-p2.mid.spr = 12,0
-p2.mid.facing = -1
-p2.front.spr = 13,0
-p2.front.facing = -1
-p2.range.x = 0,127
-
-[Begin Action 10] ;Darkened lifebar background 
-10,0, 0,0, 1, , S
-
-[Simul Lifebar]
-;Player 1
-p1.pos    = 140,12
-p1.bg0.anim = 20
-p1.bg1.spr = 21,0
-p1.mid.offset = 0,-1
-p1.mid.spr = 22,0
-p1.front.offset = 0,-1
-p1.front.spr = 23,0
-p1.range.x  = 0,-127
-;Player 2
-p2.pos    = 178,12
-p2.bg0.anim = 20
-p2.bg0.facing = -1
-p2.bg1.spr = 21,0
-p2.bg1.facing = -1
-p2.mid.offset = 0,-1
-p2.mid.spr = 22,0
-p2.mid.facing = -1
-p2.front.offset = 0,-1
-p2.front.spr = 23,0
-p2.front.facing = -1
-p2.range.x = 0,127
-;Player 3
-p3.pos    = 140,15
-p3.mid.spr = 22,0
-p3.front.spr = 23,0
-p3.range.x  = 0,-127
-;Player 4
-p4.pos    = 178,15
-p4.mid.spr = 22,0
-p4.mid.facing = -1
-p4.front.spr = 23,0
-p4.front.facing = -1
-p4.range.x = 0,127
-
-[Begin Action 20] ;Darkened lifebar background (team)
-20,0, 0,0, 1, , S
-
-[Turns Lifebar]
-;Player 1
-p1.pos    = 140,12
-p1.bg0.anim = 10
-p1.bg1.spr = 11,0
-p1.mid.spr = 12,0
-p1.front.spr = 13,0
-p1.range.x  = 0,-127
-;Player 2
-p2.pos    = 178,12
-p2.bg0.anim = 10
-p2.bg0.facing = -1
-p2.bg1.spr = 11,0
-p2.bg1.facing = -1
-p2.mid.spr = 12,0
-p2.mid.facing = -1
-p2.front.spr = 13,0
-p2.front.facing = -1
-p2.range.x = 0,127
-
-;-----------------------------------------------------------
-[Powerbar]
-;Player 1
-p1.pos    = 140,22
-p1.bg0.anim = 40
-p1.bg1.spr = 41,0
-;p1.mid.spr = 42,0
-p1.front.spr = 43,0
-p1.range.x = 0,-107
-p1.counter.offset = -108,6
-p1.counter.font = 1,0, 0
-
-;Player 2
-p2.pos    = 178,22
-p2.bg0.anim = 40
-p2.bg0.facing = -1
-p2.bg1.spr = 41,0
-p2.bg1.facing = -1
-;p2.mid.spr = 42,0
-;p2.mid.facing = -1
-p2.front.spr = 43,0
-p2.front.facing = -1
-p2.range.x  = 0,107
-p2.counter.offset = 109,6
-p2.counter.font = 1,0, 0
-
-; --level sounds---
-level1.snd = 21,0
-level2.snd = 21,0
-level3.snd = 21,0
-
-[Begin Action 40] ;Darkened powerbar background 
-40,0, 0,0, 1, , S
-
-
-;-----------------------------------------------------------
-[Face]
-;Player 1
-p1.pos    = 2,12
-p1.bg.spr = 50,0
-p1.face.spr = 9000,0
-p1.face.facing = 1
-p1.face.offset = 0,10
-;Player 2
-p2.pos    = 316,12
-p2.bg.spr = 50,0
-p2.bg.facing = -1
-p2.face.spr = 9000,0
-p2.face.facing = -1
-p2.face.offset = 0,10
-
-[Simul Face]
-;Player 1
-p1.pos    = 1,12
-p1.bg.spr = 60,0
-p1.face.spr = 9000,0
-p1.face.scale = 0.6,0.6
-p1.face.facing = 1
-p1.face.offset = 0,10
-;Player 2
-p2.pos    = 317,12
-p2.bg.spr = 60,0
-p2.bg.facing = -1
-p2.face.spr = 9000,0
-p2.face.scale = 0.6,0.6
-p2.face.facing = -1
-p2.face.offset = 0,10
-;Player 3
-p3.pos    = 2,12
-p3.face.spr = 9000,0
-p3.face.scale = 0.6,0.6
-p3.face.facing = 1
-p3.face.offset = 11,10
-;Player 4
-p4.pos    = 316,12
-p4.bg.facing = -1
-p4.face.spr = 9000,0
-p4.face.scale = 0.6,0.6
-p4.face.facing = -1
-p4.face.offset = -11,10
-
-[Turns Face]
-;Player 1
-p1.pos    = 2,12
-p1.bg.spr = 50,0
-p1.face.spr = 9000,0
-p1.face.facing = 1
-p1.face.offset = 0,10
-p1.teammate.pos = 1,49
-p1.teammate.spacing = 13,0
-p1.teammate.bg.spr = 70,0
-p1.teammate.ko.spr = 71,0
-p1.teammate.face.spr = 9000,0
-p1.teammate.face.scale = 0.5,0.53
-p1.teammate.face.facing = 1
-p1.teammate.face.offset = 1,0
-;Player 2
-p2.pos    = 316,12
-p2.bg.spr = 50,0
-p2.bg.facing = -1
-p2.face.spr = 9000,0
-p2.face.facing = -1
-p2.face.offset = 0,10
-p2.teammate.pos = 317,49
-p2.teammate.spacing = -13,0
-p2.teammate.bg.spr = 70,0
-p2.teammate.bg.facing = -1
-p2.teammate.ko.spr = 71,0
-p2.teammate.ko.facing = -1
-p2.teammate.face.spr = 9000,0
-p2.teammate.face.scale = 0.5,0.53
-p2.teammate.face.facing = -1
-p2.teammate.face.offset = -1,0
-
-;-----------------------------------------------------------
-[Name]
-p1.pos = 14,10
-;p1.bg. =
-p1.name.font = 3,0, 1
-;p2.bg. =
-p2.pos = 305,10
-p2.name.font = 3,0, -1
-
-[Simul Name]
-p1.pos = 14,10
-p1.name.font = 3,0, 1
-p2.pos = 305,10
-p2.name.font = 3,0, -1
-p3.pos = 138,10
-p3.name.font = 3,0, -1
-p4.pos = 181,10
-p4.name.font = 3,0, 1
-
-[Turns Name]
-p1.pos = 14,10
-;p1.bg. =
-p1.name.font = 3,0, 1
-;p2.bg. =
-p2.pos = 305,10
-p2.name.font = 3,0, -1
-	*/
-	    
+	/* Player 1 */
+	Bar *p1LifeBar;
+	Bar *p1PowerBar;
+	Face *p1Face;
+	Name *p1Name;
+	
+	/* Player 2 */
+	Bar *p2LifeBar;
+	Bar *p2PowerBar;
+	Face *p2Face;
+	Name *p2Name;
+	
+	/* Player 3 */
+	Bar *p3LifeBar;
+	Bar *p3PowerBar;
+	Face *p3Face;
+	Name *p3Name;
+	
+	/* Player 4 */
+	Bar *p4LifeBar;
+	Bar *p4PowerBar;
+	Face *p4Face;
+	Name *p4Name;
 };
 
 }

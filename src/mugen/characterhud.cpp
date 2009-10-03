@@ -98,7 +98,7 @@ void Bar::render(const int xaxis, const int yaxis, Bitmap &){
 }
 
 
-CharacterHUD::CharacterHUD(){
+CharacterHUD::CharacterHUD(Token *token){
     // notin
 }
 
