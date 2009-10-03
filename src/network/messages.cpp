@@ -8,7 +8,8 @@ using namespace std;
 Messages::Messages( int width, int height, int opaque ):
 width(width),
 height(height),
-opaque(opaque){
+opaque(opaque),
+borderColor(Bitmap::makeColor(200,200,200)){
 }
 
 static vector< string > wrapStrings( const string & left, const string & right, const Font & font, int max, vector< string > accum ){
@@ -58,7 +59,7 @@ void Messages::draw( int x, int y, const Bitmap & work, const Font & font ){
 	work.rectangleFill( x, y, x + width, y + height, Bitmap::makeColor( 0, 0, 0 ) );
 	work.drawingMode( Bitmap::MODE_SOLID );
 	// work.rectangle( x, y, x + width-1, y + height-1, Bitmap::makeColor( 255, 255, 255 ) );
-    work.border(0, 1, Bitmap::makeColor(200, 200, 200));
+    work.border(0, 1, borderColor);
 
     /* fast because its a sub-bitmap */
 	Bitmap area(work, x, y, width, height);

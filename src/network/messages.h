@@ -29,6 +29,7 @@ protected:
 	int width;
 	int height;
     int opaque;
+    int borderColor;
 	std::vector< std::string > messages;
 };
 
