@@ -1220,7 +1220,7 @@ MugenMenu::~MugenMenu(){
     cleanup();
 }
 
-void MugenMenu::run(){
+void MugenMenu::run() throw (ReturnException) {
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool endGame = false;

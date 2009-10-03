@@ -10,6 +10,7 @@
 #include "menu/menu.h"
 
 #include "mugen/mugen_util.h"
+#include "return_exception.h"
 
 /*
 We already have a setup for menus, might as well as utilize it to accomodate mugen
@@ -95,7 +96,7 @@ class MugenCharacterSelect{
 			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites) throw (MugenException);
 	
 	/*! do logic, draw whatever */
-	virtual MugenSelectedChars *run(const std::string &title, const int players, const bool selectStage, Bitmap *work);	
+	virtual MugenSelectedChars *run(const std::string &title, const int players, const bool selectStage, Bitmap *work);
     private:
 	//fadein.time = 10
 	//fadeout.time = 10
@@ -253,7 +254,7 @@ class MugenMenu : public Menu
 	virtual void loadData() throw (MugenException);
 	
 	/*! do logic, draw whatever */
-	virtual void run();
+	virtual void run() throw (ReturnException);
 	
 	/*! get character select */
 	inline MugenCharacterSelect *getSelect() { return characterSelect; }

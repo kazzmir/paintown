@@ -48,7 +48,7 @@ MugenOptionVersus::~MugenOptionVersus(){
 void MugenOptionVersus::logic(){
 }
 
-void MugenOptionVersus::run(bool &endGame){
+void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
     Bitmap screen(GFX_X, GFX_Y);
     // Do select screen change back to 2 once finished testing
     MugenSelectedChars *gameInfo = ((MugenMenu *)getParent())->getSelect()->run(getText(), 1, true, &screen);

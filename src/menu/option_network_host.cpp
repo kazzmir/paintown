@@ -53,7 +53,7 @@ OptionNetworkHost::~OptionNetworkHost(){
 void OptionNetworkHost::logic(){
 }
 
-void OptionNetworkHost::run(bool &endGame){
+void OptionNetworkHost::run(bool &endGame) throw (ReturnException) {
 	Keyboard key;
         try{
             Network::networkServer();

@@ -3,6 +3,7 @@
 
 #include "menu_option.h"
 #include "util/load_exception.h"
+#include "return_exception.h"
 class Token;
 
 /* Change game mod */
@@ -11,7 +12,7 @@ public:
     OptionChangeMod(Token *token) throw (LoadException);
     virtual ~OptionChangeMod();
     virtual void logic();
-    virtual void run(bool &endGame);
+    virtual void run(bool &endGame) throw (ReturnException);
 };
 
 #endif

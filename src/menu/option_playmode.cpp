@@ -81,7 +81,7 @@ void OptionPlayMode::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionPlayMode::run(bool &endGame){
+void OptionPlayMode::run(bool &endGame) throw (ReturnException) {
 }
     
 void OptionPlayMode::changeMode(){

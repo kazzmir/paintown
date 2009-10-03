@@ -5,6 +5,7 @@
 #include <vector>
 #include "gui/box.h"
 #include "util/load_exception.h"
+#include "return_exception.h"
 
 class Bitmap;
 class Token;
@@ -26,7 +27,7 @@ class MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame)=0;
+		virtual void run(bool &endGame) throw (ReturnException) =0;
 		
 		// This is to pass paramaters to an option ie a bar or something
 		// return true to pause key input

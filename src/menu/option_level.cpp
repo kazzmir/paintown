@@ -18,7 +18,7 @@ void OptionLevel::logic(){
 }
 
 /* redo this to not use global state */
-void OptionLevel::run(bool &endGame){
+void OptionLevel::run(bool &endGame) throw (ReturnException) {
 	endGame = true;
     *set = value;
 }

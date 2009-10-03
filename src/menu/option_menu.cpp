@@ -51,8 +51,7 @@ void OptionMenu::logic()
 	// Nothing
 }
 
-void OptionMenu::run(bool &endGame)
-{
+void OptionMenu::run(bool &endGame) throw (ReturnException) {
 	// Do our new menu
 	menu->run();
 }

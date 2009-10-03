@@ -254,7 +254,7 @@ void TabMenu::load(const std::string &filename) throw (LoadException){
     }
 }
 
-void TabMenu::run(){
+void TabMenu::run() throw (ReturnException) {
     //bool endMenu = false;
     bool done = false;
 

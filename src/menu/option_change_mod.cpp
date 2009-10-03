@@ -30,5 +30,5 @@ OptionChangeMod::~OptionChangeMod(){
 void OptionChangeMod::logic(){
 }
 
-void OptionChangeMod::run(bool &endGame){
+void OptionChangeMod::run(bool &endGame) throw (ReturnException) {
 }

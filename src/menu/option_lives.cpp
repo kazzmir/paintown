@@ -78,7 +78,7 @@ void OptionLives::logic(){
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionLives::run(bool &endGame){
+void OptionLives::run(bool &endGame) throw (ReturnException) {
 }
 
 bool OptionLives::leftKey(){

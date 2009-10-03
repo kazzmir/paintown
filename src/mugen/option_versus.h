@@ -3,6 +3,7 @@
 
 #include "menu/menu_option.h"
 #include "util/load_exception.h"
+#include "return_exception.h"
 
 #include <string>
 
@@ -15,7 +16,7 @@ class MugenOptionVersus : public MenuOption
     public:
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option
-	virtual void run(bool &endGame);
+	virtual void run(bool &endGame) throw (ReturnException);
 	
 	virtual void logic();
 	

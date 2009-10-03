@@ -66,8 +66,7 @@ void OptionFullscreen::logic()
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionFullscreen::run(bool &endGame)
-{
+void OptionFullscreen::run(bool &endGame) throw (ReturnException) {
 }
 
 bool OptionFullscreen::leftKey()

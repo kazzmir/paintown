@@ -55,5 +55,5 @@ OptionDummy::~OptionDummy(){
 void OptionDummy::logic(){
 }
 
-void OptionDummy::run(bool &endGame){
+void OptionDummy::run(bool &endGame) throw (ReturnException) {
 }

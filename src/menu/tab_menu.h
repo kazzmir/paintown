@@ -3,6 +3,7 @@
 
 #include "menu.h"
 #include "gui/box.h"
+#include "return_exception.h"
 
 class Font;
 class Bitmap;
@@ -54,7 +55,7 @@ class TabMenu : public Menu
 	void load(Token *token) throw (LoadException);
 	
 	/*! do logic, draw whatever */
-	void run();
+	void run() throw (ReturnException);
     private:
 	RectArea tabInfo;
 	RectArea selectedTabInfo;

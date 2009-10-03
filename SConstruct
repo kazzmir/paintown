@@ -40,7 +40,7 @@ def checkRTTI(context):
     context.Message("Checking if we need rtti... ")
     tmp = context.env.Clone()
     env = context.env
-    env.Append(CXXFLAGS = ['-fno-rtti'])
+    # env.Append(CXXFLAGS = ['-fno-rtti'])
 
     ret = context.TryCompile("""
       #include <exception>

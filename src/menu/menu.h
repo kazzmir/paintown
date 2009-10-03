@@ -5,6 +5,7 @@
 #include <string>
 
 #include "util/load_exception.h"
+#include "game/input-map.h"
 #include "return_exception.h"
 #include "gui/box.h"
 
@@ -19,6 +20,8 @@ class Bitmap;
 class MenuOption;
 class Token;
 class MenuAnimation;
+
+
 
 class Point{
     public:
@@ -43,7 +46,7 @@ class Menu
 		virtual void load(Token *token) throw (LoadException);
 		
 		/*! Logic */
-		virtual void act(bool &endGame);
+		virtual void act(bool &endGame) throw (ReturnException);
 		
 		/*! Draw */
 		virtual void draw(const Box &area, Bitmap *bmp);
@@ -52,7 +55,7 @@ class Menu
 		virtual void drawText(const Box &area, Bitmap *bmp);
 		
 		/*! run as it's own menu */
-		virtual void run();
+		virtual void run() throw (ReturnException);
 		
 		/*! Parent */
 		virtual void setParent(Menu *menu);
@@ -192,6 +195,19 @@ class Menu
 		
 		//! This is the location of the option info text
 		Point optionInfoTextLocation;
-		
+
+        enum MenuInput{
+            Up,
+            Down,
+            Left,
+            Right,
+            Select,
+            /* return is a safe menu return */
+            Return,
+            /* exit is usually done by ESC */
+            Exit,
+        };
+
+        InputMap<MenuInput> input;
 };
 #endif

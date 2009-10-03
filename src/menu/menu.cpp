@@ -19,7 +19,9 @@
 #include "menu/actionfactory.h"
 #include "menu/menu_global.h"
 #include "menu/menu_animation.h"
-#include "gui/keyinput_manager.h"
+
+#include "game/input-manager.h"
+#include "game/input-map.h"
 
 #include <queue>
 #include <map>
@@ -68,9 +70,21 @@ option(false){
 	optionInfoTextLocation.y = 100;
 	menuInfoLocation.x = 320;
 	menuInfoLocation.y = 465;
-        if (work->getError()){
-            Global::debug(-1) << "*BUG* Could not allocate bitmap for menu" << endl;
-        }
+    if (work->getError()){
+        Global::debug(-1) << "*BUG* Could not allocate bitmap for menu" << endl;
+    }
+
+    /* key, delay, block, output */
+    input.set(Keyboard::Key_J, 0, true, Down);
+    input.set(Keyboard::Key_K, 0, true, Up);
+    input.set(Keyboard::Key_H, 0, true, Left);
+    input.set(Keyboard::Key_L, 0, true, Right);
+    input.set(Keyboard::Key_UP, 0, true, Up);
+    input.set(Keyboard::Key_DOWN, 0, true, Down);
+    input.set(Keyboard::Key_LEFT, 0, true, Left);
+    input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    input.set(Keyboard::Key_ENTER, 0, true, Select);
+    input.set(Keyboard::Key_ESC, 0, true, Exit);
 }
 
 void Menu::load(Token *token) throw (LoadException){
@@ -242,8 +256,17 @@ void Menu::load(const std::string &filename) throw (LoadException){
     }
 }
 
+static void tryPlaySound(const string & path){
+    if (path != ""){
+        Sound * ok = Resource::getSound(path);
+        if (ok != NULL){
+            ok->play();
+        }
+    }
+}
+
 /*! Logic */
-void Menu::act(bool &endGame){
+void Menu::act(bool &endGame) throw (ReturnException){
 
     /* use an input map to abstract raw input over abstract actions
      * something like
@@ -254,107 +277,112 @@ void Menu::act(bool &endGame){
      * this way any arbitrary input method can be used for controlling menus
      */
 
+    /*
     // Keys
     const char vi_up = 'k';
     const char vi_down = 'j';
     const char vi_left = 'h';
     const char vi_right = 'l';
-    if ( keyInputManager::keyState(keys::UP, true ) ||
-	    /* for vi people like me */
-	    keyInputManager::keyState(vi_up, true )){	
+    */
+    InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
 
-	motion -= getFontHeight();
-	(*selectedOption)->setState(MenuOption::Deselected);
-	if (selectedOption > menuOptions.begin()){
-	    selectedOption--;
-	} else {
-	    selectedOption = menuOptions.end() -1;
-	}
+    if (inputState[Up]){
+        motion -= getFontHeight();
+        (*selectedOption)->setState(MenuOption::Deselected);
+        if (selectedOption > menuOptions.begin()){
+            selectedOption--;
+        } else {
+            selectedOption = menuOptions.end() -1;
+        }
 
-	(*selectedOption)->setState(MenuOption::Selected);
-	(*selectedOption)->resetAnimations();
+        (*selectedOption)->setState(MenuOption::Selected);
+        (*selectedOption)->resetAnimations();
 
-	if (menuOptions.size() > 1){
-	    MenuGlobals::playSelectSound();
-	}
+        if (menuOptions.size() > 1){
+            MenuGlobals::playSelectSound();
+        }
     }
 
-    if ( keyInputManager::keyState(keys::DOWN, true ) ||
-	    /* for vi people like me */
-	    keyInputManager::keyState(vi_down, true )){
+    if (inputState[Down]){
+        motion += getFontHeight();
+        (*selectedOption)->setState(MenuOption::Deselected);
+        if (selectedOption < menuOptions.begin()+menuOptions.size()-1){
+            selectedOption++;
+        } else {
+            selectedOption = menuOptions.begin();
+        }
 
-	motion += getFontHeight();
-	(*selectedOption)->setState(MenuOption::Deselected);
-	if (selectedOption < menuOptions.begin()+menuOptions.size()-1){
-	    selectedOption++;
-	} else {
-	    selectedOption = menuOptions.begin();
-	}
+        (*selectedOption)->setState(MenuOption::Selected);
+        (*selectedOption)->resetAnimations();
 
-	(*selectedOption)->setState(MenuOption::Selected);
-	(*selectedOption)->resetAnimations();
-
-	if (menuOptions.size() > 1){
-	    MenuGlobals::playSelectSound();
-	}
+        if (menuOptions.size() > 1){
+            MenuGlobals::playSelectSound();
+        }
     }
 
-    if (keyInputManager::keyState(keys::LEFT, true) ||
-	keyInputManager::keyState(vi_left, true)){
-
-	if ((*selectedOption)->leftKey()){
-	    /* ??? */
-	}
+    if (inputState[Left]){
+        if ((*selectedOption)->leftKey()){
+            /* ??? */
+        }
     }
 
-    if ( keyInputManager::keyState(keys::RIGHT, true )||
-	    keyInputManager::keyState(vi_right, true )){
-
-	if ((*selectedOption)->rightKey()){
-	    /* ??? */
-	}
+    if (inputState[Right]){
+        if ((*selectedOption)->rightKey()){
+            /* ??? */
+        }
     }
 
-    if ( keyInputManager::keyState(keys::ENTER, true ) ){
-	if ((*selectedOption)->isRunnable()){
-	    (*selectedOption)->setState(MenuOption::Run);
-	    // lets run it
-	    try{
-		if (okSound != ""){
-		    Sound * ok = Resource::getSound(okSound);
-		    ok->play();
-		}
-		(*selectedOption)->run(endGame);
-	    } catch ( const ReturnException & re ){
+    if (inputState[Exit]){
+        (*selectedOption)->setState(MenuOption::Deselected);
+        /*
+           if (backSound != ""){
+           Sound * back = Resource::getSound(backSound);
+           back->play();
+           }
+           */
+        while (inputState[Exit]){
+            inputState = InputManager::getMap(input);
+            Util::rest(1);
+            InputManager::poll();
+        }
+        Global::debug(0) << "quit menu" << endl;
+        throw ReturnException();
+    }
+
+    if (inputState[Select]){
+        if ((*selectedOption)->isRunnable()){
+            (*selectedOption)->setState(MenuOption::Run);
+            // lets run it
+            try{
+                tryPlaySound(okSound);
+                (*selectedOption)->run(endGame);
+            } catch (const ReturnException & re){
                 /* hack to make sure the current menu is drawn properly */
                 resetFadeInfo();
-                if (backSound != ""){
-                    Sound * back = Resource::getSound(backSound);
-                    back->play();
-                }
-	    }
+                tryPlaySound(backSound);
+            }
             (*selectedOption)->setState(MenuOption::Selected);
             (*selectedOption)->resetAnimations();
-	    // Reset music
-	    if ( !music.empty() ){
-		MenuGlobals::setMusic(music);
-	    }
-	}
+            // Reset music
+            if ( !music.empty() ){
+                MenuGlobals::setMusic(music);
+            }
+        }
     }
-    
+
     for ( std::vector <MenuOption *>::iterator b = menuOptions.begin() ; b != menuOptions.end(); b++ ){
-	(*b)->logic();
-	// Recalculate placement
-	checkTextLength((*b));
+        (*b)->logic();
+        // Recalculate placement
+        checkTextLength((*b));
     }
 
     const double motion_speed = 1.8;
     if (motion >= motion_speed){
-	motion -= motion_speed;
+        motion -= motion_speed;
     } else if (motion <= -motion_speed){
-	motion += motion_speed;
+        motion += motion_speed;
     } else {
-	motion = 0;
+        motion = 0;
     }
 
     // motion = 0;
@@ -364,10 +392,10 @@ void Menu::act(bool &endGame){
 
     // Animations
     for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-	(*i)->act();
+        (*i)->act();
     }
     for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-	(*i)->act();
+        (*i)->act();
     }
 
     // Lets do some logic for the box with text
@@ -377,7 +405,7 @@ void Menu::act(bool &endGame){
 void Menu::draw(const Box &area, Bitmap *bmp){
 }
 
-void Menu::run(){
+void Menu::run() throw (ReturnException) {
     bool done = false;
     bool endGame = false;
 
@@ -409,11 +437,11 @@ void Menu::run(){
         for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
             (*i)->reset();
         }
-	
-	// Set music
-	if ( !music.empty() ){
-	    MenuGlobals::setMusic(music);
-	}
+
+        // Set music
+        if ( !music.empty() ){
+            MenuGlobals::setMusic(music);
+        }
 
         while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 
@@ -423,7 +451,7 @@ void Menu::run(){
                 throw ShutdownException();
             }
 
-            keyInputManager::update();
+            InputManager::poll();
 
             if ( Global::speed_counter > 0 ){
                 draw = true;
@@ -464,8 +492,8 @@ void Menu::run(){
                 work->setClipRect(0, 0, work->getWidth(), work->getHeight());
                 // Draw option info text
                 drawInfoBox((*selectedOption)->getInfoText(), optionInfoTextLocation, work);
-		// Draw menu info text
-		drawInfoBox(menuInfo, menuInfoLocation, work);
+                // Draw menu info text
+                drawInfoBox(menuInfo, menuInfoLocation, work);
                 // Draw foreground animations
                 for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
                     (*i)->draw(work);
@@ -478,34 +506,38 @@ void Menu::run(){
 
             while ( Global::speed_counter < 1 ){
                 Util::rest( 1 );
-                keyInputManager::update();
+                InputManager::poll();
             }
 
             // endGame |= keyInputManager::keyState(keys::ESC, true );
             done |= endGame;
+
+            /* can we move the check for ESC to act() ? */
+#if 0
             if (keyInputManager::keyState(keys::ESC, true )){
                 (*selectedOption)->setState(MenuOption::Deselected);
                 /*
-                if (backSound != ""){
-                    Sound * back = Resource::getSound(backSound);
-                    back->play();
-                }
-                */
+                   if (backSound != ""){
+                   Sound * back = Resource::getSound(backSound);
+                   back->play();
+                   }
+                   */
                 throw ReturnException();
             }
+#endif
         }
-	
-	// Reset it's state
-	(*selectedOption)->setState(MenuOption::Selected);
-	if ( !selectSound.empty() ){
-	    MenuGlobals::setSelectSound(selectSound);
-	}
 
-	if (!selectSound.empty()){
-	    if(MenuGlobals::currentSelectSound() != selectSound){
-		MenuGlobals::popSelectSound();
-	    }
-	}
+        // Reset it's state
+        (*selectedOption)->setState(MenuOption::Selected);
+        if ( !selectSound.empty() ){
+            MenuGlobals::setSelectSound(selectSound);
+        }
+
+        if (!selectSound.empty()){
+            if(MenuGlobals::currentSelectSound() != selectSound){
+                MenuGlobals::popSelectSound();
+            }
+        }
     }
 }
 

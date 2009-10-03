@@ -183,8 +183,7 @@ void OptionKey::logic(){
 	setText(std::string(temp));
 }
 
-void OptionKey::run(bool &endGame)
-{
+void OptionKey::run(bool &endGame) throw (ReturnException) {
 	//int x, y, width, height;
 	const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
 	const int width = vFont.textLength("Press a Key!") + 10;

@@ -56,6 +56,6 @@ OptionQuit::~OptionQuit(){
 void OptionQuit::logic(){
 }
 
-void OptionQuit::run(bool &endGame){
+void OptionQuit::run(bool &endGame) throw (ReturnException) {
 	endGame = true;
 }
