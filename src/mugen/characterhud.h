@@ -4,12 +4,12 @@
 #include <string>
 
 #include "mugen/mugen_util.h"
+#include "mugen/mugen_exception.h"
 
 class Bitmap;
 class MugenSprite;
 class MugenAnimation;
 class MugenFont;
-class Token;
 
 namespace Mugen{
 
@@ -110,37 +110,60 @@ class Name{
 	Element *font;
 };
 
-/*! Character HUD ... lifebar, face, etc */
-class CharacterHUD
-{
+/*! Holder for character data */
+class PlayerInfo{
     public:
-	CharacterHUD(Token *token);
+	PlayerInfo();
+	~PlayerInfo();
+    
+    private:
+	/* HUD collection, compromised of a static amount of 4 players
+	   No need to make dynamic since it models the way MUGEN does it for now,
+	   might change later */
+	Bar *lifeBar[4];
+	Bar *powerBar[4];
+	Face *face[4];
+	Name *name[4];
+	
+};
+
+/*! Character HUD ... lifebar, face, etc */
+class CharacterHUD{
+    public:
+	CharacterHUD( const std::string & s );
 	virtual ~CharacterHUD();
 	
+	virtual void load() throw (MugenException);
+	
+	void act();
+	void render(const int xaxis, const int yaxis, Bitmap &);
+	
     private:
-	/* Player 1 */
-	Bar *p1LifeBar;
-	Bar *p1PowerBar;
-	Face *p1Face;
-	Name *p1Name;
+	/* files */
+	std::string location;
+	std::string sffFile;
+	std::string sndFile;
+	std::vector<std::string>fontFiles;
+	std::string fightfx_sff_File;
+	std::string fightfx_air_File;
+	std::string common_snd_File;
 	
-	/* Player 2 */
-	Bar *p2LifeBar;
-	Bar *p2PowerBar;
-	Face *p2Face;
-	Name *p2Name;
+	/* player data */
+	PlayerInfo *normal;
+	PlayerInfo *simultaneous;
+	PlayerInfo *team;
 	
-	/* Player 3 */
-	Bar *p3LifeBar;
-	Bar *p3PowerBar;
-	Face *p3Face;
-	Name *p3Name;
+	/* Time Display */
 	
-	/* Player 4 */
-	Bar *p4LifeBar;
-	Bar *p4PowerBar;
-	Face *p4Face;
-	Name *p4Name;
+	/* Combo Display */
+	
+	/* Round and Fight Display */
+	
+	/* KO Display */
+	
+	/* Win Icon... I guess this is the markers for wins */
+	
+	
 };
 
 }
