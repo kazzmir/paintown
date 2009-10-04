@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "gui/box.h"
 #include "return_exception.h"
+#include "game/input-map.h"
 
 class Font;
 class Bitmap;
@@ -15,8 +16,9 @@ class MenuAnimation;
 class ColorBuffer{
     public:
 	ColorBuffer(int color1, int color2);
-	~ColorBuffer();
-        static const int maxColors = 100;
+	virtual ~ColorBuffer();
+
+    static const int maxColors = 100;
 	int colors[maxColors];
 	int index;
 	bool forward;
@@ -77,6 +79,15 @@ class TabMenu : public Menu
 	// double scrollSpeed;
 	// Total lines from options
 	int totalLines;
+
+    enum TabInput{
+        Left,
+        Right,
+        Select,
+        Exit,
+    };
+
+    InputMap<TabInput> input;
 	
 	void drawMenus(Bitmap *bmp);
 	

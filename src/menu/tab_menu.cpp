@@ -18,7 +18,9 @@
 #include "menu/actionfactory.h"
 #include "menu/menu_global.h"
 #include "menu/menu_animation.h"
-#include "gui/keyinput_manager.h"
+
+#include "game/input-manager.h"
+#include "game/input-map.h"
 
 #include <queue>
 #include <map>
@@ -42,25 +44,25 @@ ColorBuffer::~ColorBuffer(){
 int ColorBuffer::update(){
     // Going to color1 from color2
     if (forward){
-	if (index<maxColors-1){
-	    index++;
-	} else {
-	    forward=!forward;
-	}
+        if (index<maxColors-1){
+            index++;
+        } else {
+            forward=!forward;
+        }
     } else {
-	// Going to color2 from color1
-	if (index>0){
-	    index--;
-	} else {
-	    forward=!forward;
-	}
+        // Going to color2 from color1
+        if (index>0){
+            index--;
+        } else {
+            forward=!forward;
+        }
     }
-    
+
     return colors[index];
 }
 
 void ColorBuffer::reset(){
-    index=0;
+    index = 0;
 }
 
 MenuBox::MenuBox(int w, int h):
@@ -104,141 +106,151 @@ location(0),
 targetOffset(0),
 totalOffset(0),
 totalLines(1){
+    input.set(Keyboard::Key_H, 0, true, Left);
+    input.set(Keyboard::Key_L, 0, true, Right);
+    input.set(Keyboard::Key_LEFT, 0, true, Left);
+    input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    input.set(Keyboard::Key_ENTER, 0, true, Select);
+    input.set(Keyboard::Key_ESC, 0, true, Exit);
+    input.set(InputMap<TabInput>::Joystick::Left, 0, true, Left);
+    input.set(InputMap<TabInput>::Joystick::Right, 0, true, Right);
+    input.set(InputMap<TabInput>::Joystick::Button1, 0, true, Select);
+    input.set(InputMap<TabInput>::Joystick::Button2, 0, true, Exit);
 }
 
-void TabMenu::load(Token *token)throw( LoadException ){
+void TabMenu::load(Token *token) throw (LoadException){
     if ( *token != "tabmenu" )
-	throw LoadException("Not a tabbed menu");
+        throw LoadException("Not a tabbed menu");
     else if ( ! token->hasTokens() )
-	return;
-    
+        return;
+
     while ( token->hasTokens() ){
-	try{
-	    Token * tok;
-	    *token >> tok;
-	    if ( *tok == "name" ){
-		// Set menu name
-		std::string temp;
-		*tok >> temp;
-		setName(temp);
-	    } else if ( *tok == "position" ) {
-		// This handles the placement of the menu list and surrounding box
-		*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
-	    } else if ( *tok == "position-body" ) {
-		// This handles the body color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b >> backboard.position.bodyAlpha;
-		backboard.position.body = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "position-border" ) {
-		// This handles the border color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b >> backboard.position.borderAlpha;
-		backboard.position.border = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "tab-body" ) {
-		// This handles the body color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b >> tabInfo.bodyAlpha;
-		tabInfo.body = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "tab-border" ) {
-		// This handles the border color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b >> tabInfo.borderAlpha;
-		tabInfo.border = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "selectedtab-body" ) {
-		// This handles the body color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
-		selectedTabInfo.body = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "selectedtab-border" ) {
-		// This handles the border color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
-		selectedTabInfo.border = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "runningtab-body" ) {
-		// This handles the body color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
-		runningTabInfo.body = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "runningtab-border" ) {
-		// This handles the border color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
-		runningTabInfo.border = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "font-color" ) {
-		// This handles the font color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b;
-		fontColor = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "selectedfont-color" ) {
-		// This handles the font color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b;
-		selectedFontColor = Bitmap::makeColor(r,g,b);
-	    } else if ( *tok == "runningfont-color" ) {
-		// This handles the font color of the menu box
-		int r,g,b;
-		*tok >> r >> g >> b;
-		runningFontColor = Bitmap::makeColor(r,g,b);
-	    } else if( *tok == "anim" ) {
-		MenuAnimation *animation = new MenuAnimation(tok);
-		if (animation->getLocation() == 0){
-		    backgroundAnimations.push_back(animation);
-		} else if (animation->getLocation() == 1){
-		    foregroundAnimations.push_back(animation);
-		}
-	    } else if (*tok == "menu"){
-		MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
-		if (menu){
-		    // To avoid issues
-		    menu->menu.setAsOption(true);
-		    if (tok->numTokens() == 1){
-			std::string temp;
-			*tok >> temp;
-			menu->menu.load(Filesystem::find(temp));
-		    } else {
-			menu->menu.load(tok);
-		    }
-		    tabs.push_back(menu);
-		    const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
-		    // set info on the box itself
-		    menu->position.width = vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W;
-		    menu->position.height = vFont.getHeight() + TEXT_SPACING_H;
-		} else {
-		    throw LoadException("Problem reading menu");
-		}
-	    } else if( *tok == "menuinfo" ){
-		*tok >> menuInfo;
-	    } else if( *tok == "menuinfo-position" ){
-		*tok >> menuInfoLocation.x >> menuInfoLocation.y;
-	    } else if( *tok == "runninginfo" ){
-		*tok >> runningInfo;
-	    } else {
-		Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-		if (Global::getDebug() >= 3){
-		    tok->print(" ");
-		}
-	    }
-	} catch ( const TokenException & ex ) {
-	    // delete current;
-	    string m( "Menu parse error: " );
-	    m += ex.getReason();
-	    throw LoadException( m );
-	} catch ( const LoadException & ex ) {
-	    // delete current;
-	    throw ex;
-	}
+        try{
+            Token * tok;
+            *token >> tok;
+            if ( *tok == "name" ){
+                // Set menu name
+                std::string temp;
+                *tok >> temp;
+                setName(temp);
+            } else if ( *tok == "position" ) {
+                // This handles the placement of the menu list and surrounding box
+                *tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
+            } else if ( *tok == "position-body" ) {
+                // This handles the body color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> backboard.position.bodyAlpha;
+                backboard.position.body = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "position-border" ) {
+                // This handles the border color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> backboard.position.borderAlpha;
+                backboard.position.border = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "tab-body" ) {
+                // This handles the body color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> tabInfo.bodyAlpha;
+                tabInfo.body = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "tab-border" ) {
+                // This handles the border color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> tabInfo.borderAlpha;
+                tabInfo.border = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "selectedtab-body" ) {
+                // This handles the body color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
+                selectedTabInfo.body = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "selectedtab-border" ) {
+                // This handles the border color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
+                selectedTabInfo.border = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "runningtab-body" ) {
+                // This handles the body color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
+                runningTabInfo.body = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "runningtab-border" ) {
+                // This handles the border color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
+                runningTabInfo.border = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "font-color" ) {
+                // This handles the font color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b;
+                fontColor = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "selectedfont-color" ) {
+                // This handles the font color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b;
+                selectedFontColor = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "runningfont-color" ) {
+                // This handles the font color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b;
+                runningFontColor = Bitmap::makeColor(r,g,b);
+            } else if( *tok == "anim" ) {
+                MenuAnimation *animation = new MenuAnimation(tok);
+                if (animation->getLocation() == 0){
+                    backgroundAnimations.push_back(animation);
+                } else if (animation->getLocation() == 1){
+                    foregroundAnimations.push_back(animation);
+                }
+            } else if (*tok == "menu"){
+                MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
+                if (menu){
+                    // To avoid issues
+                    menu->menu.setAsOption(true);
+                    if (tok->numTokens() == 1){
+                        std::string temp;
+                        *tok >> temp;
+                        menu->menu.load(Filesystem::find(temp));
+                    } else {
+                        menu->menu.load(tok);
+                    }
+                    tabs.push_back(menu);
+                    const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
+                    // set info on the box itself
+                    menu->position.width = vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W;
+                    menu->position.height = vFont.getHeight() + TEXT_SPACING_H;
+                } else {
+                    throw LoadException("Problem reading menu");
+                }
+            } else if( *tok == "menuinfo" ){
+                *tok >> menuInfo;
+            } else if( *tok == "menuinfo-position" ){
+                *tok >> menuInfoLocation.x >> menuInfoLocation.y;
+            } else if( *tok == "runninginfo" ){
+                *tok >> runningInfo;
+            } else {
+                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
+            }
+        } catch ( const TokenException & ex ) {
+            // delete current;
+            string m( "Menu parse error: " );
+            m += ex.getReason();
+            throw LoadException( m );
+        } catch ( const LoadException & ex ) {
+            // delete current;
+            throw ex;
+        }
     }
-	
+
     if ( getName().empty() ){
-	    throw LoadException("No name set, the menu should have a name!");
+        throw LoadException("No name set, the menu should have a name!");
     }
-    
+
     if (!menuInfo.empty()){
-	if (! menuInfoLocation.x || ! menuInfoLocation.y){
-	    throw LoadException("The position for the menu info box in \"" + getName() + "\" must be set since there menuinfo is set!"); 
-	}
+        if (! menuInfoLocation.x || ! menuInfoLocation.y){
+            throw LoadException("The position for the menu info box in \"" + getName() + "\" must be set since there menuinfo is set!"); 
+        }
     }
-    
+
     // Set totalLines
     calculateTabLines();
 }
@@ -266,177 +278,179 @@ void TabMenu::run() throw (ReturnException) {
     Global::speed_counter = 0;
     Global::second_counter = 0;
     int scrollCounter = 0;
-    
+
     // Color effects
     ColorBuffer fontBuffer(selectedFontColor,runningFontColor);
     ColorBuffer borderBuffer(selectedTabInfo.border,runningTabInfo.border);
     ColorBuffer backgroundBuffer(selectedTabInfo.body,runningTabInfo.body);
-    
+
     currentTab = tabs.begin();
     location = targetOffset = totalOffset = 0;
     // Set select color
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
-	if (i == currentTab){
-	    (*i)->setColors(selectedTabInfo,selectedFontColor);
-	} else {
-	    (*i)->setColors(tabInfo,fontColor);
-	}
+        if (i == currentTab){
+            (*i)->setColors(selectedTabInfo,selectedFontColor);
+        } else {
+            (*i)->setColors(tabInfo,fontColor);
+        }
     }
-    
-     // Reset fade stuff
+
+    // Reset fade stuff
     resetFadeInfo();
-    
+
     // Reset animations
     for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-	(*i)->reset();
+        (*i)->reset();
     }
     for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-	(*i)->reset();
+        (*i)->reset();
     }
+
     while (!done){
 
-	bool draw = false;
-	//const char vi_up = 'k';
-	//const char vi_down = 'j';
-	const char vi_left = 'h';
-	const char vi_right = 'l';
+        bool draw = false;
+        /*
+        //const char vi_up = 'k';
+        //const char vi_down = 'j';
+        const char vi_left = 'h';
+        const char vi_right = 'l';
+        */
 
-	keyInputManager::update();
+        InputManager::poll();
 
-	if ( Global::speed_counter > 0 ){
-	    draw = true;
-	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-	    while ( runCounter >= 1.0 ){
-		runCounter -= 1;
-		// Keys
-		if (!(*currentTab)->running){
-		    if (keyInputManager::keyState(keys::LEFT, true) ||
-			keyInputManager::keyState(vi_left, true)){
-			MenuGlobals::playSelectSound();
-			// Reset color
-			(*currentTab)->setColors(tabInfo,fontColor);
-			if (currentTab > tabs.begin()){
-			    currentTab--;
-			    location--;
-			    targetOffset+=backboard.position.width;
-			} else {
-			    currentTab = tabs.end()-1;
-			    location=tabs.size()-1;
-			    targetOffset = (location*backboard.position.width) * -1;
-			}
-			(*currentTab)->setColors(selectedTabInfo,selectedFontColor);
-		    }
+        if ( Global::speed_counter > 0 ){
+            draw = true;
+            runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+            while ( runCounter >= 1.0 ){
+                runCounter -= 1;
+                InputMap<TabInput>::Output inputState = InputManager::getMap(input);
+                // Keys
+                if (!(*currentTab)->running){
+                    if (inputState[Left]){
+                        MenuGlobals::playSelectSound();
+                        // Reset color
+                        (*currentTab)->setColors(tabInfo,fontColor);
+                        if (currentTab > tabs.begin()){
+                            currentTab--;
+                            location--;
+                            targetOffset+=backboard.position.width;
+                        } else {
+                            currentTab = tabs.end()-1;
+                            location=tabs.size()-1;
+                            targetOffset = (location*backboard.position.width) * -1;
+                        }
+                        (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
+                    }
 
-		    if ( keyInputManager::keyState(keys::RIGHT, true )||
-			    keyInputManager::keyState(vi_right, true )){
-			MenuGlobals::playSelectSound();
-			// Reset color
-			(*currentTab)->setColors(tabInfo,fontColor);
-			if (currentTab < tabs.begin()+tabs.size()-1){
-			    currentTab++;
-			    location++;
-			    targetOffset-=backboard.position.width;
-			} else {
-			    currentTab = tabs.begin();
-			    location= targetOffset = 0;
-			}
-			(*currentTab)->setColors(selectedTabInfo,selectedFontColor);
-		    }
-		    /*
-		    if (keyInputManager::keyState(keys::DOWN, true) ||
-			keyInputManager::keyState(vi_down, true)){
-			MenuGlobals::playSelectSound();
-		    }
+                    if (inputState[Right]){
+                        MenuGlobals::playSelectSound();
+                        // Reset color
+                        (*currentTab)->setColors(tabInfo,fontColor);
+                        if (currentTab < tabs.begin()+tabs.size()-1){
+                            currentTab++;
+                            location++;
+                            targetOffset-=backboard.position.width;
+                        } else {
+                            currentTab = tabs.begin();
+                            location= targetOffset = 0;
+                        }
+                        (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
+                    }
+                    /*
+                       if (keyInputManager::keyState(keys::DOWN, true) ||
+                       keyInputManager::keyState(vi_down, true)){
+                       MenuGlobals::playSelectSound();
+                       }
 
-		    if ( keyInputManager::keyState(keys::UP, true )||
-			    keyInputManager::keyState(vi_up, true )){
-			MenuGlobals::playSelectSound();
-		    }
-    */
-		    if ( keyInputManager::keyState(keys::ENTER, true ) ){
-			// Run menu
-			(*currentTab)->running = true;
-			backgroundBuffer.reset();
-			borderBuffer.reset();
-			fontBuffer.reset();
-		    }
-		} else {
-		    (*currentTab)->menu.act(done);
-		    (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
-		}
-		if (keyInputManager::keyState(keys::ESC, true )){
-		    if (!(*currentTab)->running){
-			done = true;
-			throw ReturnException();
-		    } else {
-			(*currentTab)->running = false;
-			(*currentTab)->setColors(selectedTabInfo,selectedFontColor);
-		    }
-		}
-		
-		// Animations
-		for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-		    (*i)->act();
-		}
-		for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-		    (*i)->act();
-		}
-		
-		// Lets do some logic for the box with text
-		updateFadeInfo();
+                       if ( keyInputManager::keyState(keys::UP, true )||
+                       keyInputManager::keyState(vi_up, true )){
+                       MenuGlobals::playSelectSound();
+                       }
+                       */
+                    if (inputState[Select]){
+                        // Run menu
+                        (*currentTab)->running = true;
+                        backgroundBuffer.reset();
+                        borderBuffer.reset();
+                        fontBuffer.reset();
+                    }
+                } else {
+                    (*currentTab)->menu.act(done);
+                    (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
+                }
+                if (inputState[Exit]){
+                    if (!(*currentTab)->running){
+                        done = true;
+                        throw ReturnException();
+                    } else {
+                        (*currentTab)->running = false;
+                        (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
+                    }
+                }
 
-		if (scrollCounter == 0 && totalOffset != targetOffset){
-		    totalOffset = (totalOffset + targetOffset) / 2;
-		    /* not sure if this is stricly necessary */
-		    if (fabs(targetOffset - totalOffset) < 5){
-			totalOffset = targetOffset;
-		    }
-		}
-		/* higher values of % X slow down scrolling */
-		scrollCounter = (scrollCounter + 1) % 5;
-		
-	    }
+                // Animations
+                for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+                    (*i)->act();
+                }
+                for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+                    (*i)->act();
+                }
 
-	    Global::speed_counter = 0;
-	}
+                // Lets do some logic for the box with text
+                updateFadeInfo();
 
-	if ( draw ){
-	    // Draw
-	    drawBackground(work);
-	    
-	    // Do background animations
-	    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-		(*i)->draw(work);
-	    }
-	    
-	    // Draw text board
-	    drawTextBoard(work);
-	    
-	    // Menus
-	    if (currentDrawState == NoFade){
-		drawMenus(work);
-	    }
-	    
-	    // Draw menu info text
-	    if (!(*currentTab)->running){
-		drawInfoBox(menuInfo, menuInfoLocation, work);
-	    } else {
-		drawInfoBox(runningInfo, menuInfoLocation, work);
-	    }
-	    
-	    // Draw foreground animations
-	    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-		(*i)->draw(work);
-	    }
-	    
-	    // Finally render to screen
-	    work->BlitToScreen();
-	}
+                if (scrollCounter == 0 && totalOffset != targetOffset){
+                    totalOffset = (totalOffset + targetOffset) / 2;
+                    /* not sure if this is stricly necessary */
+                    if (fabs(targetOffset - totalOffset) < 5){
+                        totalOffset = targetOffset;
+                    }
+                }
+                /* higher values of % X slow down scrolling */
+                scrollCounter = (scrollCounter + 1) % 5;
 
-	while ( Global::speed_counter < 1 ){
-	    Util::rest( 1 );
-	    keyInputManager::update();
-	}
+            }
+
+            Global::speed_counter = 0;
+        }
+
+        if ( draw ){
+            // Draw
+            drawBackground(work);
+
+            // Do background animations
+            for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+                (*i)->draw(work);
+            }
+
+            // Draw text board
+            drawTextBoard(work);
+
+            // Menus
+            if (currentDrawState == NoFade){
+                drawMenus(work);
+            }
+
+            // Draw menu info text
+            if (!(*currentTab)->running){
+                drawInfoBox(menuInfo, menuInfoLocation, work);
+            } else {
+                drawInfoBox(runningInfo, menuInfoLocation, work);
+            }
+
+            // Draw foreground animations
+            for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+                (*i)->draw(work);
+            }
+
+            // Finally render to screen
+            work->BlitToScreen();
+        }
+
+        while ( Global::speed_counter < 1 ){
+            Util::rest( 1 );
+            InputManager::poll();
+        }
     }
 }
 
