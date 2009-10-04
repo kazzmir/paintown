@@ -75,16 +75,25 @@ option(false){
     }
 
     /* key, delay, block, output */
+    /* vi keys */
     input.set(Keyboard::Key_J, 0, true, Down);
     input.set(Keyboard::Key_K, 0, true, Up);
     input.set(Keyboard::Key_H, 0, true, Left);
     input.set(Keyboard::Key_L, 0, true, Right);
     input.set(Keyboard::Key_UP, 0, true, Up);
+    /* regular keys */
     input.set(Keyboard::Key_DOWN, 0, true, Down);
     input.set(Keyboard::Key_LEFT, 0, true, Left);
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
     input.set(Keyboard::Key_ENTER, 0, true, Select);
     input.set(Keyboard::Key_ESC, 0, true, Exit);
+    /* joystick */
+    input.set(InputMap<MenuInput>::Joystick::Up, 0, true, Up);
+    input.set(InputMap<MenuInput>::Joystick::Down, 0, true, Down);
+    input.set(InputMap<MenuInput>::Joystick::Left, 0, true, Left);
+    input.set(InputMap<MenuInput>::Joystick::Right, 0, true, Right);
+    input.set(InputMap<MenuInput>::Joystick::Button1, 0, true, Select);
+    input.set(InputMap<MenuInput>::Joystick::Button2, 0, true, Exit);
 }
 
 void Menu::load(Token *token) throw (LoadException){

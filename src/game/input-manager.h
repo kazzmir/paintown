@@ -70,6 +70,9 @@ protected:
             input.read(all_joystick, &output);
         }
 
+        /* just bumps an internal counter */
+        input.update();
+
         return output;
     }
 
