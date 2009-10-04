@@ -162,7 +162,7 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) t
     try{
         Menu temp;
         temp.setParent(parent);
-        int index;
+        int index = 0;
         for ( unsigned int i = 0; i < possible.size(); i++ ){
             OptionLevel *opt = new OptionLevel(0, &index, i);
             opt->setText(possible[i].getName());

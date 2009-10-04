@@ -219,8 +219,8 @@ void Menu::load(Token *token) throw (LoadException){
 		throw LoadException("The position for the menu '" + getName() + "' list must be set!");
 	}
 	// Omit menu if no options are available
-	if ( ! hasOptions ) {
-		Global::debug(0) << "The menu \"" << getName() << "\" has no options & will be omitted from the top level menu!" << endl;
+	if (! hasOptions) {
+		Global::debug(1) << "The menu \"" << getName() << "\" has no options & will be omitted from the top level menu!" << endl;
 		removeOption = true;
 	}
 
@@ -229,31 +229,35 @@ void Menu::load(Token *token) throw (LoadException){
         sharedFont = Configuration::getMenuFont();
     }
 	
-	// Finally lets assign list order numering and some other stuff
+	// Finally lets assign list order numbering and some other stuff
 	// First length
     if (hasOptions){
-        longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
-
-        // Before we finish lets get rid of the cruft
-        for (std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); /**/){
-            if( (*optBegin)->scheduledForRemoval() ){
-                Global::debug(0) << "Removed option: " << (*optBegin)->getText() << endl;
-                delete (*optBegin);
-                optBegin = menuOptions.erase(optBegin);
-            }
-            else optBegin++;
-        }
-
-        // Figure out text length
-        for( unsigned int i = 0; i < menuOptions.size(); i++ ){
-            checkTextLength(menuOptions[i]);
-        }
-
-        // Set initial location
-        selectedOption = menuOptions.begin();
-        menuOptions.front()->setState(MenuOption::Selected);
-
+        setupOptions();
     }
+}
+
+void Menu::setupOptions(){
+    longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
+
+    // Before we finish lets get rid of the cruft
+    for (std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); /**/){
+        if( (*optBegin)->scheduledForRemoval() ){
+            Global::debug(0) << "Removed option: " << (*optBegin)->getText() << endl;
+            delete (*optBegin);
+            optBegin = menuOptions.erase(optBegin);
+        }
+        else optBegin++;
+    }
+
+    // Figure out text length
+    for( unsigned int i = 0; i < menuOptions.size(); i++ ){
+        checkTextLength(menuOptions[i]);
+    }
+
+    // Set initial location
+    selectedOption = menuOptions.begin();
+    menuOptions.front()->setState(MenuOption::Selected);
+
 }
 
 void Menu::load(const std::string &filename) throw (LoadException){

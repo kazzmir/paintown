@@ -154,6 +154,9 @@ class Menu
 		
 		//! Draw info box
 		void drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp );
+
+        /* finish initializing stuff for options */
+        void setupOptions();
 		
 		//! General text about the menu, similar to info about options if empty it draws nothing it also borrows the colors of the main menu box
 		std::string menuInfo;
