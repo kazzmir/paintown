@@ -80,15 +80,7 @@ class TabMenu : public Menu
 	// Total lines from options
 	int totalLines;
 
-    enum TabInput{
-        Left,
-        Right,
-        Select,
-        Exit,
-    };
-
-	
-	void drawMenus(Bitmap *bmp);
+    void drawMenus(Bitmap *bmp);
 	
 	void calculateTabLines();
 };

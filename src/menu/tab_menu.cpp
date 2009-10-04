@@ -256,6 +256,18 @@ void TabMenu::load(const std::string &filename) throw (LoadException){
     }
 }
 
+/* c++ isn't smart enough for me to put the enum inside a function, run(),
+ * so I have to put it in the global scope wrapped with a namespace.
+ */
+namespace Tab{
+    enum Input{
+        Left,
+        Right,
+        Select,
+        Exit,
+    };
+}
+
 void TabMenu::run() throw (ReturnException) {
     //bool endMenu = false;
     bool done = false;
@@ -269,18 +281,18 @@ void TabMenu::run() throw (ReturnException) {
     Global::second_counter = 0;
     int scrollCounter = 0;
 
-    InputMap<TabInput> input;
-    input.set(Keyboard::Key_H, 0, true, Left);
-    input.set(Keyboard::Key_L, 0, true, Right);
-    input.set(Keyboard::Key_LEFT, 0, true, Left);
-    input.set(Keyboard::Key_RIGHT, 0, true, Right);
-    input.set(Keyboard::Key_ENTER, 0, true, Select);
-    input.set(Keyboard::Key_SPACE, 0, true, Select);
-    input.set(Keyboard::Key_ESC, 0, true, Exit);
-    input.set(InputMap<TabInput>::Joystick::Left, 0, true, Left);
-    input.set(InputMap<TabInput>::Joystick::Right, 0, true, Right);
-    input.set(InputMap<TabInput>::Joystick::Button1, 0, true, Select);
-    input.set(InputMap<TabInput>::Joystick::Button2, 0, true, Exit);
+    InputMap<Tab::Input> input;
+    input.set(Keyboard::Key_H, 0, true, Tab::Left);
+    input.set(Keyboard::Key_L, 0, true, Tab::Right);
+    input.set(Keyboard::Key_LEFT, 0, true, Tab::Left);
+    input.set(Keyboard::Key_RIGHT, 0, true, Tab::Right);
+    input.set(Keyboard::Key_ENTER, 0, true, Tab::Select);
+    input.set(Keyboard::Key_SPACE, 0, true, Tab::Select);
+    input.set(Keyboard::Key_ESC, 0, true, Tab::Exit);
+    input.set(InputMap<Tab::Input>::Joystick::Left, 0, true, Tab::Left);
+    input.set(InputMap<Tab::Input>::Joystick::Right, 0, true, Tab::Right);
+    input.set(InputMap<Tab::Input>::Joystick::Button1, 0, true, Tab::Select);
+    input.set(InputMap<Tab::Input>::Joystick::Button2, 0, true, Tab::Exit);
 
     // Color effects
     ColorBuffer fontBuffer(selectedFontColor,runningFontColor);
@@ -326,10 +338,10 @@ void TabMenu::run() throw (ReturnException) {
             runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
             while ( runCounter >= 1.0 ){
                 runCounter -= 1;
-                InputMap<TabInput>::Output inputState = InputManager::getMap(input);
+                InputMap<Tab::Input>::Output inputState = InputManager::getMap(input);
                 // Keys
                 if (!(*currentTab)->running){
-                    if (inputState[Left]){
+                    if (inputState[Tab::Left]){
                         MenuGlobals::playSelectSound();
                         // Reset color
                         (*currentTab)->setColors(tabInfo,fontColor);
@@ -345,7 +357,7 @@ void TabMenu::run() throw (ReturnException) {
                         (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
                     }
 
-                    if (inputState[Right]){
+                    if (inputState[Tab::Right]){
                         MenuGlobals::playSelectSound();
                         // Reset color
                         (*currentTab)->setColors(tabInfo,fontColor);
@@ -370,13 +382,13 @@ void TabMenu::run() throw (ReturnException) {
                        MenuGlobals::playSelectSound();
                        }
                        */
-                    if (inputState[Select]){
+                    if (inputState[Tab::Select]){
                         /* im not sure why we have to wait for select to
                          * be released here. all the other menus seem
                          * to work just fine without waiting.
                          * anyway, no real harm comes from waiting so just wait.
                          */
-                        InputManager::waitForRelease(input, Select);
+                        InputManager::waitForRelease(input, Tab::Select);
                         // Run menu
                         (*currentTab)->running = true;
                         backgroundBuffer.reset();
@@ -384,10 +396,10 @@ void TabMenu::run() throw (ReturnException) {
                         fontBuffer.reset();
                     }
 
-                    if (inputState[Exit]){
+                    if (inputState[Tab::Exit]){
                         /* is there a reason to set done = true? */
                         done = true;
-                        InputManager::waitForRelease(input, Exit);
+                        InputManager::waitForRelease(input, Tab::Exit);
                         throw ReturnException();
                     }
                 } else {
