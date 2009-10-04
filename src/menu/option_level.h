@@ -8,6 +8,8 @@
 
 class Token;
 
+/* Should rename this class to OptionSelect */
+
 /*! Handles key reconfiguration */
 class OptionLevel : public MenuOption {
 public:

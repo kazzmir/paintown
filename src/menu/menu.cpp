@@ -48,6 +48,14 @@ y(y){
 Point::~Point(){
 }
 
+Menu::Menu(const std::string & str) throw (LoadException) {
+    load(str);
+}
+
+Menu::Menu(Token * token) throw (LoadException) {
+    load(token);
+}
+
 Menu::Menu():
 music(""),
 selectSound(""),

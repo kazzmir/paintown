@@ -37,6 +37,8 @@ class Menu
 	public:
 		/*! ctor dtor */
 		Menu();
+        Menu(const std::string & str) throw (LoadException);
+        Menu(Token * token) throw (LoadException);
 		virtual ~Menu();
 		
 		/*! load */
@@ -90,10 +92,10 @@ class Menu
 		//! set new font menu wide
 		static void setFont(const std::string &font, int w, int h);
 
-                static void setFontName(const std::string & str);
-                static void setFontWidth(int w);
-                static void setFontHeight(int h);
-		
+        static void setFontName(const std::string & str);
+        static void setFontWidth(int w);
+        static void setFontHeight(int h);
+
 		inline bool checkRemoval() const { return removeOption; }
 		
 		inline void setAsOption( const bool o ) { option = o; }
@@ -101,6 +103,9 @@ class Menu
 		inline bool isOption() const { return option; }
 		
 		inline void setInfoText(const std::string &text) { menuInfo = text; }
+        
+        /* finish initializing stuff for options */
+        void setupOptions();
 		
 		//! Area for placement of option list
 		Box backboard;
@@ -155,8 +160,6 @@ class Menu
 		//! Draw info box
 		void drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp );
 
-        /* finish initializing stuff for options */
-        void setupOptions();
 		
 		//! General text about the menu, similar to info about options if empty it draws nothing it also borrows the colors of the main menu box
 		std::string menuInfo;
