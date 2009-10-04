@@ -4,6 +4,7 @@
 #include "menu_option.h"
 #include "util/load_exception.h"
 #include "return_exception.h"
+#include "game/input-map.h"
 
 #include <vector>
 
@@ -11,9 +12,12 @@ class Token;
 class Bitmap;
 
 /*! Handles key reconfiguration */
-class OptionCredits : public MenuOption
-{
-	public:
+class OptionCredits : public MenuOption {
+public:
+    enum CreditKey{
+        Exit
+    };
+
 		// Do logic before run part
 		virtual void logic();
 		
@@ -29,6 +33,7 @@ class OptionCredits : public MenuOption
 		std::vector<std::string> credits;
 		std::string music;
 		int color, title;
+        InputMap<CreditKey> input;
 };
 
 #endif

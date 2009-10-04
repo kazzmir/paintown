@@ -10,6 +10,8 @@
 #include "util/token_exception.h"
 #include "util/file-system.h"
 #include "util/font.h"
+#include "game/input-map.h"
+#include "game/input-manager.h"
 
 using namespace std;
 
@@ -104,6 +106,9 @@ title(Bitmap::makeColor(0,255,255)){
 	if ( getText().empty() ){
 		throw LoadException("No name set, this option should have a name!");
 	}
+
+    input.set(Keyboard::Key_ESC, 0, true, Exit);
+    input.set(InputMap<CreditKey>::Joystick::Button2, 0, true, Exit);
 }
 
 OptionCredits::~OptionCredits(){
@@ -130,9 +135,13 @@ void OptionCredits::run( bool &endGame ) throw (ReturnException) {
 	
 	const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
 
-	while ( ! key[ Keyboard::Key_ESC ] ){
+    bool quit = false;
 
-		key.poll();
+	while (!quit){
+
+        InputManager::poll();
+        InputMap<CreditKey>::Output out = InputManager::getMap(input);
+        quit = out[Exit];
 
 		bool draw = false;
 		if ( Global::speed_counter / 2 > 0 ){
@@ -180,5 +189,6 @@ void OptionCredits::run( bool &endGame ) throw (ReturnException) {
 			Util::rest( 1 );
 		}
 	}
-	key.wait();
+
+    InputManager::waitForRelease(input, Exit);
 }

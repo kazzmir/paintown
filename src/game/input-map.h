@@ -125,7 +125,6 @@ public:
                 }
             }
         }
-
     }
 
     void update(){
@@ -162,6 +161,24 @@ public:
     }
     
     bool pressed(const JoystickInput & joystick, X out){
+#define do_joy(field, key) if (joystick.field){\
+    JoystickState<X> * state = joy_states[Joystick::key];\
+    if (state != 0 && state->out == out){\
+        return true;\
+    }\
+}
+
+        do_joy(down, Down);
+        do_joy(up, Up);
+        do_joy(left, Left);
+        do_joy(right, Right);
+        do_joy(button1, Button1);
+        do_joy(button2, Button2);
+        do_joy(button3, Button3);
+        do_joy(button4, Button4);
+
+
+#undef do_joy
         return false;
     }
 
