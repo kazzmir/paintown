@@ -102,121 +102,121 @@ void Menu::load(Token *token) throw (LoadException){
 	else if ( ! token->hasTokens() )
 		return;
 	
-	while ( token->hasTokens() ){
-		try{
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "name" ){
-				// Set menu name
-				*tok >> _name;
-			} else if ( *tok == "music" ) {
-				// Set music and push onto the stack
-				*tok >> music;
-			} else if( *tok == "select-sound" ) {
-				*tok >> selectSound;
-                        } else if (*tok == "back-sound"){
-                            *tok >> backSound;
-                            try{
-                                /* try to load it */
-                                Resource::getSound(backSound);
-                            } catch (const LoadException & le){
-                                Global::debug(0) << "Could not load sound " << backSound << " because " << le.getReason() << endl;
-                                /* we failed, so set the backSound to nothing */
-                                backSound = "";
-                            }
-                        } else if (*tok == "ok-sound"){
-                            *tok >> okSound;
-                            try{
-                                /* try to load it */
-                                Resource::getSound(okSound);
-                            } catch (const LoadException & le){
-                                Global::debug(0) << "Could not load sound " << okSound << " because " << le.getReason() << endl;
-                                /* we failed, so set the backSound to nothing */
-                                okSound = "";
-                            }
-			} else if ( *tok == "background" ) {
-				std::string temp;
-				*tok >> temp;
-				if ( background ){
-					delete background;
-				}
-				background = new Bitmap(Filesystem::find(temp));
-				if ( background->getError() ){
-				    Global::debug(0) << "Problem loading Bitmap: " << Filesystem::find(temp) << endl;
+    while ( token->hasTokens() ){
+        try{
+            Token * tok;
+            *token >> tok;
+            if ( *tok == "name" ){
+                // Set menu name
+                *tok >> _name;
+            } else if ( *tok == "music" ) {
+                // Set music and push onto the stack
+                *tok >> music;
+            } else if( *tok == "select-sound" ) {
+                *tok >> selectSound;
+            } else if (*tok == "back-sound"){
+                *tok >> backSound;
+                try{
+                    /* try to load it */
+                    Resource::getSound(backSound);
+                } catch (const LoadException & le){
+                    Global::debug(0) << "Could not load sound " << backSound << " because " << le.getReason() << endl;
+                    /* we failed, so set the backSound to nothing */
+                    backSound = "";
+                }
+            } else if (*tok == "ok-sound"){
+                *tok >> okSound;
+                try{
+                    /* try to load it */
+                    Resource::getSound(okSound);
+                } catch (const LoadException & le){
+                    Global::debug(0) << "Could not load sound " << okSound << " because " << le.getReason() << endl;
+                    /* we failed, so set the backSound to nothing */
+                    okSound = "";
+                }
+            } else if ( *tok == "background" ) {
+                std::string temp;
+                *tok >> temp;
+                if ( background ){
                     delete background;
-				    background = 0;
-                                }
-			} else if ( *tok == "clear-color" ) {
-				/* This is the clear color of the background if there is no background image specified within the menu
-				 * Although if this is a submenu, and parent has a background that will be used instead...*/
-				int r=0,g=0,b=0;
-				*tok >> r >> g >> b;
-				clearColor = Bitmap::makeColor(r,g,b);
-			} else if ( *tok == "position" ) {
-				// This handles the placement of the menu list and surrounding box
-				*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
-			} else if ( *tok == "position-body" ) {
-				// This handles the body color of the menu box
-				int r,g,b;
-				*tok >> r >> g >> b >> backboard.position.bodyAlpha;
-				backboard.position.body = Bitmap::makeColor(r,g,b);
-			} else if ( *tok == "position-border" ) {
-				// This handles the border color of the menu box
-				int r,g,b;
-				*tok >> r >> g >> b >> backboard.position.borderAlpha;
-				backboard.position.border = Bitmap::makeColor(r,g,b);
-			} else if ( *tok == "fade-speed" ) {
-				// Menu fade in speed
-				*tok >> fadeSpeed;
-			} else if ( *tok == "font" ) {
-                            string str;
-                            *tok >> str >> sharedFontWidth >> sharedFontHeight; 
-                            sharedFont = Filesystem::find(str);
-			} else if( *tok == "option" ) {
-				MenuOption *temp = OptionFactory::getOption(tok);
-				if (temp){
-				    addOption(temp);
-				}
-			} else if( *tok == "action" ) {
-				ActionAct(tok);
-			} else if( *tok == "info-position" ) {
-				*tok >> optionInfoTextLocation.x >> optionInfoTextLocation.y;
-			} else if( *tok == "menuinfo" ){
-			    *tok >> menuInfo;
-			} else if( *tok == "menuinfo-position" ){
-			    *tok >> menuInfoLocation.x >> menuInfoLocation.y;
-			} else if( *tok == "anim" ) {
-				MenuAnimation *animation = new MenuAnimation(tok);
-				if (animation->getLocation() == 0){
-				    backgroundAnimations.push_back(animation);
-				} else if (animation->getLocation() == 1){
-				    foregroundAnimations.push_back(animation);
-				}
-			} else {
-				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+                }
+                background = new Bitmap(Filesystem::find(temp));
+                if ( background->getError() ){
+                    Global::debug(0) << "Problem loading Bitmap: " << Filesystem::find(temp) << endl;
+                    delete background;
+                    background = 0;
+                }
+            } else if ( *tok == "clear-color" ) {
+                /* This is the clear color of the background if there is no background image specified within the menu
+                 * Although if this is a submenu, and parent has a background that will be used instead...*/
+                int r=0,g=0,b=0;
+                *tok >> r >> g >> b;
+                clearColor = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "position" ) {
+                // This handles the placement of the menu list and surrounding box
+                *tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
+            } else if ( *tok == "position-body" ) {
+                // This handles the body color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> backboard.position.bodyAlpha;
+                backboard.position.body = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "position-border" ) {
+                // This handles the border color of the menu box
+                int r,g,b;
+                *tok >> r >> g >> b >> backboard.position.borderAlpha;
+                backboard.position.border = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "fade-speed" ) {
+                // Menu fade in speed
+                *tok >> fadeSpeed;
+            } else if ( *tok == "font" ) {
+                string str;
+                *tok >> str >> sharedFontWidth >> sharedFontHeight; 
+                sharedFont = Filesystem::find(str);
+            } else if( *tok == "option" ) {
+                MenuOption *temp = OptionFactory::getOption(tok);
+                if (temp){
+                    addOption(temp);
+                }
+            } else if( *tok == "action" ) {
+                ActionAct(tok);
+            } else if( *tok == "info-position" ) {
+                *tok >> optionInfoTextLocation.x >> optionInfoTextLocation.y;
+            } else if( *tok == "menuinfo" ){
+                *tok >> menuInfo;
+            } else if( *tok == "menuinfo-position" ){
+                *tok >> menuInfoLocation.x >> menuInfoLocation.y;
+            } else if( *tok == "anim" ) {
+                MenuAnimation *animation = new MenuAnimation(tok);
+                if (animation->getLocation() == 0){
+                    backgroundAnimations.push_back(animation);
+                } else if (animation->getLocation() == 1){
+                    foregroundAnimations.push_back(animation);
+                }
+            } else {
+                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
                     tok->print(" ");
                 }
-			}
-		} catch ( const TokenException & ex ) {
-			// delete current;
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException( m );
-		} catch ( const LoadException & ex ) {
-			// delete current;
-			throw ex;
-		} catch (const Filesystem::NotFound & ex){
+            }
+        } catch ( const TokenException & ex ) {
+            // delete current;
+            string m( "Menu parse error: " );
+            m += ex.getReason();
+            throw LoadException( m );
+        } catch ( const LoadException & ex ) {
+            // delete current;
+            throw ex;
+        } catch (const Filesystem::NotFound & ex){
             throw LoadException(ex.getReason());
         }
-	}
+    }
 	
 	if ( _name.empty() ){
 		throw LoadException("No name set, the menu should have a name!");
 	}
 	
 	if ( backboard.position.empty() ){
-		throw LoadException("The position for the menu list must be set!");
+		throw LoadException("The position for the menu '" + getName() + "' list must be set!");
 	}
 	// Omit menu if no options are available
 	if ( ! hasOptions ) {
@@ -231,26 +231,29 @@ void Menu::load(Token *token) throw (LoadException){
 	
 	// Finally lets assign list order numering and some other stuff
 	// First length
-	longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
-	
-	// Before we finish lets get rid of the cruft
-    for (std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); /**/){
-        if( (*optBegin)->scheduledForRemoval() ){
-            Global::debug(0) << "Removed option: " << (*optBegin)->getText() << endl;
-            delete (*optBegin);
-            optBegin = menuOptions.erase(optBegin);
+    if (hasOptions){
+        longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
+
+        // Before we finish lets get rid of the cruft
+        for (std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); /**/){
+            if( (*optBegin)->scheduledForRemoval() ){
+                Global::debug(0) << "Removed option: " << (*optBegin)->getText() << endl;
+                delete (*optBegin);
+                optBegin = menuOptions.erase(optBegin);
+            }
+            else optBegin++;
         }
-        else optBegin++;
+
+        // Figure out text length
+        for( unsigned int i = 0; i < menuOptions.size(); i++ ){
+            checkTextLength(menuOptions[i]);
+        }
+
+        // Set initial location
+        selectedOption = menuOptions.begin();
+        menuOptions.front()->setState(MenuOption::Selected);
+
     }
-	
-	// Figure out text length
-	for( unsigned int i = 0; i < menuOptions.size(); i++ ){
-		checkTextLength(menuOptions[i]);
-	}
-	
-	// Set initial location
-	selectedOption = menuOptions.begin();
-	menuOptions.front()->setState(MenuOption::Selected);
 }
 
 void Menu::load(const std::string &filename) throw (LoadException){
@@ -277,22 +280,6 @@ static void tryPlaySound(const string & path){
 /*! Logic */
 void Menu::act(bool &endGame) throw (ReturnException){
 
-    /* use an input map to abstract raw input over abstract actions
-     * something like
-     * map.put(key('k'), UP)
-     * map.put(key(key_up), UP)
-     * map.put(joystick(joy_up), UP)
-     *
-     * this way any arbitrary input method can be used for controlling menus
-     */
-
-    /*
-    // Keys
-    const char vi_up = 'k';
-    const char vi_down = 'j';
-    const char vi_left = 'h';
-    const char vi_right = 'l';
-    */
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
 
     if (inputState[Up]){
