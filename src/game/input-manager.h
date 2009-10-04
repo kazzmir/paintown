@@ -4,6 +4,7 @@
 #include <vector>
 #include "input.h"
 #include "input-map.h"
+#include "util/funcs.h"
 #include "util/keyboard.h"
 
 class Configuration;
@@ -30,6 +31,26 @@ public:
         return *(typename InputMap<X>::Output*)0;
     }
 
+    template <typename X>
+    static bool pressed(InputMap<X> & input, X out){
+        if (manager){
+            return manager->_pressed(input, out);
+        }
+        return false;
+    }
+
+    /* wait for a key to be released
+     * really this waits for all inputs that would result in `out'
+     * being generated to stop.
+     */
+    template <typename X>
+    static void waitForRelease(InputMap<X> & input, X out){
+        while (InputManager::pressed(input, out)){
+            Util::rest(1);
+            InputManager::poll();
+        }
+    }
+
 protected:
     InputManager();
     virtual ~InputManager();
@@ -50,6 +71,22 @@ protected:
         }
 
         return output;
+    }
+
+    template <typename X>
+    bool _pressed(InputMap<X> & input, X result){
+        std::vector<int> all_keys;
+        keyboard.readKeys(all_keys);
+        bool out = false;
+
+        out = input.pressed(all_keys, result);
+
+        if (joystick != NULL){
+            JoystickInput all_joystick = joystick->readAll();
+            out |= input.pressed(all_joystick, result);
+        }
+
+        return out;
     }
 
     virtual void _poll();

@@ -27,6 +27,7 @@ vector<PaintownInput> InputManager::getInput(const Configuration & configuration
     return manager->_getInput(configuration, facing);
 }
 
+
 static vector<PaintownInput> convertJoystick(JoystickInput input, const int facing){
     vector<PaintownInput> all;
     if (input.up){

@@ -44,6 +44,19 @@ public:
         key_states[key] = new KeyState<X>(delay, block, out, last_read);
     }
 
+    bool pressed(const std::vector<int> & keys, X out){
+        for (std::vector<int>::const_iterator it = keys.begin(); it != keys.end(); it++){
+            Keyboard::KeyType key = *it;
+            KeyState<X> * state = key_states[key];
+            if (state != 0){
+                if (state->out == out){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     void read(const std::vector<int> & keys, Output * output){
         for (std::vector<int>::const_iterator it = keys.begin(); it != keys.end(); it++){
             Keyboard::KeyType key = *it;
@@ -70,6 +83,10 @@ public:
     }
     
     void read(const JoystickInput & joystick, Output * output){
+    }
+    
+    bool pressed(const JoystickInput & joystick, X out){
+        return false;
     }
 
 private:

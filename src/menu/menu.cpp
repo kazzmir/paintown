@@ -340,12 +340,9 @@ void Menu::act(bool &endGame) throw (ReturnException){
            back->play();
            }
            */
-        while (inputState[Exit]){
-            inputState = InputManager::getMap(input);
-            Util::rest(1);
-            InputManager::poll();
-        }
-        Global::debug(0) << "quit menu" << endl;
+
+        InputManager::waitForRelease(input, Exit);
+        
         throw ReturnException();
     }
 
