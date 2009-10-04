@@ -23,17 +23,18 @@ rgreen(255){
     if ( *token != "font-select" ){
         throw LoadException("Not a font selector");
     }
+
     while (token->hasTokens()){
         try{
             Token * tok;
             *token >> tok;
             if ( *tok == "adjust" ){
-		std::string temp;
+                std::string temp;
                 *tok >> temp;
-		if ( temp == "name" ) typeAdjust = fontName;
-		else if ( temp == "width" ) typeAdjust = fontWidth;
-		else if ( temp == "height" ) typeAdjust = fontHeight;
-		else throw LoadException("Incorrect value \"" + temp + "\" in font-select");
+                if ( temp == "name" ) typeAdjust = fontName;
+                else if ( temp == "width" ) typeAdjust = fontWidth;
+                else if ( temp == "height" ) typeAdjust = fontHeight;
+                else throw LoadException("Incorrect value \"" + temp + "\" in font-select");
             } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -66,22 +67,23 @@ OptionSelectFont::~OptionSelectFont(){
 }
 
 void OptionSelectFont::logic(){
-  switch (typeAdjust){
-      case fontName:	  
-	  setText("Current Font: " + Menu::getFont());
-	  break;
-      case fontWidth:{
-	  ostringstream temp;
-	  temp << "Font Width: " << Menu::getFontWidth();
-	  setText(temp.str());
-	  break;}
-      case fontHeight:{
-	  ostringstream temp;
-	  temp << "Font Height: " << Menu::getFontHeight();
-	  setText(temp.str());
-	  break;}
-      default:
-	break;
+    switch (typeAdjust){
+        case fontName:	  
+            setText("Current Font: " + Menu::getFont());
+            break;
+        case fontWidth:{
+            ostringstream temp;
+            temp << "Font Width: " << Menu::getFontWidth();
+            setText(temp.str());
+            break;
+        }
+        case fontHeight:{
+            ostringstream temp;
+            temp << "Font Height: " << Menu::getFontHeight();
+            setText(temp.str());
+            break;
+        }
+        default: break;
     }
     if (lblue < 255){
         lblue += 5;
@@ -108,17 +110,17 @@ void OptionSelectFont::run(bool &endGame) throw (ReturnException) {
 
 bool OptionSelectFont::leftKey(){
     switch (typeAdjust){
-      case fontName:
-	  nextIndex(false);
-	  break;
-      case fontWidth:
-          Menu::setFontWidth(Menu::getFontWidth() - 1);
-	  break;
-      case fontHeight:
-          Menu::setFontHeight(Menu::getFontHeight() - 1);
-	  break;
-      default:
-	break;
+        case fontName:
+            nextIndex(false);
+            break;
+        case fontWidth:
+            Menu::setFontWidth(Menu::getFontWidth() - 1);
+            break;
+        case fontHeight:
+            Menu::setFontHeight(Menu::getFontHeight() - 1);
+            break;
+        default:
+            break;
     }
     // Menu::setFont(current, width, height);
     lblue = lgreen = 0;
@@ -126,18 +128,18 @@ bool OptionSelectFont::leftKey(){
 }
 
 bool OptionSelectFont::rightKey(){
-   switch (typeAdjust){
-      case fontName:
-	    nextIndex(true);
-	  break;
-      case fontWidth:
-          Menu::setFontWidth(Menu::getFontWidth() + 1);
-	  break;
-      case fontHeight:
-          Menu::setFontHeight(Menu::getFontHeight() + 1);
-	  break;
-      default:
-	break;
+    switch (typeAdjust){
+        case fontName:
+            nextIndex(true);
+            break;
+        case fontWidth:
+            Menu::setFontWidth(Menu::getFontWidth() + 1);
+            break;
+        case fontHeight:
+            Menu::setFontHeight(Menu::getFontHeight() + 1);
+            break;
+        default:
+            break;
     }
     // Menu::setFont(current, width, height);
     rblue = rgreen = 0;
@@ -145,21 +147,21 @@ bool OptionSelectFont::rightKey(){
 }
 
 void OptionSelectFont::nextIndex(bool forward){
-  int index = 0;
-  for (unsigned int i = 0 ; i < fonts.size() ; ++i){
-      if (Menu::getFont() == fonts[i]){
-	    if (forward){
-		index = i + 1;
-		if (index >= (int) fonts.size()){
+    int index = 0;
+    for (unsigned int i = 0 ; i < fonts.size() ; ++i){
+        if (Menu::getFont() == fonts[i]){
+            if (forward){
+                index = i + 1;
+                if (index >= (int) fonts.size()){
                     index = 0;
                 }
-	    } else {
-		index = i - 1;
-		if (index < 0){
+            } else {
+                index = i - 1;
+                if (index < 0){
                     index = (int)fonts.size()-1;
                 }
-	    }
-      }    
-  }
-  Menu::setFontName(fonts[index]);
+            }
+        }    
+    }
+    Menu::setFontName(fonts[index]);
 }
