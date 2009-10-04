@@ -110,14 +110,17 @@ class Menu
 		std::string music;
 		//! Current select sound, beep or whatever
 		std::string selectSound;
-                std::string backSound;
-                std::string okSound;
+        std::string backSound;
+        std::string okSound;
 		//! longest menu text
 		int longestTextLength;
 		
 		std::vector <MenuOption *> menuOptions;
+    public:
+        /* hack to make tab menu work */
 		std::vector <MenuOption *>::iterator selectedOption;
-                double motion;
+    protected:
+        double motion;
 		//! Animations
 		std::vector <MenuAnimation *>backgroundAnimations;
 		std::vector <MenuAnimation *>foregroundAnimations;

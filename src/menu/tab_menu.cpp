@@ -106,16 +106,6 @@ location(0),
 targetOffset(0),
 totalOffset(0),
 totalLines(1){
-    input.set(Keyboard::Key_H, 0, true, Left);
-    input.set(Keyboard::Key_L, 0, true, Right);
-    input.set(Keyboard::Key_LEFT, 0, true, Left);
-    input.set(Keyboard::Key_RIGHT, 0, true, Right);
-    input.set(Keyboard::Key_ENTER, 0, true, Select);
-    input.set(Keyboard::Key_ESC, 0, true, Exit);
-    input.set(InputMap<TabInput>::Joystick::Left, 0, true, Left);
-    input.set(InputMap<TabInput>::Joystick::Right, 0, true, Right);
-    input.set(InputMap<TabInput>::Joystick::Button1, 0, true, Select);
-    input.set(InputMap<TabInput>::Joystick::Button2, 0, true, Exit);
 }
 
 void TabMenu::load(Token *token) throw (LoadException){
@@ -279,6 +269,19 @@ void TabMenu::run() throw (ReturnException) {
     Global::second_counter = 0;
     int scrollCounter = 0;
 
+    InputMap<TabInput> input;
+    input.set(Keyboard::Key_H, 0, true, Left);
+    input.set(Keyboard::Key_L, 0, true, Right);
+    input.set(Keyboard::Key_LEFT, 0, true, Left);
+    input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    input.set(Keyboard::Key_ENTER, 0, true, Select);
+    input.set(Keyboard::Key_SPACE, 0, true, Select);
+    input.set(Keyboard::Key_ESC, 0, true, Exit);
+    input.set(InputMap<TabInput>::Joystick::Left, 0, true, Left);
+    input.set(InputMap<TabInput>::Joystick::Right, 0, true, Right);
+    input.set(InputMap<TabInput>::Joystick::Button1, 0, true, Select);
+    input.set(InputMap<TabInput>::Joystick::Button2, 0, true, Exit);
+
     // Color effects
     ColorBuffer fontBuffer(selectedFontColor,runningFontColor);
     ColorBuffer borderBuffer(selectedTabInfo.border,runningTabInfo.border);
@@ -368,25 +371,48 @@ void TabMenu::run() throw (ReturnException) {
                        }
                        */
                     if (inputState[Select]){
+                        /* im not sure why we have to wait for select to
+                         * be released here. all the other menus seem
+                         * to work just fine without waiting.
+                         * anyway, no real harm comes from waiting so just wait.
+                         */
+                        InputManager::waitForRelease(input, Select);
                         // Run menu
                         (*currentTab)->running = true;
                         backgroundBuffer.reset();
                         borderBuffer.reset();
                         fontBuffer.reset();
                     }
+
+                    if (inputState[Exit]){
+                        /* is there a reason to set done = true? */
+                        done = true;
+                        InputManager::waitForRelease(input, Exit);
+                        throw ReturnException();
+                    }
                 } else {
-                    (*currentTab)->menu.act(done);
-                    (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
+                    try{
+                        (*currentTab)->menu.act(done);
+                        (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
+                    } catch (const ReturnException & re){
+                        (*currentTab)->running = false;
+                        (*(*currentTab)->menu.selectedOption)->setState(MenuOption::Selected);
+                        (*currentTab)->setColors(selectedTabInfo, selectedFontColor);
+                    }
                 }
+
+                /*
                 if (inputState[Exit]){
                     if (!(*currentTab)->running){
                         done = true;
+                        InputManager::waitForRelease(input, Exit);
                         throw ReturnException();
                     } else {
                         (*currentTab)->running = false;
                         (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
                     }
                 }
+                */
 
                 // Animations
                 for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
@@ -457,41 +483,41 @@ void TabMenu::run() throw (ReturnException) {
 void TabMenu::drawMenus(Bitmap *bmp){
     const double incrementx = backboard.position.width;
     double startx = backboard.position.x + totalOffset;
-    
+
     // Drawing menus
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
-	MenuBox *tab = *i;
-	tab->snapPosition.position.x = startx;
-	tab->snapPosition.position.y = backboard.position.y;
-	if (tab->checkVisible(backboard.position)){
-	    /* Set clipping rectangle need to know why text isn't clipping */
-	    int x1 = backboard.position.x+(backboard.position.radius/2);
-	    int y1 = backboard.position.y+(backboard.position.radius/2);
-	    int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
-	    int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
-	    bmp->setClipRect(x1, y1, x2, y2);
-	    tab->menu.drawText(tab->snapPosition,bmp);
-	    bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
-	}
-	startx += incrementx;
+        MenuBox *tab = *i;
+        tab->snapPosition.position.x = startx;
+        tab->snapPosition.position.y = backboard.position.y;
+        if (tab->checkVisible(backboard.position)){
+            /* Set clipping rectangle need to know why text isn't clipping */
+            int x1 = backboard.position.x+(backboard.position.radius/2);
+            int y1 = backboard.position.y+(backboard.position.radius/2);
+            int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
+            int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
+            bmp->setClipRect(x1, y1, x2, y2);
+            tab->menu.drawText(tab->snapPosition,bmp);
+            bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
+        }
+        startx += incrementx;
     }
     const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
     int tabstartx = backboard.position.x;
     int tabstarty = backboard.position.y - ((vFont.getHeight() + TEXT_SPACING_H) * totalLines);
     // Now draw tabs, has to be seperate from above since we need this to overlay the snaps
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
-	MenuBox *tab = *i;
-	const int tabWidth = tab->position.width;
-	if ((tabstartx + tabWidth) > (backboard.position.x + backboard.position.width)){
-	    tabstartx = backboard.position.x;
-	    tabstarty += tab->position.height;
-	}
-	tab->position.x = tabstartx;
-	tab->position.y = tabstarty;
-	tab->render(bmp);
-	// Draw text
-	vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, tab->fontColor, *bmp, tab->menu.getName(), 0 );
-	tabstartx+=tab->position.width;
+        MenuBox *tab = *i;
+        const int tabWidth = tab->position.width;
+        if ((tabstartx + tabWidth) > (backboard.position.x + backboard.position.width)){
+            tabstartx = backboard.position.x;
+            tabstarty += tab->position.height;
+        }
+        tab->position.x = tabstartx;
+        tab->position.y = tabstarty;
+        tab->render(bmp);
+        // Draw text
+        vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, tab->fontColor, *bmp, tab->menu.getName(), 0 );
+        tabstartx += tab->position.width;
     }
 }
 
@@ -499,21 +525,21 @@ void TabMenu::drawMenus(Bitmap *bmp){
 void TabMenu::calculateTabLines(){
     int tabstartx = backboard.position.x;
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
-	MenuBox *tab = *i;
-	const int tabWidth = tab->position.width;
-	if ((tabstartx + tabWidth) > (backboard.position.x + backboard.position.width)){
-	    tabstartx = backboard.position.x;
-	    totalLines++;
-	}
-	tabstartx+=tab->position.width;
+        MenuBox *tab = *i;
+        const int tabWidth = tab->position.width;
+        if ((tabstartx + tabWidth) > (backboard.position.x + backboard.position.width)){
+            tabstartx = backboard.position.x;
+            totalLines++;
+        }
+        tabstartx+=tab->position.width;
     }
 }
 
 TabMenu::~TabMenu(){
     // Rid menus
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
-	if (*i){
-	    delete *i;
-	}
+        if (*i){
+            delete *i;
+        }
     }
 }

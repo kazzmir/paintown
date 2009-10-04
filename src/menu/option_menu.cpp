@@ -53,7 +53,7 @@ void OptionMenu::logic()
 
 void OptionMenu::run(bool &endGame) throw (ReturnException) {
 	// Do our new menu
-	menu->run();
+    menu->run();
 }
 
 void OptionMenu::setParent(Menu *menu){

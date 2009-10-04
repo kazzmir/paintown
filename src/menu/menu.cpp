@@ -430,7 +430,7 @@ void Menu::run() throw (ReturnException) {
     while( ! endGame ){
         Global::speed_counter = 0;
         Global::second_counter = 0;
-        int game_time = 100;
+        // int game_time = 100;
         motion = 0;
 
         // Reset fade stuff
@@ -470,6 +470,7 @@ void Menu::run() throw (ReturnException) {
                 Global::speed_counter = 0;
             }
 
+            /*
             while ( Global::second_counter > 0 ){
                 game_time--;
                 Global::second_counter--;
@@ -477,6 +478,7 @@ void Menu::run() throw (ReturnException) {
                     game_time = 0;
                 }
             }
+            */
 
             if ( draw && (*selectedOption)->getState() != MenuOption::Run ){
                 // Draw

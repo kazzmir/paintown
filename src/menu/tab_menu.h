@@ -87,7 +87,6 @@ class TabMenu : public Menu
         Exit,
     };
 
-    InputMap<TabInput> input;
 	
 	void drawMenus(Bitmap *bmp);
 	
