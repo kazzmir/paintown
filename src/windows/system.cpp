@@ -15,6 +15,10 @@ bool readableFile(const std::string & path){
 }
     
 bool readable(const std::string & path){
+    if (isDirectory(path)){
+        return true;
+    }
+
 	std::ifstream stream(path.c_str());
     bool ok = stream.good();
     if (stream.is_open()){
