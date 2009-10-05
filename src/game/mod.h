@@ -22,7 +22,7 @@ public:
 
     std::vector<Level::LevelInfo> & getLevels();
 
-    ~Mod();
+    virtual ~Mod();
 
     static void loadMod(const std::string & path) throw (LoadException, Filesystem::NotFound);
     static Mod * getCurrentMod();

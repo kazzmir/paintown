@@ -41,7 +41,7 @@ class MenuOption
 		virtual void updateAnimations();
 		
 		//! Set parent
-		virtual  void setParent(Menu *menu);
+		virtual void setParent(Menu *menu);
 		
 		enum state
 		{

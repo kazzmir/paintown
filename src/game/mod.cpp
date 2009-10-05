@@ -50,7 +50,11 @@ const string & Mod::getMenu(){
 
 void Mod::loadMod(const string & name) throw (LoadException, Filesystem::NotFound){
    string path = name + "/" + name + ".txt"; 
-   currentMod = new Mod(Filesystem::find(path));
+   Mod * newMod = new Mod(Filesystem::find(path));
+   if (currentMod != NULL){
+       delete currentMod;
+   }
+   currentMod = newMod;
 }
 
 Mod * Mod::getCurrentMod(){

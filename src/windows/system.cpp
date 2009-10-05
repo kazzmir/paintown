@@ -6,7 +6,7 @@
 
 namespace System{
 
-static bool isDirectory(const std::string & path){
+bool isDirectory(const std::string & path){
     return GetFileAttributes(path.c_str()) & FILE_ATTRIBUTE_DIRECTORY;
 }
 
@@ -16,7 +16,11 @@ bool readableFile(const std::string & path){
     
 bool readable(const std::string & path){
 	std::ifstream stream(path.c_str());
-	return stream.good();
+    bool ok = stream.good();
+    if (stream.is_open()){
+        stream.close();
+    }
+    return ok;
 }
 
 }
