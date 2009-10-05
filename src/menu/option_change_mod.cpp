@@ -78,7 +78,7 @@ static void changeMod(const std::string & path){
     size_t slash = path.rfind('/');
     size_t txt = path.rfind(".txt");
     if (slash != string::npos && txt != string::npos){
-        string name = path.substr(slash, path.length() - slash - 4);
+        string name = path.substr(slash + 1, path.length() - slash - 5);
         Configuration::setCurrentGame(name);
         Paintown::Mod::loadMod(name);
     }
