@@ -81,6 +81,8 @@ static void changeMod(const std::string & path){
         string name = path.substr(slash + 1, path.length() - slash - 5);
         Configuration::setCurrentGame(name);
         Paintown::Mod::loadMod(name);
+    } else {
+        Global::debug(0) << "Could not change mod to " << path << endl;
     }
 }
 
