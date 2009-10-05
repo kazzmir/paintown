@@ -33,7 +33,7 @@ DONE * add tabs to menu - example: (option (tabmenu (name ...) (position ...) (m
 Future
 -------
 * network versus play
-90% * use joystick
+done * use joystick
 * fix bug with setting max lives
 * separate z planes for each block
 100% * level lighting. lamps/objects can make the level brighter as the user gets close to them
