@@ -59,6 +59,41 @@ Frame::~Frame(){
 	}
 }
 
+static const char * key_names[] = {
+                                   /* key_idle isn't a real key anymore */
+                                   // "key_idle",
+                                   "key_jump", "key_forward",
+                                   "key_back", "key_grab", "key_right",
+                                   "key_down", "key_up", "key_attack1",
+                                   "key_attack2", "key_attack3", };
+
+namespace Keys{
+    /* order of the enums should match the key_names array *exactly* */
+    enum Names{
+        // Idle = 0,
+        Jump = 0, Forward,
+        Back, Grab, Right,
+        Down, Up, Attack1,
+        Attack2, Attack3,
+
+        /* sentinal value. should always be last */
+        Max,
+    };
+}
+
+static string join(const char * names[], const int max, const string & sep){
+    ostringstream out;
+
+    for (int i = 0; i < max; i++){
+        out << names[i];
+        if (i != max - 1){
+            out << sep;
+        }
+    }
+
+    return out.str();
+}
+
 Animation::Animation( Token * tok, Character * const owner ) throw( LoadException ):
 parent( owner ),
 current_frame( NULL ),
@@ -192,7 +227,7 @@ contact( NULL ){
 						string key_name = nm->getName();
 						PaintownInput actualKey = convertKeyPress( key_name );
 						if ( actualKey == Unknown ){
-							Global::debug( 0 ) << "*WARNING*: "<<key_name<<" is not a valid key name"<<endl;
+							Global::debug( 0 ) << "Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
 						}
 						// cout<<"Convert "<<key_name<<" to "<<actualKey<<endl;
 						press.combo.push_back(actualKey);
@@ -203,7 +238,7 @@ contact( NULL ){
 							*nm >> key_name;
 							PaintownInput actualKey = convertKeyPress( key_name );
 							if (actualKey == Unknown){
-								Global::debug( 0 ) <<"*WARNING*: "<<key_name<<" is not a valid key name"<<endl;
+								Global::debug( 0 ) <<"Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
 							}
 							press.combo.push_back(actualKey);
 						}
@@ -683,20 +718,20 @@ ECollide * Animation::getCollide( int facing ){
 
 // int Animation::convertKeyPress( const string & key_name ) throw( LoadException ){
 PaintownInput Animation::convertKeyPress( const string & key_name ) {
-	if ( key_name == "key_idle" ) return Unknown;
-	if ( key_name == "key_jump" ) return Jump;
-	if ( key_name == "key_forward" ) return Forward;
-	if ( key_name == "key_back" ) return Back;
+	// if (key_name == key_names[Keys::Idle]) return Unknown;
+	if (key_name == key_names[Keys::Jump]) return Jump;
+	if (key_name == key_names[Keys::Forward]) return Forward;
+	if (key_name == key_names[Keys::Back]) return Back;
 	/* im not sure we need a grab key */
-	if ( key_name == "key_grab" ) return Grab;
+	if (key_name == key_names[Keys::Grab]) return Grab;
 	// if ( key_name == "key_right" ) return KEY_RIGHT;
-	if ( key_name == "key_down" ) return Down;
-	if ( key_name == "key_up" ) return Up;
-	if ( key_name == "key_attack1" ) return Attack1;
-	if ( key_name == "key_attack2" ) return Attack2;
-	if ( key_name == "key_attack3" ) return Attack3;
+	if (key_name == key_names[Keys::Down]) return Down;
+	if (key_name == key_names[Keys::Up]) return Up;
+	if (key_name == key_names[Keys::Attack1]) return Attack1;
+	if (key_name == key_names[Keys::Attack2]) return Attack2;
+	if (key_name == key_names[Keys::Attack3]) return Attack3;
 
-        Global::debug(1) << "Unknown key name '" << key_name << "'" << endl;
+    Global::debug(1) << "Unknown key name '" << key_name << "'" << endl;
 
 	return Unknown;
 
