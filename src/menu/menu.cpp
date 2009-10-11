@@ -456,13 +456,12 @@ void Menu::run() throw (ReturnException) {
                 throw ShutdownException();
             }
 
-            InputManager::poll();
-
             if ( Global::speed_counter > 0 ){
                 draw = true;
                 runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
                 while ( runCounter >= 1.0 ){
                     runCounter -= 1;
+                    InputManager::poll();
                     act(endGame);
                 }
 
