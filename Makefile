@@ -2,6 +2,10 @@ all:
 	@scons -j 2 || echo "Get scons at www.scons.org or read the README for compilation instructions"
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 
+static:
+	@scons -j 2 static
+	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
+
 quiet:
 	@scons -j 2 -s
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
@@ -9,7 +13,7 @@ quiet:
 clean:
 	scons -c
 
-# use to build on windows
+# use to build on windows with mingw
 win:
 	@echo Building windows..
 	@scons env=mingw
