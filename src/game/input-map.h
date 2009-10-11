@@ -10,26 +10,28 @@
 
 template <typename X>
 struct KeyState{
-    KeyState(int delay, bool block, X out, unsigned int last_read):
+    KeyState(unsigned int delay, bool block, X out, unsigned int last_read):
         delay(delay),
         block(block),
         out(out),
         pressed(false),
-        last_read(last_read){
+        last_read(last_read),
+        seen(0){
     }
 
-    int delay;
+    unsigned int delay;
     bool block;
     X out;
     bool pressed;
     unsigned int last_read;
+    unsigned int seen;
 };
 
 /* cant typedef a template'd struct so we have to copy/paste the definition
  */
 template <typename X>
 struct JoystickState{
-    JoystickState(int delay, bool block, X out, unsigned int last_read):
+    JoystickState(unsigned int delay, bool block, X out, unsigned int last_read):
         delay(delay),
         block(block),
         out(out),
@@ -37,7 +39,7 @@ struct JoystickState{
         last_read(last_read){
     }
 
-    int delay;
+    unsigned int delay;
     bool block;
     X out;
     bool pressed;
@@ -115,18 +117,23 @@ public:
                     if (last_read - state->last_read > 1){
                         use = true;
                     }
-                    state->last_read = last_read;
-                } else {
+                } else if (last_read - state->last_read > 1 || state->seen > state->delay){
                     use = true;
+                    state->seen = 0;
+                } else {
+                    state->seen += 1;
                 }
 
-                if (use){
-                    (*output)[state->out] = true;
-                }
+                state->last_read = last_read;
+
+                // state->last_read = last_read;
+
+                (*output)[state->out] = use;
             }
         }
     }
 
+    /* called by the input manager when the map is read */
     void update(){
         last_read += 1;
     }
@@ -190,14 +197,15 @@ protected:
                 if (last_read - state->last_read > 1){
                     use = true;
                 }
-                state->last_read = last_read;
-            } else {
+            } else if (last_read - state->last_read > state->delay){
                 use = true;
             }
 
-            if (use){
-                (*output)[state->out] = true;
-            }
+            state->last_read = last_read;
+
+            (*output)[state->out] = use;
+
+            state->last_read = last_read;
         }
     }
 

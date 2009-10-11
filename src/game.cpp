@@ -1,4 +1,6 @@
+/* bitmap.h must come first */
 #include "util/bitmap.h"
+
 #include "game.h"
 #include "music.h"
 #include "util/funcs.h"
@@ -25,6 +27,7 @@
 #include "game/adventure_world.h"
 #include "game/console.h"
 #include "game/input-manager.h"
+#include "game/input-map.h"
 #include "versus_world.h"
 #include "init.h"
 #include <iostream>
@@ -33,7 +36,7 @@
 using namespace std;
 
 static const char * DEFAULT_FONT = "/fonts/arial.ttf";
-static int LAZY_KEY_DELAY = 300;
+// static int LAZY_KEY_DELAY = 300;
 static bool show_loading_screen = true;
 
 namespace Game{
@@ -122,11 +125,14 @@ static string findNextFile( const char * name ){
 	char first[ 128 ];
 	strncpy( first, name, extension - name );
 	first[ extension - name ] = '\0';
-	int num = 0;
+	unsigned int num = 0;
 	sprintf( buf, "%s%d%s", first, num, extension );
 	do{
 		num += 1;
 		sprintf( buf, "%s%d%s", first, num, extension );
+        /* num != 0 prevents an infinite loop in the extremely
+         * remote case that the user has 2^32 files in the directory
+         */
 	} while ( num != 0 && Util::exists( buf ) );
 	return string( buf );
 }
@@ -155,21 +161,57 @@ static void drawHelp( const Font & font, int x, int y, int color, Bitmap & buffe
 	font.printf( x, y, color, buffer, "Press F1 to view this help", 0 );
 }
 
-bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
-    Keyboard key;
+namespace Game{
+    enum Input{
+        Screenshot,
+        Slowdown,
+        Speedup,
+        NormalSpeed,
+        ReloadLevel,
+        KillAllHumans,
+        Pause,
+        MiniMaps,
+        ShowHelp,
+        ShowFps,
+        Quit,
+        Console,
+    };
+}
 
+bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
+    // Keyboard key;
+    InputMap<Game::Input> input;
+
+    /*
     key.setDelay( Keyboard::Key_F2, 100 );
     key.setDelay( Keyboard::Key_F12, 50 );
+    */
 
-    if ( Global::getDebug() > 0 ){
-        key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
-        key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
-        key.setDelay( Keyboard::Key_F4, 200 );
-        key.setDelay( Keyboard::Key_F8, 300 );
+    if (Global::getDebug() > 0){
+        input.set(Keyboard::Key_MINUS_PAD, 2, false, Game::Slowdown);
+        input.set(Keyboard::Key_PLUS_PAD, 2, false, Game::Speedup);
+        input.set(Keyboard::Key_F4, 0, true, Game::ReloadLevel);
+        input.set(Keyboard::Key_F8, 200, false, Game::KillAllHumans);
+        /*
+        key.setDelay(Keyboard::Key_MINUS_PAD, 2);
+        key.setDelay(Keyboard::Key_PLUS_PAD, 2);
+        key.setDelay(Keyboard::Key_F4, 200);
+        key.setDelay(Keyboard::Key_F8, 300);
+        */
     }
 
+    input.set(Keyboard::Key_P, 10, false, Game::Pause);
+    input.set(Keyboard::Key_TAB, 10, false, Game::MiniMaps);
+    input.set(Keyboard::Key_TILDE, 25, false, Game::Console);
+    input.set(Keyboard::Key_ESC, 0, false, Game::Quit);
+    input.set(Keyboard::Key_F1, 0, false, Game::ShowHelp);
+    input.set(Keyboard::Key_F9, 20, false, Game::ShowFps);
+    input.set(Keyboard::Key_F12, 10, false, Game::Screenshot);
+
+    /*
     key.setDelay( Keyboard::Key_P, 100 );
     key.setDelay( Keyboard::Key_TAB, 300 );
+    */
 
     /* the game graphics are meant for 320x240 and will be stretched
      * to fit the screen
@@ -181,7 +223,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     /* 150 pixel tall console */
     Console console(150);
     bool toggleConsole = false;
-    const int consoleKey = Keyboard::Key_TILDE;
+    // const int consoleKey = Keyboard::Key_TILDE;
 
     world.getEngine()->createWorld(world);
 
@@ -201,14 +243,15 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     double gameSpeed = startingGameSpeed();
 
     const bool paused = false;
+    bool force_quit = false;
 
     /* don't put any variables after runCounter and before the while loop */
     double runCounter = 0;
     while ( ! done ){
 
         bool draw = false;
-        key.poll();
-        InputManager::poll();
+        bool takeScreenshot = false;
+        // key.poll();
 
         if (Global::shutdown()){
             throw ShutdownException();
@@ -219,6 +262,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                 runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
 
                 while ( runCounter >= 1.0 ){
+                    InputManager::poll();
                     draw = true;
                     world.act();
                     console.act();
@@ -248,27 +292,30 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                 }
             }
 
-            if ( key[ Keyboard::Key_F1 ] ){
+            InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
+
+            if (inputState[Game::ShowHelp]){
                 helpTime = helpTime < 260 ? 260 : helpTime;
             }
 
-            if ( key[ Keyboard::Key_F9 ] ){
-                show_fps = true;
-            }
-            if ( key[ Keyboard::Key_F10 ] ){
-                show_fps = false;
+            if (inputState[Game::ShowFps]){
+                show_fps = ! show_fps;
             }
 
-            if (key[consoleKey] && !toggleConsole){
+            if (inputState[Game::Console]){
                 console.toggle();
                 toggleConsole = true;
             }
 
+            takeScreenshot = inputState[Game::Screenshot];
+
+            /*
             if (!key[consoleKey]){
                 toggleConsole = false;
             }
+            */
 
-            if ( key[ Keyboard::Key_P ] ){
+            if (inputState[Game::Pause]){
                 /*
                    paused = ! paused;
                    world.addMessage(paused ? pausedMessage() : unpausedMessage());
@@ -277,7 +324,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                 world.changePause();
             }
 
-            if ( key[ Keyboard::Key_TAB ] ){
+            if (inputState[Game::MiniMaps]){
                 world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
             }
 
@@ -289,12 +336,12 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
             if ( Global::getDebug() > 0 ){
                 const double SPEED_INC = 0.02;
-                if ( key[ Keyboard::Key_PLUS_PAD ] ){
+                if (inputState[Game::Speedup]){
                     gameSpeed += SPEED_INC;
                     Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                 }
 
-                if ( key[ Keyboard::Key_MINUS_PAD ] ){
+                if (inputState[Game::Slowdown]){
                     gameSpeed -= SPEED_INC;
                     if ( gameSpeed < SPEED_INC ){
                         gameSpeed = SPEED_INC;
@@ -302,12 +349,12 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                     Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                 }
 
-                if ( key[ Keyboard::Key_ENTER_PAD ] ){
+                if (inputState[Game::NormalSpeed]){
                     gameSpeed = 1;
                     Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                 }
 
-                if ( key[ Keyboard::Key_F4 ] ){
+                if (inputState[Game::ReloadLevel]){
                     try{
                         world.reloadLevel();
                         draw = true;
@@ -318,6 +365,8 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
             }
 
             Global::speed_counter = 0;
+            force_quit |= inputState[Game::Quit];
+            done |= force_quit || world.finished();
         }
 
         /*
@@ -376,7 +425,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
             /* getX/Y move when the world is quaking */
             screen_buffer.BlitToScreen( world.getX(), world.getY() );
 
-            if ( key[ Keyboard::Key_F12 ] ){
+            if (takeScreenshot){
                 string file = findNextFile( "scr.bmp" );
                 Global::debug( 2 ) << "Saved screenshot to " << file << endl;
                 work.save( file );
@@ -387,14 +436,11 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
         while ( Global::speed_counter < 1 ){
             Util::rest( 1 );
-            key.poll();
+            // key.poll();
             InputManager::poll();
         }
-
-        done |= key[ Keyboard::Key_ESC ] || world.finished();
     }
 
-    bool force_quit = key[Keyboard::Key_ESC];
 
     if (!force_quit){
         work.clear();
@@ -427,10 +473,13 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     world.getEngine()->destroyWorld(world);
 
     if (force_quit){
-        while ( key[ Keyboard::Key_ESC ] ){
+        InputManager::waitForRelease(input, Game::Quit);
+        /*
+        while (inputState[Game::Quit] key[ Keyboard::Key_ESC ] ){
             key.poll();
             Util::rest( 1 );
         }
+        */
         return false;
     }
 

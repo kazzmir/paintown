@@ -192,7 +192,7 @@ contact( NULL ){
 						string key_name = nm->getName();
 						PaintownInput actualKey = convertKeyPress( key_name );
 						if ( actualKey == Unknown ){
-							Global::debug( 0 ) << "*WARNING*: "<<key_name<<" is not valid"<<endl;
+							Global::debug( 0 ) << "*WARNING*: "<<key_name<<" is not a valid key name"<<endl;
 						}
 						// cout<<"Convert "<<key_name<<" to "<<actualKey<<endl;
 						press.combo.push_back(actualKey);
@@ -202,8 +202,8 @@ contact( NULL ){
 							string key_name;
 							*nm >> key_name;
 							PaintownInput actualKey = convertKeyPress( key_name );
-							if ( actualKey == -2 ){
-								Global::debug( 0 ) <<"*WARNING*: "<<key_name<<" is not valid"<<endl;
+							if (actualKey == Unknown){
+								Global::debug( 0 ) <<"*WARNING*: "<<key_name<<" is not a valid key name"<<endl;
 							}
 							press.combo.push_back(actualKey);
 						}
