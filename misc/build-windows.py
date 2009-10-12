@@ -48,7 +48,7 @@ def client_side():
                 log_debug("Sending line '%s'" % out)
                 connection.send(out)
                 out = stdout.readline()
-                process.wait()
+            process.wait()
 
     def read_commands(connection):
         import re
