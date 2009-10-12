@@ -35,6 +35,11 @@ def client_side():
     # execute a command
     def do_command(command):
         import subprocess
+        args = command.split(' ')
+        if args[0] == 'cd':
+            import os
+            os.chdir(args[1])
+            return 'changed directory to ' + args[1]
         return subprocess.Popen(command.split(' '), stdout = subprocess.PIPE).communicate()[0]
 
     def read_commands(connection):
@@ -83,7 +88,7 @@ def server_side():
     def wait_for_connect():
         import socket
         server = socket.socket()
-        server.bind(('localhost', port))
+        server.bind(('0.0.0.0', port))
         server.listen(1)
         log_info("Waiting for a connection on port %d.." % port)
         (client, address) = server.accept()
@@ -97,11 +102,12 @@ def server_side():
 
     # gets the text output from sending commands
     def send_build_commands(connection):
-        send_command(connection, 'ls')
+        #send_command(connection, 'ls')
+        send_command(connection, 'cd c:/svn/paintown')
+        send_command(connection, 'svn update')
+        send_command(connection, 'make win')
+
         send_command(connection, quit_message)
-        #send_command(connection, 'cd c:/svn/paintown')
-        #send_command(connection, 'svn update')
-        #send_command(connection, 'make win')
         data = connection.recv(4096)
         while data:
             print data
