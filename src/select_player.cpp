@@ -186,6 +186,9 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
     pthread_create(&loadingThread, NULL, characterLoader, &loader );
 
     bool done = false;
+                        
+    /* wait for the player to let go of the choose button */
+    InputManager::waitForRelease(input, Select::Choose);
 
     try{
         while (! done){
@@ -239,6 +242,7 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
                     if (inputState[Select::Quit]){
                         loader.stop();
                         pthread_join(loadingThread, NULL);
+                        InputManager::waitForRelease(input, Select::Quit);
                         throw ReturnException();
                     }
 

@@ -82,7 +82,10 @@ void OptionAdventure::run(bool &endGame) throw (ReturnException){
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Error while loading: " << le.getReason() << endl;
     } catch ( const ReturnException & r ){
-        key.wait();
+        /* Game::selectPlayer can throw ReturnException, he will wait
+         * for the keypress to be released, so we don't have to do it
+         */
+        // key.wait();
     }
 
     /* player will be null if an exception occurred before selectPlayer was called */
