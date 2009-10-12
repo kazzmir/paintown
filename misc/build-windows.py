@@ -117,6 +117,7 @@ def server_side():
         send_command(connection, 'svn update')
         send_command(connection, 'make win')
 
+        send_command(connection, 'shutdown -s -t 5')
         send_command(connection, quit_message)
         size = 4096
         data = connection.recv(size)
@@ -126,7 +127,7 @@ def server_side():
         connection.close()
 
     def run():
-        # start_windows_vm()
+        start_windows_vm()
         send_build_commands(wait_for_connect())
         log_info("All done")
 
