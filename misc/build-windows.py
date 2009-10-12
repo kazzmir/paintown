@@ -39,8 +39,8 @@ def client_side():
         if args[0] == 'cd':
             import os
             os.chdir(args[1])
-            return 'changed directory to ' + args[1]
-        return subprocess.Popen(command.split(' '), stdout = subprocess.PIPE).communicate()[0]
+            return ['changed directory to ' + args[1]]
+        return subprocess.Popen(command.split(' '), stdout = subprocess.PIPE).stdout
 
     def read_commands(connection):
         import re
@@ -60,7 +60,9 @@ def client_side():
                         connection.close()
                         return
                     log_debug("Got command '%s'" % command)
-                    connection.send(do_command(command))
+                    out = do_command(command)
+                    for out_line in out:
+                        connection.send(out_line)
                     # chop of the command from the buffer
                     data = data[(len(command) + 2):]
                     get = line.match(data)
@@ -102,7 +104,7 @@ def server_side():
 
     # gets the text output from sending commands
     def send_build_commands(connection):
-        #send_command(connection, 'ls')
+        # send_command(connection, 'ls')
         send_command(connection, 'cd c:/svn/paintown')
         send_command(connection, 'svn update')
         send_command(connection, 'make win')
