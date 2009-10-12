@@ -36,7 +36,8 @@ struct JoystickState{
         block(block),
         out(out),
         pressed(false),
-        last_read(last_read){
+        last_read(last_read),
+        seen(0){
     }
 
     unsigned int delay;
@@ -44,6 +45,7 @@ struct JoystickState{
     X out;
     bool pressed;
     unsigned int last_read;
+    unsigned int seen;
 };
 
 /* maps a raw input device (keyboard, joystick, etc.) to some user-defined type
@@ -197,15 +199,18 @@ protected:
                 if (last_read - state->last_read > 1){
                     use = true;
                 }
-            } else if (last_read - state->last_read > state->delay){
+            } else if (last_read - state->last_read > 1 || state->seen > state->delay){
                 use = true;
+                state->seen = 0;
+            } else {
+                state->seen += 1;
             }
 
             state->last_read = last_read;
 
-            (*output)[state->out] = use;
+            // state->last_read = last_read;
 
-            state->last_read = last_read;
+            (*output)[state->out] = use;
         }
     }
 
