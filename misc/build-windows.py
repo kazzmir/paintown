@@ -21,19 +21,6 @@ def log_info(str):
 def log_error(str):
     log_debug(str, 0)
 
-
-class FakeReader:
-    def __init__(self, s):
-        self.s = s
-	self.done = False
-
-    def readline(self):
-        if not self.done:
-            self.done = True
-            return self.s
-        else:
-	    return None
-
 def client_side():
     def connect(address):
         import socket
@@ -52,15 +39,16 @@ def client_side():
         if args[0] == 'cd':
             import os
             os.chdir(args[1])
-	    connection.send('changed directory to ' + args[1])
-	else:
+            connection.send('changed directory to ' + args[1])
+        else:
             process = subprocess.Popen(command.split(' '), stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
-	    stdout = process.stdout
-	    out = stdout.readline()
-	    while out != None and out != "":
-	        connection.send(out)
-		out = stdout.readline()
-            process.wait()
+            stdout = process.stdout
+            out = stdout.readline()
+            while out != None and out != "":
+                log_debug("Sending line '%s'" % out)
+                connection.send(out)
+                out = stdout.readline()
+                process.wait()
 
     def read_commands(connection):
         import re
@@ -81,15 +69,6 @@ def client_side():
                         return
                     log_debug("Got command '%s'" % command)
                     out = do_command(command, connection)
-		    #out_line = out.readline()
-		    #while out_line != None and out_line != "":
-		    #	    print "Sending line " + out_line
-		    #	    connection.send(out_line)
-		    #	    print "Reading more data.."
-		    #	    out_line = out.readline()
-                    #for out_line in out:
-		    # print "sending line " + out_line
-                    #    connection.send(out_line)
                     # chop of the command from the buffer
                     data = data[(len(command) + 2):]
                     get = line.match(data)
@@ -137,10 +116,11 @@ def server_side():
         send_command(connection, 'make win')
 
         send_command(connection, quit_message)
-        data = connection.recv(4096)
+        size = 4096
+        data = connection.recv(size)
         while data:
-            print data
-            data = connection.recv(4096)
+            print data.strip()
+            data = connection.recv(size)
         connection.close()
 
     def run():
