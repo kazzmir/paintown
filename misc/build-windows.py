@@ -37,13 +37,14 @@ def client_side():
     # execute a command
     def do_command(command, connection):
         import subprocess
+        log_info("Execute command '%s'" % command)
         args = command.split(' ')
         if args[0] == 'cd':
             import os
             os.chdir(args[1])
             connection.send('changed directory to ' + args[1])
         else:
-            process = subprocess.Popen(command.split(' '), stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+            process = subprocess.Popen(args, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, shell = True)
             stdout = process.stdout
             out = stdout.readline()
             while out != None and out != "":
@@ -116,6 +117,8 @@ def server_side():
         send_command(connection, 'cd c:/svn/paintown')
         send_command(connection, 'svn update')
         send_command(connection, 'make win')
+        send_command(connection, 'cd editor')
+        send_command(connection, 'ant')
 
         send_command(connection, 'shutdown -s -t 5')
         send_command(connection, quit_message)
