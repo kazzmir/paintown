@@ -6,6 +6,7 @@
 # could also have a simple file transfer mechanism so I can get the exe without having to muck around with ftp or whatever
 
 port = 15421
+quit_message = '**quit**'
 
 # higher numbers of verbose output more stuff
 verbose = 1
@@ -33,7 +34,8 @@ def client_side():
 
     # execute a command
     def do_command(command):
-        pass
+        import subprocess
+        return subprocess.Popen(command.split(' '), stdout = subprocess.PIPE).communicate()[0]
 
     def read_commands(connection):
         import re
@@ -49,13 +51,16 @@ def client_side():
                 get = line.match(data)
                 while get != None:
                     command = get.group(1)
+                    if command == quit_message:
+                        connection.close()
+                        return
                     log_debug("Got command '%s'" % command)
-                    do_command(command)
+                    connection.send(do_command(command))
                     # chop of the command from the buffer
                     data = data[(len(command) + 2):]
                     get = line.match(data)
-        except:
-            log_error("Got an error.. closing the connection")
+        except Exception, e:
+            log_error("Got an error.. closing the connection: " + str(e))
             connection.close()
 
     def run():
@@ -92,9 +97,15 @@ def server_side():
 
     # gets the text output from sending commands
     def send_build_commands(connection):
-        send_command(connection, 'cd c:/svn/paintown')
-        send_command(connection, 'svn update')
-        send_command(connection, 'make win')
+        send_command(connection, 'ls')
+        send_command(connection, quit_message)
+        #send_command(connection, 'cd c:/svn/paintown')
+        #send_command(connection, 'svn update')
+        #send_command(connection, 'make win')
+        data = connection.recv(4096)
+        while data:
+            print data
+            data = connection.recv(4096)
         connection.close()
 
     def run():
@@ -106,7 +117,11 @@ def server_side():
 
 import sys
 if len(sys.argv) < 2:
-    log_error("pass 'client' or 'server' as an argument")
+    log_error("""valid arguments:
+  client - run as the client
+  server - run as the server
+  verbose=# - set verbose level. 1 is the default. higher numbers is more verbose
+""")
 else:
     import re
     verbose_arg = re.compile('verbose=(\d+)')
