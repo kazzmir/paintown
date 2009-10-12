@@ -282,7 +282,8 @@ void AdventureWorld::dyingObject(const Player & obj){
     /* 60 comes from character.cpp:act(), but I should probably use a function
      * that returns the number instead
      */
-    enterSlowMotion(60);
+    /* don't do this for now */
+    // enterSlowMotion(60);
 }
 
 void AdventureWorld::doLogic(){
