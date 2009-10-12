@@ -362,7 +362,7 @@ if False:
 
 custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
-		"HasRuby" : checkRunRuby,
+                "HasRuby" : checkRunRuby,
                 "CheckRTTI" : checkRTTI,
                 "CheckLex" : checkLex,
                 "CheckOgg" : checkOgg,
@@ -375,14 +375,14 @@ if isWindows():
     config.CheckPython()
     if config.HasRuby():
         config.CheckRuby()
-    if not config.CheckLex():
-        print "Can't find lex"
-	Exit(1)
+    # if not config.CheckLex():
+    #     print "Can't find lex"
+    #     Exit(1)
     # the yacc check gets into an infinite loop when checking under
     # cygwin, so just disable it for now
-    if False and not config.CheckYacc():
-        print "Can't find yacc"
-	Exit(1)
+    # if False and not config.CheckYacc():
+    #     print "Can't find yacc"
+    #     Exit(1)
     env = config.Finish()
     
     staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
@@ -469,18 +469,18 @@ else:
     config.CheckOgg()
     if config.HasRuby():
         config.CheckRuby()
-    if not config.CheckLex():
-        print "** Install a lex package such as flex"
-        Exit(1)
-    if not config.CheckYacc():
-        print "** Install a yacc package such as bison"
-        Exit(1)
+    # if not config.CheckLex():
+    #     print "** Install a lex package such as flex"
+    #     Exit(1)
+    # if not config.CheckYacc():
+    #     print "** Install a yacc package such as bison"
+    #     Exit(1)
 
     env = config.Finish()
 
     static_config = staticEnv.Configure(custom_tests = {"CheckPython" : checkPython,
                                                         "CheckRuby" : checkStaticRuby,
-							"HasRuby" : checkRunRuby,
+                                                        "HasRuby" : checkRunRuby,
                                                         "CheckRTTI" : checkRTTI})
     static_config.CheckPython()
     if static_config.HasRuby():
