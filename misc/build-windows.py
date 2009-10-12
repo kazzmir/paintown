@@ -6,6 +6,8 @@
 # could also have a simple file transfer mechanism so I can get the exe without having to muck around with ftp or whatever
 
 port = 15421
+# network settings in jon's virtual box 
+server_ip = '192.168.90.2'
 quit_message = '**quit**'
 
 # higher numbers of verbose output more stuff
@@ -77,7 +79,7 @@ def client_side():
             connection.close()
 
     def run():
-        read_commands(connect('192.168.90.2'))
+        read_commands(connect(server_ip))
 
     run()
 
