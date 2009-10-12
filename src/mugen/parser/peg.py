@@ -2284,7 +2284,7 @@ if __name__ == '__main__':
     for arg in sys.argv[1:]:
         if arg == '--bnf':
             doit.append(lambda p: p.generate_bnf())
-        elif arg == '--cpp' or arg == '-c++':
+        elif arg == '--cpp' or arg == '--c++':
             doit.append(lambda p: p.generate_cpp())
         elif arg == '--python':
             doit.append(lambda p: p.generate_python())
