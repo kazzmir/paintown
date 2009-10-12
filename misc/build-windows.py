@@ -21,6 +21,19 @@ def log_info(str):
 def log_error(str):
     log_debug(str, 0)
 
+
+class FakeReader:
+    def __init__(self, s):
+        self.s = s
+	self.done = False
+
+    def readline(self):
+        if not self.done:
+            self.done = True
+            return self.s
+        else:
+	    return None
+
 def client_side():
     def connect(address):
         import socket
@@ -33,14 +46,21 @@ def client_side():
         return connection
 
     # execute a command
-    def do_command(command):
+    def do_command(command, connection):
         import subprocess
         args = command.split(' ')
         if args[0] == 'cd':
             import os
             os.chdir(args[1])
-            return ['changed directory to ' + args[1]]
-        return subprocess.Popen(command.split(' '), stdout = subprocess.PIPE).stdout
+	    connection.send('changed directory to ' + args[1])
+	else:
+            process = subprocess.Popen(command.split(' '), stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+	    stdout = process.stdout
+	    out = stdout.readline()
+	    while out != None and out != "":
+	        connection.send(out)
+		out = stdout.readline()
+            process.wait()
 
     def read_commands(connection):
         import re
@@ -60,9 +80,16 @@ def client_side():
                         connection.close()
                         return
                     log_debug("Got command '%s'" % command)
-                    out = do_command(command)
-                    for out_line in out:
-                        connection.send(out_line)
+                    out = do_command(command, connection)
+		    #out_line = out.readline()
+		    #while out_line != None and out_line != "":
+		    #	    print "Sending line " + out_line
+		    #	    connection.send(out_line)
+		    #	    print "Reading more data.."
+		    #	    out_line = out.readline()
+                    #for out_line in out:
+		    # print "sending line " + out_line
+                    #    connection.send(out_line)
                     # chop of the command from the buffer
                     data = data[(len(command) + 2):]
                     get = line.match(data)
@@ -71,7 +98,7 @@ def client_side():
             connection.close()
 
     def run():
-        read_commands(connect('localhost'))
+        read_commands(connect('192.168.90.2'))
 
     run()
 
