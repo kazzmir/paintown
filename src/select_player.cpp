@@ -10,6 +10,8 @@
 // #include "select_player.h"
 #include "game.h"
 #include "util/keyboard.h"
+#include "game/input-manager.h"
+#include "game/input-map.h"
 #include "util/font.h"
 #include "level/utils.h"
 #include "util/file-system.h"
@@ -84,9 +86,19 @@ static void * characterLoader(void * arg){
     return NULL;
 }
 
+namespace Select{
+    enum Input{
+        Up, Down, Left,
+        Right, Remap, Quit,
+        Choose,
+    };
+}
+
 static int choosePlayer(const PlayerVector & players, const string & message) throw (ReturnException){
     DisplayCharacterLoader loader(getCharacters(players));
-    Keyboard key;
+    InputMap<Select::Input> input;
+
+    // Keyboard key;
 
     // Bitmap work( GFX_X / 2, GFX_Y / 2 );
     Bitmap work( GFX_X, GFX_Y );
@@ -97,6 +109,7 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
     /* currently selected character */
     int current = 0;
 
+    /*
     int changeRemapKey = Keyboard::Key_TAB;
 
     const int keyRight = Configuration::config( 0 ).getRight();
@@ -109,6 +122,16 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
     key.setDelay( keyDown, 300 );
     key.setDelay( keyLeft, 300 );
     key.setDelay( changeRemapKey, 200 );
+    */
+
+    input.set(Configuration::config( 0 ).getRight(), 300, false, Select::Right);
+    input.set(Configuration::config( 0 ).getUp(), 300, false, Select::Up);
+    input.set(Configuration::config( 0 ).getDown(), 300, false, Select::Down);
+    input.set(Configuration::config( 0 ).getLeft(), 300, false, Select::Left);
+    input.set(Keyboard::Key_TAB, 200, false, Select::Remap);
+    input.set(Keyboard::Key_ENTER, 0, false, Select::Choose);
+    input.set(Keyboard::Key_SPACE, 0, false, Select::Choose);
+    input.set(Configuration::config(0).getAttack1(), 0, false, Select::Choose);
 
     /* preview box for each character */
     Bitmap temp( 120, 120 );
@@ -153,10 +176,10 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
 
     pthread_create(&loadingThread, NULL, characterLoader, &loader );
 
-    try{
-        while ( ! key[ Keyboard::Key_ENTER ] && ! key[ Keyboard::Key_SPACE ] ){
-            key.poll();
+    bool done = false;
 
+    try{
+        while (! done){
             /* bad variable name */
             DisplayCharacter * ch = players[ current ].guy;
 
@@ -167,6 +190,9 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
                     int old = current;
                     runCounter -= 1;
                     clock += 1;
+                    InputManager::poll();
+                    
+                    InputMap<Select::Input>::Output inputState = InputManager::getMap(input);
 
                     if ( clock % 5 == 0 ){
                         backgroundX -= 1;
@@ -175,33 +201,33 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
                         }
                     }
 
-                    if ( key[ keyLeft ] ){
+                    if (inputState[Select::Left]){
                         current = current - 1;
                         beep.play();
                     }
 
-                    if ( key[ keyRight ] ){
+                    if (inputState[Select::Right]){
                         current = current + 1;
                         beep.play();
                     }
 
-                    if ( key[ keyUp ] ){
+                    if (inputState[Select::Up]){
                         current = current - boxesPerLine;
                         beep.play();
                     }
 
-                    if ( key[ keyDown ] ){
+                    if (inputState[Select::Down]){
                         current = current + boxesPerLine;
                         beep.play();
                     }
 
                     if (ch->isLoaded()){
-                        if ( key[ changeRemapKey ] ){
+                        if (inputState[Select::Remap]){
                             ch->nextMap();
                         }
                     }
 
-                    if ( key[ Keyboard::Key_ESC ] ){
+                    if (inputState[Select::Quit]){
                         loader.stop();
                         pthread_join(loadingThread, NULL);
                         throw ReturnException();
@@ -232,6 +258,8 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
                     if (current != old){
                         loader.update(players[current].guy);
                     }
+
+                    done |= inputState[Select::Choose];
 
                     // think--;
                 }
@@ -338,7 +366,7 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
             }
 
             while ( Global::speed_counter == 0 ){
-                key.poll();
+                InputManager::poll();
                 Util::rest( 1 );
             }
         }
