@@ -591,6 +591,42 @@ class CodeGenerator:
     def generate_verbatim(self, *args):
         self.fail()
 
+class PythonGenerator(CodeGenerator):
+    def generate_ensure(me, pattern, result, previous_result, stream, failure):
+        my_result = newResult()
+        data = """
+%s = Result(%s.getPosition())
+%s
+""" % (my_result, result, pattern.next.generate_python(my_result, result, stream, failure).strip())
+        return data
+
+    def generate_not(me, pattern, result, previous_result, stream, failure):
+        my_result = newResult()
+        my_fail = lambda : "raise NotError"
+        data = """
+%s = Result(%s.getPosition());
+try:
+    %s
+    %s
+except NotError:
+    %s.setValue(None)
+        """ % (my_result, result, indent(pattern.next.generate_python(my_result, result, stream, my_fail).strip()), failure(), result)
+
+        return data
+
+    def generate_rule(me, pattern, result, previous_result, stream, failure):
+        parameters = ""
+        if pattern.parameters != None:
+            parameters = ",%s" % ",".join(patter.parameters)
+        data = """
+# print "Trying rule " + '%s'
+%s = rule_%s(%s, %s.getPosition()%s)
+if %s == None:
+    %s
+""" % (pattern.rule, result, pattern.rule, stream, result, parameters, result, indent(failure()))
+
+        return data
+
 # all the self parameters are named me because the code was originally
 # copied from another class and to ensure that copy/paste errors don't
 # occur I have changed the name from 'self' to 'me'
@@ -919,12 +955,7 @@ class PatternEnsure(Pattern):
         return "&" + self.next.generate_bnf()
 
     def generate_python(self, result, previous_result, stream, failure):
-        my_result = newResult()
-        data = """
-%s = Result(%s.getPosition())
-%s
-""" % (my_result, result, self.next.generate_python(my_result, result, stream, failure).strip())
-        return data
+        return PythonGenerator().generate_ensure(self, result, previous_result, stream, failure)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_ensure(self, peg, result, stream, failure, tail, peg_args)
@@ -948,19 +979,8 @@ class PatternNot(Pattern):
         return "!" + self.next.generate_bnf()
 
     def generate_python(self, result, previous_result, stream, failure):
-        my_result = newResult()
-        my_fail = lambda : "raise NotError"
-        data = """
-%s = Result(%s.getPosition());
-try:
-    %s
-    %s
-except NotError:
-    %s.setValue(None)
-        """ % (my_result, result, indent(self.next.generate_python(my_result, result, stream, my_fail).strip()), failure(), result)
-
-        return data
-
+        return PythonGenerator().generate_not(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_not(self, peg, result, stream, failure, tail, peg_args)
         
@@ -989,18 +1009,8 @@ class PatternRule(Pattern):
         return self.rule
 
     def generate_python(self, result, previous_result, stream, failure):
-        parameters = ""
-        if self.parameters != None:
-            parameters = ",%s" % ",".join(self.parameters)
-        data = """
-# print "Trying rule " + '%s'
-%s = rule_%s(%s, %s.getPosition()%s)
-if %s == None:
-    %s
-""" % (self.rule, result, self.rule, stream, result, parameters, result, indent(failure()))
-
-        return data
-
+        return PythonGenerator().generate_rule(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_rule(self, peg, result, stream, failure, tail, peg_args)
     
