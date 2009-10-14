@@ -592,6 +592,11 @@ class CodeGenerator:
         self.fail()
 
 class PythonGenerator(CodeGenerator):
+    def fixup_python(self, code):
+        import re
+        fix = re.compile("\$(\d+)")
+        return re.sub(fix, r"values[\1-1]", code)
+
     def generate_ensure(me, pattern, result, previous_result, stream, failure):
         my_result = newResult()
         data = """
@@ -650,6 +655,122 @@ else:
         return data + """
 %s.setValue(%s.getLastValue())
 """ % (result, result)
+
+    def generate_repeat_once(me, pattern, result, previous_result, stream, failure):
+        my_fail = lambda : "raise PegError"
+        my_result = newResult()
+        my_result2 = newResult()
+        data = """
+try:
+    while True:
+        %s = Result(%s.getPosition());
+        %s
+        %s.addResult(%s);
+except PegError:
+    if %s.matches() == 0:
+        %s
+        """ % (my_result, result, indent(indent(pattern.next.generate_python(my_result, result, stream, my_fail).strip())), result, my_result, result, failure())
+
+        return data
+
+    def generate_code(me, pattern, result, previous_result, stream, failure):
+        data = """
+value = None
+values = %s.getValues()
+%s
+%s.setValue(value)
+""" % (previous_result, me.fixup_python(pattern.code.strip()), result)
+
+        return data
+
+    def generate_repeat_many(me, pattern, result, previous_result, stream, failure):
+        my_fail = lambda : "raise PegError"
+        my_result = newResult()
+        data = """
+try:
+    while True:
+        %s = Result(%s.getPosition());
+        %s
+        %s.addResult(%s);
+except PegError:
+    pass
+        """ % (my_result, result, indent(indent(pattern.next.generate_python(my_result, result, stream, my_fail).strip())), result, my_result)
+
+        return data
+
+    def generate_any(me, pattern, result, previous_result, stream, failure):
+        temp = gensym()
+        data = """
+%s = %s.get(%s.getPosition())
+if %s != chr(0):
+    %s.setValue(%s)
+    %s.nextPosition()
+else:
+    %s
+""" % (temp, stream, result, temp, result, temp, result, indent(failure()))
+        return data
+
+    def generate_maybe(me, pattern, result, previous_result, stream, failure):
+        save = gensym("save")
+        fail = lambda : """
+%s = Result(%s)
+%s.setValue(None)
+""" % (result, save, result)
+
+        data = """
+%s = %s.getPosition()
+%s
+""" % (save, result, pattern.pattern.generate_python(result, previous_result, stream, fail))
+        return data
+
+    def generate_or(me, pattern, result, previous_result, stream, failure):
+        data = ""
+        fail = failure
+        save = gensym("save")
+        for next_pattern in pattern.patterns[::-1]:
+            my_result = newResult()
+            data = """
+%s = Result(%s)
+%s
+""" % (result, save, next_pattern.generate_python(result, previous_result, stream, fail).strip())
+            fail = lambda : data
+        return """
+%s = %s.getPosition()
+%s
+""" % (save, result, data)
+
+    def generate_bind(me, pattern, result, previous_result, stream, failure):
+        data = """
+%s
+%s = %s.getValues()
+""" % (pattern.pattern.generate_python(result, previous_result, stream, failure).strip(), pattern.variable, result)
+        return data
+
+    def generate_range(me, pattern, result, previous_result, stream, failure):
+        letter = gensym("letter")
+        data = """
+%s = %s.get(%s.getPosition())
+if %s in '%s':
+    %s.nextPosition()
+    %s.setValue(%s)
+else:
+    %s
+""" % (letter, stream, result, letter, pattern.range, result, result, letter, indent(failure()))
+
+        return data
+
+    def generate_verbatim(me, pattern, result, previous_result, stream, failure):
+        length = len(pattern.letters)
+        if special_char(pattern.letters):
+            length = 1
+        data = """
+if '%s' == %s.get(%s.getPosition(), %s):
+    %s.nextPosition(%s)
+    %s.setValue('%s')
+else:
+    %s
+""" % (pattern.letters, stream, result, length, result, length, result, pattern.letters, indent(failure()))
+        return data
 
 # all the self parameters are named me because the code was originally
 # copied from another class and to ensure that copy/paste errors don't
@@ -1130,22 +1251,7 @@ class PatternRepeatOnce(Pattern):
         return self.parens(self.next, self.next.generate_bnf()) + "+"
 
     def generate_python(self, result, previous_result, stream, failure):
-        my_fail = lambda : "raise PegError"
-        my_result = newResult()
-        my_result2 = newResult()
-        data = """
-try:
-    while True:
-        %s = Result(%s.getPosition());
-        %s
-        %s.addResult(%s);
-except PegError:
-    if %s.matches() == 0:
-        %s
-        """ % (my_result, result, indent(indent(self.next.generate_python(my_result, result, stream, my_fail).strip())), result, my_result, result, failure())
-
-        return data
-
+        return PythonGenerator().generate_repeat_once(self, result, previous_result, stream, failure)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_repeat_once(self, peg, result, stream, failure, tail, peg_args)
@@ -1169,21 +1275,9 @@ class PatternCode(Pattern):
     def generate_bnf(self):
         return """{{%s}}""" % (self.code)
 
-    def fixup_python(self, code):
-        import re
-        fix = re.compile("\$(\d+)")
-        return re.sub(fix, r"values[\1-1]", code)
-
     def generate_python(self, result, previous_result, stream, failure):
-        data = """
-value = None
-values = %s.getValues()
-%s
-%s.setValue(value)
-""" % (previous_result, self.fixup_python(self.code.strip()), result)
-
-        return data
-
+        return PythonGenerator().generate_code(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_code(self, peg, result, stream, failure, tail, peg_args)
 
@@ -1206,20 +1300,8 @@ class PatternRepeatMany(Pattern):
         return self.parens(self.next, self.next.generate_bnf()) + "*"
 
     def generate_python(self, result, previous_result, stream, failure):
-        my_fail = lambda : "raise PegError"
-        my_result = newResult()
-        data = """
-try:
-    while True:
-        %s = Result(%s.getPosition());
-        %s
-        %s.addResult(%s);
-except PegError:
-    pass
-        """ % (my_result, result, indent(indent(self.next.generate_python(my_result, result, stream, my_fail).strip())), result, my_result)
-
-        return data
-
+        return PythonGenerator().generate_repeat_many(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_repeat_many(self, peg, result, stream, failure, tail, peg_args)
         
@@ -1242,17 +1324,8 @@ class PatternAny(Pattern):
         return CppGenerator().generate_any(self, peg, result, stream, failure, tail, peg_args)
 
     def generate_python(self, result, previous_result, stream, failure):
-        temp = gensym()
-        data = """
-%s = %s.get(%s.getPosition())
-if %s != chr(0):
-    %s.setValue(%s)
-    %s.nextPosition()
-else:
-    %s
-""" % (temp, stream, result, temp, result, temp, result, indent(failure()))
-        return data
-
+        return PythonGenerator().generate_any(self, result, previous_result, stream, failure)
+        
 class PatternMaybe(Pattern):
     def __init__(self, pattern):
         Pattern.__init__(self)
@@ -1272,18 +1345,8 @@ class PatternMaybe(Pattern):
         return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
 
     def generate_python(self, result, previous_result, stream, failure):
-        save = gensym("save")
-        fail = lambda : """
-%s = Result(%s)
-%s.setValue(None)
-""" % (result, save, result)
-
-        data = """
-%s = %s.getPosition()
-%s
-""" % (save, result, self.pattern.generate_python(result, previous_result, stream, fail))
-        return data
-
+        return PythonGenerator().generate_maybe(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_maybe(self, peg, result, stream, failure, tail, peg_args)
         
@@ -1303,21 +1366,8 @@ class PatternOr(Pattern):
         return "or"
 
     def generate_python(self, result, previous_result, stream, failure):
-        data = ""
-        fail = failure
-        save = gensym("save")
-        for pattern in self.patterns[::-1]:
-            my_result = newResult()
-            data = """
-%s = Result(%s)
-%s
-""" % (result, save, pattern.generate_python(result, previous_result, stream, fail).strip())
-            fail = lambda : data
-        return """
-%s = %s.getPosition()
-%s
-""" % (save, result, data)
-
+        return PythonGenerator().generate_or(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_or(self, peg, result, stream, failure, tail, peg_args)
         
@@ -1344,12 +1394,8 @@ class PatternBind(Pattern):
         return "%s:%s" % (self.variable, self.pattern.generate_bnf())
 
     def generate_python(self, result, previous_result, stream, failure):
-        data = """
-%s
-%s = %s.getValues()
-""" % (self.pattern.generate_python(result, previous_result, stream, failure).strip(), self.variable, result)
-        return data
-
+        return PythonGenerator().generate_bind(self, result, previous_result, stream, failure)
+        
 def PatternUntil(pattern):
     return PatternRepeatMany(PatternSequence([
         PatternNot(pattern),
@@ -1376,18 +1422,8 @@ class PatternRange(Pattern):
         return CppGenerator().generate_range(self, peg, result, stream, failure, tail, peg_args)
         
     def generate_python(self, result, previous_result, stream, failure):
-        letter = gensym("letter")
-        data = """
-%s = %s.get(%s.getPosition())
-if %s in '%s':
-    %s.nextPosition()
-    %s.setValue(%s)
-else:
-    %s
-""" % (letter, stream, result, letter, self.range, result, result, letter, indent(failure()))
-
-        return data
-
+        return PythonGenerator().generate_range(self, result, previous_result, stream, failure)
+        
 class PatternVerbatim(Pattern):
     def __init__(self, letters, options = None):
         Pattern.__init__(self)
@@ -1420,18 +1456,8 @@ for letter in '%s':
         return data
 
     def generate_python(self, result, previous_result, stream, failure):
-        length = len(self.letters)
-        if special_char(self.letters):
-            length = 1
-        data = """
-if '%s' == %s.get(%s.getPosition(), %s):
-    %s.nextPosition(%s)
-    %s.setValue('%s')
-else:
-    %s
-""" % (self.letters, stream, result, length, result, length, result, self.letters, indent(failure()))
-        return data
-
+        return PythonGenerator().generate_verbatim(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_verbatim(self, peg, result, stream, failure, tail, peg_args)
         
@@ -1495,16 +1521,18 @@ def rule_%s(%s, %s):
         debug = "debug1" in peg.options
 
         def updateChunk(new):
+            var = "column"
+            chunk = chunk_accessor.getChunk(var)
             data = """
 {
-    Column & column = %s.getColumn(%s);
+    Column & %s = %s.getColumn(%s);
     if (%s == 0){
         %s = new %s();
     }
     %s = %s;
     %s.update(%s.getPosition());
 }
-""" % (stream, position, chunk_accessor.getChunk("column"), chunk_accessor.getChunk("column"), chunk_accessor.getType(), chunk_accessor.getValue(chunk_accessor.getChunk("column")), new, stream, new)
+""" % (var, stream, position, chunk, chunk, chunk_accessor.getType(), chunk_accessor.getValue(chunk), new, stream, new)
             return data
 
         hasChunk = """
