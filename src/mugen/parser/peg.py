@@ -627,6 +627,30 @@ if %s == None:
 
         return data
 
+    def generate_eof(me, pattern, result, previous_result, stream, failure):
+        data = """
+if chr(0) == %s.get(%s.getPosition()):
+    %s.nextPosition()
+    %s.setValue(chr(0))
+else:
+    %s
+""" % (stream, result, result, result, indent(failure()))
+        return data
+
+    def generate_sequence(me, pattern, result, previous_result, stream, failure):
+        data = ""
+        for pattern in pattern.patterns:
+            my_result = newResult()
+            data += """
+%s = Result(%s.getPosition())
+%s
+%s.addResult(%s);
+""" % (my_result, result, pattern.generate_python(my_result, result, stream, failure), result, my_result)
+
+        return data + """
+%s.setValue(%s.getLastValue())
+""" % (result, result)
+
 # all the self parameters are named me because the code was originally
 # copied from another class and to ensure that copy/paste errors don't
 # occur I have changed the name from 'self' to 'me'
@@ -1051,15 +1075,8 @@ class PatternEof(Pattern):
         return "<eof>"
 
     def generate_python(self, result, previous_result, stream, failure):
-        data = """
-if chr(0) == %s.get(%s.getPosition()):
-    %s.nextPosition()
-    %s.setValue(chr(0))
-else:
-    %s
-""" % (stream, result, result, result, indent(failure()))
-        return data
-
+        return PythonGenerator().generate_eof(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_eof(self, peg, result, stream, failure, tail, peg_args)
         
@@ -1089,19 +1106,8 @@ class PatternSequence(Pattern):
         return "%s" % " ".join([p.generate_bnf() for p in self.patterns])
 
     def generate_python(self, result, previous_result, stream, failure):
-        data = ""
-        for pattern in self.patterns:
-            my_result = newResult()
-            data += """
-%s = Result(%s.getPosition())
-%s
-%s.addResult(%s);
-""" % (my_result, result, pattern.generate_python(my_result, result, stream, failure), result, my_result)
-
-        return data + """
-%s.setValue(%s.getLastValue())
-""" % (result, result)
-
+        return PythonGenerator().generate_sequence(self, result, previous_result, stream, failure)
+        
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_sequence(self, peg, result, stream, failure, tail, peg_args)
         
