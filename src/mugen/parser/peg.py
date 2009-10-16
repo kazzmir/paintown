@@ -644,13 +644,13 @@ else:
 
     def generate_sequence(me, pattern, result, previous_result, stream, failure):
         data = ""
-        for pattern in pattern.patterns:
+        for apattern in pattern.patterns:
             my_result = newResult()
             data += """
 %s = Result(%s.getPosition())
 %s
 %s.addResult(%s);
-""" % (my_result, result, pattern.generate_python(my_result, result, stream, failure), result, my_result)
+""" % (my_result, result, apattern.generate_python(my_result, result, stream, failure), result, my_result)
 
         return data + """
 %s.setValue(%s.getLastValue())
@@ -710,6 +710,7 @@ else:
 """ % (temp, stream, result, temp, result, temp, result, indent(failure()))
         return data
 
+    # this breaks when the sub-pattern is a PatternSequence, todo: fix it
     def generate_maybe(me, pattern, result, previous_result, stream, failure):
         save = gensym("save")
         fail = lambda : """
@@ -889,6 +890,8 @@ if ('\\0' == %s.get(%s.getPosition())){
             args = invalid
             use_args = []
             arg_num = 0
+
+            fail = False
             for apattern in pattern.patterns:
                 use_args.append("")
                 do_tail = None
@@ -910,6 +913,7 @@ if ('\\0' == %s.get(%s.getPosition())){
                 data.append("""
 %s
 """ % (indent(apattern.generate_cpp(peg, result, stream, failure, do_tail, args).strip())))
+
             return "{\n%s\n}" % indent('\n'.join(["%s\n%s" % (x[0], x[1]) for x in zip(data, use_args)]))
 
     def generate_repeat_once(me, pattern, peg, result, stream, failure, tail, peg_args):
@@ -1064,6 +1068,10 @@ if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
 class Pattern:
     def __init__(self):
         pass
+
+    # only true for the failure class
+    def isFail(self):
+        return False
     
     # true if this pattern is a at the end of a sequence and calls a rule
     def tailRecursive(self, rule):
@@ -1462,10 +1470,11 @@ for letter in '%s':
         return CppGenerator().generate_verbatim(self, peg, result, stream, failure, tail, peg_args)
         
 class Rule:
-    def __init__(self, name, patterns, inline = False, parameters = None):
+    def __init__(self, name, patterns, inline = False, parameters = None, fail = None):
         self.name = name
         self.patterns = patterns
         self.inline = inline
+        self.fail = fail
         self.parameters = parameters
 
     def isInline(self):
@@ -1599,6 +1608,10 @@ return %s;
         vars = "\n".join([declareVar(v) for v in findVars()])
         my_position = "myposition"
 
+        fail_code = ""
+        if self.fail != None:
+            fail_code = self.fail
+
         data = """
 Result rule_%s(Stream & %s, const int %s%s){
     %s
@@ -1607,9 +1620,10 @@ Result rule_%s(Stream & %s, const int %s%s){
     %s
     %s
     %s
+    %s
     return errorResult;
 }
-        """ % (self.name, stream, position, parameters, indent(hasChunk), my_position, position, tail_loop, indent(vars), indent('\n'.join([newPattern(pattern, stream, my_position).strip() for pattern in self.patterns])), indent(updateChunk("errorResult")))
+        """ % (self.name, stream, position, parameters, indent(hasChunk), my_position, position, tail_loop, indent(vars), indent('\n'.join([newPattern(pattern, stream, my_position).strip() for pattern in self.patterns])), indent(updateChunk("errorResult")), fail_code)
 
         return data
 
@@ -2023,8 +2037,9 @@ value = ''.join(values[0])
                         ]),
                         )
                     ),
+                PatternBind("fail", PatternMaybe(PatternRule("failure"))),
                 PatternCode("""
-value = peg.Rule(name, [pattern1] + patterns, inline = (inline != None), parameters = parameters)"""),
+value = peg.Rule(name, [pattern1] + patterns, inline = (inline != None), parameters = parameters, fail = fail)"""),
                 ]),
             ]),
         Rule("pattern_line",[
@@ -2101,6 +2116,15 @@ if ensure != None:
     pattern = peg.PatternEnsure(pattern)
 value = pattern
 """)]),
+            ]),
+        Rule("failure", [
+            PatternSequence([
+                PatternRule("whitespace"),
+                PatternVerbatim("<fail>"),
+                PatternRule("spaces"),
+                PatternBind('code', PatternRule('code')),
+                PatternCode("""value = code.code"""),
+                ]),
             ]),
         Rule("ascii", [
             PatternSequence([

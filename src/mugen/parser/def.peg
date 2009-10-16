@@ -199,6 +199,7 @@ void cleanup(const Value & value){
 
 rules:
 	start = current:{{ value = makeSectionList(); save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; cleanup(value); }}
+            <fail> {{ cleanup(current); }}
     # start = current real_start($1)
     # real_start(c) = blah ... <eof>
     #               | {{ delete c; }} <error>
@@ -264,7 +265,7 @@ rules:
             | "add1"
             | "add"
             | "sub"
-	date = digit+ "." digit+ "." digit+ {{ value = makeDate($1,$2,$3); save(as<Ast::Value*>(value)); }}
+	date = digit+ "." digit+ "." digit+ {{ value = makeDate($1,$3,$5); save(as<Ast::Value*>(value)); }}
 	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); save(as<Ast::String*>(value)); }}
 	number = sign? float_or_integer {{ value = makeNumber($1,$2); save(as<Ast::Value*>(value)); }}
 	inline sign = "+"
