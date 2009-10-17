@@ -27,7 +27,7 @@ public:
 
 	virtual void Quake( int q );
 
-	inline const int getQuake() const {
+	inline int getQuake() const {
 		return quake_time;
 	}
 
@@ -35,44 +35,44 @@ public:
 	virtual void draw( Bitmap * work ) = 0;
 	virtual void addObject( Object * o ) = 0;
 
-	virtual const bool finished() const = 0;
+	virtual bool finished() const = 0;
 
 	virtual void reloadLevel() throw( LoadException ) = 0;
 
-        virtual Script::Engine * const getEngine() const = 0;
+    virtual Script::Engine * getEngine() const = 0;
 
 	/* upper left hand corner of the screen */
 	virtual int getX() = 0;
 	virtual int getY() = 0;
 
-        virtual double ticks(const double in) const;
+    virtual double ticks(const double in) const;
 
-        /* this shouldn't be here */
-        virtual const std::deque<Bitmap*> & getScreenshots() = 0;
+    /* this shouldn't be here */
+    virtual const std::deque<Bitmap*> & getScreenshots() = 0;
 
-        virtual const int levelLength() const = 0;
-        virtual const Block * currentBlock() const = 0;
-        
-        virtual inline const std::vector<Object*> & getObjects() const {
-            return objects;
-        }
+    virtual int levelLength() const = 0;
+    virtual const Block * currentBlock() const = 0;
 
-        /* set to paused */
-        virtual void pause() = 0;
-        /* set to unpaused */
-        virtual void unpause() = 0;
-        /* set to paused if unpaused, or vice-versa */
-        virtual void changePause() = 0;
-        virtual bool isPaused() = 0;
+    virtual inline const std::vector<Object*> & getObjects() const {
+        return objects;
+    }
 
-        /* an object has notified us that it is dying */
-        virtual void dyingObject(const Object & obj);
-        virtual void dyingObject(const Player & obj);
-        
-        /* bleh.. */
-        virtual void addEnemy(Enemy * obj) = 0;
+    /* set to paused */
+    virtual void pause() = 0;
+    /* set to unpaused */
+    virtual void unpause() = 0;
+    /* set to paused if unpaused, or vice-versa */
+    virtual void changePause() = 0;
+    virtual bool isPaused() = 0;
 
-        virtual Object * findObject(int id) = 0;
+    /* an object has notified us that it is dying */
+    virtual void dyingObject(const Object & obj);
+    virtual void dyingObject(const Player & obj);
+
+    /* bleh.. */
+    virtual void addEnemy(Enemy * obj) = 0;
+
+    virtual Object * findObject(int id) = 0;
 
 	virtual int getMaximumZ() = 0;
 	virtual int getMinimumZ() = 0;

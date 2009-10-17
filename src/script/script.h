@@ -40,7 +40,7 @@ namespace Script{
     /* name : name of the library to use (python, lua, ruby, etc)
      * path : path to script to load
      */
-    void newEngine(const std::string & name, const std::string & path);
+    void newEngine(const std::string name, const std::string path);
 
     class NoSuchEngine: public std::exception {
     public:

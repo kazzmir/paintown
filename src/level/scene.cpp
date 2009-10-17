@@ -186,7 +186,7 @@ frontBuffer(NULL){
 
 }
         
-const int Scene::totalLength() const {
+int Scene::totalLength() const {
     int blength = 0;
     for ( deque< Block * >::const_iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
         blength += (*it)->getLength();
@@ -212,7 +212,7 @@ int Scene::getLimit(){
 	return block_length + current_block->getLength();
 }
 
-const int Scene::getFinished() const {
+int Scene::getFinished() const {
 	int finished = current_block->getFinished();
 	if ( finished == -1 ){
 		return -1;
@@ -257,7 +257,7 @@ bool Scene::canContinue( int x ){
  * later on. This is because modifying the world object list during
  * the logic() method will corrupt the iterators.
  */
-void Scene::addEnemy(Enemy * obj){
+void Scene::addEnemy(Enemy * const obj){
     hearts.push_back(obj->getHeart());
     added_objects.push_back(obj);
 }
@@ -328,7 +328,7 @@ void Scene::drawFront( int x, Bitmap * work ){
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
-        atmosphere->drawForeground(work, x * getForegroundParallax());
+        atmosphere->drawForeground(work, (int)(x * getForegroundParallax()));
     }
 
     /* lazily initialize to ensure the buffer is the same size as the bitmap
@@ -444,5 +444,5 @@ Scene::~Scene(){
 		delete *it;
 	}
 	*/
-        Script::newEngine("none", "none");
+    Script::newEngine("none", "none");
 }

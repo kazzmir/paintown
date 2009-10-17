@@ -564,7 +564,7 @@ void Animation::setDamage( const int d ){
 void Animation::upperCase( string & who ){
 	for ( string::size_type q = 0; q < who.length(); q++ )
 		if ( who[q] >= 'a' && who[q] <= 'z' )
-			who[q] = who[q] - 'a' + 'A';
+			who[q] = (char)(who[q] - 'a' + 'A');
 }
 	
 void Animation::setDelay( int _delay ){
@@ -785,14 +785,14 @@ Bitmap * Animation::getFrame( int x ){
 	return frame->pic;
 }
 	
-const int Animation::getWidth() const{
+int Animation::getWidth() const{
 	if ( current_frame )
 		return current_frame->getWidth();
 
 	return 0;
 }
 
-const int Animation::getHeight() const{
+int Animation::getHeight() const{
 	if ( current_frame )
 		return current_frame->getHeight();
 	return 0;
@@ -1104,7 +1104,7 @@ bool Animation::Act(){
 	return false;
 }
 	
-const bool Animation::empty(){
+bool Animation::empty(){
 	return current_event == events.end();
 }
 

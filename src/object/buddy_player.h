@@ -42,11 +42,11 @@ public:
 
 	virtual void deathReset();
 
-	inline const void setInvincible( const bool b ){
+	inline void setInvincible( const bool b ){
 		this->invincible = b;
 	}
 
-	inline const bool isInvincible() const {
+	inline bool isInvincible() const {
 		return this->invincible;
 	}
 

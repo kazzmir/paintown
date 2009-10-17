@@ -259,7 +259,7 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 	} catch( const TokenException & ex ){
 		// cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
 		// delete head;
-		throw LoadException(string("Could not open character file: ") + string(filename) );
+		throw LoadException(string("Could not open character file: ") + string(filename) + " because " + ex.getReason());
 	}
 	string xls = "Load time for ";
 	xls += filename;
@@ -509,13 +509,16 @@ void Character::setMap( const unsigned int x ){
 	if ( current_map >= mapper.size() ){
 		current_map = mapper.size() - 1;
 	}
-	if ( current_map < 0 ){
-		current_map = 0;
-	}
 
-        if (animation_current != NULL){
-            animation_current = getMovement( animation_current->getName() );
-        }
+    /*
+    if ( current_map < 0 ){
+        current_map = 0;
+    }
+    */
+
+    if (animation_current != NULL){
+        animation_current = getMovement( animation_current->getName() );
+    }
 }
 
 /* swap some colors around */
@@ -816,10 +819,11 @@ void Character::died( vector< Object * > & objects ){
 	}
 }
 
+/* use Utils::upcase instead */
 void Character::upperCase( string & who ){
 	for ( string::size_type q = 0; q < who.length(); q++ )
 		if ( who[q] >= 'a' && who[q] <= 'z' )
-			who[q] = who[q] - 'a' + 'A';
+			who[q] = (char)(who[q] - 'a' + 'A');
 }
 	
 const string & Character::getAttackName(){
@@ -969,9 +973,12 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 		moveY( getYVelocity() );
 		moveZ( getZVelocity() );
 	
-		if ( getY() == 0 ){
-			landed( world );
-			setMoving( false );
+        /* moveY ensures that getY() will never be below 0, but we use <=
+         * to make the compiler happy
+         */
+		if (getY() <= 0){
+			landed(world);
+			setMoving(false);
 		}
 	}
 
@@ -1593,12 +1600,14 @@ void Character::draw( Bitmap * work, int rel_x ){
 
 void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
     if (animation_current){
-	Bitmap::transBlender( 0, 0, 0, intensity );
-	if (getFacing() == FACING_RIGHT){ 
-	    animation_current->getCurrentFrame()->drawTransVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
-	} else { 
-	    animation_current->getCurrentFrame()->drawTransHVFlip( (getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
-	}
+        Bitmap::transBlender( 0, 0, 0, intensity );
+        int x = (int)((getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2);
+        int y = (int)(getRZ() + getY());
+        if (getFacing() == FACING_RIGHT){ 
+            animation_current->getCurrentFrame()->drawTransVFlip(x , y, *work);
+        } else { 
+            animation_current->getCurrentFrame()->drawTransHVFlip(x, y, *work );
+        }
     }
 }
 
@@ -1606,7 +1615,7 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
     if (animation_current){
         const Bitmap *bmp = animation_current->getCurrentFrame();
         const double newheight = bmp->getHeight() * scale;
-        Bitmap shade = Bitmap::temporaryBitmap(bmp->getWidth(), fabs(newheight));
+        Bitmap shade = Bitmap::temporaryBitmap(bmp->getWidth(), (int) fabs(newheight));
         bmp->Stretch(shade);
 
         /* Could be slow, but meh, lets do it for now to make it look like a real shadow */
@@ -1625,16 +1634,20 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
         // Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
         Bitmap::multiplyBlender((Bitmap::getRed(color) * 77 + intensity), (Bitmap::getGreen(color) * 154 + intensity), (Bitmap::getBlue(color) * 25 + intensity), i);
         if (scale > 0){
+            int x = (int)(getRX() - rel_x - bmp->getWidth()/2);
+            int y = (int)(getRZ() + getY() * scale);
             if (getFacing() == FACING_RIGHT){ 
-                shade.drawTransVFlip( (getRX() - rel_x) - bmp->getWidth()/2, getRZ()  + (getY() * scale), *work );
+                shade.drawTransVFlip( x, y, *work );
             } else { 
-                shade.drawTransHVFlip( (getRX() - rel_x) - bmp->getWidth()/2, getRZ()  + (getY() * scale), *work );
+                shade.drawTransHVFlip(x, y, *work );
             }
         } else if (scale < 0){
+            int x = (int)((getRX() - rel_x) - bmp->getWidth()/2);
+            int y = (int)((getRZ() - fabs(newheight)) + (getY() * scale));
             if (getFacing() == FACING_RIGHT){ 
-                shade.drawTrans( ((getRX() - rel_x) - bmp->getWidth()/2) + 3, (getRZ() - fabs(newheight)) + (getY() * scale), *work );
+                shade.drawTrans(x + 3, y, *work );
             } else { 
-                shade.drawTransHFlip( ((getRX() - rel_x) - bmp->getWidth()/2) - 3, (getRZ() - fabs(newheight)) + (getY() * scale), *work );
+                shade.drawTransHFlip(x - 3, y, *work );
             }
         }
         Bitmap::drawingMode( Bitmap::MODE_SOLID );

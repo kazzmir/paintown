@@ -59,7 +59,7 @@ struct Message{
 	Message( const Message & m );
 	Message( Socket socket );
 
-	uint16_t id;
+	uint32_t id;
 	uint8_t data[ DATA_SIZE ];
 	uint8_t * position;
 
@@ -91,6 +91,7 @@ void sendAllMessages(const std::vector<Message> & messages, Socket socket);
 void sendAllMessages(const std::vector<Message*> & messages, Socket socket);
 
 int16_t read16( Socket socket );
+int32_t read32( Socket socket );
 void send16( Socket socket, int16_t length );
 std::string readStr( Socket socket, const uint16_t length );
 void sendStr( Socket socket, const std::string & str );

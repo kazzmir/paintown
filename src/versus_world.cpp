@@ -123,7 +123,7 @@ void VersusWorld::act(){
 	objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 }
 	
-const bool VersusWorld::finished() const {
+bool VersusWorld::finished() const {
 	return player1->getHealth() <= 0 || player2->getHealth() <= 0;
 }
 

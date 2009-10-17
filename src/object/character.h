@@ -273,7 +273,7 @@ public:
 		return speed;
 	}
 
-	inline virtual int getCurrentMap() const {
+	inline virtual unsigned int getCurrentMap() const {
 		return current_map;
 	}
 
@@ -454,9 +454,9 @@ protected:
 
 	unsigned int current_map;
 	/* map from id to map of animations */
-        std::map< int, std::map<std::string,Animation*> > mapper;
-        std::vector< Object * > projectiles;
-        std::vector< BodyPart > body_parts;
+    std::map< int, std::map<std::string,Animation*> > mapper;
+    std::vector< Object * > projectiles;
+    std::vector< BodyPart > body_parts;
 	
 	Sound * die_sound;
 	Sound * landed_sound;

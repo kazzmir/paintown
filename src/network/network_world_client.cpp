@@ -210,7 +210,7 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
 	}
 }
 	
-const bool NetworkWorldClient::finished() const {
+bool NetworkWorldClient::finished() const {
 	return world_finished;
 }
 

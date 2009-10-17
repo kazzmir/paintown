@@ -221,7 +221,7 @@ namespace PaintownCharacter{
         return Py_None;
     }
 
-    static PyObject * getDouble(PyObject * dummy, PyObject * args, const double (Object::*get)() const){
+    static PyObject * getDouble(PyObject * dummy, PyObject * args, double (Object::*get)() const){
         PyObject * cobject;
         if (PyArg_ParseTuple(args, "O", &cobject)){
             Object * object = (Object*) PyCObject_AsVoidPtr(cobject);

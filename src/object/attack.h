@@ -18,32 +18,32 @@ public:
 
 	Attack & operator = ( const Attack & a );
 
-	const int getXLen() const;
-	const int getYLen() const;
+	int getXLen() const;
+	int getYLen() const;
 
 public:
 
-	inline const int getX1() const {
+	inline int getX1() const {
 		return x1;
 	}
 	
-	inline const int getX2() const {
+	inline int getX2() const {
 		return x2;
 	}
 	
-	inline const int getY1() const {
+	inline int getY1() const {
 		return y1;
 	}
 	
-	inline const int getY2() const {
+	inline int getY2() const {
 		return y2;
 	}
 
-	inline const int getDamage() const {
+	inline int getDamage() const {
 		return damage;
 	}
 
-	inline const int getForce() const {
+	inline int getForce() const {
 		return force;
 	}
 

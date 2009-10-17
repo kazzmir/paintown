@@ -8,7 +8,7 @@ namespace ObjectMessages{
         Moved = 0,
         Collided = 1,
     };
-};
+}
 
 namespace CharacterMessages{
     enum NetworkCodes{
@@ -20,13 +20,13 @@ namespace CharacterMessages{
         Ungrab = 25,
         ShowName = 26,
     };
-};
+}
 
 namespace PlayerMessages{
     enum NetworkCodes{
         Score = 27,
     };
-};
+}
 
 /* used for sending over the network */
 

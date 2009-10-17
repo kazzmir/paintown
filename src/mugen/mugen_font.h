@@ -31,13 +31,13 @@ public:
     
     // Implement Font stuff
     virtual void setSize( const int x, const int y );
-    virtual const int getSizeX() const;
-    virtual const int getSizeY() const;
+    virtual int getSizeX() const;
+    virtual int getSizeY() const;
     
-    virtual const int textLength( const char * text ) const;
+    virtual int textLength( const char * text ) const;
 
-    virtual const int getHeight( const std::string & str ) const;
-    virtual const int getHeight() const;
+    virtual int getHeight( const std::string & str ) const;
+    virtual int getHeight() const;
 
     virtual void printf( int x, int y, int color, const Bitmap & work, const std::string & str, int marker, ... ) const;
     virtual void printf( int x, int y, int xSize, int ySize, int color, const Bitmap & work, const std::string & str, int marker, ... ) const;

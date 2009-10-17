@@ -35,13 +35,13 @@ public:
 	virtual ~Item();
 
 protected:
-	Stimulation * const copyStimulation() const;
+	Stimulation * copyStimulation() const;
 
 	inline const std::string getPath() const {
 		return path;
 	}
 
-	inline Stimulation * const getStimulation() const {
+	inline Stimulation * getStimulation() const {
 		return stimulation;
 	}
 

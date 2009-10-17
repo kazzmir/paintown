@@ -35,7 +35,7 @@ namespace Script{
     }
 
     /* sets the global engine */
-    void newEngine(const string & name, const string & path){
+    void newEngine(const string name, const string path){
 #ifdef HAVE_PYTHON
         if (name == "python"){
             new PythonEngine(path);

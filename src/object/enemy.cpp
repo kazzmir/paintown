@@ -132,6 +132,11 @@ static double velocity( double x1, double x2, double speed ){
 	// moveX( want_x > getX() ? getSpeed() : -getSpeed() );
 }
 
+static bool closeFloat(double a, double b){
+    const double epsilon = 0.0001;
+    return fabs(a-b) < epsilon;
+}
+
 /* returns the closest object in the X plane */
 const Object * Enemy::findClosest( const vector< Object * > & enemies ){
 	Object * e = NULL;
@@ -264,7 +269,7 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 		// cout << "Speed: " << getSpeed() << endl;
 		if ( want_path ){
 		// if ( want_x != getX() || want_z != getZ() ){
-			if ( want_x == getX() && want_z == getZ() ){
+			if ( closeFloat(want_x, getX()) && closeFloat(want_z, getZ()) ){
 				want_path = false;
 			}
 
@@ -273,7 +278,7 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 			// animation_current = movements[ "walk" ];
 			animation_current = getMovement( "walk" );
 			world->addMessage( animationMessage() );
-			if ( want_x != getX() ){
+			if ( !closeFloat(want_x, getX()) ){
 				int dir = 1;
 				if ( getFacing() == Object::FACING_LEFT ){
 					dir = -1;
@@ -287,7 +292,7 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 				moved = true;
 			}
 
-			if ( want_z != getZ() ){
+			if ( !closeFloat(want_z, getZ()) ){
 				/*
 				if ( Global::globalDebug() ){
 					cout << "Z = " << getZ() << " velocity = " << velocity( getZ(), want_z, getSpeed() ) << endl;

@@ -23,7 +23,7 @@ DrawEffect * DrawCountdownEffect::copy(const Character * owner) const {
     return new DrawCountdownEffect(effect->copy(owner), countdown);
 }
 
-const int DrawCountdownEffect::getLevel() const {
+int DrawCountdownEffect::getLevel() const {
     return effect->getLevel();
 }
 

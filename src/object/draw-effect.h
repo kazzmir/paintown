@@ -13,7 +13,7 @@ public:
     
     virtual ~DrawEffect();
 
-    virtual inline const int getLevel() const {
+    virtual inline int getLevel() const {
         return level;
     }
 

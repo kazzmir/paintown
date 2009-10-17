@@ -48,7 +48,8 @@ ObjectNonAttack( actor ){
 	animation->reset();
 	*/
 	for ( vector< Animation * >::const_iterator it = actor.animations.begin(); it != actor.animations.end(); it++ ){
-		animations.push_back( new Animation( **it, 0 ) );
+        const Animation & animation = **it;
+		animations.push_back( new Animation(animation, 0 ) );
 	}
 	current_animation = animations[ 0 ];
 }

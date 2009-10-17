@@ -15,7 +15,7 @@ public:
 
 	virtual void act();
 	
-	virtual const bool finished() const;
+	virtual bool finished() const;
 	
 	virtual int getMaximumZ();
 	virtual int getMinimumZ();

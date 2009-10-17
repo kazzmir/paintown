@@ -131,14 +131,14 @@ void MugenFont::setSize( const int x, const int y ){
         return;
     }
 }
-const int MugenFont::getSizeX() const{
+int MugenFont::getSizeX() const{
     return width;
 }
-const int MugenFont::getSizeY() const{
+int MugenFont::getSizeY() const{
     return height;
 }
 
-const int MugenFont::textLength( const char * text ) const{
+int MugenFont::textLength( const char * text ) const{
     std::string str(text);
     int size =0;
     for (unsigned int i = 0; i < str.size(); ++i){
@@ -153,12 +153,12 @@ const int MugenFont::textLength( const char * text ) const{
     return size;
 }
 
-const int MugenFont::getHeight( const string & str ) const{
+int MugenFont::getHeight( const string & str ) const{
     // What? I guess this is for freetype?
     return getHeight();
 }
 
-const int MugenFont::getHeight() const{
+int MugenFont::getHeight() const{
     return height;
 }
     

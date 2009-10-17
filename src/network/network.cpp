@@ -47,7 +47,7 @@ Message & Message::operator=( const Message & m ){
 
 Message::Message( Socket socket ){
 	position = data;
-	id = read16( socket );
+	id = read32( socket );
 	readBytes( socket, data, DATA_SIZE );
 	int str = read16( socket );
 	if ( str != -1 ){
@@ -60,7 +60,7 @@ Message::Message( Socket socket ){
 }
 
 uint8_t * Message::dump( uint8_t * buffer ) const {
-	*(uint16_t *) buffer = id;
+	*(uint32_t *) buffer = id;
 	buffer += sizeof(uint16_t);
 	memcpy( buffer, data, DATA_SIZE );
 	buffer += DATA_SIZE;
@@ -221,10 +221,21 @@ static string getHawkError(){
 	       string( nlGetSystemErrorStr( nlGetSystemError() ) );
 }
 
+template<typename X>
+static X readX(Socket socket){
+	uint8_t data[ sizeof(X) ];
+	readBytes( socket, data, sizeof(X) ); 
+	return *(X *)data;
+}
+
 int16_t read16( Socket socket ){
+    return readX<uint16_t>(socket);
+    /*
 	uint8_t data[ sizeof(uint16_t) ];
 	readBytes( socket, data, sizeof(uint16_t) ); 
 	return *(uint16_t *)data;
+    */
+
 	/*
 	uint16_t b;
 	int read = nlRead( socket, &b, sizeof(int16_t) );
@@ -233,6 +244,10 @@ int16_t read16( Socket socket ){
 	}
 	return b;
 	*/
+}
+
+int32_t read32( Socket socket ){
+    return readX<uint32_t>(socket);
 }
 
 void send16( Socket socket, int16_t bytes ){

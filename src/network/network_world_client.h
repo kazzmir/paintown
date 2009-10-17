@@ -38,7 +38,7 @@ public:
 	bool isRunning();
 	void stopRunning();
 	
-	virtual const bool finished() const;
+	virtual bool finished() const;
 
 protected:
 

@@ -32,17 +32,17 @@ public:
 	void drawFront( int x, Bitmap * work );
 	void drawBack( int x, Bitmap * work );
 
-	const int getFinished() const;
+	int getFinished() const;
 
-	inline const int getMinimumZ() const {
+	inline int getMinimumZ() const {
 		return minimum_z;
 	}
 
-	inline const int getMaximumZ() const {
+	inline int getMaximumZ() const {
 		return maximum_z;
 	}
 
-	inline const int getBlock() const {
+	inline int getBlock() const {
 		return blockNumber;
 	}
 
@@ -50,7 +50,7 @@ public:
         return current_block;
     }
 
-    void addEnemy(Enemy * obj);
+    void addEnemy(Enemy * const obj);
 
 	void advanceBlocks( int n );
 
@@ -58,19 +58,19 @@ public:
         return atmospheres;
     }
 
-    const int totalLength() const;
+    int totalLength() const;
 
 	int getLimit();
 	void act( int min_x, int max_x, std::vector< Object * > * objects );
 
-	~Scene();
+	virtual ~Scene();
 
 protected:
 
 	/* true if the scene the next block is ready */
 	bool canContinue( int x );
 
-	inline const double getBackgroundParallax() const {
+	inline double getBackgroundParallax() const {
 		return backgroundParallax;
 	}
 
@@ -78,7 +78,7 @@ protected:
 		backgroundParallax = b;
 	}
 
-	inline const double getForegroundParallax() const {
+	inline double getForegroundParallax() const {
 		return foregroundParallax;
 	}
 
@@ -108,17 +108,17 @@ protected:
 	Bitmap * background;
 	Bitmap * arrow;
 	int arrow_blink;
-        std::vector< int > order;
-	// vector< Panel * > front_panels;
-	// vector< Bitmap * > back_panels;
-        std::vector< Bitmap * > front_panels;
-        std::map< int, Panel * > panels;
+    std::vector< int > order;
+    // vector< Panel * > front_panels;
+    // vector< Bitmap * > back_panels;
+    std::vector< Bitmap * > front_panels;
+    std::map< int, Panel * > panels;
 
-        std::deque< Block * > level_blocks;
-        std::vector<Block*> old_level_blocks;
+    std::deque< Block * > level_blocks;
+    std::vector<Block*> old_level_blocks;
 
-        std::vector< Heart * > hearts;
-        std::vector<Object*> added_objects;
+    std::vector< Heart * > hearts;
+    std::vector<Object*> added_objects;
 
 	int scene_length;
 

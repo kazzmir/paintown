@@ -17,7 +17,7 @@ bool DrawUntilEffect::act(){
     return end(effect->getOwner());
 }
 
-const int DrawUntilEffect::getLevel() const {
+int DrawUntilEffect::getLevel() const {
     return effect->getLevel();
 }
 

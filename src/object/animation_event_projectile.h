@@ -25,11 +25,11 @@ protected:
 		this->y = y;
 	}
 
-	inline const int getX() const {
+	inline int getX() const {
 		return x;
 	}
 
-	inline const int getY() const {
+	inline int getY() const {
 		return y;
 	}
 
@@ -41,11 +41,11 @@ protected:
 		this->dy = dy;
 	}
 
-	inline const double getDX() const {
+	inline double getDX() const {
 		return this->dx;
 	}
 	
-	inline const double getDY() const {
+	inline double getDY() const {
 		return this->dy;
 	}
 
@@ -53,7 +53,7 @@ protected:
 		this->life = life;
 	}
 
-	inline const int getLife() const {
+	inline int getLife() const {
 		return life;
 	}
 

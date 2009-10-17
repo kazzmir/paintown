@@ -778,13 +778,13 @@ void MugenStage::draw( Bitmap * work ){
     render( work );
 }
 void MugenStage::addObject( Object * o ){ /* Does nothing */ }
-const bool MugenStage::finished() const { return false; }
+bool MugenStage::finished() const { return false; }
 void MugenStage::reloadLevel() throw( LoadException ){ 
     cleanup();
     loaded = false;
     load(); 
 }
-Script::Engine * const MugenStage::getEngine() const { return NULL; }
+Script::Engine * MugenStage::getEngine() const { return NULL; }
 /* upper left hand corner of the screen */
 int MugenStage::getX(){
     return (int)getCameraX();
@@ -798,7 +798,7 @@ int MugenStage::getY(){
 const deque<Bitmap*> & MugenStage::getScreenshots(){
     return garbage;
 }
-const int MugenStage::levelLength() const { return 0; }
+int MugenStage::levelLength() const { return 0; }
 // Since this isn't a paintown level, I guess block wouldn't apply
 const Block * MugenStage::currentBlock() const { return NULL; }
 /* bleh.. */

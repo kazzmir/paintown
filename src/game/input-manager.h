@@ -16,7 +16,7 @@ public:
     /* main has one instance of this and thats it.
      * should the janitor have the reference instead?
      */
-    friend int ::paintown_main(int, char**);
+    friend int paintown_main(int, char**);
 
     static std::vector<PaintownInput> getInput(const Configuration & configuration, const int facing);
     static void poll();

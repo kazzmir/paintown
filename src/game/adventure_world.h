@@ -33,7 +33,7 @@ public:
 
 	virtual ~AdventureWorld();
 
-	inline const int getQuake() const {
+	inline int getQuake() const {
 		return quake_time;
 	}
 
@@ -41,31 +41,31 @@ public:
 	virtual void draw( Bitmap * work );
 	virtual void addObject( Object * o );
 
-	virtual const bool finished() const;
+	virtual bool finished() const;
 
 	virtual void reloadLevel() throw( LoadException );
 
-        virtual Script::Engine * const getEngine() const;
+    virtual Script::Engine * getEngine() const;
 
 	/* upper left hand corner of the screen */
 	virtual int getX();
 	virtual int getY();
 
-        virtual void pause();
-        virtual void unpause();
-        virtual void changePause();
-        virtual bool isPaused();
+    virtual void pause();
+    virtual void unpause();
+    virtual void changePause();
+    virtual bool isPaused();
 
-        virtual const std::deque<Bitmap*> & getScreenshots();
+    virtual const std::deque<Bitmap*> & getScreenshots();
 
-        virtual const int levelLength() const;
-        virtual const Block * currentBlock() const;
-        
-        virtual inline const std::vector<Object*> & getObjects() const {
-            return objects;
-        }
-        
-        void addEnemy(Enemy * obj);
+    virtual int levelLength() const;
+    virtual const Block * currentBlock() const;
+
+    virtual inline const std::vector<Object*> & getObjects() const {
+        return objects;
+    }
+
+    void addEnemy(Enemy * obj);
 
 	virtual void doScene( int min_x, int max_x );
 
@@ -104,17 +104,17 @@ protected:
 
 	virtual void doLogic();
 
-	virtual const bool isPlayer( Object * o ) const;
+	virtual bool isPlayer( Object * o ) const;
 
-        inline const bool shouldTakeScreenshot() const {
-            return takeAScreenshot;
-        }
+    inline bool shouldTakeScreenshot() const {
+        return takeAScreenshot;
+    }
 
-        inline void takeScreenshot(){
-            takeAScreenshot = true;
-        }
+    inline void takeScreenshot(){
+        takeAScreenshot = true;
+    }
 
-        virtual void doTakeScreenshot(Bitmap * work);
+    virtual void doTakeScreenshot(Bitmap * work);
 
 protected:
 	std::vector< PlayerTracker > players;

@@ -65,7 +65,7 @@ stimulation( item.copyStimulation() ){
 	setZ( item.getZ() );
 }
 	
-Stimulation * const Item::copyStimulation() const {
+Stimulation * Item::copyStimulation() const {
 	return getStimulation()->copy();
 }
 	

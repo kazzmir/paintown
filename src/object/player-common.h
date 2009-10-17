@@ -14,7 +14,7 @@ public:
 
     virtual void increaseScore(int much);
 
-    virtual inline const unsigned int getScore() const {
+    virtual inline unsigned int getScore() const {
         return score;
     }
 

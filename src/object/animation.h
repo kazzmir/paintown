@@ -68,7 +68,7 @@ public:
 	}
 
 	/* returns true if the animation has finished */
-	const bool empty();
+	bool empty();
 
 	/* reset:
 	 * Make the bitmap pointer point to the first bitmap in the sequence
@@ -103,12 +103,12 @@ public:
 	/* getWidth:
 	 * Gets the width of the current frame
 	 */
-	const int getWidth() const;
+	int getWidth() const;
 
 	/* getHeight:
 	 * Gets the height of the current frame
 	 */
-	const int getHeight() const;
+	int getHeight() const;
 
 	/* setX, setY, setZ:
 	 * Sets the owner's( some object ) X,Y or Z coordinate
@@ -137,11 +137,11 @@ public:
 		shadowY = y;
 	}
 
-	inline const int getShadowX() const {
+	inline int getShadowX() const {
 		return shadowX;
 	}
 	
-	inline const int getShadowY() const {
+	inline int getShadowY() const {
 		return shadowY;
 	}
 
@@ -155,11 +155,11 @@ public:
 		offset_y = y;
 	}
 
-	inline const int getOffsetX(){
+	inline int getOffsetX(){
 		return offset_x;
 	}
 
-	inline const int getOffsetY(){
+	inline int getOffsetY(){
 		return offset_y;
 	}
 
@@ -182,11 +182,11 @@ public:
 	/* isAttack:
 	 * True if this animation is an attacking sequence
 	 */
-	inline const bool isAttack() const{
+	inline bool isAttack() const{
 		return is_attack;
 	}
 
-	inline const bool isCommisioned() const {
+	inline bool isCommisioned() const {
 		return commision;
 	}
 
@@ -194,7 +194,7 @@ public:
 		commision = x;
 	}
 
-	inline const int getRange() const {
+	inline int getRange() const {
 		return range;
 	}
 
@@ -205,7 +205,7 @@ public:
 	/* getStatus:
 	 * Returns the status
 	 */
-	inline const int getStatus() const{
+	inline int getStatus() const{
 		return status;
 	}
 
@@ -225,7 +225,7 @@ public:
 		attack = a;
 	}
 
-	inline const double getMinZDistance() const {
+	inline double getMinZDistance() const {
 		return minZDistance;
 	}
 
@@ -248,12 +248,12 @@ public:
 	void setFrame( const std::string & path );
 	void setFrame( const int fr );
 	void setBBox( int x1, int y1, int x2, int y2 );
-        virtual void setTrails(const int produce, const int life);
+    virtual void setTrails(const int produce, const int life);
 	// void setAttack( int x1, int y1, int x2, int y2 );
 	void Delay();
 	void nextTicket();
 
-        virtual AnimationTrail * makeTrail(const int x, const int y, const int facing, const int life) const;
+    virtual AnimationTrail * makeTrail(const int x, const int y, const int facing, const int life) const;
 
 	int getDamage() const;
 	void setDamage( const int d );

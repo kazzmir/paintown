@@ -9,7 +9,7 @@ public:
     virtual void draw(int x, Bitmap * work);
     virtual bool act();
     virtual DrawEffect * copy(const Character * owner) const;
-    virtual const int getLevel() const;
+    virtual int getLevel() const;
     virtual ~DrawCountdownEffect();
 protected:
     DrawEffect * const effect;

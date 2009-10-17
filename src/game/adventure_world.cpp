@@ -106,7 +106,7 @@ AdventureWorld::~AdventureWorld(){
         }
 }
         
-Script::Engine * const AdventureWorld::getEngine() const {
+Script::Engine * AdventureWorld::getEngine() const {
     return Script::getEngine();
     /*
     if (scene){
@@ -192,7 +192,7 @@ void AdventureWorld::deleteObjects( vector< Object * > * objects ){
 }
 
 /* true if the player has crossed the finish line */
-const bool AdventureWorld::finished() const {
+bool AdventureWorld::finished() const {
 	int f = scene->getFinished();
 	if ( players.size() > 0 ){
 		for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
@@ -207,7 +207,7 @@ const bool AdventureWorld::finished() const {
 	}
 }
 	
-const bool AdventureWorld::isPlayer( Object * o ) const {
+bool AdventureWorld::isPlayer( Object * o ) const {
     for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
         if ( it->player == o ){
             return true;
@@ -247,7 +247,7 @@ const Block * AdventureWorld::currentBlock() const {
     return scene->currentBlock();
 }
         
-const int AdventureWorld::levelLength() const {
+int AdventureWorld::levelLength() const {
     if (scene == NULL){
         Global::debug(-1) << "*BUG* Scene is null" << endl;
         exit(1);
