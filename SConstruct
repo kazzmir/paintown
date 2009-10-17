@@ -281,7 +281,9 @@ def getEnvironment():
         env['CXX'] = 'icpc'
         # '-Werror-all', '-Weffc++'
         env.Append(CCFLAGS = ['-wd981'],
-                   CXXFLAGS = ['-wd981', '-wd271', '-wd383', '-wd869'])
+                   CXXFLAGS = ['-wd981', '-wd271',
+                               '-wd383', '-wd869',
+                               '-wd1599'])
         return env
     def raw():
         if isCygwin():

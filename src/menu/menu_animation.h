@@ -42,7 +42,7 @@ class MenuFrame{
 };
 
 class MenuAnimation{
-    public:
+public:
 	MenuAnimation(Token *token) throw (LoadException);
 	virtual ~MenuAnimation();
 	// Logic
@@ -52,10 +52,10 @@ class MenuAnimation{
 	virtual void backFrame();
 	
 	inline void reset(){ if (allowReset){ currentFrame = 0; } }
-	inline const int getID() const { return id; }
-	inline const int getLocation() const { return location; }
+	inline int getID() const { return id; }
+	inline int getLocation() const { return location; }
 	
-    private:
+private:
 	int id;
 	int location;
 	int ticks;

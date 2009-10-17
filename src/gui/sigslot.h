@@ -117,8 +117,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 // Modded to add in specific slot disconnections 01/24/2007
 // Added in stuff to be inclusive to saggui, else check out the comments below on line 148
 
-#ifndef SIGSLOT_H__
-#define SIGSLOT_H__
+#ifndef paintown_SIGSLOT_H__
+#define paintown_SIGSLOT_H__
 
 #include <set>
 #include <list>
@@ -2142,7 +2142,7 @@ namespace sigslot {
 	};
 	
 	template<class mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
-	class SAGGUI_EXPORT signal0 : public _signal_base0<mt_policy>, has_signals<mt_policy>
+	class SAGGUI_EXPORT signal0 : public _signal_base0<mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 	typedef typename _signal_base0<mt_policy>::connections_list::iterator iterator;
@@ -2273,7 +2273,7 @@ namespace sigslot {
 	};
 
 	template<class arg1_type, class mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
-	class SAGGUI_EXPORT signal1 : public _signal_base1<arg1_type, mt_policy>, has_signals<mt_policy>
+	class SAGGUI_EXPORT signal1 : public _signal_base1<arg1_type, mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 		typedef typename std::list<has_signals<mt_policy>*>::iterator sig_iterator;
@@ -2410,7 +2410,7 @@ namespace sigslot {
 	};
 
 	template<class arg1_type, typename arg2_type, typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
-	class SAGGUI_EXPORT signal2 : public _signal_base2<arg1_type, arg2_type, mt_policy>, has_signals<mt_policy>
+	class SAGGUI_EXPORT signal2 : public _signal_base2<arg1_type, arg2_type, mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 		typedef typename std::list<has_signals<mt_policy>*>::iterator sig_iterator;
@@ -2543,7 +2543,7 @@ namespace sigslot {
 	};
 
 	template<class arg1_type, typename arg2_type, typename arg3_type, typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
-	class SAGGUI_EXPORT signal3 : public _signal_base3<arg1_type, arg2_type, arg3_type, mt_policy>, has_signals<mt_policy>
+	class SAGGUI_EXPORT signal3 : public _signal_base3<arg1_type, arg2_type, arg3_type, mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 		typedef typename std::list<has_signals<mt_policy>*>::iterator sig_iterator;
@@ -2678,7 +2678,7 @@ namespace sigslot {
 
 	template<class arg1_type, class arg2_type, class arg3_type, class arg4_type, class mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 	class SAGGUI_EXPORT signal4 : public _signal_base4<arg1_type, arg2_type, arg3_type,
-		arg4_type, mt_policy>, has_signals<mt_policy>
+		arg4_type, mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 		typedef typename std::list<has_signals<mt_policy>*>::iterator sig_iterator;
@@ -2814,7 +2814,7 @@ namespace sigslot {
 	template<class arg1_type, class arg2_type, class arg3_type, class arg4_type,
 	class arg5_type, class mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 	class SAGGUI_EXPORT signal5 : public _signal_base5<arg1_type, arg2_type, arg3_type,
-		arg4_type, arg5_type, mt_policy>, has_signals<mt_policy>
+		arg4_type, arg5_type, mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 		typedef typename std::list<has_signals<mt_policy>*>::iterator sig_iterator;
@@ -2955,7 +2955,7 @@ namespace sigslot {
 	template<class arg1_type, class arg2_type, class arg3_type, class arg4_type,
 	class arg5_type, class arg6_type, class mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 	class SAGGUI_EXPORT signal6 : public _signal_base6<arg1_type, arg2_type, arg3_type,
-		arg4_type, arg5_type, arg6_type, mt_policy>, has_signals<mt_policy>
+		arg4_type, arg5_type, arg6_type, mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 		typedef typename std::list<has_signals<mt_policy>*>::iterator sig_iterator;
@@ -3098,7 +3098,7 @@ namespace sigslot {
 	template<class arg1_type, class arg2_type, class arg3_type, class arg4_type,
 	class arg5_type, class arg6_type, class arg7_type, class mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 	class SAGGUI_EXPORT signal7 : public _signal_base7<arg1_type, arg2_type, arg3_type,
-		arg4_type, arg5_type, arg6_type, arg7_type, mt_policy>, has_signals<mt_policy>
+		arg4_type, arg5_type, arg6_type, arg7_type, mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 		typedef typename std::list<has_signals<mt_policy>*>::iterator sig_iterator;
@@ -3242,7 +3242,7 @@ namespace sigslot {
 	template<class arg1_type, class arg2_type, class arg3_type, class arg4_type,
 	class arg5_type, class arg6_type, class arg7_type, class arg8_type, class mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 	class SAGGUI_EXPORT signal8 : public _signal_base8<arg1_type, arg2_type, arg3_type,
-		arg4_type, arg5_type, arg6_type, arg7_type, arg8_type, mt_policy>, has_signals<mt_policy>
+		arg4_type, arg5_type, arg6_type, arg7_type, arg8_type, mt_policy>, public has_signals<mt_policy>
 	{
 	public:
 		typedef typename std::list<has_signals<mt_policy>*>::iterator sig_iterator;
@@ -3384,9 +3384,6 @@ namespace sigslot {
 		}
 	};
 
-}; // namespace sigslot
+} // namespace sigslot
 
 #endif // SIGSLOT_H__
-
-
- 	  	 

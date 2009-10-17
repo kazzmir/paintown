@@ -72,6 +72,7 @@ image( NULL ){
 
 			// }
 
+        /* catch exception?? */
 		} catch( const exception & ex ){
 			// delete head;
 			n->print(" ");

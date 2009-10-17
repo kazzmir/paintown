@@ -5,6 +5,7 @@
 
 class Bitmap;
 
+/* should wrap this in a namespace, like Mugen */
 enum FadeType{
     FADEIN = 0,
     FADEOUT,
@@ -26,16 +27,16 @@ public:
 	// Fade to whatever state it is at
 	virtual void draw(Bitmap *bmp);
 	
-	inline const FadeType getState() const { return currentState; }
+	inline FadeType getState() const { return currentState; }
 	inline void setFadeInTime(const int time){ fadeInTime = time; }
 	inline void setFadeOutTime(const int time){ fadeOutTime = time; }
-	inline const int getFadeInTime() const { return fadeInTime; }
-	inline const int getFadeOutTime() const { return fadeOutTime; }
+	inline int getFadeInTime() const { return fadeInTime; }
+	inline int getFadeOutTime() const { return fadeOutTime; }
 	inline void setFadeInColor( int c ){ fadeInColor = c; }
-	inline const int getFadeInColor() const { return fadeInColor; }
+	inline int getFadeInColor() const { return fadeInColor; }
 	inline void setFadeOutColor( int c ){ fadeInColor = c; }
-	inline const int getFadeOutColor() const { return fadeInColor; }
-    private:
+	inline int getFadeOutColor() const { return fadeInColor; }
+private:
 	
 	FadeType currentState;
 	FadeType lastState;

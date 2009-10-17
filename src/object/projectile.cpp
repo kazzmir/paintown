@@ -124,14 +124,17 @@ void Projectile::draw( Bitmap * work, int rel_x ){
 
 void Projectile::drawReflection(Bitmap * work, int rel_x, int intensity){
     if (currentAnimation){
-	Bitmap::transBlender( 0, 0, 0, intensity );
-	Bitmap::drawingMode( Bitmap::MODE_TRANS );
-	if (getFacing() == FACING_RIGHT){ 
-	    currentAnimation->getCurrentFrame()->drawTransVFlip( (getRX() - rel_x) - currentAnimation->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
-	} else { 
-	    currentAnimation->getCurrentFrame()->drawTransHVFlip( (getRX() - rel_x) - currentAnimation->getCurrentFrame()->getWidth()/2, getRZ() + getY(), *work );
-	}
-	Bitmap::drawingMode( Bitmap::MODE_SOLID );
+        Bitmap::transBlender( 0, 0, 0, intensity );
+        Bitmap::drawingMode( Bitmap::MODE_TRANS );
+
+        int x = (int)((getRX() - rel_x) - currentAnimation->getCurrentFrame()->getWidth()/2);
+        int y = (int)(getRZ() + getY());
+        if (getFacing() == FACING_RIGHT){ 
+            currentAnimation->getCurrentFrame()->drawTransVFlip(x, y, *work);
+        } else { 
+            currentAnimation->getCurrentFrame()->drawTransHVFlip(x, y, *work);
+        }
+        Bitmap::drawingMode( Bitmap::MODE_SOLID );
     }
 }
 

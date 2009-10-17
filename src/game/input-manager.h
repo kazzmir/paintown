@@ -28,7 +28,8 @@ public:
         }
         /* just crash hard.. who cares */
         *(char *)0 = 0;
-        return *(typename InputMap<X>::Output*)0;
+        /* make the compiler happy about returning something */
+        return *(typename InputMap<X>::Output*)1;
     }
 
     template <typename X>
