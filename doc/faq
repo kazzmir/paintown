@@ -1,0 +1,23 @@
+Q. What systems is paintown known to work on?
+A. Tested on
+  linux:
+    gentoo 2008 32/64 bit
+    ubuntu 8.04/9.04
+  windows xp
+  osx 10.4
+  olpc
+
+Q. What hardware is required to run paintown?
+A. ~120 megabytes of ram
+   ~20 megabytes of hard drive space
+   modest graphics card
+   modest sound card
+   keyboard or joystick
+
+Q. What compilation environments can be used to compile paintown?
+A. Compiled with
+  [linux] gcc (Ubuntu 4.3.3-5ubuntu4)
+  [linux] gcc (Gentoo 4.3.1-r1 p1.1)
+  [linux] icpc (ICC) 11.1 20090827
+  [windows xp] mingw
+  [osx 10.4] gcc (powerpc-apple-darwin8-gcc-4.0.1)
