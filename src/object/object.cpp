@@ -165,7 +165,7 @@ void Object::moveY( double y ){
 	}
 }
 	
-const int Object::getAlliance() const{
+int Object::getAlliance() const{
 	return alliance;
 }
 	

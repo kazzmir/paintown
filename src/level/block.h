@@ -11,57 +11,57 @@ class Object;
 
 class Block{
 public:
-	Block( Token * tok ) throw( LoadException );
+    Block( Token * tok ) throw( LoadException );
 
-	inline void setLength( const int l ){
-		length = l;
-	}
+    inline void setLength( const int l ){
+        length = l;
+    }
 
-        inline const int getId() const {
-            return id;
-        }
+    inline int getId() const {
+        return id;
+    }
 
-        inline void setId(const int id){
-            this->id = id;
-        }
+    inline void setId(const int id){
+        this->id = id;
+    }
 
-	inline const int getLength() const {
-		return length;
-	}
+    inline int getLength() const {
+        return length;
+    }
 
-	inline const bool isContinuous() const {
-		return continuous;
-	}
+    inline bool isContinuous() const {
+        return continuous;
+    }
 
-	inline void setContinuous( const bool b ){
-		continuous = b;
-	}
+    inline void setContinuous( const bool b ){
+        continuous = b;
+    }
 
-	/* finished is the length the player has to walk
-	 * to complete the level
-	 */
-	inline const int getFinished() const {
-		return finished;
-	}
+    /* finished is the length the player has to walk
+     * to complete the level
+     */
+    inline int getFinished() const {
+        return finished;
+    }
 
-	inline void setFinished( const int f ){
-		finished = f;
-	}
+    inline void setFinished( const int f ){
+        finished = f;
+    }
 
-	bool empty();
+    bool empty();
 
-        std::vector< Heart * > createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, std::vector< Object * > * list );
+    std::vector< Heart * > createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, std::vector< Object * > * list );
 
-	~Block();
+    virtual ~Block();
 
 protected:
-	int length;
-        int id;
-	bool wait;
+    int length;
+    int id;
+    bool wait;
 
-        std::vector< BlockObject * > objects;
-	int finished;
-	bool continuous;
+    std::vector< BlockObject * > objects;
+    int finished;
+    bool continuous;
 };
 
 #endif

@@ -12,7 +12,7 @@ namespace Network{
 NetworkException::~NetworkException() throw (){
 }
 	
-InvalidPortException::InvalidPortException( int port, const string & message ):
+InvalidPortException::InvalidPortException( int port, const string message ):
 NetworkException(""){
 	ostringstream num;
 	num << port;

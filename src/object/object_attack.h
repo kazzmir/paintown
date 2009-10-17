@@ -17,12 +17,12 @@ public:
 	virtual void getAttackCoords( int & x, int & y) = 0;
 	virtual const std::string & getAttackName() = 0;
 
-	virtual const double minZDistance() const = 0;
+	virtual double minZDistance() const = 0;
 
 	/* this object just attached 'something' */
 	virtual void attacked( World * world, Object * something, std::vector< Object * > & objects ) = 0;
 	
-	virtual inline const unsigned int getTicket() const{
+	virtual inline unsigned int getTicket() const{
 		return attack_ticket;
 	}
 

@@ -19,7 +19,7 @@ public:
 		return alias;
 	}
 
-	inline const ObjectFactory::ObjectType getType() const {
+	inline ObjectFactory::ObjectType getType() const {
 		return type;
 	}
 
@@ -35,19 +35,19 @@ public:
 		return stimulationType;
 	}
 
-	inline const int getStimulationValue(){
+	inline int getStimulationValue(){
 		return stimulationValue;
 	}
 
-	inline const int getMap() const {
+	inline int getMap() const {
 		return map;
 	}
 
-	inline const int getAggression() const {
+	inline int getAggression() const {
 		return aggression;
 	}
 
-	inline const int getHealth() const {
+	inline int getHealth() const {
 		return health;
 	}
 
@@ -100,26 +100,26 @@ public:
 		coords_z = z;
 	}
 
-        inline void setId(const int id){
-            this->id = id;
-        }
+    inline void setId(const int id){
+        this->id = id;
+    }
 
-        inline const int getId() const{
-            return id;
-        }
+    inline int getId() const{
+        return id;
+    }
 
-	~BlockObject();
+	virtual ~BlockObject();
 
 protected:
 
 	/* the type of object this is */
-        ObjectFactory::ObjectType type;
+    ObjectFactory::ObjectType type;
 
 	int aggression;
 
-        std::string name;
-        std::string alias;
-        std::string path;
+    std::string name;
+    std::string alias;
+    std::string path;
 
 	/* the sprite to map to */
 	int map;
@@ -127,9 +127,9 @@ protected:
 	int health;
 
 	int coords_x, coords_z;
-        int id;
+    int id;
 
-        std::string stimulationType;
+    std::string stimulationType;
 	int stimulationValue;
 };
 

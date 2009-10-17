@@ -21,8 +21,8 @@ public:
 	virtual Object * copy();
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
+	virtual int getWidth() const;
+	virtual int getHeight() const;
 	virtual Network::Message getCreateMessage();
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
@@ -34,7 +34,7 @@ protected:
 	int angle;
 	int fade;
 	Bitmap * image;
-        std::vector< Point > blood;
+    std::vector< Point > blood;
 };
 
 #endif

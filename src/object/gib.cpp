@@ -53,11 +53,11 @@ bool Gib::isGettable(){
 	return false;
 }
 
-const int Gib::getWidth() const {
+int Gib::getWidth() const {
 	return 1;
 }
 
-const int Gib::getHeight() const {
+int Gib::getHeight() const {
 	return 1;
 }
 	

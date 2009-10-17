@@ -103,7 +103,7 @@ public:
 	 */
 	virtual ECollide * getCollide() const;
 
-	virtual const double currentDamage() const {
+	virtual double currentDamage() const {
 		return damage;
 	}
 
@@ -142,21 +142,21 @@ public:
 	/* getWidth:
 	 * Returns the width of the object
 	 */
-	virtual const int getWidth() const = 0;
+	virtual int getWidth() const = 0;
 
 	/* getHeight:
 	 * Returns the height of the object
 	 */
-	virtual const int getHeight() const = 0;
+	virtual int getHeight() const = 0;
 
 	/* getRX:
 	 * Returns the absolute X position of the object
 	 */
-	virtual inline const int getRX() const {
+	virtual inline int getRX() const {
 		return (int) getX();
 	}
 
-	virtual inline const int getRZ() const {
+	virtual inline int getRZ() const {
 		return (int) getZ();
 	}
 
@@ -172,17 +172,17 @@ public:
 		this->id = id;
 	}
 
-	virtual inline const networkid_t getId() const {
+	virtual inline networkid_t getId() const {
 		return this->id;
 	}
 
-        /* regular ids
-         */
-        virtual inline void setObjectId(int id){
-		this->objectId = id;
-	}
+    /* regular ids
+    */
+    virtual inline void setObjectId(int id){
+        this->objectId = id;
+    }
 
-	virtual inline const int getObjectId() const {
+	virtual inline int getObjectId() const {
 		return this->objectId;
 	}
 
@@ -192,14 +192,14 @@ public:
 	 * Z specifies how far into the screen the object is, Y is how high the
 	 * object is off of the ground
 	 */
-	virtual inline const int getRY() const {
+	virtual inline int getRY() const {
 		return (int)(getZ() - getY());
 	}
 
 	/* getX:
 	 * Returns the X coordinate of the object
 	 */
-	inline const double getX() const {
+	inline double getX() const {
 		return virtualx;
 	}
 
@@ -207,7 +207,7 @@ public:
 	 * Returns the Y coordinate of the object
 	 * Y is how far the object is from the ground
 	 */
-	inline const double getY() const {
+	inline double getY() const {
 		return virtualy;
 	}
 
@@ -215,7 +215,7 @@ public:
 	 * Returns the Z coordinate of the object
 	 * Z is how far the object is into the screen
 	 */
-	inline const double getZ() const {
+	inline double getZ() const {
 		return virtualz;
 	}
 
@@ -309,7 +309,7 @@ public:
 		alliance = x;
 	}
 
-	virtual const int getAlliance() const;
+	virtual int getAlliance() const;
 
 	/* setFacing:
 	 * Sets the direction the object is facing, either left or right.
@@ -324,7 +324,7 @@ public:
 		setFacing( getOppositeFacing() );
 	}
 
-	inline const int getOppositeFacing() const{
+	inline int getOppositeFacing() const{
 		if ( getFacing() == FACING_LEFT )
 			return FACING_RIGHT;
 		return FACING_LEFT;
@@ -333,21 +333,21 @@ public:
 	/* getFacing:
 	 * Returns the direction the object is facing.
 	 */
-	inline const int getFacing() const{
+	inline int getFacing() const{
 		return facing;
 	}
 
 	/* getHealth:
 	 * Returns the amount of health the object has left.
 	 */
-	inline virtual const int getHealth() const {
+	inline virtual int getHealth() const {
 		if ( health < 0 )
 			return 0;
 		return health;
 		// return health;
 	}
 
-	inline const int getMaxHealth() const {
+	inline int getMaxHealth() const {
 		return max_health;
 	}
 

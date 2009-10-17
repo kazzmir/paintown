@@ -76,11 +76,11 @@ public:
 	virtual bool isGettable();
 	virtual bool isGrabbable(Object*);
 	virtual bool isAttacking();
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
+	virtual int getWidth() const;
+	virtual int getHeight() const;
 	virtual Message getCreateMessage();
 	virtual void getAttackCoords(int&, int&);
-	virtual const double minZDistance() const;
+	virtual double minZDistance() const;
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
 protected:

@@ -18,8 +18,8 @@ public:
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
+	virtual int getWidth() const;
+	virtual int getHeight() const;
 
 	virtual Network::Message getCreateMessage();
 	
@@ -28,7 +28,7 @@ public:
 	virtual ~Actor();
 
 protected:
-        std::vector< Animation * > animations;
+    std::vector< Animation * > animations;
 	Animation * current_animation;
 };
 

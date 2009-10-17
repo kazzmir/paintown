@@ -21,7 +21,7 @@ public:
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	virtual bool isGrabbed();
-        virtual bool isGrabbable(Object * obj);
+    virtual bool isGrabbable(Object * obj);
 	virtual Object * copy();
 	virtual const std::string & getAttackName();
 	virtual bool isAttacking();
@@ -30,15 +30,15 @@ public:
 	virtual ECollide * getCollide() const;
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
+	virtual int getWidth() const;
+	virtual int getHeight() const;
 	virtual void getAttackCoords( int & x, int & y);
-	virtual const double minZDistance() const;
+	virtual double minZDistance() const;
 	virtual void attacked(World * world, Object * something, std::vector< Object * > & objects );
 	virtual Network::Message getCreateMessage();
 
-	virtual const int getRY() const;
-	virtual const int getRX() const;
+	virtual int getRY() const;
+	virtual int getRX() const;
 
 	virtual ~Projectile();
 
@@ -70,7 +70,7 @@ public:
 		life -= 1;
 	}
 	
-	virtual const int getHealth() const;
+	virtual int getHealth() const;
 
 protected:
 	Animation * main;

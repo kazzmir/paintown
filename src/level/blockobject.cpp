@@ -79,14 +79,14 @@ stimulationValue( 0 ){
 				string n;
 				*current >> n;
 				if ( n.length() > 0 && (n[0] >= 'a' && n[0] <= 'z') ){
-					n[0] = n[0] - 'a' + 'A';
+					n[0] = (char)(n[0] - 'a' + 'A');
 				}
 				setName( n );
 			} else if ( *current == "alias" ){
 				string n;
 				*current >> n;
 				if ( n.length() > 0 && (n[0] >= 'a' && n[0] <= 'z') )
-					n[0] = n[0] - 'a' + 'A';
+					n[0] = (char)(n[0] - 'a' + 'A');
 				setAlias( n );
 			} else if ( *current == "coords" ){
 				int x, z;

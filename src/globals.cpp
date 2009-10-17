@@ -66,7 +66,7 @@ bool Global::shutdown(){
     return do_shutdown > 0;
 }
 
-const int Global::getVersion(){
+int Global::getVersion(){
     return major_version * 100 + minor_version;
 }
 
@@ -76,7 +76,7 @@ string Global::getVersionString(){
     return str.str();
 }
 
-const int Global::getDebug(){
+int Global::getDebug(){
 	return global_debug_level;
 }
 

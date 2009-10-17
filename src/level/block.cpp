@@ -75,7 +75,7 @@ continuous( false ){
 				}
 			}
 		} catch( const TokenException & te ){
-			throw LoadException("Block parse exception");
+			throw LoadException("Block parse exception: " + te.getReason());
 		} catch( const LoadException & le ){
 			cout<<"Ignoring error: "<<le.getReason()<<endl;
 			// throw le;
@@ -90,6 +90,10 @@ bool Block::empty(){
 
 vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, vector< Object * > * list ){
 	vector< Heart * > hearts;
+
+    /* to silence compiler warnings */
+    min_x = min_x;
+    max_x = max_x;
 
 	// cout<<"Total length = "<<total_length<<" Min_x = "<<min_x<<" Max_x = " << max_x << endl;
 	// cout<<"Current block has "<<objects.size()<<" total = "<<total_length<<" min = "<<min_x<<" max_x = "<<max_x<<endl;

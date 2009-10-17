@@ -42,7 +42,7 @@ public:
 	virtual ~Enemy();
 
 	/* the chances this enemy will try to attack */
-	virtual const int getAggression() const {
+	virtual int getAggression() const {
 		return aggression;
 	}
 

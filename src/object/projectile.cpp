@@ -78,14 +78,14 @@ Projectile::~Projectile(){
 	}
 }
 	
-const int Projectile::getHealth() const {
+int Projectile::getHealth() const {
 	if ( death ){
 		return getLife() <= 0 && death->empty() ? 0 : 1;
 	}
 	return getLife() <= 0 ? 0 : 1;
 }
 
-const int Projectile::getRX() const {
+int Projectile::getRX() const {
 	if ( getFacing() == FACING_LEFT ){
 		return Object::getRX() - currentAnimation->getOffsetX();
 	} else {
@@ -93,7 +93,7 @@ const int Projectile::getRX() const {
 	}
 }
 
-const int Projectile::getRY() const {
+int Projectile::getRY() const {
 	return Object::getRY() + currentAnimation->getOffsetY();
 }
 
@@ -185,16 +185,16 @@ bool Projectile::isCollidable( Object * obj ){
 bool Projectile::isGettable(){
 	return false;
 }
-
-const int Projectile::getWidth() const {
-	return currentAnimation->getWidth();
-}
         
 bool Projectile::isGrabbable(Object * object){
     return false;
 }
 
-const int Projectile::getHeight() const {
+int Projectile::getWidth() const {
+	return currentAnimation->getWidth();
+}
+
+int Projectile::getHeight() const {
 	return currentAnimation->getHeight();
 }
 
@@ -209,7 +209,7 @@ void Projectile::getAttackCoords( int & x, int & y){
 	y += getRY() - getHeight();
 }
 
-const double Projectile::minZDistance() const {
+double Projectile::minZDistance() const {
 	return currentAnimation->getMinZDistance();
 }
 

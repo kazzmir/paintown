@@ -26,8 +26,8 @@ public:
 	virtual bool collision( ObjectAttack * obj );
 	virtual bool isGettable();
 	virtual void touch( Object * obj );
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
+	virtual int getWidth() const;
+	virtual int getHeight() const;
 	virtual Network::Message getCreateMessage();
 	
 	virtual Object * copy();

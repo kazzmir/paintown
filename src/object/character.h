@@ -118,11 +118,11 @@ public:
 	/* am I doing an attacking move? */
 	virtual bool isAttacking();
 
-	inline const bool isMoving() const{
+	inline bool isMoving() const{
 		return moving;
 	}
 	
-	virtual const double minZDistance() const;
+	virtual double minZDistance() const;
 
 	/* can I be hit? */
 	virtual bool isCollidable( Object * obj );
@@ -130,11 +130,11 @@ public:
 	/* have I hit something? */
 	virtual bool collision( ObjectAttack * obj );
         
-        virtual bool isGrabbable(Object * obj);
+    virtual bool isGrabbable(Object * obj);
 
 	virtual bool isJumping();
 	
-	virtual const int getAlliance() const;
+	virtual int getAlliance() const;
 
 public:
 	/* setters */
@@ -143,13 +143,13 @@ public:
 		status = _status;
 	}
 
-	virtual const int getToughness() const {
+	virtual int getToughness() const {
 		return toughness;
 	}
 
-	virtual const int getRX() const;
-	virtual const int getRZ() const;
-	virtual const int getRY() const;
+	virtual int getRX() const;
+	virtual int getRZ() const;
+	virtual int getRY() const;
 
 	virtual inline void setShadow( int i ){
 		shadow = i;
@@ -158,8 +158,8 @@ public:
 	virtual void setMap( const unsigned int x );
 	virtual void nextMap();
 	virtual void nextMap( int x );
-	virtual const int getNextMap() const;
-	virtual const int getNextMap( unsigned int x ) const;
+	virtual int getNextMap() const;
+	virtual int getNextMap( unsigned int x ) const;
 
 	inline void setLink( Object * o ){
 		linked = o;
@@ -235,7 +235,7 @@ public:
 		return linked;
 	}
 
-	inline const bool getThrown() const{
+	inline bool getThrown() const{
 		return thrown_status;
 	}
 
@@ -250,7 +250,7 @@ public:
 	virtual Animation * getMovement( const unsigned int x );
 	virtual const std::map<std::string,Animation*> & getMovements();
 
-	virtual inline const int getShadow() const {
+	virtual inline int getShadow() const {
 		return shadow;
 	}
 	virtual void getAttackCoords( int & x, int & y);
@@ -265,22 +265,22 @@ public:
 		death = i;
 	}
 
-	inline virtual const int getDeath() const {
+	inline virtual int getDeath() const {
 		return death;
 	}
 
-	inline virtual const double getSpeed() const {
+	inline virtual double getSpeed() const {
 		return speed;
 	}
 
-	inline virtual const int getCurrentMap() const {
+	inline virtual int getCurrentMap() const {
 		return current_map;
 	}
 
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
+	virtual int getWidth() const;
+	virtual int getHeight() const;
 	virtual const std::string & getAttackName();
-	virtual inline const int getStatus() const {
+	virtual inline int getStatus() const {
 		return status;
 	}
 
@@ -290,19 +290,19 @@ public:
 	}
         */
 
-	inline const double getMaxJumpingVelocity() const {
+	inline double getMaxJumpingVelocity() const {
 		return jumping_starting_velocity;
 	}
 
-	inline const double getYVelocity() const {
+	inline double getYVelocity() const {
 		return y_velocity;
 	}
 	
-	inline const double getXVelocity() const {
+	inline double getXVelocity() const {
 		return x_velocity;
 	}
 
-	inline const double getZVelocity() const {
+	inline double getZVelocity() const {
 		return z_velocity;
 	}
 	
@@ -318,7 +318,7 @@ public:
 	
 	virtual void deathReset();
 
-	virtual inline const int getLives(){
+	virtual inline int getLives(){
 		return lives;
 	}
 
@@ -326,7 +326,7 @@ public:
 		lives = x;
 	}
 
-	virtual inline const bool drawShadow() const {
+	virtual inline bool drawShadow() const {
 		return draw_shadow;
 	}
 
@@ -348,16 +348,16 @@ public:
 	
 	virtual void fall( double x_vel, double y_vel );
 	
-        virtual const int getInvincibility() const;
-        
-        virtual void addEffect(DrawEffect * effect);
+    virtual int getInvincibility() const;
+
+    virtual void addEffect(DrawEffect * effect);
 
 protected:
 
 	virtual Network::Message jumpMessage( double x, double y );
 	
-	const int getShadowX();
-	const int getShadowY();
+	int getShadowX();
+	int getShadowY();
 
 	virtual void filterEnemies( std::vector< Object * > & mine, std::vector< Object * > * all );
 	virtual void reMap( const std::string & from, const std::string & to, int id );

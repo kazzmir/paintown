@@ -71,11 +71,11 @@ bool Actor::isGettable(){
 	return false;
 }
 
-const int Actor::getWidth() const {
+int Actor::getWidth() const {
 	return 0;
 }
 
-const int Actor::getHeight() const {
+int Actor::getHeight() const {
 	return 0;
 }
 	

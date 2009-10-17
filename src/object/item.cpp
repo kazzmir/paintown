@@ -152,11 +152,11 @@ bool Item::isCollidable( Object * obj ){
 	return false;
 }
 
-const int Item::getWidth() const {
+int Item::getWidth() const {
 	return picture.getWidth();
 }
 
-const int Item::getHeight() const {
+int Item::getHeight() const {
 	return picture.getHeight();
 }
 	

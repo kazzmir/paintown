@@ -493,11 +493,11 @@ void Character::nextMap( int x ){
 	setMap( next );
 }
 
-const int Character::getNextMap() const {
+int Character::getNextMap() const {
 	return getNextMap( current_map );
 }
 
-const int Character::getNextMap( unsigned int x ) const {
+int Character::getNextMap( unsigned int x ) const {
 	if ( x + 1 >= mapper.size() ){
 		return 0;
 	}
@@ -663,7 +663,7 @@ void Character::testAnimation( unsigned int x ){
 	*/
 }
 	
-const int Character::getAlliance() const{
+int Character::getAlliance() const{
 	/*
 	if ( getStatus() == Status_Fell && isMoving() )
 		return ALLIANCE_NONE;
@@ -1226,7 +1226,7 @@ void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
 	}
 }
 
-const int Character::getRX() const {
+int Character::getRX() const {
 	if ( animation_current ){
 		if ( getFacing() == FACING_LEFT ){
 			return Object::getRX() - animation_current->getOffsetX();
@@ -1237,7 +1237,7 @@ const int Character::getRX() const {
 	return Object::getRX();
 }
 
-const int Character::getRZ() const {
+int Character::getRZ() const {
 	/*
 	if ( animation_current ){
 		return Object::getZ() + animation_current->getOffsetY();
@@ -1246,7 +1246,7 @@ const int Character::getRZ() const {
 	return Object::getRZ();
 }
 
-const int Character::getRY() const {
+int Character::getRY() const {
 	if ( animation_current ){
 		return Object::getRY() + animation_current->getOffsetY();
 	}
@@ -1318,7 +1318,7 @@ bool Character::realCollision( ObjectAttack * obj ){
 
 }
 	
-const double Character::minZDistance() const {
+double Character::minZDistance() const {
 	if ( animation_current ){
 		return animation_current->getMinZDistance();
 	}
@@ -1378,7 +1378,7 @@ void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
 	Bitmap::drawingMode( Bitmap::MODE_SOLID );
 }
 
-const int Character::getShadowX(){
+int Character::getShadowX(){
 	if ( animation_current ){
 		if ( getFacing() == FACING_LEFT ){
 			return -animation_current->getShadowX();
@@ -1389,7 +1389,7 @@ const int Character::getShadowX(){
 	return 0;
 }
 
-const int Character::getShadowY(){
+int Character::getShadowY(){
 	if ( animation_current ){
 		return animation_current->getShadowY();
 	}
@@ -1543,7 +1543,7 @@ Network::Message Character::animationMessage(){
 	return m;
 }
 	
-const int Character::getInvincibility() const {
+int Character::getInvincibility() const {
     return invincibility;
 }
 
@@ -1604,40 +1604,40 @@ void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
 
 void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
     if (animation_current){
-	const Bitmap *bmp = animation_current->getCurrentFrame();
-	const double newheight = bmp->getHeight() * scale;
+        const Bitmap *bmp = animation_current->getCurrentFrame();
+        const double newheight = bmp->getHeight() * scale;
         Bitmap shade = Bitmap::temporaryBitmap(bmp->getWidth(), fabs(newheight));
-	bmp->Stretch(shade);
-	
-	/* Could be slow, but meh, lets do it for now to make it look like a real shadow */
-	for (int h = 0; h < shade.getHeight(); ++h){
-	    for (int w = 0; w < shade.getWidth(); ++w){
-		int pix = shade.getPixel(w,h);
+        bmp->Stretch(shade);
+
+        /* Could be slow, but meh, lets do it for now to make it look like a real shadow */
+        for (int h = 0; h < shade.getHeight(); ++h){
+            for (int w = 0; w < shade.getWidth(); ++w){
+                int pix = shade.getPixel(w,h);
                 if (pix != Bitmap::MaskColor){
                     shade.putPixel(w,h, Bitmap::makeColor(0,0,0));
                 }
-	    }
-	}
-	
+            }
+        }
+
         int i = ((Bitmap::getRed(color) * 77 + intensity) + (Bitmap::getGreen(color) * 154 + intensity) + (Bitmap::getBlue(color) * 25 + intensity))/256;
         i = 255 - i;
-	Bitmap::drawingMode( Bitmap::MODE_TRANS );
-	// Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
-	Bitmap::multiplyBlender((Bitmap::getRed(color) * 77 + intensity), (Bitmap::getGreen(color) * 154 + intensity), (Bitmap::getBlue(color) * 25 + intensity), i);
-	if (scale > 0){
-	    if (getFacing() == FACING_RIGHT){ 
-		shade.drawTransVFlip( (getRX() - rel_x) - bmp->getWidth()/2, getRZ()  + (getY() * scale), *work );
-	    } else { 
-		shade.drawTransHVFlip( (getRX() - rel_x) - bmp->getWidth()/2, getRZ()  + (getY() * scale), *work );
-	    }
-	} else if (scale < 0){
-	    if (getFacing() == FACING_RIGHT){ 
-		shade.drawTrans( ((getRX() - rel_x) - bmp->getWidth()/2) + 3, (getRZ() - fabs(newheight)) + (getY() * scale), *work );
-	    } else { 
-		shade.drawTransHFlip( ((getRX() - rel_x) - bmp->getWidth()/2) - 3, (getRZ() - fabs(newheight)) + (getY() * scale), *work );
-	    }
-	}
-	Bitmap::drawingMode( Bitmap::MODE_SOLID );
+        Bitmap::drawingMode( Bitmap::MODE_TRANS );
+        // Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
+        Bitmap::multiplyBlender((Bitmap::getRed(color) * 77 + intensity), (Bitmap::getGreen(color) * 154 + intensity), (Bitmap::getBlue(color) * 25 + intensity), i);
+        if (scale > 0){
+            if (getFacing() == FACING_RIGHT){ 
+                shade.drawTransVFlip( (getRX() - rel_x) - bmp->getWidth()/2, getRZ()  + (getY() * scale), *work );
+            } else { 
+                shade.drawTransHVFlip( (getRX() - rel_x) - bmp->getWidth()/2, getRZ()  + (getY() * scale), *work );
+            }
+        } else if (scale < 0){
+            if (getFacing() == FACING_RIGHT){ 
+                shade.drawTrans( ((getRX() - rel_x) - bmp->getWidth()/2) + 3, (getRZ() - fabs(newheight)) + (getY() * scale), *work );
+            } else { 
+                shade.drawTransHFlip( ((getRX() - rel_x) - bmp->getWidth()/2) - 3, (getRZ() - fabs(newheight)) + (getY() * scale), *work );
+            }
+        }
+        Bitmap::drawingMode( Bitmap::MODE_SOLID );
     }
 }
 
@@ -1649,14 +1649,14 @@ bool Character::collision( Object * obj ){
 }
 */
 	
-const int Character::getWidth() const{
+int Character::getWidth() const{
 	if ( animation_current ){
 		return animation_current->getWidth();
 	}
 	return 0;
 }
 
-const int Character::getHeight() const{
+int Character::getHeight() const{
 	if ( animation_current ){
 		return animation_current->getHeight();
 	}

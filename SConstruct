@@ -15,6 +15,12 @@ def isLinux():
     import sys
     return "linux" in sys.platform
 
+def useIntel():
+    try:
+        return int(os.environ['intel'])
+    except KeyError:
+        return False
+
 def checkLex(context):
     context.Message("Checking for flex... ")
     out = context.TryAction("flex -V")
@@ -270,6 +276,13 @@ def less_verbose(env):
     return env
 
 def getEnvironment():
+    def intel(env):
+        env['CC'] = 'icc'
+        env['CXX'] = 'icc'
+        # '-Werror-all', '-Weffc++'
+        env.Append(CCFLAGS = ['-wd981'],
+                   CXXFLAGS = ['-wd981', '-wd271'])
+        return env
     def raw():
         if isCygwin():
             import SCons.Tool.zip
@@ -282,7 +295,11 @@ def getEnvironment():
         elif useMingw():
             return Environment(ENV = os.environ, tools = ['mingw', 'zip'])
         else:
-            return Environment(ENV = os.environ)
+            if useIntel():
+                print "Using the intel compiler"
+                return intel(Environment(ENV = os.environ))
+            else:
+                return Environment(ENV = os.environ)
     if not getDebug():
         return less_verbose(raw())
     else:

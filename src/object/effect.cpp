@@ -105,7 +105,7 @@ Network::Message Effect::getCreateMessage(){
 	return m;
 }
 	
-const int Effect::getWidth() const{
+int Effect::getWidth() const{
 	if ( image )
 		return image->getWidth();
 	return 0;
@@ -115,7 +115,7 @@ bool Effect::isCollidable( Object * obj ){
 	return false;
 }
 
-const int Effect::getHeight() const{
+int Effect::getHeight() const{
 	if ( image )
 		return image->getHeight();
 	return 0;

@@ -18,7 +18,7 @@ const int DATA_SIZE = 16;
 
 class NetworkException: public std::exception{
 public:
-	NetworkException( const std::string & message = "" ):std::exception(),message(message){}
+	NetworkException( const std::string message = "" ):std::exception(),message(message){}
 
 	inline const std::string getMessage() const {
 		return message;
@@ -37,19 +37,19 @@ private:
 
 class NoConnectionsPendingException: public NetworkException{
 public:
-	NoConnectionsPendingException( const std::string & message = "" ):
-		NetworkException( message ){
+	NoConnectionsPendingException(const std::string message = ""):
+		NetworkException(message){
 	}
 };
 
 class InvalidPortException: public NetworkException{
 public:
-	InvalidPortException( int port, const std::string & message = "" );
+	InvalidPortException( int port, const std::string message = "" );
 };
 
 class CannotListenException: public NetworkException{
 public:
-	CannotListenException( const std::string & message = "" ):
+	CannotListenException( const std::string message = "" ):
 		NetworkException( message ){
 	}
 };

@@ -373,7 +373,7 @@ void Player::setInvincible(const bool b){
     }
 }
         
-const int Player::getInvincibility() const {
+int Player::getInvincibility() const {
     if (isInvincible()){
         return 1;
     }

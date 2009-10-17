@@ -68,7 +68,7 @@ state( IDLE1 ){
 	meow = cat.meow;
 }
 
-const int Cat::getRX() const {
+int Cat::getRX() const {
 	if ( current_animation ){
 		if ( getFacing() == FACING_LEFT ){
 			return Object::getRX() - current_animation->getOffsetX();
@@ -254,11 +254,11 @@ bool Cat::isGettable(){
 	return false;
 }
 
-const int Cat::getWidth() const {
+int Cat::getWidth() const {
 	return 0;
 }
 
-const int Cat::getHeight() const {
+int Cat::getHeight() const {
 	return 0;
 }
 

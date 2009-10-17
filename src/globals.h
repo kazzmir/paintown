@@ -20,13 +20,13 @@ namespace Global{
 
 extern const char * DEFAULT_FONT;
 
-const int getVersion();
+int getVersion();
 std::string getVersionString();
 
 bool shutdown();
 
 void setDebug( int i );
-const int getDebug();
+int getDebug();
 std::ostream & debug( int i );
 
 void showTitleScreen();

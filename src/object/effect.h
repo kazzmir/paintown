@@ -18,8 +18,8 @@ public:
 	Effect( const Effect & ef );
 	Effect( const char * _filename, int alliance = ALLIANCE_NONE ) throw( LoadException );
 	
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
+	virtual int getWidth() const;
+	virtual int getHeight() const;
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
 

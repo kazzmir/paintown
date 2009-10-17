@@ -20,23 +20,24 @@ public:
 	virtual void draw( Bitmap * work, int rel_x );
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
+	virtual int getWidth() const;
+	virtual int getHeight() const;
 	virtual Network::Message getCreateMessage();
 	
 	virtual Object * copy();
 
-	virtual const int getRX() const;
+	virtual int getRX() const;
 	
 	virtual ~Cat();
 
 protected:
-        std::map< std::string, Animation * > animations;
+    std::map< std::string, Animation * > animations;
 	Animation * current_animation;
 
+    /* meow meow! */
 	Sound meow;
 
-        std::string path;
+    std::string path;
 
 	enum State{
 		IDLE1,

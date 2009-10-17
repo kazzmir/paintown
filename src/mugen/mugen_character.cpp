@@ -426,10 +426,10 @@ bool MugenCharacter::isGrabbable(Object*){
 bool MugenCharacter::isAttacking(){
     return false;
 }
-const int MugenCharacter::getWidth() const{
+int MugenCharacter::getWidth() const{
     return groundfront;
 }
-const int MugenCharacter::getHeight() const{
+int MugenCharacter::getHeight() const{
     return height;
 }
 Message MugenCharacter::getCreateMessage(){
@@ -437,7 +437,7 @@ Message MugenCharacter::getCreateMessage(){
 }
 void MugenCharacter::getAttackCoords(int&, int&){
 }
-const double MugenCharacter::minZDistance() const{
+double MugenCharacter::minZDistance() const{
     return 0;
 }
 void MugenCharacter::attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&){

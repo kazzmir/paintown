@@ -7,11 +7,11 @@ class Heart{
 protected:
 
 	Heart();
-	~Heart();
+	virtual ~Heart();
 
 public:
 
-	inline const bool getAlive() const{
+	inline bool getAlive() const{
 		return alive;
 	}
 

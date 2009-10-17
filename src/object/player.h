@@ -47,45 +47,45 @@ public:
 	virtual void loseLife( int l = 1 );
 	virtual void gainLife( int l = 1 );
 
-        virtual void setInvincible(const bool b);
-        virtual const int getInvincibility() const;
+    virtual void setInvincible(const bool b);
+    virtual int getInvincibility() const;
 
-	inline const bool isInvincible() const {
+	inline bool isInvincible() const {
 		return this->invincible;
 	}
 	
-        virtual void interpretMessage( Network::Message & m );
+    virtual void interpretMessage( Network::Message & m );
 	
 	/* reset some stuff when the player dies */
 	virtual void deathReset();
-	
-        virtual Network::Message getCreateMessage();
 
-        virtual inline void setConfig(int config){
-            this->config = config;
-        }
+    virtual Network::Message getCreateMessage();
 
-        virtual const int getConfig() const {
-            return this->config;
-        }
+    virtual inline void setConfig(int config){
+        this->config = config;
+    }
 
-        virtual inline void ignoreLives(){
-            ignore_lives = true;
-        }
+    virtual int getConfig() const {
+        return this->config;
+    }
 
-        virtual inline const bool ignoringLives() const {
-            return ignore_lives;
-        }
+    virtual inline void ignoreLives(){
+        ignore_lives = true;
+    }
 
-        virtual ~Player();
-	
+    virtual inline bool ignoringLives() const {
+        return ignore_lives;
+    }
+
+    virtual ~Player();
+
 protected:
-        Network::Message scoreMessage();
+    Network::Message scoreMessage();
 
-        void initializeAttackGradient();
-        std::vector<PaintownInput> fillKeyCache();
-        void debugDumpKeyCache(int level);
-        const char * keyToName(PaintownInput key);
+    void initializeAttackGradient();
+    std::vector<PaintownInput> fillKeyCache();
+    void debugDumpKeyCache(int level);
+    const char * keyToName(PaintownInput key);
 	bool combo( Animation * ani );
 	bool combo( Animation * ani, std::deque<PaintownInput>::iterator cache_cur_key, std::deque<PaintownInput>::iterator end );
 	virtual int getKey( PaintownInput x, int facing );
@@ -99,19 +99,19 @@ protected:
 protected:
 
 	/* store key presses in a stack with two ends*/
-        std::deque<PaintownInput> key_cache;
-        std::map< PaintownInput, bool > last_key;
+    std::deque<PaintownInput> key_cache;
+    std::map< PaintownInput, bool > last_key;
 	int acts;
 	int show_life;
 
 	int name_id;
-        double attack_bonus;
-        static const int num_attack_gradient = 50;
-        int attack_gradient[num_attack_gradient];
+    double attack_bonus;
+    static const int num_attack_gradient = 50;
+    int attack_gradient[num_attack_gradient];
 
 	bool invincible;
 	int config;
-        bool ignore_lives;
+    bool ignore_lives;
 
 	// int last_key;
 };
