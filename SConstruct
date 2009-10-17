@@ -278,7 +278,7 @@ def less_verbose(env):
 def getEnvironment():
     def intel(env):
         env['CC'] = 'icc'
-        env['CXX'] = 'icc'
+        env['CXX'] = 'icpc'
         # '-Werror-all', '-Weffc++'
         env.Append(CCFLAGS = ['-wd981'],
                    CXXFLAGS = ['-wd981', '-wd271', '-wd383', '-wd869'])
