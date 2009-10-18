@@ -96,12 +96,12 @@ option(false){
     input.set(Keyboard::Key_ENTER, 0, true, Select);
     input.set(Keyboard::Key_ESC, 0, true, Exit);
     /* joystick */
-    input.set(InputMap<MenuInput>::Joystick::Up, 0, true, Up);
-    input.set(InputMap<MenuInput>::Joystick::Down, 0, true, Down);
-    input.set(InputMap<MenuInput>::Joystick::Left, 0, true, Left);
-    input.set(InputMap<MenuInput>::Joystick::Right, 0, true, Right);
-    input.set(InputMap<MenuInput>::Joystick::Button1, 0, true, Select);
-    input.set(InputMap<MenuInput>::Joystick::Button2, 0, true, Exit);
+    input.set(Joystick::Up, 0, true, Up);
+    input.set(Joystick::Down, 0, true, Down);
+    input.set(Joystick::Left, 0, true, Left);
+    input.set(Joystick::Right, 0, true, Right);
+    input.set(Joystick::Button1, 0, true, Select);
+    input.set(Joystick::Button2, 0, true, Exit);
 }
 
 void Menu::load(Token *token) throw (LoadException){

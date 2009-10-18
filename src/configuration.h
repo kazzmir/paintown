@@ -9,19 +9,20 @@ class Token;
 class Configuration{
 public:
 
+    typedef Joystick::Key JoystickInput;
+
 	static Configuration & config(int x);
-    static Configuration & joystickConfig(int x);
 
 	static void loadConfigurations();
 	static void saveConfiguration();
 
-        enum PlayMode{
-            Cooperative = 1,
-            FreeForAll = 2,
-        };
+    enum PlayMode{
+        Cooperative = 1,
+        FreeForAll = 2,
+    };
 
 	/* return a Keyboard::Key_X based on some PAIN_KEY_X */
-	int getKey( PaintownInput which, int facing );
+	int getKey( Input::PaintownInput which, int facing );
 	
 	void setRight( int i );
 	void setLeft( int i );
@@ -40,6 +41,24 @@ public:
 	int getAttack2() const;
 	int getAttack3() const;
 	int getJump() const;
+
+    void setJoystickRight(JoystickInput i );
+	void setJoystickLeft(JoystickInput i );
+	void setJoystickUp(JoystickInput i );
+	void setJoystickDown(JoystickInput i );
+	void setJoystickAttack1(JoystickInput i );
+	void setJoystickAttack2(JoystickInput i );
+	void setJoystickAttack3(JoystickInput i );
+	void setJoystickJump(JoystickInput i );
+
+	JoystickInput getJoystickRight() const;
+	JoystickInput getJoystickLeft() const;
+	JoystickInput getJoystickUp() const;
+	JoystickInput getJoystickDown() const;
+	JoystickInput getJoystickAttack1() const;
+	JoystickInput getJoystickAttack2() const;
+	JoystickInput getJoystickAttack3() const;
+	JoystickInput getJoystickJump() const;
 
 public:
 	static double getGameSpeed();
@@ -66,7 +85,7 @@ public:
 protected:
 	Configuration();
 	Configuration( const Configuration & config );
-	Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump );
+	// Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump );
 
 	~Configuration();
 
@@ -74,11 +93,11 @@ protected:
 
 	static Configuration defaultPlayer1Keys();
 	static Configuration defaultPlayer2Keys();
-	static Configuration defaultPlayer1Joystick();
 
 	static Token * saveKeyboard( int num, Configuration * configuration );
 
 private:
+    /* keyboard */
 	int right;
 	int left;
 	int up;
@@ -87,6 +106,16 @@ private:
 	int attack2;
 	int attack3;
 	int jump;
+
+    /* joystick */
+    JoystickInput joystick_right;
+    JoystickInput joystick_left;
+    JoystickInput joystick_up;
+    JoystickInput joystick_down;
+    JoystickInput joystick_attack1;
+    JoystickInput joystick_attack2;
+    JoystickInput joystick_attack3;
+    JoystickInput joystick_jump;
 
 private:
 	//! Game speed

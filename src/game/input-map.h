@@ -64,19 +64,6 @@ public:
         Global::debug(0) << "*BUG* InputMap should not be copied! Pass it by reference instead" << std::endl;
     }
 
-    struct Joystick{
-        enum Key{
-            Up,
-            Down,
-            Left,
-            Right,
-            Button1,
-            Button2,
-            Button3,
-            Button4,
-        };
-    };
-
     virtual ~InputMap(){
         for (typename std::map<Keyboard::KeyType, KeyState<X>*>::iterator it = key_states.begin(); it != key_states.end(); it++){
             delete (*it).second;

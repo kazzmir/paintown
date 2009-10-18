@@ -21,7 +21,7 @@ class Projectile;
 class AnimationTrail;
 
 struct KeyPress{
-    std::vector<PaintownInput> combo;
+    std::vector<Input::PaintownInput> combo;
 
 	/*
 	KeyPress & operator= ( const KeyPress & rhs ){
@@ -263,7 +263,7 @@ protected:
 	void reMap( Bitmap * work, std::map< int, int > & colors );
 
 	// int convertKeyPress( const string & key_name ) throw( LoadException );
-	PaintownInput convertKeyPress( const std::string & key_name );
+    Input::PaintownInput convertKeyPress( const std::string & key_name );
 
 	// void parseObject( string str ) throw( exception );
 	void upperCase( std::string & who );

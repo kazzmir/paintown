@@ -18,7 +18,7 @@ public:
      */
     friend int paintown_main(int, char**);
 
-    static std::vector<PaintownInput> getInput(const Configuration & configuration, const int facing);
+    static std::vector<Input::PaintownInput> getInput(const Configuration & configuration, const int facing);
     static void poll();
 
     template <typename X>
@@ -56,7 +56,7 @@ protected:
     InputManager();
     virtual ~InputManager();
     
-    virtual std::vector<PaintownInput> _getInput(const Configuration & configuration, const int facing);
+    virtual std::vector<Input::PaintownInput> _getInput(const Configuration & configuration, const int facing);
 
     template <typename X>
     typename InputMap<X>::Output _getMap(InputMap<X> & input){

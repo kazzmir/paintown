@@ -303,10 +303,10 @@ void TabMenu::run() throw (ReturnException) {
     input.set(Keyboard::Key_ENTER, 0, true, Tab::Select);
     input.set(Keyboard::Key_SPACE, 0, true, Tab::Select);
     input.set(Keyboard::Key_ESC, 0, true, Tab::Exit);
-    input.set(InputMap<Tab::Input>::Joystick::Left, 0, true, Tab::Left);
-    input.set(InputMap<Tab::Input>::Joystick::Right, 0, true, Tab::Right);
-    input.set(InputMap<Tab::Input>::Joystick::Button1, 0, true, Tab::Select);
-    input.set(InputMap<Tab::Input>::Joystick::Button2, 0, true, Tab::Exit);
+    input.set(Joystick::Left, 0, true, Tab::Left);
+    input.set(Joystick::Right, 0, true, Tab::Right);
+    input.set(Joystick::Button1, 0, true, Tab::Select);
+    input.set(Joystick::Button2, 0, true, Tab::Exit);
 
     // Color effects
     ColorBuffer fontBuffer(selectedFontColor,runningFontColor);

@@ -18,7 +18,7 @@ InputManager::InputManager(){
 InputManager::~InputManager(){
 }
 
-vector<PaintownInput> InputManager::getInput(const Configuration & configuration, const int facing){
+vector<Input::PaintownInput> InputManager::getInput(const Configuration & configuration, const int facing){
     if (manager == 0){
         Global::debug(0) << "*BUG* Input manager not set up" << endl;
         exit(0);
@@ -27,40 +27,68 @@ vector<PaintownInput> InputManager::getInput(const Configuration & configuration
     return manager->_getInput(configuration, facing);
 }
 
+/* these mappings should agree with configuration.cpp:defaultJoystick1Keys,
+ * but otherwise they are completely arbitrary
+ */
+static Input::PaintownInput convertJoystickKey(const Joystick::Key key, const int facing){
+    switch (key){
+        case Joystick::Up : return Input::Up;
+        case Joystick::Down : return Input::Down;
+        case Joystick::Left : {
+            if (facing == Object::FACING_RIGHT){
+                return Input::Back;
+            } else {
+                return Input::Forward;
+            }
+        }
+        case Joystick::Right : {
+            if (facing == Object::FACING_RIGHT){
+                return Input::Forward;
+            } else {
+                return Input::Back;
+            }
+        }
+        case Joystick::Button1 : return Input::Attack1;
+        case Joystick::Button2 : return Input::Attack2;
+        case Joystick::Button3 : return Input::Attack3;
+        case Joystick::Button4 : return Input::Jump;
+        default : return Input::Unknown;
+    }
+}
 
-static vector<PaintownInput> convertJoystick(JoystickInput input, const int facing){
-    vector<PaintownInput> all;
+static vector<Input::PaintownInput> convertJoystick(const Configuration & configuration, JoystickInput input, const int facing){
+    vector<Input::PaintownInput> all;
+
     if (input.up){
-        all.push_back(Up);
+        all.push_back(convertJoystickKey(configuration.getJoystickUp(), facing));
     }
+
     if (input.right){
-        if (facing == Object::FACING_RIGHT){
-            all.push_back(Forward);
-        } else {
-            all.push_back(Back);
-        }
+        all.push_back(convertJoystickKey(configuration.getJoystickRight(), facing));
     }
+
     if (input.left){
-        if (facing == Object::FACING_RIGHT){
-            all.push_back(Back);
-        } else {
-            all.push_back(Forward);
-        }
+        all.push_back(convertJoystickKey(configuration.getJoystickLeft(), facing));
     }
+
     if (input.down){
-        all.push_back(Down);
+        all.push_back(convertJoystickKey(configuration.getJoystickDown(), facing));
     }
+
     if (input.button1){
-        all.push_back(Attack1);
+        all.push_back(convertJoystickKey(configuration.getJoystickAttack1(), facing));
     }
+
     if (input.button2){
-        all.push_back(Attack2);
+        all.push_back(convertJoystickKey(configuration.getJoystickAttack2(), facing));
     }
+
     if (input.button3){
-        all.push_back(Attack3);
+        all.push_back(convertJoystickKey(configuration.getJoystickAttack3(), facing));
     }
+
     if (input.button4){
-        all.push_back(Jump);
+        all.push_back(convertJoystickKey(configuration.getJoystickJump(), facing));
     }
 
     return all;
@@ -82,14 +110,14 @@ void InputManager::_poll(){
     }
 }
 
-vector<PaintownInput> InputManager::_getInput(const Configuration & configuration, const int facing){
+vector<Input::PaintownInput> InputManager::_getInput(const Configuration & configuration, const int facing){
     vector<int> all_keys;
     keyboard.readKeys( all_keys );
 
-    vector<PaintownInput> real_input = Input::convertKeyboard(configuration, facing, all_keys);
+    vector<Input::PaintownInput> real_input = Input::convertKeyboard(configuration, facing, all_keys);
 
     if (joystick != NULL){
-        vector<PaintownInput> joystick_keys = convertJoystick(joystick->readAll(), facing);
+        vector<Input::PaintownInput> joystick_keys = convertJoystick(configuration, joystick->readAll(), facing);
         real_input.insert(real_input.begin(), joystick_keys.begin(), joystick_keys.end());
     }
 

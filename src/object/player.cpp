@@ -129,17 +129,17 @@ void Player::gainLife( int l ){
 void Player::debugDumpKeyCache(int level){
     if (key_cache.size() > 0){
         ostream & out = Global::debug(level);
-        deque<PaintownInput>::iterator cur = key_cache.begin();
+        deque<Input::PaintownInput>::iterator cur = key_cache.begin();
         out << "[player] Key cache" << endl;
         for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
-            PaintownInput key = *cur;
+            Input::PaintownInput key = *cur;
             out << "[player]  " << keyToName(key) << endl;
         }
         out << "[player] end key cache" << endl;
     }
 }
 
-vector<PaintownInput> Player::fillKeyCache(){
+vector<Input::PaintownInput> Player::fillKeyCache(){
 
     /* get the latest key presses */
 
@@ -154,12 +154,12 @@ vector<PaintownInput> Player::fillKeyCache(){
         acts = 0;
     }
 
-    vector<PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
+    vector<Input::PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
     if (real_input.size() > 0){
 
-        map<PaintownInput, bool > new_last;
-        for ( vector<PaintownInput>::iterator it = real_input.begin(); it != real_input.end(); it++ ){
-            PaintownInput n = *it;
+        map<Input::PaintownInput, bool > new_last;
+        for ( vector<Input::PaintownInput>::iterator it = real_input.begin(); it != real_input.end(); it++ ){
+            Input::PaintownInput n = *it;
 
             Global::debug(1) << "Checking key " << n << endl;
 
@@ -177,12 +177,12 @@ vector<PaintownInput> Player::fillKeyCache(){
              * forward from following back and vice-versa
              */
             switch (n){
-                case Forward : {
-                    new_last[Back] = true;
+                case Input::Forward : {
+                    new_last[Input::Back] = true;
                     break;
                 }
-                case Back : {
-                    new_last[Forward] = true;
+                case Input::Back : {
+                    new_last[Input::Forward] = true;
                 }
                 default : break;
             }
@@ -292,7 +292,7 @@ void Player::drawFront( Bitmap * work, int rel_x ){
  * (f f (a1 a2)) means that the user must press
  * forward, forward and then a1 and a2 at the same time.
  */
-bool Player::combo( Animation * ani, deque<PaintownInput>::iterator cache_cur_key, deque<PaintownInput>::iterator end ){
+bool Player::combo( Animation * ani, deque<Input::PaintownInput>::iterator cache_cur_key, deque<Input::PaintownInput>::iterator end ){
     // cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
     const vector< KeyPress > & keys = ani->getKeys();
     if ( keys.empty() ){
@@ -306,9 +306,9 @@ bool Player::combo( Animation * ani, deque<PaintownInput>::iterator cache_cur_ke
 
         const KeyPress & kp = *k;
         bool all_pressed = true;
-        for ( vector<PaintownInput>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
-            PaintownInput find_key = *cur_key;
-            PaintownInput key = *cache_cur_key;
+        for ( vector<Input::PaintownInput>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
+            Input::PaintownInput find_key = *cur_key;
+            Input::PaintownInput key = *cache_cur_key;
             if ( find_key != key ){
                 all_pressed = false;
             }
@@ -323,7 +323,7 @@ bool Player::combo( Animation * ani, deque<PaintownInput>::iterator cache_cur_ke
 }
 
 bool Player::combo( Animation * ani ){
-    deque<PaintownInput>::iterator cur = key_cache.begin();
+    deque<Input::PaintownInput>::iterator cur = key_cache.begin();
     for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
         if ( combo( ani, cur, key_cache.end() ) ){
             return true;
@@ -332,27 +332,27 @@ bool Player::combo( Animation * ani ){
     return false;
 }
 
-int Player::getKey(PaintownInput motion, int facing){
+int Player::getKey(Input::PaintownInput motion, int facing){
     return Configuration::config(config).getKey( motion, facing );
 }
         
-const char * Player::keyToName(PaintownInput key){
+const char * Player::keyToName(Input::PaintownInput key){
     switch (key){
-        case Forward : return "forward";
-        case Back : return "back";
-        case Up : return "up";
-        case Down : return "down";
-        case Attack1 : return "attack1";
-        case Attack2 : return "attack2";
-        case Attack3 : return "attack3";
-        case Jump : return "jump";
-        case Grab : return "grab";
-        case Unknown : return "unknown";
+        case Input::Forward : return "forward";
+        case Input::Back : return "back";
+        case Input::Up : return "up";
+        case Input::Down : return "down";
+        case Input::Attack1 : return "attack1";
+        case Input::Attack2 : return "attack2";
+        case Input::Attack3 : return "attack3";
+        case Input::Jump : return "jump";
+        case Input::Grab : return "grab";
+        case Input::Unknown : return "unknown";
     }
     return "key-to-name-error";
 }
 	
-int Player::getKey(PaintownInput x){
+int Player::getKey(Input::PaintownInput x){
 	return this->getKey( x, getFacing() );
 }
 	
@@ -536,7 +536,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	/* Character handles jumping and possibly other things */
 	Character::act( others, world, add );
 
-	vector<PaintownInput> input = fillKeyCache();
+	vector<Input::PaintownInput> input = fillKeyCache();
 
         /*
         JoystickInput joyinput;
@@ -555,13 +555,13 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
         bool key_backward = false;
         bool key_up = false;
         bool key_down = false;
-        for (vector<PaintownInput>::iterator it = input.begin(); it != input.end(); it++){
-            PaintownInput & key = *it;
+        for (vector<Input::PaintownInput>::iterator it = input.begin(); it != input.end(); it++){
+            Input::PaintownInput & key = *it;
             switch (key){
-                case Forward : key_forward = true; break;
-                case Back : key_backward = true; break;
-                case Up : key_up = true; break;
-                case Down : key_down = true; break;
+                case Input::Forward : key_forward = true; break;
+                case Input::Back : key_backward = true; break;
+                case Input::Up : key_up = true; break;
+                case Input::Down : key_down = true; break;
                 default : break;
             }
         }

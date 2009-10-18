@@ -108,7 +108,7 @@ title(Bitmap::makeColor(0,255,255)){
 	}
 
     input.set(Keyboard::Key_ESC, 0, true, Exit);
-    input.set(InputMap<CreditKey>::Joystick::Button2, 0, true, Exit);
+    input.set(Joystick::Button2, 0, true, Exit);
 }
 
 OptionCredits::~OptionCredits(){

@@ -39,21 +39,21 @@ static int getKey(int player, OptionJoystick::JoystickType k)
 {
 	switch(k){
 		case OptionJoystick::up:
-			return Configuration::joystickConfig(player).getUp();
+			return Configuration::config(player).getUp();
 		case OptionJoystick::down:
-			return Configuration::joystickConfig(player).getDown();
+			return Configuration::config(player).getDown();
 		case OptionJoystick::left:
-			return Configuration::joystickConfig(player).getLeft();
+			return Configuration::config(player).getLeft();
 		case OptionJoystick::right:
-			return Configuration::joystickConfig(player).getRight();
+			return Configuration::config(player).getRight();
 		case OptionJoystick::jump:
-			return Configuration::joystickConfig(player).getJump();
+			return Configuration::config(player).getJump();
 		case OptionJoystick::attack1:
-			return Configuration::joystickConfig(player).getAttack1();
+			return Configuration::config(player).getAttack1();
 		case OptionJoystick::attack2:
-			return Configuration::joystickConfig(player).getAttack2();
+			return Configuration::config(player).getAttack2();
 		case OptionJoystick::attack3:
-			return Configuration::joystickConfig(player).getAttack3();
+			return Configuration::config(player).getAttack3();
 		case OptionJoystick::attack4:
 		case OptionJoystick::attack5:
 		case OptionJoystick::attack6:
@@ -67,28 +67,28 @@ static int getKey(int player, OptionJoystick::JoystickType k)
 static void setKey(int player, OptionJoystick::JoystickType k, int key){
 	switch(k){
 		case OptionJoystick::up:
-			Configuration::joystickConfig(player).setUp( key );
+			Configuration::config(player).setUp( key );
 			break;
         case OptionJoystick::down:
-			Configuration::joystickConfig(player).setDown( key );
+			Configuration::config(player).setDown( key );
 			break;
         case OptionJoystick::left:
-			Configuration::joystickConfig(player).setLeft( key );
+			Configuration::config(player).setLeft( key );
 			break;
         case OptionJoystick::right:
-			Configuration::joystickConfig(player).setRight( key );
+			Configuration::config(player).setRight( key );
 			break;
         case OptionJoystick::jump:
-			Configuration::joystickConfig(player).setJump( key );
+			Configuration::config(player).setJump( key );
 			break;
         case OptionJoystick::attack1:
-			Configuration::joystickConfig(player).setAttack1( key );
+			Configuration::config(player).setAttack1( key );
 			break;
         case OptionJoystick::attack2:
-			Configuration::joystickConfig(player).setAttack2( key );
+			Configuration::config(player).setAttack2( key );
 			break;
         case OptionJoystick::attack3:
-			Configuration::joystickConfig(player).setAttack3( key );
+			Configuration::config(player).setAttack3( key );
 			break;
 		case OptionJoystick::attack4:
 		case OptionJoystick::attack5:

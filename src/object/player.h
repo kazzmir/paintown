@@ -83,13 +83,13 @@ protected:
     Network::Message scoreMessage();
 
     void initializeAttackGradient();
-    std::vector<PaintownInput> fillKeyCache();
+    std::vector<Input::PaintownInput> fillKeyCache();
     void debugDumpKeyCache(int level);
-    const char * keyToName(PaintownInput key);
+    const char * keyToName(Input::PaintownInput key);
 	bool combo( Animation * ani );
-	bool combo( Animation * ani, std::deque<PaintownInput>::iterator cache_cur_key, std::deque<PaintownInput>::iterator end );
-	virtual int getKey( PaintownInput x, int facing );
-	virtual int getKey( PaintownInput x );
+	bool combo( Animation * ani, std::deque<Input::PaintownInput>::iterator cache_cur_key, std::deque<Input::PaintownInput>::iterator end );
+	virtual int getKey( Input::PaintownInput x, int facing );
+	virtual int getKey( Input::PaintownInput x );
 
 	bool canGrab( Object * enemy );
 	void grabEnemy( Object * enemy );
@@ -99,8 +99,8 @@ protected:
 protected:
 
 	/* store key presses in a stack with two ends*/
-    std::deque<PaintownInput> key_cache;
-    std::map< PaintownInput, bool > last_key;
+    std::deque<Input::PaintownInput> key_cache;
+    std::map< Input::PaintownInput, bool > last_key;
 	int acts;
 	int show_life;
 

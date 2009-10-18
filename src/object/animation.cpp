@@ -225,8 +225,8 @@ contact( NULL ){
 					// nm->print("combo ");
 					if ( !nm->hasTokens() ){
 						string key_name = nm->getName();
-						PaintownInput actualKey = convertKeyPress( key_name );
-						if ( actualKey == Unknown ){
+                        Input::PaintownInput actualKey = convertKeyPress( key_name );
+						if ( actualKey == Input::Unknown ){
 							Global::debug( 0 ) << "Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
 						}
 						// cout<<"Convert "<<key_name<<" to "<<actualKey<<endl;
@@ -236,8 +236,8 @@ contact( NULL ){
 						// for ( int i = 0; i < nm->numTokens(); i++ ){
 							string key_name;
 							*nm >> key_name;
-							PaintownInput actualKey = convertKeyPress( key_name );
-							if (actualKey == Unknown){
+                            Input::PaintownInput actualKey = convertKeyPress( key_name );
+							if (actualKey == Input::Unknown){
 								Global::debug( 0 ) <<"Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
 							}
 							press.combo.push_back(actualKey);
@@ -717,23 +717,23 @@ ECollide * Animation::getCollide( int facing ){
 }
 
 // int Animation::convertKeyPress( const string & key_name ) throw( LoadException ){
-PaintownInput Animation::convertKeyPress( const string & key_name ) {
+Input::PaintownInput Animation::convertKeyPress( const string & key_name ) {
 	// if (key_name == key_names[Keys::Idle]) return Unknown;
-	if (key_name == key_names[Keys::Jump]) return Jump;
-	if (key_name == key_names[Keys::Forward]) return Forward;
-	if (key_name == key_names[Keys::Back]) return Back;
+	if (key_name == key_names[Keys::Jump]) return Input::Jump;
+	if (key_name == key_names[Keys::Forward]) return Input::Forward;
+	if (key_name == key_names[Keys::Back]) return Input::Back;
 	/* im not sure we need a grab key */
-	if (key_name == key_names[Keys::Grab]) return Grab;
+	if (key_name == key_names[Keys::Grab]) return Input::Grab;
 	// if ( key_name == "key_right" ) return KEY_RIGHT;
-	if (key_name == key_names[Keys::Down]) return Down;
-	if (key_name == key_names[Keys::Up]) return Up;
-	if (key_name == key_names[Keys::Attack1]) return Attack1;
-	if (key_name == key_names[Keys::Attack2]) return Attack2;
-	if (key_name == key_names[Keys::Attack3]) return Attack3;
+	if (key_name == key_names[Keys::Down]) return Input::Down;
+	if (key_name == key_names[Keys::Up]) return Input::Up;
+	if (key_name == key_names[Keys::Attack1]) return Input::Attack1;
+	if (key_name == key_names[Keys::Attack2]) return Input::Attack2;
+	if (key_name == key_names[Keys::Attack3]) return Input::Attack3;
 
     Global::debug(1) << "Unknown key name '" << key_name << "'" << endl;
 
-	return Unknown;
+	return Input::Unknown;
 
 	// return KEY_ENTER;
 }

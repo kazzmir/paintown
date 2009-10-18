@@ -2,6 +2,7 @@
 #include "util/keyboard.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
+#include "game/input.h"
 #include "globals.h"
 #include "object/animation.h"
 #include "object/object.h"
@@ -44,6 +45,8 @@ define_config(up, "up");
 
 using namespace std;
 
+static const int InvalidKey = 0;
+
 Configuration Configuration::defaultPlayer1Keys(){
 	Configuration config;
 	config.setRight( Keyboard::Key_RIGHT );
@@ -54,20 +57,19 @@ Configuration Configuration::defaultPlayer1Keys(){
 	config.setAttack2( Keyboard::Key_S );
 	config.setAttack3( Keyboard::Key_D );
 	config.setJump( Keyboard::Key_SPACE );
-	return config;
-}
-	
-Configuration Configuration::defaultPlayer1Joystick(){
-	Configuration config;
-    /* change these things to joystick values */
-    config.setRight( Keyboard::Key_RIGHT );
-	config.setLeft( Keyboard::Key_LEFT );
-	config.setUp( Keyboard::Key_UP );
-	config.setDown( Keyboard::Key_DOWN );
-	config.setAttack1( Keyboard::Key_A );
-	config.setAttack2( Keyboard::Key_S );
-	config.setAttack3( Keyboard::Key_D );
-	config.setJump( Keyboard::Key_SPACE );
+
+    /* these mappings should agree with input-manager.cpp:convertJoystickKey,
+     * but otherwise they are completely arbitrary
+     */
+    config.setJoystickRight(Joystick::Right);
+	config.setJoystickLeft(Joystick::Left);
+	config.setJoystickUp(Joystick::Up);
+	config.setJoystickDown(Joystick::Down);
+	config.setJoystickAttack1(Joystick::Button1);
+	config.setJoystickAttack2(Joystick::Button2);
+	config.setJoystickAttack3(Joystick::Button3);
+	config.setJoystickJump(Joystick::Button4);
+
 	return config;
 }
 
@@ -103,39 +105,26 @@ Configuration & Configuration::config( int set ){
 	return *configs[ set ];
 }
 
-Configuration & Configuration::joystickConfig(int set){
-    /* cheap hack so we can re-use the same map of configs. joystick
-     * configs just start at 100
-     */
-    set += 100;
-
-	if (configs[set] == NULL ){
-		configs[set] = new Configuration();
-		switch( set ){
-			case 0 : {
-				*configs[ set ] = defaultPlayer1Joystick();
-				break;
-			}
-                     /*
-			case 1 : {
-				*configs[ set ] = defaultPlayer2Keys();
-				break;
-			}
-            */
-		}
-	}
-	return *configs[ set ];
-}
-
+/* hopefully this is only used right before setting all the values
+ * since the key mappings are bogus in here'
+ */
 Configuration::Configuration():
-right( 0 ),
-left( 0 ),
-up( 0 ),
-down( 0 ),
-attack1( 0 ),
-attack2( 0 ),
-attack3( 0 ),
-jump( 0 ){
+right(InvalidKey),
+left(InvalidKey),
+up(InvalidKey),
+down(InvalidKey),
+attack1(InvalidKey),
+attack2(InvalidKey),
+attack3(InvalidKey),
+jump(InvalidKey),
+joystick_right(Joystick::Up),
+joystick_left(Joystick::Up),
+joystick_up(Joystick::Up),
+joystick_down(Joystick::Up),
+joystick_attack1(Joystick::Up),
+joystick_attack2(Joystick::Up),
+joystick_attack3(Joystick::Up),
+joystick_jump(Joystick::Up){
 }
 
 Configuration::Configuration( const Configuration & config ):
@@ -146,10 +135,20 @@ down( config.getDown() ),
 attack1( config.getAttack1() ),
 attack2( config.getAttack2() ),
 attack3( config.getAttack3() ),
-jump( config.getJump() ){
+jump( config.getJump() ),
+joystick_right( config.getJoystickRight() ),
+joystick_left( config.getJoystickLeft() ),
+joystick_up( config.getJoystickUp() ),
+joystick_down( config.getJoystickDown() ),
+joystick_attack1( config.getJoystickAttack1() ),
+joystick_attack2( config.getJoystickAttack2() ),
+joystick_attack3( config.getJoystickAttack3() ),
+joystick_jump( config.getJoystickJump() )
+{
     menuFont = config.menuFont;
 }
-	
+
+/*
 Configuration::Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump ):
 right( right ),
 left( left ),
@@ -160,6 +159,7 @@ attack2( attack2 ),
 attack3( attack3 ),
 jump( jump ){
 }
+*/
 	
 Configuration & Configuration::operator=( const Configuration & config ){
 	setRight( config.getRight() );
@@ -170,31 +170,41 @@ Configuration & Configuration::operator=( const Configuration & config ){
 	setAttack2( config.getAttack2() );
 	setAttack3( config.getAttack3() );
 	setJump( config.getJump() );
-        setMenuFont(config.getMenuFont());
+
+    setJoystickRight( config.getJoystickRight() );
+	setJoystickLeft( config.getJoystickLeft() );
+	setJoystickUp( config.getJoystickUp() );
+	setJoystickDown( config.getJoystickDown() );
+	setJoystickAttack1( config.getJoystickAttack1() );
+	setJoystickAttack2( config.getJoystickAttack2() );
+	setJoystickAttack3( config.getJoystickAttack3() );
+	setJoystickJump( config.getJoystickJump() );
+
+    setMenuFont(config.getMenuFont());
 	return *this;
 }
 	
 Configuration::~Configuration(){
 }
 
-int Configuration::getKey( PaintownInput which, int facing ){
+int Configuration::getKey( Input::PaintownInput which, int facing ){
 	switch( which ){
-		case Forward : {
+        case Input::Forward : {
 			if ( facing == Object::FACING_LEFT ) 
-				return left;
-			else 	return right;
+                return this->left;
+            else 	return this->right;
 		}
-		case Back : {
+        case Input::Back : {
 			if ( facing == Object::FACING_LEFT )
-				return right;
-			else	return left;
+				return this->right;
+			else	return this->left;
 		}
-		case Up : return up;
-		case Down : return down;
-		case Attack1 : return attack1;
-		case Attack2 : return attack2;
-		case Attack3 : return attack3;
-		case Jump : return jump;
+        case Input::Up : return this->up;
+		case Input::Down : return this->down;
+		case Input::Attack1 : return this->attack1;
+		case Input::Attack2 : return this->attack2;
+		case Input::Attack3 : return this->attack3;
+		case Input::Jump : return this->jump;
 		default : return -1;
 	}
 }
@@ -208,43 +218,59 @@ void Configuration::setMenuFont(const std::string & str){
 }
 
 void Configuration::setRight( int i ){
-	right = i;
-	saveConfiguration();
+    if (i != InvalidKey){
+        right = i;
+        saveConfiguration();
+    }
 }
 
 void Configuration::setLeft( int i ){
-	left = i;
-	saveConfiguration();
+    if (i != InvalidKey){
+        left = i;
+        saveConfiguration();
+    }
 }
 
 void Configuration::setUp( int i ){
-	up = i;
-	saveConfiguration();
+    if (i != InvalidKey){
+        up = i;
+        saveConfiguration();
+    }
 }
 
 void Configuration::setDown( int i ){
-	down = i;	
-	saveConfiguration();
+    if (i != InvalidKey){
+        down = i;	
+        saveConfiguration();
+    }
 }
 
 void Configuration::setAttack1( int i ){
-	attack1 = i;
-	saveConfiguration();
+    if (i != InvalidKey){
+        attack1 = i;
+        saveConfiguration();
+    }
 }
 
 void Configuration::setAttack2( int i ){
-	attack2 = i;
-	saveConfiguration();
+    if (i != InvalidKey){
+        attack2 = i;
+        saveConfiguration();
+    }
 }
 
 void Configuration::setAttack3( int i ){
-	attack3 = i;
-	saveConfiguration();
+    if (i != InvalidKey){
+        attack3 = i;
+        saveConfiguration();
+    }
 }
 
 void Configuration::setJump( int i ){
-	jump = i;
-	saveConfiguration();
+    if (i != InvalidKey){
+        jump = i;
+        saveConfiguration();
+    }
 }
 
 int Configuration::getRight() const {
@@ -278,7 +304,71 @@ int Configuration::getAttack3() const {
 int Configuration::getJump() const {
 	return jump;
 }
-    
+
+void Configuration::setJoystickRight(Configuration::JoystickInput i ){
+    joystick_right = i;
+}
+
+void Configuration::setJoystickLeft(Configuration::JoystickInput i ){
+    joystick_left = i;
+}
+
+void Configuration::setJoystickUp(Configuration::JoystickInput i ){
+    joystick_up = i;
+}
+
+void Configuration::setJoystickDown(Configuration::JoystickInput i ){
+    joystick_down = i;
+}
+
+void Configuration::setJoystickAttack1(Configuration::JoystickInput i ){
+    joystick_attack1 = i;
+}
+
+void Configuration::setJoystickAttack2(Configuration::JoystickInput i ){
+    joystick_attack2 = i;
+}
+
+void Configuration::setJoystickAttack3(Configuration::JoystickInput i ){
+    joystick_attack3 = i;
+}
+
+void Configuration::setJoystickJump(Configuration::JoystickInput i ){
+    joystick_jump = i;
+}
+
+Configuration::JoystickInput Configuration::getJoystickRight() const {
+    return joystick_right;
+}
+
+Configuration::JoystickInput Configuration::getJoystickLeft() const {
+    return joystick_left;
+}
+
+Configuration::JoystickInput Configuration::getJoystickUp() const {
+    return joystick_up;
+}
+
+Configuration::JoystickInput Configuration::getJoystickDown() const {
+    return joystick_down;
+}
+
+Configuration::JoystickInput Configuration::getJoystickAttack1() const {
+    return joystick_attack1;
+}
+
+Configuration::JoystickInput Configuration::getJoystickAttack2() const {
+    return joystick_attack2;
+}
+
+Configuration::JoystickInput Configuration::getJoystickAttack3() const {
+    return joystick_attack3;
+}
+
+Configuration::JoystickInput Configuration::getJoystickJump() const {
+    return joystick_jump;
+}
+
 string Configuration::getCurrentGame(){
     return currentGameDir;
 }
@@ -321,8 +411,11 @@ void Configuration::loadConfigurations(){
              */
             if ( *n == config_keyboard_configuration ){
                 int number = -1;
-                int right = 0, left = 0, down = 0, up = 0;
-                int attack1 = 0, attack2 = 0, attack3 = 0, jump = 0;
+                int right, left, down, up, attack1,
+                    attack2, attack3, jump;
+                right = left = down = up = attack1 = attack2
+                      = attack3 = jump = InvalidKey;
+
                 while ( n->hasTokens() ){
                     Token * thing;
                     *n >> thing;
@@ -350,7 +443,15 @@ void Configuration::loadConfigurations(){
                     /* should use config_number here */
                     throw LoadException( string("Config file ") + configFile() + " does not specifiy (number #) for a keyboard-configuration" );
                 }
-                configs[ number ] = new Configuration( right, left, up, down, attack1, attack2, attack3, jump );
+                Configuration & myconfig = config(number);
+                myconfig.setRight(right);
+                myconfig.setLeft(left);
+                myconfig.setUp(up);
+                myconfig.setDown(down);
+                myconfig.setAttack1(attack1);
+                myconfig.setAttack2(attack2);
+                myconfig.setAttack3(attack3);
+                myconfig.setJump(jump);
             } else if ( *n == config_game_speed){
                 *n >> gamespeed;
             } else if ( *n == config_invincible){
