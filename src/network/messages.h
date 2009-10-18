@@ -11,11 +11,11 @@ class Messages{
 public:
 	Messages(int width, int height, int opaque = 128);
 
-	virtual inline const int getHeight() const {
+	virtual inline int getHeight() const {
 		return height;
 	}
 	
-	virtual inline const int getWidth() const {
+	virtual inline int getWidth() const {
 		return width;
 	}
 

@@ -2051,7 +2051,7 @@ namespace sigslot {
 				;
 			}
 	
-			~has_signals()
+			virtual ~has_signals()
 			{
 				;
 				remove_connections();

@@ -14,7 +14,7 @@
 
 using namespace std;
 
-OptionKey::keyType convertToKey(const std::string &k)
+static OptionKey::keyType convertToKey(const std::string &k)
 {
 	std::string temp = k;
 	for(unsigned int i=0;i<temp.length();i++)

@@ -70,7 +70,7 @@ Key getNth( const map< Key, Value > & m, int i ){
 }
 */
 
-vector<DisplayCharacter*> getCharacters(PlayerVector players){
+static vector<DisplayCharacter*> getCharacters(PlayerVector players){
     vector<DisplayCharacter*> characters;
     for (PlayerVector::iterator it = players.begin(); it != players.end(); it++){
         characters.push_back(it->guy);

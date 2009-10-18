@@ -126,10 +126,10 @@ static string findNextFile( const char * name ){
 	strncpy( first, name, extension - name );
 	first[ extension - name ] = '\0';
 	unsigned int num = 0;
-	sprintf( buf, "%s%d%s", first, num, extension );
+	sprintf( buf, "%s%u%s", first, num, extension );
 	do{
 		num += 1;
-		sprintf( buf, "%s%d%s", first, num, extension );
+		sprintf( buf, "%s%u%s", first, num, extension );
         /* num != 0 prevents an infinite loop in the extremely
          * remote case that the user has 2^32 files in the directory
          */
@@ -222,7 +222,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
     /* 150 pixel tall console */
     Console console(150);
-    bool toggleConsole = false;
+    // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;
 
     world.getEngine()->createWorld(world);
@@ -304,7 +304,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
             if (inputState[Game::Console]){
                 console.toggle();
-                toggleConsole = true;
+                // toggleConsole = true;
             }
 
             takeScreenshot = inputState[Game::Screenshot];
@@ -681,6 +681,11 @@ void fadeOut( Bitmap & work, const string & message ){
 	Util::rest( 2000 );
 }
 
+static bool closeFloat(double a, double b){
+    const double epsilon = 0.0001;
+    return fabs(a-b) < epsilon;
+}
+
 void playVersusMode( Character * player1, Character * player2, int round ) throw( ReturnException ){
 
 	player1->setY( 0 );
@@ -870,7 +875,7 @@ void playVersusMode( Character * player1, Character * player2, int round ) throw
 
 			if ( (min_x_1 < min_x_2 && max_x_1 > min_x_2) ||
 			     (min_x_2 < min_x_1 && max_x_2 > min_x_1) ||
-			     (min_x_1 == min_x_2) ){
+			     (closeFloat(min_x_1, min_x_2)) ){
 			     /* the players are close enough together to show
 			      * them in the same screen
 			      */

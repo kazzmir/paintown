@@ -20,13 +20,11 @@ Bitmap const * Shadow::getShadow( unsigned int y ){
 		foo = my_shadow->shadows.size() - 1;
 	}
 	*/
-	if ( y < 0 )
-		y = 0;
 	if ( y >= my_shadow->shadows.size() ){
 		y = my_shadow->shadows.size() - 1;
 	}
 
-	return my_shadow->shadows[ y ];
+	return my_shadow->shadows[y];
 }
 
 void Shadow::destroy(){

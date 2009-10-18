@@ -296,7 +296,6 @@ bool ChatClient::logic( Keyboard & keyboard ){
 			lineEdit->position.border = Bitmap::makeColor(255,255,0);
 			handleInput( keyboard );
 			return false;
-			break;
 		}
 		case QUIT : {
 			lineEdit->position.border = Bitmap::makeColor(255,255,255);

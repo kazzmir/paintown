@@ -92,11 +92,11 @@ int messageSize<Message*>(Message* const & message){
     return message->size();
 }
 */
-int messageSize(Message const & message){
+static int messageSize(Message const & message){
     return message.size();
 }
 
-int messageSize(Message* const & message){
+static int messageSize(Message* const & message){
     return message->size();
 }
 
@@ -114,16 +114,16 @@ uint8_t * messageDump<Message*>(Message* const & message, uint8_t * buffer){
     return message->dump(buffer);
 }
 */
-uint8_t * messageDump(const Message & message, uint8_t * buffer){
+static uint8_t * messageDump(const Message & message, uint8_t * buffer){
     return message.dump(buffer);
 }
 
-uint8_t * messageDump(Message* const & message, uint8_t * buffer){
+static uint8_t * messageDump(Message* const & message, uint8_t * buffer){
     return message->dump(buffer);
 }
 
 template <typename M>
-int totalSize(const vector<M> & messages){
+static int totalSize(const vector<M> & messages){
     int size = 0;
     for (typename vector<M>::const_iterator it = messages.begin(); it != messages.end(); it++){
         // size += messageSize<M>(*it);
@@ -133,14 +133,14 @@ int totalSize(const vector<M> & messages){
 }
 
 template <class M>
-void dump(const std::vector<M> & messages, uint8_t * buffer ){
+static void dump(const std::vector<M> & messages, uint8_t * buffer ){
     for (typename vector<M>::const_iterator it = messages.begin(); it != messages.end(); it++ ){
         buffer = messageDump(*it, buffer);
     }
 }
 
 template <class M>
-void doSendAllMessages(const vector<M> & messages, Socket socket){
+static void doSendAllMessages(const vector<M> & messages, Socket socket){
     int length = totalSize<M>(messages);
     uint8_t * data = new uint8_t[length];
     dump<M>(messages, data);

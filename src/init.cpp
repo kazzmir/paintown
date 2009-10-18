@@ -47,17 +47,17 @@ const int Global::WINDOWED = GFX_AUTODETECT_WINDOWED;
 const int Global::FULLSCREEN = GFX_AUTODETECT_FULLSCREEN;
 
 /* game counter, controls FPS */
-void inc_speed_counter(){
+static void inc_speed_counter(){
     /* probably put input polling here, InputManager::poll() */
     Global::speed_counter += 1;
 }
-END_OF_FUNCTION( inc_speed_counter );
+END_OF_FUNCTION( inc_speed_counter )
 
 /* if you need to count seconds for some reason.. */
-void inc_second_counter() {
+static void inc_second_counter() {
     Global::second_counter += 1;
 }
-END_OF_FUNCTION( inc_second_counter );
+END_OF_FUNCTION( inc_second_counter )
 
 #ifndef ALLEGRO_WINDOWS
 static void handleSigSegV(int i, siginfo_t * sig, void * data){

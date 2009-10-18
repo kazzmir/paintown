@@ -280,7 +280,7 @@ def getEnvironment():
         env['CC'] = 'icc'
         env['CXX'] = 'icpc'
         # '-Werror-all', '-Weffc++'
-        env.Append(CCFLAGS = ['-wd981'],
+        env.Append(CCFLAGS = ['-wd981', '-wd2259'],
                    CXXFLAGS = ['-wd981', '-wd271',
                                '-wd383', '-wd869',
                                '-wd1599'])

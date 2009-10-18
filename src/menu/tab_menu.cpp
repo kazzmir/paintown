@@ -268,6 +268,11 @@ namespace Tab{
     };
 }
 
+static bool closeFloat(double a, double b){
+    const double epsilon = 0.001;
+    return fabs(a-b) < epsilon;
+}
+
 void TabMenu::run() throw (ReturnException) {
     //bool endMenu = false;
     bool done = false;
@@ -437,7 +442,7 @@ void TabMenu::run() throw (ReturnException) {
                 // Lets do some logic for the box with text
                 updateFadeInfo();
 
-                if (scrollCounter == 0 && totalOffset != targetOffset){
+                if (scrollCounter == 0 && !closeFloat(totalOffset, targetOffset)){
                     totalOffset = (totalOffset + targetOffset) / 2;
                     /* not sure if this is stricly necessary */
                     if (fabs(targetOffset - totalOffset) < 5){

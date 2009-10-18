@@ -25,7 +25,7 @@ class Client{
 public:
 	Client( Network::Socket socket, ChatServer * server, unsigned int id );
 
-	inline const unsigned int getId(){
+	inline unsigned int getId(){
 		return id;
 	}
 
@@ -161,7 +161,7 @@ protected:
 	void startThreadsHack();
 
 	/* return a new connection id */
-	inline const int clientId(){
+	inline int clientId(){
 		return client_id++;
 	}
 	

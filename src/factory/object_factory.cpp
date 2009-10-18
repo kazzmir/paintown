@@ -146,7 +146,6 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 
 				return makeItem( (Item *) cached[ block->getPath() ]->copy(), block );
 
-				break;
 			}
 			case NetworkCharacterType : {
 				if ( cached[ block->getPath() ] == NULL ){
@@ -155,16 +154,14 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
                     Global::info("Cached " + block->getPath());
 				}
 				return makeNetworkCharacter( (NetworkCharacter *) cached[ block->getPath() ]->copy(), block );
-				break;
 			}
-                        case NetworkPlayerType : {
+            case NetworkPlayerType : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new NetworkPlayer( block->getPath(), 0 );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
                     Global::info("Cached " + block->getPath());
 				}
 				return makeNetworkPlayer( (NetworkPlayer *) cached[ block->getPath() ]->copy(), block );
-				break;
 			}
 			case ActorType : {
 				if ( cached[ block->getPath() ] == NULL ){
@@ -174,7 +171,6 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				}
 
 				return makeActor( (Actor *) cached[ block->getPath() ]->copy(), block );
-				break;
 			}
 			case EnemyType : {
 				if ( cached[ block->getPath() ] == NULL ){
@@ -184,7 +180,6 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				}
 
 				return makeEnemy( (Enemy *) cached[ block->getPath() ]->copy(), block );
-				break;
 			}
 			case CatType : {
 				if ( cached[ block->getPath() ] == NULL ){
@@ -194,7 +189,6 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				}
 
 				return makeCat( (Cat *) cached[ block->getPath() ]->copy(), block );
-				break;
 			}
 			default : {
 				Global::debug( 0 ) <<__FILE__<<": No type given for: "<<block->getPath()<<endl;
