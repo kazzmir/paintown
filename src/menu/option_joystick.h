@@ -26,18 +26,18 @@ public:
 
     //! keys
     enum JoystickType{
-        up=0,
-        down,
-        left,
-        right,
-        jump,
-        attack1,
-        attack2,
-        attack3,
-        attack4,
-        attack5,
-        attack6,
-        invalidkey
+        Up = 0,
+        Down,
+        Left,
+        Right,
+        Jump,
+        Attack1,
+        Attack2,
+        Attack3,
+        Attack4,
+        Attack5,
+        Attack6,
+        Invalidkey
     };
 
 private:
