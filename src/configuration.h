@@ -9,7 +9,9 @@ class Token;
 class Configuration{
 public:
 
-	static Configuration & config( int x );
+	static Configuration & config(int x);
+    static Configuration & joystickConfig(int x);
+
 	static void loadConfigurations();
 	static void saveConfiguration();
 
@@ -72,6 +74,7 @@ protected:
 
 	static Configuration defaultPlayer1Keys();
 	static Configuration defaultPlayer2Keys();
+	static Configuration defaultPlayer1Joystick();
 
 	static Token * saveKeyboard( int num, Configuration * configuration );
 

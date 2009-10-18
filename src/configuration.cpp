@@ -56,6 +56,20 @@ Configuration Configuration::defaultPlayer1Keys(){
 	config.setJump( Keyboard::Key_SPACE );
 	return config;
 }
+	
+Configuration Configuration::defaultPlayer1Joystick(){
+	Configuration config;
+    /* change these things to joystick values */
+    config.setRight( Keyboard::Key_RIGHT );
+	config.setLeft( Keyboard::Key_LEFT );
+	config.setUp( Keyboard::Key_UP );
+	config.setDown( Keyboard::Key_DOWN );
+	config.setAttack1( Keyboard::Key_A );
+	config.setAttack2( Keyboard::Key_S );
+	config.setAttack3( Keyboard::Key_D );
+	config.setJump( Keyboard::Key_SPACE );
+	return config;
+}
 
 Configuration Configuration::defaultPlayer2Keys(){
 	Configuration config;
@@ -84,6 +98,30 @@ Configuration & Configuration::config( int set ){
 				*configs[ set ] = defaultPlayer2Keys();
 				break;
 			}
+		}
+	}
+	return *configs[ set ];
+}
+
+Configuration & Configuration::joystickConfig(int set){
+    /* cheap hack so we can re-use the same map of configs. joystick
+     * configs just start at 100
+     */
+    set += 100;
+
+	if (configs[set] == NULL ){
+		configs[set] = new Configuration();
+		switch( set ){
+			case 0 : {
+				*configs[ set ] = defaultPlayer1Joystick();
+				break;
+			}
+                     /*
+			case 1 : {
+				*configs[ set ] = defaultPlayer2Keys();
+				break;
+			}
+            */
 		}
 	}
 	return *configs[ set ];

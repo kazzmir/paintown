@@ -200,11 +200,20 @@ void TabMenu::load(Token *token) throw (LoadException){
                     } else {
                         menu->menu.load(tok);
                     }
-                    tabs.push_back(menu);
-                    const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
-                    // set info on the box itself
-                    menu->position.width = vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W;
-                    menu->position.height = vFont.getHeight() + TEXT_SPACING_H;
+
+                    /* if the menu didn't have any options then we shouldn't include
+                     * it. if we try to render a menu without options we will
+                     * crash later on.
+                     */
+                    if (menu->menu.hasSomeOptions()){
+                        tabs.push_back(menu);
+                        const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
+                        // set info on the box itself
+                        menu->position.width = vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W;
+                        menu->position.height = vFont.getHeight() + TEXT_SPACING_H;
+                    } else {
+                        delete menu;
+                    }
                 } else {
                     throw LoadException("Problem reading menu");
                 }

@@ -1,11 +1,13 @@
 #include "util/token.h"
 #include "optionfactory.h"
+#include "util/load_exception.h"
 #include "menu_option.h"
 #include "option_adventure.h"
 #include "option_adventure_cpu.h"
 #include "option_credits.h"
 #include "option_invincible.h"
 #include "option_key.h"
+#include "option_joystick.h"
 #include "option_menu.h"
 #include "option_playmode.h"
 #include "option_change_mod.h"
@@ -27,7 +29,7 @@
 
 using namespace std;
 
-MenuOption * OptionFactory::getOption(Token *token){
+MenuOption * OptionFactory::getOption(Token *token) throw (LoadException) {
 	Token * tok;
 	*token >> tok;
 	if ( *tok == "menu" ){
@@ -39,6 +41,9 @@ MenuOption * OptionFactory::getOption(Token *token){
 	} else if ( *tok == "key" ){
 		// Reconfigure a given key
 		return new OptionKey(tok);
+	} else if ( *tok == "joystick" ){
+		// Reconfigure a given joystick button
+		return new OptionJoystick(tok);
 	} else if ( *tok == "adventure" ){
 		// Adventure mode
 		return new OptionAdventure(tok);

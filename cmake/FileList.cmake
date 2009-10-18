@@ -151,6 +151,7 @@ src/menu/option_fullscreen.cpp
 src/menu/option_invincible.cpp
 src/menu/option_change_mod.cpp
 src/menu/option_key.cpp
+src/menu/option_joystick.cpp
 src/menu/option_level.cpp
 src/menu/option_lives.cpp
 src/menu/option_playmode.cpp

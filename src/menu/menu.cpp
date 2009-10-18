@@ -181,9 +181,14 @@ void Menu::load(Token *token) throw (LoadException){
                 *tok >> str >> sharedFontWidth >> sharedFontHeight; 
                 sharedFont = Filesystem::find(str);
             } else if( *tok == "option" ) {
-                MenuOption *temp = OptionFactory::getOption(tok);
-                if (temp){
-                    addOption(temp);
+                try{
+                    MenuOption *temp = OptionFactory::getOption(tok);
+                    if (temp){
+                        addOption(temp);
+                    }
+                } catch (const LoadException & le){
+                    Global::debug(0) << "Could not read option: " << le.getReason() << endl;
+                    tok->print(" ");
                 }
             } else if( *tok == "action" ) {
                 ActionAct(tok);

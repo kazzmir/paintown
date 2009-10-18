@@ -103,6 +103,10 @@ class Menu
 		inline bool isOption() const { return option; }
 		
 		inline void setInfoText(const std::string &text) { menuInfo = text; }
+
+        inline bool hasSomeOptions() const {
+            return hasOptions;
+        }
         
         /* finish initializing stuff for options */
         void setupOptions();
