@@ -32,8 +32,6 @@ static std::string sharedFont = "";
 static int sharedFontWidth = 24;
 static int sharedFontHeight = 24;
 
-const int yellow = Bitmap::makeColor(255, 255, 0);
-const int white = Bitmap::makeColor(255, 255, 255);
 
 Point::Point():
 x(0),
@@ -749,6 +747,16 @@ void Menu::drawTextBoard(Bitmap *bmp){
 	}
 }
 
+int Menu::getSelectedColor(bool selected){
+    if (selected){
+        static int color = Bitmap::makeColor(26,225,227);
+        return color;
+    } else {
+        static int white = Bitmap::makeColor(255,255,255);
+        return white;
+    }
+}
+
 //! Draw text
 void Menu::drawText(const Box &area, Bitmap *bmp){
     const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
@@ -785,7 +793,9 @@ void Menu::drawText(const Box &area, Bitmap *bmp){
     for (int i=0;i<displayTotal;++i){
         std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter % menuOptions.size();
         const int startx = (area.position.width/2)-(vFont.textLength((*iterOption)->getText().c_str())/2);
-        const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
+
+        // const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
+        const unsigned int color = getSelectedColor((*iterOption)->getState() == MenuOption::Selected);
 
         int distance;
         if (i > fromMiddle){
@@ -932,6 +942,7 @@ void Menu::drawInfoBox (const std::string &info, const Point &location, Bitmap *
             // Draw text
             int sy = area.position.y - 5;
             for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
+                static int white = Bitmap::makeColor(255,255,255);
                 string & str = *it;
                 vFont.printf(area.position.x + 5, sy, white, *bmp, str, 0 );
                 sy += vFont.getHeight();

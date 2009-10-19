@@ -164,6 +164,8 @@ class Menu
 		//! Draw info box
 		void drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp );
 
+                int getSelectedColor(bool selected);
+
 		
 		//! General text about the menu, similar to info about options if empty it draws nothing it also borrows the colors of the main menu box
 		std::string menuInfo;
