@@ -411,14 +411,14 @@ void TabMenu::run() throw (ReturnException) {
                     }
 
                     if (inputState[Tab::Exit]){
-                        /* is there a reason to set done = true? */
+                        /* is there a reason to set done = true ? */
                         done = true;
                         InputManager::waitForRelease(input, Tab::Exit);
                         throw ReturnException();
                     }
                 } else {
                     try{
-                        (*currentTab)->menu.act(done);
+                        (*currentTab)->menu.act(done, false);
                         (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
                     } catch (const ReturnException & re){
                         (*currentTab)->running = false;

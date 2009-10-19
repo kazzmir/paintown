@@ -126,6 +126,7 @@ static Configuration::JoystickInput readJoystick() throw (ReturnException){
             }
         }
         if (output[Joystick::Invalid]){
+            InputManager::waitForRelease(input, Joystick::Invalid);
             throw ReturnException();
         }
         Util::rest(1);

@@ -295,7 +295,7 @@ static void tryPlaySound(const string & path){
 }
 
 /*! Logic */
-void Menu::act(bool &endGame) throw (ReturnException){
+void Menu::act(bool &endGame, bool reset) throw (ReturnException){
 
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
 
@@ -368,7 +368,9 @@ void Menu::act(bool &endGame) throw (ReturnException){
                 (*selectedOption)->run(endGame);
             } catch (const ReturnException & re){
                 /* hack to make sure the current menu is drawn properly */
-                resetFadeInfo();
+                if (reset){
+                    resetFadeInfo();
+                }
                 tryPlaySound(backSound);
             }
             (*selectedOption)->setState(MenuOption::Selected);
