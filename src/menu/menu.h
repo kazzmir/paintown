@@ -5,6 +5,7 @@
 #include <string>
 
 #include "util/load_exception.h"
+#include "util/gradient.h"
 #include "game/input-map.h"
 #include "return_exception.h"
 #include "gui/box.h"
@@ -211,9 +212,7 @@ class Menu
 		//! This is the location of the option info text
 		Point optionInfoTextLocation;
 
-                unsigned int selectedGradientIndex;
-                static const int selectedGradientMax = 40;
-                int selectedGradient[selectedGradientMax];
+                Effects::Gradient selectedGradient;
 
         enum MenuInput{
             Up,

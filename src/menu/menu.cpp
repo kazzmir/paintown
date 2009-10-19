@@ -32,6 +32,7 @@ static std::string sharedFont = "";
 static int sharedFontWidth = 24;
 static int sharedFontHeight = 24;
 
+static const int GradientMax = 50;
 
 Point::Point():
 x(0),
@@ -46,11 +47,23 @@ y(y){
 Point::~Point(){
 }
 
-Menu::Menu(const std::string & str) throw (LoadException) {
+static int selectedGradientStart(){
+    static int color = Bitmap::makeColor(19, 167, 168);
+    return color;
+}
+
+static int selectedGradientEnd(){
+    static int color = Bitmap::makeColor(27, 237, 239);
+    return color;
+}
+
+Menu::Menu(const std::string & str) throw (LoadException):
+selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
     load(str);
 }
 
-Menu::Menu(Token * token) throw (LoadException) {
+Menu::Menu(Token * token) throw (LoadException):
+selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
     load(token);
 }
 
@@ -70,7 +83,8 @@ fadeAlpha(0),
 fadeSpeed(12),
 background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
-option(false){
+option(false),
+selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
 	backboard.position.radius = 15;
 	optionInfoTextLocation.x = 320;
 	optionInfoTextLocation.y = 100;
@@ -245,10 +259,6 @@ void Menu::load(Token *token) throw (LoadException){
     if (hasOptions){
         setupOptions();
     }
-
-    Util::blend_palette(selectedGradient, selectedGradientMax / 2, Bitmap::makeColor(19, 167, 168), Bitmap::makeColor(27, 237, 239));
-    Util::blend_palette(selectedGradient + selectedGradientMax / 2, selectedGradientMax / 2, Bitmap::makeColor(27, 237, 239), Bitmap::makeColor(19, 167, 168));
-    selectedGradientIndex = 0;
 }
 
 void Menu::setupOptions(){
@@ -753,7 +763,7 @@ void Menu::drawTextBoard(Bitmap *bmp){
 
 int Menu::getSelectedColor(bool selected){
     if (selected){
-        return selectedGradient[selectedGradientIndex];
+        return selectedGradient.current();
     } else {
         static int white = Bitmap::makeColor(255,255,255);
         return white;
@@ -775,7 +785,7 @@ void Menu::drawText(const Box &area, Bitmap *bmp){
     int middle = 0;
     int currentCounter = 0;
 
-    selectedGradientIndex = (selectedGradientIndex + 1) % selectedGradientMax;
+    selectedGradient.update();
 
     /*
     int optionAlphaIncrements = 250 / (fromMiddle + 1);
