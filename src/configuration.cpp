@@ -119,14 +119,14 @@ attack1(InvalidKey),
 attack2(InvalidKey),
 attack3(InvalidKey),
 jump(InvalidKey),
-joystick_right(Joystick::Up),
-joystick_left(Joystick::Up),
-joystick_up(Joystick::Up),
-joystick_down(Joystick::Up),
-joystick_attack1(Joystick::Up),
-joystick_attack2(Joystick::Up),
-joystick_attack3(Joystick::Up),
-joystick_jump(Joystick::Up){
+joystick_right(Joystick::Invalid),
+joystick_left(Joystick::Invalid),
+joystick_up(Joystick::Invalid),
+joystick_down(Joystick::Invalid),
+joystick_attack1(Joystick::Invalid),
+joystick_attack2(Joystick::Invalid),
+joystick_attack3(Joystick::Invalid),
+joystick_jump(Joystick::Invalid){
 }
 
 Configuration::Configuration( const Configuration & config ):
@@ -576,6 +576,7 @@ void Configuration::loadConfigurations(){
     }
 }
 
+/* todo: combine saveKeyboard and saveJoystick, probably using a templated function */
 Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
     typedef int (Configuration::*get_func)() const;
     Token * config = new Token();
