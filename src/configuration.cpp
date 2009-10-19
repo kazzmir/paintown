@@ -32,6 +32,7 @@ define_config(game_speed, "game-speed");
 define_config(invincible, "invincible");
 define_config(jump, "jump");
 define_config(keyboard_configuration, "keyboard-configuration");
+define_config(joystick_configuration, "joystick-configuration");
 define_config(left, "left");
 define_config(lives, "lives");
 define_config(menu_font, "menu-font");
@@ -46,6 +47,7 @@ define_config(up, "up");
 using namespace std;
 
 static const int InvalidKey = 0;
+static const Configuration::JoystickInput InvalidJoystick = Joystick::Invalid;
 
 Configuration Configuration::defaultPlayer1Keys(){
 	Configuration config;
@@ -274,67 +276,83 @@ void Configuration::setJump( int i ){
 }
 
 int Configuration::getRight() const {
-	return right;
+    return right;
 }
 
 int Configuration::getLeft() const {
-	return left;
+    return left;
 }
 
 int Configuration::getUp() const {
-	return up;
+    return up;
 }
 
 int Configuration::getDown() const {
-	return down;
+    return down;
 }
 
 int Configuration::getAttack1() const {
-	return attack1;
+    return attack1;
 }
 
 int Configuration::getAttack2() const {
-	return attack2;
+    return attack2;
 }
 
 int Configuration::getAttack3() const {
-	return attack3;
+    return attack3;
 }
 
 int Configuration::getJump() const {
-	return jump;
+    return jump;
 }
 
 void Configuration::setJoystickRight(Configuration::JoystickInput i ){
-    joystick_right = i;
+    if (i != Joystick::Invalid){
+        joystick_right = i;
+    }
 }
 
 void Configuration::setJoystickLeft(Configuration::JoystickInput i ){
-    joystick_left = i;
+    if (i != Joystick::Invalid){
+        joystick_left = i;
+    }
 }
 
 void Configuration::setJoystickUp(Configuration::JoystickInput i ){
-    joystick_up = i;
+    if (i != Joystick::Invalid){
+        joystick_up = i;
+    }
 }
 
 void Configuration::setJoystickDown(Configuration::JoystickInput i ){
-    joystick_down = i;
+    if (i != Joystick::Invalid){
+        joystick_down = i;
+    }
 }
 
 void Configuration::setJoystickAttack1(Configuration::JoystickInput i ){
-    joystick_attack1 = i;
+    if (i != Joystick::Invalid){
+        joystick_attack1 = i;
+    }
 }
 
 void Configuration::setJoystickAttack2(Configuration::JoystickInput i ){
-    joystick_attack2 = i;
+    if (i != Joystick::Invalid){
+        joystick_attack2 = i;
+    }
 }
 
 void Configuration::setJoystickAttack3(Configuration::JoystickInput i ){
-    joystick_attack3 = i;
+    if (i != Joystick::Invalid){
+        joystick_attack3 = i;
+    }
 }
 
 void Configuration::setJoystickJump(Configuration::JoystickInput i ){
-    joystick_jump = i;
+    if (i != Joystick::Invalid){
+        joystick_jump = i;
+    }
 }
 
 Configuration::JoystickInput Configuration::getJoystickRight() const {
@@ -394,6 +412,20 @@ static string configFile(){
 }
 #endif
 
+static Configuration::JoystickInput intToJoystick(int a){
+    switch (a){
+        case Joystick::Up : return Joystick::Up;
+        case Joystick::Down : return Joystick::Down;
+        case Joystick::Left : return Joystick::Left;
+        case Joystick::Right : return Joystick::Right;
+        case Joystick::Button1 : return Joystick::Button1;
+        case Joystick::Button2 : return Joystick::Button2;
+        case Joystick::Button3 : return Joystick::Button3;
+        case Joystick::Button4 : return Joystick::Button4;
+    }
+    return Joystick::Invalid;
+}
+
 void Configuration::loadConfigurations(){
     try{
         string file = configFile();
@@ -452,6 +484,58 @@ void Configuration::loadConfigurations(){
                 myconfig.setAttack2(attack2);
                 myconfig.setAttack3(attack3);
                 myconfig.setJump(jump);
+            } else if ( *n == config_joystick_configuration ){
+                int number = -1;
+                JoystickInput right, left, down, up, attack1,
+                    attack2, attack3, jump;
+                right = left = down = up = attack1 = attack2
+                      = attack3 = jump = InvalidJoystick;
+
+                while ( n->hasTokens() ){
+                    int temp;
+                    Token * thing;
+                    *n >> thing;
+                    if ( *thing == config_number){
+                        *thing >> number;
+                    } else if ( *thing == config_left){
+                        *thing >> temp;
+                        left = intToJoystick(temp);
+                    } else if ( *thing == config_right){
+                        *thing >> temp;
+                        right = intToJoystick(temp);
+                    } else if ( *thing == config_down){
+                        *thing >> temp;
+                        down = intToJoystick(temp);
+                    } else if ( *thing == config_up){
+                        *thing >> temp;
+                        up = intToJoystick(temp);
+                    } else if ( *thing == config_attack1){
+                        *thing >> temp;
+                        attack1 = intToJoystick(temp);
+                    } else if ( *thing == config_attack2){
+                        *thing >> temp;
+                        attack2 = intToJoystick(temp);
+                    } else if ( *thing == config_attack3){
+                        *thing >> temp;
+                        attack3 = intToJoystick(temp);
+                    } else if ( *thing == config_jump){
+                        *thing >> temp;
+                        jump = intToJoystick(temp);
+                    }
+                }
+                if ( number == -1 ){
+                    /* should use config_number here */
+                    throw LoadException( string("Config file ") + configFile() + " does not specifiy (number #) for a joystick-configuration" );
+                }
+                Configuration & myconfig = config(number);
+                myconfig.setJoystickRight(right);
+                myconfig.setJoystickLeft(left);
+                myconfig.setJoystickUp(up);
+                myconfig.setJoystickDown(down);
+                myconfig.setJoystickAttack1(attack1);
+                myconfig.setJoystickAttack2(attack2);
+                myconfig.setJoystickAttack3(attack3);
+                myconfig.setJoystickJump(jump);
             } else if ( *n == config_game_speed){
                 *n >> gamespeed;
             } else if ( *n == config_invincible){
@@ -492,97 +576,125 @@ void Configuration::loadConfigurations(){
     }
 }
 
-typedef int (Configuration::*get_func)() const;
 Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
-	Token * config = new Token();
+    typedef int (Configuration::*get_func)() const;
+    Token * config = new Token();
 
-	config->addToken( new Token(config_keyboard_configuration, false ) );
-	Token * number = new Token();
-	*number << config_number;
-	config->addToken( number );
-	*number << num;
+    config->addToken( new Token(config_keyboard_configuration, false ) );
+    Token * number = new Token();
+    *number << config_number;
+    config->addToken( number );
+    *number << num;
 
-	const char * func_names[] = {config_left, config_right,
+    const char * func_names[] = {config_left, config_right,
                                  config_up, config_down,
                                  config_attack1, config_attack2,
                                  config_attack3, config_jump};
-	get_func funcs[] = {&Configuration::getLeft,
-	                    &Configuration::getRight,
-	                    &Configuration::getUp,
-	                    &Configuration::getDown,
-			    &Configuration::getAttack1,
-			    &Configuration::getAttack2,
-			    &Configuration::getAttack3,
-			    &Configuration::getJump,
-	                   };
 
-	for ( unsigned int i = 0; i < sizeof(func_names)/sizeof(char*); i++ ){
-		Token * button = new Token();
-		*button << func_names[ i ] << (configuration->*(funcs[i]))();
-		config->addToken( button );
-	}
+    get_func funcs[] = {&Configuration::getLeft, &Configuration::getRight,
+                        &Configuration::getUp, &Configuration::getDown,
+                        &Configuration::getAttack1, &Configuration::getAttack2,
+                        &Configuration::getAttack3, &Configuration::getJump,
+    };
 
-	return config;
+    for ( unsigned int i = 0; i < sizeof(func_names)/sizeof(char*); i++ ){
+        Token * button = new Token();
+        *button << func_names[ i ] << (configuration->*(funcs[i]))();
+        config->addToken( button );
+    }
+
+    return config;
+}
+
+Token * Configuration::saveJoystick( int num, Configuration * configuration ){
+    typedef JoystickInput (Configuration::*get_func)() const;
+    Token * config = new Token();
+
+    config->addToken( new Token(config_joystick_configuration, false ) );
+    Token * number = new Token();
+    *number << config_number;
+    config->addToken( number );
+    *number << num;
+
+    const char * func_names[] = {config_left, config_right,
+                                 config_up, config_down,
+                                 config_attack1, config_attack2,
+                                 config_attack3, config_jump};
+
+    get_func funcs[] = {&Configuration::getJoystickLeft, &Configuration::getJoystickRight,
+                        &Configuration::getJoystickUp, &Configuration::getJoystickDown,
+                        &Configuration::getJoystickAttack1, &Configuration::getJoystickAttack2,
+                        &Configuration::getJoystickAttack3, &Configuration::getJoystickJump,
+    };
+
+    for ( unsigned int i = 0; i < sizeof(func_names)/sizeof(char*); i++ ){
+        Token * button = new Token();
+        *button << func_names[ i ] << (configuration->*(funcs[i]))();
+        config->addToken( button );
+    }
+
+    return config;
 }
 
 void Configuration::saveConfiguration(){
-	Token head;
-	head << config_configuration;
-	for ( map< int, Configuration * >::iterator it = configs.begin(); it != configs.end(); it++ ){
-		int num = it->first;
-		Configuration * configuration = it->second;
-		head.addToken( saveKeyboard( num, configuration ) );
-	}
+    Token head;
+    head << config_configuration;
+    for ( map< int, Configuration * >::iterator it = configs.begin(); it != configs.end(); it++ ){
+        int num = it->first;
+        Configuration * configuration = it->second;
+        head.addToken(saveKeyboard(num, configuration));
+        head.addToken(saveJoystick(num, configuration));
+    }
 
-	Token * speed = new Token();
-	*speed << config_game_speed << Configuration::getGameSpeed();
-	head.addToken( speed );
+    Token * speed = new Token();
+    *speed << config_game_speed << Configuration::getGameSpeed();
+    head.addToken( speed );
 
-	Token * invincible = new Token();
-	*invincible << config_invincible << Configuration::getInvincible();
-	head.addToken( invincible );
+    Token * invincible = new Token();
+    *invincible << config_invincible << Configuration::getInvincible();
+    head.addToken( invincible );
 
-	Token * fullscreen = new Token();
-	*fullscreen << config_fullscreen << Configuration::getFullscreen();
-	head.addToken( fullscreen );
+    Token * fullscreen = new Token();
+    *fullscreen << config_fullscreen << Configuration::getFullscreen();
+    head.addToken( fullscreen );
 
-        Token * screen = new Token();
-        *screen << config_screen_size << Configuration::getScreenWidth() << Configuration::getScreenHeight();
-        head.addToken(screen);
+    Token * screen = new Token();
+    *screen << config_screen_size << Configuration::getScreenWidth() << Configuration::getScreenHeight();
+    head.addToken(screen);
 
-        if (Configuration::getMenuFont() != ""){
-            Token * font = new Token();
-            *font << config_menu_font << Configuration::getMenuFont();
-            head.addToken(font);
-        }
+    if (Configuration::getMenuFont() != ""){
+        Token * font = new Token();
+        *font << config_menu_font << Configuration::getMenuFont();
+        head.addToken(font);
+    }
 
-        Token * mode = new Token();
-        string smode;
-        if (Configuration::getPlayMode() == Configuration::Cooperative){
-            smode = config_cooperative;
-        } else if (Configuration::getPlayMode() == Configuration::FreeForAll){
-            smode = config_free_for_all;
-        }
-        *mode << config_play_mode << smode;
-        head.addToken(mode);
+    Token * mode = new Token();
+    string smode;
+    if (Configuration::getPlayMode() == Configuration::Cooperative){
+        smode = config_cooperative;
+    } else if (Configuration::getPlayMode() == Configuration::FreeForAll){
+        smode = config_free_for_all;
+    }
+    *mode << config_play_mode << smode;
+    head.addToken(mode);
 
-	Token * lives = new Token();
-	*lives << config_lives << Configuration::getLives();
-	head.addToken(lives);
+    Token * lives = new Token();
+    *lives << config_lives << Configuration::getLives();
+    head.addToken(lives);
 
     Token * game = new Token();
     *game << config_current_game << Configuration::getCurrentGame();
     head.addToken(game);
 
-	Token * npc = new Token();
-	*npc << config_npc_buddies << Configuration::getNpcBuddies();
-	head.addToken( npc );
+    Token * npc = new Token();
+    *npc << config_npc_buddies << Configuration::getNpcBuddies();
+    head.addToken( npc );
 
-	ofstream out( configFile().c_str(), ios::trunc | ios::out );
-	if ( ! out.bad() ){
-		head.toString( out, string("") );
-		out.close();
-	}
+    ofstream out( configFile().c_str(), ios::trunc | ios::out );
+    if ( ! out.bad() ){
+        head.toString( out, string("") );
+        out.close();
+    }
 }
 
 double Configuration::gamespeed = 1.0;
