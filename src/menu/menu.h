@@ -211,6 +211,10 @@ class Menu
 		//! This is the location of the option info text
 		Point optionInfoTextLocation;
 
+                unsigned int selectedGradientIndex;
+                static const int selectedGradientMax = 40;
+                int selectedGradient[selectedGradientMax];
+
         enum MenuInput{
             Up,
             Down,

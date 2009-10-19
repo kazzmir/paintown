@@ -103,11 +103,11 @@ option(false){
 }
 
 void Menu::load(Token *token) throw (LoadException){
-	if ( *token != "menu" )
-		throw LoadException("Not a menu");
-	else if ( ! token->hasTokens() )
-		return;
-	
+    if ( *token != "menu" )
+        throw LoadException("Not a menu");
+    else if ( ! token->hasTokens() )
+        return;
+
     while ( token->hasTokens() ){
         try{
             Token * tok;
@@ -221,30 +221,34 @@ void Menu::load(Token *token) throw (LoadException){
             throw LoadException(ex.getReason());
         }
     }
-	
-	if ( _name.empty() ){
-		throw LoadException("No name set, the menu should have a name!");
-	}
-	
-	if ( backboard.position.empty() ){
-		throw LoadException("The position for the menu '" + getName() + "' list must be set!");
-	}
-	// Omit menu if no options are available
-	if (! hasOptions) {
-		Global::debug(1) << "The menu \"" << getName() << "\" has no options & will be omitted from the top level menu!" << endl;
-		removeOption = true;
-	}
+
+    if ( _name.empty() ){
+        throw LoadException("No name set, the menu should have a name!");
+    }
+
+    if ( backboard.position.empty() ){
+        throw LoadException("The position for the menu '" + getName() + "' list must be set!");
+    }
+    // Omit menu if no options are available
+    if (! hasOptions) {
+        Global::debug(1) << "The menu \"" << getName() << "\" has no options & will be omitted from the top level menu!" << endl;
+        removeOption = true;
+    }
 
     // Set the sharedFont
     if (Configuration::getMenuFont() != "" && Util::exists(Configuration::getMenuFont())){
         sharedFont = Configuration::getMenuFont();
     }
-	
-	// Finally lets assign list order numbering and some other stuff
-	// First length
+
+    // Finally lets assign list order numbering and some other stuff
+    // First length
     if (hasOptions){
         setupOptions();
     }
+
+    Util::blend_palette(selectedGradient, selectedGradientMax / 2, Bitmap::makeColor(19, 167, 168), Bitmap::makeColor(27, 237, 239));
+    Util::blend_palette(selectedGradient + selectedGradientMax / 2, selectedGradientMax / 2, Bitmap::makeColor(27, 237, 239), Bitmap::makeColor(19, 167, 168));
+    selectedGradientIndex = 0;
 }
 
 void Menu::setupOptions(){
@@ -749,8 +753,7 @@ void Menu::drawTextBoard(Bitmap *bmp){
 
 int Menu::getSelectedColor(bool selected){
     if (selected){
-        static int color = Bitmap::makeColor(26,225,227);
-        return color;
+        return selectedGradient[selectedGradientIndex];
     } else {
         static int white = Bitmap::makeColor(255,255,255);
         return white;
@@ -771,6 +774,8 @@ void Menu::drawText(const Box &area, Bitmap *bmp){
 
     int middle = 0;
     int currentCounter = 0;
+
+    selectedGradientIndex = (selectedGradientIndex + 1) % selectedGradientMax;
 
     /*
     int optionAlphaIncrements = 250 / (fromMiddle + 1);
