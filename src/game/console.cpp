@@ -3,7 +3,13 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "input/input-manager.h"
+#include "input/input-map.h"
 #include "globals.h"
+#include <string>
+#include <sstream>
+
+using namespace std;
 
 ConsoleEnd Console::endl;
 const std::string Console::DEFAULT_FONT = Global::DEFAULT_FONT;
@@ -16,6 +22,11 @@ font(font),
 textHeight(15),
 textWidth(15),
 offset(0){
+    const int delay = 10;
+    input.set(Keyboard::Key_TILDE, delay * 2, false, '~');
+    input.set(Keyboard::Key_A, delay, false, 'a');
+    input.set(Keyboard::Key_BACKSPACE, delay, false, 9);
+    input.set(Keyboard::Key_ESC, delay, false, 8);
 }
 
 Console::~Console(){
@@ -51,6 +62,28 @@ void Console::act(){
     }
     checkStream();
 }
+    
+bool Console::doInput() throw (ReturnException) {
+    InputMap<char>::Output inputState = InputManager::getMap(input);
+    if (inputState['~']){
+        toggle();
+        return false;
+    }
+
+    if (inputState['a']){
+        currentCommand << 'a';
+    }
+
+    if (inputState[8]){
+        throw ReturnException();
+    }
+
+    if (inputState[9]){
+        backspace();
+    }
+
+    return true;
+}
 
 void Console::draw(const Bitmap & work){
     /* if we can show something */
@@ -62,14 +95,17 @@ void Console::draw(const Bitmap & work){
         const Font & font = Font::getFont(Filesystem::find(getFont()), textWidth, textHeight);
         //font.printf(0, height - font.getHeight(), Bitmap::makeColor(255, 255, 255), work, "Console!", 0 );
         Bitmap::drawingMode(Bitmap::MODE_SOLID);
-	if (state == Open && !lines.empty()){
-	    int start = height - font.getHeight();
-	    for (std::vector<std::string>::reverse_iterator i = lines.rbegin(); i != lines.rend(); ++i){
-		std::string str = *i;
-		font.printf(0, start, Bitmap::makeColor(255,255,255), work, str, 0);
-		start -= font.getHeight();
-	    }
-	}
+	// if (state == Open){
+            if (!lines.empty()){
+                int start = height - font.getHeight() * 2;
+                for (std::vector<std::string>::reverse_iterator i = lines.rbegin(); i != lines.rend() && start > 0; ++i){
+                    std::string str = *i;
+                    font.printf(0, start, Bitmap::makeColor(255,255,255), work, str, 0);
+                    start -= font.getHeight();
+                }
+            }
+            font.printf(0, height - font.getHeight(), Bitmap::makeColor(255,255,255), work, "> " + currentCommand.str(), 0);
+        // }
     }
 }
     
@@ -86,6 +122,14 @@ void Console::toggle(){
             break;
         }
     }
+}
+
+void Console::backspace(){
+    string now = currentCommand.str();
+    now = now.substr(0, now.size()-1);
+    currentCommand.str(now);
+    currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
+    currentCommand.clear();
 }
     
 Console & Console::operator<<(const ConsoleEnd & e){

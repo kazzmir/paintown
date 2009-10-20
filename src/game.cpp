@@ -244,6 +244,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
     const bool paused = false;
     bool force_quit = false;
+    bool use_console_input = false;
 
     /* don't put any variables after runCounter and before the while loop */
     double runCounter = 0;
@@ -292,80 +293,90 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                 }
             }
 
-            InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
+            if (!use_console_input){
+                InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
 
-            if (inputState[Game::ShowHelp]){
-                helpTime = helpTime < 260 ? 260 : helpTime;
-            }
+                if (inputState[Game::ShowHelp]){
+                    helpTime = helpTime < 260 ? 260 : helpTime;
+                }
 
-            if (inputState[Game::ShowFps]){
-                show_fps = ! show_fps;
-            }
+                if (inputState[Game::ShowFps]){
+                    show_fps = ! show_fps;
+                }
 
-            if (inputState[Game::Console]){
-                console.toggle();
-                // toggleConsole = true;
-            }
+                if (inputState[Game::Console]){
+                    console.toggle();
+                    use_console_input = ! use_console_input;
+                    // toggleConsole = true;
+                }
 
-            takeScreenshot = inputState[Game::Screenshot];
+                takeScreenshot = inputState[Game::Screenshot];
 
-            /*
-            if (!key[consoleKey]){
-                toggleConsole = false;
-            }
-            */
-
-            if (inputState[Game::Pause]){
                 /*
-                   paused = ! paused;
-                   world.addMessage(paused ? pausedMessage() : unpausedMessage());
-                   draw = true;
+                   if (!key[consoleKey]){
+                   toggleConsole = false;
+                   }
                    */
-                world.changePause();
-            }
 
-            if (inputState[Game::MiniMaps]){
-                world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
-            }
-
-            /*
-               if ( key[ Keyboard::Key_F8 ] ){
-               world.killAllHumans( player );
-               }
-               */
-
-            if ( Global::getDebug() > 0 ){
-                const double SPEED_INC = 0.02;
-                if (inputState[Game::Speedup]){
-                    gameSpeed += SPEED_INC;
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                if (inputState[Game::Pause]){
+                    /*
+                       paused = ! paused;
+                       world.addMessage(paused ? pausedMessage() : unpausedMessage());
+                       draw = true;
+                       */
+                    world.changePause();
                 }
 
-                if (inputState[Game::Slowdown]){
-                    gameSpeed -= SPEED_INC;
-                    if ( gameSpeed < SPEED_INC ){
-                        gameSpeed = SPEED_INC;
+                if (inputState[Game::MiniMaps]){
+                    world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
+                }
+
+                /*
+                   if ( key[ Keyboard::Key_F8 ] ){
+                   world.killAllHumans( player );
+                   }
+                   */
+
+                if ( Global::getDebug() > 0 ){
+                    const double SPEED_INC = 0.02;
+                    if (inputState[Game::Speedup]){
+                        gameSpeed += SPEED_INC;
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                     }
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                }
 
-                if (inputState[Game::NormalSpeed]){
-                    gameSpeed = 1;
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                }
-
-                if (inputState[Game::ReloadLevel]){
-                    try{
-                        world.reloadLevel();
-                        draw = true;
-                    } catch ( const LoadException & le ){
-                        Global::debug( 0 ) << "Could not reload world: " << le.getReason() << endl;
+                    if (inputState[Game::Slowdown]){
+                        gameSpeed -= SPEED_INC;
+                        if ( gameSpeed < SPEED_INC ){
+                            gameSpeed = SPEED_INC;
+                        }
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                     }
+
+                    if (inputState[Game::NormalSpeed]){
+                        gameSpeed = 1;
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                    }
+
+                    if (inputState[Game::ReloadLevel]){
+                        try{
+                            world.reloadLevel();
+                            draw = true;
+                        } catch ( const LoadException & le ){
+                            Global::debug( 0 ) << "Could not reload world: " << le.getReason() << endl;
+                        }
+                    }
+                }
+
+                force_quit |= inputState[Game::Quit];
+            } else {
+                try{
+                    use_console_input = console.doInput();
+                } catch (const ReturnException & r){
+                    force_quit = true;
                 }
             }
 
             Global::speed_counter = 0;
-            force_quit |= inputState[Game::Quit];
             done |= force_quit || world.finished();
         }
 
@@ -490,75 +501,75 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
 
     // Level::LevelInfo levelInfo = Level::readLevels( levelFile );
 
-	// global_debug = true;
+    // global_debug = true;
 
-	int showHelp = 800;
-	for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
-		Global::done_loading = false;
-		pthread_t loading_screen_thread;
+    int showHelp = 800;
+    for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
+        Global::done_loading = false;
+        pthread_t loading_screen_thread;
 
-		startLoading( &loading_screen_thread, levelInfo );
+        startLoading( &loading_screen_thread, levelInfo );
 
-		bool gameState = false;
-		try {
-			// vector< Object * > players;
-			// players.push_back( player );
+        bool gameState = false;
+        try {
+            // vector< Object * > players;
+            // players.push_back( player );
 
-                        /*
-                        Global::debug(0) << "Memory debug loop" << endl;
-                        for (int i = 0; i < 1000; i++){
-                            World world( players, *it );
-                            ObjectFactory::destroy();
-                            HeartFactory::destroy();
-                        }
-                        */
+            /*
+               Global::debug(0) << "Memory debug loop" << endl;
+               for (int i = 0; i < 1000; i++){
+               World world( players, *it );
+               ObjectFactory::destroy();
+               HeartFactory::destroy();
+               }
+               */
 
             Global::info("Setting up world");
-			AdventureWorld world( players, Filesystem::find(*it));
+            AdventureWorld world( players, Filesystem::find(*it));
             Global::info("World setup");
 
-			Music::pause();
-			Music::fadeIn( 0.3 );
-			Music::loadSong( Util::getFiles( Filesystem::find("/music/"), "*" ) );
-			Music::play();
+            Music::pause();
+            Music::fadeIn( 0.3 );
+            Music::loadSong( Util::getFiles( Filesystem::find("/music/"), "*" ) );
+            Music::play();
 
-			for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-				Player * playerX = (Player *) *it;
-				playerX->setY( 200 );
-				/* setMoving(false) sets all velocities to 0 */
-				playerX->setMoving( false );
-				/* but the player is falling so set it back to true */
-				playerX->setMoving( true );
+            for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+                Player * playerX = (Player *) *it;
+                playerX->setY( 200 );
+                /* setMoving(false) sets all velocities to 0 */
+                playerX->setMoving( false );
+                /* but the player is falling so set it back to true */
+                playerX->setMoving( true );
 
-				playerX->setStatus( Status_Falling );
-			}
+                playerX->setStatus( Status_Falling );
+            }
 
             Global::info("Go!");
-			stopLoading( loading_screen_thread );
+            stopLoading( loading_screen_thread );
 
             gameState = playLevel( world, players, showHelp );
-			showHelp = 0;
+            showHelp = 0;
 
-		} catch ( const LoadException & le ){
-			Global::debug( 0 ) << "Could not load " << *it << " because " << le.getReason() << endl;
-			/* if the level couldn't be loaded turn off
-			 * the loading screen
-			 */
-			stopLoading( loading_screen_thread );
-		}
+        } catch ( const LoadException & le ){
+            Global::debug( 0 ) << "Could not load " << *it << " because " << le.getReason() << endl;
+            /* if the level couldn't be loaded turn off
+             * the loading screen
+             */
+            stopLoading( loading_screen_thread );
+        }
 
-		ObjectFactory::destroy();
-		HeartFactory::destroy();
+        ObjectFactory::destroy();
+        HeartFactory::destroy();
 
-		if ( ! gameState ){
-			return;
-		}
+        if ( ! gameState ){
+            return;
+        }
 
-		// fadeOut( "Next level" );
-	}
+        // fadeOut( "Next level" );
+    }
 
-        /* fix.. */
-	// fadeOut( "You win!" );
+    /* fix.. */
+    // fadeOut( "You win!" );
 }
 
 /* use MenuGlobal::doLevelMenu instead */

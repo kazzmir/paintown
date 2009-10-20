@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include "input/input-map.h"
+#include "return_exception.h"
 
 class Bitmap;
 
@@ -24,6 +26,8 @@ public:
     virtual void toggle();
     
     virtual void clear();
+
+    virtual bool doInput() throw (ReturnException);
     
     inline int getTextHeight(){ return textHeight; };
     inline int getTextWidth(){ return textWidth; };
@@ -49,6 +53,7 @@ public:
 
 protected:
 
+    void backspace();
     virtual std::stringstream & add();
 
     enum State{
@@ -70,7 +75,9 @@ protected:
     std::vector<std::string>lines;
     // Our text inputer
     std::stringstream textInput;
+    std::stringstream currentCommand;
     unsigned int offset;
+    InputMap<char> input;
     
     void checkStream();
 };
