@@ -17,17 +17,18 @@ JoystickInput AllegroJoystick::readAll(){
             break;
         }
     }
-    if (info->num_sticks > 0){
-        if (info->stick[0].num_axis > 0){
-            int position = info->stick[0].axis[0].pos;
+
+    for (int stick = 0; stick < info->num_sticks; stick++){
+        if (info->stick[stick].num_axis > 0){
+            int position = info->stick[stick].axis[0].pos;
             if (position < 0){
                 input.left = true;
             } else if (position > 0){
                 input.right = true;
             }
         }
-        if (info->stick[0].num_axis > 1){
-            int position = info->stick[0].axis[1].pos;
+        if (info->stick[stick].num_axis > 1){
+            int position = info->stick[stick].axis[1].pos;
             if (position < 0){
                 input.up = true;
             } else if (position > 0){
@@ -35,6 +36,7 @@ JoystickInput AllegroJoystick::readAll(){
             }
         }
     }
+
     return input;
 }
 
