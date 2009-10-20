@@ -10,8 +10,8 @@
 #include "util/token_exception.h"
 #include "util/file-system.h"
 #include "util/font.h"
-#include "game/input-map.h"
-#include "game/input-manager.h"
+#include "input/input-map.h"
+#include "input/input-manager.h"
 
 using namespace std;
 

@@ -6,7 +6,7 @@
 #include <map>
 
 #include "util/load_exception.h"
-#include "game/input.h"
+#include "input/input.h"
 #include "attack.h"
 
 /* is that crazy hat for chicken? */

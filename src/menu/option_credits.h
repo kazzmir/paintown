@@ -4,7 +4,7 @@
 #include "menu_option.h"
 #include "util/load_exception.h"
 #include "return_exception.h"
-#include "game/input-map.h"
+#include "input/input-map.h"
 
 #include <vector>
 

@@ -16,8 +16,8 @@
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
-#include "game/input.h"
-#include "game/input-manager.h"
+#include "input/input.h"
+#include "input/input-manager.h"
 #include "draw-glow-effect.h"
 #include "draw-countdown-effect.h"
 

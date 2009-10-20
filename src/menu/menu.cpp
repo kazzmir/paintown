@@ -20,8 +20,8 @@
 #include "menu/menu_global.h"
 #include "menu/menu_animation.h"
 
-#include "game/input-manager.h"
-#include "game/input-map.h"
+#include "input/input-manager.h"
+#include "input/input-map.h"
 
 #include <queue>
 #include <map>

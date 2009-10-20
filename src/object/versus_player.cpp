@@ -5,7 +5,7 @@
 #include "configuration.h"
 #include "util/funcs.h"
 #include "globals.h"
-#include "game/input.h"
+#include "input/input.h"
 #include <string>
 #include <iostream>
 

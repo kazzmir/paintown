@@ -26,8 +26,8 @@
 #include "world.h"
 #include "game/adventure_world.h"
 #include "game/console.h"
-#include "game/input-manager.h"
-#include "game/input-map.h"
+#include "input/input-manager.h"
+#include "input/input-map.h"
 #include "versus_world.h"
 #include "init.h"
 #include <iostream>

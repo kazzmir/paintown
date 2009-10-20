@@ -6,7 +6,7 @@
 #include "music.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"
-#include "game/input-manager.h"
+#include "input/input-manager.h"
 #include "game/mod.h"
 #include "shutdown_exception.h"
 #include "util/timedifference.h"

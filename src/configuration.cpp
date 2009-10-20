@@ -2,7 +2,7 @@
 #include "util/keyboard.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
-#include "game/input.h"
+#include "input/input.h"
 #include "globals.h"
 #include "object/animation.h"
 #include "object/object.h"

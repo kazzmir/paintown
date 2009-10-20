@@ -2,7 +2,7 @@
 #define _paintown_configuration_h
 
 #include <string>
-#include "game/input.h"
+#include "input/input.h"
 
 class Token;
 

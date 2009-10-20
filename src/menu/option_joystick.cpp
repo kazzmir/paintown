@@ -5,7 +5,7 @@
 #include "configuration.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"
-#include "game/input-manager.h"
+#include "input/input-manager.h"
 #include "globals.h"
 #include "init.h"
 #include "util/keyboard.h"

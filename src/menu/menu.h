@@ -6,7 +6,7 @@
 
 #include "util/load_exception.h"
 #include "util/gradient.h"
-#include "game/input-map.h"
+#include "input/input-map.h"
 #include "return_exception.h"
 #include "gui/box.h"
 

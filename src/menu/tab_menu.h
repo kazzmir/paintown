@@ -4,7 +4,7 @@
 #include "menu.h"
 #include "gui/box.h"
 #include "return_exception.h"
-#include "game/input-map.h"
+#include "input/input-map.h"
 
 class Font;
 class Bitmap;
