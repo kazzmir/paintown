@@ -1,5 +1,5 @@
 #include "configuration.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "input/input.h"

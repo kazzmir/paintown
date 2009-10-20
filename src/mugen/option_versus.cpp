@@ -7,7 +7,7 @@
 #include "menu/menu_global.h"
 #include "globals.h"
 #include "init.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "util/funcs.h"
 
 #include "mugen_animation.h"

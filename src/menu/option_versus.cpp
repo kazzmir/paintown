@@ -2,7 +2,7 @@
 #include "game.h"
 #include "globals.h"
 #include "util/token.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "util/load_exception.h"
 #include "level/utils.h"
 #include "object/versus_player.h"

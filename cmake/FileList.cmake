@@ -114,7 +114,7 @@ src/util/token_exception.cpp
 src/util/tokenreader.cpp
 src/util/timedifference.cpp
 src/util/sound.cpp
-src/util/keyboard.cpp
+src/input/keyboard.cpp
 src/util/bitmap.cpp
 src/util/font.cpp
 src/util/ftalleg.cpp
@@ -122,11 +122,11 @@ src/util/funcs.cpp
 src/util/file-system.cpp
 src/util/gradient.cpp
 src/util/ebox.cpp
-src/util/joystick.cpp
-src/util/allegro-joystick.cpp
+src/input/joystick.cpp
+src/input/allegro-joystick.cpp
 src/util/system.cpp
 src/util/message-queue.cpp
-src/util/linux_joystick.cpp
+src/input/linux_joystick.cpp
 src/util/load_exception.cpp
 src/windows/funcs.cpp
 src/windows/system.cpp)

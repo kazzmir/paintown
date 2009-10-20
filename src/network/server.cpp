@@ -23,7 +23,7 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 
 using namespace std;
 

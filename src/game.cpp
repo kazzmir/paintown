@@ -15,7 +15,7 @@
 #include "factory/font_render.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "globals.h"
 #include "script/script.h"
 #include "shutdown_exception.h"

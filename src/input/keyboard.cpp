@@ -1,6 +1,6 @@
 #include "keyboard.h"
 #include "allegro.h"
-#include "funcs.h"
+#include "util/funcs.h"
 #include "globals.h"
 #include <iostream>
 #include <vector>

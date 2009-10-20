@@ -9,7 +9,9 @@
 #include "object/buddy_player.h"
 #include "level/utils.h"
 #include "util/funcs.h"
-#include "util/keyboard.h"
+
+/* todo: replace keyboard with input-map */
+#include "input/keyboard.h"
 
 #include <sstream>
 

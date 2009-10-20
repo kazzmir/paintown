@@ -3,8 +3,8 @@
 
 #include <map>
 #include <vector>
-#include "util/joystick.h"
-#include "util/keyboard.h"
+#include "input/joystick.h"
+#include "input/keyboard.h"
 #include "globals.h"
 #include <iostream>
 

@@ -5,7 +5,7 @@
 #include "util/bitmap.h"
 #include "init.h"
 #include "globals.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/file-system.h"

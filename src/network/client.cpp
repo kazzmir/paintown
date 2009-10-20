@@ -1,6 +1,6 @@
 #include "util/bitmap.h"
 #include "client.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "init.h"
 #include "globals.h"
 #include "util/funcs.h"

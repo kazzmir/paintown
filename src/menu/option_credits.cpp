@@ -5,7 +5,9 @@
 #include "globals.h"
 #include "init.h"
 #include "util/funcs.h"
-#include "util/keyboard.h"
+
+/* todo: replace keyboard with input-map */
+#include "input/keyboard.h"
 #include "util/token.h"
 #include "util/token_exception.h"
 #include "util/file-system.h"

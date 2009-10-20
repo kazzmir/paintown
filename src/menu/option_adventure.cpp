@@ -1,7 +1,9 @@
 #include "util/bitmap.h"
 #include "menu/option_adventure.h"
 #include "menu/menu_global.h"
-#include "util/keyboard.h"
+
+/* todo: replace keyboard with input-map */
+#include "input/keyboard.h"
 #include "util/load_exception.h"
 #include "util/token.h"
 #include "util/funcs.h"

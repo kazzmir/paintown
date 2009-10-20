@@ -9,7 +9,7 @@
 #include "init.h"
 // #include "select_player.h"
 #include "game.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "input/input-manager.h"
 #include "input/input-map.h"
 #include "util/font.h"

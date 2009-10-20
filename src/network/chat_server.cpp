@@ -4,7 +4,7 @@
 #include "chat.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "util/font.h"
 #include "util/file-system.h"
 #include "return_exception.h"

@@ -1,6 +1,5 @@
 #include "option_change_mod.h"
 #include "option_level.h"
-#include "util/keyboard.h"
 #include "util/load_exception.h"
 #include "util/tokenreader.h"
 #include "util/token.h"

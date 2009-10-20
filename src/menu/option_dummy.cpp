@@ -4,7 +4,6 @@
 #include "menu/menu.h"
 #include "globals.h"
 #include "init.h"
-#include "util/keyboard.h"
 
 using namespace std;
 

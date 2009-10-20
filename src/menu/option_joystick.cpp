@@ -8,7 +8,7 @@
 #include "input/input-manager.h"
 #include "globals.h"
 #include "init.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 #include "util/funcs.h"
 #include <sstream>
 

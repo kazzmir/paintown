@@ -5,7 +5,7 @@
 #include "input.h"
 #include "input-map.h"
 #include "util/funcs.h"
-#include "util/keyboard.h"
+#include "input/keyboard.h"
 
 class Configuration;
 class Joystick;

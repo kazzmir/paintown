@@ -1,9 +1,8 @@
-#ifndef _buddy_player_h
-#define _buddy_player_h
+#ifndef _paintown_buddy_player_h
+#define _paintown_buddy_player_h
 
 #include "character.h" 
 #include "player-common.h"
-#include "util/keyboard.h"
 #include <deque>
 #include "util/load_exception.h"
 #include <vector>

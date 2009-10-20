@@ -1,7 +1,7 @@
 #include "input-manager.h"
 #include "configuration.h"
 #include "object/object.h"
-#include "util/joystick.h"
+#include "input/joystick.h"
 #include "globals.h"
 #include <stdlib.h>
 #include <vector>

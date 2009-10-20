@@ -5,7 +5,6 @@
 #include "menu/menu_option.h"
 #include "menu/option_level.h"
 #include "util/funcs.h"
-#include "util/keyboard.h"
 #include "util/sound.h"
 #include "util/token.h"
 #include "util/file-system.h"
