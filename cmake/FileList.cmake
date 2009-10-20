@@ -16,8 +16,8 @@ set(GAME_SRC
 src/game/console.cpp
 src/game/adventure_world.cpp
 src/game/mod.cpp
-src/game/input.cpp
-src/game/input-manager.cpp)
+src/input/input.cpp
+src/input/input-manager.cpp)
 
 set(SCRIPT_SRC
 src/script/script.cpp
