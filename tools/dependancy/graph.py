@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# this thing generates *enormous* files when converted to .png
+#
 # dependancy will just be a map from a file to a list of files
 
 # true if the directory contains a .svn in it
@@ -50,7 +52,7 @@ def find_dependancies(dir):
     for root, dirs, files in os.walk(dir):
         if not svn(root):
             for file in [f for f in files if source(f)]:
-                print "%s %s" % (root, file)
+                print "%s/%s" % (root, file)
                 out[os.path.normpath('%s/%s' % (root,file))] = read_dependancies('%s/%s' % (root, file), root)
 
     return out
@@ -81,6 +83,8 @@ def generate_graph(dependancies):
 
     return """
 digraph X {
+size="200,200"
+ratio=fill
 %s
 }
 """ % '\n'.join(data)
