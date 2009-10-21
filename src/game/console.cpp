@@ -15,6 +15,7 @@ namespace ConsoleInput{
 static int Toggle = 254;
 static int Backspace = 9;
 static int Esc = 8;
+static int Control = 7;
 }
 
 ConsoleEnd Console::endl;
@@ -32,6 +33,7 @@ offset(0){
     input.set(Keyboard::Key_TILDE, delay * 2, false, ConsoleInput::Toggle);
     input.set(Keyboard::Key_BACKSPACE, delay, false, ConsoleInput::Backspace);
     input.set(Keyboard::Key_ESC, delay, false, ConsoleInput::Esc);
+    input.set(Keyboard::Key_LCONTROL, 0, false, ConsoleInput::Control);
     
     /* ugh, do we really have to enumerate every key?? */
     input.set(Keyboard::Key_A, delay, false, 'a');
@@ -107,6 +109,16 @@ bool Console::doInput() throw (ReturnException) {
         return false;
     }
 
+    /* ctrl-X keys */
+    if (inputState[ConsoleInput::Control]){
+        /* standard linux console commands */
+        if (inputState['u']){
+            clearInput();
+            /* ignore any other input */
+            return true;
+        }
+    }
+
     for (InputMap<char>::Output::iterator it = inputState.begin(); it != inputState.end(); it++){
         char c = (*it).first;
         bool pressed = (*it).second;
@@ -169,6 +181,12 @@ void Console::backspace(){
     string now = currentCommand.str();
     now = now.substr(0, now.size()-1);
     currentCommand.str(now);
+    currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
+    currentCommand.clear();
+}
+
+void Console::clearInput(){
+    currentCommand.str(string());
     currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
     currentCommand.clear();
 }

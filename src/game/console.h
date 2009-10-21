@@ -54,6 +54,7 @@ public:
 protected:
 
     void backspace();
+    void clearInput();
     virtual std::stringstream & add();
 
     enum State{
