@@ -106,7 +106,7 @@ public:
                     if (last_read - state->last_read > 1){
                         use = true;
                     }
-                } else if (last_read - state->last_read > 1 || state->seen > state->delay){
+                } else if (last_read - state->last_read > 1 || state->seen >= state->delay){
                     use = true;
                     state->seen = 0;
                 } else {
