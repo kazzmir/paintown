@@ -11,6 +11,12 @@
 
 using namespace std;
 
+namespace ConsoleInput{
+static int Toggle = 254;
+static int Backspace = 9;
+static int Esc = 8;
+}
+
 ConsoleEnd Console::endl;
 const std::string Console::DEFAULT_FONT = Global::DEFAULT_FONT;
 
@@ -23,10 +29,37 @@ textHeight(15),
 textWidth(15),
 offset(0){
     const int delay = 10;
-    input.set(Keyboard::Key_TILDE, delay * 2, false, '~');
+    input.set(Keyboard::Key_TILDE, delay * 2, false, ConsoleInput::Toggle);
+    input.set(Keyboard::Key_BACKSPACE, delay, false, ConsoleInput::Backspace);
+    input.set(Keyboard::Key_ESC, delay, false, ConsoleInput::Esc);
+    
+    /* ugh, do we really have to enumerate every key?? */
     input.set(Keyboard::Key_A, delay, false, 'a');
-    input.set(Keyboard::Key_BACKSPACE, delay, false, 9);
-    input.set(Keyboard::Key_ESC, delay, false, 8);
+    input.set(Keyboard::Key_B, delay, false, 'b');
+    input.set(Keyboard::Key_C, delay, false, 'c');
+    input.set(Keyboard::Key_D, delay, false, 'd');
+    input.set(Keyboard::Key_E, delay, false, 'e');
+    input.set(Keyboard::Key_F, delay, false, 'f');
+    input.set(Keyboard::Key_G, delay, false, 'g');
+    input.set(Keyboard::Key_H, delay, false, 'h');
+    input.set(Keyboard::Key_I, delay, false, 'i');
+    input.set(Keyboard::Key_J, delay, false, 'j');
+    input.set(Keyboard::Key_K, delay, false, 'k');
+    input.set(Keyboard::Key_L, delay, false, 'l');
+    input.set(Keyboard::Key_M, delay, false, 'm');
+    input.set(Keyboard::Key_N, delay, false, 'n');
+    input.set(Keyboard::Key_O, delay, false, 'o');
+    input.set(Keyboard::Key_P, delay, false, 'p');
+    input.set(Keyboard::Key_Q, delay, false, 'q');
+    input.set(Keyboard::Key_R, delay, false, 'r');
+    input.set(Keyboard::Key_S, delay, false, 's');
+    input.set(Keyboard::Key_T, delay, false, 't');
+    input.set(Keyboard::Key_U, delay, false, 'u');
+    input.set(Keyboard::Key_V, delay, false, 'v');
+    input.set(Keyboard::Key_W, delay, false, 'w');
+    input.set(Keyboard::Key_X, delay, false, 'x');
+    input.set(Keyboard::Key_Y, delay, false, 'y');
+    input.set(Keyboard::Key_Z, delay, false, 'z');
 }
 
 Console::~Console(){
@@ -62,23 +95,31 @@ void Console::act(){
     }
     checkStream();
 }
-    
+
+static bool isChar(char c){
+    return c >= 'a' && c <= 'z';
+}
+
 bool Console::doInput() throw (ReturnException) {
     InputMap<char>::Output inputState = InputManager::getMap(input);
-    if (inputState['~']){
+    if (inputState[ConsoleInput::Toggle]){
         toggle();
         return false;
     }
 
-    if (inputState['a']){
-        currentCommand << 'a';
+    for (InputMap<char>::Output::iterator it = inputState.begin(); it != inputState.end(); it++){
+        char c = (*it).first;
+        bool pressed = (*it).second;
+        if (pressed && isChar(c)){
+            currentCommand << c;
+        }
     }
 
-    if (inputState[8]){
+    if (inputState[ConsoleInput::Esc]){
         throw ReturnException();
     }
 
-    if (inputState[9]){
+    if (inputState[ConsoleInput::Backspace]){
         backspace();
     }
 
