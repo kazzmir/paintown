@@ -65,6 +65,8 @@ offset(0){
     input.set(Keyboard::Key_Y, delay, false, 'y');
     input.set(Keyboard::Key_Z, delay, false, 'z');
     input.set(Keyboard::Key_SPACE, delay, false, ' ');
+    input.set(Keyboard::Key_COMMA, delay, false, ',');
+    input.set(Keyboard::Key_STOP, delay, false, '.');
 }
 
 Console::~Console(){
@@ -102,8 +104,8 @@ void Console::act(){
 }
 
 static bool isChar(char c){
-    return (c >= 'a' && c <= 'z') ||
-           (c == ' ');
+    const char * letters = "abcdefghijklmnopqrstuvwxyz ,.";
+    return strchr(letters, c) != NULL;
 }
 
 /* console input */
@@ -122,7 +124,7 @@ bool Console::doInput() throw (ReturnException) {
 
     if (inputState[ConsoleInput::Enter]){
         if (currentCommand.str() != ""){
-            lines.push_back(currentCommand.str());
+            process(currentCommand.str());
         }
         clearInput();
     }
@@ -193,6 +195,11 @@ void Console::toggle(){
             break;
         }
     }
+}
+
+/* do something with a command */
+void Console::process(const string & command){
+    lines.push_back(command);
 }
 
 void Console::backspace(){

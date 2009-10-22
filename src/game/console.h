@@ -9,6 +9,7 @@
 
 class Bitmap;
 
+/* equivalent of std::endl */
 class ConsoleEnd{
 private:
     friend class Console;
@@ -53,6 +54,7 @@ public:
 
 protected:
 
+    void process(const std::string & command);
     void backspace();
     void clearInput();
     virtual std::stringstream & add();
