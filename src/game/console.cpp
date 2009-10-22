@@ -16,6 +16,7 @@ static int Toggle = 254;
 static int Backspace = 9;
 static int Esc = 8;
 static int Control = 7;
+static int Enter = 6;
 }
 
 ConsoleEnd Console::endl;
@@ -34,6 +35,7 @@ offset(0){
     input.set(Keyboard::Key_BACKSPACE, delay, false, ConsoleInput::Backspace);
     input.set(Keyboard::Key_ESC, delay, false, ConsoleInput::Esc);
     input.set(Keyboard::Key_LCONTROL, 0, false, ConsoleInput::Control);
+    input.set(Keyboard::Key_ENTER, 0, false, ConsoleInput::Enter);
     
     /* ugh, do we really have to enumerate every key?? */
     input.set(Keyboard::Key_A, delay, false, 'a');
@@ -62,6 +64,7 @@ offset(0){
     input.set(Keyboard::Key_X, delay, false, 'x');
     input.set(Keyboard::Key_Y, delay, false, 'y');
     input.set(Keyboard::Key_Z, delay, false, 'z');
+    input.set(Keyboard::Key_SPACE, delay, false, ' ');
 }
 
 Console::~Console(){
@@ -99,14 +102,29 @@ void Console::act(){
 }
 
 static bool isChar(char c){
-    return c >= 'a' && c <= 'z';
+    return (c >= 'a' && c <= 'z') ||
+           (c == ' ');
 }
 
+/* console input */
 bool Console::doInput() throw (ReturnException) {
     InputMap<char>::Output inputState = InputManager::getMap(input);
+
+    /* the order of reading input is arbitrary right now. I'm not
+     * sure it matters what order things are done in, but probably
+     * a few corner cases exist. When they come up please document them.
+     */
+
     if (inputState[ConsoleInput::Toggle]){
         toggle();
         return false;
+    }
+
+    if (inputState[ConsoleInput::Enter]){
+        if (currentCommand.str() != ""){
+            lines.push_back(currentCommand.str());
+        }
+        clearInput();
     }
 
     /* ctrl-X keys */
