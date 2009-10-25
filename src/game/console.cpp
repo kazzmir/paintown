@@ -70,6 +70,17 @@ offset(0){
 }
 
 Console::~Console(){
+    for (map<string, Command*>::iterator it = commands.begin(); it != commands.end(); it++){
+        delete (*it).second;
+    }
+}
+    
+void Console::addCommand(const std::string & name, Command * command){
+    if (commands[name] != 0){
+        Global::debug(0) << "Warning: duplicate console command for '" << name << "'" << std::endl;
+        delete commands[name];
+    }
+    commands[name] = command;
 }
     
 void Console::act(){
@@ -109,7 +120,7 @@ static bool isChar(char c){
 }
 
 /* console input */
-bool Console::doInput() throw (ReturnException) {
+bool Console::doInput() {
     InputMap<char>::Output inputState = InputManager::getMap(input);
 
     /* the order of reading input is arbitrary right now. I'm not
@@ -203,7 +214,11 @@ void Console::toggle(){
 
 /* do something with a command */
 void Console::process(const string & command){
-    lines.push_back(command);
+    if (commands[command] != 0){
+        lines.push_back(commands[command]->act());
+    } else {
+        lines.push_back("Unknown command '" + command + "'");
+    }
 }
 
 void Console::backspace(){

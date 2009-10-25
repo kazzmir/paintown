@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <map>
 #include "input/input-map.h"
 #include "return_exception.h"
 
@@ -24,7 +25,7 @@ public:
     Command(){
     }
 
-    virtual void act() = 0;
+    virtual std::string act() = 0;
 
     virtual ~Command(){
     }
@@ -41,7 +42,7 @@ public:
     
     virtual void clear();
 
-    virtual bool doInput() throw (ReturnException);
+    virtual bool doInput();
     
     inline int getTextHeight(){ return textHeight; };
     inline int getTextWidth(){ return textWidth; };
@@ -58,6 +59,8 @@ public:
         textInput << x;
         return *this;
     }
+
+    void addCommand(const std::string & name, Command * command);
 
     /* for end of line, always pass Console::endl */
     Console & operator<<(const ConsoleEnd & e);
@@ -95,6 +98,7 @@ protected:
     std::stringstream currentCommand;
     unsigned int offset;
     InputMap<char> input;
+    std::map<std::string, Command*> commands;
     
     void checkStream();
 };

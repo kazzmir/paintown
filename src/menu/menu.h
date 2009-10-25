@@ -48,7 +48,7 @@ public:
     virtual void load(Token *token) throw (LoadException);
 
     /*! Logic */
-    virtual void act(bool &endGame, bool reset = true) throw (ReturnException);
+    virtual void act(bool &endGame, bool reset = true);
 
     /*! Draw */
     virtual void draw(const Box &area, Bitmap *bmp);
@@ -57,7 +57,7 @@ public:
     virtual void drawText(const Box &area, Bitmap *bmp);
 
     /*! run as it's own menu */
-    virtual void run() throw (ReturnException);
+    virtual void run();
 
     /*! Parent */
     virtual void setParent(Menu *menu);

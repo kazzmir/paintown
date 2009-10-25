@@ -178,7 +178,7 @@ namespace Game{
     };
 }
 
-bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
+bool playLevel( World & world, const vector< Object * > & players, int helpTime ) throw (ShutdownException){
     // Keyboard key;
     InputMap<Game::Input> input;
 
@@ -222,6 +222,19 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
     /* 150 pixel tall console */
     Console::Console console(150);
+    {
+        class CommandQuit: public Console::Command{
+        public:
+            CommandQuit(){
+            }
+
+            string act(){
+                throw ShutdownException();
+            }
+        };
+
+        console.addCommand("quit", new CommandQuit());
+    }
     // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;
 
@@ -497,7 +510,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     return true;
 }
 
-void realGame(const vector< Object * > & players, const Level::LevelInfo & levelInfo){
+void realGame(const vector< Object * > & players, const Level::LevelInfo & levelInfo) throw (ShutdownException) {
 
     // Level::LevelInfo levelInfo = Level::readLevels( levelFile );
 

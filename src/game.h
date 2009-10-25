@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "shutdown_exception.h"
 #include "util/load_exception.h"
 #include "level/utils.h"
 #include "return_exception.h"
@@ -17,9 +18,9 @@ class World;
 namespace Game{
 
 /* play a single world */
-bool playLevel( World & world, const std::vector< Object * > & players, int helpTime );
+bool playLevel( World & world, const std::vector< Object * > & players, int helpTime ) throw (ShutdownException);
 /* do the required setup to play a single level */
-void realGame(const std::vector< Object * > & players, const Level::LevelInfo & levelInfo);
+void realGame(const std::vector< Object * > & players, const Level::LevelInfo & levelInfo) throw (ShutdownException);
 
 const Level::LevelInfo selectLevelSet( const std::string & base ) throw (LoadException, Filesystem::NotFound);
 

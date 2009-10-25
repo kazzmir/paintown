@@ -60,7 +60,7 @@ OptionAdventure::~OptionAdventure(){
 void OptionAdventure::logic(){
 }
 
-void OptionAdventure::run(bool &endGame) throw (ReturnException){
+void OptionAdventure::run(bool &endGame){
     Keyboard key;
     Object * player = NULL;
     try{

@@ -307,7 +307,7 @@ static void tryPlaySound(const string & path){
 }
 
 /*! Logic */
-void Menu::act(bool &endGame, bool reset) throw (ReturnException){
+void Menu::act(bool &endGame, bool reset){
 
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
 
@@ -429,7 +429,7 @@ void Menu::act(bool &endGame, bool reset) throw (ReturnException){
 void Menu::draw(const Box &area, Bitmap *bmp){
 }
 
-void Menu::run() throw (ReturnException) {
+void Menu::run(){
     bool done = false;
     bool endGame = false;
 
