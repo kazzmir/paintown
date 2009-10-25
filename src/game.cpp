@@ -178,7 +178,7 @@ namespace Game{
     };
 }
 
-bool playLevel( World & world, const vector< Object * > & players, int helpTime ) throw (ShutdownException){
+bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
     // Keyboard key;
     InputMap<Game::Input> input;
 
@@ -510,7 +510,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     return true;
 }
 
-void realGame(const vector< Object * > & players, const Level::LevelInfo & levelInfo) throw (ShutdownException) {
+void realGame(const vector< Object * > & players, const Level::LevelInfo & levelInfo){
 
     // Level::LevelInfo levelInfo = Level::readLevels( levelFile );
 
@@ -586,7 +586,7 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
 }
 
 /* use MenuGlobal::doLevelMenu instead */
-const Level::LevelInfo selectLevelSet( const string & base ) throw (LoadException, Filesystem::NotFound){
+const Level::LevelInfo selectLevelSet( const string & base ){
     return MenuGlobals::doLevelMenu(base, NULL);
 
 #if 0
@@ -710,7 +710,7 @@ static bool closeFloat(double a, double b){
     return fabs(a-b) < epsilon;
 }
 
-void playVersusMode( Character * player1, Character * player2, int round ) throw( ReturnException ){
+void playVersusMode( Character * player1, Character * player2, int round ){
 
 	player1->setY( 0 );
 	player2->setY( 0 );

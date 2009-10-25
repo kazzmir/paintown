@@ -6,6 +6,7 @@
 #include "object/player.h"
 #include "globals.h"
 #include "object/display_character.h"
+#include "shutdown_exception.h"
 #include "init.h"
 // #include "select_player.h"
 #include "game.h"
@@ -94,7 +95,7 @@ namespace Select{
     };
 }
 
-static int choosePlayer(const PlayerVector & players, const string & message) throw (ReturnException){
+static int choosePlayer(const PlayerVector & players, const string & message){
     DisplayCharacterLoader loader(getCharacters(players));
     InputMap<Select::Input> input;
 
@@ -205,6 +206,11 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
                     InputManager::poll();
                     
                     InputMap<Select::Input>::Output inputState = InputManager::getMap(input);
+                    if (Global::shutdown()){
+                        loader.stop();
+                        pthread_join(loadingThread, NULL);
+                        throw ShutdownException();
+                    }
 
                     if ( clock % 5 == 0 ){
                         backgroundX -= 1;
@@ -392,7 +398,7 @@ static int choosePlayer(const PlayerVector & players, const string & message) th
     return current;
 }
 
-Object * Game::selectPlayer(bool invincibile, const string & message, const Level::LevelInfo & info) throw( LoadException, ReturnException ){
+Object * Game::selectPlayer(bool invincibile, const string & message, const Level::LevelInfo & info){
     /* hm, it would be nice to cache this I suppose */
     PlayerVector players = loadPlayers(info.getPlayerPath());
 
@@ -431,7 +437,7 @@ Object * Game::selectPlayer(bool invincibile, const string & message, const Leve
     }
 }
 
-vector<Object *> Game::versusSelect( bool invincible ) throw (LoadException, ReturnException){
+vector<Object *> Game::versusSelect( bool invincible ){
 	Bitmap background( Global::titleScreen() );
 
 	/* hm, it would be nice to cache this I suppose */
