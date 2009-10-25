@@ -57,7 +57,7 @@ OptionAdventureCpu::~OptionAdventureCpu(){
 void OptionAdventureCpu::logic(){
 }
 
-void OptionAdventureCpu::run(bool &endGame) throw (ReturnException) {
+void OptionAdventureCpu::run(bool &endGame){
     int max_buddies = MenuGlobals::getNpcBuddies();
 
     Keyboard key;

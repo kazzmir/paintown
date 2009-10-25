@@ -99,7 +99,7 @@ static void setKey(int player, OptionJoystick::JoystickType k, Configuration::Jo
     }
 }
 
-static Configuration::JoystickInput readJoystick() throw (ReturnException){
+static Configuration::JoystickInput readJoystick(){
     vector<Joystick::Key> keys;
     keys.push_back(Joystick::Up);
     keys.push_back(Joystick::Down);
@@ -192,7 +192,7 @@ void OptionJoystick::logic(){
     */
 }
 
-void OptionJoystick::run(bool &endGame) throw (ReturnException) {
+void OptionJoystick::run(bool &endGame){
     //int x, y, width, height;
     const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
     const char * message = "Press a joystick button!";

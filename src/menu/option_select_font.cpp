@@ -109,7 +109,7 @@ void OptionSelectFont::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionSelectFont::run(bool &endGame) throw (ReturnException) {
+void OptionSelectFont::run(bool &endGame){
 }
 
 bool OptionSelectFont::leftKey(){

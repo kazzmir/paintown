@@ -67,7 +67,7 @@ void OptionSpeed::logic()
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionSpeed::run(bool &endGame) throw (ReturnException) {
+void OptionSpeed::run(bool &endGame){
 }
 
 bool OptionSpeed::leftKey()

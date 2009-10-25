@@ -64,7 +64,7 @@ void OptionInvincible::logic()
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionInvincible::run(bool &endGame) throw (ReturnException) {
+void OptionInvincible::run(bool &endGame){
 }
 
 bool OptionInvincible::leftKey()

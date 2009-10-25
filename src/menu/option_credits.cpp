@@ -122,7 +122,7 @@ OptionCredits::~OptionCredits(){
 void OptionCredits::logic(){
 }
 
-void OptionCredits::run( bool &endGame ) throw (ReturnException) {
+void OptionCredits::run( bool &endGame ){
 	Keyboard key;
 
 	const int maxCredits = credits.size();

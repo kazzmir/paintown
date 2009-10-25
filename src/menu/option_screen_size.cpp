@@ -158,7 +158,7 @@ void OptionScreenSize::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionScreenSize::run(bool &endGame) throw (ReturnException) {
+void OptionScreenSize::run(bool &endGame){
 }
 
 void OptionScreenSize::setMode(int width, int height){

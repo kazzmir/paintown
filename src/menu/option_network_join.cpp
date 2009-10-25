@@ -52,7 +52,7 @@ OptionNetworkJoin::~OptionNetworkJoin(){
 void OptionNetworkJoin::logic(){
 }
 
-void OptionNetworkJoin::run(bool &endGame) throw (ReturnException) {
+void OptionNetworkJoin::run(bool &endGame){
 	Keyboard key;
 	key.poll();
 	key.wait();

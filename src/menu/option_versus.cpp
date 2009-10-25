@@ -57,7 +57,7 @@ OptionVersus::~OptionVersus(){
 void OptionVersus::logic(){
 }
 
-void OptionVersus::run(bool &endGame) throw (ReturnException) {
+void OptionVersus::run(bool &endGame){
 	/*
 	Keyboard key;
 	Object * player = NULL;

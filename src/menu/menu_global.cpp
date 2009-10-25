@@ -112,7 +112,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
 }
 
-Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent) throw (LoadException, Filesystem::NotFound, ReturnException) {
+Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
 #if 0
     std::vector<std::string> possible = Util::getFiles(Filesystem::find(dir + "/"), "*.txt" );
 

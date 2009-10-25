@@ -69,7 +69,7 @@ void OptionMugenMenu::logic()
 	// Nothing
 }
 
-void OptionMugenMenu::run(bool &endGame) throw (ReturnException) {
+void OptionMugenMenu::run(bool &endGame){
 	// Do our new menu
 	_menu->run();
 }

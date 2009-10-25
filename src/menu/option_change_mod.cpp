@@ -85,7 +85,7 @@ static void changeMod(const std::string & path){
     }
 }
 
-void OptionChangeMod::run(bool &endGame) throw (ReturnException) {
+void OptionChangeMod::run(bool &endGame){
     try{
         int select = 0;
         // Menu menu(Filesystem::find("menu/change-mod.txt"));

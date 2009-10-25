@@ -75,7 +75,7 @@ void OptionNpcBuddies::logic(){
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionNpcBuddies::run(bool &endGame) throw (ReturnException) {
+void OptionNpcBuddies::run(bool &endGame){
 }
 
 bool OptionNpcBuddies::leftKey(){

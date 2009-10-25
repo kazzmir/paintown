@@ -15,7 +15,7 @@ class OptionVersus : public MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame) throw (ReturnException);
+		virtual void run(bool &endGame);
 		
 		OptionVersus(Token *token)throw( LoadException );
 	

@@ -57,7 +57,7 @@ class TabMenu : public Menu
 	void load(Token *token) throw (LoadException);
 	
 	/*! do logic, draw whatever */
-	void run() throw (ReturnException);
+	void run();
     private:
 	RectArea tabInfo;
 	RectArea selectedTabInfo;

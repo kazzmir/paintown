@@ -282,7 +282,7 @@ static bool closeFloat(double a, double b){
     return fabs(a-b) < epsilon;
 }
 
-void TabMenu::run() throw (ReturnException) {
+void TabMenu::run(){
     //bool endMenu = false;
     bool done = false;
 

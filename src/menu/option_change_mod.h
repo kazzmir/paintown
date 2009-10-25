@@ -12,7 +12,7 @@ public:
     OptionChangeMod(Token *token) throw (LoadException);
     virtual ~OptionChangeMod();
     virtual void logic();
-    virtual void run(bool &endGame) throw (ReturnException);
+    virtual void run(bool &endGame);
 };
 
 #endif
