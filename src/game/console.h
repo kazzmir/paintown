@@ -57,6 +57,7 @@ protected:
     void process(const std::string & command);
     void backspace();
     void clearInput();
+    void deleteLastWord();
     virtual std::stringstream & add();
 
     enum State{

@@ -137,6 +137,10 @@ bool Console::doInput() throw (ReturnException) {
             /* ignore any other input */
             return true;
         }
+        if (inputState['w']){
+            deleteLastWord();
+            return true;
+        }
     }
 
     for (InputMap<char>::Output::iterator it = inputState.begin(); it != inputState.end(); it++){
@@ -208,6 +212,19 @@ void Console::backspace(){
     currentCommand.str(now);
     currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
     currentCommand.clear();
+}
+
+void Console::deleteLastWord(){
+    string now = currentCommand.str();
+    size_t get = now.rfind(" ");
+    if (get != string::npos){
+        now = now.substr(0, get + 1);
+        currentCommand.str(now);
+        currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
+        currentCommand.clear();
+    } else {
+        clearInput();
+    }
 }
 
 void Console::clearInput(){
