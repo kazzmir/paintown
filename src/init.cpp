@@ -118,6 +118,11 @@ namespace Global{
 }
 
 static void close_window(){
+    /* when do_shutdown is 1 the game will attempt to throw ShutdownException
+     * wherever it is. If the game is stuck or the code doesn't throw
+     * ShutdownException then when the user tries to close the window
+     * twice we just forcifully shutdown.
+     */
     Global::do_shutdown += 1;
     if (Global::do_shutdown == 2){
         close_paintown();

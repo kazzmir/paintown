@@ -212,10 +212,29 @@ void Console::toggle(){
     }
 }
 
+static vector<string> split(string str, char splitter){
+    vector<string> strings;
+    size_t next = str.find(splitter);
+    while (next != string::npos){
+        strings.push_back(str.substr(0, next));
+        str = str.substr(next+1);
+        next = str.find(splitter);
+    }
+    if (str != ""){
+        strings.push_back(str);
+    }
+
+    return strings;
+}
+
 /* do something with a command */
 void Console::process(const string & command){
     if (commands[command] != 0){
-        lines.push_back(commands[command]->act());
+        string out = commands[command]->act();
+        vector<string> each = split(out, '\n');
+        for (vector<string>::iterator it = each.begin(); it != each.end(); it++){
+            lines.push_back(*it);
+        }
     } else {
         lines.push_back("Unknown command '" + command + "'");
     }

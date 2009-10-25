@@ -233,15 +233,27 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
             }
         };
 
+        class CommandHelp: public Console::Command{
+        public:
+            CommandHelp(){
+            }
+
+            string act(){
+                ostringstream out;
+                out << "quit - quit the game" << "\n";
+                out << "help - this help menu";
+                return out.str();
+            }
+        };
+
         console.addCommand("quit", new CommandQuit());
+        console.addCommand("help", new CommandHelp());
     }
     // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;
 
     world.getEngine()->createWorld(world);
 
-    Global::speed_counter = 0;
-    Global::second_counter = 0;
     // int game_time = 100;
     int frames = 0;
     const int max_fps_index = 5;
@@ -259,7 +271,9 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     bool force_quit = false;
     bool use_console_input = false;
 
-    /* don't put any variables after runCounter and before the while loop */
+    /* don't put anything after these variables and before the while loop */
+    Global::speed_counter = 0;
+    Global::second_counter = 0;
     double runCounter = 0;
     while ( ! done ){
 
