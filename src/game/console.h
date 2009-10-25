@@ -9,11 +9,24 @@
 
 class Bitmap;
 
+namespace Console{
+
 /* equivalent of std::endl */
 class ConsoleEnd{
 private:
     friend class Console;
     ConsoleEnd(){
+    }
+};
+
+class Command{
+public:
+    Command(){
+    }
+
+    virtual void act() = 0;
+
+    virtual ~Command(){
     }
 };
 
@@ -49,8 +62,8 @@ public:
     /* for end of line, always pass Console::endl */
     Console & operator<<(const ConsoleEnd & e);
 
-    static ConsoleEnd endl;
     static const std::string DEFAULT_FONT;
+    static ConsoleEnd endl;
 
 protected:
 
@@ -85,5 +98,7 @@ protected:
     
     void checkStream();
 };
+
+}
 
 #endif

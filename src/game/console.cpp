@@ -11,13 +11,13 @@
 
 using namespace std;
 
-namespace ConsoleInput{
+namespace Console{
+
 static int Toggle = 254;
 static int Backspace = 9;
 static int Esc = 8;
 static int Control = 7;
 static int Enter = 6;
-}
 
 ConsoleEnd Console::endl;
 const std::string Console::DEFAULT_FONT = Global::DEFAULT_FONT;
@@ -31,11 +31,11 @@ textHeight(15),
 textWidth(15),
 offset(0){
     const int delay = 10;
-    input.set(Keyboard::Key_TILDE, delay * 2, false, ConsoleInput::Toggle);
-    input.set(Keyboard::Key_BACKSPACE, delay, false, ConsoleInput::Backspace);
-    input.set(Keyboard::Key_ESC, delay, false, ConsoleInput::Esc);
-    input.set(Keyboard::Key_LCONTROL, 0, false, ConsoleInput::Control);
-    input.set(Keyboard::Key_ENTER, 0, false, ConsoleInput::Enter);
+    input.set(Keyboard::Key_TILDE, delay * 2, false, Toggle);
+    input.set(Keyboard::Key_BACKSPACE, delay, false, Backspace);
+    input.set(Keyboard::Key_ESC, delay, false, Esc);
+    input.set(Keyboard::Key_LCONTROL, 0, false, Control);
+    input.set(Keyboard::Key_ENTER, 0, false, Enter);
     
     /* ugh, do we really have to enumerate every key?? */
     input.set(Keyboard::Key_A, delay, false, 'a');
@@ -117,12 +117,12 @@ bool Console::doInput() throw (ReturnException) {
      * a few corner cases exist. When they come up please document them.
      */
 
-    if (inputState[ConsoleInput::Toggle]){
+    if (inputState[Toggle]){
         toggle();
         return false;
     }
 
-    if (inputState[ConsoleInput::Enter]){
+    if (inputState[Enter]){
         if (currentCommand.str() != ""){
             process(currentCommand.str());
         }
@@ -130,7 +130,7 @@ bool Console::doInput() throw (ReturnException) {
     }
 
     /* ctrl-X keys */
-    if (inputState[ConsoleInput::Control]){
+    if (inputState[Control]){
         /* standard linux console commands */
         if (inputState['u']){
             clearInput();
@@ -151,11 +151,11 @@ bool Console::doInput() throw (ReturnException) {
         }
     }
 
-    if (inputState[ConsoleInput::Esc]){
+    if (inputState[Esc]){
         throw ReturnException();
     }
 
-    if (inputState[ConsoleInput::Backspace]){
+    if (inputState[Backspace]){
         backspace();
     }
 
@@ -254,4 +254,6 @@ void Console::checkStream(){
 	lines.push_back(textInput.str());
 	textInput.str("");
     }
+}
+
 }

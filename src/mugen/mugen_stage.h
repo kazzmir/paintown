@@ -11,7 +11,9 @@
 #include "world.h"
 
 class Bitmap;
-class Console;
+namespace Console{
+    class Console;
+}
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
@@ -358,7 +360,7 @@ protected:
     private:
 	
 	// Our output Console
-	Console *console;
+        Console::Console *console;
 	
 	// Debug enabled?
 	bool debugMode;

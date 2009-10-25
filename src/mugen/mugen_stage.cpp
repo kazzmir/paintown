@@ -123,7 +123,7 @@ totalTime(99),
 time(99),
 p1points(0),
 p2points(0),
-console(new Console(CONSOLE_SIZE)),
+console(new Console::Console(CONSOLE_SIZE)),
 debugMode(false),
 inleft(0),
 inright(0),
@@ -192,7 +192,7 @@ totalTime(99),
 time(99),
 p1points(0),
 p2points(0),
-console(new Console(CONSOLE_SIZE)),
+console(new Console::Console(CONSOLE_SIZE)),
 debugMode(false),
 inleft(0),
 inright(0),
@@ -484,6 +484,7 @@ void MugenStage::moveCamera( const double x, const double y ){
 }
 
 void MugenStage::logic( ){
+    Console::ConsoleEnd & cend = Console::Console::endl;
     // camera crap
     if (quake_time > 0){
 	quake_time--;
@@ -507,7 +508,7 @@ void MugenStage::logic( ){
 	zlinkbackground = background->getBackground(zoffsetlink);
 	zoffset = zlinkbackground->y;
     }
-    *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << Console::endl;
+    *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
     
     // Backgrounds
     background->logic( diffx, diffy, xaxis + camerax, yaxis + cameray );
@@ -597,7 +598,7 @@ void MugenStage::logic( ){
 	}
 
 	// Debug crap put it on console
-	*console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << Console::endl;
+	*console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
     }
     objects.insert(objects.end(),add.begin(),add.end());
     
@@ -607,8 +608,8 @@ void MugenStage::logic( ){
     }
     
     // Console
-    *console << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY() << Console::endl;
-    *console << "Frames: " << getTicks() << Console::endl;
+    *console << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY() << cend;
+    *console << "Frames: " << getTicks() << cend;
     console->act();
 }
 	
