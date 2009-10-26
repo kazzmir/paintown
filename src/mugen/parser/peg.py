@@ -292,7 +292,8 @@ public:
         memo_size = newSize;
     }
 
-    void reportError(){
+    std::string reportError(){
+        std::ostringstream out;
         int line = 1;
         int column = 1;
         for (int i = 0; i < farthest; i++){
@@ -312,7 +313,7 @@ public:
         if (right >= max){
             right = max;
         }
-        std::cout << "Read up till line " << line << " column " << column << std::endl;
+        out << "Read up till line " << line << " column " << column << std::endl;
         std::ostringstream show;
         for (int i = left; i < right; i++){
             char c = buffer[i];
@@ -335,11 +336,12 @@ public:
                 default : show << c; break;
             }
         }
-        std::cout << "'" << show.str() << "'" << std::endl;
+        out << "'" << show.str() << "'" << std::endl;
         for (int i = 0; i < farthest - left; i++){
-            std::cout << " ";
+            out << " ";
         }
-        std::cout << "^" << std::endl;
+        out << "^" << std::endl;
+        return out.str();
     }
 
     inline Column & getColumn(const int position){
@@ -391,16 +393,21 @@ static inline bool compareCharCase(const char a, const char b){
 
 class ParseException: std::exception {
 public:
-    ParseException();
-    virtual ~ParseException() throw();
+    ParseException(const std::string & reason):
+    std::exception(),
+    message(reason){
+    }
+
+    std::string getReason() const {
+        return message;
+    }
+
+    virtual ~ParseException() throw(){
+    }
+
+protected:
+    std::string message;
 };
-
-ParseException::ParseException():
-std::exception(){
-}
-
-ParseException::~ParseException() throw (){
-}
 
 Result errorResult(-1);
 """
@@ -1823,8 +1830,7 @@ const void * main(const std::string & filename) throw (ParseException){
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
-        stream.reportError();
-        throw ParseException();
+        throw ParseException(stream.reportError());
     }
     return done.getValues().getValue();
 }
@@ -1835,8 +1841,7 @@ const void * main(const char * in) throw (ParseException){
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
-        stream.reportError();
-        throw ParseException();
+        throw ParseException(stream.reportError());
     }
     return done.getValues().getValue();
 }
