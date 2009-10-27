@@ -13,6 +13,16 @@ public:
     value(value){
     }
 
+    virtual const Value & operator>>(int & x) const {
+        x = (int) value;
+        return *this;
+    }
+    
+    virtual const Value & operator>>(double & x) const {
+        x = value;
+        return *this;
+    }
+
     virtual std::string toString() const {
         std::ostringstream out;
         out << value;

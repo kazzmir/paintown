@@ -2,6 +2,7 @@
 #define _paintown_value_h
 
 #include <iostream>
+#include "exception.h"
 
 namespace Ast{
 
@@ -22,6 +23,16 @@ public:
 
     virtual const Value & operator>>(std::string & str) const {
         str = toString();
+        return *this;
+    }
+    
+    virtual const Value & operator>>(int & x) const {
+        throw Exception("Cannot read an int");
+        return *this;
+    }
+
+    virtual const Value & operator>>(double & x) const {
+        throw Exception("Cannot read an int");
         return *this;
     }
 

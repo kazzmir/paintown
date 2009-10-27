@@ -218,36 +218,39 @@ MugenStage::~MugenStage(){
 
 /* fix */
 void MugenStage::loadSectionCamera(Ast::Section * section){
-    /*
-    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		if ( itemhead.find("startx")!=std::string::npos ){
-		    *content->getNext() >> startx;
-		} else if ( itemhead.find("starty")!=std::string::npos ){
-		    *content->getNext() >> starty;
-		} else if ( itemhead.find("boundleft")!=std::string::npos ){
-		    *content->getNext() >> boundleft;
-		} else if ( itemhead.find("boundright")!=std::string::npos ){
-		    *content->getNext() >> boundright;
-		} else if ( itemhead.find("boundhigh")!=std::string::npos ){
-		    *content->getNext() >> boundhigh;
-		} else if ( itemhead.find("boundlow")!=std::string::npos ){
-		    // This is always 0 so don't grab it
-		    // *content->getNext() >> boundlow;
-		} else if ( itemhead.find("verticalfollow")!=std::string::npos ){
-		    *content->getNext() >> verticalfollow;
-		    if (verticalfollow > 1) verticalfollow = 1;
-		    else if(verticalfollow < 0) verticalfollow = 0;
-		} else if ( itemhead.find("floortension")!=std::string::npos ){
-		    *content->getNext() >> floortension;
-		} else if ( itemhead.find("tension")!=std::string::npos ){
-		    *content->getNext() >> tension;
-		} else throw MugenException( "Unhandled option in Camera Section: " + itemhead );
-	    }
-            */
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "startx"){
+                (*simple) >> startx;
+            } else if (*simple == "starty"){
+                *simple >> starty;
+            } else if (*simple == "boundleft"){
+                *simple >> boundleft;
+            } else if (*simple == "boundright"){
+                *simple >> boundright;
+            } else if (*simple == "boundhigh"){
+                *simple >> boundhigh;
+            } else if (*simple == "boundlow"){
+                // This is always 0 so don't grab it
+                // *content->getNext() >> boundlow;
+            } else if (*simple == "verticalfollow"){
+                *simple >> verticalfollow;
+                if (verticalfollow > 1){
+                    verticalfollow = 1;
+                } else if (verticalfollow < 0){
+                    verticalfollow = 0;
+                }
+            } else if (*simple == "floortension"){
+                *simple >> floortension;
+            } else if (*simple == "tension"){
+                *simple >> tension;
+            } else {
+                throw MugenException( "Unhandled option in Camera Section: " + simple->toString());
+            }
+        }
+    }
 }
 
 void MugenStage::loadSectionInfo(Ast::Section * section){

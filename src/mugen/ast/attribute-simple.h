@@ -27,9 +27,10 @@ public:
         return *name == str;
     }
 
-    const AttributeSimple & operator>>(std::string & str) const {
+    template <typename X>
+    const AttributeSimple & operator>>(X & v) const {
         if (value != 0){
-            *value >> str;
+            *value >> v;
         }
         return *this;
     }
