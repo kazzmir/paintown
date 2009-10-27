@@ -112,6 +112,11 @@ public:
             // std::cout << "Collect " << pointer() << std::endl;
             delete str;
             delete section;
+            if (section_list != 0){
+                for (std::list<Section*>::const_iterator it = section_list->begin(); it != section_list->end(); it++){
+                    delete (*it);
+                }
+            }
             delete section_list;
             delete value;
             delete identifier;

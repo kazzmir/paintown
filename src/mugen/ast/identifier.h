@@ -13,6 +13,10 @@ public:
     names(names){
     }
 
+    bool operator==(const std::string & str) const {
+        return toString() == str;
+    }
+
     std::string toString() const {
         std::ostringstream out;
         bool first = true;

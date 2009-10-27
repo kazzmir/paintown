@@ -15,6 +15,11 @@ public:
     virtual std::string toString() const {
         return *str;
     }
+
+    virtual const Value & operator>>(std::string & str) const {
+        str = *(this->str);
+        return *this;
+    }
     
     virtual bool referenced(const void * value) const {
         return Value::referenced(value) ||

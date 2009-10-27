@@ -20,6 +20,11 @@ public:
         std::cout << toString() << std::endl;
     }
 
+    virtual const Value & operator>>(std::string & str) const {
+        str = toString();
+        return *this;
+    }
+
     virtual bool referenced(const void * value) const {
         return value == this;
     }

@@ -12,6 +12,11 @@ public:
     Keyword(const char * str):
     str(str){
     }
+    
+    virtual const Value & operator>>(std::string & str) const {
+        str = this->str;
+        return *this;
+    }
 
     virtual std::string toString() const {
         return std::string(str);

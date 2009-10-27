@@ -5,6 +5,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <list>
 #include <ostream>
 #include <sstream>
 #include <iostream>
@@ -22,6 +23,7 @@
 #include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
+#include "ast/all.h"
 
 #include "mugen_animation.h"
 #include "mugen_background.h"
@@ -32,6 +34,13 @@
 #include "mugen_reader.h"
 #include "mugen_sprite.h"
 #include "mugen_util.h"
+
+/* this is bad.. peg.py should just produce a .h file we can include */
+namespace Mugen{
+    namespace Def{
+        extern const void * main(const std::string & filename);
+    }
+}
 
 using namespace std;
 
@@ -206,8 +215,186 @@ loaded(false){
 MugenStage::~MugenStage(){
     cleanup();
 }
+
+/* fix */
+void MugenStage::loadSectionCamera(Ast::Section * section){
+    /*
+    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		Mugen::Util::removeSpaces(itemhead);
+		if ( itemhead.find("startx")!=std::string::npos ){
+		    *content->getNext() >> startx;
+		} else if ( itemhead.find("starty")!=std::string::npos ){
+		    *content->getNext() >> starty;
+		} else if ( itemhead.find("boundleft")!=std::string::npos ){
+		    *content->getNext() >> boundleft;
+		} else if ( itemhead.find("boundright")!=std::string::npos ){
+		    *content->getNext() >> boundright;
+		} else if ( itemhead.find("boundhigh")!=std::string::npos ){
+		    *content->getNext() >> boundhigh;
+		} else if ( itemhead.find("boundlow")!=std::string::npos ){
+		    // This is always 0 so don't grab it
+		    // *content->getNext() >> boundlow;
+		} else if ( itemhead.find("verticalfollow")!=std::string::npos ){
+		    *content->getNext() >> verticalfollow;
+		    if (verticalfollow > 1) verticalfollow = 1;
+		    else if(verticalfollow < 0) verticalfollow = 0;
+		} else if ( itemhead.find("floortension")!=std::string::npos ){
+		    *content->getNext() >> floortension;
+		} else if ( itemhead.find("tension")!=std::string::npos ){
+		    *content->getNext() >> tension;
+		} else throw MugenException( "Unhandled option in Camera Section: " + itemhead );
+	    }
+            */
+}
+
+void MugenStage::loadSectionInfo(Ast::Section * section){
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "name"){
+                /* use setName() here */
+                *simple >> name;
+                Global::debug(1) << "Read name '" << name << "'" << endl;
+            } else if (*simple == "author"){
+                // Seems to be that some people think that author belongs in background defs
+                std::string temp;
+                *simple >> temp;
+                Global::debug(1) << "Made by this guy: '" << temp << "'" << endl;
+            } else {
+                throw MugenException( "Unhandled option in Info Section: " + simple->toString());
+            }
+        }
+    }
+}
+
+/* fix */
+void MugenStage::loadSectionPlayerInfo(Ast::Section * section){
+    /*
+    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		Mugen::Util::removeSpaces(itemhead);
+		if ( itemhead.find("p1startx")!=std::string::npos ){
+		    *content->getNext() >> p1startx;
+		} else if ( itemhead.find("p1starty")!=std::string::npos ){
+		    *content->getNext() >> p1starty;
+		} else if ( itemhead.find("p1startz")!=std::string::npos ){
+		    *content->getNext() >> p1startz;
+		} else if ( itemhead.find("p1facing")!=std::string::npos ){
+		    *content->getNext() >> p1facing;
+		} else if ( itemhead.find("p2startx")!=std::string::npos ){
+		    *content->getNext() >> p2startx;
+		} else if ( itemhead.find("p2starty")!=std::string::npos ){
+		    *content->getNext() >> p2starty;
+		} else if ( itemhead.find("p2startz")!=std::string::npos ){
+		    *content->getNext() >> p2startz;
+		} else if ( itemhead.find("p2facing")!=std::string::npos ){
+		    *content->getNext() >> p2facing;
+		} else if ( itemhead.find("leftbound")!=std::string::npos ){
+		    *content->getNext() >> leftbound;
+		} else if ( itemhead.find("rightbound")!=std::string::npos ){
+		    *content->getNext() >> rightbound;
+		} else if ( itemhead.find("topbound")!=std::string::npos ){
+		    *content->getNext() >> topbound;
+		} else if ( itemhead.find("botbound")!=std::string::npos ){
+		    *content->getNext() >> botbound;
+		} else throw MugenException( "Unhandled option in PlayerInfo Section: " + itemhead );
+	    }
+            */
+}
+
+/* fix */
+void MugenStage::loadSectionBound(Ast::Section * section){
+    /*
+    while( collection[i]->hasItems() ){
+        MugenItemContent *content = collection[i]->getNext();
+        const MugenItem *item = content->getNext();
+        std::string itemhead = item->query();
+        Mugen::Util::removeSpaces(itemhead);
+        if ( itemhead.find("screenleft")!=std::string::npos ){
+            *content->getNext() >> screenleft;
+        } else if ( itemhead.find("screenright")!=std::string::npos ){
+            *content->getNext() >> screenright;
+        } else throw MugenException( "Unhandled option in Bound Section: " + itemhead );
+    }
+    */
+}
+
+/* fix */
+void MugenStage::loadSectionStageInfo(Ast::Section * section){
+    /*
+    while( collection[i]->hasItems() ){
+        MugenItemContent *content = collection[i]->getNext();
+        const MugenItem *item = content->getNext();
+        std::string itemhead = item->query();
+        Mugen::Util::removeSpaces(itemhead);
+        Mugen::Util::fixCase(itemhead);
+        if ( itemhead == "zoffset" ){
+            *content->getNext() >> zoffset;
+        } else if ( itemhead == "zoffsetlink" ){
+            *content->getNext() >> zoffsetlink;
+        } else if ( itemhead.find("autoturn")!=std::string::npos ){
+            *content->getNext() >> autoturn;
+        } else if ( itemhead.find("resetbg")!=std::string::npos ){
+            *content->getNext() >> resetBG;
+        } else throw MugenException( "Unhandled option in StageInfo Section: " + itemhead );
+    }
+    */
+}
+
+/* fix */
+void MugenStage::loadSectionShadow(Ast::Section * section){
+    /*
+    while( collection[i]->hasItems() ){
+        MugenItemContent *content = collection[i]->getNext();
+        const MugenItem *item = content->getNext();
+        std::string itemhead = item->query();
+        Mugen::Util::removeSpaces(itemhead);
+        Mugen::Util::fixCase(itemhead);
+        if ( itemhead.find("intensity")!=std::string::npos ){
+            *content->getNext() >> shadow.k;
+            // *content->getNext() >> shadowIntensity;
+            // shadow.k = shadowIntensity;
+        } else if ( itemhead == "reflect" ){
+            *content->getNext() >> reflect;
+        } else if ( itemhead.find("color")!=std::string::npos ){
+            // int c,m,k;
+            *content->getNext() >> shadow.c;
+            *content->getNext() >> shadow.y;
+            *content->getNext() >> shadow.m;
+            // shadowColor = Bitmap::makeColor(r,g,b);
+        } else if ( itemhead.find("yscale")!=std::string::npos ){
+            *content->getNext() >> shadowYscale;
+        } else if ( itemhead.find("fade.range")!=std::string::npos ){
+            *content->getNext() >> shadowFadeRangeHigh;
+            *content->getNext() >> shadowFadeRangeMid;
+        } else throw MugenException( "Unhandled option in Shadow Section: " + itemhead );
+    }
+    */
+}
+
+/* fix */
+void MugenStage::loadSectionReflection(Ast::Section * section){
+    /*
+    while( collection[i]->hasItems() ){
+        MugenItemContent *content = collection[i]->getNext();
+        const MugenItem *item = content->getNext();
+        std::string itemhead = item->query();
+        Mugen::Util::removeSpaces(itemhead);
+        Mugen::Util::fixCase(itemhead);
+        if ( itemhead.find("intensity")!=std::string::npos ){
+            *content->getNext() >> reflectionIntensity;
+        } else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
+    }
+    */
+}
 	
-void MugenStage::load() throw( MugenException ){
+void MugenStage::load(){
     if (loaded)return;
     // Lets look for our def since some assholes think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/stages/");
@@ -231,7 +418,59 @@ void MugenStage::load() throw( MugenException ){
     }
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
+
+    list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
+
+    struct cymk_holder{
+        cymk_holder():c(0),m(0),y(0),k(0){}
+        int c, m, y, k;
+    } shadow;
+    
+    /* Extract info for our first section of our stage */
+    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+        Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        /* this should really be head = Mugen::Util::fixCase(head) */
+	Mugen::Util::fixCase(head);
+	if (head == "info"){
+            loadSectionInfo(section);
+        } else if (head == "camera"){
+            loadSectionCamera(section);
+	} else if (head == "playerinfo"){
+            loadSectionPlayerInfo(section);
+	} else if (head == "scaling"){
+            /* not used anymore.. print a warning? */
+        } else if (head == "bound"){
+            loadSectionBound(section);
+	} else if (head == "stageinfo"){
+            loadSectionStageInfo(section);
+	} else if (head == "shadow"){
+            loadSectionShadow(section);
+	} else if (head == "reflection"){
+            loadSectionReflection(section);
+	} else if (head == "bgdef"){
+	    // Background management
+            /* fix */
+            /*
+	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,ticker,0);
+	    background = manager;
+	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+            */
+	}
+	else if (head == "music" ){
+            /* Ignore for now */
+        } else {
+            throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
+        }
+    }
+    
+    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+        delete (*section_it);
+    }
+    delete sections;
+
      
+#if 0
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
@@ -426,6 +665,7 @@ void MugenStage::load() throw( MugenException ){
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
 	
     }
+#endif
     
     // Setup board our worksurface to the proper size of the entire stage 320x240 :P
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;

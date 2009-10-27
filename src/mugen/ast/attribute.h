@@ -5,7 +5,17 @@ namespace Ast{
 
 class Attribute{
 public:
-    Attribute(){
+    enum Kind{
+        None = 0,
+        Simple = 1,
+    };
+
+    Attribute(Kind kind):
+    kind(kind){
+    }
+
+    virtual Kind getKind(){
+        return kind;
     }
 
     virtual void debugExplain(){
@@ -17,6 +27,8 @@ public:
 
     virtual ~Attribute(){
     }
+protected:
+    Kind kind;
 };
 
 }

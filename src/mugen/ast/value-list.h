@@ -14,6 +14,11 @@ public:
     values(values){
     }
 
+    virtual const Value & operator>>(std::string & str) const {
+        str = toString();
+        return *this;
+    }
+
     virtual std::string toString() const {
         std::ostringstream out;
         bool first = true;

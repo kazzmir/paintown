@@ -4,7 +4,7 @@
 #include "attribute.h"
 #include "identifier.h"
 #include "Value.h"
-#include <iostream>
+#include <sstream>
 
 namespace Ast{
 
@@ -12,27 +12,43 @@ class AttributeSimple: public Attribute {
 public:
     
     AttributeSimple(const Identifier * name, const Value * value):
+    Attribute(Simple),
     name(name),
     value(value){
     }
     
     AttributeSimple(const Identifier * name):
+    Attribute(Simple),
     name(name),
     value(0){
     }
-    
+
+    bool operator==(const std::string & str) const {
+        return *name == str;
+    }
+
+    const AttributeSimple & operator>>(std::string & str) const {
+        if (value != 0){
+            *value >> str;
+        }
+        return *this;
+    }
+
     virtual bool referenced(const void * value) const {
         return Attribute::referenced(value) ||
                name->referenced(value) ||
                (this->value != 0 && this->value->referenced(value));
     }
 
-    void debugExplain(){
+    std::string toString(){
+        std::ostringstream out;
         if (value != 0){
-            std::cout << name->toString() << " = " << value->toString() << std::endl;
+            out << name->toString() << " = " << value->toString();
         } else {
-            std::cout << name->toString() << " = " << std::endl;
+            out << name->toString() << " = <none>";
         }
+
+        return out.str();
     }
 
     virtual ~AttributeSimple(){

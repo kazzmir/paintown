@@ -6,6 +6,7 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <string>
 #include <stdlib.h>
 #include "attribute.h"
 #include "Value.h"
@@ -22,8 +23,16 @@ public:
         }
     }
 
+    std::string getName() const {
+        return *name;
+    }
+
     void addAttribute(Attribute * attribute){
         attributes.push_back(attribute);
+    }
+
+    const std::list<Attribute *> & getAttributes() const {
+        return attributes;
     }
 
     void addValue(Value * value){

@@ -7,13 +7,17 @@
 #include <map>
 #include "mugen_exception.h"
 
-// Implement world because raf is a kind man
 #include "world.h"
 
 class Bitmap;
 namespace Console{
     class Console;
 }
+
+namespace Ast{
+    class Section;
+}
+
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
@@ -37,9 +41,9 @@ public:
 	MugenStage( const std::string & s );
 	MugenStage( const char * location );
 
-	~MugenStage();
+	virtual ~MugenStage();
 	
-	void load() throw( MugenException );
+	void load();
 	
 	inline const std::string &getName() const {
             return name;
@@ -117,7 +121,17 @@ public:
     virtual void addMessage(Network::Message m, Network::Socket from = 0);
     virtual Network::Message createBangMessage( int x, int y, int z );
 	
-	static const std::string getStageName(const std::string &filename) throw (MugenException);
+    static const std::string getStageName(const std::string &filename) throw (MugenException);
+
+protected:
+    /* section loaders */
+    void loadSectionInfo(Ast::Section * section);
+    void loadSectionCamera(Ast::Section * section);
+    void loadSectionPlayerInfo(Ast::Section * section);
+    void loadSectionBound(Ast::Section * section);
+    void loadSectionStageInfo(Ast::Section * section);
+    void loadSectionShadow(Ast::Section * section);
+    void loadSectionReflection(Ast::Section * section);
 	
 protected:
 

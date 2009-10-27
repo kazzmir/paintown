@@ -94,7 +94,8 @@ Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
 }
 
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
-    return new Ast::Attribute();
+    /* wrong, fix this */
+    return new Ast::Attribute(Ast::Attribute::None);
 }
 
 Ast::Keyword * makeKeyword(const Value & value){
@@ -102,7 +103,8 @@ Ast::Keyword * makeKeyword(const Value & value){
 }
 
 Ast::Attribute * makeAttributes(const Value & id, const Value & data){
-    return new Ast::Attribute();
+    /* wrong, fix this */
+    return new Ast::Attribute(Ast::Attribute::None);
 }
 
 Ast::Value * makeValue(){
