@@ -1,0 +1,19 @@
+My experience with visual studio 2008 trying to compile paintown
+
+10/24/2009
+ * cannot find 'stdint.h' -- ok downloaded pstdint.h
+ * max is a #define so I can't use it as my own function -- fine, renamed to xmax
+ * no sys/time.h. -- vs is ok with just time.h
+ 
+ ok got as far as it trying to build ftalleg.h which needs freetype, so I'll have to
+download a freetype binary for MSVC at some point.
+
+ I also tried the visual studio IDE but didn't get very far. I set up a project and
+ spent a few minutes fiddling with the settings so that it added 'src' as an include
+ directory (otherwise I have to add every .h file to the project). I think I modified
+ some global setting to do this, but I'm not sure.
+
+ Tried to compile but got errors about precompiled headers. VS mentioned needing stdafx.h
+ so I added this file (it comes from the default template) and then got a different
+ error, something about Debug\paintown.gch which looks like a gcc precompiled header
+ thing but how would VS know about it?
