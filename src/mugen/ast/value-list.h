@@ -14,6 +14,8 @@ public:
     values(values){
     }
 
+    using Value::operator>>;
+
     virtual const Value & operator>>(std::string & str) const {
         str = toString();
         return *this;

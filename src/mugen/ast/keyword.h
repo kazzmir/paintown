@@ -12,7 +12,9 @@ public:
     Keyword(const char * str):
     str(str){
     }
-    
+
+    using Value::operator>>;
+
     virtual const Value & operator>>(std::string & str) const {
         str = this->str;
         return *this;

@@ -276,39 +276,39 @@ void MugenStage::loadSectionInfo(Ast::Section * section){
 
 /* fix */
 void MugenStage::loadSectionPlayerInfo(Ast::Section * section){
-    /*
-    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		if ( itemhead.find("p1startx")!=std::string::npos ){
-		    *content->getNext() >> p1startx;
-		} else if ( itemhead.find("p1starty")!=std::string::npos ){
-		    *content->getNext() >> p1starty;
-		} else if ( itemhead.find("p1startz")!=std::string::npos ){
-		    *content->getNext() >> p1startz;
-		} else if ( itemhead.find("p1facing")!=std::string::npos ){
-		    *content->getNext() >> p1facing;
-		} else if ( itemhead.find("p2startx")!=std::string::npos ){
-		    *content->getNext() >> p2startx;
-		} else if ( itemhead.find("p2starty")!=std::string::npos ){
-		    *content->getNext() >> p2starty;
-		} else if ( itemhead.find("p2startz")!=std::string::npos ){
-		    *content->getNext() >> p2startz;
-		} else if ( itemhead.find("p2facing")!=std::string::npos ){
-		    *content->getNext() >> p2facing;
-		} else if ( itemhead.find("leftbound")!=std::string::npos ){
-		    *content->getNext() >> leftbound;
-		} else if ( itemhead.find("rightbound")!=std::string::npos ){
-		    *content->getNext() >> rightbound;
-		} else if ( itemhead.find("topbound")!=std::string::npos ){
-		    *content->getNext() >> topbound;
-		} else if ( itemhead.find("botbound")!=std::string::npos ){
-		    *content->getNext() >> botbound;
-		} else throw MugenException( "Unhandled option in PlayerInfo Section: " + itemhead );
-	    }
-            */
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "p1startx"){
+                *simple >> p1startx;
+            } else if (*simple == "p1starty"){
+                *simple >> p1starty;
+            } else if (*simple == "p1startz"){
+                *simple >> p1startz;
+            } else if (*simple == "p1facing"){
+                *simple >> p1facing;
+            } else if (*simple == "p2startx"){
+                *simple >> p2startx;
+            } else if (*simple == "p2starty"){
+                *simple >> p2starty;
+            } else if (*simple == "p2startz"){
+                *simple >> p2startz;
+            } else if (*simple == "p2facing"){
+                *simple >> p2facing;
+            } else if (*simple == "leftbound"){
+                *simple >> leftbound;
+            } else if (*simple == "rightbound"){
+                *simple >> rightbound;
+            } else if (*simple == "topbound"){
+                *simple >> topbound;
+            } else if (*simple == "botbound"){
+                *simple >> botbound;
+            } else {
+                throw MugenException("Unhandled option in PlayerInfo Section: " + simple->toString());
+            }
+        }
+    }
 }
 
 /* fix */

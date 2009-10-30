@@ -13,6 +13,8 @@ public:
     value(value){
     }
 
+    using Value::operator>>;
+
     virtual const Value & operator>>(int & x) const {
         x = (int) value;
         return *this;
