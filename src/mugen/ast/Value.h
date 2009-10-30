@@ -35,6 +35,11 @@ public:
         throw Exception("Cannot read an int");
         return *this;
     }
+    
+    virtual const Value & operator>>(bool & x) const {
+        throw Exception("Cannot read a bool");
+        return *this;
+    }
 
     virtual bool referenced(const void * value) const {
         return value == this;

@@ -313,41 +313,40 @@ void MugenStage::loadSectionPlayerInfo(Ast::Section * section){
 
 /* fix */
 void MugenStage::loadSectionBound(Ast::Section * section){
-    /*
-    while( collection[i]->hasItems() ){
-        MugenItemContent *content = collection[i]->getNext();
-        const MugenItem *item = content->getNext();
-        std::string itemhead = item->query();
-        Mugen::Util::removeSpaces(itemhead);
-        if ( itemhead.find("screenleft")!=std::string::npos ){
-            *content->getNext() >> screenleft;
-        } else if ( itemhead.find("screenright")!=std::string::npos ){
-            *content->getNext() >> screenright;
-        } else throw MugenException( "Unhandled option in Bound Section: " + itemhead );
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "screenleft"){
+                *simple >> screenleft;
+            } else if (*simple == "screenright"){
+                *simple >> screenright;
+            } else {
+                throw MugenException("Unhandled option in Bound Section: " + simple->toString());
+            }
+        }
     }
-    */
 }
 
 /* fix */
 void MugenStage::loadSectionStageInfo(Ast::Section * section){
-    /*
-    while( collection[i]->hasItems() ){
-        MugenItemContent *content = collection[i]->getNext();
-        const MugenItem *item = content->getNext();
-        std::string itemhead = item->query();
-        Mugen::Util::removeSpaces(itemhead);
-        Mugen::Util::fixCase(itemhead);
-        if ( itemhead == "zoffset" ){
-            *content->getNext() >> zoffset;
-        } else if ( itemhead == "zoffsetlink" ){
-            *content->getNext() >> zoffsetlink;
-        } else if ( itemhead.find("autoturn")!=std::string::npos ){
-            *content->getNext() >> autoturn;
-        } else if ( itemhead.find("resetbg")!=std::string::npos ){
-            *content->getNext() >> resetBG;
-        } else throw MugenException( "Unhandled option in StageInfo Section: " + itemhead );
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "zoffset" ){
+                *simple >> zoffset;
+            } else if (*simple == "zoffsetlink" ){
+                *simple >> zoffsetlink;
+            } else if (*simple == "autoturn"){
+                *simple >> autoturn;
+            } else if (*simple == "resetbg"){
+                *simple >> resetBG;
+            } else {
+                throw MugenException("Unhandled option in StageInfo Section: " + simple->toString());
+            }
+        }
     }
-    */
 }
 
 /* fix */
