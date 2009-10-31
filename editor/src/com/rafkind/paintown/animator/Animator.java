@@ -134,76 +134,19 @@ public class Animator extends JFrame {
             }
         });
 
-        data.addActionListener( new ActionListener(){
-            public void actionPerformed( ActionEvent event ){
-                /* just a container for an object */
-                class ObjectBox {
-                    private Object internal;
-                    public ObjectBox(){
-                    }
-
-                    public void set( Object o ){
-                        internal = o;
-                    }
-
-                    public Object get(){
-                        return internal;
-                    }
-                }
-                final SwingEngine engine = new SwingEngine( "data-path.xml" );
-                final JTextField path = (JTextField) engine.find( "path" );
-                final ObjectBox box = new ObjectBox();
-                box.set( getDataPath() );
-                path.setText( getDataPath().getPath() );
-                final JButton change = (JButton) engine.find( "change" );
-                change.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        JFileChooser chooser = new JFileChooser( new File( "." ) );	
-                        chooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
-                        int returnVal = chooser.showOpenDialog( Animator.this );
-                        if ( returnVal == JFileChooser.APPROVE_OPTION ){
-                            final File newPath = chooser.getSelectedFile();
-                            path.setText( newPath.getPath() );
-                            box.set( newPath );
-                        }
-                    }
-                });
-                final JButton save = (JButton) engine.find( "save" );
-                final JButton cancel = (JButton) engine.find( "cancel" );
-                final JDialog dialog = new JDialog( Animator.this, "Paintown data path" );
-                save.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        setDataPath( (File) box.get() );
-                        dialog.setVisible( false );
-                    }
-                });
-
-                cancel.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        dialog.setVisible( false );
-                    }
-                });
-
-                JPanel panel = (JPanel) engine.getRootComponent();
-                dialog.getContentPane().add( panel );
-                dialog.setSize( 300, 300 );
-                dialog.setVisible( true );
-            }
-        });
-
-        // Lets add our tabbedPane and some actions
-
-        getContentPane().add(pane);
-
         class QuickCharacterLoaderModel implements ListModel {
             private List data;
             private List listeners;
 
             public QuickCharacterLoaderModel(){
-                data = new ArrayList();
                 listeners = new ArrayList();
+                load(Animator.this.getDataPath());
+            }
 
-                SwingUtilities.invokeLater(new Runnable(){
+            void load(final File path){
+                data = new ArrayList();
+
+                new Thread(new Runnable(){
                     public void run(){
                         FilenameFilter filter = new FilenameFilter(){
                             public boolean accept(File dir, String name){
@@ -214,14 +157,19 @@ public class Animator extends JFrame {
                                        name.equals(up + ".txt"));
                             }
                         };
-                        Animator.this.findPossibleFiles(Animator.this.getDataPath(), filter, new Lambda1(){
-                            public Object invoke(Object f){
-                                add((File) f);
+
+                        Animator.this.findPossibleFiles(path, filter, new Lambda1(){
+                            public Object invoke(final Object f){
+                                SwingUtilities.invokeLater(new Runnable(){
+                                    public void run(){
+                                        add((File) f);
+                                    }
+                                });
                                 return null;
                             }
                         });
                     }
-                });
+                }).start();
             }
 
             public void add(File file){
@@ -263,7 +211,8 @@ public class Animator extends JFrame {
             }
         }
 
-        final JList quickLoader = new JList(new QuickCharacterLoaderModel());
+        final QuickCharacterLoaderModel quickLoaderModel = new QuickCharacterLoaderModel();
+        final JList quickLoader = new JList(quickLoaderModel);
         quickLoader.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2){
@@ -282,6 +231,69 @@ public class Animator extends JFrame {
         });
 
         pane.add("Quick character loader", new JScrollPane(quickLoader));
+
+        data.addActionListener( new ActionListener(){
+            public void actionPerformed( ActionEvent event ){
+                /* just a container for an object */
+                class ObjectBox {
+                    private Object internal;
+                    public ObjectBox(){
+                    }
+
+                    public void set( Object o ){
+                        internal = o;
+                    }
+
+                    public Object get(){
+                        return internal;
+                    }
+                }
+                final SwingEngine engine = new SwingEngine( "data-path.xml" );
+                final JTextField path = (JTextField) engine.find( "path" );
+                final ObjectBox box = new ObjectBox();
+                box.set( getDataPath() );
+                path.setText( getDataPath().getPath() );
+                final JButton change = (JButton) engine.find( "change" );
+                change.addActionListener( new AbstractAction(){
+                    public void actionPerformed( ActionEvent event ){
+                        JFileChooser chooser = new JFileChooser( new File( "." ) );	
+                        chooser.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
+                        int returnVal = chooser.showOpenDialog( Animator.this );
+                        if ( returnVal == JFileChooser.APPROVE_OPTION ){
+                            final File newPath = chooser.getSelectedFile();
+                            path.setText( newPath.getPath() );
+                            box.set( newPath );
+                        }
+                    }
+                });
+                final JButton save = (JButton) engine.find( "save" );
+                final JButton cancel = (JButton) engine.find( "cancel" );
+                final JDialog dialog = new JDialog( Animator.this, "Paintown data path" );
+                save.addActionListener( new AbstractAction(){
+                    public void actionPerformed( ActionEvent event ){
+                        File path = (File) box.get();
+                        setDataPath(path);
+                        quickLoaderModel.load(path);
+                        dialog.setVisible( false );
+                    }
+                });
+
+                cancel.addActionListener( new AbstractAction(){
+                    public void actionPerformed( ActionEvent event ){
+                        dialog.setVisible( false );
+                    }
+                });
+
+                JPanel panel = (JPanel) engine.getRootComponent();
+                dialog.getContentPane().add( panel );
+                dialog.setSize( 300, 300 );
+                dialog.setVisible( true );
+            }
+        });
+
+        // Lets add our tabbedPane and some actions
+
+        getContentPane().add(pane);
 
         closeTab.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event){
@@ -486,11 +498,11 @@ public class Animator extends JFrame {
         File[] files = directory.listFiles(filter);
         for (final File file : files){
             if (file.isDirectory()){
-                SwingUtilities.invokeLater(new Runnable(){
+                new Thread(new Runnable(){
                     public void run(){
                         findPossibleFiles(file, filter, found);
                     }
-                });
+                }).start();
             } else {
                 found.invoke_(file);
             }
