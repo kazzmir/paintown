@@ -172,8 +172,20 @@ public class Animator extends JFrame {
                 }).start();
             }
 
-            public void add(File file){
+            private void insert(File file){
+                long time = file.lastModified();
+                for (int i = 0; i < data.size(); i++){
+                    File ok = (File) data.get(i);
+                    if (time > ok.lastModified()){
+                        data.add(i, file);
+                        return;
+                    }
+                }
                 data.add(file);
+            }
+
+            public synchronized void add(File file){
+                insert(file);
                 ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_ADDED, data.size(), data.size() );
                 for ( Iterator it = listeners.iterator(); it.hasNext(); ){
                     ListDataListener l = (ListDataListener) it.next();
