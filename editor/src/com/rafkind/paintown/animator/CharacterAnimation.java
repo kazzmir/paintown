@@ -54,11 +54,23 @@ public class CharacterAnimation extends JPanel {
     private boolean loaded = false;
     private Lambda0 loader;
 
+    private synchronized boolean isLoaded(){
+        return loaded;
+    }
+
+    private synchronized void doneLoading(){
+        loaded = true;
+    }
+
     public void paint(Graphics g){
-        if (!loaded){
-            loaded = true;
-            loader.invoke_();
-            revalidate();
+        if (!isLoaded()){
+            SwingUtilities.invokeLater(
+                new Runnable(){
+                    public void run(){
+                        CharacterAnimation.this.loader.invoke_();
+                        CharacterAnimation.this.revalidate();
+                    }
+                });
         }
         super.paint(g);
     }
@@ -940,6 +952,8 @@ public class CharacterAnimation extends JPanel {
                 area.animate( animation );
 
                 JPanel other = (JPanel) animEditor.find( "other" );
+                
+                doneLoading();
 
                 // context.add((JComponent)contextEditor.getRootComponent());
                 return null;
