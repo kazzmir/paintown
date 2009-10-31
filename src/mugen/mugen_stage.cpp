@@ -274,7 +274,6 @@ void MugenStage::loadSectionInfo(Ast::Section * section){
     }
 }
 
-/* fix */
 void MugenStage::loadSectionPlayerInfo(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
@@ -311,7 +310,6 @@ void MugenStage::loadSectionPlayerInfo(Ast::Section * section){
     }
 }
 
-/* fix */
 void MugenStage::loadSectionBound(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
@@ -328,7 +326,6 @@ void MugenStage::loadSectionBound(Ast::Section * section){
     }
 }
 
-/* fix */
 void MugenStage::loadSectionStageInfo(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
@@ -350,34 +347,31 @@ void MugenStage::loadSectionStageInfo(Ast::Section * section){
 }
 
 /* fix */
-void MugenStage::loadSectionShadow(Ast::Section * section){
-    /*
-    while( collection[i]->hasItems() ){
-        MugenItemContent *content = collection[i]->getNext();
-        const MugenItem *item = content->getNext();
-        std::string itemhead = item->query();
-        Mugen::Util::removeSpaces(itemhead);
-        Mugen::Util::fixCase(itemhead);
-        if ( itemhead.find("intensity")!=std::string::npos ){
-            *content->getNext() >> shadow.k;
+void MugenStage::loadSectionShadow(Ast::Section * section, cymk_holder & shadow){
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "intensity"){
+                *simple >> shadow.k;
             // *content->getNext() >> shadowIntensity;
             // shadow.k = shadowIntensity;
-        } else if ( itemhead == "reflect" ){
-            *content->getNext() >> reflect;
-        } else if ( itemhead.find("color")!=std::string::npos ){
-            // int c,m,k;
-            *content->getNext() >> shadow.c;
-            *content->getNext() >> shadow.y;
-            *content->getNext() >> shadow.m;
-            // shadowColor = Bitmap::makeColor(r,g,b);
-        } else if ( itemhead.find("yscale")!=std::string::npos ){
-            *content->getNext() >> shadowYscale;
-        } else if ( itemhead.find("fade.range")!=std::string::npos ){
-            *content->getNext() >> shadowFadeRangeHigh;
-            *content->getNext() >> shadowFadeRangeMid;
-        } else throw MugenException( "Unhandled option in Shadow Section: " + itemhead );
+            } else if (*simple == "reflect"){
+                *simple >> reflect;
+            } else if (*simple == "color"){
+                *simple >> shadow.c;
+                *simple >> shadow.y;
+                *simple >> shadow.m;
+            } else if (*simple == "yscale"){
+                *simple >> shadowYscale;
+            } else if (*simple == "fade.range"){
+                *simple >> shadowFadeRangeHigh;
+                *simple >> shadowFadeRangeMid;
+            } else {
+                throw MugenException("Unhandled option in Shadow Section: " + simple->toString());
+            }
+        }
     }
-    */
 }
 
 /* fix */
@@ -423,10 +417,7 @@ void MugenStage::load(){
 
     list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
 
-    struct cymk_holder{
-        cymk_holder():c(0),m(0),y(0),k(0){}
-        int c, m, y, k;
-    } shadow;
+    struct cymk_holder shadow;
     
     /* Extract info for our first section of our stage */
     for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
@@ -447,7 +438,7 @@ void MugenStage::load(){
 	} else if (head == "stageinfo"){
             loadSectionStageInfo(section);
 	} else if (head == "shadow"){
-            loadSectionShadow(section);
+            loadSectionShadow(section, shadow);
 	} else if (head == "reflection"){
             loadSectionReflection(section);
 	} else if (head == "bgdef"){

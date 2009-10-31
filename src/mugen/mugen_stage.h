@@ -124,13 +124,18 @@ public:
     static const std::string getStageName(const std::string &filename) throw (MugenException);
 
 protected:
+    struct cymk_holder{
+        cymk_holder():c(0),m(0),y(0),k(0){}
+        int c, m, y, k;
+    };
+
     /* section loaders */
     void loadSectionInfo(Ast::Section * section);
     void loadSectionCamera(Ast::Section * section);
     void loadSectionPlayerInfo(Ast::Section * section);
     void loadSectionBound(Ast::Section * section);
     void loadSectionStageInfo(Ast::Section * section);
-    void loadSectionShadow(Ast::Section * section);
+    void loadSectionShadow(Ast::Section * section, cymk_holder & shadow);
     void loadSectionReflection(Ast::Section * section);
 	
 protected:
