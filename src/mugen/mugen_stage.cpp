@@ -346,7 +346,6 @@ void MugenStage::loadSectionStageInfo(Ast::Section * section){
     }
 }
 
-/* fix */
 void MugenStage::loadSectionShadow(Ast::Section * section, cymk_holder & shadow){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
@@ -374,22 +373,20 @@ void MugenStage::loadSectionShadow(Ast::Section * section, cymk_holder & shadow)
     }
 }
 
-/* fix */
 void MugenStage::loadSectionReflection(Ast::Section * section){
-    /*
-    while( collection[i]->hasItems() ){
-        MugenItemContent *content = collection[i]->getNext();
-        const MugenItem *item = content->getNext();
-        std::string itemhead = item->query();
-        Mugen::Util::removeSpaces(itemhead);
-        Mugen::Util::fixCase(itemhead);
-        if ( itemhead.find("intensity")!=std::string::npos ){
-            *content->getNext() >> reflectionIntensity;
-        } else throw MugenException( "Unhandled option in Reflection Section: " + itemhead );
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "intensity"){
+                *simple >> reflectionIntensity;
+            } else {
+                throw MugenException("Unhandled option in Reflection Section: " + simple->toString());
+            }
+        }
     }
-    */
 }
-	
+
 void MugenStage::load(){
     if (loaded)return;
     // Lets look for our def since some assholes think that all file systems are case insensitive
@@ -443,12 +440,9 @@ void MugenStage::load(){
             loadSectionReflection(section);
 	} else if (head == "bgdef"){
 	    // Background management
-            /* fix */
-            /*
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,ticker,0);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
-            */
 	}
 	else if (head == "music" ){
             /* Ignore for now */
