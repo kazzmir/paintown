@@ -195,9 +195,99 @@ public class Animator extends JFrame {
 
         getContentPane().add(pane);
 
+        class QuickCharacterLoaderModel implements ListModel {
+            private List data;
+            private List listeners;
+
+            public QuickCharacterLoaderModel(){
+                data = new ArrayList();
+                listeners = new ArrayList();
+
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run(){
+                        FilenameFilter filter = new FilenameFilter(){
+                            public boolean accept(File dir, String name){
+                                String up = dir.getName();
+                                // System.out.println("Maybe file " + up + "/" + name);
+                                return !dir.getName().equals(".svn") &&
+                                       (new File(dir, name).isDirectory() ||
+                                       name.equals(up + ".txt"));
+                            }
+                        };
+                        Animator.this.findPossibleFiles(Animator.this.getDataPath(), filter, new Lambda1(){
+                            public Object invoke(Object f){
+                                add((File) f);
+                                return null;
+                            }
+                        });
+                    }
+                });
+            }
+
+            public void add(File file){
+                data.add(file);
+                ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_ADDED, data.size(), data.size() );
+                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+                    ListDataListener l = (ListDataListener) it.next();
+                    l.intervalAdded(event);
+                }
+            }
+
+            public void remove( int index ){
+                data.remove( index );
+                ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_REMOVED, index, index );
+                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+                    ListDataListener l = (ListDataListener) it.next();
+                    l.intervalAdded( event );
+                }
+            }
+
+            public List getAll(){
+                return data;
+            }
+
+            public void addListDataListener( ListDataListener l ){
+                listeners.add( l );
+            }
+
+            public Object getElementAt( int index ){
+                return this.data.get( index );
+            }
+
+            public int getSize(){
+                return this.data.size();
+            }
+
+            public void removeListDataListener( ListDataListener l ){
+                this.listeners.remove(l);
+            }
+        }
+
+        final JList quickLoader = new JList(new QuickCharacterLoaderModel());
+        quickLoader.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2){
+                    File file = (File) quickLoader.getSelectedValue();
+                    try{
+                        CharacterStats character = new CharacterStats("", file);
+                        Player tempPlayer = new Player(Animator.this, character);
+                        addNewTab(tempPlayer.getEditor(), character.getName());
+                    } catch ( LoadException le ){
+                        //showError( "Could not load " + f.getName() );
+                        System.out.println( "Could not load " + file.getName() );
+                        le.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        pane.add("Quick character loader", new JScrollPane(quickLoader));
+
         closeTab.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event){
-                pane.remove(CURRENT_TAB);
+                if (CURRENT_TAB > 0 && CURRENT_TAB < pane.getTabCount()){
+                    pane.remove(CURRENT_TAB);
+                }
             }
         });
 
@@ -389,6 +479,21 @@ public class Animator extends JFrame {
             return chooser.getSelectedFile();
         } else {
             return null;
+        }
+    }
+
+    private void findPossibleFiles(final File directory, final FilenameFilter filter, final Lambda1 found){
+        File[] files = directory.listFiles(filter);
+        for (final File file : files){
+            if (file.isDirectory()){
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run(){
+                        findPossibleFiles(file, filter, found);
+                    }
+                });
+            } else {
+                found.invoke_(file);
+            }
         }
     }
 

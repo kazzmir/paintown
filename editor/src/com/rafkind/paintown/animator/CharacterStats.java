@@ -27,12 +27,12 @@ public class CharacterStats extends AnimatedObject {
 	// Vector of strings containing filename locations
 	protected Vector remap = new Vector();
 	
-	public CharacterStats( String name ){
+	public CharacterStats(String name){
 		super( name );
 	}
 
 	public CharacterStats( String name, File f ) throws LoadException {
-		super( name );
+		super(name);
 		loadData( f );
 	}
 	
