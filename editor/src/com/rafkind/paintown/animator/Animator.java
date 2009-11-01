@@ -257,7 +257,7 @@ public class Animator extends JFrame {
 
         final QuickCharacterLoaderModel quickLoaderModel = new QuickCharacterLoaderModel();
 
-        final SwingEngine quickEngine = new SwingEngine("quick.xml");
+        final SwingEngine quickEngine = new SwingEngine("animator/quick.xml");
         final JTextField quickFilter = (JTextField) quickEngine.find("filter");
         quickFilter.getDocument().addDocumentListener(new DocumentListener(){
             public void changedUpdate(DocumentEvent e){
