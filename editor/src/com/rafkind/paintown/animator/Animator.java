@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import java.io.*;
+import java.util.regex.*;
 
 import java.util.List;
 
@@ -135,12 +136,16 @@ public class Animator extends JFrame {
         });
 
         class QuickCharacterLoaderModel implements ListModel {
-            private List data;
+            private List<File> data;
             private List listeners;
+            private List filtered;
+            private Pattern filter;
 
             public QuickCharacterLoaderModel(){
                 listeners = new ArrayList();
+                filtered = new ArrayList();
                 load(Animator.this.getDataPath());
+                filter = Pattern.compile(".*");
             }
 
             void load(final File path){
@@ -172,6 +177,14 @@ public class Animator extends JFrame {
                 }).start();
             }
 
+            public void setFilter(String filter){
+                this.filter = Pattern.compile(".*" + filter + ".*");
+                updateView();
+            }
+
+            /* keep list sorted by modification time
+             * possible optimization: binary search for place to insert
+             */
             private void insert(File file){
                 long time = file.lastModified();
                 for (int i = 0; i < data.size(); i++){
@@ -184,13 +197,32 @@ public class Animator extends JFrame {
                 data.add(file);
             }
 
-            public synchronized void add(File file){
-                insert(file);
-                ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_ADDED, data.size(), data.size() );
+            private void refilter(){
+                filtered = new ArrayList();
+                for (File file : data){
+                    try{
+                        Matcher m = filter.matcher(file.getCanonicalPath());
+                        if (m.matches()){
+                            filtered.add(file);
+                        }
+                    } catch (IOException e){
+                        /* ignore */
+                    }
+                }
+            }
+
+            private void updateView(){
+                refilter();
+                ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_ADDED, filtered.size(), filtered.size() );
                 for ( Iterator it = listeners.iterator(); it.hasNext(); ){
                     ListDataListener l = (ListDataListener) it.next();
                     l.intervalAdded(event);
                 }
+            }
+
+            public synchronized void add(File file){
+                insert(file);
+                updateView();
             }
 
             public void remove( int index ){
@@ -203,7 +235,7 @@ public class Animator extends JFrame {
             }
 
             public List getAll(){
-                return data;
+                return filtered;
             }
 
             public void addListDataListener( ListDataListener l ){
@@ -211,11 +243,11 @@ public class Animator extends JFrame {
             }
 
             public Object getElementAt( int index ){
-                return this.data.get( index );
+                return this.filtered.get(index);
             }
 
             public int getSize(){
-                return this.data.size();
+                return this.filtered.size();
             }
 
             public void removeListDataListener( ListDataListener l ){
@@ -224,7 +256,26 @@ public class Animator extends JFrame {
         }
 
         final QuickCharacterLoaderModel quickLoaderModel = new QuickCharacterLoaderModel();
-        final JList quickLoader = new JList(quickLoaderModel);
+
+        final SwingEngine quickEngine = new SwingEngine("quick.xml");
+        final JTextField quickFilter = (JTextField) quickEngine.find("filter");
+        quickFilter.getDocument().addDocumentListener(new DocumentListener(){
+            public void changedUpdate(DocumentEvent e){
+                quickLoaderModel.setFilter(quickFilter.getText());
+            }
+
+            public void insertUpdate(DocumentEvent e){
+                quickLoaderModel.setFilter(quickFilter.getText());
+            }
+
+            public void removeUpdate(DocumentEvent e){
+                quickLoaderModel.setFilter(quickFilter.getText());
+            }
+        });
+
+        // final JList quickLoader = new JList(quickLoaderModel);
+        final JList quickLoader = (JList) quickEngine.find("list");
+        quickLoader.setModel(quickLoaderModel);
         quickLoader.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2){
@@ -241,8 +292,9 @@ public class Animator extends JFrame {
                 }
             }
         });
-
-        pane.add("Quick character loader", new JScrollPane(quickLoader));
+        
+        // pane.add("Quick character loader", new JScrollPane(quickLoader));
+        pane.add("Quick character loader", (JPanel) quickEngine.getRootComponent());
 
         data.addActionListener( new ActionListener(){
             public void actionPerformed( ActionEvent event ){
