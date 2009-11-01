@@ -473,7 +473,7 @@ public class Animation implements Runnable {
 				}
 				setDelayTime( 0 );
 			} else {
-				rest( 10 );
+				rest(200);
 			}
 		}
 	}

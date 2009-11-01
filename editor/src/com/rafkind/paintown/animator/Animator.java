@@ -275,23 +275,49 @@ public class Animator extends JFrame {
 
         // final JList quickLoader = new JList(quickLoaderModel);
         final JList quickLoader = (JList) quickEngine.find("list");
+
+        final Lambda0 quickDoLoad = new Lambda0(){
+            public Object invoke(){
+                Object[] files = (Object[]) quickLoader.getSelectedValues();
+                for (Object file_ : files){
+                    final File file = (File) file_;
+                    new Thread(new Runnable(){
+                        public void run(){
+                            try{
+                                CharacterStats character = new CharacterStats("", file);
+                                Player tempPlayer = new Player(Animator.this, character);
+                                addNewTab(tempPlayer.getEditor(), character.getName());
+                            } catch (LoadException le){
+                                //showError( "Could not load " + f.getName() );
+                                System.out.println( "Could not load " + file.getName() );
+                                le.printStackTrace();
+                            }
+                        }
+                    }).start();
+                }
+
+                return null;
+            }
+        };
+
         quickLoader.setModel(quickLoaderModel);
         quickLoader.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2){
-                    File file = (File) quickLoader.getSelectedValue();
-                    try{
-                        CharacterStats character = new CharacterStats("", file);
-                        Player tempPlayer = new Player(Animator.this, character);
-                        addNewTab(tempPlayer.getEditor(), character.getName());
-                    } catch ( LoadException le ){
-                        //showError( "Could not load " + f.getName() );
-                        System.out.println( "Could not load " + file.getName() );
-                        le.printStackTrace();
-                    }
+                    quickDoLoad.invoke_();
                 }
             }
         });
+
+        quickLoader.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "open");
+        quickLoader.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 2), "select-all");
+        quickLoader.getActionMap().put("open", new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                quickDoLoad.invoke_();
+            }
+        });
+        
+        quickLoader.getActionMap().put("select-all", new AbstractAction(){
         
         // pane.add("Quick character loader", new JScrollPane(quickLoader));
         pane.add("Quick character loader", (JPanel) quickEngine.getRootComponent());
@@ -593,30 +619,32 @@ public class Animator extends JFrame {
         return new RelativeFileChooser( animator, getDataPath() );
     }
 
-    public void addNewTab( SpecialPanel panel, String name ){
-        pane.add( name, panel );
+    public void addNewTab(final SpecialPanel panel, final String name){
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run(){
+                pane.add( name, panel );
+                pane.setSelectedIndex(pane.getTabCount()-1);
+                CURRENT_TAB = pane.getSelectedIndex();
 
-        pane.setSelectedIndex(pane.getTabCount()-1);
+                final SpecialPanel tempPanel = (SpecialPanel)pane.getComponentAt(CURRENT_TAB);
+                if ( tempPanel.getTextBox() != null ){
 
-        CURRENT_TAB = pane.getSelectedIndex();
+                    panel.getTextBox().getDocument().addDocumentListener(new DocumentListener(){
+                        public void changedUpdate(DocumentEvent e){
+                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+                        }
 
-        final SpecialPanel tempPanel = (SpecialPanel)pane.getComponentAt(CURRENT_TAB);
-        if ( tempPanel.getTextBox() != null ){
+                        public void insertUpdate(DocumentEvent e){
+                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+                        }
 
-            panel.getTextBox().getDocument().addDocumentListener(new DocumentListener(){
-                public void changedUpdate(DocumentEvent e){
-                    pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+                        public void removeUpdate(DocumentEvent e){
+                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+                        }
+                    });
                 }
-
-                public void insertUpdate(DocumentEvent e){
-                    pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
-                }
-
-                public void removeUpdate(DocumentEvent e){
-                    pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
-                }
-            });
-        }
+            }
+        });
     }
 
     public static void main(String [] args){

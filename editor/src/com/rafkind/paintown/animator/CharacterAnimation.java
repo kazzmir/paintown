@@ -64,6 +64,7 @@ public class CharacterAnimation extends JPanel {
 
     public void paint(Graphics g){
         if (!isLoaded()){
+            doneLoading();
             SwingUtilities.invokeLater(
                 new Runnable(){
                     public void run(){
@@ -953,7 +954,7 @@ public class CharacterAnimation extends JPanel {
 
                 JPanel other = (JPanel) animEditor.find( "other" );
                 
-                doneLoading();
+                // doneLoading();
 
                 // context.add((JComponent)contextEditor.getRootComponent());
                 return null;
