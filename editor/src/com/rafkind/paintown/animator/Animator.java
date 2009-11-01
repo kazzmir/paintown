@@ -134,6 +134,17 @@ public class Animator extends JFrame {
                 MaskedImage.clearCache();
             }
         });
+        
+        final SwingEngine quickEngine = new SwingEngine("animator/quick.xml");
+        final JLabel quickDisplay = (JLabel) quickEngine.find("display");
+        final Icon quickDisplayIcon = quickDisplay.getIcon();
+        quickDisplay.setIcon(null);
+
+        /* cant get the gif through normal means, so just hack it above */
+        /*
+        System.out.println("Gif = " + this.getClass().getResource("animator/quick.gif"));
+        quickDisplay.setIcon(new ImageIcon(this.getClass().getResource("animator/quick.gif")));
+        */
 
         class QuickCharacterLoaderModel implements ListModel {
             private List<File> data;
@@ -150,6 +161,33 @@ public class Animator extends JFrame {
 
             void load(final File path){
                 data = new ArrayList();
+        
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run(){
+                        quickDisplay.setIcon(quickDisplayIcon);
+                    }
+                });
+
+                final Lambda1 loadMore = new Lambda1(){
+                    int now = 1;
+
+                    private synchronized int add(int x){
+                        now += x;
+                        return now;
+                    }
+
+                    public Object invoke(Object i_){
+                        int x = (Integer) i_;
+                        if (add(x) <= 0){
+                            SwingUtilities.invokeLater(new Runnable(){
+                                public void run(){
+                                    quickDisplay.setIcon(null);
+                                }
+                            });
+                        }
+                        return null;
+                    }
+                };
 
                 new Thread(new Runnable(){
                     public void run(){
@@ -172,7 +210,7 @@ public class Animator extends JFrame {
                                 });
                                 return null;
                             }
-                        });
+                        }, loadMore);
                     }
                 }).start();
             }
@@ -257,7 +295,6 @@ public class Animator extends JFrame {
 
         final QuickCharacterLoaderModel quickLoaderModel = new QuickCharacterLoaderModel();
 
-        final SwingEngine quickEngine = new SwingEngine("animator/quick.xml");
         final JTextField quickFilter = (JTextField) quickEngine.find("filter");
         quickFilter.getDocument().addDocumentListener(new DocumentListener(){
             public void changedUpdate(DocumentEvent e){
@@ -599,19 +636,21 @@ public class Animator extends JFrame {
         }
     }
 
-    private void findPossibleFiles(final File directory, final FilenameFilter filter, final Lambda1 found){
+    private void findPossibleFiles(final File directory, final FilenameFilter filter, final Lambda1 found, final Lambda1 loading){
         File[] files = directory.listFiles(filter);
         for (final File file : files){
             if (file.isDirectory()){
+                loading.invoke_(1);
                 new Thread(new Runnable(){
                     public void run(){
-                        findPossibleFiles(file, filter, found);
+                        findPossibleFiles(file, filter, found, loading);
                     }
                 }).start();
             } else {
                 found.invoke_(file);
             }
         }
+        loading.invoke_(-1);
     }
 
     public static File dataPath( File f ){

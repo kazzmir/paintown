@@ -1,8 +1,19 @@
 <panel layout="GridBagLayout">
+    <label id="display" icon="animator/quick.gif">
+        <gridbagconstraints
+                gridx="0"
+                gridy="0"
+                weightx="1"
+                weighty="0"
+                gridheight="1"
+                anchor="GridBagConstraints.NORTHWEST"
+                fill="GridBagConstraints.HORIZONTAL"
+                />
+        </label>
     <hbox>				
         <gridbagconstraints
             gridx="0"
-            gridy="0"
+            gridy="1"
             weightx="1"
             weighty="0"
             gridheight="1"
@@ -17,7 +28,7 @@
     <button id="load" text="Load">
         <gridbagconstraints
             gridx="0"
-            gridy="1"
+            gridy="2"
             weightx="1"
             weighty="0"
             gridheight="1"
@@ -27,7 +38,7 @@
     <scrollpane>
         <gridbagconstraints
             gridx="0"
-            gridy="2"
+            gridy="3"
             weightx="1"
             weighty="1"
             gridheight="1"

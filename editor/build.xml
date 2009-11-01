@@ -30,7 +30,8 @@
 		<copy todir="classes">
 			<fileset dir="resources">
 				<include name="**/*.xml" />
-                                <include name="**/*.png" />
+                <include name="**/*.png" />
+                <include name="**/*.gif" />
 				<include name="*.txt" />
 			</fileset>
 		</copy>
