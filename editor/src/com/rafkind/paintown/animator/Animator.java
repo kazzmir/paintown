@@ -318,6 +318,14 @@ public class Animator extends JFrame {
         });
         
         quickLoader.getActionMap().put("select-all", new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                int[] indicies = new int[quickLoaderModel.getSize()];
+                for (int i = 0; i < quickLoaderModel.getSize(); i++){
+                    indicies[i] = i;
+                }
+                quickLoader.setSelectedIndices(indicies);
+            }
+        });
         
         // pane.add("Quick character loader", new JScrollPane(quickLoader));
         pane.add("Quick character loader", (JPanel) quickEngine.getRootComponent());
