@@ -14,10 +14,20 @@
         <textfield id="filter" />
         <glue size="1" />
     </hbox>
-    <scrollpane>
+    <button id="load" text="Load">
         <gridbagconstraints
             gridx="0"
             gridy="1"
+            weightx="1"
+            weighty="0"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            />
+    </button>
+    <scrollpane>
+        <gridbagconstraints
+            gridx="0"
+            gridy="2"
             weightx="1"
             weighty="1"
             gridheight="1"

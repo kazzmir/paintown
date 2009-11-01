@@ -326,6 +326,13 @@ public class Animator extends JFrame {
                 quickLoader.setSelectedIndices(indicies);
             }
         });
+
+        JButton quickLoadButton = (JButton) quickEngine.find("load");
+        quickLoadButton.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                quickDoLoad.invoke_();
+            }
+        });
         
         // pane.add("Quick character loader", new JScrollPane(quickLoader));
         pane.add("Quick character loader", (JPanel) quickEngine.getRootComponent());
