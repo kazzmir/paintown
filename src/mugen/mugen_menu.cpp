@@ -290,9 +290,12 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 	}
 	else if( head == "selectbgdef" ){ 
 	    // Background management
+            /* FIXME!!!! */
+            /*
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir( selectFile ),collection, index,selectTicker,&sprites);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+            */
 	}
 	else {
 	    // Done collecting
@@ -1175,10 +1178,12 @@ void MugenMenu::loadData() throw (MugenException){
 	    }
 	}
 	else if( head == "titlebgdef" ){
+            /* FIXME!!!!!
 	    // Background management
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,ticker,&sprites);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+            */
 	}
 	else if( head == "select info" ){ 
 	    // Pass off to selectInfo

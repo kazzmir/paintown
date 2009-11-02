@@ -12,6 +12,7 @@
 #include "mugen_section.h"
 #include "mugen_item_content.h"
 #include "mugen_item.h"
+#include "ast/all.h"
 
 //static double pi = 3.14159265;
 
@@ -465,13 +466,13 @@ void MugenBackgroundController::act(const std::map< int, MugenAnimation * > &ani
     }
 }
 
-
-MugenBackgroundManager::MugenBackgroundManager(const std::string &baseDir, const std::vector< MugenSection * > &collection,unsigned int &index, const unsigned long int &ticker, 
-				std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites):
+MugenBackgroundManager::MugenBackgroundManager(const std::string &baseDir, const vector<Ast::Section *> & section, const unsigned long int &ticker, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites):
 name(""),
 debugbg(false),
 clearColor(-1),
 spriteFile(""){
+
+#if 0
     std::string head = name = collection[index]->getHeader();
     Mugen::Util::fixCase(head);
     // Correct name of background manager .. this is used to get the subsequent backgrounds
@@ -660,7 +661,9 @@ spriteFile(""){
 	}
     }
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
+#endif
 }
+
 MugenBackgroundManager::~MugenBackgroundManager(){
     if (!spriteFile.empty()){
 	// Get rid of sprites
@@ -783,6 +786,3 @@ void MugenBackgroundManager::getBackgrounds( std::vector<MugenBackground *> &bgs
 	}
     }
 }
-
-
-

@@ -354,9 +354,11 @@ void MugenStoryboard::load() throw (MugenException){
                 Global::debug(1) << "Checking for background: " << scene->backgroundName << " in Head: " << name << endl;
                 if (name.find(scene->backgroundName)){
                     // this is a background lets set it up
+                    /* FIXME!!!!!
                     MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,scenes.back()->ticker,&sprites);
                     scenes.back()->background = manager;
                     Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+                    */
                 }
             }
         }

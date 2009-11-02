@@ -6,6 +6,7 @@
 #include <map>
 #include "mugen_animation.h"
 #include "mugen_util.h"
+#include "ast/all.h"
 
 class MugenSection;
 class MugenSprite;
@@ -128,6 +129,7 @@ public:
 We'll seperate this from the main FSM of characters since we aren't looking for
 complete compatability */
 
+/* put this in a namespace and get rid of the Ctrl_ prefix */
 enum ControlType{
     Ctrl_Null = 0,
     Ctrl_Visible,
@@ -185,8 +187,7 @@ class MugenBackgroundManager{
 	/* It takes in a collection and reads the necessary crap
 	if sprites = 0 then it has it's own sprite collection and won't be bothered to use the external one
 	*/
-	MugenBackgroundManager(const std::string &baseDir, const std::vector< MugenSection * > &collection, unsigned int &index,const unsigned long int &ticker, 
-				std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites=0);
+	MugenBackgroundManager(const std::string &baseDir, const std::vector<Ast::Section *> & section, const unsigned long int &ticker, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites=0);
 	~MugenBackgroundManager();
 	void logic( const double x, const double y, const double placementx, const double placementy );
 	void renderBack( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
