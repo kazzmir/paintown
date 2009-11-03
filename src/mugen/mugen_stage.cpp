@@ -391,9 +391,14 @@ static vector<Ast::Section*> collectBackgroundStuff(list<Ast::Section*>::iterato
     list<Ast::Section*>::iterator last = section_it;
     vector<Ast::Section*> stuff;
     while (true){
+
     }
     section_it = last;
     return stuff;
+}
+
+static bool matchRegex(const string & str, const string & regex){
+    return Util::matchRegex(str, regex);
 }
 
 void MugenStage::load(){
@@ -447,7 +452,8 @@ void MugenStage::load(){
             loadSectionShadow(section, shadow);
 	} else if (head == "reflection"){
             loadSectionReflection(section);
-	} else if (head == "bgdef"){
+        /* search for bgdef instead of just assuming its there */
+	} else if (matchRegex(head, ".*bgdef.*")){
 	    // Background management
             vector<Ast::Section*> backgroundStuff = collectBackgroundStuff(section_it);
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, ticker, 0);

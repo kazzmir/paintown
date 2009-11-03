@@ -122,6 +122,7 @@ src/util/funcs.cpp
 src/util/file-system.cpp
 src/util/gradient.cpp
 src/util/ebox.cpp
+src/util/regex.cpp
 src/input/joystick.cpp
 src/input/allegro-joystick.cpp
 src/util/system.cpp
