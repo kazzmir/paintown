@@ -235,6 +235,9 @@ def checkStaticRuby(context):
     return ret
 
 def checkRunRuby(context):
+    # just fail for now
+    context.Result(0)
+    return 0
     context.Message("Checking if we can run ruby... ")
     (ok, stuff) = context.TryAction(Action("ruby -v"))
     context.Result(ok)
