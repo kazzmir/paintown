@@ -432,8 +432,9 @@ else:
     # find the system tool path by attaching SCons/Tool to everything
     def fix(q):
         return q + "/SCons/Tool"
-    env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
-    env['GCHFROMHCOMSTR'] = 'Compiling header $SOURCE'
+    # FIXME!! gch doesn't work with multiple environments
+    #env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
+    #env['GCHFROMHCOMSTR'] = 'Compiling header $SOURCE'
 
     try:
         dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )

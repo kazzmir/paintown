@@ -19,31 +19,17 @@ obj_files = []
 filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
 
 for i in filelist:
-    addFiles(filelist[i])
-
-use.Append(YACCFLAGS = ["-d"])
-use['YACCHXXFILESUFFIX'] = '.hh'
-
-def isH(name):
-    return name.endswith(".hpp") or name.endswith(".hh") or name.endswith(".h")
-
-# print use['BUILDERS']
-
-# lex = use.CFile('mugen/lex', 'mugen/lex.l')
-# yacc = filter(lambda s: not isH(s.path), use.CXXFile('mugen/parse', 'mugen/parse.yy'))
-# use.Depends(lex, yacc)
-# # obj_files.append(use.CFile('mugen/lex', 'mugen/lex.l'))
-# #obj_files.append(use.CXXFile('mugen/lex', 'mugen/lex.ll'))
-# obj_files.append([yacc, lex])
-
-def parser(name):
-    env = use.Clone()
-    env.Append(YACCFLAGS = ["-p %s" % name])
-    env.Append(LEXFLAGS = ["-P %s" % name])
-    lex = env.CFile('mugen/parser/lex-%s' % name, 'mugen/parser/lex-%s.l' % name)
-    yacc = filter(lambda s: not isH(s.path), env.CXXFile('mugen/parser/parse-%s' % name, 'mugen/parser/parse-%s.yy' % name))
-    env.Depends(lex, yacc)
-    return [yacc, lex]
+    # print "%s = %s" % (i, filelist[i])
+    # meh, kind of a hack
+    if i == 'SCRIPT_SRC':
+        # call the python and ruby checks here
+        env = use.Clone()
+        env.Append(CPPPATH = ['/usr/lib/ruby/1.8/i486-linux'])
+        files = filelist[i]
+        # abstract this so we don't duplicate code
+        obj_files.append(map(lambda x: env.StaticObject(x.replace('src/', '')), files))
+    else:
+        addFiles(filelist[i])
 
 # obj_files.append(parser('air'))
 # obj_files.append(parser('cns'))
