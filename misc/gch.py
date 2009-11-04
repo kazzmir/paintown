@@ -60,6 +60,8 @@ class _Autogch:
         out_sources = source[:]
 
         for obj in source:
+            if debug:
+                print "gch for %s: %s" % (obj, obj.sources[0])
             if not obj.has_builder():
                 continue
             cpp = obj.sources[0]
@@ -83,7 +85,9 @@ class _Autogch:
                 print "scons: gch: no header for '%s'." % (str(cpp))
             if h:
                 gch_cpp = env.Gch(h)
-                o = env.Object(cpp)
+                # 11/3/2009 - don't seem to need this
+                # o = env.Object(cpp)
+                o = obj
                 env.Depends(o,gch_cpp) # we assume we have a file.cpp file.header_extension pair
                                        # as exercise to the reader to improve this
                 if debug:
