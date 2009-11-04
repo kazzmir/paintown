@@ -147,8 +147,11 @@ def checkPython(context):
         env.Append(LINKFLAGS = link_stuff.split(' '))
     if lib_path != None:
         env.Append(LIBPATH = [lib_path])
+    new_libs = []
     if libs != None:
-        env.Append(LIBS = libs)
+        new_libs = libs
+    old_libs = env['LIBS']
+    env.Replace(LIBS = new_libs)
     env.Append(CPPDEFINES = ['HAVE_PYTHON'])
     ret = context.TryLink("""
         #include <Python.h>
@@ -157,6 +160,9 @@ def checkPython(context):
             return 0;
         }
     """, ".c");
+
+    env.Append(LIBS = old_libs)
+
     if not ret:
         context.sconf.env = tmp
 
@@ -192,11 +198,15 @@ def rubyStaticLib():
 
 def checkRuby(context):
     context.Message("Checking if ruby is embeddable... ")
+    if not canRunRuby(context):
+        context.Result(0)
+        return 0
     tmp = context.env.Clone()
     env = context.env
     env.Append(CPPDEFINES = ['HAVE_RUBY'])
     env.Append(CPPPATH = [rubyDir()])
-    env.Append(LIBS = [rubyLib()])
+    old_libs = env['LIBS']
+    env.Replace(LIBS = [rubyLib()])
 
     ret = context.TryLink("""
         #include <ruby.h>
@@ -205,6 +215,8 @@ def checkRuby(context):
             return 0;
         }
     """, ".c")
+
+    env.Replace(LIBS = old_libs + [rubyLib()])
 
     if not ret:
         context.sconf.env = tmp
@@ -214,11 +226,16 @@ def checkRuby(context):
 
 def checkStaticRuby(context):
     context.Message("Checking if ruby is statically embeddable... ")
+    if not canRunRuby(context):
+        context.Result(0)
+        return 0
+
     tmp = context.env.Clone()
     env = context.env
     env.Append(CPPDEFINES = ['HAVE_RUBY'])
     env.Append(CPPPATH = [rubyDir()])
-    env.Append(LIBS = [rubyStaticLib(), 'crypt'])
+    old_libs = env['LIBS']
+    env.Replace(LIBS = [rubyStaticLib(), 'crypt', 'pthread', 'm', 'dl'])
 
     ret = context.TryLink("""
         #include <ruby.h>
@@ -227,12 +244,18 @@ def checkStaticRuby(context):
             return 0;
         }
     """, ".c")
+    
+    env.Replace(LIBS = old_libs + [rubyLib()])
 
     if not ret:
         context.sconf.env = tmp
 
     context.Result(ret)
     return ret
+
+def canRunRuby(context):
+    (ok, stuff) = context.TryAction(Action("ruby -v"))
+    return ok == 1
 
 def checkRunRuby(context):
     # just fail for now
@@ -384,19 +407,20 @@ if False:
 
 custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
-                "HasRuby" : checkRunRuby,
                 "CheckRTTI" : checkRTTI,
                 "CheckLex" : checkLex,
                 "CheckOgg" : checkOgg,
                 "CheckYacc" : checkYacc}
 
+env['PAINTOWN_TESTS'] = custom_tests
+
 if isWindows():
     staticEnv = env.Clone()
 
     config = env.Configure(custom_tests = custom_tests)
-    config.CheckPython()
-    if config.HasRuby():
-        config.CheckRuby()
+    # config.CheckPython()
+    #if config.HasRuby():
+    #    config.CheckRuby()
     # if not config.CheckLex():
     #     print "Can't find lex"
     #     Exit(1)
@@ -488,10 +512,10 @@ else:
         print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
         Exit( 1 )
     config.CheckRTTI()
-    config.CheckPython()
+    # config.CheckPython()
     config.CheckOgg()
-    if config.HasRuby():
-        config.CheckRuby()
+    #if config.HasRuby():
+    #    config.CheckRuby()
     # if not config.CheckLex():
     #     print "** Install a lex package such as flex"
     #     Exit(1)
@@ -501,13 +525,14 @@ else:
 
     env = config.Finish()
 
-    static_config = staticEnv.Configure(custom_tests = {"CheckPython" : checkPython,
-                                                        "CheckRuby" : checkStaticRuby,
-                                                        "HasRuby" : checkRunRuby,
-                                                        "CheckRTTI" : checkRTTI})
-    static_config.CheckPython()
-    if static_config.HasRuby():
-        static_config.CheckRuby()
+    static_custom_tests = {"CheckPython" : checkPython,
+                           "CheckRuby" : checkStaticRuby,
+                           "CheckRTTI" : checkRTTI}
+    staticEnv['PAINTOWN_TESTS'] = static_custom_tests
+    static_config = staticEnv.Configure(custom_tests = static_custom_tests)
+    # static_config.CheckPython()
+    #if static_config.HasRuby():
+    #    static_config.CheckRuby()
     static_config.CheckRTTI()
     staticEnv = static_config.Finish()
 

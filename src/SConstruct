@@ -7,7 +7,7 @@ def isWindows():
 
 obj_files = []
 
-def addFiles( files ):
+def addFiles(files):
     obj_files.append( map( lambda x: x.replace('src/', ''), files ) )
 
 import sys
@@ -18,13 +18,27 @@ obj_files = []
 
 filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
 
+def unique(lst):
+    m = []
+    for item in lst:
+        if not item in m:
+            m.append(item)
+    return m
+
 for i in filelist:
     # print "%s = %s" % (i, filelist[i])
     # meh, kind of a hack
     if i == 'SCRIPT_SRC':
         # call the python and ruby checks here
         env = use.Clone()
-        env.Append(CPPPATH = ['/usr/lib/ruby/1.8/i486-linux'])
+        # config = env.Configure()
+        # Ugly way to pass the custom tests in
+        config = env.Configure(custom_tests = env['PAINTOWN_TESTS'])
+        config.CheckRuby()
+        config.CheckPython()
+        env = config.Finish()
+        use.Append(LIBS = env['LIBS'])
+        use.Replace(LIBS = unique(use['LIBS']))
         files = filelist[i]
         # abstract this so we don't duplicate code
         obj_files.append(map(lambda x: env.StaticObject(x.replace('src/', '')), files))
