@@ -47,11 +47,12 @@ public:
 
 static nullcout_t nullcout;
 
-ostream & Global::debug( int i ){
-	if ( global_debug_level >= i ){
-		return std::cout;
-	}
-	return nullcout;
+ostream & Global::debug(int i, const string & context){
+    if ( global_debug_level >= i ){
+        std::cout << "[" << context << "] ";
+        return std::cout;
+    }
+    return nullcout;
 }
 
 void Global::setDebug( int i ){

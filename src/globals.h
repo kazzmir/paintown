@@ -27,7 +27,7 @@ bool shutdown();
 
 void setDebug( int i );
 int getDebug();
-std::ostream & debug( int i );
+std::ostream & debug(int i, const std::string & context = "paintown");
 
 void showTitleScreen();
 const std::string titleScreen();
