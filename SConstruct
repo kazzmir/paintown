@@ -398,6 +398,7 @@ dumb = buildDumb( 'build', dumbEnv )
 hawknl_static = buildHawknl('build-static', hawkStaticEnv)
 dumb_static = buildDumb('build-static', dumbStaticEnv)
 
+# change this to if True if you want to profile paintown
 if False:
     env.Append( CCFLAGS = '-pg' )
     env.Append( LINKFLAGS = '-pg' )
@@ -495,7 +496,6 @@ else:
     staticEnv.Append( LIBS = [png,'z','m'] )
     staticEnv.Append( LIBS = freetype )
 
-    ## why doesnt this work!
     if not config.TryCompile("int main(){ return 0; }\n", ".c"):
         print "You need a C compiler such as gcc installed"
         Exit( 1 )
@@ -516,13 +516,7 @@ else:
     config.CheckOgg()
     #if config.HasRuby():
     #    config.CheckRuby()
-    # if not config.CheckLex():
-    #     print "** Install a lex package such as flex"
-    #     Exit(1)
-    # if not config.CheckYacc():
-    #     print "** Install a yacc package such as bison"
-    #     Exit(1)
-
+    
     env = config.Finish()
 
     static_custom_tests = {"CheckPython" : checkPython,
@@ -561,11 +555,3 @@ for i in shared:
 
 for i in static:
     Alias('static',env.InstallAs( i[0].name + '-static', i ))
-
-# if False:
-# 	if isWindows():
-# 		env.Install( '.', 'build/paintown.exe' )
-# 		env.Install( '.', 'build/test.exe' )
-# 	else:
-# 		env.Install( '.', 'build/paintown' )
-# 		env.Install( '.', 'build/test' )
