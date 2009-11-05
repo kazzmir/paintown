@@ -85,7 +85,7 @@ MugenCharacter::~MugenCharacter(){
 }
 
 void MugenCharacter::load() throw( MugenException ){
-    // Lets look for our def since some assholes think that all file systems are case insensitive
+    // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/chars/" + location + "/");
     Global::debug(1) << baseDir << endl;
     std::string realstr = Mugen::Util::stripDir(location);

@@ -134,7 +134,7 @@ CharacterHUD::~CharacterHUD(){
 }
 
 void CharacterHUD::load() throw (MugenException){
-     // Lets look for our def since some assholes think that all file systems are case insensitive
+     // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Mugen::Util::getFileDir(location);
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
     // get real basedir

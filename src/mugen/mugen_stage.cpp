@@ -403,7 +403,7 @@ static bool matchRegex(const string & str, const string & regex){
 
 void MugenStage::load(){
     if (loaded)return;
-    // Lets look for our def since some assholes think that all file systems are case insensitive
+    // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/stages/");
     Global::debug(1) << baseDir << endl;
     if (location.find(".def")==std::string::npos){
@@ -890,7 +890,7 @@ void MugenStage::changePause(){
 }
 
 const std::string MugenStage::getStageName(const std::string &filename) throw (MugenException){
-    // Lets look for our def since some assholes think that all file systems are case insensitive
+    // Lets look for our def since some people think that all file systems are case insensitive
     std::string dir = Filesystem::find("mugen/stages/");
     Global::debug(1) << dir << endl;
     string fullname = filename;
@@ -1105,7 +1105,7 @@ void MugenStage::updatePlayer( Object *o ){
 void MugenStage::initializeName(){
     try{
 	std::string str = this->location;
-	// Lets look for our def since some assholes think that all file systems are case insensitive
+	// Lets look for our def since some people think that all file systems are case insensitive
 	baseDir = Filesystem::find("mugen/stages/");
 	Global::debug(1) << baseDir << endl;
 	if (str.find(".def")==std::string::npos){
