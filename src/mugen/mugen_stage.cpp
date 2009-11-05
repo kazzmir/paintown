@@ -387,11 +387,13 @@ void MugenStage::loadSectionReflection(Ast::Section * section){
     }
 }
             
-static vector<Ast::Section*> collectBackgroundStuff(list<Ast::Section*>::iterator & section_it){
+static vector<Ast::Section*> collectBackgroundStuff(list<Ast::Section*>::iterator & section_it, const list<Ast::Section*>::iterator & end){
     list<Ast::Section*>::iterator last = section_it;
     vector<Ast::Section*> stuff;
     while (true){
-
+        if (section_it == end){
+            break;
+        }
     }
     section_it = last;
     return stuff;
@@ -401,8 +403,19 @@ static bool matchRegex(const string & str, const string & regex){
     return Util::matchRegex(str, regex);
 }
 
+static void freeDefParse(list<Ast::Section*> * sections){
+    /* this cleanup is yucky, it would be nicer to have a single delete call */
+    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+        delete (*section_it);
+    }
+    delete sections;
+}
+
 void MugenStage::load(){
-    if (loaded)return;
+    if (loaded){
+        return;
+    }
+
     // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/stages/");
     Global::debug(1) << baseDir << endl;
@@ -414,7 +427,9 @@ void MugenStage::load(){
     location = Mugen::Util::stripDir(location);
     const std::string ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, location);//Mugen::Util::fixFileName( baseDir, std::string(location) );
     
-    if( ourDefFile.empty() )throw MugenException( "Cannot locate stage definition file for: " + location );
+    if (ourDefFile.empty()){
+        throw MugenException( "Cannot locate stage definition file for: " + location );
+    }
     
     std::string filesdir = "";
     
@@ -455,7 +470,7 @@ void MugenStage::load(){
         /* search for bgdef instead of just assuming its there */
 	} else if (matchRegex(head, ".*bgdef.*")){
 	    // Background management
-            vector<Ast::Section*> backgroundStuff = collectBackgroundStuff(section_it);
+            vector<Ast::Section*> backgroundStuff = collectBackgroundStuff(section_it, sections->end());
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, ticker, 0);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
@@ -467,12 +482,8 @@ void MugenStage::load(){
         }
     }
     
-    /* this cleanup is yucky, it would be nicer to have a single delete call */
-    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
-        delete (*section_it);
-    }
-    delete sections;
-    
+    freeDefParse(sections);
+        
     // Setup board our worksurface to the proper size of the entire stage 320x240 :P
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
     //board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
@@ -889,6 +900,37 @@ void MugenStage::unpause(){
 void MugenStage::changePause(){
 }
 
+static string downcase(string str){
+    Mugen::Util::fixCase(str);
+    return str;
+}
+
+static Ast::Section * findSection(list<Ast::Section*> * sections, const string & find){
+    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+        Ast::Section * section = *section_it;
+        if (downcase(section->getName()) == downcase(find)){
+            return section;
+        }
+    }
+    throw MugenException("Could not find section " + find);
+}
+
+static string findAttribute(Ast::Section * section, const string & find){
+    string value;
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == find){
+                (*simple) >> value;
+                return value;
+            }
+        }
+    }
+
+    throw MugenException("Could not find attribute " + find + " in section " + section->getName());
+}
+
 const std::string MugenStage::getStageName(const std::string &filename) throw (MugenException){
     // Lets look for our def since some people think that all file systems are case insensitive
     std::string dir = Filesystem::find("mugen/stages/");
@@ -912,7 +954,19 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     }
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
+    
+    list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(defFile);
+
+    try{
+        string name = findAttribute(findSection(sections, "info"), "name");
+        freeDefParse(sections);
+        return name;
+    } catch (const MugenException & m){
+        freeDefParse(sections);
+        throw m;
+    }
      
+#if 0
     MugenReader reader( defFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
@@ -936,6 +990,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
 	    }
 	}
     }
+#endif
     
     throw MugenException( "Cannot locate stage definition file for: " + fullname );
     return "";

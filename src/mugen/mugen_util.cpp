@@ -62,10 +62,11 @@ std:string getHeadDir( const std::string & dir ){
 std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
     Global::debug(1) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
-    Mugen::Util::removeSpaces( str );
+    Mugen::Util::removeSpaces(str);
     // Fixes stupid windows users shit
-    Mugen::Util::invertSlashes( str );
+    Mugen::Util::invertSlashes(str);
     // Lets check if we need to fix anything first
+    Global::debug(1) << "Checking for file in " << (dir+str) << endl;
     if( ::Util::exists( dir + str ) == false ){
 	Global::debug(1) << "Couldn't find file: " << str << endl;
 	std::string returnString = "";
