@@ -27,7 +27,8 @@
 
 using namespace std;
 
-static const char * CONTEXT = "select-player";
+/* some compilers probably won't like __FILE__. #define it in that case */
+static const char * CONTEXT = __FILE__;
 
 struct playerInfo{
 	DisplayCharacter * guy;
