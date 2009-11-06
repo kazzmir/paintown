@@ -31,12 +31,12 @@ using namespace std;
 static const char * CONTEXT = __FILE__;
 
 struct playerInfo{
-	DisplayCharacter * guy;
-	string path;
-	playerInfo( DisplayCharacter * guy, string path ):
-		guy( guy ),
-		path( path ){
-	}
+    DisplayCharacter * guy;
+    string path;
+    playerInfo( DisplayCharacter * guy, string path ):
+    guy( guy ),
+    path( path ){
+    }
 };
 
 typedef vector<playerInfo> PlayerVector;
@@ -112,21 +112,6 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
     /* currently selected character */
     int current = 0;
-
-    /*
-    int changeRemapKey = Keyboard::Key_TAB;
-
-    const int keyRight = Configuration::config( 0 ).getRight();
-    const int keyUp = Configuration::config( 0 ).getUp();
-    const int keyDown = Configuration::config( 0 ).getDown();
-    const int keyLeft = Configuration::config( 0 ).getLeft();
-
-    key.setDelay( keyRight, 300 );
-    key.setDelay( keyUp, 300 );
-    key.setDelay( keyDown, 300 );
-    key.setDelay( keyLeft, 300 );
-    key.setDelay( changeRemapKey, 200 );
-    */
 
     input.set(Configuration::config( 0 ).getRight(), 300, false, Select::Right);
     input.set(Configuration::config( 0 ).getUp(), 300, false, Select::Up);
@@ -491,7 +476,6 @@ vector<Object *> Game::versusSelect( bool invincible ){
 	const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
 	const int selectedColor1 = Bitmap::makeColor( 0, 255, 0 );
 	const int selectedColor2 = Bitmap::makeColor( 0, 0, 255 );
-	
 			
 	const int boxSize = 80;
 	const int startX = 180;

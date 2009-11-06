@@ -11,6 +11,16 @@
 
 using namespace std;
 
+static string join(const vector<string> & strings, const string & middle){
+    ostringstream out;
+
+    for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
+        out << *it << middle;
+    }
+
+    return out.str();
+}
+
 OptionSelectFont::OptionSelectFont(Token *token) throw (LoadException):
 MenuOption(token, AdjustableOption),
 typeAdjust(fontName),
@@ -55,11 +65,14 @@ rgreen(255){
     // Find and set fonts now
     if (typeAdjust == fontName){
         try{
-            vector<string>temp1 = Util::getFiles(Filesystem::find("fonts"), "*.ttf");
-            vector<string>temp2 = Util::getFiles(Filesystem::find("fonts"), "*.otf");
-            std::back_insert_iterator< std::vector<string> > p ( fonts );
-            copy ( temp1.begin(), temp1.end(), p);
-            copy ( temp2.begin(), temp2.begin(), p);
+            Global::debug(1, "fonts") << "Font directory " << Filesystem::find("fonts") << endl;
+            vector<string> ttfFonts = Util::getFiles(Filesystem::find("fonts"), "*.ttf");
+            Global::debug(1, "fonts") << "Found ttf fonts " << join(ttfFonts, ", ") << endl;
+            vector<string> otfFonts = Util::getFiles(Filesystem::find("fonts"), "*.otf");
+            Global::debug(1, "fonts") << "Found otf fonts " << join(otfFonts, ", ") << endl;
+            std::back_insert_iterator< std::vector<string> > inserter(fonts);
+            copy(ttfFonts.begin(), ttfFonts.end(), inserter);
+            copy(otfFonts.begin(), otfFonts.end(), inserter);
         } catch (const Filesystem::NotFound & e){
             throw LoadException("Could not load font: " + e.getReason());
         }
@@ -151,6 +164,10 @@ bool OptionSelectFont::rightKey(){
 }
 
 void OptionSelectFont::nextIndex(bool forward){
+    if (fonts.size() == 0){
+        return;
+    }
+
     int index = 0;
     for (unsigned int i = 0 ; i < fonts.size() ; ++i){
         if (Menu::getFont() == fonts[i]){
