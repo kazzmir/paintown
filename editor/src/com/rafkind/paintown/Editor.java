@@ -883,6 +883,7 @@ public class Editor extends JFrame {
 		});
 
 		objectsAddRandom.addActionListener( new AbstractAction(){
+            private int thingsToAdd = 4;
 			private RandomNameAction makeName = new RandomNameAction( "boys.txt" ){
 				public void actionPerformed( ActionEvent event ){
 				}
@@ -922,7 +923,7 @@ public class Editor extends JFrame {
 					if ( objectList.getBlock() == null ){
 						throw new EditorException( "Select a block" );
 					}
-					for ( int i = 0; i < 4; i++ ){
+					for ( int i = 0; i < thingsToAdd; i++ ){
 						try{
 							objectList.getBlock().addThing( make() );
 						} catch ( LoadException e ){
@@ -1420,7 +1421,7 @@ public class Editor extends JFrame {
 				final JTextField length = (JTextField) engine.find( "length" );
 				final JTextField finish = (JTextField) engine.find( "finish" );
 				final JCheckBox isFinish = (JCheckBox) engine.find( "is-finish" );
-                                final JSpinner id = (JSpinner) engine.find("id");
+                final JSpinner id = (JSpinner) engine.find("id");
 				final JCheckBox isContinuous = (JCheckBox) engine.find( "is-continuous" );
 				final JButton save = (JButton) engine.find( "save" );
 				final JButton close = (JButton) engine.find( "close" );
