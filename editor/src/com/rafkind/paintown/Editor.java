@@ -32,9 +32,9 @@ public class Editor extends JFrame {
 
 	public Editor(){
 		super( "Paintown Editor" );
-		this.setSize( 900, 500 );
+        this.setSize( (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth() * 4.0/5.0), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 4.0/5.0));
 
-                Closer.open();
+        Closer.open();
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuProgram = new JMenu( "Program" );
