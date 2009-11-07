@@ -20,6 +20,10 @@ public:
         str = toString();
         return *this;
     }
+    
+    virtual std::string getType() const {
+        return "list of values";
+    }
 
     virtual std::string toString() const {
         std::ostringstream out;

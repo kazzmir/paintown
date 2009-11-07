@@ -107,8 +107,9 @@ Ast::Attribute * makeAttributes(const Value & id, const Value & data){
     return new Ast::Attribute(Ast::Attribute::None);
 }
 
+/* FIXME */
 Ast::Value * makeValue(){
-    return new Ast::Value();
+    return new Ast::Number(0);
 }
 
 Ast::Value * makeValueList(const Value & front, const Value & rest){
@@ -155,8 +156,9 @@ Ast::Value * asValue(const Value & value){
     return as<Ast::Value*>(value);
 }
 
+/* FIXME */
 Ast::Value * makeDate(const Value & month, const Value & day, const Value & year){
-    return new Ast::Value();
+    return new Ast::Number(0);
 }
 
 bool referenced(SectionList * list, const void * value){

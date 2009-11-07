@@ -19,6 +19,10 @@ public:
         str = this->str;
         return *this;
     }
+    
+    virtual std::string getType() const {
+        return "string";
+    }
 
     virtual std::string toString() const {
         return std::string(str);

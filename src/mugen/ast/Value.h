@@ -45,12 +45,14 @@ public:
         return value == this;
     }
 
+    virtual std::string getType() const = 0;
+
     virtual ~Value(){
     }
 
 private:
     void fail(const std::string & what) const {
-        throw Exception("Cannot read a " + what);
+        throw Exception("Cannot read a " + what + " from a " + getType());
     }
 };
 

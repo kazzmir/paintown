@@ -22,6 +22,10 @@ public:
         str = *(this->str);
         return *this;
     }
+
+    virtual std::string getType() const {
+        return "string";
+    }
     
     virtual bool referenced(const void * value) const {
         return Value::referenced(value) ||

@@ -24,6 +24,10 @@ public:
         x = value;
         return *this;
     }
+    
+    virtual std::string getType() const {
+        return "number";
+    }
 
     virtual std::string toString() const {
         std::ostringstream out;
