@@ -11,7 +11,7 @@
 #include "attribute.h"
 #include "attribute-simple.h"
 #include "Value.h"
-#include "../mugen_exception.h"
+#include "exception.h"
 
 namespace Ast{
 
@@ -67,7 +67,7 @@ public:
             }
         }
 
-        throw MugenException("Could not find attribute " + find + " in section " + getName());
+        throw Exception("Could not find attribute " + find + " in section " + getName());
     }
 
     virtual bool referenced(const void * value) const {

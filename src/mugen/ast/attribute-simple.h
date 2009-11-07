@@ -36,7 +36,11 @@ public:
     template <typename X>
     const AttributeSimple & operator>>(X & v) const {
         if (value != 0){
-            *value >> v;
+            try{
+                *value >> v;
+            } catch (const Exception & ex){
+                throw Exception("tried to read the wrong type for '" + this->toString() + "' : " + ex.getReason());
+            }
         }
         return *this;
     }
@@ -47,7 +51,7 @@ public:
                (this->value != 0 && this->value->referenced(value));
     }
 
-    std::string toString(){
+    std::string toString() const {
         std::ostringstream out;
         if (value != 0){
             out << name->toString() << " = " << value->toString();

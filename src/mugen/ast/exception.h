@@ -2,25 +2,19 @@
 #define _paintown_ast_exception_h
 
 #include <exception>
+#include "../mugen_exception.h"
 #include <string>
 
 namespace Ast{
-class Exception: public std::exception {
+class Exception: public MugenException {
 public:
     Exception(const std::string & str):
-        exception(),
-        reason(str){
-        }
-
-    const std::string & getReason() const {
-        return reason;
+        MugenException(str){
     }
 
     virtual ~Exception() throw (){
     }
 
-protected:
-    std::string reason;
 };
 }
 

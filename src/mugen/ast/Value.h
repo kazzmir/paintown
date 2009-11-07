@@ -27,17 +27,17 @@ public:
     }
     
     virtual const Value & operator>>(int & x) const {
-        throw Exception("Cannot read an int");
+        fail("int");
         return *this;
     }
 
     virtual const Value & operator>>(double & x) const {
-        throw Exception("Cannot read an int");
+        fail("double");
         return *this;
     }
     
     virtual const Value & operator>>(bool & x) const {
-        throw Exception("Cannot read a bool");
+        fail("bool");
         return *this;
     }
 
@@ -46,6 +46,11 @@ public:
     }
 
     virtual ~Value(){
+    }
+
+private:
+    void fail(const std::string & what) const {
+        throw Exception("Cannot read a " + what);
     }
 };
 

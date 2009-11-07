@@ -636,7 +636,7 @@ int main( int argc, char ** argv ){
 	else if (configLoaded == 1){
 	    try{
                 showCharacter(ourFile);
-            } catch( MugenException &ex){
+            } catch(const MugenException & ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
 	    } catch(...){
@@ -647,7 +647,7 @@ int main( int argc, char ** argv ){
 	else if ( configLoaded == 2 ){
 	    try{
                 showStage(ourFile, player1_name, player2_name);
-            } catch( MugenException &ex){
+            } catch(const MugenException &ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
 	    } catch(...){
