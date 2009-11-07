@@ -9,7 +9,9 @@
 #include <string>
 #include <stdlib.h>
 #include "attribute.h"
+#include "attribute-simple.h"
 #include "Value.h"
+#include "../mugen_exception.h"
 
 namespace Ast{
 
@@ -52,6 +54,20 @@ public:
             Value * value = *it;
             value->debugExplain();
         }
+    }
+
+    virtual AttributeSimple * findAttribute(const std::string & find) const {
+        for (std::list<Attribute*>::const_iterator attribute_it = getAttributes().begin(); attribute_it != getAttributes().end(); attribute_it++){
+            Attribute * attribute = *attribute_it;
+            if (attribute->getKind() == Attribute::Simple){
+                AttributeSimple * simple = (AttributeSimple*) attribute;
+                if (*simple == find){
+                    return simple;
+                }
+            }
+        }
+
+        throw MugenException("Could not find attribute " + find + " in section " + getName());
     }
 
     virtual bool referenced(const void * value) const {

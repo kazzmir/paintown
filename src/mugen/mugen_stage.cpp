@@ -44,6 +44,54 @@ namespace Mugen{
 
 using namespace std;
 
+/* output from the def parser. I think all mugen files are just lists
+ * of sections so we can probably rename this to AstResult or something
+ * like that and make it more generic.
+ */
+class DefParse{
+public:
+    /* boiler plate stuff */
+
+    DefParse(list<Ast::Section*> * sections):
+    sections(sections){
+    }
+
+    typedef list<Ast::Section*>::iterator section_iterator;
+
+    virtual ~DefParse(){
+        for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+            delete (*section_it);
+        }
+        delete sections;
+    }
+
+public:
+    /* useful stuff */
+
+    inline list<Ast::Section*> * getSections() const {
+        return sections;
+    }
+
+    string downcase(string str){
+        Mugen::Util::fixCase(str);
+        return str;
+    }
+
+    Ast::Section * findSection(const string & find){
+        for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+            Ast::Section * section = *section_it;
+            if (downcase(section->getName()) == downcase(find)){
+                return section;
+            }
+        }
+        throw MugenException("Could not find section " + find);
+    }
+
+protected:
+
+    list<Ast::Section*> * sections;
+};
+
 // Some static variables
 static const int CONTROLLER_VALUE_NOT_SET = -999999;
 static const int DEFAULT_BACKGROUND_ID = -9999;
@@ -403,14 +451,6 @@ static bool matchRegex(const string & str, const string & regex){
     return Util::matchRegex(str, regex);
 }
 
-static void freeDefParse(list<Ast::Section*> * sections){
-    /* this cleanup is yucky, it would be nicer to have a single delete call */
-    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
-        delete (*section_it);
-    }
-    delete sections;
-}
-
 void MugenStage::load(){
     if (loaded){
         return;
@@ -441,12 +481,13 @@ void MugenStage::load(){
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
 
-    list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
+    DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
 
     struct cymk_holder shadow;
     
     /* Extract info for our first section of our stage */
-    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+    for (DefParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
@@ -470,7 +511,7 @@ void MugenStage::load(){
         /* search for bgdef instead of just assuming its there */
 	} else if (matchRegex(head, ".*bgdef.*")){
 	    // Background management
-            vector<Ast::Section*> backgroundStuff = collectBackgroundStuff(section_it, sections->end());
+            vector<Ast::Section*> backgroundStuff = collectBackgroundStuff(section_it, parsed.getSections()->end());
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, ticker, 0);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
@@ -482,8 +523,6 @@ void MugenStage::load(){
         }
     }
     
-    freeDefParse(sections);
-        
     // Setup board our worksurface to the proper size of the entire stage 320x240 :P
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
     //board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
@@ -900,37 +939,6 @@ void MugenStage::unpause(){
 void MugenStage::changePause(){
 }
 
-static string downcase(string str){
-    Mugen::Util::fixCase(str);
-    return str;
-}
-
-static Ast::Section * findSection(list<Ast::Section*> * sections, const string & find){
-    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
-        Ast::Section * section = *section_it;
-        if (downcase(section->getName()) == downcase(find)){
-            return section;
-        }
-    }
-    throw MugenException("Could not find section " + find);
-}
-
-static string findAttribute(Ast::Section * section, const string & find){
-    string value;
-    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
-        Ast::Attribute * attribute = *attribute_it;
-        if (attribute->getKind() == Ast::Attribute::Simple){
-            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
-            if (*simple == find){
-                (*simple) >> value;
-                return value;
-            }
-        }
-    }
-
-    throw MugenException("Could not find attribute " + find + " in section " + section->getName());
-}
-
 const std::string MugenStage::getStageName(const std::string &filename) throw (MugenException){
     // Lets look for our def since some people think that all file systems are case insensitive
     std::string dir = Filesystem::find("mugen/stages/");
@@ -955,16 +963,8 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(defFile);
-
-    try{
-        string name = findAttribute(findSection(sections, "info"), "name");
-        freeDefParse(sections);
-        return name;
-    } catch (const MugenException & m){
-        freeDefParse(sections);
-        throw m;
-    }
+    DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile));
+    return parsed.findSection("info")->findAttribute("name")->asString();
      
 #if 0
     MugenReader reader( defFile );
