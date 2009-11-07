@@ -1498,6 +1498,8 @@ public class Editor extends JFrame {
 						}
 					});
 
+                    check.setToolTipText("Check this box to make the block appear in the game");
+
 					check.setSelected( true );
 					stuff.add( check );
 					final JButton button = new JButton( "Block " + n + " : " + block.getLength() );
