@@ -20,8 +20,7 @@
 using namespace std;
 
 static std::ostream & debug( int level ){
-	Global::debug( level ) << "[network-world-client] ";
-	return Global::debug( level );
+    return Global::debug(level, "network-world-client");
 }
 
 static void * handleMessages( void * arg ){

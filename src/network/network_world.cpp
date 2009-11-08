@@ -15,8 +15,7 @@ struct Stuff{
 };
 
 static std::ostream & debug( int level ){
-	Global::debug( level ) << "[network-world] ";
-	return Global::debug( level );
+    return Global::debug(level, "network-world");
 }
 
 static void * handleMessages( void * arg ){
@@ -236,6 +235,7 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 					c_grabbed->setFacing( c_grabbing->getOppositeFacing() );
 					c_grabbed->thrown();
 					addMessage( c_grabbed->movedMessage() );
+                                        /* don't hardcode the fall numbers */
 					addMessage( c_grabbed->fallMessage( 3.2, 5.0 ) );
 					c_grabbed->fall( 3.2, 5.0 );
 					c_grabbing->setStatus( Status_Ground );

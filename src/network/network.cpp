@@ -308,7 +308,7 @@ void readBytes( Socket socket, uint8_t * data, int length ){
 
 Socket open( int port ) throw( InvalidPortException ){
 	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
-	Global::debug( 1 ) << "Attemping to open port " << port << endl;
+	Global::debug(1, "network") << "Attemping to open port " << port << endl;
 	Socket server = nlOpen( port, NL_RELIABLE );
 	if ( server == NL_INVALID ){
 		throw InvalidPortException(port, nlGetSystemErrorStr(nlGetSystemError()));
@@ -332,9 +332,9 @@ Socket connect( string server, int port ) throw ( NetworkException ) {
 void close( Socket s ){
 	for ( vector< Socket >::iterator it = open_sockets.begin(); it != open_sockets.end(); ){
 		if ( *it == s ){
-			Global::debug( 1 ) << "Closing socket " << s << endl;
+			Global::debug(1, "network") << "Closing socket " << s << endl;
 			nlClose( *it );
-			Global::debug( 1 ) << "Closed" << endl;
+			Global::debug(1, "network") << "Closed" << endl;
 			it = open_sockets.erase( it );
 		} else {
 			it++;
@@ -343,7 +343,7 @@ void close( Socket s ){
 }
 
 void closeAll(){
-	Global::debug( 0 ) << "Closing all sockets" << std::endl;
+	Global::debug(0, "network") << "Closing all sockets" << std::endl;
 	for ( vector< Socket >::iterator it = open_sockets.begin(); it != open_sockets.end(); it++ ){
 		nlClose( *it );
 	}
