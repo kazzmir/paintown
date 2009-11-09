@@ -32,6 +32,7 @@ public:
         } else {
             item = true;
         }
+        return *this;
     }
     
     virtual std::string getType() const {

@@ -434,21 +434,49 @@ void MugenStage::loadSectionReflection(Ast::Section * section){
         }
     }
 }
+
+static bool matchRegex(const string & str, const string & regex){
+    return Util::matchRegex(str, regex);
+}
+
+static string regexResult(const string & str, const string & regex){
+    return "";
+}
             
 static vector<Ast::Section*> collectBackgroundStuff(list<Ast::Section*>::iterator & section_it, const list<Ast::Section*>::iterator & end){
     list<Ast::Section*>::iterator last = section_it;
     vector<Ast::Section*> stuff;
+
+    Ast::Section * section = *section_it;
+    std::string head = section->getName();
+    /* better to do case insensitive regex matching rather than
+     * screw up the original string
+     */
+    Mugen::Util::fixCase(head);
+    string prefix = regexResult(head, "(.*)bgdef");
+    stuff.push_back(section);
+    section_it++;
+
     while (true){
         if (section_it == end){
             break;
         }
+
+        section = *section_it;
+        string name = section->getName();
+        Mugen::Util::fixCase(name);
+        Global::debug(1, "mugen-stage") << "Match " << (prefix + "bg.*") << " against " << name << endl;
+        if (matchRegex(name, prefix + "bg.*")){
+            stuff.push_back(section);
+        } else {
+            break;
+        }
+
+        last = section_it;
+        section_it++;
     }
     section_it = last;
     return stuff;
-}
-
-static bool matchRegex(const string & str, const string & regex){
-    return Util::matchRegex(str, regex);
 }
 
 void MugenStage::load(){
