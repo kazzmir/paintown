@@ -25,6 +25,15 @@ public:
         return *this;
     }
     
+    virtual const Value & operator>>(bool & item) const {
+        /* cast to int here? */
+        if (value == 0){
+            item = false;
+        } else {
+            item = true;
+        }
+    }
+    
     virtual std::string getType() const {
         return "number";
     }
