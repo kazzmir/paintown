@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 namespace Ast{
 
@@ -13,8 +14,17 @@ public:
     names(names){
     }
 
+    static int lowerCase( int c ){
+        return tolower(c);
+    }
+
+    static std::string downcase(std::string str){
+        std::transform(str.begin(), str.end(), str.begin(), lowerCase);
+        return str;
+    }
+
     bool operator==(const std::string & str) const {
-        return toString() == str;
+        return downcase(toString()) == downcase(str);
     }
 
     std::string toString() const {
