@@ -12,14 +12,58 @@ class ValueList: public Value{
 public:
     ValueList(const std::list<Value*> & values):
     values(values){
+        current_value = this->values.begin();
     }
 
     using Value::operator>>;
 
+    virtual const Value & operator>>(std::string & item) const {
+        if (current_value == this->values.end()){
+            throw Exception("No more values in this value list: " + toString());
+        }
+        Value * value = *current_value;
+        *value >> item;
+        current_value++;
+        return *this;
+    }
+
+    virtual const Value & operator>>(int & item) const {
+        if (current_value == this->values.end()){
+            throw Exception("No more values in this value list: " + toString());
+        }
+        Value * value = *current_value;
+        *value >> item;
+        current_value++;
+        return *this;
+    }
+
+    virtual const Value & operator>>(double & item) const {
+        if (current_value == this->values.end()){
+            throw Exception("No more values in this value list: " + toString());
+        }
+        Value * value = *current_value;
+        *value >> item;
+        current_value++;
+        return *this;
+    }
+
+    virtual const Value & operator>>(bool & item) const {
+        if (current_value == this->values.end()){
+            throw Exception("No more values in this value list: " + toString());
+        }
+        Value * value = *current_value;
+        *value >> item;
+        current_value++;
+        return *this;
+    }
+
+
+    /*
     virtual const Value & operator>>(std::string & str) const {
         str = toString();
         return *this;
     }
+    */
     
     virtual std::string getType() const {
         return "list of values";
@@ -64,7 +108,7 @@ public:
 
 protected:
     std::list<Value*> values;
-
+    mutable std::list<Value*>::iterator current_value;
 };
 
 }

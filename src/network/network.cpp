@@ -55,6 +55,7 @@ Message::Message( Socket socket ){
 		str = (signed)(sizeof( buf ) - 1) < str ? (signed)(sizeof(buf) - 1) : str;
 		readBytes( socket, (uint8_t *) buf, str );
 		buf[ str ] = 0;
+                /* this is a string copy, not an assignment to a temporary pointer */
 		this->path = buf;
 	}
 }
