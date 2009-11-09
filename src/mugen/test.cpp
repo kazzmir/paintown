@@ -54,6 +54,7 @@
 #include "loadpng/loadpng.h"
 
 #include "ast/Configuration.h"
+#include "input/input-manager.h"
 
 using namespace std;
 
@@ -604,6 +605,8 @@ int main( int argc, char ** argv ){
 	}
 	
         Global::init( GFX_AUTODETECT_WINDOWED );
+
+        InputManager input;
 	
 	if( configLoaded == 0 ){
 	    MugenReader reader( ourFile );

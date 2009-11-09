@@ -17,6 +17,7 @@ public:
      * should the janitor have the reference instead?
      */
     friend int paintown_main(int, char**);
+    friend int main(int, char **);
 
     static std::vector<Input::PaintownInput> getInput(const Configuration & configuration, const int facing);
     static void poll();
