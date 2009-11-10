@@ -3,6 +3,7 @@ Import('use')
 def peg_to_cpp(target, source, env):
     import sys
     sys.path.append("src/mugen/parser")
+    sys.path.append(".")
     import peg
     parser = peg.make_peg_parser()
     fout = open(target[0].path, 'w')
