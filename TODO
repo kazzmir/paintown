@@ -47,7 +47,7 @@ done * use joystick
 * give enemies 'behaviors' which model how they act
 * make network mode use versions
 10% * allow level sets to only allow explicit players
-10% * make a console like in quake where debug output can go
+90% * make a console like in quake where debug output can go
 * port to psp/nds
 * mugen config and txt files
 20%  - parse data using lexer
