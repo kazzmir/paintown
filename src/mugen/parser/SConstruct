@@ -1,0 +1,19 @@
+Import('use')
+
+def peg_to_cpp(target, source, env):
+    import sys
+    sys.path.append("src/mugen/parser")
+    # sys.path.append("/home/jon/svn/paintown/src/mugen/parser")
+    import peg
+    parser = peg.make_peg_parser()
+    fout = open(target[0].path, 'w')
+    fout.write(parser(source[0].path).generate_cpp())
+    fout.close()
+
+peg_builder = Builder(action = Action(peg_to_cpp, 'Creating peg parser $TARGET'), suffix = '.cpp', src_suffix = '.peg')
+use.Append(BUILDERS = {'Peg' : peg_builder})
+
+use.Peg('def.peg')
+use.Peg('air.peg')
+use.Peg('cns.peg')
+use.Peg('cmd.peg')

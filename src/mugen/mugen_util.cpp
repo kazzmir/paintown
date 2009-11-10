@@ -252,7 +252,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, m
     ifstream ifile;
     ifile.open(filename.c_str(), ios::binary);
     if (!ifile){
-	throw MugenException("Could not open SFF file: " + filename);
+	throw MugenException("Could not open SFF file: '" + filename + "'");
     }
     
     // Lets get the filesize

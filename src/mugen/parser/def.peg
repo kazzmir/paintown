@@ -245,7 +245,7 @@ rules:
                         | comment
 	# characters = name s "," s filename
 	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); save(as<Ast::Filename*>(value)); }}
-	filename_char = !"," !"\n" !"[" .
+	filename_char = !"," !"\n" !"[" !<ascii 13> .
 	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); save(as<Ast::Attribute*>(value)); }}
               | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); save(as<Ast::Attribute*>(value)); }}
 	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); save(as<Ast::Attribute*>(value)); }}

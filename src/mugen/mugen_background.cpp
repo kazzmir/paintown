@@ -12,6 +12,7 @@
 #include "mugen_section.h"
 #include "mugen_item_content.h"
 #include "mugen_item.h"
+#include "util/regex.h"
 #include "ast/all.h"
 
 //static double pi = 3.14159265;
@@ -466,11 +467,194 @@ void MugenBackgroundController::act(const std::map< int, MugenAnimation * > &ani
     }
 }
 
+static bool matchRegex(const string & str, const string & regex){
+    return Util::matchRegex(str, regex);
+}
+
 MugenBackgroundManager::MugenBackgroundManager(const std::string &baseDir, const vector<Ast::Section *> & section, const unsigned long int &ticker, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites):
 name(""),
 debugbg(false),
 clearColor(-1),
 spriteFile(""){
+
+    // for linked position in backgrounds
+    MugenBackground *prior = 0;
+    
+    for (vector<Ast::Section*>::const_iterator section_it = section.begin(); section_it != section.end(); section_it++){
+        string head = (*section_it)->getName();
+	Mugen::Util::fixCase(head);
+	Global::debug(1) <<  "Header: " << head << " | Extracted name: " << name << endl;
+	if (matchRegex(head, ".*bgdef.*")){
+            Ast::Section * section = *section_it;
+            for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+                Ast::Attribute * attribute = *attribute_it;
+                if (attribute->getKind() == Ast::Attribute::Simple){
+                    Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+                    if (*simple == "spr"){
+			*simple >> spriteFile;
+			Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
+			// Strip it of any directory it might have
+			spriteFile = Mugen::Util::stripDir(spriteFile);
+			Global::debug(1) << "Sprite File: " << spriteFile << endl;
+			Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, spriteFile), "", this->sprites);
+		    } else if (*simple == "debugbg"){
+			*simple >> debugbg;
+		    } else if (*simple == "bgclearcolor"){
+			int r, g, b;
+			*simple >> r >> g >> b;
+			clearColor = Bitmap::makeColor(r,g,b);
+		    } else {
+                        throw MugenException("Unhandled option in Background Definition Section: " + simple->toString());
+                    }
+		}
+            }
+	// This our background data definitions
+	}
+#if 0
+        else if( head.find( std::string(name + " ")) !=std::string::npos ){
+	    MugenBackground *temp;
+	    if (!spriteFile.empty()){
+		temp = Mugen::Util::getBackground(ticker, collection[index], this->sprites);
+	    } else {
+		temp = Mugen::Util::getBackground(ticker, collection[index], *sprites);
+	    }
+	    // Do some fixups and necessary things
+	    // lets see where we lay
+	    if( temp->layerno == 0 )backgrounds.push_back(temp);
+	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
+	    
+	    // If position link lets set to previous item
+	    if( temp->positionlink ){
+		temp->linked = prior;
+		Global::debug(1) << "Set positionlink to id: '" << prior->id << "' Position at x(" << prior->startx << ")y(" << prior->starty << ")" << endl;
+	    } 
+	    
+	    // This is so we can have our positionlink info for the next item if true
+	    prior = temp;
+	}
+	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
+	else if( head.find("begin action") !=std::string::npos ){
+	    head.replace(0,13,"");
+	    int h;
+	    MugenItem(head) >> h;
+	    if (!spriteFile.empty()){
+		animations[h] = Mugen::Util::getAnimation(collection[index], this->sprites);
+	    } else {
+		animations[h] = Mugen::Util::getAnimation(collection[index], *sprites);
+	    }
+	}
+	else if( head.find("bgctrldef") != std::string::npos ){ 
+	    head.replace(0,10,"");
+	    MugenBackgroundController *temp = new MugenBackgroundController(head);
+	    Global::debug(1) << "Found background controller definition: " << temp->name << endl;
+	    // Does this one have a controlling ID
+	    bool hasID = false;
+	    while( collection[index]->hasItems() ){
+		MugenItemContent *content = collection[index]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
+		Global::debug(1) << "Getting next item: " << itemhead << endl;
+		if ( itemhead.find("eventid")!=std::string::npos ){
+		    *content->getNext() >> temp->id;
+		} else if (itemhead == "looptime"){
+		    *content->getNext() >> temp->looptime;
+		    if (temp->looptime == 0)temp->looptime = -1;
+		} else if (itemhead == "ctrlid"){
+		    hasID = true;
+		    // Max 10
+		    while(content->hasItems()){
+			int id;
+			*content->getNext() >> id;
+			getBackgrounds(temp->backgrounds, id);
+		    }
+		} else throw MugenException( "Unhandled option in BGCtrlDef " + head + " Section: " + itemhead );
+	    }
+	    // Give it all the backgrounds to make changes to
+	    if ( !hasID && temp->backgrounds.empty() ){
+		temp->backgrounds.insert(temp->backgrounds.end(),backgrounds.begin(),backgrounds.end());
+		temp->backgrounds.insert(temp->backgrounds.end(),foregrounds.begin(),foregrounds.end());
+	    }
+	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
+	    controllers.push_back(temp);
+	}
+	else if( head.find("bgctrl") != std::string::npos ){ 
+	    if (controllers.empty()){
+		// This is a hack to get mugen to do some fancy controlling in a regular game
+		// to accomplish stage fatalaties and other tricks
+		Global::debug(1) << "Found a BgCtrl without a parent definition... must be hackery!" << endl;
+		continue;
+	    }
+	    // else we got ourselves some controls... under the last controller added
+	    MugenBackgroundController *control = controllers.back();
+	    head.replace(0,7,"");
+	    BackgroundController *temp = new BackgroundController();
+	    temp->name = head;
+	    Global::debug(1) << "Found background controller: " << temp->name << endl;
+	    while( collection[index]->hasItems() ){
+		MugenItemContent *content = collection[index]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		Mugen::Util::removeSpaces(itemhead);
+		Mugen::Util::fixCase(itemhead);
+		Global::debug(1) << "Getting next item: " << itemhead << endl;
+		if ( itemhead.find("type")!=std::string::npos ){
+		    std::string type;
+		    *content->getNext() >> type;
+		    Mugen::Util::removeSpaces( type );
+		    Mugen::Util::fixCase(type);
+		    Global::debug(1) << "Type after lowercase: " << type << endl;
+		    if( type == "Anim" )temp->type = Ctrl_Animation;
+		    else if( type == "enabled" )temp->type = Ctrl_Enabled;
+		    else if( type == "null" )temp->type = Ctrl_Null;
+		    else if( type == "posadd" )temp->type = Ctrl_PosAdd;
+		    else if( type == "posset" )temp->type = Ctrl_PosSet;
+		    else if( type == "sinx" )temp->type = Ctrl_Sinx;
+		    else if( type == "siny" )temp->type = Ctrl_Siny;
+		    else if( type == "veladd" )temp->type = Ctrl_VelAdd;
+		    else if( type == "velset" )temp->type = Ctrl_VelSet;
+		    else if( type == "visible" )temp->type = Ctrl_Visible;
+		} else if (itemhead == "time"){
+		    int start=0,end=0,loop=0;
+		    *content->getNext() >> start;
+		    *content->getNext() >> end;
+		    *content->getNext() >> loop;
+		    temp->timestart = start;
+		    if (end == 0)temp->endtime = start;
+		    else temp->endtime = end;
+		    if (loop == 0)temp->looptime = -1;
+		    else temp->looptime = loop;
+		    Global::debug(1) << "start: " << temp->timestart << " | end: " << temp->endtime << " | loop: " << temp->looptime << endl;
+		} else if (itemhead == "value"){
+		    *content->getNext() >> temp->value1;
+		    *content->getNext() >> temp->value2;		    
+		    *content->getNext() >> temp->value3;
+		} else if (itemhead == "x"){
+		    *content->getNext() >> temp->value1;
+		} else if (itemhead == "y"){
+		    *content->getNext() >> temp->value2;
+		} else if (itemhead == "ctrlid"){
+		    // Max 10
+		    while(content->hasItems()){
+			int id;
+			*content->getNext() >> id;
+			getBackgrounds(temp->backgrounds, id);
+		    }
+		} else throw MugenException( "Unhandled option in BGCtrl " + head + " Section: " + itemhead );
+	    }
+	    // Does it use its own background ids? else give it the main mamas backgrounds
+	    if (temp->backgrounds.empty()){
+		temp->backgrounds.insert(temp->backgrounds.end(),control->backgrounds.begin(),control->backgrounds.end());
+	    }
+	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
+	    control->addControl(temp);
+	}
+#endif
+    }
+
+    Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
+
 
 #if 0
     std::string head = name = collection[index]->getHeader();

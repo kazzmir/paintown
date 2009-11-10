@@ -466,7 +466,7 @@ static vector<Ast::Section*> collectBackgroundStuff(list<Ast::Section*>::iterato
         string name = section->getName();
         Mugen::Util::fixCase(name);
         Global::debug(1, "mugen-stage") << "Match " << (prefix + "bg.*") << " against " << name << endl;
-        if (matchRegex(name, prefix + "bg.*")){
+        if (matchRegex(name, prefix + "bg.*") || matchRegex(name, ".*begin *action.*")){
             stuff.push_back(section);
         } else {
             break;
