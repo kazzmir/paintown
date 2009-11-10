@@ -28,6 +28,7 @@
 #include "globals.h"
 
 #include "mugen_util.h"
+#include "ast/all.h"
 
 using namespace std;
 
@@ -479,105 +480,106 @@ void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std:
     ifile.close();
 }
 
-MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
+MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenBackground *temp = new MugenBackground(ticker);
-    std::string head = section->getHeader();
+    std::string head = section->getName();
+    /* FIXME!
+     * doesnt this assume the name is just "BG Foobar" ? Use a better regex here
+     */
     head.replace(0,3,"");
     temp->name = head;
     Global::debug(1) << "Found background: " << temp->name << endl;
-    while( section->hasItems() ){
-	MugenItemContent *content = section->getNext();
-	const MugenItem *item = content->getNext();
-	std::string itemhead = item->query();
-	Mugen::Util::removeSpaces(itemhead);
-	Mugen::Util::fixCase(itemhead);
-	Global::debug(1) << "Getting next item: " << itemhead << endl;
-	if ( itemhead.find("type")!=std::string::npos ){
-	    std::string type;
-	    *content->getNext() >> type;
-	    Mugen::Util::removeSpaces( type );
-	    if( type == "normal" )temp->type = Normal;
-	    else if( type == "anim" )temp->type = Anim;
-	    else if( type == "parallax" )temp->type = Parallax;
-	    else if( type == "dummy" )temp->type = Dummy;
-	} else if (itemhead == "spriteno"){
-	    if (temp->type != Anim){
-		*content->getNext() >> temp->groupNumber;
-		*content->getNext() >> temp->imageNumber;
-	    }
-	} else if (itemhead == "actionno"){
-	    *content->getNext() >> temp->actionno;
-	} else if (itemhead == "id"){
-	    *content->getNext() >> temp->id;
-	} else if (itemhead == "layerno"){
-	    *content->getNext() >> temp->layerno;
-	} else if (itemhead == "start"){
-	    *content->getNext() >> temp->startx;
-	    *content->getNext() >> temp->starty;
-	} else if (itemhead == "delta"){
-	    *content->getNext() >> temp->deltax;
-	    *content->getNext() >> temp->deltay;
-	} else if (itemhead == "trans"){
-	    std::string type;
-	    *content->getNext() >> type;
-	    Mugen::Util::removeSpaces( type );
-	    if( type == "none" )temp->effects.trans = NONE;
-	    else if( type == "add" )temp->effects.trans =  ADD;
-	    else if( type == "add1" )temp->effects.trans = ADD1;
-	    else if( type == "sub" )temp->effects.trans = SUB;
-	    else if( type == "addalpha" )temp->effects.trans = ADDALPHA;
-	} else if (itemhead == "alpha"){
-	    *content->getNext() >> temp->effects.alphalow;
-	    *content->getNext() >> temp->effects.alphahigh;
-	} else if (itemhead == "mask"){
-	    *content->getNext() >> temp->mask;
-	} else if (itemhead == "tile"){
-	    *content->getNext() >> temp->tilex;
-	    Global::debug(2) << "Tile x is " << temp->tilex << endl;
-	    *content->getNext() >> temp->tiley;
-	    Global::debug(2) << "Tile y is " << temp->tiley << endl;
-	} else if (itemhead == "tilespacing"){
-	    *content->getNext() >> temp->tilespacingx;
-	    *content->getNext() >> temp->tilespacingy;
-	} else if (itemhead == "window"){
-	    MugenArea area;
-	    *content->getNext() >> area.x1;
-	    *content->getNext() >> area.y1;
-	    *content->getNext() >> area.x2;
-	    *content->getNext() >> area.y2;
-	    temp->window = area;
-	} else if (itemhead == "windowdelta"){
-	    *content->getNext() >> temp->windowdeltax;
-	    *content->getNext() >> temp->windowdeltay;
-	} else if (itemhead == "xscale"){
-	    // You should only use either xscale or width but not both  (According to kfm.def not sure what to do with width)
-	    *content->getNext() >> temp->xscaletop;
-	    *content->getNext() >> temp->xscalebot;
-	} else if (itemhead == "width"){
-	    // You should only use either xscale or width but not both  (According to kfm.def not sure what to do with width)
-	   /* 
-	   Not sure
-		*content->getNext() >> temp->xscaletop;
-		*content->getNext() >> temp->xscalebot;
-	    */
-	} else if (itemhead == "yscalestart"){
-	    *content->getNext() >> temp->yscalestart;
-	} else if (itemhead == "yscaledelta"){
-	    *content->getNext() >> temp->yscaledelta;
-	} else if (itemhead == "positionlink"){
-	    *content->getNext() >> temp->positionlink;
-	} else if (itemhead == "velocity"){
-	    *content->getNext() >> temp->velocityx;
-	    *content->getNext() >> temp->velocityy;
-	} else if (itemhead == "sin.x"){
-	    *content->getNext() >> temp->sinx_amp;
-	    *content->getNext() >> temp->sinx_period;
-	    *content->getNext() >> temp->sinx_offset;
-	} else if (itemhead == "sin.y"){
-	    *content->getNext() >> temp->siny_amp;
-	    *content->getNext() >> temp->siny_period;
-	    *content->getNext() >> temp->siny_offset;
-	} else throw MugenException( "Unhandled option in BG " + head + " Section: " + itemhead );
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "type"){
+                std::string type;
+                *simple >> type;
+                Mugen::Util::removeSpaces(type);
+                if (type == "normal" )temp->type = Normal;
+                else if( type == "anim" )temp->type = Anim;
+                else if( type == "parallax" )temp->type = Parallax;
+                else if( type == "dummy" )temp->type = Dummy;
+            } else if (*simple == "spriteno"){
+                if (temp->type != Anim){
+                    *simple >> temp->groupNumber;
+                    *simple >> temp->imageNumber;
+                }
+            } else if (*simple == "actionno"){
+                *simple >> temp->actionno;
+            } else if (*simple == "id"){
+                *simple >> temp->id;
+            } else if (*simple == "layerno"){
+                *simple >> temp->layerno;
+            } else if (*simple == "start"){
+                *simple >> temp->startx;
+                *simple >> temp->starty;
+            } else if (*simple == "delta"){
+                *simple >> temp->deltax;
+                *simple >> temp->deltay;
+            } else if (*simple == "trans"){
+                std::string type;
+                *simple >> type;
+                Mugen::Util::removeSpaces(type);
+                if( type == "none" )temp->effects.trans = NONE;
+                else if( type == "add" )temp->effects.trans =  ADD;
+                else if( type == "add1" )temp->effects.trans = ADD1;
+                else if( type == "sub" )temp->effects.trans = SUB;
+                else if( type == "addalpha" )temp->effects.trans = ADDALPHA;
+            } else if (*simple == "alpha"){
+                *simple >> temp->effects.alphalow;
+                *simple >> temp->effects.alphahigh;
+            } else if (*simple == "mask"){
+                *simple >> temp->mask;
+            } else if (*simple == "tile"){
+                *simple >> temp->tilex;
+                Global::debug(2) << "Tile x is " << temp->tilex << endl;
+                *simple >> temp->tiley;
+                Global::debug(2) << "Tile y is " << temp->tiley << endl;
+            } else if (*simple == "tilespacing"){
+                *simple >> temp->tilespacingx;
+                *simple >> temp->tilespacingy;
+            } else if (*simple == "window"){
+                MugenArea area;
+                *simple >> area.x1;
+                *simple >> area.y1;
+                *simple >> area.x2;
+                *simple >> area.y2;
+                temp->window = area;
+            } else if (*simple == "windowdelta"){
+                *simple >> temp->windowdeltax;
+                *simple >> temp->windowdeltay;
+            } else if (*simple == "xscale"){
+                // You should only use either xscale or width but not both  (According to kfm.def not sure what to do with width)
+                *simple >> temp->xscaletop;
+                *simple >> temp->xscalebot;
+            } else if (*simple == "width"){
+                // You should only use either xscale or width but not both  (According to kfm.def not sure what to do with width)
+                /* 
+                   Not sure
+                 *content->getNext() >> temp->xscaletop;
+                 *content->getNext() >> temp->xscalebot;
+                 */
+            } else if (*simple == "yscalestart"){
+                *simple >> temp->yscalestart;
+            } else if (*simple == "yscaledelta"){
+                *simple >> temp->yscaledelta;
+            } else if (*simple == "positionlink"){
+                *simple >> temp->positionlink;
+            } else if (*simple == "velocity"){
+                *simple >> temp->velocityx;
+                *simple >> temp->velocityy;
+            } else if (*simple == "sin.x"){
+                *simple >> temp->sinx_amp;
+                *simple >> temp->sinx_period;
+                *simple >> temp->sinx_offset;
+            } else if (*simple == "sin.y"){
+                *simple >> temp->siny_amp;
+                *simple >> temp->siny_period;
+                *simple >> temp->siny_offset;
+            } else throw MugenException( "Unhandled option in BG " + head + " Section: " + simple->toString());
+        }
     }
     Global::debug(2) << "Background " << temp->id << " has tilex " << temp->tilex << endl;
     // Do some fixups and necessary things

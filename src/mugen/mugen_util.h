@@ -14,6 +14,9 @@ class MugenSound;
 class MugenItemContent;
 class MugenSection;
 class MugenCharacterSelect;
+namespace Ast{
+    class Section;
+}
 
 namespace Mugen{
 namespace Util{
@@ -29,7 +32,7 @@ namespace Util{
     void readSprites(const std::string & filename, const std::string & palette, std::map<unsigned int, std::map<unsigned int, MugenSprite *> > & sprites) throw (MugenException);
     void readSounds(const std::string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException);
     // Get background: The background must be deleted if used outside of stage/menus (Note: we give the background a ticker to whatever is running it)
-    MugenBackground *getBackground( const unsigned long int &ticker, MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
+    MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
     MugenAnimation *getAnimation( MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
     std::string getCorrectFileLocation( const std::string &dir, const std::string &file );

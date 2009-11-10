@@ -19,6 +19,7 @@
 
 static const int CONTROLLER_VALUE_NOT_SET = -999999;
 static const int DEFAULT_BACKGROUND_ID = -9999;
+static const char * CONTEXT = __FILE__;
 
 using namespace std;
 
@@ -325,8 +326,8 @@ BackgroundController::~BackgroundController(){
 }
 
 void BackgroundController::act(const std::map< int, MugenAnimation * > &animations){
-    Global::debug(1) << "Control Name: " << name << "Control type: " << type << " is running." << endl;
-    Global::debug(1) << "ticker: " << ownticker << " Start time: " << timestart << " End Time: " << endtime << endl;
+    Global::debug(1, CONTEXT) << "Control Name: " << name << "Control type: " << type << " is running." << endl;
+    Global::debug(1, CONTEXT) << "ticker: " << ownticker << " Start time: " << timestart << " End Time: " << endtime << endl;
     // Do we run this?
     if( ownticker >= timestart && ownticker <= endtime ){
 	Global::debug(1) << "We have action, total backgrounds: " << backgrounds.size() << endl;
@@ -509,19 +510,21 @@ spriteFile(""){
 		}
             }
 	// This our background data definitions
-	}
-#if 0
-        else if( head.find( std::string(name + " ")) !=std::string::npos ){
+        /* probably need a better regex here */
+	} else if (matchRegex(head, ".*bg ")){
 	    MugenBackground *temp;
 	    if (!spriteFile.empty()){
-		temp = Mugen::Util::getBackground(ticker, collection[index], this->sprites);
+		temp = Mugen::Util::getBackground(ticker, *section_it, this->sprites);
 	    } else {
-		temp = Mugen::Util::getBackground(ticker, collection[index], *sprites);
+		temp = Mugen::Util::getBackground(ticker, *section_it, *sprites);
 	    }
 	    // Do some fixups and necessary things
 	    // lets see where we lay
-	    if( temp->layerno == 0 )backgrounds.push_back(temp);
-	    else if( temp->layerno == 1 )foregrounds.push_back(temp);
+	    if (temp->layerno == 0){
+                backgrounds.push_back(temp);
+            } else if (temp->layerno == 1){
+                foregrounds.push_back(temp);
+            }
 	    
 	    // If position link lets set to previous item
 	    if( temp->positionlink ){
@@ -532,6 +535,7 @@ spriteFile(""){
 	    // This is so we can have our positionlink info for the next item if true
 	    prior = temp;
 	}
+#if 0
 	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	else if( head.find("begin action") !=std::string::npos ){
 	    head.replace(0,13,"");
