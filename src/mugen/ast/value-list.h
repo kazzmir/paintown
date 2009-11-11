@@ -8,15 +8,21 @@
 
 namespace Ast{
 
+class Walker;
+
 class ValueList: public Value{
 public:
     ValueList(const std::list<Value*> & values):
     values(values){
         current_value = this->values.begin();
     }
+    
+    virtual void walk(Walker & walker){
+        walker.onValueList(*this);
+    }
 
     using Value::operator>>;
-
+    
     virtual const Value & operator>>(std::string & item) const {
         if (current_value == this->values.end()){
             throw Exception("No more values in this value list: " + toString());

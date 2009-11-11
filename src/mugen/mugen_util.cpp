@@ -602,26 +602,103 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
 
 MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenAnimation *animation = new MugenAnimation();
-    std::vector<MugenArea> clsn1Holder;
-    std::vector<MugenArea> clsn2Holder;
-    bool clsn1Reset = false;
-    bool clsn2Reset = false;
-    bool setloop = false;
 
     class Walker: public Ast::Walker{
     public:
-        Walker():
-        Ast::Walker(){
+        Walker(MugenAnimation * animation, std::map<unsigned int, std::map<unsigned int, MugenSprite*> > & sprites):
+        Ast::Walker(),
+        animation(animation),
+        sprites(sprites),
+        clsn1Reset(false),
+        clsn2Reset(false),
+        setloop(false){
+        }
+
+        /* data */
+        MugenAnimation * animation;
+        std::map<unsigned int, std::map<unsigned int, MugenSprite*> > & sprites;
+        std::vector<MugenArea> clsn1Holder;
+        std::vector<MugenArea> clsn2Holder;
+        bool clsn1Reset;
+        bool clsn2Reset;
+        bool setloop;
+
+        /* callbacks */
+        virtual void onValueList(const Ast::ValueList & values){
+            // This is the new frame
+            MugenFrame *frame = new MugenFrame();
+            frame->defenseCollision = clsn2Holder;
+            frame->attackCollision = clsn1Holder;
+            frame->loopstart = setloop;
+            /* Get sprite details */
+            int group, spriteNumber;
+            // Need to get the parsed data and populate these above items
+            values >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;;
+            Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
+#if 0
+            FIXME!!! Handle extra modifiers
+            while( content->hasItems() ){
+                std::string temp;
+                *content->getNext() >> temp;
+                Mugen::Util::fixCase(temp);
+                if( temp.find("h") != std::string::npos ){
+                    //frame->flipHorizontal = true;
+                    frame->effects.facing = -1;
+                }
+                if( temp.find("v") != std::string::npos ){
+                    //frame->flipVertical = true;
+                    frame->effects.vfacing = -1;
+                }
+                if (temp[0] == 'a'){
+                    frame->effects.trans = ADD;
+                    // Check if we have specified additions
+                    if (temp.size() > 2){
+                        // Source
+                        //frame->colorSource = atoi(temp.substr(2,4).c_str());
+                        frame->effects.alphalow = atoi(temp.substr(2,4).c_str());
+                        // Dest
+                        //frame->colorDestination = atoi(temp.substr(6,8).c_str());
+                        frame->effects.alphahigh = atoi(temp.substr(6,8).c_str());
+                    }
+                } else if (temp[0] == 's'){
+                    frame->effects.trans = SUB;
+                }
+            }
+#endif
+            // Add sprite
+            frame->sprite = this->sprites[(unsigned short)group][(unsigned short)spriteNumber];
+            if (frame->sprite == 0){
+                Global::debug(0) << "No sprite for group " << group << " number " << spriteNumber << endl;
+            }
+            // Add frame
+            this->animation->addFrame(frame);
+
+            // Clear if it was not a default set, since it's valid for only one frame
+            if (clsn1Reset){
+                clsn1Holder.clear();
+                clsn1Reset = false;
+            }
+
+            if (clsn2Reset){
+                clsn2Holder.clear();
+                clsn2Reset = false;
+            }
+
+            if (setloop){
+                setloop = false;
+            }
+
         }
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
         }
     };
 
-    Walker walker;
+    Walker walker(animation, sprites);
     section->walk(walker);
 
 #if 0
+    FIXME!!
     while( section->hasItems() ){
 	    MugenItemContent *content = section->getNext();
 	    MugenItem *item = content->getNext();

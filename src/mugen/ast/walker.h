@@ -7,6 +7,7 @@ class Section;
 class AttributeSimple;
 class Attribute;
 class Value;
+class ValueList;
 
 /* the visitor pattern */
 class Walker{
@@ -15,6 +16,9 @@ public:
     }
 
     virtual void onValue(const Value & value){
+    }
+    
+    virtual void onValueList(const ValueList & value){
     }
 
     virtual void onAttribute(const Attribute & attribute){
