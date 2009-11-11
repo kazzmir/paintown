@@ -116,17 +116,23 @@ const MugenFrame *MugenAnimation::getNext(){
 }
 
 void MugenAnimation::logic(){
-    if( frames[position]->time != -1 ){
-	ticks++;
-	if(ticks >= frames[position]->time * Global::LOGIC_MULTIPLIER){
-		ticks = 0;
-		if( position < frames.size() -1 )position++;
-		else position = loopPosition;
-	}
+    if (position < frames.size()){
+        if( frames[position]->time != -1 ){
+            ticks++;
+            if(ticks >= frames[position]->time * Global::LOGIC_MULTIPLIER){
+                ticks = 0;
+                if( position < frames.size() -1 )position++;
+                else position = loopPosition;
+            }
+        }
     }
 }
 
 void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, double scaley ){
+    if (position >= frames.size()){
+        return;
+    }
+
     if (frames[position]->sprite == 0){
 	return;
     }
@@ -140,6 +146,10 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
 }
 
 void MugenAnimation::render( const int facing, const int vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex, const double scaley ){
+    if (position >= frames.size()){
+        return;
+    }
+
     if (frames[position]->sprite == 0){
 	return;
     }
@@ -278,6 +288,3 @@ const std::string MugenAnimation::getName(const MugenAnimationType t){
 	default: return "Custom or Optional Animation";break;
     }
 }
-
-
-
