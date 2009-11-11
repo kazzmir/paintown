@@ -290,11 +290,34 @@ def getDebug():
     except KeyError:
         return 0
 
+def xterm_color(string, color):
+    colors = {'none': "0",
+              'black': "0;30",
+              'red': "0;31",
+              'green': "0;32",
+              'brown': "0;33",
+              'blue': "0;34",
+              'purple': "0;35",
+              'cyan': "0;36",
+              'light-gray': "0;37",
+              'dark-grey': "1:30",
+              'light-red': "1;31",
+              'light-green': "1;32",
+              'yellow': "1;33",
+              'light-blue': "1;34",
+              'light-purple': "1;35",
+              'light-cyan': "1;36",
+              'white': "1;37"}
+    return "\033[%sm%s\033[0m" % (colors[color], string)
+
+def colorize(string, color):
+    return xterm_color(string, color)
+
 def less_verbose(env):
     env['CCCOMSTR'] = 'Compiling c file $SOURCE'
     env['SHCCCOMSTR'] = 'Compiling c file $SOURCE'
-    env['CXXCOMSTR'] = 'Compiling c++ file $SOURCE'
-    env['SHCXXCOMSTR'] = 'Compiling c++ file $SOURCE'
+    env['CXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
+    env['SHCXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
     env['LINKCOMSTR'] = 'Linking $TARGET'
     env['SHLINKCOMSTR'] = 'Linking $TARGET'
     env['ARCOMSTR'] = 'Building library $TARGET'
@@ -459,7 +482,7 @@ else:
         return q + "/SCons/Tool"
     # FIXME!! gch doesn't work with multiple environments
     env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
-    env['GCHFROMHCOMSTR'] = 'Compiling header $SOURCE'
+    env['GCHFROMHCOMSTR'] = "%s %s" % (colorize('Compiling header', 'green'), colorize('$SOURCE', 'cyan'))
 
     try:
         dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
