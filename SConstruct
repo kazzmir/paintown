@@ -21,6 +21,12 @@ def useIntel():
     except KeyError:
         return False
 
+def useLLVM():
+    try:
+        return int(os.environ['llvm'])
+    except KeyError:
+        return False
+
 def checkLex(context):
     context.Message("Checking for flex... ")
     out = context.TryAction("flex -V")
@@ -334,6 +340,14 @@ def getEnvironment():
                                '-wd383', '-wd869',
                                '-wd1599'])
         return env
+    def llvm(env):
+        env['CC'] = 'llvm-gcc'
+        env['CXX'] = 'llvm-g++'
+        env['AR'] = 'llvm-ar'
+        env['AS'] = 'llvm-as'
+        env['LD'] = 'llvm-ld'
+        env['RANLIB'] = 'llvm-ranlib'
+        return env
     def raw():
         if isCygwin():
             import SCons.Tool.zip
@@ -349,6 +363,8 @@ def getEnvironment():
             if useIntel():
                 print "Using the intel compiler"
                 return intel(Environment(ENV = os.environ))
+            elif useLLVM():
+                return llvm(Environment(ENV = os.environ))
             else:
                 return Environment(ENV = os.environ)
     if not getDebug():
