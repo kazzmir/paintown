@@ -576,12 +576,18 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
                 *simple >> temp->velocityy;
             } else if (*simple == "sin.x"){
                 *simple >> temp->sinx_amp;
-                *simple >> temp->sinx_period;
-                *simple >> temp->sinx_offset;
+                try{
+                    *simple >> temp->sinx_period;
+                    *simple >> temp->sinx_offset;
+                } catch (const Ast::Exception & e){
+                }
             } else if (*simple == "sin.y"){
                 *simple >> temp->siny_amp;
-                *simple >> temp->siny_period;
-                *simple >> temp->siny_offset;
+                try{
+                    *simple >> temp->siny_period;
+                    *simple >> temp->siny_offset;
+                } catch (const Ast::Exception & e){
+                }
             } else throw MugenException( "Unhandled option in BG " + head + " Section: " + simple->toString());
         }
     }
