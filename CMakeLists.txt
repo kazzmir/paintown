@@ -64,8 +64,6 @@ find_package(PNG)
 find_package(ALLEGRO)
 find_package(FREETYPE)
 find_package(Threads)
-find_package(Ruby)
-include(TestForPythonEmbed)
 
 # -------------------------------------------------------
 # Include Source
@@ -101,20 +99,6 @@ if(NOT FREETYPE_FOUND)
 	message(FATAL_ERROR "Couldn't find freetype")
 endif(NOT FREETYPE_FOUND)
 
-# Python
-if(PYTHON_EMBEDABLE)
-	set(PY_INCLUDE ${PYTHON_INCLUDE_PATH})
-	set(PY_LIBS ${PYTHON_LIBRARIES})
-	add_definitions(-DHAVE_PYTHON)
-endif(PYTHON_EMBEDABLE)
-
-# Ruby
-if(RUBY_INCLUDE_PATH)
-	set(RUBY_INCLUDE ${RUBY_INCLUDE_PATH})
-	set(RUBY_LIBS ${RUBY_LIBRARY})
-	add_definitions(-DHAVE_RUBY)
-endif(RUBY_INCLUDE_PATH)
-
 # -------------------------------------------------------
 # Paths and system setup
 # -------------------------------------------------------
@@ -149,21 +133,21 @@ endif(APPLE)
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${PY_LIBS} ${RUBY_LIBS} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIB} ${WINSOCK})
 
-set(ALL_SRC ${BASE_SRC} ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
-${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC}
-${GAME_SRC} ${MUGEN_SRC} ${OGG_SRC} ${TRIGGER_SRC})
+#set(ALL_SRC ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
+#${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC}
+#${GAME_SRC} ${MUGEN_SRC} ${OGG_SRC} ${TRIGGER_SRC})
 
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules ${FREETYPE_INCLUDE_DIR} src/hawknl ${PY_INCLUDE} ${RUBY_INCLUDE})
+include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules src/hawknl ${FREETYPE_INCLUDE_DIR})
 
 # -------------------------------------------------------
 # Paintown and test
 # -------------------------------------------------------
-add_library (main_module ${ALL_SRC})
+#add_library (main_module ${ALL_SRC})
 
 #Dumb
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
@@ -171,9 +155,31 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/hawknl)
 
+#Source modules
+add_library(base_module ${BASE_SRC})
+add_library(level_module ${LEVEL_SRC})
+add_library(factory_module ${FACTORY_SRC})
+add_library(object_module ${OBJECT_SRC})
+add_library(util_module ${UTIL_SRC})
+add_library(loadpng_module ${LOADPNG_SRC})
+add_library(menu_module ${MENU_SRC})
+add_library(env_module ${ENV_SRC})
+add_library(network_module ${NETWORK_SRC})
+add_library(gui_module ${GUI_SRC})
+
+#Script directory
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/script)
+
+add_library(game_module ${GAME_SRC})
+add_library(mugen_module ${MUGEN_SRC})
+add_library(ogg_module ${OGG_SRC})
+add_library(trigger_module ${TRIGGER_SRC})
+
+
 #paintown executable
 add_executable (paintown src/xmain.cpp)
-target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_LIBS})
+target_link_libraries(paintown base_module level_module factory_module object_module util_module loadpng_module 
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
@@ -182,10 +188,12 @@ target_link_libraries(paintown main_module dumb_module hawknl_module ${REQUIRED_
 #target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 add_executable (mugentest src/mugen/test.cpp)
-target_link_libraries(mugentest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
+target_link_libraries(mugentest base_module level_module factory_module object_module util_module loadpng_module 
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 # Copy scripts and setup lex files
 if(UNIX OR LINUX OR CYGWIN OR MINGW)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_SOURCE_DIR}/data/scripts/paintown.py COPYONLY)
   configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
 endif(UNIX OR LINUX OR CYGWIN OR MINGW)
+
