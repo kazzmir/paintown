@@ -28,7 +28,7 @@
 using namespace std;
 
 /* some compilers probably won't like __FILE__. #define it in that case */
-static const char * CONTEXT = __FILE__;
+static const char * DEBUG_CONTEXT = __FILE__;
 
 struct playerInfo{
     DisplayCharacter * guy;
@@ -45,15 +45,15 @@ static PlayerVector loadPlayers( const string & path ){
     vector< string > files = Util::getFiles(Filesystem::find(path + "/"), "*" );
     std::sort( files.begin(), files.end() );
     for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
-        Global::debug(2, CONTEXT) << "Found file " << *it << endl;
+        Global::debug(2, DEBUG_CONTEXT) << "Found file " << *it << endl;
         string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
-        Global::debug(1, CONTEXT) << "Checking " << file << endl;
+        Global::debug(1, DEBUG_CONTEXT) << "Checking " << file << endl;
         if (Util::exists( file )){
-            Global::debug(1, CONTEXT) << "Loading " << file << endl;
+            Global::debug(1, DEBUG_CONTEXT) << "Loading " << file << endl;
             try{
                 players.push_back(playerInfo(new DisplayCharacter(file), file));
             } catch (const LoadException & le){
-                Global::debug(0, CONTEXT) << "Could not load " << file << " because " << le.getReason() << endl;
+                Global::debug(0, DEBUG_CONTEXT) << "Could not load " << file << " because " << le.getReason() << endl;
             }
         }
     }
@@ -378,7 +378,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
             }
         }
     } catch (const Filesystem::NotFound & ex){
-        Global::debug(0, CONTEXT) << "Error during select player screen: " << ex.getReason() << endl;
+        Global::debug(0, DEBUG_CONTEXT) << "Error during select player screen: " << ex.getReason() << endl;
     }
     loader.stop();
     pthread_join(loadingThread, NULL);
@@ -407,7 +407,7 @@ Object * Game::selectPlayer(bool invincibile, const string & message, const Leve
             delete it->guy;
         }
 
-        Global::debug(1, CONTEXT) << "Selected " << players[ current ].path << ". Loading.." << endl;
+        Global::debug(1, DEBUG_CONTEXT) << "Selected " << players[ current ].path << ". Loading.." << endl;
         Player * player = new Player(players[ current ].path);
         player->setInvincible(invincibile);
         player->setMap(remap);
@@ -858,14 +858,14 @@ vector<Object *> Game::versusSelect( bool invincible ){
 
 	vector<Object *> tempVec;
 	
-	Global::debug(1, CONTEXT) << "Selected " << players[ current1 ].path << ". Loading.." << endl;
+	Global::debug(1, DEBUG_CONTEXT) << "Selected " << players[ current1 ].path << ". Loading.." << endl;
 	Player * temp1 = new Player( players[ current1 ].path );
 	temp1->setMap( remap1[current1] );
 	temp1->testAnimation();
 	temp1->setInvincible( invincible );
 	tempVec.push_back(temp1);
 	
-	Global::debug(1, CONTEXT) << "Selected " << players[ current2 ].path << ". Loading.." << endl;
+	Global::debug(1, DEBUG_CONTEXT) << "Selected " << players[ current2 ].path << ". Loading.." << endl;
 	Player * temp2 = new Player( players[ current2 ].path );
 	temp2->setMap( remap2[current2] );
 	temp2->testAnimation();

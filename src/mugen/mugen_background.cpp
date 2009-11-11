@@ -18,7 +18,7 @@
 
 static const int CONTROLLER_VALUE_NOT_SET = -999999;
 static const int DEFAULT_BACKGROUND_ID = -9999;
-static const char * CONTEXT = __FILE__;
+static const char * DEBUG_CONTEXT = __FILE__;
 
 using namespace std;
 
@@ -325,8 +325,8 @@ BackgroundController::~BackgroundController(){
 }
 
 void BackgroundController::act(const std::map< int, MugenAnimation * > &animations){
-    Global::debug(1, CONTEXT) << "Control Name: " << name << "Control type: " << type << " is running." << endl;
-    Global::debug(1, CONTEXT) << "ticker: " << ownticker << " Start time: " << timestart << " End Time: " << endtime << endl;
+    Global::debug(1, DEBUG_CONTEXT) << "Control Name: " << name << "Control type: " << type << " is running." << endl;
+    Global::debug(1, DEBUG_CONTEXT) << "ticker: " << ownticker << " Start time: " << timestart << " End Time: " << endtime << endl;
     // Do we run this?
     if( ownticker >= timestart && ownticker <= endtime ){
 	Global::debug(1) << "We have action, total backgrounds: " << backgrounds.size() << endl;
