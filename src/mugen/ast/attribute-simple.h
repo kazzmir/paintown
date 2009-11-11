@@ -4,6 +4,7 @@
 #include "attribute.h"
 #include "identifier.h"
 #include "Value.h"
+#include "walker.h"
 #include <sstream>
 
 namespace Ast{
@@ -21,6 +22,10 @@ public:
     Attribute(Simple),
     name(name),
     value(0){
+    }
+
+    virtual void walk(Walker & walker){
+        walker.onAttributeSimple(*this);
     }
 
     bool operator==(const std::string & str) const {

@@ -1,5 +1,5 @@
+#include "util/bitmap.h"
 #include "mugen_background.h"
-
 #include <math.h>
 #include <ostream>
 #include <cstring>
@@ -7,7 +7,6 @@
 #include <algorithm>
 #include "globals.h"
 #include "mugen_sprite.h"
-#include "util/bitmap.h"
 #include "mugen_util.h"
 #include "mugen_section.h"
 #include "mugen_item_content.h"
@@ -535,18 +534,20 @@ spriteFile(""){
 	    // This is so we can have our positionlink info for the next item if true
 	    prior = temp;
 	}
-#if 0
 	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
-	else if( head.find("begin action") !=std::string::npos ){
+	else if(matchRegex(head, "begin *action")){
 	    head.replace(0,13,"");
 	    int h;
-	    MugenItem(head) >> h;
+            istringstream out(head);
+	    out >> h;
 	    if (!spriteFile.empty()){
-		animations[h] = Mugen::Util::getAnimation(collection[index], this->sprites);
+		animations[h] = Mugen::Util::getAnimation(*section_it, this->sprites);
 	    } else {
-		animations[h] = Mugen::Util::getAnimation(collection[index], *sprites);
+		animations[h] = Mugen::Util::getAnimation(*section_it, *sprites);
 	    }
 	}
+#if 0
+        FIXME!!
 	else if( head.find("bgctrldef") != std::string::npos ){ 
 	    head.replace(0,10,"");
 	    MugenBackgroundController *temp = new MugenBackgroundController(head);

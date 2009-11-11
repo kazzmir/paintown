@@ -15,6 +15,8 @@
 
 namespace Ast{
 
+class Walker;
+
 class Section{
 public: 
     Section(const std::string * name):
@@ -22,6 +24,19 @@ public:
         if (name == 0){
             std::cerr << "[" << __FILE__ << ": " << __LINE__ << "] Cannot create a section with an empty name" << std::endl;
             exit(-1);
+        }
+    }
+
+    virtual void walk(Walker & walker){
+        walker.onSection(*this);
+        for (std::list<Attribute*>::iterator it = attributes.begin(); it != attributes.end(); it++){
+            Attribute * attribute = *it;
+            attribute->walk(walker);
+        }
+
+        for (std::list<Value*>::iterator it = values.begin(); it != values.end(); it++){
+            Value * value = *it;
+            value->walk(walker);
         }
     }
 

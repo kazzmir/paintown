@@ -16,5 +16,6 @@
 #include "keyword.h"
 #include "filename.h"
 #include "collectable.h"
+#include "walker.h"
 
 #endif

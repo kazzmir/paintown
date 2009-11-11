@@ -1,6 +1,8 @@
 #ifndef _paintown_attribute_h
 #define _paintown_attribute_h
 
+#include "walker.h"
+
 namespace Ast{
 
 class Attribute{
@@ -12,6 +14,10 @@ public:
 
     Attribute(Kind kind):
     kind(kind){
+    }
+    
+    virtual void walk(Walker & walker){
+        walker.onAttribute(*this);
     }
 
     virtual Kind getKind(){

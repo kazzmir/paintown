@@ -2,6 +2,7 @@
 #define _paintown_value_h
 
 #include <iostream>
+#include "walker.h"
 #include "exception.h"
 
 namespace Ast{
@@ -15,6 +16,10 @@ public:
 public:
     virtual std::string toString() const {
         return "";
+    }
+    
+    virtual void walk(Walker & walker){
+        walker.onValue(*this);
     }
 
     virtual void debugExplain(){

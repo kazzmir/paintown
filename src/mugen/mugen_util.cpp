@@ -517,7 +517,11 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
                 *simple >> temp->starty;
             } else if (*simple == "delta"){
                 *simple >> temp->deltax;
-                *simple >> temp->deltay;
+                try{
+                    /* the y part is not always given */
+                    *simple >> temp->deltay;
+                } catch (const Ast::Exception & e){
+                }
             } else if (*simple == "trans"){
                 std::string type;
                 *simple >> type;
@@ -590,15 +594,28 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
     return temp;
 }
 
-MugenAnimation *Mugen::Util::getAnimation( MugenSection *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
+MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenAnimation *animation = new MugenAnimation();
-    std::string head = section->getHeader();
-    head.replace(0,13,"");
     std::vector<MugenArea> clsn1Holder;
     std::vector<MugenArea> clsn2Holder;
     bool clsn1Reset = false;
     bool clsn2Reset = false;
     bool setloop = false;
+
+    class Walker: public Ast::Walker{
+    public:
+        Walker():
+        Ast::Walker(){
+        }
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+        }
+    };
+
+    Walker walker;
+    section->walk(walker);
+
+#if 0
     while( section->hasItems() ){
 	    MugenItemContent *content = section->getNext();
 	    MugenItem *item = content->getNext();
@@ -749,13 +766,17 @@ MugenAnimation *Mugen::Util::getAnimation( MugenSection *section, std::map< unsi
 		if( setloop )setloop = false;
 	    }
     }
+#endif
+
+    /* FIXME!! use regex to get the number */
+    std::string head = section->getName();
+    head.replace(0,13,"");
     int h;
     MugenItem(head) >> h;
     animation->setType(MugenAnimationType(h));
     Global::debug(1) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(animation->getType()) << "'" << endl;
     return animation;
 }
-
 
 static std::string removeLastDir( const std::string &dir ){
     if (dir.find( "/") != std::string::npos){

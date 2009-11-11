@@ -343,7 +343,9 @@ void MugenStoryboard::load() throw (MugenException){
             head.replace(0,13,"");
             int h;
             MugenItem(head) >> h;
+            /* FIXME!!
             animations[h] = Mugen::Util::getAnimation(collection[i], sprites);
+            */
         }
         else if ( head.find("def")  != std::string::npos && head.find("scenedef") == std::string::npos ){
             Global::debug(1) << "Checking def!" << endl;
