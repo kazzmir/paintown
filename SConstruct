@@ -349,10 +349,19 @@ def getEnvironment():
     def llvm(env):
         env['CC'] = 'llvm-gcc'
         env['CXX'] = 'llvm-g++'
-        env['AR'] = 'llvm-ar'
-        env['AS'] = 'llvm-as'
-        env['LD'] = 'llvm-ld'
-        env['RANLIB'] = 'llvm-ranlib'
+        # <nicholas> ah. don't replace AR or LD or RANLIB.
+        # <jonrafkind> dont use llvm-ar and llvm-ld?
+        # <nicholas> that's correct.
+        # <jonrafkind> ok.. but why do those exist?
+        # <nicholas> if you switch CXX to llvm-g++ and change nothing else, it'll work.
+        # <jonrafkind> ok
+        # <nicholas> well, that's a great question. :)
+        # <jonrafkind> heh
+        # <nicholas> the llvm-foo tools do what the native tools except to llvm bitcode instead
+        #env['AR'] = 'llvm-ar'
+        #env['AS'] = 'llvm-as'
+        #env['LD'] = 'llvm-ld'
+        #env['RANLIB'] = 'llvm-ranlib'
         return env
     def raw():
         if isCygwin():
