@@ -113,6 +113,7 @@ public:
     Result & operator=(const Result & r){
         position = r.position;
         value = r.value;
+        return *this;
     }
 
     void reset(){
@@ -2859,12 +2860,12 @@ Result rule_filename_char(Stream & stream, const int position){
         
         
         Result result_peg_358(result_peg_345);
-            if ((unsigned char) stream.get(result_peg_358.getPosition()) == (unsigned char) 10){
+            if ((unsigned char) stream.get(result_peg_358.getPosition()) == (unsigned char) 13){
                 result_peg_358.nextPosition();
             } else {
                 goto not_peg_357;
             }
-            result_peg_358.setValue((void*) 10);
+            result_peg_358.setValue((void*) 13);
             goto out_peg_346;
             not_peg_357:
             result_peg_345.setValue((void*)0);

@@ -26,7 +26,7 @@ endif(RUBY_INCLUDE_PATH)
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(modules ${PY_INCLUDE} ${RUBY_INCLUDE})
+include_directories(${PY_INCLUDE} ${RUBY_INCLUDE})
 
 # -------------------------------------------------------
 # module
