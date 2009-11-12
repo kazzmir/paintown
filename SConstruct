@@ -316,11 +316,17 @@ def xterm_color(string, color):
               'white': "1;37"}
     return "\033[%sm%s\033[0m" % (colors[color], string)
 
+# todo: figure out when we are on an xterm
+def isXterm():
+    return True
+
 def colorize(string, color):
-    return xterm_color(string, color)
+    if isXterm():
+        return xterm_color(string, color)
+    return string
 
 def less_verbose(env):
-    env['CCCOMSTR'] = 'Compiling c file $SOURCE'
+    env['CCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
     env['SHCCCOMSTR'] = 'Compiling c file $SOURCE'
     env['CXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
     env['SHCXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
