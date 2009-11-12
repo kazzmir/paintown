@@ -154,7 +154,7 @@ typedef struct DUMBFILE_SYSTEM
 	void *(*open)(const char *filename);
 	int (*skip)(void *f, long n);
 	int (*getc)(void *f);
-	long (*getnc)(char *ptr, long n, void *f);
+	long (*getnc)(unsigned char *ptr, long n, void *f);
 	void (*close)(void *f);
 }
 DUMBFILE_SYSTEM;
@@ -180,7 +180,7 @@ long dumbfile_mgetl(DUMBFILE *f);
 unsigned long dumbfile_cgetul(DUMBFILE *f);
 signed long dumbfile_cgetsl(DUMBFILE *f);
 
-long dumbfile_getnc(char *ptr, long n, DUMBFILE *f);
+long dumbfile_getnc(unsigned char *ptr, long n, DUMBFILE *f);
 
 int dumbfile_error(DUMBFILE *f);
 int dumbfile_close(DUMBFILE *f);

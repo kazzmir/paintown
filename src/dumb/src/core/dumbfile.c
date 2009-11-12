@@ -341,7 +341,7 @@ signed long dumbfile_cgetsl(DUMBFILE *f)
 
 
 
-long dumbfile_getnc(char *ptr, long n, DUMBFILE *f)
+long dumbfile_getnc(unsigned char *ptr, long n, DUMBFILE *f)
 {
 	long rv;
 

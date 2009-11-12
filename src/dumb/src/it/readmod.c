@@ -260,7 +260,7 @@ static int buffer_mod_getc(void *f)
 
 
 
-static long buffer_mod_getnc(char *ptr, long n, void *f)
+static long buffer_mod_getnc(unsigned char *ptr, long n, void *f)
 {
 	BUFFERED_MOD *bm = f;
 	if (bm->buffered) {
@@ -598,7 +598,7 @@ DUH *dumb_read_mod_quick(DUMBFILE *f)
 	{
 		const char *tag[1][2];
 		tag[0][0] = "TITLE";
-		tag[0][1] = ((DUMB_IT_SIGDATA *)sigdata)->name;
+		tag[0][1] = (const char *) ((DUMB_IT_SIGDATA *)sigdata)->name;
 		return make_duh(-1, 1, (const char *const (*)[2])tag, 1, &descptr, &sigdata);
 	}
 }

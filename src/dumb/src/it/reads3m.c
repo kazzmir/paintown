@@ -664,7 +664,7 @@ DUH *dumb_read_s3m_quick(DUMBFILE *f)
 	{
 		const char *tag[1][2];
 		tag[0][0] = "TITLE";
-		tag[0][1] = ((DUMB_IT_SIGDATA *)sigdata)->name;
+		tag[0][1] = (const char *) ((DUMB_IT_SIGDATA *)sigdata)->name;
 		return make_duh(-1, 1, (const char *const (*)[2])tag, 1, &descptr, &sigdata);
 	}
 }

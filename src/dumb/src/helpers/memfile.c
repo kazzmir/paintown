@@ -55,7 +55,7 @@ static int dumb_memfile_getc(void *f)
 
 
 
-static long dumb_memfile_getnc(char *ptr, long n, void *f)
+static long dumb_memfile_getnc(unsigned char *ptr, long n, void *f)
 {
 	MEMFILE *m = f;
 	if (n > m->left) n = m->left;

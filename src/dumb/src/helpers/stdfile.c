@@ -44,7 +44,7 @@ static int dumb_stdfile_getc(void *f)
 
 
 
-static long dumb_stdfile_getnc(char *ptr, long n, void *f)
+static long dumb_stdfile_getnc(unsigned char *ptr, long n, void *f)
 {
 	return fread(ptr, 1, n, f);
 }

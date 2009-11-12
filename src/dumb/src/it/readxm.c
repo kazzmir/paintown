@@ -618,7 +618,7 @@ static DUMB_IT_SIGDATA *it_xm_load_sigdata(DUMBFILE *f)
 	int i, j;
 
 	/* check ID text */
-	if (dumbfile_getnc(id_text, 17, f) < 17)
+	if (dumbfile_getnc((unsigned char *) id_text, 17, f) < 17)
 		return NULL;
 	id_text[17] = 0;
 	if (strcmp(id_text, "Extended Module: ") != 0) {
@@ -1001,7 +1001,7 @@ DUH *dumb_read_xm_quick(DUMBFILE *f)
 	{
 		const char *tag[1][2];
 		tag[0][0] = "TITLE";
-		tag[0][1] = ((DUMB_IT_SIGDATA *)sigdata)->name;
+		tag[0][1] = (const char *) ((DUMB_IT_SIGDATA *)sigdata)->name;
 		return make_duh(-1, 1, (const char *const (*)[2])tag, 1, &descptr, &sigdata);
 	}
 }

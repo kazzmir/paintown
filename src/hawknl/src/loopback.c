@@ -57,8 +57,8 @@ static volatile NLushort newport = 1024;
 static NLushort loopback_getNextPort(void)
 {
     (void)htMutexLock(&portlock);
-    if(++newport > 65535)
-    {
+    newport += 1;
+    if (newport < 1024){
         newport = 1024;
     }
     (void)htMutexUnlock(&portlock);

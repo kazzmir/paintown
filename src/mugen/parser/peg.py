@@ -153,6 +153,7 @@ public:
     Result & operator=(const Result & r){
         position = r.position;
         value = r.value;
+        return *this;
     }
 
     void reset(){

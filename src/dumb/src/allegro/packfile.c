@@ -44,7 +44,7 @@ static int dumb_packfile_getc(void *f)
 
 
 
-static long dumb_packfile_getnc(char *ptr, long n, void *f)
+static long dumb_packfile_getnc(unsigned char *ptr, long n, void *f)
 {
 	return pack_fread(ptr, n, f);
 }
