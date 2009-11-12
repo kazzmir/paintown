@@ -27,6 +27,10 @@ def useLLVM():
     except KeyError:
         return False
 
+# todo: read from an environment variable or something
+def enableProfiled():
+    return False
+
 def checkLex(context):
     context.Message("Checking for flex... ")
     out = context.TryAction("flex -V")
@@ -326,14 +330,17 @@ def colorize(string, color):
     return string
 
 def less_verbose(env):
+    link_color = 'light-red'
+    ar_color = 'yellow'
+    ranlib_color = 'light-purple'
     env['CCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
-    env['SHCCCOMSTR'] = 'Compiling c file $SOURCE'
+    env['SHCCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
     env['CXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
     env['SHCXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
-    env['LINKCOMSTR'] = 'Linking $TARGET'
-    env['SHLINKCOMSTR'] = 'Linking $TARGET'
-    env['ARCOMSTR'] = 'Building library $TARGET'
-    env['RANLIBCOMSTR'] = 'Indexing library $TARGET'
+    env['LINKCOMSTR'] = "%s %s" % (colorize('Linking', link_color), colorize('$TARGET', 'light-blue'))
+    env['SHLINKCOMSTR'] = "%s %s" % (colorize('Linking', link_color), colorize('$TARGET', 'light-blue'))
+    env['ARCOMSTR'] = "%s %s" % (colorize('Building library', ar_color), colorize('$TARGET', 'light-blue'))
+    env['RANLIBCOMSTR'] = "%s %s" % (colorize('Indexing library', ranlib_color), colorize('$TARGET', 'light-blue'))
     return env
 
 def getEnvironment():
@@ -438,6 +445,8 @@ hawkEnv = getEnvironment()
 dumbStaticEnv = getEnvironment()
 hawkStaticEnv = getEnvironment()
 
+# if you dont care about building a universal binary then disable this
+# block of code
 if isOSX():
     dumbStaticEnv[ 'CXX' ] = 'misc/g++'
     dumbStaticEnv[ 'CC' ] = 'misc/gcc'
@@ -453,9 +462,9 @@ hawknl_static = buildHawknl('build-static', hawkStaticEnv)
 dumb_static = buildDumb('build-static', dumbStaticEnv)
 
 # change this to if True if you want to profile paintown
-if False:
-    env.Append( CCFLAGS = '-pg' )
-    env.Append( LINKFLAGS = '-pg' )
+if enableProfiled():
+    env.Append(CCFLAGS = '-pg')
+    env.Append(LINKFLAGS = '-pg')
 
 
 # env.Append( LIBS = [ 'aldmb', 'dumb' ] );
