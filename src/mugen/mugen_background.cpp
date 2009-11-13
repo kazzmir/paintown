@@ -546,44 +546,69 @@ spriteFile(""){
 		animations[h] = Mugen::Util::getAnimation(*section_it, *sprites);
 	    }
 	}
-#if 0
-        FIXME!!
-	else if( head.find("bgctrldef") != std::string::npos ){ 
+	else if (matchRegex(head, ".*bgctrldef")){
 	    head.replace(0,10,"");
 	    MugenBackgroundController *temp = new MugenBackgroundController(head);
 	    Global::debug(1) << "Found background controller definition: " << temp->name << endl;
-	    // Does this one have a controlling ID
-	    bool hasID = false;
-	    while( collection[index]->hasItems() ){
-		MugenItemContent *content = collection[index]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		Mugen::Util::fixCase(itemhead);
-		Global::debug(1) << "Getting next item: " << itemhead << endl;
-		if ( itemhead.find("eventid")!=std::string::npos ){
-		    *content->getNext() >> temp->id;
-		} else if (itemhead == "looptime"){
-		    *content->getNext() >> temp->looptime;
-		    if (temp->looptime == 0)temp->looptime = -1;
-		} else if (itemhead == "ctrlid"){
-		    hasID = true;
-		    // Max 10
-		    while(content->hasItems()){
-			int id;
-			*content->getNext() >> id;
-			getBackgrounds(temp->backgrounds, id);
-		    }
-		} else throw MugenException( "Unhandled option in BGCtrlDef " + head + " Section: " + itemhead );
-	    }
-	    // Give it all the backgrounds to make changes to
-	    if ( !hasID && temp->backgrounds.empty() ){
-		temp->backgrounds.insert(temp->backgrounds.end(),backgrounds.begin(),backgrounds.end());
-		temp->backgrounds.insert(temp->backgrounds.end(),foregrounds.begin(),foregrounds.end());
-	    }
+            class BackgroundControllerWalker: public Ast::Walker {
+            public:
+                BackgroundControllerWalker(MugenBackgroundManager & manager, MugenBackgroundController * controller, vector<MugenBackground*> & backgrounds, vector<MugenBackground*> & foregrounds):
+                    hasId(false),
+                    manager(manager),
+                    controller(controller),
+                    backgrounds(backgrounds),
+                    foregrounds(foregrounds){
+                }
+
+                bool hasId;
+                MugenBackgroundManager & manager;
+                MugenBackgroundController * controller;
+                vector<MugenBackground*> & backgrounds;
+                vector<MugenBackground*> & foregrounds;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "eventid"){
+		        simple >> controller->id;
+                    } else if (simple == "looptime"){
+                        simple >> controller->looptime;
+                        if (controller->looptime == 0){
+                            controller->looptime = -1;
+                        }
+                    } else if (simple == "ctrlid"){
+                        hasId = true;
+                        // Max 10
+                        try{
+                            while (true){
+                                int id;
+                                simple >> id;
+                                manager.getBackgrounds(controller->backgrounds, id);
+                            }
+                        } catch (const Ast::Exception & e){
+                        }
+                    } else {
+                        string name; // = controller->getName()
+                        throw MugenException("Unhandled option in BGCtrlDef " + name + " Section: " + simple.toString());
+                    }
+                }
+
+                virtual ~BackgroundControllerWalker(){
+                    if (!hasId && controller->backgrounds.empty()){
+                        controller->backgrounds.insert(controller->backgrounds.end(), backgrounds.begin(), backgrounds.end());
+                        controller->backgrounds.insert(controller->backgrounds.end(), foregrounds.begin(), foregrounds.end());
+                    }
+                }
+            };
+
+            {
+                BackgroundControllerWalker walker(*this, temp, backgrounds, foregrounds);
+                Ast::Section * section = *section_it;
+                section->walk(walker);
+            }
 	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
 	    controllers.push_back(temp);
 	}
+#if 0
+        FIXME!!
 	else if( head.find("bgctrl") != std::string::npos ){ 
 	    if (controllers.empty()){
 		// This is a hack to get mugen to do some fancy controlling in a regular game
