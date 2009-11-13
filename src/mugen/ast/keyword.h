@@ -8,7 +8,7 @@ namespace Ast{
 
 class Keyword: public Value{
 public:
-    /* str is not allocated!!! */
+    /* do not pass in a dynamically allocated string!!! */
     Keyword(const char * str):
     str(str){
     }

@@ -635,36 +635,39 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
             // Need to get the parsed data and populate these above items
             values >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;;
             Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
-#if 0
-            FIXME!!! Handle extra modifiers
-            while( content->hasItems() ){
-                std::string temp;
-                *content->getNext() >> temp;
-                Mugen::Util::fixCase(temp);
-                if( temp.find("h") != std::string::npos ){
-                    //frame->flipHorizontal = true;
-                    frame->effects.facing = -1;
-                }
-                if( temp.find("v") != std::string::npos ){
-                    //frame->flipVertical = true;
-                    frame->effects.vfacing = -1;
-                }
-                if (temp[0] == 'a'){
-                    frame->effects.trans = ADD;
-                    // Check if we have specified additions
-                    if (temp.size() > 2){
-                        // Source
-                        //frame->colorSource = atoi(temp.substr(2,4).c_str());
-                        frame->effects.alphalow = atoi(temp.substr(2,4).c_str());
-                        // Dest
-                        //frame->colorDestination = atoi(temp.substr(6,8).c_str());
-                        frame->effects.alphahigh = atoi(temp.substr(6,8).c_str());
-                    }
-                } else if (temp[0] == 's'){
-                    frame->effects.trans = SUB;
-                }
+
+            string flip;
+            string blend;
+            try{
+                values >> flip >> blend;
+            } catch (const Ast::Exception & e){
             }
-#endif
+
+            if (flip == "h"){
+                //frame->flipHorizontal = true;
+                frame->effects.facing = -1;
+            } else if (flip == "v"){
+                //frame->flipVertical = true;
+                frame->effects.vfacing = -1;
+            }
+
+            if (blend == "a"){
+                frame->effects.trans = ADD;
+                /* FIXME!!
+                // Check if we have specified additions
+                if (temp.size() > 2){
+                    // Source
+                    //frame->colorSource = atoi(temp.substr(2,4).c_str());
+                    frame->effects.alphalow = atoi(temp.substr(2,4).c_str());
+                    // Dest
+                    //frame->colorDestination = atoi(temp.substr(6,8).c_str());
+                    frame->effects.alphahigh = atoi(temp.substr(6,8).c_str());
+                }
+                */
+            } else if (blend == "s"){
+                frame->effects.trans = SUB;
+            }
+
             // Add sprite
             frame->sprite = this->sprites[(unsigned short)group][(unsigned short)spriteNumber];
             if (frame->sprite == 0){
