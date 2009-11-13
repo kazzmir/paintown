@@ -4,6 +4,7 @@ options: debug0
 module: Mugen.Def
 include: {{
 #include "../ast/all.h"
+#include <map>
 typedef std::list<Ast::Section*> SectionList;
 }}
 
@@ -167,6 +168,7 @@ Ast::Value * makeDate(const Value & month, const Value & day, const Value & year
     return new Ast::Number(0);
 }
 
+/*
 bool referenced(SectionList * list, const void * value){
     if (value == list){
         return true;
@@ -190,13 +192,38 @@ bool referenced(const std::list<Ast::Collectable> & list, Ast::Collectable & col
     }
     return false;
 }
+*/
 
 /* garbage collection */
 void cleanup(const Value & value){
     SectionList * list = as<SectionList*>(value);
+    std::map<const void*, bool> marks;
+    marks[list] = true;
+
+    for (SectionList::iterator it = list->begin(); it != list->end(); it++){
+        Ast::Section * section = *it;
+        section->mark(marks);
+    }
+
+    std::map<const void *, int> memory;
     for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
         Ast::Collectable & collect = *it;
+        if (! marks[collect.pointer()]){
+            std::map<const void *, bool> temp;
+            collect.mark(temp);
+            for (std::map<const void *, bool>::iterator mit = temp.begin(); mit != temp.end(); mit++){
+                memory[mit->first] += 1;
+            }
+        }
+        /*
         if (! referenced(list, collect.pointer()) && ! referenced(saved_pointers, collect)){
+            collect.destroy();
+        }
+        */
+    }
+    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
+        Ast::Collectable & collect = *it;
+        if (memory[collect.pointer()] == 1){
             collect.destroy();
         }
     }
@@ -225,8 +252,8 @@ rules:
 	         | &<eof> <void>
 	inline newline = "\n"
                    | "\r"
-	whitespace = sw*
-	sw = " "
+	inline whitespace = sw*
+	inline sw = " "
 	   | "\t"
 	   | comment
 	s = space*

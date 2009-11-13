@@ -174,7 +174,7 @@ int paintown_main( int argc, char ** argv ){
         MenuGlobals::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
     }
     diff.endTime();
-    diff.printTime("Init:");
+    Global::debug(0) << diff.printTime("Init:") << endl;
 
     Paintown::Mod::loadMod(Configuration::getCurrentGame());
 

@@ -50,10 +50,20 @@ public:
         return *this;
     }
 
+    /*
     virtual bool referenced(const void * value) const {
         return Attribute::referenced(value) ||
                name->referenced(value) ||
                (this->value != 0 && this->value->referenced(value));
+    }
+    */
+    
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+        if (value != 0){
+            value->mark(marks);
+        }
+        name->mark(marks);
     }
 
     std::string toString() const {

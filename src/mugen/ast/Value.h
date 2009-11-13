@@ -2,6 +2,7 @@
 #define _paintown_value_h
 
 #include <iostream>
+#include <map>
 #include "walker.h"
 #include "exception.h"
 
@@ -46,8 +47,14 @@ public:
         return *this;
     }
 
+    /*
     virtual bool referenced(const void * value) const {
         return value == this;
+    }
+    */
+    
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
     }
 
     virtual std::string getType() const = 0;

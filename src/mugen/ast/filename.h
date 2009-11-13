@@ -27,10 +27,17 @@ public:
         return "string";
     }
     
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+        marks[str] = true;
+    }
+
+    /*
     virtual bool referenced(const void * value) const {
         return Value::referenced(value) ||
                value == str;
     }
+    */
 
     virtual ~Filename(){
         delete str;

@@ -92,6 +92,15 @@ public:
         return out.str();
     }
     
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+        for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
+            Value * value = *it;
+            value->mark(marks);
+        }
+    }
+
+    /*
     virtual bool referenced(const void * value) const {
         if (Value::referenced(value)){
             return true;
@@ -105,6 +114,7 @@ public:
 
         return false;
     }
+    */
 
     virtual ~ValueList(){
         for (std::list<Value*>::iterator it = values.begin(); it != values.end(); it++){

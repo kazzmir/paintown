@@ -26,9 +26,16 @@ public:
         return "string";
     }
     
+    /*
     virtual bool referenced(const void * value) const {
         return Value::referenced(value) ||
                str == value;
+    }
+    */
+
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+        marks[str] = true;
     }
 
     virtual ~String(){

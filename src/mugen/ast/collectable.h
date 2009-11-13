@@ -57,6 +57,22 @@ public:
         return 0;
     }
 
+    void mark(std::map<const void *, bool> & marks) const {
+        if (str){ marks[str] = true; }
+        if (section){ section->mark(marks); }
+        if (section_list){
+            for (std::list<Section*>::const_iterator it = section_list->begin(); it != section_list->end(); it++){
+                Section * section = *it;
+                section->mark(marks);
+            }
+        }
+        if (value){ value->mark(marks); }
+        if (identifier){ identifier->mark(marks); }
+        if (number){ marks[number] = true; }
+        if (attribute){ attribute->mark(marks); }
+    }
+
+    /*
     const bool referenced(const std::list<Section*>* list, const void * value) const {
         if (list == value){
             return true;
@@ -71,11 +87,15 @@ public:
 
         return false;
     }
+    */
 
+    /*
     const bool dv(const Value * v1, const void * value) const {
         return v1->referenced(value);
     }
+    */
 
+#if 0
     const bool referenced(const void * value) const {
         /* for debugging
         bool a = (str && str == value);
@@ -106,6 +126,7 @@ public:
                (number && number == value);
                */
     }
+#endif
 
     ~Collectable(){
         if (_destroy){

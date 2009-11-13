@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <map>
 
 namespace Ast{
 
@@ -42,6 +43,7 @@ public:
         return out.str();
     }
     
+    /*
     virtual bool referenced(const void * value) const {
         if (value == this){
             return true;
@@ -54,6 +56,14 @@ public:
         }
 
         return false;
+    }
+    */
+    
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+        for (std::list<std::string*>::const_iterator it = names.begin(); it != names.end(); it++){
+            marks[*it] = true;
+        }
     }
 
     virtual ~Identifier(){

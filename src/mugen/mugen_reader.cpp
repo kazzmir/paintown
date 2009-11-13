@@ -13,7 +13,7 @@ using namespace std;
 
 MugenReader::MugenReader( const char * file ):
 usingText(false){
-    Global::debug(1) << "[mugen reader] Opening file '" << file << "'" << endl;
+    Global::debug(2) << "[mugen reader] Opening file '" << file << "'" << endl;
     ifile.open( file );
     if (!ifile){
         perror("cant open file");
@@ -23,7 +23,7 @@ usingText(false){
 
 MugenReader::MugenReader( const string & file ):
 usingText(false){
-    Global::debug(1) << "[mugen reader] Opening file '" << file << "'" << endl;
+    Global::debug(2) << "[mugen reader] Opening file '" << file << "'" << endl;
     ifile.open( file.c_str() );
     if (!ifile){
         perror("cant open file");
@@ -143,7 +143,7 @@ bool MugenReader::hasContent( const std::string &line ){
 }
 	
 MugenSection *MugenReader::extractSection( const std::string &line ){
-    Global::debug(1) << line << endl;
+    Global::debug(2) << line << endl;
     const char comment = ';';
     const char openbracket = '[';
     const char closebracket = ']';
@@ -174,7 +174,7 @@ MugenSection *MugenReader::extractSection( const std::string &line ){
 }
 
 MugenItemContent *MugenReader::extractContent( const std::string &line ){
-    Global::debug(1) << line << endl;
+    Global::debug(2) << line << endl;
     const char openbracket = '[';
     const char closebracket = ']';
     const char comment = ';';

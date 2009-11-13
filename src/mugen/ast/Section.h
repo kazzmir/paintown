@@ -85,6 +85,20 @@ public:
         throw Exception("Could not find attribute " + find + " in section " + getName());
     }
 
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+        marks[name] = true;
+        for (std::list<Attribute*>::const_iterator it = attributes.begin(); it != attributes.end(); it++){
+            Attribute * attribute = *it;
+            attribute->mark(marks);
+        }
+        for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
+            Value * value = *it;
+            value->mark(marks);
+        }
+    }
+
+    /*
     virtual bool referenced(const void * value) const {
         if (value == this){
             return true;
@@ -108,6 +122,7 @@ public:
         }
         return false;
     }
+    */
 
     virtual ~Section(){
         delete name;

@@ -2,6 +2,7 @@
 #define _paintown_attribute_h
 
 #include "walker.h"
+#include <map>
 
 namespace Ast{
 
@@ -27,9 +28,15 @@ public:
     virtual void debugExplain(){
     }
 
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+    }
+
+    /*
     virtual bool referenced(const void * value) const {
         return value == this;
     }
+    */
 
     virtual ~Attribute(){
     }

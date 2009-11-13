@@ -24,6 +24,7 @@
 #include "globals.h"
 #include "factory/font_render.h"
 #include "ast/all.h"
+#include "util/timedifference.h"
 
 #include "mugen_animation.h"
 #include "mugen_background.h"
@@ -509,7 +510,12 @@ void MugenStage::load(){
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
 
+
+    TimeDifference diff;
+    diff.startTime();
     DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in " + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
 
     struct cymk_holder shadow;
