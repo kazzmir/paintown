@@ -117,7 +117,13 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
     values.push_back(as<Ast::Value*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
         Ast::Value * value = as<Ast::Value*>((*it).getValue());
-        values.push_back(value);
+        if (value == 0){
+            /* FIXME! replace empty with a new node */
+            value = makeKeyword("empty");
+            save(value);
+        } else {
+                values.push_back(value);
+        }
     }
     return new Ast::ValueList(values);
 }
@@ -255,12 +261,12 @@ rules:
 	identifier_list = identifier (s "," s filename)+
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); save(as<Ast::Value*>(value)); }}
 	value = string
-	      | date {{ value = 0; }}
+	      | date
 	      | number
           | keyword {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
-	      | "s"{case} !letter !"." {{ value = 0; }}
-	      | "h"{case} !letter !"." {{ value = 0; }}
-	      | "a"{case} number? !letter {{ value = 0; }}
+	      | "s"{case} !letter !"." {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
+	      | "h"{case} !letter !"." {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
+	      | "a"{case} number? !letter {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
           | filename
     keyword = "normal"
             | "parallax"
