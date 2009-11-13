@@ -29,6 +29,9 @@ public:
 
     virtual void onAttributeSimple(const AttributeSimple & simple){
     }
+
+    virtual ~Walker(){
+    }
 };
 
 }
