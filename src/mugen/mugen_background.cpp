@@ -606,21 +606,103 @@ spriteFile(""){
             }
 	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
 	    controllers.push_back(temp);
-	}
-#if 0
-        FIXME!!
-	else if( head.find("bgctrl") != std::string::npos ){ 
+	} else if (matchRegex(head, ".*bgctrl")){
 	    if (controllers.empty()){
-		// This is a hack to get mugen to do some fancy controlling in a regular game
-		// to accomplish stage fatalaties and other tricks
+		/* This is a hack to get mugen to do some fancy controlling in a regular
+                 * game to accomplish stage fatalities and other tricks
+                 */
 		Global::debug(1) << "Found a BgCtrl without a parent definition... must be hackery!" << endl;
 		continue;
 	    }
+
 	    // else we got ourselves some controls... under the last controller added
 	    MugenBackgroundController *control = controllers.back();
 	    head.replace(0,7,"");
 	    BackgroundController *temp = new BackgroundController();
 	    temp->name = head;
+
+            class CtrlWalker: public Ast::Walker {
+            public:
+                CtrlWalker(BackgroundController * controller, MugenBackgroundController * control, MugenBackgroundManager & manager):
+                    controller(controller),
+                    control(control),
+                    manager(manager){
+                }
+
+                BackgroundController * controller;
+                MugenBackgroundController * control;
+                MugenBackgroundManager & manager;
+                
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "type"){
+                        string type;
+                        simple >> type;
+                        Mugen::Util::fixCase(type);
+                        if (type == "Anim") controller->type = Ctrl_Animation;
+                        else if( type == "enabled" ) controller->type = Ctrl_Enabled;
+                        else if( type == "null" ) controller->type = Ctrl_Null;
+                        else if( type == "posadd" ) controller->type = Ctrl_PosAdd;
+                        else if( type == "posset" ) controller->type = Ctrl_PosSet;
+                        else if( type == "sinx" ) controller->type = Ctrl_Sinx;
+                        else if( type == "siny" ) controller->type = Ctrl_Siny;
+                        else if( type == "veladd" ) controller->type = Ctrl_VelAdd;
+                        else if( type == "velset" ) controller->type = Ctrl_VelSet;
+                        else if( type == "visible" ) controller->type = Ctrl_Visible;
+                    } else if (simple == "time"){
+                        int start = 0, end =0, loop = 0;
+                        try{
+                            simple >> start;
+                            simple >> end;
+                            simple >> loop;
+                        } catch (const Ast::Exception & e){
+                        }
+
+                        controller->timestart = start;
+                        if (end == 0){
+                            controller->endtime = start;
+                        } else {
+                            controller->endtime = end;
+                        }
+
+                        if (loop == 0){
+                            controller->looptime = -1;
+                        } else {
+                            controller->looptime = loop;
+                        }
+
+                        Global::debug(1) << "start: " << controller->timestart << " | end: " << controller->endtime << " | loop: " << controller->looptime << endl;
+                    } else if (simple == "value"){
+                        simple >> controller->value1;
+                        simple >> controller->value2;		    
+                        simple >> controller->value3;
+                    } else if (simple == "x"){
+                        simple >> controller->value1;
+                    } else if (simple == "y"){
+                        simple >> controller->value2;
+                    } else if (simple == "ctrlid"){
+                        try{
+                            // Max 10
+                            while (true){
+                                int id;
+                                simple >> id;
+                                manager.getBackgrounds(controller->backgrounds, id);
+                            }
+                        } catch (const Ast::Exception & e){
+                        }
+                    } else {
+                        string name;
+                        throw MugenException( "Unhandled option in BGCtrl " + name + " Section: " + simple.toString());
+                    }
+                }
+
+                virtual ~CtrlWalker(){
+                    if (controller->backgrounds.empty()){
+                        controller->backgrounds.insert(controller->backgrounds.end(), control->backgrounds.begin(), control->backgrounds.end());
+                    }
+                }
+            };
+
+            /*
 	    Global::debug(1) << "Found background controller: " << temp->name << endl;
 	    while( collection[index]->hasItems() ){
 		MugenItemContent *content = collection[index]->getNext();
@@ -677,10 +759,17 @@ spriteFile(""){
 	    if (temp->backgrounds.empty()){
 		temp->backgrounds.insert(temp->backgrounds.end(),control->backgrounds.begin(),control->backgrounds.end());
 	    }
+            */
+
+            {
+                CtrlWalker walker(temp, control, *this);
+                Ast::Section * section = *section_it;
+                section->walk(walker);
+            }
+
 	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
 	    control->addControl(temp);
 	}
-#endif
     }
 
     Global::debug(1) << "Got total backgrounds: " << backgrounds.size() << " total foregrounds: " << foregrounds.size() << endl;
