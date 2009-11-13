@@ -322,7 +322,8 @@ def xterm_color(string, color):
 
 # todo: figure out when we are on an xterm
 def isXterm():
-    return True
+    # assume linux and osx are ok
+    return not isWindows()
 
 def colorize(string, color):
     if isXterm():
