@@ -1,4 +1,5 @@
 # mugen def parser
+# Can parse about 180kb/s on a 1.8ghz
 start-symbol: start
 options: debug0
 module: Mugen.Def
