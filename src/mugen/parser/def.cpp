@@ -621,59 +621,47 @@ Ast::Value * makeDate(const Value & month, const Value & day, const Value & year
     return new Ast::Number(0);
 }
 
-/*
-bool referenced(SectionList * list, const void * value){
-    if (value == list){
-        return true;
-    }
-    for (SectionList::iterator it = list->begin(); it != list->end(); it++){
-        Ast::Section * section = *it;
-        if (section->referenced(value)){
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool referenced(const std::list<Ast::Collectable> & list, Ast::Collectable & collect){
-    for (std::list<Ast::Collectable>::const_iterator it = list.begin(); it != list.end(); it++){
-        const Ast::Collectable & collect2 = *it;
-        if (&collect != &collect2 && collect2.referenced(collect.pointer())){
-            return true;
-        }
-    }
-    return false;
-}
-*/
-
 /* garbage collection */
 void cleanup(const Value & value){
     SectionList * list = as<SectionList*>(value);
-    std::map<const void*, bool> marks;
-    marks[list] = true;
 
+    /* pointers that we should keep will be marked true in the map */
+    std::map<const void*, bool> marks;
+
+    /* first mark roots */
+    marks[list] = true;
     for (SectionList::iterator it = list->begin(); it != list->end(); it++){
         Ast::Section * section = *it;
         section->mark(marks);
     }
 
+    /* all unmarked pointers should be deleted but since the destructors
+     * of AST nodes will delete child objects we only need to delete
+     * AST nodes that are not the child object of another node.
+     * If we mark every single node and add up all the times a node was marked
+     * then nodes marked only once will be top-level nodes. Those are the
+     * nodes we can destroy safely and ensure the rest of the nodes will
+     * die with them.
+     *
+     * this has worst-case performance of O(N^2)
+     */
     std::map<const void *, int> memory;
     for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
         Ast::Collectable & collect = *it;
+
+        /* only look at unmarked objects */
         if (! marks[collect.pointer()]){
             std::map<const void *, bool> temp;
             collect.mark(temp);
+
+            /* merge marks into the total count */
             for (std::map<const void *, bool>::iterator mit = temp.begin(); mit != temp.end(); mit++){
                 memory[mit->first] += 1;
             }
         }
-        /*
-        if (! referenced(list, collect.pointer()) && ! referenced(saved_pointers, collect)){
-            collect.destroy();
-        }
-        */
     }
+
+    /* finally destroy the nodes with no parents */
     for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
         Ast::Collectable & collect = *it;
         if (memory[collect.pointer()] == 1){
