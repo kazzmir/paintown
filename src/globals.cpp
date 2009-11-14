@@ -24,7 +24,7 @@ const int ALLIANCE_FREE_FOR_ALL = 1000;
 
 const int MIN_RELATIVE_DISTANCE = 10;
 
-const char * NAME_FONT = "CENTURYGOTHIC_PCX";
+// const char * NAME_FONT = "CENTURYGOTHIC_PCX";
 
 // static bool global_debug = false;
 static int global_debug_level = 0;
@@ -49,7 +49,7 @@ static nullcout_t nullcout;
 
 ostream & Global::debug(int i, const string & context){
     if ( global_debug_level >= i ){
-        std::cout << "[" << context << "] ";
+        std::cout << "[" << i << ":" << context << "] ";
         return std::cout;
     }
     return nullcout;
@@ -78,7 +78,7 @@ string Global::getVersionString(){
 }
 
 int Global::getDebug(){
-	return global_debug_level;
+    return global_debug_level;
 }
 
 void Global::showTitleScreen(){

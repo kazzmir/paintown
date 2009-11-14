@@ -537,13 +537,19 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
             } else if (*simple == "mask"){
                 *simple >> temp->mask;
             } else if (*simple == "tile"){
-                *simple >> temp->tilex;
-                Global::debug(2) << "Tile x is " << temp->tilex << endl;
-                *simple >> temp->tiley;
-                Global::debug(2) << "Tile y is " << temp->tiley << endl;
+                try{
+                    *simple >> temp->tilex;
+                    Global::debug(2) << "Tile x is " << temp->tilex << endl;
+                    *simple >> temp->tiley;
+                    Global::debug(2) << "Tile y is " << temp->tiley << endl;
+                } catch (const Ast::Exception & e){
+                }
             } else if (*simple == "tilespacing"){
-                *simple >> temp->tilespacingx;
-                *simple >> temp->tilespacingy;
+                try{
+                    *simple >> temp->tilespacingx;
+                    *simple >> temp->tilespacingy;
+                } catch (const Ast::Exception & e){
+                }
             } else if (*simple == "window"){
                 MugenArea area;
                 *simple >> area.x1;
@@ -572,8 +578,11 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
             } else if (*simple == "positionlink"){
                 *simple >> temp->positionlink;
             } else if (*simple == "velocity"){
-                *simple >> temp->velocityx;
-                *simple >> temp->velocityy;
+                try{
+                    *simple >> temp->velocityx;
+                    *simple >> temp->velocityy;
+                } catch (const Ast::Exception & e){
+                }
             } else if (*simple == "sin.x"){
                 *simple >> temp->sinx_amp;
                 try{
