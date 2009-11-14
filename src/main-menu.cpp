@@ -75,12 +75,12 @@ static const char * all(const char * args[], const int num, const char separate 
 }
 
 static void showOptions(){
-	Global::debug( 0 ) << "Paintown by Jon Rafkind" << endl;
-	Global::debug( 0 ) << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
-	Global::debug( 0 ) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2() << endl;
-	Global::debug( 0 ) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Example: -l 3" << endl;
-	Global::debug( 0 ) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
-	Global::debug( 0 ) << endl;
+	Global::debug(0) << "Paintown by Jon Rafkind" << endl;
+	Global::debug(0) << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
+	Global::debug(0) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2() << endl;
+	Global::debug(0) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
+	Global::debug(0) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
+	Global::debug(0) << endl;
 }
 
 static void addArgs(vector<const char *> & args, const char * strings[], int num){
@@ -174,7 +174,7 @@ int paintown_main( int argc, char ** argv ){
         MenuGlobals::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
     }
     diff.endTime();
-    Global::debug(0) << diff.printTime("Init:") << endl;
+    Global::debug(0) << diff.printTime("Init took") << endl;
 
     Paintown::Mod::loadMod(Configuration::getCurrentGame());
 
