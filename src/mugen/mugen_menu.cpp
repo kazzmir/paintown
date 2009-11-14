@@ -818,6 +818,7 @@ void MugenCharacterSelect::movePlayer2Cursor(int x, int y){
 void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (MugenException){
     std::string dir = Mugen::Util::getFileDir(selectFile);
     std::string file = Mugen::Util::stripDir(selectFile);
+    /* FIXME!! Replace with peg parser */
     MugenReader reader( Mugen::Util::getCorrectFileLocation(dir,file) );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
@@ -929,6 +930,7 @@ void MugenMenu::loadData() throw (MugenException){
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate menu definition file for: " + location );
     
+    /* FIXME! Replace with peg parser */
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();

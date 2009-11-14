@@ -167,6 +167,7 @@ void MugenStoryboard::load() throw (MugenException){
 
     Global::debug(1) << "Got subdir: " << filesdir << endl;
 
+    /* FIXME!! Replace with def parser */
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();

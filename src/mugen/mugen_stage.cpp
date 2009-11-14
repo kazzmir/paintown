@@ -999,33 +999,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     
     DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile));
     return parsed.findSection("info")->findAttribute("name")->asString();
-     
-#if 0
-    MugenReader reader( defFile );
-    std::vector< MugenSection * > collection;
-    collection = reader.getCollection();
-
-    /* Extract info for our first section of our stage */
-    for( unsigned int i = 0; i < collection.size(); ++i ){
-	std::string head = collection[i]->getHeader();
-	Mugen::Util::fixCase(head);
-	if( head == "info" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		if ( itemhead.find("name")!=std::string::npos ){
-		    std::string stageName;
-		    *content->getNext() >> stageName;
-                    Global::debug(1) << "Read name '" << stageName << "'" << endl;
-		    return stageName;
-		} 
-	    }
-	}
-    }
-#endif
-    
+        
     throw MugenException( "Cannot locate stage definition file for: " + fullname );
     return "";
 }

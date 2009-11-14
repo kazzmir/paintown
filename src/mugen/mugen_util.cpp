@@ -904,6 +904,7 @@ std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, const s
 
 const std::string Mugen::Util::probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException){
     
+    /* FIXME!! Replace with peg parser */
     MugenReader reader( file );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();

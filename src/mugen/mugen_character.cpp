@@ -93,6 +93,7 @@ void MugenCharacter::load() throw( MugenException ){
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );
      
+    /* FIXME!! Replace with def parser */
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
@@ -373,6 +374,7 @@ void MugenCharacter::priorPalette(){
 
 // animations
 void MugenCharacter::bundleAnimations() throw( MugenException){
+    /* FIXME!! Replace with air parser */
     MugenReader reader( Mugen::Util::fixFileName(baseDir, airFile) );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();

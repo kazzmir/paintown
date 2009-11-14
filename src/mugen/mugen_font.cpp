@@ -285,6 +285,7 @@ void MugenFont::load(){
         ourText.push_back(line);
     }
 
+    /* FIXME!! Replace with peg parser */
     MugenReader reader( ourText );
     
     std::vector< MugenSection * > collection = reader.getCollection();
