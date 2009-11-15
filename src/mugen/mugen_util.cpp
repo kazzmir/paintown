@@ -485,10 +485,6 @@ void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std:
 MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenBackground *temp = new MugenBackground(ticker);
     std::string head = section->getName();
-    /* FIXME!
-     * doesnt this assume the name is just "BG Foobar" ? Use a better regex here
-     */
-    // head.replace(0,3,"");
     head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
     temp->name = head;
     Global::debug(1) << "Found background: " << temp->name << endl;
@@ -679,10 +675,6 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
                  */
                 int source = frame->effects.alphalow;
                 int dest = frame->effects.alphahigh;
-                /* there is some gnu regex flag that I can use so I don't have to
-                 * escape every operator. its somewhere in this:
-                 * http://www.cs.utah.edu/dept/old/texinfo/regex/regex.html#SEC2
-                 */
                 // string regex = "as\\([[:digit:]]\\+\\)d\\([[:digit:]]\\+\\)";
                 string regex = "as([[:digit:]]+)d([[:digit:]]+)";
                 // string regex = "as[0-9]+d[0-9]+";
@@ -696,17 +688,6 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
                 Global::debug(1) << "Alpha source " << source << " destination " << dest << endl;
                 frame->effects.alphalow = source;
                 frame->effects.alphahigh = dest;
-                /* FIXME!!
-                // Check if we have specified additions
-                if (temp.size() > 2){
-                    // Source
-                    //frame->colorSource = atoi(temp.substr(2,4).c_str());
-                    frame->effects.alphalow = atoi(temp.substr(2,4).c_str());
-                    // Dest
-                    //frame->colorDestination = atoi(temp.substr(6,8).c_str());
-                    frame->effects.alphahigh = atoi(temp.substr(6,8).c_str());
-                }
-                */
             } else if (blend == "s"){
                 frame->effects.trans = SUB;
             }
