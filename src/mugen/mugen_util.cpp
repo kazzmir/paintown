@@ -32,6 +32,8 @@
 
 using namespace std;
 
+namespace PaintownUtil = ::Util;
+
 static int lowerCase( int c ){ return tolower( c );}
 
 void Mugen::Util::fixCase( std::string &str ){
@@ -486,7 +488,8 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
     /* FIXME!
      * doesnt this assume the name is just "BG Foobar" ? Use a better regex here
      */
-    head.replace(0,3,"");
+    // head.replace(0,3,"");
+    head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
     temp->name = head;
     Global::debug(1) << "Found background: " << temp->name << endl;
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
@@ -609,14 +612,6 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
     return temp;
 }
 
-static bool matchRegex(const string & str, const string & regex){
-    return Util::matchRegex(str, regex);
-}
-
-static string captureRegex(const string & str, const string & regex, int capture){
-    return Util::captureRegex(str, regex, capture);
-}
-
 MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenAnimation *animation = new MugenAnimation();
 
@@ -671,7 +666,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
                 frame->effects.vfacing = -1;
             }
 
-            if (matchRegex(blend, "^a")){
+            if (PaintownUtil::matchRegex(blend, "^a")){
                 frame->effects.trans = ADD;
 
                 /*
@@ -688,11 +683,12 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
                  * escape every operator. its somewhere in this:
                  * http://www.cs.utah.edu/dept/old/texinfo/regex/regex.html#SEC2
                  */
-                string regex = "as\\([[:digit:]]\\+\\)d\\([[:digit:]]\\+\\)";
+                // string regex = "as\\([[:digit:]]\\+\\)d\\([[:digit:]]\\+\\)";
+                string regex = "as([[:digit:]]+)d([[:digit:]]+)";
                 // string regex = "as[0-9]+d[0-9]+";
-                if (matchRegex(blend, regex)){
-                    source = atoi(captureRegex(blend, regex, 0).c_str());
-                    dest = atoi(captureRegex(blend, regex, 1).c_str());
+                if (PaintownUtil::matchRegex(blend, regex)){
+                    source = atoi(PaintownUtil::captureRegex(blend, regex, 0).c_str());
+                    dest = atoi(PaintownUtil::captureRegex(blend, regex, 1).c_str());
                 } else if (blend == "a1"){
                     source = 256;
                     dest = 128;
