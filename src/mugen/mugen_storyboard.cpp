@@ -161,7 +161,9 @@ void MugenStoryboard::load() throw (MugenException){
     //baseDir = Mugen::Util::getFileDir( ourDefFile );
     Global::debug(1) << baseDir << endl;
 
-    if( ourDefFile.empty() )throw MugenException( "Cannot locate storyboard definition file for: " + location );
+    if (ourDefFile.empty()){
+        throw MugenException("Cannot locate storyboard definition file for: " + location);
+    }
 
     std::string filesdir = "";
 

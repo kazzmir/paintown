@@ -26,6 +26,8 @@
 #include "ast/all.h"
 #include "util/timedifference.h"
 
+#include "parser/all.h"
+
 #include "mugen_animation.h"
 #include "mugen_background.h"
 #include "mugen_item.h"
@@ -36,62 +38,7 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 
-/* this is bad.. peg.py should just produce a .h file we can include */
-namespace Mugen{
-    namespace Def{
-        extern const void * main(const std::string & filename);
-    }
-}
-
 using namespace std;
-
-/* output from the def parser. I think all mugen files are just lists
- * of sections so we can probably rename this to AstResult or something
- * like that and make it more generic.
- */
-class DefParse{
-public:
-    /* boiler plate stuff */
-
-    DefParse(list<Ast::Section*> * sections):
-    sections(sections){
-    }
-
-    typedef list<Ast::Section*>::iterator section_iterator;
-
-    virtual ~DefParse(){
-        for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
-            delete (*section_it);
-        }
-        delete sections;
-    }
-
-public:
-    /* useful stuff */
-
-    inline list<Ast::Section*> * getSections() const {
-        return sections;
-    }
-
-    string downcase(string str){
-        Mugen::Util::fixCase(str);
-        return str;
-    }
-
-    Ast::Section * findSection(const string & find){
-        for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
-            Ast::Section * section = *section_it;
-            if (downcase(section->getName()) == downcase(find)){
-                return section;
-            }
-        }
-        throw MugenException("Could not find section " + find);
-    }
-
-protected:
-
-    list<Ast::Section*> * sections;
-};
 
 // Some static variables
 static const int CONTROLLER_VALUE_NOT_SET = -999999;
@@ -513,7 +460,7 @@ void MugenStage::load(){
 
     TimeDifference diff;
     diff.startTime();
-    DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
@@ -521,7 +468,7 @@ void MugenStage::load(){
     struct cymk_holder shadow;
     
     /* Extract info for our first section of our stage */
-    for (DefParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::DefParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
@@ -997,7 +944,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile));
+    Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile));
     return parsed.findSection("info")->findAttribute("name")->asString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname );

@@ -17,5 +17,6 @@
 #include "filename.h"
 #include "collectable.h"
 #include "walker.h"
+#include "extra.h"
 
 #endif
