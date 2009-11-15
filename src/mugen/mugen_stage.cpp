@@ -1180,7 +1180,7 @@ void MugenStage::initializeName(){
 	const std::string ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, str);
 	// Set name of map
 	name = Mugen::Util::probeDef(ourDefFile, "info", "name");
-    } catch (MugenException &ex){
+    } catch (const MugenException &ex){
 	Global::debug(1) << "Couldn't find the name of the map!" << endl;
 	Global::debug(1) << "Error was: " << ex.getReason() << endl;
     }

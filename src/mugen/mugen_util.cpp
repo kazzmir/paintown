@@ -609,6 +609,14 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
     return temp;
 }
 
+static bool matchRegex(const string & str, const string & regex){
+    return Util::matchRegex(str, regex);
+}
+
+static string captureRegex(const string & str, const string & regex, int capture){
+    return Util::captureRegex(str, regex, capture);
+}
+
 MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenAnimation *animation = new MugenAnimation();
 
@@ -643,8 +651,6 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
             int group, spriteNumber;
             // Need to get the parsed data and populate these above items
             values >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;;
-            Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << endl;
-
             string flip;
             string blend;
             try{
@@ -654,6 +660,8 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
 
             Mugen::Util::fixCase(flip);
             Mugen::Util::fixCase(blend);
+            
+            Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << " | flip " << flip << " blend '" << blend << "'" << endl;
 
             if (flip == "h"){
                 //frame->flipHorizontal = true;
@@ -663,8 +671,35 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
                 frame->effects.vfacing = -1;
             }
 
-            if (blend == "a"){
+            if (matchRegex(blend, "^a")){
                 frame->effects.trans = ADD;
+
+                /*
+                 * If you wish to specify alpha values for color addition, use the
+                 * parameter format "AS???D???", where ??? represents the values of the
+                 * source and destination alpha respectively. Values range from 0 (low)
+                 * to 256 (high). For example, "AS64D192" stands for "Add Source_64 to
+                 * Dest_192". Also, "AS256D256" is equivalent to just "A". A shorthand
+                 * for "AS256D128" is "A1".
+                 */
+                int source = frame->effects.alphalow;
+                int dest = frame->effects.alphahigh;
+                /* there is some gnu regex flag that I can use so I don't have to
+                 * escape every operator. its somewhere in this:
+                 * http://www.cs.utah.edu/dept/old/texinfo/regex/regex.html#SEC2
+                 */
+                string regex = "as\\([[:digit:]]\\+\\)d\\([[:digit:]]\\+\\)";
+                // string regex = "as[0-9]+d[0-9]+";
+                if (matchRegex(blend, regex)){
+                    source = atoi(captureRegex(blend, regex, 0).c_str());
+                    dest = atoi(captureRegex(blend, regex, 1).c_str());
+                } else if (blend == "a1"){
+                    source = 256;
+                    dest = 128;
+                }
+                Global::debug(1) << "Alpha source " << source << " destination " << dest << endl;
+                frame->effects.alphalow = source;
+                frame->effects.alphahigh = dest;
                 /* FIXME!!
                 // Check if we have specified additions
                 if (temp.size() > 2){

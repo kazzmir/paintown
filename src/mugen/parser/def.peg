@@ -123,8 +123,9 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
             /* FIXME! replace empty with a new node */
             value = makeKeyword("empty");
             save(value);
+            values.push_back(value);
         } else {
-                values.push_back(value);
+            values.push_back(value);
         }
     }
     return new Ast::ValueList(values);
