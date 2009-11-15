@@ -30,6 +30,8 @@
 
 #include "gui/keyinput_manager.h"
 
+namespace PaintownUtil = ::Util;
+
 using namespace std;
 
 static const int DEFAULT_WIDTH = 320;
@@ -233,134 +235,75 @@ void MugenStoryboard::load() throw (MugenException){
 
             SceneWalk walk(baseDir, *this);
             section->walk(walk);
+        } else if (PaintownUtil::matchRegex(head, "^scene")){
+            class SceneWalker: public Ast::Walker{
+            public:
+                SceneWalker():
+                scene(new MugenScene){
+                }
+
+                MugenScene * scene;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "fadein.time"){
+                        int time;
+                        simple >> time;
+                        scene->fader.setFadeInTime(time);
+                    } else if (simple == "fadein.col"){
+                        int r,g,b;
+                        simple >> r >> g >> b;
+                        scene->fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                    } else if (simple == "fadeout.time"){
+                        int time;
+                        simple >> time;
+                        scene->fader.setFadeOutTime(time);
+                    } else if (simple == "fadeout.col"){
+                        int r,g,b;
+                        simple >> r >> g >> b;
+                        scene->fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+                    } else if (simple == "bg.name"){
+                        simple >> scene->backgroundName;
+                    } else if (simple == "clearcolor"){
+                        int r,g,b;
+                        simple >> r >> g >> b;
+                        scene->clearColor = (r == -1 ? r : Bitmap::makeColor(r,g,b));
+                    } else if (simple == "end.time"){
+                        simple >> scene->endTime;
+                    } else if (simple == "layerall.pos"){
+                        simple >> scene->defaultAxis.x;
+                        simple >> scene->defaultAxis.y;
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
+                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
+                        if (num > 0 && num < 10){
+                            simple >> scene->layers[num]->actionno;
+                        }
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
+                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
+                        if (num > 0 && num < 10){
+                            simple >> scene->layers[num]->offset.x;
+                            simple >> scene->layers[num]->offset.y;
+                        }
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
+                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
+                        if (num > 0 && num < 10){
+                            simple >> scene->layers[num]->startTime;
+                        }
+                    } else if (simple == "bgm"){
+                        // do nothing
+                    } else if (simple == "bgm.loop"){
+                        // do nothing
+                    } else {
+                        throw MugenException( "Unhandled option in Scene Section: " + simple.toString());
+                    }
+                }
+            };
+
+            SceneWalker walker;
+            section->walk(walker);
+            scenes.push_back(walker.scene);
+            Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "'" << endl;
 #if 0
     FIXME!!
-        else if( head.find("scene ") != std::string::npos ){
-            Global::debug(1) << "Found: '" << head << "'" << endl;
-            MugenScene *scene = new MugenScene();
-            if (scene){
-                Global::debug(1) << "Created: '" << head << "' ok!" << endl;
-            } else {
-                Global::debug(1) << "Failed to create: '" << head << "'!" << endl;
-            }
-            while( collection[i]->hasItems() ){
-                MugenItemContent *content = collection[i]->getNext();
-                const MugenItem *item = content->getNext();
-                std::string itemhead = item->query();
-                Mugen::Util::removeSpaces(itemhead);
-                Mugen::Util::fixCase(itemhead);
-                if ( itemhead.find("fadein.time")!=std::string::npos ){
-                    int time;
-                    *content->getNext() >> time;
-                    scene->fader.setFadeInTime(time);
-                } else if ( itemhead.find("fadein.col")!=std::string::npos ){
-                    int r,g,b;
-                    *content->getNext() >> r;
-                    *content->getNext() >> g;
-                    *content->getNext() >> b;
-                    scene->fader.setFadeInColor(Bitmap::makeColor(r,g,b));
-                } else if ( itemhead.find("fadeout.time")!=std::string::npos ){
-                    int time;
-                    *content->getNext() >> time;
-                    scene->fader.setFadeOutTime(time);
-                } else if ( itemhead.find("fadeout.col")!=std::string::npos ){
-                    int r,g,b;
-                    *content->getNext() >> r;
-                    *content->getNext() >> g;
-                    *content->getNext() >> b;
-                    scene->fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
-                } else if ( itemhead.find("bg.name")!=std::string::npos ){
-                    *content->getNext() >> scene->backgroundName;
-                } else if ( itemhead.find("clearcolor")!=std::string::npos ){
-                    int r,g,b;
-                    *content->getNext() >> r;
-                    *content->getNext() >> g;
-                    *content->getNext() >> b;
-                    scene->clearColor = (r == -1 ? r : Bitmap::makeColor(r,g,b));
-                } else if ( itemhead.find("end.time")!=std::string::npos ){
-                    *content->getNext() >> scene->endTime;
-                } else if ( itemhead.find("layerall.pos")!=std::string::npos ){
-                    *content->getNext() >> scene->defaultAxis.x;
-                    *content->getNext() >> scene->defaultAxis.y;
-                } else if ( itemhead.find("layer0.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[0]->actionno;
-                } else if ( itemhead.find("layer0.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[0]->offset.x;
-                    *content->getNext() >> scene->layers[0]->offset.y;
-                } else if ( itemhead.find("layer0.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[0]->startTime;
-                } else if ( itemhead.find("layer1.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[1]->actionno;
-                } else if ( itemhead.find("layer1.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[1]->offset.x;
-                    *content->getNext() >> scene->layers[1]->offset.y;
-                } else if ( itemhead.find("layer1.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[1]->startTime;
-                } else if ( itemhead.find("layer2.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[2]->actionno;
-                } else if ( itemhead.find("layer2.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[2]->offset.x;
-                    *content->getNext() >> scene->layers[2]->offset.y;
-                } else if ( itemhead.find("layer2.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[2]->startTime;
-                } else if ( itemhead.find("layer3.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[3]->actionno;
-                } else if ( itemhead.find("layer3.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[3]->offset.x;
-                    *content->getNext() >> scene->layers[3]->offset.y;
-                } else if ( itemhead.find("layer3.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[3]->startTime;
-                } else if ( itemhead.find("layer4.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[4]->actionno;
-                } else if ( itemhead.find("layer4.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[4]->offset.x;
-                    *content->getNext() >> scene->layers[4]->offset.y;
-                } else if ( itemhead.find("layer4.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[4]->startTime;
-                } else if ( itemhead.find("layer5.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[5]->actionno;
-                } else if ( itemhead.find("layer5.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[5]->offset.x;
-                    *content->getNext() >> scene->layers[5]->offset.y;
-                } else if ( itemhead.find("layer5.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[5]->startTime;
-                } else if ( itemhead.find("layer6.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[6]->actionno;
-                } else if ( itemhead.find("layer6.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[6]->offset.x;
-                    *content->getNext() >> scene->layers[6]->offset.y;
-                } else if ( itemhead.find("layer6.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[6]->startTime;
-                } else if ( itemhead.find("layer7.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[7]->actionno;
-                } else if ( itemhead.find("layer7.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[7]->offset.x;
-                    *content->getNext() >> scene->layers[7]->offset.y;
-                } else if ( itemhead.find("layer7.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[7]->startTime;
-                } else if ( itemhead.find("layer8.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[8]->actionno;
-                } else if ( itemhead.find("layer8.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[8]->offset.x;
-                    *content->getNext() >> scene->layers[8]->offset.y;
-                } else if ( itemhead.find("layer8.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[8]->startTime;
-                } else if ( itemhead.find("layer9.anim")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[9]->actionno;
-                } else if ( itemhead.find("layer9.offset")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[9]->offset.x;
-                    *content->getNext() >> scene->layers[9]->offset.y;
-                } else if ( itemhead.find("layer9.starttime")!=std::string::npos ){
-                    *content->getNext() >> scene->layers[9]->startTime;
-                } else if ( itemhead.find("bgm")!=std::string::npos ){
-                    // do nothing
-                } else if ( itemhead.find("bgm.loop")!=std::string::npos ){
-                    // do nothing
-                } else throw MugenException( "Unhandled option in Scene Section: " + itemhead + " -> " + head);
-            }
-            scenes.push_back(scene);
-            Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "'" << endl;
-        }
         else if( head.find("begin action") != std::string::npos ){
             head.replace(0,13,"");
             int h;

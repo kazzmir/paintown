@@ -66,6 +66,11 @@ public:
         name->mark(marks);
     }
 
+    /* just the identifier */
+    std::string idString() const {
+        return name->toString();
+    }
+
     std::string toString() const {
         std::ostringstream out;
         if (value != 0){
