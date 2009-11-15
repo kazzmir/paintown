@@ -457,7 +457,6 @@ void MugenStage::load(){
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
 
-
     TimeDifference diff;
     diff.startTime();
     Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
