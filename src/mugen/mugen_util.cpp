@@ -652,6 +652,9 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
             } catch (const Ast::Exception & e){
             }
 
+            Mugen::Util::fixCase(flip);
+            Mugen::Util::fixCase(blend);
+
             if (flip == "h"){
                 //frame->flipHorizontal = true;
                 frame->effects.facing = -1;

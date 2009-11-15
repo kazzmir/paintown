@@ -515,7 +515,7 @@ void MugenStage::load(){
     diff.startTime();
     DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in " + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
 
     struct cymk_holder shadow;

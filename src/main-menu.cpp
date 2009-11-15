@@ -195,6 +195,8 @@ int paintown_main( int argc, char ** argv ){
     } catch (const ReturnException & ex){
     } catch (const ShutdownException & shutdown){
         Global::debug(1) << "Forced a shutdown. Cya!" << endl;
+    } catch (...){
+        Global::debug(0) << "Uncaught exception!" << endl;
     }
 
     Configuration::saveConfiguration();
