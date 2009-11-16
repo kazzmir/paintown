@@ -141,16 +141,7 @@ Topics:
      path underneath it, freetype2\freetype.
     Get unxutils for things like mv, rm, cp - http://unxutils.sf.net.
       Find the .zip. It unzips as usr\local\wbin, so put that in your path.
-    Bison. The bison that comes with unxutils is old, so get a newer version
-      from gnuwin32. Replace the bison that comes with unxutils. Use 2.1 for now
-      until things are fixed so 2.4.1 works.
-      http://gnuwin32.sourceforge.net/packages/bison.htm
-    Get flex from gnuwin32 as well. http://gnuwin32.sourceforge.net/packages/flex.htm
-      Get the source package and change the makefile to remove libmain.c from
-      LIBSRCS and LIBOBJS. libflex.a comes with its own main method for reasons
-      I can't understand so you have to remove this. Don't build the flex binary,
-      just the library with 'make libfl.a'. unxutils comes with a good enough flex
-      you can use. Then copy libfl.a to your standard library path.
+    Gnu regex: http://gnuwin32.sourceforge.net/packages/regex.htm
     Use the dependancy walker: http://www.dependencywalker.com/ to check that
       all required dlls are around.
 
