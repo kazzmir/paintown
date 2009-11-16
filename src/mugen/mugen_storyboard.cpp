@@ -181,6 +181,9 @@ void MugenStoryboard::load() throw (MugenException){
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
 
+    /* set by bg.name = "foo" */
+    string bgname;
+
     for (Ast::DefParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
@@ -301,34 +304,35 @@ void MugenStoryboard::load() throw (MugenException){
             SceneWalker walker;
             section->walk(walker);
             scenes.push_back(walker.scene);
-            Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "'" << endl;
-#if 0
-    FIXME!!
-        else if( head.find("begin action") != std::string::npos ){
-            head.replace(0,13,"");
-            int h;
-            MugenItem(head) >> h;
-            /* FIXME!!
-            animations[h] = Mugen::Util::getAnimation(collection[i], sprites);
-            */
-        }
-        else if ( head.find("def")  != std::string::npos && head.find("scenedef") == std::string::npos ){
+            bgname = walker.scene->backgroundName;
+            bgname.erase(std::remove(bgname.begin(), bgname.end(), ' '), bgname.end());
+            Mugen::Util::fixCase(bgname);
+            Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "' bgname is '" << bgname << "'" << endl;
+        } else if (PaintownUtil::matchRegex(head, "begin action")){
+            int h = atoi(PaintownUtil::captureRegex(head, "begin action *([0-9]+)", 0).c_str());
+            animations[h] = Mugen::Util::getAnimation(section, sprites);
+        } else if (PaintownUtil::matchRegex(head, bgname + "def$")){
             Global::debug(1) << "Checking def!" << endl;
             if (scenes.back()){
                 MugenScene *scene = scenes.back();
+                /*
                 std::string name = collection[i]->getHeader();
                 Mugen::Util::fixCase(name);
                 Global::debug(1) << "Checking for background: " << scene->backgroundName << " in Head: " << name << endl;
+                */
+                vector<Ast::Section*> backgroundStuff = Mugen::Util::collectBackgroundStuff(section_it, parsed.getSections()->end(), bgname);
+                MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, scenes.back()->ticker, &sprites, bgname);
+                scenes.back()->background = manager;
+                /*
                 if (name.find(scene->backgroundName)){
                     // this is a background lets set it up
-                    /* FIXME!!!!!
+                     FIXME!!!!!
                     MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,scenes.back()->ticker,&sprites);
                     scenes.back()->background = manager;
                     Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
-                    */
                 }
+                */
             }
-#endif
         } else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
 

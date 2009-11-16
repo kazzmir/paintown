@@ -390,42 +390,6 @@ static bool matchRegex(const string & str, const string & regex){
 static string regexResult(const string & str, const string & regex){
     return "";
 }
-            
-static vector<Ast::Section*> collectBackgroundStuff(list<Ast::Section*>::iterator & section_it, const list<Ast::Section*>::iterator & end){
-    list<Ast::Section*>::iterator last = section_it;
-    vector<Ast::Section*> stuff;
-
-    Ast::Section * section = *section_it;
-    std::string head = section->getName();
-    /* better to do case insensitive regex matching rather than
-     * screw up the original string
-     */
-    Mugen::Util::fixCase(head);
-    string prefix = regexResult(head, "(.*)bgdef");
-    stuff.push_back(section);
-    section_it++;
-
-    while (true){
-        if (section_it == end){
-            break;
-        }
-
-        section = *section_it;
-        string name = section->getName();
-        Mugen::Util::fixCase(name);
-        Global::debug(1, __FILE__) << "Match " << (prefix + "bg.*") << " against " << name << endl;
-        if (matchRegex(name, prefix + "bg.*") || matchRegex(name, ".*begin *action.*")){
-            stuff.push_back(section);
-        } else {
-            break;
-        }
-
-        last = section_it;
-        section_it++;
-    }
-    section_it = last;
-    return stuff;
-}
 
 void MugenStage::load(){
     if (loaded){
@@ -491,7 +455,7 @@ void MugenStage::load(){
         /* search for bgdef instead of just assuming its there */
 	} else if (matchRegex(head, ".*bgdef.*")){
 	    // Background management
-            vector<Ast::Section*> backgroundStuff = collectBackgroundStuff(section_it, parsed.getSections()->end());
+            vector<Ast::Section*> backgroundStuff = Mugen::Util::collectBackgroundStuff(section_it, parsed.getSections()->end());
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, ticker, 0);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;

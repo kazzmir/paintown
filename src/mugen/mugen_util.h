@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <list>
 #include "mugen_exception.h"
 
 class Bitmap;
@@ -28,6 +29,7 @@ namespace Util{
     std::string getFileDir( const std::string &dir );
     // If you use this, please delete the item after you use it, this isn't java ok
     MugenItemContent *parseOpt( const std::string &opt );
+    std::vector<Ast::Section*> collectBackgroundStuff(std::list<Ast::Section*>::iterator & section_it, const std::list<Ast::Section*>::iterator & end, const std::string & name = "bg");
     bool readPalette(const std::string &filename, unsigned char *pal);
     void readSprites(const std::string & filename, const std::string & palette, std::map<unsigned int, std::map<unsigned int, MugenSprite *> > & sprites) throw (MugenException);
     void readSounds(const std::string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException);

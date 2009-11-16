@@ -471,7 +471,7 @@ static bool matchRegex(const string & str, const string & regex){
     return Util::matchRegex(str, regex);
 }
 
-MugenBackgroundManager::MugenBackgroundManager(const std::string &baseDir, const vector<Ast::Section *> & section, const unsigned long int &ticker, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites):
+MugenBackgroundManager::MugenBackgroundManager(const std::string &baseDir, const vector<Ast::Section *> & section, const unsigned long int &ticker, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites, const string & baseName):
 name(""),
 debugbg(false),
 clearColor(-1),
@@ -484,7 +484,7 @@ spriteFile(""){
         string head = (*section_it)->getName();
 	Mugen::Util::fixCase(head);
 	Global::debug(1) <<  "Header: " << head << " | Extracted name: " << name << endl;
-	if (matchRegex(head, ".*bgdef.*")){
+	if (matchRegex(head, ".*" + baseName + "def.*")){
             Ast::Section * section = *section_it;
             for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
                 Ast::Attribute * attribute = *attribute_it;
@@ -510,7 +510,7 @@ spriteFile(""){
             }
 	// This our background data definitions
         /* probably need a better regex here */
-	} else if (matchRegex(head, ".*bg ")){
+	} else if (matchRegex(head, ".*" + baseName + " ")){
 	    MugenBackground *temp;
 	    if (!spriteFile.empty()){
 		temp = Mugen::Util::getBackground(ticker, *section_it, this->sprites);

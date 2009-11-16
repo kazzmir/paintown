@@ -187,7 +187,7 @@ class MugenBackgroundManager{
 	/* It takes in a collection and reads the necessary crap
 	if sprites = 0 then it has it's own sprite collection and won't be bothered to use the external one
 	*/
-	MugenBackgroundManager(const std::string &baseDir, const std::vector<Ast::Section *> & section, const unsigned long int &ticker, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites=0);
+	MugenBackgroundManager(const std::string &baseDir, const std::vector<Ast::Section *> & section, const unsigned long int &ticker, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites=0, const std::string & baseName = "bg" );
 	~MugenBackgroundManager();
 	void logic( const double x, const double y, const double placementx, const double placementy );
 	void renderBack( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );

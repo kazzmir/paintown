@@ -482,6 +482,42 @@ void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std:
     ifile.close();
 }
 
+vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::iterator & section_it, const list<Ast::Section*>::iterator & end, const std::string & name){
+    list<Ast::Section*>::iterator last = section_it;
+    vector<Ast::Section*> stuff;
+
+    Ast::Section * section = *section_it;
+    std::string head = section->getName();
+    /* better to do case insensitive regex matching rather than
+     * screw up the original string
+     */
+    Mugen::Util::fixCase(head);
+    string prefix = PaintownUtil::captureRegex(head, "(.*)" + name + "def", 0);
+    stuff.push_back(section);
+    section_it++;
+
+    while (true){
+        if (section_it == end){
+            break;
+        }
+
+        section = *section_it;
+        string name = section->getName();
+        Mugen::Util::fixCase(name);
+        Global::debug(1, __FILE__) << "Match " << (prefix + "bg.*") << " against " << name << endl;
+        if (PaintownUtil::matchRegex(name, prefix + name + ".*") || PaintownUtil::matchRegex(name, ".*begin *action.*")){
+            stuff.push_back(section);
+        } else {
+            break;
+        }
+
+        last = section_it;
+        section_it++;
+    }
+    section_it = last;
+    return stuff;
+}
+
 MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
     MugenBackground *temp = new MugenBackground(ticker);
     std::string head = section->getName();
