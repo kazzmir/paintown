@@ -473,9 +473,7 @@ if enableProfiled():
 custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
                 "CheckRTTI" : checkRTTI,
-                "CheckLex" : checkLex,
-                "CheckOgg" : checkOgg,
-                "CheckYacc" : checkYacc}
+                "CheckOgg" : checkOgg}
 
 env['PAINTOWN_TESTS'] = custom_tests
 
@@ -499,9 +497,6 @@ if isWindows():
     staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
     env.Append( LIBS = [dumb,hawknl] )
     
-    env.Append(LIBS = ['fl'])
-    staticEnv.Append(LIBS = ['fl'])
-
     env.Append( LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32' ] )
     env.Append( CPPDEFINES = 'WINDOWS' )
     env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
@@ -548,10 +543,6 @@ else:
         staticEnv.ParseConfig( 'libpng-config --cflags' )
     except OSError:
         pass
-
-    # lex library
-    env.Append(LIBS = ['fl'])
-    staticEnv.Append(LIBS = ['fl'])
 
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
