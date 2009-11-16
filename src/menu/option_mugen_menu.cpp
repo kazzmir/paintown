@@ -35,7 +35,7 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
 				_menu->loadData();
 			    } catch( const MugenException &ex ){
 				string m("Problem with loading MUGEN menu: ");
-				m += ex.getReason();
+				m += ex.getFullReason();
 				throw LoadException(m);
 			    }
 			}else {

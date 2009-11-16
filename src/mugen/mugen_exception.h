@@ -4,19 +4,23 @@
 #include <exception>
 #include <string>
 
-class MugenException : public std::exception {
+class MugenException: public std::exception {
 public:
 	MugenException();
-	MugenException( const std::string & reason );
+	MugenException(const std::string & reason, const std::string & where = "?", int line = 0);
 
-	~MugenException() throw();
+	virtual ~MugenException() throw();
+
+        const std::string getFullReason() const;
 
 	inline const std::string & getReason() const{
-		return reason;
+            return reason;
 	}
 
 protected:
         std::string reason;
+        std::string where;
+        int line;
 };
 
 #endif

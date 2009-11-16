@@ -50,6 +50,8 @@
 
 #include "mugen/option_versus.h"
 
+namespace PaintownUtil = ::Util;
+
 using namespace std;
 
 static const int DEFAULT_WIDTH = 320;
@@ -845,8 +847,8 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
 		    MugenCharacter *character = new MugenCharacter(itemhead);
 		    try{
 			character->load();
-		    } catch (MugenException &ex){
-			throw MugenException(ex);
+		    } catch (const MugenException & ex){
+                        throw ex;
 		    }
 		    characters.push_back(character);
 		    Global::debug(1) << "Got character: " << character->getName() << endl;
@@ -886,7 +888,7 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
 	    }
 	}
 	else if( head == "options" ){ /* ignore for now */}
-	else throw MugenException( "Unhandled Section in '" + selectFile + "': " + head ); 
+	else throw MugenException("Unhandled Section in '" + selectFile + "': " + head, __FILE__, __LINE__); 
     }
     
     // Prepare stages
@@ -930,7 +932,7 @@ void MugenMenu::loadData() throw (MugenException){
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate menu definition file for: " + location );
     
-    /* FIXME! Replace with peg parser */
+    /* FIXME!! Replace with peg parser */
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
@@ -954,7 +956,7 @@ void MugenMenu::loadData() throw (MugenException){
 		    std::string temp;
 		    *content->getNext() >> temp;
                     Global::debug(1) << "Made by: '" << temp << "'" << endl;
-		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
+		} else throw MugenException("Unhandled option in Info Section: " + itemhead, __FILE__, __LINE__);
 	    }
 	}
 	else if( head == "files" ){
@@ -979,8 +981,8 @@ void MugenMenu::loadData() throw (MugenException){
 			    logo = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, logoFile));
 			    logo->load();
 			}
-			catch (MugenException &ex){
-			    throw MugenException( "Error loading logo storyboard: " + ex.getReason() );
+			catch (const MugenException &ex){
+			    throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
 			}
 		    }
                     Global::debug(1) << "Got Logo Storyboard File: '" << logoFile << "'" << endl;
@@ -991,8 +993,8 @@ void MugenMenu::loadData() throw (MugenException){
 			    intro = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, introFile));
 			    intro->load();
 			}
-			catch (MugenException &ex){
-			    throw MugenException( "Error loading intro storyboard: " + ex.getReason() );
+			catch (const MugenException &ex){
+			    throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);
 			}
 		    }
                     Global::debug(1) << "Got Intro Storyboard File: '" << introFile << "'" << endl;
@@ -1008,7 +1010,7 @@ void MugenMenu::loadData() throw (MugenException){
 		    Mugen::Util::removeSpaces(temp);
 		    fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
                     Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
-		} else throw MugenException( "Unhandled option in Files Section: " + itemhead );
+		} else throw MugenException( "Unhandled option in Files Section: " + itemhead, __FILE__, __LINE__ );
 	    }
 	}
 	else if( head == "title info" ){
@@ -1176,12 +1178,11 @@ void MugenMenu::loadData() throw (MugenException){
 		    // Configure later
 		} else if ( itemhead.find("cancel.snd")!=std::string::npos ){
 		    // Configure later
-		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
+		} else throw MugenException("Unhandled option in Info Section: " + itemhead, __FILE__, __LINE__);
 	    }
 	}
-	else if( head == "titlebgdef" ){
-            /* FIXME!!!!!
-	    // Background management
+	else if (PaintownUtil::matchRegex(head, "^titlebgdef")){
+            /* FIXME!!
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,ticker,&sprites);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
@@ -1193,8 +1194,8 @@ void MugenMenu::loadData() throw (MugenException){
 	    try{
 		characterSelect->load(baseDir + selectFile,i,collection,sprites);
 	    }
-	    catch (MugenException &ex){
-		throw MugenException(ex);
+	    catch (const MugenException &ex){
+                throw ex;
 	    }
 	}
 	else if( head == "selectbgdef" ){ /* Ignore for now */ }
@@ -1215,7 +1216,7 @@ void MugenMenu::loadData() throw (MugenException){
 	else if( head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
 	else if( head == "music" ){ /* Ignore for now */ }
 	else if( head.find("begin action") != std::string::npos ){ /* Ignore  fornow */ }
-	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
+	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
     }
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
