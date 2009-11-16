@@ -64,6 +64,7 @@ find_package(PNG)
 find_package(ALLEGRO)
 find_package(FREETYPE)
 find_package(Threads)
+find_package(GNUREGEX)
 
 # -------------------------------------------------------
 # Include Source
@@ -99,6 +100,11 @@ if(NOT FREETYPE_FOUND)
 	message(FATAL_ERROR "Couldn't find freetype")
 endif(NOT FREETYPE_FOUND)
 
+# regex
+if(NOT GNUREGEX_FOUND)
+	message(FATAL_ERROR "Couldn't find GNU Regex")
+endif(NOT GNUREGEX_FOUND)
+
 # -------------------------------------------------------
 # Paths and system setup
 # -------------------------------------------------------
@@ -133,7 +139,7 @@ endif(APPLE)
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${GNUREGEX_LIBRARIES} ${WIN_LIB} ${WINSOCK})
 
 #set(ALL_SRC ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
 #${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC}
@@ -143,7 +149,7 @@ set(REQUIRED_LIBS ${ALLEGRO_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIB
 # Include directory
 # -------------------------------------------------------
 # include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules src/hawknl ${FREETYPE_INCLUDE_DIR})
-include_directories(src src/hawknl ${FREETYPE_INCLUDE_DIR})
+include_directories(src src/hawknl ${FREETYPE_INCLUDE_DIR} ${GNUREGEX_INCLUDE_DIR})
 
 # -------------------------------------------------------
 # Paintown and test
@@ -176,11 +182,10 @@ add_library(mugen_module ${MUGEN_SRC})
 add_library(ogg_module ${OGG_SRC})
 add_library(trigger_module ${TRIGGER_SRC})
 
-
 #paintown executable
 add_executable (paintown src/xmain.cpp)
-target_link_libraries(paintown base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${REQUIRED_LIBS})
+target_link_libraries(paintown -Wl,--start-group base_module level_module factory_module object_module util_module loadpng_module 
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module -Wl,--end-group ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
@@ -189,8 +194,8 @@ target_link_libraries(paintown base_module level_module factory_module object_mo
 #target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 add_executable (mugentest src/mugen/test.cpp)
-target_link_libraries(mugentest base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${REQUIRED_LIBS})
+target_link_libraries(mugentest -Wl,--start-group base_module level_module factory_module object_module util_module loadpng_module 
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module -Wl,--end-group ${REQUIRED_LIBS})
 
 # Copy scripts and setup lex files
 if(UNIX OR LINUX OR CYGWIN OR MINGW)
