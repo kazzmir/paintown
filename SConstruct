@@ -15,6 +15,12 @@ def isLinux():
     import sys
     return "linux" in sys.platform
 
+def noColors():
+    try:
+        return int(ARGUMENTS['colors']) == 0
+    except KeyError:
+        return False
+
 def useGch():
     try:
         return int(ARGUMENTS['gch']) == 1
@@ -332,6 +338,8 @@ def isXterm():
     return not isWindows()
 
 def colorize(string, color):
+    if noColors():
+        return string
     if isXterm():
         return xterm_color(string, color)
     return string
