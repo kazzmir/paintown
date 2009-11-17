@@ -18,6 +18,7 @@
 #include "resource.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "util/timedifference.h"
 #include "game/console.h"
 #include "object/animation.h"
 #include "object/object.h"
@@ -49,6 +50,8 @@
 #include "mugen_storyboard.h"
 
 #include "mugen/option_versus.h"
+#include "ast/all.h"
+#include "parser/all.h"
 
 namespace PaintownUtil = ::Util;
 
@@ -930,13 +933,59 @@ void MugenMenu::loadData() throw (MugenException){
     //baseDir = Mugen::Util::getFileDir( ourDefFile );
     Global::debug(1) << baseDir << endl;
     
-    if( ourDefFile.empty() )throw MugenException( "Cannot locate menu definition file for: " + location );
+    if (ourDefFile.empty()){
+        throw MugenException( "Cannot locate menu definition file for: " + location );
+    }
+
+    TimeDifference diff;
+    diff.startTime();
+    Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
     
-    /* FIXME!! Replace with peg parser */
+    /*
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
+    */
+
+    for (Ast::DefParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        /* this should really be head = Mugen::Util::fixCase(head) */
+	Mugen::Util::fixCase(head);
+        if (head == "info"){
+            class InfoWalker: public Ast::Walker{
+            public:
+                InfoWalker(MugenMenu & menu):
+                menu(menu){
+                }
+
+                MugenMenu & menu;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "name"){
+                        menu.setName(simple.asString());
+                        Global::debug(1) << "Read name '" << menu.getName() << "'" << endl;
+                    } else if (simple == "author"){
+                        string temp;
+                        simple >> temp;
+                        Global::debug(1) << "Made by: '" << temp << "'" << endl;
+                    } else {
+                        throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                    }
+                }
+            };
+
+            InfoWalker walker(*this);
+            section->walk(walker);
+        } else {
+            throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
+        }
+    }
+
     
+#if 0
     /* Extract info for our first section of our menu */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
@@ -1218,6 +1267,7 @@ void MugenMenu::loadData() throw (MugenException){
 	else if( head.find("begin action") != std::string::npos ){ /* Ignore  fornow */ }
 	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
     }
+#endif
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
     if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
