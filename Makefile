@@ -6,7 +6,8 @@ all:
 
 # usually only be executed by the buildbot script
 buildbot:
-	@scons -j `python misc/cores.py`
+	# gch is broken for some reason: http://gcc.gnu.org/ml/gcc-help/2005-02/msg00007.html
+	@scons -j `python misc/cores.py` gch=0
 	cd editor; $(MAKE)
 
 static:

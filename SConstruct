@@ -15,6 +15,12 @@ def isLinux():
     import sys
     return "linux" in sys.platform
 
+def useGch():
+    try:
+        return int(ARGUMENTS['gch']) == 1
+    except KeyError:
+        return True
+
 def useIntel():
     try:
         return int(os.environ['intel'])
@@ -516,9 +522,9 @@ else:
     # find the system tool path by attaching SCons/Tool to everything
     def fix(q):
         return q + "/SCons/Tool"
-    # FIXME!! gch doesn't work with multiple environments
-    env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
-    env['GCHFROMHCOMSTR'] = "%s %s" % (colorize('Compiling header', 'green'), colorize('$SOURCE', 'cyan'))
+    if useGch():
+        env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
+        env['GCHFROMHCOMSTR'] = "%s %s" % (colorize('Compiling header', 'green'), colorize('$SOURCE', 'cyan'))
 
     try:
         dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
