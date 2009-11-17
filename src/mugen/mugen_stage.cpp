@@ -908,7 +908,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
     Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile));
-    return parsed.findSection("info")->findAttribute("name")->asString();
+    return parsed.findSection("info")->findAttribute("name")->valueAsString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname );
     return "";

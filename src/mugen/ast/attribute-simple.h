@@ -32,7 +32,7 @@ public:
         return *name == str;
     }
 
-    std::string asString() const {
+    std::string valueAsString() const {
         std::string str;
         *this >> str;
         return str;

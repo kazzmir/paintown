@@ -965,7 +965,7 @@ void MugenMenu::loadData() throw (MugenException){
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "name"){
-                        menu.setName(simple.asString());
+                        menu.setName(simple.valueAsString());
                         Global::debug(1) << "Read name '" << menu.getName() << "'" << endl;
                     } else if (simple == "author"){
                         string temp;
@@ -1044,6 +1044,134 @@ void MugenMenu::loadData() throw (MugenException){
             
             FileWalker walker(*this, baseDir);
             section->walk(walker);
+        } else if (head == "music"){
+            /* FIXME! */
+        } else if (head == "title info"){
+            class TitleInfoWalker: public Ast::Walker{
+            public:
+                TitleInfoWalker(MugenMenu & menu):
+                menu(menu){
+                }
+
+                MugenMenu & menu;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "fadein.time"){
+                        int time;
+                        simple >> time;
+                        menu.fader.setFadeInTime(time);
+                    } else if (simple == "fadein.color"){
+                        int r,g,b;
+                        simple >> r >> g >> b;
+                        menu.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                    } else if (simple == "fadeout.time"){
+                        int time;
+                        simple >> time;
+                        menu.fader.setFadeOutTime(time);
+                    } else if (simple == "fadeout.color"){
+                        int r,g,b;
+                        simple >> r >> g >> b;
+                        menu.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+                    } else if (simple == "menu.pos"){
+                        simple >> menu.position.x;
+                        simple >> menu.position.y;
+                    } else if (simple == "menu.item.font"){
+                        simple >> menu.fontItem.index;
+                        simple >> menu.fontItem.bank;
+                        simple >> menu.fontItem.position;
+                    } else if (simple == "menu.item.active.font"){
+                        simple >> menu.fontActive.index;
+                        simple >> menu.fontActive.bank;
+                        simple >> menu.fontActive.position;
+                    } else if (simple == "menu.item.spacing"){
+                        simple >> menu.fontSpacing.x;
+                        simple >> menu.fontSpacing.y;
+		    } else if (simple == "menu.itemname.arcade"){
+                        try{
+                            menu.addOption(new OptionDummy(simple.valueAsString()));
+                        } catch (const Ast::Exception & e){
+                        }
+                    } else if (simple == "menu.itemname.versus"){
+                        try{
+                            menu.addOption(new MugenOptionVersus(simple.valueAsString()));
+                        } catch (const Ast::Exception & e){
+                        }
+		   } else if (simple == "menu.itemname.teamarcade"){
+                       try{
+                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+		   } else if (simple == "menu.itemname.teamversus"){
+                       try{
+                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+		   } else if (simple == "menu.itemname.teamcoop"){
+                       try{
+                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+		   } else if (simple == "menu.itemname.survival"){
+                       try{
+                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+		   } else if (simple == "menu.itemname.survivalcoop"){
+                       try{
+                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+		   } else if (simple == "menu.itemname.training"){
+                       try{
+                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+		   } else if (simple == "menu.itemname.watch"){
+                       try{
+                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+		   } else if (simple == "menu.itemname.options"){
+                       try{
+                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+		   } else if (simple == "menu.itemname.exit"){
+                       try{
+                           menu.addOption(new OptionQuit(simple.valueAsString()));
+                       } catch (const Ast::Exception & e){
+                       }
+                   } else if (simple == "menu.window.margins.x"){
+                       simple >> menu.windowMarginX.x;
+                       simple >> menu.windowMarginX.y;
+                   } else if (simple == "menu.window.margins.y"){
+                       simple >> menu.windowMarginY.x;
+                       simple >> menu.windowMarginY.y;
+                   } else if (simple == "menu.window.visibleitems"){
+                       simple >> menu.windowVisibleItems;
+                   } else if (simple == "menu.boxcursor.visible"){
+                       simple >> menu.showBoxCursor;
+                   } else if (simple == "menu.boxcursor.coords"){
+                       simple >> menu.boxCursorCoords.x1;
+                       simple >> menu.boxCursorCoords.y1;
+                       simple >> menu.boxCursorCoords.x2;
+                       simple >> menu.boxCursorCoords.y2;
+                       menu.boxCursorCoords.alpha = 128;
+                       menu.boxCursorCoords.alphaMove = -6;
+                   } else if (simple == "cursor.move.snd"){
+                       /* FIXME! */
+                   } else if (simple == "cursor.done.snd"){
+                       /* FIXME! */
+                   } else if (simple == "cancel.snd"){
+                       /* FIXME! */
+                   } else {
+                       throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                   }
+                }
+	    };
+            
+            TitleInfoWalker walker(*this);
+            section->walk(walker);
         } else {
             throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
         }
@@ -1051,174 +1179,7 @@ void MugenMenu::loadData() throw (MugenException){
     
 #if 0
 	
-	else if( head == "title info" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		Mugen::Util::fixCase(itemhead);
-		if ( itemhead.find("fadein.time")!=std::string::npos ){
-		    int time;
-		    *content->getNext() >> time;
-		    fader.setFadeInTime(time);
-		} else if ( itemhead.find("fadein.color")!=std::string::npos ){
-		    int r,g,b;
-		    *content->getNext() >> r;
-		    *content->getNext() >> g;
-		    *content->getNext() >> b;
-		    fader.setFadeInColor(Bitmap::makeColor(r,g,b));
-		} else if ( itemhead.find("fadeout.time")!=std::string::npos ){
-		    int time;
-		    *content->getNext() >> time;
-		    fader.setFadeOutTime(time);
-		} else if ( itemhead.find("fadeout.color")!=std::string::npos ){
-		    int r,g,b;
-		    *content->getNext() >> r;
-		    *content->getNext() >> g;
-		    *content->getNext() >> b;
-		    fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
-		} else if ( itemhead.find("menu.pos")!=std::string::npos ){
-		    *content->getNext() >> position.x;
-		    *content->getNext() >> position.y;
-		} else if ( itemhead.find("menu.item.font")!=std::string::npos ){
-		    *content->getNext() >> fontItem.index;
-		    *content->getNext() >> fontItem.bank;
-		    *content->getNext() >> fontItem.position;
-		} else if ( itemhead.find("menu.item.active.font")!=std::string::npos ){
-		    *content->getNext() >> fontActive.index;
-		    *content->getNext() >> fontActive.bank;
-		    *content->getNext() >> fontActive.position;
-		} else if ( itemhead.find("menu.item.spacing")!=std::string::npos ){
-		    *content->getNext() >> fontSpacing.x;
-		    *content->getNext() >> fontSpacing.y;
-		} else if ( itemhead.find("menu.itemname.")!=std::string::npos ){
-		   if (itemhead == "menu.itemname.arcade"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.versus"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    MugenOptionVersus *versus = new MugenOptionVersus(temp);
-				    addOption(versus);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.teamarcade"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.teamversus"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.teamcoop"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.survival"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.survivalcoop"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.training"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.watch"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.options"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionDummy *dummy = new OptionDummy(temp);
-				    addOption(dummy);
-			    }
-		       }
-		   } else if (itemhead == "menu.itemname.exit"){
-		       if (content->hasItems()){
-			    std::string temp;
-			    *content->getNext() >> temp;
-			    if (!temp.empty()){
-				    OptionQuit *quit = new OptionQuit(temp);
-				    addOption(quit);
-			    }
-		       }
-		   }
-		} else if ( itemhead.find("menu.window.margins.x")!=std::string::npos ){
-		    *content->getNext() >> windowMarginX.x;
-		    *content->getNext() >> windowMarginX.y;
-		} else if ( itemhead.find("menu.window.margins.y")!=std::string::npos ){
-		    *content->getNext() >> windowMarginY.x;
-		    *content->getNext() >> windowMarginY.y;
-		} else if ( itemhead.find("menu.window.visibleitems")!=std::string::npos ){
-		    *content->getNext() >> windowVisibleItems;
-		} else if ( itemhead.find("menu.boxcursor.visible")!=std::string::npos ){
-		    *content->getNext() >> showBoxCursor;
-		} else if ( itemhead.find("menu.boxcursor.coords")!=std::string::npos ){
-		    *content->getNext() >> boxCursorCoords.x1;
-		    *content->getNext() >> boxCursorCoords.y1;
-		    *content->getNext() >> boxCursorCoords.x2;
-		    *content->getNext() >> boxCursorCoords.y2;
-		    boxCursorCoords.alpha = 128;
-		    boxCursorCoords.alphaMove = -6;
-		} else if ( itemhead.find("cursor.move.snd")!=std::string::npos ){
-		    // Configure later
-		} else if ( itemhead.find("cursor.done.snd")!=std::string::npos ){
-		    // Configure later
-		} else if ( itemhead.find("cancel.snd")!=std::string::npos ){
-		    // Configure later
-		} else throw MugenException("Unhandled option in Info Section: " + itemhead, __FILE__, __LINE__);
-	    }
-	}
+	
 	else if (PaintownUtil::matchRegex(head, "^titlebgdef")){
             /* FIXME!!
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,ticker,&sprites);
@@ -1238,7 +1199,6 @@ void MugenMenu::loadData() throw (MugenException){
 	}
 	else if( head == "selectbgdef" ){ /* Ignore for now */ }
 	else if( head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
-	else if( head == "music" ){ /* Ignore for now */ }
 	else if( head == "vs screen" ){ /* Ignore for now */ }
 	else if( head == "versusbgdef" ){ /* Ignore for now */ }
 	else if( head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
