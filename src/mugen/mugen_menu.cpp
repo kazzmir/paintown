@@ -979,89 +979,78 @@ void MugenMenu::loadData() throw (MugenException){
 
             InfoWalker walker(*this);
             section->walk(walker);
+        } else if (head == "files"){
+            class FileWalker: public Ast::Walker{
+                public:
+                    FileWalker(MugenMenu & menu, const string & baseDir):
+                        menu(menu),
+                        baseDir(baseDir){
+                        }
+
+                    MugenMenu & menu;
+                    const string & baseDir;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "spr"){
+                            simple >> menu.spriteFile;
+                            Global::debug(1) << "Got Sprite File: '" << menu.spriteFile << "'" << endl;
+                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, menu.spriteFile), "", menu.sprites);
+                        } else if (simple == "snd"){
+                            simple >> menu.soundFile;
+                            Global::debug(1) << "Got Sound File: '" << menu.soundFile << "'" << endl;
+                        } else if (simple == "logo.storyboard"){
+                            try{
+                                simple >> menu.logoFile;
+                                try{
+                                    Global::debug(1) << "Logo file " << baseDir << "/" << menu.logoFile << endl;
+                                    menu.logo = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
+                                    menu.logo->load();
+                                    Global::debug(1) << "Got Logo Storyboard File: '" << menu.logoFile << "'" << endl;
+                                } catch (const MugenException &ex){
+                                    throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
+                                }
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "intro.storyboard"){
+                            try{
+                                simple >> menu.introFile;
+                                try{
+                                    Global::debug(1) << "Intro file " << baseDir << "/" << menu.introFile << endl;
+                                    menu.intro = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
+                                    menu.intro->load();
+                                    Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
+                                } catch (const MugenException &ex){
+                                    throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);
+                                }
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "select"){
+                            simple >> menu.selectFile;
+                            Global::debug(1) << "Got Select File: '" << menu.selectFile << "'" << endl;
+                        } else if (simple == "fight"){
+                            simple >> menu.fightFile;
+                            Global::debug(1) << "Got Fight File: '" << menu.fightFile << "'" << endl;
+                        } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                            string temp;
+                            simple >> temp;
+                            menu.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
+                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+
+                        } else {
+                            throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
+                        }
+                    }
+            };
+            
+            FileWalker walker(*this, baseDir);
+            section->walk(walker);
         } else {
             throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
         }
     }
-
     
 #if 0
-    /* Extract info for our first section of our menu */
-    for( unsigned int i = 0; i < collection.size(); ++i ){
-	std::string head = collection[i]->getHeader();
-	Mugen::Util::fixCase(head);
-	if( head == "info" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		if ( itemhead.find("name")!=std::string::npos ){
-		    std::string temp;
-		    *content->getNext() >> temp;
-		    setName(temp);
-                    Global::debug(1) << "Read name '" << getName() << "'" << endl;
-		} else if ( itemhead.find("author")!=std::string::npos ){
-		    std::string temp;
-		    *content->getNext() >> temp;
-                    Global::debug(1) << "Made by: '" << temp << "'" << endl;
-		} else throw MugenException("Unhandled option in Info Section: " + itemhead, __FILE__, __LINE__);
-	    }
-	}
-	else if( head == "files" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		Mugen::Util::fixCase(itemhead);
-		if ( itemhead.find("spr")!=std::string::npos ){
-		    *content->getNext() >> spriteFile;
-		    Global::debug(1) << "Got Sprite File: '" << spriteFile << "'" << endl;
-		    Mugen::Util::readSprites( Mugen::Util::getCorrectFileLocation(baseDir, spriteFile), "", sprites );
-		} else if ( itemhead.find("snd")!=std::string::npos ){
-		    *content->getNext() >> soundFile;
-                    Global::debug(1) << "Got Sound File: '" << soundFile << "'" << endl;
-		} else if ( itemhead.find("logo.storyboard")!=std::string::npos ){
-		    if( content->hasItems()){
-			*content->getNext() >> logoFile;
-			try{
-			    Global::debug(1) << baseDir << " / " << logoFile << endl;
-			    logo = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, logoFile));
-			    logo->load();
-			}
-			catch (const MugenException &ex){
-			    throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
-			}
-		    }
-                    Global::debug(1) << "Got Logo Storyboard File: '" << logoFile << "'" << endl;
-		} else if ( itemhead.find("intro.storyboard")!=std::string::npos ){
-		    if (content->hasItems()){
-			*content->getNext() >> introFile;
-			try{
-			    intro = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, introFile));
-			    intro->load();
-			}
-			catch (const MugenException &ex){
-			    throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);
-			}
-		    }
-                    Global::debug(1) << "Got Intro Storyboard File: '" << introFile << "'" << endl;
-		} else if ( itemhead.find("select")!=std::string::npos ){
-		    *content->getNext() >> selectFile;
-                    Global::debug(1) << "Got Select File: '" << selectFile << "'" << endl;
-		} else if ( itemhead.find("fight")!=std::string::npos ){
-		    *content->getNext() >> fightFile;
-                    Global::debug(1) << "Got Fight File: '" << fightFile << "'" << endl;
-		} else if ( itemhead.find("font")!=std::string::npos ){
-		    std::string temp;
-		    *content->getNext() >> temp;
-		    Mugen::Util::removeSpaces(temp);
-		    fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
-                    Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
-		} else throw MugenException( "Unhandled option in Files Section: " + itemhead, __FILE__, __LINE__ );
-	    }
-	}
+	
 	else if( head == "title info" ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();
