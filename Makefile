@@ -7,6 +7,7 @@ all:
 # usually only be executed by the buildbot script
 buildbot:
 	@scons -j `python misc/cores.py`
+	cd editor; $(MAKE)
 
 static:
 	@scons -j 2 static
