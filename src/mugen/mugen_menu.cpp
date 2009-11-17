@@ -922,7 +922,8 @@ showBoxCursor(false),
 ticker(0),
 background(0),
 logo(0),
-intro(0){
+intro(0),
+characterSelect(0){
 }
 
 void MugenMenu::loadData() throw (MugenException){
@@ -1172,54 +1173,45 @@ void MugenMenu::loadData() throw (MugenException){
             
             TitleInfoWalker walker(*this);
             section->walk(walker);
-        } else {
+        } else if (PaintownUtil::matchRegex(head, "^titlebgdef")){
+            vector<Ast::Section*> backgroundStuff = Mugen::Util::collectBackgroundStuff(section_it, parsed.getSections()->end());
+	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, ticker, &sprites);
+	    background = manager;
+	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+        } else if (head == "select info"){ 
+	    // Pass off to selectInfo
+	    characterSelect = new MugenCharacterSelect(ticker, fonts);
+            /* FIXME!!
+            characterSelect->load(baseDir + selectFile, i, collection, sprites);
+            */
+        } else if (head == "selectbgdef" ){ /* Ignore for now */ }
+	else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "vs screen" ){ /* Ignore for now */ }
+	else if (head == "versusbgdef" ){ /* Ignore for now */ }
+	else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "demo mode" ){ /* Ignore for now */ }
+	else if (head == "continue screen" ){ /* Ignore for now */ }
+	else if (head == "game over screen" ){ /* Ignore for now */ }
+	else if (head == "win screen" ){ /* Ignore for now */ }
+	else if (head == "default ending" ){ /* Ignore for now */ }
+	else if (head == "end credits" ){ /* Ignore for now */ }
+	else if (head == "survival results screen" ){ /* Ignore for now */ }
+	else if (head == "option info" ){ /* Ignore for now */ }
+	else if (head == "optionbgdef" ){ /* Ignore for now */ }
+	else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "music" ){ /* Ignore for now */ }
+	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
+        else {
             throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
         }
     }
     
-#if 0
-	
-	
-	else if (PaintownUtil::matchRegex(head, "^titlebgdef")){
-            /* FIXME!!
-	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir,collection, i,ticker,&sprites);
-	    background = manager;
-	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
-            */
-	}
-	else if( head == "select info" ){ 
-	    // Pass off to selectInfo
-	    characterSelect = new MugenCharacterSelect(ticker,fonts);
-	    try{
-		characterSelect->load(baseDir + selectFile,i,collection,sprites);
-	    }
-	    catch (const MugenException &ex){
-                throw ex;
-	    }
-	}
-	else if( head == "selectbgdef" ){ /* Ignore for now */ }
-	else if( head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
-	else if( head == "vs screen" ){ /* Ignore for now */ }
-	else if( head == "versusbgdef" ){ /* Ignore for now */ }
-	else if( head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
-	else if( head == "demo mode" ){ /* Ignore for now */ }
-	else if( head == "continue screen" ){ /* Ignore for now */ }
-	else if( head == "game over screen" ){ /* Ignore for now */ }
-	else if( head == "win screen" ){ /* Ignore for now */ }
-	else if( head == "default ending" ){ /* Ignore for now */ }
-	else if( head == "end credits" ){ /* Ignore for now */ }
-	else if( head == "survival results screen" ){ /* Ignore for now */ }
-	else if( head == "option info" ){ /* Ignore for now */ }
-	else if( head == "optionbgdef" ){ /* Ignore for now */ }
-	else if( head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
-	else if( head == "music" ){ /* Ignore for now */ }
-	else if( head.find("begin action") != std::string::npos ){ /* Ignore  fornow */ }
-	else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
+    /* Set up the animations for those that have action numbers assigned (not -1 )
+     * Also do their preload
+     */
+    if (background){
+        background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
     }
-#endif
-    // Set up the animations for those that have action numbers assigned (not -1 )
-    // Also do their preload
-    if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
 }
 
 MugenMenu::~MugenMenu(){
@@ -1498,5 +1490,3 @@ void MugenMenu::renderText(Bitmap *bmp){
 	if (visibleCounter >= windowVisibleItems)break;
     }
 }
-
-

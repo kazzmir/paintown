@@ -502,10 +502,10 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
         }
 
         section = *section_it;
-        string name = section->getName();
-        Mugen::Util::fixCase(name);
-        Global::debug(1, __FILE__) << "Match " << (prefix + "bg.*") << " against " << name << endl;
-        if (PaintownUtil::matchRegex(name, prefix + name + ".*") || PaintownUtil::matchRegex(name, ".*begin *action.*")){
+        string sectionName = section->getName();
+        Mugen::Util::fixCase(sectionName);
+        Global::debug(1, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
+        if (PaintownUtil::matchRegex(sectionName, prefix + name + ".*") || PaintownUtil::matchRegex(sectionName, ".*begin *action.*")){
             stuff.push_back(section);
         } else {
             break;

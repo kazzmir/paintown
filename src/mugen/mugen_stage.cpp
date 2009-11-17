@@ -459,8 +459,7 @@ void MugenStage::load(){
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, ticker, 0);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
-	}
-	else if (head == "music" ){
+	} else if (head == "music" ){
             /* Ignore for now */
         } else {
             throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 

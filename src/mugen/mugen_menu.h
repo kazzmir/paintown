@@ -247,6 +247,7 @@ class MugenMenu : public Menu
 {
     public:
 	/*! ctor dtor */
+        explicit MugenMenu(const MugenMenu & menu);
 	MugenMenu(const std::string &filename);
 	virtual ~MugenMenu();
 	
