@@ -524,6 +524,19 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     return true;
 }
 
+static string funnyGo(){
+    switch (Util::rnd(10)){
+        case 0 : return "Robofrance 99";
+        case 1 : return "Is that a weasel?";
+        case 2 : return "You are the insult master!";
+        case 3 : return "Get to the choppaa!!!";
+        case 4 : return "Ride or die";
+        case 5 : return "Let the Dragon ride on the winds of time";
+        case 6 : return "I LIKE TURTLES";
+        default : return "Go!";
+    }
+}
+
 void realGame(const vector< Object * > & players, const Level::LevelInfo & levelInfo){
 
     // Level::LevelInfo levelInfo = Level::readLevels( levelFile );
@@ -554,6 +567,7 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
             Global::info("Setting up world");
             AdventureWorld world( players, Filesystem::find(*it));
             Global::info("World setup");
+            Global::info(funnyGo());
 
             Music::pause();
             Music::fadeIn( 0.3 );
@@ -571,7 +585,6 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
                 playerX->setStatus( Status_Falling );
             }
 
-            Global::info("Go!");
             stopLoading( loading_screen_thread );
 
             gameState = playLevel( world, players, showHelp );
