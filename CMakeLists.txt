@@ -136,12 +136,12 @@ if(APPLE)
 	add_definitions(-DMACOSX)
         
         # Groups
-        set(GROUP_START "--W1,-all_load")
+        set(GROUP_START "-Wl,-all_load")
         set(GROUP_END "")
 else(APPLE)
         # Groups
-        set(GROUP_START "--W1,--start-group")
-        set(GROUP_END "--W1,--end-group")
+        set(GROUP_START "-Wl,--start-group")
+        set(GROUP_END "-Wl,--end-group")
 endif(APPLE)
 
 # -------------------------------------------------------
