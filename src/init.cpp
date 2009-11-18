@@ -9,7 +9,7 @@
 #endif
 
 /* don't be a boring tuna */
-#warning you are ugly
+// #warning you are ugly
 
 #include "globals.h"
 #include "init.h"
