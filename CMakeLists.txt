@@ -134,6 +134,14 @@ if(APPLE)
 	# -------------------------------------------------------
 	set(WIN_LIB "-framework Carbon")
 	add_definitions(-DMACOSX)
+        
+        # Groups
+        set(GROUP_START "--W1,-all_load")
+        set(GROUP_END "")
+else(APPLE)
+        # Groups
+        set(GROUP_START "--W1,--start-group")
+        set(GROUP_END "--W1,--end-group")
 endif(APPLE)
 
 # -------------------------------------------------------
@@ -184,8 +192,8 @@ add_library(trigger_module ${TRIGGER_SRC})
 
 #paintown executable
 add_executable (paintown src/xmain.cpp)
-target_link_libraries(paintown -Wl,--start-group base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module -Wl,--end-group ${REQUIRED_LIBS})
+target_link_libraries(paintown ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
@@ -194,8 +202,8 @@ target_link_libraries(paintown -Wl,--start-group base_module level_module factor
 #target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
 add_executable (mugentest src/mugen/test.cpp)
-target_link_libraries(mugentest -Wl,--start-group base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module -Wl,--end-group ${REQUIRED_LIBS})
+target_link_libraries(mugentest ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${GROUP_END} ${REQUIRED_LIBS})
 
 # Copy scripts and setup lex files
 if(UNIX OR LINUX OR CYGWIN OR MINGW)
