@@ -13,7 +13,11 @@ def peg_to_cpp(target, source, env):
 peg_builder = Builder(action = Action(peg_to_cpp, 'Creating peg parser $TARGET'), suffix = '.cpp', src_suffix = '.peg')
 use.Append(BUILDERS = {'Peg' : peg_builder})
 
-use.Peg('def.peg')
-use.Peg('air.peg')
-use.Peg('cns.peg')
-use.Peg('cmd.peg')
+all = []
+all.append(use.Peg('def.peg'))
+all.append(use.Peg('air.peg'))
+all.append(use.Peg('cns.peg'))
+all.append(use.Peg('cmd.peg'))
+
+for x in all:
+    use.Depends(x, 'peg.py')

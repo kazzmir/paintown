@@ -8,7 +8,7 @@ def isWindows():
 obj_files = []
 
 def addFiles(files):
-    obj_files.append( map( lambda x: x.replace('src/', ''), files ) )
+    obj_files.append(map(lambda x: x.replace('src/', ''), files))
 
 import sys
 sys.path.append("../scons")

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 # Packrat PEG (parsing expression grammar) generator
 # http://pdos.csail.mit.edu/~baford/packrat/
 # Optimizations (like chunks) and other inspiration: Rats!
@@ -13,6 +14,7 @@
 
 # Todo (finished items at bottom)
 # add generator for ruby, scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
+# add header (.h) generator for C/C++
 
 next_var = 0
 def nextVar():
@@ -821,9 +823,17 @@ Result %s(%s.getPosition());
                 raise Exception("Do not combine inlined rules that use tail recursion")
             def newPattern(pattern, stream, result, success):
                 my_result = newResult()
-                out = newOut()
+                out = [False]
+                def label(n):
+                    if n != False:
+                        return "%s:" % n
+                    return ""
+
                 def fail():
-                    return "goto %s;" % out
+                    if out[0] == False:
+                        out[0] = newOut()
+                    return "goto %s;" % out[0]
+                pattern_result = pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip()
                 data = """
 {
 Result %s(%s.getPosition());
@@ -831,16 +841,16 @@ Result %s(%s.getPosition());
 %s = %s;
 }
 %s
-%s:
-                """ % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip(), result, my_result, success, out)
+%s
+                """ % (my_result, result, pattern_result, result, my_result, success, label(out[0]))
 
                 data = """
 {
     %s
 }
 %s
-%s:
-""" % (indent(pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)), success, out)
+%s
+""" % (indent(pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)), success, label(out[0]))
                 return data
 
             success_out = gensym('success')
@@ -999,6 +1009,7 @@ int %s = %s.getPosition();
         data = ""
         success = gensym("success")
         for pattern in pattern.patterns:
+            # TODO: lazily create this
             out = gensym("or")
             my_result = newResult()
             fail = lambda : "goto %s;" % out
@@ -1534,9 +1545,11 @@ def rule_%s(%s, %s):
         rule_number = "RULE_%s" % self.name
         stream = "stream"
         position = "position"
-        tail_loop = gensym("tail");
+        # tail_loop = [gensym("tail")]
+        tail_loop = [False]
         debug = "debug1" in peg.options
 
+        
         def updateChunk(new):
             var = "column"
             chunk = chunk_accessor.getChunk(var)
@@ -1560,12 +1573,20 @@ def rule_%s(%s, %s):
     }
 }
 """ % (stream, position, chunk_accessor.getChunk("column"), chunk_accessor.getValue(chunk_accessor.getChunk("column")), chunk_accessor.getValue(chunk_accessor.getChunk("column")))
-
+        
         def newPattern(pattern, stream, position):
             result = newResult()
-            out = newOut()
+            out = [False]
+
+            def label(n):
+                if n != False:
+                    return "%s:" % n
+                return ""
+
             def failure():
-                return "goto %s;" % out
+                if out[0] == False:
+                    out[0] = newOut()
+                return "goto %s;" % out[0]
             
             def invalid_arg(d):
                 raise Exception("No results available")
@@ -1574,14 +1595,17 @@ def rule_%s(%s, %s):
                 tail_vars = self.parameters
                 if tail_vars == None:
                     tail_vars = []
+                if tail_loop[0] == False:
+                    tail_loop[0] = gensym("tail")
                 data = """
 Result %s(%s);
 %s
 %s = %s.getPosition();
 goto %s;
-%s:
-    """ % (result, position, pattern.generate_cpp(peg, result, stream, failure, tail_vars, invalid_arg).strip(), position, result, tail_loop, out)
+%s
+    """ % (result, position, pattern.generate_cpp(peg, result, stream, failure, tail_vars, invalid_arg).strip(), position, result, tail_loop[0], label(out[0]))
             else:
+                # non-tail so dont make the tail label
                 debugging = ""
                 debug_result = ""
                 if debug:
@@ -1595,8 +1619,8 @@ Result %s(%s);
 %s
 %s
 return %s;
-%s:
-            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result), debug_result, result, out)
+%s
+            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result), debug_result, result, label(out[0]))
 
             return data
 
@@ -1620,18 +1644,25 @@ return %s;
         if self.fail != None:
             fail_code = self.fail
 
+        def label(n):
+            if n != False:
+                return "%s:" % n
+            return ""
+        
+        pattern_results = indent('\n'.join([newPattern(pattern, stream, my_position).strip() for pattern in self.patterns]))
+
         data = """
 Result rule_%s(Stream & %s, const int %s%s){
     %s
     int %s = %s;
-    %s:
+    %s
     %s
     %s
     %s
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, parameters, indent(hasChunk), my_position, position, tail_loop, indent(vars), indent('\n'.join([newPattern(pattern, stream, my_position).strip() for pattern in self.patterns])), indent(updateChunk("errorResult")), fail_code)
+        """ % (self.name, stream, position, parameters, indent(hasChunk), my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult")), fail_code)
 
         return data
 
@@ -1905,6 +1936,8 @@ std::cout << "Parsed def!" << std::endl;
     peg = Peg("Peg", "start", rules)
     print peg.generate_cpp()
 
+# BNF for parsing BNF description
+# This bootstraps the system so we can write normal BNF rules in a file
 def peg_bnf():
     rules = [
         Rule("start", [
