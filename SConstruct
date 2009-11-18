@@ -428,7 +428,7 @@ def getDataPath():
 debug = getDebug()
 dataPath = getDataPath()
 
-cflags = [ '-Wall' ]
+cflags = ['-Wall', '-Wno-unused-variable', '-Wno-unused-function']
 cppflags = ['-Woverloaded-virtual']
 cdefines = ['DATA_PATH=\\\"%s\\\"' % dataPath]
 # cppflags = [ '-Woverloaded-virtual' ]
