@@ -314,7 +314,9 @@ void TabMenu::run(){
     ColorBuffer backgroundBuffer(selectedTabInfo.body,runningTabInfo.body);
 
     currentTab = tabs.begin();
-    location = targetOffset = totalOffset = 0;
+    location = 0;
+    targetOffset = 0;
+    totalOffset = 0;
     // Set select color
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         if (i == currentTab){
@@ -381,7 +383,8 @@ void TabMenu::run(){
                             targetOffset-=backboard.position.width;
                         } else {
                             currentTab = tabs.begin();
-                            location= targetOffset = 0;
+                            location = 0;
+                            targetOffset = 0;
                         }
                         (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
                     }
@@ -513,7 +516,7 @@ void TabMenu::drawMenus(Bitmap *bmp){
     // Drawing menus
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
-        tab->snapPosition.position.x = startx;
+        tab->snapPosition.position.x = (int) startx;
         tab->snapPosition.position.y = backboard.position.y;
         if (tab->checkVisible(backboard.position)){
             /* Set clipping rectangle need to know why text isn't clipping */

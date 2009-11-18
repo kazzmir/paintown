@@ -769,6 +769,7 @@ static DUMB_IT_SIGDATA *it_xm_load_sigdata(DUMBFILE *f)
 
 	for (i = 0; i < sigdata->n_instruments; i++) {
 		XM_INSTRUMENT_EXTRA extra;
+                memset(&extra, 0, sizeof(XM_INSTRUMENT_EXTRA));
 
 		if (it_xm_read_instrument(&sigdata->instrument[i], &extra, f) < 0) {
 			TRACE("XM error: instrument %d\n", i+1);

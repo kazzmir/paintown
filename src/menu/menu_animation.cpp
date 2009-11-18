@@ -137,10 +137,10 @@ void MenuFrame::draw(const int xaxis, const int yaxis, Bitmap *work){
         } else if (scrollOffset.y > 0){
             loc.y = scrollOffset.y - bmp->getHeight();
         }
-        bmp->Blit(scrollOffset.x, scrollOffset.y, temp);
-        bmp->Blit( scrollOffset.x, loc.y, temp);
-        bmp->Blit( loc.x, scrollOffset.y, temp);
-        bmp->Blit( loc.x, loc.y, temp);
+        bmp->Blit((int) scrollOffset.x, (int) scrollOffset.y, temp);
+        bmp->Blit((int) scrollOffset.x, (int) loc.y, temp);
+        bmp->Blit((int) loc.x, (int) scrollOffset.y, temp);
+        bmp->Blit((int) loc.x, (int) loc.y, temp);
 
         renderSprite(&temp, (int)(xaxis+offset.x), (int)(yaxis+offset.y), alpha, horizontalFlip, verticalFlip, work);
 

@@ -102,7 +102,7 @@ static void * playMusic( void * _music ){
 }
 
 double Music::getVolume(){
-    int vol = 0;
+    double vol = 0;
     LOCK;{
         vol = volume;
     }

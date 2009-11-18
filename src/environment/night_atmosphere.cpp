@@ -79,17 +79,17 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
     int lamp_height = save.getHeight() - top;
 
     /* y = tan(theta) * x */
-    int lamp_top = ((double)lower_width * 2.0 / (double)lamp_height) * (double)upper_width;
+    int lamp_top = (int)(((double)lower_width * 2.0 / (double)lamp_height) * (double)upper_width);
 
     // int top = 0;
     save.triangle(left, top, middle, top, left, save.getHeight(), black);
     save.triangle(right, top, middle, top, right, save.getHeight(), black);
-    int nwidth = (double) lamp_top / ((double) lamp_height / (double) lower_width);
+    int nwidth = (int)((double) lamp_top / ((double) lamp_height / (double) lower_width));
     save.triangle(middle, top, middle - nwidth, top + lamp_top, middle + nwidth, top + lamp_top, black);
 
     save.rectangleFill(0, 0, right, top, black);
     Bitmap::drawingMode(Bitmap::MODE_SOLID);
-    int xwidth = (double) lamp_height / ((double)(save.getHeight() - top) / (double) lower_width);
+    int xwidth = (int)((double) lamp_height / ((double)(save.getHeight() - top) / (double) lower_width));
     save.light(middle, top, xwidth, lamp_height, lamp_top, light_alpha, dark_alpha, light, black);
     lamp->draw(middle - 8, top, save);
     save.draw(where_x, 0, *work);

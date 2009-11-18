@@ -343,7 +343,7 @@ static DUMB_IT_SIGDATA *it_mod_load_sigdata(DUMBFILE *f)
 	DUMB_IT_SIGDATA *sigdata;
 	int n_channels;
 	int i;
-	unsigned long fft;
+	unsigned long fft = 0;
 
 	f = dumbfile_buffer_mod(f, &fft);
 	if (!f)
