@@ -19,11 +19,11 @@ buildbot_cmake:
 	cd b; cmake ..; $(MAKE)
 
 static:
-	@scons -j 2 static
+	@scons -j `python misc/cores.py` static
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 
 quiet:
-	@scons -j 2 -s
+	@scons -j `python misc/cores.py` -s
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 
 clean:
