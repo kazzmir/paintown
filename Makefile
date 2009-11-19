@@ -6,9 +6,17 @@ all:
 
 # usually only be executed by the buildbot script
 # gch is broken for some reason: http://gcc.gnu.org/ml/gcc-help/2005-02/msg00007.html
-buildbot:
+buildbot: buildbot_normal buildbot_static buildbot_editor buildbot_cmake
+buildbot_normal:
 	@scons -j `python misc/cores.py` gch=0 colors=0
+buildbot_static:
+	@scons static -j `python misc/cores.py` gch=0 colors=0
+buildbot_editor:
 	cd editor; $(MAKE)
+buildbot_cmake:
+	-rm -rf b
+	-mkdir b
+	cd b; cmake ..; $(MAKE)
 
 static:
 	@scons -j 2 static
