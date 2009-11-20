@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export USE_ICECC=1
+export PATH=/usr/lib/icecc/bin:$PATH
+echo "Using icecc as your compiler"

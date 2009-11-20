@@ -21,4 +21,15 @@ def detectCPUs():
             return ncpus
     return 1 # Default
 
-print detectCPUs()
+def usingIcecream():
+    import os
+    try:
+        return int(os.environ['USE_ICECC']) == 1
+    except KeyError:
+        return False
+
+# if using the icecc distributed compiler stuff just set cores to 5
+if usingIcecream():
+    print "5"
+else:
+    print detectCPUs()
