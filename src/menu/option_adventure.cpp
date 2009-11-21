@@ -25,15 +25,23 @@ MenuOption(token, Event){
         throw LoadException("Not an adventure");
     }
 
+    token->findTokens("foo");
+
     while (token->hasTokens()){
         try{
             Token * tok;
             *token >> tok;
             string temp;
+            
+            if (tok->match("name")){
+                // ...
+            }
 
+            /*
             if (tok->match("name", temp)){
                 this->addText(LanguageString(temp));
             }
+            */
 
             Token::Matcher matcher = tok->getMatcher("name/language");
             string language, words;
