@@ -1,0 +1,11 @@
+Import('use')
+
+source = Split("""
+test.cpp
+../../util/token.cpp
+../../util/token_exception.cpp
+""")
+
+x = []
+x.append(use.Program('test', source))
+Return('x')
