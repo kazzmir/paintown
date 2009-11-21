@@ -75,11 +75,30 @@ static void test3(){
     }
 }
 
+static void test4_write(string file){
+    ofstream out(file.c_str());
+    out << "(foo (bar cheese))";
+    out.close();
+}
+
+static void test4(){
+    string file = randomFile();
+    test4_write(file);
+    TokenReader reader(file);
+    Token * head = reader.readToken();
+    string words;
+    head->match("foo/bar", words);
+    if (words != "cheese"){
+        throw Failure(4);
+    }
+}
+
 int main(){
     try{
         test1();
         test2();
         test3();
+        test4();
         cout << "All tests passed!" << endl;
     } catch (const Failure & f){
         cout << "Test case " << f.num << " failed" << endl;
