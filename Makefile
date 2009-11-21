@@ -1,8 +1,12 @@
-.PHONY: all doc static quiet clean win nsis count
+.PHONY: all doc static quiet clean win nsis count test
 
 all:
 	@scons -j `python misc/cores.py` || echo "Get scons at www.scons.org or read the README for compilation instructions"
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
+
+test:
+	@scons -j `python misc/cores.py` test-all
+	@python misc/gnome-notify "Finished compiling" 2>/dev/null
 
 # usually only be executed by the buildbot script
 # gch is broken for some reason: http://gcc.gnu.org/ml/gcc-help/2005-02/msg00007.html
