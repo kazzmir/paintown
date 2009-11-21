@@ -5,6 +5,7 @@
 #include <vector>
 #include "gui/box.h"
 #include "util/load_exception.h"
+#include "util/language-string.h"
 #include "return_exception.h"
 
 class Bitmap;
@@ -89,6 +90,7 @@ class MenuOption
 		inline OptionType getType() const { return mType; }
 		
 		inline void setText(const std::string &t) { text = t; }
+                void addText(const LanguageString & str);
 		
 		inline std::string getText() const { return text; }
 		

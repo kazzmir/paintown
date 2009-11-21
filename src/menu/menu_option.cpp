@@ -2,6 +2,7 @@
 #include "menu/menu_option.h"
 #include "util/token.h"
 #include "util/funcs.h"
+#include "util/language-string.h"
 #include "globals.h"
 #include "menu/menu_animation.h"
 
@@ -79,6 +80,10 @@ void MenuOption::drawBelow(Bitmap *work){
 	    (*i)->draw(work);
 	}
     }
+}
+
+void MenuOption::addText(const LanguageString & string){
+    /* TODO */
 }
 
 void MenuOption::drawAbove(Bitmap *work){
