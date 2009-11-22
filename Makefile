@@ -10,6 +10,7 @@ test:
 	@echo
 	@echo Running tests
 	build/test/token/test
+	@-rm /tmp/token*
 
 # usually only be executed by the buildbot script
 # gch is broken for some reason: http://gcc.gnu.org/ml/gcc-help/2005-02/msg00007.html
