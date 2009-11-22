@@ -4,14 +4,12 @@
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "globals.h"
-
-#include <stdio.h>
+#include <sstream>
 
 using namespace std;
 
 OptionNpcBuddies::OptionNpcBuddies( Token * token ) throw( LoadException ):
 MenuOption(token, AdjustableOption),
-name(""),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -28,31 +26,33 @@ rgreen(255){
 OptionNpcBuddies::~OptionNpcBuddies(){
 	// Nothing
 }
+        
+std::string OptionNpcBuddies::getText(){
+    ostringstream out;
+    out << MenuOption::getText() << ": " << MenuGlobals::getNpcBuddies();
+    return out.str();
+}
 
 void OptionNpcBuddies::logic(){
-	//ostringstream temp;
-	char temp[255];
-	sprintf( temp, "%s: %d", name.c_str(), MenuGlobals::getNpcBuddies() );
-	setText(std::string(temp));
-	
-	if ( lblue < 255 ){
-		lblue += 5;
-	}
 
-	if ( rblue < 255 ){
-		rblue += 5;
-	}
+    if ( lblue < 255 ){
+        lblue += 5;
+    }
 
-	if ( lgreen < 255 ){
-		lgreen += 5;
-	}
+    if ( rblue < 255 ){
+        rblue += 5;
+    }
 
-	if ( rgreen < 255 ){
-		rgreen += 5;
-	}
-	
-	setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
-	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
+    if ( lgreen < 255 ){
+        lgreen += 5;
+    }
+
+    if ( rgreen < 255 ){
+        rgreen += 5;
+    }
+
+    setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
+    setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
 void OptionNpcBuddies::run(bool &endGame){

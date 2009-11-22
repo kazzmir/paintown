@@ -20,14 +20,13 @@ class OptionInvincible : public MenuOption
 		// This is to pass paramaters to an option ie a bar or something
 		virtual bool leftKey();
 		virtual bool rightKey();
+    
+                virtual std::string getText();
 		
 		OptionInvincible(Token *token)throw( LoadException );
 	
 		virtual ~OptionInvincible();
 	private:
-		// name
-		std::string name;
-		
 		int lblue, lgreen;
 		int rblue, rgreen;
 };

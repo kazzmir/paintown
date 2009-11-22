@@ -4,11 +4,16 @@
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "globals.h"
+#include <sstream>
 
 using namespace std;
 
-OptionInvincible::OptionInvincible(Token *token) throw (LoadException): MenuOption(token, AdjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
-{
+OptionInvincible::OptionInvincible(Token *token) throw (LoadException):
+MenuOption(token, AdjustableOption),
+lblue(255),
+lgreen(255),
+rblue(255),
+rgreen(255){
 	setRunnable(false);
 	
 	if ( *token != "invincible" )
@@ -21,10 +26,15 @@ OptionInvincible::~OptionInvincible()
 {
 	// Nothing
 }
+                
+std::string OptionInvincible::getText(){
+    ostringstream out;
+    out << MenuOption::getText() << ": " << (MenuGlobals::getInvincible() ? "Yes" : "No");
+    return out.str();
+}
 
 void OptionInvincible::logic()
 {
-	setText(name + (MenuGlobals::getInvincible() ? ": Yes" : ": No"));
 	
 	if(lblue < 255)lblue+=5;
 	if(rblue < 255)rblue+=5;

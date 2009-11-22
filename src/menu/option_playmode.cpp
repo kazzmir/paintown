@@ -5,12 +5,12 @@
 #include "menu/menu_global.h"
 #include "globals.h"
 #include "init.h"
+#include <sstream>
 
 using namespace std;
 
 OptionPlayMode::OptionPlayMode(Token *token) throw (LoadException):
 MenuOption(token, AdjustableOption),
-name(""),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -27,14 +27,23 @@ rgreen(255){
 OptionPlayMode::~OptionPlayMode(){
     // Nothing
 }
+    
+std::string OptionPlayMode::getText(){
+    ostringstream out;
+    out << MenuOption::getText() << ": ";
+
+    /* TODO: language translations of these */
+    if (MenuGlobals::freeForAll()){
+        out << "Free for all";
+    } else if (MenuGlobals::cooperative()){
+        out << "Cooperative";
+    }
+
+    return out.str();
+}
 
 void OptionPlayMode::logic(){
-    //ostringstream temp;
-    if (MenuGlobals::freeForAll()){
-        setText(name + ": Free for all");
-    } else if (MenuGlobals::cooperative()){
-        setText(name + ": Cooperative");
-    }
+    
 
     if (lblue < 255){
         lblue += 5;

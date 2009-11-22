@@ -5,11 +5,16 @@
 #include "menu/menu_global.h"
 #include "globals.h"
 #include "init.h"
+#include <sstream>
 
 using namespace std;
 
-OptionFullscreen::OptionFullscreen(Token *token) throw (LoadException): MenuOption(token, AdjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
-{
+OptionFullscreen::OptionFullscreen(Token *token) throw (LoadException):
+MenuOption(token, AdjustableOption),
+lblue(255),
+lgreen(255),
+rblue(255),
+rgreen(255){
 	setRunnable(false);
 	
 	if ( *token != "fullscreen" )
@@ -22,12 +27,14 @@ OptionFullscreen::~OptionFullscreen()
 {
 	// Nothing
 }
+    
+std::string OptionFullscreen::getText(){
+    ostringstream out;
+    out << MenuOption::getText() << ": " << (MenuGlobals::getFullscreen() ? "Yes" : "No");
+    return out.str();
+}
 
-void OptionFullscreen::logic()
-{
-	//ostringstream temp;
-	setText(name + (MenuGlobals::getFullscreen() ? ": Yes" : ": No"));
-	
+void OptionFullscreen::logic(){
 	if(lblue < 255)lblue+=5;
 	if(rblue < 255)rblue+=5;
 	if(lgreen < 255)lgreen+=5;

@@ -18,6 +18,8 @@ public:
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
     virtual void run(bool &endGame);
+    
+    virtual std::string getText();
 
     // This is to pass paramaters to an option ie a bar or something
     virtual bool leftKey();
@@ -29,8 +31,6 @@ protected:
     virtual void changeMode();
 
 private:
-    // name
-    std::string name;
 
     int lblue, lgreen;
     int rblue, rgreen;

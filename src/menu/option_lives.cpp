@@ -4,14 +4,12 @@
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "globals.h"
-
-#include <stdio.h>
+#include <sstream>
 
 using namespace std;
 
 OptionLives::OptionLives( Token * token ) throw( LoadException ):
 MenuOption(token, AdjustableOption),
-name(""),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -26,33 +24,34 @@ rgreen(255){
 }
 
 OptionLives::~OptionLives(){
-	// Nothing
+}
+    
+std::string OptionLives::getText(){
+    ostringstream out;
+    out << MenuOption::getText() << ": " << MenuGlobals::getLives();
+    return out.str();
 }
 
 void OptionLives::logic(){
-	//ostringstream temp;
-	char temp[255];
-	sprintf( temp, "%s: %d", name.c_str(), MenuGlobals::getLives() );
-	setText(std::string(temp));
-	
-	if ( lblue < 255 ){
-		lblue += 5;
-	}
 
-	if ( rblue < 255 ){
-		rblue += 5;
-	}
+    if ( lblue < 255 ){
+        lblue += 5;
+    }
 
-	if ( lgreen < 255 ){
-		lgreen += 5;
-	}
+    if ( rblue < 255 ){
+        rblue += 5;
+    }
 
-	if ( rgreen < 255 ){
-		rgreen += 5;
-	}
-	
-	setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
-	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
+    if ( lgreen < 255 ){
+        lgreen += 5;
+    }
+
+    if ( rgreen < 255 ){
+        rgreen += 5;
+    }
+
+    setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
+    setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
 void OptionLives::run(bool &endGame){
