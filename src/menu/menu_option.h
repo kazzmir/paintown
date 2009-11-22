@@ -68,7 +68,7 @@ private:
     state currentState;
     OptionType mType;
     LanguageString text;
-    std::string infoText;
+    LanguageString infoText;
     Bitmap *bmp;
     int adjustLeftColor;
     int adjustRightColor;
@@ -86,8 +86,8 @@ public:
     inline OptionType getType() const { return mType; }
     inline void setText(const LanguageString & t) { text = t; }
     inline std::string getText() { return text.get(); }
-    inline void setInfoText(const std::string &t) { infoText = t; }
-    inline std::string getInfoText() const { return infoText; }
+    inline void setInfoText(const LanguageString &t) { infoText = t; }
+    inline std::string getInfoText(){ return infoText.get(); }
     inline void setBitmap(Bitmap *b) { bmp = b; }
     inline Bitmap *getBitmap() const { return bmp; }
     inline void setLeftAdjustColor(int c) { adjustLeftColor = c; }
@@ -102,6 +102,7 @@ public:
 
 protected:
     void readName(Token * token);
+    void readInfo(Token * token);
 };
 
 #endif

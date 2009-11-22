@@ -28,12 +28,14 @@ forRemoval(false){
 	      Token * token;
 	      tok >> token;
 	      if ( *token == "info" ){
+                  readInfo(token);
+                  /*
 		  // get info text add to option
 		  std::string temp;
 		  *token >> temp;
 		  setInfoText(temp);
-	      } 
-	      else if( *token == "option-anim" ) {
+                  */
+	      } else if( *token == "option-anim" ) {
 		  MenuAnimation *animation = new MenuAnimation(token);
 		  if (animation->getLocation() == 0){
 		    backgroundAnimations.push_back(animation);
@@ -69,6 +71,9 @@ forRemoval(false){
  *
  *  Using both style is actually allowed but a (language "english" "foo")
  *  will override the legacy definition.
+ *
+ *  Expects the parent token to be passed in:
+ *  (whatever (name ...))
  */
 void MenuOption::readName(Token * token){
     try{
@@ -89,6 +94,31 @@ void MenuOption::readName(Token * token){
         if (getText().empty()){
             throw LoadException("No name set, this option should have a name!");
         }
+    } catch (const TokenException & ex){
+        string m( "Menu parse error: " );
+        m += ex.getReason();
+        throw LoadException(m);
+    }
+}
+
+/* same deal as readName, except this excepts just the info token:
+ * (info ...)
+ */
+void MenuOption::readInfo(Token * token){
+    try{
+        LanguageString name;
+        string temp;
+        if (token->match("info", temp)){
+            name.add(temp);
+        }
+
+        string language, words;
+        Token::Matcher matcher = token->getMatcher("info/language");
+        while (matcher.match(language, words)){
+            name.add(words, language);
+        }
+
+        this->setInfoText(name);
     } catch (const TokenException & ex){
         string m( "Menu parse error: " );
         m += ex.getReason();
