@@ -60,6 +60,42 @@ forRemoval(false){
     }
 }
 
+/* tries to read the name for the option. Either use
+ *  - legacy way: (name "foobar") which sets the name to "foobar
+ *  in english
+ *  - new way: (name (language "english" "foobar") ...) which adds
+ *  "foobar" as a name in "english". further uses of `language'
+ *  add new languages for the name.
+ *
+ *  Using both style is actually allowed but a (language "english" "foo")
+ *  will override the legacy definition.
+ */
+void MenuOption::readName(Token * token){
+    try{
+        LanguageString name;
+        string temp;
+        if (token->match("_/name", temp)){
+            name.add(temp);
+        }
+
+        string language, words;
+        Token::Matcher matcher = token->getMatcher("_/name/language");
+        while (matcher.match(language, words)){
+            name.add(words, language);
+        }
+
+        this->setText(name);
+
+        if (getText().empty()){
+            throw LoadException("No name set, this option should have a name!");
+        }
+    } catch (const TokenException & ex){
+        string m( "Menu parse error: " );
+        m += ex.getReason();
+        throw LoadException(m);
+    }
+}
+
 MenuOption::~MenuOption(){
     // Kill all animations
     for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){

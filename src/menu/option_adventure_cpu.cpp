@@ -19,36 +19,11 @@ using namespace std;
 
 OptionAdventureCpu::OptionAdventureCpu(Token *token) throw( LoadException ):
 MenuOption(token, Event){
-	if ( *token != "adventure-cpu" ){
-		throw LoadException("Not an adventure");
-	}
-	
-	while ( token->hasTokens() ){
-		try{ 
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "name" ){
-				// Create an image and push it back on to vector
-				std::string temp;
-				*tok >> temp;
-				this->setText(temp);
-			} else {
-				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-                                if (Global::getDebug() >= 3){
-                                    tok->print(" ");
-                                }
-			}
-		} catch ( const TokenException & ex ) {
-			// delete current;
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException( m );
-		}
-	}
-	
-	if ( getText().empty() ){
-		throw LoadException("No name set, this option should have a name!");
-	}
+    if (*token != "adventure-cpu"){
+        throw LoadException("Not an adventure");
+    }
+
+    readName(token);
 }
 
 OptionAdventureCpu::~OptionAdventureCpu(){
