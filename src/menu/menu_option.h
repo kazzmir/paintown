@@ -68,7 +68,7 @@ class MenuOption
 	private:
 		state currentState;
 		OptionType mType;
-		std::string text;
+		LanguageString text;
 		std::string infoText;
 		Bitmap *bmp;
 		int adjustLeftColor;
@@ -89,10 +89,8 @@ class MenuOption
 		
 		inline OptionType getType() const { return mType; }
 		
-		inline void setText(const std::string &t) { text = t; }
-                void addText(const LanguageString & str);
-		
-		inline std::string getText() const { return text; }
+		inline void setText(const LanguageString & t) { text = t; }
+		inline std::string getText() { return text.get(); }
 		
 		inline void setInfoText(const std::string &t) { infoText = t; }
 		

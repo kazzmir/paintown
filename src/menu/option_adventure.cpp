@@ -25,28 +25,21 @@ MenuOption(token, Event){
         throw LoadException("Not an adventure");
     }
 
-    token->findTokens("foo");
-
+    LanguageString name;
     while (token->hasTokens()){
         try{
             Token * tok;
             *token >> tok;
             string temp;
             
-            if (tok->match("name")){
-                // ...
-            }
-
-            /*
             if (tok->match("name", temp)){
-                this->addText(LanguageString(temp));
+                name.add(temp, LanguageString::defaultLanguage());
             }
-            */
 
             Token::Matcher matcher = tok->getMatcher("name/language");
             string language, words;
             while (matcher.match(language, words)){
-                this->addText(LanguageString(words, language));
+                name.add(words, language);
             }
 
             /*
@@ -69,8 +62,9 @@ MenuOption(token, Event){
             throw LoadException( m );
         } 
     }
+    this->setText(name);
 
-    if ( getText().empty() ){
+    if (getText().empty()){
         throw LoadException("No name set, this option should have a name!");
     }
 }

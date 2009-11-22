@@ -9,35 +9,36 @@ using namespace std;
 
 OptionDummy::OptionDummy(Token *token) throw( LoadException ):
 MenuOption(token, Event){
-	if ( *token != "dummy" ){
-		throw LoadException("Not dummy option");
-	}
-	while ( token->hasTokens() ){
-		try{
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "name" ){
-				// Create an image and push it back on to vector
-				std::string temp;
-				*tok >> temp;
-				this->setText(temp);
-			} else {
-				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-                                if (Global::getDebug() >= 3){
-                                    tok->print(" ");
-                                }
-			}
-		} catch ( const TokenException & ex ) {
-			// delete current;
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException( m );
-		} 
-	}
-	
-	if (getText().empty()){
-	    this->setText("Dummy");
-	}
+    if ( *token != "dummy" ){
+        throw LoadException("Not dummy option");
+    }
+
+    while ( token->hasTokens() ){
+        try{
+            Token * tok;
+            *token >> tok;
+            if ( *tok == "name" ){
+                // Create an image and push it back on to vector
+                std::string temp;
+                *tok >> temp;
+                this->setText(temp);
+            } else {
+                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
+            }
+        } catch ( const TokenException & ex ) {
+            // delete current;
+            string m( "Menu parse error: " );
+            m += ex.getReason();
+            throw LoadException( m );
+        } 
+    }
+
+    if (getText().empty()){
+        this->setText("Dummy");
+    }
 }
 
 OptionDummy::OptionDummy( const std::string &name ) throw( LoadException ):

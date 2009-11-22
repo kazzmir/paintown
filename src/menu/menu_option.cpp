@@ -82,10 +82,6 @@ void MenuOption::drawBelow(Bitmap *work){
     }
 }
 
-void MenuOption::addText(const LanguageString & string){
-    /* TODO */
-}
-
 void MenuOption::drawAbove(Bitmap *work){
     for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 	if (*i){

@@ -100,7 +100,9 @@ int main(){
         test3();
         test4();
         cout << "All tests passed!" << endl;
+        return 0;
     } catch (const Failure & f){
         cout << "Test case " << f.num << " failed" << endl;
+        return 1;
     }
 }
