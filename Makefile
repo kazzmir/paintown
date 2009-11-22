@@ -7,6 +7,8 @@ all:
 test:
 	@scons -j `python misc/cores.py` test-all
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null
+	@echo
+	@echo Running tests
 	build/test/token/test
 
 # usually only be executed by the buildbot script
