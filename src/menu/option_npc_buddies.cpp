@@ -5,6 +5,8 @@
 #include "menu/menu_global.h"
 #include "globals.h"
 
+#include <stdio.h>
+
 using namespace std;
 
 OptionNpcBuddies::OptionNpcBuddies( Token * token ) throw( LoadException ):

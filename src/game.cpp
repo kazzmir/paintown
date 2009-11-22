@@ -121,7 +121,7 @@ static vector< Background > readBackgrounds( const string & path ){
 
 static string findNextFile( const char * name ){
 	char buf[ 128 ];
-	char * extension = strchr( name, '.' );
+	const char * extension = strchr( name, '.' );
 	char first[ 128 ];
 	strncpy( first, name, extension - name );
 	first[ extension - name ] = '\0';
