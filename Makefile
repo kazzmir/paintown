@@ -7,6 +7,7 @@ all:
 test:
 	@scons -j `python misc/cores.py` test-all
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null
+	build/test/token/test
 
 # usually only be executed by the buildbot script
 # gch is broken for some reason: http://gcc.gnu.org/ml/gcc-help/2005-02/msg00007.html
