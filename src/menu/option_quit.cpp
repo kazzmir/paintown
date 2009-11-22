@@ -10,35 +10,11 @@ using namespace std;
 
 OptionQuit::OptionQuit(Token *token) throw( LoadException ):
 MenuOption(token, Event){
-	if ( *token != "quit" ){
-		throw LoadException("Not quit option");
-	}
-	while ( token->hasTokens() ){
-		try{
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "name" ){
-				// Create an image and push it back on to vector
-				std::string temp;
-				*tok >> temp;
-				this->setText(temp);
-			} else {
-				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-                                if (Global::getDebug() >= 3){
-                                    tok->print(" ");
-                                }
-			}
-		} catch ( const TokenException & ex ) {
-			// delete current;
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException( m );
-		} 
-	}
-	
-	if (getText().empty()){
-	    this->setText("Quit");
-	}
+    if ( *token != "quit" ){
+        throw LoadException("Not quit option");
+    }
+
+    readName(token);
 }
 
 OptionQuit::OptionQuit( const std::string &name ) throw( LoadException ):

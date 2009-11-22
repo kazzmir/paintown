@@ -51,17 +51,14 @@ title(Bitmap::makeColor(0,255,255)){
 	
 	if ( *token != "credits" )
 		throw LoadException("Not a credit menu");
+
+        readName(token);
 	
 	while ( token->hasTokens() ){
 		try{
 			Token * tok;
 			*token >> tok;
-			if ( *tok == "name" ){
-				/* Create an image and push it back on to vector */
-				std::string temp;
-				*tok >> temp;
-				this->setText(temp);
-			} else if ( *tok == "music" ) {
+			if ( *tok == "music" ) {
 				/* Set music for credits */
 				*tok >> music;
 			} else if ( *tok == "background" ) {
@@ -105,10 +102,6 @@ title(Bitmap::makeColor(0,255,255)){
 		}
 	}
 	
-	if ( getText().empty() ){
-		throw LoadException("No name set, this option should have a name!");
-	}
-
     input.set(Keyboard::Key_ESC, 0, true, Exit);
     input.set(Joystick::Button2, 0, true, Exit);
 }

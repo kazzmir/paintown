@@ -21,32 +21,7 @@ rgreen(255){
         throw LoadException("Not a play-mode");
     }
 
-    while (token->hasTokens()){
-        try{
-            Token * tok;
-            *token >> tok;
-            if ( *tok == "name" ){
-                *tok >> name;
-            } else {
-                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-                if (Global::getDebug() >= 3){
-                    tok->print(" ");
-                }
-            }
-        } catch ( const TokenException & ex ) {
-            // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException( m );
-        } catch ( const LoadException & ex ) {
-            // delete current;
-            throw ex;
-        }
-    }
-
-    if (name.empty()){
-        throw LoadException("No name set, this option should have a name!");
-    }
+    readName(token);
 }
 
 OptionPlayMode::~OptionPlayMode(){

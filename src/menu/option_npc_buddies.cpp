@@ -16,35 +16,13 @@ lblue(255),
 lgreen(255),
 rblue(255),
 rgreen(255){
-	setRunnable(false);
-	
-	if ( *token != "npc" ){
-		throw LoadException( "Not npc option" );
-	}
-	
-	while ( token->hasTokens() ){
-		try{
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "name" ){
-				*tok >> name;
-			} else {
-				Global::debug( 3 ) << "Unhandled menu attribute: " << endl;
-                                if (Global::getDebug() >= 3){
-                                    tok->print(" ");
-                                }
-			}
-		} catch ( const TokenException & ex ) {
-			// delete current;
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException( m );
-		}
-	}
-	
-	if ( name.empty() ){
-		throw LoadException("No name set, this option should have a name!");
-	}
+    setRunnable(false);
+
+    if ( *token != "npc" ){
+        throw LoadException( "Not npc option" );
+    }
+
+    readName(token);
 }
 
 OptionNpcBuddies::~OptionNpcBuddies(){

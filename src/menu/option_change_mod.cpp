@@ -16,10 +16,11 @@ using namespace std;
 
 OptionChangeMod::OptionChangeMod(Token *token) throw (LoadException):
 MenuOption(token, Event){
-	if ( *token != "change-mod" ){
-		throw LoadException("Not a change mod");
-	}
+    if ( *token != "change-mod" ){
+        throw LoadException("Not a change mod");
+    }
 
+    /* TODO: fix */
     setText("Change mod");
 }
 

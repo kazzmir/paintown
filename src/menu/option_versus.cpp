@@ -12,43 +12,36 @@ using namespace std;
 
 OptionVersus::OptionVersus( Token *token ) throw( LoadException ):
 MenuOption(token, Event), human(false){
-	if ( *token != "versus" ){
-		throw LoadException("Not versus");
-	}
-	
-	while ( token->hasTokens() ){
-		try{ 
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "name" ){
-				// Create an image and push it back on to vector
-				std::string temp;
-				*tok >> temp;
-				this->setText(temp);
-			} else if( *tok == "cpu" ) {
-				human = false;
-			} else if( *tok == "human" ) {
-				human = true;
-			} else {
-				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-                                if (Global::getDebug() >= 3){
-                                    tok->print(" ");
-                                }
-			}
-		} catch ( const TokenException & ex ) {
-			// delete current;
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException( m );
-		} catch ( const LoadException & ex ) {
-			// delete current;
-			throw ex;
-		}
-	}
-	
-	if ( getText().empty() ){
-		throw LoadException("No name set, this option should have a name!");
-	}
+    if ( *token != "versus" ){
+        throw LoadException("Not versus");
+    }
+
+    readName(token);
+
+    while ( token->hasTokens() ){
+        try{ 
+            Token * tok;
+            *token >> tok;
+            if( *tok == "cpu" ) {
+                human = false;
+            } else if( *tok == "human" ) {
+                human = true;
+            } else {
+                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
+            }
+        } catch ( const TokenException & ex ) {
+            // delete current;
+            string m( "Menu parse error: " );
+            m += ex.getReason();
+            throw LoadException( m );
+        } catch ( const LoadException & ex ) {
+            // delete current;
+            throw ex;
+        }
+    }
 }
 
 OptionVersus::~OptionVersus(){
