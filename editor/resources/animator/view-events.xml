@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+    <scrollpane>
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+        <panel id="work" layout="GridBagLayout" />
+    </scrollpane>
+    <hbox>
+        <gridbagconstraints
+            gridx="0"
+            gridy="1"
+            weightx="1"
+            weighty="0.1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+        <button id="close" text="Close" />
+    </hbox>
+</panel>

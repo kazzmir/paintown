@@ -735,44 +735,31 @@ public class CharacterAnimation extends JPanel {
                     eventSelect.addItem( event );
                 }
 
+                JButton eventView = (JButton) contextEditor.find("view-events");
+                eventView.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        final SwingEngine engine = new SwingEngine("animator/view-events.xml");
+                        // final JDialog dialog = new JDialog("Event viewer");
+                        final JDialog dialog = new JDialog();
+
+                        final JButton close = (JButton) engine.find("close");
+                        close.addActionListener( new AbstractAction(){
+                            public void actionPerformed( ActionEvent event ){
+                                dialog.setVisible( false );
+                            }
+                        });
+
+                        dialog.getContentPane().add((JPanel) engine.getRootComponent());
+                        dialog.setSize(300, 300);
+                        dialog.setVisible(true);
+                    }
+                });
+
                 JButton eventAdd = (JButton) contextEditor.find( "add-event" );
                 eventAdd.addActionListener( new AbstractAction(){
                     public void actionPerformed( ActionEvent event ){
                         AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
                         doEvent.invoke_(temp);
-                        /*
-                        JPanel editor = temp.getEditor(animation);
-                        JPanel work = (JPanel) contextEditor.find("event-work");
-                        work.removeAll();
-                        GridBagConstraints constraints = new GridBagConstraints();
-                        constraints.gridx = 0;
-                        constraints.gridy = 0;
-                        constraints.weightx = 1;
-                        constraints.weighty = 1;
-                        constraints.fill = GridBagConstraints.BOTH;
-                        constraints.anchor = GridBagConstraints.NORTHWEST;
-                        work.add(editor, constraints);
-                        work.revalidate();
-                        */
-
-                        /*
-                        if ( editor != null ){
-                            JDialog dialog = new JDialog();
-                            dialog.setSize(editor.getSize());
-                            Point here = animEditor.getRootComponent().getLocation();
-                            SwingUtilities.convertPointToScreen(here, animEditor.getRootComponent());
-                            here.setLocation(here.getX() + animEditor.getRootComponent().getWidth() / 2, here.getY() + animEditor.getRootComponent().getHeight() / 2);
-                            dialog.setLocation(here);
-
-                            dialog.getContentPane().add(editor);
-                            dialog.addWindowStateListener(new WindowStateListener(){
-                                public void windowStateChanged(WindowEvent e){
-                                    eventList.setListData( animation.getEvents() );
-                                }
-                            });
-                            dialog.show();
-                        }
-                        */
                         int index = 0;
                         if ( eventList.getSelectedIndex() != -1 ){
                             index = animation.addEvent( temp, eventList.getSelectedIndex() + 1 );
@@ -790,39 +777,6 @@ public class CharacterAnimation extends JPanel {
                         if( ! animation.getEvents().isEmpty()){
                             AnimationEvent temp = (AnimationEvent) animation.getEvents().elementAt( eventList.getSelectedIndex() );
                             doEvent.invoke_(temp);
-                            /*
-                            JPanel editor = temp.getEditor(animation);
-                            JPanel work = (JPanel) contextEditor.find("event-work");
-                            work.removeAll();
-                            GridBagConstraints constraints = new GridBagConstraints();
-                            constraints.gridx = 0;
-                            constraints.gridy = 0;
-                            constraints.weightx = 1;
-                            constraints.weighty = 1;
-                            constraints.fill = GridBagConstraints.BOTH;
-                            constraints.anchor = GridBagConstraints.NORTHWEST;
-                            work.add(editor, constraints);
-                            work.revalidate();
-                            */
-
-                            /*
-                               if ( editor != null ){
-                               JDialog dialog = new JDialog();
-                               dialog.setSize(editor.getSize());
-                               Point here = animEditor.getRootComponent().getLocation();
-                               SwingUtilities.convertPointToScreen(here, animEditor.getRootComponent());
-                               here.setLocation(here.getX() + animEditor.getRootComponent().getWidth() / 2, here.getY() + animEditor.getRootComponent().getHeight() / 2);
-                               dialog.setLocation(here);
-
-                               dialog.getContentPane().add(editor);
-                               dialog.addWindowStateListener(new WindowStateListener(){
-                               public void windowStateChanged(WindowEvent e){
-                               eventList.setListData( animation.getEvents() );
-                               }
-                               });
-                               dialog.show();
-                               }
-                               */
                         }
                     }
                 });

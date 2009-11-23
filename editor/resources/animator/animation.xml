@@ -36,8 +36,8 @@
                     <gridbagconstraints
                         gridx="0"
                         gridy="0"
-                        weightx="0.1"
-                        weighty="0.1"
+                        weightx="0"
+                        weighty="0"
                         gridheight="1"
                         anchor="GridBagConstraints.NORTHWEST"
                         fill="GridBagConstraints.NONE"
@@ -46,10 +46,10 @@
                 </button>
                 <vbox id="upper">
                     <gridbagconstraints
-                        gridx="1"
-                        gridy="0"
-                        weightx="0.1"
-                        weighty="0.8"
+                        gridx="0"
+                        gridy="1"
+                        weightx="0"
+                        weighty="1"
                         gridheight="1"
                         anchor="GridBagConstraints.NORTHWEST"
                         fill="GridBagConstraints.BOTH"
@@ -104,9 +104,9 @@
                 <vbox>
                     <gridbagconstraints
                         gridx="0"
-                        gridy="1"
+                        gridy="2"
                         weightx="1"
-                        weighty="0.4"
+                        weighty="0.1"
                         gridheight="1"
                         gridwidth="2"
                         anchor="GridBagConstraints.NORTHWEST"
@@ -117,6 +117,7 @@
                         border="MatteBorder(2,2,2,2,667A63)"
                         layout="GridBagLayout" />
                     <label text="Events" />
+                    <glue />
                     <scrollpane>
                         <list id="events" />
                     </scrollpane>
@@ -131,6 +132,8 @@
                         <button text="Move-Up" id="up-event" />
                         <glue size="1" />
                         <button text="Move-Down" id="down-event" />
+                        <glue size="1" />
+                        <button text="View All" id="view-events" />
                         <glue size="1" />
                     </hbox>
                     <glue size="1" />
