@@ -632,7 +632,7 @@ except NotError:
     def generate_rule(me, pattern, result, previous_result, stream, failure):
         parameters = ""
         if pattern.parameters != None:
-            parameters = ",%s" % ",".join(patter.parameters)
+            parameters = ",%s" % ",".join(pattern.parameters)
         data = """
 # print "Trying rule " + '%s'
 %s = rule_%s(%s, %s.getPosition()%s)
@@ -771,17 +771,33 @@ else:
         return data
 
     def generate_verbatim(me, pattern, result, previous_result, stream, failure):
-        length = len(pattern.letters)
-        if special_char(pattern.letters):
-            length = 1
-        data = """
+        def doString():
+            length = len(pattern.letters)
+            if special_char(pattern.letters):
+                length = 1
+            data = """
 if '%s' == %s.get(%s.getPosition(), %s):
     %s.nextPosition(%s)
     %s.setValue('%s')
 else:
     %s
 """ % (pattern.letters, stream, result, length, result, length, result, pattern.letters, indent(failure()))
-        return data
+            return data
+        def doAscii():
+            data = """
+if ord(%s.get(%s.getPosition())) == %s:
+    %s.nextPosition()
+    %s.setValue(%s);
+else:
+    %s
+"""
+            return data % (stream, result, pattern.letters, result, result, pattern.letters, indent(failure()))
+        if type(pattern.letters) == type('x'):
+            return doString()
+        elif type(pattern.letters) == type(0):
+            return doAscii()
+        else:
+            raise Exception("unknown verbatim value %s" % pattern.letters)
 
 # all the self parameters are named me because the code was originally
 # copied from another class and to ensure that copy/paste errors don't
