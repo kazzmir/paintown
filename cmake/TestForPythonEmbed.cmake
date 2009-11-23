@@ -8,6 +8,9 @@ find_package(PythonLibs)
 if(PYTHONLIBS_FOUND)
 	MESSAGE(STATUS "Checking if Python is Embedable")
 	SET(CMAKE_REQUIRED_INCLUDES ${PYTHON_INCLUDE_PATH})
+	# If on Slackware, uncomment the next line to fix a missing library issue
+	# As of 11/22/2009 this is needed for Slackware 13
+	# SET(PYTHON_LIBRARIES ${PYTHON_LIBRARIES} -ldl -lm -lpthread -lutil)
 	SET(CMAKE_REQUIRED_LIBRARIES ${PYTHON_LIBRARIES})
 	CHECK_C_SOURCE_COMPILES(
 "#include <Python.h>
