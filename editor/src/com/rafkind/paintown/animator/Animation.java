@@ -265,9 +265,9 @@ public class Animation implements Runnable {
 	 * do not edit the returned list, to add new events use
 	 * addEvent/removeEvent
 	 */ 
-	public Vector getEvents(){
-		synchronized( events ){
-			return new Vector( events );
+	public Vector<AnimationEvent> getEvents(){
+		synchronized(events){
+			return new Vector<AnimationEvent>(events);
 		}
 	}
 

@@ -744,10 +744,31 @@ public class CharacterAnimation extends JPanel {
 
                         final JButton close = (JButton) engine.find("close");
                         close.addActionListener( new AbstractAction(){
-                            public void actionPerformed( ActionEvent event ){
-                                dialog.setVisible( false );
+                            public void actionPerformed(ActionEvent event ){
+                                dialog.setVisible(false);
                             }
                         });
+
+                        final JPanel work = (JPanel) engine.find("work");
+                        int x = 0;
+                        int y = 0;
+                        for (AnimationEvent aevent : animation.getEvents()){
+                            JButton button = new JButton("foobar");
+                            GridBagConstraints constraints = new GridBagConstraints();
+                            constraints.gridx = x;
+                            constraints.gridy = y;
+                            constraints.weightx = 0.1;
+                            constraints.weighty = 0.1;
+                            // constraints.fill = GridBagConstraints.BOTH;
+                            // constraints.anchor = GridBagConstraints.NORTHWEST;
+                            work.add(button, constraints);
+                            x += 1;
+                            if (x > Math.sqrt(animation.getEvents().size())){
+                                y += 1;
+                                x = 0;
+                            }
+                        }
+
 
                         dialog.getContentPane().add((JPanel) engine.getRootComponent());
                         dialog.setSize(300, 300);
