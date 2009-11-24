@@ -1,21 +1,30 @@
-<panel layout="GridBagLayout" size="200">
-	<vbox>
-		<gridbagconstraints
-			gridx="0"
-			gridy="0"
-			weightx="1"
-			weighty="1"
-			gridheight="1"
-			anchor="GridBagConstraints.NORTHWEST"
-			fill="GridBagConstraints.BOTH"
-			/>
-		<hbox>
-			<panel id="canvas" />
-		</hbox>
-		<hbox>
-			<label text="Set Frame" />
-			<combobox id="frame" />
-			<glue />
-		</hbox>
-	</vbox>
+<panel layout="GridBagLayout">
+    <!--
+    <panel layout="GridBagLayout" id="canvas">
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="1"
+            weighty="0.9"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+
+    </panel>
+    -->
+    <hbox>
+        <gridbagconstraints
+            gridx="0"
+            gridy="1"
+            weightx="1"
+            weighty="0.1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.HORIZONTAL"
+            />
+        <label text="Set Frame" />
+        <combobox id="frame" />
+        <glue />
+    </hbox>
 </panel>

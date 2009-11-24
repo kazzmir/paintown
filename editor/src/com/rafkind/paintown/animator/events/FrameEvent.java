@@ -50,17 +50,26 @@ public class FrameEvent implements AnimationEvent {
 	
 	public JPanel getEditor( final Animation animation, final DrawArea area2){
 		SwingEngine engine = new SwingEngine( "animator/eventframe.xml" );
-		((JPanel)engine.getRootComponent()).setSize(350,270);
-		JPanel canvas = (JPanel)engine.find("canvas");
-		canvas.setSize(350,200);
+		// ((JPanel)engine.getRootComponent()).setSize(350,270);
+		// JPanel canvas = (JPanel)engine.find("canvas");
+        final JPanel canvas = (JPanel) engine.getRootComponent();
+		// canvas.setSize(350,200);
 		
 		class drawArea extends JComponent {
 			private BufferedImage img = null;
 			public void paint( Graphics g ){
 				g.setColor( new Color( 0, 0, 0 ) );
-				g.fillRect( 0, 0, 640, 480 );
-				if ( img != null ){
-					g.drawImage( img, 125 - (img.getTileWidth()/2), 100 - (img.getTileHeight()/2), null );
+				// g.fillRect( 0, 0, 640, 480 );
+				g.fillRect(1, 1, getWidth() - 1, getHeight() - 1);
+				if (img != null){
+					// g.drawImage( img, 125 - (img.getTileWidth()/2), 100 - (img.getTileHeight()/2), null );
+                    Graphics2D g2d = (Graphics2D) g;
+                    double scale = Math.min((getWidth() - 5.0) / img.getTileWidth(), (getHeight() - 5.0) / img.getTileHeight());
+                    g2d.scale(scale, scale);
+                    // g.drawImage(img, (int)(getWidth() / 2 - (img.getTileWidth()*scale/2)), (int)(getHeight() / 2 - img.getTileHeight()*scale/2), null);
+                    // g.drawImage(img, (int)(getWidth() / 2 - (img.getTileWidth()*scale/2)), (int)(getHeight() / 2 - img.getTileHeight()*scale/2), null);
+                    g.drawImage(img, (int)(getWidth() / 2 - (img.getWidth(null)*scale/2)), (int)(getHeight() / 2 - img.getHeight(null)*scale/2), null);
+                    // g.drawImage(img, (int) ((getWidth() / 2 - (img.getTileWidth()/2)) * scale), (int)((getHeight() / 2 - (img.getTileHeight()/2)) * scale), null);
 				}
 			}
 			
@@ -71,10 +80,21 @@ public class FrameEvent implements AnimationEvent {
 
 		final drawArea area = new drawArea();
 
+        /*
 		area.setSize(350,200);
 		area.setPreferredSize( new Dimension( 350,200 ) );
+        */
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        canvas.add(area, constraints);
 		
-		canvas.add(area);
+		// canvas.add(area);
 		
 		final JComboBox framebox = (JComboBox) engine.find( "frame" );
 		int index = 0;
