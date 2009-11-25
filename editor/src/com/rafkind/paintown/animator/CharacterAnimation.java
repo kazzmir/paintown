@@ -750,27 +750,45 @@ public class CharacterAnimation extends JPanel {
                         });
 
                         final JPanel work = (JPanel) engine.find("work");
-                        int x = 0;
-                        int y = 0;
-                        double maxWidth = Math.sqrt(animation.getEvents().size());
-                        for (AnimationEvent aevent : animation.getEvents()){
-                            JPanel editor = aevent.getEditor(animation, area);
-                            // editor.setSize(50, 50);
-                            GridBagConstraints constraints = new GridBagConstraints();
-                            constraints.gridx = x;
-                            constraints.gridy = y;
-                            constraints.weightx = 0.1;
-                            constraints.weighty = 0.1;
-                            constraints.fill = GridBagConstraints.BOTH;
-                            // constraints.anchor = GridBagConstraints.NORTHWEST;
-                            work.add(editor, constraints);
-                            x += 1;
-                            if (x > maxWidth){
-                                y += 1;
-                                x = 0;
-                            }
-                        }
 
+                        final Lambda1 update = new Lambda1(){
+                            private synchronized void doit(){
+                                int x = 0;
+                                int y = 0;
+                                work.removeAll();
+                                double maxWidth = Math.sqrt(animation.getEvents().size());
+                                for (AnimationEvent aevent : animation.getEvents()){
+                                    JPanel editor = aevent.getEditor(animation, area);
+                                    // editor.setSize(50, 50);
+                                    GridBagConstraints constraints = new GridBagConstraints();
+                                    constraints.gridx = x;
+                                    constraints.gridy = y;
+                                    constraints.weightx = 0.1;
+                                    constraints.weighty = 0.1;
+                                    constraints.fill = GridBagConstraints.BOTH;
+                                    // constraints.anchor = GridBagConstraints.NORTHWEST;
+                                    work.add(editor, constraints);
+                                    x += 1;
+                                    if (x > maxWidth){
+                                        y += 1;
+                                        x = 0;
+                                    }
+                                }
+                                work.revalidate();
+                            }
+
+                            public Object invoke(Object o){
+                                SwingUtilities.invokeLater(new Runnable(){
+                                    public void run(){
+                                        doit();
+                                    }
+                                });
+                                return null;
+                            }
+                        };
+
+                        update.invoke_(null);
+                        animation.addChangeUpdate(update);
 
                         dialog.getContentPane().add((JPanel) engine.getRootComponent());
                         dialog.setSize(300, 300);

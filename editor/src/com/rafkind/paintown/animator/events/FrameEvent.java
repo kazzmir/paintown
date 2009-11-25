@@ -129,6 +129,7 @@ public class FrameEvent implements AnimationEvent {
 	private List getFiles( String path ){
 		File dir = Animator.dataPath( new File( path ) );
 		List files = new ArrayList();
+        /* use a FileFilter here */
 		if ( dir.isDirectory() ){
 			File[] all = dir.listFiles();
 			for ( int i = 0; i < all.length; i++ ){
