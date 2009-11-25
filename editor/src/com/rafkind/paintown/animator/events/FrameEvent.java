@@ -53,7 +53,6 @@ public class FrameEvent implements AnimationEvent {
 		// ((JPanel)engine.getRootComponent()).setSize(350,270);
 		// JPanel canvas = (JPanel)engine.find("canvas");
         final JPanel canvas = (JPanel) engine.getRootComponent();
-		// canvas.setSize(350,200);
 		
 		class drawArea extends JComponent {
 			private BufferedImage img = null;
@@ -84,6 +83,7 @@ public class FrameEvent implements AnimationEvent {
 		area.setSize(350,200);
 		area.setPreferredSize( new Dimension( 350,200 ) );
         */
+		area.setPreferredSize(new Dimension(100,100));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
