@@ -752,6 +752,9 @@ public class CharacterAnimation extends JPanel {
                         final JPanel work = (JPanel) engine.find("work");
 
                         final Lambda1 update = new Lambda1(){
+                            /* multiple requests should really just be folded
+                             * into a single call to this function.
+                             */
                             private synchronized void doit(){
                                 int x = 0;
                                 int y = 0;

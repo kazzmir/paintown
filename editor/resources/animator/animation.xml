@@ -20,6 +20,46 @@
                 anchor="GridBagConstraints.NORTHWEST"
                 fill="GridBagConstraints.BOTH"
                 />
+            <panel>
+                <gridbagconstraints
+                    gridx="0"
+                    gridy="1"
+                    weightx="1"
+                    weighty="0"
+                    gridheight="1"
+                    anchor="GridBagConstraints.NORTHWEST"
+                    fill="GridBagConstraints.BOTH"
+                    />
+                <vbox>
+                    <hbox>
+                        <label id="speed-num" />
+                        <glue />
+                    </hbox>
+                    <hbox>
+                        <button id="speed:decrease" icon="animator/minus.png" />
+                        <slider id="speed" minimum="1" maximum="50" />
+                        <button id="speed:increase" icon="animator/plus.png" />
+                    </hbox>
+                    <glue size="1" />
+                    <hbox>
+                        <label id="scale-num" />
+                        <glue />
+                    </hbox>
+                    <hbox>
+                        <button id="scale:decrease" icon="animator/minus.png" />
+                        <slider id="scale" minimum="1" maximum="20" />
+                        <button id="scale:increase" icon="animator/plus.png" />
+                    </hbox>
+                    <glue size="1" />
+                    <hbox>
+                        <glue size="1" />
+                        <button id="play" text="Play" />
+                        <glue size="1" />
+                        <button id="stop" text="Stop" />
+                        <glue />
+                    </hbox>
+                </vbox>
+            </panel>
         </panel>
         <scrollpane>
             <gridbagconstraints
@@ -113,9 +153,6 @@
                         fill="GridBagConstraints.BOTH"
                         />
 
-                    <panel id="event-work"
-                        border="MatteBorder(2,2,2,2,667A63)"
-                        layout="GridBagLayout" />
                     <label text="Events" />
                     <glue />
                     <scrollpane>
@@ -128,7 +165,8 @@
                         <button text="Edit" id="edit-event" />
                         <glue size="1" />
                         <button text="Remove" id="remove-event" />
-                        <glue size="1" />
+                    </hbox>
+                    <hbox>
                         <button text="Move-Up" id="up-event" />
                         <glue size="1" />
                         <button text="Move-Down" id="down-event" />
@@ -136,34 +174,9 @@
                         <button text="View All" id="view-events" />
                         <glue size="1" />
                     </hbox>
-                    <glue size="1" />
-                    <hbox>
-                        <label id="speed-num" />
-                        <glue />
-                    </hbox>
-                    <hbox>
-                        <button id="speed:decrease" icon="animator/minus.png" />
-                        <slider id="speed" minimum="1" maximum="50" />
-                        <button id="speed:increase" icon="animator/plus.png" />
-                    </hbox>
-                    <glue size="1" />
-                    <hbox>
-                        <label id="scale-num" />
-                        <glue />
-                    </hbox>
-                    <hbox>
-                        <button id="scale:decrease" icon="animator/minus.png" />
-                        <slider id="scale" minimum="1" maximum="20" />
-                        <button id="scale:increase" icon="animator/plus.png" />
-                    </hbox>
-                    <glue size="1" />
-                    <hbox>
-                        <glue size="1" />
-                        <button id="play" text="Play" />
-                        <glue size="1" />
-                        <button id="stop" text="Stop" />
-                        <glue />
-                    </hbox>
+                    <panel id="event-work"
+                        border="MatteBorder(2,2,2,2,667A63)"
+                        layout="GridBagLayout" />
                 </vbox>
             </panel>
         </scrollpane>
