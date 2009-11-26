@@ -82,7 +82,7 @@ public class AttackEvent implements AnimationEvent {
 
     private JPanel getEditor(final Animation animation, final DrawArea area, final Attack attack){
         SwingEngine engine = new SwingEngine("animator/eventattack.xml");
-        ((JPanel)engine.getRootComponent()).setSize(200,150);
+        // ((JPanel)engine.getRootComponent()).setSize(200,150);
 
         final JSpinner x1spin = (JSpinner) engine.find( "x1" );
         x1spin.setValue(new Integer(attack.x1));
@@ -194,7 +194,7 @@ public class AttackEvent implements AnimationEvent {
 
     public JPanel getEditor(final Animation animation, final DrawArea area){
         return getEditor(animation, area, attacks.get(0));
-            }
+    }
     
     public void destroy(){
         onDestroy.invoke_();
