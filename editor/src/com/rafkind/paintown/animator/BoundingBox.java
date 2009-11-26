@@ -5,8 +5,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class BoundingBox{
-
-	// Basic character info
 	public int x1;
 	public int y1;
 	public int x2;

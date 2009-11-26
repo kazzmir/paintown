@@ -35,10 +35,8 @@ public class AttackEvent implements AnimationEvent {
         this.attacks = new ArrayList();
     }
 
-    public void loadToken(Token token){
-        this.attacks = new ArrayList();
+    public Attack parse(Token token){
         Attack attack = new Attack();
-        this.attacks.add(attack);
 
         Token x1_token = token.findToken("x1");
         if (x1_token != null){
@@ -69,11 +67,63 @@ public class AttackEvent implements AnimationEvent {
         if (force_token != null){
             attack.force = force_token.readInt(0);
         }
+
+        return attack;
+    }
+
+    public void loadToken(Token token){
+        this.attacks = new ArrayList();
+        Attack attack = new Attack();
+
+        Token x1_token = token.findToken("x1");
+        if (x1_token != null){
+            attack.x1 = x1_token.readInt(0);
+        }
+
+        Token y1_token = token.findToken("y1");
+        if (y1_token != null){
+            attack.y1 = y1_token.readInt(0);
+        }
+
+        Token x2_token = token.findToken("x2");
+        if (x2_token != null){
+            attack.x2 = x2_token.readInt(0);
+        }
+
+        Token y2_token = token.findToken("y2");
+        if (y2_token != null){
+            attack.y2 = y2_token.readInt(0);
+        }
+
+        Token damage_token = token.findToken("damage");
+        if (damage_token != null){
+            attack.damage = damage_token.readInt(0);
+        }
+
+        Token force_token = token.findToken("force");
+        if (force_token != null){
+            attack.force = force_token.readInt(0);
+        }
+
+        if (attack.x1 != 0 || attack.y1 != 0 ||
+            attack.x2 != 0 || attack.y2 != 0 ||
+            attack.damage != 0 ||
+            attack.force != 0){
+            attacks.add(attack);
+            }
+
+        for (Token box : token.findTokens("box")){
+            attacks.add(parse(box));
+        }
     }
 
     public void interact(Animation animation){
-        Attack attack = attacks.get(0);
-        animation.setAttack(new BoundingBox(attack.x1, attack.y1, attack.x2, attack.y2));
+        if (attacks.isEmpty()){
+            animation.setAttack(new BoundingBox(0, 0, 0, 0));
+        } else {
+            Attack attack = attacks.get(0);
+            animation.setAttack(new BoundingBox(attack.x1, attack.y1, attack.x2, attack.y2));
+        }
     }
 
     public String getName(){

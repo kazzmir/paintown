@@ -107,14 +107,14 @@ public class Token{
 		return (Token) l.get( 0 );
 	}
 
-	public List findTokens( String name ){
+	public List<Token> findTokens( String name ){
 		int seperator = name.indexOf( "/" );
 		String part = null;
 		if ( seperator != -1 ){
 			part = name.substring( 0, seperator );
 			name = name.substring( seperator + 1 );
 		}
-		List all = new ArrayList();
+		List<Token> all = new ArrayList();
 		for ( Iterator it = this.iterator(); it.hasNext(); ){
 			Token t = (Token) it.next();
 			if ( part == null ){
