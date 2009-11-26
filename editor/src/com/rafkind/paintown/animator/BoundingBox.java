@@ -27,8 +27,13 @@ public class BoundingBox{
 	public void render( Graphics g, int x, int y ){
 		Color color = g.getColor();
 
-		g.setColor(new Color(255,255,255));
-		g.drawRect(x + x1,y + y1,x2-x1,y2-y1);
+        if (x1 < x2 && y1 < y2){
+            g.setColor(new Color(255,255,255));
+            g.drawRect(x + x1, y + y1, x2-x1, y2-y1);
+        } else {
+            g.setColor(new Color(192, 84, 130));
+            g.drawRect(x + Math.min(x1, x2), y + Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
+        }
 		g.setColor(color);
 	}
 }
