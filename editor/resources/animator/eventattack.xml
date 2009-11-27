@@ -1,4 +1,4 @@
-<panel layout="GridBagLayout" size="200">
+<panel layout="GridBagLayout">
 	<vbox>
 		<gridbagconstraints
 			gridx="0"
@@ -7,9 +7,8 @@
 			weighty="1"
 			gridheight="1"
 			anchor="GridBagConstraints.NORTHWEST"
-			fill="GridBagConstraints.BOTH"
 			/>
-                <button id="toggle" text="Draw attack box" />
+        <button id="toggle" text="Draw attack box" />
 		<hbox>
 			<label text="Set X1" />
 			<spinner id="x1" />
