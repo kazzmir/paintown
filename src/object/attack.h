@@ -10,7 +10,7 @@ class Attack{
 public:
 	
 	Attack();
-	Attack( Token * tok ) throw( LoadException );
+	Attack(Token & tok) throw( LoadException );
 	Attack( const int x1, const int y1, const int x2, const int y2, const int damage, const int force );
 	Attack( const Attack & a );
 

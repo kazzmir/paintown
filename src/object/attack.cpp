@@ -34,13 +34,21 @@ Attack::Attack( const Attack & a ){
 	setForce( a.getForce() );
 }
 
-Attack::Attack( Token * tok ) throw( LoadException ):
+Attack::Attack(Token & tok) throw( LoadException ):
 x1( 0 ),
 y1( 0 ),
 x2( 0 ),
 y2( 0 ),
 damage( 0 ),
 force( 0 ){
+    tok.match("_/x1", x1);
+    tok.match("_/y1", y1);
+    tok.match("_/x2", x2);
+    tok.match("_/y2", y2);
+    tok.match("_/damage", damage);
+    tok.match("_/force", force);
+
+    /*
 	Token * current;
 	while ( tok->hasTokens() ){
 		try{
@@ -67,6 +75,7 @@ force( 0 ){
 			throw LoadException( k );
 		}
 	}
+        */
 
 	if ( x1 > x2 ){
 		int p = x2;

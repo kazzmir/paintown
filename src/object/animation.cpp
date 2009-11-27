@@ -47,25 +47,25 @@ Frame::Frame( Bitmap * p, ECollide * e ){
 }
 	
 Frame::Frame( const Frame & f ){
-	pic = f.pic;
-	collide = f.collide;
-	mine = false;
+    pic = f.pic;
+    collide = f.collide;
+    mine = false;
 }
 
 Frame::~Frame(){
-	if ( mine ){
-		delete pic;
-		delete collide;
-	}
+    if ( mine ){
+        delete pic;
+        delete collide;
+    }
 }
 
 static const char * key_names[] = {
-                                   /* key_idle isn't a real key anymore */
-                                   // "key_idle",
-                                   "key_jump", "key_forward",
-                                   "key_back", "key_grab", "key_right",
-                                   "key_down", "key_up", "key_attack1",
-                                   "key_attack2", "key_attack3", };
+    /* key_idle isn't a real key anymore */
+    // "key_idle",
+    "key_jump", "key_forward",
+    "key_back", "key_grab", "key_right",
+    "key_down", "key_up", "key_attack1",
+    "key_attack2", "key_attack3", };
 
 namespace Keys{
     /* order of the enums should match the key_names array *exactly* */
@@ -296,7 +296,7 @@ contact( NULL ){
 				*/
 			} else if ( current == "attack" ){
 
-				Attack ak( &current );
+				Attack ak(current);
 		
 				/*
 				int x1 = 0; 
