@@ -130,7 +130,7 @@ protected:
 	// Sounds
 	std::string sndFile;
 	// Palettes max 12
-	std::vector< std::string > palFile;
+        std::map<int, std::string> palFile;
 	
 	// Arcade mode ( I don't think we will be using this anytime soon )
 	std::string introFile;

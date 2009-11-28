@@ -34,6 +34,8 @@
 
 using namespace std;
 
+namespace PaintownUtil = ::Util;
+
 MugenCharacter::MugenCharacter( const string & s ):
 ObjectAttack(0){
     this->location = s;
@@ -138,294 +140,73 @@ void MugenCharacter::load() throw( MugenException ){
             InfoWalker walker(*this);
             Ast::Section * section = *section_it;
             section->walk(walker);
-        }
+        } else if (head == "files"){
+            class FilesWalker: public Ast::Walker {
+            public:
+                FilesWalker(MugenCharacter & self):
+                self(self){
+                }
 
-        /* FIXME!
-	else if( head == "Files" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces( itemhead);
-		if( itemhead.find("cmd")!=std::string::npos ){
-		    *content->getNext() >> cmdFile;
-		}
-		else if (itemhead.find("cns")!=std::string::npos ){
-		    *content->getNext() >> constantsFile;
-		}
-		else if ( itemhead.find("st")!=std::string::npos ){
-		    Mugen::Util::removeSpaces(itemhead);
-		    if (itemhead.find("st0") !=std::string::npos )*content->getNext() >> stFile[0];
-		    else if (itemhead.find("st1") !=std::string::npos )*content->getNext() >> stFile[1];
-		    else if (itemhead.find("st2")!=std::string::npos )*content->getNext() >> stFile[2];
-		    else if (itemhead.find("st3")!=std::string::npos )*content->getNext() >> stFile[3];
-		    else if (itemhead.find("st4")!=std::string::npos )*content->getNext() >> stFile[4];
-		    else if (itemhead.find("st5")!=std::string::npos )*content->getNext() >> stFile[5];
-		    else if (itemhead.find("st6")!=std::string::npos )*content->getNext() >> stFile[6];
-		    else if (itemhead.find("st7")!=std::string::npos )*content->getNext() >> stFile[7];
-		    else if (itemhead.find("st8")!=std::string::npos )*content->getNext() >> stFile[8];
-		    else if (itemhead.find("st9")!=std::string::npos )*content->getNext() >> stFile[9];
-		    else if (itemhead.find("st10")!=std::string::npos )*content->getNext() >> stFile[10];
-		    else if (itemhead.find("st11")!=std::string::npos )*content->getNext() >> stFile[11];
-		    else if (itemhead.find("st12")!=std::string::npos )*content->getNext() >> stFile[12];
-		    else if( itemhead.find("stcommon")!=std::string::npos )*content->getNext() >> commonStateFile;
-		    else if( itemhead.find("st")!=std::string::npos )*content->getNext() >> stateFile;
-		    else throw MugenException( "Unhandled state file in Files Section: " + itemhead );
-		}
-		else if (itemhead.find("sprite") != std::string::npos ){
-		    *content->getNext() >> sffFile;
-		}
-		else if ( itemhead.find("anim") != std::string::npos ){
-		    *content->getNext() >> airFile;
-		}
-		else if ( itemhead.find("sound") != std::string::npos ){
-		    *content->getNext() >> sndFile;
-		}
-		else if( itemhead.find("pal") != std::string::npos ){
-		    if (itemhead == "pal1"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal2"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal3"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal4"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal5"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal6"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal7"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal8"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal9"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal10"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal11"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal12"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else throw MugenException( "Unhandled Palette File in Files Section: " + itemhead );
-		}
-		else throw MugenException( "Unhandled option in Files Section: " + itemhead );
-	    }
-	}
-	else if( head == "Arcade" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces( itemhead);
-		if( itemhead.find("intro.storyboard") != std::string::npos ){
-		    *content->getNext() >> introFile;
-		}
-		else if (itemhead.find("ending.storyboard") != std::string::npos ){
-		    *content->getNext() >> endingFile;
-		}
-		else throw MugenException( "Unhandled option in Arcade Section: " + itemhead );
-	    }    
+                MugenCharacter & self;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "cmd"){
+                        simple >> self.cmdFile;
+                    } else if (simple == "cns"){
+                        simple >> self.constantsFile;
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){
+                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "st([0-9]+)", 0).c_str());
+                        if (num >= 0 && num <= 12){
+                            simple >> self.stFile[num];
+                        }
+                    } else if (simple == "stcommon"){
+                        simple >> self.commonStateFile;
+                    } else if (simple == "st"){
+                        simple >> self.stateFile;
+                    } else if (simple == "sprite"){
+                        simple >> self.sffFile;
+                    } else if (simple == "anim"){
+                        simple >> self.airFile;
+                    } else if (simple == "sound"){
+                        simple >> self.sndFile;
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "pal[0-9]+")){
+                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "pal([0-9]+)", 0).c_str());
+                        string what;
+                        simple >> what;
+                        self.palFile[num] = what;
+                    } else {
+                        throw MugenException("Unhandled option in Files Section: " + simple.toString());
+                    }
+                }
+            };
+
+            FilesWalker walker(*this);
+            Ast::Section * section = *section_it;
+            section->walk(walker);
+	} else if (head == "arcade"){
+            class ArcadeWalker: public Ast::Walker {
+            public:
+                ArcadeWalker(MugenCharacter & self):
+                self(self){
+                }
+
+                MugenCharacter & self;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "intro.storyboard"){
+                        simple >> self.introFile;
+                    } else if (simple == "ending.storyboard"){
+                        simple >> self.endingFile;
+                    } else {
+                        throw MugenException("Unhandled option in Arcade Section: " + simple.toString());
+                    }
+                }
+            };
+            
+            ArcadeWalker walker(*this);
+            Ast::Section * section = *section_it;
+            section->walk(walker);
 	}
     }
-    */
-}
-
-#if 0
-    MugenReader reader( ourDefFile );
-    std::vector< MugenSection * > collection;
-    collection = reader.getCollection();
-    
-    /* Extract info for our first section of our character */
-    for( unsigned int i = 0; i < collection.size(); ++i ){
-	const std::string &head = collection[i]->getHeader();
-	if( head == "Info" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		// This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-		Mugen::Util::fixCase( itemhead );
-		if ( itemhead.find("name")!=std::string::npos ){
-		    *content->getNext() >> name;
-                    Global::debug(1) << "Read name '" << name << "'" << endl;
-		} else if ( itemhead.find("displayname")!=std::string::npos ){
-		    *content->getNext() >> displayName;
-		} else if ( itemhead.find("versiondate")!=std::string::npos ){
-		    *content->getNext() >> versionDate;
-		} else if ( itemhead.find("mugenversion")!=std::string::npos ){
-		    *content->getNext() >> mugenVersion;
-		} else if ( itemhead.find("author")!=std::string::npos ){
-		    *content->getNext() >> author;
-		} else if ( itemhead.find("pal.defaults")!=std::string::npos ){
-		    while (content->hasItems()){
-			int num;
-			*content->getNext() >> num;
-			palDefaults.push_back(num-1);
-			Global::debug(1) << "Pal" << palDefaults.size() << ": " << num << endl;
-		    }
-		} else throw MugenException( "Unhandled option in Info Section: " + itemhead );
-	    }
-	}
-	else if( head == "Files" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces( itemhead);
-		if( itemhead.find("cmd")!=std::string::npos ){
-		    *content->getNext() >> cmdFile;
-		}
-		else if (itemhead.find("cns")!=std::string::npos ){
-		    *content->getNext() >> constantsFile;
-		}
-		else if ( itemhead.find("st")!=std::string::npos ){
-		    Mugen::Util::removeSpaces(itemhead);
-		    if (itemhead.find("st0") !=std::string::npos )*content->getNext() >> stFile[0];
-		    else if (itemhead.find("st1") !=std::string::npos )*content->getNext() >> stFile[1];
-		    else if (itemhead.find("st2")!=std::string::npos )*content->getNext() >> stFile[2];
-		    else if (itemhead.find("st3")!=std::string::npos )*content->getNext() >> stFile[3];
-		    else if (itemhead.find("st4")!=std::string::npos )*content->getNext() >> stFile[4];
-		    else if (itemhead.find("st5")!=std::string::npos )*content->getNext() >> stFile[5];
-		    else if (itemhead.find("st6")!=std::string::npos )*content->getNext() >> stFile[6];
-		    else if (itemhead.find("st7")!=std::string::npos )*content->getNext() >> stFile[7];
-		    else if (itemhead.find("st8")!=std::string::npos )*content->getNext() >> stFile[8];
-		    else if (itemhead.find("st9")!=std::string::npos )*content->getNext() >> stFile[9];
-		    else if (itemhead.find("st10")!=std::string::npos )*content->getNext() >> stFile[10];
-		    else if (itemhead.find("st11")!=std::string::npos )*content->getNext() >> stFile[11];
-		    else if (itemhead.find("st12")!=std::string::npos )*content->getNext() >> stFile[12];
-		    else if( itemhead.find("stcommon")!=std::string::npos )*content->getNext() >> commonStateFile;
-		    else if( itemhead.find("st")!=std::string::npos )*content->getNext() >> stateFile;
-		    else throw MugenException( "Unhandled state file in Files Section: " + itemhead );
-		}
-		else if (itemhead.find("sprite") != std::string::npos ){
-		    *content->getNext() >> sffFile;
-		}
-		else if ( itemhead.find("anim") != std::string::npos ){
-		    *content->getNext() >> airFile;
-		}
-		else if ( itemhead.find("sound") != std::string::npos ){
-		    *content->getNext() >> sndFile;
-		}
-		else if( itemhead.find("pal") != std::string::npos ){
-		    if (itemhead == "pal1"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal2"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal3"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal4"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal5"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal6"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal7"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal8"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal9"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal10"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal11"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else if (itemhead == "pal12"){
-			std::string temp;
-			*content->getNext() >> temp;
-			palFile.push_back(temp);
-		    }
-		    else throw MugenException( "Unhandled Palette File in Files Section: " + itemhead );
-		}
-		else throw MugenException( "Unhandled option in Files Section: " + itemhead );
-	    }
-	}
-	else if( head == "Arcade" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces( itemhead);
-		if( itemhead.find("intro.storyboard") != std::string::npos ){
-		    *content->getNext() >> introFile;
-		}
-		else if (itemhead.find("ending.storyboard") != std::string::npos ){
-		    *content->getNext() >> endingFile;
-		}
-		else throw MugenException( "Unhandled option in Arcade Section: " + itemhead );
-	    }    
-	}
-    }
-#endif
 
     // Current palette
     if (palDefaults.empty()){
