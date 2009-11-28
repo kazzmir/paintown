@@ -57,20 +57,24 @@ def do_bnf(name, grammar):
 
 def do_python(name, grammar, input):
     # import subprocess
-    print "[%s] Test python.." % name
-    out = get_peg_output('--python', grammar)
-    # peg_out = subprocess.Popen(['./peg.py', '--python', grammar], stdout = subprocess.PIPE)
-    # out, err = peg_out.communicate()
-    file = 'test_python.py'
-    write(out, file)
-    x = __import__('test_python')
-    result = x.parse(input)
-    erase(file)
-    erase(file + 'c')
-    if result == None:
-        print "Error with python parser"
-        return False
-    return True
+    try:
+        print "[%s] Test python.." % name
+        out = get_peg_output('--python', grammar)
+        # peg_out = subprocess.Popen(['./peg.py', '--python', grammar], stdout = subprocess.PIPE)
+        # out, err = peg_out.communicate()
+        file = 'test_python.py'
+        write(out, file)
+        x = __import__('test_python')
+        result = x.parse(input)
+        erase(file)
+        erase(file + 'c')
+        if result == None:
+            raise TestException("Error with python parser")
+        return result
+    except Exception, e:
+        import traceback
+        traceback.print_exc()
+        raise TestException(str(e))
 
 def do_cpp(name, grammar, input):
     import subprocess
@@ -129,18 +133,24 @@ def test_all(name, grammar, input):
     erase(grammar_file)
     erase(input_file)
 
-def test_cpp(name, grammar, input):
+def test_something(name, grammar, input, func):
     grammar_file = newFile()
     input_file = newFile()
     
     write(grammar, grammar_file)
     write(input, input_file)
 
-    out = do_cpp(name, grammar_file, input_file)
+    out = func(name, grammar_file, input_file)
 
     erase(grammar_file)
     erase(input_file)
     return out
+
+def test_cpp(name, grammar, input):
+    return test_something(name, grammar, input, do_cpp)
+
+def test_python(name, grammar, input):
+    return test_something(name, grammar, input, do_python)
 
 def test1():
     grammar = """
@@ -186,7 +196,8 @@ import sys
 # add rootPath to sys path
 
 def test4():
-    grammar = """
+    def cpp():
+        grammar = """
 start-symbol: start
 code: {{
 static Value add(const Value & a, const Value & b){
@@ -235,11 +246,46 @@ rules:
         inline digit = [0123456789]
 """
 
-    input = """1+(3-2)*9/(2+2*32)-3232342+91"""
-    out = test_cpp('test4', grammar, input).strip()
-    expected = "-3232250"
-    if out != expected:
-        raise TestException("Expected %s but got %s" % (expected, out))
+        input = """1+(3-2)*9/(2+2*32)-3232342+91"""
+        out = test_cpp('test4', grammar, input).strip()
+        expected = "-3232250"
+        if out != expected:
+            raise TestException("Expected %s but got %s" % (expected, out))
+
+    def python():
+        grammar = """
+start-symbol: start
+rules:
+        start = expression sw <eof> {{ value = $1; }}
+        expression = expression2 expression1_rest($1)
+        expression1_rest(a) = "+" expression2 e:{{value = a + $2;}} expression1_rest(e)
+                            | "-" expression2 e:{{value = a - $2;}} expression1_rest(e)
+                            | <void> {{ value = a; }}
+
+        expression2 = expression3 expression2_rest($1)
+        expression2_rest(a) = "*" expression3 e:{{value = a * $2;}} expression2_rest(e)
+                            | "/" expression3 e:{{value = a / $2;}} expression2_rest(e)
+                            | <void> {{ value = a; }}
+
+        expression3 = number
+                    | "(" expression ")" {{ value = $2; }}
+
+        inline number = digit+ {{
+            value = int(''.join($1))
+        }}
+        inline sw = "\\n"*
+        inline digit = [0123456789]
+"""
+
+
+        expected = "-3232250"
+        input = """1+(3-2)*9/(2+2*32)-3232342+91"""
+        out = test_python('test4', grammar, input)
+        if str(out) != str(expected):
+            raise TestException("Expected %s but got %s" % (expected, out))
+
+    cpp()
+    python()
 
 def test5():
     grammar = """

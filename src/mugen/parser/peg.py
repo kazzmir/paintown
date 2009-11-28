@@ -602,10 +602,12 @@ class CodeGenerator:
         self.fail()
 
 class PythonGenerator(CodeGenerator):
-    def fixup_python(self, code):
+    def fixup_python(self, code, how):
         import re
         fix = re.compile("\$(\d+)")
-        return re.sub(fix, r"values[\1-1]", code)
+        # return re.sub(fix, r"values[\1-1]", code)
+        # return re.sub(fix, r"(\1-1)", code)
+        return re.sub(fix, how, code)
 
     def generate_ensure(me, pattern, result, previous_result, stream, failure):
         my_result = newResult()
@@ -630,9 +632,11 @@ except NotError:
         return data
 
     def generate_rule(me, pattern, result, previous_result, stream, failure):
+        def fix(v):
+            return "%s.getValues()[%s]" % (previous_result, int(v.group(1)) - 1)
         parameters = ""
         if pattern.parameters != None:
-            parameters = ",%s" % ",".join(pattern.parameters)
+            parameters = ", %s" % ",".join([me.fixup_python(p, fix) for p in pattern.parameters])
         data = """
 # print "Trying rule " + '%s'
 %s = rule_%s(%s, %s.getPosition()%s)
@@ -689,7 +693,7 @@ value = None
 values = %s.getValues()
 %s
 %s.setValue(value)
-""" % (previous_result, me.fixup_python(pattern.code.strip()), result)
+""" % (previous_result, me.fixup_python(pattern.code.strip(), lambda v: "values[%s]" % (int(v.group(1)) - 1)), result)
 
         return data
 
@@ -1546,14 +1550,17 @@ except PegError:
 
         stream = "stream"
         position = "position"
+        parameters = ""
+        if self.parameters != None:
+            parameters = ", " + ", ".join(["%s" % p for p in self.parameters])
         data = """
-def rule_%s(%s, %s):
+def rule_%s(%s, %s%s):
     if %s.hasResult(%s, %s):
         return %s.result(%s, %s)
     %s
     %s.update(%s, %s, %s)
     return None
-""" % (self.name, stream, position, stream, "RULE_%s" % self.name, position, stream, "RULE_%s" % self.name, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, "RULE_%s" % self.name, position, "None")
+""" % (self.name, stream, position, parameters, stream, "RULE_%s" % self.name, position, stream, "RULE_%s" % self.name, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, "RULE_%s" % self.name, position, "None")
 
         return data
 
