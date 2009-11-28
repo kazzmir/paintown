@@ -47,6 +47,14 @@ force( 0 ){
     tok.match("_/y2", y2);
     tok.match("_/damage", damage);
     tok.match("_/force", force);
+    
+    /* TODO: read all attack boxes */
+    tok.match("_/box/x1", x1);
+    tok.match("_/box/y1", y1);
+    tok.match("_/box/x2", x2);
+    tok.match("_/box/y2", y2);
+    tok.match("_/box/damage", damage);
+    tok.match("_/box/force", force);
 
     /*
 	Token * current;

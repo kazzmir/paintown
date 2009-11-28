@@ -389,8 +389,8 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 	MugenItem(head) >> h;
         /* FIXME!!!
 	animations[h] = Mugen::Util::getAnimation(collection[i], sprites);
-        */
 	Global::debug(1) << "Added Animation 'Begin Action " << h << "' : '" << animations[h]->getName(animations[h]->getType()) << "'" << endl;
+        */
     }
 }
 
