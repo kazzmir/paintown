@@ -94,22 +94,26 @@ namespace Parser{
 int main(int argc, char ** argv){
     if (argc >= 2){
         const void * result = Parser::main(argv[1]);
-        cout << "got " << (int) result << endl << endl;
-        return (int) result;
+        cout << (int) result << endl << endl;
+        return 0;
     } else {
         cout << "Give an argument" << endl;
     }
+    return 1;
 }
 """
     write(driver_code, driver)
 
     exe = './.cpp-test'
     subprocess.call(["g++", "-g3", cpp, driver, "-o", exe])
-    subprocess.call([exe, input])
+    # out = subprocess.call([exe, input])
+    cpp_out = subprocess.Popen([exe, input], stdout = subprocess.PIPE)
+    code = cpp_out.wait()
+    out, err = cpp_out.communicate()
 
     # erase(driver)
     # erase(cpp)
-    return True
+    return out
 
 def test_all(name, grammar, input):
     grammar_file = '.grammar'
@@ -132,10 +136,11 @@ def test_cpp(name, grammar, input):
     write(grammar, grammar_file)
     write(input, input_file)
 
-    do_cpp(name, grammar_file, input_file)
+    out = do_cpp(name, grammar_file, input_file)
 
     erase(grammar_file)
     erase(input_file)
+    return out
 
 def test1():
     grammar = """
@@ -231,7 +236,10 @@ rules:
 """
 
     input = """1+(3-2)*9/(2+2*32)-3232342+91"""
-    test_cpp('test4', grammar, input)
+    out = test_cpp('test4', grammar, input).strip()
+    expected = "-3232250"
+    if out != expected:
+        raise TestException("Expected %s but got %s" % (expected, out))
 
 def test5():
     grammar = """
@@ -248,15 +256,23 @@ rules:
 
 tests = [test1, test2, test3, test4, test5]
 import sys
+failures = 0
+run = 0
 if len(sys.argv) > 1:
     num = int(sys.argv[1]) - 1
     try:
+        run += 1
         tests[num]()
     except TestException as t:
+        failures += 1
         print t
 else:
     for test in tests:
         try:
+            run += 1
             test()
         except TestException as t:
+            failures += 1
             print t
+print
+print "Tests run %d. Failures %d" % (run, failures)
