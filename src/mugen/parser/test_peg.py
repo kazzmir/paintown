@@ -56,22 +56,24 @@ def do_bnf(name, grammar):
     return True
 
 def do_python(name, grammar, input):
+    import re
     # import subprocess
     try:
         print "[%s] Test python.." % name
         out = get_peg_output('--python', grammar)
         # peg_out = subprocess.Popen(['./peg.py', '--python', grammar], stdout = subprocess.PIPE)
         # out, err = peg_out.communicate()
-        file = 'test_python.py'
+        file = newFile('.py')
         write(out, file)
-        x = __import__('test_python')
+        name = re.match(r"(\w+)\.py", file).group(1)
+        x = __import__(name)
         result = x.parse(input)
         erase(file)
         erase(file + 'c')
         if result == None:
             raise TestException("Error with python parser")
         return result
-    except Exception, e:
+    except Exception as e:
         import traceback
         traceback.print_exc()
         raise TestException(str(e))
@@ -305,13 +307,13 @@ import sys
 failures = 0
 run = 0
 if len(sys.argv) > 1:
-    num = int(sys.argv[1]) - 1
-    try:
-        run += 1
-        tests[num]()
-    except TestException as t:
-        failures += 1
-        print t
+    for num in sys.argv[1:]:
+        try:
+            run += 1
+            tests[int(num) - 1]()
+        except TestException as t:
+            failures += 1
+            print t
 else:
     for test in tests:
         try:
