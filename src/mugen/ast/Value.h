@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 #include "walker.h"
 #include "exception.h"
 
@@ -43,6 +44,11 @@ public:
     }
     
     virtual const Value & operator>>(bool & x) const {
+        fail("bool");
+        return *this;
+    }
+    
+    virtual const Value & operator>>(std::vector<int> & x) const {
         fail("bool");
         return *this;
     }

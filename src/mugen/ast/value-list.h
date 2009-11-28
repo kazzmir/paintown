@@ -43,6 +43,17 @@ public:
         return *this;
     }
 
+    virtual const Value & operator>>(std::vector<int> & itemList) const {
+        while (current_value != this->values.end()){
+            int item;
+            Value * value = *current_value;
+            *value >> item;
+            itemList.push_back(item);
+            current_value++;
+        }
+        return *this;
+    }
+
     virtual const Value & operator>>(double & item) const {
         if (current_value == this->values.end()){
             throw Exception("No more values in this value list: " + toString());

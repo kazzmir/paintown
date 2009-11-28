@@ -29,6 +29,9 @@
 #include "mugen_util.h"
 #include "globals.h"
 
+#include "parser/all.h"
+#include "ast/all.h"
+
 using namespace std;
 
 MugenCharacter::MugenCharacter( const string & s ):
@@ -93,7 +96,177 @@ void MugenCharacter::load() throw( MugenException ){
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );
      
-    /* FIXME!! Replace with def parser */
+    Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    /* Extract info for our first section of our stage */
+    for (Ast::DefParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        /* this should really be head = Mugen::Util::fixCase(head) */
+	Mugen::Util::fixCase(head);
+
+        if (head == "info"){
+            class InfoWalker: public Ast::Walker {
+            public:
+                InfoWalker(MugenCharacter & who):
+                self(who){
+                }
+
+                MugenCharacter & self;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "name"){
+                        simple >> self.name;
+                    } else if (simple == "displayname"){
+                        simple >> self.displayName;
+                    } else if (simple == "versiondate"){
+                        simple >> self.versionDate;
+                    } else if (simple == "mugenversion"){
+                        simple >> self.mugenVersion;
+                    } else if (simple == "author"){
+                        simple >> self.author;
+                    } else if (simple == "pal.defaults"){
+                        vector<int> numbers;
+                        simple >> numbers;
+                        for (vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
+                            self.palDefaults.push_back((*it) - 1);
+                        }
+                        // Global::debug(1) << "Pal" << self.palDefaults.size() << ": " << num << endl;
+                    } else throw MugenException("Unhandled option in Info Section: " + simple.toString());
+                }
+            };
+
+            InfoWalker walker(*this);
+            Ast::Section * section = *section_it;
+            section->walk(walker);
+        }
+
+        /* FIXME!
+	else if( head == "Files" ){
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		Mugen::Util::removeSpaces( itemhead);
+		if( itemhead.find("cmd")!=std::string::npos ){
+		    *content->getNext() >> cmdFile;
+		}
+		else if (itemhead.find("cns")!=std::string::npos ){
+		    *content->getNext() >> constantsFile;
+		}
+		else if ( itemhead.find("st")!=std::string::npos ){
+		    Mugen::Util::removeSpaces(itemhead);
+		    if (itemhead.find("st0") !=std::string::npos )*content->getNext() >> stFile[0];
+		    else if (itemhead.find("st1") !=std::string::npos )*content->getNext() >> stFile[1];
+		    else if (itemhead.find("st2")!=std::string::npos )*content->getNext() >> stFile[2];
+		    else if (itemhead.find("st3")!=std::string::npos )*content->getNext() >> stFile[3];
+		    else if (itemhead.find("st4")!=std::string::npos )*content->getNext() >> stFile[4];
+		    else if (itemhead.find("st5")!=std::string::npos )*content->getNext() >> stFile[5];
+		    else if (itemhead.find("st6")!=std::string::npos )*content->getNext() >> stFile[6];
+		    else if (itemhead.find("st7")!=std::string::npos )*content->getNext() >> stFile[7];
+		    else if (itemhead.find("st8")!=std::string::npos )*content->getNext() >> stFile[8];
+		    else if (itemhead.find("st9")!=std::string::npos )*content->getNext() >> stFile[9];
+		    else if (itemhead.find("st10")!=std::string::npos )*content->getNext() >> stFile[10];
+		    else if (itemhead.find("st11")!=std::string::npos )*content->getNext() >> stFile[11];
+		    else if (itemhead.find("st12")!=std::string::npos )*content->getNext() >> stFile[12];
+		    else if( itemhead.find("stcommon")!=std::string::npos )*content->getNext() >> commonStateFile;
+		    else if( itemhead.find("st")!=std::string::npos )*content->getNext() >> stateFile;
+		    else throw MugenException( "Unhandled state file in Files Section: " + itemhead );
+		}
+		else if (itemhead.find("sprite") != std::string::npos ){
+		    *content->getNext() >> sffFile;
+		}
+		else if ( itemhead.find("anim") != std::string::npos ){
+		    *content->getNext() >> airFile;
+		}
+		else if ( itemhead.find("sound") != std::string::npos ){
+		    *content->getNext() >> sndFile;
+		}
+		else if( itemhead.find("pal") != std::string::npos ){
+		    if (itemhead == "pal1"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal2"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal3"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal4"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal5"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal6"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal7"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal8"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal9"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal10"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal11"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else if (itemhead == "pal12"){
+			std::string temp;
+			*content->getNext() >> temp;
+			palFile.push_back(temp);
+		    }
+		    else throw MugenException( "Unhandled Palette File in Files Section: " + itemhead );
+		}
+		else throw MugenException( "Unhandled option in Files Section: " + itemhead );
+	    }
+	}
+	else if( head == "Arcade" ){
+	    while( collection[i]->hasItems() ){
+		MugenItemContent *content = collection[i]->getNext();
+		const MugenItem *item = content->getNext();
+		std::string itemhead = item->query();
+		Mugen::Util::removeSpaces( itemhead);
+		if( itemhead.find("intro.storyboard") != std::string::npos ){
+		    *content->getNext() >> introFile;
+		}
+		else if (itemhead.find("ending.storyboard") != std::string::npos ){
+		    *content->getNext() >> endingFile;
+		}
+		else throw MugenException( "Unhandled option in Arcade Section: " + itemhead );
+	    }    
+	}
+    }
+    */
+}
+
+#if 0
     MugenReader reader( ourDefFile );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
@@ -252,6 +425,8 @@ void MugenCharacter::load() throw( MugenException ){
 	    }    
 	}
     }
+#endif
+
     // Current palette
     if (palDefaults.empty()){
 	// Correct the palette defaults
@@ -275,6 +450,7 @@ void MugenCharacter::load() throw( MugenException ){
 	    }
 	}
     }
+
     currentPalette = 0;
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
