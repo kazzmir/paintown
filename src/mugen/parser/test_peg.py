@@ -171,6 +171,9 @@ def test_cpp(name, grammar, input):
 def test_python(name, grammar, input):
     return test_something(name, grammar, input, do_python)
 
+def test_ruby(name, grammar, input):
+    return test_something(name, grammar, input, do_ruby)
+
 def test1():
     grammar = """
 start-symbol: start
@@ -274,6 +277,7 @@ rules:
     def python():
         grammar = """
 start-symbol: start
+options: debug9
 rules:
         start = expression sw <eof> {{ value = $1; }}
         expression = expression2 expression1_rest($1)
@@ -303,8 +307,40 @@ rules:
         if str(out) != str(expected):
             raise TestException("Expected %s but got %s" % (expected, out))
 
+    def ruby():
+        grammar = """
+start-symbol: start
+rules:
+        start = expression sw <eof> {{ value = $1; }}
+        expression = expression2 expression1_rest($1)
+        expression1_rest(a) = "+" expression2 e:{{value = a + $2;}} expression1_rest(e)
+                            | "-" expression2 e:{{value = a - $2;}} expression1_rest(e)
+                            | <void> {{ value = a; }}
+
+        expression2 = expression3 expression2_rest($1)
+        expression2_rest(a) = "*" expression3 e:{{value = a * $2;}} expression2_rest(e)
+                            | "/" expression3 e:{{value = a / $2;}} expression2_rest(e)
+                            | <void> {{ value = a; }}
+
+        expression3 = number
+                    | "(" expression ")" {{ value = $2; }}
+
+        inline number = digit+ {{
+            value = $1.join('').to_i
+        }}
+        inline sw = "\\n"*
+        inline digit = [0123456789]
+"""
+
+        expected = "-3232250"
+        input = """1+(3-2)*9/(2+2*32)-3232342+91"""
+        out = test_ruby('test4', grammar, input).strip()
+        if str(out) != str(expected):
+            raise TestException("Expected '%s' but got '%s'" % (expected, out))
+
     cpp()
     python()
+    ruby()
 
 def test5():
     grammar = """

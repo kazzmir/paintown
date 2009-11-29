@@ -598,7 +598,7 @@ class Result
     end
 
     def addResult(him)
-        @values.concat(him.values)
+        @values << him.values
         @position = him.position
     end
     
@@ -631,7 +631,7 @@ class Stream
             return 0.chr()
         end
         # print "stream: %s" % self.all[position:position+number]
-        return @all[position..position+number]
+        return @all[position...position+number]
     end
 
     def reportError()
@@ -655,7 +655,7 @@ class Stream
             right = @all.size
         end
         puts "Read up till line #{line}, column #{column}"
-        puts special_escape(@all[left..right])
+        puts special_escape(@all[left...right])
         puts (' ' * (@furthest - left)) + "^"
     end
 
@@ -804,7 +804,7 @@ end
         if pattern.parameters != None:
             parameters = ", %s" % ",".join([me.fixup_ruby(p, fix) for p in pattern.parameters])
         data = """
-# print "Trying rule " + '%s'
+# puts "Trying rule '%s'"
 %s = rule_%s(%s, %s.getPosition()%s)
 if %s == nil
     %s
@@ -829,7 +829,7 @@ rescue PegError
         %s
     end
 end
-        """ % (my_result, result, indent(indent(pattern.next.generate_python(my_result, result, stream, my_fail).strip())), result, my_result, result, failure())
+        """ % (my_result, result, indent(indent(pattern.next.generate_v1(me, my_result, result, stream, my_fail).strip())), result, my_result, result, failure())
 
         return data
 
@@ -2160,7 +2160,7 @@ def parse(file)
     stream = Stream.new(file)
     out = rule_%s(stream, 0)
     stream.close()
-    return out
+    return out.getValues()
 end
 """ % (start_ruby, rule_numbers, '\n'.join([rule.generate_ruby() for rule in self.rules]), self.start)
         return data
