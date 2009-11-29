@@ -602,7 +602,90 @@ class CodeGenerator:
         self.fail()
 
 class RubyGenerator(CodeGenerator):
-    pass
+    def fixup_ruby(self, code, how):
+        import re
+        fix = re.compile("\$(\d+)")
+        return re.sub(fix, how, code)
+
+    def generate_sequence(me, pattern, result, previous_result, stream, failure):
+        data = ""
+        for apattern in pattern.patterns:
+            my_result = newResult()
+            data += """
+%s = Result(%s.getPosition())
+%s
+%s.addResult(%s)
+""" % (my_result, result, apattern.generate_v1(me, my_result, result, stream, failure), result, my_result)
+
+        return data + """
+%s.setValue(%s.getLastValue())
+""" % (result, result)
+
+    # this breaks when the sub-pattern is a PatternSequence, todo: fix it
+    def generate_maybe(me, pattern, result, previous_result, stream, failure):
+        save = gensym("save")
+        fail = lambda : """
+%s = Result(%s)
+%s.setValue(nil)
+""" % (result, save, result)
+
+        data = """
+%s = %s.getPosition()
+%s
+""" % (save, result, pattern.pattern.generate_v1(me, result, previous_result, stream, fail))
+        return data
+
+    def generate_repeat_many(me, pattern, result, previous_result, stream, failure):
+        my_fail = lambda : "raise PegError"
+        my_result = newResult()
+        data = """
+begin
+    while true
+        %s = Result(%s.getPosition())
+        %s
+        %s.addResult(%s)
+    end
+rescue PegError
+end
+        """ % (my_result, result, indent(indent(pattern.next.generate_v1(me, my_result, result, stream, my_fail).strip())), result, my_result)
+
+        return data
+
+    def generate_rule(me, pattern, result, previous_result, stream, failure):
+        def fix(v):
+            return "%s.getValues()[%s]" % (previous_result, int(v.group(1)) - 1)
+        parameters = ""
+        if pattern.parameters != None:
+            parameters = ", %s" % ",".join([me.fixup_ruby(p, fix) for p in pattern.parameters])
+        data = """
+# print "Trying rule " + '%s'
+%s = rule_%s(%s, %s.getPosition()%s)
+if %s == nil
+    %s
+end
+""" % (pattern.rule, result, pattern.rule, stream, result, parameters, result, indent(failure()))
+
+        return data
+
+
+    def generate_code(me, pattern, result, previous_result, stream, failure):
+        data = """
+value = nil
+values = %s.getValues()
+%s
+%s.setValue(value)
+""" % (previous_result, me.fixup_ruby(pattern.code.strip(), lambda v: "values[%s]" % (int(v.group(1)) - 1)), result)
+
+        return data
+
+
+    def generate_bind(me, pattern, result, previous_result, stream, failure):
+        data = """
+%s
+%s = %s.getValues()
+""" % (pattern.pattern.generate_v1(me, result, previous_result, stream, failure).strip(), pattern.variable, result)
+        return data
+
 
 class PythonGenerator(CodeGenerator):
     def fixup_python(self, code, how):
@@ -1119,11 +1202,13 @@ class Pattern:
     def tailRecursive(self, rule):
         return False
 
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        raise Exception("%s must override the `generate_v1' method to generate code" % (self.__class__))
+
     # generic code generation method. visitor should be a subclass of
     # CodeGenerator
     def generate(self, visitor, peg, result, stream, failure, tail, peg_args):
-        raise Exception("Sub-classes must override the `generate' method generate code")
-
+        raise Exception("Sub-classes must override the `generate' method to generate code")
     # utility method, probably move it elsewhere
     def parens(self, pattern, str):
         if pattern.contains() > 1:
@@ -1205,6 +1290,9 @@ class PatternRule(Pattern):
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_rule(self, result, previous_result, stream, failure)
+    
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_rule(self, result, previous_result, stream, failure)
         
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_rule(self, peg, result, stream, failure, tail, peg_args)
@@ -1276,6 +1364,9 @@ class PatternSequence(Pattern):
     def generate_bnf(self):
         return "%s" % " ".join([p.generate_bnf() for p in self.patterns])
 
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_sequence(self, result, previous_result, stream, failure)
+
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_sequence(self, result, previous_result, stream, failure)
         
@@ -1322,6 +1413,9 @@ class PatternCode(Pattern):
     def ensureRules(self, find):
         pass
 
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_code(self, result, previous_result, stream, failure)
+
     def generate_bnf(self):
         return """{{%s}}""" % (self.code)
 
@@ -1345,6 +1439,9 @@ class PatternRepeatMany(Pattern):
                 return [self]
             return []
         return me() + self.next.find(proc)
+    
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_repeat_many(self, result, previous_result, stream, failure)
 
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "*"
@@ -1390,6 +1487,9 @@ class PatternMaybe(Pattern):
                 return [self]
             return []
         return me() + self.pattern.find(proc)
+    
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_maybe(self, result, previous_result, stream, failure)
 
     def generate_bnf(self):
         return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
@@ -1436,6 +1536,9 @@ class PatternBind(Pattern):
                 return [self]
             return []
         return me() + self.pattern.find(proc)
+
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_bind(self, result, previous_result, stream, failure)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_bind(self, peg, result, stream, failure, tail, peg_args)
@@ -1535,17 +1638,42 @@ class Rule:
             pattern.ensureRules(find)
 
     def generate_ruby(self):
+        def newPattern(pattern, stream, position):
+            result = newResult()
+            rule_id = "RULE_%s" % self.name
+
+            def fail():
+                return "raise PegError"
+            data = """
+begin
+    %s = Result(%s)
+    %s
+    %s.update(%s, %s, %s)
+    return %s
+rescue PegError
+    pass
+end
+            """ % (result, position, indent(pattern.generate_v1(RubyGenerator(), result, None, stream, fail).strip()), stream, rule_id, position, result, result)
+            return data
+
 
         stream = "stream"
         position = "position"
+        rule_id = "RULE_%s" % self.name
         parameters = ""
         if self.parameters != None:
             parameters = ", " + ", ".join(["%s" % p for p in self.parameters])
 
         data = """
 def rule_%s(%s, %s%s)
+    if %s.hasResult(%s, %s)
+        return %s.result(%s, %s)
+    end
+    %s
+    %s.update(%s, %s, nil)
+    return nil
 end
-""" % (self.name, stream, position, parameters)
+""" % (self.name, stream, position, parameters, stream, rule_id, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, rule_id, position)
         return data
 
     def generate_python(self):
