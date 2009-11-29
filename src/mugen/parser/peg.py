@@ -601,6 +601,9 @@ class CodeGenerator:
     def generate_verbatim(self, *args):
         self.fail()
 
+class RubyGenerator(CodeGenerator):
+    pass
+
 class PythonGenerator(CodeGenerator):
     def fixup_python(self, code, how):
         import re
@@ -1531,6 +1534,20 @@ class Rule:
         for pattern in self.patterns:
             pattern.ensureRules(find)
 
+    def generate_ruby(self):
+
+        stream = "stream"
+        position = "position"
+        parameters = ""
+        if self.parameters != None:
+            parameters = ", " + ", ".join(["%s" % p for p in self.parameters])
+
+        data = """
+def rule_%s(%s, %s%s)
+end
+""" % (self.name, stream, position, parameters)
+        return data
+
     def generate_python(self):
         def newPattern(pattern, stream, position):
             result = newResult()
@@ -1727,6 +1744,20 @@ class Peg:
             if rule.name == name:
                 return rule
         return None
+
+    def generate_ruby(self):
+
+        data = """
+%s
+
+def parse(file)
+    f = File.new(file, 'r')
+    stream = Stream.new(f)
+    rule_%s(stream, 0)
+    f.close()
+end
+""" % ('\n'.join([rule.generate_ruby() for rule in self.rules]), self.start)
+        return data
 
     def generate_python(self):
         # use_rules = [rule for rule in self.rules if not rule.isInline()]
@@ -2416,6 +2447,8 @@ if __name__ == '__main__':
             doit.append(lambda p: p.generate_bnf())
         elif arg == '--cpp' or arg == '--c++':
             doit.append(lambda p: p.generate_cpp())
+        elif arg == '--ruby':
+            doit.append(lambda p: p.generate_ruby())
         elif arg == '--python':
             doit.append(lambda p: p.generate_python())
         elif arg == "--help-syntax":

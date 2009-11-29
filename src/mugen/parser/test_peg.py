@@ -55,6 +55,20 @@ def do_bnf(name, grammar):
         return False
     return True
 
+def do_ruby(name, grammar, input):
+    print "[%s] Test ruby.." % name
+    out = get_peg_output('--ruby', grammar)
+    file = newFile('.rb')
+    write(out, file)
+    import re
+    import subprocess
+    module = re.match(r"(\w+)\.rb", file).group(1)
+    process = subprocess.Popen(['ruby', '-e', 'require "%s"; puts parse(ARGV[0])' % module, input], stdout = subprocess.PIPE)
+    code = process.wait()
+    out, err = process.communicate()
+    erase(file)
+    return out
+
 def do_python(name, grammar, input):
     import re
     # import subprocess
@@ -122,8 +136,8 @@ int main(int argc, char ** argv){
     return out
 
 def test_all(name, grammar, input):
-    grammar_file = '.grammar'
-    input_file = '.input'
+    grammar_file = newFile()
+    input_file = newFile()
     
     write(grammar, grammar_file)
     write(input, input_file)
@@ -131,6 +145,7 @@ def test_all(name, grammar, input):
     do_bnf(name, grammar_file)
     do_python(name, grammar_file, input_file)
     do_cpp(name, grammar_file, input_file)
+    do_ruby(name, grammar_file, input_file)
 
     erase(grammar_file)
     erase(input_file)
