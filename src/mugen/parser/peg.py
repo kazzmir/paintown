@@ -667,6 +667,119 @@ end
 
         return data
 
+    def generate_repeat_once(me, pattern, result, previous_result, stream, failure):
+        my_fail = lambda : "raise PegError"
+        my_result = newResult()
+        my_result2 = newResult()
+        data = """
+begin
+    while (true)
+        %s = Result(%s.getPosition())
+        %s
+        %s.addResult(%s)
+    end
+rescue PegError
+    if %s.matches() == 0
+        %s
+    end
+end
+        """ % (my_result, result, indent(indent(pattern.next.generate_python(my_result, result, stream, my_fail).strip())), result, my_result, result, failure())
+
+        return data
+
+    def generate_void(me, pattern, result, previous_result, stream, failure):
+        return ""
+
+    def generate_verbatim(me, pattern, result, previous_result, stream, failure):
+        def doString():
+            length = len(pattern.letters)
+            if special_char(pattern.letters):
+                length = 1
+            data = """
+if '%s' == %s.get(%s.getPosition(), %s) then
+    %s.nextPosition(%s)
+    %s.setValue('%s')
+else
+    %s
+end
+""" % (pattern.letters, stream, result, length, result, length, result, pattern.letters, indent(failure()))
+            return data
+        def doAscii():
+            data = """
+if %s.get(%s.getPosition()).ord() == %s then
+    %s.nextPosition()
+    %s.setValue(%s)
+else
+    %s
+end
+"""
+            return data % (stream, result, pattern.letters, result, result, pattern.letters, indent(failure()))
+        if type(pattern.letters) == type('x'):
+            return doString()
+        elif type(pattern.letters) == type(0):
+            return doAscii()
+        else:
+            raise Exception("unknown verbatim value %s" % pattern.letters)
+
+    def generate_ensure(me, pattern, result, previous_result, stream, failure):
+        my_result = newResult()
+        data = """
+%s = Result(%s.getPosition())
+%s
+""" % (my_result, result, pattern.next.generate_v1(me, my_result, result, stream, failure).strip())
+        return data
+
+    def generate_not(me, pattern, result, previous_result, stream, failure):
+        my_result = newResult()
+        my_fail = lambda : "raise NotError"
+        data = """
+%s = Result(%s.getPosition())
+begin
+    %s
+    %s
+rescue NotError
+    %s.setValue(nil)
+end
+        """ % (my_result, result, indent(pattern.next.generate_python(my_result, result, stream, my_fail).strip()), failure(), result)
+
+        return data
+
+    def generate_any(me, pattern, result, previous_result, stream, failure):
+        temp = gensym()
+        data = """
+%s = %s.get(%s.getPosition())
+if %s != 0.chr() then
+    %s.setValue(%s)
+    %s.nextPosition()
+else
+    %s
+end
+""" % (temp, stream, result, temp, result, temp, result, indent(failure()))
+        return data
+
+    def generate_range(me, pattern, result, previous_result, stream, failure):
+        letter = gensym("letter")
+        data = """
+%s = %s.get(%s.getPosition())
+if '%s'.index(%s) != nil then
+    %s.nextPosition()
+    %s.setValue(%s)
+else
+    %s
+end
+""" % (letter, stream, result, pattern.range, letter, result, result, letter, indent(failure()))
+        return data
+
+    def generate_eof(me, pattern, result, previous_result, stream, failure):
+        data = """
+if 0.chr() == %s.get(%s.getPosition()) then
+    %s.nextPosition()
+    %s.setValue(0.chr())
+else
+    %s
+end
+""" % (stream, result, result, result, indent(failure()))
+        return data
 
     def generate_code(me, pattern, result, previous_result, stream, failure):
         data = """
@@ -1237,6 +1350,9 @@ class PatternEnsure(Pattern):
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_ensure(self, result, previous_result, stream, failure)
 
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_ensure(self, result, previous_result, stream, failure)
+
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_ensure(self, peg, result, stream, failure, tail, peg_args)
         
@@ -1263,6 +1379,9 @@ class PatternNot(Pattern):
         
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_not(self, peg, result, stream, failure, tail, peg_args)
+
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_not(self, result, previous_result, stream, failure)
         
 class PatternRule(Pattern):
     def __init__(self, rule, parameters = None):
@@ -1312,6 +1431,9 @@ class PatternVoid(Pattern):
     def generate_bnf(self):
         return "<void>"
 
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_void(self, result, previous_result, stream, failure)
+
     def generate_python(self, result, previous_result, stream, failure):
         return ""
     
@@ -1332,6 +1454,9 @@ class PatternEof(Pattern):
 
     def generate_bnf(self):
         return "<eof>"
+
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_eof(self, result, previous_result, stream, failure)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_eof(self, result, previous_result, stream, failure)
@@ -1390,6 +1515,9 @@ class PatternRepeatOnce(Pattern):
 
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "+"
+
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_repeat_once(self, result, previous_result, stream, failure)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_repeat_once(self, result, previous_result, stream, failure)
@@ -1466,6 +1594,9 @@ class PatternAny(Pattern):
 
     def ensureRules(self, find):
         pass
+
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_any(self, result, previous_result, stream, failure)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_any(self, peg, result, stream, failure, tail, peg_args)
@@ -1576,6 +1707,9 @@ class PatternRange(Pattern):
         
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_range(self, result, previous_result, stream, failure)
+
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_range(self, result, previous_result, stream, failure)
         
 class PatternVerbatim(Pattern):
     def __init__(self, letters, options = None):
@@ -1597,16 +1731,8 @@ class PatternVerbatim(Pattern):
     def generate_bnf(self):
         return '"%s"' % self.letters
 
-    def generate_python2(self, result, previous_result, stream, failure):
-        data = """
-for letter in '%s':
-    if letter == %s.get(%s.getPosition()):
-        %s.nextPosition()
-    else:
-        %s
-%s.setValue('%s')
-""" % (self.letters, stream, result, result, failure(), result, self.letters)
-        return data
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_verbatim(self, result, previous_result, stream, failure)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_verbatim(self, result, previous_result, stream, failure)
@@ -1673,7 +1799,7 @@ def rule_%s(%s, %s%s)
     %s.update(%s, %s, nil)
     return nil
 end
-""" % (self.name, stream, position, parameters, stream, rule_id, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, rule_id, position)
+""" % (self.name, stream, position, parameters, stream, rule_id, position, stream, rule_id, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, rule_id, position)
         return data
 
     def generate_python(self):
