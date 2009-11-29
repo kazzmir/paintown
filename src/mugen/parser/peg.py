@@ -559,6 +559,8 @@ class NotError < Exception
 end
 
 class Result
+    attr_reader :values, :position
+
     def initialize(position)
         @position = position
         @values = []
@@ -596,7 +598,7 @@ class Result
     end
 
     def addResult(him)
-        @values.append(him.values)
+        @values.concat(him.values)
         @position = him.position
     end
     
@@ -756,7 +758,7 @@ class RubyGenerator(CodeGenerator):
         for apattern in pattern.patterns:
             my_result = newResult()
             data += """
-%s = Result(%s.getPosition())
+%s = Result.new(%s.getPosition())
 %s
 %s.addResult(%s)
 """ % (my_result, result, apattern.generate_v1(me, my_result, result, stream, failure), result, my_result)
@@ -769,7 +771,7 @@ class RubyGenerator(CodeGenerator):
     def generate_maybe(me, pattern, result, previous_result, stream, failure):
         save = gensym("save")
         fail = lambda : """
-%s = Result(%s)
+%s = Result.new(%s)
 %s.setValue(nil)
 """ % (result, save, result)
 
@@ -785,7 +787,7 @@ class RubyGenerator(CodeGenerator):
         data = """
 begin
     while true
-        %s = Result(%s.getPosition())
+        %s = Result.new(%s.getPosition())
         %s
         %s.addResult(%s)
     end
@@ -818,7 +820,7 @@ end
         data = """
 begin
     while (true)
-        %s = Result(%s.getPosition())
+        %s = Result.new(%s.getPosition())
         %s
         %s.addResult(%s)
     end
@@ -868,7 +870,7 @@ end
     def generate_ensure(me, pattern, result, previous_result, stream, failure):
         my_result = newResult()
         data = """
-%s = Result(%s.getPosition())
+%s = Result.new(%s.getPosition())
 %s
 """ % (my_result, result, pattern.next.generate_v1(me, my_result, result, stream, failure).strip())
         return data
@@ -877,7 +879,7 @@ end
         my_result = newResult()
         my_fail = lambda : "raise NotError"
         data = """
-%s = Result(%s.getPosition())
+%s = Result.new(%s.getPosition())
 begin
     %s
     %s
@@ -1916,12 +1918,11 @@ class Rule:
                 return "raise PegError"
             data = """
 begin
-    %s = Result(%s)
+    %s = Result.new(%s)
     %s
     %s.update(%s, %s, %s)
     return %s
 rescue PegError
-    pass
 end
             """ % (result, position, indent(pattern.generate_v1(RubyGenerator(), result, None, stream, fail).strip()), stream, rule_id, position, result, result)
             return data
@@ -2145,18 +2146,23 @@ class Peg:
 
     def generate_ruby(self):
 
+        use_rules = self.rules
+        rule_numbers = '\n'.join(["RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
+
         data = """
 %s
 
 %s
 
+%s
+
 def parse(file)
-    f = File.new(file, 'r')
-    stream = Stream.new(f)
-    rule_%s(stream, 0)
-    f.close()
+    stream = Stream.new(file)
+    out = rule_%s(stream, 0)
+    stream.close()
+    return out
 end
-""" % (start_ruby, '\n'.join([rule.generate_ruby() for rule in self.rules]), self.start)
+""" % (start_ruby, rule_numbers, '\n'.join([rule.generate_ruby() for rule in self.rules]), self.start)
         return data
 
     def generate_python(self):
