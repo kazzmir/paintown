@@ -13,7 +13,7 @@
 # 4. 171397b / 10.539s = 16263.1179428788 b/s
 
 # Todo (finished items at bottom)
-# add generator for ruby, scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
+# add generator for scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
 # add header (.h) generator for C/C++
 
 next_var = 0
@@ -2900,3 +2900,4 @@ if __name__ == '__main__':
 # make intra-pattern actions work
 # add helper function section
 # error reporting for c++
+# generator for python, ruby, c++
