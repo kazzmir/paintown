@@ -66,7 +66,9 @@ def do_ruby(name, grammar, input):
     process = subprocess.Popen(['ruby', '-e', 'require "%s"; puts parse(ARGV[0])' % module, input], stdout = subprocess.PIPE)
     code = process.wait()
     out, err = process.communicate()
-    erase(file)
+    # erase(file)
+    if code != 0:
+        raise TestException("Ruby failed: %s" % code)
     return out
 
 def do_python(name, grammar, input):

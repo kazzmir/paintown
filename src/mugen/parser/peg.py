@@ -546,6 +546,150 @@ class Stream:
 
 """
 
+start_ruby = """
+
+def special_escape(s)
+    return s.replace("\\\\n", "\\\\\\\\n").replace("\\\\t", "\\\\\\\\t").replace("\\\"", '\\\\\\\"').replace("\\\\r", "\\\\\\\\r")
+end
+
+class PegError < Exception
+end
+
+class NotError < Exception
+end
+
+class Result
+    def initialize(position)
+        @position = position
+        @values = []
+    end
+
+    def getPosition()
+        return @position
+    end
+
+    def nextPosition(amount = 1)
+        @position += amount
+    end
+
+    def setValue(value)
+        @values = value
+    end
+
+    def getLastValue()
+        if @values.is_a?(Array)
+            if @values.size() > 0
+                return @values[-1]
+            else
+                return nil
+            end
+        end
+        return @values
+    end
+    
+    def matches()
+        return @values.size
+    end
+
+    def getValues()
+        return @values
+    end
+
+    def addResult(him)
+        @values.append(him.values)
+        @position = him.position
+    end
+    
+    #def extendResult(self, him):
+    #    self.values.extend(him.values)
+    #    self.position = him.position
+end
+
+class Stream
+    def initialize(filename)
+        @file = File.new(filename, 'r')
+        @position = 0
+        @limit = 100
+        @furthest = 0
+        @all = @file.read()
+        @memo = {}
+        # print "Read " + str(len(self.all))
+    end
+
+    def close()
+        @file.close()
+    end
+
+    def get(position, number = 1)
+        if position + number > @limit
+            # print (position + number)
+            @limit += 5000
+        end
+        if position + number > @all.size
+            return 0.chr()
+        end
+        # print "stream: %s" % self.all[position:position+number]
+        return @all[position..position+number]
+    end
+
+    def reportError()
+        line = 1
+        column = 1
+        for i in 0..@furthest
+            if @all[i] == '\\n'
+                line += 1
+                column = 1
+            else
+                column += 1
+            end
+        end
+        context = 10
+        left = @furthest - context
+        right = @furthest + context
+        if left < 0
+            left = 0
+        end
+        if right > @all.size
+            right = @all.size
+        end
+        puts "Read up till line #{line}, column #{column}"
+        puts special_escape(@all[left..right])
+        puts (' ' * (@furthest - left)) + "^"
+    end
+
+    def update(rule, position, result)
+        if result != nil and result.getPosition() > @furthest
+            @furthest = result.getPosition()
+        end
+
+        for_rule = nil
+        if @memo.has_key? rule
+            for_rule = @memo[rule]
+        else
+            @memo[rule] = {}
+            for_rule = @memo[rule]
+        end
+        
+        for_position = nil
+        if for_rule.has_key? position
+            for_position = for_rule[position]
+        else
+            for_rule[position] = nil
+        end
+        for_rule[position] = result
+    end
+
+    def hasResult(rule, position)
+        @memo.has_key?(rule) and @memo[rule].has_key?(position)
+        # return @memo.has_key?(rule) and @memo[rule].has_key?(position)
+    end
+
+    def result(rule, position)
+        return @memo[rule][position]
+    end
+end
+"""
+
 def _not_used_by_anything_or_anyone_please_ignore_me():
     pass
 
@@ -2004,13 +2148,15 @@ class Peg:
         data = """
 %s
 
+%s
+
 def parse(file)
     f = File.new(file, 'r')
     stream = Stream.new(f)
     rule_%s(stream, 0)
     f.close()
 end
-""" % ('\n'.join([rule.generate_ruby() for rule in self.rules]), self.start)
+""" % (start_ruby, '\n'.join([rule.generate_ruby() for rule in self.rules]), self.start)
         return data
 
     def generate_python(self):
