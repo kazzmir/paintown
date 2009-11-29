@@ -4,6 +4,11 @@
 #  PYTHON_EMBEDABLE - True if embedable
 
 find_package(PythonLibs)
+# Some systems require these libs to be explicitly be added for the test
+find_library(DL dl)
+find_library(MATH m)
+find_library(PTHREAD pthread)
+find_library(UTIL util)
 
 if(PYTHONLIBS_FOUND)
 	MESSAGE(STATUS "Checking if Python is Embedable")
@@ -11,7 +16,7 @@ if(PYTHONLIBS_FOUND)
 	# If on Slackware, uncomment the next line to fix a missing library issue
 	# As of 11/22/2009 this is needed for Slackware 13
 	# SET(PYTHON_LIBRARIES ${PYTHON_LIBRARIES} -ldl -lm -lpthread -lutil)
-	SET(CMAKE_REQUIRED_LIBRARIES ${PYTHON_LIBRARIES})
+	SET(CMAKE_REQUIRED_LIBRARIES ${PYTHON_LIBRARIES} ${DL} ${MATH} ${PTHREAD} ${UTIL})
 	CHECK_C_SOURCE_COMPILES(
 "#include <Python.h>
 int main(int argc, char *argv[]) {
