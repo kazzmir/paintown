@@ -8,6 +8,10 @@ namespace Mugen{
     namespace Def{
         extern const void * main(const std::string & filename);
     }
+
+    namespace Air{
+        extern const void * main(const std::string & filename);
+    }
 }
 
 #endif

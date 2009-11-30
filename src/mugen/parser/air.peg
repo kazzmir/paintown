@@ -1,6 +1,13 @@
 start-symbol: start
 options: debug0
 module: Mugen.Air
+include: {{
+#include "../ast/all.h"
+#include <map>
+#include "gc.h"
+typedef std::list<Ast::Section*> SectionList;
+}}
+
 rules:
 	start = whitespace newline* (line whitespace line_end)* <eof>
 	line = s comment

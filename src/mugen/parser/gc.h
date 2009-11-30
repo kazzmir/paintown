@@ -24,7 +24,7 @@ void save(const X x){
 }
 
 /* garbage collection */
-void cleanup(SectionList * list){
+static void cleanup(SectionList * list){
     /* pointers that we should keep will be marked true in the map */
     std::map<const void*, bool> marks;
 
