@@ -463,6 +463,8 @@ Result rule_float_or_integer(Stream &, const int);
 
 
 
+namespace GC{
+
 /* poor man's garbage collection.
  * after parsing every pointer stored in this list is checked to see if it
  * is stored in the resulting AST. If the AST does not know about the pointer
@@ -473,6 +475,62 @@ Result rule_float_or_integer(Stream &, const int);
  * that is allocated. Collectable will call the appropriate destructor.
  */
 static std::list<Ast::Collectable> saved_pointers;
+
+template<class X>
+void save(const X x){
+    saved_pointers.push_back(Ast::Collectable(x));
+}
+
+/* garbage collection */
+void cleanup(SectionList * list){
+    /* pointers that we should keep will be marked true in the map */
+    std::map<const void*, bool> marks;
+
+    /* first mark roots */
+    marks[list] = true;
+    for (SectionList::iterator it = list->begin(); it != list->end(); it++){
+        Ast::Section * section = *it;
+        section->mark(marks);
+    }
+
+    /* all unmarked pointers should be deleted but since the destructors
+     * of AST nodes will delete child objects we only need to delete
+     * AST nodes that are not the child object of another node.
+     * If we mark every single node and add up all the times a node was marked
+     * then nodes marked only once will be top-level nodes. Those are the
+     * nodes we can destroy safely and ensure the rest of the nodes will
+     * die with them.
+     *
+     * this has worst-case performance of O(N^2)
+     */
+    std::map<const void *, int> memory;
+    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
+        Ast::Collectable & collect = *it;
+
+        /* only look at unmarked objects */
+        if (! marks[collect.pointer()]){
+            std::map<const void *, bool> temp;
+            collect.mark(temp);
+
+            /* merge marks into the total count */
+            for (std::map<const void *, bool>::iterator mit = temp.begin(); mit != temp.end(); mit++){
+                memory[mit->first] += 1;
+            }
+        }
+    }
+
+    /* finally destroy the nodes with no parents */
+    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
+        Ast::Collectable & collect = *it;
+        if (memory[collect.pointer()] == 1){
+            collect.destroy();
+        }
+    }
+    // std::cout << "Destroying everything" << std::endl;
+    saved_pointers.clear();
+}
+
+} /* GC */
 
 template<class X>
 X as(const Value & value){
@@ -490,11 +548,6 @@ void addSection(const Value & section_list_value, const Value & section_value){
 
 Ast::Section * makeSection(const Value & str){
   return new Ast::Section(as<std::string*>(str));
-}
-
-template<class X>
-void save(const X x){
-    saved_pointers.push_back(Ast::Collectable(x));
 }
 
 SectionList * makeSectionList(){
@@ -574,7 +627,7 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
         if (value == 0){
             /* FIXME! replace empty with a new node */
             value = makeKeyword("empty");
-            save(value);
+            GC::save(as<Ast::Keyword*>(value));
             values.push_back(value);
         } else {
             values.push_back(value);
@@ -622,57 +675,6 @@ Ast::Value * makeDate(const Value & month, const Value & day, const Value & year
     return new Ast::Number(0);
 }
 
-/* garbage collection */
-void cleanup(const Value & value){
-    SectionList * list = as<SectionList*>(value);
-
-    /* pointers that we should keep will be marked true in the map */
-    std::map<const void*, bool> marks;
-
-    /* first mark roots */
-    marks[list] = true;
-    for (SectionList::iterator it = list->begin(); it != list->end(); it++){
-        Ast::Section * section = *it;
-        section->mark(marks);
-    }
-
-    /* all unmarked pointers should be deleted but since the destructors
-     * of AST nodes will delete child objects we only need to delete
-     * AST nodes that are not the child object of another node.
-     * If we mark every single node and add up all the times a node was marked
-     * then nodes marked only once will be top-level nodes. Those are the
-     * nodes we can destroy safely and ensure the rest of the nodes will
-     * die with them.
-     *
-     * this has worst-case performance of O(N^2)
-     */
-    std::map<const void *, int> memory;
-    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
-        Ast::Collectable & collect = *it;
-
-        /* only look at unmarked objects */
-        if (! marks[collect.pointer()]){
-            std::map<const void *, bool> temp;
-            collect.mark(temp);
-
-            /* merge marks into the total count */
-            for (std::map<const void *, bool>::iterator mit = temp.begin(); mit != temp.end(); mit++){
-                memory[mit->first] += 1;
-            }
-        }
-    }
-
-    /* finally destroy the nodes with no parents */
-    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
-        Ast::Collectable & collect = *it;
-        if (memory[collect.pointer()] == 1){
-            collect.destroy();
-        }
-    }
-    // std::cout << "Destroying everything" << std::endl;
-    saved_pointers.clear();
-}
-
 
 
 
@@ -694,7 +696,7 @@ Result rule_start(Stream & stream, const int position){
     
         {
                 Value value((void*) 0);
-                value = makeSectionList(); save(as<SectionList*>(value));
+                value = makeSectionList(); GC::save(as<SectionList*>(value));
                 result_peg_1.setValue(value);
             }
             current = result_peg_1.getValues();
@@ -1190,7 +1192,7 @@ Result rule_start(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = current; cleanup(value);
+                value = current; GC::cleanup(as<SectionList*>(value));
                 result_peg_1.setValue(value);
             }
         
@@ -1219,7 +1221,7 @@ Result rule_start(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
     }
     
-     cleanup(current); 
+     GC::cleanup(as<SectionList*>(current)); 
     return errorResult;
 }
         
@@ -1737,7 +1739,7 @@ Result rule_section(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeSection(result_peg_467.getValues()); save(as<Ast::Section*>(value));
+                value = makeSection(result_peg_467.getValues()); GC::save(as<Ast::Section*>(value));
                 result_peg_466.setValue(value);
             }
             ast = result_peg_466.getValues();
@@ -2746,7 +2748,7 @@ Result rule_section_start(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = toString(data); save(as<std::string*>(value));
+                value = toString(data); GC::save(as<std::string*>(value));
                 result_peg_920.setValue(value);
             }
         
@@ -2809,7 +2811,7 @@ Result rule_loopstart(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeValue(); save(as<Ast::Value*>(value));
+                value = makeValue(); GC::save(as<Ast::Value*>(value));
                 result_peg_933.setValue(value);
             }
         
@@ -2894,7 +2896,7 @@ Result rule_name(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = toString((char)(long)result_peg_937.getValues().getValue(),result_peg_944.getValues()); save(as<std::string*>(value));
+                value = toString((char)(long)result_peg_937.getValues().getValue(),result_peg_944.getValues()); GC::save(as<std::string*>(value));
                 result_peg_936.setValue(value);
             }
         
@@ -3276,7 +3278,7 @@ Result rule_filename(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = new Ast::Filename(toString(file)); save(as<Ast::Filename*>(value));
+                value = new Ast::Filename(toString(file)); GC::save(as<Ast::Filename*>(value));
                 result_peg_1006.setValue(value);
             }
         
@@ -3498,7 +3500,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttribute(id); save(as<Ast::Attribute*>(value));
+                value = makeAttribute(id); GC::save(as<Ast::Attribute*>(value));
                 result_peg_1032.setValue(value);
             }
         
@@ -3564,7 +3566,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttribute(id, data); save(as<Ast::Attribute*>(value));
+                value = makeAttribute(id, data); GC::save(as<Ast::Attribute*>(value));
                 result_peg_1040.setValue(value);
             }
         
@@ -3630,7 +3632,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttributeFilename(id, data); save(as<Ast::Attribute*>(value));
+                value = makeAttributeFilename(id, data); GC::save(as<Ast::Attribute*>(value));
                 result_peg_1047.setValue(value);
             }
         
@@ -3747,7 +3749,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeIndexedAttribute(id, index, data); save(as<Ast::Value*>(value));
+                value = makeIndexedAttribute(id, index, data); GC::save(as<Ast::Value*>(value));
                 result_peg_1054.setValue(value);
             }
         
@@ -3813,7 +3815,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttributes(id, data); save(as<Ast::Attribute*>(value));
+                value = makeAttributes(id, data); GC::save(as<Ast::Attribute*>(value));
                 result_peg_1067.setValue(value);
             }
         
@@ -3902,7 +3904,7 @@ Result rule_identifier(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeIdentifier(result_peg_1075.getValues(),result_peg_1077.getValues()); save(as<Ast::Identifier*>(value));
+                value = makeIdentifier(result_peg_1075.getValues(),result_peg_1077.getValues()); GC::save(as<Ast::Identifier*>(value));
                 result_peg_1074.setValue(value);
             }
         
@@ -4107,7 +4109,7 @@ Result rule_valuelist(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeValueList(result_peg_1090.getValues(),result_peg_1092.getValues()); save(as<Ast::Value*>(value));
+                value = makeValueList(result_peg_1090.getValues(),result_peg_1092.getValues()); GC::save(as<Ast::Value*>(value));
                 result_peg_1089.setValue(value);
             }
         
@@ -4223,7 +4225,7 @@ Result rule_value(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_1106.getValues()); save(as<Ast::Value*>(value));
+                value = makeKeyword(result_peg_1106.getValues()); GC::save(as<Ast::Value*>(value));
                 result_peg_1105.setValue(value);
             }
         
@@ -4297,7 +4299,7 @@ Result rule_value(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_1109.getValues()); save(as<Ast::Value*>(value));
+                value = makeKeyword(result_peg_1109.getValues()); GC::save(as<Ast::Value*>(value));
                 result_peg_1108.setValue(value);
             }
         
@@ -4371,7 +4373,7 @@ Result rule_value(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_1123.getValues()); save(as<Ast::Value*>(value));
+                value = makeKeyword(result_peg_1123.getValues()); GC::save(as<Ast::Value*>(value));
                 result_peg_1122.setValue(value);
             }
         
@@ -4442,7 +4444,7 @@ Result rule_value(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_1137.getValues()); save(as<Ast::Value*>(value));
+                value = makeKeyword(result_peg_1137.getValues()); GC::save(as<Ast::Value*>(value));
                 result_peg_1136.setValue(value);
             }
         
@@ -4784,7 +4786,7 @@ Result rule_date(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeDate(result_peg_1164.getValues(),result_peg_1174.getValues(),result_peg_1183.getValues()); save(as<Ast::Value*>(value));
+                value = makeDate(result_peg_1164.getValues(),result_peg_1174.getValues(),result_peg_1183.getValues()); GC::save(as<Ast::Value*>(value));
                 result_peg_1163.setValue(value);
             }
         
@@ -4911,7 +4913,7 @@ Result rule_string(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeString(data); save(as<Ast::String*>(value));
+                value = makeString(data); GC::save(as<Ast::String*>(value));
                 result_peg_1191.setValue(value);
             }
         
@@ -5009,7 +5011,7 @@ Result rule_number(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeNumber(result_peg_1206.getValues(),result_peg_1213.getValues()); save(as<Ast::Value*>(value));
+                value = makeNumber(result_peg_1206.getValues(),result_peg_1213.getValues()); GC::save(as<Ast::Value*>(value));
                 result_peg_1205.setValue(value);
             }
         
@@ -5129,7 +5131,7 @@ Result rule_float_or_integer(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = parseDouble(left,right); save(as<double*>(value));
+                value = parseDouble(left,right); GC::save(as<double*>(value));
                 result_peg_1215.setValue(value);
             }
         
@@ -5197,7 +5199,7 @@ Result rule_float_or_integer(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = parseDouble(result_peg_1235.getValues()); save(as<double*>(value));
+                value = parseDouble(result_peg_1235.getValues()); GC::save(as<double*>(value));
                 result_peg_1234.setValue(value);
             }
         

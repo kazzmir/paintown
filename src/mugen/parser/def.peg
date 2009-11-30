@@ -11,6 +11,8 @@ typedef std::list<Ast::Section*> SectionList;
 
 code: {{
 
+namespace GC{
+
 /* poor man's garbage collection.
  * after parsing every pointer stored in this list is checked to see if it
  * is stored in the resulting AST. If the AST does not know about the pointer
@@ -21,6 +23,62 @@ code: {{
  * that is allocated. Collectable will call the appropriate destructor.
  */
 static std::list<Ast::Collectable> saved_pointers;
+
+template<class X>
+void save(const X x){
+    saved_pointers.push_back(Ast::Collectable(x));
+}
+
+/* garbage collection */
+void cleanup(SectionList * list){
+    /* pointers that we should keep will be marked true in the map */
+    std::map<const void*, bool> marks;
+
+    /* first mark roots */
+    marks[list] = true;
+    for (SectionList::iterator it = list->begin(); it != list->end(); it++){
+        Ast::Section * section = *it;
+        section->mark(marks);
+    }
+
+    /* all unmarked pointers should be deleted but since the destructors
+     * of AST nodes will delete child objects we only need to delete
+     * AST nodes that are not the child object of another node.
+     * If we mark every single node and add up all the times a node was marked
+     * then nodes marked only once will be top-level nodes. Those are the
+     * nodes we can destroy safely and ensure the rest of the nodes will
+     * die with them.
+     *
+     * this has worst-case performance of O(N^2)
+     */
+    std::map<const void *, int> memory;
+    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
+        Ast::Collectable & collect = *it;
+
+        /* only look at unmarked objects */
+        if (! marks[collect.pointer()]){
+            std::map<const void *, bool> temp;
+            collect.mark(temp);
+
+            /* merge marks into the total count */
+            for (std::map<const void *, bool>::iterator mit = temp.begin(); mit != temp.end(); mit++){
+                memory[mit->first] += 1;
+            }
+        }
+    }
+
+    /* finally destroy the nodes with no parents */
+    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
+        Ast::Collectable & collect = *it;
+        if (memory[collect.pointer()] == 1){
+            collect.destroy();
+        }
+    }
+    // std::cout << "Destroying everything" << std::endl;
+    saved_pointers.clear();
+}
+
+} /* GC */
 
 template<class X>
 X as(const Value & value){
@@ -38,11 +96,6 @@ void addSection(const Value & section_list_value, const Value & section_value){
 
 Ast::Section * makeSection(const Value & str){
   return new Ast::Section(as<std::string*>(str));
-}
-
-template<class X>
-void save(const X x){
-    saved_pointers.push_back(Ast::Collectable(x));
 }
 
 SectionList * makeSectionList(){
@@ -122,7 +175,7 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
         if (value == 0){
             /* FIXME! replace empty with a new node */
             value = makeKeyword("empty");
-            save(value);
+            GC::save(as<Ast::Keyword*>(value));
             values.push_back(value);
         } else {
             values.push_back(value);
@@ -170,62 +223,12 @@ Ast::Value * makeDate(const Value & month, const Value & day, const Value & year
     return new Ast::Number(0);
 }
 
-/* garbage collection */
-void cleanup(const Value & value){
-    SectionList * list = as<SectionList*>(value);
-
-    /* pointers that we should keep will be marked true in the map */
-    std::map<const void*, bool> marks;
-
-    /* first mark roots */
-    marks[list] = true;
-    for (SectionList::iterator it = list->begin(); it != list->end(); it++){
-        Ast::Section * section = *it;
-        section->mark(marks);
-    }
-
-    /* all unmarked pointers should be deleted but since the destructors
-     * of AST nodes will delete child objects we only need to delete
-     * AST nodes that are not the child object of another node.
-     * If we mark every single node and add up all the times a node was marked
-     * then nodes marked only once will be top-level nodes. Those are the
-     * nodes we can destroy safely and ensure the rest of the nodes will
-     * die with them.
-     *
-     * this has worst-case performance of O(N^2)
-     */
-    std::map<const void *, int> memory;
-    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
-        Ast::Collectable & collect = *it;
-
-        /* only look at unmarked objects */
-        if (! marks[collect.pointer()]){
-            std::map<const void *, bool> temp;
-            collect.mark(temp);
-
-            /* merge marks into the total count */
-            for (std::map<const void *, bool>::iterator mit = temp.begin(); mit != temp.end(); mit++){
-                memory[mit->first] += 1;
-            }
-        }
-    }
-
-    /* finally destroy the nodes with no parents */
-    for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
-        Ast::Collectable & collect = *it;
-        if (memory[collect.pointer()] == 1){
-            collect.destroy();
-        }
-    }
-    // std::cout << "Destroying everything" << std::endl;
-    saved_pointers.clear();
-}
-
 }}
 
 rules:
-	start = current:{{ value = makeSectionList(); save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; cleanup(value); }}
-            <fail> {{ cleanup(current); }}
+	start = current:{{ value = makeSectionList(); GC::save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
+
+            <fail> {{ GC::cleanup(as<SectionList*>(current)); }}
     # start = current real_start($1)
     # real_start(c) = blah ... <eof>
     #               | {{ delete c; }} <error>
@@ -252,38 +255,38 @@ rules:
 	inline comment = ";" (!"\n" .)*
 	               | "=" (!"\n" .)*
 		           | "-" "-"+
-	section = section_start ast:{{value = makeSection($1); save(as<Ast::Section*>(value)); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
+	section = section_start ast:{{value = makeSection($1); GC::save(as<Ast::Section*>(value)); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
     section_line(section) = s comment
                           | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
                           | s data:valuelist {{ asSection(section)->addValue(asValue(data)); }}
                           | s data:loopstart {{ asSection(section)->addValue(asValue(data)); }}
                           | space+ !"["
-    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); save(as<std::string*>(value)); }}
-	loopstart = "loopstart"{case} {{ value = makeValue(); save(as<Ast::Value*>(value)); }}
-	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); save(as<std::string*>(value)); }}
+    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); GC::save(as<std::string*>(value)); }}
+	loopstart = "loopstart"{case} {{ value = makeValue(); GC::save(as<Ast::Value*>(value)); }}
+	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); GC::save(as<std::string*>(value)); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
     line_end_or_comment = line_end
                         | comment
 	# characters = name s "," s filename
-	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); save(as<Ast::Filename*>(value)); }}
+	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); GC::save(as<Ast::Filename*>(value)); }}
 	filename_char = !"," !"\n" !"[" !<ascii 13> !";" .
-	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); save(as<Ast::Attribute*>(value)); }}
-              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); save(as<Ast::Attribute*>(value)); }}
-	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); save(as<Ast::Attribute*>(value)); }}
-		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); save(as<Ast::Value*>(value)); }}
-		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); save(as<Ast::Attribute*>(value)); }}
-	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); save(as<Ast::Identifier*>(value)); }}
+	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); GC::save(as<Ast::Attribute*>(value)); }}
+              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); GC::save(as<Ast::Attribute*>(value)); }}
+	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); GC::save(as<Ast::Attribute*>(value)); }}
+		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); GC::save(as<Ast::Value*>(value)); }}
+		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); GC::save(as<Ast::Attribute*>(value)); }}
+	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); GC::save(as<Ast::Identifier*>(value)); }}
 	identifier_list = identifier (s "," s filename)+
-	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); save(as<Ast::Value*>(value)); }}
+	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); GC::save(as<Ast::Value*>(value)); }}
 	value = string
 	      | date
 	      | number
-          | keyword {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
-	      | "s"{case} !letter !"." {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
-	      | "h"{case} !letter !"." {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
-	      | "a"{case} number? !letter {{ value = makeKeyword($1); save(as<Ast::Value*>(value)); }}
+          | keyword {{ value = makeKeyword($1); GC::save(as<Ast::Value*>(value)); }}
+	      | "s"{case} !letter !"." {{ value = makeKeyword($1); GC::save(as<Ast::Value*>(value)); }}
+	      | "h"{case} !letter !"." {{ value = makeKeyword($1); GC::save(as<Ast::Value*>(value)); }}
+	      | "a"{case} number? !letter {{ value = makeKeyword($1); GC::save(as<Ast::Value*>(value)); }}
           | filename
     keyword = "normal"
             | "parallax"
@@ -291,11 +294,11 @@ rules:
             | "add1"
             | "add"
             | "sub"
-	date = digit+ "." digit+ "." digit+ {{ value = makeDate($1,$3,$5); save(as<Ast::Value*>(value)); }}
-	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); save(as<Ast::String*>(value)); }}
-	number = sign? float_or_integer {{ value = makeNumber($1,$2); save(as<Ast::Value*>(value)); }}
+	date = digit+ "." digit+ "." digit+ {{ value = makeDate($1,$3,$5); GC::save(as<Ast::Value*>(value)); }}
+	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); GC::save(as<Ast::String*>(value)); }}
+	number = sign? float_or_integer {{ value = makeNumber($1,$2); GC::save(as<Ast::Value*>(value)); }}
 	inline sign = "+"
 	            | "-"
-	float_or_integer = left:digit* "." right:digit+ {{ value = parseDouble(left,right); save(as<double*>(value)); }}
-	                 | digit+ !"." {{ value = parseDouble($1); save(as<double*>(value)); }}
+	float_or_integer = left:digit* "." right:digit+ {{ value = parseDouble(left,right); GC::save(as<double*>(value)); }}
+	                 | digit+ !"." {{ value = parseDouble($1); GC::save(as<double*>(value)); }}
 	inline digit = [0123456789]
