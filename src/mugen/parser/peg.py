@@ -1124,13 +1124,15 @@ else:
             length = len(pattern.letters)
             if special_char(pattern.letters):
                 length = 1
+            import re
+            letters = re.sub(r"'", "\\'", pattern.letters)
             data = """
 if '%s' == %s.get(%s.getPosition(), %s):
     %s.nextPosition(%s)
     %s.setValue('%s')
 else:
     %s
-""" % (pattern.letters, stream, result, length, result, length, result, pattern.letters, indent(failure()))
+""" % (letters, stream, result, length, result, length, result, letters, indent(failure()))
             return data
         def doAscii():
             data = """
