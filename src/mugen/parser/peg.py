@@ -2174,8 +2174,14 @@ end
         if self.include_code != None:
             top_code = self.include_code
 
+        more_code = ""
+        if self.more_code != None:
+            more_code = self.more_code
+
         data = """
 import peg
+
+%s
 
 %s
 
@@ -2196,7 +2202,7 @@ def parse(file):
         return None
     else:
         return done.getValues()
-""" % (top_code, start_python, rule_numbers, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
+""" % (top_code, start_python, rule_numbers, more_code, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
         return data
 
