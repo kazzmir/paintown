@@ -401,9 +401,7 @@ public:
     message(reason){
     }
 
-    std::string getReason() const {
-        return message;
-    }
+    std::string getReason() const;
 
     virtual ~ParseException() throw(){
     }
@@ -411,6 +409,10 @@ public:
 protected:
     std::string message;
 };
+
+std::string ParseException::getReason() const {
+    return message;
+}
 
 Result errorResult(-1);
 """

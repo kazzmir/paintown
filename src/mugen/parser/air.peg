@@ -21,7 +21,7 @@ rules:
 	         | &<eof> <void>
 	newline = "\n"
 	        | "\r"
-	loopstart = "Loopstart"{case}
+	loopstart = "loopstart"{case}
 	whitespace = sw*
 	sw = space
 	   | comment

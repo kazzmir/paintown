@@ -414,9 +414,7 @@ public:
     message(reason){
     }
 
-    std::string getReason() const {
-        return message;
-    }
+    std::string getReason() const;
 
     virtual ~ParseException() throw(){
     }
@@ -424,6 +422,10 @@ public:
 protected:
     std::string message;
 };
+
+std::string ParseException::getReason() const {
+    return message;
+}
 
 Result errorResult(-1);
 
@@ -973,13 +975,13 @@ Result rule_loopstart(Stream & stream, const int position){
     Result result_peg_46(myposition);
     
     for (int i = 0; i < 9; i++){
-        if (compareCharCase("Loopstart"[i], stream.get(result_peg_46.getPosition()))){
+        if (compareCharCase("loopstart"[i], stream.get(result_peg_46.getPosition()))){
             result_peg_46.nextPosition();
         } else {
             goto out_peg_47;
         }
     }
-    result_peg_46.setValue((void*) "Loopstart");
+    result_peg_46.setValue((void*) "loopstart");
     
     {
         Column & column = stream.getColumn(position);
