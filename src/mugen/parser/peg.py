@@ -377,7 +377,7 @@ public:
     }
 
     inline Column & getColumn(const int position){
-        if (position >= memo_size){
+        while (position >= memo_size){
             growMemo();
         }
         return *(memo[position]);
@@ -2255,7 +2255,7 @@ rules:
 """ % (self.start, more, code, indent('\n'.join([rule.generate_bnf() for rule in self.rules]).strip()))
         return data
 
-    def generate_cpp(self):
+    def generate_cpp(self, parallel = False):
         def prototype(rule):
             parameters = ""
             if rule.parameters != None:
@@ -2901,7 +2901,6 @@ if __name__ == '__main__':
     import sys
     import re
     parser = make_peg_parser()
-    # out = parser('peg.in.x')
     doit = []
     file = None
     helped = 0
@@ -2911,15 +2910,18 @@ if __name__ == '__main__':
     do_output = print_it
     do_close = lambda : 0
     return_code = 0
+    parallel = [False]
     for arg in sys.argv[1:]:
         if arg == '--bnf':
             doit.append(lambda p: p.generate_bnf())
         elif arg == '--cpp' or arg == '--c++':
-            doit.append(lambda p: p.generate_cpp())
+            doit.append(lambda p: p.generate_cpp(parallel[0]))
         elif arg == '--ruby':
             doit.append(lambda p: p.generate_ruby())
         elif arg == '--python':
             doit.append(lambda p: p.generate_python())
+        elif arg == '--parallel':
+            parallel[0] = True
         elif arg == "--help-syntax":
             help_syntax()
         elif save_re.match(arg):

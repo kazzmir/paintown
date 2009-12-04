@@ -436,7 +436,7 @@ public:
     }
 
     inline Column & getColumn(const int position){
-        if (position >= memo_size){
+        while (position >= memo_size){
             growMemo();
         }
         return *(memo[position]);
