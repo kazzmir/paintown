@@ -260,6 +260,35 @@ public:
         }
     }
 
+    int length(){
+        return max;
+    }
+
+    /* prints statistics about how often rules were fired and how
+     * likely rules are to succeed
+     */
+    void printStats(){
+        double min = 1;
+        double max = 0;
+        double average = 0;
+        int count = 0;
+        for (int i = 0; i < length(); i++){
+            Column & c = getColumn(i);
+            double rate = (double) c.hitCount() / (double) c.maxHits();
+            if (rate != 0 && rate < min){
+                min = rate;
+            }
+            if (rate > max){
+                max = rate;
+            }
+            if (rate != 0){
+                average += rate;
+                count += 1;
+            }
+        }
+        std::cout << "Min " << (100 * min) << " Max " << (100 * max) << " Average " << (100 * average / count) << " Count " << count << " Length " << length() << " Rule rate " << (100.0 * (double)count / (double) length()) << std::endl;
+    }
+
     char get(const int position){
         if (position >= max || position < 0){
             return '\\0';
@@ -2254,9 +2283,11 @@ rules:
             #    values_per_chunk = 5
             all = []
             pre = ""
+            chunk_to_rules = {}
             for i in xrange(0,int(math.ceil(float(len(rules)) / values_per_chunk))):
                 values = rules[i*values_per_chunk:(i+1)*values_per_chunk]
                 name = "Chunk%d" % i
+                chunk_to_rules[name.lower()] = values
                 chunk_accessors.extend([Accessor(".%s" % name.lower(), "->chunk_%s" % rule.name, name, rule) for rule in values])
 
                 value_data = """
@@ -2267,6 +2298,14 @@ struct %s{
                 all.append(name)
                 pre += value_data
 
+            def sumChunk(chunk):
+                data = """
+(%s != NULL ? (%s) : 0)
+""" % (chunk, '\n+ '.join(["(%s->chunk_%s.calculated() ? 1 : 0)" % (chunk, rule.name) for rule in chunk_to_rules[chunk]]))
+                return data
+
+            hit_count = '+'.join([sumChunk(chunk) for chunk in chunk_to_rules.keys()])
+
             data = """
 %s
 struct Column{
@@ -2276,11 +2315,19 @@ struct Column{
 
     %s
 
+    int hitCount(){
+        return %s;
+    }
+
+    int maxHits(){
+        return %s;
+    }
+
     ~Column(){
         %s
     }
 };
-""" % (pre, indent(indent("\n,".join(["%s(0)" % x.lower() for x in all]))), indent("\n".join(["%s * %s;" % (x, x.lower()) for x in all])), indent(indent("\n".join(["delete %s;" % x.lower() for x in all]))))
+""" % (pre, indent(indent("\n,".join(["%s(0)" % x.lower() for x in all]))), indent("\n".join(["%s * %s;" % (x, x.lower()) for x in all])), hit_count, len(rules), indent(indent("\n".join(["delete %s;" % x.lower() for x in all]))))
 
             return data
 
@@ -2326,7 +2373,7 @@ namespace %s{
 
 %s
 
-const void * main(const std::string & filename) throw (ParseException){
+const void * main(const std::string & filename, bool stats = false) throw (ParseException){
     Stream stream(filename);
     errorResult.setError();
     Result done = rule_%s(stream, 0);
@@ -2334,16 +2381,22 @@ const void * main(const std::string & filename) throw (ParseException){
         std::cout << "Could not parse" << std::endl;
         throw ParseException(stream.reportError());
     }
+    if (stats){
+        stream.printStats();
+    }
     return done.getValues().getValue();
 }
 
-const void * main(const char * in) throw (ParseException){
+const void * main(const char * in, bool stats = false) throw (ParseException){
     Stream stream(in);
     errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
         throw ParseException(stream.reportError());
+    }
+    if (stats){
+        stream.printStats();
     }
     return done.getValues().getValue();
 }

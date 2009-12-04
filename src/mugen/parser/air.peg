@@ -7,16 +7,42 @@ include: {{
 #include "gc.h"
 typedef std::list<Ast::Section*> SectionList;
 }}
+code: {{
+template<class X>
+X as(const Value & value){
+    return (X) value.getValue();
+}
+
+std::string * toString(const Value & input){
+  std::ostringstream out;
+  for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
+    out << (char) (long) (*it).getValue();
+  }
+  return new std::string(out.str());
+}
+
+Ast::Section * makeSection(const Value & str){
+  return new Ast::Section(as<std::string*>(str));
+}
+
+SectionList * makeSectionList(){
+  return new SectionList();
+}
+
+}}
 
 rules:
-	start = whitespace newline* (line whitespace line_end)* <eof>
-	line = s comment
-	     | s action_section
-	     | s collision_default
-	     | s collision
-	     | s valuelist
-	     | s loopstart
-	     | space+
+	start = current:{{ value = makeSectionList(); GC::save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
+
+	line(current) = s comment
+	              | s action
+    action = action_start ast:{{value = makeSection($1); GC::save(as<Ast::Section*>(value)); }} whitespace newline+ (action_line whitespace line_end)* {{ value = ast; }}
+    action_line = s comment
+	            | s collision_default
+	            | s collision
+	            | s valuelist
+	            | s loopstart
+	              # | space+
 	line_end = newline+
 	         | &<eof> <void>
 	newline = "\n"
@@ -31,20 +57,21 @@ rules:
 	      | <ascii 255>
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
-		| "-" "-"+
+		    | "-" "-"+
 	collision_default = "Clsn2Default:"{case} s integer
 	                  | "Clsn1Default:"{case} s integer
 	                  | "Clsn2:"{case} s integer
 			  | "Clsn1:"{case} s integer
 	collision = "Clsn2"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
 	          | "Clsn1"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
-	action_section = "[" s "Begin"{case} s "Action"{case} s integer s "]"
+	action_start = "[" s "Begin"{case} s "Action"{case} s integer s "]"
 	digit = [0123456789]
 	integer = sign? digit+
 	sign = "-"
 	     | "+"
 	valuelist = value (s "," s valuev)*
 	value = integer
+          # Are all these things part of .air files?
 	      | "as"{case} integer "d"{case} integer
 	      | "a"{case} integer
 	      | "a"{case}

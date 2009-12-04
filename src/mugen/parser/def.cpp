@@ -238,6 +238,42 @@ struct Column{
     Chunk3 * chunk3;
     Chunk4 * chunk4;
 
+    int hitCount(){
+        return 
+(chunk3 != NULL ? ((chunk3->chunk_identifier_list.calculated() ? 1 : 0)
++ (chunk3->chunk_valuelist.calculated() ? 1 : 0)
++ (chunk3->chunk_value.calculated() ? 1 : 0)
++ (chunk3->chunk_keyword.calculated() ? 1 : 0)
++ (chunk3->chunk_date.calculated() ? 1 : 0)) : 0)
++
+(chunk2 != NULL ? ((chunk2->chunk_line_end_or_comment.calculated() ? 1 : 0)
++ (chunk2->chunk_filename.calculated() ? 1 : 0)
++ (chunk2->chunk_filename_char.calculated() ? 1 : 0)
++ (chunk2->chunk_attribute.calculated() ? 1 : 0)
++ (chunk2->chunk_identifier.calculated() ? 1 : 0)) : 0)
++
+(chunk1 != NULL ? ((chunk1->chunk_section_line.calculated() ? 1 : 0)
++ (chunk1->chunk_section_start.calculated() ? 1 : 0)
++ (chunk1->chunk_loopstart.calculated() ? 1 : 0)
++ (chunk1->chunk_name.calculated() ? 1 : 0)
++ (chunk1->chunk_alpha_digit.calculated() ? 1 : 0)) : 0)
++
+(chunk0 != NULL ? ((chunk0->chunk_start.calculated() ? 1 : 0)
++ (chunk0->chunk_line.calculated() ? 1 : 0)
++ (chunk0->chunk_line_end.calculated() ? 1 : 0)
++ (chunk0->chunk_s.calculated() ? 1 : 0)
++ (chunk0->chunk_section.calculated() ? 1 : 0)) : 0)
++
+(chunk4 != NULL ? ((chunk4->chunk_string.calculated() ? 1 : 0)
++ (chunk4->chunk_number.calculated() ? 1 : 0)
++ (chunk4->chunk_float_or_integer.calculated() ? 1 : 0)) : 0)
+;
+    }
+
+    int maxHits(){
+        return 23;
+    }
+
     ~Column(){
         delete chunk0;
         delete chunk1;
@@ -281,6 +317,35 @@ public:
         for (int i = 0; i < memo_size; i++){
             memo[i] = new Column();
         }
+    }
+
+    int length(){
+        return max;
+    }
+
+    /* prints statistics about how often rules were fired and how
+     * likely rules are to succeed
+     */
+    void printStats(){
+        double min = 1;
+        double max = 0;
+        double average = 0;
+        int count = 0;
+        for (int i = 0; i < length(); i++){
+            Column & c = getColumn(i);
+            double rate = (double) c.hitCount() / (double) c.maxHits();
+            if (rate != 0 && rate < min){
+                min = rate;
+            }
+            if (rate > max){
+                max = rate;
+            }
+            if (rate != 0){
+                average += rate;
+                count += 1;
+            }
+        }
+        std::cout << "Min " << (100 * min) << " Max " << (100 * max) << " Average " << (100 * average / count) << " Count " << count << " Length " << length() << " Rule rate " << (100.0 * (double)count / (double) length()) << std::endl;
     }
 
     char get(const int position){
@@ -5166,7 +5231,7 @@ Result rule_float_or_integer(Stream & stream, const int position){
 }
         
 
-const void * main(const std::string & filename) throw (ParseException){
+const void * main(const std::string & filename, bool stats = false) throw (ParseException){
     Stream stream(filename);
     errorResult.setError();
     Result done = rule_start(stream, 0);
@@ -5174,16 +5239,22 @@ const void * main(const std::string & filename) throw (ParseException){
         std::cout << "Could not parse" << std::endl;
         throw ParseException(stream.reportError());
     }
+    if (stats){
+        stream.printStats();
+    }
     return done.getValues().getValue();
 }
 
-const void * main(const char * in) throw (ParseException){
+const void * main(const char * in, bool stats = false) throw (ParseException){
     Stream stream(in);
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
         std::cout << "Could not parse" << std::endl;
         throw ParseException(stream.reportError());
+    }
+    if (stats){
+        stream.printStats();
     }
     return done.getValues().getValue();
 }

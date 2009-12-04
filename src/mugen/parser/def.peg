@@ -178,8 +178,8 @@ rules:
                    | "\r"
 	inline whitespace = sw*
 	inline sw = " "
-	   | "\t"
-	   | comment
+	          | "\t"
+	          | comment
 	s = space*
 	inline space = " "
 	             | "\t"
