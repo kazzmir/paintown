@@ -496,17 +496,23 @@ class Result:
     #    self.position = him.position
 
 class Stream:
-    def __init__(self, filename):
-        self.file = open(filename, 'r')
+    def __init__(self, filename = None, input = None):
+        def read():
+            file = open(filename, 'r')
+            out = file.read()
+            file.close()
+            return out
         self.position = 0
         self.limit = 100
         self.furthest = 0
-        self.all = self.file.read()
         self.memo = {}
+        if filename != None:
+            self.all = read()
+        elif input != None:
+            self.all = input
+        else:
+            raise PegError("Pass a filename or input")
         # print "Read " + str(len(self.all))
-
-    def close(self):
-        self.file.close()
 
     def get(self, position, number = 1):
         if position + number > self.limit:
@@ -2224,18 +2230,23 @@ import peg
 
 %s
 
-def parse(file):
-    # print "Parsing " + file
-    stream = Stream(file)
+def doParse(stream):
     done = rule_%s(stream, 0)
-    stream.close()
     if done == None:
         print "Error parsing " + file
         stream.reportError()
         return None
     else:
         return done.getValues()
-""" % (top_code, start_python, rule_numbers, more_code, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
+
+def parseFile(file):
+    # print "Parsing " + file
+    return doParse(Stream(filename = file))
+
+def parseString(str):
+    return doParse(Stream(input = str))
+
+    """ % (top_code, start_python, rule_numbers, more_code, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
         return data
 
@@ -2433,7 +2444,7 @@ def create_peg(peg):
     module = __import__(name, globals(), locals(), ['parse'])
     # print module
     # print dir(module)
-    return module.parse
+    return module.parseFile
 
 def test2():
     start_code_abc = """
