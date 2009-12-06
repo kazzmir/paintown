@@ -2233,7 +2233,7 @@ import peg
 def doParse(stream):
     done = rule_%s(stream, 0)
     if done == None:
-        print "Error parsing " + file
+        # print "Error parsing " + file
         stream.reportError()
         return None
     else:
@@ -2243,8 +2243,8 @@ def parseFile(file):
     # print "Parsing " + file
     return doParse(Stream(filename = file))
 
-def parseString(str):
-    return doParse(Stream(input = str))
+def parseString(value):
+    return doParse(Stream(input = value))
 
     """ % (top_code, start_python, rule_numbers, more_code, '\n'.join([rule.generate_python() for rule in self.rules]), self.start)
 
