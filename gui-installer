@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+# GTK or QT based installer
+
+# Copy files to some directory, symlink the binary.
