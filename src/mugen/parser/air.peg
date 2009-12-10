@@ -29,6 +29,10 @@ SectionList * makeSectionList(){
   return new SectionList();
 }
 
+Ast::Keyword * makeKeyword(const Value & value){
+    return new Ast::Keyword(as<char*>(value));
+}
+
 }}
 
 rules:
@@ -47,7 +51,7 @@ rules:
 	         | &<eof> <void>
 	newline = "\n"
 	        | "\r"
-	loopstart = "loopstart"{case}
+	loopstart = "loopstart"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
 	whitespace = sw*
 	sw = space
 	   | comment
