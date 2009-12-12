@@ -312,7 +312,7 @@ public:
     }
 
     void createMemo(){
-        memo_size = 1024;
+        memo_size = 1024 * 2;
         memo = new Column*[memo_size];
         for (int i = 0; i < memo_size; i++){
             memo[i] = new Column();
