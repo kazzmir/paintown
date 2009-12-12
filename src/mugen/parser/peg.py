@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 # Packrat PEG (parsing expression grammar) generator
-# http://pdos.csail.mit.edu/~baford/packrat/
+#   http://pdos.csail.mit.edu/~baford/packrat/
 # Optimizations (like chunks) and other inspiration: Rats!
-# http://cs.nyu.edu/rgrimm/xtc/rats.html
+#   http://cs.nyu.edu/rgrimm/xtc/rats.html
+# By Jon Rafkind
+# License: GPL 2
 
 # Python BNF parser:
 # 1. 171397b / 45.216s = 3790.62721160651 b/s
