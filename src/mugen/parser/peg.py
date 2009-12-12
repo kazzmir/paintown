@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 # Packrat PEG (parsing expression grammar) generator
 # http://pdos.csail.mit.edu/~baford/packrat/
 # Optimizations (like chunks) and other inspiration: Rats!
@@ -15,18 +14,27 @@
 # Todo (finished items at bottom)
 # add generator for scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
 # add header (.h) generator for C/C++
+# getter for the current line and column
+# fix error message reporting
 
+# create a variable name
 next_var = 0
 def nextVar():
     global next_var;
     next_var += 1;
     return "peg_%d" % next_var
 
-def gensym(what = None):
-    if what == None:
-        return "temp_%s" % nextVar()
-    else:
-        return "%s_%s" % (what, nextVar())
+# substitute variables in a string named by $foo
+# "$foo + $bar - $foo" with {foo:1, bar:2} => "1 + 2 - 1"
+def template(now, dict):
+    import re
+    for key in dict:
+        now = re.sub(r'\$%s' % key, str(dict[key]), now)
+    return now
+
+# create a variable using the argument as a prefix
+def gensym(what = "temp"):
+    return "%s_%s" % (what, nextVar())
 
 def newResult():
     return gensym("result")
@@ -51,6 +59,7 @@ def special_escape(s):
 def special_char(s):
     return s in ["\\n", "\\t", "\\r"]
 
+# unique elements of a list
 def unique(lst):
     x = []
     for item in lst:
@@ -923,7 +932,7 @@ begin
 rescue NotError
     %s.setValue(nil)
 end
-        """ % (my_result, result, indent(pattern.next.generate_python(my_result, result, stream, my_fail).strip()), failure(), result)
+        """ % (my_result, result, indent(pattern.next.generate_v1(my_result, result, stream, my_fail).strip()), failure(), result)
 
         return data
 

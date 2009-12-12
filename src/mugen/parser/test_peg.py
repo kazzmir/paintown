@@ -83,7 +83,7 @@ def do_python(name, grammar, input):
         write(out, file)
         name = re.match(r"(\w+)\.py", file).group(1)
         x = __import__(name)
-        result = x.parse(input)
+        result = x.parseFile(input)
         erase(file)
         erase(file + 'c')
         if result == None:
@@ -110,7 +110,7 @@ using namespace std;
 
 namespace Parser{
     struct Value;
-    const void * main(const std::string & filename);
+    const void * main(const std::string & filename, bool stats = false);
 }
 
 int main(int argc, char ** argv){
