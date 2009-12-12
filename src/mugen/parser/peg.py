@@ -2037,31 +2037,26 @@ def rule_%s(%s, %s%s):
         # tail_loop = [gensym("tail")]
         tail_loop = [False]
         debug = "debug1" in peg.options
-
         
-        def updateChunk(new):
-            var = "column"
-            chunk = chunk_accessor.getChunk(var)
+        def updateChunk(new, columnVar):
+            chunk = chunk_accessor.getChunk(columnVar)
             data = """
-{
-    Column & %s = %s.getColumn(%s);
-    if (%s == 0){
-        %s = new %s();
-    }
-    %s = %s;
-    %s.update(%s.getPosition());
+if (%s == 0){
+    %s = new %s();
 }
-""" % (var, stream, position, chunk, chunk, chunk_accessor.getType(), chunk_accessor.getValue(chunk), new, stream, new)
+%s = %s;
+%s.update(%s.getPosition());
+""" % (chunk, chunk, chunk_accessor.getType(), chunk_accessor.getValue(chunk), new, stream, new)
             return data
+            
+        columnVar = gensym("column")
 
         hasChunk = """
-{
-    Column & column = %s.getColumn(%s);
-    if (%s != 0 && %s.calculated()){
-        return %s;
-    }
+Column & %s = %s.getColumn(%s);
+if (%s != 0 && %s.calculated()){
+    return %s;
 }
-""" % (stream, position, chunk_accessor.getChunk("column"), chunk_accessor.getValue(chunk_accessor.getChunk("column")), chunk_accessor.getValue(chunk_accessor.getChunk("column")))
+""" % (columnVar, stream, position, chunk_accessor.getChunk(columnVar), chunk_accessor.getValue(chunk_accessor.getChunk(columnVar)), chunk_accessor.getValue(chunk_accessor.getChunk(columnVar)))
         
         def newPattern(pattern, stream, position):
             result = newResult()
@@ -2109,7 +2104,7 @@ Result %s(%s);
 %s
 return %s;
 %s
-            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result), debug_result, result, label(out[0]))
+            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result, columnVar), debug_result, result, label(out[0]))
 
             return data
 
@@ -2151,7 +2146,7 @@ Result rule_%s(Stream & %s, const int %s%s){
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, parameters, indent(hasChunk), my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult")), fail_code)
+        """ % (self.name, stream, position, parameters, indent(hasChunk), my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar)), fail_code)
 
         return data
 
