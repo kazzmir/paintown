@@ -4,11 +4,13 @@
 #  PYTHON_EMBEDABLE - True if embedable
 
 find_package(PythonLibs)
-# Some systems require these libs to be added explicitly
-find_library(DL dl)
-find_library(MATH m)
-find_library(PTHREAD pthread)
-find_library(UTIL util)
+if(UNIX OR LINUX)
+    # Some systems require these libs to be added explicitly
+    find_library(DL dl)
+    find_library(MATH m)
+    find_library(PTHREAD pthread)
+    find_library(UTIL util)
+endif(UNIX OR LINUX)
 
 if(PYTHONLIBS_FOUND)
 	MESSAGE(STATUS "Checking if Python is Embedable")
