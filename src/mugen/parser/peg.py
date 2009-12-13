@@ -18,6 +18,7 @@
 # add header (.h) generator for C/C++
 # getter for the current line and column
 # fix error message reporting
+# inline rules + semantic actions are broken (in C++ at least)
 
 # create a variable name
 next_var = 0
