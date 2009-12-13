@@ -1,7 +1,7 @@
 # mugen def parser
 # Can parse about 180kb/s on a 1.8ghz
 start-symbol: start
-options: debug0
+options: debug0, no-memo
 module: Mugen.Def
 include: {{
 #include "../ast/all.h"
@@ -180,7 +180,7 @@ rules:
 	inline sw = " "
 	          | "\t"
 	          | comment
-	s = space*
+	inline s = space*
 	inline space = " "
 	             | "\t"
 	inline comment = ";" (!"\n" .)*
@@ -196,7 +196,7 @@ rules:
 	loopstart = "loopstart"{case} {{ value = makeValue(); GC::save(as<Ast::Value*>(value)); }}
 	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); GC::save(as<std::string*>(value)); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
-	alpha_digit = letter
+	inline alpha_digit = letter
 	            | digit
     line_end_or_comment = line_end
                         | comment

@@ -2039,7 +2039,9 @@ def rule_%s(%s, %s%s):
         tail_loop = [False]
         debug = "debug1" in peg.options
         
-        def updateChunk(new, columnVar):
+        def updateChunk(new, columnVar, memo):
+            if not memo:
+                return ""
             chunk = chunk_accessor.getChunk(columnVar)
             data = """
 if (%s == 0){
@@ -2052,12 +2054,16 @@ if (%s == 0){
             
         columnVar = gensym("column")
 
-        hasChunk = """
+        def hasChunk(memo):
+            if memo:
+                return """
 Column & %s = %s.getColumn(%s);
 if (%s != 0 && %s.calculated()){
     return %s;
 }
 """ % (columnVar, stream, position, chunk_accessor.getChunk(columnVar), chunk_accessor.getValue(chunk_accessor.getChunk(columnVar)), chunk_accessor.getValue(chunk_accessor.getChunk(columnVar)))
+            else:
+                return ""
         
         def newPattern(pattern, stream, position):
             result = newResult()
@@ -2105,7 +2111,7 @@ Result %s(%s);
 %s
 return %s;
 %s
-            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result, columnVar), debug_result, result, label(out[0]))
+            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result, columnVar, peg.memo), debug_result, result, label(out[0]))
 
             return data
 
@@ -2147,7 +2153,7 @@ Result rule_%s(Stream & %s, const int %s%s){
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, parameters, indent(hasChunk), my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar)), fail_code)
+        """ % (self.name, stream, position, parameters, indent(hasChunk(peg.memo)), my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar, peg.memo)), fail_code)
 
         return data
 
@@ -2176,10 +2182,14 @@ class Peg:
         self.more_code = more_code
         self.module = module
         self.options = options
+        # Whether to memoize or not
+        self.memo = True
         if options == None:
-                self.options = []
+            self.options = []
         if self.module == None:
             self.module = ['Parser']
+        if 'no-memo' in self.options:
+            self.memo = False
 
         for rule in self.rules:
             rule.ensureRules(lambda r: r in [r2.name for r2 in self.rules])
@@ -2558,6 +2568,8 @@ for option in ([option1] + option_rest):
         num = int(out.group(1))
         for x in xrange(1,num+1):
             value.append('debug%d' % x)
+    elif option == 'no-memo':
+        value.append(option)
 """),
                     ]),
             ]),
@@ -2569,6 +2581,7 @@ for option in ([option1] + option_rest):
 value = 'debug%s' % number
 """),
                 ]),
+            PatternVerbatim('no-memo'),
             ]),
         Rule("word", [
             PatternSequence([
