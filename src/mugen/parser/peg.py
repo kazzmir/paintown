@@ -2401,7 +2401,7 @@ namespace %s{
 
 %s
 
-const void * main(const std::string & filename, bool stats = false) throw (ParseException){
+const void * main(const std::string & filename, bool stats = false){
     Stream stream(filename);
     errorResult.setError();
     Result done = rule_%s(stream, 0);
@@ -2415,7 +2415,7 @@ const void * main(const std::string & filename, bool stats = false) throw (Parse
     return done.getValues().getValue();
 }
 
-const void * main(const char * in, bool stats = false) throw (ParseException){
+const void * main(const char * in, bool stats = false){
     Stream stream(in);
     errorResult.setError();
     Result done = rule_%s(stream, 0);

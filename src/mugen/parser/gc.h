@@ -28,11 +28,13 @@ static void cleanup(SectionList * list){
     /* pointers that we should keep will be marked true in the map */
     std::map<const void*, bool> marks;
 
-    /* first mark roots */
-    marks[list] = true;
-    for (SectionList::iterator it = list->begin(); it != list->end(); it++){
-        Ast::Section * section = *it;
-        section->mark(marks);
+    if (list != 0){
+        /* first mark roots */
+        marks[list] = true;
+        for (SectionList::iterator it = list->begin(); it != list->end(); it++){
+            Ast::Section * section = *it;
+            section->mark(marks);
+        }
     }
 
     /* all unmarked pointers should be deleted but since the destructors

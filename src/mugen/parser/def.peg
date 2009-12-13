@@ -159,7 +159,7 @@ Ast::Value * makeDate(const Value & month, const Value & day, const Value & year
 rules:
 	start = current:{{ value = makeSectionList(); GC::save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
 
-            <fail> {{ GC::cleanup(as<SectionList*>(current)); }}
+            <fail> {{ GC::cleanup(0); }}
     # start = current real_start($1)
     # real_start(c) = blah ... <eof>
     #               | {{ delete c; }} <error>

@@ -61,6 +61,7 @@ public:
         if (str){ marks[str] = true; }
         if (section){ section->mark(marks); }
         if (section_list){
+            marks[section_list] = true;
             for (std::list<Section*>::const_iterator it = section_list->begin(); it != section_list->end(); it++){
                 Section * section = *it;
                 section->mark(marks);

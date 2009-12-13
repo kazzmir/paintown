@@ -1188,7 +1188,7 @@ Result rule_start(Stream & stream, const int position){
     return result_peg_2;
     out_peg_189:
     
-     GC::cleanup(as<SectionList*>(current)); 
+     GC::cleanup(0); 
     return errorResult;
 }
         
@@ -5400,7 +5400,7 @@ Result rule_float_or_integer(Stream & stream, const int position){
 }
         
 
-const void * main(const std::string & filename, bool stats = false) throw (ParseException){
+const void * main(const std::string & filename, bool stats = false){
     Stream stream(filename);
     errorResult.setError();
     Result done = rule_start(stream, 0);
@@ -5414,7 +5414,7 @@ const void * main(const std::string & filename, bool stats = false) throw (Parse
     return done.getValues().getValue();
 }
 
-const void * main(const char * in, bool stats = false) throw (ParseException){
+const void * main(const char * in, bool stats = false){
     Stream stream(in);
     errorResult.setError();
     Result done = rule_start(stream, 0);
