@@ -271,7 +271,7 @@ protected:
 	
     protected:
 	/* This creates the animations no need for a new class to handle this */
-	virtual void bundleAnimations() throw( MugenException);
+	virtual void bundleAnimations();
 };
 
 #endif

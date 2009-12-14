@@ -14,17 +14,17 @@ namespace Ast{
  * of sections so we can probably rename this to AstResult or something
  * like that and make it more generic.
  */
-class DefParse{
+class AstParse{
 public:
     /* boiler plate stuff */
 
-    DefParse(std::list<Section*> * sections):
+    AstParse(std::list<Section*> * sections):
     sections(sections){
     }
 
     typedef std::list<Section*>::iterator section_iterator;
 
-    virtual ~DefParse(){
+    virtual ~AstParse(){
         for (std::list<Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
             delete (*section_it);
         }

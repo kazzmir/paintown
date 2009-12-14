@@ -423,7 +423,7 @@ void MugenStage::load(){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
@@ -431,7 +431,7 @@ void MugenStage::load(){
     struct cymk_holder shadow;
     
     /* Extract info for our first section of our stage */
-    for (Ast::DefParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
@@ -906,7 +906,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile));
     return parsed.findSection("info")->findAttribute("name")->valueAsString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname );

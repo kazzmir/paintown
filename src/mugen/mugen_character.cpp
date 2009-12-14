@@ -98,9 +98,9 @@ void MugenCharacter::load() throw( MugenException ){
     
     if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );
      
-    Ast::DefParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
     /* Extract info for our first section of our stage */
-    for (Ast::DefParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
@@ -330,7 +330,10 @@ void MugenCharacter::priorPalette(){
 }
 
 // animations
-void MugenCharacter::bundleAnimations() throw( MugenException){
+void MugenCharacter::bundleAnimations(){
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Air::main(Mugen::Util::fixFileName(baseDir, airFile)));
+
+#if 0
     /* FIXME!! Replace with air parser */
     MugenReader reader( Mugen::Util::fixFileName(baseDir, airFile) );
     std::vector< MugenSection * > collection;
@@ -349,6 +352,7 @@ void MugenCharacter::bundleAnimations() throw( MugenException){
 	Global::debug(1) << "Added Animation 'Begin Action " << h << "' : '" << animations[h]->getName(animations[h]->getType()) << "'" << endl;
         */
     }
+#endif
 }
 
 /* Inherited members */
