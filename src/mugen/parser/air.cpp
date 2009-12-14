@@ -202,17 +202,14 @@ struct Chunk1{
 };
 
 struct Chunk2{
-    Result chunk_space;
     Result chunk_comment;
     Result chunk_collision_default;
     Result chunk_collision;
     Result chunk_action_start;
+    Result chunk_integer;
 };
 
 struct Chunk3{
-    Result chunk_digit;
-    Result chunk_integer;
-    Result chunk_sign;
     Result chunk_valuelist;
     Result chunk_value;
 };
@@ -232,17 +229,14 @@ struct Column{
 
     int hitCount(){
         return 
-(chunk3 != NULL ? ((chunk3->chunk_digit.calculated() ? 1 : 0)
-+ (chunk3->chunk_integer.calculated() ? 1 : 0)
-+ (chunk3->chunk_sign.calculated() ? 1 : 0)
-+ (chunk3->chunk_valuelist.calculated() ? 1 : 0)
+(chunk3 != NULL ? ((chunk3->chunk_valuelist.calculated() ? 1 : 0)
 + (chunk3->chunk_value.calculated() ? 1 : 0)) : 0)
 +
-(chunk2 != NULL ? ((chunk2->chunk_space.calculated() ? 1 : 0)
-+ (chunk2->chunk_comment.calculated() ? 1 : 0)
+(chunk2 != NULL ? ((chunk2->chunk_comment.calculated() ? 1 : 0)
 + (chunk2->chunk_collision_default.calculated() ? 1 : 0)
 + (chunk2->chunk_collision.calculated() ? 1 : 0)
-+ (chunk2->chunk_action_start.calculated() ? 1 : 0)) : 0)
++ (chunk2->chunk_action_start.calculated() ? 1 : 0)
++ (chunk2->chunk_integer.calculated() ? 1 : 0)) : 0)
 +
 (chunk1 != NULL ? ((chunk1->chunk_newline.calculated() ? 1 : 0)
 + (chunk1->chunk_loopstart.calculated() ? 1 : 0)
@@ -259,7 +253,7 @@ struct Column{
     }
 
     int maxHits(){
-        return 20;
+        return 17;
     }
 
     ~Column(){
@@ -502,14 +496,11 @@ Result rule_loopstart(Stream &, const int);
 Result rule_whitespace(Stream &, const int);
 Result rule_sw(Stream &, const int);
 Result rule_s(Stream &, const int);
-Result rule_space(Stream &, const int);
 Result rule_comment(Stream &, const int);
 Result rule_collision_default(Stream &, const int);
 Result rule_collision(Stream &, const int);
 Result rule_action_start(Stream &, const int);
-Result rule_digit(Stream &, const int);
 Result rule_integer(Stream &, const int);
-Result rule_sign(Stream &, const int);
 Result rule_valuelist(Stream &, const int);
 Result rule_value(Stream &, const int);
 
@@ -1346,10 +1337,49 @@ Result rule_sw(Stream & stream, const int position){
     
     Result result_peg_78(myposition);
     
-    result_peg_78 = rule_space(stream, result_peg_78.getPosition());
-    if (result_peg_78.error()){
-        goto out_peg_79;
+    {
+        
+        for (int i = 0; i < 1; i++){
+            if (compareChar(" "[i], stream.get(result_peg_78.getPosition()))){
+                result_peg_78.nextPosition();
+            } else {
+                goto out_peg_81;
+            }
+        }
+        result_peg_78.setValue((void*) " ");
+            
     }
+    goto success_peg_79;
+    out_peg_81:
+    {
+        
+        for (int i = 0; i < 1; i++){
+            if (compareChar("\t"[i], stream.get(result_peg_78.getPosition()))){
+                result_peg_78.nextPosition();
+            } else {
+                goto out_peg_83;
+            }
+        }
+        result_peg_78.setValue((void*) "\t");
+            
+    }
+    goto success_peg_79;
+    out_peg_83:
+    {
+        
+        if ((unsigned char) stream.get(result_peg_78.getPosition()) == (unsigned char) 255){
+            result_peg_78.nextPosition();
+        } else {
+            goto out_peg_85;
+        }
+        result_peg_78.setValue((void*) 255);
+        
+    }
+    goto success_peg_79;
+    out_peg_85:
+    goto out_peg_86;
+    success_peg_79:
+    ;
     
     if (column_peg_77.chunk1 == 0){
         column_peg_77.chunk1 = new Chunk1();
@@ -1359,23 +1389,23 @@ Result rule_sw(Stream & stream, const int position){
     
     
     return result_peg_78;
-    out_peg_79:
-    Result result_peg_80(myposition);
+    out_peg_86:
+    Result result_peg_87(myposition);
     
-    result_peg_80 = rule_comment(stream, result_peg_80.getPosition());
-    if (result_peg_80.error()){
-        goto out_peg_81;
+    result_peg_87 = rule_comment(stream, result_peg_87.getPosition());
+    if (result_peg_87.error()){
+        goto out_peg_88;
     }
     
     if (column_peg_77.chunk1 == 0){
         column_peg_77.chunk1 = new Chunk1();
     }
-    column_peg_77.chunk1->chunk_sw = result_peg_80;
-    stream.update(result_peg_80.getPosition());
+    column_peg_77.chunk1->chunk_sw = result_peg_87;
+    stream.update(result_peg_87.getPosition());
     
     
-    return result_peg_80;
-    out_peg_81:
+    return result_peg_87;
+    out_peg_88:
     
     if (column_peg_77.chunk1 == 0){
         column_peg_77.chunk1 = new Chunk1();
@@ -1390,121 +1420,80 @@ Result rule_sw(Stream & stream, const int position){
 
 Result rule_s(Stream & stream, const int position){
     
-    Column & column_peg_82 = stream.getColumn(position);
-    if (column_peg_82.chunk1 != 0 && column_peg_82.chunk1->chunk_s.calculated()){
-        return column_peg_82.chunk1->chunk_s;
+    Column & column_peg_89 = stream.getColumn(position);
+    if (column_peg_89.chunk1 != 0 && column_peg_89.chunk1->chunk_s.calculated()){
+        return column_peg_89.chunk1->chunk_s;
     }
     
     int myposition = position;
     
     
-    Result result_peg_83(myposition);
+    Result result_peg_90(myposition);
     
-    result_peg_83.reset();
+    result_peg_90.reset();
     do{
-        Result result_peg_85(result_peg_83.getPosition());
-        result_peg_85 = rule_space(stream, result_peg_85.getPosition());
-        if (result_peg_85.error()){
-            goto loop_peg_84;
+        Result result_peg_92(result_peg_90.getPosition());
+        {
+            
+            for (int i = 0; i < 1; i++){
+                if (compareChar(" "[i], stream.get(result_peg_92.getPosition()))){
+                    result_peg_92.nextPosition();
+                } else {
+                    goto out_peg_95;
+                }
+            }
+            result_peg_92.setValue((void*) " ");
+                
         }
-        result_peg_83.addResult(result_peg_85);
+        goto success_peg_93;
+        out_peg_95:
+        {
+            
+            for (int i = 0; i < 1; i++){
+                if (compareChar("\t"[i], stream.get(result_peg_92.getPosition()))){
+                    result_peg_92.nextPosition();
+                } else {
+                    goto out_peg_97;
+                }
+            }
+            result_peg_92.setValue((void*) "\t");
+                
+        }
+        goto success_peg_93;
+        out_peg_97:
+        {
+            
+            if ((unsigned char) stream.get(result_peg_92.getPosition()) == (unsigned char) 255){
+                result_peg_92.nextPosition();
+            } else {
+                goto out_peg_99;
+            }
+            result_peg_92.setValue((void*) 255);
+            
+        }
+        goto success_peg_93;
+        out_peg_99:
+        goto loop_peg_91;
+        success_peg_93:
+        ;
+        result_peg_90.addResult(result_peg_92);
     } while (true);
-    loop_peg_84:
+    loop_peg_91:
     ;
     
-    if (column_peg_82.chunk1 == 0){
-        column_peg_82.chunk1 = new Chunk1();
+    if (column_peg_89.chunk1 == 0){
+        column_peg_89.chunk1 = new Chunk1();
     }
-    column_peg_82.chunk1->chunk_s = result_peg_83;
-    stream.update(result_peg_83.getPosition());
+    column_peg_89.chunk1->chunk_s = result_peg_90;
+    stream.update(result_peg_90.getPosition());
     
     
-    return result_peg_83;
+    return result_peg_90;
     
-    if (column_peg_82.chunk1 == 0){
-        column_peg_82.chunk1 = new Chunk1();
+    if (column_peg_89.chunk1 == 0){
+        column_peg_89.chunk1 = new Chunk1();
     }
-    column_peg_82.chunk1->chunk_s = errorResult;
-    stream.update(errorResult.getPosition());
-    
-    
-    return errorResult;
-}
-        
-
-Result rule_space(Stream & stream, const int position){
-    
-    Column & column_peg_86 = stream.getColumn(position);
-    if (column_peg_86.chunk2 != 0 && column_peg_86.chunk2->chunk_space.calculated()){
-        return column_peg_86.chunk2->chunk_space;
-    }
-    
-    int myposition = position;
-    
-    
-    Result result_peg_87(myposition);
-    
-    for (int i = 0; i < 1; i++){
-        if (compareChar(" "[i], stream.get(result_peg_87.getPosition()))){
-            result_peg_87.nextPosition();
-        } else {
-            goto out_peg_88;
-        }
-    }
-    result_peg_87.setValue((void*) " ");
-    
-    if (column_peg_86.chunk2 == 0){
-        column_peg_86.chunk2 = new Chunk2();
-    }
-    column_peg_86.chunk2->chunk_space = result_peg_87;
-    stream.update(result_peg_87.getPosition());
-    
-    
-    return result_peg_87;
-    out_peg_88:
-    Result result_peg_89(myposition);
-    
-    for (int i = 0; i < 1; i++){
-        if (compareChar("\t"[i], stream.get(result_peg_89.getPosition()))){
-            result_peg_89.nextPosition();
-        } else {
-            goto out_peg_90;
-        }
-    }
-    result_peg_89.setValue((void*) "\t");
-    
-    if (column_peg_86.chunk2 == 0){
-        column_peg_86.chunk2 = new Chunk2();
-    }
-    column_peg_86.chunk2->chunk_space = result_peg_89;
-    stream.update(result_peg_89.getPosition());
-    
-    
-    return result_peg_89;
-    out_peg_90:
-    Result result_peg_91(myposition);
-    
-    if ((unsigned char) stream.get(result_peg_91.getPosition()) == (unsigned char) 255){
-        result_peg_91.nextPosition();
-    } else {
-        goto out_peg_92;
-    }
-    result_peg_91.setValue((void*) 255);
-    
-    if (column_peg_86.chunk2 == 0){
-        column_peg_86.chunk2 = new Chunk2();
-    }
-    column_peg_86.chunk2->chunk_space = result_peg_91;
-    stream.update(result_peg_91.getPosition());
-    
-    
-    return result_peg_91;
-    out_peg_92:
-    
-    if (column_peg_86.chunk2 == 0){
-        column_peg_86.chunk2 = new Chunk2();
-    }
-    column_peg_86.chunk2->chunk_space = errorResult;
+    column_peg_89.chunk1->chunk_s = errorResult;
     stream.update(errorResult.getPosition());
     
     
@@ -1514,188 +1503,188 @@ Result rule_space(Stream & stream, const int position){
 
 Result rule_comment(Stream & stream, const int position){
     
-    Column & column_peg_93 = stream.getColumn(position);
-    if (column_peg_93.chunk2 != 0 && column_peg_93.chunk2->chunk_comment.calculated()){
-        return column_peg_93.chunk2->chunk_comment;
+    Column & column_peg_100 = stream.getColumn(position);
+    if (column_peg_100.chunk2 != 0 && column_peg_100.chunk2->chunk_comment.calculated()){
+        return column_peg_100.chunk2->chunk_comment;
     }
     
     int myposition = position;
     
     
-    Result result_peg_94(myposition);
+    Result result_peg_101(myposition);
     
     {
     
         for (int i = 0; i < 1; i++){
-                if (compareChar(";"[i], stream.get(result_peg_94.getPosition()))){
-                    result_peg_94.nextPosition();
+                if (compareChar(";"[i], stream.get(result_peg_101.getPosition()))){
+                    result_peg_101.nextPosition();
                 } else {
-                    goto out_peg_96;
+                    goto out_peg_103;
                 }
             }
-            result_peg_94.setValue((void*) ";");
+            result_peg_101.setValue((void*) ";");
         
         
         
-        result_peg_94.reset();
+        result_peg_101.reset();
             do{
-                Result result_peg_98(result_peg_94.getPosition());
+                Result result_peg_105(result_peg_101.getPosition());
                 {
                 
-                    Result result_peg_101(result_peg_98);
+                    Result result_peg_108(result_peg_105);
                         for (int i = 0; i < 1; i++){
-                            if (compareChar("\n"[i], stream.get(result_peg_101.getPosition()))){
-                                result_peg_101.nextPosition();
+                            if (compareChar("\n"[i], stream.get(result_peg_108.getPosition()))){
+                                result_peg_108.nextPosition();
                             } else {
-                                goto not_peg_100;
+                                goto not_peg_107;
                             }
                         }
-                        result_peg_101.setValue((void*) "\n");
-                        goto loop_peg_97;
-                        not_peg_100:
-                        result_peg_98.setValue((void*)0);
+                        result_peg_108.setValue((void*) "\n");
+                        goto loop_peg_104;
+                        not_peg_107:
+                        result_peg_105.setValue((void*)0);
                     
                     
                     
-                    char temp_peg_102 = stream.get(result_peg_98.getPosition());
-                        if (temp_peg_102 != '\0'){
-                            result_peg_98.setValue((void*) temp_peg_102);
-                            result_peg_98.nextPosition();
+                    char temp_peg_109 = stream.get(result_peg_105.getPosition());
+                        if (temp_peg_109 != '\0'){
+                            result_peg_105.setValue((void*) temp_peg_109);
+                            result_peg_105.nextPosition();
                         } else {
-                            goto loop_peg_97;
+                            goto loop_peg_104;
                         }
                     
                     
                 }
-                result_peg_94.addResult(result_peg_98);
+                result_peg_101.addResult(result_peg_105);
             } while (true);
-            loop_peg_97:
+            loop_peg_104:
             ;
         
         
     }
     
-    if (column_peg_93.chunk2 == 0){
-        column_peg_93.chunk2 = new Chunk2();
+    if (column_peg_100.chunk2 == 0){
+        column_peg_100.chunk2 = new Chunk2();
     }
-    column_peg_93.chunk2->chunk_comment = result_peg_94;
-    stream.update(result_peg_94.getPosition());
+    column_peg_100.chunk2->chunk_comment = result_peg_101;
+    stream.update(result_peg_101.getPosition());
     
     
-    return result_peg_94;
-    out_peg_96:
-    Result result_peg_103(myposition);
+    return result_peg_101;
+    out_peg_103:
+    Result result_peg_110(myposition);
     
     {
     
         for (int i = 0; i < 1; i++){
-                if (compareChar("="[i], stream.get(result_peg_103.getPosition()))){
-                    result_peg_103.nextPosition();
+                if (compareChar("="[i], stream.get(result_peg_110.getPosition()))){
+                    result_peg_110.nextPosition();
                 } else {
-                    goto out_peg_105;
+                    goto out_peg_112;
                 }
             }
-            result_peg_103.setValue((void*) "=");
+            result_peg_110.setValue((void*) "=");
         
         
         
-        result_peg_103.reset();
+        result_peg_110.reset();
             do{
-                Result result_peg_107(result_peg_103.getPosition());
+                Result result_peg_114(result_peg_110.getPosition());
                 {
                 
-                    Result result_peg_110(result_peg_107);
+                    Result result_peg_117(result_peg_114);
                         for (int i = 0; i < 1; i++){
-                            if (compareChar("\n"[i], stream.get(result_peg_110.getPosition()))){
-                                result_peg_110.nextPosition();
+                            if (compareChar("\n"[i], stream.get(result_peg_117.getPosition()))){
+                                result_peg_117.nextPosition();
                             } else {
-                                goto not_peg_109;
+                                goto not_peg_116;
                             }
                         }
-                        result_peg_110.setValue((void*) "\n");
-                        goto loop_peg_106;
-                        not_peg_109:
-                        result_peg_107.setValue((void*)0);
+                        result_peg_117.setValue((void*) "\n");
+                        goto loop_peg_113;
+                        not_peg_116:
+                        result_peg_114.setValue((void*)0);
                     
                     
                     
-                    char temp_peg_111 = stream.get(result_peg_107.getPosition());
-                        if (temp_peg_111 != '\0'){
-                            result_peg_107.setValue((void*) temp_peg_111);
-                            result_peg_107.nextPosition();
+                    char temp_peg_118 = stream.get(result_peg_114.getPosition());
+                        if (temp_peg_118 != '\0'){
+                            result_peg_114.setValue((void*) temp_peg_118);
+                            result_peg_114.nextPosition();
                         } else {
-                            goto loop_peg_106;
+                            goto loop_peg_113;
                         }
                     
                     
                 }
-                result_peg_103.addResult(result_peg_107);
+                result_peg_110.addResult(result_peg_114);
             } while (true);
-            loop_peg_106:
+            loop_peg_113:
             ;
         
         
     }
     
-    if (column_peg_93.chunk2 == 0){
-        column_peg_93.chunk2 = new Chunk2();
+    if (column_peg_100.chunk2 == 0){
+        column_peg_100.chunk2 = new Chunk2();
     }
-    column_peg_93.chunk2->chunk_comment = result_peg_103;
-    stream.update(result_peg_103.getPosition());
+    column_peg_100.chunk2->chunk_comment = result_peg_110;
+    stream.update(result_peg_110.getPosition());
     
     
-    return result_peg_103;
-    out_peg_105:
-    Result result_peg_112(myposition);
+    return result_peg_110;
+    out_peg_112:
+    Result result_peg_119(myposition);
     
     {
     
         for (int i = 0; i < 1; i++){
-                if (compareChar("-"[i], stream.get(result_peg_112.getPosition()))){
-                    result_peg_112.nextPosition();
+                if (compareChar("-"[i], stream.get(result_peg_119.getPosition()))){
+                    result_peg_119.nextPosition();
                 } else {
-                    goto out_peg_114;
+                    goto out_peg_121;
                 }
             }
-            result_peg_112.setValue((void*) "-");
+            result_peg_119.setValue((void*) "-");
         
         
         
-        result_peg_112.reset();
+        result_peg_119.reset();
             do{
-                Result result_peg_116(result_peg_112.getPosition());
+                Result result_peg_123(result_peg_119.getPosition());
                 for (int i = 0; i < 1; i++){
-                    if (compareChar("-"[i], stream.get(result_peg_116.getPosition()))){
-                        result_peg_116.nextPosition();
+                    if (compareChar("-"[i], stream.get(result_peg_123.getPosition()))){
+                        result_peg_123.nextPosition();
                     } else {
-                        goto loop_peg_115;
+                        goto loop_peg_122;
                     }
                 }
-                result_peg_116.setValue((void*) "-");
-                result_peg_112.addResult(result_peg_116);
+                result_peg_123.setValue((void*) "-");
+                result_peg_119.addResult(result_peg_123);
             } while (true);
-            loop_peg_115:
-            if (result_peg_112.matches() == 0){
-                goto out_peg_114;
+            loop_peg_122:
+            if (result_peg_119.matches() == 0){
+                goto out_peg_121;
             }
         
         
     }
     
-    if (column_peg_93.chunk2 == 0){
-        column_peg_93.chunk2 = new Chunk2();
+    if (column_peg_100.chunk2 == 0){
+        column_peg_100.chunk2 = new Chunk2();
     }
-    column_peg_93.chunk2->chunk_comment = result_peg_112;
-    stream.update(result_peg_112.getPosition());
+    column_peg_100.chunk2->chunk_comment = result_peg_119;
+    stream.update(result_peg_119.getPosition());
     
     
-    return result_peg_112;
-    out_peg_114:
+    return result_peg_119;
+    out_peg_121:
     
-    if (column_peg_93.chunk2 == 0){
-        column_peg_93.chunk2 = new Chunk2();
+    if (column_peg_100.chunk2 == 0){
+        column_peg_100.chunk2 = new Chunk2();
     }
-    column_peg_93.chunk2->chunk_comment = errorResult;
+    column_peg_100.chunk2->chunk_comment = errorResult;
     stream.update(errorResult.getPosition());
     
     
@@ -1705,187 +1694,187 @@ Result rule_comment(Stream & stream, const int position){
 
 Result rule_collision_default(Stream & stream, const int position){
     
-    Column & column_peg_117 = stream.getColumn(position);
-    if (column_peg_117.chunk2 != 0 && column_peg_117.chunk2->chunk_collision_default.calculated()){
-        return column_peg_117.chunk2->chunk_collision_default;
+    Column & column_peg_124 = stream.getColumn(position);
+    if (column_peg_124.chunk2 != 0 && column_peg_124.chunk2->chunk_collision_default.calculated()){
+        return column_peg_124.chunk2->chunk_collision_default;
     }
     
     int myposition = position;
     
     Value num;
-    Result result_peg_118(myposition);
+    Result result_peg_125(myposition);
     
     {
     
         for (int i = 0; i < 13; i++){
-                if (compareCharCase("Clsn2Default:"[i], stream.get(result_peg_118.getPosition()))){
-                    result_peg_118.nextPosition();
+                if (compareCharCase("Clsn2Default:"[i], stream.get(result_peg_125.getPosition()))){
+                    result_peg_125.nextPosition();
                 } else {
-                    goto out_peg_120;
+                    goto out_peg_127;
                 }
             }
-            result_peg_118.setValue((void*) "Clsn2Default:");
+            result_peg_125.setValue((void*) "Clsn2Default:");
         
-        Result result_peg_119 = result_peg_118;
+        Result result_peg_126 = result_peg_125;
         
-        result_peg_118 = rule_s(stream, result_peg_118.getPosition());
-            if (result_peg_118.error()){
-                goto out_peg_120;
+        result_peg_125 = rule_s(stream, result_peg_125.getPosition());
+            if (result_peg_125.error()){
+                goto out_peg_127;
             }
         
         
         
-        result_peg_118 = rule_integer(stream, result_peg_118.getPosition());
-            if (result_peg_118.error()){
-                goto out_peg_120;
+        result_peg_125 = rule_integer(stream, result_peg_125.getPosition());
+            if (result_peg_125.error()){
+                goto out_peg_127;
             }
-            num = result_peg_118.getValues();
+            num = result_peg_125.getValues();
         
         
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_119.getValues()); GC::save(as<Ast::Keyword*>(value)); value = makeAttributeKeyword(value, num); GC::save(as<Ast::Attribute*>(value));
-                result_peg_118.setValue(value);
+                value = makeKeyword(result_peg_126.getValues()); GC::save(as<Ast::Keyword*>(value)); value = makeAttributeKeyword(value, num); GC::save(as<Ast::Attribute*>(value));
+                result_peg_125.setValue(value);
             }
         
         
     }
     
-    if (column_peg_117.chunk2 == 0){
-        column_peg_117.chunk2 = new Chunk2();
+    if (column_peg_124.chunk2 == 0){
+        column_peg_124.chunk2 = new Chunk2();
     }
-    column_peg_117.chunk2->chunk_collision_default = result_peg_118;
-    stream.update(result_peg_118.getPosition());
+    column_peg_124.chunk2->chunk_collision_default = result_peg_125;
+    stream.update(result_peg_125.getPosition());
     
     
-    return result_peg_118;
-    out_peg_120:
-    Result result_peg_123(myposition);
+    return result_peg_125;
+    out_peg_127:
+    Result result_peg_130(myposition);
     
     {
     
         for (int i = 0; i < 13; i++){
-                if (compareCharCase("Clsn1Default:"[i], stream.get(result_peg_123.getPosition()))){
-                    result_peg_123.nextPosition();
+                if (compareCharCase("Clsn1Default:"[i], stream.get(result_peg_130.getPosition()))){
+                    result_peg_130.nextPosition();
                 } else {
-                    goto out_peg_125;
+                    goto out_peg_132;
                 }
             }
-            result_peg_123.setValue((void*) "Clsn1Default:");
+            result_peg_130.setValue((void*) "Clsn1Default:");
         
         
         
-        result_peg_123 = rule_s(stream, result_peg_123.getPosition());
-            if (result_peg_123.error()){
-                goto out_peg_125;
+        result_peg_130 = rule_s(stream, result_peg_130.getPosition());
+            if (result_peg_130.error()){
+                goto out_peg_132;
             }
         
         
         
-        result_peg_123 = rule_integer(stream, result_peg_123.getPosition());
-            if (result_peg_123.error()){
-                goto out_peg_125;
+        result_peg_130 = rule_integer(stream, result_peg_130.getPosition());
+            if (result_peg_130.error()){
+                goto out_peg_132;
             }
-            num = result_peg_123.getValues();
+            num = result_peg_130.getValues();
         
         
     }
     
-    if (column_peg_117.chunk2 == 0){
-        column_peg_117.chunk2 = new Chunk2();
+    if (column_peg_124.chunk2 == 0){
+        column_peg_124.chunk2 = new Chunk2();
     }
-    column_peg_117.chunk2->chunk_collision_default = result_peg_123;
-    stream.update(result_peg_123.getPosition());
+    column_peg_124.chunk2->chunk_collision_default = result_peg_130;
+    stream.update(result_peg_130.getPosition());
     
     
-    return result_peg_123;
-    out_peg_125:
-    Result result_peg_127(myposition);
+    return result_peg_130;
+    out_peg_132:
+    Result result_peg_134(myposition);
     
     {
     
         for (int i = 0; i < 6; i++){
-                if (compareCharCase("Clsn2:"[i], stream.get(result_peg_127.getPosition()))){
-                    result_peg_127.nextPosition();
+                if (compareCharCase("Clsn2:"[i], stream.get(result_peg_134.getPosition()))){
+                    result_peg_134.nextPosition();
                 } else {
-                    goto out_peg_129;
+                    goto out_peg_136;
                 }
             }
-            result_peg_127.setValue((void*) "Clsn2:");
+            result_peg_134.setValue((void*) "Clsn2:");
         
         
         
-        result_peg_127 = rule_s(stream, result_peg_127.getPosition());
-            if (result_peg_127.error()){
-                goto out_peg_129;
+        result_peg_134 = rule_s(stream, result_peg_134.getPosition());
+            if (result_peg_134.error()){
+                goto out_peg_136;
             }
         
         
         
-        result_peg_127 = rule_integer(stream, result_peg_127.getPosition());
-            if (result_peg_127.error()){
-                goto out_peg_129;
+        result_peg_134 = rule_integer(stream, result_peg_134.getPosition());
+            if (result_peg_134.error()){
+                goto out_peg_136;
             }
-            num = result_peg_127.getValues();
+            num = result_peg_134.getValues();
         
         
     }
     
-    if (column_peg_117.chunk2 == 0){
-        column_peg_117.chunk2 = new Chunk2();
+    if (column_peg_124.chunk2 == 0){
+        column_peg_124.chunk2 = new Chunk2();
     }
-    column_peg_117.chunk2->chunk_collision_default = result_peg_127;
-    stream.update(result_peg_127.getPosition());
+    column_peg_124.chunk2->chunk_collision_default = result_peg_134;
+    stream.update(result_peg_134.getPosition());
     
     
-    return result_peg_127;
-    out_peg_129:
-    Result result_peg_131(myposition);
+    return result_peg_134;
+    out_peg_136:
+    Result result_peg_138(myposition);
     
     {
     
         for (int i = 0; i < 6; i++){
-                if (compareCharCase("Clsn1:"[i], stream.get(result_peg_131.getPosition()))){
-                    result_peg_131.nextPosition();
+                if (compareCharCase("Clsn1:"[i], stream.get(result_peg_138.getPosition()))){
+                    result_peg_138.nextPosition();
                 } else {
-                    goto out_peg_133;
+                    goto out_peg_140;
                 }
             }
-            result_peg_131.setValue((void*) "Clsn1:");
+            result_peg_138.setValue((void*) "Clsn1:");
         
         
         
-        result_peg_131 = rule_s(stream, result_peg_131.getPosition());
-            if (result_peg_131.error()){
-                goto out_peg_133;
+        result_peg_138 = rule_s(stream, result_peg_138.getPosition());
+            if (result_peg_138.error()){
+                goto out_peg_140;
             }
         
         
         
-        result_peg_131 = rule_integer(stream, result_peg_131.getPosition());
-            if (result_peg_131.error()){
-                goto out_peg_133;
+        result_peg_138 = rule_integer(stream, result_peg_138.getPosition());
+            if (result_peg_138.error()){
+                goto out_peg_140;
             }
-            num = result_peg_131.getValues();
+            num = result_peg_138.getValues();
         
         
     }
     
-    if (column_peg_117.chunk2 == 0){
-        column_peg_117.chunk2 = new Chunk2();
+    if (column_peg_124.chunk2 == 0){
+        column_peg_124.chunk2 = new Chunk2();
     }
-    column_peg_117.chunk2->chunk_collision_default = result_peg_131;
-    stream.update(result_peg_131.getPosition());
+    column_peg_124.chunk2->chunk_collision_default = result_peg_138;
+    stream.update(result_peg_138.getPosition());
     
     
-    return result_peg_131;
-    out_peg_133:
+    return result_peg_138;
+    out_peg_140:
     
-    if (column_peg_117.chunk2 == 0){
-        column_peg_117.chunk2 = new Chunk2();
+    if (column_peg_124.chunk2 == 0){
+        column_peg_124.chunk2 = new Chunk2();
     }
-    column_peg_117.chunk2->chunk_collision_default = errorResult;
+    column_peg_124.chunk2->chunk_collision_default = errorResult;
     stream.update(errorResult.getPosition());
     
     
@@ -1895,443 +1884,467 @@ Result rule_collision_default(Stream & stream, const int position){
 
 Result rule_collision(Stream & stream, const int position){
     
-    Column & column_peg_135 = stream.getColumn(position);
-    if (column_peg_135.chunk2 != 0 && column_peg_135.chunk2->chunk_collision.calculated()){
-        return column_peg_135.chunk2->chunk_collision;
+    Column & column_peg_142 = stream.getColumn(position);
+    if (column_peg_142.chunk2 != 0 && column_peg_142.chunk2->chunk_collision.calculated()){
+        return column_peg_142.chunk2->chunk_collision;
     }
     
     int myposition = position;
     
     
-    Result result_peg_136(myposition);
+    Result result_peg_143(myposition);
     
     {
     
         for (int i = 0; i < 5; i++){
-                if (compareCharCase("Clsn2"[i], stream.get(result_peg_136.getPosition()))){
-                    result_peg_136.nextPosition();
+                if (compareCharCase("Clsn2"[i], stream.get(result_peg_143.getPosition()))){
+                    result_peg_143.nextPosition();
                 } else {
-                    goto out_peg_138;
+                    goto out_peg_145;
                 }
             }
-            result_peg_136.setValue((void*) "Clsn2");
+            result_peg_143.setValue((void*) "Clsn2");
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar("["[i], stream.get(result_peg_136.getPosition()))){
-                    result_peg_136.nextPosition();
+                if (compareChar("["[i], stream.get(result_peg_143.getPosition()))){
+                    result_peg_143.nextPosition();
                 } else {
-                    goto out_peg_138;
+                    goto out_peg_145;
                 }
             }
-            result_peg_136.setValue((void*) "[");
+            result_peg_143.setValue((void*) "[");
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
-        result_peg_136.reset();
+        result_peg_143.reset();
             do{
-                Result result_peg_144(result_peg_136.getPosition());
-                result_peg_144 = rule_digit(stream, result_peg_144.getPosition());
-                if (result_peg_144.error()){
-                    goto loop_peg_143;
+                Result result_peg_151(result_peg_143.getPosition());
+                {
+                    
+                    char letter_peg_156 = stream.get(result_peg_151.getPosition());
+                    if (letter_peg_156 != '\0' && strchr("0123456789", letter_peg_156) != NULL){
+                        result_peg_151.nextPosition();
+                        result_peg_151.setValue((void*) letter_peg_156);
+                    } else {
+                        goto out_peg_155;
+                    }
+                    
                 }
-                result_peg_136.addResult(result_peg_144);
+                goto success_peg_152;
+                out_peg_155:
+                goto loop_peg_150;
+                success_peg_152:
+                ;
+                result_peg_143.addResult(result_peg_151);
             } while (true);
-            loop_peg_143:
-            if (result_peg_136.matches() == 0){
-                goto out_peg_138;
+            loop_peg_150:
+            if (result_peg_143.matches() == 0){
+                goto out_peg_145;
             }
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
-            }
-        
-        
-        
-        for (int i = 0; i < 1; i++){
-                if (compareChar("]"[i], stream.get(result_peg_136.getPosition()))){
-                    result_peg_136.nextPosition();
-                } else {
-                    goto out_peg_138;
-                }
-            }
-            result_peg_136.setValue((void*) "]");
-        
-        
-        
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar("="[i], stream.get(result_peg_136.getPosition()))){
-                    result_peg_136.nextPosition();
+                if (compareChar("]"[i], stream.get(result_peg_143.getPosition()))){
+                    result_peg_143.nextPosition();
                 } else {
-                    goto out_peg_138;
+                    goto out_peg_145;
                 }
             }
-            result_peg_136.setValue((void*) "=");
+            result_peg_143.setValue((void*) "]");
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
-            }
-        
-        
-        
-        result_peg_136 = rule_integer(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
-            }
-        
-        
-        
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar(","[i], stream.get(result_peg_136.getPosition()))){
-                    result_peg_136.nextPosition();
+                if (compareChar("="[i], stream.get(result_peg_143.getPosition()))){
+                    result_peg_143.nextPosition();
                 } else {
-                    goto out_peg_138;
+                    goto out_peg_145;
                 }
             }
-            result_peg_136.setValue((void*) ",");
+            result_peg_143.setValue((void*) "=");
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
-        result_peg_136 = rule_integer(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_integer(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar(","[i], stream.get(result_peg_136.getPosition()))){
-                    result_peg_136.nextPosition();
+                if (compareChar(","[i], stream.get(result_peg_143.getPosition()))){
+                    result_peg_143.nextPosition();
                 } else {
-                    goto out_peg_138;
+                    goto out_peg_145;
                 }
             }
-            result_peg_136.setValue((void*) ",");
+            result_peg_143.setValue((void*) ",");
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
-        result_peg_136 = rule_integer(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_integer(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar(","[i], stream.get(result_peg_136.getPosition()))){
-                    result_peg_136.nextPosition();
+                if (compareChar(","[i], stream.get(result_peg_143.getPosition()))){
+                    result_peg_143.nextPosition();
                 } else {
-                    goto out_peg_138;
+                    goto out_peg_145;
                 }
             }
-            result_peg_136.setValue((void*) ",");
+            result_peg_143.setValue((void*) ",");
         
         
         
-        result_peg_136 = rule_s(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
         
-        result_peg_136 = rule_integer(stream, result_peg_136.getPosition());
-            if (result_peg_136.error()){
-                goto out_peg_138;
+        result_peg_143 = rule_integer(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
+            }
+        
+        
+        
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
+            }
+        
+        
+        
+        for (int i = 0; i < 1; i++){
+                if (compareChar(","[i], stream.get(result_peg_143.getPosition()))){
+                    result_peg_143.nextPosition();
+                } else {
+                    goto out_peg_145;
+                }
+            }
+            result_peg_143.setValue((void*) ",");
+        
+        
+        
+        result_peg_143 = rule_s(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
+            }
+        
+        
+        
+        result_peg_143 = rule_integer(stream, result_peg_143.getPosition());
+            if (result_peg_143.error()){
+                goto out_peg_145;
             }
         
         
     }
     
-    if (column_peg_135.chunk2 == 0){
-        column_peg_135.chunk2 = new Chunk2();
+    if (column_peg_142.chunk2 == 0){
+        column_peg_142.chunk2 = new Chunk2();
     }
-    column_peg_135.chunk2->chunk_collision = result_peg_136;
-    stream.update(result_peg_136.getPosition());
+    column_peg_142.chunk2->chunk_collision = result_peg_143;
+    stream.update(result_peg_143.getPosition());
     
     
-    return result_peg_136;
-    out_peg_138:
-    Result result_peg_162(myposition);
+    return result_peg_143;
+    out_peg_145:
+    Result result_peg_174(myposition);
     
     {
     
         for (int i = 0; i < 5; i++){
-                if (compareCharCase("Clsn1"[i], stream.get(result_peg_162.getPosition()))){
-                    result_peg_162.nextPosition();
+                if (compareCharCase("Clsn1"[i], stream.get(result_peg_174.getPosition()))){
+                    result_peg_174.nextPosition();
                 } else {
-                    goto out_peg_164;
+                    goto out_peg_176;
                 }
             }
-            result_peg_162.setValue((void*) "Clsn1");
+            result_peg_174.setValue((void*) "Clsn1");
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar("["[i], stream.get(result_peg_162.getPosition()))){
-                    result_peg_162.nextPosition();
+                if (compareChar("["[i], stream.get(result_peg_174.getPosition()))){
+                    result_peg_174.nextPosition();
                 } else {
-                    goto out_peg_164;
+                    goto out_peg_176;
                 }
             }
-            result_peg_162.setValue((void*) "[");
+            result_peg_174.setValue((void*) "[");
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
-        result_peg_162.reset();
+        result_peg_174.reset();
             do{
-                Result result_peg_170(result_peg_162.getPosition());
-                result_peg_170 = rule_digit(stream, result_peg_170.getPosition());
-                if (result_peg_170.error()){
-                    goto loop_peg_169;
+                Result result_peg_182(result_peg_174.getPosition());
+                {
+                    
+                    char letter_peg_187 = stream.get(result_peg_182.getPosition());
+                    if (letter_peg_187 != '\0' && strchr("0123456789", letter_peg_187) != NULL){
+                        result_peg_182.nextPosition();
+                        result_peg_182.setValue((void*) letter_peg_187);
+                    } else {
+                        goto out_peg_186;
+                    }
+                    
                 }
-                result_peg_162.addResult(result_peg_170);
+                goto success_peg_183;
+                out_peg_186:
+                goto loop_peg_181;
+                success_peg_183:
+                ;
+                result_peg_174.addResult(result_peg_182);
             } while (true);
-            loop_peg_169:
-            if (result_peg_162.matches() == 0){
-                goto out_peg_164;
+            loop_peg_181:
+            if (result_peg_174.matches() == 0){
+                goto out_peg_176;
             }
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
-            }
-        
-        
-        
-        for (int i = 0; i < 1; i++){
-                if (compareChar("]"[i], stream.get(result_peg_162.getPosition()))){
-                    result_peg_162.nextPosition();
-                } else {
-                    goto out_peg_164;
-                }
-            }
-            result_peg_162.setValue((void*) "]");
-        
-        
-        
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar("="[i], stream.get(result_peg_162.getPosition()))){
-                    result_peg_162.nextPosition();
+                if (compareChar("]"[i], stream.get(result_peg_174.getPosition()))){
+                    result_peg_174.nextPosition();
                 } else {
-                    goto out_peg_164;
+                    goto out_peg_176;
                 }
             }
-            result_peg_162.setValue((void*) "=");
+            result_peg_174.setValue((void*) "]");
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
-            }
-        
-        
-        
-        result_peg_162 = rule_integer(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
-            }
-        
-        
-        
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar(","[i], stream.get(result_peg_162.getPosition()))){
-                    result_peg_162.nextPosition();
+                if (compareChar("="[i], stream.get(result_peg_174.getPosition()))){
+                    result_peg_174.nextPosition();
                 } else {
-                    goto out_peg_164;
+                    goto out_peg_176;
                 }
             }
-            result_peg_162.setValue((void*) ",");
+            result_peg_174.setValue((void*) "=");
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
-        result_peg_162 = rule_integer(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_integer(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar(","[i], stream.get(result_peg_162.getPosition()))){
-                    result_peg_162.nextPosition();
+                if (compareChar(","[i], stream.get(result_peg_174.getPosition()))){
+                    result_peg_174.nextPosition();
                 } else {
-                    goto out_peg_164;
+                    goto out_peg_176;
                 }
             }
-            result_peg_162.setValue((void*) ",");
+            result_peg_174.setValue((void*) ",");
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
-        result_peg_162 = rule_integer(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_integer(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar(","[i], stream.get(result_peg_162.getPosition()))){
-                    result_peg_162.nextPosition();
+                if (compareChar(","[i], stream.get(result_peg_174.getPosition()))){
+                    result_peg_174.nextPosition();
                 } else {
-                    goto out_peg_164;
+                    goto out_peg_176;
                 }
             }
-            result_peg_162.setValue((void*) ",");
+            result_peg_174.setValue((void*) ",");
         
         
         
-        result_peg_162 = rule_s(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
         
-        result_peg_162 = rule_integer(stream, result_peg_162.getPosition());
-            if (result_peg_162.error()){
-                goto out_peg_164;
+        result_peg_174 = rule_integer(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
+            }
+        
+        
+        
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
+            }
+        
+        
+        
+        for (int i = 0; i < 1; i++){
+                if (compareChar(","[i], stream.get(result_peg_174.getPosition()))){
+                    result_peg_174.nextPosition();
+                } else {
+                    goto out_peg_176;
+                }
+            }
+            result_peg_174.setValue((void*) ",");
+        
+        
+        
+        result_peg_174 = rule_s(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
+            }
+        
+        
+        
+        result_peg_174 = rule_integer(stream, result_peg_174.getPosition());
+            if (result_peg_174.error()){
+                goto out_peg_176;
             }
         
         
     }
     
-    if (column_peg_135.chunk2 == 0){
-        column_peg_135.chunk2 = new Chunk2();
+    if (column_peg_142.chunk2 == 0){
+        column_peg_142.chunk2 = new Chunk2();
     }
-    column_peg_135.chunk2->chunk_collision = result_peg_162;
-    stream.update(result_peg_162.getPosition());
+    column_peg_142.chunk2->chunk_collision = result_peg_174;
+    stream.update(result_peg_174.getPosition());
     
     
-    return result_peg_162;
-    out_peg_164:
+    return result_peg_174;
+    out_peg_176:
     
-    if (column_peg_135.chunk2 == 0){
-        column_peg_135.chunk2 = new Chunk2();
+    if (column_peg_142.chunk2 == 0){
+        column_peg_142.chunk2 = new Chunk2();
     }
-    column_peg_135.chunk2->chunk_collision = errorResult;
+    column_peg_142.chunk2->chunk_collision = errorResult;
     stream.update(errorResult.getPosition());
     
     
@@ -2341,9 +2354,9 @@ Result rule_collision(Stream & stream, const int position){
 
 Result rule_action_start(Stream & stream, const int position){
     
-    Column & column_peg_188 = stream.getColumn(position);
-    if (column_peg_188.chunk2 != 0 && column_peg_188.chunk2->chunk_action_start.calculated()){
-        return column_peg_188.chunk2->chunk_action_start;
+    Column & column_peg_205 = stream.getColumn(position);
+    if (column_peg_205.chunk2 != 0 && column_peg_205.chunk2->chunk_action_start.calculated()){
+        return column_peg_205.chunk2->chunk_action_start;
     }
     
     int myposition = position;
@@ -2351,156 +2364,115 @@ Result rule_action_start(Stream & stream, const int position){
     Value begin;
     Value action;
     Value num;
-    Result result_peg_189(myposition);
+    Result result_peg_206(myposition);
     
     {
     
         for (int i = 0; i < 1; i++){
-                if (compareChar("["[i], stream.get(result_peg_189.getPosition()))){
-                    result_peg_189.nextPosition();
+                if (compareChar("["[i], stream.get(result_peg_206.getPosition()))){
+                    result_peg_206.nextPosition();
                 } else {
-                    goto out_peg_191;
+                    goto out_peg_208;
                 }
             }
-            result_peg_189.setValue((void*) "[");
+            result_peg_206.setValue((void*) "[");
         
         
         
-        result_peg_189 = rule_s(stream, result_peg_189.getPosition());
-            if (result_peg_189.error()){
-                goto out_peg_191;
+        result_peg_206 = rule_s(stream, result_peg_206.getPosition());
+            if (result_peg_206.error()){
+                goto out_peg_208;
             }
         
         
         
         for (int i = 0; i < 5; i++){
-                if (compareCharCase("Begin"[i], stream.get(result_peg_189.getPosition()))){
-                    result_peg_189.nextPosition();
+                if (compareCharCase("Begin"[i], stream.get(result_peg_206.getPosition()))){
+                    result_peg_206.nextPosition();
                 } else {
-                    goto out_peg_191;
+                    goto out_peg_208;
                 }
             }
-            result_peg_189.setValue((void*) "Begin");
-            begin = result_peg_189.getValues();
+            result_peg_206.setValue((void*) "Begin");
+            begin = result_peg_206.getValues();
         
         
         
-        result_peg_189 = rule_s(stream, result_peg_189.getPosition());
-            if (result_peg_189.error()){
-                goto out_peg_191;
+        result_peg_206 = rule_s(stream, result_peg_206.getPosition());
+            if (result_peg_206.error()){
+                goto out_peg_208;
             }
         
         
         
         for (int i = 0; i < 6; i++){
-                if (compareCharCase("Action"[i], stream.get(result_peg_189.getPosition()))){
-                    result_peg_189.nextPosition();
+                if (compareCharCase("Action"[i], stream.get(result_peg_206.getPosition()))){
+                    result_peg_206.nextPosition();
                 } else {
-                    goto out_peg_191;
+                    goto out_peg_208;
                 }
             }
-            result_peg_189.setValue((void*) "Action");
-            action = result_peg_189.getValues();
+            result_peg_206.setValue((void*) "Action");
+            action = result_peg_206.getValues();
         
         
         
-        result_peg_189 = rule_s(stream, result_peg_189.getPosition());
-            if (result_peg_189.error()){
-                goto out_peg_191;
+        result_peg_206 = rule_s(stream, result_peg_206.getPosition());
+            if (result_peg_206.error()){
+                goto out_peg_208;
             }
         
         
         
-        result_peg_189 = rule_integer(stream, result_peg_189.getPosition());
-            if (result_peg_189.error()){
-                goto out_peg_191;
+        result_peg_206 = rule_integer(stream, result_peg_206.getPosition());
+            if (result_peg_206.error()){
+                goto out_peg_208;
             }
-            num = result_peg_189.getValues();
+            num = result_peg_206.getValues();
         
         
         
-        result_peg_189 = rule_s(stream, result_peg_189.getPosition());
-            if (result_peg_189.error()){
-                goto out_peg_191;
+        result_peg_206 = rule_s(stream, result_peg_206.getPosition());
+            if (result_peg_206.error()){
+                goto out_peg_208;
             }
         
         
         
         for (int i = 0; i < 1; i++){
-                if (compareChar("]"[i], stream.get(result_peg_189.getPosition()))){
-                    result_peg_189.nextPosition();
+                if (compareChar("]"[i], stream.get(result_peg_206.getPosition()))){
+                    result_peg_206.nextPosition();
                 } else {
-                    goto out_peg_191;
+                    goto out_peg_208;
                 }
             }
-            result_peg_189.setValue((void*) "]");
+            result_peg_206.setValue((void*) "]");
         
         
         
         {
                 Value value((void*) 0);
                 value = makeHeader(begin, action, num); GC::save(as<std::string*>(value));
-                result_peg_189.setValue(value);
+                result_peg_206.setValue(value);
             }
         
         
     }
     
-    if (column_peg_188.chunk2 == 0){
-        column_peg_188.chunk2 = new Chunk2();
+    if (column_peg_205.chunk2 == 0){
+        column_peg_205.chunk2 = new Chunk2();
     }
-    column_peg_188.chunk2->chunk_action_start = result_peg_189;
-    stream.update(result_peg_189.getPosition());
+    column_peg_205.chunk2->chunk_action_start = result_peg_206;
+    stream.update(result_peg_206.getPosition());
     
     
-    return result_peg_189;
-    out_peg_191:
+    return result_peg_206;
+    out_peg_208:
     
-    if (column_peg_188.chunk2 == 0){
-        column_peg_188.chunk2 = new Chunk2();
+    if (column_peg_205.chunk2 == 0){
+        column_peg_205.chunk2 = new Chunk2();
     }
-    column_peg_188.chunk2->chunk_action_start = errorResult;
-    stream.update(errorResult.getPosition());
-    
-    
-    return errorResult;
-}
-        
-
-Result rule_digit(Stream & stream, const int position){
-    
-    Column & column_peg_200 = stream.getColumn(position);
-    if (column_peg_200.chunk3 != 0 && column_peg_200.chunk3->chunk_digit.calculated()){
-        return column_peg_200.chunk3->chunk_digit;
-    }
-    
-    int myposition = position;
-    
-    
-    Result result_peg_201(myposition);
-    
-    char letter_peg_202 = stream.get(result_peg_201.getPosition());
-    if (letter_peg_202 != '\0' && strchr("0123456789", letter_peg_202) != NULL){
-        result_peg_201.nextPosition();
-        result_peg_201.setValue((void*) letter_peg_202);
-    } else {
-        goto out_peg_203;
-    }
-    
-    if (column_peg_200.chunk3 == 0){
-        column_peg_200.chunk3 = new Chunk3();
-    }
-    column_peg_200.chunk3->chunk_digit = result_peg_201;
-    stream.update(result_peg_201.getPosition());
-    
-    
-    return result_peg_201;
-    out_peg_203:
-    
-    if (column_peg_200.chunk3 == 0){
-        column_peg_200.chunk3 = new Chunk3();
-    }
-    column_peg_200.chunk3->chunk_digit = errorResult;
+    column_peg_205.chunk2->chunk_action_start = errorResult;
     stream.update(errorResult.getPosition());
     
     
@@ -2510,143 +2482,9 @@ Result rule_digit(Stream & stream, const int position){
 
 Result rule_integer(Stream & stream, const int position){
     
-    Column & column_peg_204 = stream.getColumn(position);
-    if (column_peg_204.chunk3 != 0 && column_peg_204.chunk3->chunk_integer.calculated()){
-        return column_peg_204.chunk3->chunk_integer;
-    }
-    
-    int myposition = position;
-    
-    
-    Result result_peg_205(myposition);
-    
-    {
-    
-        int save_peg_207 = result_peg_205.getPosition();
-            
-            result_peg_205 = rule_sign(stream, result_peg_205.getPosition());
-            if (result_peg_205.error()){
-                
-                result_peg_205 = Result(save_peg_207);
-                result_peg_205.setValue((void*) 0);
-                
-            }
-        
-        Result result_peg_206 = result_peg_205;
-        
-        result_peg_205.reset();
-            do{
-                Result result_peg_210(result_peg_205.getPosition());
-                result_peg_210 = rule_digit(stream, result_peg_210.getPosition());
-                if (result_peg_210.error()){
-                    goto loop_peg_209;
-                }
-                result_peg_205.addResult(result_peg_210);
-            } while (true);
-            loop_peg_209:
-            if (result_peg_205.matches() == 0){
-                goto out_peg_211;
-            }
-        
-        Result result_peg_208 = result_peg_205;
-        
-        {
-                Value value((void*) 0);
-                value = parseDouble(result_peg_208.getValues()); GC::save(as<double*>(value)); value = makeNumber(result_peg_206.getValues(),value); GC::save(as<Ast::Number*>(value));
-                result_peg_205.setValue(value);
-            }
-        
-        
-    }
-    
-    if (column_peg_204.chunk3 == 0){
-        column_peg_204.chunk3 = new Chunk3();
-    }
-    column_peg_204.chunk3->chunk_integer = result_peg_205;
-    stream.update(result_peg_205.getPosition());
-    
-    
-    return result_peg_205;
-    out_peg_211:
-    
-    if (column_peg_204.chunk3 == 0){
-        column_peg_204.chunk3 = new Chunk3();
-    }
-    column_peg_204.chunk3->chunk_integer = errorResult;
-    stream.update(errorResult.getPosition());
-    
-    
-    return errorResult;
-}
-        
-
-Result rule_sign(Stream & stream, const int position){
-    
-    Column & column_peg_212 = stream.getColumn(position);
-    if (column_peg_212.chunk3 != 0 && column_peg_212.chunk3->chunk_sign.calculated()){
-        return column_peg_212.chunk3->chunk_sign;
-    }
-    
-    int myposition = position;
-    
-    
-    Result result_peg_213(myposition);
-    
-    for (int i = 0; i < 1; i++){
-        if (compareChar("-"[i], stream.get(result_peg_213.getPosition()))){
-            result_peg_213.nextPosition();
-        } else {
-            goto out_peg_214;
-        }
-    }
-    result_peg_213.setValue((void*) "-");
-    
-    if (column_peg_212.chunk3 == 0){
-        column_peg_212.chunk3 = new Chunk3();
-    }
-    column_peg_212.chunk3->chunk_sign = result_peg_213;
-    stream.update(result_peg_213.getPosition());
-    
-    
-    return result_peg_213;
-    out_peg_214:
-    Result result_peg_215(myposition);
-    
-    for (int i = 0; i < 1; i++){
-        if (compareChar("+"[i], stream.get(result_peg_215.getPosition()))){
-            result_peg_215.nextPosition();
-        } else {
-            goto out_peg_216;
-        }
-    }
-    result_peg_215.setValue((void*) "+");
-    
-    if (column_peg_212.chunk3 == 0){
-        column_peg_212.chunk3 = new Chunk3();
-    }
-    column_peg_212.chunk3->chunk_sign = result_peg_215;
-    stream.update(result_peg_215.getPosition());
-    
-    
-    return result_peg_215;
-    out_peg_216:
-    
-    if (column_peg_212.chunk3 == 0){
-        column_peg_212.chunk3 = new Chunk3();
-    }
-    column_peg_212.chunk3->chunk_sign = errorResult;
-    stream.update(errorResult.getPosition());
-    
-    
-    return errorResult;
-}
-        
-
-Result rule_valuelist(Stream & stream, const int position){
-    
     Column & column_peg_217 = stream.getColumn(position);
-    if (column_peg_217.chunk3 != 0 && column_peg_217.chunk3->chunk_valuelist.calculated()){
-        return column_peg_217.chunk3->chunk_valuelist;
+    if (column_peg_217.chunk2 != 0 && column_peg_217.chunk2->chunk_integer.calculated()){
+        return column_peg_217.chunk2->chunk_integer;
     }
     
     int myposition = position;
@@ -2656,85 +2494,196 @@ Result rule_valuelist(Stream & stream, const int position){
     
     {
     
-        result_peg_218 = rule_value(stream, result_peg_218.getPosition());
-            if (result_peg_218.error()){
-                goto out_peg_220;
+        int save_peg_220 = result_peg_218.getPosition();
+            
+            {
+                
+                for (int i = 0; i < 1; i++){
+                    if (compareChar("-"[i], stream.get(result_peg_218.getPosition()))){
+                        result_peg_218.nextPosition();
+                    } else {
+                        goto out_peg_223;
+                    }
+                }
+                result_peg_218.setValue((void*) "-");
+                    
             }
+            goto success_peg_221;
+            out_peg_223:
+            {
+                
+                for (int i = 0; i < 1; i++){
+                    if (compareChar("+"[i], stream.get(result_peg_218.getPosition()))){
+                        result_peg_218.nextPosition();
+                    } else {
+                        goto out_peg_225;
+                    }
+                }
+                result_peg_218.setValue((void*) "+");
+                    
+            }
+            goto success_peg_221;
+            out_peg_225:
+            
+            result_peg_218 = Result(save_peg_220);
+            result_peg_218.setValue((void*) 0);
+            
+            success_peg_221:
+            ;
         
         Result result_peg_219 = result_peg_218;
         
         result_peg_218.reset();
             do{
-                Result result_peg_223(result_peg_218.getPosition());
+                Result result_peg_228(result_peg_218.getPosition());
                 {
-                
-                    result_peg_223 = rule_s(stream, result_peg_223.getPosition());
-                        if (result_peg_223.error()){
-                            goto loop_peg_222;
-                        }
                     
-                    
-                    
-                    for (int i = 0; i < 1; i++){
-                            if (compareChar(","[i], stream.get(result_peg_223.getPosition()))){
-                                result_peg_223.nextPosition();
-                            } else {
-                                goto loop_peg_222;
-                            }
-                        }
-                        result_peg_223.setValue((void*) ",");
-                    
-                    
-                    
-                    result_peg_223 = rule_s(stream, result_peg_223.getPosition());
-                        if (result_peg_223.error()){
-                            goto loop_peg_222;
-                        }
-                    
-                    
-                    
-                    int save_peg_227 = result_peg_223.getPosition();
-                        
-                        result_peg_223 = rule_value(stream, result_peg_223.getPosition());
-                        if (result_peg_223.error()){
-                            
-                            result_peg_223 = Result(save_peg_227);
-                            result_peg_223.setValue((void*) 0);
-                            
-                        }
-                    
+                    char letter_peg_233 = stream.get(result_peg_228.getPosition());
+                    if (letter_peg_233 != '\0' && strchr("0123456789", letter_peg_233) != NULL){
+                        result_peg_228.nextPosition();
+                        result_peg_228.setValue((void*) letter_peg_233);
+                    } else {
+                        goto out_peg_232;
+                    }
                     
                 }
-                result_peg_218.addResult(result_peg_223);
+                goto success_peg_229;
+                out_peg_232:
+                goto loop_peg_227;
+                success_peg_229:
+                ;
+                result_peg_218.addResult(result_peg_228);
             } while (true);
-            loop_peg_222:
-            ;
+            loop_peg_227:
+            if (result_peg_218.matches() == 0){
+                goto out_peg_234;
+            }
         
-        Result result_peg_221 = result_peg_218;
+        Result result_peg_226 = result_peg_218;
         
         {
                 Value value((void*) 0);
-                value = makeValueList(result_peg_219.getValues(),result_peg_221.getValues()); GC::save(as<Ast::Value*>(value));
+                value = parseDouble(result_peg_226.getValues()); GC::save(as<double*>(value)); value = makeNumber(result_peg_219.getValues(),value); GC::save(as<Ast::Number*>(value));
                 result_peg_218.setValue(value);
             }
         
         
     }
     
-    if (column_peg_217.chunk3 == 0){
-        column_peg_217.chunk3 = new Chunk3();
+    if (column_peg_217.chunk2 == 0){
+        column_peg_217.chunk2 = new Chunk2();
     }
-    column_peg_217.chunk3->chunk_valuelist = result_peg_218;
+    column_peg_217.chunk2->chunk_integer = result_peg_218;
     stream.update(result_peg_218.getPosition());
     
     
     return result_peg_218;
-    out_peg_220:
+    out_peg_234:
     
-    if (column_peg_217.chunk3 == 0){
-        column_peg_217.chunk3 = new Chunk3();
+    if (column_peg_217.chunk2 == 0){
+        column_peg_217.chunk2 = new Chunk2();
     }
-    column_peg_217.chunk3->chunk_valuelist = errorResult;
+    column_peg_217.chunk2->chunk_integer = errorResult;
+    stream.update(errorResult.getPosition());
+    
+    
+    return errorResult;
+}
+        
+
+Result rule_valuelist(Stream & stream, const int position){
+    
+    Column & column_peg_235 = stream.getColumn(position);
+    if (column_peg_235.chunk3 != 0 && column_peg_235.chunk3->chunk_valuelist.calculated()){
+        return column_peg_235.chunk3->chunk_valuelist;
+    }
+    
+    int myposition = position;
+    
+    
+    Result result_peg_236(myposition);
+    
+    {
+    
+        result_peg_236 = rule_value(stream, result_peg_236.getPosition());
+            if (result_peg_236.error()){
+                goto out_peg_238;
+            }
+        
+        Result result_peg_237 = result_peg_236;
+        
+        result_peg_236.reset();
+            do{
+                Result result_peg_241(result_peg_236.getPosition());
+                {
+                
+                    result_peg_241 = rule_s(stream, result_peg_241.getPosition());
+                        if (result_peg_241.error()){
+                            goto loop_peg_240;
+                        }
+                    
+                    
+                    
+                    for (int i = 0; i < 1; i++){
+                            if (compareChar(","[i], stream.get(result_peg_241.getPosition()))){
+                                result_peg_241.nextPosition();
+                            } else {
+                                goto loop_peg_240;
+                            }
+                        }
+                        result_peg_241.setValue((void*) ",");
+                    
+                    
+                    
+                    result_peg_241 = rule_s(stream, result_peg_241.getPosition());
+                        if (result_peg_241.error()){
+                            goto loop_peg_240;
+                        }
+                    
+                    
+                    
+                    int save_peg_245 = result_peg_241.getPosition();
+                        
+                        result_peg_241 = rule_value(stream, result_peg_241.getPosition());
+                        if (result_peg_241.error()){
+                            
+                            result_peg_241 = Result(save_peg_245);
+                            result_peg_241.setValue((void*) 0);
+                            
+                        }
+                    
+                    
+                }
+                result_peg_236.addResult(result_peg_241);
+            } while (true);
+            loop_peg_240:
+            ;
+        
+        Result result_peg_239 = result_peg_236;
+        
+        {
+                Value value((void*) 0);
+                value = makeValueList(result_peg_237.getValues(),result_peg_239.getValues()); GC::save(as<Ast::Value*>(value));
+                result_peg_236.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_235.chunk3 == 0){
+        column_peg_235.chunk3 = new Chunk3();
+    }
+    column_peg_235.chunk3->chunk_valuelist = result_peg_236;
+    stream.update(result_peg_236.getPosition());
+    
+    
+    return result_peg_236;
+    out_peg_238:
+    
+    if (column_peg_235.chunk3 == 0){
+        column_peg_235.chunk3 = new Chunk3();
+    }
+    column_peg_235.chunk3->chunk_valuelist = errorResult;
     stream.update(errorResult.getPosition());
     
     
@@ -2744,331 +2693,331 @@ Result rule_valuelist(Stream & stream, const int position){
 
 Result rule_value(Stream & stream, const int position){
     
-    Column & column_peg_228 = stream.getColumn(position);
-    if (column_peg_228.chunk3 != 0 && column_peg_228.chunk3->chunk_value.calculated()){
-        return column_peg_228.chunk3->chunk_value;
+    Column & column_peg_246 = stream.getColumn(position);
+    if (column_peg_246.chunk3 != 0 && column_peg_246.chunk3->chunk_value.calculated()){
+        return column_peg_246.chunk3->chunk_value;
     }
     
     int myposition = position;
     
     
-    Result result_peg_229(myposition);
-    
-    result_peg_229 = rule_integer(stream, result_peg_229.getPosition());
-    if (result_peg_229.error()){
-        goto out_peg_230;
-    }
-    
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
-    }
-    column_peg_228.chunk3->chunk_value = result_peg_229;
-    stream.update(result_peg_229.getPosition());
-    
-    
-    return result_peg_229;
-    out_peg_230:
-    Result result_peg_231(myposition);
-    
-    {
-    
-        for (int i = 0; i < 2; i++){
-                if (compareCharCase("as"[i], stream.get(result_peg_231.getPosition()))){
-                    result_peg_231.nextPosition();
-                } else {
-                    goto out_peg_233;
-                }
-            }
-            result_peg_231.setValue((void*) "as");
-        
-        Result result_peg_232 = result_peg_231;
-        
-        result_peg_231 = rule_integer(stream, result_peg_231.getPosition());
-            if (result_peg_231.error()){
-                goto out_peg_233;
-            }
-        
-        
-        
-        for (int i = 0; i < 1; i++){
-                if (compareCharCase("d"[i], stream.get(result_peg_231.getPosition()))){
-                    result_peg_231.nextPosition();
-                } else {
-                    goto out_peg_233;
-                }
-            }
-            result_peg_231.setValue((void*) "d");
-        
-        
-        
-        result_peg_231 = rule_integer(stream, result_peg_231.getPosition());
-            if (result_peg_231.error()){
-                goto out_peg_233;
-            }
-        
-        
-        
-        {
-                Value value((void*) 0);
-                value = makeKeyword(result_peg_232.getValues()); GC::save(as<Ast::Keyword*>(value));
-                result_peg_231.setValue(value);
-            }
-        
-        
-    }
-    
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
-    }
-    column_peg_228.chunk3->chunk_value = result_peg_231;
-    stream.update(result_peg_231.getPosition());
-    
-    
-    return result_peg_231;
-    out_peg_233:
-    Result result_peg_237(myposition);
-    
-    {
-    
-        for (int i = 0; i < 1; i++){
-                if (compareCharCase("a"[i], stream.get(result_peg_237.getPosition()))){
-                    result_peg_237.nextPosition();
-                } else {
-                    goto out_peg_239;
-                }
-            }
-            result_peg_237.setValue((void*) "a");
-        
-        Result result_peg_238 = result_peg_237;
-        
-        result_peg_237 = rule_integer(stream, result_peg_237.getPosition());
-            if (result_peg_237.error()){
-                goto out_peg_239;
-            }
-        
-        
-        
-        {
-                Value value((void*) 0);
-                value = makeKeyword(result_peg_238.getValues()); GC::save(as<Ast::Keyword*>(value));
-                result_peg_237.setValue(value);
-            }
-        
-        
-    }
-    
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
-    }
-    column_peg_228.chunk3->chunk_value = result_peg_237;
-    stream.update(result_peg_237.getPosition());
-    
-    
-    return result_peg_237;
-    out_peg_239:
-    Result result_peg_241(myposition);
-    
-    {
-    
-        for (int i = 0; i < 1; i++){
-                if (compareCharCase("a"[i], stream.get(result_peg_241.getPosition()))){
-                    result_peg_241.nextPosition();
-                } else {
-                    goto out_peg_243;
-                }
-            }
-            result_peg_241.setValue((void*) "a");
-        
-        Result result_peg_242 = result_peg_241;
-        
-        {
-                Value value((void*) 0);
-                value = makeKeyword(result_peg_242.getValues()); GC::save(as<Ast::Keyword*>(value));
-                result_peg_241.setValue(value);
-            }
-        
-        
-    }
-    
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
-    }
-    column_peg_228.chunk3->chunk_value = result_peg_241;
-    stream.update(result_peg_241.getPosition());
-    
-    
-    return result_peg_241;
-    out_peg_243:
-    Result result_peg_244(myposition);
-    
-    {
-    
-        for (int i = 0; i < 1; i++){
-                if (compareCharCase("s"[i], stream.get(result_peg_244.getPosition()))){
-                    result_peg_244.nextPosition();
-                } else {
-                    goto out_peg_246;
-                }
-            }
-            result_peg_244.setValue((void*) "s");
-        
-        Result result_peg_245 = result_peg_244;
-        
-        {
-                Value value((void*) 0);
-                value = makeKeyword(result_peg_245.getValues()); GC::save(as<Ast::Keyword*>(value));
-                result_peg_244.setValue(value);
-            }
-        
-        
-    }
-    
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
-    }
-    column_peg_228.chunk3->chunk_value = result_peg_244;
-    stream.update(result_peg_244.getPosition());
-    
-    
-    return result_peg_244;
-    out_peg_246:
     Result result_peg_247(myposition);
     
-    {
-    
-        for (int i = 0; i < 2; i++){
-                if (compareCharCase("vh"[i], stream.get(result_peg_247.getPosition()))){
-                    result_peg_247.nextPosition();
-                } else {
-                    goto out_peg_249;
-                }
-            }
-            result_peg_247.setValue((void*) "vh");
-        
-        Result result_peg_248 = result_peg_247;
-        
-        {
-                Value value((void*) 0);
-                value = makeKeyword(result_peg_248.getValues()); GC::save(as<Ast::Keyword*>(value));
-                result_peg_247.setValue(value);
-            }
-        
-        
+    result_peg_247 = rule_integer(stream, result_peg_247.getPosition());
+    if (result_peg_247.error()){
+        goto out_peg_248;
     }
     
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
     }
-    column_peg_228.chunk3->chunk_value = result_peg_247;
+    column_peg_246.chunk3->chunk_value = result_peg_247;
     stream.update(result_peg_247.getPosition());
     
     
     return result_peg_247;
-    out_peg_249:
-    Result result_peg_250(myposition);
+    out_peg_248:
+    Result result_peg_249(myposition);
     
     {
     
         for (int i = 0; i < 2; i++){
-                if (compareCharCase("hv"[i], stream.get(result_peg_250.getPosition()))){
-                    result_peg_250.nextPosition();
+                if (compareCharCase("as"[i], stream.get(result_peg_249.getPosition()))){
+                    result_peg_249.nextPosition();
                 } else {
-                    goto out_peg_252;
+                    goto out_peg_251;
                 }
             }
-            result_peg_250.setValue((void*) "hv");
+            result_peg_249.setValue((void*) "as");
         
-        Result result_peg_251 = result_peg_250;
+        Result result_peg_250 = result_peg_249;
+        
+        result_peg_249 = rule_integer(stream, result_peg_249.getPosition());
+            if (result_peg_249.error()){
+                goto out_peg_251;
+            }
+        
+        
+        
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("d"[i], stream.get(result_peg_249.getPosition()))){
+                    result_peg_249.nextPosition();
+                } else {
+                    goto out_peg_251;
+                }
+            }
+            result_peg_249.setValue((void*) "d");
+        
+        
+        
+        result_peg_249 = rule_integer(stream, result_peg_249.getPosition());
+            if (result_peg_249.error()){
+                goto out_peg_251;
+            }
+        
+        
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_251.getValues()); GC::save(as<Ast::Keyword*>(value));
-                result_peg_250.setValue(value);
+                value = makeKeyword(result_peg_250.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_249.setValue(value);
             }
         
         
     }
     
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
     }
-    column_peg_228.chunk3->chunk_value = result_peg_250;
-    stream.update(result_peg_250.getPosition());
+    column_peg_246.chunk3->chunk_value = result_peg_249;
+    stream.update(result_peg_249.getPosition());
     
     
-    return result_peg_250;
-    out_peg_252:
-    Result result_peg_253(myposition);
+    return result_peg_249;
+    out_peg_251:
+    Result result_peg_255(myposition);
     
     {
     
         for (int i = 0; i < 1; i++){
-                if (compareCharCase("v"[i], stream.get(result_peg_253.getPosition()))){
-                    result_peg_253.nextPosition();
+                if (compareCharCase("a"[i], stream.get(result_peg_255.getPosition()))){
+                    result_peg_255.nextPosition();
                 } else {
-                    goto out_peg_255;
+                    goto out_peg_257;
                 }
             }
-            result_peg_253.setValue((void*) "v");
+            result_peg_255.setValue((void*) "a");
         
-        Result result_peg_254 = result_peg_253;
+        Result result_peg_256 = result_peg_255;
+        
+        result_peg_255 = rule_integer(stream, result_peg_255.getPosition());
+            if (result_peg_255.error()){
+                goto out_peg_257;
+            }
+        
+        
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_254.getValues()); GC::save(as<Ast::Keyword*>(value));
-                result_peg_253.setValue(value);
+                value = makeKeyword(result_peg_256.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_255.setValue(value);
             }
         
         
     }
     
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
     }
-    column_peg_228.chunk3->chunk_value = result_peg_253;
-    stream.update(result_peg_253.getPosition());
+    column_peg_246.chunk3->chunk_value = result_peg_255;
+    stream.update(result_peg_255.getPosition());
     
     
-    return result_peg_253;
-    out_peg_255:
-    Result result_peg_256(myposition);
+    return result_peg_255;
+    out_peg_257:
+    Result result_peg_259(myposition);
     
     {
     
         for (int i = 0; i < 1; i++){
-                if (compareCharCase("h"[i], stream.get(result_peg_256.getPosition()))){
-                    result_peg_256.nextPosition();
+                if (compareCharCase("a"[i], stream.get(result_peg_259.getPosition()))){
+                    result_peg_259.nextPosition();
                 } else {
-                    goto out_peg_258;
+                    goto out_peg_261;
                 }
             }
-            result_peg_256.setValue((void*) "h");
+            result_peg_259.setValue((void*) "a");
         
-        Result result_peg_257 = result_peg_256;
+        Result result_peg_260 = result_peg_259;
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_257.getValues()); GC::save(as<Ast::Keyword*>(value));
-                result_peg_256.setValue(value);
+                value = makeKeyword(result_peg_260.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_259.setValue(value);
             }
         
         
     }
     
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
     }
-    column_peg_228.chunk3->chunk_value = result_peg_256;
-    stream.update(result_peg_256.getPosition());
+    column_peg_246.chunk3->chunk_value = result_peg_259;
+    stream.update(result_peg_259.getPosition());
     
     
-    return result_peg_256;
-    out_peg_258:
+    return result_peg_259;
+    out_peg_261:
+    Result result_peg_262(myposition);
     
-    if (column_peg_228.chunk3 == 0){
-        column_peg_228.chunk3 = new Chunk3();
+    {
+    
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("s"[i], stream.get(result_peg_262.getPosition()))){
+                    result_peg_262.nextPosition();
+                } else {
+                    goto out_peg_264;
+                }
+            }
+            result_peg_262.setValue((void*) "s");
+        
+        Result result_peg_263 = result_peg_262;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_263.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_262.setValue(value);
+            }
+        
+        
     }
-    column_peg_228.chunk3->chunk_value = errorResult;
+    
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
+    }
+    column_peg_246.chunk3->chunk_value = result_peg_262;
+    stream.update(result_peg_262.getPosition());
+    
+    
+    return result_peg_262;
+    out_peg_264:
+    Result result_peg_265(myposition);
+    
+    {
+    
+        for (int i = 0; i < 2; i++){
+                if (compareCharCase("vh"[i], stream.get(result_peg_265.getPosition()))){
+                    result_peg_265.nextPosition();
+                } else {
+                    goto out_peg_267;
+                }
+            }
+            result_peg_265.setValue((void*) "vh");
+        
+        Result result_peg_266 = result_peg_265;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_266.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_265.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
+    }
+    column_peg_246.chunk3->chunk_value = result_peg_265;
+    stream.update(result_peg_265.getPosition());
+    
+    
+    return result_peg_265;
+    out_peg_267:
+    Result result_peg_268(myposition);
+    
+    {
+    
+        for (int i = 0; i < 2; i++){
+                if (compareCharCase("hv"[i], stream.get(result_peg_268.getPosition()))){
+                    result_peg_268.nextPosition();
+                } else {
+                    goto out_peg_270;
+                }
+            }
+            result_peg_268.setValue((void*) "hv");
+        
+        Result result_peg_269 = result_peg_268;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_269.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_268.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
+    }
+    column_peg_246.chunk3->chunk_value = result_peg_268;
+    stream.update(result_peg_268.getPosition());
+    
+    
+    return result_peg_268;
+    out_peg_270:
+    Result result_peg_271(myposition);
+    
+    {
+    
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("v"[i], stream.get(result_peg_271.getPosition()))){
+                    result_peg_271.nextPosition();
+                } else {
+                    goto out_peg_273;
+                }
+            }
+            result_peg_271.setValue((void*) "v");
+        
+        Result result_peg_272 = result_peg_271;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_272.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_271.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
+    }
+    column_peg_246.chunk3->chunk_value = result_peg_271;
+    stream.update(result_peg_271.getPosition());
+    
+    
+    return result_peg_271;
+    out_peg_273:
+    Result result_peg_274(myposition);
+    
+    {
+    
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("h"[i], stream.get(result_peg_274.getPosition()))){
+                    result_peg_274.nextPosition();
+                } else {
+                    goto out_peg_276;
+                }
+            }
+            result_peg_274.setValue((void*) "h");
+        
+        Result result_peg_275 = result_peg_274;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_275.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_274.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
+    }
+    column_peg_246.chunk3->chunk_value = result_peg_274;
+    stream.update(result_peg_274.getPosition());
+    
+    
+    return result_peg_274;
+    out_peg_276:
+    
+    if (column_peg_246.chunk3 == 0){
+        column_peg_246.chunk3 = new Chunk3();
+    }
+    column_peg_246.chunk3->chunk_value = errorResult;
     stream.update(errorResult.getPosition());
     
     

@@ -118,7 +118,7 @@ rules:
 	sw = space
 	   | comment
 	s = space*
-	space = " "
+	inline space = " "
 	      | "\t"
 	      | <ascii 255>
 	comment = ";" (!"\n" .)*
@@ -131,9 +131,9 @@ rules:
 	collision = "Clsn2"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
 	          | "Clsn1"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
 	action_start = "[" s begin:"Begin"{case} s action:"Action"{case} s num:integer s "]" {{ value = makeHeader(begin, action, num); GC::save(as<std::string*>(value)); }}
-	digit = [0123456789]
+	inline digit = [0123456789]
 	integer = sign? digit+ {{ value = parseDouble($2); GC::save(as<double*>(value)); value = makeNumber($1,value); GC::save(as<Ast::Number*>(value)); }}
-	sign = "-"
+	inline sign = "-"
 	     | "+"
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); GC::save(as<Ast::Value*>(value)); }}
 
