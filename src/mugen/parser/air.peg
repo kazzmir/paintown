@@ -21,8 +21,46 @@ std::string * toString(const Value & input){
   return new std::string(out.str());
 }
 
+Ast::String * makeString(std::string * str){
+    return new Ast::String(str);
+}
+
+Ast::String * makeString(const Value & value){
+    return new Ast::String(toString(value));
+}
+
 Ast::Section * makeSection(const Value & str){
   return new Ast::Section(as<std::string*>(str));
+}
+
+Ast::Value * makeNumber(const Value & sign, const Value & number){
+    double value = *(as<double*>(number));
+    if (sign.getValue() != 0){
+        value = -value;
+    }
+
+    return new Ast::Number(value);
+}
+
+double * parseDouble(const Value & value){
+    std::string * str = toString(value);
+    std::istringstream get(*str);
+    double * number = new double;
+    get >> *number;
+    delete str;
+    return number;
+}
+
+std::string * makeHeader(const Value & begin, const Value & action, const Value & num){
+    std::ostringstream out;
+    std::string * temp = toString(begin);
+    out << *temp;
+    delete temp;
+    temp = toString(action);
+    out << " " << *temp;
+    delete temp;
+    out << (as<Ast::Value*>(num))->toString();
+    return new std::string(out.str()); 
 }
 
 SectionList * makeSectionList(){
@@ -31,6 +69,10 @@ SectionList * makeSectionList(){
 
 Ast::Keyword * makeKeyword(const Value & value){
     return new Ast::Keyword(as<char*>(value));
+}
+
+Ast::Attribute * makeAttributeKeyword(const Value & id, const Value & data){
+    return new Ast::AttributeKeyword(as<Ast::Keyword*>(id), as<Ast::Value*>(data));
 }
 
 }}
@@ -62,15 +104,15 @@ rules:
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		    | "-" "-"+
-	collision_default = "Clsn2Default:"{case} s integer
-	                  | "Clsn1Default:"{case} s integer
-	                  | "Clsn2:"{case} s integer
-			  | "Clsn1:"{case} s integer
+	collision_default = "Clsn2Default:"{case} s num:integer {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); value = makeAttributeKeyword(value, num); GC::save(as<Ast::Attribute*>(value)); }}
+	                  | "Clsn1Default:"{case} s num:integer
+	                  | "Clsn2:"{case} s num:integer
+			          | "Clsn1:"{case} s num:integer
 	collision = "Clsn2"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
 	          | "Clsn1"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
-	action_start = "[" s "Begin"{case} s "Action"{case} s integer s "]"
+	action_start = "[" s begin:"Begin"{case} s action:"Action"{case} s num:integer s "]" {{ value = makeHeader(begin, action, num); GC::save(as<std::string*>(value)); }}
 	digit = [0123456789]
-	integer = sign? digit+
+	integer = sign? digit+ {{ value = parseDouble($2); GC::save(as<double*>(value)); value = makeNumber($1,value); GC::save(as<Ast::Number*>(value)); }}
 	sign = "-"
 	     | "+"
 	valuelist = value (s "," s valuev)*
