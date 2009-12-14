@@ -217,24 +217,18 @@ struct Chunk3{
     Result chunk_value;
 };
 
-struct Chunk4{
-    Result chunk_valuev;
-};
-
 struct Column{
     Column():
         chunk0(0)
         ,chunk1(0)
         ,chunk2(0)
-        ,chunk3(0)
-        ,chunk4(0){
+        ,chunk3(0){
     }
 
     Chunk0 * chunk0;
     Chunk1 * chunk1;
     Chunk2 * chunk2;
     Chunk3 * chunk3;
-    Chunk4 * chunk4;
 
     int hitCount(){
         return 
@@ -261,13 +255,11 @@ struct Column{
 + (chunk0->chunk_action.calculated() ? 1 : 0)
 + (chunk0->chunk_action_line.calculated() ? 1 : 0)
 + (chunk0->chunk_line_end.calculated() ? 1 : 0)) : 0)
-+
-(chunk4 != NULL ? ((chunk4->chunk_valuev.calculated() ? 1 : 0)) : 0)
 ;
     }
 
     int maxHits(){
-        return 21;
+        return 20;
     }
 
     ~Column(){
@@ -275,7 +267,6 @@ struct Column{
         delete chunk1;
         delete chunk2;
         delete chunk3;
-        delete chunk4;
     }
 };
 
@@ -521,7 +512,6 @@ Result rule_integer(Stream &, const int);
 Result rule_sign(Stream &, const int);
 Result rule_valuelist(Stream &, const int);
 Result rule_value(Stream &, const int);
-Result rule_valuev(Stream &, const int);
 
 
 template<class X>
@@ -788,18 +778,18 @@ Result rule_line(Stream & stream, const int position, Value current){
                 goto out_peg_22;
             }
         
-        Result result_peg_21 = result_peg_20;
+        
         
         result_peg_20 = rule_action(stream, result_peg_20.getPosition());
             if (result_peg_20.error()){
                 goto out_peg_22;
             }
         
-        
+        Result result_peg_23 = result_peg_20;
         
         {
                 Value value((void*) 0);
-                addSection(current, result_peg_21.getValues());
+                addSection(current, result_peg_23.getValues());
                 result_peg_20.setValue(value);
             }
         
@@ -2788,7 +2778,7 @@ Result rule_value(Stream & stream, const int position){
             }
             result_peg_230.setValue((void*) "as");
         
-        
+        Result result_peg_231 = result_peg_230;
         
         result_peg_230 = rule_integer(stream, result_peg_230.getPosition());
             if (result_peg_230.error()){
@@ -2814,6 +2804,14 @@ Result rule_value(Stream & stream, const int position){
             }
         
         
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_231.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_230.setValue(value);
+            }
+        
+        
     }
     
     if (column_peg_227.chunk3 == 0){
@@ -2825,24 +2823,32 @@ Result rule_value(Stream & stream, const int position){
     
     return result_peg_230;
     out_peg_232:
-    Result result_peg_235(myposition);
+    Result result_peg_236(myposition);
     
     {
     
         for (int i = 0; i < 1; i++){
-                if (compareCharCase("a"[i], stream.get(result_peg_235.getPosition()))){
-                    result_peg_235.nextPosition();
+                if (compareCharCase("a"[i], stream.get(result_peg_236.getPosition()))){
+                    result_peg_236.nextPosition();
                 } else {
-                    goto out_peg_237;
+                    goto out_peg_238;
                 }
             }
-            result_peg_235.setValue((void*) "a");
+            result_peg_236.setValue((void*) "a");
+        
+        Result result_peg_237 = result_peg_236;
+        
+        result_peg_236 = rule_integer(stream, result_peg_236.getPosition());
+            if (result_peg_236.error()){
+                goto out_peg_238;
+            }
         
         
         
-        result_peg_235 = rule_integer(stream, result_peg_235.getPosition());
-            if (result_peg_235.error()){
-                goto out_peg_237;
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_237.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_236.setValue(value);
             }
         
         
@@ -2851,42 +2857,35 @@ Result rule_value(Stream & stream, const int position){
     if (column_peg_227.chunk3 == 0){
         column_peg_227.chunk3 = new Chunk3();
     }
-    column_peg_227.chunk3->chunk_value = result_peg_235;
-    stream.update(result_peg_235.getPosition());
+    column_peg_227.chunk3->chunk_value = result_peg_236;
+    stream.update(result_peg_236.getPosition());
     
     
-    return result_peg_235;
-    out_peg_237:
-    Result result_peg_238(myposition);
-    
-    for (int i = 0; i < 1; i++){
-        if (compareCharCase("a"[i], stream.get(result_peg_238.getPosition()))){
-            result_peg_238.nextPosition();
-        } else {
-            goto out_peg_239;
-        }
-    }
-    result_peg_238.setValue((void*) "a");
-    
-    if (column_peg_227.chunk3 == 0){
-        column_peg_227.chunk3 = new Chunk3();
-    }
-    column_peg_227.chunk3->chunk_value = result_peg_238;
-    stream.update(result_peg_238.getPosition());
-    
-    
-    return result_peg_238;
-    out_peg_239:
+    return result_peg_236;
+    out_peg_238:
     Result result_peg_240(myposition);
     
-    for (int i = 0; i < 1; i++){
-        if (compareCharCase("s"[i], stream.get(result_peg_240.getPosition()))){
-            result_peg_240.nextPosition();
-        } else {
-            goto out_peg_241;
-        }
+    {
+    
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("a"[i], stream.get(result_peg_240.getPosition()))){
+                    result_peg_240.nextPosition();
+                } else {
+                    goto out_peg_242;
+                }
+            }
+            result_peg_240.setValue((void*) "a");
+        
+        Result result_peg_241 = result_peg_240;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_241.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_240.setValue(value);
+            }
+        
+        
     }
-    result_peg_240.setValue((void*) "s");
     
     if (column_peg_227.chunk3 == 0){
         column_peg_227.chunk3 = new Chunk3();
@@ -2896,57 +2895,63 @@ Result rule_value(Stream & stream, const int position){
     
     
     return result_peg_240;
-    out_peg_241:
-    Result result_peg_242(myposition);
+    out_peg_242:
+    Result result_peg_243(myposition);
     
-    for (int i = 0; i < 2; i++){
-        if (compareCharCase("vh"[i], stream.get(result_peg_242.getPosition()))){
-            result_peg_242.nextPosition();
-        } else {
-            goto out_peg_243;
-        }
+    {
+    
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("s"[i], stream.get(result_peg_243.getPosition()))){
+                    result_peg_243.nextPosition();
+                } else {
+                    goto out_peg_245;
+                }
+            }
+            result_peg_243.setValue((void*) "s");
+        
+        Result result_peg_244 = result_peg_243;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_244.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_243.setValue(value);
+            }
+        
+        
     }
-    result_peg_242.setValue((void*) "vh");
     
     if (column_peg_227.chunk3 == 0){
         column_peg_227.chunk3 = new Chunk3();
     }
-    column_peg_227.chunk3->chunk_value = result_peg_242;
-    stream.update(result_peg_242.getPosition());
+    column_peg_227.chunk3->chunk_value = result_peg_243;
+    stream.update(result_peg_243.getPosition());
     
     
-    return result_peg_242;
-    out_peg_243:
-    Result result_peg_244(myposition);
-    
-    for (int i = 0; i < 2; i++){
-        if (compareCharCase("hv"[i], stream.get(result_peg_244.getPosition()))){
-            result_peg_244.nextPosition();
-        } else {
-            goto out_peg_245;
-        }
-    }
-    result_peg_244.setValue((void*) "hv");
-    
-    if (column_peg_227.chunk3 == 0){
-        column_peg_227.chunk3 = new Chunk3();
-    }
-    column_peg_227.chunk3->chunk_value = result_peg_244;
-    stream.update(result_peg_244.getPosition());
-    
-    
-    return result_peg_244;
+    return result_peg_243;
     out_peg_245:
     Result result_peg_246(myposition);
     
-    for (int i = 0; i < 1; i++){
-        if (compareCharCase("v"[i], stream.get(result_peg_246.getPosition()))){
-            result_peg_246.nextPosition();
-        } else {
-            goto out_peg_247;
-        }
+    {
+    
+        for (int i = 0; i < 2; i++){
+                if (compareCharCase("vh"[i], stream.get(result_peg_246.getPosition()))){
+                    result_peg_246.nextPosition();
+                } else {
+                    goto out_peg_248;
+                }
+            }
+            result_peg_246.setValue((void*) "vh");
+        
+        Result result_peg_247 = result_peg_246;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_247.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_246.setValue(value);
+            }
+        
+        
     }
-    result_peg_246.setValue((void*) "v");
     
     if (column_peg_227.chunk3 == 0){
         column_peg_227.chunk3 = new Chunk3();
@@ -2956,82 +2961,111 @@ Result rule_value(Stream & stream, const int position){
     
     
     return result_peg_246;
-    out_peg_247:
-    Result result_peg_248(myposition);
+    out_peg_248:
+    Result result_peg_249(myposition);
     
-    for (int i = 0; i < 1; i++){
-        if (compareCharCase("h"[i], stream.get(result_peg_248.getPosition()))){
-            result_peg_248.nextPosition();
-        } else {
-            goto out_peg_249;
-        }
+    {
+    
+        for (int i = 0; i < 2; i++){
+                if (compareCharCase("hv"[i], stream.get(result_peg_249.getPosition()))){
+                    result_peg_249.nextPosition();
+                } else {
+                    goto out_peg_251;
+                }
+            }
+            result_peg_249.setValue((void*) "hv");
+        
+        Result result_peg_250 = result_peg_249;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_250.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_249.setValue(value);
+            }
+        
+        
     }
-    result_peg_248.setValue((void*) "h");
     
     if (column_peg_227.chunk3 == 0){
         column_peg_227.chunk3 = new Chunk3();
     }
-    column_peg_227.chunk3->chunk_value = result_peg_248;
-    stream.update(result_peg_248.getPosition());
+    column_peg_227.chunk3->chunk_value = result_peg_249;
+    stream.update(result_peg_249.getPosition());
     
     
-    return result_peg_248;
-    out_peg_249:
+    return result_peg_249;
+    out_peg_251:
+    Result result_peg_252(myposition);
+    
+    {
+    
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("v"[i], stream.get(result_peg_252.getPosition()))){
+                    result_peg_252.nextPosition();
+                } else {
+                    goto out_peg_254;
+                }
+            }
+            result_peg_252.setValue((void*) "v");
+        
+        Result result_peg_253 = result_peg_252;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_253.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_252.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_227.chunk3 == 0){
+        column_peg_227.chunk3 = new Chunk3();
+    }
+    column_peg_227.chunk3->chunk_value = result_peg_252;
+    stream.update(result_peg_252.getPosition());
+    
+    
+    return result_peg_252;
+    out_peg_254:
+    Result result_peg_255(myposition);
+    
+    {
+    
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("h"[i], stream.get(result_peg_255.getPosition()))){
+                    result_peg_255.nextPosition();
+                } else {
+                    goto out_peg_257;
+                }
+            }
+            result_peg_255.setValue((void*) "h");
+        
+        Result result_peg_256 = result_peg_255;
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword(result_peg_256.getValues()); GC::save(as<Ast::Keyword*>(value));
+                result_peg_255.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_227.chunk3 == 0){
+        column_peg_227.chunk3 = new Chunk3();
+    }
+    column_peg_227.chunk3->chunk_value = result_peg_255;
+    stream.update(result_peg_255.getPosition());
+    
+    
+    return result_peg_255;
+    out_peg_257:
     
     if (column_peg_227.chunk3 == 0){
         column_peg_227.chunk3 = new Chunk3();
     }
     column_peg_227.chunk3->chunk_value = errorResult;
-    stream.update(errorResult.getPosition());
-    
-    
-    return errorResult;
-}
-        
-
-Result rule_valuev(Stream & stream, const int position){
-    
-    Column & column_peg_250 = stream.getColumn(position);
-    if (column_peg_250.chunk4 != 0 && column_peg_250.chunk4->chunk_valuev.calculated()){
-        return column_peg_250.chunk4->chunk_valuev;
-    }
-    
-    int myposition = position;
-    
-    
-    Result result_peg_251(myposition);
-    
-    result_peg_251 = rule_value(stream, result_peg_251.getPosition());
-    if (result_peg_251.error()){
-        goto out_peg_252;
-    }
-    
-    if (column_peg_250.chunk4 == 0){
-        column_peg_250.chunk4 = new Chunk4();
-    }
-    column_peg_250.chunk4->chunk_valuev = result_peg_251;
-    stream.update(result_peg_251.getPosition());
-    
-    
-    return result_peg_251;
-    out_peg_252:
-    Result result_peg_253(myposition);
-    
-    
-    
-    if (column_peg_250.chunk4 == 0){
-        column_peg_250.chunk4 = new Chunk4();
-    }
-    column_peg_250.chunk4->chunk_valuev = result_peg_253;
-    stream.update(result_peg_253.getPosition());
-    
-    
-    return result_peg_253;
-    
-    if (column_peg_250.chunk4 == 0){
-        column_peg_250.chunk4 = new Chunk4();
-    }
-    column_peg_250.chunk4->chunk_valuev = errorResult;
     stream.update(errorResult.getPosition());
     
     

@@ -107,7 +107,7 @@ rules:
 	start = current:{{ value = makeSectionList(); GC::save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
 
 	line(current) = s comment
-	              | s action {{ addSection(current, $1); }}
+	              | s action {{ addSection(current, $2); }}
     action = action_start ast:{{value = makeSection($1); GC::save(as<Ast::Section*>(value)); }} whitespace newline+ (action_line whitespace line_end)* {{ value = ast; }}
     action_line = s comment
 	            | s collision_default
@@ -145,13 +145,11 @@ rules:
 
 	value = integer
           # Are all these things part of .air files?
-	      | "as"{case} integer "d"{case} integer
-	      | "a"{case} integer
-	      | "a"{case}
-	      | "s"{case}
-	      | "vh"{case}
-	      | "hv"{case}
-	      | "v"{case}
-	      | "h"{case}
-	valuev = value
-	       | <void>
+	      | "as"{case} integer "d"{case} integer {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	      | "a"{case} integer {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	      | "a"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	      | "s"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	      | "vh"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	      | "hv"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	      | "v"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	      | "h"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
