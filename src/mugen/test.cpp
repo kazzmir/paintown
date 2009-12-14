@@ -130,7 +130,7 @@ void showCharacter(const string & ourFile){
     unsigned int currentFrame = 0;
     
     if (it->second->getFrames().size() == 0){
-        Global::debug(0) << "No frames!" << endl;
+        Global::debug(0, __FILE__) << "No frames!" << endl;
         exit(0);
     }
 

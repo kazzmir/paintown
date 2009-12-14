@@ -33,6 +33,27 @@ Ast::Section * makeSection(const Value & str){
   return new Ast::Section(as<std::string*>(str));
 }
 
+Ast::Keyword * makeKeyword(const Value & value){
+    return new Ast::Keyword(as<char*>(value));
+}
+
+Ast::Value * makeValueList(const Value & front, const Value & rest){
+    std::list<Ast::Value*> values;
+    values.push_back(as<Ast::Value*>(front));
+    for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
+        Ast::Value * value = as<Ast::Value*>((*it).getValue());
+        if (value == 0){
+            /* FIXME! replace empty with a new node */
+            value = makeKeyword("empty");
+            GC::save(as<Ast::Keyword*>(value));
+            values.push_back(value);
+        } else {
+            values.push_back(value);
+        }
+    }
+    return new Ast::ValueList(values);
+}
+
 Ast::Value * makeNumber(const Value & sign, const Value & number){
     double value = *(as<double*>(number));
     if (sign.getValue() != 0){
@@ -67,8 +88,13 @@ SectionList * makeSectionList(){
   return new SectionList();
 }
 
-Ast::Keyword * makeKeyword(const Value & value){
-    return new Ast::Keyword(as<char*>(value));
+void addSection(const Value & section_list_value, const Value & section_value){
+  SectionList * sections = (SectionList*) section_list_value.getValue();
+  Ast::Section * section = (Ast::Section*) section_value.getValue();
+  if (section == 0){
+    throw ParseException("Cannot add null section");
+  }
+  sections->push_back(section);
 }
 
 Ast::Attribute * makeAttributeKeyword(const Value & id, const Value & data){
@@ -81,7 +107,7 @@ rules:
 	start = current:{{ value = makeSectionList(); GC::save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
 
 	line(current) = s comment
-	              | s action
+	              | s action {{ addSection(current, $1); }}
     action = action_start ast:{{value = makeSection($1); GC::save(as<Ast::Section*>(value)); }} whitespace newline+ (action_line whitespace line_end)* {{ value = ast; }}
     action_line = s comment
 	            | s collision_default
@@ -115,7 +141,8 @@ rules:
 	integer = sign? digit+ {{ value = parseDouble($2); GC::save(as<double*>(value)); value = makeNumber($1,value); GC::save(as<Ast::Number*>(value)); }}
 	sign = "-"
 	     | "+"
-	valuelist = value (s "," s valuev)*
+	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); GC::save(as<Ast::Value*>(value)); }}
+
 	value = integer
           # Are all these things part of .air files?
 	      | "as"{case} integer "d"{case} integer

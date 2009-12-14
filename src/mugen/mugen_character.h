@@ -33,7 +33,7 @@ public:
 	// Convert to paintown character or whatever
 	// Do code
 	
-	virtual void load() throw( MugenException );
+	virtual void load();
 	
 	virtual void renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp, 
 			   const int flip=1, const double scalex = 1, const double scaley = 1);
