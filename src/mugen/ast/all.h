@@ -3,6 +3,7 @@
 
 #include "attribute.h"
 #include "attribute-simple.h"
+#include "attribute-keyword.h"
 #include "Configuration.h"
 #include "Expression.h"
 #include "identifier.h"

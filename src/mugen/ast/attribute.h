@@ -11,6 +11,8 @@ public:
     enum Kind{
         None = 0,
         Simple = 1,
+        /* to avoid name clash with the Keyword class */
+        KeywordAttribute = 2,
     };
 
     Attribute(Kind kind):

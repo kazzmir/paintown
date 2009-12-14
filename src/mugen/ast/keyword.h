@@ -20,6 +20,19 @@ public:
         return *this;
     }
     
+    bool operator==(const std::string & str) const {
+        return downcase(toString()) == downcase(str);
+    }
+
+    static int lowerCase( int c ){
+        return tolower(c);
+    }
+
+    static std::string downcase(std::string str){
+        std::transform(str.begin(), str.end(), str.begin(), lowerCase);
+        return str;
+    }
+    
     virtual std::string getType() const {
         return "string";
     }
