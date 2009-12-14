@@ -102,11 +102,11 @@ rules:
 
 	line(current) = s comment
 	              | s action {{ addSection(current, $2); }}
-    action = action_start ast:{{value = makeSection($1); GC::save(as<Ast::Section*>(value)); }} whitespace newline+ (action_line whitespace line_end)* {{ value = ast; }}
-    action_line = s comment
+    action = action_start ast:{{value = makeSection($1); GC::save(as<Ast::Section*>(value)); }} whitespace newline+ (action_line(ast) whitespace line_end)* {{ value = ast; }}
+    action_line(section) = s comment
 	            | s collision_default
 	            | s collision
-	            | s valuelist
+	            | s data:valuelist {{ as<Ast::Section*>(section)->addValue(as<Ast::Value*>(data)); }}
 	            | s loopstart
 	              # | space+
 	line_end = newline+
