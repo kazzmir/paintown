@@ -337,6 +337,7 @@ void MugenCharacter::bundleAnimations(){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
+        Global::debug(1, __FILE__) << "Animation section '" << head << "'" << endl;
 	Mugen::Util::fixCase(head);
         int number;
         if (PaintownUtil::matchRegex(head, "begin action [0-9]+")){

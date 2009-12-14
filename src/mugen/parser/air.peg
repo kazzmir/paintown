@@ -74,13 +74,7 @@ double * parseDouble(const Value & value){
 
 std::string * makeHeader(const Value & begin, const Value & action, const Value & num){
     std::ostringstream out;
-    std::string * temp = toString(begin);
-    out << *temp;
-    delete temp;
-    temp = toString(action);
-    out << " " << *temp;
-    delete temp;
-    out << (as<Ast::Value*>(num))->toString();
+    out << as<char*>(begin) << " " << as<char*>(action) << " " << (as<Ast::Value*>(num))->toString();
     return new std::string(out.str()); 
 }
 
