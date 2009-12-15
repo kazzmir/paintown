@@ -30,11 +30,15 @@ Ast::String * makeString(const Value & value){
 }
 
 Ast::Section * makeSection(const Value & str){
-  return new Ast::Section(as<std::string*>(str));
+    Ast::Section * object = new Ast::Section(as<std::string*>(str));
+    GC::save(object);
+    return object;
 }
 
 Ast::Keyword * makeKeyword(const Value & value){
-    return new Ast::Keyword(as<char*>(value));
+    Ast::Keyword * object = new Ast::Keyword(as<char*>(value));
+    GC::save(object);
+    return object;
 }
 
 Ast::Value * makeValueList(const Value & front, const Value & rest){
@@ -45,13 +49,14 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
         if (value == 0){
             /* FIXME! replace empty with a new node */
             value = makeKeyword("empty");
-            GC::save(as<Ast::Keyword*>(value));
             values.push_back(value);
         } else {
             values.push_back(value);
         }
     }
-    return new Ast::ValueList(values);
+    Ast::ValueList * object = new Ast::ValueList(values);
+    GC::save(object);
+    return object;
 }
 
 Ast::Value * makeNumber(const Value & sign, const Value & number){
@@ -60,7 +65,9 @@ Ast::Value * makeNumber(const Value & sign, const Value & number){
         value = -value;
     }
 
-    return new Ast::Number(value);
+    Ast::Number * object = new Ast::Number(value);
+    GC::save(object);
+    return object;
 }
 
 double * parseDouble(const Value & value){
@@ -69,17 +76,22 @@ double * parseDouble(const Value & value){
     double * number = new double;
     get >> *number;
     delete str;
+    GC::save(number);
     return number;
 }
 
 std::string * makeHeader(const Value & begin, const Value & action, const Value & num){
     std::ostringstream out;
     out << as<char*>(begin) << " " << as<char*>(action) << " " << (as<Ast::Value*>(num))->toString();
-    return new std::string(out.str()); 
+    std::string * object = new std::string(out.str());
+    GC::save(object);
+    return object;
 }
 
 SectionList * makeSectionList(){
-  return new SectionList();
+    SectionList * object = new SectionList();
+    GC::save(object);
+    return object;
 }
 
 void addSection(const Value & section_list_value, const Value & section_value){
@@ -92,17 +104,19 @@ void addSection(const Value & section_list_value, const Value & section_value){
 }
 
 Ast::Attribute * makeAttributeKeyword(const Value & id, const Value & data){
-    return new Ast::AttributeKeyword(as<Ast::Keyword*>(id), as<Ast::Value*>(data));
+    Ast::AttributeKeyword * object = new Ast::AttributeKeyword(as<Ast::Keyword*>(id), as<Ast::Value*>(data));
+    GC::save(object);
+    return object;
 }
 
 }}
 
 rules:
-	start = current:{{ value = makeSectionList(); GC::save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
+	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
 
 	line(current) = s comment
 	              | s action {{ addSection(current, $2); }}
-    action = action_start ast:{{value = makeSection($1); GC::save(as<Ast::Section*>(value)); }} whitespace newline+ (action_line(ast) whitespace line_end)* {{ value = ast; }}
+    action = action_start ast:{{value = makeSection($1); }} whitespace newline+ (action_line(ast) whitespace line_end)* {{ value = ast; }}
     action_line(section) = s comment
 	            | s collision_default
 	            | s collision
@@ -113,7 +127,7 @@ rules:
 	         | &<eof> <void>
 	newline = "\n"
 	        | "\r"
-	loopstart = "loopstart"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	loopstart = "loopstart"{case} {{ value = makeKeyword($1); }}
 	whitespace = sw*
 	sw = space
 	   | comment
@@ -124,26 +138,27 @@ rules:
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		    | "-" "-"+
-	collision_default = "Clsn2Default:"{case} s num:integer {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); value = makeAttributeKeyword(value, num); GC::save(as<Ast::Attribute*>(value)); }}
+	collision_default = "Clsn2Default:"{case} s num:integer {{ value = makeKeyword($1); value = makeAttributeKeyword(value, num); }}
 	                  | "Clsn1Default:"{case} s num:integer
 	                  | "Clsn2:"{case} s num:integer
 			          | "Clsn1:"{case} s num:integer
+    # change int,int,int,int to valuelist ?
 	collision = "Clsn2"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
 	          | "Clsn1"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
-	action_start = "[" s begin:"Begin"{case} s action:"Action"{case} s num:integer s "]" {{ value = makeHeader(begin, action, num); GC::save(as<std::string*>(value)); }}
+	action_start = "[" s begin:"Begin"{case} s action:"Action"{case} s num:integer s "]" {{ value = makeHeader(begin, action, num); }}
 	inline digit = [0123456789]
-	integer = sign? digit+ {{ value = parseDouble($2); GC::save(as<double*>(value)); value = makeNumber($1,value); GC::save(as<Ast::Number*>(value)); }}
+	integer = sign? digit+ {{ value = parseDouble($2); value = makeNumber($1,value); }}
 	inline sign = "-"
 	     | "+"
-	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); GC::save(as<Ast::Value*>(value)); }}
+	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
 
 	value = integer
           # Are all these things part of .air files?
-	      | "as"{case} integer "d"{case} integer {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
-	      | "a"{case} integer {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
-	      | "a"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
-	      | "s"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
-	      | "vh"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
-	      | "hv"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
-	      | "v"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
-	      | "h"{case} {{ value = makeKeyword($1); GC::save(as<Ast::Keyword*>(value)); }}
+	      | "as"{case} integer "d"{case} integer {{ value = makeKeyword($1); }}
+	      | "a"{case} integer {{ value = makeKeyword($1); }}
+	      | "a"{case} {{ value = makeKeyword($1); }}
+	      | "s"{case} {{ value = makeKeyword($1); }}
+	      | "vh"{case} {{ value = makeKeyword($1); }}
+	      | "hv"{case} {{ value = makeKeyword($1); }}
+	      | "v"{case} {{ value = makeKeyword($1); }}
+	      | "h"{case} {{ value = makeKeyword($1); }}
