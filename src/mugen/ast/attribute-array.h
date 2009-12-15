@@ -15,7 +15,7 @@ public:
     AttributeArray(const Keyword * name, const Value * index, const Value * value):
     Attribute(Array),
     name(name),
-    index(value),
+    index(index),
     value(value){
     }
    

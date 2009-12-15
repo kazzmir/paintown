@@ -754,6 +754,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
         }
 
         virtual void onAttributeArray(const Ast::AttributeArray & array){
+            Global::debug(1, __FILE__) << "Array item: " << array.toString() << endl;
         }
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
