@@ -17,7 +17,7 @@ QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
 # Load the installer widgets dynamically
 currentPage = [0]
-eula = [0]
+eula = [False]
 widget = uic.loadUi("installer/installer.ui")
 
 #Back function
@@ -30,7 +30,7 @@ def backButton():
 #Forward function
 def forwardButton():
     currentPage[0] += 1
-    if currentPage[0] > 1 and eula[0] != 1:
+    if currentPage[0] > 1 and not eula[0]:
         currentPage[0] = 1
     if currentPage[0] > 4:
         currentPage[0] = 4
