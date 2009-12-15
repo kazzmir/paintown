@@ -26,11 +26,15 @@ void addSection(const Value & section_list_value, const Value & section_value){
 }
 
 Ast::Section * makeSection(const Value & str){
-  return new Ast::Section(as<std::string*>(str));
+    Ast::Section * object = new Ast::Section(as<std::string*>(str));
+    GC::save(object);
+    return object;
 }
 
 SectionList * makeSectionList(){
-  return new SectionList();
+    SectionList * object = new SectionList();
+    GC::save(object);
+    return object;
 }
 
 std::string * toString(const Value & input){
@@ -38,7 +42,9 @@ std::string * toString(const Value & input){
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
     out << (char) (long) (*it).getValue();
   }
-  return new std::string(out.str());
+  std::string * object = new std::string(out.str());
+  GC::save(object);
+  return object;
 }
 
 double * parseDouble(const Value & value){
@@ -46,7 +52,7 @@ double * parseDouble(const Value & value){
     std::istringstream get(*str);
     double * number = new double;
     get >> *number;
-    delete str;
+    GC::save(number);
     return number;
 }
 
@@ -56,8 +62,7 @@ double * parseDouble(const Value & left, const Value & right){
     std::istringstream get(*str1 + "." + *str2);
     double * number = new double;
     get >> *number;
-    delete str1;
-    delete str2;
+    GC::save(number);
     return number;
 }
 
@@ -68,11 +73,15 @@ std::string * toString(char front, const Value & input){
 }
 
 Ast::Attribute * makeAttribute(const Value & id, const Value & data){
-    return new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
+    GC::save(object);
+    return object;
 }
 
 Ast::Attribute * makeAttribute(const Value & id){
-    return new Ast::AttributeSimple(as<Ast::Identifier*>(id));
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id));
+    GC::save(object);
+    return object;
 }
 
 Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
@@ -81,21 +90,29 @@ Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
 
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
     /* wrong, fix this */
-    return new Ast::Attribute(Ast::Attribute::None);
+    Ast::Attribute * object = new Ast::Attribute(Ast::Attribute::None);
+    GC::save(object);
+    return object;
 }
 
 Ast::Keyword * makeKeyword(const Value & value){
-    return new Ast::Keyword(as<char*>(value));
+    Ast::Keyword * object = new Ast::Keyword(as<char*>(value));
+    GC::save(object);
+    return object;
 }
 
 Ast::Attribute * makeAttributes(const Value & id, const Value & data){
     /* wrong, fix this */
-    return new Ast::Attribute(Ast::Attribute::None);
+    Ast::Attribute * object = new Ast::Attribute(Ast::Attribute::None);
+    GC::save(object);
+    return object;
 }
 
 /* FIXME */
 Ast::Value * makeValue(){
-    return new Ast::Number(0);
+    Ast::Number * object = new Ast::Number(0);
+    GC::save(object);
+    return object;
 }
 
 Ast::Value * makeValueList(const Value & front, const Value & rest){
@@ -106,13 +123,15 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
         if (value == 0){
             /* FIXME! replace empty with a new node */
             value = makeKeyword("empty");
-            GC::save(as<Ast::Keyword*>(value));
             values.push_back(value);
         } else {
             values.push_back(value);
         }
     }
-    return new Ast::ValueList(values);
+
+    Ast::ValueList * object = new Ast::ValueList(values);
+    GC::save(object);
+    return object;
 }
 
 Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
@@ -121,7 +140,9 @@ Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
         ids.push_back(as<std::string*>((*it).getValue()));
     }
-    return new Ast::Identifier(ids);
+    Ast::Identifier * object = new Ast::Identifier(ids);
+    GC::save(object);
+    return object;
 }
 
 Ast::Value * makeNumber(const Value & sign, const Value & number){
@@ -130,11 +151,15 @@ Ast::Value * makeNumber(const Value & sign, const Value & number){
         value = -value;
     }
 
-    return new Ast::Number(value);
+    Ast::Number * object = new Ast::Number(value);
+    GC::save(object);
+    return object;
 }
 
 Ast::String * makeString(const Value & value){
-    return new Ast::String(toString(value));
+    Ast::String * object = new Ast::String(toString(value));
+    GC::save(object);
+    return object;
 }
 
 Ast::Section * asSection(const Value & value){
@@ -151,13 +176,15 @@ Ast::Value * asValue(const Value & value){
 
 /* FIXME */
 Ast::Value * makeDate(const Value & month, const Value & day, const Value & year){
-    return new Ast::Number(0);
+    Ast::Number * object = new Ast::Number(0);
+    GC::save(object);
+    return object;
 }
 
 }}
 
 rules:
-	start = current:{{ value = makeSectionList(); GC::save(as<SectionList*>(value)); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
+	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }}
 
             <fail> {{ GC::cleanup(0); }}
     # start = current real_start($1)
@@ -186,15 +213,15 @@ rules:
 	inline comment = ";" (!"\n" .)*
 	               | "=" (!"\n" .)*
 		           | "-" "-"+
-	section = section_start ast:{{value = makeSection($1); GC::save(as<Ast::Section*>(value)); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
+	section = section_start ast:{{value = makeSection($1); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
     section_line(section) = s comment
                           | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
                           | s data:valuelist {{ asSection(section)->addValue(asValue(data)); }}
                           | s data:loopstart {{ asSection(section)->addValue(asValue(data)); }}
                           | space+ !"["
-    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); GC::save(as<std::string*>(value)); }}
-	loopstart = "loopstart"{case} {{ value = makeValue(); GC::save(as<Ast::Value*>(value)); }}
-	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); GC::save(as<std::string*>(value)); }}
+    section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); }}
+	loopstart = "loopstart"{case} {{ value = makeValue(); }}
+	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	inline alpha_digit = letter
 	            | digit
@@ -203,21 +230,21 @@ rules:
 	# characters = name s "," s filename
 	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); GC::save(as<Ast::Filename*>(value)); }}
 	filename_char = !"," !"\n" !"[" !<ascii 13> !";" .
-	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); GC::save(as<Ast::Attribute*>(value)); }}
-              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); GC::save(as<Ast::Attribute*>(value)); }}
-	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); GC::save(as<Ast::Attribute*>(value)); }}
-		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); GC::save(as<Ast::Value*>(value)); }}
-		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); GC::save(as<Ast::Attribute*>(value)); }}
-	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); GC::save(as<Ast::Identifier*>(value)); }}
+	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); }}
+              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); }}
+	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); }}
+		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
+		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
+	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); }}
 	identifier_list = identifier (s "," s filename)+
-	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); GC::save(as<Ast::Value*>(value)); }}
+	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
 	value = string
 	      | date
 	      | number
-          | keyword {{ value = makeKeyword($1); GC::save(as<Ast::Value*>(value)); }}
-	      | "s"{case} !letter !"." {{ value = makeKeyword($1); GC::save(as<Ast::Value*>(value)); }}
-	      | "h"{case} !letter !"." {{ value = makeKeyword($1); GC::save(as<Ast::Value*>(value)); }}
-	      | "a"{case} number? !letter {{ value = makeKeyword($1); GC::save(as<Ast::Value*>(value)); }}
+          | keyword {{ value = makeKeyword($1); }}
+	      | "s"{case} !letter !"." {{ value = makeKeyword($1); }}
+	      | "h"{case} !letter !"." {{ value = makeKeyword($1); }}
+	      | "a"{case} number? !letter {{ value = makeKeyword($1); }}
           | filename
     keyword = "normal"
             | "parallax"
@@ -225,11 +252,11 @@ rules:
             | "add1"
             | "add"
             | "sub"
-	date = digit+ "." digit+ "." digit+ {{ value = makeDate($1,$3,$5); GC::save(as<Ast::Value*>(value)); }}
-	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); GC::save(as<Ast::String*>(value)); }}
-	number = sign? float_or_integer {{ value = makeNumber($1,$2); GC::save(as<Ast::Value*>(value)); }}
+	date = digit+ "." digit+ "." digit+ {{ value = makeDate($1,$3,$5); }}
+	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); }}
+	number = sign? float_or_integer {{ value = makeNumber($1,$2); }}
 	inline sign = "+"
 	            | "-"
-	float_or_integer = left:digit* "." right:digit+ {{ value = parseDouble(left,right); GC::save(as<double*>(value)); }}
-	                 | digit+ !"." {{ value = parseDouble($1); GC::save(as<double*>(value)); }}
+	float_or_integer = left:digit* "." right:digit+ {{ value = parseDouble(left,right); }}
+	                 | digit+ !"." {{ value = parseDouble($1); }}
 	inline digit = [0123456789]

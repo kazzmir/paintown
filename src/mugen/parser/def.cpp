@@ -539,11 +539,15 @@ void addSection(const Value & section_list_value, const Value & section_value){
 }
 
 Ast::Section * makeSection(const Value & str){
-  return new Ast::Section(as<std::string*>(str));
+    Ast::Section * object = new Ast::Section(as<std::string*>(str));
+    GC::save(object);
+    return object;
 }
 
 SectionList * makeSectionList(){
-  return new SectionList();
+    SectionList * object = new SectionList();
+    GC::save(object);
+    return object;
 }
 
 std::string * toString(const Value & input){
@@ -551,7 +555,9 @@ std::string * toString(const Value & input){
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
     out << (char) (long) (*it).getValue();
   }
-  return new std::string(out.str());
+  std::string * object = new std::string(out.str());
+  GC::save(object);
+  return object;
 }
 
 double * parseDouble(const Value & value){
@@ -559,7 +565,7 @@ double * parseDouble(const Value & value){
     std::istringstream get(*str);
     double * number = new double;
     get >> *number;
-    delete str;
+    GC::save(number);
     return number;
 }
 
@@ -569,8 +575,7 @@ double * parseDouble(const Value & left, const Value & right){
     std::istringstream get(*str1 + "." + *str2);
     double * number = new double;
     get >> *number;
-    delete str1;
-    delete str2;
+    GC::save(number);
     return number;
 }
 
@@ -581,11 +586,15 @@ std::string * toString(char front, const Value & input){
 }
 
 Ast::Attribute * makeAttribute(const Value & id, const Value & data){
-    return new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
+    GC::save(object);
+    return object;
 }
 
 Ast::Attribute * makeAttribute(const Value & id){
-    return new Ast::AttributeSimple(as<Ast::Identifier*>(id));
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id));
+    GC::save(object);
+    return object;
 }
 
 Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
@@ -594,21 +603,29 @@ Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
 
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
     /* wrong, fix this */
-    return new Ast::Attribute(Ast::Attribute::None);
+    Ast::Attribute * object = new Ast::Attribute(Ast::Attribute::None);
+    GC::save(object);
+    return object;
 }
 
 Ast::Keyword * makeKeyword(const Value & value){
-    return new Ast::Keyword(as<char*>(value));
+    Ast::Keyword * object = new Ast::Keyword(as<char*>(value));
+    GC::save(object);
+    return object;
 }
 
 Ast::Attribute * makeAttributes(const Value & id, const Value & data){
     /* wrong, fix this */
-    return new Ast::Attribute(Ast::Attribute::None);
+    Ast::Attribute * object = new Ast::Attribute(Ast::Attribute::None);
+    GC::save(object);
+    return object;
 }
 
 /* FIXME */
 Ast::Value * makeValue(){
-    return new Ast::Number(0);
+    Ast::Number * object = new Ast::Number(0);
+    GC::save(object);
+    return object;
 }
 
 Ast::Value * makeValueList(const Value & front, const Value & rest){
@@ -619,13 +636,15 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
         if (value == 0){
             /* FIXME! replace empty with a new node */
             value = makeKeyword("empty");
-            GC::save(as<Ast::Keyword*>(value));
             values.push_back(value);
         } else {
             values.push_back(value);
         }
     }
-    return new Ast::ValueList(values);
+
+    Ast::ValueList * object = new Ast::ValueList(values);
+    GC::save(object);
+    return object;
 }
 
 Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
@@ -634,7 +653,9 @@ Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
         ids.push_back(as<std::string*>((*it).getValue()));
     }
-    return new Ast::Identifier(ids);
+    Ast::Identifier * object = new Ast::Identifier(ids);
+    GC::save(object);
+    return object;
 }
 
 Ast::Value * makeNumber(const Value & sign, const Value & number){
@@ -643,11 +664,15 @@ Ast::Value * makeNumber(const Value & sign, const Value & number){
         value = -value;
     }
 
-    return new Ast::Number(value);
+    Ast::Number * object = new Ast::Number(value);
+    GC::save(object);
+    return object;
 }
 
 Ast::String * makeString(const Value & value){
-    return new Ast::String(toString(value));
+    Ast::String * object = new Ast::String(toString(value));
+    GC::save(object);
+    return object;
 }
 
 Ast::Section * asSection(const Value & value){
@@ -664,7 +689,9 @@ Ast::Value * asValue(const Value & value){
 
 /* FIXME */
 Ast::Value * makeDate(const Value & month, const Value & day, const Value & year){
-    return new Ast::Number(0);
+    Ast::Number * object = new Ast::Number(0);
+    GC::save(object);
+    return object;
 }
 
 
@@ -681,7 +708,7 @@ Result rule_start(Stream & stream, const int position){
     
         {
                 Value value((void*) 0);
-                value = makeSectionList(); GC::save(as<SectionList*>(value));
+                value = makeSectionList();
                 result_peg_2.setValue(value);
             }
             current = result_peg_2.getValues();
@@ -1627,7 +1654,7 @@ Result rule_section(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeSection(result_peg_495.getValues()); GC::save(as<Ast::Section*>(value));
+                value = makeSection(result_peg_495.getValues());
                 result_peg_494.setValue(value);
             }
             ast = result_peg_494.getValues();
@@ -2802,7 +2829,7 @@ Result rule_section_start(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = toString(data); GC::save(as<std::string*>(value));
+                value = toString(data);
                 result_peg_1014.setValue(value);
             }
         
@@ -2840,7 +2867,7 @@ Result rule_loopstart(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeValue(); GC::save(as<Ast::Value*>(value));
+                value = makeValue();
                 result_peg_1060.setValue(value);
             }
         
@@ -2943,7 +2970,7 @@ Result rule_name(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = toString((char)(long)result_peg_1065.getValues().getValue(),result_peg_1072.getValues()); GC::save(as<std::string*>(value));
+                value = toString((char)(long)result_peg_1065.getValues().getValue(),result_peg_1072.getValues());
                 result_peg_1064.setValue(value);
             }
         
@@ -3433,7 +3460,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttribute(id); GC::save(as<Ast::Attribute*>(value));
+                value = makeAttribute(id);
                 result_peg_1175.setValue(value);
             }
         
@@ -3574,7 +3601,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttribute(id, data); GC::save(as<Ast::Attribute*>(value));
+                value = makeAttribute(id, data);
                 result_peg_1215.setValue(value);
             }
         
@@ -3715,7 +3742,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttributeFilename(id, data); GC::save(as<Ast::Attribute*>(value));
+                value = makeAttributeFilename(id, data);
                 result_peg_1254.setValue(value);
             }
         
@@ -4033,7 +4060,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeIndexedAttribute(id, index, data); GC::save(as<Ast::Value*>(value));
+                value = makeIndexedAttribute(id, index, data);
                 result_peg_1293.setValue(value);
             }
         
@@ -4174,7 +4201,7 @@ Result rule_attribute(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttributes(id, data); GC::save(as<Ast::Attribute*>(value));
+                value = makeAttributes(id, data);
                 result_peg_1386.setValue(value);
             }
         
@@ -4238,7 +4265,7 @@ Result rule_identifier(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeIdentifier(result_peg_1427.getValues(),result_peg_1429.getValues()); GC::save(as<Ast::Identifier*>(value));
+                value = makeIdentifier(result_peg_1427.getValues(),result_peg_1429.getValues());
                 result_peg_1426.setValue(value);
             }
         
@@ -4561,7 +4588,7 @@ Result rule_valuelist(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeValueList(result_peg_1476.getValues(),result_peg_1478.getValues()); GC::save(as<Ast::Value*>(value));
+                value = makeValueList(result_peg_1476.getValues(),result_peg_1478.getValues());
                 result_peg_1475.setValue(value);
             }
         
@@ -4625,7 +4652,7 @@ Result rule_value(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_1525.getValues()); GC::save(as<Ast::Value*>(value));
+                value = makeKeyword(result_peg_1525.getValues());
                 result_peg_1524.setValue(value);
             }
         
@@ -4690,7 +4717,7 @@ Result rule_value(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_1528.getValues()); GC::save(as<Ast::Value*>(value));
+                value = makeKeyword(result_peg_1528.getValues());
                 result_peg_1527.setValue(value);
             }
         
@@ -4755,7 +4782,7 @@ Result rule_value(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_1542.getValues()); GC::save(as<Ast::Value*>(value));
+                value = makeKeyword(result_peg_1542.getValues());
                 result_peg_1541.setValue(value);
             }
         
@@ -4817,7 +4844,7 @@ Result rule_value(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword(result_peg_1556.getValues()); GC::save(as<Ast::Value*>(value));
+                value = makeKeyword(result_peg_1556.getValues());
                 result_peg_1555.setValue(value);
             }
         
@@ -5055,7 +5082,7 @@ Result rule_date(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeDate(result_peg_1585.getValues(),result_peg_1595.getValues(),result_peg_1604.getValues()); GC::save(as<Ast::Value*>(value));
+                value = makeDate(result_peg_1585.getValues(),result_peg_1595.getValues(),result_peg_1604.getValues());
                 result_peg_1584.setValue(value);
             }
         
@@ -5157,7 +5184,7 @@ Result rule_string(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeString(data); GC::save(as<Ast::String*>(value));
+                value = makeString(data);
                 result_peg_1613.setValue(value);
             }
         
@@ -5230,7 +5257,7 @@ Result rule_number(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeNumber(result_peg_1629.getValues(),result_peg_1636.getValues()); GC::save(as<Ast::Value*>(value));
+                value = makeNumber(result_peg_1629.getValues(),result_peg_1636.getValues());
                 result_peg_1628.setValue(value);
             }
         
@@ -5325,7 +5352,7 @@ Result rule_float_or_integer(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = parseDouble(left,right); GC::save(as<double*>(value));
+                value = parseDouble(left,right);
                 result_peg_1639.setValue(value);
             }
         
@@ -5384,7 +5411,7 @@ Result rule_float_or_integer(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = parseDouble(result_peg_1659.getValues()); GC::save(as<double*>(value));
+                value = parseDouble(result_peg_1659.getValues());
                 result_peg_1658.setValue(value);
             }
         

@@ -515,15 +515,21 @@ std::string * toString(const Value & input){
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
     out << (char) (long) (*it).getValue();
   }
-  return new std::string(out.str());
+  std::string * object = new std::string(out.str());
+  GC::save(object);
+  return object;
 }
 
 Ast::String * makeString(std::string * str){
-    return new Ast::String(str);
+    Ast::String * object = new Ast::String(str);
+    GC::save(object);
+    return object;
 }
 
 Ast::String * makeString(const Value & value){
-    return new Ast::String(toString(value));
+    Ast::String * object = new Ast::String(toString(value));
+    GC::save(object);
+    return object;
 }
 
 Ast::Section * makeSection(const Value & str){
@@ -584,7 +590,6 @@ double * parseDouble(const Value & value){
     std::istringstream get(*str);
     double * number = new double;
     get >> *number;
-    delete str;
     GC::save(number);
     return number;
 }
