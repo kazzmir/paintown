@@ -13,6 +13,7 @@ public:
         Simple = 1,
         /* to avoid name clash with the Keyword class */
         KeywordAttribute = 2,
+        Array = 3,
     };
 
     Attribute(Kind kind):

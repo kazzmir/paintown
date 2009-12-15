@@ -41,6 +41,18 @@ Ast::Keyword * makeKeyword(const Value & value){
     return object;
 }
 
+Ast::Value * makeValueList(const Value & n1, const Value & n2, const Value & n3, const Value & n4){
+    std::list<Ast::Value*> values;
+    values.push_back(as<Ast::Value*>(n1));
+    values.push_back(as<Ast::Value*>(n2));
+    values.push_back(as<Ast::Value*>(n3));
+    values.push_back(as<Ast::Value*>(n4));
+
+    Ast::ValueList * object = new Ast::ValueList(values);
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
@@ -94,6 +106,12 @@ SectionList * makeSectionList(){
     return object;
 }
 
+Ast::Attribute * makeAttributeArray(Ast::Keyword * name, Ast::Value * index, Ast::Value * value){
+    Ast::AttributeArray * object = new Ast::AttributeArray(name, index, value);
+    GC::save(object);
+    return object;
+}
+
 void addSection(const Value & section_list_value, const Value & section_value){
   SectionList * sections = (SectionList*) section_list_value.getValue();
   Ast::Section * section = (Ast::Section*) section_value.getValue();
@@ -143,8 +161,8 @@ rules:
 	                  | "Clsn2:"{case} s num:integer
 			          | "Clsn1:"{case} s num:integer
     # change int,int,int,int to valuelist ?
-	collision = "Clsn2"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
-	          | "Clsn1"{case} s "[" s digit+ s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
+	collision = name:"Clsn2"{case} s "[" s index:integer s "]" s "=" s n1:integer s "," s n2:integer s "," s n3:integer s "," s n4:integer {{ value = makeAttributeArray(makeKeyword(name), as<Ast::Value*>(index), makeValueList(n1, n2, n3, n4)); }}
+	          | "Clsn1"{case} s "[" s index:integer s "]" s "=" s integer s "," s integer s "," s integer s "," s integer
 	action_start = "[" s begin:"Begin"{case} s action:"Action"{case} s num:integer s "]" {{ value = makeHeader(begin, action, num); }}
 	inline digit = [0123456789]
 	integer = sign? digit+ {{ value = parseDouble($2); value = makeNumber($1,value); }}

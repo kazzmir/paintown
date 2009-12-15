@@ -4,6 +4,7 @@
 #include "attribute.h"
 #include "attribute-simple.h"
 #include "attribute-keyword.h"
+#include "attribute-array.h"
 #include "Configuration.h"
 #include "Expression.h"
 #include "identifier.h"

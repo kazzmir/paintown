@@ -6,6 +6,7 @@ namespace Ast{
 class Section;
 class AttributeSimple;
 class AttributeKeyword;
+class AttributeArray;
 class Attribute;
 class Value;
 class ValueList;
@@ -32,6 +33,9 @@ public:
     }
     
     virtual void onAttributeKeyword(const AttributeKeyword & simple){
+    }
+    
+    virtual void onAttributeArray(const AttributeArray & simple){
     }
 
     virtual ~Walker(){
