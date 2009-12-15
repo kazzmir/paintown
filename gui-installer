@@ -21,7 +21,6 @@ eula = [0]
 widget = uic.loadUi("installer/installer.ui")
 
 #Back function
-@pyqtSlot()
 def backButton():
     currentPage[0] -= 1
     if currentPage[0] < 0:
@@ -29,7 +28,6 @@ def backButton():
     widget.stackedWidget.setCurrentIndex(currentPage[0])
 
 #Forward function
-@pyqtSlot()
 def forwardButton():
     currentPage[0] += 1
     if currentPage[0] > 1 and eula[0] != 1:
@@ -39,7 +37,6 @@ def forwardButton():
     widget.stackedWidget.setCurrentIndex(currentPage[0])
 
 #Set User agreement
-@pyqtSlot()
 def toggleEula():
     eula[0] = not eula[0]
 
