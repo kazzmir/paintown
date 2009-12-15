@@ -16,6 +16,8 @@ app = QtGui.QApplication(sys.argv)
 QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
 # Load the installer widgets dynamically
+binLocation = ['/usr/share/games/paintown']
+dataLocation = ['/usr/games']
 currentPage = [0]
 eula = [False]
 widget = uic.loadUi("installer/installer.ui")
@@ -44,11 +46,13 @@ def toggleEula():
 widget.connect(widget.back, SIGNAL("clicked()"), backButton)
 widget.connect(widget.next, SIGNAL("clicked()"), forwardButton)
 widget.connect(widget.eula, SIGNAL("clicked()"), toggleEula)
+widget.back.setShortcut('Alt+B')
+widget.next.setShortcut('Alt+N')
 
 # Exit installer
 exit = QtGui.QAction('Exit', widget)
 exit.setShortcut('Ctrl+Q')
-exit.setStatusTip('Exit application')
+exit.setStatusTip('Quit Installer')
 widget.connect(exit, SIGNAL('triggered()'), SLOT('close()'))
 widget.file.addAction(exit)
 
@@ -59,12 +63,14 @@ widget.WelcomePage.setScene(scene)
 widget.WelcomePage.scale(1.15,.94)
 
 # Page 2 - End User Agreement or License
-widget.textBrowser.setPlainText(QString(open(str('LICENSE')).read()))
-widget.textBrowser.selectAll()
-widget.textBrowser.setAlignment(Qt.AlignCenter)
-widget.textBrowser.moveCursor(QTextCursor.Start)
+widget.textBrowser.setPlainText(QString(open(str('README')).read()))
+#widget.textBrowser.selectAll()
+#widget.textBrowser.setAlignment(Qt.AlignCenter)
+#widget.textBrowser.moveCursor(QTextCursor.Start)
 
 # Page 3 - Install Locations
+widget.binDir.setText(binLocation[0])
+widget.dataDir.setText(dataLocation[0])
 
 # Page 4 - Console Output
 
