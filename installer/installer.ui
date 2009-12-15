@@ -26,7 +26,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="next">
     <property name="geometry">
      <rect>
       <x>700</x>
@@ -39,7 +39,7 @@
      <string>Next</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="back">
     <property name="geometry">
      <rect>
       <x>620</x>
@@ -102,7 +102,7 @@
         </rect>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QCheckBox" name="eula">
        <property name="geometry">
         <rect>
          <x>680</x>
@@ -200,6 +200,21 @@
        </property>
        <property name="text">
         <string>Binary Directory</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_5">
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>60</y>
+         <width>231</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Console Output for Install... Fill in later.</string>
        </property>
       </widget>
      </widget>

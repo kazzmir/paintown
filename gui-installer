@@ -16,15 +16,43 @@ app = QtGui.QApplication(sys.argv)
 QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
 # Load the installer widgets dynamically
+currentPage = [0]
+eula = [0]
 widget = uic.loadUi("installer/installer.ui")
 
+#Back function
+@pyqtSlot()
+def backButton():
+    currentPage[0] -= 1
+    if currentPage[0] < 0:
+        currentPage[0] = 0
+    widget.stackedWidget.setCurrentIndex(currentPage[0])
+
+#Forward function
+@pyqtSlot()
+def forwardButton():
+    currentPage[0] += 1
+    if currentPage[0] > 1 and eula[0] != 1:
+        currentPage[0] = 1
+    if currentPage[0] > 4:
+        currentPage[0] = 4
+    widget.stackedWidget.setCurrentIndex(currentPage[0])
+
+#Set User agreement
+@pyqtSlot()
+def toggleEula():
+    eula[0] = not eula[0]
+
 # Update the widgets with the needed Info
+widget.connect(widget.back, SIGNAL("clicked()"), backButton)
+widget.connect(widget.next, SIGNAL("clicked()"), forwardButton)
+widget.connect(widget.eula, SIGNAL("clicked()"), toggleEula)
 
 # Exit installer
 exit = QtGui.QAction('Exit', widget)
 exit.setShortcut('Ctrl+Q')
 exit.setStatusTip('Exit application')
-widget.connect(exit, QtCore.SIGNAL('triggered()'), QtCore.SLOT('close()'))
+widget.connect(exit, SIGNAL('triggered()'), SLOT('close()'))
 widget.file.addAction(exit)
 
 # Page 1 - Intro and graphic
@@ -34,13 +62,21 @@ widget.WelcomePage.setScene(scene)
 widget.WelcomePage.scale(1.15,.94)
 
 # Page 2 - End User Agreement or License
-
+widget.textBrowser.setPlainText(QString(open(str('LICENSE')).read()))
+widget.textBrowser.selectAll()
+widget.textBrowser.setAlignment(Qt.AlignCenter)
+widget.textBrowser.moveCursor(QTextCursor.Start)
 
 # Page 3 - Install Locations
 
+# Page 4 - Console Output
+
+# Page 5 - Finished
 
 # show widget
 widget.show()
 
 # Run
 app.exec_()
+
+
