@@ -3,3 +3,44 @@
 # GTK or QT based installer
 
 # Copy files to some directory, symlink the binary.
+
+import sys
+
+from PyQt4 import QtCore, QtGui, uic
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+
+app = QtGui.QApplication(sys.argv)
+
+# Set the look and feel
+QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
+
+# Load the installer widgets dynamically
+widget = uic.loadUi("installer/installer.ui")
+
+# Update the widgets with the needed Info
+
+# Exit installer
+exit = QtGui.QAction('Exit', widget)
+exit.setShortcut('Ctrl+Q')
+exit.setStatusTip('Exit application')
+widget.connect(exit, QtCore.SIGNAL('triggered()'), QtCore.SLOT('close()'))
+widget.file.addAction(exit)
+
+# Page 1 - Intro and graphic
+scene = QGraphicsScene()
+scene.addPixmap(QPixmap('data/menu/paintown.png'))
+widget.WelcomePage.setScene(scene)
+widget.WelcomePage.scale(1.15,.94)
+
+# Page 2 - End User Agreement or License
+
+
+# Page 3 - Install Locations
+
+
+# show widget
+widget.show()
+
+# Run
+app.exec_()

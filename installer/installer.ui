@@ -77,7 +77,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <widget class="QGraphicsView" name="WelcomePage">
@@ -230,18 +230,17 @@
      <height>18</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuPaintown_Installer">
+   <widget class="QMenu" name="file">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
      <string>About</string>
     </property>
    </widget>
-   <addaction name="menuPaintown_Installer"/>
+   <addaction name="file"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
