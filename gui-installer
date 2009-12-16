@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # GTK or QT based installer
 
@@ -60,7 +61,10 @@ widget.file.addAction(exit)
 scene = QGraphicsScene()
 scene.addPixmap(QPixmap('data/menu/paintown.png'))
 widget.WelcomePage.setScene(scene)
-widget.WelcomePage.scale(1.15,.94)
+#widget.WelcomePage.scale(1,1)
+widget.WelcomePage.fitInView(0, 0, 94,29)
+widget.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+widget.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
 # Page 2 - End User Agreement or License
 widget.textBrowser.setPlainText(QString(open(str('README')).read()))
