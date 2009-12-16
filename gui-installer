@@ -16,18 +16,55 @@ app = QtGui.QApplication(sys.argv)
 # Set the look and feel
 QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
-# Load the installer widgets dynamically
+# Globals
+paintownVersion = [3.2]
 binLocation = ['/usr/share/games/paintown']
 dataLocation = ['/usr/games']
 currentPage = [0]
 eula = [False]
+
+# Load Interface
 widget = uic.loadUi("installer/installer.ui")
+widget.back.setEnabled(False)
+
+# About
+def about():
+    QMessageBox.about(widget,'Paintown ','A simple installer built with PyQt')
+
+# About Qt
+def aboutQt():
+    QMessageBox.aboutQt(widget,'About Qt')
+
+# Set About info
+menuAbout = QtGui.QAction('About Paintown',widget)
+widget.connect(menuAbout,SIGNAL('triggered()'), about)
+widget.about.addAction(menuAbout)
+
+menuAboutQt = QtGui.QAction('About Qt',widget)
+widget.connect(menuAboutQt,SIGNAL('triggered()'), aboutQt)
+widget.about.addAction(menuAboutQt)
+
+# Set Exit installer
+exit = QtGui.QAction('Exit', widget)
+exit.setShortcut('Ctrl+Q')
+exit.setStatusTip('Quit Installer')
+widget.connect(exit, SIGNAL('triggered()'), SLOT('close()'))
+widget.file.addAction(exit)
 
 #Back function
 def backButton():
     currentPage[0] -= 1
-    if currentPage[0] < 0:
+    if currentPage[0] <= 0:
         currentPage[0] = 0
+	widget.back.setEnabled(False)
+    elif currentPage[0] == 1:
+	widget.back.setEnabled(True)
+    elif currentPage[0] == 2:
+	widget.back.setEnabled(True)
+    elif currentPage[0] == 3:
+	widget.back.setEnabled(False)
+    elif currentPage[0] == 4:
+	widget.back.setEnabled(False)
     widget.stackedWidget.setCurrentIndex(currentPage[0])
 
 #Forward function
@@ -35,8 +72,19 @@ def forwardButton():
     currentPage[0] += 1
     if currentPage[0] > 1 and not eula[0]:
         currentPage[0] = 1
-    if currentPage[0] > 4:
-        currentPage[0] = 4
+    elif currentPage[0] == 1:
+	widget.back.setEnabled(True)
+    elif currentPage[0] == 3:
+	widget.back.setEnabled(False)
+	# disable forward until copy is complete
+	#widget.next.setEnabled(False)
+	widget.file.removeAction(exit)
+    elif currentPage[0] == 4:
+	widget.file.addAction(exit)
+	widget.disconnect(widget.next, SIGNAL("clicked()"), forwardButton)
+	widget.connect(widget.next, SIGNAL("clicked()"), SLOT("close()"))
+	widget.next.setText('Exit')
+
     widget.stackedWidget.setCurrentIndex(currentPage[0])
 
 #Set User agreement
@@ -66,13 +114,6 @@ widget.connect(widget.changeDataDir, SIGNAL("clicked()"), selectDataDirectory)
 widget.back.setShortcut('Alt+B')
 widget.next.setShortcut('Alt+N')
 
-# Exit installer
-exit = QtGui.QAction('Exit', widget)
-exit.setShortcut('Ctrl+Q')
-exit.setStatusTip('Quit Installer')
-widget.connect(exit, SIGNAL('triggered()'), SLOT('close()'))
-widget.file.addAction(exit)
-
 # Page 1 - Intro and graphic
 scene = QGraphicsScene()
 scene.addPixmap(QPixmap('data/menu/paintown.png'))
@@ -93,8 +134,9 @@ widget.binDir.setText(binLocation[0])
 widget.dataDir.setText(dataLocation[0])
 
 # Page 4 - Console Output
+# Add file copy info and renable next button after complete
 
-# Page 5 - Finished
+# Page 5 - Finished - Nothing to do
 
 # show widget
 widget.show()

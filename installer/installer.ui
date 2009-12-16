@@ -263,13 +263,13 @@
      <string>File</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuAbout">
+   <widget class="QMenu" name="about">
     <property name="title">
      <string>About</string>
     </property>
    </widget>
    <addaction name="file"/>
-   <addaction name="menuAbout"/>
+   <addaction name="about"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExit">
