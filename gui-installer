@@ -7,6 +7,12 @@
 
 import sys
 
+class Signals:
+    pass
+Signals.Triggered = "triggered()"
+Signals.Close = "close()"
+Signals.Clicked = "clicked()"
+
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -29,39 +35,40 @@ widget = uic.loadUi("installer/installer.ui")
 widget.back.setEnabled(False)
 
 # Exit override
-def exitOverride(self, event):
-        if allowExit[0]:
-            event.accept()
-        else:
-            event.ignore()
-	    # Here we will prompt user "Are they sure?"
-	    # If yes stop current copy and remove files and exit program
+# def exitOverride(self, event):
+def exitOverride(event):
+    if allowExit[0]:
+        event.accept()
+    else:
+        event.ignore()
+    # Here we will prompt user "Are they sure?"
+    # If yes stop current copy and remove files and exit program
 
 # override exit
 widget.closeEvent = exitOverride
 
 # About
 def about():
-    QMessageBox.about(widget,'Paintown ','A simple installer built with PyQt')
+    QMessageBox.about(widget, 'Paintown ', 'A simple installer built with PyQt')
 
 # About Qt
 def aboutQt():
-    QMessageBox.aboutQt(widget,'About Qt')
+    QMessageBox.aboutQt(widget, 'About Qt')
 
 # Set About info
-menuAbout = QtGui.QAction('About Paintown',widget)
-widget.connect(menuAbout,SIGNAL('triggered()'), about)
+menuAbout = QtGui.QAction('About Paintown', widget)
+widget.connect(menuAbout,SIGNAL(Signals.Triggered), about)
 widget.about.addAction(menuAbout)
 
-menuAboutQt = QtGui.QAction('About Qt',widget)
-widget.connect(menuAboutQt,SIGNAL('triggered()'), aboutQt)
+menuAboutQt = QtGui.QAction('About Qt', widget)
+widget.connect(menuAboutQt,SIGNAL(Signals.Triggered), aboutQt)
 widget.about.addAction(menuAboutQt)
 
 # Set Exit installer
 exit = QtGui.QAction('Exit', widget)
 exit.setShortcut('Ctrl+Q')
 exit.setStatusTip('Quit Installer')
-widget.connect(exit, SIGNAL('triggered()'), SLOT('close()'))
+widget.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
 widget.file.addAction(exit)
 
 #Back function
@@ -94,8 +101,8 @@ def forwardButton():
 	allowExit[0] = False
     elif currentPage[0] == 4:
 	allowExit[0] = True
-	widget.disconnect(widget.next, SIGNAL("clicked()"), forwardButton)
-	widget.connect(widget.next, SIGNAL("clicked()"), SLOT("close()"))
+	widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
+	widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
 	widget.next.setText('Exit')
 
     widget.stackedWidget.setCurrentIndex(currentPage[0])
@@ -119,11 +126,11 @@ def selectDataDirectory():
         widget.dataDir.setText(tempstr)
 
 # Update the widgets with the needed Info
-widget.connect(widget.back, SIGNAL("clicked()"), backButton)
-widget.connect(widget.next, SIGNAL("clicked()"), forwardButton)
-widget.connect(widget.eula, SIGNAL("clicked()"), toggleEula)
-widget.connect(widget.changeBinDir, SIGNAL("clicked()"), selectBinDirectory)
-widget.connect(widget.changeDataDir, SIGNAL("clicked()"), selectDataDirectory)
+widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
+widget.connect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
+widget.connect(widget.eula, SIGNAL(Signals.Clicked), toggleEula)
+widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
+widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
 widget.back.setShortcut('Alt+B')
 widget.next.setShortcut('Alt+N')
 
