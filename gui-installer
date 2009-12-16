@@ -158,6 +158,11 @@ widget.dataDir.setText(dataLocation[0])
 
 # Page 5 - Finished - Nothing to do
 
+# Center on screen
+screen = QtGui.QDesktopWidget().screenGeometry()
+size = widget.geometry()
+widget.move((screen.width()-size.width())/2, (screen.height()-size.height())/2)
+
 # show widget
 widget.show()
 
