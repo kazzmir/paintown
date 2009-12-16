@@ -43,10 +43,26 @@ def forwardButton():
 def toggleEula():
     eula[0] = not eula[0]
 
+#Select Binary Directory
+def selectBinDirectory():
+    tempstr = QFileDialog.getExistingDirectory(widget, 'Please Select Binary Directory', binLocation[0], QFileDialog.ShowDirsOnly)
+    if not tempstr == '':
+	binLocation[0] = tempstr
+	widget.binDir.setText(tempstr)
+
+#Select Data Directory
+def selectDataDirectory():
+    tempstr = QFileDialog.getExistingDirectory(widget, 'Please Select Data Directory', dataLocation[0], QFileDialog.ShowDirsOnly)
+    if not tempstr == '':
+	dataLocation[0] = tempstr
+	widget.dataDir.setText(tempstr)
+
 # Update the widgets with the needed Info
 widget.connect(widget.back, SIGNAL("clicked()"), backButton)
 widget.connect(widget.next, SIGNAL("clicked()"), forwardButton)
 widget.connect(widget.eula, SIGNAL("clicked()"), toggleEula)
+widget.connect(widget.changeBinDir, SIGNAL("clicked()"), selectBinDirectory)
+widget.connect(widget.changeDataDir, SIGNAL("clicked()"), selectDataDirectory)
 widget.back.setShortcut('Alt+B')
 widget.next.setShortcut('Alt+N')
 
