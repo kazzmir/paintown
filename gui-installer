@@ -35,8 +35,7 @@ widget = uic.loadUi("installer/installer.ui")
 widget.back.setEnabled(False)
 
 # Exit override
-# def exitOverride(self, event):
-def exitOverride(event):
+def exitOverride(self, event):
     if allowExit[0]:
         event.accept()
     else:
@@ -45,7 +44,7 @@ def exitOverride(event):
     # If yes stop current copy and remove files and exit program
 
 # override exit
-widget.closeEvent = exitOverride
+widget.__class__.closeEvent = exitOverride
 
 # About
 def about():
