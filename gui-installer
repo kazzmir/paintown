@@ -5,7 +5,7 @@
 
 # Copy files to some directory, symlink the binary.
 
-import sys
+import sys, os
 
 class Signals:
     pass
@@ -70,6 +70,28 @@ exit.setStatusTip('Quit Installer')
 widget.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
 widget.file.addAction(exit)
 
+# Check permissions on directories
+def checkDirs():
+    binOk = False
+    dataOk = False
+    if os.access(binLocation[0], os.W_OK):
+        widget.binAccess.setText('<font color=\'green\'>Directory is writable.</font>')
+        binOk = True
+    else:
+        widget.binAccess.setText('<font color=\'red\'>Directory is <strong>NOT</strong> writable.</font>')
+        binOk = False
+    if os.access(dataLocation[0], os.W_OK):
+        widget.dataAccess.setText('<font color=\'green\'>Directory is writable.</font>')
+        dataOk = True
+    else:
+        widget.dataAccess.setText('<font color=\'red\'>Directory is <strong>NOT</strong> writable.</font>')
+        dataOk = False
+    if binOk and dataOk:
+        widget.next.setEnabled(True)
+    else:
+        widget.next.setEnabled(False)
+    return
+
 #Back function
 def backButton():
     currentPage[0] -= 1
@@ -92,7 +114,9 @@ def forwardButton():
     if currentPage[0] > 1 and not eula[0]:
         currentPage[0] = 1
     elif currentPage[0] == 1:
-	widget.back.setEnabled(True)
+        widget.back.setEnabled(True)
+    elif currentPage[0] == 2:
+        checkDirs()
     elif currentPage[0] == 3:
 	widget.back.setEnabled(False)
 	# disable forward until copy is complete
@@ -116,6 +140,7 @@ def selectBinDirectory():
     if not tempstr == '':
         binLocation[0] = tempstr
         widget.binDir.setText(tempstr)
+        checkDirs()
 
 #Select Data Directory
 def selectDataDirectory():
@@ -123,6 +148,7 @@ def selectDataDirectory():
     if not tempstr == '':
         dataLocation[0] = tempstr
         widget.dataDir.setText(tempstr)
+        checkDirs()
 
 # Update the widgets with the needed Info
 widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
