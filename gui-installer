@@ -29,17 +29,32 @@ dataLocation = ['/usr/games']
 allowExit = [True]
 currentPage = [0]
 
+signals = [0]
+def generateSignal():
+    signals[0] += 1
+    return "signal%s" % signals[0]
+
 # Set Info on Data that will be copied
-def setDataFileInfo(widget):
-    widget.clear()
+def setDataFileInfo(widget, emitter):
+    # widget.clear()
     for root, dirs, files in os.walk("data"):
         for file in files:
             tmpFile = os.path.join(root, file)
             if 'svn' in tmpFile:
                 continue
-            widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
-    widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin')
-    widget.moveCursor(QTextCursor.Start)
+            # widget.emit(SIGNAL(signal), lambda: widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root))
+
+            # scoping is broken in python so we have to create a new function that
+            # will ensure `path' stores its value correctly
+            def doit(path):
+                emitter(lambda: widget.append(path))
+            doit(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
+            # emitter(lambda: widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root))
+            # widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
+    #widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin')
+    emitter(lambda: widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin'))
+    #widget.moveCursor(QTextCursor.Start)
+    emitter(lambda: widget.moveCursor(QTextCursor.Start))
 
 # Copy Data
 def copyData(widget):
@@ -60,8 +75,44 @@ def copyData(widget):
 widget = uic.loadUi("installer/installer.ui")
 widget.back.setEnabled(False)
 
+threads = []
+def doBackground(func):
+    class Runner(QThread):
+        def __init__(self, signal):
+            QThread.__init__(self)
+            self.signal = signal
+
+        def run(self):
+            func(lambda arg: self.emit(SIGNAL(signal), arg))
+
+    def process(arg):
+        arg()
+
+    # I'm not sure we even need to generate a signal..
+    signal = generateSignal()
+
+    # I guess pyqtSignal is only in pyqt 4.5+
+    # signal = QtCore.pyqtSignal()
+    # signal = SLOT(process)
+    n = Runner(signal)
+    QtCore.QObject.connect(n, SIGNAL(signal), process)
+    # n.connect(SIGNAL(signal), process)
+    # widget.connect(n, SIGNAL(signal), process)
+
+    # Have to save threads from being GC'd, so just put it in a variable that no one will use
+    global threads
+    threads.append(n)
+
+    n.start()
+    return n
+
+    # Runner().start()
+
 # Set data info
-setDataFileInfo(widget.textBrowser)
+widget.textBrowser.clear()
+
+doBackground(lambda emitter: setDataFileInfo(widget.textBrowser, emitter))
+# setDataFileInfo(widget.textBrowser)
 
 # Exit override
 def exitOverride(self, event):
@@ -176,7 +227,8 @@ def selectDataDirectory():
     if not tempstr == '':
         dataLocation[0] = tempstr
         widget.dataDir.setText(tempstr)
-        setDataFileInfo(widget.textBrowser)
+        # FIXME!!! Redo this thread
+        # setDataFileInfo(widget.textBrowser)
         checkDirs()
 
 # Update the widgets with the needed Info
