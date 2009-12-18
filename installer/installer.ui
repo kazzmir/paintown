@@ -149,7 +149,7 @@
         <rect>
          <x>40</x>
          <y>30</y>
-         <width>141</width>
+         <width>251</width>
          <height>16</height>
         </rect>
        </property>
@@ -187,8 +187,8 @@
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>76</y>
-         <width>141</width>
+         <y>73</y>
+         <width>301</width>
          <height>16</height>
         </rect>
        </property>
@@ -200,8 +200,8 @@
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>117</y>
-         <width>141</width>
+         <y>114</y>
+         <width>301</width>
          <height>16</height>
         </rect>
        </property>
@@ -226,7 +226,7 @@
         <rect>
          <x>0</x>
          <y>10</y>
-         <width>301</width>
+         <width>601</width>
          <height>16</height>
         </rect>
        </property>
@@ -269,7 +269,7 @@
         <rect>
          <x>20</x>
          <y>20</y>
-         <width>141</width>
+         <width>351</width>
          <height>16</height>
         </rect>
        </property>
@@ -287,7 +287,7 @@
      <x>0</x>
      <y>0</y>
      <width>662</width>
-     <height>18</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="file">
