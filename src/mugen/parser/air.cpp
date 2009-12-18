@@ -754,7 +754,7 @@ Result rule_start(Stream & stream, const int position){
     column_peg_1.chunk0->chunk_start = errorResult;
     stream.update(errorResult.getPosition());
     
-    
+     GC::cleanup(0); 
     return errorResult;
 }
         
