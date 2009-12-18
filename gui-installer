@@ -83,7 +83,9 @@ def doBackground(func):
             self.signal = signal
 
         def run(self):
+            # print "Start thread.."
             func(lambda arg: self.emit(SIGNAL(signal), arg))
+            # print "Ok done"
 
     def process(arg):
         arg()
@@ -108,11 +110,13 @@ def doBackground(func):
 
     # Runner().start()
 
-# Set data info
-widget.textBrowser.clear()
+def updateFileList():
+    # Set data info
+    widget.textBrowser.clear()
+    doBackground(lambda emitter: setDataFileInfo(widget.textBrowser, emitter))
+    # setDataFileInfo(widget.textBrowser)
 
-doBackground(lambda emitter: setDataFileInfo(widget.textBrowser, emitter))
-# setDataFileInfo(widget.textBrowser)
+updateFileList()
 
 # Exit override
 def exitOverride(self, event):
@@ -228,6 +232,7 @@ def selectDataDirectory():
         dataLocation[0] = tempstr
         widget.dataDir.setText(tempstr)
         # FIXME!!! Redo this thread
+        updateFileList()
         # setDataFileInfo(widget.textBrowser)
         checkDirs()
 
