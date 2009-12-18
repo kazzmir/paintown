@@ -57,19 +57,25 @@ def setDataFileInfo(widget, emitter):
     emitter(lambda: widget.moveCursor(QTextCursor.Start))
 
 # Copy Data
-def copyData(widget):
-      for root, dirs, files in os.walk("data"):
-          for file in files:
-              tmpFile = os.path.join(root, file)
-              if 'svn' in tmpFile:
-                  continue
-              # ****FIXME**** Add copy command
-              widget.append('Copying ' + tmpFile + '...')
-      # ****FIXME**** Copy paintown to paintown-bin
-      widget.append('Copying paintown...')
-      # ****FIXME**** Create script to invoke paintown
-      # echo "$data_dir/paintown-bin -d $data_dir/data" >> $bin_dir/paintown
-      # chmod +x $bin_dir/paintown
+def copyData(widget, emitter):
+    for root, dirs, files in os.walk("data"):
+        for file in files:
+            tmpFile = os.path.join(root, file)
+            if 'svn' in tmpFile:
+                continue
+            # ****FIXME**** Add copy command
+            def update(str):
+                emitter(lambda: widget.append(str))
+            update('Copying %s...' % tmpFile)
+            # <Put the actual copy command right here>
+    # FIXME: Copy paintown to paintown-bin
+    emitter(lambda: widget.append('Copying paintown...'))
+    # <Put the actual copy command right here>
+
+    # widget.append('Copying paintown...')
+    # FIXME: Create script to invoke paintown
+    # echo "$data_dir/paintown-bin -d $data_dir/data" >> $bin_dir/paintown
+    # chmod +x $bin_dir/paintown
 
 # Load Interface
 widget = uic.loadUi("installer/installer.ui")
@@ -206,7 +212,8 @@ def forwardButton():
         allowExit[0] = False
         widget.stackedWidget.setCurrentIndex(currentPage[0])
         # ****FIXME**** Copy data ---- Need to do this in realtime or else it hangs the GUI
-        copyData(widget.installOutput)
+        # copyData(widget.installOutput)
+        doBackground(lambda emitter: copyData(widget.installOutput, emitter))
         widget.next.setEnabled(True)
         allowExit[0] = True
     elif currentPage[0] == 4:
