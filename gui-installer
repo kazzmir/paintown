@@ -5,7 +5,7 @@
 
 # Copy files to some directory, symlink the binary.
 
-import sys, os
+import sys, os, shutil
 
 class Signals:
     pass
@@ -28,11 +28,40 @@ binLocation = ['/usr/share/games/paintown']
 dataLocation = ['/usr/games']
 allowExit = [True]
 currentPage = [0]
-eula = [False]
+
+# Set Info on Data that will be copied
+def setDataFileInfo(widget):
+    widget.clear()
+    for root, dirs, files in os.walk("data"):
+        for file in files:
+            tmpFile = os.path.join(root, file)
+            if 'svn' in tmpFile:
+                continue
+            widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
+    widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin')
+    widget.moveCursor(QTextCursor.Start)
+
+# Copy Data
+def copyData(widget):
+      for root, dirs, files in os.walk("data"):
+          for file in files:
+              tmpFile = os.path.join(root, file)
+              if 'svn' in tmpFile:
+                  continue
+              # ****FIXME**** Add copy command
+              widget.append('Copying ' + tmpFile + '...')
+      # ****FIXME**** Copy paintown to paintown-bin
+      widget.append('Copying paintown...')
+      # ****FIXME**** Create script to invoke paintown
+      # echo "$data_dir/paintown-bin -d $data_dir/data" >> $bin_dir/paintown
+      # chmod +x $bin_dir/paintown
 
 # Load Interface
 widget = uic.loadUi("installer/installer.ui")
 widget.back.setEnabled(False)
+
+# Set data info
+setDataFileInfo(widget.textBrowser)
 
 # Exit override
 def exitOverride(self, event):
@@ -98,8 +127,9 @@ def backButton():
     if currentPage[0] <= 0:
         currentPage[0] = 0
 	widget.back.setEnabled(False)
+        widget.next.setEnabled(True)
     elif currentPage[0] == 1:
-	widget.back.setEnabled(True)
+        widget.back.setEnabled(True)
     elif currentPage[0] == 2:
 	widget.back.setEnabled(True)
     elif currentPage[0] == 3:
@@ -111,17 +141,19 @@ def backButton():
 #Forward function
 def forwardButton():
     currentPage[0] += 1
-    if currentPage[0] > 1 and not eula[0]:
-        currentPage[0] = 1
-    elif currentPage[0] == 1:
+    if currentPage[0] == 1:
         widget.back.setEnabled(True)
-    elif currentPage[0] == 2:
         checkDirs()
     elif currentPage[0] == 3:
 	widget.back.setEnabled(False)
 	# disable forward until copy is complete
-	#widget.next.setEnabled(False)
-	allowExit[0] = False
+        widget.next.setEnabled(False)
+        allowExit[0] = False
+        widget.stackedWidget.setCurrentIndex(currentPage[0])
+        # ****FIXME**** Copy data ---- Need to do this in realtime or else it hangs the GUI
+        copyData(widget.installOutput)
+        widget.next.setEnabled(True)
+        allowExit[0] = True
     elif currentPage[0] == 4:
 	allowExit[0] = True
 	widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
@@ -129,10 +161,6 @@ def forwardButton():
 	widget.next.setText('Exit')
 
     widget.stackedWidget.setCurrentIndex(currentPage[0])
-
-#Set User agreement
-def toggleEula():
-    eula[0] = not eula[0]
 
 #Select Binary Directory
 def selectBinDirectory():
@@ -148,12 +176,12 @@ def selectDataDirectory():
     if not tempstr == '':
         dataLocation[0] = tempstr
         widget.dataDir.setText(tempstr)
+        setDataFileInfo(widget.textBrowser)
         checkDirs()
 
 # Update the widgets with the needed Info
 widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
 widget.connect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
-widget.connect(widget.eula, SIGNAL(Signals.Clicked), toggleEula)
 widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
 widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
 widget.back.setShortcut('Alt+B')
@@ -168,20 +196,14 @@ widget.WelcomePage.fitInView(0, 0, 94,29)
 widget.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 widget.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-# Page 2 - End User Agreement or License
-widget.textBrowser.setPlainText(QString(open(str('README')).read()))
-#widget.textBrowser.selectAll()
-#widget.textBrowser.setAlignment(Qt.AlignCenter)
-#widget.textBrowser.moveCursor(QTextCursor.Start)
-
-# Page 3 - Install Locations
+# Page 2 - Install Locations
 widget.binDir.setText(binLocation[0])
 widget.dataDir.setText(dataLocation[0])
 
-# TODO: add a screen here that says "ok im going to install the following things"
+# Page 3 - Install information
 
 # Page 4 - Console Output
-# Add file copy info and renable next button after complete
+# ****FIXME**** Add file copy info and renable next button after complete
 
 # Page 5 - Finished - Nothing to do
 

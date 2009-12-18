@@ -79,7 +79,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="page">
+     <widget class="QWidget" name="page1">
       <widget class="QGraphicsView" name="WelcomePage">
        <property name="geometry">
         <rect>
@@ -91,32 +91,7 @@
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="page_2">
-      <widget class="QTextBrowser" name="textBrowser">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>10</y>
-         <width>621</width>
-         <height>321</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="eula">
-       <property name="geometry">
-        <rect>
-         <x>540</x>
-         <y>340</y>
-         <width>71</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Agree</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="page_3">
+     <widget class="QWidget" name="page2">
       <widget class="QPushButton" name="changeDataDir">
        <property name="geometry">
         <rect>
@@ -152,6 +127,9 @@
          <height>20</height>
         </rect>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="QLineEdit" name="binDir">
        <property name="geometry">
@@ -161,6 +139,9 @@
          <width>231</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
       <widget class="QLabel" name="label">
@@ -206,7 +187,7 @@
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>70</y>
+         <y>76</y>
          <width>141</width>
          <height>16</height>
         </rect>
@@ -219,7 +200,7 @@
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>110</y>
+         <y>117</y>
          <width>141</width>
          <height>16</height>
         </rect>
@@ -229,7 +210,32 @@
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="page_5">
+     <widget class="QWidget" name="page3">
+      <widget class="QTextBrowser" name="textBrowser">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>30</y>
+         <width>621</width>
+         <height>341</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="install_info">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>301</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>The following will be installed to the given locations:</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page4">
       <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
@@ -257,7 +263,7 @@
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="page_4">
+     <widget class="QWidget" name="page5">
       <widget class="QLabel" name="label_4">
        <property name="geometry">
         <rect>
