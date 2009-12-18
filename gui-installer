@@ -178,6 +178,8 @@ widget.textBrowser.setPlainText(QString(open(str('README')).read()))
 widget.binDir.setText(binLocation[0])
 widget.dataDir.setText(dataLocation[0])
 
+# TODO: add a screen here that says "ok im going to install the following things"
+
 # Page 4 - Console Output
 # Add file copy info and renable next button after complete
 
