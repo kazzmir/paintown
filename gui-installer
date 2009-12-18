@@ -126,16 +126,16 @@ def backButton():
     currentPage[0] -= 1
     if currentPage[0] <= 0:
         currentPage[0] = 0
-	widget.back.setEnabled(False)
+        widget.back.setEnabled(False)
         widget.next.setEnabled(True)
     elif currentPage[0] == 1:
         widget.back.setEnabled(True)
     elif currentPage[0] == 2:
-	widget.back.setEnabled(True)
+        widget.back.setEnabled(True)
     elif currentPage[0] == 3:
-	widget.back.setEnabled(False)
+        widget.back.setEnabled(False)
     elif currentPage[0] == 4:
-	widget.back.setEnabled(False)
+        widget.back.setEnabled(False)
     widget.stackedWidget.setCurrentIndex(currentPage[0])
 
 #Forward function
@@ -145,8 +145,8 @@ def forwardButton():
         widget.back.setEnabled(True)
         checkDirs()
     elif currentPage[0] == 3:
-	widget.back.setEnabled(False)
-	# disable forward until copy is complete
+        widget.back.setEnabled(False)
+        # disable forward until copy is complete
         widget.next.setEnabled(False)
         allowExit[0] = False
         widget.stackedWidget.setCurrentIndex(currentPage[0])
@@ -155,10 +155,10 @@ def forwardButton():
         widget.next.setEnabled(True)
         allowExit[0] = True
     elif currentPage[0] == 4:
-	allowExit[0] = True
-	widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
-	widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
-	widget.next.setText('Exit')
+        allowExit[0] = True
+        widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
+        widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
+        widget.next.setText('Exit')
 
     widget.stackedWidget.setCurrentIndex(currentPage[0])
 
