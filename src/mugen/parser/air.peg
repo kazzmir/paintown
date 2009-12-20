@@ -167,10 +167,10 @@ rules:
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		    | "-" "-"+
-	collision_default = "Clsn2Default:"{case} s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
-	                  | "Clsn1Default:"{case} s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
-	                  | "Clsn2:"{case} s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
-			          | "Clsn1:"{case} s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
+	collision_default = "Clsn2Default"{case} ":" s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
+	                  | "Clsn1Default"{case} ":" s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
+	                  | "Clsn2"{case} ":" s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
+			          | "Clsn1"{case} ":" s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
 
     # change int,int,int,int to valuelist ?
 	collision = name:"Clsn2"{case} s "[" s index:integer s "]" s "=" s n1:integer s "," s n2:integer s "," s n3:integer s "," s n4:integer {{ value = makeAttributeArray(makeKeyword(name), as<Ast::Value*>(index), makeValueList(n1, n2, n3, n4)); }}
@@ -180,7 +180,7 @@ rules:
 	inline digit = [0123456789]
 	integer = sign? digit+ {{ value = parseDouble($2); value = makeNumber($1,value); }}
 	inline sign = "-"
-	     | "+"
+	            | "+"
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
 
 	value = integer

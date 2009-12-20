@@ -754,10 +754,58 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
         }
 
         virtual void onAttributeArray(const Ast::AttributeArray & array){
-            Global::debug(1, __FILE__) << "Array item: " << array.toString() << endl;
+            // Global::debug(1, __FILE__) << "Array item: " << array.toString() << endl;
+            MugenArea area;
+            array >> area.x1 >> area.y1 >> area.x2 >> area.y2;
+            Global::debug(2) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
+            if (array == "clsn1"){
+                clsn1Holder.push_back(area);
+            } else if (array == "clsn2"){
+                clsn2Holder.push_back(area);
+            }
         }
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+        }
+    
+        virtual void onAttributeKeyword(const Ast::AttributeKeyword & simple){
+            if (simple == "loopstart"){
+                setloop = true;
+                return;
+            }
+
+            if (simple == "clsn1default"){
+                clsn1Holder.clear();
+                clsn1Reset = false;
+                /* do we really care how many boxes are specified here? it seems good
+                 * enough to just read them in as they are defined in
+                 *  clsn1[0] = ...
+                 *  clsn1[1] = ...
+                 * I mean so what if the file has
+                 *   clsn1default: 1
+                 *   clsn1[0] = ...
+                 *   clsn1[1] = ...
+                 *   clsn1[2] = ...
+                 * Just read 3 boxes because thats whats given.
+                 */
+                int boxes;
+                simple >> boxes;
+            } else if (simple == "clsn2default"){
+                clsn2Holder.clear();
+                clsn2Reset = false;
+                int boxes;
+                simple >> boxes;
+            } else if (simple == "clsn1"){
+                clsn1Holder.clear();
+                clsn1Reset = true;
+                int boxes;
+                simple >> boxes;
+            } else if (simple == "clsn2"){
+                clsn2Holder.clear();
+                clsn2Reset = true;
+                int boxes;
+                simple >> boxes;
+            }
         }
     };
 
