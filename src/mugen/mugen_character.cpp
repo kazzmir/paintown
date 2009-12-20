@@ -329,7 +329,9 @@ void MugenCharacter::priorPalette(){
     }*/
 }
 
-// animations
+/* parse animations.
+ * badly named and doesn't return anything.. maybe return an std::map ?
+ */
 void MugenCharacter::bundleAnimations(){
     Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Air::main(Mugen::Util::fixFileName(baseDir, airFile)));
     Global::debug(1, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
@@ -346,27 +348,6 @@ void MugenCharacter::bundleAnimations(){
             animations[number] = Mugen::Util::getAnimation(section, sprites);
         }
     }
-
-#if 0
-    /* FIXME!! Replace with air parser */
-    MugenReader reader( Mugen::Util::fixFileName(baseDir, airFile) );
-    std::vector< MugenSection * > collection;
-    collection = reader.getCollection();
-    
-    if( collection.empty() ) throw MugenException( "Problem loading Animations from file: " + airFile );
-    
-    /* Extract info for our first section of our character */
-    for( unsigned int i = 0; i < collection.size(); ++i ){
-	std::string head = collection[i]->getHeader();
-	head.replace(0,13,"");
-	int h;
-	MugenItem(head) >> h;
-        /* FIXME!!!
-	animations[h] = Mugen::Util::getAnimation(collection[i], sprites);
-	Global::debug(1) << "Added Animation 'Begin Action " << h << "' : '" << animations[h]->getName(animations[h]->getType()) << "'" << endl;
-        */
-    }
-#endif
 }
 
 /* Inherited members */

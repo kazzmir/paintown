@@ -119,6 +119,7 @@ public:
         throw Exception("Could not find attribute " + find + " in section " + getName());
     }
 
+    /* mark phase of garbage collection. all live pointers are marked 'true' */
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
         marks[name] = true;

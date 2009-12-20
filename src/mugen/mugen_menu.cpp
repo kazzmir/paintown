@@ -295,7 +295,7 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 	}
 	else if( head == "selectbgdef" ){ 
 	    // Background management
-            /* FIXME!!!! */
+            /* FIXME!!!! use collectBackgroundStuff() */
             /*
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir( selectFile ),collection, index,selectTicker,&sprites);
 	    background = manager;
@@ -1046,7 +1046,7 @@ void MugenMenu::loadData() throw (MugenException){
             FileWalker walker(*this, baseDir);
             section->walk(walker);
         } else if (head == "music"){
-            /* FIXME! */
+            /* FIXME! parse music here */
         } else if (head == "title info"){
             class TitleInfoWalker: public Ast::Walker{
             public:
@@ -1160,11 +1160,11 @@ void MugenMenu::loadData() throw (MugenException){
                        menu.boxCursorCoords.alpha = 128;
                        menu.boxCursorCoords.alphaMove = -6;
                    } else if (simple == "cursor.move.snd"){
-                       /* FIXME! */
+                       /* FIXME! parse cursor.move.snd */
                    } else if (simple == "cursor.done.snd"){
-                       /* FIXME! */
+                       /* FIXME! parse cursor.done.snd */
                    } else if (simple == "cancel.snd"){
-                       /* FIXME! */
+                       /* FIXME! parse cancel.snd */
                    } else {
                        throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
                    }
@@ -1181,7 +1181,7 @@ void MugenMenu::loadData() throw (MugenException){
         } else if (head == "select info"){ 
 	    // Pass off to selectInfo
 	    characterSelect = new MugenCharacterSelect(ticker, fonts);
-            /* FIXME!!
+            /* FIXME!! change load() to take an Ast::Section
             characterSelect->load(baseDir + selectFile, i, collection, sprites);
             */
         } else if (head == "selectbgdef" ){ /* Ignore for now */ }
