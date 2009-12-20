@@ -34,6 +34,10 @@ def generateSignal():
     signals[0] += 1
     return "signal%s" % signals[0]
 
+# Update page
+def updatePageNumber():
+    widget.positionLabel.setText('Page ' + str(widget.stackedWidget.currentIndex() + 1) + ' of ' + str(widget.stackedWidget.count()))
+
 # Set Info on Data that will be copied
 def setDataFileInfo(widget, emitter):
     # widget.clear()
@@ -198,6 +202,7 @@ def backButton():
     elif currentPage[0] == 4:
         widget.back.setEnabled(False)
     widget.stackedWidget.setCurrentIndex(currentPage[0])
+    updatePageNumber()
 
 #Forward function
 def forwardButton():
@@ -221,8 +226,8 @@ def forwardButton():
         widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
         widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
         widget.next.setText('Exit')
-
     widget.stackedWidget.setCurrentIndex(currentPage[0])
+    updatePageNumber()
 
 #Select Binary Directory
 def selectBinDirectory():
@@ -250,6 +255,7 @@ widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
 widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
 widget.back.setShortcut('Alt+B')
 widget.next.setShortcut('Alt+N')
+updatePageNumber()
 
 # Page 1 - Intro and graphic
 scene = QGraphicsScene()

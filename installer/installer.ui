@@ -280,6 +280,19 @@
      </widget>
     </widget>
    </widget>
+   <widget class="QLabel" name="positionLabel">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>406</y>
+      <width>381</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Page 1 of 5</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
