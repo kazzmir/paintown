@@ -27,8 +27,39 @@ public:
         }
     }
 
+    enum WalkList{
+        WalkAttribute,
+        WalkValue,
+    };
+
     virtual void walk(Walker & walker){
         walker.onSection(*this);
+        std::list<Attribute*>::iterator attribute_it = attributes.begin();
+        std::list<Value*>::iterator value_it = values.begin();
+
+        /* walk values in the order they came in. hopefully the number of values in the
+         * walkList are the same number of items in the attributes+values lists.
+         * I mean this should be the case since the only operations done to those lists
+         * is adding elements. No one ever removes them.
+         */
+        for (std::list<WalkList>::iterator it = walkList.begin(); it != walkList.end(); it++){
+            WalkList what = *it;
+            switch (what){
+                case WalkAttribute : {
+                    Attribute * attribute = *attribute_it;
+                    attribute->walk(walker);
+                    attribute_it++;
+                    break;
+                }
+                case WalkValue : {
+                    Value * value = *value_it;
+                    value->walk(walker);
+                    value_it++;
+                }
+            }
+        }
+
+        /*
         for (std::list<Attribute*>::iterator it = attributes.begin(); it != attributes.end(); it++){
             Attribute * attribute = *it;
             attribute->walk(walker);
@@ -38,6 +69,7 @@ public:
             Value * value = *it;
             value->walk(walker);
         }
+        */
     }
 
     std::string getName() const {
@@ -46,6 +78,7 @@ public:
 
     void addAttribute(Attribute * attribute){
         attributes.push_back(attribute);
+        walkList.push_back(WalkAttribute);
     }
 
     const std::list<Attribute *> & getAttributes() const {
@@ -54,6 +87,7 @@ public:
 
     void addValue(Value * value){
         values.push_back(value);
+        walkList.push_back(WalkValue);
     }
 
     void debugExplain() {
@@ -138,6 +172,7 @@ private:
     const std::string * name;
     std::list<Attribute *> attributes;
     std::list<Value *> values;
+    std::list<WalkList> walkList;
 };
 
 }
