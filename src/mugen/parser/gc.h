@@ -37,6 +37,18 @@ static void cleanup(SectionList * list){
         }
     }
 
+    /* `memory' is a map of objects to the number of times the object was marked.
+     * an object could be marked more than once because the following loop
+     * will mark every object. if an object is the child of some other object
+     * then it (the child) will be marked once itself and once due to the marking
+     * of the parent. That is, if the child is A and some object B contains A then
+     * the following marks will occur:
+     *   mark(A) -> A is marked
+     *   mark(B) -> B is marked, then A is marked
+     * So A will have a mark count of 2 and B will have a mark count of 1.
+     */
+    std::map<const void *, int> memory;
+
     /* all unmarked pointers should be deleted but since the destructors
      * of AST nodes will delete child objects we only need to delete
      * AST nodes that are not the child object of another node.
@@ -47,11 +59,12 @@ static void cleanup(SectionList * list){
      *
      * this has worst-case performance of O(N^2)
      */
-    std::map<const void *, int> memory;
     for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
         Ast::Collectable & collect = *it;
 
-        /* only look at unmarked objects */
+        /* anything already marked in the `marks' map is a live object so we should
+         * not consider it here.
+         */
         if (! marks[collect.pointer()]){
             std::map<const void *, bool> temp;
             collect.mark(temp);
@@ -66,6 +79,8 @@ static void cleanup(SectionList * list){
     /* finally destroy the nodes with no parents */
     for (std::list<Ast::Collectable>::iterator it = saved_pointers.begin(); it != saved_pointers.end(); it++){
         Ast::Collectable & collect = *it;
+        
+        /* a mark count of 1 signifies objects with no parents */
         if (memory[collect.pointer()] == 1){
             collect.destroy();
         }

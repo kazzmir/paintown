@@ -15,8 +15,24 @@ X as(const Value & value){
     return (X) value.getValue();
 }
 
+std::string * toString(const Value & input){
+  std::ostringstream out;
+  for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
+    out << (char) (long) (*it).getValue();
+  }
+  std::string * object = new std::string(out.str());
+  GC::save(object);
+  return object;
+}
+
 SectionList * makeSectionList(){
     SectionList * object = new SectionList();
+    GC::save(object);
+    return object;
+}
+
+Ast::Section * makeSection(const Value & str){
+    Ast::Section * object = new Ast::Section(as<std::string*>(str));
     GC::save(object);
     return object;
 }
@@ -24,11 +40,9 @@ SectionList * makeSectionList(){
 }}
 
 rules:
-	start = current:{{ value = makeSectionList(); }} whitespace newline* (line whitespace line_end)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
-	line = s comment
-	     | s section
-	     | s assignment
-	     | space+
+	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
+	line(current) = s comment
+	              | s section
 	line_end = newline+
 	         | &<eof> <void>
 	inline newline = "\n"
@@ -42,7 +56,10 @@ rules:
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		    | "-" "-"+
-	section = "[" s (!"]" .)+ "]"
+    section = section_title ast:{{ value = makeSection($1); }} whitespace newline+ (section_item(ast) whitespace line_end)* {{ value = ast; }}
+
+    section_item(ast) = s assignment
+	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = identifier s "=" s expr
 	           | identifier s "(" s integer s ")" s "=" s expr
 	identifier = name ("." name)*
