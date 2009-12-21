@@ -1,25 +1,47 @@
 start-symbol: start
 options: debug0
 module: Mugen.Cmd
+include: {{
+#include "../ast/all.h"
+#include <map>
+#include "gc.h"
+typedef std::list<Ast::Section*> SectionList;
+}}
+
+code: {{
+
+template<class X>
+X as(const Value & value){
+    return (X) value.getValue();
+}
+
+SectionList * makeSectionList(){
+    SectionList * object = new SectionList();
+    GC::save(object);
+    return object;
+}
+
+}}
+
 rules:
-	start = whitespace newline* (line whitespace line_end)* <eof>
+	start = current:{{ value = makeSectionList(); }} whitespace newline* (line whitespace line_end)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
 	line = s comment
 	     | s section
 	     | s assignment
 	     | space+
 	line_end = newline+
 	         | &<eof> <void>
-	newline = "\n"
-	        | "\r"
+	inline newline = "\n"
+	               | "\r"
 	whitespace = sw*
 	sw = space
 	   | comment
 	s = space*
-	space = " "
-	      | "\t"
+	inline space = " "
+	             | "\t"
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
-		| "-" "-"+
+		    | "-" "-"+
 	section = "[" s (!"]" .)+ "]"
 	assignment = identifier s "=" s expr
 	           | identifier s "(" s integer s ")" s "=" s expr
@@ -28,8 +50,8 @@ rules:
 	string = <quote> (!<quote> !"\n" .)* <quote>
 	float = sign? digit* "." digit+
 	      | sign? digit+ "."
-	sign = "-"
-	     | "+"
+	inline sign = "-"
+	            | "+"
 	range = "[" s valuelist s "]"
 	      | "(" s valuelist s ")"
 	      | "(" s valuelist s "]"
@@ -38,7 +60,7 @@ rules:
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
-	digit = [0123456789]
+	inline digit = [0123456789]
 	
 	valuelist = expr_c (s "," s expr_c)*
 	          | s "," s expr_c ("," s expr_c)*
@@ -84,12 +106,12 @@ rules:
 	expr9_rest = s compare s expr10 expr9_rest
 	           | <void>
 	compare = "<="
-		| ">="
-		| "<"
+		    | ">="
+		    | "<"
 	        | ">"
 	all_compare = compare
 	            | "="
-		    | "!="
+		        | "!="
 	expr10_rest = s "+" s expr11 expr10_rest
 	            | s "-" s expr11 expr10_rest
 		    | <void>
