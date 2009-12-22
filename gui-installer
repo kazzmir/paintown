@@ -33,7 +33,7 @@ currentPage = [0]
 #Create Directory
 def createDirectory(str):
     if not os.path.exists(str):
-	os.makedirs(str)
+        os.makedirs(str)
 
 signals = [0]
 def generateSignal():
@@ -77,11 +77,11 @@ def copyData(widget, emitter):
             def update(str):
                 emitter(lambda: widget.append(str))
             update('Copying %s...' % tmpFile)
-	    # Create directory and copy
-	    def dataCopy(dstr,rstr,tstr):
-		emitter(lambda: createDirectory(dstr + '/' + rstr))
-		emitter(lambda: shutil.copy(tstr,dstr + '/' + tstr))
-	    dataCopy(dataLocation[0],root,tmpFile)
+        # Create directory and copy
+        def dataCopy(dstr,rstr,tstr):
+            emitter(lambda: createDirectory(dstr + '/' + rstr))
+        emitter(lambda: shutil.copy(tstr,dstr + '/' + tstr))
+        dataCopy(dataLocation[0],root,tmpFile)
     # Copy paintown to paintown-bin
     emitter(lambda: widget.append('Copying paintown...'))
     emitter(lambda: shutil.copy('paintown', dataLocation[0] + '/' + 'paintown-bin'))
@@ -229,14 +229,14 @@ def forwardButton():
         # copyData(widget.installOutput)
         doBackground(lambda emitter: copyData(widget.installOutput, emitter))
         widget.next.setEnabled(True)
-	widget.installLabel.setText('Complete.')
+        widget.installLabel.setText('Complete.')
         allowExit[0] = True
     elif currentPage[0] == 4:
         allowExit[0] = True
         widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
         widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
         widget.next.setText('&Exit')
-	widget.next.setShortcut('Alt+E')
+    widget.next.setShortcut('Alt+E')
     widget.stackedWidget.setCurrentIndex(currentPage[0])
     updatePageNumber()
 
