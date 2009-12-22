@@ -31,6 +31,15 @@ SectionList * makeSectionList(){
     return object;
 }
 
+void addSection(const Value & section_list_value, const Value & section_value){
+    SectionList * sections = (SectionList*) section_list_value.getValue();
+    Ast::Section * section = (Ast::Section*) section_value.getValue();
+    if (section == 0){
+            throw ParseException("Cannot add null section");
+    }
+    sections->push_back(section);
+}
+
 Ast::Section * makeSection(const Value & str){
     Ast::Section * object = new Ast::Section(as<std::string*>(str));
     GC::save(object);
@@ -42,7 +51,7 @@ Ast::Section * makeSection(const Value & str){
 rules:
 	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
 	line(current) = s comment
-	              | s section
+	              | s section {{ addSection($2); }}
 	line_end = newline+
 	         | &<eof> <void>
 	inline newline = "\n"
@@ -144,7 +153,8 @@ rules:
 	expr13_real = function
 	      | value
 	      | "(" s expr s ")"
-        function = "abs"{case} s "(" s expr s ")"
+
+    function = "abs"{case} s "(" s expr s ")"
 	         | "const"{case} s "(" s expr s ")"
 		 | "selfanimexist"{case} s "(" s expr s ")"
 		 | "ifelse"{case} s "(" s expr_c s "," s expr_c s "," s expr_c s ")"

@@ -355,25 +355,46 @@ rules:
 
     test_all('test5', grammar, input)
 
-tests = [test1, test2, test3, test4, test5]
-import sys
-failures = 0
-run = 0
-if len(sys.argv) > 1:
-    for num in sys.argv[1:]:
-        try:
-            run += 1
-            tests[int(num) - 1]()
-        except TestException as t:
-            failures += 1
-            print t
-else:
-    for test in tests:
-        try:
-            run += 1
-            test()
-        except TestException as t:
-            failures += 1
-            print t
-print
-print "Tests run %d. Failures %d" % (run, failures)
+def test6():
+    grammar = """
+start-symbol: start
+rules:
+    start = x:x sum[a](x) sum[b](x) sum[c](x) sum2[d,e](x)
+    sum[what](arg) = @what(arg)
+    sum2[what,who](arg) = @what[@who](arg)
+    a(x) = "a"
+    b(x) = "b"
+    c(arg) = "c"
+    d[fuz](more) = @fuz(more)
+    e(more) = "e"
+    x = "x"
+"""
+
+    input = "xabce"
+    test_all('test6', grammar, input)
+
+def run():
+    tests = [test1, test2, test3, test4, test5, test6]
+    import sys
+    failures = 0
+    run = 0
+    if len(sys.argv) > 1:
+        for num in sys.argv[1:]:
+            try:
+                run += 1
+                tests[int(num) - 1]()
+            except TestException as t:
+                failures += 1
+                print t
+    else:
+        for test in tests:
+            try:
+                run += 1
+                test()
+            except TestException as t:
+                failures += 1
+                print t
+    print
+    print "Tests run %d. Failures %d" % (run, failures)
+
+run()
