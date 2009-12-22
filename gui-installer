@@ -30,10 +30,18 @@ dataLocation = ['/usr/games']
 allowExit = [True]
 currentPage = [0]
 
+# Higher numbers of verbose will print more stuff (and slow the program down)
+verbose = 0
+
+def debug(s):
+    if verbose > 0:
+        print s
+
 #Create Directory
-def createDirectory(str):
-    if not os.path.exists(str):
-        os.makedirs(str)
+def createDirectory(path):
+    debug("Creating directory '%s'" % path)
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 signals = [0]
 def generateSignal():
@@ -50,7 +58,7 @@ def setDataFileInfo(widget, emitter):
     for root, dirs, files in os.walk("data"):
         for file in files:
             tmpFile = os.path.join(root, file)
-            if 'svn' in tmpFile:
+            if '.svn' in tmpFile:
                 continue
             # widget.emit(SIGNAL(signal), lambda: widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root))
 
@@ -58,6 +66,7 @@ def setDataFileInfo(widget, emitter):
             # will ensure `path' stores its value correctly
             def doit(path):
                 emitter(lambda: widget.append(path))
+            # This string is ugly, use something that looks nicer
             doit(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
             # emitter(lambda: widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root))
             # widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
@@ -67,7 +76,7 @@ def setDataFileInfo(widget, emitter):
     emitter(lambda: widget.moveCursor(QTextCursor.Start))
 
 # Copy Data
-def copyData(widget, emitter):
+def copyData(currentRoot, widget, emitter):
     for root, dirs, files in os.walk("data"):
         for file in files:
             tmpFile = os.path.join(root, file)
@@ -77,15 +86,23 @@ def copyData(widget, emitter):
             def update(str):
                 emitter(lambda: widget.append(str))
             update('Copying %s...' % tmpFile)
-        # Create directory and copy
-        def dataCopy(dstr,rstr,tstr):
-            emitter(lambda: createDirectory(dstr + '/' + rstr))
-        emitter(lambda: shutil.copy(tstr,dstr + '/' + tstr))
-        dataCopy(dataLocation[0],root,tmpFile)
+            # Create directory and copy
+            def dataCopy(dstr, rstr, tstr):
+                #emitter(lambda: createDirectory(dstr + '/' + rstr))
+                #emitter(lambda: shutil.copy(tstr, dstr + '/' + tstr))
+                createDirectory(str(dstr + '/' + rstr))
+                shutil.copy(str(tstr), str(dstr + '/' + tstr))
+
+            try:
+                dataCopy(currentRoot, root, tmpFile)
+            except Exception:
+                print "Could not copy %s!" % tmpFile
     # Copy paintown to paintown-bin
     emitter(lambda: widget.append('Copying paintown...'))
-    emitter(lambda: shutil.copy('paintown', dataLocation[0] + '/' + 'paintown-bin'))
-    emitter(lambda: os.chmod(dataLocation[0] + '/' + 'paintown-bin', stat.S_IEXEC))
+    # emitter(lambda: shutil.copy('paintown', dataLocation[0] + '/' + 'paintown-bin'))
+    shutil.copy('paintown', str(currentRoot + '/' + 'paintown-bin'))
+    # emitter(lambda: os.chmod(dataLocation[0] + '/' + 'paintown-bin', stat.S_IEXEC))
+    os.chmod(str(currentRoot + '/' + 'paintown-bin'), stat.S_IEXEC)
     # FIXME: Create script to invoke paintown
     # echo "$data_dir/paintown-bin -d $data_dir/data" >> $bin_dir/paintown
     # chmod +x $bin_dir/paintown
@@ -227,7 +244,7 @@ def forwardButton():
         widget.stackedWidget.setCurrentIndex(currentPage[0])
         # ****FIXME**** Copy data ---- Need to do this in realtime or else it hangs the GUI
         # copyData(widget.installOutput)
-        doBackground(lambda emitter: copyData(widget.installOutput, emitter))
+        doBackground(lambda emitter: copyData(dataLocation[0], widget.installOutput, emitter))
         widget.next.setEnabled(True)
         widget.installLabel.setText('Complete.')
         allowExit[0] = True
