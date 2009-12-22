@@ -28,6 +28,16 @@ public:
         Assignment,
         Equals,
         Unequals,
+        GreaterThanEquals,
+        GreaterThan,
+        LessThanEquals,
+        LessThan,
+        Add,
+        Subtract,
+        Multiply,
+        Divide,
+        Modulo,
+        Power,
     };
 
     ExpressionInfix(InfixType type, const Value * left, const Value * right):
@@ -60,6 +70,16 @@ public:
             case Assignment : return "!=";
             case Equals : return "=";
             case Unequals : return "!=";
+            case GreaterThanEquals : return ">=";
+            case GreaterThan : return ">";
+            case LessThanEquals : return "<=";
+            case LessThan : return "<";
+            case Add : return "+";
+            case Subtract : return "-";
+            case Multiply : return "*";
+            case Divide : return "/";
+            case Modulo : return "%";
+            case Power : return "**";
         }
     }
 

@@ -25,6 +25,20 @@ std::string * toString(const Value & input){
   return object;
 }
 
+Ast::Value * makeInteger(const Value & sign, const Value & digits){
+    std::istringstream in(*toString(digits));
+    double value = 0;
+    in >> value;
+
+    if (sign.getValue() != 0){
+        value = -value;
+    }
+    
+    Ast::Number * object = new Ast::Number(value);
+    GC::save(object);
+    return object;
+}
+
 std::string * toString(char front, const Value & input){
   std::string * str = toString(input);
   str->insert(str->begin(), front);
@@ -77,12 +91,52 @@ Ast::Value * makeExpressionUnequals(const Value & left, const Value & right){
     return makeExpressionInfix(Ast::ExpressionInfix::Unequals, left, right);
 }
 
+Ast::Value * makeExpressionGreaterThanEquals(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals, left, right);
+}
+
+Ast::Value * makeExpressionGreaterThan(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::GreaterThan, left, right);
+}
+
+Ast::Value * makeExpressionLessThanEquals(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::LessThanEquals, left, right);
+}
+
+Ast::Value * makeExpressionLessThan(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::LessThan, left, right);
+}
+
 Ast::Value * makeExpressionXOr(const Value & left, const Value & right){
     return makeExpressionInfix(Ast::ExpressionInfix::XOr, left, right);
 }
 
 Ast::Value * makeExpressionAnd(const Value & left, const Value & right){
     return makeExpressionInfix(Ast::ExpressionInfix::And, left, right);
+}
+
+Ast::Value * makeExpressionAdd(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Add, left, right);
+}
+
+Ast::Value * makeExpressionSubtract(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Subtract, left, right);
+}
+
+Ast::Value * makeExpressionMultiply(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Multiply, left, right);
+}
+
+Ast::Value * makeExpressionDivide(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Divide, left, right);
+}
+
+Ast::Value * makeExpressionModulo(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Modulo, left, right);
+}
+
+Ast::Value * makeExpressionPower(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Power, left, right);
 }
 
 Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
@@ -143,7 +197,7 @@ rules:
 	assignment = name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
 	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
 	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}
-	integer = sign? digit+
+	integer = sign? digit+ {{ value = makeInteger($1, $2); }}
 	string = <quote> (!<quote> !"\n" .)* <quote>
 	float = sign? digit* "." digit+
 	      | sign? digit+ "."
@@ -169,6 +223,7 @@ rules:
 	       # I dont think this is right
 	       # | expr2_rest
 	
+    # Increasing order of precedence
 	expr2 = left:expr3 expr2_rest(left)
 	expr3 = left:expr4 expr3_rest(left)
 	expr4 = left:expr5 expr4_rest(left)
@@ -176,11 +231,11 @@ rules:
 	expr6 = left:expr7 expr6_rest(left)
 	expr7 = left:expr8 expr7_rest(left)
 	expr8 = left:expr9 expr8_rest(left)
-	expr9 = left:expr10 expr9_rest {{ value = makeExpression(); }}
-	expr10 = left:expr11 expr10_rest {{ value = makeExpression(); }}
-	expr11 = left:expr12 expr11_rest {{ value = makeExpression(); }}
-	expr12 = left:expr13 expr12_rest {{ value = makeExpression(); }}
-	expr13 = unary* expr13_real {{ value = makeExpression(); }}
+	expr9 = left:expr10 expr9_rest(left)
+	expr10 = left:expr11 expr10_rest(left)
+	expr11 = left:expr12 expr11_rest(left)
+	expr12 = left:expr13 expr12_rest(left)
+	expr13 = unary* expr13_real
 
 	expr_rest(left) = s "||" s right:expr2 new_left:{{ value = makeExpressionOr(left, right); }} expr_rest(new_left)
 	                | <void> {{ value = left; }}
@@ -201,28 +256,28 @@ rules:
 	                 | s "!=" s right:expr9 new_left:{{ value = makeExpressionUnequals(left, right); }} expr8_rest(new_left)
 		             # todo: intervals
 	                 | <void> {{ value = left; }}
-	expr9_rest = s compare s expr10 expr9_rest
-	           | <void>
-	compare = "<="
-		    | ">="
-		    | "<"
-	        | ">"
+	expr9_rest(left) = s maker:compare s right:expr10 new_left:{{ { typedef Ast::Value * (*compare_func)(const Value &, const Value &); value = as<compare_func>(maker)(left, right); } }} expr9_rest(new_left)
+	                 | <void> {{ value = left; }}
+	compare = "<=" {{ value = (void *) makeExpressionLessThanEquals; }}
+		    | ">=" {{ value = (void *) makeExpressionGreaterThanEquals; }}
+		    | "<" {{ value = (void *) makeExpressionLessThan; }}
+	        | ">" {{ value = (void *) makeExpressionGreaterThan; }}
 	all_compare = compare
 	            | "="
 		        | "!="
-	expr10_rest = s "+" s expr11 expr10_rest
-	            | s "-" s expr11 expr10_rest
-		    | <void>
-	expr11_rest = s "*" s expr12 expr11_rest
-	            | s "/" s expr12 expr11_rest
-	            | s "%" s expr12 expr11_rest
-		    | <void>
-	expr12_rest = s "**" s expr13 expr12_rest
-	            | <void>
+	expr10_rest(left) = s "+" s right:expr11 new_left:{{ value = makeExpressionAdd(left, right); }} expr10_rest(new_left)
+	                  | s "-" s right:expr11 new_left:{{ value = makeExpressionSubtract(left, right); }} expr10_rest(new_left)
+		              | <void> {{ value = left; }}
+	expr11_rest(left) = s "*" s right:expr12 new_left:{{ value = makeExpressionMultiply(left, right); }} expr11_rest(new_left)
+	                  | s "/" s right:expr12 new_left:{{ value = makeExpressionDivide(left, right); }} expr11_rest(new_left)
+	                  | s "%" s right:expr12 new_left:{{ value = makeExpressionModulo(left, right); }} expr11_rest(new_left)
+		              | <void> {{ value = left; }}
+	expr12_rest(left) = s "**" s right:expr13 new_left:{{ value = makeExpressionPower(left, right); }} expr12_rest(new_left)
+	                  | <void> {{ value = left; }}
 	unary = "!"
 	      | "-"
 	      | "~" !key !digit
-	expr13_real = function
+	expr13_real = function {{ value = makeExpression(); }}
 	            | value
 	            | "(" s e:expr s ")" {{ value = e; }}
 
@@ -258,31 +313,31 @@ rules:
 	key_real = key_modifier* key_name
 	key_modifier = "~" digit*
 	             | "$"
-		     | "/"
-		     | ">"
+		         | "/"
+		         | ">"
 	key_name = "DB"
-		 | "B"
-		 | "DF"
-		 | "D"
-		 | "F"
-		 | "UF"
-		 | "UB"
-		 | "U"
-		 | "a"
-		 | "b"
-		 | "c"
-		 | "x"
-		 | "y"
-		 | "z"
-		 | "s"
+		     | "B"
+		     | "DF"
+		     | "D"
+		     | "F"
+		     | "UF"
+		     | "UB"
+		     | "U"
+		     | "a"
+		     | "b"
+		     | "c"
+		     | "x"
+		     | "y"
+		     | "z"
+		     | "s"
 
-	value = float
+	value = float {{ value = makeExpression(); }}
 	      | integer
-	      | keyword
+	      | keyword {{ value = makeExpression(); }}
 	      | !keyword identifier
-	      | range
-	      | string
-	      | key
+	      | range {{ value = makeExpression(); }}
+	      | string {{ value = makeExpression(); }}
+	      | key {{ value = makeExpression(); }}
 	
 	keyword = keyword_real !alpha_digit
 	keyword_real = "vel"{case} s "y"{case}
