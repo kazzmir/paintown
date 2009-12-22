@@ -5,7 +5,8 @@
 
 # Copy files to some directory, symlink the binary.
 
-import sys, os, shutil
+import sys, os, shutil, stat
+from stat import *
 
 class Signals:
     pass
@@ -28,6 +29,11 @@ binLocation = ['/usr/share/games/paintown']
 dataLocation = ['/usr/games']
 allowExit = [True]
 currentPage = [0]
+
+#Create Directory
+def createDirectory(str):
+    if not os.path.exists(str):
+	os.makedirs(str)
 
 signals = [0]
 def generateSignal():
@@ -71,12 +77,15 @@ def copyData(widget, emitter):
             def update(str):
                 emitter(lambda: widget.append(str))
             update('Copying %s...' % tmpFile)
-            # <Put the actual copy command right here>
-    # FIXME: Copy paintown to paintown-bin
+	    # Create directory and copy
+	    def dataCopy(dstr,rstr,tstr):
+		emitter(lambda: createDirectory(dstr + '/' + rstr))
+		emitter(lambda: shutil.copy(tstr,dstr + '/' + tstr))
+	    dataCopy(dataLocation[0],root,tmpFile)
+    # Copy paintown to paintown-bin
     emitter(lambda: widget.append('Copying paintown...'))
-    # <Put the actual copy command right here>
-
-    # widget.append('Copying paintown...')
+    emitter(lambda: shutil.copy('paintown', dataLocation[0] + '/' + 'paintown-bin'))
+    emitter(lambda: os.chmod(dataLocation[0] + '/' + 'paintown-bin', stat.S_IEXEC))
     # FIXME: Create script to invoke paintown
     # echo "$data_dir/paintown-bin -d $data_dir/data" >> $bin_dir/paintown
     # chmod +x $bin_dir/paintown
@@ -220,12 +229,14 @@ def forwardButton():
         # copyData(widget.installOutput)
         doBackground(lambda emitter: copyData(widget.installOutput, emitter))
         widget.next.setEnabled(True)
+	widget.installLabel.setText('Complete.')
         allowExit[0] = True
     elif currentPage[0] == 4:
         allowExit[0] = True
         widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
         widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
-        widget.next.setText('Exit')
+        widget.next.setText('&Exit')
+	widget.next.setShortcut('Alt+E')
     widget.stackedWidget.setCurrentIndex(currentPage[0])
     updatePageNumber()
 

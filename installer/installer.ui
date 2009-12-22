@@ -236,12 +236,12 @@
       </widget>
      </widget>
      <widget class="QWidget" name="page4">
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="installLabel">
        <property name="geometry">
         <rect>
          <x>20</x>
          <y>20</y>
-         <width>331</width>
+         <width>391</width>
          <height>16</height>
         </rect>
        </property>
