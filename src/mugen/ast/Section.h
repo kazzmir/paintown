@@ -55,6 +55,7 @@ public:
                     Value * value = *value_it;
                     value->walk(walker);
                     value_it++;
+                    break;
                 }
             }
         }
@@ -88,6 +89,34 @@ public:
     void addValue(Value * value){
         values.push_back(value);
         walkList.push_back(WalkValue);
+    }
+    
+    std::string toString(){
+        std::ostringstream out;
+
+        out << "[" << *name << "]" << std::endl;
+        
+        std::list<Attribute*>::iterator attribute_it = attributes.begin();
+        std::list<Value*>::iterator value_it = values.begin();
+        for (std::list<WalkList>::iterator it = walkList.begin(); it != walkList.end(); it++){
+            WalkList what = *it;
+            switch (what){
+                case WalkAttribute : {
+                    Attribute * attribute = *attribute_it;
+                    out << attribute->toString() << std::endl;
+                    attribute_it++;
+                    break;
+                }
+                case WalkValue : {
+                    Value * value = *value_it;
+                    out << value->toString() << std::endl;
+                    value_it++;
+                    break;
+                }
+            }
+        }
+
+        return out.str();
     }
 
     void debugExplain() {

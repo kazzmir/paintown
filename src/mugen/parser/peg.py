@@ -1379,6 +1379,8 @@ Result %s(%s.getPosition());
                 if len(tail) == 0:
                     return ""
                 else:
+                    if pattern.parameters == None or len(tail) != len(pattern.parameters):
+                        raise Exception("Expected parameters %s but got %s while calling rule '%s'" % (tail, pattern.parameters, pattern.rule))
                     return '\n'.join(["%s = %s;" % (q[0], me.fixup_cpp(q[1], peg_args)) for q in zip(tail, pattern.parameters)])
             else:
                 def change(arg):

@@ -67,11 +67,11 @@ public:
     }
 
     /* just the identifier */
-    std::string idString() const {
+    virtual std::string idString() const {
         return name->toString();
     }
 
-    std::string toString() const {
+    virtual std::string toString() const {
         std::ostringstream out;
         if (value != 0){
             out << name->toString() << " = " << value->toString();

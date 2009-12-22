@@ -3,6 +3,7 @@
 
 #include "walker.h"
 #include <map>
+#include <string>
 
 namespace Ast{
 
@@ -30,6 +31,8 @@ public:
 
     virtual void debugExplain(){
     }
+
+    virtual std::string toString() const = 0;
 
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;

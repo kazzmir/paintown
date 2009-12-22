@@ -25,8 +25,51 @@ std::string * toString(const Value & input){
   return object;
 }
 
+std::string * toString(char front, const Value & input){
+  std::string * str = toString(input);
+  str->insert(str->begin(), front);
+  return str;
+}
+
 SectionList * makeSectionList(){
     SectionList * object = new SectionList();
+    GC::save(object);
+    return object;
+}
+
+Ast::Value * makeExpression(){
+    Ast::Value * object = new Ast::Expression();
+    GC::save(object);
+    return object;
+}
+
+Ast::Value * makeExpressionInfix(Ast::ExpressionInfix::InfixType type, const Value & left, const Value & right){
+    Ast::Value * object = new Ast::ExpressionInfix(type, as<Ast::Value*>(left), as<Ast::Value*>(right));
+    GC::save(object);
+    return object;
+}
+
+Ast::Value * makeExpressionOr(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Or, left, right);
+}
+
+Ast::Value * makeExpressionAnd(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::And, left, right);
+}
+
+Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
+    std::list<std::string*> ids;
+    ids.push_back(as<std::string*>(front));
+    for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
+        ids.push_back(as<std::string*>((*it).getValue()));
+    }
+    Ast::Identifier * object = new Ast::Identifier(ids);
+    GC::save(object);
+    return object;
+}
+
+Ast::Attribute * makeAttribute(const Value & id, const Value & data){
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
     GC::save(object);
     return object;
 }
@@ -51,7 +94,7 @@ Ast::Section * makeSection(const Value & str){
 rules:
 	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
 	line(current) = s comment
-	              | s section {{ addSection($2); }}
+	              | s section {{ addSection(current, $2); }}
 	line_end = newline+
 	         | &<eof> <void>
 	inline newline = "\n"
@@ -67,11 +110,11 @@ rules:
 		    | "-" "-"+
     section = section_title ast:{{ value = makeSection($1); }} whitespace newline+ (section_item(ast) whitespace line_end)* {{ value = ast; }}
 
-    section_item(ast) = s assignment
+    section_item(ast) = s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
-	assignment = identifier s "=" s expr
-	           | identifier s "(" s integer s ")" s "=" s expr
-	identifier = name ("." name)*
+	assignment = name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
+	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
+	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}
 	integer = sign? digit+
 	string = <quote> (!<quote> !"\n" .)* <quote>
 	float = sign? digit* "." digit+
@@ -82,7 +125,7 @@ rules:
 	      | "(" s valuelist s ")"
 	      | "(" s valuelist s "]"
 	      | "[" s valuelist s ")"
-	name = letter alpha_digit*
+	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
 	            | digit
@@ -91,31 +134,32 @@ rules:
 	valuelist = expr_c (s "," s expr_c)*
 	          | s "," s expr_c ("," s expr_c)*
 
-	expr = expr_c !(s ",")
-	     | valuelist
-	expr_c = expr2 expr_rest
-	       # I dont think this is right
-	       | expr2_rest
-	
-	expr2 = expr3 expr2_rest
-	expr3 = expr4 expr3_rest
-	expr4 = expr5 expr4_rest
-	expr5 = expr6 expr5_rest
-	expr6 = expr7 expr6_rest
-	expr7 = expr8 expr7_rest
-	expr8 = expr9 expr8_rest
-	expr9 = expr10 expr9_rest
-	expr10 = expr11 expr10_rest
-	expr11 = expr12 expr11_rest
-	expr12 = expr13 expr12_rest
-	expr13 = unary* expr13_real
+	expr = expr_c !(s ",") {{ value = $1; }}
+	     | valuelist {{ value = makeExpression(); }}
 
-	expr_rest = s "||" s expr2 expr_rest
-	          | <void>
-	expr2_rest = s "^^" s expr3 expr2_rest
-	           | <void>
-	expr3_rest = s "&&" s expr4 expr3_rest
-	           | <void>
+	expr_c = left:expr2 expr_rest(left)
+	       # I dont think this is right
+	       # | expr2_rest
+	
+	expr2 = left:expr3 expr2_rest(left)
+	expr3 = left:expr4 expr3_rest(left)
+	expr4 = left:expr5 expr4_rest {{ value = makeExpression(); }}
+	expr5 = left:expr6 expr5_rest {{ value = makeExpression(); }}
+	expr6 = left:expr7 expr6_rest {{ value = makeExpression(); }}
+	expr7 = left:expr8 expr7_rest {{ value = makeExpression(); }}
+	expr8 = left:expr9 expr8_rest {{ value = makeExpression(); }}
+	expr9 = left:expr10 expr9_rest {{ value = makeExpression(); }}
+	expr10 = left:expr11 expr10_rest {{ value = makeExpression(); }}
+	expr11 = left:expr12 expr11_rest {{ value = makeExpression(); }}
+	expr12 = left:expr13 expr12_rest {{ value = makeExpression(); }}
+	expr13 = unary* expr13_real {{ value = makeExpression(); }}
+
+	expr_rest(left) = s "||" s right:expr2 new_left:{{ value = makeExpressionOr(left, right); }} expr_rest(new_left)
+	                | <void> {{ value = left; }}
+	expr2_rest(left) = s "^^" s expr3 expr2_rest(left)
+	                 | <void> {{ value = left; }}
+	expr3_rest(left) = s "&&" s right:expr4 new_left:{{ value = makeExpressionAnd(left, right); }} expr3_rest(new_left)
+	                 | <void> {{ value = left; }}
 	expr4_rest = s "|" s expr5 expr4_rest
 	           | <void>
 	expr5_rest = s "^" s expr6 expr5_rest
@@ -151,8 +195,8 @@ rules:
 	      | "-"
 	      | "~" !key !digit
 	expr13_real = function
-	      | value
-	      | "(" s expr s ")"
+	            | value
+	            | "(" s e:expr s ")" {{ value = e; }}
 
     function = "abs"{case} s "(" s expr s ")"
 	         | "const"{case} s "(" s expr s ")"

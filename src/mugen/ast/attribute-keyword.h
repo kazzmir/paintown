@@ -71,7 +71,7 @@ public:
         return name->toString();
     }
 
-    std::string toString() const {
+    virtual std::string toString() const {
         std::ostringstream out;
         if (value != 0){
             out << name->toString() << " = " << value->toString();
