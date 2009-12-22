@@ -20,7 +20,14 @@ class ExpressionInfix: public Expression {
 public:
     enum InfixType{
         Or,
+        XOr,
         And,
+        BitwiseOr,
+        BitwiseXOr,
+        BitwiseAnd,
+        Assignment,
+        Equals,
+        Unequals,
     };
 
     ExpressionInfix(InfixType type, const Value * left, const Value * right):
@@ -46,6 +53,13 @@ public:
         switch (type){
             case Or : return "||";
             case And : return "&&";
+            case XOr : return "^^";
+            case BitwiseOr : return "|";
+            case BitwiseXOr : return "^";
+            case BitwiseAnd : return "&";
+            case Assignment : return "!=";
+            case Equals : return "=";
+            case Unequals : return "!=";
         }
     }
 

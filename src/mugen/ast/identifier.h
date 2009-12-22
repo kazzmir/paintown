@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <map>
 
+#include "Value.h"
+
 namespace Ast{
 
-class Identifier{
+class Identifier: public Value {
 public:
     Identifier(const std::list<std::string*> & names):
     names(names){
@@ -27,8 +29,12 @@ public:
     bool operator==(const std::string & str) const {
         return downcase(toString()) == downcase(str);
     }
+    
+    virtual std::string getType() const {
+        return "identifier";
+    }
 
-    std::string toString() const {
+    virtual std::string toString() const {
         std::ostringstream out;
         bool first = true;
         for (std::list<std::string*>::const_iterator it = names.begin(); it != names.end(); it++){

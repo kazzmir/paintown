@@ -53,6 +53,34 @@ Ast::Value * makeExpressionOr(const Value & left, const Value & right){
     return makeExpressionInfix(Ast::ExpressionInfix::Or, left, right);
 }
 
+Ast::Value * makeExpressionBitwiseOr(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::BitwiseOr, left, right);
+}
+
+Ast::Value * makeExpressionBitwiseXOr(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::BitwiseXOr, left, right);
+}
+
+Ast::Value * makeExpressionBitwiseAnd(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::BitwiseAnd, left, right);
+}
+
+Ast::Value * makeExpressionAssignment(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Assignment, left, right);
+}
+
+Ast::Value * makeExpressionEquals(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Equals, left, right);
+}
+
+Ast::Value * makeExpressionUnequals(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::Unequals, left, right);
+}
+
+Ast::Value * makeExpressionXOr(const Value & left, const Value & right){
+    return makeExpressionInfix(Ast::ExpressionInfix::XOr, left, right);
+}
+
 Ast::Value * makeExpressionAnd(const Value & left, const Value & right){
     return makeExpressionInfix(Ast::ExpressionInfix::And, left, right);
 }
@@ -143,11 +171,11 @@ rules:
 	
 	expr2 = left:expr3 expr2_rest(left)
 	expr3 = left:expr4 expr3_rest(left)
-	expr4 = left:expr5 expr4_rest {{ value = makeExpression(); }}
-	expr5 = left:expr6 expr5_rest {{ value = makeExpression(); }}
-	expr6 = left:expr7 expr6_rest {{ value = makeExpression(); }}
-	expr7 = left:expr8 expr7_rest {{ value = makeExpression(); }}
-	expr8 = left:expr9 expr8_rest {{ value = makeExpression(); }}
+	expr4 = left:expr5 expr4_rest(left)
+	expr5 = left:expr6 expr5_rest(left)
+	expr6 = left:expr7 expr6_rest(left)
+	expr7 = left:expr8 expr7_rest(left)
+	expr8 = left:expr9 expr8_rest(left)
 	expr9 = left:expr10 expr9_rest {{ value = makeExpression(); }}
 	expr10 = left:expr11 expr10_rest {{ value = makeExpression(); }}
 	expr11 = left:expr12 expr11_rest {{ value = makeExpression(); }}
@@ -156,23 +184,23 @@ rules:
 
 	expr_rest(left) = s "||" s right:expr2 new_left:{{ value = makeExpressionOr(left, right); }} expr_rest(new_left)
 	                | <void> {{ value = left; }}
-	expr2_rest(left) = s "^^" s expr3 expr2_rest(left)
+	expr2_rest(left) = s "^^" s right:expr3 new_left:{{ value = makeExpressionXOr(left, right); }} expr2_rest(new_left)
 	                 | <void> {{ value = left; }}
 	expr3_rest(left) = s "&&" s right:expr4 new_left:{{ value = makeExpressionAnd(left, right); }} expr3_rest(new_left)
 	                 | <void> {{ value = left; }}
-	expr4_rest = s "|" s expr5 expr4_rest
-	           | <void>
-	expr5_rest = s "^" s expr6 expr5_rest
-	           | <void>
-	expr6_rest = s "&" s expr7 expr6_rest
-	           | <void>
-	expr7_rest = s ":=" s expr8 expr7_rest
-	           | <void>
+	expr4_rest(left) = s "|" s right:expr5 new_left:{{ value = makeExpressionBitwiseOr(left, right); }} expr4_rest(new_left)
+	                 | <void> {{ value = left; }}
+	expr5_rest(left) = s "^" s right:expr6 new_left:{{ value = makeExpressionBitwiseXOr(left, right); }} expr5_rest(new_left)
+	                 | <void> {{ value = left; }}
+	expr6_rest(left) = s "&" s right:expr7 new_left:{{ value = makeExpressionBitwiseAnd(left, right); }} expr6_rest(new_left)
+	                 | <void> {{ value = left; }}
+	expr7_rest(left) = s ":=" s right:expr8 new_left:{{ value = makeExpressionAssignment(left, right); }} expr7_rest(new_left)
+	                 | <void> {{ value = left; }}
 	# todo: fix expr8_rest
-	expr8_rest = s "=" s expr9 expr8_rest
-	           | s "!=" s expr9 expr8_rest
-		   # todo: intervals
-	           | <void>
+	expr8_rest(left) = s "=" s right:expr9 new_left:{{ value = makeExpressionEquals(left, right); }} expr8_rest(new_left)
+	                 | s "!=" s right:expr9 new_left:{{ value = makeExpressionUnequals(left, right); }} expr8_rest(new_left)
+		             # todo: intervals
+	                 | <void> {{ value = left; }}
 	expr9_rest = s compare s expr10 expr9_rest
 	           | <void>
 	compare = "<="
