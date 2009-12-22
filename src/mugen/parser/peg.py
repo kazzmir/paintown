@@ -1330,6 +1330,7 @@ if (%s.error()){
     def generate_rule(me, pattern, peg, result, stream, failure, tail, peg_args):
         rule = peg.getRule(pattern.rule)
         if rule != None and rule.isInline():
+            # TODO: add rule parameters and regular parameters for inlined rules
             if tail != None:
                 raise Exception("Do not combine inlined rules that use tail recursion")
             def newPattern(pattern, stream, result, success):
@@ -1373,6 +1374,7 @@ Result %s(%s.getPosition());
 """ % ('\n'.join([newPattern(pattern, stream, result, "goto %s;" % success_out).strip() for pattern in rule.patterns]), failure(), success_out)
             return data
         else:
+            # TODO: add rule parameters here
             if tail != None:
                 if len(tail) == 0:
                     return ""
@@ -1382,6 +1384,8 @@ Result %s(%s.getPosition());
                 def change(arg):
                     if arg.startswith('@'):
                         return arg[1:]
+                    if peg.getRule(arg) == None:
+                        raise Exception("Cannot find rule '%s' while trying to call rule '%s'" % (arg, pattern.rule))
                     return '(void*) rule_%s' % arg
                 rule_parameters = ""
                 if pattern.rules != None:
