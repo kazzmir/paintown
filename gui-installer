@@ -53,7 +53,7 @@ def updatePageNumber():
     widget.positionLabel.setText('Page ' + str(widget.stackedWidget.currentIndex() + 1) + ' of ' + str(widget.stackedWidget.count()))
 
 # Set Info on Data that will be copied
-def setDataFileInfo(widget, emitter):
+def setDataFileInfo(location, widget, emitter):
     # widget.clear()
     for root, dirs, files in os.walk("data"):
         for file in files:
@@ -67,11 +67,11 @@ def setDataFileInfo(widget, emitter):
             def doit(path):
                 emitter(lambda: widget.append(path))
             # This string is ugly, use something that looks nicer
-            doit(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
+            doit(tmpFile + '      >>      ' + location + '/' + root)
             # emitter(lambda: widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root))
             # widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
     #widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin')
-    emitter(lambda: widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin'))
+    emitter(lambda: widget.append('paintown' + '      >>      ' + location + '/paintown-bin'))
     #widget.moveCursor(QTextCursor.Start)
     emitter(lambda: widget.moveCursor(QTextCursor.Start))
 
@@ -158,7 +158,9 @@ def doBackground(func):
 def updateFileList():
     # Set data info
     widget.textBrowser.clear()
-    doBackground(lambda emitter: setDataFileInfo(widget.textBrowser, emitter))
+    def doit(location):
+        doBackground(lambda emitter: setDataFileInfo(location, widget.textBrowser, emitter))
+    doit(dataLocation[0])
     # setDataFileInfo(widget.textBrowser)
 
 updateFileList()
