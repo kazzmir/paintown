@@ -852,16 +852,24 @@ end
     def generate_rule(me, pattern, result, previous_result, stream, failure):
         def fix(v):
             return "%s.getValues()[%s]" % (previous_result, int(v.group(1)) - 1)
+        def change(arg):
+            if arg.startswith('@'):
+                return arg[1:]
+            return 'lambda{|*args| rule_%s(*args)}' % arg
+        rule_parameters = ""
+        if pattern.rules != None:
+            rule_parameters = ", %s" % ", ".join([change(f) for f in pattern.rules])
+
         parameters = ""
         if pattern.parameters != None:
             parameters = ", %s" % ",".join([me.fixup_ruby(p, fix) for p in pattern.parameters])
         data = """
 # puts "Trying rule '%s'"
-%s = rule_%s(%s, %s.getPosition()%s)
+%s = rule_%s(%s, %s.getPosition()%s%s)
 if %s == nil
     %s
 end
-""" % (pattern.rule, result, pattern.rule, stream, result, parameters, result, indent(failure()))
+""" % (pattern.rule, result, pattern.rule, stream, result, rule_parameters, parameters, result, indent(failure()))
 
         return data
 
@@ -997,6 +1005,29 @@ values = %s.getValues()
 """ % (pattern.pattern.generate_v1(me, result, previous_result, stream, failure).strip(), pattern.variable, result)
         return data
 
+    def generate_call_rule(me, pattern, result, previous_result, stream, failure):
+        def fix(v):
+            return "%s.getValues()[%s]" % (previous_result, int(v.group(1)) - 1)
+        def change(arg):
+            if arg.startswith('@'):
+                return arg[1:]
+            return 'lambda{|*args| rule_%s(*args)}' % arg
+        rule_parameters = ""
+        if pattern.rules != None:
+            rule_parameters = ", %s" % ", ".join([change(f) for f in pattern.rules])
+
+        parameters = ""
+        if pattern.values != None:
+            parameters = ", %s" % ",".join([me.fixup_ruby(p, fix) for p in pattern.values])
+        data = """
+# print "Trying rule " + '%s'
+%s = %s.call(%s, %s.getPosition()%s%s)
+if %s == nil
+    %s
+end
+""" % (pattern.name, result, pattern.name, stream, result, rule_parameters, parameters, result, indent(failure()))
+
+        return data
 
 class PythonGenerator(CodeGenerator):
     def fixup_python(self, code, how):
@@ -2094,12 +2125,15 @@ end
         stream = "stream"
         position = "position"
         rule_id = "RULE_%s" % self.name
+        rule_parameters = ""
+        if self.rules != None:
+            rule_parameters = ", " + ", ".join(["%s" % p for p in self.rules])
         parameters = ""
         if self.parameters != None:
             parameters = ", " + ", ".join(["%s" % p for p in self.parameters])
 
         data = """
-def rule_%s(%s, %s%s)
+def rule_%s(%s, %s%s%s)
     if %s.hasResult(%s, %s)
         return %s.result(%s, %s)
     end
@@ -2107,7 +2141,7 @@ def rule_%s(%s, %s%s)
     %s.update(%s, %s, nil)
     return nil
 end
-""" % (self.name, stream, position, parameters, stream, rule_id, position, stream, rule_id, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, rule_id, position)
+""" % (self.name, stream, position, rule_parameters, parameters, stream, rule_id, position, stream, rule_id, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, rule_id, position)
         return data
 
     def generate_python(self):
