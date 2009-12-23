@@ -77,6 +77,14 @@ struct Message{
 	void reset();
 
 	std::string path;
+
+        /* time in microseconds
+         * a 64-bit variable can hold
+         *  years = 2**64.0 / (1000 * 1000 * 60 * 60 * 24 * 365)
+         *  years = 584942.417355072
+         * worth of microseconds
+         */
+        uint64_t timestamp;
 };
 
 /*

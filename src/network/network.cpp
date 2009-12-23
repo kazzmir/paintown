@@ -3,6 +3,7 @@
 #include "globals.h"
 #include <string>
 #include <sstream>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -21,60 +22,72 @@ NetworkException(""){
 	this->setMessage( "Invalid port " + num.str() );
 }
 
-Message::Message(){
-	memset( data, 0, sizeof(data) );
+Message::Message():
+timestamp(0){
+	memset(data, 0, sizeof(data));
 	position = data;
 }
 	
-Message::Message( const Message & m ){
-	memcpy( data, m.data, sizeof(data) );
-	position = data;
-	position += m.position - m.data;
-	path = m.path;
-	id = m.id;
+Message::Message(const Message & m):
+timestamp(m.timestamp){
+    memcpy( data, m.data, sizeof(data) );
+    position = data;
+    position += m.position - m.data;
+    path = m.path;
+    id = m.id;
 }
 	
 Message & Message::operator=( const Message & m ){
-
-	memcpy( data, m.data, sizeof(data) );
-	position = data;
-	position += m.position - m.data;
-	path = m.path;
-	id = m.id;
-
-	return *this;
+    memcpy(data, m.data, sizeof(data));
+    position = data;
+    position += m.position - m.data;
+    path = m.path;
+    id = m.id;
+    timestamp = m.timestamp;
+    return *this;
 }
 
-Message::Message( Socket socket ){
-	position = data;
-	id = read32( socket );
-	readBytes( socket, data, DATA_SIZE );
-	int str = read16( socket );
-	if ( str != -1 ){
-		char buf[ 1024 ];
-		str = (signed)(sizeof( buf ) - 1) < str ? (signed)(sizeof(buf) - 1) : str;
-		readBytes( socket, (uint8_t *) buf, str );
-		buf[ str ] = 0;
-                /* this is a string copy, not an assignment to a temporary pointer */
-		this->path = buf;
-	}
+static uint64_t timenow(){
+#ifndef WINDOWS
+    struct timeval hold;
+    gettimeofday(&hold, NULL);
+    return hold.tv_sec * 1000 * 1000 + hold.tv_usec;
+#else
+    return 0;
+#endif
+}
+
+Message::Message(Socket socket){
+    position = data;
+    id = read32( socket );
+    readBytes( socket, data, DATA_SIZE );
+    int str = read16( socket );
+    if ( str != -1 ){
+        char buf[ 1024 ];
+        str = (signed)(sizeof( buf ) - 1) < str ? (signed)(sizeof(buf) - 1) : str;
+        readBytes( socket, (uint8_t *) buf, str );
+        buf[ str ] = 0;
+        /* this is a string copy, not an assignment to a temporary pointer */
+        this->path = buf;
+    }
+    timestamp = timenow();
 }
 
 uint8_t * Message::dump( uint8_t * buffer ) const {
-	*(uint32_t *) buffer = id;
-	buffer += sizeof(uint16_t);
-	memcpy( buffer, data, DATA_SIZE );
-	buffer += DATA_SIZE;
-	if ( path != "" ){
-		*(uint16_t *) buffer = path.length() + 1;
-		buffer += sizeof(uint16_t);
-		memcpy( buffer, path.c_str(), path.length() + 1 );
-		buffer += path.length() + 1;
-	} else {
-		*(uint16_t *) buffer = (uint16_t) -1;
-		buffer += sizeof(uint16_t);
-	}
-	return buffer;
+    *(uint32_t *) buffer = id;
+    buffer += sizeof(uint16_t);
+    memcpy( buffer, data, DATA_SIZE );
+    buffer += DATA_SIZE;
+    if ( path != "" ){
+        *(uint16_t *) buffer = path.length() + 1;
+        buffer += sizeof(uint16_t);
+        memcpy( buffer, path.c_str(), path.length() + 1 );
+        buffer += path.length() + 1;
+    } else {
+        *(uint16_t *) buffer = (uint16_t) -1;
+        buffer += sizeof(uint16_t);
+    }
+    return buffer;
 }
 
 /*

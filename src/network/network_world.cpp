@@ -25,7 +25,7 @@ static void * handleMessages( void * arg ){
 	
 	try{
 		while ( world->isRunning() ){
-			Network::Message m( socket );
+			Network::Message m(socket);
 			// pthread_mutex_lock( lock );
 			world->addIncomingMessage( m, socket );
 			debug( 2 ) << "Received path '" << m.path << "'" << endl;
