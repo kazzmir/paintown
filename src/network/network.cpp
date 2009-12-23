@@ -23,13 +23,15 @@ NetworkException(""){
 }
 
 Message::Message():
-timestamp(0){
+timestamp(0),
+readFrom(0){
 	memset(data, 0, sizeof(data));
 	position = data;
 }
 	
 Message::Message(const Message & m):
-timestamp(m.timestamp){
+timestamp(m.timestamp),
+readFrom(0){
     memcpy( data, m.data, sizeof(data) );
     position = data;
     position += m.position - m.data;
@@ -44,6 +46,7 @@ Message & Message::operator=( const Message & m ){
     path = m.path;
     id = m.id;
     timestamp = m.timestamp;
+    readFrom = m.readFrom;
     return *this;
 }
 
@@ -71,11 +74,12 @@ Message::Message(Socket socket){
         this->path = buf;
     }
     timestamp = timenow();
+    readFrom = socket;
 }
 
 uint8_t * Message::dump( uint8_t * buffer ) const {
     *(uint32_t *) buffer = id;
-    buffer += sizeof(uint16_t);
+    buffer += sizeof(id);
     memcpy( buffer, data, DATA_SIZE );
     buffer += DATA_SIZE;
     if ( path != "" ){
@@ -223,9 +227,8 @@ Message & Message::operator<<( string p ){
 }
 	
 int Message::size() const {
-	return sizeof( uint16_t ) + DATA_SIZE + 
-		(path != "" ? sizeof( uint16_t ) + path.length() + 1 :
-		sizeof( uint16_t ));
+    return sizeof(id) + DATA_SIZE + 
+           (path != "" ? sizeof(uint16_t) + path.length() + 1 : sizeof(uint16_t));
 }
 
 static string getHawkError(){
@@ -327,6 +330,7 @@ Socket open( int port ) throw( InvalidPortException ){
 	if ( server == NL_INVALID ){
 		throw InvalidPortException(port, nlGetSystemErrorStr(nlGetSystemError()));
 	}
+        Global::debug(1, "network") << "Successfully opened a socket: " << server << endl;
 	open_sockets.push_back( server );
 	return server;
 }

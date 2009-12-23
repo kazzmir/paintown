@@ -358,7 +358,7 @@ def less_verbose(env):
     env['RANLIBCOMSTR'] = "%s %s" % (colorize('Indexing library', ranlib_color), colorize('$TARGET', 'light-blue'))
     return env
 
-def getEnvironment():
+def getEnvironment(debug):
     def intel(env):
         env['CC'] = 'icc'
         env['CXX'] = 'icpc'
@@ -386,6 +386,12 @@ def getEnvironment():
         #env['RANLIB'] = 'llvm-ranlib'
         return env
     def raw():
+        cflags = []
+        if debug:
+            cflags.append( ['-g3','-ggdb'] )
+        else:
+            cflags.append( '-O2' )
+
         if isCygwin():
             import SCons.Tool.zip
             env = Environment(ENV = os.environ, tools = ['mingw'])
@@ -395,16 +401,16 @@ def getEnvironment():
             SCons.Tool.zip.generate(env)
             return env
         elif useMingw():
-            return Environment(ENV = os.environ, tools = ['mingw', 'zip'])
+            return Environment(ENV = os.environ, CCFLAGS = cflags, tools = ['mingw', 'zip'])
         else:
             if useIntel():
                 print "Using the intel compiler"
-                return intel(Environment(ENV = os.environ))
+                return intel(Environment(ENV = os.environ, CCFLAGS = cflags))
             elif useLLVM():
-                return llvm(Environment(ENV = os.environ))
+                return llvm(Environment(ENV = os.environ, CCFLAGS = cflags))
             else:
-                return Environment(ENV = os.environ)
-    if not getDebug():
+                return Environment(ENV = os.environ, CCFLAGS = cflags)
+    if not debug:
         return less_verbose(raw())
     else:
         return raw()
@@ -417,7 +423,7 @@ if isWindows():
     else:
         print "Cygwin detected"
     
-env = getEnvironment()
+env = getEnvironment(getDebug())
 
 def getDataPath():
     try:
@@ -428,15 +434,11 @@ def getDataPath():
 debug = getDebug()
 dataPath = getDataPath()
 
+# This stuff should be moved to getEnvironment()
 cflags = ['-Wall', '-Wno-unused-variable', '-Wno-unused-function']
 cppflags = ['-Woverloaded-virtual']
 cdefines = ['DATA_PATH=\\\"%s\\\"' % dataPath]
 # cppflags = [ '-Woverloaded-virtual' ]
-
-if debug:
-    cflags.append( ['-g3','-ggdb'] )
-else:
-    cflags.append( '-O2' )
 
 # env.Append( CCFLAGS = '-m32' )
 # env.Append( LINKFLAGS = '-m32' )
@@ -455,10 +457,10 @@ def buildDumb(where, env):
 def buildHawknl(where, env):
     return SConscript( "src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env' )
 
-dumbEnv = getEnvironment()
-hawkEnv = getEnvironment()
-dumbStaticEnv = getEnvironment()
-hawkStaticEnv = getEnvironment()
+dumbEnv = getEnvironment(debug)
+hawkEnv = getEnvironment(debug)
+dumbStaticEnv = getEnvironment(debug)
+hawkStaticEnv = getEnvironment(debug)
 
 # if you dont care about building a universal binary then disable this
 # block of code

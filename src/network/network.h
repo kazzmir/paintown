@@ -85,6 +85,7 @@ struct Message{
          * worth of microseconds
          */
         uint64_t timestamp;
+        Socket readFrom;
 };
 
 /*

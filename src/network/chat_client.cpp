@@ -24,6 +24,7 @@ static void * serverInput( void * client_ ){
 	bool done = false;
 	while ( ! done ){
 		try{
+                    debug(1) << "Waiting to receive a message" << endl;
 			Network::Message message( client->getSocket() );
 			int x;
 			ChatType kind;
@@ -284,6 +285,7 @@ void ChatClient::needUpdate(){
 bool ChatClient::logic( Keyboard & keyboard ){
 	if ( keyboard[ Keyboard::Key_TAB ] ){
 		focus = nextFocus( focus );
+                debug(1) << "Focus is " << focus << endl;
 		needUpdate();
 	}
 	
@@ -305,7 +307,6 @@ bool ChatClient::logic( Keyboard & keyboard ){
 			break;
 		}
 	}
-	debug( 1 ) << "Focus is " << lineEdit->isFocused() << endl;
 	return false;
 }
 

@@ -4,6 +4,7 @@
 #include "network.h"
 #include "level/scene.h"
 #include "globals.h"
+#include "init.h"
 #include "level/blockobject.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -12,6 +13,7 @@
 #include "factory/object_factory.h"
 #include <pthread.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include "object/character.h"
 #include "object/cat.h"
@@ -52,7 +54,8 @@ NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vecto
 AdventureWorld( players, path, screen_size ),
 server( server ),
 world_finished( false ),
-id( id ),
+secondCounter(Global::second_counter),
+id(id),
 running( true ){
 	objects.clear();
 	pthread_mutex_init( &message_mutex, NULL );
@@ -274,6 +277,20 @@ Object * NetworkWorldClient::findNetworkObject( Object::networkid_t id ){
 	}
 	return NULL;
 }
+
+void NetworkWorldClient::handlePing(Network::Message & message){
+    unsigned int id;
+    message >> id;
+    if (pings.find(id) != pings.end()){
+        uint64_t drift = message.timestamp - pings[id];
+        Global::debug(0) << "Ping " << id << ": " << drift << endl;
+
+        /* dont fill up the ping table; save memory */
+        pings.erase(id);
+    } else {
+        Global::debug(0) << "Unknown ping reply: " << id << endl;
+    }
+}
 	
 /* messages are defined in ../world.h */
 void NetworkWorldClient::handleMessage( Network::Message & message ){
@@ -348,6 +365,10 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				debug( 0 ) << endl;
 				break;
 			}
+                        case PING_REPLY : {
+                            handlePing(message);
+                            break;
+                        }
                         case PAUSE : {
                             this->pause();
                             break;
@@ -369,9 +390,9 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 }
 
 void NetworkWorldClient::addMessage( Network::Message m, Network::Socket from ){
-	if ( m.id == id || m.id == 0 ){
-		outgoing.push_back( m );
-	}
+    if ( m.id == id || m.id == 0 ){
+        outgoing.push_back( m );
+    }
 }
 	
 void NetworkWorldClient::doScene( int min_x, int max_x ){
@@ -380,6 +401,34 @@ void NetworkWorldClient::doScene( int min_x, int max_x ){
 	for ( vector< Object * >::iterator it = objs.begin(); it != objs.end(); it++ ){
 		delete *it;
 	}
+}
+
+static uint64_t timenow(){
+#ifndef WINDOWS
+    struct timeval hold;
+    gettimeofday(&hold, NULL);
+    return hold.tv_sec * 1000 * 1000 + hold.tv_usec;
+#else
+    return 0;
+#endif
+}
+
+Network::Message NetworkWorldClient::pingMessage(unsigned int id){
+    Network::Message message;
+    message.id = 0;
+    message << World::PING_REQUEST;
+    message << id;
+    pings[id] = timenow();
+
+    /* pings won't fill up unless the server dies or something, so
+     * as a fail-safe don't let the table get too big
+     */
+    if (pings.size() > 1000){
+        Global::debug(0, __FILE__) << "Warning: ping table is full. Is the server or network dead?" << endl;
+        pings.clear();
+    }
+
+    return message;
 }
 
 void NetworkWorldClient::sendMessage( const Network::Message & message, Network::Socket socket ){
@@ -469,6 +518,11 @@ void NetworkWorldClient::act(){
             }
             it = objects.erase( it );
         } else ++it;
+    }
+
+    if (secondCounter != Global::second_counter){
+        addMessage(pingMessage(secondCounter));
+        secondCounter = Global::second_counter;
     }
 
     sendMessages(outgoing, getServer());

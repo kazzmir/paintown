@@ -96,7 +96,7 @@ public:
          */
         enum{
             /* no action, just a dummy value */
-            NOTHING,
+            NOTHING = 0,
             /* create a new character */
             CREATE_CHARACTER,
             /* create a cat */
@@ -137,6 +137,10 @@ public:
             PAUSE,
             /* unpause the game */
             UNPAUSE,
+            /* request a ping */
+            PING_REQUEST,
+            /* reply to a ping */
+            PING_REPLY,
         };
 };
 

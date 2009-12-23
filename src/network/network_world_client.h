@@ -55,6 +55,8 @@ protected:
 	bool uniqueObject( Object::networkid_t id );
 	void handleMessage( Network::Message & message );
         std::vector< Network::Message > getIncomingMessages();
+        Network::Message pingMessage(unsigned int id);
+        void handlePing(Network::Message & message);
 
 private:
 	NLsocket server;
@@ -65,9 +67,12 @@ private:
 	pthread_t message_thread;
 
 	bool world_finished;
+        unsigned int secondCounter;
         Object::networkid_t id;
 
 	bool running;
+
+        std::map<unsigned int, uint64_t> pings;
 };
 
 #endif

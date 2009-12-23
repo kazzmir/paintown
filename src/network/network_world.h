@@ -10,16 +10,22 @@
 #include <string>
 
 struct Packet{
-	Packet( const Network::Message & m, Network::Socket s ):message(m),socket(s){}
+	Packet(const Network::Message & m, Network::Socket s, Network::Socket to = 0):
+            message(m),
+            socket(s),
+            to(to){}
+
 	Network::Message message;
 	Network::Socket socket;
+        /* if you want to specify a receipient, make `to' non-null */
+	Network::Socket to;
 };
 
 class NetworkWorld: public AdventureWorld {
 public:
 	NetworkWorld( const std::vector< NLsocket > & sockets, const std::vector< Object * > & players, const std::string & path, int screen_size = 320 ) throw ( LoadException );
 	
-	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
+	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	virtual void act();
 	virtual void doScene( int min_x, int max_x );
         
@@ -48,6 +54,7 @@ protected:
 	void sendMessage( const Network::Message & message, NLsocket socket );
         std::vector< Network::Message > getIncomingMessages();
 	void handleMessage( Network::Message & message );
+        void handlePing(Network::Message & message);
 
 	Network::Message nextBlockMessage( int block );
 

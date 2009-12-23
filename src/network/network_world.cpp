@@ -103,16 +103,16 @@ void NetworkWorld::addObject( Object * o ){
 	AdventureWorld::addObject( o );
 }
 	
-void NetworkWorld::addMessage( Network::Message m, Network::Socket from ){
+void NetworkWorld::addMessage( Network::Message m, Network::Socket from, Network::Socket to){
 	pthread_mutex_lock( &message_mutex );
-	Packet p( m, from );
+	Packet p(m, from, to);
 	outgoing.push_back( p );
 	pthread_mutex_unlock( &message_mutex );
 }
 
 void NetworkWorld::addIncomingMessage( const Network::Message & message, Network::Socket from ){
 	pthread_mutex_lock( &message_mutex );
-	incoming.push_back( message );
+	incoming.push_back(message);
 	pthread_mutex_unlock( &message_mutex );
 	addMessage( message, from );
 }
@@ -204,6 +204,16 @@ Object * NetworkWorld::findNetworkObject( Object::networkid_t id ){
 	}
 	return NULL;
 }
+
+void NetworkWorld::handlePing(Network::Message & message){
+    Network::Message out;
+    unsigned int ping_id;
+    message >> ping_id;
+    out.id = 0;
+    out << World::PING_REPLY;
+    out << ping_id;
+    addMessage(out, 0, message.readFrom);
+}
 	
 void NetworkWorld::handleMessage( Network::Message & message ){
 	if ( message.id == 0 ){
@@ -243,6 +253,10 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 				}
 				break;
 			}
+                        case PING_REQUEST : {
+                            handlePing(message);
+                            break;
+                        }
                         case PAUSE : {
                             this->pause();
                             addMessage(pausedMessage());
@@ -284,7 +298,8 @@ void NetworkWorld::flushOutgoing(){
             for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
                 Network::Message & message = (*it).message;
 		Network::Socket from = (*it).socket;
-                if (from != *socket){
+                Network::Socket to = (*it).to;
+                if (from != *socket && (to == 0 || to == *socket)){
                     messages.push_back(&message);
                 }
             }

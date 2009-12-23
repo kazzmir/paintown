@@ -117,7 +117,7 @@ static void * clientOutput( void * client_ ){
 		Network::Message message;
 		done = ! client->isAlive();
 		if ( client->getOutgoing( message ) != false ){
-			debug( 1 ) << "Sending a message to " << client->getId() << endl;
+			debug(1) << "Sending a message to " << client->getId() << endl;
 			try{
 				/*
 				Network::Message net;
@@ -125,6 +125,7 @@ static void * clientOutput( void * client_ ){
 				net.send( client->getSocket() );
 				*/
 				message.send( client->getSocket() );
+                                debug(1) << "Sent a message to " << client->getId() << endl;
 			} catch ( const Network::NetworkException & e ){
 				debug( 0 ) << "Client output " << client->getId() << " died" << endl;
 				done = true;
