@@ -473,6 +473,12 @@ void NetworkWorldClient::draw(Bitmap * work){
     super::draw(work);
     const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 9, 9);
     FontRender * render = FontRender::getInstance();
+
+    /* the coordinates are only right becuase I know that the screen is twice as
+     * large as `work'. FontRender should be changed so that we don't have to know
+     * its coordinate system, something like opengl where -1 is the top and 1
+     * is the bottom.
+     */
     render->addMessage(font, 1, work->getHeight() * 2 - 11, Bitmap::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
     // font.printf(1, work->getHeight() - 11, Bitmap::makeColor( 255, 255, 255 ), *work, "Ping %d", 0, (int) (currentPing / 1000));
 }

@@ -95,7 +95,7 @@ public:
          * backwards compatibility.
          */
         enum{
-            /* no action, just a dummy value */
+            /* sanity check, no one should ever pass `NOTHING' around */
             NOTHING = 0,
             /* create a new character */
             CREATE_CHARACTER,
@@ -141,6 +141,8 @@ public:
             PING_REQUEST,
             /* reply to a ping */
             PING_REPLY,
+            /* client has quit */
+            QUIT,
         };
 };
 
