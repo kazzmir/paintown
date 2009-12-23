@@ -238,6 +238,7 @@ Network::Message Cat::getCreateMessage(){
 	message << getId();
 
 	string mypath = Filesystem::cleanse(path);
+        message << mypath;
         /*
 	mypath.erase( 0, Util::getDataPath().length() );
 	message << mypath;

@@ -294,9 +294,11 @@ void NetworkWorldClient::handlePing(Network::Message & message){
 	
 /* messages are defined in ../world.h */
 void NetworkWorldClient::handleMessage( Network::Message & message ){
+    Global::debug(2) << "Handle message for id " << message.id << endl;
 	if ( message.id == 0 ){
 		int type;
 		message >> type;
+                Global::debug(2) << "Message type " << type << endl;
 		switch ( type ){
 			case CREATE_CHARACTER : {
 				handleCreateCharacter( message );

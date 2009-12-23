@@ -323,10 +323,14 @@ void readBytes( Socket socket, uint8_t * data, int length ){
 	}
 }
 
-Socket open( int port ) throw( InvalidPortException ){
+Socket open( int port ) throw (InvalidPortException){
 	// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
 	Global::debug(1, "network") << "Attemping to open port " << port << endl;
 	Socket server = nlOpen( port, NL_RELIABLE );
+        /* server will either be NL_INVALID (-1) or some low integer. hawknl
+         * sockets are mapped internally to real sockets, so don't be surprised
+         * if you get a socket back like 0.
+         */
 	if ( server == NL_INVALID ){
 		throw InvalidPortException(port, nlGetSystemErrorStr(nlGetSystemError()));
 	}

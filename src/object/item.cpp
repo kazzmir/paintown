@@ -140,6 +140,8 @@ Network::Message Item::getCreateMessage(){
 	this->stimulation->createMessage( message );
 
 	string mypath = Filesystem::cleanse(path);
+        Global::debug(2) << "Create item id " << getId() << " path " << mypath << endl;
+        message << mypath;
         /*
 	mypath.erase( 0, Util::getDataPath().length() );
 	message << mypath;
