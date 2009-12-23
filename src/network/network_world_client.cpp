@@ -5,6 +5,8 @@
 #include "level/scene.h"
 #include "globals.h"
 #include "init.h"
+#include "util/font.h"
+#include "factory/font_render.h"
 #include "level/blockobject.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -20,6 +22,9 @@
 #include "object/item.h"
 
 using namespace std;
+
+/* use java-style OOP */
+typedef AdventureWorld super;
 
 static std::ostream & debug( int level ){
     return Global::debug(level, "network-world-client");
@@ -51,7 +56,7 @@ static void * handleMessages( void * arg ){
 }
 	
 NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size ) throw ( LoadException ):
-AdventureWorld( players, path, screen_size ),
+super( players, path, screen_size ),
 server( server ),
 world_finished( false ),
 secondCounter(Global::second_counter),
@@ -125,7 +130,7 @@ static Network::Message unpausedMessage(){
 }
 
 void NetworkWorldClient::changePause(){
-    AdventureWorld::changePause();
+    super::changePause();
     if (isPaused()){
         addMessage(pausedMessage());
     } else {
@@ -462,6 +467,14 @@ void NetworkWorldClient::sendMessages(const vector<Network::Message> & messages,
     Network::sendBytes(socket, data, length);
     delete[] data;
     */
+}
+	
+void NetworkWorldClient::draw(Bitmap * work){
+    super::draw(work);
+    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 9, 9);
+    FontRender * render = FontRender::getInstance();
+    render->addMessage(font, 1, work->getHeight() * 2 - 11, Bitmap::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
+    // font.printf(1, work->getHeight() - 11, Bitmap::makeColor( 255, 255, 255 ), *work, "Ping %d", 0, (int) (currentPing / 1000));
 }
 
 void NetworkWorldClient::act(){

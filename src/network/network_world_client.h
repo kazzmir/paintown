@@ -8,12 +8,15 @@
 #include "util/load_exception.h"
 #include <vector>
 
+class Bitmap;
+
 class NetworkWorldClient: public AdventureWorld {
 public:
 
 	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const std::string & path, Object::networkid_t id, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void act();
+	virtual void draw(Bitmap * work);
 
 	void addIncomingMessage( const Network::Message & message );
 
