@@ -3,7 +3,7 @@
 #include "globals.h"
 #include <string>
 #include <sstream>
-#include <sys/time.h>
+#include "util/system.h"
 
 using namespace std;
 
@@ -50,16 +50,6 @@ Message & Message::operator=( const Message & m ){
     return *this;
 }
 
-static uint64_t timenow(){
-#ifndef WINDOWS
-    struct timeval hold;
-    gettimeofday(&hold, NULL);
-    return hold.tv_sec * 1000 * 1000 + hold.tv_usec;
-#else
-    return 0;
-#endif
-}
-
 Message::Message(Socket socket){
     position = data;
     id = read32( socket );
@@ -73,7 +63,7 @@ Message::Message(Socket socket){
         /* this is a string copy, not an assignment to a temporary pointer */
         this->path = buf;
     }
-    timestamp = timenow();
+    timestamp = System::currentMicroseconds();
     readFrom = socket;
 }
 

@@ -81,7 +81,7 @@ public:
 
 	void killAllHumans( Object * player );
 
-	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
+	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	Network::Message createBangMessage( int x, int y, int z );
         
         /* overloading virtual methods requires that all the original methods

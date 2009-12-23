@@ -118,7 +118,7 @@ public:
     virtual void drawMiniMaps( bool b );
     virtual bool shouldDrawMiniMaps();
     virtual void killAllHumans( Object * player );
-    virtual void addMessage(Network::Message m, Network::Socket from = 0);
+    virtual void addMessage(Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
     virtual Network::Message createBangMessage( int x, int y, int z );
 	
     static const std::string getStageName(const std::string &filename) throw (MugenException);

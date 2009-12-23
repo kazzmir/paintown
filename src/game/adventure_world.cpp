@@ -216,7 +216,7 @@ bool AdventureWorld::isPlayer( Object * o ) const {
     return false;
 }
 
-void AdventureWorld::addMessage( Network::Message m, Network::Socket from ){
+void AdventureWorld::addMessage( Network::Message m, Network::Socket from, Network::Socket to){
 	/* nothing */
 }
 	

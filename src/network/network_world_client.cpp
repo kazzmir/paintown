@@ -15,7 +15,7 @@
 #include "factory/object_factory.h"
 #include <pthread.h>
 #include <string.h>
-#include <sys/time.h>
+#include "util/system.h"
 
 #include "object/character.h"
 #include "object/cat.h"
@@ -426,22 +426,12 @@ void NetworkWorldClient::doScene( int min_x, int max_x ){
 	}
 }
 
-static uint64_t timenow(){
-#ifndef WINDOWS
-    struct timeval hold;
-    gettimeofday(&hold, NULL);
-    return hold.tv_sec * 1000 * 1000 + hold.tv_usec;
-#else
-    return 0;
-#endif
-}
-
 Network::Message NetworkWorldClient::pingMessage(unsigned int pingId){
     Network::Message message;
     message.id = 0;
     message << World::PING_REQUEST;
     message << pingId;
-    pings[pingId] = timenow();
+    pings[pingId] = System::currentMicroseconds();
 
     /* pings won't fill up unless the server dies or something, so
      * as a fail-safe don't let the table get too big

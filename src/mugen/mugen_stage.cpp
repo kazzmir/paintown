@@ -863,7 +863,10 @@ void MugenStage::killAllHumans( Object * player ){
 		o->takeDamage(*this, NULL, 999999 );
     }
 }
-void MugenStage::addMessage(Network::Message m, Network::Socket from){ }
+
+void MugenStage::addMessage(Network::Message m, Network::Socket from, Network::Socket to){
+}
+
 Network::Message MugenStage::createBangMessage( int x, int y, int z ){
     Network::Message m;
     return m;
