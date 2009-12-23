@@ -30,7 +30,9 @@
 using namespace std;
 
 volatile int Global::speed_counter = 0;
-volatile int Global::second_counter = 0;
+
+/* enough seconds for 136 years */
+volatile unsigned int Global::second_counter = 0;
 
 /* the original engine was running at 90 ticks per second, but we dont
  * need to render that fast, so TICS_PER_SECOND is really fps and

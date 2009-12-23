@@ -292,7 +292,6 @@ void TabMenu::run(){
 
     double runCounter = 0;
     Global::speed_counter = 0;
-    Global::second_counter = 0;
     int scrollCounter = 0;
 
     InputMap<Tab::Input> input;

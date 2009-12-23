@@ -447,7 +447,6 @@ void Menu::run(){
     double runCounter = 0;
     while( ! endGame ){
         Global::speed_counter = 0;
-        Global::second_counter = 0;
         // int game_time = 100;
         motion = 0;
 

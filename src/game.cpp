@@ -271,9 +271,10 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     bool force_quit = false;
     bool use_console_input = false;
 
+    int second_counter = Global::second_counter;
     /* don't put anything after these variables and before the while loop */
     Global::speed_counter = 0;
-    Global::second_counter = 0;
+    // Global::second_counter = 0;
     double runCounter = 0;
     while ( ! done ){
 
@@ -415,10 +416,15 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
            game_time = 0;
            }
            */
-        if ( Global::second_counter > 0 ){
-            fps[fps_index] = (double) frames / (double) Global::second_counter;
+        if (second_counter != Global::second_counter){
+            int difference = Global::second_counter - second_counter;
+            /* unlikely, but just in case */
+            if (difference == 0){
+                difference = 1;
+            }
+            fps[fps_index] = (double) frames / (double) difference;
             fps_index = (fps_index+1) % max_fps_index;
-            Global::second_counter = 0;
+            second_counter = Global::second_counter;
             frames = 0;
         }
 

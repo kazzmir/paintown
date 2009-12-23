@@ -12,7 +12,7 @@
 
 namespace Global{
 	extern volatile int speed_counter;
-	extern volatile int second_counter;
+	extern volatile unsigned int second_counter;
 
         extern const double LOGIC_MULTIPLIER;
         extern const int TICS_PER_SECOND;
