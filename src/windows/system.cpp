@@ -27,6 +27,14 @@ bool readable(const std::string & path){
     return ok;
 }
 
+uint64_t currentMicroseconds(){
+    LARGE_INTEGER ticksPerSecond;
+    LARGE_INTEGER tick;  
+    QueryPerformanceFrequency(&ticksPerSecond);
+    QueryPerformanceCounter(&tick);
+    return (tick.QuadPart)/(ticksPerSecond.QuadPart/1000000);
+}
+
 }
 
 #endif
