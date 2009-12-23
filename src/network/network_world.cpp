@@ -19,25 +19,25 @@ static std::ostream & debug( int level ){
 }
 
 static void * handleMessages( void * arg ){
-	Stuff * s = (Stuff *) arg;
-	Network::Socket socket = s->socket;
-	NetworkWorld * world = s->world;
-	
-	try{
-		while ( world->isRunning() ){
-			Network::Message m(socket);
-			// pthread_mutex_lock( lock );
-			world->addIncomingMessage( m, socket );
-			debug( 2 ) << "Received path '" << m.path << "'" << endl;
-			// pthread_mutex_unlock( lock );
-		}
-	} catch ( const Network::NetworkException & ne ){
-		debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
-	}
+    Stuff * s = (Stuff *) arg;
+    Network::Socket socket = s->socket;
+    NetworkWorld * world = s->world;
 
-	delete s;
+    try{
+        while ( world->isRunning() ){
+            Network::Message m(socket);
+            // pthread_mutex_lock( lock );
+            world->addIncomingMessage(m, socket);
+            debug(2) << "Received path '" << m.path << "'" << endl;
+            // pthread_mutex_unlock( lock );
+        }
+    } catch ( const Network::NetworkException & ne ){
+        debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
+    }
 
-	return NULL;
+    delete s;
+
+    return NULL;
 }
 
 NetworkWorld::NetworkWorld( const vector< NLsocket > & sockets, const vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
@@ -47,18 +47,17 @@ sent_messages( 0 ),
 running( true ){
     Object::networkid_t max_id = 0;
 
-	pthread_mutex_init( &message_mutex, NULL );
-	pthread_mutex_init( &running_mutex, NULL );
+    pthread_mutex_init( &message_mutex, NULL );
+    pthread_mutex_init( &running_mutex, NULL );
 
-	for ( vector< PlayerTracker >::iterator it = this->players.begin(); it != this->players.end(); it++ ){
-		Object * object = it->player;
-		addMessage( object->getCreateMessage() );
-		if ( object->getId() > max_id ){
-			max_id = object->getId();
-		}
-	}
-	this->id = max_id + 1;
-
+    for ( vector< PlayerTracker >::iterator it = this->players.begin(); it != this->players.end(); it++ ){
+        Object * object = it->player;
+        addMessage( object->getCreateMessage() );
+        if ( object->getId() > max_id ){
+            max_id = object->getId();
+        }
+    }
+    this->id = max_id + 1;
 }
 
 void NetworkWorld::startMessageHandlers(){
@@ -105,6 +104,9 @@ void NetworkWorld::addObject( Object * o ){
 	
 void NetworkWorld::addMessage( Network::Message m, Network::Socket from, Network::Socket to){
 	pthread_mutex_lock( &message_mutex );
+        /* if the server generates a message `from' will probably be 0.
+         * if the message should go to a specific client `to' will be non-zero.
+         */
 	Packet p(m, from, to);
 	outgoing.push_back( p );
 	pthread_mutex_unlock( &message_mutex );
@@ -114,6 +116,11 @@ void NetworkWorld::addIncomingMessage( const Network::Message & message, Network
 	pthread_mutex_lock( &message_mutex );
 	incoming.push_back(message);
 	pthread_mutex_unlock( &message_mutex );
+
+        /* by default all messages get relayed to all clients, but a client
+         * shouldn't send its own message back to itself so it populates the
+         * `from' field.
+         */
 	addMessage( message, from );
 }
 	
@@ -130,26 +137,26 @@ bool NetworkWorld::isRunning(){
 	return b;
 }
 
+/* what is this method for? */
 void NetworkWorld::sendMessage( const Network::Message & message, Network::Socket socket ){
 	// message.send( socket );
 }
 	
 Network::Message NetworkWorld::finishMessage(){
-	Network::Message message;
-
-	message << FINISH;
-
-	return message;
+    Network::Message message;
+    message.id = 0;
+    message << FINISH;
+    return message;
 }
 
 Network::Message NetworkWorld::nextBlockMessage( int block ){
-	Network::Message message;
+    Network::Message message;
 
-	message.id = 0;
-	message << NEXT_BLOCK;
-	message << block;
+    message.id = 0;
+    message << NEXT_BLOCK;
+    message << block;
 
-	return message;
+    return message;
 }
 
 static Network::Message pausedMessage(){
@@ -196,13 +203,13 @@ void NetworkWorld::doScene( int min_x, int max_x ){
 }
 
 Object * NetworkWorld::findNetworkObject( Object::networkid_t id ){
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		Object * o = *it;
-		if ( o->getId() == id ){
-			return o;
-		}
-	}
-	return NULL;
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+        Object * o = *it;
+        if ( o->getId() == id ){
+            return o;
+        }
+    }
+    return NULL;
 }
 
 void NetworkWorld::handlePing(Network::Message & message){
@@ -212,6 +219,7 @@ void NetworkWorld::handlePing(Network::Message & message){
     out.id = 0;
     out << World::PING_REPLY;
     out << ping_id;
+    /* only send ping reply to the client that asked for it */
     addMessage(out, 0, message.readFrom);
 }
 	
@@ -259,6 +267,11 @@ void NetworkWorld::handleMessage( Network::Message & message ){
                         }
                         case PAUSE : {
                             this->pause();
+
+                            /* I dont think I need to send another pause message
+                             * because all client messages get sent to each other
+                             * anyway.
+                             */
                             addMessage(pausedMessage());
                             break;
                         }
@@ -278,66 +291,72 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 }
 
 vector< Network::Message > NetworkWorld::getIncomingMessages(){
-	vector< Network::Message > m;
-	pthread_mutex_lock( &message_mutex );
-	m = incoming;
-	incoming.clear();
-	pthread_mutex_unlock( &message_mutex );
-	return m;
+    vector< Network::Message > m;
+    pthread_mutex_lock( &message_mutex );
+    m = incoming;
+    incoming.clear();
+    pthread_mutex_unlock( &message_mutex );
+    return m;
 }
 
 void NetworkWorld::flushOutgoing(){
-	vector< Packet > packets;
-	pthread_mutex_lock( &message_mutex );
-	packets = outgoing;
-	outgoing.clear();
-	pthread_mutex_unlock( &message_mutex );
+    vector< Packet > packets;
+    pthread_mutex_lock( &message_mutex );
+    packets = outgoing;
+    outgoing.clear();
+    pthread_mutex_unlock( &message_mutex );
 
-        for (vector<Network::Socket>::iterator socket = sockets.begin(); socket != sockets.end(); socket++){
-            vector<Network::Message*> messages;
-            for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
-                Network::Message & message = (*it).message;
-		Network::Socket from = (*it).socket;
-                Network::Socket to = (*it).to;
-                if (from != *socket && (to == 0 || to == *socket)){
-                    messages.push_back(&message);
-                }
+    for (vector<Network::Socket>::iterator socket = sockets.begin(); socket != sockets.end(); socket++){
+        vector<Network::Message*> messages;
+        for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
+            Network::Message & message = (*it).message;
+            Network::Socket from = (*it).socket;
+            Network::Socket to = (*it).to;
+
+            /* send the socket if
+             * 1. the sender is not the same as the receiver and
+             * 2. a) either the receiver is not specified or
+             *    b) the receiver is the right one
+             */
+            if (from != *socket && (to == 0 || to == *socket)){
+                messages.push_back(&message);
             }
-
-            Network::sendAllMessages(messages, *socket);
         }
 
+        Network::sendAllMessages(messages, *socket);
+    }
+
 #if 0
-	/* TODO: combine packets together into one big bundle to save TCP ack's */
-	for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
-		Network::Message & m = (*it).message;
-		Network::Socket from = (*it).socket;
-		sent_messages += 1;
-		for ( vector< Network::Socket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
-			try{
-				if ( from != *socket ){
-					debug( 1 ) << "Send message " << sent_messages << " to " << *socket << endl;
-					m.send( *socket );
-					debug( 1 ) << "Sent message" << endl;
-				}
-				socket++;
-			} catch ( const Network::NetworkException & ne ){
-				/* TODO: remove character if the socket dies */
-				socket = sockets.erase( socket );
-				debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
-			}
-		}
-	}
+    /* TODO: combine packets together into one big bundle to save TCP ack's */
+    for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
+        Network::Message & m = (*it).message;
+        Network::Socket from = (*it).socket;
+        sent_messages += 1;
+        for ( vector< Network::Socket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
+            try{
+                if ( from != *socket ){
+                    debug( 1 ) << "Send message " << sent_messages << " to " << *socket << endl;
+                    m.send( *socket );
+                    debug( 1 ) << "Sent message" << endl;
+                }
+                socket++;
+            } catch ( const Network::NetworkException & ne ){
+                /* TODO: remove character if the socket dies */
+                socket = sockets.erase( socket );
+                debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
+            }
+        }
+    }
 #endif
 }
 	
 void NetworkWorld::act(){
-	AdventureWorld::act();
+    AdventureWorld::act();
 
-        vector< Network::Message > messages = getIncomingMessages();
-        for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
-            handleMessage( *it );
-        }
+    vector< Network::Message > messages = getIncomingMessages();
+    for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
+        handleMessage( *it );
+    }
 
-        flushOutgoing();
+    flushOutgoing();
 }

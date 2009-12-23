@@ -56,7 +56,8 @@ server( server ),
 world_finished( false ),
 secondCounter(Global::second_counter),
 id(id),
-running( true ){
+running(true),
+currentPing(0){
 	objects.clear();
 	pthread_mutex_init( &message_mutex, NULL );
 	pthread_mutex_init( &running_mutex, NULL );
@@ -282,8 +283,23 @@ void NetworkWorldClient::handlePing(Network::Message & message){
     unsigned int id;
     message >> id;
     if (pings.find(id) != pings.end()){
-        uint64_t drift = message.timestamp - pings[id];
-        Global::debug(0) << "Ping " << id << ": " << drift << endl;
+        uint64_t drift = (message.timestamp - pings[id]);
+
+        /* exponential moving average
+         * http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
+         */
+        /* tested values of alpha
+         *   0.25 - ok
+         */
+        double alpha = 0.25;
+        /* divide by 2 because drift is the time from client->server->client.
+         * we want just client->server.
+         * this assumes the time between client->server and server->client
+         * is the same, which is probably a reasonable assumption.
+         */
+        currentPing = alpha * drift / 2 + (1.0 - alpha) * currentPing;
+
+        Global::debug(1) << "Ping " << id << ": " << drift << " average ping: " << currentPing << endl;
 
         /* dont fill up the ping table; save memory */
         pings.erase(id);
@@ -415,12 +431,12 @@ static uint64_t timenow(){
 #endif
 }
 
-Network::Message NetworkWorldClient::pingMessage(unsigned int id){
+Network::Message NetworkWorldClient::pingMessage(unsigned int pingId){
     Network::Message message;
     message.id = 0;
     message << World::PING_REQUEST;
-    message << id;
-    pings[id] = timenow();
+    message << pingId;
+    pings[pingId] = timenow();
 
     /* pings won't fill up unless the server dies or something, so
      * as a fail-safe don't let the table get too big

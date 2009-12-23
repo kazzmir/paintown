@@ -73,6 +73,7 @@ private:
 	bool running;
 
         std::map<unsigned int, uint64_t> pings;
+        double currentPing;
 };
 
 #endif
