@@ -35,6 +35,8 @@ static void * handleMessages( void * arg ){
             // debug(2, __FILE__) << "Received path '" << m.path << "'" << endl;
             // pthread_mutex_unlock( lock );
         }
+    } catch (const Network::MessageEnd & end){
+        debug(1) << "Closed connection with socket " << socket << endl;
     } catch ( const Network::NetworkException & ne ){
         debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
     }

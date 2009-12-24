@@ -32,28 +32,30 @@ static std::ostream & debug( int level ){
 }
 
 static void * handleMessages( void * arg ){
-	NetworkWorldClient * world = (NetworkWorldClient *) arg;
-	NLsocket socket = world->getServer();
-	// pthread_mutex_t * lock = world->getLock();
-	unsigned int received = 0;
-	
-	try{
-		while ( world->isRunning() ){
-			received += 1;
-			debug( 1 ) << "Receiving message " << received << endl;
-			Network::Message m( socket );
-			// pthread_mutex_lock( lock );
-			world->addIncomingMessage( m );
-			debug( 2 ) << "Received path '" << m.path << "'" << endl;
-			// pthread_mutex_unlock( lock );
-		}
-	} catch ( const Network::NetworkException & n ){
-		debug( 0 ) << "Network exception: " << n.getMessage() << endl;
-	}
+    NetworkWorldClient * world = (NetworkWorldClient *) arg;
+    NLsocket socket = world->getServer();
+    // pthread_mutex_t * lock = world->getLock();
+    unsigned int received = 0;
 
-	debug( 1 ) << "Client input stopped" << endl;
+    try{
+        while ( world->isRunning() ){
+            received += 1;
+            debug( 1 ) << "Receiving message " << received << endl;
+            Network::Message m( socket );
+            // pthread_mutex_lock( lock );
+            world->addIncomingMessage( m );
+            debug( 2 ) << "Received path '" << m.path << "'" << endl;
+            // pthread_mutex_unlock( lock );
+        }
+    } catch (const Network::MessageEnd & end){
+        debug(1) << "Closed connection with socket " << socket << endl;
+    } catch (const Network::NetworkException & n){
+        debug( 0 ) << "Network exception: " << n.getMessage() << endl;
+    }
 
-	return NULL;
+    debug( 1 ) << "Client input stopped" << endl;
+
+    return NULL;
 }
 	
 NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size ) throw ( LoadException ):
@@ -574,7 +576,7 @@ void NetworkWorldClient::act(){
         } else ++it;
     }
 
-    if (abs(Global::second_counter - secondCounter) > 2){
+    if (abs((long)(Global::second_counter) - (long)secondCounter) > 2){
         addMessage(pingMessage(secondCounter));
         secondCounter = Global::second_counter;
     }

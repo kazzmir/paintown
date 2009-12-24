@@ -42,6 +42,11 @@ public:
 	}
 };
 
+class MessageEnd: public NetworkException {
+public:
+    MessageEnd();
+};
+
 class InvalidPortException: public NetworkException{
 public:
 	InvalidPortException( int port, const std::string message = "" );

@@ -12,6 +12,9 @@ namespace Network{
 
 NetworkException::~NetworkException() throw (){
 }
+    
+MessageEnd::MessageEnd(){
+}
 	
 InvalidPortException::InvalidPortException( int port, const string message ):
 NetworkException(""){
@@ -306,7 +309,10 @@ void readBytes( Socket socket, uint8_t * data, int length ){
 		/* put htons here for endianess compatibility */
 		int bytes = nlRead( socket, position, length - read );
 		if ( bytes == NL_INVALID ){
-			throw NetworkException( string("Could not read bytes.") + getHawkError() );
+                    switch (nlGetError()){
+                        case NL_MESSAGE_END : throw MessageEnd();
+                        default : throw NetworkException(string("Could not read bytes.") + getHawkError());
+                    }
 		}
 		read += bytes;
 		position += bytes;
