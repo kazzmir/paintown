@@ -264,7 +264,7 @@ def forwardButton():
         widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
         widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
         widget.next.setText('&Exit')
-    widget.next.setShortcut('Alt+E')
+	widget.next.setShortcut('Alt+E')
     widget.stackedWidget.setCurrentIndex(currentPage[0])
     updatePageNumber()
 
