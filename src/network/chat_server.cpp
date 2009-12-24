@@ -14,6 +14,7 @@
 #include "gui/keyinput_manager.h"
 #include "gui/keys.h"
 #include "menu/menu.h"
+#include "util/timer.h"
 #include <iostream>
 
 #include <signal.h>
@@ -21,8 +22,7 @@
 using namespace std;
 
 static std::ostream & debug( int level ){
-	Global::debug( level ) << "[chat-server] ";
-	return Global::debug( level );
+    return Global::debug( level, "chat-server");
 }
 
 Client::Client( Network::Socket socket, ChatServer * server, unsigned int id ):
@@ -180,6 +180,57 @@ void Client::startThreads(){
 	pthread_mutex_unlock( &lock );
 }
 
+struct do_add_stuff{
+    do_add_stuff(ChatServer * server, Network::Socket socket):
+    server(server), socket(socket){
+    }
+
+    ChatServer * server;
+    Network::Socket socket;
+};
+
+static void kill_socket(void * arg){
+    Network::Socket socket = *(Network::Socket *) arg;
+    Network::close(socket);
+}
+
+static void * do_add(void * stuff_){
+    do_add_stuff * stuff = (do_add_stuff *) stuff_;
+    ChatServer * server = stuff->server;
+    Network::Socket socket = stuff->socket;
+    /* client has 5 seconds to perform the handshake */
+    Util::Timer fail(5, &kill_socket, &socket);
+    /* there is a very unlikely chance that addConnection will be processing
+     * the client while the timer expires. A normal scenario is:
+     *  1. client connects
+     *  2. client sends HELLO
+     *  3. server sends ADD_BUDDY messages to the clients (by putting the
+     *    messages into queues)
+     *  4. server stores the client in internal datastructures
+     *
+     * After the client sends the HELLO the other steps should be fast, like
+     * a few microseconds at the most. So if the client takes 4.9999 seconds
+     * to send HELLO then 5 seconds could expire during step 3 or something.
+     *
+     * This is so remote I don't care about fixing it at the moment. A possible
+     * fix is to do everything after step 2 outside of the timer so that
+     * if the client sends a HELLO then the server can take its time doing
+     * the rest of the processing.
+     */
+    try{
+        /* if the timer expires the socket will close and send a NetworkException */
+        server->addConnection(socket);
+        /* the timer could also expire right *here* and then things would break */
+        fail.stop();
+    } catch ( const Network::NetworkException & e ){
+        Global::debug(0) << "Timer expired while processing client! Client dropped." << endl;
+    }
+
+    delete stuff;
+
+    return NULL;
+}
+
 static void * acceptConnections( void * server_ ){
 	bool done = false;
 	ChatServer * server = (ChatServer *) server_;
@@ -188,7 +239,15 @@ static void * acceptConnections( void * server_ ){
 	while ( ! done ){
 		done = ! server->isAccepting();
 		try{
-			server->addConnection( Network::accept( socket ) );
+                    /* start the accepting handshake in a thread in case
+                     * the client dies or has an invalid version.
+                     */
+                    Network::Socket client = Network::accept(socket);
+                    pthread_t accepter;
+                    do_add_stuff * stuff = new do_add_stuff(server, client);
+                    pthread_create(&accepter, NULL, do_add, stuff);
+                    server->addAccepter(accepter);
+                    // server->addConnection(client);
 		} catch ( const Network::NoConnectionsPendingException & e ){
 		} catch ( const Network::NetworkException & e ){
 			debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
@@ -251,11 +310,17 @@ enterPressed( false ){
 }
 	
 bool ChatServer::isAccepting(){
-	bool f;
-	pthread_mutex_lock( &lock );
-	f = accepting;	
-	pthread_mutex_unlock( &lock );
-	return f;
+    bool f;
+    pthread_mutex_lock( &lock );
+    f = accepting;	
+    pthread_mutex_unlock( &lock );
+    return f;
+}
+        
+void ChatServer::addAccepter(pthread_t accepter){
+    pthread_mutex_lock(&lock);
+    accepted.push_back(accepter);
+    pthread_mutex_unlock( &lock );
 }
 
 void ChatServer::stopAccepting(){
@@ -266,45 +331,78 @@ void ChatServer::stopAccepting(){
 // #ifndef WINDOWS
 	Network::close( socket );
 // #endif
+        debug(1) << "Waiting for client accept threads to stop" << endl;
+        pthread_mutex_lock(&lock);
+        for (vector<pthread_t>::iterator it = accepted.begin(); it != accepted.end(); it++){
+            pthread_t accept = *it;
+            debug(2) << "Waiting for client accept thread " << accept << endl;
+            pthread_join(accept, NULL);
+        }
+	pthread_mutex_unlock( &lock );
 	debug( 1 ) << "Waiting for accepting thread to stop" << endl;
 	pthread_join( acceptThread, NULL );
 	debug( 1 ) << "Not accepting any connections" << endl;
 }
 
 void ChatServer::addConnection( Network::Socket s ){
-	Client * client = new Client( s, this, clientId() );
+    Client * client = new Client( s, this, clientId() );
 
-	{
-		Network::Message message;
-		message << ADD_BUDDY;
-		message << 0;
-		message.path = getName();
-		client->addOutputMessage( message );
-	}
+    /* the client should send a hello message to us immediately */
+    try{
+        Network::Message hello(s);
+        int type;
+        hello >> type;
+        if (type != HELLO){
+            Global::debug(0) << "Client sent something other than a HELLO" << endl;
+            delete client;
+            return;
+        }
+        /* TODO: check for the version here */
+        string name;
+        name = hello.path;
+        client->setName(name);
+    } catch (const Network::NetworkException & e){
+        delete client;
+        throw e;
+    }
 
-	pthread_mutex_lock( &lock );
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * c = *it;
-		Network::Message message;
-		message << ADD_BUDDY;
-		message << c->getId();
-		message.path = c->getName();
-		client->addOutputMessage( message );
-	}
-	pthread_mutex_unlock( &lock );
+    /* send the server name to the just connected client */
+    {
+        Network::Message message;
+        message << ADD_BUDDY;
+        message << 0;
+        message.path = getName();
+        client->addOutputMessage( message );
+    }
 
-	debug( 1 ) << "Adding client " << client->getId() << endl;
+    /* send all the other client names to the just connected client */
+    pthread_mutex_lock( &lock );
+    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+        Client * c = *it;
+        Network::Message message;
+        message << ADD_BUDDY;
+        message << c->getId();
+        message.path = c->getName();
+        client->addOutputMessage( message );
+    }
+    pthread_mutex_unlock( &lock );
 
-	addMessage( "** A client joined", 0 );
+    debug( 1 ) << "Adding client " << client->getId() << endl;
 
-	Network::Message message;
-	message << ADD_BUDDY;
-	message << client->getId();
-	sendMessage( message, 0 );
+    /* don't know the name of the client yet. the client will send
+     * a CHANGE_NAME packet very soon.
+     */
+    addMessage( string("** Client ") + client->getName() + " joined", 0 );
 
-	pthread_mutex_lock( &lock );
-	clients.push_back( client );
-	pthread_mutex_unlock( &lock );
+    Network::Message message;
+    message << ADD_BUDDY;
+    message << client->getId();
+    message << client->getName();
+    sendMessage( message, 0 );
+
+    pthread_mutex_lock( &lock );
+    clients.push_back( client );
+    pthread_mutex_unlock( &lock );
 }
 
 #if 0

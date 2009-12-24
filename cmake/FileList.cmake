@@ -114,6 +114,7 @@ src/util/token_exception.cpp
 src/util/tokenreader.cpp
 src/util/timedifference.cpp
 src/util/sound.cpp
+src/util/timer.cpp
 src/input/keyboard.cpp
 src/util/bitmap.cpp
 src/util/font.cpp

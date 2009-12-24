@@ -8,6 +8,8 @@ enum ChatType{
 	ADD_BUDDY,
 	START_THE_GAME,
 	OK_TO_START,
+        /* first message a client sends to the server */
+        HELLO,
 };
 
 #endif

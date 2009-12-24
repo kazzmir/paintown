@@ -59,10 +59,11 @@ Message::Message(Socket socket){
     readBytes( socket, data, DATA_SIZE );
     int str = read16( socket );
     if ( str != -1 ){
-        char buf[ 1024 ];
+        /* cap strings at 1024 bytes */
+        char buf[1024];
         str = (signed)(sizeof( buf ) - 1) < str ? (signed)(sizeof(buf) - 1) : str;
         readBytes( socket, (uint8_t *) buf, str );
-        buf[ str ] = 0;
+        buf[str] = 0;
         /* this is a string copy, not an assignment to a temporary pointer */
         this->path = buf;
     }

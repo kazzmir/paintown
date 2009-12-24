@@ -32,6 +32,10 @@ static void * serverInput( void * client_ ){
 			kind = (ChatType) x;
 			debug( 1 ) << "Received message type " << kind << endl;
 			switch ( kind ){
+                            case HELLO : {
+                                debug(0) << "Client should not see a HELLO message!" << endl;
+                                break;
+                            }
 				case ADD_MESSAGE : {
 					client->addMessage( message.path, 0 );
 					break;
@@ -92,7 +96,7 @@ enterPressed( false ){
 	try{
 		Network::Message nameMessage;
 		nameMessage.path = name;
-		nameMessage << CHANGE_NAME;
+		nameMessage << HELLO;
 		nameMessage.send( socket );
 	} catch ( const Network::NetworkException & n ){
 		debug( 0 ) << "Could not send username: " << n.getMessage() << endl;

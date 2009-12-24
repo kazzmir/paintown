@@ -113,6 +113,9 @@ public:
 		
 	/* is accepting connections from clients */
 	bool isAccepting();
+        
+        /* each new client starts an accepting thread */
+        void addAccepter(pthread_t accepter);
 
 	/* get the list of connected clients */
         std::vector< Network::Socket > getConnectedClients();
@@ -184,6 +187,7 @@ protected:
 	LineEdit * lineEdit;
 	unsigned long long editCounter;
 	bool enterPressed;
+        std::vector<pthread_t> accepted;
 };
 
 #endif
