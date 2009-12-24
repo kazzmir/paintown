@@ -143,6 +143,7 @@ static void playGame( Socket socket ){
                     Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
                     Music::play();
 
+                    Global::info("Waiting for ok from server");
                     waitForServer(socket);
 
                     world.startMessageHandler();
