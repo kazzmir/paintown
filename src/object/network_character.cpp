@@ -114,7 +114,7 @@ void NetworkCharacter::draw( Bitmap * work, int rel_x ){
 
 /* just performs the current animation */
 void NetworkCharacter::act( vector< Object * > * others, World * world, vector< Object * > * add ){
-    Global::debug( 2 ) << getId() << " status is " << getStatus() << endl;
+    Global::debug(3, __FILE__) << getId() << " status is " << getStatus() << endl;
     Character::act( others, world, add );
     if ( (getStatus() == Status_Ground ||
                 getStatus() == Status_Jumping) && animation_current->Act() ){

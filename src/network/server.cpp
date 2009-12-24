@@ -498,7 +498,7 @@ static void sendAllOk(const vector<Socket> & sockets){
     sendToAll(sockets, ok);
 }
 
-static void playGame( const vector< Socket > & sockets ){
+static void playGame( vector< Socket > & sockets ){
     vector< Object * > players;
     pthread_t loading_screen_thread;
     try{
@@ -524,6 +524,9 @@ static void playGame( const vector< Socket > & sockets ){
          * need to change it
          */
 
+        /* keep track of characters and their related sockets (clients) */
+        map<Object*, Socket> characterToSocket;
+
         id += 1;
         /* all other players will send their chosen character as a
          * CREATE_CHARACTER message. after receiving it, send back the
@@ -538,6 +541,7 @@ static void playGame( const vector< Socket > & sockets ){
             if ( type == World::CREATE_CHARACTER ){
                 int alliance = playerAlliance();
                 Character * client_character = new NetworkPlayer(Filesystem::find(message.path), alliance);
+                characterToSocket[client_character] = socket;
                 /* Don't need this line now that NetworkPlayer exists.
                  * take it out at some point.
                  */
@@ -599,7 +603,7 @@ static void playGame( const vector< Socket > & sockets ){
             }
 
             debug( 1 ) << "Create network world" << endl;
-            NetworkWorld world( sockets, players, Filesystem::find(level));
+            NetworkWorld world( sockets, players, characterToSocket, Filesystem::find(level));
 
             debug( 1 ) << "Load music" << endl;
 

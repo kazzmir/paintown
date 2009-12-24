@@ -5,6 +5,7 @@
 #include "network.h"
 #include "util/funcs.h"
 #include "level/scene.h"
+#include "script/script.h"
 #include "globals.h"
 
 using namespace std;
@@ -23,12 +24,15 @@ static void * handleMessages( void * arg ){
     Network::Socket socket = s->socket;
     NetworkWorld * world = s->world;
 
+    unsigned int id = 0;
     try{
         while ( world->isRunning() ){
             Network::Message m(socket);
+            Global::debug(2, __FILE__) << "Received message " << id << " with path '" << m.path << "'" << endl;
+            id += 1;
             // pthread_mutex_lock( lock );
             world->addIncomingMessage(m, socket);
-            debug(2) << "Received path '" << m.path << "'" << endl;
+            // debug(2, __FILE__) << "Received path '" << m.path << "'" << endl;
             // pthread_mutex_unlock( lock );
         }
     } catch ( const Network::NetworkException & ne ){
@@ -40,9 +44,10 @@ static void * handleMessages( void * arg ){
     return NULL;
 }
 
-NetworkWorld::NetworkWorld( const vector< NLsocket > & sockets, const vector< Object * > & players, const string & path, int screen_size ) throw ( LoadException ):
+NetworkWorld::NetworkWorld( vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const string & path, int screen_size ) throw ( LoadException ):
 AdventureWorld( players, path, screen_size ),
-sockets( sockets ),
+sockets(sockets),
+characterToClient(characterToClient),
 sent_messages( 0 ),
 running( true ){
     Object::networkid_t max_id = 0;
@@ -222,6 +227,44 @@ void NetworkWorld::handlePing(Network::Message & message){
     /* only send ping reply to the client that asked for it */
     addMessage(out, 0, message.readFrom);
 }
+
+void NetworkWorld::removePlayer(Object * player){
+    for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); ){
+        PlayerTracker & tracker = *it;
+        if (tracker.player == player){
+            void * handle = tracker.script;
+            if (handle != NULL){
+                Script::Engine::getEngine()->destroyObject(handle);
+            }
+            tracker.player->setScriptObject(NULL);
+            
+            it = players.erase(it);
+        } else {
+            it++;
+        }
+    }
+}
+
+void NetworkWorld::removeSocket(Network::Socket socket){
+    for (vector<Network::Socket>::iterator it = sockets.begin(); it != sockets.end(); ){
+        if (socket == *it){
+            it = sockets.erase(it);
+        } else {
+            it++;
+        }
+    }
+}
+                            
+Object * NetworkWorld::findPlayerFromSocket(Network::Socket socket){
+    for (map<Object*, Network::Socket>::iterator it = characterToClient.begin(); it != characterToClient.end(); it++){
+        Object * who = (*it).first;
+        Network::Socket search = (*it).second;
+        if (search == socket){
+            return who;
+        }
+    }
+    return NULL;
+}
 	
 void NetworkWorld::handleMessage( Network::Message & message ){
 	if ( message.id == 0 ){
@@ -261,6 +304,20 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 				}
 				break;
 			}
+                        case QUIT : {
+                            /* when a client quits we have to
+                             * 1. delete that player from existence, send DELETE_OBJ
+                             * 2. stop the socket input threads 
+                             * 3. remove the socket from our list of clients
+                             * The thread will die on its own so we don't need to kill it.
+                             */
+                            Object * player = findPlayerFromSocket(message.readFrom);
+                            addMessage(deleteMessage(player->getId()));
+                            removePlayer(player);
+                            Network::close(message.readFrom);
+                            removeSocket(message.readFrom);
+                            break;
+                        }
                         case PING_REQUEST : {
                             handlePing(message);
                             break;

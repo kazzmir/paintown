@@ -412,8 +412,9 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 	}
 }
 
-void NetworkWorldClient::addMessage( Network::Message m, Network::Socket from ){
+void NetworkWorldClient::addMessage( Network::Message m, Network::Socket from, Network::Socket to ){
     if ( m.id == id || m.id == 0 ){
+        debug(2) << "Sending message to id " << m.id << endl;
         outgoing.push_back( m );
     }
 }

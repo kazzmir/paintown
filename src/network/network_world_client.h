@@ -32,7 +32,7 @@ public:
         void startMessageHandler();
 	
 	virtual void doScene( int min_x, int max_x );
-	virtual void addMessage( Network::Message m, Network::Socket from = 0 );
+	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 
         virtual void changePause();
 

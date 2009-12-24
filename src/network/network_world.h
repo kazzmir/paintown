@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <vector>
 #include <string>
+#include <map>
 
 struct Packet{
 	Packet(const Network::Message & m, Network::Socket s, Network::Socket to = 0):
@@ -23,7 +24,7 @@ struct Packet{
 
 class NetworkWorld: public AdventureWorld {
 public:
-	NetworkWorld( const std::vector< NLsocket > & sockets, const std::vector< Object * > & players, const std::string & path, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Object * > & players, const std::map<Object*, Network::Socket> & characterToClient, const std::string & path, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	virtual void act();
@@ -51,25 +52,29 @@ public:
 
 protected:
 	Object * findNetworkObject( Object::networkid_t id );
-	void sendMessage( const Network::Message & message, NLsocket socket );
+	void sendMessage( const Network::Message & message, Network::Socket socket );
         std::vector< Network::Message > getIncomingMessages();
 	void handleMessage( Network::Message & message );
         void handlePing(Network::Message & message);
 
 	Network::Message nextBlockMessage( int block );
 
+        void removePlayer(Object * player);
+        void removeSocket(Network::Socket socket);
+        Object * findPlayerFromSocket(Network::Socket socket);
 
 	inline unsigned int nextId(){
-		unsigned int i = id;
-		id += 1;
-		return i;
+            unsigned int i = id;
+            id += 1;
+            return i;
 	}
 
 private:
-	std::vector< NLsocket > sockets;
+	std::vector<Network::Socket> & sockets;
 	std::vector< Packet > outgoing;
 	std::vector< Network::Message > incoming;
 	std::vector< pthread_t > threads;
+	std::map<Object*, Network::Socket> characterToClient;
         Object::networkid_t id;
 
 	unsigned int sent_messages;

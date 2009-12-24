@@ -30,25 +30,25 @@ using namespace std;
 namespace Network{
 
 static void stopLoading( pthread_t thread ){
-	pthread_mutex_lock( &Global::loading_screen_mutex );
-	Global::done_loading = true;
-	pthread_mutex_unlock( &Global::loading_screen_mutex );
+    pthread_mutex_lock( &Global::loading_screen_mutex );
+    Global::done_loading = true;
+    pthread_mutex_unlock( &Global::loading_screen_mutex );
 
-	pthread_join( thread, NULL );
+    pthread_join( thread, NULL );
 }
 
 static void startLoading( pthread_t * thread ){
-	pthread_create( thread, NULL, loadingScreen, NULL );
+    pthread_create( thread, NULL, loadingScreen, NULL );
 }
 
 static bool uniqueId( const vector< Object * > & objs, Object::networkid_t id ){
-	for ( vector< Object * >::const_iterator it = objs.begin(); it != objs.end(); it++ ){
-		Object * o = *it;
-		if ( o->getId() == id ){
-			return false;
-		}
-	}
-	return true;
+    for ( vector< Object * >::const_iterator it = objs.begin(); it != objs.end(); it++ ){
+        Object * o = *it;
+        if ( o->getId() == id ){
+            return false;
+        }
+    }
+    return true;
 }
 
 /* send ok to server, get an ok back */
@@ -68,116 +68,140 @@ static void waitForServer(Socket socket){
 
 static void sendDummy(Socket socket){
     Message dummy;
+    dummy.id = 0;
     dummy << World::IGNORE_MESSAGE;
     dummy.send( socket );
 }
 
+static void sendQuit(Socket socket){
+    Message quit;
+    quit.id = 0;
+    quit << World::QUIT;
+    quit.send(socket);
+}
+
 static void playGame( Socket socket ){
-	pthread_t loadingThread;
-	try{
-            /* TODO: get the info from the server */
-            Level::LevelInfo info;
-		Character * player = (Character *) Game::selectPlayer( false, "Pick a player", info);
-                ((Player *) player)->ignoreLives();
-		string path = Filesystem::cleanse(player->getPath());
-		// path.erase( 0, Util::getDataPath().length() );
-	
-		startLoading( &loadingThread );
+    pthread_t loadingThread;
+    try{
+        /* TODO: get the info from the server */
+        Level::LevelInfo info;
+        Character * player = (Character *) Game::selectPlayer( false, "Pick a player", info);
+        ((Player *) player)->ignoreLives();
+        string path = Filesystem::cleanse(player->getPath());
+        // path.erase( 0, Util::getDataPath().length() );
 
-		/* send the path of the chosen player */
-		Message create;
-		create << World::CREATE_CHARACTER;
-		create.path = path;
-		create.send( socket );
+        startLoading( &loadingThread );
 
-		/* get the id from the server */
-		Message myid( socket );
-		int type;
-                int alliance;
-		myid >> type;
-                Object::networkid_t client_id = (Object::networkid_t) -1;
-		if ( type == World::SET_ID ){
-			myid >> client_id >> alliance;
-			player->setId( client_id );
-                        player->setAlliance(alliance);
-			Global::debug( 1 ) << "Client id is " << client_id << endl;
-		} else {
-			Global::debug( 0 ) << "Bogus message, expected SET_ID( " << World::SET_ID << " ) got " << type << endl;
-		}
+        /* send the path of the chosen player */
+        Message create;
+        create << World::CREATE_CHARACTER;
+        create.path = path;
+        create.send( socket );
 
-		vector< Object * > players;
-		players.push_back( player );
+        /* get the id from the server */
+        Message myid( socket );
+        int type;
+        int alliance;
+        myid >> type;
+        Object::networkid_t client_id = (Object::networkid_t) -1;
+        if ( type == World::SET_ID ){
+            myid >> client_id >> alliance;
+            player->setId( client_id );
+            player->setAlliance(alliance);
+            Global::debug( 1 ) << "Client id is " << client_id << endl;
+        } else {
+            Global::debug( 0 ) << "Bogus message, expected SET_ID( " << World::SET_ID << " ) got " << type << endl;
+        }
 
-		bool done = false;
-		while ( ! done ){
-			Message next( socket );
-			int type;
-			next >> type;
-			switch ( type ){
-				case World::CREATE_CHARACTER : {
-                                        Object::networkid_t id;
-                                        int alliance;
-					next >> id >> alliance;
-					if ( uniqueId( players, id ) ){
-                                            Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
-						Character * c = new NetworkPlayer(Filesystem::find(next.path), alliance);
-						c->setId( id );
-						((NetworkCharacter *)c)->alwaysShowName();
-						players.push_back( c );
-					}
-					break;
-				}
-				case World::LOAD_LEVEL : {
-					string level = Filesystem::find(next.path);
-					NetworkWorldClient world( socket, players, level, client_id );
-					Music::pause();
-					Music::fadeIn( 0.3 );
-					Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
-					Music::play();
+        vector< Object * > players;
+        players.push_back( player );
 
-                                        waitForServer(socket);
-
-                                        world.startMessageHandler();
-
-					stopLoading( loadingThread );
-					try{
-                                            vector<Object*> xplayers;
-                                            Game::playLevel( world, xplayers, 100 );
-
-                                                ObjectFactory::destroy();
-                                                HeartFactory::destroy();
-
-						startLoading( &loadingThread );
-                                                Global::debug(1) << "Stop running client world" << endl;
-                                                /* this dummy lets the server message handler
-                                                 * stop running. its currently blocked waiting for
-                                                 * a message to come through.
-                                                 */
-                                                sendDummy(socket);
-						world.stopRunning();
-                                                Global::debug(1) << "Send dummy packet" << endl;
-                                                /* then wait for a barrier */
-                                                waitForServer(socket);
-                                        } catch ( const ReturnException & e ){
-						Network::close( socket );
-					}
-					break;
-				}
-				/* thats all folks! */
-				case World::GAME_OVER : {
-					break;
-				}
-			}
-		}
-
-                for (vector<Object*>::iterator it = players.begin(); it != players.end(); it++){
-                    delete *it;
+        bool done = false;
+        while ( ! done ){
+            Message next( socket );
+            int type;
+            next >> type;
+            switch ( type ){
+                case World::CREATE_CHARACTER : {
+                    Object::networkid_t id;
+                    int alliance;
+                    next >> id >> alliance;
+                    if ( uniqueId( players, id ) ){
+                        Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
+                        Character * c = new NetworkPlayer(Filesystem::find(next.path), alliance);
+                        c->setId( id );
+                        ((NetworkCharacter *)c)->alwaysShowName();
+                        players.push_back( c );
+                    }
+                    break;
                 }
-	} catch ( const LoadException & le ){
-		Global::debug( 0 ) << "[client] Load exception: " + le.getReason() << endl;
-	}
+                case World::LOAD_LEVEL : {
+                    string level = Filesystem::find(next.path);
+                    NetworkWorldClient world( socket, players, level, client_id );
+                    Music::pause();
+                    Music::fadeIn( 0.3 );
+                    Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
+                    Music::play();
 
-	stopLoading( loadingThread );
+                    waitForServer(socket);
+
+                    world.startMessageHandler();
+
+                    stopLoading( loadingThread );
+                    try{
+                        vector<Object*> xplayers;
+                        bool forceQuit = Game::playLevel( world, xplayers, 100 );
+
+                        ObjectFactory::destroy();
+                        HeartFactory::destroy();
+
+                        startLoading( &loadingThread );
+
+                        if (forceQuit){
+                            sendQuit(socket);
+                            /* After quit is sent the socket will be closed
+                             * by someone later on. The input handler in the client
+                             * world will throw a network exception and then
+                             * the thread will die.
+                             */
+                            done = true;
+                        } else {
+                            Global::debug(1) << "Stop running client world" << endl;
+                            /* this dummy lets the server message handler
+                             * stop running. its currently blocked waiting for
+                             * a message to come through.
+                             */
+                            sendDummy(socket);
+                            world.stopRunning();
+                            Global::debug(1) << "Send dummy packet" << endl;
+                            /* then wait for a barrier */
+                            waitForServer(socket);
+                        }
+                    } catch ( const ReturnException & e ){
+                        /* do we need to close the socket here?
+                         * when this function returns the socket will be
+                         * close anyway.
+                         */
+                        Network::close( socket );
+                    }
+                    break;
+                }
+                /* thats all folks! */
+                case World::GAME_OVER : {
+                    done = true;
+                    break;
+                }
+            }
+        }
+
+        for (vector<Object*>::iterator it = players.begin(); it != players.end(); it++){
+            delete *it;
+        }
+    } catch ( const LoadException & le ){
+        Global::debug(0, "client") << "Load exception: " + le.getReason() << endl;
+    }
+
+    stopLoading( loadingThread );
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
@@ -354,7 +378,7 @@ void networkClient(){
 							keyboard.wait();
 							chat.run();
 							if ( chat.isFinished() ){
-								playGame( socket );
+                                                            playGame( socket );
 							}
 							Network::close( socket );
 						} catch ( const NetworkException & e ){
