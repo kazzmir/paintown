@@ -20,6 +20,8 @@ extern const int MIN_RELATIVE_DISTANCE;
 
 namespace Global{
 
+extern const unsigned int MagicId;
+
 extern const char * DEFAULT_FONT;
 
 int getVersion();

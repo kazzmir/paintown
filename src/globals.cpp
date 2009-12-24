@@ -92,6 +92,9 @@ const std::string Global::titleScreen(){
 
 namespace Global{
 
+/* just some random number I picked out of thin air */
+const unsigned int MagicId = 0x0dff2110;
+
 /* should support infinite queues eventually */
 static MessageQueue * current = NULL;
 void registerInfo(MessageQueue * queue){

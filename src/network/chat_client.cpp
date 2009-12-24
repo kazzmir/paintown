@@ -97,6 +97,8 @@ enterPressed( false ){
 		Network::Message nameMessage;
 		nameMessage.path = name;
 		nameMessage << HELLO;
+                nameMessage << Global::MagicId;
+                nameMessage << Global::getVersion();
 		nameMessage.send( socket );
 	} catch ( const Network::NetworkException & n ){
 		debug( 0 ) << "Could not send username: " << n.getMessage() << endl;

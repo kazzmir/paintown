@@ -458,6 +458,7 @@ static int playerAlliance(){
 
 static void waitAllOk(const vector<Socket> & sockets){
     Global::debug(1) << "Waiting for an ok from all clients" << endl;
+    Global::info("Waiting for all clients..");
     for (vector<Socket>::const_iterator it = sockets.begin(); it != sockets.end(); it++){
         bool done = false;
         while (!done){

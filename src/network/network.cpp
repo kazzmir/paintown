@@ -186,38 +186,53 @@ void Message::send( Socket socket ) const {
 }
 	
 void Message::reset(){
-	position = data;
+    position = data;
 }
 
 Message & Message::operator<<(int x){
+    if (position > data + DATA_SIZE - sizeof(uint16_t)){
+        throw NetworkException("Tried to set too much data");
+    }
 
-	*(int16_t *) position = x;
-	position += sizeof(int16_t);
+    *(int16_t *) position = x;
+    position += sizeof(int16_t);
 
-	return *this;
+    return *this;
 }
 
 Message & Message::operator<<(unsigned int x){
-	*(int32_t *) position = x;
-	position += sizeof(int32_t);
-	return *this;
+    if (position > data + DATA_SIZE - sizeof(uint32_t)){
+        throw NetworkException("Tried to set too much data");
+    }
+
+    *(int32_t *) position = x;
+    position += sizeof(int32_t);
+    return *this;
 }
 	
 Message & Message::operator>>(int & x){
-	x = *(int16_t *) position;
-	position += sizeof(int16_t);
-	return *this;
+    if (position > data + DATA_SIZE - sizeof(uint16_t)){
+        throw NetworkException("Tried to read too much data");
+    }
+
+    x = *(int16_t *) position;
+    position += sizeof(int16_t);
+    return *this;
 }
 
 Message & Message::operator>>(unsigned int & x){
-	x = *(int32_t *) position;
-	position += sizeof(int32_t);
-	return *this;
+    if (position > data + DATA_SIZE - sizeof(uint32_t)){
+        throw NetworkException("Tried to read too much data");
+    }
+
+    x = *(int32_t *) position;
+    position += sizeof(int32_t);
+    return *this;
 }
 
 Message & Message::operator<<( string p ){
-	path = p;
-	return *this;
+    path = p;
+    return *this;
 }
 	
 int Message::size() const {

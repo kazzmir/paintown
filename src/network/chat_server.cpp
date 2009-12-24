@@ -7,6 +7,7 @@
 #include "input/keyboard.h"
 #include "util/font.h"
 #include "util/file-system.h"
+#include "util/load_exception.h"
 #include "return_exception.h"
 #include "globals.h"
 #include "init.h"
@@ -16,6 +17,7 @@
 #include "menu/menu.h"
 #include "util/timer.h"
 #include <iostream>
+#include <sstream>
 
 #include <signal.h>
 
@@ -353,17 +355,34 @@ void ChatServer::addConnection( Network::Socket s ){
         int type;
         hello >> type;
         if (type != HELLO){
-            Global::debug(0) << "Client sent something other than a HELLO" << endl;
-            delete client;
-            return;
+            ostringstream out;
+            out << "Client sent something other than a HELLO: " << type;
+            throw LoadException(out.str());
         }
-        /* TODO: check for the version here */
+        unsigned int magic;
+        hello >> magic;
+        if (magic != Global::MagicId){
+            ostringstream out;
+            out << "Invalid magic id: " << magic;
+            throw LoadException(out.str());
+        }
+        int version;
+        hello >> version;
+        if (! Util::checkVersion(version)){
+            ostringstream out;
+            out << "Invalid version: " << version;
+            throw LoadException(out.str());
+        }
         string name;
         name = hello.path;
         client->setName(name);
     } catch (const Network::NetworkException & e){
         delete client;
         throw e;
+    } catch (const LoadException & e){
+        delete client;
+        Global::debug(0) << "Dropping connection: " << e.getReason() << endl;
+        return;
     }
 
     /* send the server name to the just connected client */
