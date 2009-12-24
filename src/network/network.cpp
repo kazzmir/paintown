@@ -31,7 +31,7 @@ readFrom(0){
 	
 Message::Message(const Message & m):
 timestamp(m.timestamp),
-readFrom(0){
+readFrom(m.readFrom){
     memcpy( data, m.data, sizeof(data) );
     position = data;
     position += m.position - m.data;

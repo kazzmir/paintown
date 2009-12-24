@@ -243,6 +243,15 @@ void NetworkWorld::removePlayer(Object * player){
             it++;
         }
     }
+
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+        Object * o = *it;
+        if (o->getId() == player->getId()){
+            it = objects.erase( it );
+        } else {
+            it++;
+        }
+    }
 }
 
 void NetworkWorld::removeSocket(Network::Socket socket){
@@ -316,6 +325,10 @@ void NetworkWorld::handleMessage( Network::Message & message ){
                             removePlayer(player);
                             Network::close(message.readFrom);
                             removeSocket(message.readFrom);
+
+                            /* TODO: add a warning message to the user
+                             * that a client just quit.
+                             */
                             break;
                         }
                         case PING_REQUEST : {

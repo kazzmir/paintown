@@ -150,7 +150,7 @@ static void playGame( Socket socket ){
                     stopLoading( loadingThread );
                     try{
                         vector<Object*> xplayers;
-                        bool forceQuit = Game::playLevel( world, xplayers, 100 );
+                        bool forceQuit = ! Game::playLevel( world, xplayers, 100 );
 
                         ObjectFactory::destroy();
                         HeartFactory::destroy();
@@ -158,6 +158,7 @@ static void playGame( Socket socket ){
                         startLoading( &loadingThread );
 
                         if (forceQuit){
+                            Global::debug(1, __FILE__) << "Force quite" << endl;
                             sendQuit(socket);
                             /* After quit is sent the socket will be closed
                              * by someone later on. The input handler in the client

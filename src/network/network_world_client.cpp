@@ -63,9 +63,9 @@ secondCounter(Global::second_counter),
 id(id),
 running(true),
 currentPing(0){
-	objects.clear();
-	pthread_mutex_init( &message_mutex, NULL );
-	pthread_mutex_init( &running_mutex, NULL );
+    objects.clear();
+    pthread_mutex_init( &message_mutex, NULL );
+    pthread_mutex_init( &running_mutex, NULL );
 }
 
 void NetworkWorldClient::startMessageHandler(){
@@ -360,8 +360,12 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
                                 Object::networkid_t id;
 				message >> id;
 				Object * o = removeObject( id );
+
+                                /* TODO: this will crash later on if the object
+                                 * removed is a player. check for that
+                                 */
 				if ( o != NULL ){
-					delete o;
+                                    delete o;
 				}
 				break;
 			}
@@ -548,7 +552,7 @@ void NetworkWorldClient::act(){
         } else ++it;
     }
 
-    if (secondCounter != Global::second_counter){
+    if (abs(Global::second_counter - secondCounter) > 2){
         addMessage(pingMessage(secondCounter));
         secondCounter = Global::second_counter;
     }
