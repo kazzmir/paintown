@@ -51,6 +51,7 @@ protected:
 	void handleCreateBang( Network::Message & message );
 	void handleCreateItem( Network::Message & message );
 	Object * removeObject( Object::networkid_t id );
+        void removePlayer(Object * obj);
 
 	void sendMessage( const Network::Message & message, NLsocket socket );
         void sendMessages(const std::vector<Network::Message> & messages, Network::Socket socket);

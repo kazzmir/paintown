@@ -182,29 +182,27 @@ void AdventureWorld::loadLevel( const string & path ) throw( LoadException ){
 }
 
 void AdventureWorld::deleteObjects( vector< Object * > * objects ){
-
-	for ( vector< Object * >::iterator it = objects->begin(); it != objects->end(); it++ ){
-		if ( ! isPlayer( *it ) ){
-			delete *it;
-		}
-	}
-
+    for ( vector< Object * >::iterator it = objects->begin(); it != objects->end(); it++ ){
+        if ( ! isPlayer( *it ) ){
+            delete *it;
+        }
+    }
 }
 
 /* true if the player has crossed the finish line */
 bool AdventureWorld::finished() const {
-	int f = scene->getFinished();
-	if ( players.size() > 0 ){
-		for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
-			Object * const player = it->player;
-			if ( f != -1 && player->getX() >= f ){
-				return player->getX() >= f;
-			}
-		}
-		return false;
-	} else {
-		return true;
-	}
+    int f = scene->getFinished();
+    if ( players.size() > 0 ){
+        for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
+            Object * const player = it->player;
+            if ( f != -1 && player->getX() >= f ){
+                return player->getX() >= f;
+            }
+        }
+        return false;
+    } else {
+        return true;
+    }
 }
 	
 bool AdventureWorld::isPlayer( Object * o ) const {

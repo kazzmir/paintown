@@ -247,7 +247,7 @@ void NetworkWorld::removePlayer(Object * player){
     for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
         Object * o = *it;
         if (o->getId() == player->getId()){
-            it = objects.erase( it );
+            it = objects.erase(it);
         } else {
             it++;
         }

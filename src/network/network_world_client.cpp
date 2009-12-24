@@ -4,6 +4,7 @@
 #include "network.h"
 #include "level/scene.h"
 #include "globals.h"
+#include "script/script.h"
 #include "init.h"
 #include "util/font.h"
 #include "factory/font_render.h"
@@ -284,6 +285,26 @@ Object * NetworkWorldClient::findNetworkObject( Object::networkid_t id ){
 	return NULL;
 }
 
+/* TODO: this code is duplicated in game/adventure_world.cpp and network_world.cpp.
+ * try to abstract it out at some point.
+ */
+void NetworkWorldClient::removePlayer(Object * player){
+    for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); ){
+        PlayerTracker & tracker = *it;
+        if (tracker.player == player){
+            void * handle = tracker.script;
+            if (handle != NULL){
+                Script::Engine::getEngine()->destroyObject(handle);
+            }
+            tracker.player->setScriptObject(NULL);
+
+            it = players.erase(it);
+        } else {
+            it++;
+        }
+    }
+}
+
 void NetworkWorldClient::handlePing(Network::Message & message){
     unsigned int id;
     message >> id;
@@ -361,12 +382,13 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				message >> id;
 				Object * o = removeObject( id );
 
-                                /* TODO: this will crash later on if the object
-                                 * removed is a player. check for that
-                                 */
-				if ( o != NULL ){
-                                    delete o;
-				}
+                                if (isPlayer(o)){
+                                    removePlayer(o);
+                                } else {
+                                    if ( o != NULL ){
+                                        delete o;
+                                    }
+                                }
 				break;
 			}
 			case IGNORE_MESSAGE : {
