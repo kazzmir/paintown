@@ -5,6 +5,7 @@
 #include "game/adventure_world.h"
 #include "util/load_exception.h"
 #include "object/object.h"
+#include "input/input-map.h"
 #include <pthread.h>
 #include <vector>
 #include <string>
@@ -69,6 +70,10 @@ protected:
             return i;
 	}
 
+        enum Keys{
+            Talk,
+        };
+
 private:
 	std::vector<Network::Socket> & sockets;
 	std::vector< Packet > outgoing;
@@ -82,6 +87,7 @@ private:
 	pthread_mutex_t message_mutex;
 	pthread_mutex_t running_mutex;
 	bool running;
+        InputMap<Keys> input;
 };
 
 #endif

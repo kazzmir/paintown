@@ -8,6 +8,10 @@
 #include "level/scene.h"
 #include "level/cacher.h"
 #include "script/script.h"
+#include "util/file-system.h"
+#include "input/input-manager.h"
+#include "util/font.h"
+#include "factory/font_render.h"
 #include "globals.h"
 #include <sstream>
 
@@ -70,6 +74,8 @@ running( true ){
         }
     }
     this->id = max_id + 1;
+
+    input.set(Keyboard::Key_T, 200, false, Talk);
 }
 
 void NetworkWorld::startMessageHandlers(){
@@ -437,6 +443,16 @@ void NetworkWorld::flushOutgoing(){
 	
 void NetworkWorld::act(){
     AdventureWorld::act();
+    
+    InputMap<Keys>::Output inputState = InputManager::getMap(input);
+    if (inputState[Talk]){
+        /*
+        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
+        FontRender * render = FontRender::getInstance();
+        render->addMessage(font, 1, work->getHeight(), Bitmap::makeColor(255, 255, 255), -1, "server is talking");
+        */
+        Global::debug(0) << "Server is talking" << endl;
+    }
 
     vector< Network::Message > messages = getIncomingMessages();
     for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){

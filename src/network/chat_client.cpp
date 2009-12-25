@@ -199,10 +199,10 @@ void ChatClient::removeBuddy( int id ){
 }
 
 void ChatClient::addMessage( const string & s, unsigned int id ){
-	pthread_mutex_lock( &lock );
-	messages.addMessage( s );
-	needUpdate();
-	pthread_mutex_unlock( &lock );
+    pthread_mutex_lock( &lock );
+    messages.addMessage( s );
+    needUpdate();
+    pthread_mutex_unlock( &lock );
 }
 
 /*
@@ -215,33 +215,33 @@ static char lowerCase( const char * x ){
 */
 
 bool ChatClient::sendMessage( const string & message ){
-	try{
-		Network::Message net;
-		net << ADD_MESSAGE;
-		net.path = message;
-		net.send( socket );
-		return true;
-	} catch ( const Network::NetworkException & e ){
-		debug( 0 ) << "Client could not send message" << endl;
-	}
-	return false;
+    try{
+        Network::Message net;
+        net << ADD_MESSAGE;
+        net.path = message;
+        net.send( socket );
+        return true;
+    } catch ( const Network::NetworkException & e ){
+        debug( 0 ) << "Client could not send message" << endl;
+    }
+    return false;
 }
-	
-void ChatClient::popup( Bitmap & work, Keyboard & key, const std::string & str ){
-	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
-	int length = font.textLength( str.c_str() ) + 20;
-	int height = font.getHeight() * 2;
-	Bitmap area( work, work.getWidth() / 2 - length / 2, work.getHeight() / 2, length, height );
-	area.drawingMode( Bitmap::MODE_TRANS );
-	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
-	area.drawingMode( Bitmap::MODE_SOLID );
-	int color = Bitmap::makeColor( 255, 255, 255 );
-	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
-	font.printf( 10, area.getHeight() / 3, Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
-        work.BlitToScreen();
 
-	key.wait();
-	key.readKey();
+void ChatClient::popup( Bitmap & work, Keyboard & key, const std::string & str ){
+    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+    int length = font.textLength( str.c_str() ) + 20;
+    int height = font.getHeight() * 2;
+    Bitmap area( work, work.getWidth() / 2 - length / 2, work.getHeight() / 2, length, height );
+    area.drawingMode( Bitmap::MODE_TRANS );
+    area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
+    area.drawingMode( Bitmap::MODE_SOLID );
+    int color = Bitmap::makeColor( 255, 255, 255 );
+    area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
+    font.printf( 10, area.getHeight() / 3, Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
+    work.BlitToScreen();
+
+    key.wait();
+    key.readKey();
 }
 
 void ChatClient::handleInput( Keyboard & keyboard ){
@@ -321,141 +321,140 @@ bool ChatClient::logic( Keyboard & keyboard ){
 }
 
 void ChatClient::drawInputBox( int x, int y, const Bitmap & work ){
-	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
 
-	work.drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::transBlender( 0, 0, 0, 128 );
-	work.rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Bitmap::makeColor( 0, 0, 0 ) );
-	work.drawingMode( Bitmap::MODE_SOLID );
-	int color = Bitmap::makeColor( 255, 255, 255 );
-	if ( focus == INPUT_BOX ){
-		color = Bitmap::makeColor( 255, 255, 0 );
-	}
-	work.rectangle( x, y, x + messages.getWidth(), y + font.getHeight(), color );
-	Bitmap input_box( work, x + 1, y, messages.getWidth(), font.getHeight() );
-	// font.printf( x + 1, y, Bitmap::makeColor( 255, 255, 255 ), work, input, 0 );
-	font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
+    work.drawingMode( Bitmap::MODE_TRANS );
+    Bitmap::transBlender( 0, 0, 0, 128 );
+    work.rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Bitmap::makeColor( 0, 0, 0 ) );
+    work.drawingMode( Bitmap::MODE_SOLID );
+    int color = Bitmap::makeColor( 255, 255, 255 );
+    if ( focus == INPUT_BOX ){
+        color = Bitmap::makeColor( 255, 255, 0 );
+    }
+    work.rectangle( x, y, x + messages.getWidth(), y + font.getHeight(), color );
+    Bitmap input_box( work, x + 1, y, messages.getWidth(), font.getHeight() );
+    // font.printf( x + 1, y, Bitmap::makeColor( 255, 255, 255 ), work, input, 0 );
+    font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
 
 }
 
 void ChatClient::drawBuddies( const Bitmap & area, int x, int y, const Font & font ){
-	Bitmap buddyList( area, x, y, GFX_X - x - 5, 200 );
-	buddyList.drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::transBlender( 0, 0, 0, 128 );
-	buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-	buddyList.drawingMode( Bitmap::MODE_SOLID );
-	buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
-	int fy = 1;
-	for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
-		Buddy & buddy = *it;
-		const string & name = buddy.name;
-		font.printf( 1, fy, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
-		fy += font.getHeight();
-	}
+    Bitmap buddyList( area, x, y, GFX_X - x - 5, 200 );
+    buddyList.drawingMode( Bitmap::MODE_TRANS );
+    Bitmap::transBlender( 0, 0, 0, 128 );
+    buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+    buddyList.drawingMode( Bitmap::MODE_SOLID );
+    buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
+    int fy = 1;
+    for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
+        Buddy & buddy = *it;
+        const string & name = buddy.name;
+        font.printf( 1, fy, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
+        fy += font.getHeight();
+    }
 }
 	
 void ChatClient::draw( const Bitmap & work ){
-	int start_x = 20;
-	int start_y = 20;
-	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
-	background->Blit( work );
-	messages.draw( start_x, start_y, work, font );
-	// drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
-	lineEdit->render(work);
-	drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
+    int start_x = 20;
+    int start_y = 20;
+    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+    background->Blit( work );
+    messages.draw( start_x, start_y, work, font );
+    // drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
+    lineEdit->render(work);
+    drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
 
-	int color = Bitmap::makeColor( 255, 255, 255 );
-	if ( focus == QUIT ){
-		color = Bitmap::makeColor( 255, 255, 0 );
-	}
-	font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() + 20, color, work, "Back", 0 );
+    int color = Bitmap::makeColor( 255, 255, 255 );
+    if ( focus == QUIT ){
+        color = Bitmap::makeColor( 255, 255, 0 );
+    }
+    font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() + 20, color, work, "Back", 0 );
 
-	need_update = false;
+    need_update = false;
 }
 			
 bool ChatClient::isFinished(){
-	bool b;
-	pthread_mutex_lock( &lock );
-	b = finished;
-	pthread_mutex_unlock( &lock );
-	return b;
+    bool b;
+    pthread_mutex_lock( &lock );
+    b = finished;
+    pthread_mutex_unlock( &lock );
+    return b;
 }
 
 void ChatClient::finish(){
-	pthread_mutex_lock( &lock );
-	finished = true;
-	pthread_mutex_unlock( &lock );
+    pthread_mutex_lock( &lock );
+    finished = true;
+    pthread_mutex_unlock( &lock );
 }
-	
+
 void ChatClient::killInputThread(){
-	debug( 0 ) << "Killing input socket" << endl;
-	Network::close( getSocket() );
-	debug( 0 ) << "Waiting for input thread to die" << endl;
-	pthread_join( inputThread, NULL );
-	debug( 0 ) << "Input thread killed" << endl;
+    debug( 0 ) << "Killing input socket" << endl;
+    Network::close( getSocket() );
+    debug( 0 ) << "Waiting for input thread to die" << endl;
+    pthread_join( inputThread, NULL );
+    debug( 0 ) << "Input thread killed" << endl;
 }
 
 void ChatClient::run(){
-	Global::speed_counter = 0;
-	Bitmap work( GFX_X, GFX_Y );
-	Keyboard keyboard;
+    Global::speed_counter = 0;
+    Bitmap work( GFX_X, GFX_Y );
+    Keyboard keyboard;
 
-	keyboard.setAllDelay( 200 );
-	keyboard.setDelay( Keyboard::Key_TAB, 200 );
-	keyboard.setDelay( Keyboard::Key_ESC, 0 );
+    keyboard.setAllDelay( 200 );
+    keyboard.setDelay( Keyboard::Key_TAB, 200 );
+    keyboard.setDelay( Keyboard::Key_ESC, 0 );
 
-	bool done = false;
-	bool kill = false;
-	while ( ! done ){
-		int think = Global::speed_counter;
-		while ( think > 0 ){
-			keyboard.poll();
-			if ( logic( keyboard ) ){
-				kill = true;
-				done = true;
-				break;
-			}
-		
-                        while ( ! toSend.empty() ){
-                            if ( ! sendMessage( toSend.front() ) ){
-                                popup( work, keyboard, "Could not send message" );
-                            }
-                            toSend.pop();
-                        }
+    bool done = false;
+    bool kill = false;
+    while ( ! done ){
+        int think = Global::speed_counter;
+        while ( think > 0 ){
+            keyboard.poll();
+            if ( logic( keyboard ) ){
+                kill = true;
+                done = true;
+                break;
+            }
 
-			think -= 1;
-			Global::speed_counter = 0;
-			done = isFinished();
-			if ( keyboard[ Keyboard::Key_ESC ] ){
-				kill = true;
-				done = true;
-				break;
-			}
-		}
+            while ( ! toSend.empty() ){
+                if ( ! sendMessage( toSend.front() ) ){
+                    popup( work, keyboard, "Could not send message" );
+                }
+                toSend.pop();
+            }
 
-		if ( needToDraw() ){
-			draw( work );
-			work.BlitToScreen();
-			work.clear();
-		}
+            think -= 1;
+            Global::speed_counter = 0;
+            done = isFinished();
+            if ( keyboard[ Keyboard::Key_ESC ] ){
+                kill = true;
+                done = true;
+                break;
+            }
+        }
 
-		while ( Global::speed_counter == 0 ){
-			Util::rest( 1 );
-			keyboard.poll();
-		}
-	}
+        if ( needToDraw() ){
+            draw( work );
+            work.BlitToScreen();
+            work.clear();
+        }
 
-	if ( kill ){
-		killInputThread();
-	} else {
-		Network::Message message;
-		message << OK_TO_START;
-		message.send( getSocket() );
-	}
+        while ( Global::speed_counter == 0 ){
+            Util::rest( 1 );
+            keyboard.poll();
+        }
+    }
+
+    if ( kill ){
+        killInputThread();
+    } else {
+        Network::Message message;
+        message << OK_TO_START;
+        message.send( getSocket() );
+    }
 }
 
 ChatClient::~ChatClient(){
-	delete background;
-	delete lineEdit;
+    delete background;
+    delete lineEdit;
 }
-
