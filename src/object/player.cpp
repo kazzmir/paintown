@@ -161,7 +161,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
         for ( vector<Input::PaintownInput>::iterator it = real_input.begin(); it != real_input.end(); it++ ){
             Input::PaintownInput n = *it;
 
-            Global::debug(1) << "Checking key " << n << endl;
+            Global::debug(3) << "Checking key " << n << endl;
 
             /* dont repeat keys */
             if ( ! last_key[n] ){
@@ -644,7 +644,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		// unsigned int num_keys = 0;
 		map<Animation *, int > possible_animations;
 
-                debugDumpKeyCache(2);
+                debugDumpKeyCache(3);
 
 		/*
 		vector< Animation * > xv;

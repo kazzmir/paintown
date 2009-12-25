@@ -26,6 +26,7 @@ NetworkException(""){
 }
 
 Message::Message():
+id(-1),
 timestamp(0),
 readFrom(0){
 	memset(data, 0, sizeof(data));

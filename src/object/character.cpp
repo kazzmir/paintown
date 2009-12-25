@@ -1071,9 +1071,12 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 			}
 			world->addMessage( ungrabMessage() );
 		} else {
+                    /* probably not necessary */
+                    /*
 			if ( getLink() ){
 				world->addMessage( grabMessage( getLink()->getId(), getId() ) );
 			}
+                        */
 		}
 	}
 

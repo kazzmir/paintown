@@ -4,9 +4,11 @@
 #include "network_world.h"
 #include "network.h"
 #include "util/funcs.h"
+#include "util/system.h"
 #include "level/scene.h"
 #include "script/script.h"
 #include "globals.h"
+#include <sstream>
 
 using namespace std;
 
@@ -28,7 +30,9 @@ static void * handleMessages( void * arg ){
     try{
         while ( world->isRunning() ){
             Network::Message m(socket);
-            Global::debug(2, __FILE__) << "Received message " << id << " with path '" << m.path << "'" << endl;
+            ostringstream context;
+            context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
+            Global::debug(2, context.str()) << "Received message " << id << " with path '" << m.path << "'" << endl;
             id += 1;
             // pthread_mutex_lock( lock );
             world->addIncomingMessage(m, socket);
@@ -110,13 +114,21 @@ void NetworkWorld::addObject( Object * o ){
 }
 	
 void NetworkWorld::addMessage( Network::Message m, Network::Socket from, Network::Socket to){
-	pthread_mutex_lock( &message_mutex );
-        /* if the server generates a message `from' will probably be 0.
-         * if the message should go to a specific client `to' will be non-zero.
-         */
-	Packet p(m, from, to);
-	outgoing.push_back( p );
-	pthread_mutex_unlock( &message_mutex );
+    if (m.id == (uint32_t) -1){
+        ostringstream out;
+        out << "Message not properly formed: ";
+        for ( int i = 0; i < Network::DATA_SIZE; i++ ){
+            out << (int) m.data[ i ] << " ";
+        }
+        throw Network::NetworkException(out.str());
+    }
+    pthread_mutex_lock( &message_mutex );
+    /* if the server generates a message `from' will probably be 0.
+     * if the message should go to a specific client `to' will be non-zero.
+     */
+    Packet p(m, from, to);
+    outgoing.push_back( p );
+    pthread_mutex_unlock( &message_mutex );
 }
 
 void NetworkWorld::addIncomingMessage( const Network::Message & message, Network::Socket from ){
