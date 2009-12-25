@@ -15,6 +15,10 @@ class Atmosphere;
 class Enemy;
 class Trigger;
 
+namespace Level{
+    class Cacher;
+}
+
 struct Panel{
 	Bitmap * pic;
 	Bitmap * neon;
@@ -26,7 +30,7 @@ struct Panel{
 
 class Scene{
 public:
-	Scene( const char * filename ) throw( LoadException );
+	Scene(const char * filename, const Level::Cacher & cacher) throw (LoadException);
 
 	// void Draw( int x, Bitmap * work );
 	void drawFront( int x, Bitmap * work );

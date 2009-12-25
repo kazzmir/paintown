@@ -11,12 +11,14 @@
 #include "level/blockobject.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "level/cacher.h"
 #include "object/object.h"
 #include "object/player.h"
 #include "factory/object_factory.h"
 #include <pthread.h>
 #include <string.h>
 #include "util/system.h"
+#include "cacher.h"
 #include <sstream>
 
 #include "object/character.h"
@@ -75,7 +77,7 @@ static void * handleMessages( void * arg ){
 }
 	
 NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size ) throw ( LoadException ):
-super( players, path, screen_size ),
+super( players, path, new NetworkCacher(), screen_size ),
 server( server ),
 world_finished( false ),
 secondCounter(Global::second_counter),

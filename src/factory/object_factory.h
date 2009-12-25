@@ -18,7 +18,7 @@ class NetworkPlayer;
 /* factory class for instantiating new objects from a BlockObject */
 class ObjectFactory{
 public:
-	static Object * createObject( BlockObject * block );
+	static Object * createObject( const BlockObject * block );
         static int getNextObjectId();
         static void maxId(int id);
 	static void destroy();
@@ -39,14 +39,14 @@ public:
 	
 private:
 	ObjectFactory();
-	Object * makeObject( BlockObject * block );
+	Object * makeObject( const BlockObject * block );
 
-	Object * makeItem(Item * item, BlockObject * block);
-	Object * makeEnemy(Enemy * enemy, BlockObject * block);
-	Object * makeActor(Actor * ret, BlockObject * block);
-	Object * makeCat(Cat * ret, BlockObject * block);
-	Object * makeNetworkCharacter(NetworkCharacter * guy, BlockObject * block);
-	Object * makeNetworkPlayer(NetworkPlayer * guy, BlockObject * block);
+	Object * makeItem(Item * item, const BlockObject * block);
+	Object * makeEnemy(Enemy * enemy, const BlockObject * block);
+	Object * makeActor(Actor * ret, const BlockObject * block);
+	Object * makeCat(Cat * ret, const BlockObject * block);
+	Object * makeNetworkCharacter(NetworkCharacter * guy, const BlockObject * block);
+	Object * makeNetworkPlayer(NetworkPlayer * guy, const BlockObject * block);
 
         int _getNextObjectId();
         void maxObjectId(int id);

@@ -14,6 +14,7 @@
 #include "world.h"
 #include "adventure_world.h"
 #include "network/network.h"
+#include "level/cacher.h"
 
 #include <iostream>
 #include <string>
@@ -32,14 +33,15 @@ slowmotion(0){
 	bang = NULL;
 }
 
-AdventureWorld::AdventureWorld( const vector< Object * > & players, const string & path, int _screen_size ) throw( LoadException ):
+AdventureWorld::AdventureWorld( const vector< Object * > & players, const string & path, Level::Cacher * cacher, int _screen_size ) throw( LoadException ):
 World(),
 path( path ),
 draw_minimaps( true ),
 mini_map( NULL ),
 takeAScreenshot(false),
 is_paused(false),
-slowmotion(0){
+slowmotion(0),
+cacher(cacher){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -52,7 +54,7 @@ slowmotion(0){
 		this->players.push_back( t );
 	}
 
-	loadLevel( path );
+	loadLevel(path);
 
         /* 1.3333 is the aspect ratio of screen_width/screen_height when the res is any standard of
          * 640,480 800,600, 1024,768
@@ -88,6 +90,8 @@ AdventureWorld::~AdventureWorld(){
 	if ( mini_map ){
 		delete mini_map;
 	}
+
+        delete cacher;
 
 	deleteObjects( &objects );
             
@@ -140,7 +144,7 @@ void AdventureWorld::unpause(){
     is_paused = false;
 }
 	
-void AdventureWorld::loadLevel( const string & path ) throw( LoadException ){
+void AdventureWorld::loadLevel( const string & path ) throw (LoadException){
 	/*
 	if ( scene ){
 		delete scene;
@@ -152,7 +156,7 @@ void AdventureWorld::loadLevel( const string & path ) throw( LoadException ){
 	}
 	*/
 
-	Scene * s = new Scene( path.c_str() );
+	Scene * s = new Scene(path.c_str(), *cacher);
 	if ( scene != NULL ){
 		delete scene;
 	}

@@ -23,6 +23,21 @@ stimulationType( "none" ),
 stimulationValue( 0 ){
 }
 
+BlockObject::BlockObject(const BlockObject & copy):
+type(copy.type),
+aggression(copy.aggression),
+name(copy.name),
+alias(copy.alias),
+path(copy.path),
+map(copy.map),
+health(copy.health),
+coords_x(copy.coords_x),
+coords_z(copy.coords_z),
+id(copy.id),
+stimulationType(copy.stimulationType),
+stimulationValue(copy.stimulationValue){
+}
+
 BlockObject::BlockObject( Token * tok ) throw ( LoadException ):
 type(ObjectFactory::NoneType),
 aggression( -1 ),

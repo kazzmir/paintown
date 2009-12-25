@@ -19,7 +19,7 @@
 using namespace std;
 
 ObjectFactory * ObjectFactory::factory = NULL;
-Object * ObjectFactory::createObject( BlockObject * block ){
+Object * ObjectFactory::createObject( const BlockObject * block ){
 	return getFactory()->makeObject( block );
 }
         
@@ -56,7 +56,7 @@ static Stimulation * makeStimulation( const string & str, int value ){
 	return new Stimulation();
 }
 
-Object * ObjectFactory::makeItem( Item * item, BlockObject * block ){
+Object * ObjectFactory::makeItem( Item * item, const BlockObject * block ){
 	
 	int x, z;
 	block->getCoords( x, z );
@@ -67,7 +67,7 @@ Object * ObjectFactory::makeItem( Item * item, BlockObject * block ){
 
 }
 
-Object * ObjectFactory::makeActor( Actor * ret, BlockObject * block ){
+Object * ObjectFactory::makeActor( Actor * ret, const BlockObject * block ){
 	int x, z;
 	block->getCoords( x, z );
 	ret->setX( x );
@@ -77,7 +77,7 @@ Object * ObjectFactory::makeActor( Actor * ret, BlockObject * block ){
 	return ret;
 }
 
-Object * ObjectFactory::makeCat( Cat * ret, BlockObject * block ){
+Object * ObjectFactory::makeCat( Cat * ret, const BlockObject * block ){
 	int x, z;
 	block->getCoords( x, z );
 	ret->setX( x );
@@ -86,7 +86,7 @@ Object * ObjectFactory::makeCat( Cat * ret, BlockObject * block ){
 	return ret;
 }
 
-Object * ObjectFactory::makeNetworkCharacter( NetworkCharacter * guy, BlockObject * block ){
+Object * ObjectFactory::makeNetworkCharacter( NetworkCharacter * guy, const BlockObject * block ){
 
 	guy->setMap( block->getMap() );
         guy->setObjectId(block->getId());
@@ -94,13 +94,13 @@ Object * ObjectFactory::makeNetworkCharacter( NetworkCharacter * guy, BlockObjec
 	return guy;
 }
 
-Object * ObjectFactory::makeNetworkPlayer( NetworkPlayer * guy, BlockObject * block ){
+Object * ObjectFactory::makeNetworkPlayer( NetworkPlayer * guy, const BlockObject * block ){
 	guy->setMap( block->getMap() );
         guy->setObjectId(block->getId());
 	return guy;
 }
 
-Object * ObjectFactory::makeEnemy( Enemy * ret, BlockObject * block ){
+Object * ObjectFactory::makeEnemy( Enemy * ret, const BlockObject * block ){
 
 	int x, z;
 	block->getCoords( x, z );
@@ -132,7 +132,7 @@ void ObjectFactory::maxObjectId(int id){
     }
 }
 
-Object * ObjectFactory::makeObject( BlockObject * block ){
+Object * ObjectFactory::makeObject( const BlockObject * block ){
     maxObjectId(block->getId());
 
     try{

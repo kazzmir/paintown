@@ -9,9 +9,13 @@ class Token;
 class Heart;
 class Object;
 
+namespace Level{
+    class Cacher;
+}
+
 class Block{
 public:
-    Block( Token * tok ) throw( LoadException );
+    Block(Token * tok, const Level::Cacher & cacher) throw( LoadException );
 
     inline void setLength( const int l ){
         length = l;

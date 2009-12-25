@@ -6,6 +6,7 @@
 #include "util/funcs.h"
 #include "util/system.h"
 #include "level/scene.h"
+#include "level/cacher.h"
 #include "script/script.h"
 #include "globals.h"
 #include <sstream>
@@ -51,7 +52,7 @@ static void * handleMessages( void * arg ){
 }
 
 NetworkWorld::NetworkWorld( vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const string & path, int screen_size ) throw ( LoadException ):
-AdventureWorld( players, path, screen_size ),
+AdventureWorld( players, path, new Level::DefaultCacher(), screen_size ),
 sockets(sockets),
 characterToClient(characterToClient),
 sent_messages( 0 ),

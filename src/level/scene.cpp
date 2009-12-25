@@ -17,6 +17,7 @@
 #include "environment/atmosphere.h"
 #include "script/script.h"
 #include "trigger/trigger.h"
+#include "cacher.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ Panel::~Panel(){
 	if ( screen_overlay ) delete screen_overlay;
 }
 
-Scene::Scene( const char * filename ) throw( LoadException ):
+Scene::Scene(const char * filename, const Level::Cacher & cacher) throw( LoadException ):
 background( NULL ),
 block_length( 0 ),
 minimum_z( 0 ),
@@ -43,146 +44,146 @@ backgroundParallax( 5 ),
 foregroundParallax( 1.2 ),
 frontBuffer(NULL){
 
-	TokenReader tr( filename );
+    TokenReader tr( filename );
 
-	// Token * current = tr.readToken();
-	Token * current;
-        
-        Script::newEngine("none","none");
+    // Token * current = tr.readToken();
+    Token * current;
 
-	/* the first panel index */
-	// char panel_num = 'a';
+    Script::newEngine("none","none");
 
-	try {
-		current = tr.readToken();
+    /* the first panel index */
+    // char panel_num = 'a';
 
-		if ( *current != "level" )
-			throw LoadException("Not a level");
+    try {
+        current = tr.readToken();
 
-		while ( current->hasTokens() ){
+        if ( *current != "level" )
+            throw LoadException("Not a level");
 
-			Token * tok;
-			*current >> tok;
-			if ( *tok == "music" ){
-				*tok >> music;
-			} else if ( *tok == "background" ){
-				string n;
-				*tok >> n;
-				background = new Bitmap(Filesystem::find(n));
-			} else if ( *tok == "background-parallax" ){
-				double d;
-				*tok >> d;
-				setBackgroundParallax( d );
-			} else if ( *tok == "foreground-parallax" ){
-				double d;
-				*tok >> d;
-				setForegroundParallax( d );
-                        } else if ( *tok == "script" ){
-                            string kind;
-                            string scriptPath;
-                            *tok >> kind >> scriptPath;
-                            Script::newEngine(kind, scriptPath);
-			} else if ( *tok == "atmosphere" ){
-                            while (tok->hasTokens()){
-				string s;
-				*tok >> s;
-				Atmosphere * atmosphere = Atmosphere::createAtmosphere(s);
-                                if (atmosphere != NULL){
-                                    atmospheres.push_back(atmosphere);
-                                }
-                            }
-			} else if ( *tok == "z" ){
-				while ( tok->hasTokens() ){
-					Token * next;
-					*tok >> next;
-					if ( *next == "minimum" ){
-						int m;
-						*next >> m;
-						setMinimumZ( m );
-					} else if ( *next == "maximum" ){
-						int m;
-						*next >> m;
-						setMaximumZ( m );
-					}
-				}
-			} else if ( *tok == "panel" ){
-				int num;
-				string normal, neon, s_screen;
-				*tok >> num >> normal >> neon >> s_screen;
+        while ( current->hasTokens() ){
 
-				Bitmap * x_normal = NULL;
-				Bitmap * x_neon = NULL;
-				Bitmap * x_screen = NULL;
-				if ( normal != "none" ){
-					x_normal = new Bitmap(Filesystem::find(normal));
-				}
-				x_neon = new Bitmap();
-				x_screen = new Bitmap();
-				/*
-				if ( neon != "none" ){
-					x_neon = new Bitmap( neon );
-				}
-				if ( s_screen != "none" ){
-					x_screen = new Bitmap( s_screen );
-				}
-				*/
-				Panel * p = new Panel( x_normal, x_neon, x_screen );
-				panels[ num ] = p;
-				// panel_num++;
+            Token * tok;
+            *current >> tok;
+            if ( *tok == "music" ){
+                *tok >> music;
+            } else if ( *tok == "background" ){
+                string n;
+                *tok >> n;
+                background = new Bitmap(Filesystem::find(n));
+            } else if ( *tok == "background-parallax" ){
+                double d;
+                *tok >> d;
+                setBackgroundParallax( d );
+            } else if ( *tok == "foreground-parallax" ){
+                double d;
+                *tok >> d;
+                setForegroundParallax( d );
+            } else if ( *tok == "script" ){
+                string kind;
+                string scriptPath;
+                *tok >> kind >> scriptPath;
+                Script::newEngine(kind, scriptPath);
+            } else if ( *tok == "atmosphere" ){
+                while (tok->hasTokens()){
+                    string s;
+                    *tok >> s;
+                    Atmosphere * atmosphere = Atmosphere::createAtmosphere(s);
+                    if (atmosphere != NULL){
+                        atmospheres.push_back(atmosphere);
+                    }
+                }
+            } else if ( *tok == "z" ){
+                while ( tok->hasTokens() ){
+                    Token * next;
+                    *tok >> next;
+                    if ( *next == "minimum" ){
+                        int m;
+                        *next >> m;
+                        setMinimumZ( m );
+                    } else if ( *next == "maximum" ){
+                        int m;
+                        *next >> m;
+                        setMaximumZ( m );
+                    }
+                }
+            } else if ( *tok == "panel" ){
+                int num;
+                string normal, neon, s_screen;
+                *tok >> num >> normal >> neon >> s_screen;
+
+                Bitmap * x_normal = NULL;
+                Bitmap * x_neon = NULL;
+                Bitmap * x_screen = NULL;
+                if ( normal != "none" ){
+                    x_normal = new Bitmap(Filesystem::find(normal));
+                }
+                x_neon = new Bitmap();
+                x_screen = new Bitmap();
+                /*
+                   if ( neon != "none" ){
+                   x_neon = new Bitmap( neon );
+                   }
+                   if ( s_screen != "none" ){
+                   x_screen = new Bitmap( s_screen );
+                   }
+                   */
+                Panel * p = new Panel( x_normal, x_neon, x_screen );
+                panels[ num ] = p;
+                // panel_num++;
             } else if (*tok == "trigger"){
                 Trigger * trigger = Trigger::parse(tok);
                 triggers.push_back(trigger);
-			} else if ( *tok == "block" ){
-				Block * b = new Block( tok );
-				level_blocks.push_back( b );
-			} else if ( *tok == "frontpanel" ){
-				string file;
-				*tok >> file;
-				Bitmap * front = new Bitmap(Filesystem::find(file));
-				front_panels.push_back( front );
-			} else if ( *tok == "order" ){
-				// *tok >> order;
-				while ( tok->hasTokens() ){
-					int x;
-					*tok >> x;
-					order.push_back( x );
-				}
-			} else {
-				Global::debug( 0 ) <<"Unhandled scene attribute: "<<endl;
-				tok->print(" ");
-			}
-		}
+            } else if ( *tok == "block" ){
+                Block * b = new Block(tok, cacher);
+                level_blocks.push_back( b );
+            } else if ( *tok == "frontpanel" ){
+                string file;
+                *tok >> file;
+                Bitmap * front = new Bitmap(Filesystem::find(file));
+                front_panels.push_back( front );
+            } else if ( *tok == "order" ){
+                // *tok >> order;
+                while ( tok->hasTokens() ){
+                    int x;
+                    *tok >> x;
+                    order.push_back( x );
+                }
+            } else {
+                Global::debug( 0 ) <<"Unhandled scene attribute: "<<endl;
+                tok->print(" ");
+            }
+        }
 
-	} catch ( const TokenException & ex ){
-		// delete current;
-		string m( "Level parse error: " );
-		m += ex.getReason();
-		throw LoadException( m );
-	} catch ( const LoadException & ex ){
-		// delete current;
-		throw ex;
-	}
+    } catch ( const TokenException & ex ){
+        // delete current;
+        string m( "Level parse error: " );
+        m += ex.getReason();
+        throw LoadException( m );
+    } catch ( const LoadException & ex ){
+        // delete current;
+        throw ex;
+    }
 
-	if ( level_blocks.empty() )
-		throw LoadException("No level blocks defined");
+    if ( level_blocks.empty() )
+        throw LoadException("No level blocks defined");
 
-	current_block = level_blocks.front();
-	level_blocks.pop_front();
+    current_block = level_blocks.front();
+    level_blocks.pop_front();
 
-	arrow = new Bitmap(Filesystem::find("/sprites/arrow.png"));
-	arrow_blink = 0;
+    arrow = new Bitmap(Filesystem::find("/sprites/arrow.png"));
+    arrow_blink = 0;
 
-	// delete current;
+    // delete current;
 
-	Global::debug( 1 ) <<"Loaded level "<< filename << endl;
+    Global::debug( 1 ) <<"Loaded level "<< filename << endl;
 
-	calculateLength();
+    calculateLength();
 
-	int blength = 0;
-	for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
-		blength += (*it)->getLength();
-	}
-	Global::debug( 1 ) <<"Scene length = "<<scene_length<<". Length used = "<<blength<<endl;
+    int blength = 0;
+    for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
+        blength += (*it)->getLength();
+    }
+    Global::debug( 1 ) <<"Scene length = "<<scene_length<<". Length used = "<<blength<<endl;
 
 }
         

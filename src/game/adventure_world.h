@@ -15,6 +15,7 @@ class Enemy;
 #include "util/load_exception.h"
 #include "network/network.h"
 #include "world.h"
+#include "level/cacher.h"
 
 namespace Script{
     class Engine;
@@ -29,7 +30,7 @@ struct PlayerTracker{
 class AdventureWorld: public World {
 public:
 	AdventureWorld();
-	AdventureWorld(const std::vector< Object * > & players, const std::string & path, int screen_size = 320) throw (LoadException);
+	AdventureWorld(const std::vector< Object * > & players, const std::string & path, Level::Cacher * cacher = new Level::DefaultCacher(), int screen_size = 320) throw (LoadException);
 
 	virtual ~AdventureWorld();
 
@@ -134,6 +135,7 @@ protected:
         bool takeAScreenshot;
         bool is_paused;
         int slowmotion;
+        Level::Cacher * cacher;
 };
 
 #endif

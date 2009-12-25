@@ -10,6 +10,7 @@ class Token;
 class BlockObject{
 public:
 	BlockObject();
+	BlockObject(const BlockObject & copy);
 	BlockObject( Token * tok ) throw ( LoadException );
 
 /* getters */
@@ -31,11 +32,11 @@ public:
 		return path;
 	}
 
-	inline const std::string getStimulationType(){
+	inline const std::string getStimulationType() const {
 		return stimulationType;
 	}
 
-	inline int getStimulationValue(){
+	inline int getStimulationValue() const {
 		return stimulationValue;
 	}
 
@@ -51,7 +52,7 @@ public:
 		return health;
 	}
 
-	inline void getCoords( int & x, int & z ) {
+	inline void getCoords( int & x, int & z ) const {
 		x = coords_x;
 		z = coords_z;
 	}
@@ -113,24 +114,24 @@ public:
 protected:
 
 	/* the type of object this is */
-    ObjectFactory::ObjectType type;
+        ObjectFactory::ObjectType type;
 
-	int aggression;
+        int aggression;
 
-    std::string name;
-    std::string alias;
-    std::string path;
+        std::string name;
+        std::string alias;
+        std::string path;
 
-	/* the sprite to map to */
-	int map;
+        /* the sprite to map to */
+        int map;
 
-	int health;
+        int health;
 
-	int coords_x, coords_z;
-    int id;
+        int coords_x, coords_z;
+        int id;
 
-    std::string stimulationType;
-	int stimulationValue;
+        std::string stimulationType;
+        int stimulationValue;
 };
 
 #endif

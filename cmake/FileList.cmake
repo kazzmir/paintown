@@ -30,10 +30,12 @@ src/ogg/logg.c)
 set(LEVEL_SRC
 src/level/block.cpp
 src/level/blockobject.cpp
+src/level/cacher.cpp
 src/level/scene.cpp
 src/level/utils.cpp)
 
 set(NETWORK_SRC
+src/network/cacher.cpp
 src/network/client.cpp
 src/network/chat_client.cpp
 src/network/chat_server.cpp

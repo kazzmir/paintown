@@ -9,6 +9,7 @@
 #include "util/funcs.h"
 #include "util/token_exception.h"
 #include "factory/object_factory.h"
+#include "cacher.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ static const string dataPath( const string & str ){
 }
 */
 	
-Block::Block( Token * tok ) throw ( LoadException ):
+Block::Block(Token * tok, const Level::Cacher & cacher) throw ( LoadException ):
 id(-1),
 finished( -1 ),
 continuous( false ){
@@ -53,7 +54,8 @@ continuous( false ){
 					BlockObject * so = new BlockObject( current );
 
 					/* cache the object in the factory */
-					Object * tmp = ObjectFactory::createObject(so);
+					// Object * tmp = ObjectFactory::createObject(so);
+					Object * tmp = cacher.cache(*so);
 					if ( tmp == NULL ){
 						current->print(" ");
 						delete so;
