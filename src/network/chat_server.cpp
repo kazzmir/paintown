@@ -18,6 +18,8 @@
 #include "util/timer.h"
 #include <iostream>
 #include <sstream>
+#include "resource.h"
+#include "util/sound.h"
 
 #include <signal.h>
 
@@ -422,6 +424,8 @@ void ChatServer::addConnection( Network::Socket s ){
     pthread_mutex_lock( &lock );
     clients.push_back( client );
     pthread_mutex_unlock( &lock );
+
+    Resource::getSound("menu/sounds/chip-in.wav")->play();
 }
 
 #if 0
@@ -610,6 +614,7 @@ void ChatServer::killClient( Client * c ){
 	needUpdate();
 	pthread_mutex_unlock( &lock );
 	addMessage( "** " + name + " quit", 0 );
+        Resource::getSound("menu/sounds/chip-out.wav")->play();
 	Network::Message remove;
 	remove << REMOVE_BUDDY;
 	remove << id;
