@@ -92,44 +92,44 @@ void NetworkWorldClient::startMessageHandler(){
 }
 	
 NetworkWorldClient::~NetworkWorldClient(){
-	debug( 1 ) << "Destroy client world" << endl;
-        /*
-	stopRunning();
-	pthread_join( message_thread, NULL );
-        */
+    debug( 1 ) << "Destroy client world" << endl;
+    /*
+       stopRunning();
+       pthread_join( message_thread, NULL );
+       */
 }
 	
 bool NetworkWorldClient::isRunning(){
-	pthread_mutex_lock( &running_mutex );
-	bool b = running;
-	pthread_mutex_unlock( &running_mutex );
-	return b;
+    pthread_mutex_lock( &running_mutex );
+    bool b = running;
+    pthread_mutex_unlock( &running_mutex );
+    return b;
 }
 
 void NetworkWorldClient::stopRunning(){
-	pthread_mutex_lock( &running_mutex );
-	running = false;
-	pthread_mutex_unlock( &running_mutex );
-        Network::Message finish;
-        finish << World::FINISH;
-        finish.id = 0;
-        finish.send(getServer());
-	pthread_join( message_thread, NULL );
+    pthread_mutex_lock( &running_mutex );
+    running = false;
+    pthread_mutex_unlock( &running_mutex );
+    Network::Message finish;
+    finish << World::FINISH;
+    finish.id = 0;
+    finish.send(getServer());
+    pthread_join( message_thread, NULL );
 }
 	
 void NetworkWorldClient::addIncomingMessage( const Network::Message & message ){
-	pthread_mutex_lock( &message_mutex );
-	incoming.push_back( message );
-	pthread_mutex_unlock( &message_mutex );
+    pthread_mutex_lock( &message_mutex );
+    incoming.push_back( message );
+    pthread_mutex_unlock( &message_mutex );
 }
 	
 void NetworkWorldClient::getIncomingMessages(vector<Network::Message> & messages){
-	// vector< Network::Message > m;
-	pthread_mutex_lock( &message_mutex );
-	messages = incoming;
-	incoming.clear();
-	pthread_mutex_unlock( &message_mutex );
-	// return m;
+    // vector< Network::Message > m;
+    pthread_mutex_lock( &message_mutex );
+    messages = incoming;
+    incoming.clear();
+    pthread_mutex_unlock( &message_mutex );
+    // return m;
 }
 
 static Network::Message pausedMessage(){
@@ -158,149 +158,151 @@ void NetworkWorldClient::changePause(){
 }
 
 bool NetworkWorldClient::uniqueObject( Object::networkid_t id ){
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		Object * o = *it;
-		if ( o->getId() == id ){
-			return false;
-		}
-	}
-	return true;
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+        Object * o = *it;
+        if ( o->getId() == id ){
+            return false;
+        }
+    }
+    return true;
 }
 
 void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
-	int alliance;
-        Object::networkid_t id;
-	int map;
-	string path = Filesystem::find(message.path);
-	message >> alliance >> id >> map;
-	if ( uniqueObject( id ) ){
-		bool found = false;
-		for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-			Character * character = (Character *) it->player;
-			if ( character->getId() == id ){
-				character->deathReset();
-				addObject( character );
-				found = true;
-				break;
-			}
+    int alliance;
+    Object::networkid_t id;
+    int map;
+    string path = Filesystem::find(message.path);
+    message >> alliance >> id >> map;
+    if ( uniqueObject( id ) ){
+        bool found = false;
+        for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+            Character * character = (Character *) it->player;
+            if ( character->getId() == id ){
+                character->deathReset();
+                addObject( character );
+                found = true;
+                break;
+            }
 
-		}
-		if ( ! found ){
-			BlockObject block;
-                        int isPlayer;
-                        message >> isPlayer;
-                        if (isPlayer == World::IS_PLAYER){
-                            block.setType( ObjectFactory::NetworkPlayerType );
-                        } else {
-                            block.setType( ObjectFactory::NetworkCharacterType );
-                        }
-			block.setMap( map );
-			block.setPath( path );
-			Character * character = (Character *) ObjectFactory::createObject( &block );
-			if ( character == NULL ){
-				debug( 0 ) << "Could not create character!" << endl;
-				return;
-			}
-			debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
-			character->setId( id );
-			character->setAlliance( alliance );
-			/* TODO: should these values be hard-coded? */
-			character->setX( 200 );
-			character->setY( 0 );
-			character->setZ( 150 );
-			addObject( character );
-		}
-	} else {
-		debug( 1 ) << id << " is not unique" << endl;
-	}
+        }
+        if ( ! found ){
+            /* TODO: set the block id (different from network id) */
+            BlockObject block;
+            int isPlayer;
+            message >> isPlayer;
+            if (isPlayer == World::IS_PLAYER){
+                block.setType( ObjectFactory::NetworkPlayerType );
+            } else {
+                block.setType( ObjectFactory::NetworkCharacterType );
+            }
+            block.setMap( map );
+            block.setPath( path );
+            Character * character = (Character *) ObjectFactory::createObject( &block );
+            if ( character == NULL ){
+                debug( 0 ) << "Could not create character!" << endl;
+                return;
+            }
+            debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
+            /* this is the network id */
+            character->setId( id );
+            character->setAlliance( alliance );
+            /* TODO: should these values be hard-coded? */
+            character->setX( 200 );
+            character->setY( 0 );
+            character->setZ( 150 );
+            addObject( character );
+        }
+    } else {
+        debug( 1 ) << id << " is not unique" << endl;
+    }
 }
 
 void NetworkWorldClient::handleCreateCat( Network::Message & message ){
     Object::networkid_t id;
-	message >> id;
-	if ( uniqueObject( id ) ){
-		string path = Filesystem::find(message.path);
-		BlockObject block;
-		block.setType( ObjectFactory::CatType );
-		block.setPath( path );
-		/* TODO: should these values be hard-coded? */
-		block.setCoords( 200, 150 );
-		Cat * cat = (Cat *) ObjectFactory::createObject( &block );
-		if ( cat == NULL ){
-			debug( 0 ) << "Could not create cat" << endl;
-			return;
-		}
+    message >> id;
+    if ( uniqueObject( id ) ){
+        string path = Filesystem::find(message.path);
+        BlockObject block;
+        block.setType( ObjectFactory::CatType );
+        block.setPath( path );
+        /* TODO: should these values be hard-coded? */
+        block.setCoords( 200, 150 );
+        Cat * cat = (Cat *) ObjectFactory::createObject( &block );
+        if ( cat == NULL ){
+            debug( 0 ) << "Could not create cat" << endl;
+            return;
+        }
 
-		cat->setY( 0 );
-		cat->setId( (unsigned int) -1 );
-		addObject( cat );
-	}
+        cat->setY( 0 );
+        cat->setId( (unsigned int) -1 );
+        addObject( cat );
+    }
 }
 	
 bool NetworkWorldClient::finished() const {
-	return world_finished;
+    return world_finished;
 }
 
 Object * NetworkWorldClient::removeObject( Object::networkid_t id ){
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
-		Object * o = *it;
-		if ( o->getId() == id ){
-			it = objects.erase( it );
-			return o;
-		} else {
-			it++;
-		}
-	}
-	return NULL;
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
+        Object * o = *it;
+        if ( o->getId() == id ){
+            it = objects.erase( it );
+            return o;
+        } else {
+            it++;
+        }
+    }
+    return NULL;
 }
 
 void NetworkWorldClient::handleCreateItem( Network::Message & message ){
-	int id;
-	message >> id;
-	if ( uniqueObject( id ) ){
-		int x, z;
-		int value;
-		message >> x >> z >> value;
-		string path = Filesystem::find(message.path);
-		BlockObject block;
-		block.setType( ObjectFactory::ItemType );
-		block.setPath( path );
-		/* TODO: dont hard-code this */
-		block.setStimulationType( "health" );
-		block.setStimulationValue( value );
-		block.setCoords( x, z );
-		Item * item = (Item *) ObjectFactory::createObject( &block );
-		if ( item == NULL ){
-			debug( 0 ) << "Could not create item" << endl;
-			return;
-		}
+    int id;
+    message >> id;
+    if ( uniqueObject( id ) ){
+        int x, z;
+        int value;
+        message >> x >> z >> value;
+        string path = Filesystem::find(message.path);
+        BlockObject block;
+        block.setType( ObjectFactory::ItemType );
+        block.setPath( path );
+        /* TODO: dont hard-code this */
+        block.setStimulationType( "health" );
+        block.setStimulationValue( value );
+        block.setCoords( x, z );
+        Item * item = (Item *) ObjectFactory::createObject( &block );
+        if ( item == NULL ){
+            debug( 0 ) << "Could not create item" << endl;
+            return;
+        }
 
-		item->setY( 0 );
-		item->setId( id );
-		addObject( item );
-	}
+        item->setY( 0 );
+        item->setId( id );
+        addObject( item );
+    }
 }
 
 void NetworkWorldClient::handleCreateBang( Network::Message & message ){
-	int x, y, z;
-	message >> x >> y >> z;
-	Object * addx = bang->copy();
-	addx->setX( x );
-	addx->setY( 0 );
-	addx->setZ( y+addx->getHeight()/2 );
-	addx->setHealth( 1 );
-	addx->setId( (unsigned int) -1 );
-	addObject( addx );
+    int x, y, z;
+    message >> x >> y >> z;
+    Object * addx = bang->copy();
+    addx->setX( x );
+    addx->setY( 0 );
+    addx->setZ( y+addx->getHeight()/2 );
+    addx->setHealth( 1 );
+    addx->setId( (unsigned int) -1 );
+    addObject( addx );
 }
 
 Object * NetworkWorldClient::findNetworkObject( Object::networkid_t id ){
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		Object * o = *it;
-		if ( o->getId() == id ){
-			return o;
-		}
-	}
-	return NULL;
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+        Object * o = *it;
+        if ( o->getId() == id ){
+            return o;
+        }
+    }
+    return NULL;
 }
 
 /* TODO: this code is duplicated in game/adventure_world.cpp and network_world.cpp.
@@ -334,8 +336,9 @@ void NetworkWorldClient::handlePing(Network::Message & message){
          */
         /* tested values of alpha
          *   0.25 - ok
+         *   0.3 - ok
          */
-        double alpha = 0.25;
+        double alpha = 0.3;
         /* divide by 2 because drift is the time from client->server->client.
          * we want just client->server.
          * this assumes the time between client->server and server->client
@@ -609,7 +612,7 @@ void NetworkWorldClient::act(){
         } else ++it;
     }
 
-    if (abs((long)(Global::second_counter) - (long)secondCounter) > 2){
+    if (currentPing < 1 || abs((long)(Global::second_counter) - (long)secondCounter) > 2){
         addMessage(pingMessage(secondCounter));
         secondCounter = Global::second_counter;
     }
