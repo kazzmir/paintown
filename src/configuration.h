@@ -2,6 +2,7 @@
 #define _paintown_configuration_h
 
 #include <string>
+#include <map>
 #include "input/input.h"
 
 class Token;
@@ -82,6 +83,9 @@ public:
     static std::string getCurrentGame();
     static void setCurrentGame(const std::string & str);
 
+    static void setStringProperty(const std::string & path, const std::string & value);
+    static std::string getStringProperty(const std::string & path, const std::string & defaultValue);
+
 protected:
     Configuration();
     Configuration( const Configuration & config );
@@ -96,6 +100,8 @@ protected:
 
     static Token * saveKeyboard( int num, Configuration * configuration );
     static Token * saveJoystick( int num, Configuration * configuration );
+
+    static void setProperty(std::string name, std::string value);
 
 private:
     /* keyboard */
@@ -141,6 +147,7 @@ private:
 
     /* directory of current game/mod */
     static std::string currentGameDir;
+    static std::map<std::string, std::string> properties;
 };
 
 #endif

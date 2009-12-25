@@ -22,6 +22,7 @@
 #include "loading.h"
 #include "chat_client.h"
 #include "network.h"
+#include "configuration.h"
 #include <string>
 #include <sstream>
 
@@ -314,10 +315,14 @@ void networkClient(){
 	Global::speed_counter = 0;
 	Keyboard keyboard;
 	keyboard.setAllDelay( 200 );
+        
+        const char * propertyLastClientName = "network:last-client-name";
+        const char * propertyLastClientHost = "network:last-client-host";
+        const char * propertyLastClientPort = "network:last-client-port";
 
-	string name = string("player") + getANumber() + getANumber();
-	string host = "localhost";
-	string port = "7887";
+	string name = Configuration::getStringProperty(propertyLastClientName, string("player") + getANumber() + getANumber());
+	string host = Configuration::getStringProperty(propertyLastClientHost, "localhost");
+	string port = Configuration::getStringProperty(propertyLastClientPort, "7887");
 
 	enum Focus{
 		NAME, HOST, PORT, CONNECT, BACK
@@ -372,6 +377,9 @@ void networkClient(){
 					case CONNECT : {
 						done = true;
 						try{
+                                                    Configuration::setStringProperty(propertyLastClientName, name);
+                                                    Configuration::setStringProperty(propertyLastClientHost, host);
+                                                    Configuration::getStringProperty(propertyLastClientPort, port);
 							istringstream is( port );
 							int porti;
 							is >> porti;

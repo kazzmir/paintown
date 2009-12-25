@@ -567,6 +567,14 @@ void Configuration::loadConfigurations(){
                 } else if (mode == config_free_for_all){
                     Configuration::setPlayMode(Configuration::FreeForAll);
                 }
+            } else {
+                string value;
+                try{
+                    *n >> value;
+                    Configuration::setProperty(n->getName(), value);
+                } catch (const TokenException & e){
+                    /* ignore errors */
+                }
             }
         }
     } catch ( const LoadException & le ){
@@ -638,6 +646,8 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
 }
 
 void Configuration::saveConfiguration(){
+
+    /* head will delete all these tokens in its destructor */
     Token head;
     head << config_configuration;
     for ( map< int, Configuration * >::iterator it = configs.begin(); it != configs.end(); it++ ){
@@ -691,6 +701,14 @@ void Configuration::saveConfiguration(){
     *npc << config_npc_buddies << Configuration::getNpcBuddies();
     head.addToken( npc );
 
+    for (map<string, string>::iterator it = properties.begin(); it != properties.end(); it++){
+        string name = (*it).first;
+        string value = (*it).second;
+        Token * property = new Token();
+        *property << name << value;
+        head.addToken(property);
+    }
+
     ofstream out( configFile().c_str(), ios::trunc | ios::out );
     if ( ! out.bad() ){
         head.toString( out, string("") );
@@ -708,8 +726,24 @@ int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
 std::string Configuration::menuFont = "";
 std::string Configuration::currentGameDir = "paintown";
+std::map<std::string, std::string> Configuration::properties;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
+
+void Configuration::setProperty(string name, string value){
+    properties[name] = value;
+}
+
+void Configuration::setStringProperty(const std::string & path, const std::string & value){
+    setProperty(path, value);
+}
+
+std::string Configuration::getStringProperty(const std::string & path, const std::string & defaultValue){
+    if (properties.find(path) == properties.end()){
+        properties[path] = defaultValue;
+    }
+    return properties[path];
+}
 
 double Configuration::getGameSpeed(){
 	return gamespeed;
