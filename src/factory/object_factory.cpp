@@ -134,74 +134,76 @@ void ObjectFactory::maxObjectId(int id){
 
 Object * ObjectFactory::makeObject( BlockObject * block ){
     maxObjectId(block->getId());
-	
-	try{
-		switch( block->getType() ){
-			case ItemType : {
-				if ( cached[ block->getPath() ] == NULL ){
-					cached[ block->getPath() ] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
-					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                                        Global::info("Cached " + block->getPath());
-				}
 
-				return makeItem( (Item *) cached[ block->getPath() ]->copy(), block );
-
-			}
-			case NetworkCharacterType : {
-                                string cachedPath = "network:" + block->getPath();
-				if ( cached[cachedPath] == NULL ){
-					cached[cachedPath] = new NetworkCharacter( block->getPath(), 0 );
-					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                                        Global::info("Cached " + block->getPath());
-				}
-				return makeNetworkCharacter( (NetworkCharacter *) cached[cachedPath]->copy(), block );
-			}
-                        case NetworkPlayerType : {
-                                string cachedPath = "network:" + block->getPath();
-				if ( cached[cachedPath] == NULL ){
-					cached[cachedPath] = new NetworkPlayer( block->getPath(), 0 );
-					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                                        Global::info("Cached " + block->getPath());
-				}
-				return makeNetworkPlayer( (NetworkPlayer *) cached[cachedPath]->copy(), block );
-			}
-			case ActorType : {
-				if ( cached[ block->getPath() ] == NULL ){
-					cached[ block->getPath() ] = new Actor( block->getPath() );
-					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                                        Global::info("Cached " + block->getPath());
-				}
-
-				return makeActor( (Actor *) cached[ block->getPath() ]->copy(), block );
-			}
-			case EnemyType : {
-				if ( cached[ block->getPath() ] == NULL ){
-					cached[ block->getPath() ] = new Enemy( block->getPath() );
-					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                                        Global::info("Cached " + block->getPath());
-				}
-
-				return makeEnemy( (Enemy *) cached[ block->getPath() ]->copy(), block );
-			}
-			case CatType : {
-				if ( cached[ block->getPath() ] == NULL ){
-					cached[ block->getPath() ] = new Cat( block->getPath() );
-					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+    try{
+        switch( block->getType() ){
+            case ItemType : {
+                string cachePath = "item:" + block->getPath();
+                if ( cached[cachePath] == NULL ){
+                    cached[cachePath] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
+                    Global::debug( 1 ) << "Cached " << block->getPath() << endl;
                     Global::info("Cached " + block->getPath());
-				}
+                }
 
-				return makeCat( (Cat *) cached[ block->getPath() ]->copy(), block );
-			}
-			default : {
-				Global::debug( 0 ) <<__FILE__<<": No type given for: "<<block->getPath()<<endl;
-				break;
-			}
-		}
-	} catch ( const LoadException & le ){
-		Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
-	}
+                return makeItem( (Item *) cached[cachePath]->copy(), block );
+            }
+            case NetworkCharacterType : {
+                string cachedPath = "network-character:" + block->getPath();
+                if ( cached[cachedPath] == NULL ){
+                    cached[cachedPath] = new NetworkCharacter( block->getPath(), 0 );
+                    Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+                    Global::info("Cached " + block->getPath());
+                }
+                return makeNetworkCharacter( (NetworkCharacter *) cached[cachedPath]->copy(), block );
+            }
+            case NetworkPlayerType : {
+                string cachedPath = "network-player:" + block->getPath();
+                if (cached[cachedPath] == NULL){
+                    cached[cachedPath] = new NetworkPlayer( block->getPath(), 0 );
+                    Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+                    Global::info("Cached " + block->getPath());
+                }
+                return makeNetworkPlayer( (NetworkPlayer *) cached[cachedPath]->copy(), block );
+            }
+            case ActorType : {
+                string cachedPath = "actor:" + block->getPath();
+                if ( cached[cachedPath] == NULL ){
+                    cached[cachedPath] = new Actor( block->getPath() );
+                    Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+                    Global::info("Cached " + block->getPath());
+                }
 
-	return NULL;
+                return makeActor( (Actor *) cached[cachedPath]->copy(), block );
+            }
+            case EnemyType : {
+                string cachedPath = "enemy:" + block->getPath();
+                if ( cached[cachedPath] == NULL ){
+                    cached[cachedPath] = new Enemy( block->getPath() );
+                    Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+                    Global::info("Cached " + block->getPath());
+                }
+                return makeEnemy( (Enemy *) cached[cachedPath]->copy(), block );
+            }
+            case CatType : {
+                string cachedPath = "cat:" + block->getPath();
+                if ( cached[cachedPath] == NULL ){
+                    cached[cachedPath] = new Cat( block->getPath() );
+                    Global::debug( 1 ) << "Cached " << block->getPath() << endl;
+                    Global::info("Cached " + block->getPath());
+                }
+
+                return makeCat( (Cat *) cached[cachedPath]->copy(), block );
+            }
+            default : {
+                Global::debug( 0 ) <<__FILE__<<": No type given for: "<<block->getPath()<<endl;
+                break;
+            }
+        }
+    } catch ( const LoadException & le ){
+        Global::debug( 0 ) << "Could not load " << block->getPath() << " because " << le.getReason() << endl;
+    }
+
+    return NULL;
 }
 
 ObjectFactory::~ObjectFactory(){

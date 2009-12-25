@@ -10,11 +10,6 @@
 #include "util/token_exception.h"
 #include "factory/object_factory.h"
 
-#ifndef debug
-#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
-// #define debug
-#endif
-
 using namespace std;
 
 /*
