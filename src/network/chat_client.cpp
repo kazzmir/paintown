@@ -12,6 +12,8 @@
 #include "gui/lineedit.h"
 #include "gui/keyinput_manager.h"
 #include "gui/keys.h"
+#include "resource.h"
+#include "util/sound.h"
 
 using namespace std;
 
@@ -159,13 +161,14 @@ Focus ChatClient::nextFocus( Focus f ){
 }
 	
 void ChatClient::addBuddy( int id, const std::string & s ){
-	Buddy b;
-	b.id = id;
-	b.name = s;
-	pthread_mutex_lock( &lock );
-	buddies.push_back( b );
-	needUpdate();
-	pthread_mutex_unlock( &lock );
+    Buddy b;
+    b.id = id;
+    b.name = s;
+    pthread_mutex_lock( &lock );
+    buddies.push_back( b );
+    needUpdate();
+    pthread_mutex_unlock( &lock );
+    Resource::getSound("menu/sounds/chip-in.wav")->play();
 }
 	
 void ChatClient::changeName( int id, const std::string & s ){
@@ -181,17 +184,18 @@ void ChatClient::changeName( int id, const std::string & s ){
 }
 
 void ChatClient::removeBuddy( int id ){
-	pthread_mutex_lock( &lock );
-	for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); ){
-		const Buddy & b = *it;
-		if ( b.id == id ){
-			it = buddies.erase( it );
-		} else {
-			it ++;
-		}
-	}
-	needUpdate();
-	pthread_mutex_unlock( &lock );
+    pthread_mutex_lock( &lock );
+    for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); ){
+        const Buddy & b = *it;
+        if ( b.id == id ){
+            it = buddies.erase( it );
+        } else {
+            it ++;
+        }
+    }
+    needUpdate();
+    pthread_mutex_unlock( &lock );
+    Resource::getSound("menu/sounds/chip-out.wav")->play();
 }
 
 void ChatClient::addMessage( const string & s, unsigned int id ){
