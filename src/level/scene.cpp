@@ -232,21 +232,21 @@ void Scene::clearHearts(){
 }
 
 void Scene::advanceBlocks( int n ){
-	while ( blockNumber < n ){
-		if ( level_blocks.empty() ){
-			break;
-		}
+    while ( blockNumber < n ){
+        if ( level_blocks.empty() ){
+            break;
+        }
 
-		block_length += current_block->getLength();
-		// delete current_block;
-                /* store blocks so that they are deleted in the destructor.
-                 * this way the scripting engine can do stuff with it
-                 */
-                old_level_blocks.push_back(current_block);
-		current_block = level_blocks.front();
-		level_blocks.pop_front();
-		blockNumber += 1;
-	}
+        block_length += current_block->getLength();
+        // delete current_block;
+        /* store blocks so that they are deleted in the destructor.
+         * this way the scripting engine can do stuff with it
+         */
+        old_level_blocks.push_back(current_block);
+        current_block = level_blocks.front();
+        level_blocks.pop_front();
+        blockNumber += 1;
+    }
 }
 
 bool Scene::canContinue( int x ){
@@ -285,10 +285,12 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 
     doTriggers();
 
-    vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
-    hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
-    objects->insert(objects->end(), added_objects.begin(), added_objects.end());
-    added_objects.clear();
+    if (objects != 0){
+        vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
+        hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
+        objects->insert(objects->end(), added_objects.begin(), added_objects.end());
+        added_objects.clear();
+    }
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;

@@ -478,8 +478,10 @@ void NetworkWorldClient::addMessage( Network::Message m, Network::Socket from, N
 }
 	
 void NetworkWorldClient::doScene( int min_x, int max_x ){
+    scene->act(min_x, max_x, 0);
+#if 0
     vector< Object * > objs;
-    scene->act( min_x, max_x, &objs );
+    scene->act( min_x, max_x,  &objs );
 
     /* throw out everything the scene just made because the server is
      * going to tell us which objects/characters to make
@@ -487,6 +489,7 @@ void NetworkWorldClient::doScene( int min_x, int max_x ){
     for ( vector< Object * >::iterator it = objs.begin(); it != objs.end(); it++ ){
         delete *it;
     }
+#endif
 }
 
 Network::Message NetworkWorldClient::pingMessage(unsigned int pingId){

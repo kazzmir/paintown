@@ -204,21 +204,21 @@ void NetworkWorld::changePause(){
 }
 
 void NetworkWorld::doScene( int min_x, int max_x ){
-	vector< Object * > obj;
-	int block = scene->getBlock();
-	scene->act( min_x, max_x, &obj );
-	if ( scene->getBlock() != block ){
-		addMessage( nextBlockMessage( scene->getBlock() ) );
-	}
+    vector< Object * > obj;
+    int block = scene->getBlock();
+    scene->act( min_x, max_x, &obj );
+    if ( scene->getBlock() != block ){
+        addMessage( nextBlockMessage( scene->getBlock() ) );
+    }
 
-	for ( vector< Object * >::iterator it = obj.begin(); it != obj.end(); it++ ){
-		Object * m = *it;
-		m->setId( nextId() );
-		addMessage( m->getCreateMessage() );
-		addMessage( m->movedMessage() );
-	}
+    for ( vector< Object * >::iterator it = obj.begin(); it != obj.end(); it++ ){
+        Object * m = *it;
+        m->setId( nextId() );
+        addMessage( m->getCreateMessage() );
+        addMessage( m->movedMessage() );
+    }
 
-	objects.insert( objects.end(), obj.begin(), obj.end() );
+    objects.insert( objects.end(), obj.begin(), obj.end() );
 }
 
 Object * NetworkWorld::findNetworkObject( Object::networkid_t id ){
