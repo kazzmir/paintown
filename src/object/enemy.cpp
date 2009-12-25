@@ -64,7 +64,7 @@ void Enemy::constructSelf(){
 }
 
 Enemy::~Enemy(){
-	heart->setAlive( false );
+    heart->setAlive( false );
 }
 	
 Object * Enemy::copy(){

@@ -26,7 +26,7 @@ static void * handleMessages( void * arg ){
     Network::Socket socket = s->socket;
     NetworkWorld * world = s->world;
 
-    unsigned int id = 0;
+    unsigned int id = 1;
     try{
         while ( world->isRunning() ){
             Network::Message m(socket);

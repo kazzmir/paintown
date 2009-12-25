@@ -1347,7 +1347,7 @@ bool Character::collision( ObjectAttack * obj ){
 
 	if ( collision_objects[ obj ] == obj->getTicket() ){
 		// if ( last_obj == obj && last_collide == obj->getTicket() )
-		Global::debug( 2 ) << this << " already collided with " << obj << endl;
+		Global::debug(3) << this << " already collided with " << obj << endl;
 		return false;
 	}
 
@@ -1749,4 +1749,3 @@ Character::~Character(){
 		delete *it;
 	*/
 }
-

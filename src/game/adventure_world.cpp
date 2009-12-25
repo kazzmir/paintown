@@ -307,11 +307,10 @@ void AdventureWorld::doLogic(){
             ObjectAttack * o_good = (ObjectAttack *)good;
             for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
                 if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
-                    Global::debug( 2 ) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
-
                     // cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
                     // cout << "Collision: " << (*fight)->collision( o_good ) << endl;
-                    if ( good->ZDistance( *fight ) <= o_good->minZDistance() && (*fight)->collision( o_good ) ){ 
+                    if ( good->ZDistance( *fight ) <= o_good->minZDistance() && (*fight)->collision( o_good ) ){
+                        Global::debug(2) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
 
                         // cout << "There was a collision" << endl;
                         // cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;

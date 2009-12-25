@@ -58,7 +58,9 @@ protected:
 
 	bool uniqueObject( Object::networkid_t id );
 	void handleMessage( Network::Message & message );
-        std::vector< Network::Message > getIncomingMessages();
+        // std::vector< Network::Message > getIncomingMessages();
+        /* avoid an unnecessary stack copy by passing in the vector directly */
+        void getIncomingMessages(std::vector< Network::Message > & messages);
         Network::Message pingMessage(unsigned int id);
         void handlePing(Network::Message & message);
 

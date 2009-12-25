@@ -36,20 +36,31 @@ static void * handleMessages( void * arg ){
     NetworkWorldClient * world = (NetworkWorldClient *) arg;
     NLsocket socket = world->getServer();
     // pthread_mutex_t * lock = world->getLock();
+
+    /* at 100 messages per second (which is more than normal)
+     * this can count 1.36 years worth of messages.
+     * a reasonable rate is probably 10 messages per second which
+     * gives 13.6 years worth of messages.
+     */
     unsigned int received = 0;
 
     try{
         while ( world->isRunning() ){
             received += 1;
-            ostringstream context;
-            context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
-            Global::debug(1, context.str()) << "Receiving message " << received << endl;
+            {
+                ostringstream context;
+                context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
+                Global::debug(1, context.str()) << "Receiving message " << received << endl;
+            }
             Network::Message m( socket );
             // pthread_mutex_lock( lock );
             world->addIncomingMessage( m );
-            context.clear();
-            context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
-            Global::debug(2, context.str()) << "Received path '" << m.path << "'" << endl;
+
+            {
+                ostringstream context;
+                context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
+                Global::debug(2, context.str()) << "Received path '" << m.path << "'" << endl;
+            }
             // pthread_mutex_unlock( lock );
         }
     } catch (const Network::MessageEnd & end){
@@ -112,13 +123,13 @@ void NetworkWorldClient::addIncomingMessage( const Network::Message & message ){
 	pthread_mutex_unlock( &message_mutex );
 }
 	
-vector< Network::Message > NetworkWorldClient::getIncomingMessages(){
-	vector< Network::Message > m;
+void NetworkWorldClient::getIncomingMessages(vector<Network::Message> & messages){
+	// vector< Network::Message > m;
 	pthread_mutex_lock( &message_mutex );
-	m = incoming;
+	messages = incoming;
 	incoming.clear();
 	pthread_mutex_unlock( &message_mutex );
-	return m;
+	// return m;
 }
 
 static Network::Message pausedMessage(){
@@ -464,11 +475,15 @@ void NetworkWorldClient::addMessage( Network::Message m, Network::Socket from, N
 }
 	
 void NetworkWorldClient::doScene( int min_x, int max_x ){
-	vector< Object * > objs;
-	scene->act( min_x, max_x, &objs );
-	for ( vector< Object * >::iterator it = objs.begin(); it != objs.end(); it++ ){
-		delete *it;
-	}
+    vector< Object * > objs;
+    scene->act( min_x, max_x, &objs );
+
+    /* throw out everything the scene just made because the server is
+     * going to tell us which objects/characters to make
+     */
+    for ( vector< Object * >::iterator it = objs.begin(); it != objs.end(); it++ ){
+        delete *it;
+    }
 }
 
 Network::Message NetworkWorldClient::pingMessage(unsigned int pingId){
@@ -577,7 +592,9 @@ void NetworkWorldClient::act(){
         doScene( 0, 0 );
     }
 
-    vector< Network::Message > messages = getIncomingMessages();
+    vector< Network::Message > messages;
+    getIncomingMessages(messages);
+    // vector< Network::Message > messages = getIncomingMessages();
     for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
         handleMessage( *it );
     }

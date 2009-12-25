@@ -141,33 +141,35 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                                        Global::info("Cached " + block->getPath());
 				}
 
 				return makeItem( (Item *) cached[ block->getPath() ]->copy(), block );
 
 			}
 			case NetworkCharacterType : {
-				if ( cached[ block->getPath() ] == NULL ){
-					cached[ block->getPath() ] = new NetworkCharacter( block->getPath(), 0 );
+                                string cachedPath = "network:" + block->getPath();
+				if ( cached[cachedPath] == NULL ){
+					cached[cachedPath] = new NetworkCharacter( block->getPath(), 0 );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                                        Global::info("Cached " + block->getPath());
 				}
-				return makeNetworkCharacter( (NetworkCharacter *) cached[ block->getPath() ]->copy(), block );
+				return makeNetworkCharacter( (NetworkCharacter *) cached[cachedPath]->copy(), block );
 			}
-            case NetworkPlayerType : {
-				if ( cached[ block->getPath() ] == NULL ){
-					cached[ block->getPath() ] = new NetworkPlayer( block->getPath(), 0 );
+                        case NetworkPlayerType : {
+                                string cachedPath = "network:" + block->getPath();
+				if ( cached[cachedPath] == NULL ){
+					cached[cachedPath] = new NetworkPlayer( block->getPath(), 0 );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                                        Global::info("Cached " + block->getPath());
 				}
-				return makeNetworkPlayer( (NetworkPlayer *) cached[ block->getPath() ]->copy(), block );
+				return makeNetworkPlayer( (NetworkPlayer *) cached[cachedPath]->copy(), block );
 			}
 			case ActorType : {
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Actor( block->getPath() );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                                        Global::info("Cached " + block->getPath());
 				}
 
 				return makeActor( (Actor *) cached[ block->getPath() ]->copy(), block );
@@ -176,7 +178,7 @@ Object * ObjectFactory::makeObject( BlockObject * block ){
 				if ( cached[ block->getPath() ] == NULL ){
 					cached[ block->getPath() ] = new Enemy( block->getPath() );
 					Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                                        Global::info("Cached " + block->getPath());
 				}
 
 				return makeEnemy( (Enemy *) cached[ block->getPath() ]->copy(), block );
