@@ -271,7 +271,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     bool force_quit = false;
     bool use_console_input = false;
 
-    int second_counter = Global::second_counter;
+    unsigned int second_counter = Global::second_counter;
     /* don't put anything after these variables and before the while loop */
     Global::speed_counter = 0;
     // Global::second_counter = 0;

@@ -23,7 +23,8 @@ public:
     };
 
     /* return a Keyboard::Key_X based on some PAIN_KEY_X */
-    int getKey( Input::PaintownInput which, int facing );
+    int getKey( Input::PaintownInput which, int facing ) const;
+    JoystickInput getJoystickKey(Input::PaintownInput which, int facing) const; 
 
     void setRight( int i );
     void setLeft( int i );

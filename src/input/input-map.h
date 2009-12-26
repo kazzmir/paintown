@@ -74,12 +74,41 @@ public:
         }
     }
 
+    /* key: the keyboard key to recognize, something like KEY_A
+     * delay: time before successive keys are recognized (if held down)
+     * block: if true then the key must be released before it will
+     *   be recognized again. false allows repetition.
+     * out: user defined value to set if this key is pressed
+     */
     void set(Keyboard::KeyType key, int delay, bool block, X out){
         key_states[key] = new KeyState<X>(delay, block, out, last_read);
     }
 
+    /* change an existing key */
+    void update(Keyboard::KeyType key, int delay, bool block, X out){
+        if (key_states[key] != 0){
+            key_states[key]->delay = delay;
+            key_states[key]->block = block;
+            key_states[key]->out = out;
+        }
+    }
+
+    /* mostly the same stuff but for joysticks.
+     */
     void set(typename Joystick::Key key, int delay, bool block, X out){
         joy_states[key] = new JoystickState<X>(delay, block, out, last_read);
+    }
+
+    static std::vector<X> getAllPressed(const Output & output){
+        std::vector<X> out;
+
+        for (typename Output::const_iterator it = output.begin(); it != output.end(); it++){
+            if ((*it).second){
+                out.push_back((*it).first);
+            }
+        }
+
+        return out;
     }
 
     bool pressed(const std::vector<int> & keys, X out){

@@ -189,7 +189,29 @@ Configuration & Configuration::operator=( const Configuration & config ){
 Configuration::~Configuration(){
 }
 
-int Configuration::getKey( Input::PaintownInput which, int facing ){
+Configuration::JoystickInput Configuration::getJoystickKey(Input::PaintownInput which, int facing) const {
+    switch( which ){
+        case Input::Forward : {
+                                  if ( facing == Object::FACING_LEFT ) 
+                                      return this->joystick_left;
+                                  else 	return this->joystick_right;
+                              }
+        case Input::Back : {
+                               if ( facing == Object::FACING_LEFT )
+                                   return this->joystick_right;
+                               else	return this->joystick_left;
+                           }
+        case Input::Up : return this->joystick_up;
+        case Input::Down : return this->joystick_down;
+        case Input::Attack1 : return this->joystick_attack1;
+        case Input::Attack2 : return this->joystick_attack2;
+        case Input::Attack3 : return this->joystick_attack3;
+        case Input::Jump : return this->joystick_jump;
+        default : return Joystick::Invalid;
+    }
+}
+
+int Configuration::getKey( Input::PaintownInput which, int facing ) const {
 	switch( which ){
         case Input::Forward : {
 			if ( facing == Object::FACING_LEFT ) 
@@ -412,6 +434,7 @@ static string configFile(){
 }
 #endif
 
+/* this nonsense is just to convert a regular integer into an enum */
 static Configuration::JoystickInput intToJoystick(int a){
     switch (a){
         case Joystick::Up : return Joystick::Up;

@@ -52,7 +52,7 @@ ignore_lives(false){
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
 
-        initializeAttackGradient();
+        commonInitialize();
 }
 	
 Player::Player( const string & filename, int config ) throw( LoadException ):
@@ -77,7 +77,7 @@ ignore_lives(false){
 
 	int x, y;
 	NamePlacer::getPlacement( x, y, name_id );
-        initializeAttackGradient();
+        commonInitialize();
 }
 	
 Player::Player(const Character & chr) throw( LoadException ):
@@ -90,7 +90,7 @@ config(0),
 ignore_lives(false){
 	show_life = getHealth();
 	lives = DEFAULT_LIVES;
-        initializeAttackGradient();
+        commonInitialize();
 }
 
 Player::Player(const Player & pl) throw( LoadException ):
@@ -102,13 +102,20 @@ invincible( false ),
 ignore_lives(false){
 	show_life = getHealth();
         ignore_lives = pl.ignore_lives;
-        initializeAttackGradient();
+        commonInitialize();
         config = pl.config;
 }
 
-void Player::initializeAttackGradient(){
+void Player::commonInitialize(){
     Util::blend_palette(attack_gradient, num_attack_gradient / 2, Bitmap::makeColor(255,255,255), Bitmap::makeColor(255,255,0));
     Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Bitmap::makeColor(255,255,0), Bitmap::makeColor(255,0,0));
+    
+    /*
+    enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Jump, Input::Grab};
+    for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
+        input.set(getKey(all[i]), 0, false, all[i]);
+    }
+    */
 }
 
 Player::~Player(){
@@ -153,6 +160,16 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
 
         acts = 0;
     }
+    
+    /* when the player turns around */
+#if 0
+    input.update(getKey(Input::Forward), 0, false, Input::Forward);
+    input.update(getKey(Input::Back), 0, false, Input::Back);
+
+    InputMap<Input::PaintownInput>::Output state = InputManager::getMap(input);
+    vector<Input::PaintownInput> real_input = InputMap<Input::PaintownInput>::getAllPressed(state);
+    // key_cache.insert(key_cache.end(), real_input.begin(), real_input.end());
+#endif
 
     vector<Input::PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
     if (real_input.size() > 0){

@@ -111,6 +111,19 @@ void InputManager::_poll(){
 }
 
 vector<Input::PaintownInput> InputManager::_getInput(const Configuration & configuration, const int facing){
+
+    InputMap<Input::PaintownInput> input;
+
+    enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Jump, Input::Grab};
+    for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
+        input.set(configuration.getKey(all[i], facing), 0, false, all[i]);
+        input.set(configuration.getJoystickKey(all[i], facing), 0, false, all[i]);
+    }
+    
+    InputMap<Input::PaintownInput>::Output state = InputManager::getMap(input);
+    return InputMap<Input::PaintownInput>::getAllPressed(state);
+
+    /*
     vector<int> all_keys;
     keyboard.readKeys( all_keys );
 
@@ -122,4 +135,5 @@ vector<Input::PaintownInput> InputManager::_getInput(const Configuration & confi
     }
 
     return real_input;
+    */
 }
