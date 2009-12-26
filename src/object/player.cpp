@@ -25,7 +25,7 @@
 // this can probably be user defined in the future
 static const int GLOBAL_KEY_DELAY = 15;
 static const unsigned int KEY_CACHE_SIZE = 100;
-static const char * PLAYER_FONT = "/fonts/arial.ttf";
+static const char * PLAYER_FONT = Global::DEFAULT_FONT;
 
 using namespace std;
 
@@ -109,13 +109,6 @@ ignore_lives(false){
 void Player::commonInitialize(){
     Util::blend_palette(attack_gradient, num_attack_gradient / 2, Bitmap::makeColor(255,255,255), Bitmap::makeColor(255,255,0));
     Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Bitmap::makeColor(255,255,0), Bitmap::makeColor(255,0,0));
-    
-    /*
-    enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Jump, Input::Grab};
-    for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
-        input.set(getKey(all[i]), 0, false, all[i]);
-    }
-    */
 }
 
 Player::~Player(){
@@ -160,17 +153,17 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
 
         acts = 0;
     }
-    
-    /* when the player turns around */
-#if 0
-    input.update(getKey(Input::Forward), 0, false, Input::Forward);
-    input.update(getKey(Input::Back), 0, false, Input::Back);
-
-    InputMap<Input::PaintownInput>::Output state = InputManager::getMap(input);
-    vector<Input::PaintownInput> real_input = InputMap<Input::PaintownInput>::getAllPressed(state);
-    // key_cache.insert(key_cache.end(), real_input.begin(), real_input.end());
-#endif
-
+   
+    /* I tried to convert this logic to just use an InputMap but was unable because
+     * a) turning around means flipping the meaning of the left and right keys
+     *   which is annoying to do with InputMap's
+     * b) keys should not be put in the key_cache twice, so it looks like the
+     *   InputMap can enable blocking but for walking to work the forward/back keys
+     *   need to be repeated as fast as possible. Just allowing forward/back to
+     *   be non-blocking doesn't work because forward/back are legal keys in the
+     *   key_cache. That is, holding down forward should not put more than one
+     *   forward key into the key_cache.
+     */
     vector<Input::PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
     if (real_input.size() > 0){
 

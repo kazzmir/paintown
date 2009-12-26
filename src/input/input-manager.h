@@ -53,6 +53,16 @@ public:
         }
     }
 
+    template <typename X>
+    static void captureInput(InputMap<X> & input){
+        manager->_captureInput(input);
+    }
+
+    template <typename X>
+    static void releaseInput(InputMap<X> & input){
+        manager->_releaseInput(input);
+    }
+
 protected:
     InputManager();
     virtual ~InputManager();
@@ -60,8 +70,25 @@ protected:
     virtual std::vector<Input::PaintownInput> _getInput(const Configuration & configuration, const int facing);
 
     template <typename X>
+    void _captureInput(InputMap<X> & input){
+        capture = (void*) &input;
+    }
+
+    template <typename X>
+    void _releaseInput(InputMap<X> & input){
+        if (capture == (void*) &input){
+            capture = 0;
+        }
+    }
+
+    template <typename X>
     typename InputMap<X>::Output _getMap(InputMap<X> & input){
         typename InputMap<X>::Output output;
+
+        if (capture != 0 && capture != &input){
+            return output;
+        }
+
         std::vector<int> all_keys;
         keyboard.readKeys(all_keys);
 
@@ -80,6 +107,11 @@ protected:
 
     template <typename X>
     bool _pressed(InputMap<X> & input, X result){
+
+        if (capture != 0 && capture != &input){
+            return false;
+        }
+
         std::vector<int> all_keys;
         keyboard.readKeys(all_keys);
         bool out = false;
@@ -98,6 +130,7 @@ protected:
 
 private:
     static InputManager * manager;
+    void * capture;
     Joystick * joystick;
     Keyboard keyboard;
 };

@@ -22,6 +22,7 @@ public:
         Grab = 8,
     };
 
+    /* TODO: remove this method.. useless now. */
     static std::vector<PaintownInput> convertKeyboard(const Configuration & configuration,int facing, const std::vector<int> & keys);
 };
 

@@ -10,7 +10,8 @@ using namespace std;
 
 InputManager * InputManager::manager = 0;
 
-InputManager::InputManager(){
+InputManager::InputManager():
+capture(0){
     manager = this;
     joystick = Joystick::create();
 }
