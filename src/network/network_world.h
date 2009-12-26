@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <map>
 
 struct Packet{
@@ -29,6 +30,7 @@ public:
 	
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	virtual void act();
+        void draw(Bitmap * work);
 	virtual void doScene( int min_x, int max_x );
         
         virtual void changePause();
@@ -88,6 +90,10 @@ private:
 	pthread_mutex_t running_mutex;
 	bool running;
         InputMap<Keys> input;
+
+        std::ostringstream chatText;
+        bool chat;
+        InputMap<char> chatInput;
 };
 
 #endif
