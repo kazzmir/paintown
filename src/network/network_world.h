@@ -94,6 +94,7 @@ private:
 	bool running;
         InputMap<Keys> input;
 
+        bool enable_chat;
         TextInput chatInput;
 };
 

@@ -67,7 +67,8 @@ AdventureWorld( players, path, new Level::DefaultCacher(), screen_size ),
 sockets(sockets),
 characterToClient(characterToClient),
 sent_messages( 0 ),
-running( true ){
+running(true),
+enable_chat(false){
     Object::networkid_t max_id = 0;
 
     pthread_mutex_init( &message_mutex, NULL );
@@ -82,7 +83,7 @@ running( true ){
     }
     this->id = max_id + 1;
 
-    input.set(Keyboard::Key_T, 200, false, Talk);
+    input.set(Keyboard::Key_T, 0, false, Talk);
 
     chatInput.addHandle(Keyboard::Key_ENTER, do_finish_chat_input, this);
 }
@@ -477,11 +478,16 @@ void NetworkWorld::act(){
         render->addMessage(font, 1, work->getHeight(), Bitmap::makeColor(255, 255, 255), -1, "server is talking");
         */
 
-        chatInput.enable();
+        enable_chat = true;
         /*
         chat = true;
         InputManager::captureInput(chatInput);
         */
+    } else {
+        if (enable_chat){
+            chatInput.enable();
+            enable_chat = false;
+        }
     }
 
     chatInput.doInput();
