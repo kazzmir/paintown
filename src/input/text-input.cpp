@@ -51,6 +51,18 @@ handle(201){
     set(Keyboard::Key_X, delay, false, 'x');
     set(Keyboard::Key_Y, delay, false, 'y');
     set(Keyboard::Key_Z, delay, false, 'z');
+
+    set(Keyboard::Key_0, delay, false, '0');
+    set(Keyboard::Key_1, delay, false, '1');
+    set(Keyboard::Key_2, delay, false, '2');
+    set(Keyboard::Key_3, delay, false, '3');
+    set(Keyboard::Key_4, delay, false, '4');
+    set(Keyboard::Key_5, delay, false, '5');
+    set(Keyboard::Key_6, delay, false, '6');
+    set(Keyboard::Key_7, delay, false, '7');
+    set(Keyboard::Key_8, delay, false, '8');
+    set(Keyboard::Key_9, delay, false, '9');
+
     set(Keyboard::Key_SPACE, delay, false, ' ');
     set(Keyboard::Key_COMMA, delay, false, ',');
     set(Keyboard::Key_STOP, delay, false, '.');
@@ -69,7 +81,7 @@ void TextInput::addHandle(int key, callback function, void * data){
 }
 
 static bool isChar(char c){
-    const char * letters = "abcdefghijklmnopqrstuvwxyz ,.";
+    const char * letters = "abcdefghijklmnopqrstuvwxyz ,.0123456789";
     return strchr(letters, c) != NULL;
 }
 

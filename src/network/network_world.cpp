@@ -461,9 +461,9 @@ void NetworkWorld::draw(Bitmap * work){
 
     if (chatInput.isEnabled()){
         const int green = Bitmap::makeColor(0, 255, 0);
-        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
+        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
         FontRender * render = FontRender::getInstance();
-        render->addMessage(font, 320, work->getHeight(), green, -1, string("Say: ") + chatInput.getText());
+        render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, green, -1, string("Say: ") + chatInput.getText());
     }
 }
 	
