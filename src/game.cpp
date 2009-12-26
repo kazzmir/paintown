@@ -240,7 +240,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
             string act(){
                 ostringstream out;
-                out << "quit - quit the game" << "\n";
+                out << "quit - quit the game entirely" << "\n";
                 out << "help - this help menu";
                 return out.str();
             }
@@ -269,7 +269,6 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
     const bool paused = false;
     bool force_quit = false;
-    bool use_console_input = false;
 
     unsigned int second_counter = Global::second_counter;
     /* don't put anything after these variables and before the while loop */
@@ -321,87 +320,76 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                 }
             }
 
-            if (!use_console_input){
-                InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
+            InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
 
-                if (inputState[Game::ShowHelp]){
-                    helpTime = helpTime < 260 ? 260 : helpTime;
-                }
+            if (inputState[Game::ShowHelp]){
+                helpTime = helpTime < 260 ? 260 : helpTime;
+            }
 
-                if (inputState[Game::ShowFps]){
-                    show_fps = ! show_fps;
-                }
+            if (inputState[Game::ShowFps]){
+                show_fps = ! show_fps;
+            }
 
-                if (inputState[Game::Console]){
-                    console.toggle();
-                    use_console_input = ! use_console_input;
-                    // toggleConsole = true;
-                }
+            if (inputState[Game::Console]){
+                console.toggle();
+            }
 
-                takeScreenshot = inputState[Game::Screenshot];
+            takeScreenshot = inputState[Game::Screenshot];
 
+            if (inputState[Game::Pause]){
                 /*
-                   if (!key[consoleKey]){
-                   toggleConsole = false;
-                   }
+                   paused = ! paused;
+                   world.addMessage(paused ? pausedMessage() : unpausedMessage());
+                   draw = true;
                    */
+                world.changePause();
+            }
 
-                if (inputState[Game::Pause]){
-                    /*
-                       paused = ! paused;
-                       world.addMessage(paused ? pausedMessage() : unpausedMessage());
-                       draw = true;
-                       */
-                    world.changePause();
+            if (inputState[Game::MiniMaps]){
+                world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
+            }
+
+            /*
+               if ( key[ Keyboard::Key_F8 ] ){
+               world.killAllHumans( player );
+               }
+               */
+
+            if ( Global::getDebug() > 0 ){
+                const double SPEED_INC = 0.02;
+                if (inputState[Game::Speedup]){
+                    gameSpeed += SPEED_INC;
+                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                 }
 
-                if (inputState[Game::MiniMaps]){
-                    world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
+                if (inputState[Game::Slowdown]){
+                    gameSpeed -= SPEED_INC;
+                    if ( gameSpeed < SPEED_INC ){
+                        gameSpeed = SPEED_INC;
+                    }
+                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                 }
 
-                /*
-                   if ( key[ Keyboard::Key_F8 ] ){
-                   world.killAllHumans( player );
-                   }
-                   */
-
-                if ( Global::getDebug() > 0 ){
-                    const double SPEED_INC = 0.02;
-                    if (inputState[Game::Speedup]){
-                        gameSpeed += SPEED_INC;
-                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                    }
-
-                    if (inputState[Game::Slowdown]){
-                        gameSpeed -= SPEED_INC;
-                        if ( gameSpeed < SPEED_INC ){
-                            gameSpeed = SPEED_INC;
-                        }
-                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                    }
-
-                    if (inputState[Game::NormalSpeed]){
-                        gameSpeed = 1;
-                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                    }
-
-                    if (inputState[Game::ReloadLevel]){
-                        try{
-                            world.reloadLevel();
-                            draw = true;
-                        } catch ( const LoadException & le ){
-                            Global::debug( 0 ) << "Could not reload world: " << le.getReason() << endl;
-                        }
-                    }
+                if (inputState[Game::NormalSpeed]){
+                    gameSpeed = 1;
+                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                 }
 
-                force_quit |= inputState[Game::Quit];
-            } else {
-                try{
-                    use_console_input = console.doInput();
-                } catch (const ReturnException & r){
-                    force_quit = true;
+                if (inputState[Game::ReloadLevel]){
+                    try{
+                        world.reloadLevel();
+                        draw = true;
+                    } catch ( const LoadException & le ){
+                        Global::debug( 0 ) << "Could not reload world: " << le.getReason() << endl;
+                    }
                 }
+            }
+
+            force_quit |= inputState[Game::Quit];
+            try{
+                console.doInput();
+            } catch (const ReturnException & r){
+                force_quit = true;
             }
 
             Global::speed_counter = 0;

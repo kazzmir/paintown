@@ -121,6 +121,10 @@ static bool isChar(char c){
 
 /* console input */
 bool Console::doInput() {
+    if (state != Open){
+        return false;
+    }
+
     InputMap<char>::Output inputState = InputManager::getMap(input);
 
     /* the order of reading input is arbitrary right now. I'm not
@@ -163,6 +167,7 @@ bool Console::doInput() {
     }
 
     if (inputState[Esc]){
+        InputManager::releaseInput(input);
         throw ReturnException();
     }
 
@@ -202,11 +207,13 @@ void Console::toggle(){
         case Open:
         case Opening: {
             state = Closing;
+            InputManager::releaseInput(input);
             break;
         }
         case Closed:
         case Closing: {
             state = Opening;
+            InputManager::captureInput(input);
             break;
         }
     }
