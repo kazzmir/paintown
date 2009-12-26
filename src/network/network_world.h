@@ -5,7 +5,7 @@
 #include "game/adventure_world.h"
 #include "util/load_exception.h"
 #include "object/object.h"
-#include "input/input-map.h"
+#include "input/text-input.h"
 #include <pthread.h>
 #include <vector>
 #include <string>
@@ -53,6 +53,9 @@ public:
 
 	virtual ~NetworkWorld();
 
+public:
+        void endChatLine();
+
 protected:
 	Object * findNetworkObject( Object::networkid_t id );
 	void sendMessage( const Network::Message & message, Network::Socket socket );
@@ -91,9 +94,7 @@ private:
 	bool running;
         InputMap<Keys> input;
 
-        std::ostringstream chatText;
-        bool chat;
-        InputMap<char> chatInput;
+        TextInput chatInput;
 };
 
 #endif

@@ -57,13 +57,17 @@ static void * handleMessages( void * arg ){
     return NULL;
 }
 
+static void do_finish_chat_input(void * arg){
+    NetworkWorld * world = (NetworkWorld *) arg;
+    world->endChatLine();
+}
+
 NetworkWorld::NetworkWorld( vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const string & path, int screen_size ) throw ( LoadException ):
 AdventureWorld( players, path, new Level::DefaultCacher(), screen_size ),
 sockets(sockets),
 characterToClient(characterToClient),
 sent_messages( 0 ),
-running( true ),
-chat(false){
+running( true ){
     Object::networkid_t max_id = 0;
 
     pthread_mutex_init( &message_mutex, NULL );
@@ -80,8 +84,12 @@ chat(false){
 
     input.set(Keyboard::Key_T, 200, false, Talk);
 
-    chatInput.set(Keyboard::Key_A, 200, false, 'a');
-    chatInput.set(Keyboard::Key_ENTER, 1, true, ' ');
+    chatInput.addHandle(Keyboard::Key_ENTER, do_finish_chat_input, this);
+}
+
+void NetworkWorld::endChatLine(){
+    chatInput.disable();
+    chatInput.clearInput();
 }
 
 void NetworkWorld::startMessageHandlers(){
@@ -450,11 +458,11 @@ void NetworkWorld::flushOutgoing(){
 void NetworkWorld::draw(Bitmap * work){
     super::draw(work);
 
-    if (chat){
+    if (chatInput.isEnabled()){
         const int green = Bitmap::makeColor(0, 255, 0);
         const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
         FontRender * render = FontRender::getInstance();
-        render->addMessage(font, 320, work->getHeight(), green, -1, string("Say: ") + chatText.str());
+        render->addMessage(font, 320, work->getHeight(), green, -1, string("Say: ") + chatInput.getText());
     }
 }
 	
@@ -468,10 +476,16 @@ void NetworkWorld::act(){
         FontRender * render = FontRender::getInstance();
         render->addMessage(font, 1, work->getHeight(), Bitmap::makeColor(255, 255, 255), -1, "server is talking");
         */
+
+        chatInput.enable();
+        /*
         chat = true;
         InputManager::captureInput(chatInput);
+        */
     }
 
+    chatInput.doInput();
+    /*
     if (chat){
         InputMap<char>::Output inputState = InputManager::getMap(chatInput);
         if (inputState['a']){
@@ -485,6 +499,7 @@ void NetworkWorld::act(){
             chatText.clear();
         }
     }
+    */
 
     vector< Network::Message > messages = getIncomingMessages();
     for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
