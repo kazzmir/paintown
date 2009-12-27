@@ -82,7 +82,7 @@ static void do_finish_chat_input(void * arg){
     world->endChatLine();
 }
 	
-NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size ) throw ( LoadException ):
+NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, const map<Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
 super( players, path, new NetworkCacher(), screen_size ),
 server( server ),
 removeChatTimer(0),
@@ -91,7 +91,8 @@ secondCounter(Global::second_counter),
 id(id),
 running(true),
 currentPing(0),
-enable_chat(false){
+enable_chat(false),
+clientNames(clientNames){
     objects.clear();
     pthread_mutex_init( &message_mutex, NULL );
     pthread_mutex_init( &running_mutex, NULL );
@@ -122,9 +123,10 @@ void NetworkWorldClient::endChatLine(){
         Network::Message chat;
         chat.id = 0;
         chat << CHAT;
+        chat << getId();
         chat << message;
         addMessage(chat);
-        chatMessages.push_back(message);
+        chatMessages.push_back("You: " + message);
         while (chatMessages.size() > 10){
             chatMessages.pop_front();
         }
@@ -445,7 +447,13 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 				break;
 			}
                         case CHAT : {
-                            chatMessages.push_back(message.path);
+                            Object::networkid_t him;
+                            message >> him;
+                            string name = clientNames[him];
+                            if (him == 0){
+                                name = "Server";
+                            }
+                            chatMessages.push_back(name + ": " + message.path);
                             while (chatMessages.size() > 10){
                                 chatMessages.pop_front();
                             }
@@ -605,7 +613,7 @@ void NetworkWorldClient::act(){
             chatMessages.pop_front();
         }
     } else if (chatMessages.size() > 0){
-        removeChatTimer = 150;
+        removeChatTimer = 175;
     }
 
     InputMap<Keys>::Output inputState = InputManager::getMap(input);

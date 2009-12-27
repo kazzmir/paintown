@@ -324,10 +324,10 @@ static void networkGame( const vector< Object * > & players, const string & leve
 #endif
 
 static void sendToAll( const vector< Socket > & sockets, const Message & message ){
-	for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-		const Socket & socket = *it;
-		message.send( socket );
-	}
+    for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
+        const Socket & socket = *it;
+        message.send( socket );
+    }
 }
 
 #if 0
@@ -499,7 +499,7 @@ static void sendAllOk(const vector<Socket> & sockets){
     sendToAll(sockets, ok);
 }
 
-static void playGame( vector< Socket > & sockets ){
+static void playGame(vector<Client*> & clients){
     vector< Object * > players;
     pthread_t loading_screen_thread;
     try{
@@ -525,16 +525,25 @@ static void playGame( vector< Socket > & sockets ){
          * need to change it
          */
 
+        vector<Network::Socket> sockets;
+
         /* keep track of characters and their related sockets (clients) */
         map<Object*, Socket> characterToSocket;
+
+        /* bundle up all the client infos and send them after setting up the clients */
+        vector<Message> clientInfos;
+
+        map<Object::networkid_t, string> clientNames;
 
         id += 1;
         /* all other players will send their chosen character as a
          * CREATE_CHARACTER message. after receiving it, send back the
          * network id for that character.
          */
-        for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-            const Socket & socket = *it;
+        for ( vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++ ){
+            Client * client = *it;
+            Socket socket = client->getSocket();
+            sockets.push_back(socket);
             debug( 1 ) << "Read character path from " << id << endl;
             Message message( socket );
             int type;
@@ -556,10 +565,23 @@ static void playGame( vector< Socket > & sockets ){
                 clientId << id;
                 clientId << alliance;
                 clientId.send( socket );
+
+                clientNames[id] = client->getName();
+
+                Message info;
+                info << World::CLIENT_INFO;
+                info << id;
+                info << client->getName();
+                clientInfos.push_back(info);
+
                 id += 1;
             } else {
                 debug( 0 ) << "Got a bogus message: " << type << endl;
             }
+        }
+        
+        for (vector<Message>::iterator it = clientInfos.begin(); it != clientInfos.end(); it++){
+            sendToAll(sockets, *it);
         }
 
         /* send all created characters to all clients */
@@ -604,7 +626,7 @@ static void playGame( vector< Socket > & sockets ){
             }
 
             debug( 1 ) << "Create network world" << endl;
-            NetworkWorld world( sockets, players, characterToSocket, Filesystem::find(level));
+            NetworkWorld world( sockets, players, characterToSocket, Filesystem::find(level), clientNames);
 
             debug( 1 ) << "Load music" << endl;
 
@@ -689,8 +711,8 @@ static void playGame( vector< Socket > & sockets ){
         delete *it;
     }
 
-    for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-        Network::close( *it );
+    for ( vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++ ){
+        Network::close((*it)->getSocket());
     }
 
     stopLoading( loading_screen_thread );
@@ -746,10 +768,10 @@ void networkServer(){
 		Network::blocking( true );
 #endif
 */
-		vector< Network::Socket > sockets = chat.getConnectedClients();
-		if ( ! sockets.empty() ){
-			debug( 1 ) << "Start game with " << sockets.size() << " clients" << endl;
-			playGame( sockets );
+		vector<Client*> clients = chat.getConnectedClients();
+		if (! clients.empty()){
+			debug( 1 ) << "Start game with " << clients.size() << " clients" << endl;
+			playGame(clients);
 		} else {
 			key.poll();
 			popup( font, "No clients connected" );

@@ -118,7 +118,7 @@ public:
         void addAccepter(pthread_t accepter);
 
 	/* get the list of connected clients */
-        std::vector< Network::Socket > getConnectedClients();
+        std::vector<Client*> getConnectedClients();
 
 	inline const std::string getName() const {
 		return name;

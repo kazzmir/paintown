@@ -117,6 +117,8 @@ static void playGame( Socket socket ){
         vector< Object * > players;
         players.push_back( player );
 
+        map<Object::networkid_t, string> clientNames;
+
         bool done = false;
         while ( ! done ){
             Message next( socket );
@@ -136,9 +138,16 @@ static void playGame( Socket socket ){
                     }
                     break;
                 }
+                case World::CLIENT_INFO : {
+                    Object::networkid_t id;
+                    next >> id;
+                    string name = next.path;
+                    clientNames[id] = name;
+                    break;
+                }
                 case World::LOAD_LEVEL : {
                     string level = Filesystem::find(next.path);
-                    NetworkWorldClient world( socket, players, level, client_id );
+                    NetworkWorldClient world(socket, players, level, client_id, clientNames);
                     Music::pause();
                     Music::fadeIn( 0.3 );
                     Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );

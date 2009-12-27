@@ -559,17 +559,17 @@ void ChatServer::shutdownClientThreads(){
 	debug( 1 ) << "Shut down all clients" << endl;
 }
 	
-vector< Network::Socket > ChatServer::getConnectedClients(){
-	vector< Network::Socket > sockets;
+vector<Client*> ChatServer::getConnectedClients(){
+    vector<Client*> out;
 
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * c = *it;
-		if ( c->isOk() ){
-			sockets.push_back( c->getSocket() );
-		}
-	}
+    for (vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++){
+        Client * c = *it;
+        if (c->isOk()){
+            out.push_back(c);
+        }
+    }
 
-	return sockets;
+    return out;
 }
 
 void ChatServer::killAllClients(){

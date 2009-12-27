@@ -27,7 +27,7 @@ struct Packet{
 
 class NetworkWorld: public AdventureWorld {
 public:
-	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Object * > & players, const std::map<Object*, Network::Socket> & characterToClient, const std::string & path, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Object * > & players, const std::map<Object*, Network::Socket> & characterToClient, const std::string & path, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	virtual void act();
@@ -86,6 +86,7 @@ private:
 	std::vector< Network::Message > incoming;
 	std::vector< pthread_t > threads;
         std::deque<std::string> chatMessages;
+        std::map<Object::networkid_t, std::string> clientNames;
         int removeChatTimer;
 	std::map<Object*, Network::Socket> characterToClient;
         Object::networkid_t id;

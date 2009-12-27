@@ -15,7 +15,7 @@ class Bitmap;
 class NetworkWorldClient: public AdventureWorld {
 public:
 
-	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const std::string & path, Object::networkid_t id, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const std::string & path, Object::networkid_t id, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void act();
 	virtual void draw(Bitmap * work);
@@ -32,6 +32,10 @@ public:
 
         /* start thread to handle messages */
         void startMessageHandler();
+
+        Object::networkid_t getId() const {
+            return id;
+        }
 	
 	virtual void doScene( int min_x, int max_x );
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
@@ -95,6 +99,8 @@ private:
         InputMap<Keys> input;
         bool enable_chat;
         TextInput chatInput;
+
+        std::map<Object::networkid_t, std::string> clientNames;
 };
 
 #endif

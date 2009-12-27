@@ -145,6 +145,8 @@ public:
             QUIT,
             /* chat message */
             CHAT,
+            /* client name and stuff */
+            CLIENT_INFO,
         };
 };
 

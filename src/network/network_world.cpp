@@ -62,9 +62,10 @@ static void do_finish_chat_input(void * arg){
     world->endChatLine();
 }
 
-NetworkWorld::NetworkWorld( vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const string & path, int screen_size ) throw ( LoadException ):
+NetworkWorld::NetworkWorld(vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const string & path, const map<Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
 AdventureWorld( players, path, new Level::DefaultCacher(), screen_size ),
 sockets(sockets),
+clientNames(clientNames),
 removeChatTimer(0),
 characterToClient(characterToClient),
 sent_messages( 0 ),
@@ -96,11 +97,14 @@ void NetworkWorld::endChatLine(){
 
     if (message != ""){
         Network::Message chat;
+        /* server's id is always 0 */
+        Object::networkid_t id = 0;
         chat.id = 0;
         chat << CHAT;
+        chat << id;
         chat << message;
         addMessage(chat);
-        chatMessages.push_back(message);
+        chatMessages.push_back(string("You: ") + message);
         while (chatMessages.size() > 10){
             chatMessages.pop_front();
         }
@@ -344,7 +348,10 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 				break;
 			}
                         case CHAT : {
-                            chatMessages.push_back(message.path);
+                            Object::networkid_t him;
+                            message >> him;
+                            string name = clientNames[him];
+                            chatMessages.push_back(name + ": " + message.path);
                             while (chatMessages.size() > 10){
                                 chatMessages.pop_front();
                             }
@@ -482,7 +489,7 @@ void NetworkWorld::act(){
             chatMessages.pop_front();
         }
     } else if (chatMessages.size() > 0){
-        removeChatTimer = 150;
+        removeChatTimer = 175;
     }
     
     InputMap<Keys>::Output inputState = InputManager::getMap(input);
