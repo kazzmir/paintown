@@ -279,6 +279,7 @@ void NetworkWorld::handlePing(Network::Message & message){
     out.id = 0;
     out << World::PING_REPLY;
     out << ping_id;
+    Global::debug(1) << "Replying to ping " << ping_id << " from " << message.readFrom << endl;
     /* only send ping reply to the client that asked for it */
     addMessage(out, 0, message.readFrom);
 }

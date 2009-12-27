@@ -101,6 +101,7 @@ private:
         TextInput chatInput;
 
         std::map<Object::networkid_t, std::string> clientNames;
+        unsigned int pingCounter;
 };
 
 #endif

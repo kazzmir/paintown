@@ -53,7 +53,7 @@ static void * handleMessages( void * arg ){
             {
                 ostringstream context;
                 context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
-                Global::debug(1, context.str()) << "Receiving message " << received << endl;
+                Global::debug(2, context.str()) << "Receiving message " << received << endl;
             }
             Network::Message m( socket );
             // pthread_mutex_lock( lock );
@@ -92,7 +92,8 @@ id(id),
 running(true),
 currentPing(0),
 enable_chat(false),
-clientNames(clientNames){
+clientNames(clientNames),
+pingCounter(0){
     objects.clear();
     pthread_mutex_init( &message_mutex, NULL );
     pthread_mutex_init( &running_mutex, NULL );
@@ -547,6 +548,8 @@ Network::Message NetworkWorldClient::pingMessage(unsigned int pingId){
     message << pingId;
     pings[pingId] = System::currentMicroseconds();
 
+    Global::debug(1) << "Sending ping request " << pingId << endl;
+
     /* pings won't fill up unless the server dies or something, so
      * as a fail-safe don't let the table get too big
      */
@@ -700,7 +703,8 @@ void NetworkWorldClient::act(){
     }
 
     if (currentPing < 1 || abs((long)(Global::second_counter) - (long)secondCounter) > 2){
-        addMessage(pingMessage(secondCounter));
+        pingCounter += 1;
+        addMessage(pingMessage(pingCounter));
         secondCounter = Global::second_counter;
     }
 

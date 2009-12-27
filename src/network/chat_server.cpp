@@ -72,6 +72,7 @@ void Client::setName( const std::string & s ){
 static void * clientInput( void * client_ ){
 	Client * client = (Client *) client_;
 	bool done = false;
+        bool error = false;
 	while ( ! done ){
 		try{
 			debug( 1 ) << "Client " << client->getId() << " waiting for message" << endl;
@@ -93,22 +94,25 @@ static void * clientInput( void * client_ ){
 				}
 				case OK_TO_START : {
 					client->setOk();
+                                        done = true;
 					break;
 				}
 			}
-			done = ! client->isAlive();
+			// done = ! client->isAlive();
 			Util::rest( 1 );
 		} catch ( const Network::NetworkException & e ){
 			debug( 0 ) << "Client input " << client->getId() << " died" << endl;
 			done = true;
+                        error = true;
 		}
 	}
 
 	debug( 1 ) << client->getId() << " is done" << endl;
 	
-	if ( client->canKill() ){
-		debug( 1 ) << "Input thread killing client" << endl;
-		client->getServer()->killClient( client );
+	// if ( client->canKill() ){
+	if (error){
+            debug( 1 ) << "Input thread killing client" << endl;
+            client->getServer()->killClient( client );
 	}
 
 	return NULL;
@@ -117,6 +121,7 @@ static void * clientInput( void * client_ ){
 static void * clientOutput( void * client_ ){
 	Client * client = (Client *) client_;
 	bool done = false;
+        bool error = false;
 	while ( ! done ){
 		Network::Message message;
 		done = ! client->isAlive();
@@ -133,15 +138,16 @@ static void * clientOutput( void * client_ ){
 			} catch ( const Network::NetworkException & e ){
 				debug( 0 ) << "Client output " << client->getId() << " died" << endl;
 				done = true;
+                                error = true;
 			}
 		} else {
 			Util::rest( 1 );
 		}
 	}
 
-	if ( client->canKill() ){
-		debug( 1 ) << "Output thread killing client" << endl;
-		client->getServer()->killClient( client );
+	if (error){
+            debug( 1 ) << "Output thread killing client" << endl;
+            client->getServer()->killClient( client );
 	}
 
 	return NULL;
@@ -151,6 +157,7 @@ bool Client::canKill(){
 	bool f;
 	pthread_mutex_lock( &lock );
 	f = alive;
+        /* why set alive to false here? */
 	alive = false;
 	pthread_mutex_unlock( &lock );
 	return f;
