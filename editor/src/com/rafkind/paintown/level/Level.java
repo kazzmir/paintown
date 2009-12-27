@@ -32,6 +32,7 @@ public class Level{
 	private double scale;
 	private File path;
 	private String atmosphere;
+    private String description;
 
 	private List blocks;
 
@@ -118,6 +119,14 @@ public class Level{
 	public double getForegroundParallax(){
 		return this.foregroundParallax;
 	}
+
+    public String getDescription(){
+        return this.description;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
 
 	public List getBlocks(){
 		return blocks;
@@ -401,6 +410,11 @@ public class Level{
 			}
 		}
 
+        Token desc = head.findToken("description");
+        if (desc != null){
+            setDescription(desc.readString(0));
+        }
+
 		Token atm = head.findToken( "atmosphere" );
 		if ( atm != null ){
 			setAtmosphere( atm.readString( 0 ) );
@@ -550,6 +564,10 @@ public class Level{
 			f.addToken( new Token( f, "junk" ) );
 			f.addToken( new Token( f, "junk" ) );
 		}
+        
+        if (getDescription() != null){
+            level.addToken(new String[]{ "description", "\"" + getDescription() + "\""});
+        }
 
 		Token order = new Token( level );
 		level.addToken( order );
