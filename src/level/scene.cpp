@@ -78,6 +78,8 @@ frontBuffer(NULL){
                 double d;
                 *tok >> d;
                 setForegroundParallax( d );
+            } else if (*tok == "description"){
+                *tok >> this->description;
             } else if ( *tok == "script" ){
                 string kind;
                 string scriptPath;

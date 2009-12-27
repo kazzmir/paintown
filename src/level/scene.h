@@ -38,6 +38,10 @@ public:
 
 	int getFinished() const;
 
+        inline std::string getDescription() const {
+            return description;
+        }
+
 	inline int getMinimumZ() const {
 		return minimum_z;
 	}
@@ -108,10 +112,10 @@ protected:
 
 protected:
 
-        std::string music;
-	Bitmap * background;
-	Bitmap * arrow;
-	int arrow_blink;
+    std::string music;
+    Bitmap * background;
+    Bitmap * arrow;
+    int arrow_blink;
     std::vector< int > order;
     // vector< Panel * > front_panels;
     // vector< Bitmap * > back_panels;
@@ -124,26 +128,27 @@ protected:
     std::vector< Heart * > hearts;
     std::vector<Object*> added_objects;
 
-	int scene_length;
+    int scene_length;
 
-	/* how far the scene has progressed */
-	int block_length;
+    /* how far the scene has progressed */
+    int block_length;
 
-	/* minimum/maximum values characters can move within the z-plane */
-	int minimum_z, maximum_z;
+    /* minimum/maximum values characters can move within the z-plane */
+    int minimum_z, maximum_z;
 
-	Block * current_block;
+    Block * current_block;
 
-	/* count of how many blocks have gone by */
-	int blockNumber;
+    /* count of how many blocks have gone by */
+    int blockNumber;
 
-	double backgroundParallax;
-	double foregroundParallax;
+    double backgroundParallax;
+    double foregroundParallax;
 
     Bitmap * frontBuffer;
 
     std::vector<Atmosphere*> atmospheres;
     std::vector<Trigger*> triggers;
+    std::string description;
 };
 
 #endif

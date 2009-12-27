@@ -7,6 +7,7 @@
 #include "util/load_exception.h"
 #include "util/font.h"
 #include "util/file-system.h"
+#include "factory/font_render.h"
 #include "globals.h"
 #include "object/effect.h"
 #include "object/enemy.h"
@@ -28,7 +29,8 @@ draw_minimaps( true ),
 mini_map( NULL ),
 takeAScreenshot(false),
 is_paused(false),
-slowmotion(0){
+slowmotion(0),
+descriptionTime(0){
 	scene = NULL;
 	bang = NULL;
 }
@@ -41,7 +43,8 @@ mini_map( NULL ),
 takeAScreenshot(false),
 is_paused(false),
 slowmotion(0),
-cacher(cacher){
+cacher(cacher),
+descriptionTime(1000){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -414,6 +417,10 @@ void AdventureWorld::act(){
         quake_time--;
     }
 
+    if (descriptionTime > 0){
+        descriptionTime -= 1;
+    }
+
     if (!is_paused){
 		
 	doLogic();
@@ -562,82 +569,89 @@ void AdventureWorld::doTakeScreenshot(Bitmap * work){
 
 void AdventureWorld::draw( Bitmap * work ){
 
-	map< int, vector<Object*> > object_z;
+    map< int, vector<Object*> > object_z;
 
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		Object * n = *it;
-		object_z[ n->getRZ() ].push_back( n );
-	}
+    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+        Object * n = *it;
+        object_z[ n->getRZ() ].push_back( n );
+    }
 
-	Global::debug( 4 ) << "World draw" << endl;
-	
-	// min_x = (int)min_x_virtual;
-	Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
-	int mini_position_x = work->getWidth() - mini.getWidth() - 1;
-	int mini_position_y = work->getHeight() - mini.getHeight() - 1;
-	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		Bitmap * on = mini_map;
-		if ( it == players.begin() ){
-			on = work;
-		}
+    Global::debug( 4 ) << "World draw" << endl;
 
-		drawWorld( *it, on, object_z );
-		if ( on != work ){
-			on->Stretch( mini );
-			Bitmap::transBlender( 0, 0, 0, 128 );
-			mini.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
-			mini.drawTrans( mini_position_x, mini_position_y, *work );
-			mini_position_x -= mini.getWidth() - 2;
-			if ( mini_position_x <= 0 ){
-				mini_position_y -= mini.getHeight() - 2;
-				mini_position_x = work->getWidth() - mini.getWidth() - 1;
-			}
-		} else if ( ! shouldDrawMiniMaps() ){
-			break;
-		}
-	}
+    if (descriptionTime > 0 && scene->getDescription() != ""){
+        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 30, 30);
+        FontRender * render = FontRender::getInstance();
+        string description = scene->getDescription();
+        render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, Bitmap::makeColor(255, 255, 255), -1, description);
+    }
 
-        if (shouldTakeScreenshot() && (screenshots.empty() || Util::rnd(15) == 0)){
-            doTakeScreenshot(work);
-        } else {
-            takeAScreenshot = false;
+    // min_x = (int)min_x_virtual;
+    Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
+    int mini_position_x = work->getWidth() - mini.getWidth() - 1;
+    int mini_position_y = work->getHeight() - mini.getHeight() - 1;
+    for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+        Bitmap * on = mini_map;
+        if ( it == players.begin() ){
+            on = work;
         }
 
-        if (is_paused){
-            const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
-            work->transBlender( 0, 0, 0, 128 );
-            work->drawingMode( Bitmap::MODE_TRANS );
-            work->rectangleFill( 0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-            work->drawingMode( Bitmap::MODE_SOLID );
-            font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
+        drawWorld( *it, on, object_z );
+        if ( on != work ){
+            on->Stretch( mini );
+            Bitmap::transBlender( 0, 0, 0, 128 );
+            mini.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
+            mini.drawTrans( mini_position_x, mini_position_y, *work );
+            mini_position_x -= mini.getWidth() - 2;
+            if ( mini_position_x <= 0 ){
+                mini_position_y -= mini.getHeight() - 2;
+                mini_position_x = work->getWidth() - mini.getWidth() - 1;
+            }
+        } else if ( ! shouldDrawMiniMaps() ){
+            break;
         }
-	
-	/*
-	int min_x = 0;
-	if ( players.size() > 0 ){
-		min_x = (int) players[ 0 ].min_x;
+    }
 
-		int max_x = (int)(players[ 0 ].player->getX() + screen_size / 2 > scene->getLimit() ? scene->getLimit() : players[ 0 ].player->getX() + screen_size / 2);
-		min_x = (int)(max_x - screen_size);
-		if ( min_x < 0 ){
-			min_x = 0;
-		}
+    if (shouldTakeScreenshot() && (screenshots.empty() || Util::rnd(15) == 0)){
+        doTakeScreenshot(work);
+    } else {
+        takeAScreenshot = false;
+    }
 
-		if ( min_x > players[ 0 ].min_x ){
-			min_x = (int) players[ 0 ].min_x;
-		}
-	}
+    if (is_paused){
+        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
+        work->transBlender( 0, 0, 0, 128 );
+        work->drawingMode( Bitmap::MODE_TRANS );
+        work->rectangleFill( 0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+        work->drawingMode( Bitmap::MODE_SOLID );
+        font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
+    }
 
-	scene->drawBack( min_x, work );
-	for ( map<int,vector<Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
-		vector<Object *> & xx = (*it).second;
-		for ( vector<Object *>::iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+    /*
+       int min_x = 0;
+       if ( players.size() > 0 ){
+       min_x = (int) players[ 0 ].min_x;
 
-			(*mm)->draw( work, min_x );
-		}
-	}
-	scene->drawFront( min_x, work );
-	*/
+       int max_x = (int)(players[ 0 ].player->getX() + screen_size / 2 > scene->getLimit() ? scene->getLimit() : players[ 0 ].player->getX() + screen_size / 2);
+       min_x = (int)(max_x - screen_size);
+       if ( min_x < 0 ){
+       min_x = 0;
+       }
+
+       if ( min_x > players[ 0 ].min_x ){
+       min_x = (int) players[ 0 ].min_x;
+       }
+       }
+
+       scene->drawBack( min_x, work );
+       for ( map<int,vector<Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
+       vector<Object *> & xx = (*it).second;
+       for ( vector<Object *>::iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+
+       (*mm)->draw( work, min_x );
+       }
+       }
+       scene->drawFront( min_x, work );
+       */
 }
         
 double AdventureWorld::ticks(const double in) const{

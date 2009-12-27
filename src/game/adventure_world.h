@@ -118,24 +118,25 @@ protected:
     virtual void doTakeScreenshot(Bitmap * work);
 
 protected:
-	std::vector< PlayerTracker > players;
-	Object * bang;
-	
-	Scene * scene;
+    std::vector< PlayerTracker > players;
+    Object * bang;
 
-	// int min_x;
-	int screen_size;
-	std::string path;
+    Scene * scene;
 
-	bool draw_minimaps;
-	
-	Bitmap * mini_map;
+    // int min_x;
+    int screen_size;
+    std::string path;
 
-        std::deque<Bitmap*> screenshots;
-        bool takeAScreenshot;
-        bool is_paused;
-        int slowmotion;
-        Level::Cacher * cacher;
+    bool draw_minimaps;
+
+    Bitmap * mini_map;
+
+    std::deque<Bitmap*> screenshots;
+    bool takeAScreenshot;
+    bool is_paused;
+    int slowmotion;
+    Level::Cacher * cacher;
+    int descriptionTime;
 };
 
 #endif
