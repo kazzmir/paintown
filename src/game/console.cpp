@@ -70,6 +70,7 @@ offset(0){
 }
 
 Console::~Console(){
+    InputManager::releaseInput(input);
     for (map<string, Command*>::iterator it = commands.begin(); it != commands.end(); it++){
         delete (*it).second;
     }

@@ -542,6 +542,7 @@ static void playGame(vector<Client*> & clients){
          */
         for ( vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++ ){
             Client * client = *it;
+            debug(1) << "Setting up client " << client->getName() << endl;
             Socket socket = client->getSocket();
             sockets.push_back(socket);
             debug( 1 ) << "Read character path from " << id << endl;
