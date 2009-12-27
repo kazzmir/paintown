@@ -105,6 +105,9 @@ public:
 	
 	/* send a message from the guy who is identified by id */
 	void sendMessage( const Network::Message & message, unsigned int id );
+
+        /* send the message immediately */
+        void sendMessageNow(const Network::Message & message, unsigned int id);
 	
 	/* need to update the screen because a message came through or
 	 * the user typed something in the chat box

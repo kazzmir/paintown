@@ -448,6 +448,9 @@ void ChatClient::run(){
     if ( kill ){
         killInputThread();
     } else {
+        /* when OK_TO_START is sent there are guaranteed to be no other
+         * packets in front of it to confuse the server
+         */
         Network::Message message;
         message << OK_TO_START;
         message.send( getSocket() );

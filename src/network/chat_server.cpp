@@ -145,6 +145,8 @@ static void * clientOutput( void * client_ ){
 		}
 	}
 
+        debug(1) << "Output thread for client " << client->getId() << " is done" << endl;
+
 	if (error){
             debug( 1 ) << "Output thread killing client" << endl;
             client->getServer()->killClient( client );
@@ -157,7 +159,9 @@ bool Client::canKill(){
 	bool f;
 	pthread_mutex_lock( &lock );
 	f = alive;
-        /* why set alive to false here? */
+        /* why set alive to false here?
+         * it was supposed to check if the client was already dead.
+         */
 	alive = false;
 	pthread_mutex_unlock( &lock );
 	return f;
@@ -444,15 +448,26 @@ static char lowerCase( const char * x ){
 }
 #endif
 
+void ChatServer::sendMessageNow(const Network::Message & message, unsigned int id){
+    pthread_mutex_lock( &lock );
+    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+        Client * c = *it;
+        if ( c->getId() != id ){
+            message.send(c->getSocket());
+        }
+    }
+    pthread_mutex_unlock( &lock );
+}
+
 void ChatServer::sendMessage( const Network::Message & message, unsigned int id ){
-	pthread_mutex_lock( &lock );
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * c = *it;
-		if ( c->getId() != id ){
-			c->addOutputMessage( message );
-		}
-	}
-	pthread_mutex_unlock( &lock );
+    pthread_mutex_lock( &lock );
+    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+        Client * c = *it;
+        if ( c->getId() != id ){
+            c->addOutputMessage( message );
+        }
+    }
+    pthread_mutex_unlock( &lock );
 }
 
 void ChatServer::addMessage( const string & s, unsigned int id ){
@@ -543,27 +558,35 @@ void ChatServer::handleInput( Keyboard & keyboard ){
 }
 	
 void ChatServer::shutdownClientThreads(){
-	pthread_mutex_lock( &lock );
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * c = *it;
-		c->kill();
-	}
-	pthread_mutex_unlock( &lock );
-	Network::Message message;
-	message << START_THE_GAME;
-	sendMessage( message, 0 );
+    debug(1) << "Shutting down client threads" << endl;
 
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * c = *it;
-		debug( 1 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
-		pthread_join( c->getInputThread(), NULL );
-		debug( 1 ) << "Input thread done for " << c->getId() << endl;
-		pthread_join( c->getOutputThread(), NULL );
-		debug( 1 ) << "Output thread done for " << c->getId() << endl;
-		debug( 1 ) << "Client " << c->getId() << " is done" << endl;
-	}
+    /* end the output threads */
+    pthread_mutex_lock( &lock );
+    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+        Client * c = *it;
+        c->kill();
+        pthread_join( c->getOutputThread(), NULL );
+    }
+    pthread_mutex_unlock( &lock );
+    
+    /* tell clients that the game is starting */
+    Network::Message message;
+    message << START_THE_GAME;
+    sendMessageNow(message, 0);
 
-	debug( 1 ) << "Shut down all clients" << endl;
+    /* wait for clients to finish processing. clients should receive START_THE_GAME
+     * then send back OK_TO_START and then finish.
+     */
+    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+        Client * c = *it;
+        debug( 1 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
+        pthread_join( c->getInputThread(), NULL );
+        debug( 1 ) << "Input thread done for " << c->getId() << endl;
+        // debug( 1 ) << "Output thread done for " << c->getId() << endl;
+        debug( 1 ) << "Client " << c->getId() << " is done" << endl;
+    }
+
+    debug( 1 ) << "Shut down all clients" << endl;
 }
 	
 vector<Client*> ChatServer::getConnectedClients(){
