@@ -53,16 +53,29 @@ void FontRender::destroy(){
 void FontRender::render( Bitmap * work ){
 	for ( vector<render_message>::iterator it = messages.begin(); it != messages.end(); it++ ){
 		const render_message & r = *it;
+
+                if (r.translucency != -1){
+                    Bitmap::transBlender(0, 0, 0, r.translucency);
+                    work->drawingMode( Bitmap::MODE_TRANS );
+                }
+
 		// work->printf( r.x, r.y, r.fg, r.r_font, r.str );
 		r.r_font.printf( r.x, r.y, r.sizeX, r.sizeY, r.fg, *work, r.str, 0 );
 		// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
+                if (r.translucency != -1){
+                    work->drawingMode( Bitmap::MODE_SOLID );
+                }
 	}
 	messages.clear();
 }
 
-void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const string & str ){
-    render_message r( f, x, y, f.getSizeX(), f.getSizeY(), fg, bg, str );
+void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, int translucency, const string & str ){
+    render_message r( f, x, y, f.getSizeX(), f.getSizeY(), fg, bg, translucency, str );
     messages.push_back( r );
+}
+
+void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const string & str ){
+    addMessage(f, x, y, fg, bg, -1, str);
 }
 
 void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const char * str, ... ){
@@ -73,9 +86,9 @@ void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const
 	uvszprintf(buf, sizeof(buf), str, ap);
 	va_end(ap);
 	string mm( buf );
-	addMessage( f, x, y, fg, bg, mm );
+	addMessage( f, x, y, fg, bg, -1, mm );
 }
 	
 void FontRender::addMessage( const char * font_name, int x, int y, int fg, int bg, const string & str ){
-	addMessage( Font::getFont( font_name ), x, y, fg, bg, str );
+	addMessage( Font::getFont( font_name ), x, y, fg, bg, -1, str );
 }

@@ -7,6 +7,7 @@
 #include "util/load_exception.h"
 #include "util/font.h"
 #include "util/file-system.h"
+#include "util/gradient.h"
 #include "factory/font_render.h"
 #include "globals.h"
 #include "object/effect.h"
@@ -30,10 +31,13 @@ mini_map( NULL ),
 takeAScreenshot(false),
 is_paused(false),
 slowmotion(0),
-descriptionTime(0){
+descriptionTime(0),
+descriptionGradient(0){
 	scene = NULL;
 	bang = NULL;
 }
+
+static const int DESCRIPTION_TIME = 700;
 
 AdventureWorld::AdventureWorld( const vector< Object * > & players, const string & path, Level::Cacher * cacher, int _screen_size ) throw( LoadException ):
 World(),
@@ -44,7 +48,8 @@ takeAScreenshot(false),
 is_paused(false),
 slowmotion(0),
 cacher(cacher),
-descriptionTime(1000){
+descriptionTime(DESCRIPTION_TIME),
+descriptionGradient(new Effects::Gradient(100, Bitmap::makeColor(255, 255, 255), Bitmap::makeColor(128, 128, 128))){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -95,6 +100,8 @@ AdventureWorld::~AdventureWorld(){
 	}
 
         delete cacher;
+
+        delete descriptionGradient;
 
 	deleteObjects( &objects );
             
@@ -419,6 +426,7 @@ void AdventureWorld::act(){
 
     if (descriptionTime > 0){
         descriptionTime -= 1;
+        descriptionGradient->update();
     }
 
     if (!is_paused){
@@ -582,7 +590,12 @@ void AdventureWorld::draw( Bitmap * work ){
         const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 30, 30);
         FontRender * render = FontRender::getInstance();
         string description = scene->getDescription();
-        render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, Bitmap::makeColor(255, 255, 255), -1, description);
+        int trans = (DESCRIPTION_TIME - descriptionTime) / 2;
+        if (trans >= 255){
+            render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), -1, description);
+        } else {
+            render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), -1, trans, description);
+        }
     }
 
     // min_x = (int)min_x_virtual;

@@ -9,7 +9,7 @@
 class Bitmap;
 
 struct render_message{
-	render_message( const Font & f, int x, int y, int sizeX, int sizeY, int fg, int bg, const std::string & str ):r_font( f ){
+	render_message( const Font & f, int x, int y, int sizeX, int sizeY, int fg, int bg, int translucency, const std::string & str ):r_font( f ){
             this->sizeX = sizeX;
             this->sizeY = sizeY;
             this->x = x;
@@ -17,6 +17,7 @@ struct render_message{
             this->fg = fg;
             this->bg = bg;
             this->str = str;
+            this->translucency = translucency;
 	}
 
 	render_message( const render_message & c ):
@@ -28,6 +29,7 @@ struct render_message{
 		fg = c.fg;
 		bg = c.bg;
 		str = c.str;
+                translucency = c.translucency;
 	}
 
 	render_message & operator=( const render_message & rhs ){
@@ -52,6 +54,7 @@ struct render_message{
 	int fg;
 	int bg;
         std::string str;
+        int translucency;
 };
 
 /* factory class to render strings later on */
@@ -62,6 +65,7 @@ public:
 	static void destroy();
 
 	void addMessage( const Font & f, int x, int y, int fg, int bg, const std::string & str );
+	void addMessage( const Font & f, int x, int y, int fg, int bg, int translucency, const std::string & str );
 	void addMessage( const Font & f, int x, int y, int fg, int bg, const char * str, ... );
 	void addMessage( const char * font_name, int x, int y, int fg, int bg, const std::string & str );
 	void render( Bitmap * work );

@@ -7,6 +7,10 @@ class Bitmap;
 class Block;
 class Enemy;
 
+namespace Effects{
+class Gradient;
+}
+
 #include <vector>
 #include <deque>
 #include <map>
@@ -137,6 +141,7 @@ protected:
     int slowmotion;
     Level::Cacher * cacher;
     int descriptionTime;
+    Effects::Gradient * descriptionGradient;
 };
 
 #endif
