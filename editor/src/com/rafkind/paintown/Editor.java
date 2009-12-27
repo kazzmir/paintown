@@ -1138,6 +1138,7 @@ public class Editor extends JFrame {
         final JSpinner levelMaxZ = (JSpinner) levelEngine.find( "max-z" );
         final JComboBox atmosphere = (JComboBox) levelEngine.find( "atmosphere" );
         final JTextField levelBackground = (JTextField) levelEngine.find( "background" );
+        final JTextField levelDescription = (JTextField) levelEngine.find("description");
         final JButton levelChangeBackground = (JButton) levelEngine.find( "change-background" );
         final Vector frontPanelsData = new Vector();
         final JList frontPanels = (JList) levelEngine.find( "front-panels" );
@@ -1167,6 +1168,13 @@ public class Editor extends JFrame {
             public void stateChanged( ChangeEvent e ){
                 level.setForegroundParallax( (double) foregroundParallax.getValue() / 10.0 );
                 foregroundAmount.setText( String.valueOf( level.getForegroundParallax() ) );
+            }
+        });
+        
+        levelDescription.setText(level.getDescription());
+        levelDescription.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent e){
+                level.setDescription(levelDescription.getText());
             }
         });
 
