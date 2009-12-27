@@ -143,6 +143,8 @@ public:
             PING_REPLY,
             /* client has quit */
             QUIT,
+            /* chat message */
+            CHAT,
         };
 };
 

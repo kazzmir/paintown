@@ -79,6 +79,7 @@ static void * handleMessages( void * arg ){
 NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size ) throw ( LoadException ):
 super( players, path, new NetworkCacher(), screen_size ),
 server( server ),
+removeChatTimer(0),
 world_finished( false ),
 secondCounter(Global::second_counter),
 id(id),
@@ -414,6 +415,13 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
                                 }
 				break;
 			}
+                        case CHAT : {
+                            chatMessages.push_back(message.path);
+                            while (chatMessages.size() > 10){
+                                chatMessages.pop_front();
+                            }
+                            break;
+                        }
 			case IGNORE_MESSAGE : {
 				break;
 			}
@@ -539,12 +547,31 @@ void NetworkWorldClient::draw(Bitmap * work){
      */
     render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
     // font.printf(1, work->getHeight() - 11, Bitmap::makeColor( 255, 255, 255 ), *work, "Ping %d", 0, (int) (currentPing / 1000));
+
+    const Font & font2 = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
+
+    int y = work->getHeight() * 2 - 1 - font2.getHeight() * 3 - 1;
+    for (deque<string>::reverse_iterator it = chatMessages.rbegin(); it != chatMessages.rend(); it++){
+        string message = *it;
+        render->addMessage(font2, 1, y, Bitmap::makeColor(255, 255, 255), -1, message);
+        y -= font2.getHeight() + 1;
+    }
+
 }
 
 void NetworkWorldClient::act(){
 	
     if ( quake_time > 0 ){
         quake_time--;
+    }
+
+    if (removeChatTimer > 0){
+        removeChatTimer -= 1;
+        if (removeChatTimer == 0 && chatMessages.size() > 0){
+            chatMessages.pop_front();
+        }
+    } else if (chatMessages.size() > 0){
+        removeChatTimer = 150;
     }
 
     vector< Object * > added_effects;

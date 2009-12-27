@@ -68,6 +68,8 @@ private:
 	NLsocket server;
 	std::vector< Network::Message > incoming;
 	std::vector< Network::Message > outgoing;
+        std::deque<std::string> chatMessages;
+        int removeChatTimer;
 	pthread_mutex_t message_mutex;
 	pthread_mutex_t running_mutex;
 	pthread_t message_thread;

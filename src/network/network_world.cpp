@@ -65,6 +65,7 @@ static void do_finish_chat_input(void * arg){
 NetworkWorld::NetworkWorld( vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const string & path, int screen_size ) throw ( LoadException ):
 AdventureWorld( players, path, new Level::DefaultCacher(), screen_size ),
 sockets(sockets),
+removeChatTimer(0),
 characterToClient(characterToClient),
 sent_messages( 0 ),
 running(true),
@@ -89,8 +90,21 @@ enable_chat(false){
 }
 
 void NetworkWorld::endChatLine(){
+    string message = chatInput.getText();
     chatInput.disable();
     chatInput.clearInput();
+
+    if (message != ""){
+        Network::Message chat;
+        chat.id = 0;
+        chat << CHAT;
+        chat << message;
+        addMessage(chat);
+        chatMessages.push_back(message);
+        while (chatMessages.size() > 10){
+            chatMessages.pop_front();
+        }
+    }
 }
 
 void NetworkWorld::startMessageHandlers(){
@@ -329,6 +343,13 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 				}
 				break;
 			}
+                        case CHAT : {
+                            chatMessages.push_back(message.path);
+                            while (chatMessages.size() > 10){
+                                chatMessages.pop_front();
+                            }
+                            break;
+                        }
 			case THROWN : {
                               Object::networkid_t grabbing;
                               Object::networkid_t grabbed;
@@ -431,58 +452,42 @@ void NetworkWorld::flushOutgoing(){
 
         Network::sendAllMessages(messages, *socket);
     }
-
-#if 0
-    /* TODO: combine packets together into one big bundle to save TCP ack's */
-    for ( vector< Packet >::iterator it = packets.begin(); it != packets.end(); it++ ){
-        Network::Message & m = (*it).message;
-        Network::Socket from = (*it).socket;
-        sent_messages += 1;
-        for ( vector< Network::Socket >::iterator socket = sockets.begin(); socket != sockets.end(); ){
-            try{
-                if ( from != *socket ){
-                    debug( 1 ) << "Send message " << sent_messages << " to " << *socket << endl;
-                    m.send( *socket );
-                    debug( 1 ) << "Sent message" << endl;
-                }
-                socket++;
-            } catch ( const Network::NetworkException & ne ){
-                /* TODO: remove character if the socket dies */
-                socket = sockets.erase( socket );
-                debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
-            }
-        }
-    }
-#endif
 }
 	
 void NetworkWorld::draw(Bitmap * work){
     super::draw(work);
 
+    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
+    FontRender * render = FontRender::getInstance();
+
+    int y = work->getHeight() * 2 - 1 - font.getHeight() * 2 - 1;
+    for (deque<string>::reverse_iterator it = chatMessages.rbegin(); it != chatMessages.rend(); it++){
+        string message = *it;
+        render->addMessage(font, 1, y, Bitmap::makeColor(255, 255, 255), -1, message);
+        y -= font.getHeight() + 1;
+    }
+
     if (chatInput.isEnabled()){
         const int green = Bitmap::makeColor(0, 255, 0);
-        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
-        FontRender * render = FontRender::getInstance();
         render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, green, -1, string("Say: ") + chatInput.getText());
     }
 }
 	
 void NetworkWorld::act(){
     AdventureWorld::act();
+
+    if (removeChatTimer > 0){
+        removeChatTimer -= 1;
+        if (removeChatTimer == 0 && chatMessages.size() > 0){
+            chatMessages.pop_front();
+        }
+    } else if (chatMessages.size() > 0){
+        removeChatTimer = 150;
+    }
     
     InputMap<Keys>::Output inputState = InputManager::getMap(input);
     if (inputState[Talk]){
-        /*
-        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
-        FontRender * render = FontRender::getInstance();
-        render->addMessage(font, 1, work->getHeight(), Bitmap::makeColor(255, 255, 255), -1, "server is talking");
-        */
-
         enable_chat = true;
-        /*
-        chat = true;
-        InputManager::captureInput(chatInput);
-        */
     } else {
         if (enable_chat){
             chatInput.enable();
@@ -491,21 +496,6 @@ void NetworkWorld::act(){
     }
 
     chatInput.doInput();
-    /*
-    if (chat){
-        InputMap<char>::Output inputState = InputManager::getMap(chatInput);
-        if (inputState['a']){
-            chatText << 'a';
-        }
-
-        if (inputState[' ']){
-            chat = false;
-            InputManager::releaseInput(chatInput);
-            chatText.str("");
-            chatText.clear();
-        }
-    }
-    */
 
     vector< Network::Message > messages = getIncomingMessages();
     for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){

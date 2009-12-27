@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <vector>
 #include <string>
+#include <deque>
 #include <sstream>
 #include <map>
 
@@ -84,6 +85,8 @@ private:
 	std::vector< Packet > outgoing;
 	std::vector< Network::Message > incoming;
 	std::vector< pthread_t > threads;
+        std::deque<std::string> chatMessages;
+        int removeChatTimer;
 	std::map<Object*, Network::Socket> characterToClient;
         Object::networkid_t id;
 
