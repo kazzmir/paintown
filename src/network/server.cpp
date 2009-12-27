@@ -23,6 +23,7 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "util/system.h"
 #include "input/keyboard.h"
 
 using namespace std;
@@ -644,10 +645,11 @@ static void playGame(vector<Client*> & clients){
             Message finish;
             finish << World::FINISH;
             finish.id = 0;
-            Global::debug(1) << "Sending finish message to all clients" << endl;
+            Global::debug(1) << "Sending finish message to all clients" <<  endl;
             sendToAll(sockets, finish);
             world.waitForHandlers();
 
+            Global::debug(1) << "Waiting for finish from all clients " << endl;
             waitAllFinish(sockets);
 
             Message ignore;
@@ -657,11 +659,13 @@ static void playGame(vector<Client*> & clients){
             sendToAll(sockets, ignore);
 
             /* another ok barrier */
+            Global::debug(1) << "Wait for all clients to ok" << endl;
             waitAllOk(sockets);
             sendAllOk(sockets);
 
             /* if the server quits, then everyone quits */
             if (!played){
+                Global::debug(1) << "Server exiting early.." << endl;
                 break;
             }
 

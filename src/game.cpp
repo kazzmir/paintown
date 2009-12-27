@@ -495,7 +495,9 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
             snapshot.play();
             Util::rest(1500);
         }
-        Util::rest(2000);
+        if (world.getScreenshots().size() > 0){
+            Util::rest(2000);
+        }
     }
 
     world.getEngine()->destroyWorld(world);

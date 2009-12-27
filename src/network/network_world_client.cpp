@@ -150,6 +150,7 @@ void NetworkWorldClient::stopRunning(){
     finish << World::FINISH;
     finish.id = 0;
     finish.send(getServer());
+    debug(1) << "Sent finish, waiting for message thread to end." << endl;
     pthread_join( message_thread, NULL );
 }
 	

@@ -23,6 +23,7 @@
 #include "chat_client.h"
 #include "network.h"
 #include "configuration.h"
+#include "util/system.h"
 #include <string>
 #include <sstream>
 
@@ -45,14 +46,14 @@ static void waitForServer(Socket socket){
     Message ok;
     ok << World::OK;
     ok.send( socket );
-    Global::debug( 1 ) << "Sent ok" << endl;
+    Global::debug( 1 ) << "Sent ok " << endl;
     Message ok_ack(socket);
     int type;
     ok_ack >> type;
     if (type != World::OK){
         Global::debug(0) << "Did not receive ok from the server, instead received " << type << ". Badness may ensure" << endl;
     }
-    Global::debug( 1 ) << "Received ok" << endl;
+    Global::debug( 1 ) << "Received ok " << endl;
 }
 
 static void sendDummy(Socket socket){
@@ -157,7 +158,7 @@ static void playGame( Socket socket ){
                         Global::startLoading( &loadingThread );
 
                         if (forceQuit){
-                            Global::debug(1, __FILE__) << "Force quite" << endl;
+                            Global::debug(1, __FILE__) << "Force quit" << endl;
                             sendQuit(socket);
                             /* After quit is sent the socket will be closed
                              * by someone later on. The input handler in the client
@@ -173,7 +174,7 @@ static void playGame( Socket socket ){
                              */
                             sendDummy(socket);
                             world.stopRunning();
-                            Global::debug(1) << "Send dummy packet" << endl;
+                            Global::debug(1) << "Wait for server " << endl;
                             /* then wait for a barrier */
                             waitForServer(socket);
                         }
