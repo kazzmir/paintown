@@ -6,6 +6,8 @@
 #include "network.h"
 #include "object/object.h"
 #include "util/load_exception.h"
+#include "input/input-map.h"
+#include "input/text-input.h"
 #include <vector>
 
 class Bitmap;
@@ -64,6 +66,13 @@ protected:
         Network::Message pingMessage(unsigned int id);
         void handlePing(Network::Message & message);
 
+        enum Keys{
+            Talk,
+        };
+
+public:
+        void endChatLine();
+
 private:
 	NLsocket server;
 	std::vector< Network::Message > incoming;
@@ -82,6 +91,10 @@ private:
 
         std::map<unsigned int, uint64_t> pings;
         double currentPing;
+        
+        InputMap<Keys> input;
+        bool enable_chat;
+        TextInput chatInput;
 };
 
 #endif

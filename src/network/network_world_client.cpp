@@ -19,6 +19,7 @@
 #include <string.h>
 #include "util/system.h"
 #include "cacher.h"
+#include "input/input-manager.h"
 #include <sstream>
 
 #include "object/character.h"
@@ -75,6 +76,11 @@ static void * handleMessages( void * arg ){
 
     return NULL;
 }
+
+static void do_finish_chat_input(void * arg){
+    NetworkWorldClient * world = (NetworkWorldClient *) arg;
+    world->endChatLine();
+}
 	
 NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, int screen_size ) throw ( LoadException ):
 super( players, path, new NetworkCacher(), screen_size ),
@@ -84,10 +90,15 @@ world_finished( false ),
 secondCounter(Global::second_counter),
 id(id),
 running(true),
-currentPing(0){
+currentPing(0),
+enable_chat(false){
     objects.clear();
     pthread_mutex_init( &message_mutex, NULL );
     pthread_mutex_init( &running_mutex, NULL );
+
+    input.set(Keyboard::Key_T, 0, false, Talk);
+
+    chatInput.addHandle(Keyboard::Key_ENTER, do_finish_chat_input, this);
 }
 
 void NetworkWorldClient::startMessageHandler(){
@@ -100,6 +111,24 @@ NetworkWorldClient::~NetworkWorldClient(){
        stopRunning();
        pthread_join( message_thread, NULL );
        */
+}
+
+void NetworkWorldClient::endChatLine(){
+    string message = chatInput.getText();
+    chatInput.disable();
+    chatInput.clearInput();
+
+    if (message != ""){
+        Network::Message chat;
+        chat.id = 0;
+        chat << CHAT;
+        chat << message;
+        addMessage(chat);
+        chatMessages.push_back(message);
+        while (chatMessages.size() > 10){
+            chatMessages.pop_front();
+        }
+    }
 }
 	
 bool NetworkWorldClient::isRunning(){
@@ -550,6 +579,11 @@ void NetworkWorldClient::draw(Bitmap * work){
 
     const Font & font2 = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
 
+    if (chatInput.isEnabled()){
+        const int green = Bitmap::makeColor(0, 255, 0);
+        render->addMessage(font2, 1, work->getHeight() * 2 - font2.getHeight() * 2 - 1, green, -1, string("Say: ") + chatInput.getText());
+    }
+
     int y = work->getHeight() * 2 - 1 - font2.getHeight() * 3 - 1;
     for (deque<string>::reverse_iterator it = chatMessages.rbegin(); it != chatMessages.rend(); it++){
         string message = *it;
@@ -573,6 +607,18 @@ void NetworkWorldClient::act(){
     } else if (chatMessages.size() > 0){
         removeChatTimer = 150;
     }
+
+    InputMap<Keys>::Output inputState = InputManager::getMap(input);
+    if (inputState[Talk]){
+        enable_chat = true;
+    } else {
+        if (enable_chat){
+            chatInput.enable();
+            enable_chat = false;
+        }
+    }
+
+    chatInput.doInput();
 
     vector< Object * > added_effects;
     if (! isPaused()){
