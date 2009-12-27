@@ -30,18 +30,6 @@ using namespace std;
 
 namespace Network{
 
-static void stopLoading( pthread_t thread ){
-    pthread_mutex_lock( &Global::loading_screen_mutex );
-    Global::done_loading = true;
-    pthread_mutex_unlock( &Global::loading_screen_mutex );
-
-    pthread_join( thread, NULL );
-}
-
-static void startLoading( pthread_t * thread ){
-    pthread_create( thread, NULL, loadingScreen, NULL );
-}
-
 static bool uniqueId( const vector< Object * > & objs, Object::networkid_t id ){
     for ( vector< Object * >::const_iterator it = objs.begin(); it != objs.end(); it++ ){
         Object * o = *it;
@@ -91,7 +79,7 @@ static void playGame( Socket socket ){
         string path = Filesystem::cleanse(player->getPath());
         // path.erase( 0, Util::getDataPath().length() );
 
-        startLoading( &loadingThread );
+        Global::startLoading( &loadingThread );
 
         /* send the path of the chosen player */
         Message create;
@@ -158,7 +146,7 @@ static void playGame( Socket socket ){
 
                     world.startMessageHandler();
 
-                    stopLoading( loadingThread );
+                    Global::stopLoading(loadingThread);
                     try{
                         vector<Object*> xplayers;
                         bool forceQuit = ! Game::playLevel( world, xplayers, 100 );
@@ -166,7 +154,7 @@ static void playGame( Socket socket ){
                         ObjectFactory::destroy();
                         HeartFactory::destroy();
 
-                        startLoading( &loadingThread );
+                        Global::startLoading( &loadingThread );
 
                         if (forceQuit){
                             Global::debug(1, __FILE__) << "Force quite" << endl;
@@ -213,7 +201,7 @@ static void playGame( Socket socket ){
         Global::debug(0, "client") << "Load exception: " + le.getReason() << endl;
     }
 
-    stopLoading( loadingThread );
+    Global::stopLoading( loadingThread );
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){

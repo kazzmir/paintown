@@ -42,8 +42,6 @@ volatile unsigned int Global::second_counter = 0;
 const int Global::TICS_PER_SECOND = 40;
 const double Global::LOGIC_MULTIPLIER = (double) 90 / (double) Global::TICS_PER_SECOND;
         
-pthread_mutex_t Global::loading_screen_mutex;
-bool Global::done_loading = false;
 
 const int Global::WINDOWED = GFX_AUTODETECT_WINDOWED;
 const int Global::FULLSCREEN = GFX_AUTODETECT_FULLSCREEN;

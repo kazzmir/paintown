@@ -42,18 +42,6 @@ static void showTitleScreen(){
 }
 */
 
-static void stopLoading( pthread_t thread ){
-	pthread_mutex_lock( &Global::loading_screen_mutex );
-	Global::done_loading = true;
-	pthread_mutex_unlock( &Global::loading_screen_mutex );
-
-	pthread_join( thread, NULL );
-}
-
-static void startLoading( pthread_t * thread ){
-	pthread_create( thread, NULL, loadingScreen, NULL );
-}
-
 #if 0
 static void fadeOut( const string & str ){
 	/* fill in */
@@ -513,7 +501,7 @@ static void playGame(vector<Client*> & clients){
         Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
 
         /* show the loading screen */
-        startLoading( &loading_screen_thread );
+        Global::startLoading( &loading_screen_thread );
 
         /* reset the alliance settings */
         allAlliance = ALLIANCE_FREE_FOR_ALL;
@@ -645,14 +633,14 @@ static void playGame(vector<Client*> & clients){
 
             world.startMessageHandlers();
 
-            stopLoading( loading_screen_thread );
+            Global::stopLoading( loading_screen_thread );
             bool played = Game::playLevel( world, players, 200 );
 
             ObjectFactory::destroy();
             HeartFactory::destroy();
 
             world.stopRunning();
-            startLoading( &loading_screen_thread );
+            Global::startLoading(&loading_screen_thread);
             Message finish;
             finish << World::FINISH;
             finish.id = 0;
@@ -717,7 +705,7 @@ static void playGame(vector<Client*> & clients){
         Network::close((*it)->getSocket());
     }
 
-    stopLoading( loading_screen_thread );
+    Global::stopLoading( loading_screen_thread );
 }
 
 static void popup( const Font & font, const string & message ){

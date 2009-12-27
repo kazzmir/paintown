@@ -53,19 +53,15 @@ static double startingGameSpeed(){
 }
 
 static void stopLoading( pthread_t thread ){
-	if ( show_loading_screen ){
-		pthread_mutex_lock( &Global::loading_screen_mutex );
-		Global::done_loading = true;
-		pthread_mutex_unlock( &Global::loading_screen_mutex );
-
-		pthread_join( thread, NULL );
-	}
+    if ( show_loading_screen ){
+        Global::stopLoading(thread);
+    }
 }
 
 static void startLoading(pthread_t * thread, const Level::LevelInfo & info ){
-	if ( show_loading_screen ){
-		pthread_create(thread, NULL, loadingScreen, (void *)&info);
-	}
+    if ( show_loading_screen ){
+        Global::startLoading(thread, (void*) &info);
+    }
 }
 
 static Network::Message removeMessage( int id ){
@@ -539,9 +535,7 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
 
     int showHelp = 800;
     for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
-        Global::done_loading = false;
         pthread_t loading_screen_thread;
-
         startLoading( &loading_screen_thread, levelInfo );
 
         bool gameState = false;
