@@ -111,7 +111,7 @@ static void playGame( Socket socket ){
             player->setAlliance(alliance);
             Global::debug( 1 ) << "Client id is " << client_id << endl;
         } else {
-            Global::debug( 0 ) << "Bogus message, expected SET_ID( " << World::SET_ID << " ) got " << type << endl;
+            Global::debug( 0 ) << "Bogus message, expected SET_ID(" << World::SET_ID << ") got " << type << endl;
         }
 
         vector< Object * > players;

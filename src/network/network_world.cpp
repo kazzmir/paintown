@@ -131,6 +131,7 @@ void NetworkWorld::waitForHandlers(){
 
 NetworkWorld::~NetworkWorld(){
 	stopRunning();
+        chatInput.disable();
 
 	/*
 	for ( vector< pthread_t >::iterator it = threads.begin(); it != threads.end(); it++ ){

@@ -108,6 +108,7 @@ void NetworkWorldClient::startMessageHandler(){
 	
 NetworkWorldClient::~NetworkWorldClient(){
     debug( 1 ) << "Destroy client world" << endl;
+    chatInput.disable();
     /*
        stopRunning();
        pthread_join( message_thread, NULL );

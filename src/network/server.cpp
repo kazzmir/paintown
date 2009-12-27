@@ -569,6 +569,7 @@ static void playGame(vector<Client*> & clients){
                 clientNames[id] = client->getName();
 
                 Message info;
+                info.id = 0;
                 info << World::CLIENT_INFO;
                 info << id;
                 info << client->getName();
