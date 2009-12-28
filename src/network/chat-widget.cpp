@@ -72,7 +72,7 @@ void ChatWidget::endChatLine(){
     }
 }
 
-void ChatWidget::addChatMessage(string message){
+void ChatWidget::receiveMessage(string message){
     chatMessages.push_back(message);
     while (chatMessages.size() > 10){
         chatMessages.pop_front();

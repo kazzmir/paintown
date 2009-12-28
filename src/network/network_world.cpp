@@ -321,7 +321,7 @@ void NetworkWorld::handleMessage( Network::Message & message ){
                             Object::networkid_t him;
                             message >> him;
                             string name = clientNames[him];
-                            addChatMessage(name + ": " + message.path);
+                            ChatWidget::receiveMessage(name + ": " + message.path);
                             break;
                         }
 			case THROWN : {

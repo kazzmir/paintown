@@ -13,7 +13,7 @@ public:
     virtual ~ChatWidget();
 
     virtual void act();
-    void addChatMessage(std::string message);
+    void receiveMessage(std::string message);
 
     inline const std::deque<std::string> & getChatMessages() const {
         return chatMessages;

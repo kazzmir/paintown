@@ -8,11 +8,12 @@
 #include "util/load_exception.h"
 #include "input/input-map.h"
 #include "input/text-input.h"
+#include "chat-widget.h"
 #include <vector>
 
 class Bitmap;
 
-class NetworkWorldClient: public AdventureWorld {
+class NetworkWorldClient: public AdventureWorld, public ChatWidget {
 public:
 
 	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const std::string & path, Object::networkid_t id, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
@@ -70,19 +71,10 @@ protected:
         Network::Message pingMessage(unsigned int id);
         void handlePing(Network::Message & message);
 
-        enum Keys{
-            Talk,
-        };
-
-public:
-        void endChatLine();
-
 private:
 	NLsocket server;
 	std::vector< Network::Message > incoming;
 	std::vector< Network::Message > outgoing;
-        std::deque<std::string> chatMessages;
-        int removeChatTimer;
 	pthread_mutex_t message_mutex;
 	pthread_mutex_t running_mutex;
 	pthread_t message_thread;
@@ -95,11 +87,7 @@ private:
 
         std::map<unsigned int, uint64_t> pings;
         double currentPing;
-        
-        InputMap<Keys> input;
-        bool enable_chat;
-        TextInput chatInput;
-
+       
         std::map<Object::networkid_t, std::string> clientNames;
         unsigned int pingCounter;
 };

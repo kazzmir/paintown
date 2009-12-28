@@ -76,31 +76,21 @@ static void * handleMessages( void * arg ){
 
     return NULL;
 }
-
-static void do_finish_chat_input(void * arg){
-    NetworkWorldClient * world = (NetworkWorldClient *) arg;
-    world->endChatLine();
-}
 	
 NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, const map<Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
 super( players, path, new NetworkCacher(), screen_size ),
+ChatWidget(*this, id),
 server( server ),
-removeChatTimer(0),
 world_finished( false ),
 secondCounter(Global::second_counter),
 id(id),
 running(true),
 currentPing(0),
-enable_chat(false),
 clientNames(clientNames),
 pingCounter(0){
     objects.clear();
     pthread_mutex_init( &message_mutex, NULL );
     pthread_mutex_init( &running_mutex, NULL );
-
-    input.set(Keyboard::Key_T, 0, false, Talk);
-
-    chatInput.addHandle(Keyboard::Key_ENTER, do_finish_chat_input, this);
 }
 
 void NetworkWorldClient::startMessageHandler(){
@@ -109,30 +99,10 @@ void NetworkWorldClient::startMessageHandler(){
 	
 NetworkWorldClient::~NetworkWorldClient(){
     debug( 1 ) << "Destroy client world" << endl;
-    chatInput.disable();
     /*
        stopRunning();
        pthread_join( message_thread, NULL );
        */
-}
-
-void NetworkWorldClient::endChatLine(){
-    string message = chatInput.getText();
-    chatInput.disable();
-    chatInput.clearInput();
-
-    if (message != ""){
-        Network::Message chat;
-        chat.id = 0;
-        chat << CHAT;
-        chat << getId();
-        chat << message;
-        addMessage(chat);
-        chatMessages.push_back("You: " + message);
-        while (chatMessages.size() > 10){
-            chatMessages.pop_front();
-        }
-    }
 }
 	
 bool NetworkWorldClient::isRunning(){
@@ -456,10 +426,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
                             if (him == 0){
                                 name = "Server";
                             }
-                            chatMessages.push_back(name + ": " + message.path);
-                            while (chatMessages.size() > 10){
-                                chatMessages.pop_front();
-                            }
+                            ChatWidget::receiveMessage(name + ": " + message.path);
                             break;
                         }
 			case IGNORE_MESSAGE : {
@@ -590,20 +557,7 @@ void NetworkWorldClient::draw(Bitmap * work){
     render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
     // font.printf(1, work->getHeight() - 11, Bitmap::makeColor( 255, 255, 255 ), *work, "Ping %d", 0, (int) (currentPing / 1000));
 
-    const Font & font2 = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
-
-    if (chatInput.isEnabled()){
-        const int green = Bitmap::makeColor(0, 255, 0);
-        render->addMessage(font2, 1, work->getHeight() * 2 - font2.getHeight() * 2 - 1, green, -1, string("Say: ") + chatInput.getText());
-    }
-
-    int y = work->getHeight() * 2 - 1 - font2.getHeight() * 3 - 1;
-    for (deque<string>::reverse_iterator it = chatMessages.rbegin(); it != chatMessages.rend(); it++){
-        string message = *it;
-        render->addMessage(font2, 1, y, Bitmap::makeColor(255, 255, 255), -1, message);
-        y -= font2.getHeight() + 1;
-    }
-
+    ChatWidget::draw(work);
 }
 
 void NetworkWorldClient::act(){
@@ -612,26 +566,7 @@ void NetworkWorldClient::act(){
         quake_time--;
     }
 
-    if (removeChatTimer > 0){
-        removeChatTimer -= 1;
-        if (removeChatTimer == 0 && chatMessages.size() > 0){
-            chatMessages.pop_front();
-        }
-    } else if (chatMessages.size() > 0){
-        removeChatTimer = 175;
-    }
-
-    InputMap<Keys>::Output inputState = InputManager::getMap(input);
-    if (inputState[Talk]){
-        enable_chat = true;
-    } else {
-        if (enable_chat){
-            chatInput.enable();
-            enable_chat = false;
-        }
-    }
-
-    chatInput.doInput();
+    ChatWidget::act();
 
     vector< Object * > added_effects;
     if (! isPaused()){
