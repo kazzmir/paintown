@@ -788,6 +788,7 @@ void Character::takeDamage( World & world, ObjectAttack * obj, int damage ){
 void Character::died( vector< Object * > & objects ){
     if (getLink() != NULL){
         getLink()->unGrab();
+        setLink(NULL);
     }
 
 	if ( getExplode() ){
