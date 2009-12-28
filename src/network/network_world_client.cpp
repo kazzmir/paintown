@@ -17,6 +17,7 @@
 #include "factory/object_factory.h"
 #include <pthread.h>
 #include <string.h>
+#include "util/gradient.h"
 #include "util/system.h"
 #include "cacher.h"
 #include "input/input-manager.h"
@@ -563,9 +564,16 @@ void NetworkWorldClient::draw(Bitmap * work){
 /* does NOT call AdventureWorld::act() */
 void NetworkWorldClient::act(){
 	
+    /* these things are copy/pasted from AdventureWorld */
     if ( quake_time > 0 ){
         quake_time--;
     }
+
+    if (descriptionTime > 0){
+        descriptionTime -= 1;
+        descriptionGradient->update();
+    }
+    /* end copy/paste */
 
     ChatWidget::act();
 
