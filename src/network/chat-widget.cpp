@@ -31,6 +31,7 @@ ChatWidget::~ChatWidget(){
 }
 
 void ChatWidget::act(){
+    /*
     if (removeChatTimer > 0){
         removeChatTimer -= 1;
         if (removeChatTimer == 0 && chatMessages.size() > 0){
@@ -39,6 +40,7 @@ void ChatWidget::act(){
     } else if (chatMessages.size() > 0){
         removeChatTimer = 175;
     }
+    */
     
     InputMap<Inputs>::Output inputState = InputManager::getMap(input);
     if (inputState[Talk]){
@@ -47,6 +49,16 @@ void ChatWidget::act(){
         if (enable_chat){
             chatInput.enable();
             enable_chat = false;
+        }
+    }
+    
+    for (deque<Message>::iterator it = chatMessages.begin(); it != chatMessages.end();){
+        Message & message = *it;
+        message.life -= 1;
+        if (message.life <= 0){
+            it = chatMessages.erase(it);
+        } else {
+            it++;
         }
     }
 
@@ -66,16 +78,13 @@ void ChatWidget::endChatLine(){
         chat << id;
         chat << message;
         world.addMessage(chat);
-        chatMessages.push_back(string("You: ") + message);
-        while (chatMessages.size() > 10){
-            chatMessages.pop_front();
-        }
+        receiveMessage(string("You: ") + message);
     }
 }
 
 void ChatWidget::receiveMessage(string message){
-    chatMessages.push_back(message);
-    while (chatMessages.size() > 10){
+    chatMessages.push_back(Message("", message, 500));
+    while (chatMessages.size() > 20){
         chatMessages.pop_front();
     }
     Resource::getSound("menu/sounds/talk.wav")->play();
@@ -96,10 +105,14 @@ void ChatWidget::drawChat(Bitmap * work, int start){
         y -= font.getHeight() + 1;
     }
 
-    const deque<string> messages = getChatMessages();
-    for (deque<string>::const_reverse_iterator it = messages.rbegin(); it != messages.rend(); it++){
-        string message = *it;
-        render->addMessage(font, 1, y, Bitmap::makeColor(255, 255, 255), -1, message);
+    for (deque<Message>::const_reverse_iterator it = chatMessages.rbegin(); it != chatMessages.rend(); it++){
+        const Message & message = *it;
+        int trans = message.life;
+        if (trans < 255){
+            render->addMessage(font, 1, y, Bitmap::makeColor(255, 255, 255), -1, trans, message.text);
+        } else {
+            render->addMessage(font, 1, y, Bitmap::makeColor(255, 255, 255), -1, message.text);
+        }
         y -= font.getHeight() + 1;
     }
 }

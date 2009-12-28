@@ -15,9 +15,11 @@ public:
     virtual void act();
     void receiveMessage(std::string message);
 
+    /*
     inline const std::deque<std::string> & getChatMessages() const {
         return chatMessages;
     }
+    */
 
     virtual void drawChat(Bitmap * work, int start);
 
@@ -25,12 +27,24 @@ public:
     void endChatLine();
 
 private:
+    struct Message{
+        Message(std::string sender, std::string text, int life):
+            sender(sender),
+            text(text),
+            life(life){
+            }
+
+        std::string sender;
+        std::string text;
+        int life;
+    };
+
     enum Inputs{
         Talk,
     };
 
     World & world;
-    std::deque<std::string> chatMessages;
+    std::deque<Message> chatMessages;
     int removeChatTimer;
     bool enable_chat;
     TextInput chatInput;
