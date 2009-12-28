@@ -557,7 +557,7 @@ void NetworkWorldClient::draw(Bitmap * work){
     render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
     // font.printf(1, work->getHeight() - 11, Bitmap::makeColor( 255, 255, 255 ), *work, "Ping %d", 0, (int) (currentPing / 1000));
 
-    ChatWidget::draw(work);
+    ChatWidget::drawChat(work, work->getHeight() * 2 - 1 - font.getHeight() - 1);
 }
 
 void NetworkWorldClient::act(){

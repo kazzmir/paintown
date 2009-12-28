@@ -19,7 +19,7 @@ public:
         return chatMessages;
     }
 
-    virtual void draw(Bitmap * work);
+    virtual void drawChat(Bitmap * work, int start);
 
 public:
     void endChatLine();

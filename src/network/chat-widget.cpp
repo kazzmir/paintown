@@ -79,20 +79,23 @@ void ChatWidget::receiveMessage(string message){
     }
 }
 
-void ChatWidget::draw(Bitmap * work){
+void ChatWidget::drawChat(Bitmap * work, int start){
     const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
     FontRender * render = FontRender::getInstance();
 
-    int y = work->getHeight() * 2 - 1 - font.getHeight() * 2 - 1;
+    // int y = work->getHeight() * 2 - 1 - font.getHeight() * 2 - 1;
+    int y = start - font.getHeight();
+
+    if (chatInput.isEnabled()){
+        const int green = Bitmap::makeColor(0, 255, 0);
+        render->addMessage(font, 1, y, green, -1, string("Say: ") + chatInput.getText());
+        y -= font.getHeight() + 1;
+    }
+
     const deque<string> messages = getChatMessages();
     for (deque<string>::const_reverse_iterator it = messages.rbegin(); it != messages.rend(); it++){
         string message = *it;
         render->addMessage(font, 1, y, Bitmap::makeColor(255, 255, 255), -1, message);
         y -= font.getHeight() + 1;
-    }
-
-    if (chatInput.isEnabled()){
-        const int green = Bitmap::makeColor(0, 255, 0);
-        render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, green, -1, string("Say: ") + chatInput.getText());
     }
 }
