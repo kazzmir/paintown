@@ -90,7 +90,9 @@ void ChatWidget::drawChat(Bitmap * work, int start){
 
     if (chatInput.isEnabled()){
         const int green = Bitmap::makeColor(0, 255, 0);
-        render->addMessage(font, 1, y, green, -1, string("Say: ") + chatInput.getText());
+        // render->addMessage(font, 1, y, green, -1, string("Say: ") + chatInput.getText());
+        render->addMessage(font, 1, y, Bitmap::makeColor(255, 255, 0), -1, string("Say: "));
+        render->addMessage(font, 1 + font.textLength("Say: "), y, green, -1, chatInput.getText());
         y -= font.getHeight() + 1;
     }
 
