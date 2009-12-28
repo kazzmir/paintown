@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "object/object.h"
 #include "object/character.h"
 #include "game/adventure_world.h"

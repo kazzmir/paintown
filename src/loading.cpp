@@ -16,6 +16,11 @@
 
 using namespace std;
 
+namespace Loader{
+
+pthread_mutex_t loading_screen_mutex;
+bool done_loading = false;
+
 typedef struct pair{
 	int x, y;
 } ppair;
@@ -43,6 +48,20 @@ public:
 private:
     MessageQueue messages;
 };
+
+void startLoading(pthread_t * thread, void * arg){
+    pthread_mutex_lock( &loading_screen_mutex );
+    done_loading = false;
+    pthread_mutex_unlock( &loading_screen_mutex );
+    pthread_create(thread, NULL, loadingScreen, arg);
+}
+
+void stopLoading(pthread_t thread){
+    pthread_mutex_lock( &loading_screen_mutex );
+    done_loading = true;
+    pthread_mutex_unlock( &loading_screen_mutex );
+    pthread_join(thread, NULL );
+}
 
 void * loadingScreen( void * arg ){
     const int load_x = 80;
@@ -156,10 +175,12 @@ void * loadingScreen( void * arg ){
             work.BlitAreaToScreen( load_x, load_y );
         }
 
-        pthread_mutex_lock( &Global::loading_screen_mutex );
-        quit = Global::done_loading;
-        pthread_mutex_unlock( &Global::loading_screen_mutex );
+        pthread_mutex_lock( &loading_screen_mutex );
+        quit = done_loading;
+        pthread_mutex_unlock( &loading_screen_mutex );
     }
 
     return NULL;
+}
+
 }

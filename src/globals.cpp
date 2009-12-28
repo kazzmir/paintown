@@ -1,7 +1,7 @@
+#include "util/bitmap.h"
 #include "globals.h"
 #include <streambuf>
 #include "util/funcs.h"
-#include "util/bitmap.h"
 #include "util/file-system.h"
 #include "util/message-queue.h"
 #include "loading.h"
@@ -94,8 +94,6 @@ const std::string Global::titleScreen(){
 
 namespace Global{
 
-pthread_mutex_t loading_screen_mutex;
-bool done_loading = false;
 
 /* just some random number I picked out of thin air */
 const unsigned int MagicId = 0x0dff2110;
@@ -118,18 +116,5 @@ void info(const std::string & str){
     }
 }
 
-void startLoading(pthread_t * thread, void * arg){
-    pthread_mutex_lock( &Global::loading_screen_mutex );
-    Global::done_loading = false;
-    pthread_mutex_unlock( &Global::loading_screen_mutex );
-    pthread_create(thread, NULL, loadingScreen, arg);
-}
-
-void stopLoading(pthread_t thread){
-    pthread_mutex_lock( &Global::loading_screen_mutex );
-    Global::done_loading = true;
-    pthread_mutex_unlock( &Global::loading_screen_mutex );
-    pthread_join(thread, NULL );
-}
 
 }

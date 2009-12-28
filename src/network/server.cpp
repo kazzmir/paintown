@@ -502,7 +502,7 @@ static void playGame(vector<Client*> & clients){
         Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
 
         /* show the loading screen */
-        Global::startLoading( &loading_screen_thread );
+        Loader::startLoading( &loading_screen_thread );
 
         /* reset the alliance settings */
         allAlliance = ALLIANCE_FREE_FOR_ALL;
@@ -634,14 +634,14 @@ static void playGame(vector<Client*> & clients){
 
             world.startMessageHandlers();
 
-            Global::stopLoading( loading_screen_thread );
+            Loader::stopLoading(loading_screen_thread);
             bool played = Game::playLevel( world, players, 200 );
 
             ObjectFactory::destroy();
             HeartFactory::destroy();
 
             world.stopRunning();
-            Global::startLoading(&loading_screen_thread);
+            Loader::startLoading(&loading_screen_thread);
             Message finish;
             finish << World::FINISH;
             finish.id = 0;
@@ -709,7 +709,7 @@ static void playGame(vector<Client*> & clients){
         Network::close((*it)->getSocket());
     }
 
-    Global::stopLoading( loading_screen_thread );
+    Loader::stopLoading(loading_screen_thread);
 }
 
 static void popup( const Font & font, const string & message ){

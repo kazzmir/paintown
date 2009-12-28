@@ -1,6 +1,6 @@
+#include "util/bitmap.h"
 #include <map>
 #include "object_nonattack.h"
-#include "util/bitmap.h"
 #include "util/funcs.h"
 #include "globals.h"
 #include "animation.h"

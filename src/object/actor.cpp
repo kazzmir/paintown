@@ -1,5 +1,5 @@
-#include "object_nonattack.h"
 #include "util/bitmap.h"
+#include "object_nonattack.h"
 #include "globals.h"
 #include "animation.h"
 #include "util/tokenreader.h"

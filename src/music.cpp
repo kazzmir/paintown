@@ -1,9 +1,9 @@
 #include "music.h"
-#include "dumb/include/aldumb.h"
 #include <string>
 #include <iostream>
 #include "globals.h"
 // #include "defs.h"
+#include "dumb/include/aldumb.h"
 
 #ifdef _WIN32
 #include <winalleg.h>

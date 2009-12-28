@@ -1,7 +1,7 @@
+#include "util/bitmap.h"
 #include <iostream>
 #include "object_nonattack.h"
 #include "gib.h"
-#include "util/bitmap.h"
 #include "util/funcs.h"
 #include "globals.h"
 #include <math.h>

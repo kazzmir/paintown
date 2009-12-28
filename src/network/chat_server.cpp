@@ -350,7 +350,7 @@ void ChatServer::stopAccepting(){
         pthread_mutex_lock(&lock);
         for (vector<pthread_t>::iterator it = accepted.begin(); it != accepted.end(); it++){
             pthread_t accept = *it;
-            debug(2) << "Waiting for client accept thread " << accept << endl;
+            debug(2) << "Waiting for client accept thread " << endl;
             pthread_join(accept, NULL);
         }
 	pthread_mutex_unlock( &lock );

@@ -3,7 +3,6 @@
 
 #include <ostream>
 #include <string>
-#include <pthread.h>
 
 class Bitmap;
 class MessageQueue;
@@ -21,9 +20,6 @@ extern const int MIN_RELATIVE_DISTANCE;
 
 namespace Global{
 	
-extern pthread_mutex_t loading_screen_mutex;
-extern bool done_loading;
-
 extern const unsigned int MagicId;
 
 extern const char * DEFAULT_FONT;
@@ -43,9 +39,6 @@ const std::string titleScreen();
 void registerInfo(MessageQueue *);
 void unregisterInfo(MessageQueue *);
 void info(const std::string & str);
-
-void startLoading(pthread_t * thread, void * arg = 0);
-void stopLoading(pthread_t thread);
 
 }
 

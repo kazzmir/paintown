@@ -2,7 +2,7 @@
 #define _paintown_init_h
 
 // #include <allegro.h>
-#include <pthread.h>
+// #include <pthread.h>
 
 
 /* global vars */

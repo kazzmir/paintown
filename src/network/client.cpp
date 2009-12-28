@@ -80,7 +80,7 @@ static void playGame( Socket socket ){
         string path = Filesystem::cleanse(player->getPath());
         // path.erase( 0, Util::getDataPath().length() );
 
-        Global::startLoading( &loadingThread );
+        Loader::startLoading( &loadingThread );
 
         /* send the path of the chosen player */
         Message create;
@@ -147,7 +147,7 @@ static void playGame( Socket socket ){
 
                     world.startMessageHandler();
 
-                    Global::stopLoading(loadingThread);
+                    Loader::stopLoading(loadingThread);
                     try{
                         vector<Object*> xplayers;
                         bool forceQuit = ! Game::playLevel( world, xplayers, 100 );
@@ -155,7 +155,7 @@ static void playGame( Socket socket ){
                         ObjectFactory::destroy();
                         HeartFactory::destroy();
 
-                        Global::startLoading( &loadingThread );
+                        Loader::startLoading( &loadingThread );
 
                         if (forceQuit){
                             Global::debug(1, __FILE__) << "Force quit" << endl;
@@ -202,7 +202,7 @@ static void playGame( Socket socket ){
         Global::debug(0, "client") << "Load exception: " + le.getReason() << endl;
     }
 
-    Global::stopLoading( loadingThread );
+    Loader::stopLoading(loadingThread);
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){

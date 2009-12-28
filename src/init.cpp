@@ -26,6 +26,7 @@
 #include "configuration.h"
 #include "script/script.h"
 #include "music.h"
+#include "loading.h"
 
 using namespace std;
 
@@ -194,7 +195,7 @@ bool Global::init( int gfx ){
     Network::init();
 
     /* this mutex is used to show the loading screen while the game loads */
-    pthread_mutex_init( &Global::loading_screen_mutex, NULL );
+    pthread_mutex_init( &Loader::loading_screen_mutex, NULL );
 
     out<<"-- END init --"<<endl;
 

@@ -105,7 +105,7 @@ void ChatWidget::drawChat(Bitmap * work, int start){
         y -= font.getHeight() + 1;
     }
 
-    for (deque<Message>::const_reverse_iterator it = chatMessages.rbegin(); it < chatMessages.rend(); it++){
+    for (deque<Message>::reverse_iterator it = chatMessages.rbegin(); it < chatMessages.rend(); it++){
         const Message & message = *it;
         int trans = message.life;
         if (trans < 255){

@@ -54,13 +54,13 @@ static double startingGameSpeed(){
 
 static void stopLoading( pthread_t thread ){
     if ( show_loading_screen ){
-        Global::stopLoading(thread);
+        Loader::stopLoading(thread);
     }
 }
 
 static void startLoading(pthread_t * thread, const Level::LevelInfo & info ){
     if ( show_loading_screen ){
-        Global::startLoading(thread, (void*) &info);
+        Loader::startLoading(thread, (void*) &info);
     }
 }
 
