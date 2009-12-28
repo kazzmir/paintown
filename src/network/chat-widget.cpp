@@ -6,6 +6,7 @@
 #include "input/input-manager.h"
 #include "util/font.h"
 #include "factory/font_render.h"
+#include "resource.h"
 #include "util/file-system.h"
 #include <string>
 
@@ -77,6 +78,7 @@ void ChatWidget::receiveMessage(string message){
     while (chatMessages.size() > 10){
         chatMessages.pop_front();
     }
+    Resource::getSound("menu/sounds/talk.wav")->play();
 }
 
 void ChatWidget::drawChat(Bitmap * work, int start){
