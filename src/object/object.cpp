@@ -169,7 +169,7 @@ int Object::getAlliance() const{
 	return alliance;
 }
 	
-void Object::collided( ObjectAttack * obj, vector< Object * > & objects ){
+void Object::collided(World * world, ObjectAttack * obj, vector< Object * > & objects ){
 	hit.play();
         if (getScriptObject() != NULL){
             void * object = NULL;
@@ -188,7 +188,7 @@ void Object::moveZ( double z ){
 void Object::print() const{
 }
 	
-void Object::interpretMessage( Network::Message & message ){
+void Object::interpretMessage(World * world, Network::Message & message ){
     int type;
     message >> type;
     switch ( type ){
@@ -205,7 +205,7 @@ void Object::interpretMessage( Network::Message & message ){
         case ObjectMessages::Collided : {
             vector< Object * > objects;
             /* TODO: get the real object that collided instead of NULL */
-            collided( NULL, objects );
+            collided(NULL, NULL, objects );
             break;
         }
     }

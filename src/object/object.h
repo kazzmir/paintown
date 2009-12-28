@@ -93,7 +93,7 @@ public:
 	/* collided
 	 * You have collided with this object. Make your time.
 	 */
-	virtual void collided( ObjectAttack * obj, std::vector< Object * > & objects );
+	virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects );
 
 	/* send an arbitrary stimulation to an object */
 	virtual void stimulate( const Stimulation & stim );
@@ -162,7 +162,7 @@ public:
 
 	virtual Network::Message getCreateMessage() = 0;
 
-	virtual void interpretMessage( Network::Message & m );
+	virtual void interpretMessage(World * world, Network::Message & m );
 
 	virtual Network::Message movedMessage();
 	virtual Network::Message collidedMessage();

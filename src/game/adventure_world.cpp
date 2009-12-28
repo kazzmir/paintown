@@ -346,7 +346,8 @@ void AdventureWorld::doLogic(){
                         }
 
                         o_good->attacked(this, *fight, added_effects );
-                        (*fight)->collided( o_good, added_effects );
+                        (*fight)->collided(this, o_good, added_effects );
+                        /* move this to the object now */
                         addMessage( (*fight)->collidedMessage() );
                         (*fight)->takeDamage(*this, o_good, o_good->getDamage() );
 

@@ -25,6 +25,7 @@ namespace CharacterMessages{
 namespace PlayerMessages{
     enum NetworkCodes{
         Score = 27,
+        Confirm = 28,
     };
 }
 

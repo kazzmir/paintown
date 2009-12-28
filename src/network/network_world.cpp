@@ -287,7 +287,7 @@ void NetworkWorld::removeSocket(Network::Socket socket){
         }
     }
 }
-                            
+
 Object * NetworkWorld::findPlayerFromSocket(Network::Socket socket){
     for (map<Object*, Network::Socket>::iterator it = characterToClient.begin(); it != characterToClient.end(); it++){
         Object * who = (*it).first;
@@ -385,7 +385,7 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 	} else {
 		Object * o = findNetworkObject( message.id );
 		if ( o != NULL ){
-			o->interpretMessage( message );
+			o->interpretMessage(this, message );
 		}
 		
 	}

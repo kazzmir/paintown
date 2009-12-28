@@ -54,7 +54,7 @@ public:
         return this->invincible;
     }
 
-    virtual void interpretMessage( Network::Message & m );
+    virtual void interpretMessage(World * world, Network::Message & m );
 
     /* reset some stuff when the player dies */
     virtual void deathReset();

@@ -1217,34 +1217,44 @@ void Character::attacked( World * world, Object * something, vector< Object * > 
         }
 }
 
-void Character::collided( ObjectAttack * obj, vector< Object * > & objects ){
-	/*
-	last_obj = obj;
-	last_collide = obj->getTicket();
-	*/
+void Character::collided(World * world, ObjectAttack * obj, vector< Object * > & objects){
+    /*
+       last_obj = obj;
+       last_collide = obj->getTicket();
+       */
 
-	// cout << this << " collided with " << obj << endl;
-	Object::collided( obj, objects );
+    // cout << this << " collided with " << obj << endl;
+    Object::collided(world, obj, objects);
 
-	if ( obj != NULL ){
-		collision_objects[ obj ] = obj->getTicket();
-		setFacing( obj->getOppositeFacing() );
-	}
+    bool needMove = false;
+    if (obj != NULL){
+        /* getting his ticket prevents being hit multiple times from the
+         * same attack.
+         */
+        collision_objects[obj] = obj->getTicket();
+        setFacing(obj->getOppositeFacing());
+        needMove = true;
+    }
 
-	if ( getStatus() != Status_Grabbed ){
-		moveX( -5 );
-	}
+    if (getStatus() != Status_Grabbed){
+        moveX(-5);
+        needMove = true;
+    }
+
+    if (needMove && world != NULL){
+        world->addMessage(movedMessage());
+    }
 }
 
 int Character::getRX() const {
-	if ( animation_current ){
-		if ( getFacing() == FACING_LEFT ){
-			return Object::getRX() - animation_current->getOffsetX();
-		} else {
-			return Object::getRX() + animation_current->getOffsetX();
-		}
-	}
-	return Object::getRX();
+    if ( animation_current ){
+        if ( getFacing() == FACING_LEFT ){
+            return Object::getRX() - animation_current->getOffsetX();
+        } else {
+            return Object::getRX() + animation_current->getOffsetX();
+        }
+    }
+    return Object::getRX();
 }
 
 int Character::getRZ() const {
@@ -1472,7 +1482,7 @@ Network::Message Character::jumpMessage( double x, double z ){
 	return message;
 }
 	
-void Character::interpretMessage( Network::Message & message ){
+void Character::interpretMessage(World * world, Network::Message & message ){
     int type;
     message >> type;
     namespace CM = CharacterMessages;
@@ -1481,7 +1491,7 @@ void Character::interpretMessage( Network::Message & message ){
      * the type as well
      */
     message.reset();
-    Object::interpretMessage( message );
+    Object::interpretMessage(world, message );
     switch ( type ){
         case ObjectMessages::Moved : {
             int status;

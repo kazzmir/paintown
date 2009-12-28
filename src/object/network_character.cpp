@@ -54,7 +54,7 @@ Network::Message NetworkCharacter::grabMessage( unsigned int from, unsigned int 
     return message;
 }
 
-void NetworkCharacter::interpretMessage( Network::Message & message ){
+void NetworkCharacter::interpretMessage(World * world, Network::Message & message ){
     int type;
     message >> type;
     switch ( type ){
@@ -66,7 +66,7 @@ void NetworkCharacter::interpretMessage( Network::Message & message ){
         }
         default : {
             message.reset();
-            Character::interpretMessage( message );
+            Character::interpretMessage(world, message );
             break;
         }
     }

@@ -20,14 +20,18 @@ using namespace std;
 NetworkPlayer::NetworkPlayer(const string & filename, int alliance) throw ( LoadException ):
 NetworkCharacter( filename, alliance ),
 score(0),
-attack_bonus(0){
+attack_bonus(0),
+need_confirm(false),
+need_confirm_message(false){
     initializeAttackGradient();
 }
 
 NetworkPlayer::NetworkPlayer(const Character & chr) throw( LoadException ):
 NetworkCharacter( chr ),
 score(0),
-attack_bonus(0){
+attack_bonus(0),
+need_confirm(false),
+need_confirm_message(false){
     initializeAttackGradient();
 }
 
@@ -43,11 +47,19 @@ void NetworkPlayer::initializeAttackGradient(){
     Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Bitmap::makeColor(255,255,0), Bitmap::makeColor(255,0,0));
 }
 
-void NetworkPlayer::interpretMessage( Network::Message & message ){
+void NetworkPlayer::interpretMessage(World * world, Network::Message & message ){
     int type;
     message >> type;
+    if (need_confirm){
+        if (type == PlayerMessages::Confirm){
+            need_confirm = false;
+        } else {
+            Global::debug(1) << "Waiting on player confirmation" << endl;
+            return;
+        }
+    }
     message.reset();
-    NetworkCharacter::interpretMessage(message);
+    NetworkCharacter::interpretMessage(world, message);
     switch (type){
         case PlayerMessages::Score : {
             unsigned int s;
@@ -56,6 +68,25 @@ void NetworkPlayer::interpretMessage( Network::Message & message ){
             break;
         }
     }
+}
+        
+/*
+void NetworkPlayer::fall(double x_vel, double y_vel){
+    needConfirm();
+    NetworkCharacter::fall(x_vel, y_vel);
+}
+*/
+        
+void NetworkPlayer::collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects ){
+    if (world != NULL){
+        needConfirm();
+    }
+    NetworkCharacter::collided(world, obj, objects);
+}
+
+void NetworkPlayer::needConfirm(){
+    need_confirm = true;
+    need_confirm_message = true;
 }
         
 void NetworkPlayer::attacked( World * world, Object * something, vector< Object * > & objects ){
@@ -119,5 +150,13 @@ void NetworkPlayer::act( vector< Object * > * others, World * world, vector< Obj
         attack_bonus -= 0.02;
     } else {
         attack_bonus = 0;
+    }
+
+    if (need_confirm_message){
+        Network::Message message;
+        message.id = getId();
+        message << PlayerMessages::Confirm;
+        world->addMessage(message);
+        need_confirm_message = false;
     }
 }

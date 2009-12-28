@@ -93,6 +93,8 @@ public:
         /* serialized actions the world can take. mostly for use with networking
          * WARNING: changing these values (like moving them around) will break
          * backwards compatibility.
+         * If a message with one of these types is sent then the message
+         * id *must* be set to 0, which indicates a server message.
          */
         enum{
             /* sanity check, no one should ever pass `NOTHING' around */

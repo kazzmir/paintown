@@ -84,7 +84,7 @@ public:
 	virtual void thrown();
 
 	/* you have collided with obj */
-	virtual void collided( ObjectAttack * obj, std::vector< Object * > & objects );
+	virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects );
 	
 	inline virtual void setFacing( const int f ){
 		if ( getStatus() == Status_Ground || getStatus() == Status_Grabbed ){
@@ -344,7 +344,7 @@ public:
 	virtual Network::Message fallMessage( double x, double y );
         virtual Network::Message grabMessage(Object::networkid_t from, Object::networkid_t who);
 	
-	virtual void interpretMessage( Network::Message & m );
+	virtual void interpretMessage(World * world, Network::Message & m );
 	
 	virtual void fall( double x_vel, double y_vel );
 	

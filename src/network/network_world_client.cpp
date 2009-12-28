@@ -470,7 +470,7 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
 			Object * o = *it;
                         /* message.id is a uint16_t and getId() is an unsigned long */
 			if ( o->getId() == message.id ){
-				o->interpretMessage( message );
+				o->interpretMessage(this, message );
 			}
 		}
 	}
@@ -560,6 +560,7 @@ void NetworkWorldClient::draw(Bitmap * work){
     ChatWidget::drawChat(work, work->getHeight() * 2 - 1 - font.getHeight() - 1);
 }
 
+/* does NOT call AdventureWorld::act() */
 void NetworkWorldClient::act(){
 	
     if ( quake_time > 0 ){

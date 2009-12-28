@@ -473,7 +473,7 @@ void Player::deathReset(){
 	loseLife();
 }
         
-void Player::interpretMessage(Network::Message & message){
+void Player::interpretMessage(World * world, Network::Message & message){
     int type;
     message >> type;
 
@@ -481,7 +481,7 @@ void Player::interpretMessage(Network::Message & message){
      * the type as well
      */
     message.reset();
-    Character::interpretMessage( message );
+    Character::interpretMessage(world, message );
     switch (type){
         case PlayerMessages::Score : {
             unsigned int s;
@@ -489,6 +489,13 @@ void Player::interpretMessage(Network::Message & message){
             message >> s >> attack;
             setScore(s);
             attack_bonus = (double) attack / 10.0;
+            break;
+        }
+        case PlayerMessages::Confirm : {
+            Network::Message response;
+            response.id = getId();
+            response << PlayerMessages::Confirm;
+            world->addMessage(response);
             break;
         }
         case CharacterMessages::Health : {
