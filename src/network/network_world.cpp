@@ -99,27 +99,27 @@ void NetworkWorld::waitForHandlers(){
 }
 
 NetworkWorld::~NetworkWorld(){
-	stopRunning();
+    stopRunning();
 
-	/*
-	for ( vector< pthread_t >::iterator it = threads.begin(); it != threads.end(); it++ ){
-		const pthread_t & thread = *it;
-		pthread_join( thread, NULL );
-	}
-	*/
+    /*
+       for ( vector< pthread_t >::iterator it = threads.begin(); it != threads.end(); it++ ){
+       const pthread_t & thread = *it;
+       pthread_join( thread, NULL );
+       }
+       */
 }
 	
 void NetworkWorld::addObject( Object * o ){
-	if ( o->getId() != (Object::networkid_t) -1 ){
-		for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-			Object * obj = *it;
-			if ( obj->getId() == o->getId() ){
-				return;
-			}
-		}
-	}
+    if ( o->getId() != (Object::networkid_t) -1 ){
+        for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+            Object * obj = *it;
+            if ( obj->getId() == o->getId() ){
+                return;
+            }
+        }
+    }
 
-	AdventureWorld::addObject( o );
+    AdventureWorld::addObject( o );
 }
 	
 void NetworkWorld::addMessage( Network::Message m, Network::Socket from, Network::Socket to){
@@ -141,28 +141,28 @@ void NetworkWorld::addMessage( Network::Message m, Network::Socket from, Network
 }
 
 void NetworkWorld::addIncomingMessage( const Network::Message & message, Network::Socket from ){
-	pthread_mutex_lock( &message_mutex );
-	incoming.push_back(message);
-	pthread_mutex_unlock( &message_mutex );
+    pthread_mutex_lock( &message_mutex );
+    incoming.push_back(message);
+    pthread_mutex_unlock( &message_mutex );
 
-        /* by default all messages get relayed to all clients, but a client
-         * shouldn't send its own message back to itself so it populates the
-         * `from' field.
-         */
-	addMessage( message, from );
+    /* by default all messages get relayed to all clients, but a client
+     * shouldn't send its own message back to itself so it populates the
+     * `from' field.
+     */
+    addMessage( message, from );
 }
 	
 void NetworkWorld::stopRunning(){
-	pthread_mutex_lock( &running_mutex );
-	running = false;
-	pthread_mutex_unlock( &running_mutex );
+    pthread_mutex_lock( &running_mutex );
+    running = false;
+    pthread_mutex_unlock( &running_mutex );
 }
 
 bool NetworkWorld::isRunning(){
-	pthread_mutex_lock( &running_mutex );
-	bool b = running;
-	pthread_mutex_unlock( &running_mutex );
-	return b;
+    pthread_mutex_lock( &running_mutex );
+    bool b = running;
+    pthread_mutex_unlock( &running_mutex );
+    return b;
 }
 
 /* what is this method for? */
