@@ -40,6 +40,7 @@ src/network/cacher.cpp
 src/network/client.cpp
 src/network/chat_client.cpp
 src/network/chat_server.cpp
+src/network/chat-widget.cpp
 src/network/messages.cpp
 src/network/network.cpp
 src/network/network_world.cpp

@@ -57,20 +57,14 @@ static void * handleMessages( void * arg ){
     return NULL;
 }
 
-static void do_finish_chat_input(void * arg){
-    NetworkWorld * world = (NetworkWorld *) arg;
-    world->endChatLine();
-}
-
 NetworkWorld::NetworkWorld(vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const string & path, const map<Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
 AdventureWorld( players, path, new Level::DefaultCacher(), screen_size ),
+ChatWidget(*this, 0),
 sockets(sockets),
 clientNames(clientNames),
-removeChatTimer(0),
 characterToClient(characterToClient),
 sent_messages( 0 ),
-running(true),
-enable_chat(false){
+running(true){
     Object::networkid_t max_id = 0;
 
     pthread_mutex_init( &message_mutex, NULL );
@@ -84,31 +78,6 @@ enable_chat(false){
         }
     }
     this->id = max_id + 1;
-
-    input.set(Keyboard::Key_T, 0, false, Talk);
-
-    chatInput.addHandle(Keyboard::Key_ENTER, do_finish_chat_input, this);
-}
-
-void NetworkWorld::endChatLine(){
-    string message = chatInput.getText();
-    chatInput.disable();
-    chatInput.clearInput();
-
-    if (message != ""){
-        Network::Message chat;
-        /* server's id is always 0 */
-        Object::networkid_t id = 0;
-        chat.id = 0;
-        chat << CHAT;
-        chat << id;
-        chat << message;
-        addMessage(chat);
-        chatMessages.push_back(string("You: ") + message);
-        while (chatMessages.size() > 10){
-            chatMessages.pop_front();
-        }
-    }
 }
 
 void NetworkWorld::startMessageHandlers(){
@@ -131,7 +100,6 @@ void NetworkWorld::waitForHandlers(){
 
 NetworkWorld::~NetworkWorld(){
 	stopRunning();
-        chatInput.disable();
 
 	/*
 	for ( vector< pthread_t >::iterator it = threads.begin(); it != threads.end(); it++ ){
@@ -353,10 +321,7 @@ void NetworkWorld::handleMessage( Network::Message & message ){
                             Object::networkid_t him;
                             message >> him;
                             string name = clientNames[him];
-                            chatMessages.push_back(name + ": " + message.path);
-                            while (chatMessages.size() > 10){
-                                chatMessages.pop_front();
-                            }
+                            addChatMessage(name + ": " + message.path);
                             break;
                         }
 			case THROWN : {
@@ -465,46 +430,12 @@ void NetworkWorld::flushOutgoing(){
 	
 void NetworkWorld::draw(Bitmap * work){
     super::draw(work);
-
-    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
-    FontRender * render = FontRender::getInstance();
-
-    int y = work->getHeight() * 2 - 1 - font.getHeight() * 2 - 1;
-    for (deque<string>::reverse_iterator it = chatMessages.rbegin(); it != chatMessages.rend(); it++){
-        string message = *it;
-        render->addMessage(font, 1, y, Bitmap::makeColor(255, 255, 255), -1, message);
-        y -= font.getHeight() + 1;
-    }
-
-    if (chatInput.isEnabled()){
-        const int green = Bitmap::makeColor(0, 255, 0);
-        render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, green, -1, string("Say: ") + chatInput.getText());
-    }
+    ChatWidget::draw(work);
 }
 	
 void NetworkWorld::act(){
     AdventureWorld::act();
-
-    if (removeChatTimer > 0){
-        removeChatTimer -= 1;
-        if (removeChatTimer == 0 && chatMessages.size() > 0){
-            chatMessages.pop_front();
-        }
-    } else if (chatMessages.size() > 0){
-        removeChatTimer = 175;
-    }
-    
-    InputMap<Keys>::Output inputState = InputManager::getMap(input);
-    if (inputState[Talk]){
-        enable_chat = true;
-    } else {
-        if (enable_chat){
-            chatInput.enable();
-            enable_chat = false;
-        }
-    }
-
-    chatInput.doInput();
+    ChatWidget::act();
 
     vector< Network::Message > messages = getIncomingMessages();
     for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){

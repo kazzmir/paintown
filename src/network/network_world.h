@@ -6,6 +6,7 @@
 #include "util/load_exception.h"
 #include "object/object.h"
 #include "input/text-input.h"
+#include "chat-widget.h"
 #include <pthread.h>
 #include <vector>
 #include <string>
@@ -25,7 +26,7 @@ struct Packet{
 	Network::Socket to;
 };
 
-class NetworkWorld: public AdventureWorld {
+class NetworkWorld: public AdventureWorld, public ChatWidget {
 public:
 	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Object * > & players, const std::map<Object*, Network::Socket> & characterToClient, const std::string & path, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
 	
@@ -54,9 +55,6 @@ public:
 
 	virtual ~NetworkWorld();
 
-public:
-        void endChatLine();
-
 protected:
 	Object * findNetworkObject( Object::networkid_t id );
 	void sendMessage( const Network::Message & message, Network::Socket socket );
@@ -76,18 +74,12 @@ protected:
             return i;
 	}
 
-        enum Keys{
-            Talk,
-        };
-
 private:
 	std::vector<Network::Socket> & sockets;
 	std::vector< Packet > outgoing;
 	std::vector< Network::Message > incoming;
 	std::vector< pthread_t > threads;
-        std::deque<std::string> chatMessages;
         std::map<Object::networkid_t, std::string> clientNames;
-        int removeChatTimer;
 	std::map<Object*, Network::Socket> characterToClient;
         Object::networkid_t id;
 
@@ -96,10 +88,6 @@ private:
 	pthread_mutex_t message_mutex;
 	pthread_mutex_t running_mutex;
 	bool running;
-        InputMap<Keys> input;
-
-        bool enable_chat;
-        TextInput chatInput;
 };
 
 #endif
