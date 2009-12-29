@@ -74,6 +74,6 @@ public class JumpEvent implements AnimationEvent {
 		return temp;
 	}
 
-        public void destroy(){
-        }
+    public void destroy(){
+    }
 }
