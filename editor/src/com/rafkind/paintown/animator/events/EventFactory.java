@@ -20,6 +20,7 @@ public class EventFactory{
         events.put( "bbox", new Lambda0(){public Object invoke(){return new BBoxEvent();}});
         events.put( "coords", new Lambda0(){public Object invoke(){return new CoordsEvent();}});
         events.put( "delay", new Lambda0(){public Object invoke(){return new DelayEvent();}});
+        events.put( "defense", new Lambda0(){public Object invoke(){return new DefenseEvent();}});
         events.put( "face", new Lambda0(){public Object invoke(){return new FaceEvent();}});
         events.put( "frame", new Lambda0(){public Object invoke(){return new FrameEvent();}});
         events.put( "jump", new Lambda0(){public Object invoke(){return new JumpEvent();}});
