@@ -598,13 +598,13 @@ Ast::Attribute * makeAttribute(const Value & id){
 }
 
 Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
-    /* FIXME! */
+    /* TODO */
     exit(0);
     // return makeAttribute(id, data);
 }
 
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
-    /* wrong, fix this */
+    /* TODO: fix this */
     exit(0);
     /*
     Ast::Attribute * object = new Ast::Attribute(Ast::Attribute::None);
@@ -620,7 +620,7 @@ Ast::Keyword * makeKeyword(const Value & value){
 }
 
 Ast::Attribute * makeAttributes(const Value & id, const Value & data){
-    /* wrong, fix this */
+    /* TODO */
     exit(0);
     /*
     Ast::Attribute * object = new Ast::Attribute(Ast::Attribute::None);
@@ -629,7 +629,7 @@ Ast::Attribute * makeAttributes(const Value & id, const Value & data){
     */
 }
 
-/* FIXME */
+/* TODO */
 Ast::Value * makeValue(){
     Ast::Number * object = new Ast::Number(0);
     GC::save(object);

@@ -16,6 +16,51 @@ public:
     }
 };
 
+class ExpressionUnary: public Expression {
+public:
+    enum UnaryType{
+        Not,
+        Minus,
+        Negation,
+    };
+    
+    ExpressionUnary(UnaryType type, const Value * expression):
+    type(type),
+    expression(expression){
+    }
+
+    virtual std::string getType() const {
+        return "unary expression";
+    }
+
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+        expression->mark(marks);
+    }
+
+    virtual std::string toString() const {
+        std::stringstream out;
+        out << prefixName(type) << expression->toString();
+        return out.str();
+    }
+
+    virtual const char * prefixName(UnaryType type) const {
+        switch (type){
+            case Not : return "!";
+            case Minus : return "-";
+            case Negation : return "~";
+        }
+    }
+
+    virtual ~ExpressionUnary(){
+        delete expression;
+    }
+
+protected:
+    UnaryType type;
+    const Value * expression;
+};
+
 class ExpressionInfix: public Expression {
 public:
     enum InfixType{

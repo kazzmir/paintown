@@ -139,6 +139,16 @@ Ast::Value * makeExpressionPower(const Value & left, const Value & right){
     return makeExpressionInfix(Ast::ExpressionInfix::Power, left, right);
 }
 
+Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
+    Ast::Value * expression = as<Ast::Value*>(exp);
+    for (Value::iterator it = unaries.getValues().begin(); it != unaries.getValues().end(); it++){
+        Ast::ExpressionUnary::UnaryType unary = (Ast::ExpressionUnary::UnaryType) (long) (*it).getValue();
+        expression = new Ast::ExpressionUnary(unary, expression);
+        GC::save(expression);
+    }
+    return expression;
+}
+
 Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
     std::list<std::string*> ids;
     ids.push_back(as<std::string*>(front));
@@ -235,7 +245,7 @@ rules:
 	expr10 = left:expr11 expr10_rest(left)
 	expr11 = left:expr12 expr11_rest(left)
 	expr12 = left:expr13 expr12_rest(left)
-	expr13 = unary* expr13_real
+	expr13 = unary* exp:expr13_real {{ value = makeUnaryExpression($1, exp); }}
 
 	expr_rest(left) = s "||" s right:expr2 new_left:{{ value = makeExpressionOr(left, right); }} expr_rest(new_left)
 	                | <void> {{ value = left; }}
@@ -274,9 +284,9 @@ rules:
 		              | <void> {{ value = left; }}
 	expr12_rest(left) = s "**" s right:expr13 new_left:{{ value = makeExpressionPower(left, right); }} expr12_rest(new_left)
 	                  | <void> {{ value = left; }}
-	unary = "!"
-	      | "-"
-	      | "~" !key !digit
+	unary = "!" {{ value = (void*) Ast::ExpressionUnary::Not; }}
+	      | "-" {{ value = (void*) Ast::ExpressionUnary::Minus; }}
+	      | "~" !key !digit {{ value = (void*) Ast::ExpressionUnary::Negation; }}
 	expr13_real = function {{ value = makeExpression(); }}
 	            | value
 	            | "(" s e:expr s ")" {{ value = e; }}
