@@ -7,6 +7,7 @@
 
 using namespace std;
 
+static const int Shift = 198;
 static const int Control = 199;
 static const int Backspace = 200;
 
@@ -23,6 +24,8 @@ handle(201){
     
     set(Keyboard::Key_LCONTROL, 0, false, Control);
     set(Keyboard::Key_BACKSPACE, delay, false, Backspace);
+    set(Keyboard::Key_LSHIFT, 0, false, Shift);
+    set(Keyboard::Key_RSHIFT, 0, false, Shift);
     
     /* ugh, do we really have to enumerate every key?? */
     set(Keyboard::Key_A, delay, false, 'a');
@@ -63,6 +66,7 @@ handle(201){
     set(Keyboard::Key_8, delay, false, '8');
     set(Keyboard::Key_9, delay, false, '9');
 
+    set(Keyboard::Key_SLASH, delay, false, '/');
     set(Keyboard::Key_SPACE, delay, false, ' ');
     set(Keyboard::Key_COMMA, delay, false, ',');
     set(Keyboard::Key_STOP, delay, false, '.');
@@ -81,8 +85,32 @@ void TextInput::addHandle(int key, callback function, void * data){
 }
 
 static bool isChar(char c){
-    const char * letters = "abcdefghijklmnopqrstuvwxyz ,.0123456789";
+    const char * letters = "abcdefghijklmnopqrstuvwxyz ,.0123456789/";
     return strchr(letters, c) != NULL;
+}
+
+static unsigned char doShift(unsigned char letter, bool shift){
+    if (shift){
+        if (letter >= 'a' && letter <= 'z'){
+            return toupper(letter);
+        }
+        switch (letter){
+            case '/' : return '?';
+            case '0' : return ')';
+            case '1' : return '!';
+            case '2' : return '@';
+            case '3' : return '#';
+            case '4' : return '$';
+            case '5' : return '%';
+            case '6' : return '^';
+            case '7' : return '&';
+            case '8' : return '*';
+            case '9' : return '(';
+            default : return letter;
+        }
+    } else {
+        return letter;
+    }
 }
 
 void TextInput::doInput(){
@@ -126,7 +154,7 @@ void TextInput::doInput(){
             bool pressed = (*it).second;
             if (pressed){
                 if (isChar(c)){
-                    text << c;
+                    text << doShift(c, inputState[Shift]);
                 } else {
                     if (callbacks.find(c) != callbacks.end()){
                         Callback back = callbacks[c];
