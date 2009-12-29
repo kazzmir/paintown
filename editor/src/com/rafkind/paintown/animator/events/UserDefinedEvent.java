@@ -16,18 +16,27 @@ public class UserDefinedEvent implements AnimationEvent {
     private String value;
 
     public UserDefinedEvent(){
+        name = "";
+        value = "";
     }
     
     public void loadToken(Token token){
 		name = token.readString(0);
 		value = token.readString(1);
     }
+
+    private String maybeString(String value){
+        if (value.indexOf(" ") != -1){
+            return "\"" + value + "\"";
+        }
+        return value;
+    }
     
     public Token getToken(){
         Token temp = new Token("user");
 		temp.addToken(new Token("user"));
-		temp.addToken(new Token(name));
-		temp.addToken(new Token(value));
+		temp.addToken(new Token(maybeString(name)));
+		temp.addToken(new Token(maybeString(value)));
 		
 		return temp;
     }
