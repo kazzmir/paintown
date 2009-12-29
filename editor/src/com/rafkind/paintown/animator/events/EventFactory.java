@@ -32,6 +32,7 @@ public class EventFactory{
         events.put("trail", new Lambda0(){public Object invoke(){ return new TrailEvent();}});
         events.put( "shadow", new Lambda0(){public Object invoke(){return new ShadowEvent();}});
         events.put( "sound", new Lambda0(){public Object invoke(){return new SoundEvent();}});
+        events.put( "user", new Lambda0(){public Object invoke(){return new UserDefinedEvent();}});
         events.put( "status", new Lambda0(){public Object invoke(){return new StatusEvent();}});
         events.put( "z-distance", new Lambda0(){public Object invoke(){return new ZDistanceEvent();}});
 

@@ -1,7 +1,10 @@
 package com.rafkind.paintown.animator.events;
 
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.DrawArea;
@@ -30,7 +33,6 @@ public class UserDefinedEvent implements AnimationEvent {
     }
     
     public void interact(Animation animation){
-        /* nothing */
     }
     
     public String getName(){
@@ -38,7 +40,27 @@ public class UserDefinedEvent implements AnimationEvent {
     }
 
     public JPanel getEditor(final Animation animation, final DrawArea area){
-        return null;
+
+        SwingEngine engine = new SwingEngine( "animator/event-user.xml" );
+		final JTextField namePanel = (JTextField) engine.find("name");
+		final JTextField valuePanel = (JTextField) engine.find("value");
+
+        namePanel.setText(name);
+        valuePanel.setText(value);
+        namePanel.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent e){
+                name = namePanel.getText();
+            }
+        });
+
+        valuePanel.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent e){
+                value = valuePanel.getText();
+            }
+        });
+
+        return (JPanel) engine.getRootComponent();
+
     }
 
     public void destroy(){

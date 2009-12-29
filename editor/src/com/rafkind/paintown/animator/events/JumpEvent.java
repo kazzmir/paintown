@@ -63,8 +63,7 @@ public class JumpEvent implements AnimationEvent {
 		return (JPanel)engine.getRootComponent();
 	}
 	
-	public Token getToken()
-	{
+	public Token getToken(){
 		Token temp = new Token("jump");
 		temp.addToken(new Token("jump"));
 		temp.addToken(new Token(Double.toString(_x)));
