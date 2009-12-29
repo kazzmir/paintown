@@ -15,6 +15,9 @@ import org.swixml.SwingEngine;
 
 public class DefenseEvent implements AnimationEvent {
     private class Defense{
+        public Defense(){
+        }
+
         public int x1;
         public int y1;
         public int x2;
@@ -205,6 +208,10 @@ public class DefenseEvent implements AnimationEvent {
     }
 
     public JPanel getEditor(final Animation animation, final DrawArea area){
+        if (boxes.isEmpty()){
+            boxes.add(new Defense());
+        }
+
         return getEditor(animation, area, boxes.get(0));
     }
     

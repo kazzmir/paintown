@@ -15,6 +15,9 @@ import org.swixml.SwingEngine;
 
 public class AttackEvent implements AnimationEvent {
     private class Attack{
+        public Attack(){
+        }
+
         public int x1;
         public int y1;
         public int x2;
@@ -243,7 +246,12 @@ public class AttackEvent implements AnimationEvent {
     }
 
     public JPanel getEditor(final Animation animation, final DrawArea area){
-        return getEditor(animation, area, attacks.get(0));
+        if (attacks.isEmpty()){
+            attacks.add(new Attack());
+            return getEditor(animation, area, attacks.get(0));
+        } else {
+            return getEditor(animation, area, attacks.get(0));
+        }
     }
     
     public void destroy(){
