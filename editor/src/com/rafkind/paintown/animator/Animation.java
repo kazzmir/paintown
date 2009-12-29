@@ -29,6 +29,7 @@ public class Animation implements Runnable {
 	private String sequence;
 	private BufferedImage image;
 	private BoundingBox attackArea;
+	private BoundingBox defenseArea;
 	private int eventIndex;
 	private int delay;
 	private int delayTime;
@@ -57,6 +58,7 @@ public class Animation implements Runnable {
 		animationSpeed = 1.0;
 		sequence = "none";
 		attackArea = new BoundingBox( 0, 0, 0, 0 );
+		defenseArea = new BoundingBox( 0, 0, 0, 0 );
 		keys = new Vector();
 		baseDirectory = ".";
 		type = "none";
@@ -149,6 +151,11 @@ public class Animation implements Runnable {
 
 	public void setAttack( BoundingBox attack ){
 		attackArea = attack;
+		updateAll();
+	}
+	
+    public void setDefense( BoundingBox defense ){
+		defenseArea = defense;
 		updateAll();
 	}
 
@@ -315,6 +322,10 @@ public class Animation implements Runnable {
 
 		if ( ! attackArea.empty() ){
 			attackArea.render( g, trueX, trueY );
+		}
+		
+        if ( ! defenseArea.empty() ){
+			defenseArea.render( g, trueX, trueY );
 		}
 	}
 
