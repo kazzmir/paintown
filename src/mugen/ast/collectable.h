@@ -18,6 +18,9 @@
 
 namespace Ast{
 
+/* this could be vastly simplified if all AST objects derived
+ * from a single Ast class that had a pure virtual marks() method.
+ */
 class Collectable{
 public:
 

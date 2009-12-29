@@ -149,6 +149,12 @@ Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
     return expression;
 }
 
+Ast::Value * makeRange(Ast::Range::RangeType type, const Value & low, const Value & high){
+    Ast::Value * range = new Ast::Range(type, as<Ast::Value*>(low), as<Ast::Value*>(high));
+    GC::save(range);
+    return range;
+}
+
 Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
     std::list<std::string*> ids;
     ids.push_back(as<std::string*>(front));
@@ -213,10 +219,12 @@ rules:
 	      | sign? digit+ "."
 	inline sign = "-"
 	            | "+"
-	range = "[" s valuelist s "]"
-	      | "(" s valuelist s ")"
-	      | "(" s valuelist s "]"
-	      | "[" s valuelist s ")"
+    # [,] is inclusive
+    # (,) is exclusive
+	range = "[" s low:value s "," s high:value s "]" {{ value = makeRange(Ast::Range::AllInclusive, low, high); }}
+	      | "(" s low:value s "," s high:value s ")" {{ value = makeRange(Ast::Range::AllExclusive, low, high); }}
+	      | "(" s low:value s "," s high:value s "]" {{ value = makeRange(Ast::Range::LeftExclusiveRightInclusive, low, high); }}
+	      | "[" s low:value s "," s high:value s ")" {{ value = makeRange(Ast::Range::LeftInclusiveRightExclusive, low, high); }}
 	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
@@ -345,7 +353,7 @@ rules:
 	      | integer
 	      | keyword {{ value = makeExpression(); }}
 	      | !keyword identifier
-	      | range {{ value = makeExpression(); }}
+	      | range
 	      | string {{ value = makeExpression(); }}
 	      | key {{ value = makeExpression(); }}
 	
