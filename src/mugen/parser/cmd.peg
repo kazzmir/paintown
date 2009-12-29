@@ -149,6 +149,12 @@ Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
     return expression;
 }
 
+Ast::Value * makeFunction(const Value & name, const Value & arg1){
+    Ast::Value * function = new Ast::Function(std::string(as<const char*>(name)), as<Ast::Value*>(arg1));
+    GC::save(function);
+    return function;
+}
+
 Ast::Value * makeRange(Ast::Range::RangeType type, const Value & low, const Value & high){
     Ast::Value * range = new Ast::Range(type, as<Ast::Value*>(low), as<Ast::Value*>(high));
     GC::save(range);
@@ -295,34 +301,34 @@ rules:
 	unary = "!" {{ value = (void*) Ast::ExpressionUnary::Not; }}
 	      | "-" {{ value = (void*) Ast::ExpressionUnary::Minus; }}
 	      | "~" !key !digit {{ value = (void*) Ast::ExpressionUnary::Negation; }}
-	expr13_real = function {{ value = makeExpression(); }}
+	expr13_real = function
 	            | value
 	            | "(" s e:expr s ")" {{ value = e; }}
 
-    function = "abs"{case} s "(" s expr s ")"
-	         | "const"{case} s "(" s expr s ")"
-		 | "selfanimexist"{case} s "(" s expr s ")"
-		 | "ifelse"{case} s "(" s expr_c s "," s expr_c s "," s expr_c s ")"
-		 | "gethitvar"{case} s "(" s expr_c s ")"
-		 | "floor"{case} s "(" s expr_c s ")"
-		 | "ceil"{case} s "(" s expr_c s ")"
-		 | "sysvar"{case} s "(" s integer s ")"
-		 | "var"{case} s "(" s integer s ")"
-		 | "numexplod"{case} s "(" s integer s ")"
-		 | "numhelper"{case} s "(" s integer s ")"
-		 | "numprojid"{case} s "(" s integer s ")"
-		 | "helper"{case} s "(" s integer s ")"
-		 | "fvar"{case} s "(" s integer s ")"
-		 | "target"{case} s "(" s integer s ")"
-		 | "ishelper"{case} s "(" s integer s ")"
-		 | "animelemtime"{case} s "(" s integer s ")"
-		 | "animelemno"{case} s "(" s expr_c s ")"
-		 | "animexist"{case} s "(" s expr_c s ")"
-		 | "projguarded"{case} s "(" s expr_c s ")"
-		 | "projcontact"{case} s "=" s integer function_rest
-		 | "animelem"{case} s "=" s integer function_rest
-		 | "numhelper"{case} s "(" s expr_c s ")"
-		 | "helper"{case} s "(" s expr_c s ")"
+    function = name:"abs"{case} s "(" s arg1:expr s ")"  {{ value = makeFunction(name, arg1); }}
+	         | name:"const"{case} s "(" s arg1:expr s ")" {{ value = makeExpression(); }}
+		     | name:"selfanimexist"{case} s "(" s arg1:expr s ")" {{ value = makeExpression(); }}
+		     | name:"ifelse"{case} s "(" s arg1:expr_c s "," s arg2:expr_c s "," s arg3:expr_c s ")" {{ value = makeExpression(); }}
+		     | name:"gethitvar"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
+		     | name:"floor"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
+		     | name:"ceil"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
+		     | name:"sysvar"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"var"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"numexplod"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"numhelper"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"numprojid"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"helper"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"fvar"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"target"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"ishelper"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"animelemtime"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"animelemno"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
+		     | name:"animexist"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
+		     | name:"projguarded"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
+		     | name:"projcontact"{case} s "=" s integer function_rest {{ value = makeExpression(); }}
+		     | name:"animelem"{case} s "=" s integer function_rest {{ value = makeExpression(); }}
+		     | name:"numhelper"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
+		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
 	function_rest = s "," s all_compare s integer
 
 	key = key_real key_rest

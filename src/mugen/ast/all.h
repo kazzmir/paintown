@@ -21,5 +21,6 @@
 #include "walker.h"
 #include "range.h"
 #include "extra.h"
+#include "function.h"
 
 #endif
