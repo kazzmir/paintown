@@ -22,16 +22,16 @@ public class BoundingBox{
 		return x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0;
 	}
 	
-	public void render( Graphics g, int x, int y ){
-		Color color = g.getColor();
+	public void render( Graphics g, int x, int y, Color color ){
+		Color oldColor = g.getColor();
 
         if (x1 < x2 || y1 < y2){
-            g.setColor(new Color(255,255,255));
+            g.setColor(color);
         } else {
             g.setColor(new Color(192, 84, 130));
         }
 
         g.drawRect(x + Math.min(x1, x2), y + Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
-		g.setColor(color);
+		g.setColor(oldColor);
 	}
 }

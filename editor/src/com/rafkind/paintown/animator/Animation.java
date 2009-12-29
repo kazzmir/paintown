@@ -321,11 +321,11 @@ public class Animation implements Runnable {
 		}
 
 		if ( ! attackArea.empty() ){
-			attackArea.render( g, trueX, trueY );
+			attackArea.render( g, trueX, trueY, new Color(236, 30, 30));
 		}
 		
         if ( ! defenseArea.empty() ){
-			defenseArea.render( g, trueX, trueY );
+			defenseArea.render( g, trueX, trueY, new Color(51, 133, 243));
 		}
 	}
 
