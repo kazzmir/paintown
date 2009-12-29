@@ -141,10 +141,13 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
     const int maxColor = 40;
     int selectedGradient[ maxColor ];
-    int unselectedGradient[ maxColor ];
+    int unselectedGradient[3];
 
+    /*
     Util::blend_palette( unselectedGradient, maxColor / 2, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 255, 0, 0 ) );
     Util::blend_palette( unselectedGradient + maxColor / 2, maxColor / 2, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 255, 0, 0 ) );
+    */
+    Util::blend_palette(unselectedGradient, 3, Bitmap::makeColor(0, 0, 0), Bitmap::makeColor(255, 0, 0));
 
     Util::blend_palette( selectedGradient, maxColor / 2, Bitmap::makeColor( 0, 128, 0 ), Bitmap::makeColor( 0, 255, 0 ) );
     Util::blend_palette( selectedGradient + maxColor / 2, maxColor / 2, Bitmap::makeColor( 0, 255, 0 ), Bitmap::makeColor( 0, 128, 0 ) );
@@ -334,7 +337,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     temp.clear();
                     Bitmap box( work, x, y, boxSize, boxSize );
                     // int color = unselectedColor;
-                    int * color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
+                    // int * color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
                     if (players[i].guy->isLoaded()){
                         Character smaller( *players[ i ].guy );
 
@@ -348,7 +351,24 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     }
 
                     temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
-                    box.border( 0, 3, color[ clock % maxColor ] );
+                    if (i == (unsigned int) current){
+                        box.border(0, 3, selectedGradient[clock % maxColor]);
+                    } else {
+                        for (int border = 0; border < 3; border++){
+                            box.border(border, border + 1, unselectedGradient[border]);
+                        }
+
+                        /*
+                        if (i % 2 == 0){
+                            for (int border = 0; border < 3; border++){
+                                box.border(border, border + 1, unselectedGradient[border]);
+                            }
+                            // box.border(0, 3, unselectedGradient[0]);
+                        } else {
+                            box.border(0, 3, unselectedGradient[2]);
+                        }
+                        */
+                    }
                     x += boxSize + 10;
                     if ( x + boxSize + 10 > work.getWidth() ){
                         x = startX;
