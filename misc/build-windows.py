@@ -90,10 +90,13 @@ def server_side():
             import subprocess
             # specific to jon's setup
             vm_name = "xp-dev"
-            executable = "VBoxSDL"
+            # executable = "VBoxSDL"
+            # Run with no gui
+            executable = "VBoxHeadless"
             return subprocess.Popen([executable, "-startvm", vm_name])
 
         start_virtualbox()
+        print "Started virtual box. Use 'rdesktop localhost' to connect to the gui"
 
     # returns a connection
     def wait_for_connect():
@@ -139,8 +142,8 @@ def server_side():
 import sys
 if len(sys.argv) < 2:
     log_error("""valid arguments:
-  client - run as the client
-  server - run as the server
+  client - run as the client (use this option on windows VM)
+  server - run as the server (use this option on linux/host)
   verbose=# - set verbose level. 1 is the default. higher numbers is more verbose
 """)
 else:
