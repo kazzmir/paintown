@@ -127,7 +127,7 @@ def server_side(make_commands):
 
         # Wait 5 seconds to give time for the quit message to reach the
         # client script.
-        send_command(connection, 'shutdown -s -t 5')
+        send_command(connection, 'shutdown -s -f -t 5')
         send_command(connection, quit_message)
         size = 4096
         data = connection.recv(size)
@@ -137,11 +137,14 @@ def server_side(make_commands):
         connection.close()
 
     def run():
+        import time
+        start = time.time()
         vm = start_windows_vm()
         send_build_commands(wait_for_connect())
         log_info("Waiting for vm to close")
         vm.wait()
-        log_info("All done")
+        end = time.time()
+        log_info("All done. Took %f seconds" % (end - start))
 
     run()
 
