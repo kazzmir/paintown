@@ -11,7 +11,7 @@
 #include "Modifier.h"
 #include "Section.h"
 #include "Value.h"
-#include "Variable.h"
+#include "variable.h"
 #include "value-list.h"
 #include "number.h"
 #include "string.h"
