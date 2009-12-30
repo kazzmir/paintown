@@ -405,7 +405,7 @@ rules:
 	value = float {{ value = makeExpression(); }}
 	      | integer
 	      | keyword
-	      | key {{ value = makeExpression(); }} 
+	      | key
 	      | !keyword identifier
 	      | range
 	      | string {{ value = makeExpression(); }}
