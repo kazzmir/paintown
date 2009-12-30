@@ -26,6 +26,9 @@ public:
     virtual std::string getType() const {
         return "function";
     }
+    
+    virtual ~Function(){
+    }
 
 protected:
     std::string name;

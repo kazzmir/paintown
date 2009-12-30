@@ -184,6 +184,25 @@ Ast::Attribute * makeAttribute(const Value & id, const Value & data){
     return object;
 }
 
+Ast::Value * makeValueList(const Value & front, const Value & rest){
+    std::list<Ast::Value*> values;
+    values.push_back(as<Ast::Value*>(front));
+    for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
+        Ast::Value * value = as<Ast::Value*>((*it).getValue());
+        if (value == 0){
+            /* FIXME! replace empty with a new node */
+            value = makeKeyword("empty");
+            values.push_back(value);
+        } else {
+            values.push_back(value);
+        }
+    }
+
+    Ast::ValueList * object = new Ast::ValueList(values);
+    GC::save(object);
+    return object;
+}
+
 void addSection(const Value & section_list_value, const Value & section_value){
     SectionList * sections = (SectionList*) section_list_value.getValue();
     Ast::Section * section = (Ast::Section*) section_value.getValue();
@@ -243,11 +262,11 @@ rules:
 	            | digit
 	inline digit = [0123456789]
 	
-	valuelist = expr_c (s "," s expr_c)*
-	          | s "," s expr_c ("," s expr_c)*
+	valuelist = first:expr_c rest:(s "," s expr_c)+ {{ value = makeValueList(first, rest); }}
+	          | s "," s first:expr_c rest:(s "," s expr_c)* {{ value = makeValueList(first, rest); }}
 
 	expr = expr_c !(s ",") {{ value = $1; }}
-	     | valuelist {{ value = makeExpression(); }}
+	     | valuelist expr2_rest($1)
 
 	expr_c = left:expr2 expr_rest(left)
 	       # I dont think this is right
@@ -341,7 +360,7 @@ rules:
 		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
 	function_rest = s "," s all_compare s integer
 
-	key = key_real key_rest
+	key = key_real key_rest !identifier
 	key_rest = s "+" key_real key_rest
 	         | <void>
 	key_real = key_modifier* key_name
@@ -368,10 +387,10 @@ rules:
 	value = float {{ value = makeExpression(); }}
 	      | integer
 	      | keyword
+	      | key {{ value = makeExpression(); }} 
 	      | !keyword identifier
 	      | range
 	      | string {{ value = makeExpression(); }}
-	      | key {{ value = makeExpression(); }}
 	
 	keyword = keyword_real !alpha_digit {{ value = $1; }}
 	keyword_real = "vel"{case} s "y"{case} {{ value = makeKeyword("vel y"); }}

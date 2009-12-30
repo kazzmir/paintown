@@ -14,6 +14,9 @@ public:
     virtual std::string getType() const {
         return "expression";
     }
+
+    virtual ~Expression(){
+    }
 };
 
 class ExpressionUnary: public Expression {

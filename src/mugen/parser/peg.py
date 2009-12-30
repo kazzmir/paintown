@@ -19,6 +19,7 @@
 # getter for the current line and column
 # fix error message reporting
 # inline rules + semantic actions are broken (in C++ at least)
+# Don't memoize if a rule accepts parameters (ruby, python)
 
 # create a variable name
 next_var = 0
@@ -159,9 +160,9 @@ public:
     position(position){
     }
 
-    Result(const Result & r){
-        position = r.position;
-        value = r.value;
+    Result(const Result & r):
+    position(r.position),
+    value(r.value){
     }
 
     Result & operator=(const Result & r){
@@ -2258,6 +2259,7 @@ goto %s;
                     debugging = """std::cout << "Trying rule %s at " << %s << " '" << %s.get(%s.getPosition()) << "' alternative: %s" << std::endl;""" % (self.name, position, stream, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 if 'debug2' in peg.options:
                     debug_result = """std::cout << "Succeeded rule %s at position " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
+                do_memo = peg.memo and self.rules == None and self.parameters == None
                 data = """
 Result %s(%s);
 %s
@@ -2266,7 +2268,7 @@ Result %s(%s);
 %s
 return %s;
 %s
-            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result, columnVar, peg.memo), debug_result, result, label(out[0]))
+            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result, columnVar, do_memo), debug_result, result, label(out[0]))
 
             return data
 
@@ -2302,6 +2304,8 @@ return %s;
         
         pattern_results = indent('\n'.join([newPattern(pattern, stream, my_position).strip() for pattern in self.patterns]))
 
+        # Don't memoize if the rule accepts parameters
+        do_memo = peg.memo and self.rules == None and self.parameters == None
         data = """
 Result rule_%s(Stream & %s, const int %s%s%s){
     %s
@@ -2313,7 +2317,7 @@ Result rule_%s(Stream & %s, const int %s%s%s){
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(peg.memo)), my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar, peg.memo)), fail_code)
+        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar, do_memo)), fail_code)
 
         return data
 

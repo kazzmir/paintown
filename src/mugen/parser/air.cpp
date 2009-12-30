@@ -107,9 +107,9 @@ public:
     position(position){
     }
 
-    Result(const Result & r){
-        position = r.position;
-        value = r.value;
+    Result(const Result & r):
+    position(r.position),
+    value(r.value){
     }
 
     Result & operator=(const Result & r){
@@ -761,11 +761,6 @@ Result rule_start(Stream & stream, const int position){
 
 Result rule_line(Stream & stream, const int position, Value current){
     
-    Column & column_peg_16 = stream.getColumn(position);
-    if (column_peg_16.chunk0 != 0 && column_peg_16.chunk0->chunk_line.calculated()){
-        return column_peg_16.chunk0->chunk_line;
-    }
-    
     int myposition = position;
     
     
@@ -787,12 +782,6 @@ Result rule_line(Stream & stream, const int position, Value current){
         
         
     }
-    
-    if (column_peg_16.chunk0 == 0){
-        column_peg_16.chunk0 = new Chunk0();
-    }
-    column_peg_16.chunk0->chunk_line = result_peg_17;
-    stream.update(result_peg_17.getPosition());
     
     
     return result_peg_17;
@@ -824,21 +813,9 @@ Result rule_line(Stream & stream, const int position, Value current){
         
     }
     
-    if (column_peg_16.chunk0 == 0){
-        column_peg_16.chunk0 = new Chunk0();
-    }
-    column_peg_16.chunk0->chunk_line = result_peg_20;
-    stream.update(result_peg_20.getPosition());
-    
     
     return result_peg_20;
     out_peg_22:
-    
-    if (column_peg_16.chunk0 == 0){
-        column_peg_16.chunk0 = new Chunk0();
-    }
-    column_peg_16.chunk0->chunk_line = errorResult;
-    stream.update(errorResult.getPosition());
     
     
     return errorResult;
@@ -963,11 +940,6 @@ Result rule_action(Stream & stream, const int position){
 
 Result rule_action_line(Stream & stream, const int position, Value section){
     
-    Column & column_peg_38 = stream.getColumn(position);
-    if (column_peg_38.chunk0 != 0 && column_peg_38.chunk0->chunk_action_line.calculated()){
-        return column_peg_38.chunk0->chunk_action_line;
-    }
-    
     int myposition = position;
     
     Value data;
@@ -989,12 +961,6 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
         
     }
-    
-    if (column_peg_38.chunk0 == 0){
-        column_peg_38.chunk0 = new Chunk0();
-    }
-    column_peg_38.chunk0->chunk_action_line = result_peg_39;
-    stream.update(result_peg_39.getPosition());
     
     
     return result_peg_39;
@@ -1027,12 +993,6 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
     }
     
-    if (column_peg_38.chunk0 == 0){
-        column_peg_38.chunk0 = new Chunk0();
-    }
-    column_peg_38.chunk0->chunk_action_line = result_peg_42;
-    stream.update(result_peg_42.getPosition());
-    
     
     return result_peg_42;
     out_peg_44:
@@ -1063,12 +1023,6 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
         
     }
-    
-    if (column_peg_38.chunk0 == 0){
-        column_peg_38.chunk0 = new Chunk0();
-    }
-    column_peg_38.chunk0->chunk_action_line = result_peg_46;
-    stream.update(result_peg_46.getPosition());
     
     
     return result_peg_46;
@@ -1101,12 +1055,6 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
     }
     
-    if (column_peg_38.chunk0 == 0){
-        column_peg_38.chunk0 = new Chunk0();
-    }
-    column_peg_38.chunk0->chunk_action_line = result_peg_50;
-    stream.update(result_peg_50.getPosition());
-    
     
     return result_peg_50;
     out_peg_52:
@@ -1138,21 +1086,9 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
     }
     
-    if (column_peg_38.chunk0 == 0){
-        column_peg_38.chunk0 = new Chunk0();
-    }
-    column_peg_38.chunk0->chunk_action_line = result_peg_54;
-    stream.update(result_peg_54.getPosition());
-    
     
     return result_peg_54;
     out_peg_56:
-    
-    if (column_peg_38.chunk0 == 0){
-        column_peg_38.chunk0 = new Chunk0();
-    }
-    column_peg_38.chunk0->chunk_action_line = errorResult;
-    stream.update(errorResult.getPosition());
     
     
     return errorResult;

@@ -42,6 +42,9 @@ public:
     virtual std::string getType() const {
         return "range";
     }
+    
+    virtual ~Range(){
+    }
 
 protected:
     RangeType type;

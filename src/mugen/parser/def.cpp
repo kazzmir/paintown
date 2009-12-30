@@ -107,9 +107,9 @@ public:
     position(position){
     }
 
-    Result(const Result & r){
-        position = r.position;
-        value = r.value;
+    Result(const Result & r):
+    position(r.position),
+    value(r.value){
     }
 
     Result & operator=(const Result & r){
