@@ -57,6 +57,12 @@ Ast::Value * makeExpression(){
     return object;
 }
 
+Ast::Value * makeKeyword(const char * name){
+    Ast::Value * keyword = new Ast::Keyword(name);
+    GC::save(keyword);
+    return keyword;
+}
+
 Ast::Value * makeExpressionInfix(Ast::ExpressionInfix::InfixType type, const Value & left, const Value & right){
     Ast::Value * object = new Ast::ExpressionInfix(type, as<Ast::Value*>(left), as<Ast::Value*>(right));
     GC::save(object);
@@ -280,7 +286,11 @@ rules:
 	                 | s "!=" s right:expr9 new_left:{{ value = makeExpressionUnequals(left, right); }} expr8_rest(new_left)
 		             # todo: intervals
 	                 | <void> {{ value = left; }}
-	expr9_rest(left) = s maker:compare s right:expr10 new_left:{{ { typedef Ast::Value * (*compare_func)(const Value &, const Value &); value = as<compare_func>(maker)(left, right); } }} expr9_rest(new_left)
+	expr9_rest(left) = s maker:compare s right:expr10 new_left:{{ {
+        typedef Ast::Value * (*compare_func)(const Value &, const Value &);
+        value = as<compare_func>(maker)(left, right);
+        }
+    }} expr9_rest(new_left)
 	                 | <void> {{ value = left; }}
 	compare = "<=" {{ value = (void *) makeExpressionLessThanEquals; }}
 		    | ">=" {{ value = (void *) makeExpressionGreaterThanEquals; }}
@@ -357,22 +367,22 @@ rules:
 
 	value = float {{ value = makeExpression(); }}
 	      | integer
-	      | keyword {{ value = makeExpression(); }}
+	      | keyword
 	      | !keyword identifier
 	      | range
 	      | string {{ value = makeExpression(); }}
 	      | key {{ value = makeExpression(); }}
 	
-	keyword = keyword_real !alpha_digit
-	keyword_real = "vel"{case} s "y"{case}
-	             | "vel"{case} s "x"{case}
-	             | "pos"{case} s "y"{case}
-	             | "pos"{case} s "x"{case}
-	             | "p2dist"{case} s "x"{case}
-	             | "p2dist"{case} s "y"{case}
-	             | "p1dist"{case} s "x"{case}
-	             | "p1dist"{case} s "y"{case}
-	             | "p2bodydist"{case} s "x"{case}
-	             | "p2bodydist"{case} s "y"{case}
-	             | "p1bodydist"{case} s "x"{case}
-	             | "p1bodydist"{case} s "y"{case}
+	keyword = keyword_real !alpha_digit {{ value = $1; }}
+	keyword_real = "vel"{case} s "y"{case} {{ value = makeKeyword("vel y"); }}
+	             | "vel"{case} s "x"{case} {{ value = makeKeyword("vel x"); }}
+	             | "pos"{case} s "y"{case} {{ value = makeKeyword("pos y"); }}
+	             | "pos"{case} s "x"{case} {{ value = makeKeyword("pos x"); }}
+	             | "p2dist"{case} s "x"{case} {{ value = makeKeyword("p2dist x"); }}
+	             | "p2dist"{case} s "y"{case} {{ value = makeKeyword("p2dist y"); }}
+	             | "p1dist"{case} s "x"{case} {{ value = makeKeyword("p1dist x"); }}
+	             | "p1dist"{case} s "y"{case} {{ value = makeKeyword("p1dist y"); }}
+	             | "p2bodydist"{case} s "x"{case} {{ value = makeKeyword("p2bodydist x"); }}
+	             | "p2bodydist"{case} s "y"{case} {{ value = makeKeyword("p2bodydist y"); }}
+	             | "p1bodydist"{case} s "x"{case} {{ value = makeKeyword("p1bodydist x"); }}
+	             | "p1bodydist"{case} s "y"{case} {{ value = makeKeyword("p1bodydist y"); }}
