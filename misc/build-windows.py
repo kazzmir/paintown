@@ -84,7 +84,7 @@ def client_side():
 
     run()
 
-def server_side():
+def server_side(make_commands):
     def start_windows_vm():
         def start_virtualbox():
             import subprocess
@@ -95,8 +95,9 @@ def server_side():
             executable = "VBoxHeadless"
             return subprocess.Popen([executable, "-startvm", vm_name])
 
-        start_virtualbox()
+        process = start_virtualbox()
         print "Started virtual box. Use 'rdesktop localhost' to connect to the gui"
+        return process
 
     # returns a connection
     def wait_for_connect():
@@ -119,10 +120,13 @@ def server_side():
         # send_command(connection, 'ls')
         send_command(connection, 'cd c:/svn/paintown')
         send_command(connection, 'svn update')
-        send_command(connection, 'make win')
         send_command(connection, 'cd editor')
         send_command(connection, 'ant')
+        send_command(connection, 'cd ..')
+        send_command(connection, 'make %s' % ' '.join(make_commands))
 
+        # Wait 5 seconds to give time for the quit message to reach the
+        # client script.
         send_command(connection, 'shutdown -s -t 5')
         send_command(connection, quit_message)
         size = 4096
@@ -133,8 +137,10 @@ def server_side():
         connection.close()
 
     def run():
-        start_windows_vm()
+        vm = start_windows_vm()
         send_build_commands(wait_for_connect())
+        log_info("Waiting for vm to close")
+        vm.wait()
         log_info("All done")
 
     run()
@@ -144,16 +150,22 @@ if len(sys.argv) < 2:
     log_error("""valid arguments:
   client - run as the client (use this option on windows VM)
   server - run as the server (use this option on linux/host)
+  make=a,b,c - send make commands a,b,c. default is just 'win'. if you supply this argument then you must supply the 'win' target or it won't be built
   verbose=# - set verbose level. 1 is the default. higher numbers is more verbose
 """)
 else:
     import re
     verbose_arg = re.compile('verbose=(\d+)')
+    make_arg = re.compile('make=(.*)')
+    make_commands = ['win']
     for arg in sys.argv[1:]:
         if arg == 'client':
             client_side()
         elif arg == 'server':
-            server_side()
+            server_side(make_commands)
+        elif make_arg.match(arg) != None:
+            out = make_arg.match(arg)
+            make_commands = out.group(1).split(',')
         elif verbose_arg.match(arg) != None:
             out = verbose_arg.match(arg)
             verbose = int(out.group(1))

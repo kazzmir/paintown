@@ -37,6 +37,9 @@ quiet:
 clean:
 	scons -c
 
+win_clean:
+	@scons -c env=mingw
+
 # use to build on windows with mingw
 win:
 	@echo Building windows..
