@@ -44,6 +44,8 @@ public:
     }
     
     virtual ~Range(){
+        delete low;
+        delete high;
     }
 
 protected:

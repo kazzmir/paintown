@@ -13,6 +13,7 @@ namespace Ast{
 
 class Identifier: public Value {
 public:
+    /* theres no real reason to use pointers to strings.. */
     Identifier(const std::list<std::string*> & names):
     names(names){
     }
@@ -80,6 +81,19 @@ public:
 
 protected:
     std::list<std::string*> names;
+};
+
+static std::list<std::string*> toList(std::string * s){
+    std::list<std::string*> out;
+    out.push_back(s);
+    return out;
+}
+
+class SimpleIdentifier: public Identifier {
+public:
+    SimpleIdentifier(const std::string & name):
+    Identifier(toList(new std::string(name))){
+    }
 };
 
 }

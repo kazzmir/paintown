@@ -28,6 +28,7 @@ public:
     }
     
     virtual ~Function(){
+        delete arg1;
     }
 
 protected:

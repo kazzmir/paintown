@@ -203,6 +203,18 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
     return object;
 }
 
+Ast::Identifier * makeSimpleIdentifier(const Value & name){
+    Ast::Identifier * identifier = new Ast::SimpleIdentifier(as<const char *>(name));
+    GC::save(identifier);
+    return identifier;
+}
+
+Ast::Identifier * makeSimpleIdentifier(const std::string & str){
+    Ast::Identifier * identifier = new Ast::SimpleIdentifier(str);
+    GC::save(identifier);
+    return identifier;
+}
+
 void addSection(const Value & section_list_value, const Value & section_value){
     SectionList * sections = (SectionList*) section_list_value.getValue();
     Ast::Section * section = (Ast::Section*) section_value.getValue();
@@ -360,10 +372,16 @@ rules:
 		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
 	function_rest = s "," s all_compare s integer
 
-	key = key_real key_rest !identifier
-	key_rest = s "+" key_real key_rest
-	         | <void>
-	key_real = key_modifier* key_name
+	key = key_real ok:key_rest($1) !identifier {{ value = ok; }}
+	key_rest(left) = s "+" another:key_real new_left:{{
+        std::ostringstream out;
+        out << as<Ast::Identifier*>(left)->toString();
+        out << "+";
+        out << as<Ast::Identifier*>(another)->toString();
+        value = makeSimpleIdentifier(out.str());
+    }} key_rest(new_left)
+	               | <void> {{ value = left; }}
+	key_real = key_modifier* name:key_name {{ value = makeSimpleIdentifier(name); }}
 	key_modifier = "~" digit*
 	             | "$"
 		         | "/"
