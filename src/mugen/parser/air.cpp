@@ -3100,7 +3100,7 @@ const void * main(const std::string & filename, bool stats = false){
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
-        std::cout << "Could not parse" << std::endl;
+        // std::cout << "Could not parse" << std::endl;
         throw ParseException(stream.reportError());
     }
     if (stats){
@@ -3114,7 +3114,7 @@ const void * main(const char * in, bool stats = false){
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
-        std::cout << "Could not parse" << std::endl;
+        // std::cout << "Could not parse" << std::endl;
         throw ParseException(stream.reportError());
     }
     if (stats){

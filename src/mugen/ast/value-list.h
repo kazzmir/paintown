@@ -21,6 +21,10 @@ public:
         walker.onValueList(*this);
     }
 
+    virtual bool hasMultiple() const {
+        return true;
+    }
+
     using Value::operator>>;
     
     virtual const Value & operator>>(std::string & item) const {
@@ -46,6 +50,17 @@ public:
     virtual const Value & operator>>(std::vector<int> & itemList) const {
         while (current_value != this->values.end()){
             int item;
+            Value * value = *current_value;
+            *value >> item;
+            itemList.push_back(item);
+            current_value++;
+        }
+        return *this;
+    }
+
+    virtual const Value & operator>>(std::vector<double> & itemList) const {
+        while (current_value != this->values.end()){
+            double item;
             Value * value = *current_value;
             *value >> item;
             itemList.push_back(item);

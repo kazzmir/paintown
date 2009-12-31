@@ -102,6 +102,72 @@ void Character::loadCmdFile(const string & path){
     }
 }
 
+static bool isStateDefSection(string name){
+    Util::fixCase(name);
+    return PaintownUtil::matchRegex(name, "state ") ||
+           PaintownUtil::matchRegex(name, "statedef ");
+}
+    
+void Character::setConstant(std::string name, const vector<double> & values){
+}
+
+void Character::setConstant(std::string name, double value){
+}
+
+void Character::loadCnsFile(const string & path){
+    string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
+    try{
+        /* cns can use the Cmd parser */
+        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
+        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+            Ast::Section * section = *section_it;
+            std::string head = section->getName();
+            /* this should really be head = Mugen::Util::fixCase(head) */
+            Util::fixCase(head);
+            if (!isStateDefSection(head)){
+                class AttributeWalker: public Ast::Walker {
+                public:
+                    AttributeWalker(Character & who):
+                    self(who){
+                    }
+
+                    Character & self;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        string name = simple.idString();
+                        if (simple.getValue() != 0 && simple.getValue()->hasMultiple()){
+                            vector<double> values;
+                            simple >> values;
+                            self.setConstant(name, values);
+                        } else {
+                            double value;
+                            simple >> value;
+                            self.setConstant(name, value);
+                        }
+                    }
+                };
+
+                AttributeWalker walker(*this);
+                section->walk(walker);
+            }
+        }
+    } catch (const Mugen::Cmd::ParseException & e){
+        Global::debug(0) << "Could not parse " << path << endl;
+        Global::debug(0) << e.getReason() << endl;
+    }
+}
+
+void Character::loadStateFile(const string & path){
+    string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
+    try{
+        /* st can use the Cmd parser */
+        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
+    } catch (const Mugen::Cmd::ParseException & e){
+        Global::debug(0) << "Could not parse " << path << endl;
+        Global::debug(0) << e.getReason() << endl;
+    }
+}
+
 void Character::load(){
     // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/chars/" + location + "/");
@@ -169,6 +235,7 @@ void Character::load(){
                         self.loadCmdFile(self.cmdFile);
                     } else if (simple == "cns"){
                         simple >> self.constantsFile;
+                        self.loadCnsFile(self.constantsFile);
                     } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){
                         int num = atoi(PaintownUtil::captureRegex(simple.idString(), "st([0-9]+)", 0).c_str());
                         if (num >= 0 && num <= 12){
@@ -176,14 +243,17 @@ void Character::load(){
                         }
                     } else if (simple == "stcommon"){
                         simple >> self.commonStateFile;
+                        self.loadStateFile(self.commonStateFile);
                     } else if (simple == "st"){
                         simple >> self.stateFile;
+                        self.loadStateFile(self.stateFile);
                     } else if (simple == "sprite"){
                         simple >> self.sffFile;
                     } else if (simple == "anim"){
                         simple >> self.airFile;
                     } else if (simple == "sound"){
                         simple >> self.sndFile;
+                        Mugen::Util::readSounds( Mugen::Util::fixFileName(self.baseDir, self.sndFile ), self.sounds );
                     } else if (PaintownUtil::matchRegex(simple.idString(), "pal[0-9]+")){
                         int num = atoi(PaintownUtil::captureRegex(simple.idString(), "pal([0-9]+)", 0).c_str());
                         string what;
@@ -256,9 +326,6 @@ void Character::load(){
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
-    Global::debug(1) << "Reading Snd (sound) Data..." << endl; 
-    /* Sounds */
-    Mugen::Util::readSounds( Mugen::Util::fixFileName( baseDir, sndFile ), sounds );
 }
 
 // Render sprite

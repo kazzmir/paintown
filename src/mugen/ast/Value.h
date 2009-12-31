@@ -24,6 +24,13 @@ public:
         walker.onValue(*this);
     }
 
+    /* true if this value has multiple values in it
+     * should only be true for value-list
+     */
+    virtual bool hasMultiple() const {
+        return false;
+    }
+
     virtual void debugExplain(){
         std::cout << toString() << std::endl;
     }
@@ -49,6 +56,11 @@ public:
     }
     
     virtual const Value & operator>>(std::vector<int> & x) const {
+        fail("bool");
+        return *this;
+    }
+    
+    virtual const Value & operator>>(std::vector<double> & x) const {
         fail("bool");
         return *this;
     }

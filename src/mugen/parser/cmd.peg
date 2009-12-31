@@ -489,3 +489,6 @@ rules:
 	             | "p2bodydist"{case} s "y"{case} {{ value = makeKeyword("p2bodydist y"); }}
 	             | "p1bodydist"{case} s "x"{case} {{ value = makeKeyword("p1bodydist x"); }}
 	             | "p1bodydist"{case} s "y"{case} {{ value = makeKeyword("p1bodydist y"); }}
+                 | "screenpos"{case} s "x"{case} {{ value = makeKeyword("screenpos x"); }}
+                 | "screenpos"{case} s "y"{case} {{ value = makeKeyword("screenpos y"); }}
+                 | "M-" {{ value = makeKeyword("M-"); }}

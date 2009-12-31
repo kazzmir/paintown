@@ -38,6 +38,10 @@ public:
         return str;
     }
 
+    const Value * getValue() const {
+        return value;
+    }
+
     template <typename X>
     const AttributeSimple & operator>>(X & v) const {
         if (value != 0){

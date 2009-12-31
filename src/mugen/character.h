@@ -87,6 +87,11 @@ protected:
     /* This creates the animations no need for a new class to handle this */
     virtual void bundleAnimations();
     virtual void loadCmdFile(const std::string & path);
+    virtual void loadCnsFile(const std::string & path);
+    virtual void loadStateFile(const std::string & path);
+
+    virtual void setConstant(std::string name, const std::vector<double> & values);
+    virtual void setConstant(std::string name, double value);
 
 protected:
 

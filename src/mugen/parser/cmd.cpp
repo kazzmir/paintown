@@ -9976,6 +9976,141 @@ Result rule_keyword_real(Stream & stream, const int position){
     
     return result_peg_1017;
     out_peg_1019:
+    Result result_peg_1022(myposition);
+    
+    {
+    
+        for (int i = 0; i < 9; i++){
+                if (compareCharCase("screenpos"[i], stream.get(result_peg_1022.getPosition()))){
+                    result_peg_1022.nextPosition();
+                } else {
+                    goto out_peg_1024;
+                }
+            }
+            result_peg_1022.setValue((void*) "screenpos");
+        
+        
+        
+        result_peg_1022 = rule_s(stream, result_peg_1022.getPosition());
+            if (result_peg_1022.error()){
+                goto out_peg_1024;
+            }
+        
+        
+        
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("x"[i], stream.get(result_peg_1022.getPosition()))){
+                    result_peg_1022.nextPosition();
+                } else {
+                    goto out_peg_1024;
+                }
+            }
+            result_peg_1022.setValue((void*) "x");
+        
+        
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword("screenpos x");
+                result_peg_1022.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_961.chunk12 == 0){
+        column_peg_961.chunk12 = new Chunk12();
+    }
+    column_peg_961.chunk12->chunk_keyword_real = result_peg_1022;
+    stream.update(result_peg_1022.getPosition());
+    
+    
+    return result_peg_1022;
+    out_peg_1024:
+    Result result_peg_1027(myposition);
+    
+    {
+    
+        for (int i = 0; i < 9; i++){
+                if (compareCharCase("screenpos"[i], stream.get(result_peg_1027.getPosition()))){
+                    result_peg_1027.nextPosition();
+                } else {
+                    goto out_peg_1029;
+                }
+            }
+            result_peg_1027.setValue((void*) "screenpos");
+        
+        
+        
+        result_peg_1027 = rule_s(stream, result_peg_1027.getPosition());
+            if (result_peg_1027.error()){
+                goto out_peg_1029;
+            }
+        
+        
+        
+        for (int i = 0; i < 1; i++){
+                if (compareCharCase("y"[i], stream.get(result_peg_1027.getPosition()))){
+                    result_peg_1027.nextPosition();
+                } else {
+                    goto out_peg_1029;
+                }
+            }
+            result_peg_1027.setValue((void*) "y");
+        
+        
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword("screenpos y");
+                result_peg_1027.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_961.chunk12 == 0){
+        column_peg_961.chunk12 = new Chunk12();
+    }
+    column_peg_961.chunk12->chunk_keyword_real = result_peg_1027;
+    stream.update(result_peg_1027.getPosition());
+    
+    
+    return result_peg_1027;
+    out_peg_1029:
+    Result result_peg_1032(myposition);
+    
+    {
+    
+        for (int i = 0; i < 2; i++){
+                if (compareChar("M-"[i], stream.get(result_peg_1032.getPosition()))){
+                    result_peg_1032.nextPosition();
+                } else {
+                    goto out_peg_1034;
+                }
+            }
+            result_peg_1032.setValue((void*) "M-");
+        
+        
+        
+        {
+                Value value((void*) 0);
+                value = makeKeyword("M-");
+                result_peg_1032.setValue(value);
+            }
+        
+        
+    }
+    
+    if (column_peg_961.chunk12 == 0){
+        column_peg_961.chunk12 = new Chunk12();
+    }
+    column_peg_961.chunk12->chunk_keyword_real = result_peg_1032;
+    stream.update(result_peg_1032.getPosition());
+    
+    
+    return result_peg_1032;
+    out_peg_1034:
     
     if (column_peg_961.chunk12 == 0){
         column_peg_961.chunk12 = new Chunk12();
@@ -9993,7 +10128,7 @@ const void * main(const std::string & filename, bool stats = false){
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
-        std::cout << "Could not parse" << std::endl;
+        // std::cout << "Could not parse" << std::endl;
         throw ParseException(stream.reportError());
     }
     if (stats){
@@ -10007,7 +10142,7 @@ const void * main(const char * in, bool stats = false){
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
-        std::cout << "Could not parse" << std::endl;
+        // std::cout << "Could not parse" << std::endl;
         throw ParseException(stream.reportError());
     }
     if (stats){
