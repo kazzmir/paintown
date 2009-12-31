@@ -112,8 +112,12 @@ void Character::loadCmdFile(const string & path){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "name"){
+                            string name;
+                            simple >> name;
                         } else if (simple == "command"){
                         } else if (simple == "time"){
+                            int time;
+                            simple >> time;
                         }
                     }
                 };
