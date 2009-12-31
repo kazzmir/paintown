@@ -34,33 +34,35 @@
 
 using namespace std;
 
+namespace Mugen{
+
 namespace PaintownUtil = ::Util;
 
-MugenCharacter::MugenCharacter( const string & s ):
+Character::Character( const string & s ):
 ObjectAttack(0){
     this->location = s;
 }
 
-MugenCharacter::MugenCharacter( const char * location ):
+Character::Character( const char * location ):
 ObjectAttack(0){
     this->location = std::string(location);
 }
 
-MugenCharacter::MugenCharacter( const string & s, int alliance ):
+Character::Character( const string & s, int alliance ):
 ObjectAttack(alliance){
     this->location = s;
 }
 
-MugenCharacter::MugenCharacter( const string & s, const int x, const int y, int alliance ):
+Character::Character( const string & s, const int x, const int y, int alliance ):
 ObjectAttack(x,y,alliance){
     this->location = s;
 }
 
-MugenCharacter::MugenCharacter( const MugenCharacter & copy ):
+Character::Character( const Character & copy ):
 ObjectAttack(copy){
 }
 
-MugenCharacter::~MugenCharacter(){
+Character::~Character(){
      // Get rid of sprites
     for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
@@ -89,8 +91,8 @@ MugenCharacter::~MugenCharacter(){
     
 }
 
-void MugenCharacter::loadCmdFile(const string & path){
-    string full = Filesystem::find("mugen/chars/" + location + "/" + Util::trim(path));
+void Character::loadCmdFile(const string & path){
+    string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
     try{
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
         Global::debug(0) << "Parsed .cmd file " << path << endl;
@@ -100,7 +102,7 @@ void MugenCharacter::loadCmdFile(const string & path){
     }
 }
 
-void MugenCharacter::load(){
+void Character::load(){
     // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/chars/" + location + "/");
     Global::debug(1) << baseDir << endl;
@@ -122,11 +124,11 @@ void MugenCharacter::load(){
         if (head == "info"){
             class InfoWalker: public Ast::Walker {
             public:
-                InfoWalker(MugenCharacter & who):
+                InfoWalker(Character & who):
                 self(who){
                 }
 
-                MugenCharacter & self;
+                Character & self;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "name"){
@@ -156,11 +158,11 @@ void MugenCharacter::load(){
         } else if (head == "files"){
             class FilesWalker: public Ast::Walker {
             public:
-                FilesWalker(MugenCharacter & self):
+                FilesWalker(Character & self):
                 self(self){
                 }
 
-                MugenCharacter & self;
+                Character & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "cmd"){
                         simple >> self.cmdFile;
@@ -199,11 +201,11 @@ void MugenCharacter::load(){
 	} else if (head == "arcade"){
             class ArcadeWalker: public Ast::Walker {
             public:
-                ArcadeWalker(MugenCharacter & self):
+                ArcadeWalker(Character & self):
                 self(self){
                 }
 
-                MugenCharacter & self;
+                Character & self;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "intro.storyboard"){
@@ -260,7 +262,7 @@ void MugenCharacter::load(){
 }
 
 // Render sprite
-void MugenCharacter::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp , 
+void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp , 
 				   const int flip, const double scalex, const double scaley ){
     MugenSprite *sprite = sprites[group][image];
     if (sprite){
@@ -283,7 +285,7 @@ void MugenCharacter::renderSprite(const int x, const int y, const unsigned int g
     }
 }
 
-void MugenCharacter::nextPalette(){
+void Character::nextPalette(){
     if (currentPalette < palDefaults.size()-1){
 	currentPalette++;
     } else currentPalette = 0;
@@ -314,7 +316,7 @@ void MugenCharacter::nextPalette(){
     */
 }
 
-void MugenCharacter::priorPalette(){
+void Character::priorPalette(){
     if (currentPalette > 0){
 	currentPalette--;
     } else currentPalette = palDefaults.size() -1;
@@ -346,7 +348,7 @@ void MugenCharacter::priorPalette(){
 /* parse animations.
  * badly named and doesn't return anything.. maybe return an std::map ?
  */
-void MugenCharacter::bundleAnimations(){
+void Character::bundleAnimations(){
     Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Air::main(Mugen::Util::fixFileName(baseDir, airFile)));
     Global::debug(1, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
     
@@ -365,58 +367,58 @@ void MugenCharacter::bundleAnimations(){
 }
 
 /* Inherited members */
-void MugenCharacter::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
+void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
 }
-void MugenCharacter::draw(Bitmap*, int){
+void Character::draw(Bitmap*, int){
 }                      
-void MugenCharacter::grabbed(Object*){
+void Character::grabbed(Object*){
 }
-void MugenCharacter::unGrab(){
+void Character::unGrab(){
 }
-bool MugenCharacter::isGrabbed(){
+bool Character::isGrabbed(){
     return false;
 }
-Object* MugenCharacter::copy(){
+Object* Character::copy(){
     return this;
 }
-const std::string& MugenCharacter::getAttackName(){
+const std::string& Character::getAttackName(){
     return getName();
 }
-bool MugenCharacter::collision(ObjectAttack*){
+bool Character::collision(ObjectAttack*){
     return false;
 }
-int MugenCharacter::getDamage() const{
+int Character::getDamage() const{
     return 0;
 }
-bool MugenCharacter::isCollidable(Object*){
+bool Character::isCollidable(Object*){
     return true;
 }
-bool MugenCharacter::isGettable(){
+bool Character::isGettable(){
     return false;
 }
-bool MugenCharacter::isGrabbable(Object*){
+bool Character::isGrabbable(Object*){
     return true;
 }
-bool MugenCharacter::isAttacking(){
+bool Character::isAttacking(){
     return false;
 }
-int MugenCharacter::getWidth() const{
+int Character::getWidth() const{
     return groundfront;
 }
-int MugenCharacter::getHeight() const{
+int Character::getHeight() const{
     return height;
 }
-Message MugenCharacter::getCreateMessage(){
-    return Message();
+
+Network::Message Character::getCreateMessage(){
+    return Network::Message();
 }
-void MugenCharacter::getAttackCoords(int&, int&){
+
+void Character::getAttackCoords(int&, int&){
 }
-double MugenCharacter::minZDistance() const{
+double Character::minZDistance() const{
     return 0;
 }
-void MugenCharacter::attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&){
+void Character::attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&){
 }
 
-
-
-
+}

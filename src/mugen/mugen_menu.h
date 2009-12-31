@@ -22,7 +22,11 @@ class MugenFont;
 class MugenSprite;
 class MugenStoryboard;
 class MugenSection;
-class MugenCharacter;
+
+namespace Mugen{
+class Character;
+}
+
 class MugenStage;
 
 struct MugenMenuArea{
@@ -66,7 +70,7 @@ struct MugenPlayerCell{
 struct MugenCell{
     // Location
     Mugen::Point position;
-    MugenCharacter *character;
+    Mugen::Character *character;
     bool random;
     bool empty;
 };
@@ -81,8 +85,8 @@ struct MugenStageInfo{
 };
 
 struct MugenSelectedChars{
-    std::vector< MugenCharacter *>team1;
-    std::vector< MugenCharacter *>team2;
+    std::vector< Mugen::Character *>team1;
+    std::vector< Mugen::Character *>team2;
     MugenStage *selectedStage;
 };
 
@@ -226,7 +230,7 @@ class MugenCharacterSelect{
 	
 	std::vector< std::vector< MugenCell *> > cells;
 	
-	std::vector< MugenCharacter *> characters;
+	std::vector< Mugen::Character *> characters;
 	
 	std::vector< MugenStage *> stages;
 	

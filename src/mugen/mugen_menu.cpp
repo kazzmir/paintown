@@ -99,7 +99,7 @@ MugenCharacterSelect::~MugenCharacterSelect(){
 	}
     }
     // Characters
-    for (std::vector< MugenCharacter *>::iterator c = characters.begin(); c != characters.end(); ++c){
+    for (std::vector< Mugen::Character *>::iterator c = characters.begin(); c != characters.end(); ++c){
 	    if (*c) delete (*c);
     }
     // STages
@@ -847,7 +847,7 @@ void MugenCharacterSelect::loadCharacters(const std::string &selectFile) throw (
 		    cells[row][column]->empty = false;
 		} else {
 		    // Get character
-		    MugenCharacter *character = new MugenCharacter(itemhead);
+                    Mugen::Character *character = new Mugen::Character(itemhead);
 		    try{
 			character->load();
 		    } catch (const MugenException & ex){

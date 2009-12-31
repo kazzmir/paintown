@@ -1,5 +1,5 @@
-#ifndef mugen_character_h
-#define mugen_character_h
+#ifndef paintown_mugen_character_h
+#define paintown_mugen_character_h
 
 #include <fstream>
 #include <string>
@@ -17,18 +17,18 @@ class MugenSprite;
 class MugenSound;
 class MugenAnimation;
 
-using namespace Network;
+namespace Mugen{
 
-class MugenCharacter : public ObjectAttack{
+class Character: public ObjectAttack {
 public:
 	// Location at dataPath() + "mugen/chars/"
-	MugenCharacter( const std::string & s );
-	MugenCharacter( const char * location );
-	MugenCharacter( const std::string & s, int alliance );
-	MugenCharacter( const std::string & s, const int x, const int y, int alliance );
-	MugenCharacter( const MugenCharacter &copy );
+	Character(const std::string & s );
+	Character(const char * location );
+	Character(const std::string & s, int alliance );
+	Character(const std::string & s, const int x, const int y, int alliance );
+	Character(const Character &copy );
 
-	virtual ~MugenCharacter();
+	virtual ~Character();
 	
 	// Convert to paintown character or whatever
 	// Do code
@@ -78,7 +78,7 @@ public:
 	virtual bool isAttacking();
 	virtual int getWidth() const;
 	virtual int getHeight() const;
-	virtual Message getCreateMessage();
+	virtual Network::Message getCreateMessage();
 	virtual void getAttackCoords(int&, int&);
 	virtual double minZDistance() const;
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
@@ -274,5 +274,7 @@ protected:
 	
 	/* Commands, Triggers or whatever else we come up with */
 };
+
+}
 
 #endif

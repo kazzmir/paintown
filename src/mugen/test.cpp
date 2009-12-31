@@ -115,7 +115,7 @@ void showCharacter(const string & ourFile){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);*/
     Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
-    MugenCharacter character( ourFile );
+    Mugen::Character character( ourFile );
     character.load();
     Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
     bool quit = false;
