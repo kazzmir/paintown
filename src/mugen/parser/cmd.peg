@@ -230,6 +230,25 @@ Ast::Identifier * makeSimpleIdentifier(const Value & name){
     return identifier;
 }
 
+double * parseDouble(const Value & value){
+    std::string * str = toString(value);
+    std::istringstream get(*str);
+    double * number = new double;
+    get >> *number;
+    GC::save(number);
+    return number;
+}
+
+double * parseDouble(const Value & left, const Value & right){
+    std::string * str1 = toString(left);
+    std::string * str2 = toString(right);
+    std::istringstream get(*str1 + "." + *str2);
+    double * number = new double;
+    get >> *number;
+    GC::save(number);
+    return number;
+}
+
 Ast::Identifier * makeSimpleIdentifier(const std::string & str){
     Ast::Identifier * identifier = new Ast::SimpleIdentifier(str);
     GC::save(identifier);
@@ -242,6 +261,16 @@ Ast::Attribute * makeAttribute(const char * name, const Value & data){
     return object;
 }
 
+Ast::Value * makeNumber(const Value & sign, const Value & number){
+    double value = *(as<double*>(number));
+    if (sign.getValue() != 0){
+        value = -value;
+    }
+
+    Ast::Number * object = new Ast::Number(value);
+    GC::save(object);
+    return object;
+}
 
 void addSection(const Value & section_list_value, const Value & section_value){
     SectionList * sections = (SectionList*) section_list_value.getValue();
@@ -286,9 +315,9 @@ rules:
 	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
 	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}
 	integer = sign? digit+ {{ value = makeInteger($1, $2); }}
+	float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, parseDouble(left,right)); }}
+          | sign? left:digit+ "." {{ value = makeNumber($1, parseDouble(left)); }}
 	string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = makeString(contents); }}
-	float = sign? digit* "." digit+
-	      | sign? digit+ "."
 	inline sign = "-"
 	            | "+"
     # [,] is inclusive
