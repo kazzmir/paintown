@@ -25,6 +25,21 @@ std::string * toString(const Value & input){
   return object;
 }
 
+std::string combineStrings(const Value & input){
+    std::ostringstream out;
+    for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
+        std::string * str = (std::string *) (*it).getValue();
+        out << *str;
+    }
+    return out.str();
+}
+
+std::string * toString(const char * x){
+    std::string * object = new std::string(x);
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeInteger(const Value & sign, const Value & digits){
     std::istringstream in(*toString(digits));
     double value = 0;
@@ -386,6 +401,7 @@ rules:
 		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
 	function_rest = s "," s all_compare s integer
 
+    # Keys and key modifiers need their own AST structures
     keys = key_value_list
     key_value_list = first:key rest:(s "," s key)* {{ value = makeValueList(first, rest); }}
 	key = key_real ok:key_rest($1) !identifier {{ value = ok; }}
@@ -397,11 +413,16 @@ rules:
         value = makeSimpleIdentifier(out.str());
     }} key_rest(new_left)
 	               | <void> {{ value = left; }}
-	key_real = key_modifier* name:key_name {{ value = makeSimpleIdentifier(name); }}
-	key_modifier = "~" digit*
-	             | "$"
-		         | "/"
-		         | ">"
+	key_real = mods:key_modifier* name:key_name {{
+        std::ostringstream out;
+        out << combineStrings(mods);
+        out << as<const char *>(name);
+        value = makeSimpleIdentifier(out.str());
+    }}
+	key_modifier = "~" digit* {{ value = toString('~', $2); }}
+	             | "$" {{ value = toString(as<const char *>($1)); }}
+		         | "/" {{ value = toString(as<const char *>($1)); }}
+		         | ">" {{ value = toString(as<const char *>($1)); }}
 	key_name = "DB"
 		     | "B"
 		     | "DF"
