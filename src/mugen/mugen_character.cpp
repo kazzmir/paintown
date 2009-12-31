@@ -89,14 +89,27 @@ MugenCharacter::~MugenCharacter(){
     
 }
 
+void MugenCharacter::loadCmdFile(const string & path){
+    string full = Filesystem::find("mugen/chars/" + location + "/" + Util::trim(path));
+    try{
+        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
+        Global::debug(0) << "Parsed .cmd file " << path << endl;
+    } catch (const Mugen::Cmd::ParseException & e){
+        Global::debug(0) << "Could not parse " << path << endl;
+        Global::debug(0) << e.getReason() << endl;
+    }
+}
+
 void MugenCharacter::load(){
     // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/chars/" + location + "/");
     Global::debug(1) << baseDir << endl;
     std::string realstr = Mugen::Util::stripDir(location);
-    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, std::string(realstr + ".def") );
+    const std::string ourDefFile = Mugen::Util::fixFileName(baseDir, std::string(realstr + ".def"));
     
-    if( ourDefFile.empty() )throw MugenException( "Cannot locate player definition file for: " + location );
+    if (ourDefFile.empty()){
+        throw MugenException( "Cannot locate player definition file for: " + location );
+    }
      
     Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
     /* Extract info for our first section of our stage */
@@ -151,6 +164,7 @@ void MugenCharacter::load(){
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "cmd"){
                         simple >> self.cmdFile;
+                        self.loadCmdFile(self.cmdFile);
                     } else if (simple == "cns"){
                         simple >> self.constantsFile;
                     } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){

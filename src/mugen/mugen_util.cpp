@@ -42,7 +42,7 @@ void Mugen::Util::fixCase( std::string &str ){
 
 void Mugen::Util::removeSpaces( std::string &str ){
     if( str.find(' ') != std::string::npos ){
-	Global::debug(1) << "Removing spaces from: " << str << endl;
+	Global::debug(2) << "Removing spaces from: " << str << endl;
 	for( int i = str.size()-1; i>-1; --i){
 	    if( str[i] == ' ' )str.erase( str.begin()+i );
 	    else if( str[i] == '\t' )str.erase( str.begin()+i );
@@ -63,18 +63,18 @@ std:string getHeadDir( const std::string & dir ){
 }*/
 
 std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
-    Global::debug(1) << "Current File: " << str << endl;
+    Global::debug(2) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
     Mugen::Util::removeSpaces(str);
     // Fixes stupid windows users shit
     Mugen::Util::invertSlashes(str);
     // Lets check if we need to fix anything first
-    Global::debug(1) << "Checking for file in " << (dir+str) << endl;
+    Global::debug(2) << "Checking for file in " << (dir+str) << endl;
     if( ::Util::exists( dir + str ) == false ){
-	Global::debug(1) << "Couldn't find file: " << str << endl;
+	Global::debug(2) << "Couldn't find file: " << str << endl;
 	std::string returnString = "";
 	std::vector< string > files = ::Util::getFiles( dir, "*" );
-	Global::debug(1) << "Correcting file: " << str << ", in directory: "<< dir <<".\nGot " << files.size() << " files." << endl;
+	Global::debug(2) << "Correcting file: " << str << ", in directory: "<< dir <<".\nGot " << files.size() << " files." << endl;
 	for( unsigned int i = 0; i < files.size(); ++i ){
 	    std::string temp = files[i].c_str();
 	    Mugen::Util::fixCase( temp );
@@ -84,7 +84,7 @@ std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
 		break;
 	    }
 	}
-	Global::debug(1) << "Corrected file: " << returnString << endl;
+	Global::debug(2) << "Corrected file: " << returnString << endl;
 	return returnString;
     }
     return std::string(dir + str);
@@ -127,18 +127,18 @@ MugenItemContent *Mugen::Util::parseOpt( const std::string &opt ){
     std::string contentHolder = "";
     MugenItemContent *temp = new MugenItemContent();
     const char * ignored = " \r\n";
-    Global::debug(1) << "Parsing string to ItemContent: " << opt << endl;
+    Global::debug(2) << "Parsing string to ItemContent: " << opt << endl;
     for( unsigned int i = 0; i < opt.size(); ++i ){
 	if( opt[i] == ';' )break;
 	if( opt[i] == ' ' ){
 	    if( !contentHolder.empty() ) *temp << contentHolder;
-	    Global::debug(1) << "Got content: " << contentHolder << endl;
+	    Global::debug(3) << "Got content: " << contentHolder << endl;
 	    contentHolder = "";
 	}
 	// We got one push back the other and reset the holder to get the next
 	else if( opt[i] == ',' ){
 	    if( !contentHolder.empty() ) *temp << contentHolder;
-	    Global::debug(1) << "Got content: " << contentHolder << endl;
+	    Global::debug(3) << "Got content: " << contentHolder << endl;
 	    contentHolder = "";
 	}
 	//Start grabbing our item
@@ -148,7 +148,7 @@ MugenItemContent *Mugen::Util::parseOpt( const std::string &opt ){
     }
     if( !contentHolder.empty() ){
 	*temp << contentHolder;
-	Global::debug(1) << "Got content: " << contentHolder << endl;
+	Global::debug(3) << "Got content: " << contentHolder << endl;
     }
     return temp;
 }
@@ -285,7 +285,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, m
     location = suboffset;
     if( location < 512 || location > 2147482717 )location = 512;
     
-    Global::debug(1) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
+    Global::debug(2) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
     MugenSprite *spriteIndex[totalImages + 1];
     
@@ -343,7 +343,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, m
 		    }
 		}
 		
-		Global::debug(1) << "Referenced Sprite Location: " << temp->getLocation() << " | Group: " << temp->getGroupNumber() << " | Sprite: " << temp->getGroupNumber() << " | at index: " << sprite->getPrevious() << endl;
+		Global::debug(2) << "Referenced Sprite Location: " << temp->getLocation() << " | Group: " << temp->getGroupNumber() << " | Sprite: " << temp->getGroupNumber() << " | at index: " << sprite->getPrevious() << endl;
 	    }
 	}
 	else islinked = 0;
@@ -428,7 +428,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, m
 	    break;
 	}
 	
-	Global::debug(1) << "Index: " << i << ", Location: " << sprite->getLocation()  << ", Next Sprite: "  << sprite->getNext() << ", Length: " << sprite->getRealLength() << ", x|y: " << sprite->getX() << "|" << sprite->getY() << ", Group|Image Number: " << sprite->getGroupNumber() << "|" << sprite->getImageNumber() << ", Prev: " << sprite->getPrevious() << ", Same Pal: " << sprite->getSamePalette() << ", Comments: " << sprite->getComments() << endl;
+	Global::debug(2) << "Index: " << i << ", Location: " << sprite->getLocation()  << ", Next Sprite: "  << sprite->getNext() << ", Length: " << sprite->getRealLength() << ", x|y: " << sprite->getX() << "|" << sprite->getY() << ", Group|Image Number: " << sprite->getGroupNumber() << "|" << sprite->getImageNumber() << ", Prev: " << sprite->getPrevious() << ", Same Pal: " << sprite->getSamePalette() << ", Comments: " << sprite->getComments() << endl;
 	
     }
 
@@ -504,7 +504,7 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
         section = *section_it;
         string sectionName = section->getName();
         Mugen::Util::fixCase(sectionName);
-        Global::debug(1, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
+        Global::debug(2, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
         if (PaintownUtil::matchRegex(sectionName, prefix + name + ".*") || PaintownUtil::matchRegex(sectionName, ".*begin *action.*")){
             stuff.push_back(section);
         } else {
@@ -689,7 +689,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
             Mugen::Util::fixCase(flip);
             Mugen::Util::fixCase(blend);
             
-            Global::debug(1) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << " | flip " << flip << " blend '" << blend << "'" << endl;
+            Global::debug(2) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << " | flip " << flip << " blend '" << blend << "'" << endl;
 
             if (flip == "h"){
                 //frame->flipHorizontal = true;
@@ -722,7 +722,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
                     source = 256;
                     dest = 128;
                 }
-                Global::debug(1) << "Alpha source " << source << " destination " << dest << endl;
+                Global::debug(2) << "Alpha source " << source << " destination " << dest << endl;
                 frame->effects.alphalow = source;
                 frame->effects.alphahigh = dest;
             } else if (blend == "s"){

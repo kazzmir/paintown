@@ -676,10 +676,12 @@ int main( int argc, char ** argv ){
 		// run it and repeat
 		Bitmap screen(640, 480);
 		story.run( &screen,true);
-            } catch( MugenException &ex){
+            } catch (const MugenException & ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
-	    } catch(...){
+	    } catch (const Filesystem::NotFound & found){
+                Global::debug(0) << "Could not find file: " << found.getReason() << endl;
+            } catch (...){
 		Global::debug(0) << "Unknown problem loading file" << endl;
 		return 1;
 	    }

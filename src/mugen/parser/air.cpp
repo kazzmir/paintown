@@ -265,6 +265,22 @@ struct Column{
 };
 
 
+class ParseException: std::exception {
+public:
+    ParseException(const std::string & reason):
+    std::exception(),
+    message(reason){
+    }
+
+    std::string getReason() const;
+
+    virtual ~ParseException() throw(){
+    }
+
+protected:
+    std::string message;
+};
+
 class Stream{
 public:
     Stream(const std::string & filename):
@@ -273,6 +289,11 @@ public:
     farthest(0){
         std::ifstream stream;
         stream.open(filename.c_str());
+        if (stream.fail()){
+            std::ostringstream out;
+            out << "Cannot open '" << filename << "'";
+            throw ParseException(out.str());
+        }
         stream.seekg(0, std::ios_base::end);
         max = stream.tellg();
         stream.seekg(0, std::ios_base::beg);
@@ -462,22 +483,6 @@ static inline char lower(const char x){
 static inline bool compareCharCase(const char a, const char b){
     return lower(a) == lower(b);
 }
-
-class ParseException: std::exception {
-public:
-    ParseException(const std::string & reason):
-    std::exception(),
-    message(reason){
-    }
-
-    std::string getReason() const;
-
-    virtual ~ParseException() throw(){
-    }
-
-protected:
-    std::string message;
-};
 
 std::string ParseException::getReason() const {
     return message;

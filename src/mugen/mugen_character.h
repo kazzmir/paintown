@@ -84,6 +84,11 @@ public:
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
 protected:
+    /* This creates the animations no need for a new class to handle this */
+    virtual void bundleAnimations();
+    virtual void loadCmdFile(const std::string & path);
+
+protected:
 
 	/* Location is the directory passed in ctor
 	This is where the def is loaded and all the relevant files
@@ -268,10 +273,6 @@ protected:
 	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
-	
-    protected:
-	/* This creates the animations no need for a new class to handle this */
-	virtual void bundleAnimations();
 };
 
 #endif
