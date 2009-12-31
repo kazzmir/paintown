@@ -45,6 +45,12 @@ std::string * toString(char front, const Value & input){
   return str;
 }
 
+Ast::String * makeString(const Value & value){
+    Ast::String * object = new Ast::String(toString(value));
+    GC::save(object);
+    return object;
+}
+
 SectionList * makeSectionList(){
     SectionList * object = new SectionList();
     GC::save(object);
@@ -215,6 +221,13 @@ Ast::Identifier * makeSimpleIdentifier(const std::string & str){
     return identifier;
 }
 
+Ast::Attribute * makeAttribute(const char * name, const Value & data){
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(makeSimpleIdentifier(std::string(name)), as<Ast::Value*>(data));
+    GC::save(object);
+    return object;
+}
+
+
 void addSection(const Value & section_list_value, const Value & section_value){
     SectionList * sections = (SectionList*) section_list_value.getValue();
     Ast::Section * section = (Ast::Section*) section_value.getValue();
@@ -253,11 +266,12 @@ rules:
 
     section_item(ast) = s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
-	assignment = name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
+	assignment = "command" s "=" s all:keys {{ value = makeAttribute("command", all); }}
+               | name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
 	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
 	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}
 	integer = sign? digit+ {{ value = makeInteger($1, $2); }}
-	string = <quote> (!<quote> !"\n" .)* <quote>
+	string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = makeString(contents); }}
 	float = sign? digit* "." digit+
 	      | sign? digit+ "."
 	inline sign = "-"
@@ -372,6 +386,8 @@ rules:
 		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
 	function_rest = s "," s all_compare s integer
 
+    keys = key_value_list
+    key_value_list = first:key rest:(s "," s key)* {{ value = makeValueList(first, rest); }}
 	key = key_real ok:key_rest($1) !identifier {{ value = ok; }}
 	key_rest(left) = s "+" another:key_real new_left:{{
         std::ostringstream out;
@@ -408,7 +424,7 @@ rules:
 	      | key
 	      | !keyword identifier
 	      | range
-	      | string {{ value = makeExpression(); }}
+	      | string
 	
 	keyword = keyword_real !alpha_digit {{ value = $1; }}
 	keyword_real = "vel"{case} s "y"{case} {{ value = makeKeyword("vel y"); }}
