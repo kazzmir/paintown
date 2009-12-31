@@ -109,9 +109,11 @@ static bool isStateDefSection(string name){
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
+    constants[name] = Constant(values);
 }
 
 void Character::setConstant(std::string name, double value){
+    constants[name] = Constant(value);
 }
 
 void Character::loadCnsFile(const string & path){
@@ -152,6 +154,9 @@ void Character::loadCnsFile(const string & path){
             }
         }
     } catch (const Mugen::Cmd::ParseException & e){
+        Global::debug(0) << "Could not parse " << path << endl;
+        Global::debug(0) << e.getReason() << endl;
+    } catch (const Ast::Exception & e){
         Global::debug(0) << "Could not parse " << path << endl;
         Global::debug(0) << e.getReason() << endl;
     }
@@ -243,7 +248,8 @@ void Character::load(){
                         }
                     } else if (simple == "stcommon"){
                         simple >> self.commonStateFile;
-                        self.loadStateFile(self.commonStateFile);
+                        /* TODO: load from the common directory */
+                        // self.loadStateFile(self.commonStateFile);
                     } else if (simple == "st"){
                         simple >> self.stateFile;
                         self.loadStateFile(self.stateFile);

@@ -19,6 +19,33 @@ class MugenAnimation;
 
 namespace Mugen{
 
+struct Constant{
+    enum ConstantType{
+        None,
+        Double,
+        ListOfDouble,
+    };
+
+    Constant():
+    type(None){
+    }
+
+    Constant(double value):
+    type(Double),
+    double_(value){
+    }
+
+    Constant(std::vector<double> doubles):
+    type(ListOfDouble),
+    doubles(doubles){
+    }
+
+    ConstantType type;
+
+    double double_;
+    std::vector<double> doubles;
+};
+
 class Character: public ObjectAttack {
 public:
 	// Location at dataPath() + "mugen/chars/"
@@ -278,6 +305,7 @@ protected:
 	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
+        std::map<std::string, Constant> constants;
 };
 
 }

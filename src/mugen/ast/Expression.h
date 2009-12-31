@@ -40,6 +40,13 @@ public:
         marks[this] = true;
         expression->mark(marks);
     }
+    
+    using Value::operator>>;
+
+    virtual const Value & operator>>(double & x) const {
+        *expression >> x;
+        return *this;
+    }
 
     virtual std::string toString() const {
         std::stringstream out;
