@@ -1,12 +1,16 @@
 #include "util/bitmap.h"
 #include "mugen_animation.h"
 
+#include "globals.h"
 #include <string>
 #include <vector>
 
 #include "init.h"
 #include "mugen_sprite.h"
 #include "mugen_util.h"
+#include "util/load_exception.h"
+
+using namespace std;
 
 static void renderCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int color ){
     for( unsigned int i = 0; i < vec.size(); ++i ){
@@ -139,10 +143,16 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
     // Modify with frame adjustment
     const int placex = xaxis+frames[position]->xoffset;
     const int placey = yaxis+frames[position]->yoffset;
-    frames[position]->sprite->render(placex,placey,work,frames[position]->effects);
-    
-    if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
-    if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
+    try{
+        frames[position]->sprite->render(placex,placey,work,frames[position]->effects);
+        
+        if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
+        if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
+    } catch (const LoadException & e){
+        Global::debug(0) << "Error loading sprite: " << e.getReason() << endl;
+        /* FIXME: do something sensible here */
+        frames[position]->sprite = 0;
+    }
 }
 
 void MugenAnimation::render( const int facing, const int vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex, const double scaley ){
