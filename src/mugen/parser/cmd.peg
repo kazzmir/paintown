@@ -308,7 +308,8 @@ rules:
 		    | "-" "-"+
     section = section_title ast:{{ value = makeSection($1); }} whitespace newline+ (section_item(ast) whitespace line_end)* {{ value = ast; }}
 
-    section_item(ast) = s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
+    section_item(ast) = s comment
+                      | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = "command" s "=" s all:keys {{ value = makeAttribute("command", all); }}
                | name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
