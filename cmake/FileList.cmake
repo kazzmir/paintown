@@ -195,7 +195,7 @@ set(MUGEN_SRC
 src/mugen/characterhud.cpp
 src/mugen/mugen_animation.cpp
 src/mugen/mugen_background.cpp
-src/mugen/mugen_character.cpp
+src/mugen/character.cpp
 src/mugen/mugen_exception.cpp
 src/mugen/mugen_fadetool.cpp
 src/mugen/mugen_font.cpp
