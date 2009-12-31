@@ -95,7 +95,33 @@ void Character::loadCmdFile(const string & path){
     string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
     try{
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
-        Global::debug(0) << "Parsed .cmd file " << path << endl;
+        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+            Ast::Section * section = *section_it;
+            std::string head = section->getName();
+            /* this should really be head = Mugen::Util::fixCase(head) */
+            Util::fixCase(head);
+
+            if (head == "command"){
+                class CommandWalker: public Ast::Walker {
+                    public:
+                        CommandWalker(Character & self):
+                            self(self){
+                            }
+
+                        Character & self;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "name"){
+                        } else if (simple == "command"){
+                        } else if (simple == "time"){
+                        }
+                    }
+                };
+
+                CommandWalker walker(*this);
+                section->walk(walker);
+            }
+        }
     } catch (const Mugen::Cmd::ParseException & e){
         Global::debug(0) << "Could not parse " << path << endl;
         Global::debug(0) << e.getReason() << endl;

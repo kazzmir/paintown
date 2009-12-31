@@ -91,6 +91,7 @@ showDefense(false),
 showOffense(false),
 ticks(0){
 }
+
 MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
     this->frames = copy.frames;
     this->loopPosition = copy.loopPosition;
@@ -99,6 +100,7 @@ MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
     this->showDefense = copy.showDefense;
     this->showOffense = copy.showOffense;
 }
+
 MugenAnimation::~MugenAnimation(){
     for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
 	if( (*i) )delete (*i);
