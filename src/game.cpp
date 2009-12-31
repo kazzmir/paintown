@@ -252,12 +252,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
 
     // int game_time = 100;
     int frames = 0;
-    const int max_fps_index = 5;
-    double fps[max_fps_index];
-    for (int i = 0; i < max_fps_index; i++){
-        fps[i] = Global::TICS_PER_SECOND;
-    }
-    int fps_index = 0;
+    double fps = Global::TICS_PER_SECOND;
     bool show_fps = false;
     bool done = false;
 
@@ -406,8 +401,9 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
             if (difference == 0){
                 difference = 1;
             }
-            fps[fps_index] = (double) frames / (double) difference;
-            fps_index = (fps_index+1) % max_fps_index;
+            fps = (0.75 * fps) + (0.25 * (double) frames / difference);
+            // fps[fps_index] = (double) frames / (double) difference;
+            // fps_index = (fps_index+1) % max_fps_index;
             second_counter = Global::second_counter;
             frames = 0;
         }
@@ -440,13 +436,16 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                 font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
             }
 
+            /*
             double real_fps = 0;
             for ( int i = 0; i < max_fps_index; i++ ){
                 real_fps += fps[i];
             }
             real_fps /= max_fps_index;
+            */
+
             if ( show_fps ){
-                font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, real_fps );
+                font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
             }
             console.draw(screen_buffer);
 

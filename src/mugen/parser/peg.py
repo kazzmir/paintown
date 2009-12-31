@@ -30,6 +30,9 @@ def nextVar():
 
 # substitute variables in a string named by $foo
 # "$foo + $bar - $foo" with {foo:1, bar:2} => "1 + 2 - 1"
+# this is orders of magnitude slower than normal python string
+# interpolation like "%s %s %s" % (str1, str2, str3)
+# so only use it if it makes life much easier (and speed isn't an issue)
 def template(now, dict):
     import re
     for key in dict:
