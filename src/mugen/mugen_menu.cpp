@@ -38,7 +38,7 @@
 
 #include "mugen_animation.h"
 #include "mugen_background.h"
-#include "mugen_character.h"
+#include "character.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
