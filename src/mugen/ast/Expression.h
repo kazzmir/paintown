@@ -52,6 +52,7 @@ public:
             case Not : return "!";
             case Minus : return "-";
             case Negation : return "~";
+            default : return "?";
         }
     }
 
@@ -128,6 +129,7 @@ public:
             case Divide : return "/";
             case Modulo : return "%";
             case Power : return "**";
+            default : return "?";
         }
     }
 

@@ -212,6 +212,7 @@ src/mugen/mugen_util.cpp
 src/mugen/option_versus.cpp
 src/mugen/parser/parse-exception.cpp
 src/mugen/parser/def.cpp
+src/mugen/parser/cmd.cpp
 src/mugen/parser/air.cpp
 )
 

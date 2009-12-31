@@ -12,6 +12,10 @@ namespace Mugen{
     namespace Air{
         extern const void * main(const std::string & filename, bool stats = false);
     }
+    
+    namespace Cmd{
+        extern const void * main(const std::string & filename, bool stats = false);
+    }
 }
 
 #endif

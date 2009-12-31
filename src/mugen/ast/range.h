@@ -30,6 +30,7 @@ public:
             case AllExclusive : return toString('(', ')');
             case LeftInclusiveRightExclusive : return toString('[', ')');
             case LeftExclusiveRightInclusive : return toString('(', ']');
+            default : return "";
         }
     }
     

@@ -405,18 +405,18 @@ rules:
 	            | "(" s e:expr s ")" {{ value = e; }}
 
     function = name:"abs"{case} s "(" s arg1:expr s ")"  {{ value = makeFunction(name, arg1); }}
-	         | name:"const"{case} s "(" s arg1:expr s ")" {{ value = makeExpression(); }}
-		     | name:"selfanimexist"{case} s "(" s arg1:expr s ")" {{ value = makeExpression(); }}
+	         | name:"const"{case} s "(" s arg1:expr s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"selfanimexist"{case} s "(" s arg1:expr s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"ifelse"{case} s "(" s arg1:expr_c s "," s arg2:expr_c s "," s arg3:expr_c s ")" {{ value = makeExpression(); }}
-		     | name:"gethitvar"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
-		     | name:"floor"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
-		     | name:"ceil"{case} s "(" s arg1:expr_c s ")" {{ value = makeExpression(); }}
-		     | name:"sysvar"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"gethitvar"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"floor"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"ceil"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"sysvar"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"var"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"numexplod"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
-		     | name:"numhelper"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
-		     | name:"numprojid"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
-		     | name:"helper"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
+		     | name:"numexplod"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"numhelper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"numprojid"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"helper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"fvar"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
 		     | name:"target"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
 		     | name:"ishelper"{case} s "(" s arg1:integer s ")" {{ value = makeExpression(); }}
