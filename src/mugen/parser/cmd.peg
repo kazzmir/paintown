@@ -468,7 +468,7 @@ rules:
 		     | "z"
 		     | "s"
 
-	value = float {{ value = makeExpression(); }}
+	value = float
 	      | integer
 	      | keyword
 	      | !keyword identifier
