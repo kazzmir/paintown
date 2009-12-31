@@ -421,7 +421,6 @@ rules:
 	value = float {{ value = makeExpression(); }}
 	      | integer
 	      | keyword
-	      | key
 	      | !keyword identifier
 	      | range
 	      | string
