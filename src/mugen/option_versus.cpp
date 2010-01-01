@@ -57,11 +57,12 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
     // Load the stage
     try{
 	gameInfo->selectedStage->load();
-    }catch (MugenException &ex){
+    } catch (const MugenException &ex){
 	Global::debug(0) << "Problem with stage: " << gameInfo->selectedStage->getName() << " Problem was: " << ex.getReason() << endl;
 	return;
     }
     
+    /* FIXME: replace hard coded numbers */
     Bitmap work(320,240);
     bool quit = false;
     double gameSpeed = 1.0;

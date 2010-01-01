@@ -111,8 +111,10 @@ MugenCharacterSelect::~MugenCharacterSelect(){
 	delete characterList;
     }
 }
-void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &index, std::vector< MugenSection * > &collection, 
-			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites) throw (MugenException){
+
+void MugenCharacterSelect::load(const std::string &selectFile, const std::vector<Ast::Section*> & sections, MugenSprites & sprites){
+
+#if 0
     /* Extract info for our first section of our select screen */
     for( ; index < collection.size(); ++index ){
 	std::string head = collection[index]->getHeader();
@@ -308,6 +310,8 @@ void MugenCharacterSelect::load(const std::string &selectFile, unsigned int &ind
 	    break;
 	}
     }
+#endif
+
     fonts = fonts;
     // Set up cell table
     Mugen::Point currentPosition;
@@ -926,6 +930,40 @@ intro(0),
 characterSelect(0){
 }
 
+static vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end){
+    Ast::AstParse::section_iterator last = iterator;
+    vector<Ast::Section*> stuff;
+
+    Ast::Section * section = *iterator;
+    std::string head = section->getName();
+    /* better to do case insensitive regex matching rather than
+     * screw up the original string
+     */
+    stuff.push_back(section);
+    iterator++;
+
+    while (true){
+        if (iterator == end){
+            break;
+        }
+
+        section = *iterator;
+        string sectionName = section->getName();
+        Mugen::Util::fixCase(sectionName);
+        // Global::debug(2, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
+        if (PaintownUtil::matchRegex(sectionName, "select")){
+            stuff.push_back(section);
+        } else {
+            break;
+        }
+
+        last = iterator;
+        iterator++;
+    }
+    iterator = last;
+    return stuff;
+}
+
 void MugenMenu::loadData() throw (MugenException){
      // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Filesystem::find("mugen/data/" + Mugen::Util::getFileDir(location));
@@ -1181,9 +1219,7 @@ void MugenMenu::loadData() throw (MugenException){
         } else if (head == "select info"){ 
 	    // Pass off to selectInfo
 	    characterSelect = new MugenCharacterSelect(ticker, fonts);
-            /* FIXME!! change load() to take an Ast::Section
-            characterSelect->load(baseDir + selectFile, i, collection, sprites);
-            */
+            characterSelect->load(baseDir + selectFile, collectSelectStuff(section_it, parsed.getSections()->end()), sprites);
         } else if (head == "selectbgdef" ){ /* Ignore for now */ }
 	else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
 	else if (head == "vs screen" ){ /* Ignore for now */ }

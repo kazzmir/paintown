@@ -13,8 +13,8 @@
 #include "return_exception.h"
 
 /*
-We already have a setup for menus, might as well as utilize it to accomodate mugen
-*/
+ * We already have a setup for menus, might as well as utilize it to accomodate mugen
+ */
 
 class MugenAnimation;
 class MugenBackgroundManager;
@@ -23,8 +23,12 @@ class MugenSprite;
 class MugenStoryboard;
 class MugenSection;
 
+namespace Ast{
+    class Section;
+}
+
 namespace Mugen{
-class Character;
+    class Character;
 }
 
 class MugenStage;
@@ -89,6 +93,8 @@ struct MugenSelectedChars{
     std::vector< Mugen::Character *>team2;
     MugenStage *selectedStage;
 };
+	
+typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > MugenSprites;
 
 class MugenCharacterSelect{
     public:
@@ -96,8 +102,7 @@ class MugenCharacterSelect{
 	virtual ~MugenCharacterSelect();
 	
 	/*! load */
-	virtual void load(const std::string &selectFile, unsigned int &index, std::vector< MugenSection * > &collection, 
-			   std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites) throw (MugenException);
+	virtual void load(const std::string &selectFile, const std::vector<Ast::Section*> & sections, MugenSprites & sprites);
 	
 	/*! do logic, draw whatever */
 	virtual MugenSelectedChars *run(const std::string &title, const int players, const bool selectStage, Bitmap *work);
@@ -343,7 +348,7 @@ class MugenMenu : public Menu
 	unsigned long int ticker;
 	
 	/* Sprites */
-	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
+	MugenSprites sprites;
 	
 	// Title background
 	MugenBackgroundManager *background;
