@@ -58,7 +58,9 @@ def flatten(lst):
     return [lst]
 
 def reverse(lst):
-    return list(reversed(lst))
+    # reversed only seems to be in python 2.4+, but I need to support 2.3
+    # list(reversed(lst))
+    return lst[::-1]
 
 def special_escape(s):
     return s.replace("\\n", "\\\\n").replace("\\t", "\\\\t").replace("\"", "\\\"").replace("\\r", "\\\\r")

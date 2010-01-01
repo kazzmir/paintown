@@ -53,7 +53,7 @@ struct Constant{
 /* key command */
 class Command{
 public:
-    Command(std::string name, Ast::Key * key, int maxTime);
+    Command(std::string name, Ast::Key * key, int maxTime, int bufferTime);
 };
 
 class Character: public ObjectAttack {

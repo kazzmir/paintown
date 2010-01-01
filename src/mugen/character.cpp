@@ -38,7 +38,7 @@ namespace Mugen{
 
 namespace PaintownUtil = ::Util;
     
-Command::Command(std::string name, Ast::Key * key, int maxTime){
+Command::Command(std::string name, Ast::Key * key, int maxTime, int bufferTime){
 }
 
 Character::Character( const string & s ):
@@ -101,6 +101,9 @@ void Character::addCommand(Command * command){
 void Character::loadCmdFile(const string & path){
     string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
     try{
+        int defaultTime = 15;
+        int defaultBufferTime = 1;
+
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
@@ -111,14 +114,16 @@ void Character::loadCmdFile(const string & path){
             if (head == "command"){
                 class CommandWalker: public Ast::Walker {
                 public:
-                    CommandWalker(Character & self):
+                    CommandWalker(Character & self, const int defaultTime, const int defaultBufferTime):
                         self(self),
-                        time(0),
+                        time(defaultTime),
+                        bufferTime(defaultBufferTime),
                         key(0){
                         }
 
                     Character & self;
                     int time;
+                    int bufferTime;
                     string name;
                     Ast::Key * key;
 
@@ -129,6 +134,16 @@ void Character::loadCmdFile(const string & path){
                             key = (Ast::Key*) simple.getValue()->copy();
                         } else if (simple == "time"){
                             simple >> time;
+                        } else if (simple == "buffer.time"){
+                            simple >> bufferTime;
+                            /* Time that the command will be buffered for. If the command is done
+                             * successfully, then it will be valid for this time. The simplest
+                             * case is to set this to 1. That means that the command is valid
+                             * only in the same tick it is performed. With a higher value, such
+                             * as 3 or 4, you can get a "looser" feel to the command. The result
+                             * is that combos can become easier to do because you can perform
+                             * the command early.
+                             */
                         }
                     }
 
@@ -137,21 +152,48 @@ void Character::loadCmdFile(const string & path){
                             throw MugenException("No name given for command");
                         }
 
-                        if (time == 0){
-                            throw MugenException("No time specified for command");
-                        }
-
                         if (key == 0){
                             throw MugenException("No key sequence given for command");
                         }
 
-                        self.addCommand(new Command(name, key, time));
+                        self.addCommand(new Command(name, key, time, bufferTime));
                     }
                 };
 
-                CommandWalker walker(*this);
+                CommandWalker walker(*this, defaultTime, defaultBufferTime);
+                section->walk(walker);
+            } else if (head == "defaults"){
+                class DefaultWalker: public Ast::Walker {
+                public:
+                    DefaultWalker(int & time, int & buffer):
+                        time(time),
+                        buffer(buffer){
+                        }
+
+                    int & time;
+                    int & buffer;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "command.time"){
+                            simple >> time;
+                        } else if (simple == "command.buffer.time"){
+                            simple >> buffer;
+                        }
+                    }
+                };
+
+                DefaultWalker walker(defaultTime, defaultBufferTime);
                 section->walk(walker);
             }
+
+            /* [Defaults]
+             * ; Default value for the "time" parameter of a Command. Minimum 1.
+             * command.time = 15
+             *
+             * ; Default value for the "buffer.time" parameter of a Command. Minimum 1,
+             * ; maximum 30.
+             * command.buffer.time = 1
+             */
         }
     } catch (const Mugen::Cmd::ParseException & e){
         Global::debug(0) << "Could not parse " << path << endl;
