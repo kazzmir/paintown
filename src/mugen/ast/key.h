@@ -7,9 +7,13 @@
 
 namespace Ast{
 
-class Key: public Element {
+class Key: public Value {
 public:
     Key(){
+    }
+
+    virtual std::string getType() const {
+        return "key";
     }
 
     virtual ~Key(){

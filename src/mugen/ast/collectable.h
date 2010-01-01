@@ -28,6 +28,7 @@ public:
         str(copy.str),
         element(copy.element),
         section_list(copy.section_list),
+        number(copy.number),
         _destroy(copy._destroy){
     }
 

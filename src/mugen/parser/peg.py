@@ -58,7 +58,7 @@ def flatten(lst):
     return [lst]
 
 def reverse(lst):
-    return lst[::-1]
+    return list(reversed(lst))
 
 def special_escape(s):
     return s.replace("\\n", "\\\\n").replace("\\t", "\\\\t").replace("\"", "\\\"").replace("\\r", "\\\\r")

@@ -888,6 +888,7 @@ Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
     std::list<std::string*> ids;
     ids.push_back(as<std::string*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
+        /* this works becuase as() will coerce a void* into Value(void*) */
         ids.push_back(as<std::string*>((*it).getValue()));
     }
     Ast::Identifier * object = new Ast::Identifier(ids);
@@ -981,6 +982,88 @@ Ast::Section * makeSection(const Value & str){
     Ast::Section * object = new Ast::Section(as<std::string*>(str));
     GC::save(object);
     return object;
+}
+
+Ast::Key * makeKeyModifier(Ast::Key * in, Ast::KeyModifier::ModifierType type, int ticks = 0){
+    Ast::Key * modded = new Ast::KeyModifier(type, in, ticks);
+    GC::save(modded);
+    return modded;
+}
+
+Ast::Key * makeKeyCombined(const Value & left, const Value & right){
+    Ast::Key * key = new Ast::KeyCombined(as<Ast::Key*>(left), as<Ast::Key*>(right));
+    GC::save(key);
+    return key;
+}
+    
+Ast::Key * makeKeyList(const Value & first, const Value & rest){
+    std::vector<Ast::Key*> all;
+    all.push_back(as<Ast::Key*>(first));
+
+    for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
+        Ast::Key * key = (Ast::Key*) (*it).getValue();
+        all.push_back(key);
+    }
+
+    Ast::Key * object = new Ast::KeyList(all);
+    GC::save(object);
+    return object;
+}
+
+Ast::Key * makeKey(const Value & value){
+    Ast::Key * key = new Ast::KeySingle(as<const char *>(value));
+    GC::save(key);
+    return key;
+}
+
+class KeyModifier{
+public:
+    virtual Ast::Key * apply(Ast::Key * in) = 0;
+};
+
+class ReleaseKeyModifier: public KeyModifier {
+public:
+    ReleaseKeyModifier(int ticks):
+    ticks(ticks){
+    }
+
+    virtual Ast::Key * apply(Ast::Key * in){
+        return makeKeyModifier(in, Ast::KeyModifier::Release, ticks);
+    }
+
+protected:
+
+    int ticks;
+};
+
+class DirectionKeyModifier: public KeyModifier {
+public:
+    virtual Ast::Key * apply(Ast::Key * in){
+        return makeKeyModifier(in, Ast::KeyModifier::Direction);
+    }
+};
+
+class HeldDownKeyModifier: public KeyModifier {
+public:
+    virtual Ast::Key * apply(Ast::Key * in){
+        return makeKeyModifier(in, Ast::KeyModifier::MustBeHeldDown);
+    }
+};
+
+class OnlyKeyModifier: public KeyModifier {
+public:
+    virtual Ast::Key * apply(Ast::Key * in){
+        return makeKeyModifier(in, Ast::KeyModifier::Only);
+    }
+};
+
+Ast::Key * applyKeyModifiers(const Value & mods, Ast::Key * key){
+    for (Value::iterator it = mods.getValues().begin(); it != mods.getValues().end(); it++){
+        KeyModifier * modifier = (KeyModifier*) (*it).getValue();
+        key = modifier->apply(key);
+        delete modifier;
+    }
+    return key;
 }
 
 
@@ -8407,7 +8490,7 @@ Result rule_key_value_list(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeValueList(first, rest);
+                value = makeKeyList(first, rest);
                 result_peg_852.setValue(value);
             }
         
@@ -8542,11 +8625,7 @@ Result rule_key_rest(Stream & stream, const int position, Value left){
         
         {
                 Value value((void*) 0);
-                std::ostringstream out;
-                        out << as<Ast::Identifier*>(left)->toString();
-                        out << "+";
-                        out << as<Ast::Identifier*>(another)->toString();
-                        value = makeSimpleIdentifier(out.str());
+                value = makeKeyCombined(left, another);
                 result_peg_870.setValue(value);
             }
             new_left = result_peg_870.getValues();
@@ -8625,10 +8704,7 @@ Result rule_key_real(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                std::ostringstream out;
-                        out << combineStrings(mods);
-                        out << as<const char *>(name);
-                        value = makeSimpleIdentifier(out.str());
+                value = applyKeyModifiers(mods, makeKey(name));
                 result_peg_880.setValue(value);
             }
         
@@ -8665,7 +8741,7 @@ Result rule_key_modifier(Stream & stream, const int position){
     
     int myposition = position;
     
-    
+    Value num;
     Result result_peg_887(myposition);
     
     {
@@ -8704,12 +8780,13 @@ Result rule_key_modifier(Stream & stream, const int position){
             } while (true);
             loop_peg_891:
             ;
+            num = result_peg_887.getValues();
         
-        Result result_peg_890 = result_peg_887;
+        
         
         {
                 Value value((void*) 0);
-                value = toString('~', result_peg_890.getValues());
+                value = new ReleaseKeyModifier(*parseDouble(num));
                 result_peg_887.setValue(value);
             }
         
@@ -8738,11 +8815,11 @@ Result rule_key_modifier(Stream & stream, const int position){
             }
             result_peg_898.setValue((void*) "$");
         
-        Result result_peg_899 = result_peg_898;
+        
         
         {
                 Value value((void*) 0);
-                value = toString(as<const char *>(result_peg_899.getValues()));
+                value = new DirectionKeyModifier();
                 result_peg_898.setValue(value);
             }
         
@@ -8771,11 +8848,11 @@ Result rule_key_modifier(Stream & stream, const int position){
             }
             result_peg_901.setValue((void*) "/");
         
-        Result result_peg_902 = result_peg_901;
+        
         
         {
                 Value value((void*) 0);
-                value = toString(as<const char *>(result_peg_902.getValues()));
+                value = new HeldDownKeyModifier();
                 result_peg_901.setValue(value);
             }
         
@@ -8804,11 +8881,11 @@ Result rule_key_modifier(Stream & stream, const int position){
             }
             result_peg_904.setValue((void*) ">");
         
-        Result result_peg_905 = result_peg_904;
+        
         
         {
                 Value value((void*) 0);
-                value = toString(as<const char *>(result_peg_905.getValues()));
+                value = new OnlyKeyModifier();
                 result_peg_904.setValue(value);
             }
         
