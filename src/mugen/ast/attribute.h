@@ -4,10 +4,11 @@
 #include "walker.h"
 #include <map>
 #include <string>
+#include "ast.h"
 
 namespace Ast{
 
-class Attribute{
+class Attribute: public Element {
 public:
     enum Kind{
         None = 0,

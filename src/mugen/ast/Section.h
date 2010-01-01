@@ -12,12 +12,13 @@
 #include "attribute-simple.h"
 #include "Value.h"
 #include "exception.h"
+#include "ast.h"
 
 namespace Ast{
 
 class Walker;
 
-class Section{
+class Section: public Element {
 public: 
     Section(const std::string * name):
     name(name){

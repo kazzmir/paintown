@@ -6,10 +6,11 @@
 #include <vector>
 #include "walker.h"
 #include "exception.h"
+#include "ast.h"
 
 namespace Ast{
 
-class Value {
+class Value: public Element {
 public:
 
     Value(){
