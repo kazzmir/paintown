@@ -121,182 +121,188 @@ void MugenCharacterSelect::load(const std::string &selectFile, const std::vector
 	Mugen::Util::fixCase(head);
 
 	if (head == "select info"){ 
+            class SelectInfoWalker: public Ast::Walker{
+            public:
+                SelectInfoWalker(MugenCharacterSelect & self, MugenSprites & sprites):
+                    self(self),
+                    sprites(sprites){
+                    }
+
+                MugenCharacterSelect & self;
+                MugenSprites & sprites;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		if (simple == "fadein.time" ){
+		    int time;
+                    simple >> time;
+		    self.fader.setFadeInTime(time);
+		} else if (simple == "fadein.color" ){
+		    int r,g,b;
+                    simple >> r >> g >> b;
+		    self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+		} else if (simple == "fadeout.time"){
+		    int time;
+                    simple >> time;
+		    self.fader.setFadeOutTime(time);
+		} else if (simple == "fadeout.color"){
+		    int r,g,b;
+                    simple >> r >> g >> b;
+		    self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+		} else if (simple == "rows"){
+                    simple >> self.rows;
+		} else if (simple == "columns"){
+                    simple >> self.columns;
+		} else if (simple == "wrapping"){
+                    simple >> self.wrapping;
+		} else if (simple == "pos"){
+                    simple >> self.position.x >> self.position.y;
+		} else if (simple == "showemptyboxes"){
+                    simple >> self.showEmptyBoxes;
+		} else if (simple == "moveoveremptyboxes"){
+                    simple >> self.moveOverEmptyBoxes;
+		} else if (simple == "cell.size"){
+                    simple >> self.cellSize.x >> self.cellSize.y;
+		} else if (simple == "cell.spacing"){
+                    simple >> self.cellSpacing;
+		} else if (simple == "cell.bg.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    self.cellBackgroundSprite = sprites[group][sprite];
+		    self.cellBackgroundSprite->load();
+		    self.cellBackgroundBitmap = self.cellBackgroundSprite->getBitmap();
+		} else if (simple == "cell.random.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    self.cellRandomSprite = sprites[group][sprite];
+		    self.cellRandomSprite->load();
+		    self.cellRandomBitmap = self.cellRandomSprite->getBitmap();
+		} else if (simple == "cell.random.switchtime"){
+                    simple >> self.cellRandomSwitchTime;
+		} else if (simple == "p1.cursor.startcell"){
+                    simple >> self.p1Cursor.cursor.x;
+		    simple >> self.p1Cursor.cursor.y;
+		    self.p1Cursor.start.x = self.p1Cursor.cursor.x;
+		    self.p1Cursor.start.y = self.p1Cursor.cursor.y;
+		} else if (simple == "p1.cursor.active.spr"){
+		    int group, sprite;
+		    simple >> group >> sprite;
+		    self.p1Cursor.cursorActiveSprite = sprites[group][sprite];
+		    self.p1Cursor.cursorActiveSprite->load();
+		    self.p1Cursor.active = self.p1Cursor.cursorActiveSprite->getBitmap();
+		} else if (simple == "p1.cursor.done.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    self.p1Cursor.cursorDoneSprite = sprites[group][sprite];
+		    self.p1Cursor.cursorDoneSprite->load();
+		    self.p1Cursor.done = self.p1Cursor.cursorDoneSprite->getBitmap();
+		} else if (simple == "p1.cursor.move.snd"){ /* nothing */ }
+                else if (simple == "p1.cursor.done.snd"){ /* nothing */ }
+		else if (simple == "p1.random.move.snd"){ /* nothing */ }
+		else if (simple == "p2.cursor.startcell"){
+                    simple >> self.p2Cursor.cursor.x;
+		    simple >> self.p2Cursor.cursor.y;
+		    self.p2Cursor.start.x = self.p2Cursor.cursor.x;
+		    self.p2Cursor.start.y = self.p2Cursor.cursor.y;
+		} if (simple == "p2.cursor.active.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    self.p2Cursor.cursorActiveSprite = sprites[group][sprite];
+		    self.p2Cursor.cursorActiveSprite->load();
+		    self.p2Cursor.active = self.p2Cursor.cursorActiveSprite->getBitmap();
+		} else if (simple == "p2.cursor.done.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    self.p2Cursor.cursorDoneSprite = sprites[group][sprite];
+		    self.p2Cursor.cursorDoneSprite->load();
+		    self.p2Cursor.done = self.p2Cursor.cursorDoneSprite->getBitmap();
+		} else if (simple == "p2.cursor.blink"){
+		    simple >> self.p2Cursor.blink;
+		    self.p2Cursor.blinkCounter = 0;
+		} 
+		else if ( simple == "p2.cursor.move.snd"){ /* nothing */ }
+		else if ( simple == "p2.cursor.done.snd"){ /* nothing */ }
+		else if ( simple == "p2.random.move.snd"){ /* nothing */ }
+		else if ( simple == "stage.move.snd"){ /* nothing */ }
+		else if ( simple == "stage.done.snd"){ /* nothing */ }
+		else if ( simple == "cancel.snd"){ /* nothing */ }
+		else if (simple == "portrait.offset"){
+		    simple >> self.portraitOffset.x;
+		    simple >> self.portraitOffset.y;
+		} else if (simple == "portrait.scale"){
+		    simple >> self.portraitScale.x;
+		    simple >> self.portraitScale.y;
+		} else if ( simple == "title.offset"){
+		    simple >> self.titleOffset.x;
+		    simple >> self.titleOffset.y;
+		} else if ( simple == "title.font"){
+		    simple >> self.titleFont.index;
+		    simple >> self.titleFont.bank;
+		    simple >> self.titleFont.position;
+		} else if ( simple == "p1.face.offset"){
+		    simple >> self.p1Cursor.faceOffset.x;
+		    simple >> self.p1Cursor.faceOffset.y;
+		} else if ( simple == "p1.face.scale"){
+		    simple >> self.p1Cursor.faceScalex;
+		    simple >> self.p1Cursor.faceScaley;
+		} else if ( simple == "p1.face.facing"){
+		    simple >> self.p1Cursor.facing;
+		} else if ( simple == "p2.face.offset"){
+		    simple >> self.p2Cursor.faceOffset.x;
+		    simple >> self.p2Cursor.faceOffset.y;
+		} else if ( simple == "p2.face.scale"){
+		    simple >> self.p2Cursor.faceScalex;
+		    simple >> self.p2Cursor.faceScaley;
+		} else if ( simple == "p2.face.facing"){
+		    simple >> self.p2Cursor.facing;
+		} else if ( simple == "p1.name.offset"){
+		    simple >> self.p1Cursor.nameOffset.x;
+		    simple >> self.p1Cursor.nameOffset.y;
+		}  else if ( simple == "p1.name.font"){
+		    simple >> self.p1Cursor.nameFont.index;
+		    simple >> self.p1Cursor.nameFont.bank;
+		    simple >> self.p1Cursor.nameFont.position;
+		} else if ( simple == "p2.name.offset"){
+		    simple >> self.p2Cursor.nameOffset.x;
+		    simple >> self.p2Cursor.nameOffset.y;
+		} else if ( simple == "p2.name.font"){
+		    simple >> self.p2Cursor.nameFont.index;
+		    simple >> self.p2Cursor.nameFont.bank;
+		    simple >> self.p2Cursor.nameFont.position;
+		} else if ( simple == "stage.pos"){
+		    simple >> self.stageInfo.stagePosition.x;
+		    simple >> self.stageInfo.stagePosition.y;
+		} else if ( simple == "stage.active.font"){
+		    simple >> self.stageInfo.stageActiveFont.index;
+		    simple >> self.stageInfo.stageActiveFont.bank;
+		    simple >> self.stageInfo.stageActiveFont.position;
+		} else if ( simple == "stage.active2.font"){
+                    try{
+                        simple >> self.stageInfo.stageActiveFont2.index;
+                        simple >> self.stageInfo.stageActiveFont2.bank;
+                        simple >> self.stageInfo.stageActiveFont2.position;
+                    } catch (const Ast::Exception & e){
+                        /* ignore I guess */
+                    }
+		} else if ( simple == "stage.done.font"){
+                    try{
+                        simple >> self.stageInfo.stageDoneFont.index;
+                        simple >> self.stageInfo.stageDoneFont.bank;
+                        simple >> self.stageInfo.stageDoneFont.position;
+                    } catch (const Ast::Exception & e){
+                        /* ignore */
+                    }
+		}
 #if 0
-	    while( collection[index]->hasItems() ){
-		MugenItemContent *content = collection[index]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
-		Mugen::Util::fixCase(itemhead);
-		Global::debug(1) << "Got itemhead: '" << itemhead << "'" << endl;
-		if ( itemhead == "fadein.time" ){
-		    int time;
-		    *content->getNext() >> time;
-		    fader.setFadeInTime(time);
-		} else if ( itemhead == "fadein.color" ){
-		    int r,g,b;
-		    *content->getNext() >> r;
-		    *content->getNext() >> g;
-		    *content->getNext() >> b;
-		    fader.setFadeInColor(Bitmap::makeColor(r,g,b));
-		} else if ( itemhead == "fadeout.time" ){
-		    int time;
-		    *content->getNext() >> time;
-		    fader.setFadeOutTime(time);
-		} else if ( itemhead == "fadeout.color" ){
-		    int r,g,b;
-		    *content->getNext() >> r;
-		    *content->getNext() >> g;
-		    *content->getNext() >> b;
-		    fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
-		} else if ( itemhead == "rows" ){
-		    *content->getNext() >> rows;
-		} else if ( itemhead == "columns" ){
-		    *content->getNext() >> columns;
-		} else if ( itemhead == "wrapping"){
-		    *content->getNext() >> wrapping;
-		} else if ( itemhead == "pos" ){
-		    *content->getNext() >> position.x;
-		    *content->getNext() >> position.y;
-		} else if ( itemhead == "showemptyboxes" ){
-		    *content->getNext() >> showEmptyBoxes;
-		} else if ( itemhead == "moveoveremptyboxes" ){
-		    *content->getNext() >> moveOverEmptyBoxes;
-		} else if ( itemhead == "cell.size" ){
-		    *content->getNext() >> cellSize.x;
-		    *content->getNext() >> cellSize.y;
-		} else if ( itemhead == "cell.spacing" ){
-		    *content->getNext() >> cellSpacing;
-		} else if ( itemhead == "cell.bg.spr" ){
-		    int group, sprite;
-		    *content->getNext() >> group;
-		    *content->getNext() >> sprite;
-		    cellBackgroundSprite = sprites[group][sprite];
-		    cellBackgroundSprite->load();
-		    cellBackgroundBitmap = cellBackgroundSprite->getBitmap();//= new Bitmap(Bitmap::memoryPCX((unsigned char*) cellBackgroundSprite->pcx, cellBackgroundSprite->newlength, true));
-		} else if ( itemhead == "cell.random.spr" ){
-		    int group, sprite;
-		    *content->getNext() >> group;
-		    *content->getNext() >> sprite;
-		    cellRandomSprite = sprites[group][sprite];
-		    cellRandomSprite->load();
-		    cellRandomBitmap = cellRandomSprite->getBitmap();// = new Bitmap(Bitmap::memoryPCX((unsigned char*) cellRandomSprite->pcx, cellRandomSprite->newlength, true));
-		} else if ( itemhead == "cell.random.switchtime" ){
-		    *content->getNext() >> cellRandomSwitchTime;
-		} else if ( itemhead == "p1.cursor.startcell" ){
-		    *content->getNext() >> p1Cursor.cursor.x;
-		    *content->getNext() >> p1Cursor.cursor.y;
-		    p1Cursor.start.x = p1Cursor.cursor.x;
-		    p1Cursor.start.y = p1Cursor.cursor.y;
-		} else if ( itemhead == "p1.cursor.active.spr"){
-		    int group, sprite;
-		    *content->getNext() >> group;
-		    *content->getNext() >> sprite;
-		    p1Cursor.cursorActiveSprite = sprites[group][sprite];
-		    p1Cursor.cursorActiveSprite->load();
-		    p1Cursor.active = p1Cursor.cursorActiveSprite->getBitmap();//new Bitmap(Bitmap::memoryPCX((unsigned char*) p1Cursor.cursorActiveSprite->pcx, p1Cursor.cursorActiveSprite->newlength, true));
-		} else if ( itemhead == "p1.cursor.done.spr"){
-		    int group, sprite;
-		    *content->getNext() >> group;
-		    *content->getNext() >> sprite;
-		    p1Cursor.cursorDoneSprite = sprites[group][sprite];
-		    p1Cursor.cursorDoneSprite->load();
-		    p1Cursor.done = p1Cursor.cursorDoneSprite->getBitmap();//new Bitmap(Bitmap::memoryPCX((unsigned char*) p1Cursor.cursorDoneSprite->pcx, p1Cursor.cursorDoneSprite->newlength, true));
-		} 
-		else if ( itemhead == "p1.cursor.move.snd" ){ /* nothing */ }
-		else if ( itemhead == "p1.cursor.done.snd"){ /* nothing */ }
-		else if ( itemhead == "p1.random.move.snd"){ /* nothing */ }
-		else if ( itemhead == "p2.cursor.startcell"){
-		    *content->getNext() >> p2Cursor.cursor.x;
-		    *content->getNext() >> p2Cursor.cursor.y;
-		    p2Cursor.start.x = p2Cursor.cursor.x;
-		    p2Cursor.start.y = p2Cursor.cursor.y;
-		} if ( itemhead == "p2.cursor.active.spr"){
-		    int group, sprite;
-		    *content->getNext() >> group;
-		    *content->getNext() >> sprite;
-		    p2Cursor.cursorActiveSprite = sprites[group][sprite];
-		    p2Cursor.cursorActiveSprite->load();
-		    p2Cursor.active = p2Cursor.cursorActiveSprite->getBitmap();//new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorActiveSprite->pcx, p2Cursor.cursorActiveSprite->newlength, true));
-		} else if ( itemhead == "p2.cursor.done.spr"){
-		    int group, sprite;
-		    *content->getNext() >> group;
-		    *content->getNext() >> sprite;
-		    p2Cursor.cursorDoneSprite = sprites[group][sprite];
-		    p2Cursor.cursorDoneSprite->load();
-		    p2Cursor.done = p2Cursor.cursorDoneSprite->getBitmap();// = new Bitmap(Bitmap::memoryPCX((unsigned char*) p2Cursor.cursorDoneSprite->pcx, p2Cursor.cursorDoneSprite->newlength, true));
-		} else if ( itemhead == "p2.cursor.blink"){
-		    *content->getNext() >> p2Cursor.blink;
-		    p2Cursor.blinkCounter = 0;
-		} 
-		else if ( itemhead == "p2.cursor.move.snd"){ /* nothing */ }
-		else if ( itemhead == "p2.cursor.done.snd"){ /* nothing */ }
-		else if ( itemhead == "p2.random.move.snd"){ /* nothing */ }
-		else if ( itemhead == "stage.move.snd"){ /* nothing */ }
-		else if ( itemhead == "stage.done.snd"){ /* nothing */ }
-		else if ( itemhead == "cancel.snd"){ /* nothing */ }
-		else if ( itemhead == "portrait.offset"){
-		    *content->getNext() >> portraitOffset.x;
-		    *content->getNext() >> portraitOffset.y;
-		} else if ( itemhead == "portrait.scale"){
-		    *content->getNext() >> portraitScale.x;
-		    *content->getNext() >> portraitScale.y;
-		} else if ( itemhead == "title.offset"){
-		    *content->getNext() >> titleOffset.x;
-		    *content->getNext() >> titleOffset.y;
-		} else if ( itemhead == "title.font"){
-		    *content->getNext() >> titleFont.index;
-		    *content->getNext() >> titleFont.bank;
-		    *content->getNext() >> titleFont.position;
-		} else if ( itemhead == "p1.face.offset"){
-		    *content->getNext() >> p1Cursor.faceOffset.x;
-		    *content->getNext() >> p1Cursor.faceOffset.y;
-		} else if ( itemhead == "p1.face.scale"){
-		    *content->getNext() >> p1Cursor.faceScalex;
-		    *content->getNext() >> p1Cursor.faceScaley;
-		} else if ( itemhead == "p1.face.facing"){
-		    *content->getNext() >> p1Cursor.facing;
-		} else if ( itemhead == "p2.face.offset"){
-		    *content->getNext() >> p2Cursor.faceOffset.x;
-		    *content->getNext() >> p2Cursor.faceOffset.y;
-		} else if ( itemhead == "p2.face.scale"){
-		    *content->getNext() >> p2Cursor.faceScalex;
-		    *content->getNext() >> p2Cursor.faceScaley;
-		} else if ( itemhead == "p2.face.facing"){
-		    *content->getNext() >> p2Cursor.facing;
-		} else if ( itemhead == "p1.name.offset"){
-		    *content->getNext() >> p1Cursor.nameOffset.x;
-		    *content->getNext() >> p1Cursor.nameOffset.y;
-		}  else if ( itemhead == "p1.name.font"){
-		    *content->getNext() >> p1Cursor.nameFont.index;
-		    *content->getNext() >> p1Cursor.nameFont.bank;
-		    *content->getNext() >> p1Cursor.nameFont.position;
-		} else if ( itemhead == "p2.name.offset"){
-		    *content->getNext() >> p2Cursor.nameOffset.x;
-		    *content->getNext() >> p2Cursor.nameOffset.y;
-		} else if ( itemhead == "p2.name.font"){
-		    *content->getNext() >> p2Cursor.nameFont.index;
-		    *content->getNext() >> p2Cursor.nameFont.bank;
-		    *content->getNext() >> p2Cursor.nameFont.position;
-		} else if ( itemhead == "stage.pos"){
-		    *content->getNext() >> stageInfo.stagePosition.x;
-		    *content->getNext() >> stageInfo.stagePosition.y;
-		} else if ( itemhead == "stage.active.font"){
-		    *content->getNext() >> stageInfo.stageActiveFont.index;
-		    *content->getNext() >> stageInfo.stageActiveFont.bank;
-		    *content->getNext() >> stageInfo.stageActiveFont.position;
-		} else if ( itemhead == "stage.active2.font"){
-		    *content->getNext() >> stageInfo.stageActiveFont2.index;
-		    *content->getNext() >> stageInfo.stageActiveFont2.bank;
-		    *content->getNext() >> stageInfo.stageActiveFont2.position;
-		} else if ( itemhead == "stage.done.font"){
-		    *content->getNext() >> stageInfo.stageDoneFont.index;
-		    *content->getNext() >> stageInfo.stageDoneFont.bank;
-		    *content->getNext() >> stageInfo.stageDoneFont.position;
-		} else if ( itemhead.find("teammenu")!=std::string::npos ){ /* Ignore for now */ }
-		//else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
-	    }
+                else if ( simple.find("teammenu")!=std::string::npos ){
+                    /* Ignore for now */
+                }
 #endif
+		//else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
+                }
+            };
+
+            SelectInfoWalker walker(*this, sprites);
+            section->walk(walker);
 	} else if (head == "selectbgdef"){ 
 	    /* Background management */
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir(selectFile), sections, selectTicker, &sprites, "selectbg");
