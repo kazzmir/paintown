@@ -114,12 +114,14 @@ MugenCharacterSelect::~MugenCharacterSelect(){
 
 void MugenCharacterSelect::load(const std::string &selectFile, const std::vector<Ast::Section*> & sections, MugenSprites & sprites){
 
-#if 0
-    /* Extract info for our first section of our select screen */
-    for( ; index < collection.size(); ++index ){
-	std::string head = collection[index]->getHeader();
+    for (vector<Ast::Section*>::const_iterator it = sections.begin(); it != sections.end(); it++){
+        Ast::Section * section = *it;
+        std::string head = section->getName();
+        /* this should really be head = Mugen::Util::fixCase(head) */
 	Mugen::Util::fixCase(head);
-	if( head == "select info" ){ 
+
+	if (head == "select info"){ 
+#if 0
 	    while( collection[index]->hasItems() ){
 		MugenItemContent *content = collection[index]->getNext();
 		const MugenItem *item = content->getNext();
@@ -294,23 +296,14 @@ void MugenCharacterSelect::load(const std::string &selectFile, const std::vector
 		} else if ( itemhead.find("teammenu")!=std::string::npos ){ /* Ignore for now */ }
 		//else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
 	    }
-	}
-	else if( head == "selectbgdef" ){ 
-	    // Background management
-            /* FIXME!!!! use collectBackgroundStuff() */
-            /*
-	    MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir( selectFile ),collection, index,selectTicker,&sprites);
+#endif
+	} else if (head == "selectbgdef"){ 
+	    /* Background management */
+	    MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir(selectFile), sections, selectTicker, &sprites, "selectbg");
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
-            */
-	}
-	else {
-	    // Done collecting
-	    index--;
-	    break;
 	}
     }
-#endif
 
     fonts = fonts;
     // Set up cell table
