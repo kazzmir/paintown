@@ -11,6 +11,10 @@
 #include "object/object_attack.h"
 #include "network/network.h"
 
+namespace Ast{
+    class Key;
+}
+
 class Bitmap;
 class MugenItemContent;
 class MugenSprite;
@@ -44,6 +48,12 @@ struct Constant{
 
     double double_;
     std::vector<double> doubles;
+};
+
+/* key command */
+class Command{
+public:
+    Command(std::string name, Ast::Key * key, int maxTime);
 };
 
 class Character: public ObjectAttack {
@@ -116,6 +126,8 @@ protected:
     virtual void loadCmdFile(const std::string & path);
     virtual void loadCnsFile(const std::string & path);
     virtual void loadStateFile(const std::string & path);
+
+    virtual void addCommand(Command * command);
 
     virtual void setConstant(std::string name, const std::vector<double> & values);
     virtual void setConstant(std::string name, double value);

@@ -20,6 +20,10 @@ public:
         return *this;
     }
     
+    virtual Element * copy() const {
+        return new Number(value);
+    }
+    
     virtual const Value & operator>>(double & x) const {
         x = value;
         return *this;

@@ -14,6 +14,10 @@ public:
     virtual std::string getType() const {
         return "expression";
     }
+    
+    virtual Element * copy() const {
+        throw Exception("Not implemented yet");
+    }
 
     virtual ~Expression(){
     }

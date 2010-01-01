@@ -24,6 +24,10 @@ public:
     virtual bool hasMultiple() const {
         return true;
     }
+    
+    virtual Element * copy() const {
+        throw Exception("Not implemented yet");
+    }
 
     using Value::operator>>;
     

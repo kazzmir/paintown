@@ -37,6 +37,9 @@ using namespace std;
 namespace Mugen{
 
 namespace PaintownUtil = ::Util;
+    
+Command::Command(std::string name, Ast::Key * key, int maxTime){
+}
 
 Character::Character( const string & s ):
 ObjectAttack(0){
@@ -90,6 +93,10 @@ Character::~Character(){
     }
     
 }
+    
+void Character::addCommand(Command * command){
+    /* todo */
+}
 
 void Character::loadCmdFile(const string & path){
     string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
@@ -103,22 +110,42 @@ void Character::loadCmdFile(const string & path){
 
             if (head == "command"){
                 class CommandWalker: public Ast::Walker {
-                    public:
-                        CommandWalker(Character & self):
-                            self(self){
-                            }
+                public:
+                    CommandWalker(Character & self):
+                        self(self),
+                        time(0),
+                        key(0){
+                        }
 
-                        Character & self;
+                    Character & self;
+                    int time;
+                    string name;
+                    Ast::Key * key;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "name"){
-                            string name;
                             simple >> name;
                         } else if (simple == "command"){
+                            key = (Ast::Key*) simple.getValue()->copy();
                         } else if (simple == "time"){
-                            int time;
                             simple >> time;
                         }
+                    }
+
+                    virtual ~CommandWalker(){
+                        if (name == ""){
+                            throw MugenException("No name given for command");
+                        }
+
+                        if (time == 0){
+                            throw MugenException("No time specified for command");
+                        }
+
+                        if (key == 0){
+                            throw MugenException("No key sequence given for command");
+                        }
+
+                        self.addCommand(new Command(name, key, time));
                     }
                 };
 

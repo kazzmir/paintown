@@ -23,15 +23,27 @@ public:
 class KeySingle: public Key {
 public:
     KeySingle(const char * name):
-        Key(){
+        Key(),
+        name(name){
         }
     
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
     }
+    
+    virtual std::string toString() const {
+        return std::string(name);
+    }
+    
+    virtual Element * copy() const {
+        return new KeySingle(name);
+    }
 
     virtual ~KeySingle(){
     }
+
+protected:
+    const char * name;
 };
 
 class KeyModifier: public Key {
@@ -78,6 +90,30 @@ public:
         key->mark(marks);
     }
 
+    virtual std::string toString() const {
+        std::ostringstream out;
+        out << modifierName(type);
+        if (type == Release && extra != 0){
+            out << extra;
+        }
+        out << key->toString();
+        return out.str();
+    }
+
+    const char * modifierName(ModifierType type) const {
+        switch (type){
+            case MustBeHeldDown : return "/";
+            case Release : return "~";
+            case Direction : return "$";
+            case Only : return ">";
+            default : return "?";
+        }
+    }
+
+    virtual Element * copy() const {
+        return new KeyModifier(type, (Key*) key->copy(), extra);
+    }
+
     virtual ~KeyModifier(){
         delete key;
     }
@@ -100,6 +136,16 @@ public:
         marks[this] = true;
         key1->mark(marks);
         key2->mark(marks);
+    }
+    
+    virtual std::string toString() const {
+        std::ostringstream out;
+        out << key1->toString() << "+" << key2->toString();
+        return out.str();
+    }
+
+    virtual Element * copy() const {
+        return new KeyCombined((Key*) key1->copy(), (Key*) key2->copy());
     }
 
     virtual ~KeyCombined(){
@@ -125,6 +171,27 @@ public:
             Key * key = (Key *) *it;
             key->mark(marks);
         }
+    }
+
+    virtual Element * copy() const {
+        std::vector<Key*> copied;
+        for (std::vector<Key*>::const_iterator it = keys.begin(); it != keys.end(); it++){
+            copied.push_back((Key*) (*it)->copy());
+        }
+        return new KeyList(copied);
+    }
+    
+    virtual std::string toString() const {
+        std::ostringstream out;
+
+        for (std::vector<Key*>::const_iterator it = keys.begin(); it != keys.end(); it++){
+            if (it != keys.begin()){
+                out << ", ";
+            }
+            out << (*it)->toString();
+        }
+
+        return out.str();
     }
 
     virtual ~KeyList(){

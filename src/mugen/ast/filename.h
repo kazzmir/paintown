@@ -22,6 +22,10 @@ public:
         str = *(this->str);
         return *this;
     }
+    
+    virtual Element * copy() const {
+        throw Exception("Not implemented yet");
+    }
 
     virtual std::string getType() const {
         return "string";

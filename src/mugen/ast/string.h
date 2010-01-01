@@ -26,6 +26,10 @@ public:
         return "string";
     }
     
+    virtual Element * copy() const {
+        throw Exception("Not implemented yet");
+    }
+    
     /*
     virtual bool referenced(const void * value) const {
         return Value::referenced(value) ||

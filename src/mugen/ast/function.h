@@ -18,6 +18,10 @@ public:
         return out.str();
     }
     
+    virtual Element * copy() const {
+        throw Exception("Not implemented yet");
+    }
+    
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
         arg1->mark(marks);

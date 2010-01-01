@@ -39,6 +39,10 @@ public:
         low->mark(marks);
         high->mark(marks);
     }
+
+    virtual Element * copy() const {
+        throw Exception("Copy not implemented yet");
+    }
     
     virtual std::string getType() const {
         return "range";

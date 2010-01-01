@@ -12,6 +12,9 @@ public:
 
     virtual void mark(std::map<const void*, bool> & marks) const = 0;
 
+    /* create a deep copy of this object */
+    virtual Element * copy() const = 0;
+
     virtual ~Element(){
     }
 };

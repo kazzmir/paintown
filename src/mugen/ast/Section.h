@@ -82,6 +82,10 @@ public:
         attributes.push_back(attribute);
         walkList.push_back(WalkAttribute);
     }
+    
+    virtual Element * copy() const {
+        throw Exception("Copy not implemented yet");
+    }
 
     const std::list<Attribute *> & getAttributes() const {
         return attributes;

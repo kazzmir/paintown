@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include "ast.h"
+#include "exception.h"
 
 namespace Ast{
 
@@ -28,6 +29,10 @@ public:
 
     virtual Kind getKind(){
         return kind;
+    }
+
+    virtual Element * copy() const {
+        throw Exception("Copy not implemented yet");
     }
 
     virtual void debugExplain(){

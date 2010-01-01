@@ -21,6 +21,10 @@ public:
     static int lowerCase( int c ){
         return tolower(c);
     }
+    
+    virtual Element * copy() const {
+        throw Exception("Not implemented yet");
+    }
 
     static std::string downcase(std::string str){
         std::transform(str.begin(), str.end(), str.begin(), lowerCase);

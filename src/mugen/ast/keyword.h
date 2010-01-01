@@ -20,6 +20,10 @@ public:
         return *this;
     }
     
+    virtual Element * copy() const {
+        throw Exception("Copy not implemented yet");
+    }
+    
     bool operator==(const std::string & str) const {
         return downcase(toString()) == downcase(str);
     }
