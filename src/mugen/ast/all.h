@@ -22,5 +22,6 @@
 #include "range.h"
 #include "extra.h"
 #include "function.h"
+#include "key.h"
 
 #endif
