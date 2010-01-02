@@ -17,7 +17,7 @@ public:
         current_value = this->values.begin();
     }
     
-    virtual void walk(Walker & walker){
+    virtual void walk(Walker & walker) const {
         walker.onValueList(*this);
     }
 

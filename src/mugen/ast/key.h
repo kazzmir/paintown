@@ -2,6 +2,7 @@
 #define _paintown_497caab0341b35e92742cc75b287ff0b
 
 #include "ast.h"
+#include "walker.h"
 #include <map>
 #include <vector>
 
@@ -29,6 +30,14 @@ public:
     
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
+    }
+
+    virtual bool operator==(const std::string & that) const {
+        return name == that;
+    }
+    
+    virtual void walk(Walker & walker) const {
+        walker.onKeySingle(*this);
     }
     
     virtual std::string toString() const {
@@ -84,10 +93,18 @@ public:
         key(key),
         extra(0){
         }
+    
+    virtual void walk(Walker & walker) const {
+        walker.onKeyModifier(*this);
+    }
 
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
         key->mark(marks);
+    }
+
+    virtual const Key * getKey() const {
+        return key;
     }
 
     virtual std::string toString() const {
@@ -138,6 +155,18 @@ public:
         key2->mark(marks);
     }
     
+    virtual void walk(Walker & walker) const {
+        walker.onKeyCombined(*this);
+    }
+
+    virtual const Key * getKey1() const {
+        return key1;
+    }
+    
+    virtual const Key * getKey2() const {
+        return key2;
+    }
+    
     virtual std::string toString() const {
         std::ostringstream out;
         out << key1->toString() << "+" << key2->toString();
@@ -179,6 +208,10 @@ public:
             copied.push_back((Key*) (*it)->copy());
         }
         return new KeyList(copied);
+    }
+
+    virtual const std::vector<Key*> & getKeys() const {
+        return keys;
     }
     
     virtual std::string toString() const {

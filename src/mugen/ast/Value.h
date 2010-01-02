@@ -21,7 +21,7 @@ public:
         return "";
     }
     
-    virtual void walk(Walker & walker){
+    virtual void walk(Walker & walker) const {
         walker.onValue(*this);
     }
 

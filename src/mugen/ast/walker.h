@@ -10,6 +10,9 @@ class AttributeArray;
 class Attribute;
 class Value;
 class ValueList;
+class KeySingle;
+class KeyModifier;
+class KeyCombined;
 
 /* the visitor pattern */
 class Walker{
@@ -24,6 +27,15 @@ public:
     }
 
     virtual void onAttribute(const Attribute & attribute){
+    }
+
+    virtual void onKeySingle(const KeySingle & key){
+    }
+    
+    virtual void onKeyModifier(const KeyModifier & key){
+    }
+
+    virtual void onKeyCombined(const KeyCombined & key){
     }
 
     virtual void onSection(const Section & section){

@@ -18,13 +18,14 @@
 #include "game/console.h"
 #include "object/animation.h"
 #include "object/object.h"
-#include "object/character.h"
+// #include "object/character.h"
 #include "object/object_attack.h"
 #include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
 #include "ast/all.h"
 #include "util/timedifference.h"
+#include "character.h"
 
 #include "parser/all.h"
 
@@ -50,8 +51,10 @@ static const double DEFAULT_JUMP_VELOCITY = 7.2;
 static const int CONSOLE_SIZE = 95;
 static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
-static bool centerCollision( Character *p1, Character *p2 ){
+static bool centerCollision( Mugen::Character *p1, Mugen::Character *p2 ){
     //p1->getCurrentMovement()->getCurrentFrame();
+    /* FIXME! */
+    /*
     const int p1width = p1->getCurrentMovement()->getCurrentFrame()->getWidth(), p1height = p1->getCurrentMovement()->getCurrentFrame()->getHeight();
     const int p2width = p2->getCurrentMovement()->getCurrentFrame()->getWidth(), p2height = p2->getCurrentMovement()->getCurrentFrame()->getHeight();
     
@@ -66,6 +69,7 @@ static bool centerCollision( Character *p1, Character *p2 ){
 	    y2 < y3 && y2 < y4 ) return false;
     if ( y1 > y3 && y1 > y4 &&
 	    y2 > y3 && y2 > y4 ) return false;
+            */
     
     return true;
 }
@@ -569,24 +573,31 @@ void MugenStage::logic( ){
 		// Do stuff for players
 		if (isaPlayer( enemy )){
 		    // He collides with another push him away
-		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Character *)player), ((Character *)enemy) ) ){
+		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
 			if ( enemy->getX() < player->getX() ){
-			    enemy->moveLeft( ((Character *)player)->getSpeed() );
+                            /* FIXME! */
+			    enemy->moveLeft(1);
+			    // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
 			}
 			else if ( enemy->getX() > player->getX() ){
-			    enemy->moveRight( ((Character *)player)->getSpeed() );
+                            /* FIXME! */
+			    enemy->moveRight(1);
+			    // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
 			}
 		    }
 		    // autoturn need to do turning actions
 		    if (autoturn){
 			if (isaPlayer( player )){
-			    if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT && ((Character *)enemy)->getStatus() == Status_Ground){
+                            /* FIXME! */
+                            /*
+			    if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT && ((Mugen::Character *)enemy)->getStatus() == Status_Ground){
 				enemy->setFacing(Object::FACING_LEFT);
 			    }
 
-			    if (enemy->getX() < player->getX() && enemy->getFacing() != Object::FACING_RIGHT && ((Character *)enemy)->getStatus() == Status_Ground){
+			    if (enemy->getX() < player->getX() && enemy->getFacing() != Object::FACING_RIGHT && ((Mugen::Character *)enemy)->getStatus() == Status_Ground){
 				enemy->setFacing(Object::FACING_RIGHT);
 			    }
+                            */
 			}
 		    }
 		}
@@ -675,7 +686,7 @@ void MugenStage::render( Bitmap *work ){
     // Player debug
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	if (isaPlayer(*it)){
-	    Character *character = (Character*)*it;
+            Mugen::Character *character = (Mugen::Character*)*it;
 	    // Player debug crap
 	    if (debugMode){
 		// Players x positioning
@@ -703,12 +714,14 @@ void MugenStage::render( Bitmap *work ){
 	int p1Side = 5;
 	int p2Side = 5;
 	if (isaPlayer(*it)){
-	    Character *character = (Character*)*it;
+            Mugen::Character *character = (Mugen::Character*)*it;
 	    if ( character->getAlliance() == Player1Side ){
-		character->drawLifeBar( 5, p1Side, work );
+                /* FIXME! */
+		// character->drawLifeBar( 5, p1Side, work );
 		p1Side +=10;
 	    } else if ( character->getAlliance() == Player2Side ){
-		character->drawLifeBar( 215, p2Side, work );
+                /* FIXME! */
+		// character->drawLifeBar( 215, p2Side, work );
 		p2Side +=10;
 	    }
 	}
@@ -780,7 +793,8 @@ void MugenStage::addp1( Object * o ){
     o->setFacing( Object::FACING_RIGHT );
     objects.push_back(o);
     players.push_back(o);
-    ((Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
+    /* FIXME! */
+    // ((Mugen::Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
     playerInfo[o].oldx = o->getX();
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;
@@ -799,7 +813,8 @@ void MugenStage::addp2( Object * o ){
     o->setFacing( Object::FACING_LEFT );
     objects.push_back(o);
     players.push_back(o);
-    ((Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
+    /* FIXME! */
+    // ((Mugen::Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
     playerInfo[o].oldx = o->getX();
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;
@@ -817,9 +832,11 @@ void MugenStage::toggleConsole(){
 void MugenStage::act(){
     logic();
 }
+
 void MugenStage::draw( Bitmap * work ){
-    render( work );
+    render(work);
 }
+
 void MugenStage::addObject( Object * o ){ /* Does nothing */ }
 bool MugenStage::finished() const { return false; }
 void MugenStage::reloadLevel() throw( LoadException ){ 

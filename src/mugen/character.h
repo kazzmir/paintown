@@ -13,6 +13,7 @@
 #include "input/input-map.h"
 
 namespace Ast{
+    class KeyList;
     class Key;
 }
 
@@ -54,7 +55,7 @@ struct Constant{
 /* key command */
 class Command{
 public:
-    Command(std::string name, Ast::Key * key, int maxTime, int bufferTime);
+    Command(std::string name, Ast::KeyList * keys, int maxTime, int bufferTime);
 
     enum Keys{
         Down,
@@ -68,6 +69,17 @@ public:
         B,
         C,
     };
+
+    virtual void handle(InputMap<Keys>::Output keys);
+
+    virtual ~Command();
+
+protected:
+    std::string name;
+    Ast::KeyList * keys;
+    int maxTime;
+    int bufferTime;
+    std::vector<Ast::Key*>::const_iterator current;
 };
 
 class Character: public ObjectAttack {
@@ -337,6 +349,8 @@ protected:
 	
 	/* Commands, Triggers or whatever else we come up with */
         std::map<std::string, Constant> constants;
+
+        std::vector<Command *> commands;
 
         int currentState;
 

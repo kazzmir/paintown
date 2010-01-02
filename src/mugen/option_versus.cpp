@@ -8,6 +8,7 @@
 #include "globals.h"
 #include "init.h"
 #include "input/keyboard.h"
+#include "input/input-manager.h"
 #include "util/funcs.h"
 
 #include "character.h"
@@ -80,6 +81,7 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
                 runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
                 while (runCounter > 1){
                     keyInputManager::update();
+                    InputManager::poll();
                     stage->logic();
                     runCounter -= 1;
                     draw = true;

@@ -42,7 +42,85 @@ namespace Mugen{
 
 namespace PaintownUtil = ::Util;
     
-Command::Command(std::string name, Ast::Key * key, int maxTime, int bufferTime){
+Command::Command(std::string name, Ast::KeyList * keys, int maxTime, int bufferTime):
+name(name),
+keys(keys),
+maxTime(maxTime),
+bufferTime(bufferTime),
+current(keys->getKeys().begin()){
+}
+
+void Command::handle(InputMap<Keys>::Output keys){
+    class KeyWalker: public Ast::Walker{
+    public:
+        KeyWalker(InputMap<Keys>::Output & keys):
+        ok(false),
+        keys(keys){
+        }
+        
+        bool ok;
+        InputMap<Keys>::Output & keys;
+
+        virtual void onKeySingle(const Ast::KeySingle & key){
+            if (key == "a"){
+                ok = keys[A];
+            } else if (key == "b"){
+                ok = keys[B];
+            } else if (key == "c"){
+                ok = keys[C];
+            } else if (key == "x"){
+                ok = keys[X];
+            } else if (key == "y"){
+                ok = keys[Y];
+            } else if (key == "z"){
+                ok = keys[Z];
+            } else if (key == "B"){
+                ok = keys[Back];
+            } else if (key == "DB"){
+                ok = keys[Back] && keys[Down];
+            } else if (key == "D"){
+                ok = keys[Down];
+            } else if (key == "DF"){
+                ok = keys[Forward] && keys[Down];
+            } else if (key == "F"){
+                ok = keys[Forward];
+            } else if (key == "UF"){
+                ok = keys[Forward] && keys[Up];
+            } else if (key == "U"){
+                ok = keys[Up];
+            } else if (key == "UB"){
+                ok = keys[Back] && keys[Up];
+            }
+        }
+
+        virtual void onKeyModifier(const Ast::KeyModifier & key){
+            /* FIXME */
+            key.getKey()->walk(*this);
+        }
+
+        virtual void onKeyCombined(const Ast::KeyCombined & key){
+            KeyWalker left(keys);
+            KeyWalker right(keys);
+            key.getKey1()->walk(left);
+            key.getKey2()->walk(right);
+            ok = left.ok && right.ok;
+        }
+    };
+
+    KeyWalker walker(keys);
+    (*current)->walk(walker);
+
+    if (walker.ok){
+        current++;
+        if (current == this->keys->getKeys().end()){
+            current = this->keys->getKeys().begin();
+            Global::debug(0) << "Pressed " << name << endl;
+        }
+    }
+}
+
+Command::~Command(){
+    delete keys;
 }
 
 Character::Character( const string & s ):
@@ -75,7 +153,7 @@ ObjectAttack(copy){
 
 Character::~Character(){
      // Get rid of sprites
-    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+    for (std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
@@ -99,7 +177,10 @@ Character::~Character(){
 	  if( j->second )delete j->second;
       }
     }
-    
+
+    for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
+        delete (*it);
+    }
 }
 
 void Character::initialize(){
@@ -119,6 +200,7 @@ void Character::initialize(){
 }
     
 void Character::addCommand(Command * command){
+    commands.push_back(command);
     /* todo */
 }
 
@@ -180,7 +262,8 @@ void Character::loadCmdFile(const string & path){
                             throw MugenException("No key sequence given for command");
                         }
 
-                        self.addCommand(new Command(name, key, time, bufferTime));
+                        /* parser guarantees the key will be a KeyList */
+                        self.addCommand(new Command(name, (Ast::KeyList*) key, time, bufferTime));
                     }
                 };
 
@@ -572,6 +655,10 @@ MugenAnimation * Character::getCurrentAnimation() const {
 }
 
 void Character::doInput(InputMap<Command::Keys>::Output output){
+    for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
+        Command * command = *it;
+        command->handle(output);
+    }
 }
 
 /* Inherited members */
