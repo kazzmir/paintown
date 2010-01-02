@@ -28,6 +28,7 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 #include "globals.h"
+#include "state.h"
 
 #include "parser/all.h"
 #include "ast/all.h"
@@ -99,7 +100,7 @@ Character::~Character(){
 }
 
 void Character::initialize(){
-    currentState = 0;
+    currentState = Standing;
 }
     
 void Character::addCommand(Command * command){
@@ -442,8 +443,7 @@ void Character::load(){
 }
 
 // Render sprite
-void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp , 
-				   const int flip, const double scalex, const double scaley ){
+void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp , const int flip, const double scalex, const double scaley ){
     MugenSprite *sprite = sprites[group][image];
     if (sprite){
 	Bitmap *bitmap = sprite->getBitmap();//bitmaps[group][image];
@@ -550,7 +550,13 @@ void Character::bundleAnimations(){
 void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
 }
 
-void Character::draw(Bitmap*, int){
+void Character::draw(Bitmap * work, int x_position){
+    typedef std::map< int, MugenAnimation * > Animations;
+    Animations::const_iterator it = getAnimations().find(currentState);
+    if (it != getAnimations().end()){
+        MugenAnimation * animation = (*it).second;
+        animation->render(260, 230, *work, 0, 0);
+    }
 }                      
 
 void Character::grabbed(Object*){

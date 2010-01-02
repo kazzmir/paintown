@@ -149,8 +149,13 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
     try{
         frames[position]->sprite->render(placex,placey,work,frames[position]->effects);
         
-        if( showDefense )renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
-        if( showOffense )renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
+        if (showDefense){
+            renderCollision( frames[position]->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ) );
+        }
+
+        if (showOffense){
+            renderCollision( frames[position]->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ) );
+        }
     } catch (const LoadException & e){
         Global::debug(0) << "Error loading sprite: " << e.getReason() << endl;
         /* FIXME: do something sensible here */

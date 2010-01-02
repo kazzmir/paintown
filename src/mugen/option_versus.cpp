@@ -10,6 +10,7 @@
 #include "input/keyboard.h"
 #include "util/funcs.h"
 
+#include "character.h"
 #include "mugen_animation.h"
 #include "mugen_background.h"
 #include "mugen_item.h"
@@ -52,52 +53,54 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
     // Do select screen change back to 2 once finished testing
     MugenSelectedChars *gameInfo = ((MugenMenu *)getParent())->getSelect()->run(getText(), 1, true, &screen);
     
-    if (gameInfo == 0)return;
+    if (gameInfo == 0){
+        return;
+    }
+
+    MugenStage * stage = gameInfo->selectedStage;
+    stage->addp1(gameInfo->team1[0]);
     
     // Load the stage
     try{
-	gameInfo->selectedStage->load();
+        stage->load();
+
+        /* FIXME: replace hard coded numbers */
+        Bitmap work(320,240);
+        bool quit = false;
+        double gameSpeed = 1.0;
+        double runCounter = 0;
+
+        // Lets reset the stage for good measure
+        gameInfo->selectedStage->reset();
+
+        while( !quit ){
+            bool draw = false;
+
+            if ( Global::speed_counter > 0 ){
+                runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+                while (runCounter > 1){
+                    keyInputManager::update();
+                    stage->logic();
+                    runCounter -= 1;
+                    draw = true;
+
+                    quit |= keyInputManager::keyState(keys::ESC, true );
+                }
+                Global::speed_counter = 0;
+            }
+
+            if (draw){
+                stage->render(&work);
+                work.Stretch(screen);
+                screen.BlitToScreen();
+            }
+
+            while (Global::speed_counter == 0){
+                Util::rest(1);
+                keyInputManager::update();
+            }
+        }
     } catch (const MugenException &ex){
 	Global::debug(0) << "Problem with stage: " << gameInfo->selectedStage->getName() << " Problem was: " << ex.getReason() << endl;
-	return;
     }
-    
-    /* FIXME: replace hard coded numbers */
-    Bitmap work(320,240);
-    bool quit = false;
-    double gameSpeed = 1.0;
-    double runCounter = 0;
-   
-    // Lets reset the stage for good measure
-    gameInfo->selectedStage->reset();
-    
-    while( !quit ){
-        bool draw = false;
-        
-        if ( Global::speed_counter > 0 ){
-            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
-            while (runCounter > 1){
-		keyInputManager::update();
-		gameInfo->selectedStage->logic();
-                runCounter -= 1;
-                draw = true;
-		
-		quit |= keyInputManager::keyState(keys::ESC, true );
-            }
-            Global::speed_counter = 0;
-        }
-
-        if (draw){
-            gameInfo->selectedStage->render(&work);
-	    work.Stretch(screen);
-	    screen.BlitToScreen();
-        }
-
-        while (Global::speed_counter == 0){
-            Util::rest(1);
-            keyInputManager::update();
-        }
-    }
-    
 }
-

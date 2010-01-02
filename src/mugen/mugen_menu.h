@@ -89,8 +89,8 @@ struct MugenStageInfo{
 };
 
 struct MugenSelectedChars{
-    std::vector< Mugen::Character *>team1;
-    std::vector< Mugen::Character *>team2;
+    std::vector<Mugen::Character *> team1;
+    std::vector<Mugen::Character *> team2;
     MugenStage *selectedStage;
 };
 	
