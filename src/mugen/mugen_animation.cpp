@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "mugen_animation.h"
+#include "state.h"
 
 #include "globals.h"
 #include <string>
@@ -86,7 +87,7 @@ Holds mugen animations, ie: player.air
 MugenAnimation::MugenAnimation():
 loopPosition(0),
 position(0),
-type(Unknown),
+type(Mugen::Unknown),
 showDefense(false),
 showOffense(false),
 ticks(0){
@@ -200,103 +201,103 @@ void MugenAnimation::reloadBitmaps(){
 }
 
 // Get name of type of animation
-const std::string MugenAnimation::getName(const MugenAnimationType t){
+const std::string MugenAnimation::getName(const Mugen::AnimationType t){
     switch( t ){
-	case Standing : return "Standing";break;
-	case StandTurning : return "Stand turning";break;
-	case CrouchTurning : return "Crouch turning";break;
-	case StandToCrouch : return "Stand to crouch";break;
-	case Crouching : return "Crouching";break;
-	case CrouchToStand : return "Crouch to stand";break;
-	case WalkingForwards : return "Walking forwards";break;
-	case WalkingBackwards : return "Walking backwards";break;
-	case JumpStart : return "Jump start (on ground)";break;
-	case JumpNeutralUp : return "Jump neutral (upwards)";break;
-	case JumpForwardsUp : return "Jump forwards (upwards)";break;
-	case JumpBackUp : return "Jump back (upwards)";break;
-	case JumpNeutralDown : return "Jump neutral (downwards)";break;
-	case JumpForwardsDown : return "Jump fwd (downwards)";break;
-	case JumpBackDown : return "Jump back (downwards)";break;
-	case JumpLanding : return "Jump landing";break;
-	case RunForwards : return "Run fwd/hop forward";break;
-	case HopBack : return "Hop back";break;
-	case StartGuardStand : return "Start guarding (stand)";break;
-	case StartGuardCrouch : return "Start guarding (crouch)";break;
-	case StartGuardAir : return "Start guarding (air)";break;
-	case GuardStand : return "Guard (stand)";break;
-	case GuardCrouch : return "Guard (crouch)";break;
-	case GuardAir : return "Guard (air)";break;
-	case StopGuardStand : return "Stop guarding (stand)";break;
-	case StopGuardCrouch : return "Stop guarding (crouch)";break;
-	case StopGuardAir : return "Stop guarding (air)";break;
-	case GuardHitStand : return "Guarding a hit (stand)";break;
-	case GuardHitCrouch : return "Guarding a hit (crouch)";break;
-	case GuardHitAir : return "Guarding a hit (air)";break;
-	case Lose : return "opt   Lose";break;
-	case Draw : return "opt   Time Over drawgame";break;
-	case Win : return "opt   Win";break;
-	case Intro : return "opt   Intro";break;
-	case Taunt : return "opt   Taunt";break;
-	case HitHighLight : return "Stand/Air Hit high (light)";break;
-	case HitHighMedium : return "Stand/Air Hit high (medium)";break;
-	case HitHighHard : return "Stand/Air Hit high (hard)";break;
-	case StandRecoverHighLight : return "Stand Recover high (light)";break;
-	case StandRecoverHighMedium : return "Stand Recover high (medium)";break;
-	case StandRecoverHighHard : return "Stand Recover high (hard)";break;
-	case HitLowLight : return "Stand/Air Hit low (light)";break;
-	case HitLowMedium : return "Stand/Air Hit low (medium)";break;
-	case HitLowHard : return "Stand/Air Hit low (hard)";break;
-	case StandRecoverLowLight : return "Stand Recover low (light)";break;
-	case StandRecoverLowMedium : return "Stand Recover low (medium)";break;
-	case StandRecoverLowHard : return "Stand Recover low (hard)";break;
-	case CrouchHitLight : return "Crouch Hit (light)";break;
-	case CrouchHitMedium : return "Crouch Hit (medium)";break;
-	case CrouchHitHard : return "Crouch Hit (hard)";break;
-	case CrouchRecoverLight : return "Crouch Recover (light)";break;
-	case CrouchRecoverMedium : return "Crouch Recover (medium)";break;
-	case CrouchRecoverHard : return "Crouch Recover (hard)";break;
-	case HitBack : return "Stand/Air Hit back";break;
-	case HitTransition : return "opt  Stand/Air Hit transition";break;
-	case AirRecover : return "Air Recover";break;
-	case AirFall : return "Air Fall";break;
-	case AirFallComingDown : return "opt  Air Fall (coming down)";break;
-	case Tripped : return "Tripped";break;
-	case LiedownHitStaydown : return "LieDown Hit (stay down)";break;
-	case LiedownHitIntoair : return "LieDown Hit (hit up into air)";break;
-	case HitGroundFromFall : return "Hitting ground from fall";break;
-	case BounceIntoAir : return "Bounce into air";break;
-	case HitGroundFromBounce : return "Hit ground from bounce";break;
-	case Liedown : return "LieDown";break;
-	case GetUpFromLiedown : return "Get up from LieDown";break;
-	case LiedeadFirstRounds : return "opt  LieDead (first rounds)";break;
-	case LiedeadFinalRound : return "opt  LieDead (final round)";break;
-	case FallRecoveryNearGround : return "Fall-recovery near ground";break;
-	case FallRecoveryMidair : return "Fall-recovery in mid-air";break;
-	case Dizzy : return "Dizzy";break;
-	case Continue : return "opt  \"Continue?\" screen";break;
-	case YesContinue : return "opt  \"Yes\" to \"Continue\"";break;
-	case NoContinue : return "opt  \"No\" to \"Continue\"";break;
-	case AirFallHitUp : return "opt  Air fall -- hit up";break;
-	case FallFromHitUp : return "opt  Coming down from hit up";break;
-	case LiedownHitStaydown2 : return "opt  LieDown Hit (stay down)";break;
-	case BounceFromGroundIntoAir : return "opt  Bounce from ground into air";break;
-	case BounceIntoAir2 : return "opt  Bounce into air";break;
-	case HitGroundFromBounce2 : return "opt  Hit ground from bounce";break;
-	case Liedown2 : return "opt  LieDown";break;
-	case GetUpFromLiedown2 : return "opt  Get up from LieDown";break;
-	case LiedeadFirstRounds2 : return "opt  LieDead (first rounds)";break;
-	case LiedeadFinalRound2 : return "opt  LieDead (final round)";break;
-	case AirFallHitUp2 : return "opt  Air fall -- hit up";break;
-	case FallFromHitUp2 : return "opt  Coming down from hit up";break;
-	case LiedownHitStaydown3 : return "opt  LieDown Hit (stay down)";break;
-	case BounceFromGroundIntoAir2 : return "opt  Bounce from ground into air";break;
-	case BounceIntoAir3 : return "opt  Bounce into air";break;
-	case HitGroundFromBounce3 : return "opt  Hit ground from bounce";break;
-	case Liedown3 : return "opt  LieDown";break;
-	case GetUpFromLiedown3 : return "opt  Get up from LieDown";break;
-	case LiedeadFirstRounds3 : return "opt  LieDead (first rounds)";break;
-	case LiedeadFinalRound3 : return "opt  LieDead (final round)";break;
-	case Unknown :
+        case Mugen::Standing : return "Standing";break;
+	case Mugen::StandTurning : return "Stand turning";break;
+	case Mugen::CrouchTurning : return "Crouch turning";break;
+	case Mugen::StandToCrouch : return "Stand to crouch";break;
+	case Mugen::Crouching : return "Crouching";break;
+	case Mugen::CrouchToStand : return "Crouch to stand";break;
+	case Mugen::WalkingForwards : return "Walking forwards";break;
+	case Mugen::WalkingBackwards : return "Walking backwards";break;
+	case Mugen::JumpStart : return "Jump start (on ground)";break;
+	case Mugen::JumpNeutralUp : return "Jump neutral (upwards)";break;
+	case Mugen::JumpForwardsUp : return "Jump forwards (upwards)";break;
+	case Mugen::JumpBackUp : return "Jump back (upwards)";break;
+	case Mugen::JumpNeutralDown : return "Jump neutral (downwards)";break;
+	case Mugen::JumpForwardsDown : return "Jump fwd (downwards)";break;
+	case Mugen::JumpBackDown : return "Jump back (downwards)";break;
+	case Mugen::JumpLanding : return "Jump landing";break;
+	case Mugen::RunForwards : return "Run fwd/hop forward";break;
+	case Mugen::HopBack : return "Hop back";break;
+	case Mugen::StartGuardStand : return "Start guarding (stand)";break;
+	case Mugen::StartGuardCrouch : return "Start guarding (crouch)";break;
+	case Mugen::StartGuardAir : return "Start guarding (air)";break;
+	case Mugen::GuardStand : return "Guard (stand)";break;
+	case Mugen::GuardCrouch : return "Guard (crouch)";break;
+	case Mugen::GuardAir : return "Guard (air)";break;
+	case Mugen::StopGuardStand : return "Stop guarding (stand)";break;
+	case Mugen::StopGuardCrouch : return "Stop guarding (crouch)";break;
+	case Mugen::StopGuardAir : return "Stop guarding (air)";break;
+	case Mugen::GuardHitStand : return "Guarding a hit (stand)";break;
+	case Mugen::GuardHitCrouch : return "Guarding a hit (crouch)";break;
+	case Mugen::GuardHitAir : return "Guarding a hit (air)";break;
+	case Mugen::Lose : return "opt   Lose";break;
+	case Mugen::Draw : return "opt   Time Over drawgame";break;
+	case Mugen::Win : return "opt   Win";break;
+	case Mugen::Intro : return "opt   Intro";break;
+	case Mugen::Taunt : return "opt   Taunt";break;
+	case Mugen::HitHighLight : return "Stand/Air Hit high (light)";break;
+	case Mugen::HitHighMedium : return "Stand/Air Hit high (medium)";break;
+	case Mugen::HitHighHard : return "Stand/Air Hit high (hard)";break;
+	case Mugen::StandRecoverHighLight : return "Stand Recover high (light)";break;
+	case Mugen::StandRecoverHighMedium : return "Stand Recover high (medium)";break;
+	case Mugen::StandRecoverHighHard : return "Stand Recover high (hard)";break;
+	case Mugen::HitLowLight : return "Stand/Air Hit low (light)";break;
+	case Mugen::HitLowMedium : return "Stand/Air Hit low (medium)";break;
+	case Mugen::HitLowHard : return "Stand/Air Hit low (hard)";break;
+	case Mugen::StandRecoverLowLight : return "Stand Recover low (light)";break;
+	case Mugen::StandRecoverLowMedium : return "Stand Recover low (medium)";break;
+	case Mugen::StandRecoverLowHard : return "Stand Recover low (hard)";break;
+	case Mugen::CrouchHitLight : return "Crouch Hit (light)";break;
+	case Mugen::CrouchHitMedium : return "Crouch Hit (medium)";break;
+	case Mugen::CrouchHitHard : return "Crouch Hit (hard)";break;
+	case Mugen::CrouchRecoverLight : return "Crouch Recover (light)";break;
+	case Mugen::CrouchRecoverMedium : return "Crouch Recover (medium)";break;
+	case Mugen::CrouchRecoverHard : return "Crouch Recover (hard)";break;
+	case Mugen::HitBack : return "Stand/Air Hit back";break;
+	case Mugen::HitTransition : return "opt  Stand/Air Hit transition";break;
+	case Mugen::AirRecover : return "Air Recover";break;
+	case Mugen::AirFall : return "Air Fall";break;
+	case Mugen::AirFallComingDown : return "opt  Air Fall (coming down)";break;
+	case Mugen::Tripped : return "Tripped";break;
+	case Mugen::LiedownHitStaydown : return "LieDown Hit (stay down)";break;
+	case Mugen::LiedownHitIntoair : return "LieDown Hit (hit up into air)";break;
+	case Mugen::HitGroundFromFall : return "Hitting ground from fall";break;
+	case Mugen::BounceIntoAir : return "Bounce into air";break;
+	case Mugen::HitGroundFromBounce : return "Hit ground from bounce";break;
+	case Mugen::Liedown : return "LieDown";break;
+	case Mugen::GetUpFromLiedown : return "Get up from LieDown";break;
+	case Mugen::LiedeadFirstRounds : return "opt  LieDead (first rounds)";break;
+	case Mugen::LiedeadFinalRound : return "opt  LieDead (final round)";break;
+	case Mugen::FallRecoveryNearGround : return "Fall-recovery near ground";break;
+	case Mugen::FallRecoveryMidair : return "Fall-recovery in mid-air";break;
+	case Mugen::Dizzy : return "Dizzy";break;
+	case Mugen::Continue : return "opt  \"Continue?\" screen";break;
+	case Mugen::YesContinue : return "opt  \"Yes\" to \"Continue\"";break;
+	case Mugen::NoContinue : return "opt  \"No\" to \"Continue\"";break;
+	case Mugen::AirFallHitUp : return "opt  Air fall -- hit up";break;
+	case Mugen::FallFromHitUp : return "opt  Coming down from hit up";break;
+	case Mugen::LiedownHitStaydown2 : return "opt  LieDown Hit (stay down)";break;
+	case Mugen::BounceFromGroundIntoAir : return "opt  Bounce from ground into air";break;
+	case Mugen::BounceIntoAir2 : return "opt  Bounce into air";break;
+	case Mugen::HitGroundFromBounce2 : return "opt  Hit ground from bounce";break;
+	case Mugen::Liedown2 : return "opt  LieDown";break;
+	case Mugen::GetUpFromLiedown2 : return "opt  Get up from LieDown";break;
+	case Mugen::LiedeadFirstRounds2 : return "opt  LieDead (first rounds)";break;
+	case Mugen::LiedeadFinalRound2 : return "opt  LieDead (final round)";break;
+	case Mugen::AirFallHitUp2 : return "opt  Air fall -- hit up";break;
+	case Mugen::FallFromHitUp2 : return "opt  Coming down from hit up";break;
+	case Mugen::LiedownHitStaydown3 : return "opt  LieDown Hit (stay down)";break;
+	case Mugen::BounceFromGroundIntoAir2 : return "opt  Bounce from ground into air";break;
+	case Mugen::BounceIntoAir3 : return "opt  Bounce into air";break;
+	case Mugen::HitGroundFromBounce3 : return "opt  Hit ground from bounce";break;
+	case Mugen::Liedown3 : return "opt  LieDown";break;
+	case Mugen::GetUpFromLiedown3 : return "opt  Get up from LieDown";break;
+	case Mugen::LiedeadFirstRounds3 : return "opt  LieDead (first rounds)";break;
+	case Mugen::LiedeadFinalRound3 : return "opt  LieDead (final round)";break;
+	case Mugen::Unknown :
 	default: return "Custom or Optional Animation";break;
     }
 }

@@ -25,6 +25,7 @@
 #include "mugen_reader.h"
 #include "mugen_sprite.h"
 #include "globals.h"
+#include "state.h"
 
 #include "mugen_util.h"
 #include "ast/all.h"
@@ -817,7 +818,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
     head.replace(0,13,"");
     int h;
     MugenItem(head) >> h;
-    animation->setType(MugenAnimationType(h));
+    animation->setType(Mugen::AnimationType(h));
     Global::debug(1) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(animation->getType()) << "'" << endl;
     return animation;
 }
