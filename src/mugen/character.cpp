@@ -44,21 +44,25 @@ Command::Command(std::string name, Ast::Key * key, int maxTime, int bufferTime){
 Character::Character( const string & s ):
 ObjectAttack(0){
     this->location = s;
+    initialize();
 }
 
 Character::Character( const char * location ):
 ObjectAttack(0){
     this->location = std::string(location);
+    initialize();
 }
 
 Character::Character( const string & s, int alliance ):
 ObjectAttack(alliance){
     this->location = s;
+    initialize();
 }
 
 Character::Character( const string & s, const int x, const int y, int alliance ):
 ObjectAttack(x,y,alliance){
     this->location = s;
+    initialize();
 }
 
 Character::Character( const Character & copy ):
@@ -92,6 +96,10 @@ Character::~Character(){
       }
     }
     
+}
+
+void Character::initialize(){
+    currentState = 0;
 }
     
 void Character::addCommand(Command * command){
@@ -541,42 +549,56 @@ void Character::bundleAnimations(){
 /* Inherited members */
 void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
 }
+
 void Character::draw(Bitmap*, int){
 }                      
+
 void Character::grabbed(Object*){
 }
+
 void Character::unGrab(){
 }
+
 bool Character::isGrabbed(){
     return false;
 }
+
 Object* Character::copy(){
     return this;
 }
+
 const std::string& Character::getAttackName(){
     return getName();
 }
+
 bool Character::collision(ObjectAttack*){
     return false;
 }
+
 int Character::getDamage() const{
     return 0;
 }
+
 bool Character::isCollidable(Object*){
     return true;
 }
+
 bool Character::isGettable(){
     return false;
 }
+
 bool Character::isGrabbable(Object*){
     return true;
 }
+
 bool Character::isAttacking(){
     return false;
 }
+
 int Character::getWidth() const{
     return groundfront;
 }
+
 int Character::getHeight() const{
     return height;
 }
@@ -587,9 +609,11 @@ Network::Message Character::getCreateMessage(){
 
 void Character::getAttackCoords(int&, int&){
 }
+
 double Character::minZDistance() const{
     return 0;
 }
+
 void Character::attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&){
 }
 

@@ -121,6 +121,8 @@ public:
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
 protected:
+    void initialize();
+
     /* This creates the animations no need for a new class to handle this */
     virtual void bundleAnimations();
     virtual void loadCmdFile(const std::string & path);
@@ -318,6 +320,8 @@ protected:
 	
 	/* Commands, Triggers or whatever else we come up with */
         std::map<std::string, Constant> constants;
+
+        int currentState;
 };
 
 }

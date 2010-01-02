@@ -531,7 +531,9 @@ void MugenStage::logic( ){
     }
     
     // implement some stuff before we actually begin the round then start the round
-    if(!stageStart)stageStart = true;
+    if (!stageStart){
+        stageStart = true;
+    }
     
     // Run our ticker on and on like energizer bunnies (tm)
     ticker++;

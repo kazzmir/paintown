@@ -20,6 +20,7 @@
 # fix error message reporting
 # inline rules + semantic actions are broken (in C++ at least)
 # Don't memoize if a rule accepts parameters (ruby, python)
+# If a rule has a <fail> then catch a parsing exception and call the fail function
 
 # create a variable name
 next_var = 0
