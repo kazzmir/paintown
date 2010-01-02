@@ -91,48 +91,225 @@ void Element::setFont(MugenFont *fnt){
     }
 }
 
-Bar::Bar(const int x, const int y){
+Bar::Bar(const int x, const int y):
+back0(0),
+back1(0),
+back2(0),
+middle(0),
+front(0),
+counter(0),
+sound(0){
 }
 Bar::~Bar(){
+    if (back0){
+	delete back0;
+    }
+    if (back1){
+	delete back1;
+    }
+    if (back2){
+	delete back2;
+    }
+    if (middle){
+	delete middle;
+    }
+    if (front){
+	delete front;
+    }
+    if (counter){
+	delete counter;
+    }
+    if (sound){
+	delete sound;
+    }
 }
-void Bar::setBack0(Element *){
+void Bar::setBack0(Element *e){
+    back0 = e;
 }
-void Bar::setBack1(Element *){
+void Bar::setBack1(Element *e){
+    back1 = e;
 }
-void Bar::setBack2(Element *){
+void Bar::setBack2(Element *e){
+    back2 = e;
 }
-void Bar::setMiddle(Element *){
+void Bar::setMiddle(Element *e){
+    middle = e;
 }
-void Bar::setFront(Element *){
+void Bar::setFront(Element *e){
+    front = e;
 }
-void Bar::setCounter(Element *){
+void Bar::setCounter(Element *e){
+    counter = e;
 }
-void Bar::setSound(Element *){
+void Bar::setSound(Element *e){
+    sound = e;
 }
 void Bar::act(){
+    if (back0){
+	back0->act();
+    }
+    if (back1){
+	back1->act();
+    }
+    if (back2){
+	back2->act();
+    }
+    if (middle){
+	middle->act();
+    }
+    if (front){
+	front->act();
+    }
+    if (counter){
+	counter->act();
+    }
+    if (sound){
+	sound->act();
+    }
 }
-void Bar::render(const int xaxis, const int yaxis, Bitmap &){
+void Bar::render(const int xaxis, const int yaxis, Bitmap &bmp){
+    if (back0){
+	back0->render(xaxis,yaxis,bmp);
+    }
+    if (back1){
+	back1->render(xaxis,yaxis,bmp);
+    }
+    if (back2){
+	back2->render(xaxis,yaxis,bmp);
+    }
+    if (middle){
+	middle->render(xaxis,yaxis,bmp);
+    }
+    if (front){
+	front->render(xaxis,yaxis,bmp);
+    }
+    if (counter){
+	counter->render(xaxis,yaxis,bmp);
+    }
+    if (sound){
+	//sound->render(xaxis,yaxis,bmp);
+    }
 }
 
 
-Face::Face(){}
-Face::Face(const int x, const int y){}
-Face::~Face(){}
-void Face::act(){}
-void Face::render(){}
+Face::Face():
+background(0),
+face(0){
+}
+Face::Face(const int x, const int y):
+background(0),
+face(0){
+    setPosition(x,y);
+}
+Face::~Face(){
+    if (background){
+	delete background;
+    }
+    if (face){
+	delete face;
+    }
+}
+void Face::act(){
+    if (background){
+	background->act();
+    }
+    if (face){
+	face->act();
+    }
+}
+void Face::render(const int xaxis, const int yaxis, Bitmap &bmp){
+    if (background){
+	background->render(xaxis + position.x + spacing.x,yaxis + position.y + spacing.y,bmp);
+    }
+    if (face){
+	face->render(xaxis + position.x + spacing.x,yaxis + position.y + spacing.y,bmp);
+    }
+}
+void Face::setPosition(const int x, const int y){
+    position.x = x;
+    position.y = y;
+}
+void Face::setSpacing(const int x, const int y){
+    spacing.x = x;
+    spacing.y = y;
+}
+void Face::setBackground(Element *e){
+    background = e;
+}
+void Face::setFace(Element *e){
+    face = e;
+}
 
-Name::Name(){}
-Name::~Name(){}
+Name::Name():
+font(0){
+}
+Name::Name(const int x, const int y):
+font(0){
+    setPosition(x,y);
+}
+Name::~Name(){
+    if (font){
+	delete font;
+    }
+}
+void Name::act(){
+    if (font){
+	font->act();
+    }
+}
+void Name::render(const int xaxis, const int yaxis, Bitmap &bmp){
+    if (font){
+	font->render(xaxis + position.x,yaxis + position.y,bmp);
+    }
+}
+void Name::setPosition(const int x, const int y){
+    position.x = x;
+    position.y = y;
+}
+void Name::setFont(Element *e){
+    font = e;
+}
 
-PlayerInfo::PlayerInfo(){}
+PlayerInfo::PlayerInfo():
+lifeBar(0),
+powerBar(0),
+face(0),
+name(0){}
 PlayerInfo::~PlayerInfo(){}
-    
+void PlayerInfo::setLifeBar(Bar *b){
+    lifeBar = b;
+}
+void PlayerInfo::setPowerbar(Bar *b){
+    powerBar = b;
+}
+void PlayerInfo::setFace(Face *f){
+    face = f;
+}
+void PlayerInfo::setName(Name *n){
+    name = n;
+}
     
 CharacterHUD::CharacterHUD( const std::string & s ):
-location(s){
+location(s),
+player1(0),
+player2(0),
+player3(0),
+player4(0){
 }
 
 CharacterHUD::~CharacterHUD(){
+    if (player1){
+	delete player1;
+    }
+    if (player2){
+	delete player2;
+    }
+    if (player3){
+	delete player3;
+    }
+    if (player4){
+	delete player4;
+    }
 }
 
 void CharacterHUD::load() throw (MugenException){

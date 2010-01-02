@@ -77,8 +77,9 @@ static void showOptions(){
     Global::debug(0) << "M.U.G.E.N. Config Reader:" << endl;
     Global::debug(0) << "-f <file>: Load a M.U.G.E.N. config file and output to screen." << endl;
     Global::debug(0) << "-c <name>: Load a M.U.G.E.N. character and output some data about it.\n         ie: 'data/mugen/chars/name' only pass name." << endl;
-    Global::debug(0) << "-s <name> (p1) (p2): Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name.def' only pass name.\n         (p1) and (p2) are player names and is optional." << endl;
+    Global::debug(0) << "-s <name> (p1) (p2): Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name.def'.\n         (p1) and (p2) are player names and is optional." << endl;
     Global::debug(0) << "-font <file>: Load a M.U.G.E.N. font and print out Hello World!" << endl;
+    Global::debug(0) << "-sff <file>: Load a M.U.G.E.N. SFF File and browse contents.\n         ie: 'data/mugen/data/some.sff'." << endl;
     Global::debug(0) << "-storyboard <file>: Load a M.U.G.E.N. storyboard and render it!" << endl;
     Global::debug(0) << "-l <level>: Set debug level." << endl;
     Global::debug(0) << endl;
@@ -424,6 +425,75 @@ void showFont(const string & ourFile){
     }
 }
 
+void showSFF(const string & ourFile){
+    std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
+    int currentGroup = 0;
+    int currentSprite = 0;
+    Global::debug(0) << "Trying to load SFF File: " << ourFile << "..." << endl;
+    Mugen::Util::readSprites(ourFile, "", sprites);
+    Global::debug(0) << "Loaded SFF file: \"" << ourFile << "\" successfully." << endl;
+    
+    bool quit = false;
+    
+    /*Bitmap work( 320, 240 );*/
+    Bitmap back( 640, 480 );
+    
+    double gameSpeed = 1.0;
+    double runCounter = 0;
+    
+    while( !quit ){
+        bool draw = false;
+        
+        if ( Global::speed_counter > 0 ){
+            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+            while (runCounter > 1){
+                keyInputManager::update();
+                runCounter -= 1;
+                draw = true;
+		if( keyInputManager::keyState(keys::DOWN, true) ){
+                   currentGroup--;
+                }
+                if( keyInputManager::keyState(keys::UP, true) ){
+		   currentGroup++;
+                }
+		if( keyInputManager::keyState(keys::LEFT, true) ){
+                   currentSprite--;
+                }
+                if( keyInputManager::keyState(keys::RIGHT, true) ){
+                   currentSprite++;
+                }
+		if( keyInputManager::keyState(keys::PGUP, true) ){
+                   currentGroup+=500;
+                }
+                if( keyInputManager::keyState(keys::PGDN, true) ){
+		   currentGroup-=500;
+                }
+                quit |= keyInputManager::keyState(keys::ESC, true );
+            }
+            Global::speed_counter = 0;
+        }
+
+        if (draw){
+	    back.clear();
+	    MugenSprite *ourSprite = sprites[currentGroup][currentSprite];
+	    if (ourSprite){
+		Mugen::Effects effects;
+		ourSprite->render(320-(ourSprite->getWidth()/2),240-(ourSprite->getHeight()/2),back,effects);
+		Font::getDefaultFont().printf( 15, 470, Bitmap::makeColor( 0, 255, 0 ), back, "Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
+	    } else {
+		Font::getDefaultFont().printf( 15, 470, Bitmap::makeColor( 0, 255, 0 ), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
+	    }
+	    /*work.Stretch(back);*/
+            back.BlitToScreen();
+        }
+
+        while (Global::speed_counter == 0){
+            Util::rest(1);
+            keyInputManager::update();
+        }
+    }
+}
+
 int main( int argc, char ** argv ){
 	
 	if(argc <= 1){
@@ -442,6 +512,7 @@ int main( int argc, char ** argv ){
         const char * PARSE_CMD_ARG = "-parse-cmd";
         const char * PARSE_DEF_ARG = "-parse-def";
 	const char * STORY_ARG = "-storyboard";
+	const char * SFF_ARG = "-sff";
 	std::string ourFile;
 	int configLoaded = -1;
 	
@@ -586,6 +657,17 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
+		} else if ( isArg( argv[ q ], SFF_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				ourFile = std::string( argv[ q ] );
+				configLoaded = 5;
+			}
+			else{
+                            Global::debug(0) << "Error no file given!" << endl;
+			  showOptions();
+			  return 0;
+			}
 		} else if (isArg(argv[q], DEBUG_ARG)){
 		    //debuglevel:
                     q += 1;
@@ -689,8 +771,17 @@ int main( int argc, char ** argv ){
 		Global::debug(0) << "Unknown problem loading file" << endl;
 		return 1;
 	    }
-	}
-	else showOptions();
+	} else if ( configLoaded == 5 ){
+	    try{
+                showSFF(ourFile);
+            } catch( MugenException &ex){
+                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+		return 1;
+	    } catch(...){
+		Global::debug(0) << "Unknown problem loading file" << endl;
+		return 1;
+	    }
+	} else showOptions();
 	
 	return 0;
 }

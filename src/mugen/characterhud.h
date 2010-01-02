@@ -92,38 +92,51 @@ class Face{
 	virtual ~Face();
 	
 	virtual void act();
-	virtual void render();
+	virtual void render(const int xaxis, const int yaxis, Bitmap &);
+	virtual void setPosition(const int x, const int y);
+	virtual void setSpacing(const int x, const int y);
+	virtual void setBackground(Element *);
+	virtual void setFace(Element *);
+	
     private:
 	Mugen::Point position;
 	Mugen::Point spacing;
-	Element background;
-	Element face;
+	Element *background;
+	Element *face;
 };
 
 class Name{
     public:
 	Name();
+	Name(const int x, const int y);
 	virtual ~Name();
+	
+	virtual void act();
+	virtual void render(const int xaxis, const int yaxis, Bitmap &);
+	virtual void setPosition(const int x, const int y);
+	virtual void setFont(Element *);
 	
     private:
 	Mugen::Point position;
 	Element *font;
 };
 
-/*! Holder for character data */
+/*! HUD collection for character data */
 class PlayerInfo{
     public:
 	PlayerInfo();
-	~PlayerInfo();
+	virtual ~PlayerInfo();
+	
+	virtual void setLifeBar(Bar *);
+	virtual void setPowerbar(Bar *);
+	virtual void setFace(Face *);
+	virtual void setName(Name *);
     
     private:
-	/* HUD collection, compromised of a static amount of 4 players
-	   No need to make dynamic since it models the way MUGEN does it for now,
-	   might change later */
-	Bar *lifeBar[4];
-	Bar *powerBar[4];
-	Face *face[4];
-	Name *name[4];
+	Bar *lifeBar;
+	Bar *powerBar;
+	Face *face;
+	Name *name;
 	
 };
 
@@ -149,9 +162,10 @@ class CharacterHUD{
 	std::string common_snd_File;
 	
 	/* player data */
-	PlayerInfo *normal;
-	PlayerInfo *simultaneous;
-	PlayerInfo *team;
+	PlayerInfo *player1;
+	PlayerInfo *player2;
+	PlayerInfo *player3;
+	PlayerInfo *player4;
 	
 	/* Time Display */
 	
