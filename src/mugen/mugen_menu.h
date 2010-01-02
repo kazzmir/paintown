@@ -29,6 +29,7 @@ namespace Ast{
 
 namespace Mugen{
     class Character;
+    class CharacterSelect;
 }
 
 class MugenStage;
@@ -41,216 +42,8 @@ struct MugenMenuArea{
     int alpha;
     int alphaMove;
 };
-
-struct MugenMenuFont{
-    int index;
-    int bank;
-    int position;
-};
-
-struct MugenPlayerCell{
-    // Cell
-    Mugen::Point start;
-    Mugen::Point cursor;
-    MugenSprite *cursorActiveSprite;
-    MugenSprite *cursorDoneSprite;
-    bool blink;
-    int blinkCounter;
-    // The bitmaps
-    Bitmap *active;
-    Bitmap *done;
-    //Facing
-    Mugen::Point faceOffset;
-    double faceScalex;
-    double faceScaley;
-    int facing;
-    bool selecting;
-    bool show;
-    // Name
-    Mugen::Point nameOffset;
-    MugenMenuFont nameFont;
-};
-
-struct MugenCell{
-    // Location
-    Mugen::Point position;
-    Mugen::Character *character;
-    bool random;
-    bool empty;
-};
-
-struct MugenStageInfo{
-    Mugen::Point stagePosition;
-    MugenMenuFont stageActiveFont;
-    MugenMenuFont stageActiveFont2;
-    MugenMenuFont stageDoneFont;
-    bool selected;
-    int altCounter;
-};
-
-struct MugenSelectedChars{
-    std::vector<Mugen::Character *> team1;
-    std::vector<Mugen::Character *> team2;
-    MugenStage *selectedStage;
-};
 	
 typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > MugenSprites;
-
-class MugenCharacterSelect{
-    public:
-	MugenCharacterSelect(const unsigned long int &ticker, std::vector<MugenFont *> &fonts);
-	virtual ~MugenCharacterSelect();
-	
-	/*! load */
-	virtual void load(const std::string &selectFile, const std::vector<Ast::Section*> & sections, MugenSprites & sprites);
-	
-	/*! do logic, draw whatever */
-	virtual MugenSelectedChars *run(const std::string &title, const int players, const bool selectStage, Bitmap *work);
-    private:
-	//fadein.time = 10
-	//fadeout.time = 10
-	MugenFadeTool fader;
-	
-	//rows = 6
-	int rows;
-	//columns = 10
-	int columns;
-	//wrapping = 1              ;1 to let cursor wrap around
-	bool wrapping;
-	//pos = 17,24               ;Position to draw to
-	Mugen::Point position;
-	//showEmptyBoxes = 1
-	bool showEmptyBoxes;
-	//moveOverEmptyBoxes = 1
-	bool moveOverEmptyBoxes;
-	//cell.size = 27,27         ;x,y size of each cell (in pixels)
-	Mugen::Point cellSize;
-	//cell.spacing = 2          ;space between each cell
-	int cellSpacing;
-	//cell.bg.spr = 150,0       ;Note: Don't use animation for cells
-	MugenSprite *cellBackgroundSprite;
-	Bitmap *cellBackgroundBitmap;
-	//cell.random.spr = 180,0   ;Icon for random select (don't use animation)
-	MugenSprite *cellRandomSprite;
-	Bitmap *cellRandomBitmap;
-	//cell.random.switchtime = 4;Time to wait before changing to another random portrait
-	int cellRandomSwitchTime;
-	//p1.cursor.startcell = 0,0
-	//p1.cursor.active.spr = 160,0
-	//p1.cursor.done.spr = 161,0
-	//p1.cursor.move.snd = 100,0
-	//p1.cursor.done.snd = 100,1
-	//p1.random.move.snd = 100,0
-	MugenPlayerCell p1Cursor;
-	/*p2.cursor.startcell = 0,4
-	p2.cursor.active.spr = 170,0
-	p2.cursor.done.spr = 171,0
-	p2.cursor.blink = 1       ;1 to blink p2's cursor if overlapping p1's
-	p2.cursor.move.snd = 100,0
-	p2.cursor.done.snd = 100,1
-	p2.random.move.snd = 100,0*/
-	MugenPlayerCell p2Cursor;
-	//random.move.snd.cancel = 0;1 to have random move sound cancel itself when played repeatedly
-	//stage.move.snd = 100,0
-	//stage.done.snd = 100,1
-	//cancel.snd = 100,2
-	//portrait.offset = 0,0
-	Mugen::Point portraitOffset;
-	//portrait.scale = 1,1
-	Mugen::Point portraitScale;
-	//title.offset = 159,13     ;Position of title (Arcade Mode, etc)
-	Mugen::Point titleOffset;
-	//title.font = 3,0,0        ;Font of title (-1 for none)
-	MugenMenuFont titleFont;
-	/*;Big portraits
-	p1.face.offset = 1,193    ;Position to put big portrait
-	p1.face.scale = .35, .33
-	p1.face.facing = 1
-	p2.face.offset = 318,193
-	p2.face.scale = .35, .33
-	p2.face.facing = -1
-	;Name
-	p1.name.offset = 3,236    ;Position to put name
-	p1.name.font = 3,4,1      ;Set to -1 for no display
-	p2.name.offset = 316,236
-	p2.name.font = 3,1,-1
-	;Stage select
-	stage.pos = 160,216
-	stage.active.font = 3,0,0
-	stage.active2.font = 3,2  ;Second font color for blinking
-	stage.done.font = 3,0
-	*/
-	MugenStageInfo stageInfo;
-	/*
-	;Team menu
-	teammenu.move.wrapping = 1
-	p1.teammenu.pos = 20, 30
-	;p1.teammenu.bg.spr =
-	p1.teammenu.selftitle.font = 3,0, 1
-	p1.teammenu.selftitle.text = Select team mode
-	p1.teammenu.enemytitle.font = 3,0, 1
-	p1.teammenu.enemytitle.text = Opponent team mode
-	p1.teammenu.move.snd = 100,0
-	p1.teammenu.value.snd = 100,0
-	p1.teammenu.done.snd = 100,1
-	p1.teammenu.item.offset = 0,20
-	p1.teammenu.item.spacing = 0,15
-	p1.teammenu.item.font = 3,0, 1
-	p1.teammenu.item.active.font = 3,3, 1
-	p1.teammenu.item.active2.font = 3,0, 1 ;Second font color for blinking
-	p1.teammenu.item.cursor.offset = -10, 0
-	p1.teammenu.item.cursor.anim = 180
-	p1.teammenu.value.icon.offset = 60,1
-	p1.teammenu.value.icon.spr = 181,0
-	p1.teammenu.value.empty.icon.offset = 60,1
-	p1.teammenu.value.empty.icon.spr = 182,0
-	p1.teammenu.value.spacing = 6,0
-	;p2 team
-	p2.teammenu.pos = 299, 30
-	;p2.teammenu.bg.spr =
-	p2.teammenu.selftitle.font = 3,0, -1
-	p2.teammenu.selftitle.text = Select team mode
-	p2.teammenu.enemytitle.font = 3,0, -1
-	p2.teammenu.enemytitle.text = Opponent team mode
-	p2.teammenu.move.snd = 100,0
-	p2.teammenu.value.snd = 100,0
-	p2.teammenu.done.snd = 100,1
-	p2.teammenu.item.offset = 0,20
-	p2.teammenu.item.spacing = 0,15
-	p2.teammenu.item.font = 3,0, -1
-	p2.teammenu.item.active.font = 3,1, -1
-	p2.teammenu.item.active2.font = 3,0, -1 ;Second font color for blinking
-	p2.teammenu.item.cursor.offset = 10, 0
-	p2.teammenu.item.cursor.anim = 190
-	p2.teammenu.value.icon.offset = -60,1
-	p2.teammenu.value.icon.spr = 191,0
-	p2.teammenu.value.empty.icon.offset = -60,1
-	p2.teammenu.value.empty.icon.spr = 192,0
-	p2.teammenu.value.spacing = -6,0
-	*/
-	// Select background
-	MugenBackgroundManager *background;
-	
-	const unsigned long int &selectTicker;
-	
-	std::vector< std::vector< MugenCell *> > cells;
-	
-	std::vector< Mugen::Character *> characters;
-	
-	std::vector< MugenStage *> stages;
-	
-	void drawCursors(const int players, Bitmap *work);
-	
-	void movePlayer1Cursor(int x, int y);
-	
-	void movePlayer2Cursor(int x, int y);
-	
-	std::vector<MugenFont *> &fonts;
-	
-	void loadCharacters(const std::string &selectFile)throw (MugenException);
-	
-	MugenSelectedChars *characterList;
-};
 
 class MugenMenu : public Menu
 {
@@ -267,7 +60,7 @@ class MugenMenu : public Menu
 	virtual void run() throw (ReturnException);
 	
 	/*! get character select */
-	inline MugenCharacterSelect *getSelect() { return characterSelect; }
+	inline Mugen::CharacterSelect *getSelect() { return characterSelect; }
 	
     private:
 	// Option offset
@@ -305,8 +98,8 @@ class MugenMenu : public Menu
 	//menu.item.active.font = 3,5,0
 	//menu.item.spacing = 0, 13
 	*/
-	MugenMenuFont fontItem;
-	MugenMenuFont fontActive;
+	Mugen::FontInfo fontItem;
+	Mugen::FontInfo fontActive;
 	Mugen::Point fontSpacing;
 	/*
 	; Names for each of the items in the menu. Names must be in quotes.
@@ -360,7 +153,7 @@ class MugenMenu : public Menu
 	MugenStoryboard *intro;
 	
 	// Select Info
-	MugenCharacterSelect *characterSelect;
+	Mugen::CharacterSelect *characterSelect;
 	
 	// Cleanup
 	void cleanup();

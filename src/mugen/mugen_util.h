@@ -76,6 +76,16 @@ class Effects{
 	int scaley;
 };
 
+/* Use with fonts */
+struct FontInfo{
+    int index;
+    int bank;
+    int position;
+};
+
+/* Makes the use of the sprite maps easier */
+typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > SpriteMap;
+
 }
 
 #endif
