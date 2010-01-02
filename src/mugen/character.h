@@ -10,6 +10,7 @@
 // Implement object_attack
 #include "object/object_attack.h"
 #include "network/network.h"
+#include "input/input-map.h"
 
 namespace Ast{
     class Key;
@@ -54,6 +55,19 @@ struct Constant{
 class Command{
 public:
     Command(std::string name, Ast::Key * key, int maxTime, int bufferTime);
+
+    enum Keys{
+        Down,
+        Up,
+        Forward,
+        Back,
+        X,
+        Y,
+        Z,
+        A,
+        B,
+        C,
+    };
 };
 
 class Character: public ObjectAttack {
@@ -134,6 +148,8 @@ protected:
 
     virtual void setConstant(std::string name, const std::vector<double> & values);
     virtual void setConstant(std::string name, double value);
+
+    virtual void doInput(InputMap<Command::Keys>::Output output);
 
 protected:
 
@@ -323,6 +339,8 @@ protected:
         std::map<std::string, Constant> constants;
 
         int currentState;
+
+        InputMap<Command::Keys> input;
 };
 
 }
