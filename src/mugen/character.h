@@ -84,6 +84,7 @@ protected:
     std::vector<Ast::Key*>::const_iterator current;
     InputMap<Keys>::Output oldKeys;
     const Ast::Key * holder;
+    int successTime;
 };
 
 class Character: public ObjectAttack {

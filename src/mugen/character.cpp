@@ -50,7 +50,8 @@ bufferTime(bufferTime),
 ticks(0),
 holdKey(-1),
 current(keys->getKeys().begin()),
-holder(0){
+holder(0),
+successTime(0){
 }
 
 void Command::handle(InputMap<Keys>::Output keys){
@@ -174,6 +175,11 @@ void Command::handle(InputMap<Keys>::Output keys){
             ok = left.ok && right.ok;
         }
     };
+    
+    if (successTime > 0){
+        successTime -= 1;
+        Global::debug(0) << "Pressed " << name << endl;
+    }
 
     KeyWalker walker(keys, oldKeys, holdKey, holder);
     (*current)->walk(walker);
@@ -188,6 +194,9 @@ void Command::handle(InputMap<Keys>::Output keys){
 
     oldKeys = keys;
     ticks += 1;
+    if (ticks > maxTime){
+        fail = true;
+    }
 
     if (fail){
         current = this->keys->getKeys().begin();
@@ -202,6 +211,7 @@ void Command::handle(InputMap<Keys>::Output keys){
             current = this->keys->getKeys().begin();
             ticks = 0;
             holder = 0;
+            successTime = bufferTime - 1;
             Global::debug(0) << "Pressed " << name << endl;
         }
     }
