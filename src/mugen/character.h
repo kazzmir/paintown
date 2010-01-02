@@ -85,6 +85,7 @@ protected:
     InputMap<Keys>::Output oldKeys;
     const Ast::Key * holder;
     int successTime;
+    const Ast::Key * needRelease;
 };
 
 class Character: public ObjectAttack {

@@ -51,19 +51,21 @@ ticks(0),
 holdKey(-1),
 current(keys->getKeys().begin()),
 holder(0),
-successTime(0){
+successTime(0),
+needRelease(0){
 }
 
 void Command::handle(InputMap<Keys>::Output keys){
     class KeyWalker: public Ast::Walker{
     public:
-        KeyWalker(InputMap<Keys>::Output & keys, const InputMap<Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder):
+        KeyWalker(InputMap<Keys>::Output & keys, const InputMap<Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease):
         ok(false),
         fail(false),
         holdKey(holdKey),
         keys(keys),
         oldKeys(keys),
-        holder(holder){
+        holder(holder),
+        needRelease(needRelease){
         }
         
         bool ok;
@@ -72,6 +74,7 @@ void Command::handle(InputMap<Keys>::Output keys){
         InputMap<Keys>::Output & keys;
         const InputMap<Keys>::Output & oldKeys;
         const Ast::Key *& holder;
+        const Ast::Key *& needRelease;
 
         virtual void onKeySingle(const Ast::KeySingle & key){
             if (key == "a"){
@@ -103,6 +106,9 @@ void Command::handle(InputMap<Keys>::Output keys){
             } else if (key == "UB"){
                 ok = keys[Back] && keys[Up];
             }
+            if (ok){
+                needRelease = &key;
+            }
         }
 
         bool sameKeys(const InputMap<Keys>::Output & map1, const InputMap<Keys>::Output & map2 ){
@@ -110,6 +116,7 @@ void Command::handle(InputMap<Keys>::Output keys){
         }
 
         virtual void onKeyModifier(const Ast::KeyModifier & key){
+            needRelease = NULL;
             switch (key.getModifierType()){
                 case Ast::KeyModifier::MustBeHeldDown : {
                     key.getKey()->walk(*this);
@@ -122,7 +129,7 @@ void Command::handle(InputMap<Keys>::Output keys){
                     if (key.getExtra() > 0){
                         if (holdKey > 0){
                             int fake = -1;
-                            KeyWalker walker(keys, oldKeys, fake, holder);
+                            KeyWalker walker(keys, oldKeys, fake, holder, needRelease);
                             key.getKey()->walk(walker);
                             if (walker.ok){
                                 holdKey -= 1;
@@ -131,7 +138,7 @@ void Command::handle(InputMap<Keys>::Output keys){
                             }
                         } else if (holdKey == 0){
                             int fake = -1;
-                            KeyWalker walker(keys, oldKeys, fake, holder);
+                            KeyWalker walker(keys, oldKeys, fake, holder, needRelease);
                             key.getKey()->walk(walker);
                             /* if ok is true then the key is still being pressed */
                             if (!walker.ok){
@@ -142,7 +149,7 @@ void Command::handle(InputMap<Keys>::Output keys){
                         }
                     } else {
                         int fake = -1;
-                        KeyWalker walker(keys, oldKeys, fake, holder);
+                        KeyWalker walker(keys, oldKeys, fake, holder, needRelease);
                         key.getKey()->walk(walker);
                         if (!walker.ok){
                             ok = true;
@@ -168,39 +175,63 @@ void Command::handle(InputMap<Keys>::Output keys){
 
         virtual void onKeyCombined(const Ast::KeyCombined & key){
             int fake = -1;
-            KeyWalker left(keys, oldKeys, fake, holder);
-            KeyWalker right(keys, oldKeys, fake, holder);
+            KeyWalker left(keys, oldKeys, fake, holder, needRelease);
+            KeyWalker right(keys, oldKeys, fake, holder, needRelease);
             key.getKey1()->walk(left);
             key.getKey2()->walk(right);
             ok = left.ok && right.ok;
+            if (ok){
+                needRelease = &key;
+            }
         }
     };
     
     if (successTime > 0){
         successTime -= 1;
         Global::debug(0) << "Pressed " << name << endl;
+        return;
     }
 
-    KeyWalker walker(keys, oldKeys, holdKey, holder);
-    (*current)->walk(walker);
+    bool use = true;
+    if (needRelease != NULL){
+        const Ast::Key * fake;
+        KeyWalker walker(keys, oldKeys, holdKey, holder, fake);
+        needRelease->walk(walker);
+        Global::debug(1) << "Waiting for key " << needRelease->toString() << " to be released: " << walker.ok << endl;
+        if (walker.ok){
+            use = false;
+        } else {
+            needRelease = NULL;
+        }
+    }
 
-    bool ok = walker.ok;
-    bool fail = walker.fail;
-    if (holder != 0){
-        holder->walk(walker);
-        ok &= walker.ok;
-        fail |= walker.fail;
+    bool fail = false;
+    bool ok = false;
+
+    if (use){
+        KeyWalker walker(keys, oldKeys, holdKey, holder, needRelease);
+        (*current)->walk(walker);
+
+        ok = walker.ok;
+        fail = walker.fail;
+        if (holder != 0){
+            holder->walk(walker);
+            ok &= walker.ok;
+            fail |= walker.fail;
+        }
     }
 
     oldKeys = keys;
     ticks += 1;
     if (ticks > maxTime){
         fail = true;
+        Global::debug(2) << name << " ran out of time" << endl;
     }
 
     if (fail){
         current = this->keys->getKeys().begin();
         ticks = 0;
+        needRelease = NULL;
         holdKey = -1;
         holder = 0;
     } else if (ok){
@@ -210,6 +241,7 @@ void Command::handle(InputMap<Keys>::Output keys){
             /* success! */
             current = this->keys->getKeys().begin();
             ticks = 0;
+            needRelease = NULL;
             holder = 0;
             successTime = bufferTime - 1;
             Global::debug(0) << "Pressed " << name << endl;
