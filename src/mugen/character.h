@@ -77,9 +77,13 @@ public:
 protected:
     std::string name;
     Ast::KeyList * keys;
-    int maxTime;
-    int bufferTime;
+    const int maxTime;
+    const int bufferTime;
+    int ticks;
+    int holdKey;
     std::vector<Ast::Key*>::const_iterator current;
+    InputMap<Keys>::Output oldKeys;
+    const Ast::Key * holder;
 };
 
 class Character: public ObjectAttack {

@@ -47,19 +47,30 @@ name(name),
 keys(keys),
 maxTime(maxTime),
 bufferTime(bufferTime),
-current(keys->getKeys().begin()){
+ticks(0),
+holdKey(-1),
+current(keys->getKeys().begin()),
+holder(0){
 }
 
 void Command::handle(InputMap<Keys>::Output keys){
     class KeyWalker: public Ast::Walker{
     public:
-        KeyWalker(InputMap<Keys>::Output & keys):
+        KeyWalker(InputMap<Keys>::Output & keys, const InputMap<Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder):
         ok(false),
-        keys(keys){
+        fail(false),
+        holdKey(holdKey),
+        keys(keys),
+        oldKeys(keys),
+        holder(holder){
         }
         
         bool ok;
+        bool fail;
+        int & holdKey;
         InputMap<Keys>::Output & keys;
+        const InputMap<Keys>::Output & oldKeys;
+        const Ast::Key *& holder;
 
         virtual void onKeySingle(const Ast::KeySingle & key){
             if (key == "a"){
@@ -93,27 +104,104 @@ void Command::handle(InputMap<Keys>::Output keys){
             }
         }
 
+        bool sameKeys(const InputMap<Keys>::Output & map1, const InputMap<Keys>::Output & map2 ){
+            return map1 == map2;
+        }
+
         virtual void onKeyModifier(const Ast::KeyModifier & key){
-            /* FIXME */
-            key.getKey()->walk(*this);
+            switch (key.getModifierType()){
+                case Ast::KeyModifier::MustBeHeldDown : {
+                    key.getKey()->walk(*this);
+                    if (ok){
+                        holder = key.getKey();
+                    }
+                    break;
+                }
+                case Ast::KeyModifier::Release : {
+                    if (key.getExtra() > 0){
+                        if (holdKey > 0){
+                            int fake = -1;
+                            KeyWalker walker(keys, oldKeys, fake, holder);
+                            key.getKey()->walk(walker);
+                            if (walker.ok){
+                                holdKey -= 1;
+                            } else {
+                                fail = true;
+                            }
+                        } else if (holdKey == 0){
+                            int fake = -1;
+                            KeyWalker walker(keys, oldKeys, fake, holder);
+                            key.getKey()->walk(walker);
+                            /* if ok is true then the key is still being pressed */
+                            if (!walker.ok){
+                                ok = true;
+                            }
+                        } else if (holdKey == -1){
+                            holdKey = key.getExtra();
+                        }
+                    } else {
+                        int fake = -1;
+                        KeyWalker walker(keys, oldKeys, fake, holder);
+                        key.getKey()->walk(walker);
+                        if (!walker.ok){
+                            ok = true;
+                        }
+                    }
+                    break;
+                }
+                case Ast::KeyModifier::Direction : {
+                    key.getKey()->walk(*this);
+                    break;
+                }
+                case Ast::KeyModifier::Only : {
+                    key.getKey()->walk(*this);
+                    if (!ok){
+                        if (!sameKeys(keys, oldKeys)){
+                            fail = true;
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
         virtual void onKeyCombined(const Ast::KeyCombined & key){
-            KeyWalker left(keys);
-            KeyWalker right(keys);
+            int fake = -1;
+            KeyWalker left(keys, oldKeys, fake, holder);
+            KeyWalker right(keys, oldKeys, fake, holder);
             key.getKey1()->walk(left);
             key.getKey2()->walk(right);
             ok = left.ok && right.ok;
         }
     };
 
-    KeyWalker walker(keys);
+    KeyWalker walker(keys, oldKeys, holdKey, holder);
     (*current)->walk(walker);
 
-    if (walker.ok){
+    bool ok = walker.ok;
+    bool fail = walker.fail;
+    if (holder != 0){
+        holder->walk(walker);
+        ok &= walker.ok;
+        fail |= walker.fail;
+    }
+
+    oldKeys = keys;
+    ticks += 1;
+
+    if (fail){
+        current = this->keys->getKeys().begin();
+        ticks = 0;
+        holdKey = -1;
+        holder = 0;
+    } else if (ok){
         current++;
+        holdKey = -1;
         if (current == this->keys->getKeys().end()){
+            /* success! */
             current = this->keys->getKeys().begin();
+            ticks = 0;
+            holder = 0;
             Global::debug(0) << "Pressed " << name << endl;
         }
     }
@@ -188,8 +276,8 @@ void Character::initialize(){
 
     input.set(Keyboard::Key_UP, 0, false, Command::Up);
     input.set(Keyboard::Key_DOWN, 0, false, Command::Down);
-    input.set(Keyboard::Key_LEFT, 0, false, Command::Forward);
-    input.set(Keyboard::Key_RIGHT, 0, false, Command::Back);
+    input.set(Keyboard::Key_RIGHT, 0, false, Command::Forward);
+    input.set(Keyboard::Key_LEFT, 0, false, Command::Back);
 
     input.set(Keyboard::Key_A, 0, false, Command::A);
     input.set(Keyboard::Key_S, 0, false, Command::B);

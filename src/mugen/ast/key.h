@@ -103,6 +103,14 @@ public:
         key->mark(marks);
     }
 
+    virtual ModifierType getModifierType() const {
+        return type;
+    }
+
+    virtual inline int getExtra() const {
+        return extra;
+    }
+
     virtual const Key * getKey() const {
         return key;
     }
