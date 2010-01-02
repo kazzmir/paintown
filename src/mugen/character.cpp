@@ -546,15 +546,28 @@ void Character::bundleAnimations(){
     }
 }
 
-/* Inherited members */
-void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
-}
-
-void Character::draw(Bitmap * work, int x_position){
+MugenAnimation * Character::getCurrentAnimation() const {
     typedef std::map< int, MugenAnimation * > Animations;
     Animations::const_iterator it = getAnimations().find(currentState);
     if (it != getAnimations().end()){
         MugenAnimation * animation = (*it).second;
+        return animation;
+    }
+    return NULL;
+}
+
+/* Inherited members */
+void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
+    MugenAnimation * animation = getCurrentAnimation();
+    if (animation != 0){
+        animation->logic();
+    }
+}
+
+void Character::draw(Bitmap * work, int x_position){
+    MugenAnimation * animation = getCurrentAnimation();
+    if (animation != 0){
+        /* FIXME: change these numbers */
         animation->render(260, 230, *work, 0, 0);
     }
 }                      

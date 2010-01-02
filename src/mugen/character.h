@@ -97,6 +97,8 @@ public:
 	virtual inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
             return sounds;
         }
+
+        MugenAnimation * getCurrentAnimation() const;
 	
 	/*! This all the inherited members */
 	virtual void act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*);                       
