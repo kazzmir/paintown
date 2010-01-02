@@ -70,6 +70,7 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
         bool quit = false;
         double gameSpeed = 1.0;
         double runCounter = 0;
+        double mugenSpeed = 60;
 
         // Lets reset the stage for good measure
         gameInfo->selectedStage->reset();
@@ -78,7 +79,7 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
             bool draw = false;
 
             if ( Global::speed_counter > 0 ){
-                runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+                runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
                 while (runCounter > 1){
                     keyInputManager::update();
                     InputManager::poll();
