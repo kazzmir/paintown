@@ -91,7 +91,7 @@ public:
         Key(),
         type(type),
         key(key),
-        extra(0){
+        extra(extra){
         }
     
     virtual void walk(Walker & walker) const {

@@ -129,7 +129,8 @@ void Command::handle(InputMap<Keys>::Output keys){
                     if (key.getExtra() > 0){
                         if (holdKey > 0){
                             int fake = -1;
-                            KeyWalker walker(keys, oldKeys, fake, holder, needRelease);
+                            const Ast::Key * fakeKey;
+                            KeyWalker walker(keys, oldKeys, fake, holder, fakeKey);
                             key.getKey()->walk(walker);
                             if (walker.ok){
                                 holdKey -= 1;
@@ -138,7 +139,8 @@ void Command::handle(InputMap<Keys>::Output keys){
                             }
                         } else if (holdKey == 0){
                             int fake = -1;
-                            KeyWalker walker(keys, oldKeys, fake, holder, needRelease);
+                            const Ast::Key * fakeKey;
+                            KeyWalker walker(keys, oldKeys, fake, holder, fakeKey);
                             key.getKey()->walk(walker);
                             /* if ok is true then the key is still being pressed */
                             if (!walker.ok){
