@@ -342,6 +342,7 @@ void MugenCharacterSelect::load(const std::string &selectFile, const std::vector
     // Also do their preload
     if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
 }
+
 MugenSelectedChars *MugenCharacterSelect::run(const std::string &title, const int players, const bool selectStage, Bitmap *work){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;

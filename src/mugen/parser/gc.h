@@ -19,8 +19,14 @@ static std::list<Ast::Collectable> saved_pointers;
 typedef std::list<Ast::Section*> SectionList;
 
 template<class X>
-void save(const X x){
+static void save(const X x){
     saved_pointers.push_back(Ast::Collectable(x));
+}
+
+static void check(){
+    if (!(saved_pointers.size() == 0)){
+        *(char *) 0 = 0;
+    }
 }
 
 /* garbage collection */

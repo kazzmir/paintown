@@ -70,9 +70,9 @@ static bool centerCollision( Character *p1, Character *p2 ){
     return true;
 }
 
-MugenStage::MugenStage( const string & s ):
+MugenStage::MugenStage(const string & location):
 World(),
-location( s ),
+location(location),
 baseDir(""),
 name(""),
 startx(0),
@@ -139,7 +139,8 @@ loaded(false){
     initializeName();
 }
 
-MugenStage::MugenStage( const char * location ): World(),
+MugenStage::MugenStage( const char * location ):
+World(),
 location( std::string(location) ),
 baseDir(""),
 name(""),
@@ -557,7 +558,7 @@ void MugenStage::logic( ){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
         /* use local variables more often, iterators can be easily confused */
         Object * player = *it;
-        player->act( &objects, (World *)this, &add);
+        player->act( &objects, this, &add);
 	
 	// Check collisions
 	for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
