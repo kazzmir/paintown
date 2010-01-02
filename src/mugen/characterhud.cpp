@@ -18,8 +18,10 @@
 #include "mugen/mugen_sprite.h"
 #include "mugen/mugen_animation.h"
 #include "mugen/mugen_font.h"
-#include "mugen/mugen_reader.h"
-#include "mugen/mugen_section.h"
+
+#include "util/timedifference.h"
+#include "ast/all.h"
+#include "parser/all.h"
 
 using namespace std;
 using namespace Mugen;
@@ -146,16 +148,41 @@ void CharacterHUD::load() throw (MugenException){
     std::string filesdir = "";
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
-     
-    MugenReader reader( ourDefFile );
-    std::vector< MugenSection * > collection;
-    collection = reader.getCollection();
     
-    /* Extract info for our first section of our stage */
-    for( unsigned int i = 0; i < collection.size(); ++i ){
-	std::string head = collection[i]->getHeader();
+    TimeDifference diff;
+    diff.startTime();
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
+    
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        /* this should really be head = Mugen::Util::fixCase(head) */
 	Mugen::Util::fixCase(head);
-	Global::debug(1) << "Name: " << head << endl;
+
+        // Global::debug(1) << "Name: " << head << endl;
+        if (head == "info"){
+            class InfoWalk: public Ast::Walker{
+            public:
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "name"){
+                        string name;
+                        simple >> name;
+                        Global::debug(1) << "Read name '" << name << "'" << endl;
+                    } else if (simple == "author"){
+                        string name;
+                        simple >> name;
+                        Global::debug(1) << "Made by: '" << name << "'" << endl;
+                    } else {
+                        Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
+                    }
+                }
+            };
+
+            InfoWalk walk;
+            section->walk(walk);
+	} else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
 }
 
