@@ -112,10 +112,26 @@ public:
     right(right){
     }
 
+    virtual InfixType getExpressionType() const {
+        return type;
+    }
+
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
         left->mark(marks);
         right->mark(marks);
+    }
+    
+    virtual void walk(Walker & walker) const {
+        walker.onExpressionInfix(*this);
+    }
+
+    virtual inline const Value * getLeft() const {
+        return left;
+    }
+    
+    virtual inline const Value * getRight() const {
+        return right;
     }
     
     virtual Element * copy() const {

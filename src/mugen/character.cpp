@@ -71,21 +71,190 @@ void StateController::addTrigger(int number, Ast::Value * trigger){
     triggers[number].push_back(trigger);
 }
 
+struct RuntimeValue{
+    enum Type{
+        Bool,
+        String,
+        Integer,
+        Double,
+        ListOfString,
+    };
+
+    RuntimeValue():
+    type(Bool),
+    bool_value(false){
+    }
+
+    RuntimeValue(bool b):
+    type(Bool),
+    bool_value(b){
+    }
+
+    RuntimeValue(const string & str):
+    type(String),
+    string_value(str){
+    }
+
+    RuntimeValue(const vector<string> & strings):
+    type(ListOfString),
+    strings_value(strings){
+    }
+
+    inline bool isBool() const {
+        return type == Bool;
+    }
+
+    inline bool getBoolValue() const {
+        return bool_value;
+    }
+
+    Type type;
+    string string_value;
+    bool bool_value;
+    vector<string> strings_value;
+};
+
 bool StateController::canTrigger(const Ast::Value * expression, const vector<string> & commands) const {
-    class ExpressionWalker: public Ast::Walker {
+    /* a meta-circular evaluator! */
+    class Evaluator: public Ast::Walker {
     public:
-        ExpressionWalker(const vector<string> & commands):
-        commands(commands),
-        ok(false){
+        Evaluator(const vector<string> & commands):
+        commands(commands){
         }
 
+        RuntimeValue result;
         const vector<string> & commands;
-        bool ok;
+
+        RuntimeValue same(const RuntimeValue & value1, const RuntimeValue & value2){
+            switch (value1.type){
+                case RuntimeValue::ListOfString : {
+                    switch (value2.type){
+                        case RuntimeValue::String : {
+                            const vector<string> & strings = value1.strings_value;
+                            /*
+                            if (strings.size() > 0){
+                                for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
+                                    Global::debug(0) << "Command: " << *it << endl;
+                                }
+                            }
+                            */
+                            for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
+                                const string & check = *it;
+                                if (check == value2.string_value){
+                                    return RuntimeValue(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return RuntimeValue();
+        }
+
+        RuntimeValue evaluate(const Ast::Value * value){
+            Evaluator eval(commands);
+            value->walk(eval);
+            return eval.result;
+        }
+
+        RuntimeValue evalIdentifier(const Ast::Identifier & identifier){
+            if (identifier == "command"){
+                return RuntimeValue(commands);
+            }
+
+            return RuntimeValue();
+        }
+
+        virtual void onIdenfitier(const Ast::Identifier & identifier){
+            result = evalIdentifier(identifier);
+        }
+
+        RuntimeValue evalString(const Ast::String & string_value){
+            string out;
+            string_value >> out;
+            return RuntimeValue(out);
+        }
+          
+        virtual void onString(const Ast::String & string){
+            result = evalString(string);
+        }
+
+        virtual RuntimeValue evalExpressionInfix(const Ast::ExpressionInfix & expression){
+            Global::debug(1) << "Evaluate expression " << expression.toString() << endl;
+            using namespace Ast;
+            switch (expression.getExpressionType()){
+                case ExpressionInfix::Or : {
+                    break;
+                }
+                case ExpressionInfix::XOr : {
+                    break;
+                }
+                case ExpressionInfix::And : {
+                    break;
+                }
+                case ExpressionInfix::BitwiseOr : {
+                    break;
+                }
+                case ExpressionInfix::BitwiseXOr : {
+                    break;
+                }
+                case ExpressionInfix::BitwiseAnd : {
+                    break;
+                }
+                case ExpressionInfix::Assignment : {
+                    break;
+                }
+                case ExpressionInfix::Equals : {
+                    return same(evaluate(expression.getLeft()), evaluate(expression.getRight()));
+                    break;
+                }
+                case ExpressionInfix::Unequals : {
+                    break;
+                }
+                case ExpressionInfix::GreaterThanEquals : {
+                    break;
+                }
+                case ExpressionInfix::GreaterThan : {
+                    break;
+                }
+                case ExpressionInfix::LessThanEquals : {
+                    break;
+                }
+                case ExpressionInfix::LessThan : {
+                    break;
+                }
+                case ExpressionInfix::Add : {
+                    break;
+                }
+                case ExpressionInfix::Subtract : {
+                    break;
+                }
+                case ExpressionInfix::Multiply : {
+                    break;
+                }
+                case ExpressionInfix::Divide : {
+                    break;
+                }
+                case ExpressionInfix::Modulo : {
+                    break;
+                }
+                case ExpressionInfix::Power : {
+                    break;
+                }
+            }
+
+            return RuntimeValue();
+        }
+
+        virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
+            result = evalExpressionInfix(expression);
+        }
     };
-    ExpressionWalker walker(commands);
+    Evaluator walker(commands);
     expression->walk(walker);
 
-    return walker.ok;
+    return walker.result.isBool() && walker.result.getBoolValue() == true;
 }
 
 bool StateController::canTrigger(const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
@@ -136,6 +305,7 @@ bool StateController::canTrigger(const vector<string> & commands) const {
 }
 
 void StateController::activate(Character & who) const {
+    Global::debug(0) << "Activate controller " << name << endl;
 }
 
 State::State():
@@ -802,7 +972,7 @@ void Character::loadStateFile(const std::string & base, const string & path){
                         } else if (simple == "triggerall"){
                             controller->addTriggerAll((Ast::Value*) simple.getValue()->copy());
                         } else if (PaintownUtil::matchRegex(simple.idString(), "trigger[0-9]+")){
-                            int trigger = atoi(PaintownUtil::captureRegex(simple.idString(), "trigger([0-9]+)", 1).c_str());
+                            int trigger = atoi(PaintownUtil::captureRegex(simple.idString(), "trigger([0-9]+)", 0).c_str());
                             controller->addTrigger(trigger, (Ast::Value*) simple.getValue()->copy());
                         }
                     }

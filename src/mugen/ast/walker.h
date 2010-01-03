@@ -13,6 +13,9 @@ class ValueList;
 class KeySingle;
 class KeyModifier;
 class KeyCombined;
+class ExpressionInfix;
+class Identifier;
+class String;
 
 /* the visitor pattern */
 class Walker{
@@ -48,6 +51,15 @@ public:
     }
     
     virtual void onAttributeArray(const AttributeArray & simple){
+    }
+        
+    virtual void onExpressionInfix(const ExpressionInfix & expression){
+    }
+
+    virtual void onIdenfitier(const Identifier & identifier){
+    }
+
+    virtual void onString(const String & string){
     }
 
     virtual ~Walker(){

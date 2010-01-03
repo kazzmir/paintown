@@ -30,6 +30,10 @@ public:
         std::transform(str.begin(), str.end(), str.begin(), lowerCase);
         return str;
     }
+    
+    virtual void walk(Walker & walker) const {
+        walker.onIdenfitier(*this);
+    }
 
     bool operator==(const std::string & str) const {
         return downcase(toString()) == downcase(str);

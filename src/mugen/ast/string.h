@@ -11,6 +11,10 @@ public:
     String(const std::string * str):
     str(str){
     }
+    
+    virtual void walk(Walker & walker) const {
+        walker.onString(*this);
+    }
 
     virtual std::string toString() const {
         return "\"" + *str + "\"";
