@@ -52,6 +52,25 @@ struct Constant{
     std::vector<double> doubles;
 };
 
+/* comes from a State */
+class StateController{
+public:
+    StateController();
+
+    virtual ~StateController();
+};
+
+/* comes from a StateDef */
+class State{
+public:
+    State();
+
+    virtual ~State();
+
+protected:
+    std::vector<StateController*> controllers;
+};
+
 /* key command */
 class Command{
 public:
@@ -359,6 +378,8 @@ protected:
         std::map<std::string, Constant> constants;
 
         std::vector<Command *> commands;
+
+        std::map<int, State*> states;
 
         int currentState;
 

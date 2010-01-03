@@ -41,6 +41,18 @@ using namespace std;
 namespace Mugen{
 
 namespace PaintownUtil = ::Util;
+
+StateController::StateController(){
+}
+
+StateController::~StateController(){
+}
+
+State::State(){
+}
+
+State::~State(){
+}
     
 Command::Command(std::string name, Ast::KeyList * keys, int maxTime, int bufferTime):
 name(name),
@@ -505,6 +517,45 @@ void Character::loadStateFile(const std::string & base, const string & path){
     try{
         /* st can use the Cmd parser */
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
+        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+            Ast::Section * section = *section_it;
+            std::string head = section->getName();
+            /* this should really be head = Mugen::Util::fixCase(head) */
+            Util::fixCase(head);
+            if (PaintownUtil::matchRegex(head, "statedef")){
+                int state = atoi(PaintownUtil::captureRegex(head, "statedef *(-?[0-9]+)", 0).c_str());
+                class StateWalker: public Ast::Walker {
+                public:
+                    StateWalker(State * definition):
+                    definition(definition){
+                    }
+
+                    State * definition;
+                
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    }
+                };
+
+                State * definition = new State();
+                StateWalker walker(definition);
+                section->walk(walker);
+                if (states[state] != 0){
+                    Global::debug(1) << "Overriding state " << state << endl;
+                    delete states[state];
+                }
+                Global::debug(1) << "Adding state definition " << state << endl;
+                states[state] = definition;
+            } else if (PaintownUtil::matchRegex(head, "state ")){
+                int state = atoi(PaintownUtil::captureRegex(head, "state *(-?[0-9]+)", 0).c_str());
+                string name = PaintownUtil::captureRegex(head, "state *-?[0-9]+ *, *(.*)", 1);
+
+                class StateControllerWalker: public Ast::Walker {
+                public:
+                };
+                
+                Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
+            }
+        }
     } catch (const Mugen::Cmd::ParseException & e){
         Global::debug(0) << "Could not parse " << path << endl;
         Global::debug(0) << e.getReason() << endl;
@@ -605,8 +656,6 @@ void Character::load(){
                         string path;
                         simple >> path;
                         stateFiles.insert(stateFiles.begin(), Location("mugen/data/", path));
-                        /* TODO: load from the common directory */
-                        // self.loadStateFile(self.commonStateFile);
                     } else if (simple == "st"){
                         string path;
                         simple >> path;
