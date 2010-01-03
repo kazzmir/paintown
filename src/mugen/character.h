@@ -183,6 +183,7 @@ public:
         Crouching,
         Air,
         LyingDown,
+        Unchanged,
     };
 
     virtual inline void setType(Type t){

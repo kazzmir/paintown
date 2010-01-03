@@ -580,6 +580,8 @@ void Character::loadStateFile(const std::string & base, const string & path){
                                 definition->setType(State::Air);
                             } else if (type == "L"){
                                 definition->setType(State::LyingDown);
+                            } else if (type == "U"){
+                                definition->setType(State::Unchanged);
                             } else {
                                 ostringstream out;
                                 out << "Unknown statedef type: '" << type << "'";
@@ -878,7 +880,13 @@ void Character::load(){
 
             for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
                 Location & where = *it;
-                loadStateFile(where.base, where.file);
+                try{
+                    loadStateFile(where.base, where.file);
+                } catch (const MugenException & e){
+                    ostringstream out;
+                    out << "Problem loading state file " << where.file << ": " << e.getReason();
+                    throw MugenException(out.str());
+                }
             }
 
             /*
