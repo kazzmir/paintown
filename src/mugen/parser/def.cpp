@@ -661,10 +661,10 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
 }
 
 Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
-    std::list<std::string*> ids;
-    ids.push_back(as<std::string*>(front));
+    std::list<std::string> ids;
+    ids.push_back(*as<std::string*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
-        ids.push_back(as<std::string*>((*it).getValue()));
+        ids.push_back(*as<std::string*>((*it).getValue()));
     }
     Ast::Identifier * object = new Ast::Identifier(ids);
     GC::save(object);

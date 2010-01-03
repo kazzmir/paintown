@@ -885,11 +885,11 @@ Ast::Value * makeRange(Ast::Range::RangeType type, const Value & low, const Valu
 }
 
 Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
-    std::list<std::string*> ids;
-    ids.push_back(as<std::string*>(front));
+    std::list<std::string> ids;
+    ids.push_back(*as<std::string*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
         /* this works becuase as() will coerce a void* into Value(void*) */
-        ids.push_back(as<std::string*>((*it).getValue()));
+        ids.push_back(*as<std::string*>((*it).getValue()));
     }
     Ast::Identifier * object = new Ast::Identifier(ids);
     GC::save(object);
