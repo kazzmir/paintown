@@ -42,16 +42,39 @@ namespace Mugen{
 
 namespace PaintownUtil = ::Util;
 
-StateController::StateController(){
+StateController::StateController(const string & name):
+type(Unknown),
+name(name){
 }
 
 StateController::~StateController(){
 }
 
-State::State(){
+
+bool StateController::canTrigger(const vector<string> & commands) const {
+}
+
+void StateController::activate(Character & who) const {
+}
+
+State::State():
+animation(-1){
+}
+
+void State::addController(StateController * controller){
+    controllers.push_back(controller);
+}
+
+void State::transitionTo(Character & who){
+    if (animation != -1){
+        who.setAnimation(animation);
+    }
 }
 
 State::~State(){
+    for (vector<StateController*>::iterator it = controllers.begin(); it != controllers.end(); it++){
+        delete (*it);
+    }
 }
     
 Command::Command(std::string name, Ast::KeyList * keys, int maxTime, int bufferTime):
@@ -67,7 +90,7 @@ successTime(0),
 needRelease(0){
 }
 
-void Command::handle(InputMap<Keys>::Output keys){
+bool Command::handle(InputMap<Keys>::Output keys){
     class KeyWalker: public Ast::Walker{
     public:
         KeyWalker(InputMap<Keys>::Output & keys, const InputMap<Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease):
@@ -203,7 +226,7 @@ void Command::handle(InputMap<Keys>::Output keys){
     if (successTime > 0){
         successTime -= 1;
         Global::debug(0) << "Pressed " << name << endl;
-        return;
+        return true;
     }
 
     bool use = true;
@@ -258,9 +281,12 @@ void Command::handle(InputMap<Keys>::Output keys){
             needRelease = NULL;
             holder = 0;
             successTime = bufferTime - 1;
-            Global::debug(0) << "Pressed " << name << endl;
+            Global::debug(1) << "Pressed " << name << endl;
+            return true;
         }
     }
+
+    return false;
 }
 
 Command::~Command(){
@@ -329,6 +355,7 @@ Character::~Character(){
 
 void Character::initialize(){
     currentState = Standing;
+    currentAnimation = Standing;
 
     input.set(Keyboard::Key_UP, 0, false, Command::Up);
     input.set(Keyboard::Key_DOWN, 0, false, Command::Down);
@@ -533,6 +560,38 @@ void Character::loadStateFile(const std::string & base, const string & path){
                     State * definition;
                 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "type"){
+                            string type;
+                            simple >> type;
+                            if (type == "S"){
+                                definition->setType(State::Standing);
+                            } else if (type == "C"){
+                                definition->setType(State::Crouching);
+                            } else if (type == "A"){
+                                definition->setType(State::Air);
+                            } else if (type == "L"){
+                                definition->setType(State::LyingDown);
+                            } else {
+                                ostringstream out;
+                                out << "Unknown statedef type: '" << type << "'";
+                                throw MugenException(out.str());
+                            }
+                        } else if (simple == "movetype"){
+                        } else if (simple == "physics"){
+                        } else if (simple == "anim"){
+                            int animation;
+                            simple >> animation;
+                            definition->setAnimation(animation);
+                        } else if (simple == "velset"){
+                        } else if (simple == "ctrl"){
+                        } else if (simple == "poweradd"){
+                        } else if (simple == "juggle"){
+                        } else if (simple == "facep2"){
+                        } else if (simple == "hitdefpersist"){
+                        } else if (simple == "movehitpersist"){
+                        } else if (simple == "hitcountpersist"){
+                        } else if (simple == "sprpriority"){
+                        }
                     }
                 };
 
@@ -551,7 +610,129 @@ void Character::loadStateFile(const std::string & base, const string & path){
 
                 class StateControllerWalker: public Ast::Walker {
                 public:
+                    StateControllerWalker(StateController * controller):
+                        controller(controller){
+                        }
+
+                    StateController * controller;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "type"){
+                            string type;
+                            simple >> type;
+                            Mugen::Util::fixCase(type);
+                            map<string, StateController::Type> types;
+                            types["afterimage"] = StateController::AfterImage;
+                            types["afterimagetime"] = StateController::AfterImageTime;
+                            types["allpalfx"] = StateController::AllPalFX;
+                            types["angleadd"] = StateController::AngleAdd;
+                            types["angledraw"] = StateController::AngleDraw;
+                            types["anglemul"] = StateController::AngleMul;
+                            types["angleset"] = StateController::AngleSet;
+                            types["appendtoclipboard"] = StateController::AppendToClipboard;
+                            types["assertspecial"] = StateController::AssertSpecial;
+                            types["attackdist"] = StateController::AttackDist;
+                            types["attackmulset"] = StateController::AttackMulSet;
+                            types["bgpalfx"] = StateController::BGPalFX;
+                            types["bindtoparent"] = StateController::BindToParent;
+                            types["bindtoroot"] = StateController::BindToRoot;
+                            types["bindtotarget"] = StateController::BindToTarget;
+                            types["changeanim"] = StateController::ChangeAnim;
+                            types["changeanim2"] = StateController::ChangeAnim2;
+                            types["changestate"] = StateController::ChangeState;
+                            types["clearclipboard"] = StateController::ClearClipboard;
+                            types["ctrlset"] = StateController::CtrlSet;
+                            types["defencemulset"] = StateController::DefenceMulSet;
+                            types["destroyself"] = StateController::DestroySelf;
+                            types["displaytoclipboard"] = StateController::DisplayToClipboard;
+                            types["envcolor"] = StateController::EnvColor;
+                            types["envshake"] = StateController::EnvShake;
+                            types["explod"] = StateController::Explod;
+                            types["explodbindtime"] = StateController::ExplodBindTime;
+                            types["forcefeedback"] = StateController::ForceFeedback;
+                            types["fallenvshake"] = StateController::FallEnvShake;
+                            types["gamemakeanim"] = StateController::GameMakeAnim;
+                            types["gravity"] = StateController::Gravity;
+                            types["helper"] = StateController::Helper;
+                            types["hitadd"] = StateController::HitAdd;
+                            types["hitby"] = StateController::HitBy;
+                            types["hitdef"] = StateController::HitDef;
+                            types["hitfalldamage"] = StateController::HitFallDamage;
+                            types["hitfallset"] = StateController::HitFallSet;
+                            types["hitfallvel"] = StateController::HitFallVel;
+                            types["hitoverride"] = StateController::HitOverride;
+                            types["hitvelset"] = StateController::HitVelSet;
+                            types["lifeadd"] = StateController::LifeAdd;
+                            types["lifeset"] = StateController::LifeSet;
+                            types["makedust"] = StateController::MakeDust;
+                            types["modifyexplod"] = StateController::ModifyExplod;
+                            types["movehitreset"] = StateController::MoveHitReset;
+                            types["nothitby"] = StateController::NotHitBy;
+                            types["null"] = StateController::Null;
+                            types["offset"] = StateController::Offset;
+                            types["palfx"] = StateController::PalFX;
+                            types["parentvaradd"] = StateController::ParentVarAdd;
+                            types["parentvarset"] = StateController::ParentVarSet;
+                            types["pause"] = StateController::Pause;
+                            types["playerpush"] = StateController::PlayerPush;
+                            types["playsnd"] = StateController::PlaySnd;
+                            types["posadd"] = StateController::PosAdd;
+                            types["posfreeze"] = StateController::PosFreeze;
+                            types["posset"] = StateController::PosSet;
+                            types["poweradd"] = StateController::PowerAdd;
+                            types["powerset"] = StateController::PowerSet;
+                            types["projectile"] = StateController::Projectile;
+                            types["removeexplod"] = StateController::RemoveExplod;
+                            types["reversaldef"] = StateController::ReversalDef;
+                            types["screenbound"] = StateController::ScreenBound;
+                            types["selfstate"] = StateController::SelfState;
+                            types["sprpriority"] = StateController::SprPriority;
+                            types["statetypeset"] = StateController::StateTypeSet;
+                            types["sndpan"] = StateController::SndPan;
+                            types["stopsnd"] = StateController::StopSnd;
+                            types["superpause"] = StateController::SuperPause;
+                            types["targetbind"] = StateController::TargetBind;
+                            types["targetdrop"] = StateController::TargetDrop;
+                            types["targetfacing"] = StateController::TargetFacing;
+                            types["targetlifeadd"] = StateController::TargetLifeAdd;
+                            types["targetpoweradd"] = StateController::TargetPowerAdd;
+                            types["targetstate"] = StateController::TargetState;
+                            types["targetveladd"] = StateController::TargetVelAdd;
+                            types["targetvelset"] = StateController::TargetVelSet;
+                            types["trans"] = StateController::Trans;
+                            types["turn"] = StateController::Turn;
+                            types["varadd"] = StateController::VarAdd;
+                            types["varrandom"] = StateController::VarRandom;
+                            types["varrangeset"] = StateController::VarRangeSet;
+                            types["varset"] = StateController::VarSet;
+                            types["veladd"] = StateController::VelAdd;
+                            types["velmul"] = StateController::VelMul;
+                            types["velset"] = StateController::VelSet;
+                            types["width"] = StateController::Width;
+
+                            if (types.find(type) != types.end()){
+                                map<string, StateController::Type>::iterator what = types.find(type);
+                                controller->setType((*what).second);
+                            }
+                        } else if (simple == "value"){
+                        } else if (simple == "triggerall"){
+                        } else if (PaintownUtil::matchRegex(simple.idString(), "trigger[0-9]+")){
+                        }
+                    }
                 };
+
+                StateController * controller = new StateController(name);
+                StateControllerWalker walker(controller);
+                section->walk(walker);
+
+                if (states[state] == 0){
+                    ostringstream out;
+                    out << "No StateDef for state " << state << " [" << name << "]";
+                    delete controller;
+                    throw MugenException(out.str());
+                }
+
+                states[state]->addController(controller);
                 
                 Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
             }
@@ -863,7 +1044,7 @@ void Character::bundleAnimations(){
 
 MugenAnimation * Character::getCurrentAnimation() const {
     typedef std::map< int, MugenAnimation * > Animations;
-    Animations::const_iterator it = getAnimations().find(currentState);
+    Animations::const_iterator it = getAnimations().find(currentAnimation);
     if (it != getAnimations().end()){
         MugenAnimation * animation = (*it).second;
         return animation;
@@ -871,11 +1052,18 @@ MugenAnimation * Character::getCurrentAnimation() const {
     return NULL;
 }
 
-void Character::doInput(InputMap<Command::Keys>::Output output){
+/* returns all the commands that are currently active */
+vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
+    vector<string> out;
+
     for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
         Command * command = *it;
-        command->handle(output);
+        if (command->handle(output)){
+            out.push_back(command->getName());
+        }
     }
+
+    return out;
 }
 
 /* Inherited members */
@@ -885,7 +1073,23 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
         animation->logic();
     }
 
-    doInput(InputManager::getMap(input));
+    vector<string> active = doInput(InputManager::getMap(input));
+    doStates(active, -3);
+    doStates(active, -2);
+    doStates(active, -1);
+    doStates(active, currentState);
+}
+
+void Character::doStates(const vector<string> & active, int stateNumber){
+    if (states[stateNumber] != 0){
+        State * state = states[stateNumber];
+        for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
+            const StateController * controller = *it;
+            if (controller->canTrigger(active)){
+                controller->activate(*this);
+            }
+        }
+    }
 }
 
 void Character::draw(Bitmap * work, int x_position){

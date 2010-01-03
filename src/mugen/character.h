@@ -52,12 +52,119 @@ struct Constant{
     std::vector<double> doubles;
 };
 
+class Character;
+
 /* comes from a State */
 class StateController{
 public:
-    StateController();
+    StateController(const std::string & name);
+
+    /* from scrtls.html or more recently
+     * http://elecbyte.com/wiki/index.php/Category:State_Controllers
+     */
+    enum Type{
+        AfterImage,
+        AfterImageTime,
+        AllPalFX,
+        AngleAdd,
+        AngleDraw,
+        AngleMul,
+        AngleSet,
+        AppendToClipboard,
+        AssertSpecial,
+        AttackDist,
+        AttackMulSet,
+        BGPalFX,
+        BindToParent,
+        BindToRoot,
+        BindToTarget,
+        ChangeAnim,
+        ChangeAnim2,
+        ChangeState,
+        ClearClipboard,
+        CtrlSet,
+        DefenceMulSet,
+        DestroySelf,
+        DisplayToClipboard,
+        EnvColor,
+        EnvShake,
+        Explod,
+        ExplodBindTime,
+        ForceFeedback,
+        FallEnvShake,
+        GameMakeAnim,
+        Gravity,
+        Helper,
+        HitAdd,
+        HitBy,
+        HitDef,
+        HitFallDamage,
+        HitFallSet,
+        HitFallVel,
+        HitOverride,
+        HitVelSet,
+        LifeAdd,
+        LifeSet,
+        MakeDust,
+        ModifyExplod,
+        MoveHitReset,
+        NotHitBy,
+        Null,
+        Offset,
+        PalFX,
+        ParentVarAdd,
+        ParentVarSet,
+        Pause,
+        PlayerPush,
+        PlaySnd,
+        PosAdd,
+        PosFreeze,
+        PosSet,
+        PowerAdd,
+        PowerSet,
+        Projectile,
+        RemoveExplod,
+        ReversalDef,
+        ScreenBound,
+        SelfState,
+        SprPriority,
+        StateTypeSet,
+        SndPan,
+        StopSnd,
+        SuperPause,
+        TargetBind,
+        TargetDrop,
+        TargetFacing,
+        TargetLifeAdd,
+        TargetPowerAdd,
+        TargetState,
+        TargetVelAdd,
+        TargetVelSet,
+        Trans,
+        Turn,
+        VarAdd,
+        VarRandom,
+        VarRangeSet,
+        VarSet,
+        VelAdd,
+        VelMul,
+        VelSet,
+        Width,
+        Unknown,
+    };
+
+    bool canTrigger(const std::vector<std::string> & commands) const;
+    void activate(Character & who) const;
+
+    virtual inline void setType(Type type){
+        this->type = type;
+    }
 
     virtual ~StateController();
+
+protected:
+    Type type;
+    std::string name;
 };
 
 /* comes from a StateDef */
@@ -65,9 +172,34 @@ class State{
 public:
     State();
 
+    enum Type{
+        Standing,
+        Crouching,
+        Air,
+        LyingDown,
+    };
+
+    virtual inline void setType(Type t){
+        type = t;
+    }
+
+    virtual inline void setAnimation(int animation){
+        this->animation = animation;
+    }
+
+    virtual inline const std::vector<StateController*> & getControllers() const {
+        return controllers;
+    }
+
+    virtual void addController(StateController * controller);
+
+    virtual void transitionTo(Character & who);
+
     virtual ~State();
 
 protected:
+    Type type;
+    int animation;
     std::vector<StateController*> controllers;
 };
 
@@ -89,7 +221,11 @@ public:
         C,
     };
 
-    virtual void handle(InputMap<Keys>::Output keys);
+    virtual inline std::string getName() const {
+        return name;
+    }
+
+    virtual bool handle(InputMap<Keys>::Output keys);
 
     virtual ~Command();
 
@@ -172,6 +308,10 @@ public:
 	virtual double minZDistance() const;
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
+        virtual inline void setAnimation(int animation){
+            this->currentAnimation = animation;
+        }
+
 protected:
     void initialize();
 
@@ -186,7 +326,8 @@ protected:
     virtual void setConstant(std::string name, const std::vector<double> & values);
     virtual void setConstant(std::string name, double value);
 
-    virtual void doInput(InputMap<Command::Keys>::Output output);
+    virtual std::vector<std::string> doInput(InputMap<Command::Keys>::Output output);
+    virtual void doStates(const std::vector<std::string> & active, int state);
 
 protected:
 
@@ -382,6 +523,7 @@ protected:
         std::map<int, State*> states;
 
         int currentState;
+        int currentAnimation;
 
         InputMap<Command::Keys> input;
 };
