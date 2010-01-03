@@ -101,6 +101,11 @@ struct RuntimeValue{
     double_value(d){
     }
 
+    RuntimeValue(int i):
+    type(Double),
+    double_value(i){
+    }
+
     RuntimeValue(const string & str):
     type(String),
     string_value(str){
@@ -123,7 +128,7 @@ struct RuntimeValue{
         return bool_value;
     }
     
-    inline bool getDoubleValue() const {
+    inline double getDoubleValue() const {
         return double_value;
     }
 
@@ -169,9 +174,16 @@ public:
                     }
                 }
             }
+            case RuntimeValue::Double : {
+                switch (value2.type){
+                    case RuntimeValue::Double : {
+                        return RuntimeValue(value1.getDoubleValue() == value2.getDoubleValue());
+                    }
+                }
+            }
         }
 
-        return RuntimeValue();
+        return RuntimeValue(false);
     }
 
     static RuntimeValue evaluate(const Character & character, const Ast::Value * value, const vector<string> & commands){
@@ -194,6 +206,20 @@ public:
             return RuntimeValue(commands);
         }
 
+        if (identifier == "anim"){
+            return RuntimeValue(character.getAnimation());
+        }
+
+        if (identifier == "animtime"){
+            /* FIXME! */
+            return RuntimeValue(0);
+        }
+
+        if (identifier == "time"){
+            /* FIXME! */
+            return RuntimeValue(0);
+        }
+
         if (identifier == "velocity.walk.back.x"){
             return RuntimeValue(character.getWalkBackX());
         }
@@ -202,7 +228,9 @@ public:
             return RuntimeValue(character.getWalkForwardX());
         }
 
-        return RuntimeValue();
+        ostringstream out;
+        out << "Unknown identifier '" << identifier.toString() << "'";
+        throw MugenException(out.str());
     }
 
     virtual void onIdenfitier(const Ast::Identifier & identifier){
@@ -252,6 +280,13 @@ public:
         throw MugenException("Not a number");
     }
 
+    double toBool(const RuntimeValue & value){
+        if (value.isBool()){
+            return value.getBoolValue();
+        }
+        throw MugenException("Not a bool");
+    }
+
     RuntimeValue evalNumber(const Ast::Number & number){
         double x;
         number >> x;
@@ -273,6 +308,13 @@ public:
                 break;
             }
             case ExpressionInfix::And : {
+                /* FIXME! dont use a try/catch here */
+                try{
+                return RuntimeValue(toBool(evaluate(expression.getLeft())) &&
+                                    toBool(evaluate(expression.getRight())));
+                } catch (const MugenException & e){
+                    return RuntimeValue(false);
+                }
                 break;
             }
             case ExpressionInfix::BitwiseOr : {
@@ -292,6 +334,7 @@ public:
                 break;
             }
             case ExpressionInfix::Unequals : {
+                return RuntimeValue(!toBool(same(evaluate(expression.getLeft()), evaluate(expression.getRight()))));
                 break;
             }
             case ExpressionInfix::GreaterThanEquals : {
@@ -305,6 +348,11 @@ public:
                 break;
             }
             case ExpressionInfix::LessThan : {
+                 try{
+                return toNumber(evaluate(expression.getLeft())) < toNumber(evaluate(expression.getRight()));
+                 } catch (const MugenException & e){
+                     return RuntimeValue(false);
+                 }
                 break;
             }
             case ExpressionInfix::Add : {
@@ -336,13 +384,7 @@ public:
 };
 
 bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
-    
     RuntimeValue result = Evaluator::evaluate(character, expression, commands);
-    /*
-    Evaluator walker(character, commands);
-    expression->walk(walker);
-    */
-
     return result.isBool() && result.getBoolValue() == true;
 }
 
@@ -442,6 +484,11 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case ChangeAnim : {
+            RuntimeValue result = Evaluator::evaluate(guy, value1);
+            if (result.isDouble()){
+                int value = (int) result.getDoubleValue();
+                guy.setAnimation(value);
+            }
             break;
         }
         case ChangeAnim2 : {
@@ -977,6 +1024,9 @@ Character::~Character(){
 void Character::initialize(){
     currentState = Standing;
     currentAnimation = Standing;
+
+    walkfwd = 3;
+    walkback = -3;
 
     velocity_x = 0;
     velocity_y = 0;
@@ -1748,6 +1798,12 @@ void Character::doStates(const vector<string> & active, int stateNumber){
         State * state = states[stateNumber];
         for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
             const StateController * controller = *it;
+            Global::debug(1) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
+            /* for debugging
+            if (stateNumber == 20 && controller->getName() == "3"){
+                int x = 2;
+            }
+            */
             if (controller->canTrigger(*this, active)){
                 controller->activate(*this);
             }

@@ -165,6 +165,10 @@ public:
         return this->type;
     }
 
+    virtual inline const std::string & getName() const {
+        return name;
+    }
+
     virtual void setValue1(Ast::Value * value);
     virtual void setValue2(Ast::Value * value);
     virtual void addTriggerAll(Ast::Value * trigger);
@@ -332,6 +336,10 @@ public:
 
         virtual inline void setAnimation(int animation){
             this->currentAnimation = animation;
+        }
+        
+        virtual inline int getAnimation() const {
+            return this->currentAnimation;
         }
 
         virtual inline void setXVelocity(double x){
