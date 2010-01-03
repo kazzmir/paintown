@@ -20,6 +20,10 @@ public:
         return *this;
     }
     
+    virtual void walk(Walker & walker) const {
+        walker.onKeyword(*this);
+    }
+    
     virtual Element * copy() const {
         return new Keyword(str);
     }

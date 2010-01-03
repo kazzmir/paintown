@@ -17,6 +17,7 @@ class ExpressionInfix;
 class Identifier;
 class String;
 class Function;
+class Keyword;
 
 /* the visitor pattern */
 class Walker{
@@ -64,6 +65,9 @@ public:
     }
     
     virtual void onFunction(const Function & string){
+    }
+
+    virtual void onKeyword(const Keyword & keyword){
     }
 
     virtual ~Walker(){

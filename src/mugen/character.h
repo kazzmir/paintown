@@ -337,9 +337,17 @@ public:
         virtual inline void setXVelocity(double x){
             this->velocity_x = x;
         }
+
+        virtual inline double getXVelocity() const {
+            return this->velocity_x;
+        }
         
         virtual inline void setYVelocity(double y){
             this->velocity_y = y;
+        }
+        
+        virtual inline double getYVelocity() const {
+            return this->velocity_y;
         }
 
         virtual inline double getWalkBackX() const {

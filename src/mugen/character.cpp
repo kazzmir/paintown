@@ -147,6 +147,7 @@ public:
     RuntimeValue result;
     const vector<string> & commands;
 
+    /* value1 == value2 */
     RuntimeValue same(const RuntimeValue & value1, const RuntimeValue & value2){
         switch (value1.type){
             case RuntimeValue::ListOfString : {
@@ -159,6 +160,13 @@ public:
                                 return RuntimeValue(true);
                             }
                         }
+                    }
+                }
+            }
+            case RuntimeValue::String : {
+                switch (value2.type){
+                    case RuntimeValue::ListOfString : {
+                        return same(value2, value1);
                     }
                 }
             }
@@ -200,6 +208,20 @@ public:
 
     virtual void onIdenfitier(const Ast::Identifier & identifier){
         result = evalIdentifier(identifier);
+    }
+
+    RuntimeValue evalKeyword(const Ast::Keyword & keyword){
+        if (keyword == "vel x"){
+            return RuntimeValue(character.getXVelocity());
+        }
+        if (keyword == "vel y"){
+            return RuntimeValue(character.getYVelocity());
+        }
+        return RuntimeValue();
+    }
+
+    virtual void onKeyword(const Ast::Keyword & keyword){
+        result = evalKeyword(keyword);
     }
 
     RuntimeValue evalString(const Ast::String & string_value){
