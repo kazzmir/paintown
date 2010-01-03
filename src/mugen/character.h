@@ -168,9 +168,15 @@ public:
     virtual ~StateController();
 
 protected:
+
+    bool canTrigger(const std::vector<Ast::Value*> & expressions, const std::vector<std::string> & commands) const;
+    std::vector<int> sortTriggers() const;
+
+protected:
     Type type;
     std::string name;
     Ast::Value * value;
+    std::map<int, std::vector<Ast::Value*> > triggers;
 };
 
 /* comes from a StateDef */

@@ -51,15 +51,59 @@ StateController::~StateController(){
 }
 
 void StateController::setValue(Ast::Value * value){
+    for (map<int, vector<Ast::Value*> >::iterator it = triggers.begin(); it != triggers.end(); it++){
+        vector<Ast::Value*> values = (*it).second;
+        for (vector<Ast::Value*>::iterator value_it = values.begin(); value_it != values.end(); value_it++){
+            Ast::Value * value = *value_it;
+            delete value;
+        }
+    }
 }
 
 void StateController::addTriggerAll(Ast::Value * trigger){
+    triggers[-1].push_back(trigger);
 }
 
 void StateController::addTrigger(int number, Ast::Value * trigger){
+    triggers[number].push_back(trigger);
+}
+
+bool StateController::canTrigger(const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
+    return false;
+}
+
+vector<int> StateController::sortTriggers() const {
+    vector<int> out;
+
+    for (map<int, vector<Ast::Value*> >::const_iterator it = triggers.begin(); it != triggers.end(); it++){
+        int number = it->first;
+        /* ignore triggerall (-1) */
+        if (number != -1){
+            out.push_back(number);
+        }
+    }
+
+    sort(out.begin(), out.end());
+
+    return out;
 }
 
 bool StateController::canTrigger(const vector<string> & commands) const {
+    if (triggers.find(-1) != triggers.end()){
+        vector<Ast::Value*> values = triggers.find(-1)->second;
+        if (!canTrigger(values, commands)){
+            return false;
+        }
+    }
+
+    vector<int> keys = sortTriggers();
+    for (vector<int>::iterator it = keys.begin(); it != keys.end(); it++){
+        vector<Ast::Value*> values = triggers.find(*it)->second;
+        if (canTrigger(values, commands)){
+            return true;
+        }
+    }
+
     return false;
 }
 
