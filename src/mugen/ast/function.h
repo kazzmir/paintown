@@ -17,6 +17,27 @@ public:
         out << name << "(" << arg1->toString() << ")";
         return out.str();
     }
+
+    virtual void walk(Walker & walker) const {
+        walker.onFunction(*this);
+    }
+
+    virtual const Value * getArg1() const {
+        return arg1;
+    }
+
+    static std::string downcase(std::string str){
+        std::transform(str.begin(), str.end(), str.begin(), lowerCase);
+        return str;
+    }
+
+    static int lowerCase( int c ){
+        return tolower(c);
+    }
+
+    bool operator==(const std::string & str) const {
+        return downcase(name) == downcase(str);
+    }
     
     virtual Element * copy() const {
         return new Function(name, (Value*) arg1->copy());

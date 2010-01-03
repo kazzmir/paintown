@@ -16,6 +16,7 @@ class KeyCombined;
 class ExpressionInfix;
 class Identifier;
 class String;
+class Function;
 
 /* the visitor pattern */
 class Walker{
@@ -60,6 +61,9 @@ public:
     }
 
     virtual void onString(const String & string){
+    }
+    
+    virtual void onFunction(const Function & string){
     }
 
     virtual ~Walker(){

@@ -154,7 +154,7 @@ public:
         Unknown,
     };
 
-    bool canTrigger(const std::vector<std::string> & commands) const;
+    bool canTrigger(const Character & character, const std::vector<std::string> & commands) const;
     void activate(Character & who) const;
 
     virtual inline void setType(Type type){
@@ -165,7 +165,8 @@ public:
         return this->type;
     }
 
-    virtual void setValue(Ast::Value * value);
+    virtual void setValue1(Ast::Value * value);
+    virtual void setValue2(Ast::Value * value);
     virtual void addTriggerAll(Ast::Value * trigger);
     virtual void addTrigger(int number, Ast::Value * trigger);
 
@@ -173,14 +174,15 @@ public:
 
 protected:
 
-    bool canTrigger(const std::vector<Ast::Value*> & expressions, const std::vector<std::string> & commands) const;
-    bool canTrigger(const Ast::Value * expression, const std::vector<std::string> & commands) const;
+    bool canTrigger(const Character & character, const std::vector<Ast::Value*> & expressions, const std::vector<std::string> & commands) const;
+    bool canTrigger(const Character & character, const Ast::Value * expression, const std::vector<std::string> & commands) const;
     std::vector<int> sortTriggers() const;
 
 protected:
     Type type;
     std::string name;
-    Ast::Value * value;
+    Ast::Value * value1;
+    Ast::Value * value2;
     std::map<int, std::vector<Ast::Value*> > triggers;
 };
 
@@ -330,6 +332,22 @@ public:
 
         virtual inline void setAnimation(int animation){
             this->currentAnimation = animation;
+        }
+
+        virtual inline void setXVelocity(double x){
+            this->velocity_x = x;
+        }
+        
+        virtual inline void setYVelocity(double y){
+            this->velocity_y = y;
+        }
+
+        virtual inline double getWalkBackX() const {
+            return walkback;
+        }
+        
+        virtual inline double getWalkForwardX() const {
+            return walkfwd;
         }
 
 protected:
@@ -548,6 +566,8 @@ protected:
         int currentAnimation;
 
         InputMap<Command::Keys> input;
+
+        double velocity_x, velocity_y;
 };
 
 }
