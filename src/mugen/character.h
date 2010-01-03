@@ -349,6 +349,8 @@ protected:
     virtual std::vector<std::string> doInput(InputMap<Command::Keys>::Output output);
     virtual void doStates(const std::vector<std::string> & active, int state);
 
+    virtual void fixAssumptions();
+
 protected:
 
 	/* Location is the directory passed in ctor

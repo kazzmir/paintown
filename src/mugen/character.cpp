@@ -1477,6 +1477,18 @@ void Character::load(){
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     bundleAnimations();
+
+    fixAssumptions();
+}
+
+void Character::fixAssumptions(){
+    /* common1.cns defines state 20 but doesn't set the anim for it, so we have to
+     * do it manually.
+     */
+    if (states[20] != 0){
+        State * state = states[20];
+        state->setAnimation(20);
+    }
 }
 
 // Render sprite
