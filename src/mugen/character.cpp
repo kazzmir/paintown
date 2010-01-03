@@ -304,8 +304,277 @@ bool StateController::canTrigger(const vector<string> & commands) const {
     return false;
 }
 
-void StateController::activate(Character & who) const {
-    Global::debug(0) << "Activate controller " << name << endl;
+void StateController::activate(Character & guy) const {
+    Global::debug(1) << "Activate controller " << name << endl;
+    switch (getType()){
+        case AfterImage : {
+            break;
+        }
+        case AfterImageTime : {
+            break;
+        }
+        case AllPalFX : {
+            break;
+        }
+        case AngleAdd : {
+            break;
+        }
+        case AngleDraw : {
+            break;
+        }
+        case AngleMul : {
+            break;
+        }
+        case AngleSet : {
+            break;
+        }
+        case AppendToClipboard : {
+            break;
+        }
+        case AssertSpecial : {
+            break;
+        }
+        case AttackDist : {
+            break;
+        }
+        case AttackMulSet : {
+            break;
+        }
+        case BGPalFX : {
+            break;
+        }
+        case BindToParent : {
+            break;
+        }
+        case BindToRoot : {
+            break;
+        }
+        case BindToTarget : {
+            break;
+        }
+        case ChangeAnim : {
+            break;
+        }
+        case ChangeAnim2 : {
+            break;
+        }
+        case ChangeState : {
+            int state;
+            *value >> state;
+            guy.changeState(state);
+            break;
+        }
+        case ClearClipboard : {
+            break;
+        }
+        case CtrlSet : {
+            break;
+        }
+        case DefenceMulSet : {
+            break;
+        }
+        case DestroySelf : {
+            break;
+        }
+        case DisplayToClipboard : {
+            break;
+        }
+        case EnvColor : {
+            break;
+        }
+        case EnvShake : {
+            break;
+        }
+        case Explod : {
+            break;
+        }
+        case ExplodBindTime : {
+            break;
+        }
+        case ForceFeedback : {
+            break;
+        }
+        case FallEnvShake : {
+            break;
+        }
+        case GameMakeAnim : {
+            break;
+        }
+        case Gravity : {
+            break;
+        }
+        case Helper : {
+            break;
+        }
+        case HitAdd : {
+            break;
+        }
+        case HitBy : {
+            break;
+        }
+        case HitDef : {
+            break;
+        }
+        case HitFallDamage : {
+            break;
+        }
+        case HitFallSet : {
+            break;
+        }
+        case HitFallVel : {
+            break;
+        }
+        case HitOverride : {
+            break;
+        }
+        case HitVelSet : {
+            break;
+        }
+        case LifeAdd : {
+            break;
+        }
+        case LifeSet : {
+            break;
+        }
+        case MakeDust : {
+            break;
+        }
+        case ModifyExplod : {
+            break;
+        }
+        case MoveHitReset : {
+            break;
+        }
+        case NotHitBy : {
+            break;
+        }
+        case Null : {
+            break;
+        }
+        case Offset : {
+            break;
+        }
+        case PalFX : {
+            break;
+        }
+        case ParentVarAdd : {
+            break;
+        }
+        case ParentVarSet : {
+            break;
+        }
+        case Pause : {
+            break;
+        }
+        case PlayerPush : {
+            break;
+        }
+        case PlaySnd : {
+            break;
+        }
+        case PosAdd : {
+            break;
+        }
+        case PosFreeze : {
+            break;
+        }
+        case PosSet : {
+            break;
+        }
+        case PowerAdd : {
+            break;
+        }
+        case PowerSet : {
+            break;
+        }
+        case Projectile : {
+            break;
+        }
+        case RemoveExplod : {
+            break;
+        }
+        case ReversalDef : {
+            break;
+        }
+        case ScreenBound : {
+            break;
+        }
+        case SelfState : {
+            break;
+        }
+        case SprPriority : {
+            break;
+        }
+        case StateTypeSet : {
+            break;
+        }
+        case SndPan : {
+            break;
+        }
+        case StopSnd : {
+            break;
+        }
+        case SuperPause : {
+            break;
+        }
+        case TargetBind : {
+            break;
+        }
+        case TargetDrop : {
+            break;
+        }
+        case TargetFacing : {
+            break;
+        }
+        case TargetLifeAdd : {
+            break;
+        }
+        case TargetPowerAdd : {
+            break;
+        }
+        case TargetState : {
+            break;
+        }
+        case TargetVelAdd : {
+            break;
+        }
+        case TargetVelSet : {
+            break;
+        }
+        case Trans : {
+            break;
+        }
+        case Turn : {
+            break;
+        }
+        case VarAdd : {
+            break;
+        }
+        case VarRandom : {
+            break;
+        }
+        case VarRangeSet : {
+            break;
+        }
+        case VarSet : {
+            break;
+        }
+        case VelAdd : {
+            break;
+        }
+        case VelMul : {
+            break;
+        }
+        case VelSet : {
+            break;
+        }
+        case Width : {
+            break;
+        }
+        case Unknown : {
+            break;
+        }
+    }
 }
 
 State::State():
@@ -742,6 +1011,15 @@ void Character::setConstant(std::string name, const vector<double> & values){
 
 void Character::setConstant(std::string name, double value){
     constants[name] = Constant(value);
+}
+        
+void Character::changeState(int stateNumber){
+    Global::debug(1) << "Change to state " << stateNumber << endl;
+    currentState = stateNumber;
+    if (states[currentState] != 0){
+        State * state = states[currentState];
+        state->transitionTo(*this);
+    }
 }
 
 void Character::loadCnsFile(const string & path){

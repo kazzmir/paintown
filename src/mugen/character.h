@@ -161,6 +161,10 @@ public:
         this->type = type;
     }
 
+    virtual inline Type getType() const {
+        return this->type;
+    }
+
     virtual void setValue(Ast::Value * value);
     virtual void addTriggerAll(Ast::Value * trigger);
     virtual void addTrigger(int number, Ast::Value * trigger);
@@ -321,6 +325,8 @@ public:
 	virtual void getAttackCoords(int&, int&);
 	virtual double minZDistance() const;
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
+
+        virtual void changeState(int state);
 
         virtual inline void setAnimation(int animation){
             this->currentAnimation = animation;
