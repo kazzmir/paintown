@@ -500,8 +500,8 @@ void Character::loadCnsFile(const string & path){
     }
 }
 
-void Character::loadStateFile(const string & path){
-    string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
+void Character::loadStateFile(const std::string & base, const string & path){
+    string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     try{
         /* st can use the Cmd parser */
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
@@ -510,6 +510,16 @@ void Character::loadStateFile(const string & path){
         Global::debug(0) << e.getReason() << endl;
     }
 }
+
+/* a container for a directory and a file */
+struct Location{
+    Location(string base, string file):
+        base(base), file(file){
+        }
+
+    string base;
+    string file;
+};
 
 void Character::load(){
     // Lets look for our def since some people think that all file systems are case insensitive
@@ -567,9 +577,13 @@ void Character::load(){
         } else if (head == "files"){
             class FilesWalker: public Ast::Walker {
             public:
-                FilesWalker(Character & self):
+                FilesWalker(Character & self, const string & location):
+                location(location),
                 self(self){
                 }
+
+                vector<Location> stateFiles;
+                const string & location;
 
                 Character & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
@@ -582,15 +596,21 @@ void Character::load(){
                     } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){
                         int num = atoi(PaintownUtil::captureRegex(simple.idString(), "st([0-9]+)", 0).c_str());
                         if (num >= 0 && num <= 12){
-                            simple >> self.stFile[num];
+                            string path;
+                            simple >> path;
+                            stateFiles.push_back(Location("mugen/chars/" + location, path));
+                            // simple >> self.stFile[num];
                         }
                     } else if (simple == "stcommon"){
-                        simple >> self.commonStateFile;
+                        string path;
+                        simple >> path;
+                        stateFiles.insert(stateFiles.begin(), Location("mugen/data/", path));
                         /* TODO: load from the common directory */
                         // self.loadStateFile(self.commonStateFile);
                     } else if (simple == "st"){
-                        simple >> self.stateFile;
-                        self.loadStateFile(self.stateFile);
+                        string path;
+                        simple >> path;
+                        stateFiles.push_back(Location("mugen/chars/" + location, path));
                     } else if (simple == "sprite"){
                         simple >> self.sffFile;
                     } else if (simple == "anim"){
@@ -609,9 +629,25 @@ void Character::load(){
                 }
             };
 
-            FilesWalker walker(*this);
+            FilesWalker walker(*this, location);
             Ast::Section * section = *section_it;
             section->walk(walker);
+
+            for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
+                Location & where = *it;
+                loadStateFile(where.base, where.file);
+            }
+
+            /*
+            if (commonStateFile != ""){
+                loadStateFile("mugen/data/", commonStateFile);
+            }
+            if (stateFile != ""){
+                loadStateFile("mugen/chars/" + location, stateFile);
+            }
+            if (
+            */
+
 	} else if (head == "arcade"){
             class ArcadeWalker: public Ast::Walker {
             public:

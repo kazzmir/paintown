@@ -160,7 +160,7 @@ protected:
     virtual void bundleAnimations();
     virtual void loadCmdFile(const std::string & path);
     virtual void loadCnsFile(const std::string & path);
-    virtual void loadStateFile(const std::string & path);
+    virtual void loadStateFile(const std::string & base, const std::string & path);
 
     virtual void addCommand(Command * command);
 
@@ -203,12 +203,14 @@ protected:
 	std::string cmdFile;
 	// Constants
 	std::string constantsFile;
+        /*
 	// States
 	std::string stateFile;
 	// Common States
 	std::string commonStateFile;
 	// Other state files? I can't find documentation on this, in the meantime we'll wing it
 	std::string stFile[12];
+        */
 	// Sprites
 	std::string sffFile;
 	// animations
