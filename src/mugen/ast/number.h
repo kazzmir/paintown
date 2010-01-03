@@ -19,6 +19,10 @@ public:
         x = (int) value;
         return *this;
     }
+
+    virtual void walk(Walker & walker) const {
+        walker.onNumber(*this);
+    }
     
     virtual Element * copy() const {
         return new Number(value);

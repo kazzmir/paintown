@@ -83,7 +83,6 @@ struct RuntimeValue{
         Invalid,
         Bool,
         String,
-        Integer,
         Double,
         ListOfString,
     };
@@ -246,6 +245,23 @@ public:
         result = evalFunction(string);
     }
 
+    double toNumber(const RuntimeValue & value){
+        if (value.isDouble()){
+            return value.getDoubleValue();
+        }
+        throw MugenException("Not a number");
+    }
+
+    RuntimeValue evalNumber(const Ast::Number & number){
+        double x;
+        number >> x;
+        return RuntimeValue(x);
+    }
+
+    virtual void onNumber(const Ast::Number & number){
+        result = evalNumber(number);
+    }
+
     virtual RuntimeValue evalExpressionInfix(const Ast::ExpressionInfix & expression){
         Global::debug(1) << "Evaluate expression " << expression.toString() << endl;
         using namespace Ast;
@@ -282,6 +298,7 @@ public:
                 break;
             }
             case ExpressionInfix::GreaterThan : {
+                return toNumber(evaluate(expression.getLeft())) > toNumber(evaluate(expression.getRight()));
                 break;
             }
             case ExpressionInfix::LessThanEquals : {

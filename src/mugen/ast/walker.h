@@ -18,6 +18,7 @@ class Identifier;
 class String;
 class Function;
 class Keyword;
+class Number;
 
 /* the visitor pattern */
 class Walker{
@@ -68,6 +69,9 @@ public:
     }
 
     virtual void onKeyword(const Keyword & keyword){
+    }
+    
+    virtual void onNumber(const Number & keyword){
     }
 
     virtual ~Walker(){
