@@ -78,6 +78,12 @@ class Effects{
 
 /* Use with fonts */
 struct FontInfo{
+    FontInfo():
+        index(0),
+        bank(0),
+        position(0){
+        }
+
     int index;
     int bank;
     int position;

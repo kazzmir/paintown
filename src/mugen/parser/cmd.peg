@@ -458,6 +458,7 @@ rules:
 	expr8_rest(left) = s "=" s right:expr9 new_left:{{ value = makeExpressionEquals(left, right); }} expr8_rest(new_left)
 	                 | s "!=" s right:expr9 new_left:{{ value = makeExpressionUnequals(left, right); }} expr8_rest(new_left)
 		             # todo: intervals
+                             # but we have ranges.. dont need intervals
 	                 | <void> {{ value = left; }}
 	expr9_rest(left) = s maker:compare s right:expr10 new_left:{{ {
         typedef Ast::Value * (*compare_func)(const Value &, const Value &);

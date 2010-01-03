@@ -170,6 +170,7 @@ public:
 protected:
 
     bool canTrigger(const std::vector<Ast::Value*> & expressions, const std::vector<std::string> & commands) const;
+    bool canTrigger(const Ast::Value * expression, const std::vector<std::string> & commands) const;
     std::vector<int> sortTriggers() const;
 
 protected:

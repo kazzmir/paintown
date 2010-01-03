@@ -69,6 +69,7 @@ selectTicker(ticker),
 fonts(fonts),
 characterList(0){
 }
+
 Mugen::CharacterSelect::~CharacterSelect(){
     /*if (cellBackgroundBitmap){
 	delete cellBackgroundBitmap;

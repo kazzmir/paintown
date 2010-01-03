@@ -9,7 +9,7 @@
 
 #include "menu/menu.h"
 
-#include "mugen/mugen_util.h"
+#include "mugen_util.h"
 #include "return_exception.h"
 
 #include "ast/all.h"

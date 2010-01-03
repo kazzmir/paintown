@@ -48,9 +48,6 @@ name(name){
 }
 
 StateController::~StateController(){
-}
-
-void StateController::setValue(Ast::Value * value){
     for (map<int, vector<Ast::Value*> >::iterator it = triggers.begin(); it != triggers.end(); it++){
         vector<Ast::Value*> values = (*it).second;
         for (vector<Ast::Value*>::iterator value_it = values.begin(); value_it != values.end(); value_it++){
@@ -58,6 +55,12 @@ void StateController::setValue(Ast::Value * value){
             delete value;
         }
     }
+
+    delete value;
+}
+
+void StateController::setValue(Ast::Value * value){
+    this->value = value;
 }
 
 void StateController::addTriggerAll(Ast::Value * trigger){
@@ -68,8 +71,31 @@ void StateController::addTrigger(int number, Ast::Value * trigger){
     triggers[number].push_back(trigger);
 }
 
+bool StateController::canTrigger(const Ast::Value * expression, const vector<string> & commands) const {
+    class ExpressionWalker: public Ast::Walker {
+    public:
+        ExpressionWalker(const vector<string> & commands):
+        commands(commands),
+        ok(false){
+        }
+
+        const vector<string> & commands;
+        bool ok;
+    };
+    ExpressionWalker walker(commands);
+    expression->walk(walker);
+
+    return walker.ok;
+}
+
 bool StateController::canTrigger(const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
-    return false;
+    for (vector<Ast::Value*>::const_iterator it = expressions.begin(); it != expressions.end(); it++){
+        const Ast::Value * value = *it;
+        if (!canTrigger(value, commands)){
+            return false;
+        }
+    }
+    return true;
 }
 
 vector<int> StateController::sortTriggers() const {
@@ -91,6 +117,7 @@ vector<int> StateController::sortTriggers() const {
 bool StateController::canTrigger(const vector<string> & commands) const {
     if (triggers.find(-1) != triggers.end()){
         vector<Ast::Value*> values = triggers.find(-1)->second;
+        /* if the triggerall fails then no triggers will work */
         if (!canTrigger(values, commands)){
             return false;
         }
@@ -99,6 +126,7 @@ bool StateController::canTrigger(const vector<string> & commands) const {
     vector<int> keys = sortTriggers();
     for (vector<int>::iterator it = keys.begin(); it != keys.end(); it++){
         vector<Ast::Value*> values = triggers.find(*it)->second;
+        /* if a trigger succeeds then stop processing and just return true */
         if (canTrigger(values, commands)){
             return true;
         }
@@ -661,7 +689,7 @@ void Character::loadStateFile(const std::string & base, const string & path){
                 states[state] = definition;
             } else if (PaintownUtil::matchRegex(head, "state ")){
                 int state = atoi(PaintownUtil::captureRegex(head, "state *(-?[0-9]+)", 0).c_str());
-                string name = PaintownUtil::captureRegex(head, "state *-?[0-9]+ *, *(.*)", 1);
+                string name = PaintownUtil::captureRegex(head, "state *-?[0-9]+ *, *(.*)", 0);
 
                 class StateControllerWalker: public Ast::Walker {
                 public:
