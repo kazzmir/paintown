@@ -27,7 +27,7 @@ public:
     }
     
     virtual Element * copy() const {
-        throw Exception("Not implemented yet");
+        return new String(new std::string(*str));
     }
     
     /*

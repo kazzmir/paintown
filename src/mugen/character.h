@@ -15,6 +15,7 @@
 namespace Ast{
     class KeyList;
     class Key;
+    class Value;
 }
 
 class Bitmap;
@@ -160,11 +161,16 @@ public:
         this->type = type;
     }
 
+    virtual void setValue(Ast::Value * value);
+    virtual void addTriggerAll(Ast::Value * trigger);
+    virtual void addTrigger(int number, Ast::Value * trigger);
+
     virtual ~StateController();
 
 protected:
     Type type;
     std::string name;
+    Ast::Value * value;
 };
 
 /* comes from a StateDef */

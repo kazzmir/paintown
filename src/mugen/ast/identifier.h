@@ -14,7 +14,7 @@ namespace Ast{
 class Identifier: public Value {
 public:
     /* theres no real reason to use pointers to strings.. */
-    Identifier(const std::list<std::string*> & names):
+    Identifier(const std::list<std::string> & names):
     names(names){
     }
 
@@ -23,7 +23,7 @@ public:
     }
     
     virtual Element * copy() const {
-        throw Exception("Not implemented yet");
+        return new Identifier(names);
     }
 
     static std::string downcase(std::string str){
@@ -42,14 +42,13 @@ public:
     virtual std::string toString() const {
         std::ostringstream out;
         bool first = true;
-        for (std::list<std::string*>::const_iterator it = names.begin(); it != names.end(); it++){
+        for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); it++){
             if (!first){
                 out << ".";
             } else {
                 first = false;
             }
-            std::string * str = *it;
-            out << *str;
+            out << *it;
         }
         return out.str();
     }
@@ -72,23 +71,17 @@ public:
     
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
-        for (std::list<std::string*>::const_iterator it = names.begin(); it != names.end(); it++){
-            marks[*it] = true;
-        }
     }
 
     virtual ~Identifier(){
-        for (std::list<std::string*>::iterator it = names.begin(); it != names.end(); it++){
-            delete *it;
-        }
     }
 
 protected:
-    std::list<std::string*> names;
+    std::list<std::string> names;
 };
 
-static std::list<std::string*> toList(std::string * s){
-    std::list<std::string*> out;
+static std::list<std::string> toList(const std::string & s){
+    std::list<std::string> out;
     out.push_back(s);
     return out;
 }
@@ -96,7 +89,7 @@ static std::list<std::string*> toList(std::string * s){
 class SimpleIdentifier: public Identifier {
 public:
     SimpleIdentifier(const std::string & name):
-    Identifier(toList(new std::string(name))){
+    Identifier(toList(name)){
     }
 };
 

@@ -11,14 +11,15 @@ public:
         Value(){
     }
 
+    /* TODO: get rid of this method, this class should not be instantiated */
+    virtual Element * copy() const {
+        return new Expression();
+    }
+
     virtual std::string getType() const {
         return "expression";
     }
     
-    virtual Element * copy() const {
-        throw Exception("Not implemented yet");
-    }
-
     virtual ~Expression(){
     }
 };
@@ -38,6 +39,10 @@ public:
 
     virtual std::string getType() const {
         return "unary expression";
+    }
+    
+    virtual Element * copy() const {
+        return new ExpressionUnary(type, (Value*) expression->copy());
     }
 
     virtual void mark(std::map<const void*, bool> & marks) const {
@@ -111,6 +116,10 @@ public:
         marks[this] = true;
         left->mark(marks);
         right->mark(marks);
+    }
+    
+    virtual Element * copy() const {
+        return new ExpressionInfix(type, (const Value*) left->copy(), (const Value*) right->copy());
     }
 
     virtual std::string toString() const {

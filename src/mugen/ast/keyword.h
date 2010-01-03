@@ -21,7 +21,7 @@ public:
     }
     
     virtual Element * copy() const {
-        throw Exception("Copy not implemented yet");
+        return new Keyword(str);
     }
     
     bool operator==(const std::string & str) const {

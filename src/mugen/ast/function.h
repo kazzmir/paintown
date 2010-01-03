@@ -19,7 +19,7 @@ public:
     }
     
     virtual Element * copy() const {
-        throw Exception("Not implemented yet");
+        return new Function(name, (Value*) arg1->copy());
     }
     
     virtual void mark(std::map<const void*, bool> & marks) const {

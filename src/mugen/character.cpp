@@ -50,8 +50,17 @@ name(name){
 StateController::~StateController(){
 }
 
+void StateController::setValue(Ast::Value * value){
+}
+
+void StateController::addTriggerAll(Ast::Value * trigger){
+}
+
+void StateController::addTrigger(int number, Ast::Value * trigger){
+}
 
 bool StateController::canTrigger(const vector<string> & commands) const {
+    return false;
 }
 
 void StateController::activate(Character & who) const {
@@ -715,8 +724,12 @@ void Character::loadStateFile(const std::string & base, const string & path){
                                 controller->setType((*what).second);
                             }
                         } else if (simple == "value"){
+                            controller->setValue((Ast::Value*) simple.getValue()->copy());
                         } else if (simple == "triggerall"){
+                            controller->addTriggerAll((Ast::Value*) simple.getValue()->copy());
                         } else if (PaintownUtil::matchRegex(simple.idString(), "trigger[0-9]+")){
+                            int trigger = atoi(PaintownUtil::captureRegex(simple.idString(), "trigger([0-9]+)", 1).c_str());
+                            controller->addTrigger(trigger, (Ast::Value*) simple.getValue()->copy());
                         }
                     }
                 };

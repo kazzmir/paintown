@@ -41,7 +41,7 @@ public:
     }
 
     virtual Element * copy() const {
-        throw Exception("Copy not implemented yet");
+        return new Range(type, (Value*) low->copy(), (Value*) high->copy());
     }
     
     virtual std::string getType() const {

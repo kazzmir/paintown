@@ -26,7 +26,12 @@ public:
     }
     
     virtual Element * copy() const {
-        throw Exception("Not implemented yet");
+        std::list<Value*> copied;
+        for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
+            const Value * value = *it;
+            copied.push_back((Value*) value->copy());
+        }
+        return new ValueList(copied);
     }
 
     using Value::operator>>;
