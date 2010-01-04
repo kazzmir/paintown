@@ -159,7 +159,7 @@ static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iter
 
 void Mugen::CharacterSelect::load(){
      // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Filesystem::find("mugen/data/" + Mugen::Util::getFileDir(location));
+    std::string baseDir = Filesystem::find(Mugen::Util::getFileDir(location));
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
     // get real basedir
     //baseDir = Mugen::Util::getFileDir( ourDefFile );

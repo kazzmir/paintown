@@ -299,7 +299,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     //VersusPlayer p2v( *(Player *) p2 );
     */
     int ticker = 0;
-    Mugen::CharacterSelect selector(ticker,"system.def");
+    Mugen::CharacterSelect selector(ticker,"data/mugen/data/system.def");
     selector.load();
     Mugen::SelectedChars *gameInfo = selector.run("Select a Character", 1, true, &back);
     stage.addp1(gameInfo->team1[0]);
