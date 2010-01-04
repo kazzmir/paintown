@@ -15,7 +15,7 @@ double toNumber(const RuntimeValue & value){
     throw MugenException("Not a number");
 }
 
-double toBool(const RuntimeValue & value){
+bool toBool(const RuntimeValue & value){
     if (value.isBool()){
         return value.getBoolValue();
     }
@@ -58,7 +58,8 @@ public:
             case RuntimeValue::Double : {
                 switch (value2.type){
                     case RuntimeValue::Double : {
-                        return RuntimeValue(value1.getDoubleValue() == value2.getDoubleValue());
+                        double epsilon = 0.0000001;
+                        return RuntimeValue(fabs(value1.getDoubleValue() - value2.getDoubleValue()) < epsilon);
                     }
                 }
             }
@@ -162,23 +163,28 @@ public:
         using namespace Ast;
         switch (expression.getExpressionType()){
             case ExpressionInfix::Or : {
-                break;
+                return RuntimeValue(toBool(evaluate(expression.getLeft())) ||
+                                    toBool(evaluate(expression.getRight())));
             }
             case ExpressionInfix::XOr : {
-                break;
+                return RuntimeValue(toBool(evaluate(expression.getLeft())) ^
+                                    toBool(evaluate(expression.getRight())));
             }
             case ExpressionInfix::And : {
                 return RuntimeValue(toBool(evaluate(expression.getLeft())) &&
                                     toBool(evaluate(expression.getRight())));
             }
             case ExpressionInfix::BitwiseOr : {
-                break;
+                return RuntimeValue((int)toNumber(evaluate(expression.getLeft())) |
+                                    (int)toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::BitwiseXOr : {
-                break;
+                return RuntimeValue((int)toNumber(evaluate(expression.getLeft())) ^
+                                    (int)toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::BitwiseAnd : {
-                break;
+                return RuntimeValue((int)toNumber(evaluate(expression.getLeft())) &
+                                    (int)toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Assignment : {
                 break;
@@ -189,42 +195,41 @@ public:
             }
             case ExpressionInfix::Unequals : {
                 return RuntimeValue(!toBool(same(evaluate(expression.getLeft()), evaluate(expression.getRight()))));
-                break;
             }
             case ExpressionInfix::GreaterThanEquals : {
-                break;
+                return RuntimeValue(toNumber(evaluate(expression.getLeft())) >= toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::GreaterThan : {
-                return toNumber(evaluate(expression.getLeft())) > toNumber(evaluate(expression.getRight()));
-                break;
+                return RuntimeValue(toNumber(evaluate(expression.getLeft())) > toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::LessThanEquals : {
-                break;
+                return RuntimeValue(toNumber(evaluate(expression.getLeft())) <= toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::LessThan : {
-                return toNumber(evaluate(expression.getLeft())) < toNumber(evaluate(expression.getRight()));
+                return RuntimeValue(toNumber(evaluate(expression.getLeft())) < toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Add : {
-                break;
+                return RuntimeValue(toNumber(evaluate(expression.getLeft())) + toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Subtract : {
-                break;
+                return RuntimeValue(toNumber(evaluate(expression.getLeft())) - toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Multiply : {
-                break;
+                return RuntimeValue(toNumber(evaluate(expression.getLeft())) * toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Divide : {
-                break;
+                /* FIXME: catch divide by 0 */
+                return RuntimeValue(toNumber(evaluate(expression.getLeft())) / toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Modulo : {
-                break;
+                return RuntimeValue((int)toNumber(evaluate(expression.getLeft())) % (int)toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Power : {
-                break;
+                return RuntimeValue(pow(toNumber(evaluate(expression.getLeft())), toNumber(evaluate(expression.getRight()))));
             }
         }
 
-        return RuntimeValue();
+        throw MugenException("Unknown expression");
     }
 
     virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){

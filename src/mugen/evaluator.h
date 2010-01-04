@@ -105,7 +105,7 @@ protected:
 RuntimeValue evaluate(const Ast::Value * value, const Environment & environment);
 
 double toNumber(const RuntimeValue & value);
-double toBool(const RuntimeValue & value);
+bool toBool(const RuntimeValue & value);
 
 }
 
