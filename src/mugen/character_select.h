@@ -86,18 +86,33 @@ typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > MugenS
 
 class CharacterSelect{
     public:
-	CharacterSelect(const unsigned long int &ticker, std::vector<MugenFont *> &fonts);
+	CharacterSelect(const unsigned long int &ticker, const std::string &filename);
 	virtual ~CharacterSelect();
 	
 	/*! load */
-	virtual void load(const std::string &selectFile, const std::vector<Ast::Section*> & sections, MugenSprites & sprites);
+	virtual void load();
 	
 	/*! do logic, draw whatever */
 	virtual SelectedChars *run(const std::string &title, const int players, const bool selectStage, Bitmap *work);
 	
-	/*! parser */
-	static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end);
     private:
+	void parseSelectInfo(const std::vector<Ast::Section*> & sections);
+	
+	// Location of file
+	std::string location;
+	
+	// sprite file
+	std::string sffFile;
+	
+	// music
+	std::string sndFile;
+	
+	// Select file
+	std::string selectFile;
+	
+	// Fonts
+	std::vector<MugenFont *>fonts;
+	
 	//fadein.time = 10
 	//fadeout.time = 10
 	MugenFadeTool fader;
@@ -157,11 +172,12 @@ class CharacterSelect{
 	
 	void movePlayer2Cursor(int x, int y);
 	
-	std::vector<MugenFont *> &fonts;
-	
 	void loadCharacters(const std::string &selectFile)throw (MugenException);
 	
 	SelectedChars *characterList;
+	
+	/* Sprites */
+	Mugen::SpriteMap sprites;
 };
 }
 #endif
