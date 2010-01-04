@@ -81,6 +81,11 @@ public:
             return RuntimeValue(environment.getCharacter().getAnimation());
         }
 
+        if (identifier == "alive"){
+            /* fixme */
+            return RuntimeValue(true);
+        }
+
         if (identifier == "animtime"){
             /* FIXME! */
             return RuntimeValue(0);

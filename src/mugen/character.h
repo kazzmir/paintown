@@ -16,6 +16,7 @@ namespace Ast{
     class KeyList;
     class Key;
     class Value;
+    class Section;
 }
 
 class Bitmap;
@@ -384,6 +385,8 @@ protected:
     virtual void doStates(const std::vector<std::string> & active, int state);
 
     virtual void fixAssumptions();
+    virtual void parseState(Ast::Section * section);
+    virtual void parseStateDefinition(Ast::Section * section);
 
 protected:
 
