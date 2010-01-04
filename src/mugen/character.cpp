@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "util/funcs.h"
 #include "util/bitmap.h"
@@ -187,9 +188,15 @@ public:
     }
 
     static RuntimeValue evaluate(const Character & character, const Ast::Value * value, const vector<string> & commands){
-        Evaluator eval(character,commands);
-        value->walk(eval);
-        return eval.result;
+        try{
+            Evaluator eval(character,commands);
+            value->walk(eval);
+            return eval.result;
+        } catch (const MugenException & e){
+            ostringstream out;
+            out << "Error while evaluating expression " << value->toString() << ": " << e.getReason();
+            throw MugenException(out.str());
+        }
     }
     
     static RuntimeValue evaluate(const Character & character, const Ast::Value * value){
@@ -266,6 +273,10 @@ public:
             return evaluate(function.getArg1());
         }
 
+        if (function == "abs"){
+            return RuntimeValue(fabs(toNumber(evaluate(function.getArg1()))));
+        }
+
         return RuntimeValue();
     }
 
@@ -308,14 +319,8 @@ public:
                 break;
             }
             case ExpressionInfix::And : {
-                /* FIXME! dont use a try/catch here */
-                try{
                 return RuntimeValue(toBool(evaluate(expression.getLeft())) &&
                                     toBool(evaluate(expression.getRight())));
-                } catch (const MugenException & e){
-                    return RuntimeValue(false);
-                }
-                break;
             }
             case ExpressionInfix::BitwiseOr : {
                 break;
@@ -348,12 +353,7 @@ public:
                 break;
             }
             case ExpressionInfix::LessThan : {
-                 try{
                 return toNumber(evaluate(expression.getLeft())) < toNumber(evaluate(expression.getRight()));
-                 } catch (const MugenException & e){
-                     return RuntimeValue(false);
-                 }
-                break;
             }
             case ExpressionInfix::Add : {
                 break;
