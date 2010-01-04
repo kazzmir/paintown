@@ -25,6 +25,7 @@
 #include "mugen_item_content.h"
 #include "mugen_item.h"
 #include "character.h"
+#include "character_select.h"
 #include "mugen_animation.h"
 #include "mugen_sprite.h"
 #include "mugen_stage.h"
@@ -278,7 +279,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
     //Object *p1 = new Player( "data/players/wolverine/wolverine.txt", 0 );//Game::selectPlayer( false, "Pick player1" );
-    Level::LevelInfo info;
+    /*Level::LevelInfo info;
     Object *p1 = !p1_name.empty() ? new Player(p1_name,0) : Game::selectPlayer( false, "Pick player1", info);
     Global::debug(0) << "Loading player 2" << endl;
     //Object *p2 = new Player( "data/players/venom/venom.txt", 1 );//Game::selectPlayer( false, "Pick player2" );
@@ -296,9 +297,14 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     VersusPlayer p1v( *(Player *) p1 );
     VersusEnemy p2v( *(Player *) p2 );
     //VersusPlayer p2v( *(Player *) p2 );
-    
-    stage.addp1(&p1v);
-    stage.addp2(&p2v);
+    */
+    int ticker = 0;
+    Mugen::CharacterSelect selector(ticker,"system.def");
+    selector.load();
+    Mugen::SelectedChars *gameInfo = selector.run("Select a Character", 1, true, &back);
+    stage.addp1(gameInfo->team1[0]);
+    //stage.addp1(&p1v);
+    //stage.addp2(&p2v);
 
     double gameSpeed = 1.0;
     double runCounter = 0;
@@ -362,8 +368,8 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
         }
     }
     
-    delete p1;
-    delete p2;
+    //delete p1;
+    //delete p2;
 
 }
 

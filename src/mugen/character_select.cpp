@@ -66,6 +66,7 @@ Mugen::CharacterSelect::CharacterSelect(const unsigned long int &ticker, const s
 location(filename),
 cellBackgroundBitmap(0),
 cellRandomBitmap(0),
+background(0),
 selectTicker(ticker),
 characterList(0){
 }
@@ -247,10 +248,33 @@ void Mugen::CharacterSelect::load(){
             
             FileWalker walker(*this, baseDir);
             section->walk(walker);
-        } else if (head == "select info"){ 
+        } else if (head == "music"){
+            /* FIXME! parse music here */
+        } else if (head == "title info"){
+	    /* Nothing */
+	} else if (PaintownUtil::matchRegex(head, "^titlebg")){
+	    /* Nothing */
+	} else if (head == "select info"){ 
 	    // Pass off to selectInfo
 	    parseSelectInfo(collectSelectStuff(section_it, parsed.getSections()->end()));
-        } else {
+        } else if (head == "selectbgdef" ){ /* Ignore for now */ }
+	else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "vs screen" ){ /* Ignore for now */ }
+	else if (head == "versusbgdef" ){ /* Ignore for now */ }
+	else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "demo mode" ){ /* Ignore for now */ }
+	else if (head == "continue screen" ){ /* Ignore for now */ }
+	else if (head == "game over screen" ){ /* Ignore for now */ }
+	else if (head == "win screen" ){ /* Ignore for now */ }
+	else if (head == "default ending" ){ /* Ignore for now */ }
+	else if (head == "end credits" ){ /* Ignore for now */ }
+	else if (head == "survival results screen" ){ /* Ignore for now */ }
+	else if (head == "option info" ){ /* Ignore for now */ }
+	else if (head == "optionbgdef" ){ /* Ignore for now */ }
+	else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "music" ){ /* Ignore for now */ }
+	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
+        else {
             throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
         }
     }
@@ -275,7 +299,7 @@ void Mugen::CharacterSelect::load(){
 	currentPosition.y += cellSize.y + cellSpacing;
     }
     // Now load up our characters
-    loadCharacters(selectFile);
+    loadCharacters(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
     
     // Set stage info
     stageInfo.selected = false;
