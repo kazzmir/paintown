@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include "util/funcs.h"
 #include "util/bitmap.h"
@@ -30,6 +29,7 @@
 #include "mugen_util.h"
 #include "globals.h"
 #include "state.h"
+#include "evaluator.h"
 
 #include "input/input-map.h"
 #include "input/input-manager.h"
@@ -79,312 +79,8 @@ void StateController::addTrigger(int number, Ast::Value * trigger){
     triggers[number].push_back(trigger);
 }
 
-struct RuntimeValue{
-    enum Type{
-        Invalid,
-        Bool,
-        String,
-        Double,
-        ListOfString,
-    };
-
-    RuntimeValue():
-    type(Invalid){
-    }
-
-    RuntimeValue(bool b):
-    type(Bool),
-    bool_value(b){
-    }
-
-    RuntimeValue(double d):
-    type(Double),
-    double_value(d){
-    }
-
-    RuntimeValue(int i):
-    type(Double),
-    double_value(i){
-    }
-
-    RuntimeValue(const string & str):
-    type(String),
-    string_value(str){
-    }
-
-    RuntimeValue(const vector<string> & strings):
-    type(ListOfString),
-    strings_value(strings){
-    }
-
-    inline bool isBool() const {
-        return type == Bool;
-    }
-    
-    inline bool isDouble() const {
-        return type == Double;
-    }
-
-    inline bool getBoolValue() const {
-        return bool_value;
-    }
-    
-    inline double getDoubleValue() const {
-        return double_value;
-    }
-
-    Type type;
-    string string_value;
-    bool bool_value;
-    double double_value;
-    vector<string> strings_value;
-};
-
-/* a meta-circular evaluator! */
-class Evaluator: public Ast::Walker {
-public:
-    Evaluator(const Character & character, const vector<string> & commands):
-        character(character),
-        commands(commands){
-        }
-
-    const Character & character;
-    RuntimeValue result;
-    const vector<string> & commands;
-
-    /* value1 == value2 */
-    RuntimeValue same(const RuntimeValue & value1, const RuntimeValue & value2){
-        switch (value1.type){
-            case RuntimeValue::ListOfString : {
-                switch (value2.type){
-                    case RuntimeValue::String : {
-                        const vector<string> & strings = value1.strings_value;
-                        for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
-                            const string & check = *it;
-                            if (check == value2.string_value){
-                                return RuntimeValue(true);
-                            }
-                        }
-                    }
-                }
-            }
-            case RuntimeValue::String : {
-                switch (value2.type){
-                    case RuntimeValue::ListOfString : {
-                        return same(value2, value1);
-                    }
-                }
-            }
-            case RuntimeValue::Double : {
-                switch (value2.type){
-                    case RuntimeValue::Double : {
-                        return RuntimeValue(value1.getDoubleValue() == value2.getDoubleValue());
-                    }
-                }
-            }
-        }
-
-        return RuntimeValue(false);
-    }
-
-    static RuntimeValue evaluate(const Character & character, const Ast::Value * value, const vector<string> & commands){
-        try{
-            Evaluator eval(character,commands);
-            value->walk(eval);
-            return eval.result;
-        } catch (const MugenException & e){
-            ostringstream out;
-            out << "Error while evaluating expression " << value->toString() << ": " << e.getReason();
-            throw MugenException(out.str());
-        }
-    }
-    
-    static RuntimeValue evaluate(const Character & character, const Ast::Value * value){
-        vector<string> empty;
-        return evaluate(character, value, empty);
-    }
-
-    RuntimeValue evaluate(const Ast::Value * value){
-        return evaluate(character, value, commands);
-    }
-
-    RuntimeValue evalIdentifier(const Ast::Identifier & identifier){
-        if (identifier == "command"){
-            return RuntimeValue(commands);
-        }
-
-        if (identifier == "anim"){
-            return RuntimeValue(character.getAnimation());
-        }
-
-        if (identifier == "animtime"){
-            /* FIXME! */
-            return RuntimeValue(0);
-        }
-
-        if (identifier == "time"){
-            /* FIXME! */
-            return RuntimeValue(0);
-        }
-
-        if (identifier == "velocity.walk.back.x"){
-            return RuntimeValue(character.getWalkBackX());
-        }
-
-        if (identifier == "velocity.walk.fwd.x"){
-            return RuntimeValue(character.getWalkForwardX());
-        }
-
-        ostringstream out;
-        out << "Unknown identifier '" << identifier.toString() << "'";
-        throw MugenException(out.str());
-    }
-
-    virtual void onIdenfitier(const Ast::Identifier & identifier){
-        result = evalIdentifier(identifier);
-    }
-
-    RuntimeValue evalKeyword(const Ast::Keyword & keyword){
-        if (keyword == "vel x"){
-            return RuntimeValue(character.getXVelocity());
-        }
-        if (keyword == "vel y"){
-            return RuntimeValue(character.getYVelocity());
-        }
-        return RuntimeValue();
-    }
-
-    virtual void onKeyword(const Ast::Keyword & keyword){
-        result = evalKeyword(keyword);
-    }
-
-    RuntimeValue evalString(const Ast::String & string_value){
-        string out;
-        string_value >> out;
-        return RuntimeValue(out);
-    }
-
-    virtual void onString(const Ast::String & string){
-        result = evalString(string);
-    }
-
-    RuntimeValue evalFunction(const Ast::Function & function){
-        if (function == "const"){
-            return evaluate(function.getArg1());
-        }
-
-        if (function == "abs"){
-            return RuntimeValue(fabs(toNumber(evaluate(function.getArg1()))));
-        }
-
-        return RuntimeValue();
-    }
-
-    virtual void onFunction(const Ast::Function & string){
-        result = evalFunction(string);
-    }
-
-    double toNumber(const RuntimeValue & value){
-        if (value.isDouble()){
-            return value.getDoubleValue();
-        }
-        throw MugenException("Not a number");
-    }
-
-    double toBool(const RuntimeValue & value){
-        if (value.isBool()){
-            return value.getBoolValue();
-        }
-        throw MugenException("Not a bool");
-    }
-
-    RuntimeValue evalNumber(const Ast::Number & number){
-        double x;
-        number >> x;
-        return RuntimeValue(x);
-    }
-
-    virtual void onNumber(const Ast::Number & number){
-        result = evalNumber(number);
-    }
-
-    virtual RuntimeValue evalExpressionInfix(const Ast::ExpressionInfix & expression){
-        Global::debug(1) << "Evaluate expression " << expression.toString() << endl;
-        using namespace Ast;
-        switch (expression.getExpressionType()){
-            case ExpressionInfix::Or : {
-                break;
-            }
-            case ExpressionInfix::XOr : {
-                break;
-            }
-            case ExpressionInfix::And : {
-                return RuntimeValue(toBool(evaluate(expression.getLeft())) &&
-                                    toBool(evaluate(expression.getRight())));
-            }
-            case ExpressionInfix::BitwiseOr : {
-                break;
-            }
-            case ExpressionInfix::BitwiseXOr : {
-                break;
-            }
-            case ExpressionInfix::BitwiseAnd : {
-                break;
-            }
-            case ExpressionInfix::Assignment : {
-                break;
-            }
-            case ExpressionInfix::Equals : {
-                return same(evaluate(expression.getLeft()), evaluate(expression.getRight()));
-                break;
-            }
-            case ExpressionInfix::Unequals : {
-                return RuntimeValue(!toBool(same(evaluate(expression.getLeft()), evaluate(expression.getRight()))));
-                break;
-            }
-            case ExpressionInfix::GreaterThanEquals : {
-                break;
-            }
-            case ExpressionInfix::GreaterThan : {
-                return toNumber(evaluate(expression.getLeft())) > toNumber(evaluate(expression.getRight()));
-                break;
-            }
-            case ExpressionInfix::LessThanEquals : {
-                break;
-            }
-            case ExpressionInfix::LessThan : {
-                return toNumber(evaluate(expression.getLeft())) < toNumber(evaluate(expression.getRight()));
-            }
-            case ExpressionInfix::Add : {
-                break;
-            }
-            case ExpressionInfix::Subtract : {
-                break;
-            }
-            case ExpressionInfix::Multiply : {
-                break;
-            }
-            case ExpressionInfix::Divide : {
-                break;
-            }
-            case ExpressionInfix::Modulo : {
-                break;
-            }
-            case ExpressionInfix::Power : {
-                break;
-            }
-        }
-
-        return RuntimeValue();
-    }
-
-    virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
-        result = evalExpressionInfix(expression);
-    }
-};
-
 bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
-    RuntimeValue result = Evaluator::evaluate(character, expression, commands);
+    RuntimeValue result = evaluate(character, expression, commands);
     return result.isBool() && result.getBoolValue() == true;
 }
 
@@ -484,7 +180,7 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case ChangeAnim : {
-            RuntimeValue result = Evaluator::evaluate(guy, value1);
+            RuntimeValue result = evaluate(guy, value1);
             if (result.isDouble()){
                 int value = (int) result.getDoubleValue();
                 guy.setAnimation(value);
@@ -703,13 +399,13 @@ void StateController::activate(Character & guy) const {
         }
         case VelSet : {
             if (value1 != NULL){
-                RuntimeValue result = Evaluator::evaluate(guy, value1);
+                RuntimeValue result = evaluate(guy, value1);
                 if (result.isDouble()){
                     guy.setXVelocity(result.getDoubleValue());
                 }
             }
             if (value2 != NULL){
-                RuntimeValue result = Evaluator::evaluate(guy, value2);
+                RuntimeValue result = evaluate(guy, value2);
                 if (result.isDouble()){
                     guy.setYVelocity(result.getDoubleValue());
                 }
