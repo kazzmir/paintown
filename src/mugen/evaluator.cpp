@@ -96,6 +96,30 @@ public:
             return RuntimeValue(0);
         }
 
+        if (identifier == "A"){
+            /* FIXME */
+            return RuntimeValue();
+        }
+        
+        if (identifier == "S"){
+            /* FIXME */
+            return RuntimeValue();
+        }
+
+        if (identifier == "statetype"){
+            /* FIXME */
+            return RuntimeValue();
+        }
+
+        if (identifier == "ctrl"){
+            /* FIXME */
+            return RuntimeValue();
+        }
+
+        if (identifier == "stateno"){
+            return RuntimeValue(environment.getCharacter().getCurrentState());
+        }
+
         if (identifier == "velocity.walk.back.x"){
             return RuntimeValue(environment.getCharacter().getWalkBackX());
         }
@@ -268,7 +292,7 @@ RuntimeValue evaluate(const Ast::Value * value, const Environment & environment)
         return eval.result;
     } catch (const MugenException & e){
         ostringstream out;
-        out << "Error while evaluating expression " << value->toString() << ": " << e.getReason();
+        out << "Error while evaluating expression `" << value->toString() << "': " << e.getReason();
         throw MugenException(out.str());
     }
 }

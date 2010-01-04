@@ -343,6 +343,14 @@ public:
             return this->currentAnimation;
         }
 
+        virtual inline int getCurrentState() const {
+            return this->currentState;
+        }
+
+        virtual inline void setCurrentState(int state){
+            this->currentState = state;
+        }
+
         virtual inline void setXVelocity(double x){
             this->velocity_x = x;
         }

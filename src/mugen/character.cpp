@@ -191,9 +191,11 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case ChangeState : {
-            int state;
-            *value1 >> state;
-            guy.changeState(state);
+            RuntimeValue result = evaluate(value1, Environment(guy));
+            if (result.isDouble()){
+                int value = (int) result.getDoubleValue();
+                guy.changeState(value);
+            }
             break;
         }
         case ClearClipboard : {
@@ -1357,15 +1359,29 @@ void Character::load(){
 }
 
 void Character::fixAssumptions(){
-    /* common1.cns defines state 20 but doesn't set the anim for it, so we have to
-     * do it manually.
+    /* need a -1 state controller that changes to state 20 if holdfwd
+     * or holdback is pressed
      */
-    /*
-    if (states[20] != 0){
-        State * state = states[20];
-        state->setAnimation(20);
+
+    {
+        StateController * controller = new StateController("walk");
+        controller->setType(StateController::ChangeState);
+        controller->setValue1(new Ast::Number(20));
+        controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                    new Ast::SimpleIdentifier("stateno"),
+                    new Ast::Number(0)));
+        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                    new Ast::SimpleIdentifier("command"),
+                    new Ast::String(new string("holdfwd"))));
+        controller->addTrigger(2, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                    new Ast::SimpleIdentifier("command"),
+                    new Ast::String(new string("holdback"))));
+        states[-1]->addController(controller);
     }
-    */
+
+    /* need a 20 state controller that changes to state 0 if holdfwd
+     * or holdback is not pressed
+     */
 }
 
 // Render sprite
