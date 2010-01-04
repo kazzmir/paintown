@@ -25,14 +25,12 @@ double toBool(const RuntimeValue & value){
 /* a meta-circular evaluator! */
 class Evaluator: public Ast::Walker {
 public:
-    Evaluator(const Character & character, const vector<string> & commands):
-        character(character),
-        commands(commands){
+    Evaluator(const Environment & environment):
+        environment(environment){
         }
 
-    const Character & character;
+    const Environment & environment;
     RuntimeValue result;
-    const vector<string> & commands;
 
     /* value1 == value2 */
     RuntimeValue same(const RuntimeValue & value1, const RuntimeValue & value2){
@@ -70,16 +68,16 @@ public:
     }
    
     RuntimeValue evaluate(const Ast::Value * value){
-        return Mugen::evaluate(character, value, commands);
+        return Mugen::evaluate(value, environment);
     }
 
     RuntimeValue evalIdentifier(const Ast::Identifier & identifier){
         if (identifier == "command"){
-            return RuntimeValue(commands);
+            return RuntimeValue(environment.getCommands());
         }
 
         if (identifier == "anim"){
-            return RuntimeValue(character.getAnimation());
+            return RuntimeValue(environment.getCharacter().getAnimation());
         }
 
         if (identifier == "animtime"){
@@ -93,11 +91,11 @@ public:
         }
 
         if (identifier == "velocity.walk.back.x"){
-            return RuntimeValue(character.getWalkBackX());
+            return RuntimeValue(environment.getCharacter().getWalkBackX());
         }
 
         if (identifier == "velocity.walk.fwd.x"){
-            return RuntimeValue(character.getWalkForwardX());
+            return RuntimeValue(environment.getCharacter().getWalkForwardX());
         }
 
         ostringstream out;
@@ -111,10 +109,10 @@ public:
 
     RuntimeValue evalKeyword(const Ast::Keyword & keyword){
         if (keyword == "vel x"){
-            return RuntimeValue(character.getXVelocity());
+            return RuntimeValue(environment.getCharacter().getXVelocity());
         }
         if (keyword == "vel y"){
-            return RuntimeValue(character.getYVelocity());
+            return RuntimeValue(environment.getCharacter().getYVelocity());
         }
         return RuntimeValue();
     }
@@ -234,9 +232,9 @@ public:
     }
 };
 
-RuntimeValue evaluate(const Character & character, const Ast::Value * value, const vector<string> & commands){
+RuntimeValue evaluate(const Ast::Value * value, const Environment & environment){
     try{
-        Evaluator eval(character,commands);
+        Evaluator eval(environment);
         value->walk(eval);
         return eval.result;
     } catch (const MugenException & e){
@@ -244,11 +242,6 @@ RuntimeValue evaluate(const Character & character, const Ast::Value * value, con
         out << "Error while evaluating expression " << value->toString() << ": " << e.getReason();
         throw MugenException(out.str());
     }
-}
-
-RuntimeValue evaluate(const Character & character, const Ast::Value * value){
-    vector<string> empty;
-    return evaluate(character, value, empty);
 }
 
 }

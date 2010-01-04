@@ -80,7 +80,7 @@ void StateController::addTrigger(int number, Ast::Value * trigger){
 }
 
 bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
-    RuntimeValue result = evaluate(character, expression, commands);
+    RuntimeValue result = evaluate(expression, Environment(character, commands));
     return result.isBool() && result.getBoolValue() == true;
 }
 
@@ -180,7 +180,7 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case ChangeAnim : {
-            RuntimeValue result = evaluate(guy, value1);
+            RuntimeValue result = evaluate(value1, Environment(guy));
             if (result.isDouble()){
                 int value = (int) result.getDoubleValue();
                 guy.setAnimation(value);
@@ -399,13 +399,13 @@ void StateController::activate(Character & guy) const {
         }
         case VelSet : {
             if (value1 != NULL){
-                RuntimeValue result = evaluate(guy, value1);
+                RuntimeValue result = evaluate(value1, Environment(guy));
                 if (result.isDouble()){
                     guy.setXVelocity(result.getDoubleValue());
                 }
             }
             if (value2 != NULL){
-                RuntimeValue result = evaluate(guy, value2);
+                RuntimeValue result = evaluate(value2, Environment(guy));
                 if (result.isDouble()){
                     guy.setYVelocity(result.getDoubleValue());
                 }

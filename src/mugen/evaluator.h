@@ -73,11 +73,36 @@ struct RuntimeValue{
     std::vector<std::string> strings_value;
 };
 
-struct Environment{
+class Environment{
+public:
+    Environment(const Character & character, const std::vector<std::string> commands):
+    character(character),
+    commands(commands){
+    }
+
+    Environment(const Character & character):
+    character(character){
+    }
+
+    Environment(const Environment & copy):
+    character(copy.character),
+    commands(copy.commands){
+    }
+
+    virtual inline const Character & getCharacter() const {
+        return character;
+    }
+
+    virtual inline const std::vector<std::string> getCommands() const {
+        return commands;
+    }
+
+protected:
+    const Character & character;
+    std::vector<std::string> commands;
 };
     
-RuntimeValue evaluate(const Character & character, const Ast::Value * value, const std::vector<std::string> & commands);
-RuntimeValue evaluate(const Character & character, const Ast::Value * value);
+RuntimeValue evaluate(const Ast::Value * value, const Environment & environment);
 
 double toNumber(const RuntimeValue & value);
 double toBool(const RuntimeValue & value);
