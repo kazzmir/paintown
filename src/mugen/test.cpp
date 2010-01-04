@@ -301,7 +301,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     int ticker = 0;
     Mugen::CharacterSelect selector(ticker,"data/mugen/data/system.def");
     selector.load();
-    Mugen::SelectedChars *gameInfo = selector.run("Select a Character", 1, true, &back);
+    Mugen::SelectedChars *gameInfo = selector.run("Select a Character", 1, false, &back);
     stage.addp1(gameInfo->team1[0]);
     //stage.addp1(&p1v);
     //stage.addp2(&p2v);
@@ -323,6 +323,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
         if ( Global::speed_counter > 0 ){
             runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
             while (runCounter > 1){
+		InputManager::poll();
                 keyInputManager::update();
                 stage.logic();
                 runCounter -= 1;

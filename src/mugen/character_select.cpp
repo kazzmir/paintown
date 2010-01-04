@@ -161,8 +161,7 @@ void Mugen::CharacterSelect::load(){
      // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Filesystem::find(Mugen::Util::getFileDir(location));
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
-    // get real basedir
-    //baseDir = Mugen::Util::getFileDir( ourDefFile );
+    
     Global::debug(1) << baseDir << endl;
     
     if (ourDefFile.empty()){
@@ -248,8 +247,6 @@ void Mugen::CharacterSelect::load(){
             
             FileWalker walker(*this, baseDir);
             section->walk(walker);
-        } else if (head == "music"){
-            /* FIXME! parse music here */
         } else if (head == "title info"){
 	    /* Nothing */
 	} else if (PaintownUtil::matchRegex(head, "^titlebg")){
