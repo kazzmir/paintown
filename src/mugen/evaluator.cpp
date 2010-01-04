@@ -235,6 +235,25 @@ public:
     virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
         result = evalExpressionInfix(expression);
     }
+
+    RuntimeValue evalExpressionUnary(const Ast::ExpressionUnary & expression){
+        switch (expression.getExpressionType()){
+            case Ast::ExpressionUnary::Not : {
+                return RuntimeValue(!toBool(evaluate(expression.getExpression())));
+            }
+            case Ast::ExpressionUnary::Minus : {
+                return RuntimeValue(-toNumber(evaluate(expression.getExpression())));
+            }
+            case Ast::ExpressionUnary::Negation : {
+                return RuntimeValue(~(int)toNumber(evaluate(expression.getExpression())));
+            }
+        }
+        throw MugenException("Unknown expression");
+    }
+    
+    virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
+        result = evalExpressionUnary(expression);
+    }
 };
 
 RuntimeValue evaluate(const Ast::Value * value, const Environment & environment){

@@ -37,6 +37,14 @@ public:
     expression(expression){
     }
 
+    UnaryType getExpressionType() const {
+        return type;
+    }
+
+    const Value * getExpression() const {
+        return expression;
+    }
+
     virtual std::string getType() const {
         return "unary expression";
     }
@@ -55,6 +63,10 @@ public:
     virtual const Value & operator>>(double & x) const {
         *expression >> x;
         return *this;
+    }
+
+    virtual void walk(Walker & walker) const {
+        walker.onExpressionUnary(*this);
     }
 
     virtual std::string toString() const {

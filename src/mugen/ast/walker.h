@@ -14,6 +14,7 @@ class KeySingle;
 class KeyModifier;
 class KeyCombined;
 class ExpressionInfix;
+class ExpressionUnary;
 class Identifier;
 class String;
 class Function;
@@ -57,6 +58,9 @@ public:
     }
         
     virtual void onExpressionInfix(const ExpressionInfix & expression){
+    }
+        
+    virtual void onExpressionUnary(const ExpressionUnary & expression){
     }
 
     virtual void onIdenfitier(const Identifier & identifier){
