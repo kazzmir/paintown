@@ -4,6 +4,17 @@
 #include "ast/all.h"
 #include <math.h>
 
+/* TODO:
+ * 1. Change RuntimeValue into an object that stores pointers so that the
+ * overhead of copying values is not so high.
+ * 2. 1 necessitates garbage collection. Implement precise mark/sweep.
+ * 3. Convert interpreter into a compiler. Refresher
+ *   (define intepreter (lambda (env) (lambda (input) (eval env input))))
+ *   (define compiler (lambda (input) (let ([compiled (compile input)])
+ *                       (lambda (env) (eval env compiled)))))
+ * 4. Implement simple optimizations: constant folding, dead code elimintation.
+ */
+
 using namespace std;
 
 namespace Mugen{
@@ -82,7 +93,7 @@ public:
         }
 
         if (identifier == "alive"){
-            /* fixme */
+            /* FIXME */
             return RuntimeValue(true);
         }
 

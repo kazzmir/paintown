@@ -303,7 +303,8 @@ public:
     buffer(0),
     farthest(0){
         std::ifstream stream;
-        stream.open(filename.c_str());
+        /* ios::binary is needed on windows */
+        stream.open(filename.c_str(), std::ios::in | std::ios::binary);
         if (stream.fail()){
             std::ostringstream out;
             out << "Cannot open '" << filename << "'";
