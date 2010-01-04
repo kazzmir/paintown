@@ -28,7 +28,7 @@ public:
     }
 
     virtual std::string getType() const {
-        return "string";
+        return "filename";
     }
     
     virtual void mark(std::map<const void*, bool> & marks) const {
