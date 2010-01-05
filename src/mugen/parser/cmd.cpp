@@ -7447,7 +7447,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_743.setValue(value);
             }
         
@@ -7532,7 +7532,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_752.setValue(value);
             }
         
@@ -7617,7 +7617,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_761.setValue(value);
             }
         
@@ -7702,7 +7702,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_770.setValue(value);
             }
         
@@ -7787,7 +7787,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_779.setValue(value);
             }
         
@@ -7872,7 +7872,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_788.setValue(value);
             }
         
@@ -7957,7 +7957,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_797.setValue(value);
             }
         
@@ -8188,7 +8188,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_822.setValue(value);
             }
         
@@ -8273,7 +8273,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction(name, arg1);
                 result_peg_831.setValue(value);
             }
         

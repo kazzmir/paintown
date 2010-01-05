@@ -729,6 +729,7 @@ void Character::initialize(){
     walkback = -3;
     runbackx = 3;
     runbacky = 3;
+    power = 100;
 
     velocity_x = 0;
     velocity_y = 0;

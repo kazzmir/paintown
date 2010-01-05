@@ -90,6 +90,10 @@ class MugenAnimation{
 	
 	// Add a frame
 	void addFrame( MugenFrame * );
+
+        inline unsigned int getPosition() const {
+            return position;
+        }
 	
 	// Get name of type of animation
 	static const std::string getName(const Mugen::AnimationType t);

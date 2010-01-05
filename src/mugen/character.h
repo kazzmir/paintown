@@ -386,6 +386,10 @@ public:
         virtual inline double getYPosition() const {
             return getY();
         }
+        
+        virtual inline double getPower() const {
+            return power;
+        }
 
 protected:
     void initialize();
@@ -569,6 +573,8 @@ protected:
 	// Air jump speeds (opt)
 	double airjumpback;
 	double airjumpfwd;
+
+        double power;
 	
 	/* Movement */
 	

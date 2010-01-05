@@ -156,6 +156,10 @@ public:
             return RuntimeValue(environment.getCharacter().getCurrentState());
         }
 
+        if (identifier == "power"){
+            return RuntimeValue(environment.getCharacter().getPower());
+        }
+
         if (identifier == "velocity.walk.back.x"){
             return RuntimeValue(environment.getCharacter().getWalkBackX());
         }
@@ -222,7 +226,19 @@ public:
             return RuntimeValue(fabs(toNumber(evaluate(function.getArg1()))));
         }
 
-        return RuntimeValue();
+        /* Gets the animation-time elapsed since the start of a specified element
+         * of the current animation action. Useful for synchronizing events to
+         * elements of an animation action.
+         *
+         * (reminder: first element of an action is element 1, not 0)
+         */
+        if (function == "animelemtime"){
+            return RuntimeValue(0);
+        }
+
+        ostringstream out;
+        out << "Unknown function '" << function.toString() << "'";
+        throw MugenException(out.str());
     }
 
     virtual void onFunction(const Ast::Function & string){
