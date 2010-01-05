@@ -724,8 +724,10 @@ void Character::initialize(){
     currentState = Standing;
     currentAnimation = Standing;
 
+    /* FIXME: these initializations come from the .cns file */
     walkfwd = 3;
     walkback = -3;
+    runbackx = 3;
 
     velocity_x = 0;
     velocity_y = 0;

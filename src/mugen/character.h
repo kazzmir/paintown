@@ -374,6 +374,10 @@ public:
         virtual inline double getWalkForwardX() const {
             return walkfwd;
         }
+        
+        virtual inline double getRunBackX() const {
+            return runbackx;
+        }
 
 protected:
     void initialize();

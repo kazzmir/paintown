@@ -116,6 +116,11 @@ public:
             return RuntimeValue(0);
         }
 
+        if (identifier == "animelem"){
+            /* FIXME! */
+            return RuntimeValue(0);
+        }
+
         if (identifier == "time"){
             /* FIXME! */
             return RuntimeValue(0);
@@ -157,6 +162,10 @@ public:
 
         if (identifier == "velocity.walk.fwd.x"){
             return RuntimeValue(environment.getCharacter().getWalkForwardX());
+        }
+        
+        if (identifier == "velocity.run.back.x"){
+            return RuntimeValue(environment.getCharacter().getRunBackX());
         }
 
         ostringstream out;
