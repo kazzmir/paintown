@@ -123,10 +123,12 @@ const MugenFrame *MugenAnimation::getNext(){
 }
 
 void MugenAnimation::logic(){
+    /* FIXME: dont put the speed here */
+    double speed = 60.0 / Global::TICS_PER_SECOND;
     if (position < frames.size()){
         if( frames[position]->time != -1 ){
             ticks++;
-            if(ticks >= frames[position]->time * Global::LOGIC_MULTIPLIER){
+            if(ticks >= frames[position]->time * speed){
                 ticks = 0;
                 if( position < frames.size() -1 )position++;
                 else position = loopPosition;
