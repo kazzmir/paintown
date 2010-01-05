@@ -82,7 +82,9 @@ void StateController::addTrigger(int number, Ast::Value * trigger){
 
 bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
     RuntimeValue result = evaluate(expression, Environment(character, commands));
-    return result.isBool() && result.getBoolValue() == true;
+    /* non-zero numbers count as true */
+    return (result.isBool() && result.getBoolValue() == true) ||
+           (result.isDouble() && result.getDoubleValue() != 0);
 }
 
 bool StateController::canTrigger(const Character & character, const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
@@ -729,6 +731,8 @@ void Character::initialize(){
     walkback = -3;
     runbackx = 3;
     runbacky = 3;
+    runforwardx = 3;
+    runforwardy = 3;
     power = 100;
 
     velocity_x = 0;

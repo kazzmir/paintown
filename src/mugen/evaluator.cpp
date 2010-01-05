@@ -172,6 +172,10 @@ public:
         if (identifier == "velocity.walk.fwd.x"){
             return RuntimeValue(environment.getCharacter().getWalkForwardX());
         }
+
+        if (identifier == "velocity.run.fwd.x"){
+            return RuntimeValue(environment.getCharacter().getRunForwardX());
+        }
         
         if (identifier == "velocity.run.back.x"){
             return RuntimeValue(environment.getCharacter().getRunBackX());

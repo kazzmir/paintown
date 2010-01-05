@@ -903,6 +903,12 @@ Ast::Attribute * makeAttribute(const Value & id, const Value & data){
     return object;
 }
 
+Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
+    Ast::Attribute * object = new Ast::AttributeArray(as<Ast::Identifier*>(id), as<Ast::Value*>(index), as<Ast::Value*>(data));
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
@@ -2330,7 +2336,7 @@ Result rule_assignment(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeAttribute(name, exp);
+                value = makeIndexedAttribute(name, index, exp);
                 result_peg_145.setValue(value);
             }
         

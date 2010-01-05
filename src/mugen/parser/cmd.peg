@@ -206,6 +206,12 @@ Ast::Attribute * makeAttribute(const Value & id, const Value & data){
     return object;
 }
 
+Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
+    Ast::Attribute * object = new Ast::AttributeArray(as<Ast::Identifier*>(id), as<Ast::Value*>(index), as<Ast::Value*>(data));
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
@@ -396,7 +402,7 @@ rules:
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = "command" s "=" s all:keys {{ value = makeAttribute("command", all); }}
                | name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
-	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
+	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
 	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}
 	integer = sign? digit+ {{ value = makeInteger($1, $2); }}
 	float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, parseDouble(left,right)); }}

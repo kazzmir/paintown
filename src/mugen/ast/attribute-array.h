@@ -3,6 +3,8 @@
 
 #include "attribute.h"
 #include "keyword.h"
+#include "identifier.h"
+#include "exception.h"
 #include "Value.h"
 #include "walker.h"
 #include <sstream>
@@ -14,9 +16,27 @@ public:
     
     AttributeArray(const Keyword * name, const Value * index, const Value * value):
     Attribute(Array),
-    name(name),
+    keyword_name(name),
+    identifier_name(0),
     index(index),
     value(value){
+    }
+
+    AttributeArray(const Identifier * name, const Value * index, const Value * value):
+    Attribute(Array),
+    keyword_name(0),
+    identifier_name(name),
+    index(index),
+    value(value){
+    }
+
+    virtual Element * copy() const {
+        if (keyword_name != 0){
+            return new AttributeArray((Keyword*) keyword_name->copy(), (Value*) index->copy(), (Value*) value->copy());
+        } else if (identifier_name != 0){
+            return new AttributeArray((Identifier*) keyword_name->copy(), (Value*) index->copy(), (Value*) value->copy());
+        }
+        throw Exception("don't copy that floppy!");
     }
    
     virtual void walk(Walker & walker){
@@ -24,7 +44,12 @@ public:
     }
 
     bool operator==(const std::string & str) const {
-        return *name == str;
+        if (keyword_name != 0){
+            return *keyword_name == str;
+        } else if (identifier_name != 0){
+            return *identifier_name == str;
+        }
+        return false;
     }
 
     std::string valueAsString() const {
@@ -63,29 +88,47 @@ public:
         marks[this] = true;
         index->mark(marks);
         value->mark(marks);
-        name->mark(marks);
+        if (keyword_name != 0){
+            keyword_name->mark(marks);
+        }
+        if (identifier_name != 0){
+            identifier_name->mark(marks);
+        }
     }
 
     /* just the identifier */
     std::string idString() const {
-        return name->toString();
+        if (keyword_name != 0){
+            return keyword_name->toString();
+        } else if (identifier_name != 0){
+            return identifier_name->toString();
+        }
+
+        return "";
     }
 
     virtual std::string toString() const {
         std::ostringstream out;
-        out << name->toString() << "[" << index->toString() << "] = " << value->toString();
+        if (keyword_name != 0){
+            out << keyword_name->toString();
+        } else if (identifier_name != 0){
+            out << identifier_name->toString();
+        }
+        out << "[" << index->toString() << "] = " << value->toString();
 
         return out.str();
     }
 
     virtual ~AttributeArray(){
-        delete name;
+        delete keyword_name;
+        delete identifier_name;
         delete index;
         delete value;
     }
 
 protected:
-    const Keyword * name;
+    const Keyword * keyword_name;
+    const Identifier * identifier_name;
     const Value * index;
     const Value * value;
 };

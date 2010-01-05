@@ -380,6 +380,14 @@ public:
         virtual inline double getRunBackY() const {
             return runbacky;
         }
+        
+        virtual inline double getRunForwardX() const {
+            return runforwardx;
+        }
+        
+        virtual inline double getRunForwardY() const {
+            return runforwardy;
+        }
 
         virtual inline double getYPosition() const {
             return getY();
@@ -545,8 +553,8 @@ protected:
 	// = -2.2     ;Walk backward
 	double walkback;
 	//  = 4.6, 0    ;Run forward (x, y)
-	double runfwdx;
-	double runfwdy;
+	double runforwardx;
+	double runforwardy;
 	// = -4.5,-3.8 ;Hop backward (x, y)
 	double runbackx;
 	double runbacky;
