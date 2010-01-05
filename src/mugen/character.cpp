@@ -1544,7 +1544,7 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
 
 /* returns true if a state change occured */
 bool Character::doStates(const vector<string> & active, int stateNumber){
-    int oldState = stateNumber;
+    int oldState = getCurrentState();
     if (states[stateNumber] != 0){
         State * state = states[stateNumber];
         for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
@@ -1555,11 +1555,11 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
             /* more debugging */
             bool hasFF = false;
             for (vector<string>::const_iterator it = active.begin(); it != active.end(); it++){
-                if (*it == "FF"){
+                if (*it == "x"){
                     hasFF = true;
                 }
             }
-            if (controller->getName() == "run fwd" && hasFF){
+            if (controller->getName() == "stand light punch" && hasFF){
             // if (controller->getName() == "run fwd"){
                 int x = 2;
             }

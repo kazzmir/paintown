@@ -111,6 +111,11 @@ public:
             return RuntimeValue(true);
         }
 
+        if (identifier == "p2statetype"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
         if (identifier == "animtime"){
             /* FIXME! */
             return RuntimeValue(0);
@@ -197,6 +202,11 @@ public:
         if (keyword == "pos y"){
             return RuntimeValue(environment.getCharacter().getYPosition());
         }
+        
+        if (keyword == "p2bodydist x"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
 
         ostringstream out;
         out << "Unknown keyword '" << keyword.toString() << "'";
@@ -233,6 +243,7 @@ public:
          * (reminder: first element of an action is element 1, not 0)
          */
         if (function == "animelemtime"){
+            /* FIXME */
             return RuntimeValue(0);
         }
 
