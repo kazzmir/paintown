@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -15,7 +16,7 @@
 #include <stdlib.h>
 
 #include "util/funcs.h"
-#include "util/bitmap.h"
+#include "util/font.h"
 #include "util/file-system.h"
 
 #include "mugen_animation.h"
@@ -1356,6 +1357,13 @@ void Character::load(){
     bundleAnimations();
 
     fixAssumptions();
+
+    /*
+    State * state = states[-1];
+    for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
+        Global::debug(0) << "State -1: '" << (*it)->getName() << "'" << endl;
+    }
+    */
 }
 
 void Character::fixAssumptions(){
@@ -1502,9 +1510,11 @@ MugenAnimation * Character::getCurrentAnimation() const {
 vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
     vector<string> out;
 
+    Global::debug(2) << "Commands" << endl;
     for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
         Command * command = *it;
         if (command->handle(output)){
+            Global::debug(2) << "command: " << command->getName() << endl;
             out.push_back(command->getName());
         }
     }
@@ -1523,28 +1533,58 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     doStates(active, -3);
     doStates(active, -2);
     doStates(active, -1);
-    doStates(active, currentState);
+    while (doStates(active, currentState)){
+        /* empty */
+    }
 }
 
-void Character::doStates(const vector<string> & active, int stateNumber){
+/* returns true if a state change occured */
+bool Character::doStates(const vector<string> & active, int stateNumber){
+    int oldState = stateNumber;
     if (states[stateNumber] != 0){
         State * state = states[stateNumber];
         for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
             const StateController * controller = *it;
-            Global::debug(1) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
+            Global::debug(2) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
+
+#if 0
+            /* more debugging */
+            bool hasFF = false;
+            for (vector<string>::const_iterator it = active.begin(); it != active.end(); it++){
+                if (*it == "FF"){
+                    hasFF = true;
+                }
+            }
+            if (controller->getName() == "run fwd" && hasFF){
+            // if (controller->getName() == "run fwd"){
+                int x = 2;
+            }
             /* for debugging
             if (stateNumber == 20 && controller->getName() == "3"){
                 int x = 2;
             }
             */
+#endif
+
             if (controller->canTrigger(*this, active)){
                 controller->activate(*this);
             }
+
+            if (stateNumber >= 0 && getCurrentState() != oldState){
+                return true;
+            }
         }
     }
+    return false;
 }
 
 void Character::draw(Bitmap * work, int x_position){
+    const Font & font = Font::getFont(Filesystem::find("/fonts/arial.ttf"), 10, 10);
+    int x = 300;
+    int y = 80;
+    int color = Bitmap::makeColor(255,255,255);
+    font.printf( x, y, color, *work, "State %d Animation %d", 0,  getCurrentState(), currentAnimation);
+
     MugenAnimation * animation = getCurrentAnimation();
     if (animation != 0){
         /* FIXME: change these numbers */

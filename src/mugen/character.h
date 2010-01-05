@@ -390,7 +390,7 @@ protected:
     virtual void setConstant(std::string name, double value);
 
     virtual std::vector<std::string> doInput(InputMap<Command::Keys>::Output output);
-    virtual void doStates(const std::vector<std::string> & active, int state);
+    virtual bool doStates(const std::vector<std::string> & active, int state);
 
     virtual void fixAssumptions();
     virtual void parseState(Ast::Section * section);

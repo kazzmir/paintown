@@ -57,11 +57,19 @@ struct RuntimeValue{
     inline bool isDouble() const {
         return type == Double;
     }
+    
+    inline bool isString() const {
+        return type == String;
+    }
 
     inline bool getBoolValue() const {
         return bool_value;
     }
     
+    inline std::string getStringValue() const {
+        return string_value;
+    }
+
     inline double getDoubleValue() const {
         return double_value;
     }

@@ -19,6 +19,13 @@ using namespace std;
 
 namespace Mugen{
 
+string toString(const RuntimeValue & value){
+    if (value.isString()){
+        return value.getStringValue();
+    }
+    throw MugenException("Not a string");
+}
+
 double toNumber(const RuntimeValue & value){
     if (value.isDouble()){
         return value.getDoubleValue();
@@ -56,15 +63,21 @@ public:
                                 return RuntimeValue(true);
                             }
                         }
+                        return RuntimeValue(false);
                     }
                 }
+                break;
             }
             case RuntimeValue::String : {
                 switch (value2.type){
                     case RuntimeValue::ListOfString : {
                         return same(value2, value1);
                     }
+                    case RuntimeValue::String : {
+                        return toString(value1) == toString(value2);
+                    }
                 }
+                break;
             }
             case RuntimeValue::Double : {
                 switch (value2.type){
@@ -73,6 +86,7 @@ public:
                         return RuntimeValue(fabs(value1.getDoubleValue() - value2.getDoubleValue()) < epsilon);
                     }
                 }
+                break;
             }
         }
 
@@ -109,22 +123,28 @@ public:
 
         if (identifier == "A"){
             /* FIXME */
-            return RuntimeValue();
+            return RuntimeValue(string("A"));
         }
         
         if (identifier == "S"){
             /* FIXME */
-            return RuntimeValue();
+            return RuntimeValue(string("S"));
+        }
+
+        if (identifier == "C"){
+            /* FIXME */
+            return RuntimeValue(string("C"));
         }
 
         if (identifier == "statetype"){
             /* FIXME */
-            return RuntimeValue();
+            return RuntimeValue(string("S"));
         }
 
+        /* true if the player has control */
         if (identifier == "ctrl"){
             /* FIXME */
-            return RuntimeValue();
+            return RuntimeValue(true);
         }
 
         if (identifier == "stateno"){
