@@ -1568,8 +1568,12 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
             */
 #endif
 
-            if (controller->canTrigger(*this, active)){
-                controller->activate(*this);
+            try{
+                if (controller->canTrigger(*this, active)){
+                    controller->activate(*this);
+                }
+            } catch (const MugenException & me){
+                Global::debug(0) << "Error with trigger: " << me.getReason() << endl;
             }
 
             if (stateNumber >= 0 && getCurrentState() != oldState){
