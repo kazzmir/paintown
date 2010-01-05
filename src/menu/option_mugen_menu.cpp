@@ -1,6 +1,4 @@
 #include "menu/option_mugen_menu.h"
-#include "util/bitmap.h"
-#include "util/font.h"
 #include "menu/menu.h"
 #include "util/token.h"
 #include "return_exception.h"
