@@ -162,10 +162,12 @@ class CharacterHUD{
 	std::string common_snd_File;
 	
 	/* player data */
-	PlayerInfo *player1;
-	PlayerInfo *player2;
-	PlayerInfo *player3;
-	PlayerInfo *player4;
+	std::vector<PlayerInfo *> regularTeam1;
+	std::vector<PlayerInfo *> regularTeam2;
+	std::vector<PlayerInfo *> simultaneousTeam1;
+	std::vector<PlayerInfo *> simultaneousTeam2;
+	std::vector<PlayerInfo *> turnsTeam1;
+	std::vector<PlayerInfo *> turnsTeam2;
 	
 	/* Time Display */
 	

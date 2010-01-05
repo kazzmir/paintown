@@ -290,26 +290,11 @@ void PlayerInfo::setName(Name *n){
 }
     
 CharacterHUD::CharacterHUD( const std::string & s ):
-location(s),
-player1(0),
-player2(0),
-player3(0),
-player4(0){
+location(s){
 }
 
 CharacterHUD::~CharacterHUD(){
-    if (player1){
-	delete player1;
-    }
-    if (player2){
-	delete player2;
-    }
-    if (player3){
-	delete player3;
-    }
-    if (player4){
-	delete player4;
-    }
+    
 }
 
 void CharacterHUD::load() throw (MugenException){

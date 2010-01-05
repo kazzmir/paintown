@@ -184,26 +184,9 @@ void OptionKey::logic(){
 }
 
 void OptionKey::run(bool &endGame){
-	//int x, y, width, height;
-	const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
-	const int width = vFont.textLength("Press a Key!") + 10;
-	const int height = vFont.getHeight() + 10;
-	const int x = (getParent()->getWork()->getWidth()/2) - (width/2);
-	const int y = (getParent()->getWork()->getHeight()/2) - (height/2);
-	Box dialog;
-	dialog.position.x = 0;
-	dialog.position.y = 0;
-	dialog.position.width = vFont.textLength("Press a Key!") + 10;
-	dialog.position.height = vFont.getHeight() + 10;
-	dialog.position.radius = 0;
-	dialog.position.body = Bitmap::makeColor(0,0,0);
-	dialog.position.bodyAlpha = 200;
-	dialog.position.border = Bitmap::makeColor(255,255,255);
-	dialog.position.borderAlpha = 255;
-	Bitmap temp = Bitmap::temporaryBitmap(width,height);
-	dialog.render(&temp);
-	vFont.printf( 5, 5, Bitmap::makeColor(255,255,255), temp, "Press a Key!", -1);
-	temp.BlitToScreen(x,y);
+	// Do dialog
+	Box::msgDialog(*getParent()->getWork(),"Press a Key!",2);
+	
 	Keyboard key;
 	keyCode = readKey( key );
 	setKey(player,type, keyCode);

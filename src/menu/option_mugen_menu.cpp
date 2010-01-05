@@ -1,4 +1,6 @@
 #include "menu/option_mugen_menu.h"
+#include "util/bitmap.h"
+#include "util/font.h"
 #include "menu/menu.h"
 #include "util/token.h"
 #include "return_exception.h"
@@ -8,6 +10,7 @@
 
 #include "mugen/mugen_menu.h"
 #include "mugen/mugen_exception.h"
+#include "return_exception.h"
 
 using namespace std;
 
@@ -31,13 +34,6 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
 			    // Filename
 			    *tok >> temp;
 			    _menu = new MugenMenu(temp);
-			    try {
-				_menu->loadData();
-			    } catch( const MugenException &ex ){
-				string m("Problem with loading MUGEN menu: ");
-				m += ex.getFullReason();
-				throw LoadException(m);
-			    }
 			}else {
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                                 if (Global::getDebug() >= 3){
@@ -70,7 +66,21 @@ void OptionMugenMenu::logic()
 }
 
 void OptionMugenMenu::run(bool &endGame){
-	// Do our new menu
+    // Load er up and throw up a load box to inform the user
+    Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
+    try {
+	_menu->loadData();
+    } catch (const MugenException & ex){
+	string m("Problem with loading MUGEN menu: ");
+	m += ex.getFullReason();
+	throw LoadException(m);
+    }
+    try {
+	// Run
 	_menu->run();
+    } catch (const ReturnException & re){
+	// Say what?
+	// Do not quit game
+    }
 }
 

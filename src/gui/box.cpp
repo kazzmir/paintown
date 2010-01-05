@@ -1,6 +1,10 @@
 #include "util/bitmap.h"
 #include "gui/box.h"
 
+#include "menu/menu.h"
+
+#include "util/font.h"
+
 Box::Box(){
 	// Nothing yet
 }
@@ -41,4 +45,24 @@ void Box::render(const Bitmap *work){
     workArea->drawingMode( Bitmap::MODE_TRANS );
     workArea->drawTrans(position.x,position.y,*work);
     work->drawingMode( Bitmap::MODE_SOLID );
+}
+
+void Box::msgDialog(const Bitmap & bmp, const std::string & message, int radius){
+    const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
+    const int width = vFont.textLength(message.c_str()) + 10;
+    const int height = vFont.getHeight() + 10;
+    const int x = (bmp.getWidth()/2) - (width/2);
+    const int y = (bmp.getHeight()/2) - (height/2);
+    Box dialog;
+    dialog.position.width = width;
+    dialog.position.height = height;
+    dialog.position.radius = radius;
+    dialog.position.body = Bitmap::makeColor(0,0,0);
+    dialog.position.bodyAlpha = 200;
+    dialog.position.border = Bitmap::makeColor(255,255,255);
+    dialog.position.borderAlpha = 255;
+    Bitmap temp = Bitmap::temporaryBitmap(width,height);
+    dialog.render(&temp);
+    vFont.printf( 5, 5, Bitmap::makeColor(255,255,255), temp, message, -1);
+    temp.BlitToScreen(x,y);
 }
