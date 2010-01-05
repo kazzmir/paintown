@@ -65,10 +65,12 @@ mugen
     within paintown's sound system 
 * mugen main system
   - load in menus
-    DONE - Character select
-    DONE - Team Character select
+    Select Screens:
+	DONE - Character select
+	DONE - Team Character select
+	DONE - Allow to be used independently from menu
     - Option Menu (To an extent.... Mainly rely on paintowns system)
-    DONE - Storyboards
+    90% - Storyboards - Needs correction, mainly due to background issues...
     50% - load in fight.def info from mugen for the stage mechanics (i.e. Round indicators, 
     Round Ticker, Players Health and Power bars) etc.
     DONE - Menuing system utilize paintowns menus to render itself and its options
@@ -100,6 +102,7 @@ mugen
     50% - cmd parser
 * mugen sff files
   - Correct issues with loading certain files like (High/Low) Resolution images and their palettes
+  - Support sffv2 format
 
 For 3.3
 -------
