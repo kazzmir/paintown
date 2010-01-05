@@ -21,6 +21,8 @@ public:
     virtual const std::string & loadingBackground() const;
     virtual const std::string & getPlayerPath() const;
 
+    virtual void setLoadingMessage(const std::string & str);
+
     /* descriptive name of this set of levels */
     virtual const std::string & getName() const;
     virtual void setPlayerPath(const std::string & s);

@@ -33,6 +33,10 @@ LevelInfo & LevelInfo::operator=(const LevelInfo & info){
     return *this;
 }
     
+void LevelInfo::setLoadingMessage(const std::string & str){
+    this->_loadingMessage = str;
+}
+    
 const std::string & LevelInfo::loadingMessage() const {
     return this->_loadingMessage;
 }

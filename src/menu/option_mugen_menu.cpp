@@ -6,6 +6,7 @@
 #include "return_exception.h"
 #include "util/token_exception.h"
 #include "util/funcs.h"
+#include "level/utils.h"
 #include "globals.h"
 #include "loading.h"
 #include <pthread.h>
@@ -70,7 +71,9 @@ void OptionMugenMenu::run(bool &endGame){
     // Load er up and throw up a load box to inform the user
     // Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
     pthread_t loading;
-    Loader::startLoading(&loading);
+    Level::LevelInfo info;
+    info.setLoadingMessage("Loading Mugen");
+    Loader::startLoading(&loading, (void*) &info);
     try {
         _menu->loadData();
     } catch (const MugenException & ex){
