@@ -47,6 +47,8 @@ namespace PaintownUtil = ::Util;
 StateController::StateController(const string & name):
 type(Unknown),
 name(name),
+changeControl(false),
+control(false),
 value1(NULL),
 value2(NULL){
 }
@@ -136,6 +138,9 @@ bool StateController::canTrigger(const Character & character, const vector<strin
 
 void StateController::activate(Character & guy) const {
     Global::debug(1) << "Activate controller " << name << endl;
+    if (changeControl){
+        guy.setControl(control);
+    }
     switch (getType()){
         case AfterImage : {
             break;
@@ -427,7 +432,9 @@ void StateController::activate(Character & guy) const {
 }
 
 State::State():
-animation(-1){
+animation(-1),
+changeControl(false),
+control(false){
 }
 
 void State::addController(StateController * controller){
@@ -437,6 +444,10 @@ void State::addController(StateController * controller){
 void State::transitionTo(Character & who){
     if (animation != -1){
         who.setAnimation(animation);
+    }
+
+    if (changeControl){
+        who.setControl(control);
     }
 }
 
@@ -725,6 +736,7 @@ Character::~Character(){
 void Character::initialize(){
     currentState = Standing;
     currentAnimation = Standing;
+    has_control = true;
 
     /* FIXME: these initializations come from the .cns file */
     walkfwd = 3;
@@ -978,6 +990,9 @@ void Character::parseStateDefinition(Ast::Section * section){
                     definition->setAnimation(animation);
                 } else if (simple == "velset"){
                 } else if (simple == "ctrl"){
+                    bool control;
+                    simple >> control;
+                    definition->setControl(control);
                 } else if (simple == "poweradd"){
                 } else if (simple == "juggle"){
                 } else if (simple == "facep2"){
@@ -1125,6 +1140,10 @@ void Character::parseState(Ast::Section * section){
                     controller->setValue1((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "y"){
                     controller->setValue2((Ast::Value*) simple.getValue()->copy());
+                } else if (simple == "ctrl"){
+                    bool control;
+                    simple >> control;
+                    controller->setControl(control);
                 }
             }
     };
@@ -1522,12 +1541,14 @@ MugenAnimation * Character::getCurrentAnimation() const {
 vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
     vector<string> out;
 
-    Global::debug(2) << "Commands" << endl;
-    for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
-        Command * command = *it;
-        if (command->handle(output)){
-            Global::debug(2) << "command: " << command->getName() << endl;
-            out.push_back(command->getName());
+    if (hasControl()){
+        Global::debug(2) << "Commands" << endl;
+        for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
+            Command * command = *it;
+            if (command->handle(output)){
+                Global::debug(2) << "command: " << command->getName() << endl;
+                out.push_back(command->getName());
+            }
         }
     }
 

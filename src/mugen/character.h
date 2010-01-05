@@ -162,6 +162,11 @@ public:
         this->type = type;
     }
 
+    virtual inline void setControl(bool control){
+        changeControl = true;
+        this->control = control;
+    }
+
     virtual inline Type getType() const {
         return this->type;
     }
@@ -186,6 +191,8 @@ protected:
 protected:
     Type type;
     std::string name;
+    bool changeControl;
+    bool control;
     Ast::Value * value1;
     Ast::Value * value2;
     std::map<int, std::vector<Ast::Value*> > triggers;
@@ -212,6 +219,11 @@ public:
         this->animation = animation;
     }
 
+    virtual inline void setControl(bool control){
+        changeControl = true;
+        this->control = control;
+    }
+
     virtual inline const std::vector<StateController*> & getControllers() const {
         return controllers;
     }
@@ -225,6 +237,8 @@ public:
 protected:
     Type type;
     int animation;
+    bool changeControl;
+    bool control;
     std::vector<StateController*> controllers;
 };
 
@@ -395,6 +409,14 @@ public:
         
         virtual inline double getPower() const {
             return power;
+        }
+
+        virtual inline bool hasControl() const {
+            return has_control;
+        }
+
+        virtual inline void setControl(bool b){
+            has_control = b;
         }
 
 protected:
@@ -619,6 +641,8 @@ protected:
         InputMap<Command::Keys> input;
 
         double velocity_x, velocity_y;
+
+        bool has_control;
 };
 
 }

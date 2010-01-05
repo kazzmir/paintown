@@ -153,8 +153,7 @@ public:
 
         /* true if the player has control */
         if (identifier == "ctrl"){
-            /* FIXME */
-            return RuntimeValue(true);
+            return RuntimeValue(environment.getCharacter().hasControl());
         }
 
         if (identifier == "stateno"){
