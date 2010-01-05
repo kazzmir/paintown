@@ -5,6 +5,16 @@
 # this script should send commands for building the tree and creating the exe
 # could also have a simple file transfer mechanism so I can get the exe without having to muck around with ftp or whatever
 
+# To setup virtualbox so this script works with it do this
+# Set the networking for interface 0 as NAT for the VM
+# By default Virtualbox will use 10.0/16 as the subnet to supply IP's from.
+# To change it to 192.168.90/8 use
+#  $ VBoxManage modifyvm "xp-dev" --natnet1 "192.168.90/8"
+# The gateway (host) will be 192.168.90.2 and the first address for the machine
+# will be 192.168.90.15. It doesn't really matter what the client IP is,
+# all that matters is the gateway IP is 192.168.90.2 (the server_ip variable).
+
+# This is completely arbitrary but the server and client need to agree on it.
 port = 15421
 # network settings in jon's virtual box 
 server_ip = '192.168.90.2'
