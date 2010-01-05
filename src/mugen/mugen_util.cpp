@@ -66,7 +66,7 @@ std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
     Global::debug(2) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
     Mugen::Util::removeSpaces(str);
-    // Fixes stupid windows users shit
+    // Fixes windows paths
     Mugen::Util::invertSlashes(str);
     // Lets check if we need to fix anything first
     Global::debug(2) << "Checking for file in " << (dir+str) << endl;
