@@ -335,9 +335,7 @@ public:
 
         virtual void changeState(int state);
 
-        virtual inline void setAnimation(int animation){
-            this->currentAnimation = animation;
-        }
+        virtual void setAnimation(int animation);
         
         virtual inline int getAnimation() const {
             return this->currentAnimation;

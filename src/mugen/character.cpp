@@ -749,7 +749,11 @@ void Character::initialize(){
     
 void Character::addCommand(Command * command){
     commands.push_back(command);
-    /* todo */
+}
+
+void Character::setAnimation(int animation){
+    currentAnimation = animation;
+    getCurrentAnimation()->reset();
 }
 
 void Character::loadCmdFile(const string & path){
@@ -1575,7 +1579,7 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
                     controller->activate(*this);
                 }
             } catch (const MugenException & me){
-                Global::debug(0) << "Error with trigger: " << me.getReason() << endl;
+                Global::debug(0) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
             }
 
             if (stateNumber >= 0 && getCurrentState() != oldState){

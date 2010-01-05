@@ -1,6 +1,7 @@
 #include "evaluator.h"
 #include "mugen_exception.h"
 #include "character.h"
+#include "mugen_animation.h"
 #include "ast/all.h"
 #include <math.h>
 
@@ -117,8 +118,7 @@ public:
         }
 
         if (identifier == "animtime"){
-            /* FIXME! */
-            return RuntimeValue(0);
+            return RuntimeValue(environment.getCharacter().getCurrentAnimation()->animationTime());
         }
 
         if (identifier == "animelem"){

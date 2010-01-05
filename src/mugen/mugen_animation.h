@@ -128,10 +128,11 @@ class MugenAnimation{
 	inline void toggleDefense(){ showDefense = !showDefense; }
 	inline void toggleOffense(){ showOffense = !showOffense; }
 	
-
         inline const std::vector<MugenFrame*> & getFrames() const {
             return frames;
         }
+
+        int animationTime() const;
 	
     private:
 	

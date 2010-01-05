@@ -103,8 +103,10 @@ MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
 }
 
 MugenAnimation::~MugenAnimation(){
-    for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
-	if( (*i) )delete (*i);
+    for (std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i){
+	if (*i){
+            delete (*i);
+        }
     }
 }
 
@@ -112,14 +114,22 @@ void MugenAnimation::addFrame( MugenFrame *frame ){
     if (frame->loopstart){
 	loopPosition = frames.size();
     }
-    frames.push_back( frame );
+    frames.push_back(frame);
 }
 
-const MugenFrame *MugenAnimation::getNext(){
-    if( position < frames.size() -1 )position++;
-    else position = loopPosition;
+const MugenFrame * MugenAnimation::getNext(){
+    if (position < frames.size() - 1){
+        position += 1;
+    } else {
+        position = loopPosition;
+    }
     
     return frames[position];
+}
+
+/* time left in the animation */
+int MugenAnimation::animationTime() const {
+    return (int) position - (int) frames.size() + 1;
 }
 
 void MugenAnimation::logic(){
