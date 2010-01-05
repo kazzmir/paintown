@@ -167,6 +167,10 @@ public:
         if (identifier == "velocity.run.back.x"){
             return RuntimeValue(environment.getCharacter().getRunBackX());
         }
+        
+        if (identifier == "velocity.run.back.y"){
+            return RuntimeValue(environment.getCharacter().getRunBackY());
+        }
 
         ostringstream out;
         out << "Unknown identifier '" << identifier.toString() << "'";
@@ -181,10 +185,18 @@ public:
         if (keyword == "vel x"){
             return RuntimeValue(environment.getCharacter().getXVelocity());
         }
+
         if (keyword == "vel y"){
             return RuntimeValue(environment.getCharacter().getYVelocity());
         }
-        return RuntimeValue();
+        
+        if (keyword == "pos y"){
+            return RuntimeValue(environment.getCharacter().getYPosition());
+        }
+
+        ostringstream out;
+        out << "Unknown keyword '" << keyword.toString() << "'";
+        throw MugenException(out.str());
     }
 
     virtual void onKeyword(const Ast::Keyword & keyword){

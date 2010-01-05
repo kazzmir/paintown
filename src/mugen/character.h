@@ -379,6 +379,14 @@ public:
             return runbackx;
         }
 
+        virtual inline double getRunBackY() const {
+            return runbacky;
+        }
+
+        virtual inline double getYPosition() const {
+            return getY();
+        }
+
 protected:
     void initialize();
 
