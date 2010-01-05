@@ -159,13 +159,13 @@ static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iter
 
 void Mugen::CharacterSelect::load(){
      // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Filesystem::find(Mugen::Util::getFileDir(location));
-    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
+    std::string baseDir = Mugen::Util::getFileDir(location);
+    const std::string ourDefFile = location;
     
     Global::debug(1) << baseDir << endl;
     
     if (ourDefFile.empty()){
-        throw MugenException( "Cannot locate menu definition file for: " + location );
+        throw MugenException( "Cannot locate character select definition file for: " + location );
     }
 
     TimeDifference diff;
