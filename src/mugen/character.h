@@ -507,6 +507,12 @@ public:
             airjumpfwd = x;
         }
 
+        virtual inline int getStateTime() const {
+            return stateTime;
+        }
+
+        virtual void resetStateTime();
+
 protected:
     void initialize();
 
@@ -731,6 +737,9 @@ protected:
         double velocity_x, velocity_y;
 
         bool has_control;
+
+        /* how much time the player has been in the current state */
+        int stateTime;
 };
 
 }

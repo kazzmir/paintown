@@ -127,8 +127,7 @@ public:
         }
 
         if (identifier == "time"){
-            /* FIXME! */
-            return RuntimeValue(0);
+            return RuntimeValue(environment.getCharacter().getStateTime());
         }
 
         if (identifier == "A"){

@@ -533,6 +533,19 @@ void MugenStage::physics(Object * player){
     mugen->moveX(mugen->getXVelocity());
     mugen->moveY(mugen->getYVelocity());
 
+    if (mugen->getY() == 0){
+        double friction = 0.1;
+        if (mugen->getXVelocity() < -friction){
+            mugen->setXVelocity(mugen->getXVelocity() + friction);
+        } else if (mugen->getXVelocity() > friction){
+            mugen->setXVelocity(mugen->getXVelocity() - friction);
+        }
+    }
+
+    if (mugen->getY() > 0){
+        mugen->setYVelocity(mugen->getYVelocity() - 0.5);
+    }
+
     // Check collisions
     for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
         Object *enemy = *enem;

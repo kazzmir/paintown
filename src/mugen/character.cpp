@@ -894,9 +894,14 @@ void Character::setConstant(std::string name, double value){
     constants[name] = Constant(value);
 }
         
+void Character::resetStateTime(){
+    stateTime = 0;
+}
+        
 void Character::changeState(int stateNumber){
     Global::debug(1) << "Change to state " << stateNumber << endl;
     currentState = stateNumber;
+    resetStateTime();
     if (states[currentState] != 0){
         State * state = states[currentState];
         state->transitionTo(*this);
@@ -1657,6 +1662,8 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     if (animation != 0){
         animation->logic();
     }
+
+    stateTime += 1;
 
     vector<string> active = doInput(InputManager::getMap(input));
     doStates(active, -3);
