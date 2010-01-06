@@ -386,9 +386,25 @@ public:
         virtual inline double getWalkForwardX() const {
             return walkfwd;
         }
+
+        virtual inline void setWalkBackX(double x){
+            walkback = x;
+        }
+        
+        virtual inline void setWalkForwardX(double x){
+            walkfwd = x;
+        }
         
         virtual inline double getRunBackX() const {
             return runbackx;
+        }
+
+        virtual inline void setRunBackX(double x){
+            runbackx = x;
+        }
+
+        virtual inline void setRunBackY(double x){
+            runbacky = x;
         }
 
         virtual inline double getRunBackY() const {
@@ -398,9 +414,33 @@ public:
         virtual inline double getRunForwardX() const {
             return runforwardx;
         }
+
+        virtual inline void setRunForwardX(double x){
+            runforwardx = x;
+        }
         
         virtual inline double getRunForwardY() const {
             return runforwardy;
+        }
+        
+        virtual inline void setRunForwardY(double x){
+            runforwardy = x;
+        }
+
+        virtual inline double getNeutralJumpingX() const {
+            return jumpneux;
+        }
+
+        virtual inline void setNeutralJumpingX(double x){
+            jumpneux = x;
+        }
+        
+        virtual inline double getNeutralJumpingY() const {
+            return jumpneuy;
+        }
+        
+        virtual inline void setNeutralJumpingY(double x){
+            jumpneuy = x;
         }
 
         virtual inline double getYPosition() const {
@@ -417,6 +457,54 @@ public:
 
         virtual inline void setControl(bool b){
             has_control = b;
+        }
+
+        virtual inline void setJumpBackX(double x){
+            jumpbackx = x;
+        }
+
+        virtual inline void setJumpBackY(double y){
+            jumpbacky = y;
+        }
+
+        virtual inline void setJumpForwardX(double x){
+            jumpfwdx = x;
+        }
+        
+        virtual inline void setJumpForwardY(double y){
+            jumpfwdy = y;
+        }
+
+        virtual inline void setRunJumpBackX(double x){
+            runjumpbackx = x;
+        }
+
+        virtual inline void setRunJumpBackY(double y){
+            runjumpbacky = y;
+        }
+
+        virtual inline void setRunJumpForwardX(double x){
+            runjumpfwdx = x;
+        }
+
+        virtual inline void setRunJumpForwardY(double y){
+            runjumpbacky = y;
+        }
+
+        virtual inline void setAirJumpNeutralX(double x){
+            airjumpneux = x;
+        }
+        
+        virtual inline void setAirJumpNeutralY(double y){
+            airjumpneuy = y;
+        }
+
+        virtual inline void setAirJumpBack(double x){
+            airjumpback = x;
+        }
+
+        virtual inline void setAirJumpForward(double x){
+            airjumpfwd = x;
         }
 
 protected:

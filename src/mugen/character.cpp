@@ -738,14 +738,14 @@ void Character::initialize(){
     currentAnimation = Standing;
     has_control = true;
 
-    /* FIXME: these initializations come from the .cns file */
-    walkfwd = 3;
-    walkback = -3;
-    runbackx = 3;
-    runbacky = 3;
-    runforwardx = 3;
-    runforwardy = 3;
-    power = 100;
+    /* provide sensible defaults */
+    walkfwd = 0;
+    walkback = 0;
+    runbackx = 0;
+    runbacky = 0;
+    runforwardx = 0;
+    runforwardy = 0;
+    power = 0;
 
     velocity_x = 0;
     velocity_y = 0;
@@ -913,7 +913,8 @@ void Character::loadCnsFile(const string & path){
             std::string head = section->getName();
             /* this should really be head = Mugen::Util::fixCase(head) */
             Util::fixCase(head);
-            if (!isStateDefSection(head)){
+            if (false && !isStateDefSection(head)){
+                /* I dont think this is the right way to do it */
                 class AttributeWalker: public Ast::Walker {
                 public:
                     AttributeWalker(Character & who):
@@ -937,6 +938,84 @@ void Character::loadCnsFile(const string & path){
                 };
 
                 AttributeWalker walker(*this);
+                section->walk(walker);
+            } else if (head == "velocity"){
+                class VelocityWalker: public Ast::Walker {
+                public:
+                    VelocityWalker(Character & who):
+                    self(who){
+                    }
+
+                    Character & self;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "walk.fwd"){
+                            double speed;
+                            simple >> speed;
+                            self.setWalkForwardX(speed);
+                        } else if (simple == "walk.back"){
+                            double speed;
+                            simple >> speed;
+                            self.setWalkBackX(speed);
+                        } else if (simple == "run.fwd"){
+                            double x, y;
+                            simple >> x >> y;
+                            self.setRunForwardX(x);
+                            self.setRunForwardY(y);
+                        } else if (simple == "run.back"){
+                            double x, y;
+                            simple >> x >> y;
+                            self.setRunBackX(x);
+                            self.setRunBackY(y);
+                        } else if (simple == "jump.neu"){
+                            double x, y;
+                            simple >> x >> y;
+                            self.setNeutralJumpingX(x);
+                            self.setNeutralJumpingY(y);
+                        } else if (simple == "jump.back"){
+                            double x = 0, y = 0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.setJumpBackX(x);
+                            self.setJumpBackY(y);
+                        } else if (simple == "jump.fwd"){
+                            double x = 0, y = 0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.setJumpForwardX(x);
+                            self.setJumpForwardY(y);
+                        } else if (simple == "runjump.back"){
+                            double x,y ;
+                            simple >> x >> y;
+                            self.setRunJumpBackX(x);
+                            self.setRunJumpBackY(y);
+                        } else if (simple == "runjump.fwd"){
+                            double x, y;
+                            simple >> x >> y;
+                            self.setRunJumpForwardX(x);
+                            self.setRunJumpForwardY(y);
+                        } else if (simple == "airjump.neu"){
+                            double x, y;
+                            simple >> x >> y;
+                            self.setAirJumpNeutralX(x);
+                            self.setAirJumpNeutralY(y);
+                        } else if (simple == "airjump.back"){
+                            double speed;
+                            simple >> speed;
+                            self.setAirJumpBack(speed);
+                        } else if (simple == "airjump.fwd"){
+                            double speed;
+                            simple >> speed;
+                            self.setAirJumpForward(speed);
+                        }
+                    }
+                };
+
+                VelocityWalker walker(*this);
                 section->walk(walker);
             }
         }
