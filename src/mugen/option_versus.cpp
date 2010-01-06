@@ -74,7 +74,7 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
         double mugenSpeed = 60;
 
         // Lets reset the stage for good measure
-        gameInfo->selectedStage->reset();
+        stage->reset();
 
         while( !quit ){
             bool draw = false;

@@ -1717,11 +1717,13 @@ void Character::draw(Bitmap * work, int x_position){
     int y = 80;
     int color = Bitmap::makeColor(255,255,255);
     font.printf( x, y, color, *work, "State %d Animation %d", 0,  getCurrentState(), currentAnimation);
+    font.printf( x, y + font.getHeight() + 1, color, *work, "X %d Y %d", 0, getRX(), getRY());
 
     MugenAnimation * animation = getCurrentAnimation();
     if (animation != 0){
         /* FIXME: change these numbers */
-        animation->render(260, 230, *work, 0, 0);
+        // animation->render(260, 230, *work, 0, 0);
+        animation->render(getRX(), getRY(), *work, 0, 0);
     }
 }                      
 
