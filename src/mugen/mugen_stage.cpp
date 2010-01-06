@@ -20,7 +20,7 @@
 #include "object/object.h"
 // #include "object/character.h"
 #include "object/object_attack.h"
-#include "object/player.h"
+// #include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
 #include "ast/all.h"
@@ -527,6 +527,77 @@ void MugenStage::moveCamera( const double x, const double y ){
     else if( cameray > boundlow )cameray = boundlow;
 }
 
+void MugenStage::physics(Object * player){
+
+    Mugen::Character * mugen = (Mugen::Character *) player;
+    mugen->moveX(mugen->getXVelocity());
+    mugen->moveY(mugen->getYVelocity());
+
+    // Check collisions
+    for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+        Object *enemy = *enem;
+        if (player->getAlliance() != enemy->getAlliance()){
+            // Do stuff for players
+            if (isaPlayer( enemy )){
+                // He collides with another push him away
+                if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
+                    if ( enemy->getX() < player->getX() ){
+                        /* FIXME! */
+                        enemy->moveLeft(1);
+                        // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
+                    }
+                    else if ( enemy->getX() > player->getX() ){
+                        /* FIXME! */
+                        enemy->moveRight(1);
+                        // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
+                    }
+                }
+                // autoturn need to do turning actions
+                if (autoturn){
+                    if (isaPlayer( player )){
+                        /* FIXME! */
+                        /*
+                           if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT && ((Mugen::Character *)enemy)->getStatus() == Status_Ground){
+                           enemy->setFacing(Object::FACING_LEFT);
+                           }
+
+                           if (enemy->getX() < player->getX() && enemy->getFacing() != Object::FACING_RIGHT && ((Mugen::Character *)enemy)->getStatus() == Status_Ground){
+                           enemy->setFacing(Object::FACING_RIGHT);
+                           }
+                           */
+                    }
+                }
+            }
+            // Attacking
+            /*if ( player->isAttacking() ){
+              ObjectAttack * playerAttack = (ObjectAttack *)player;
+              if ( enemy != player && enemy->isCollidable( player ) && player->isCollidable( enemy ) ){
+              if ( player->ZDistance( enemy ) <= playerAttack->minZDistance() && enemy->collision( playerAttack ) ){ 
+              double x = 0, y = 0;
+
+              x = enemy->getX();
+              y = enemy->getRY() - enemy->getHeight() + enemy->getHeight() / 3;*/
+        /*
+           if ( bang != NULL ){
+           Object * addx = bang->copy();
+           addx->setX( x );
+           addx->setY( 0 );
+           addx->setZ( y+addx->getHeight()/2 );
+           addx->setHealth( 1 );
+           added_effects.push_back( addx );
+           }
+           */
+        /*
+           playerAttack->attacked(this, enemy, add );
+           enemy->collided( playerAttack, add );
+           enemy->takeDamage( this, playerAttack, playerAttack->getDamage() );
+           }    
+           }
+           }*/
+        }
+    }
+}
+
 void MugenStage::logic( ){
     Console::ConsoleEnd & cend = Console::Console::endl;
     // camera crap
@@ -565,70 +636,7 @@ void MugenStage::logic( ){
         /* use local variables more often, iterators can be easily confused */
         Object * player = *it;
         player->act( &objects, this, &add);
-	
-	// Check collisions
-	for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
-	    Object *enemy = *enem;
-	    if (player->getAlliance() != enemy->getAlliance()){
-		// Do stuff for players
-		if (isaPlayer( enemy )){
-		    // He collides with another push him away
-		    if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
-			if ( enemy->getX() < player->getX() ){
-                            /* FIXME! */
-			    enemy->moveLeft(1);
-			    // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
-			}
-			else if ( enemy->getX() > player->getX() ){
-                            /* FIXME! */
-			    enemy->moveRight(1);
-			    // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
-			}
-		    }
-		    // autoturn need to do turning actions
-		    if (autoturn){
-			if (isaPlayer( player )){
-                            /* FIXME! */
-                            /*
-			    if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT && ((Mugen::Character *)enemy)->getStatus() == Status_Ground){
-				enemy->setFacing(Object::FACING_LEFT);
-			    }
-
-			    if (enemy->getX() < player->getX() && enemy->getFacing() != Object::FACING_RIGHT && ((Mugen::Character *)enemy)->getStatus() == Status_Ground){
-				enemy->setFacing(Object::FACING_RIGHT);
-			    }
-                            */
-			}
-		    }
-		}
-		// Attacking
-		/*if ( player->isAttacking() ){
-		    ObjectAttack * playerAttack = (ObjectAttack *)player;
-		    if ( enemy != player && enemy->isCollidable( player ) && player->isCollidable( enemy ) ){
-			if ( player->ZDistance( enemy ) <= playerAttack->minZDistance() && enemy->collision( playerAttack ) ){ 
-			    double x = 0, y = 0;
-			    
-			    x = enemy->getX();
-			    y = enemy->getRY() - enemy->getHeight() + enemy->getHeight() / 3;*/
-/*
-			    if ( bang != NULL ){
-				    Object * addx = bang->copy();
-				    addx->setX( x );
-				    addx->setY( 0 );
-				    addx->setZ( y+addx->getHeight()/2 );
-				    addx->setHealth( 1 );
-				    added_effects.push_back( addx );
-			    }
-*/
-/*
-			    playerAttack->attacked(this, enemy, add );
-			    enemy->collided( playerAttack, add );
-			    enemy->takeDamage( this, playerAttack, playerAttack->getDamage() );
-			}    
-		    }
-		}*/
-	    }
-	}
+        physics(player);
 	
 	if ( isaPlayer(player)){
 	    // Lets check their boundaries and camera whateva

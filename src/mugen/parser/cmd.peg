@@ -270,7 +270,7 @@ Ast::Attribute * makeAttribute(const char * name, const Value & data){
 
 Ast::Value * makeNumber(const Value & sign, const Value & number){
     double value = *(as<double*>(number));
-    if (sign.getValue() != 0){
+    if (sign.getValue() != 0 && strcmp(as<const char *>(sign), "-") == 0){
         value = -value;
     }
 
@@ -489,7 +489,7 @@ rules:
 	expr12_rest(left) = s "**" s right:expr13 new_left:{{ value = makeExpressionPower(left, right); }} expr12_rest(new_left)
 	                  | <void> {{ value = left; }}
 	unary = "!" {{ value = (void*) Ast::ExpressionUnary::Not; }}
-	      | "-" {{ value = (void*) Ast::ExpressionUnary::Minus; }}
+	      | "-" !digit {{ value = (void*) Ast::ExpressionUnary::Minus; }}
 	      | "~" !key !digit {{ value = (void*) Ast::ExpressionUnary::Negation; }}
 	expr13_real = function
 	            | value

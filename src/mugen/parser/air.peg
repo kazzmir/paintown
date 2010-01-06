@@ -79,7 +79,7 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
 
 Ast::Value * makeNumber(const Value & sign, const Value & number){
     double value = *(as<double*>(number));
-    if (sign.getValue() != 0){
+    if (sign.getValue() != 0 && strcmp(as<const char *>(sign), "-") == 0){
         value = -value;
     }
 

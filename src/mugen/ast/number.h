@@ -49,6 +49,7 @@ public:
 
     virtual std::string toString() const {
         std::ostringstream out;
+        // out << '[' << value << ']';
         out << value;
         return out.str();
     }

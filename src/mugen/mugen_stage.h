@@ -137,6 +137,9 @@ protected:
     void loadSectionStageInfo(Ast::Section * section);
     void loadSectionShadow(Ast::Section * section, cymk_holder & shadow);
     void loadSectionReflection(Ast::Section * section);
+
+    void updatePlayer(Object *o);
+    void physics(Object * o);
 	
 protected:
 
@@ -407,7 +410,6 @@ protected:
 	
 	bool loaded;
 	
-	void updatePlayer( Object *o );
 	
 	// Controllers
 	//std::vector<MugenBackgroundController *> controllers;
