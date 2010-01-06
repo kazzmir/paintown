@@ -23,8 +23,11 @@
 #include "ast/all.h"
 #include "parser/all.h"
 
+namespace PaintownUtil = ::Util;
+
 using namespace std;
 using namespace Mugen;
+
 
 Element::Element():
 type(IS_NOTSET),
@@ -324,26 +327,71 @@ void CharacterHUD::load() throw (MugenException){
 	Mugen::Util::fixCase(head);
 
         // Global::debug(1) << "Name: " << head << endl;
-        if (head == "info"){
-            class InfoWalk: public Ast::Walker{
+        if (head == "files"){
+            class FileWalk: public Ast::Walker{
             public:
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "name"){
-                        string name;
-                        simple >> name;
-                        Global::debug(1) << "Read name '" << name << "'" << endl;
-                    } else if (simple == "author"){
-                        string name;
-                        simple >> name;
-                        Global::debug(1) << "Made by: '" << name << "'" << endl;
-                    } else {
+                    if (simple == "sff"){
+                        // Sprite file
+                    } else if (simple == "snd"){
+                        // Sound file
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                            /*string temp;
+                            simple >> temp;
+                            fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
+                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+			    */
+		    } else if (simple == "fightfx.sff"){
+		    } else if (simple == "fightfx.air"){
+		    } else if (simple == "common.snd"){
+		    } else {
                         Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
                     }
                 }
             };
 
-            InfoWalk walk;
+            FileWalk walk;
             section->walk(walk);
+	} if (head == "lifebar"){
+            class LifeBarWalk: public Ast::Walker{
+            public:
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "sff"){
+                        // Sprite file
+                    } else if (simple == "snd"){
+                        // Sound file
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                            /*string temp;
+                            simple >> temp;
+                            fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
+                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+			    */
+		    } else if (simple == "fightfx.sff"){
+		    } else if (simple == "fightfx.air"){
+		    } else if (simple == "common.snd"){
+		    } else {
+                        Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
+                    }
+                }
+            };
+
+            LifeBarWalk walk;
+            section->walk(walk);
+	} else if (head == "lifebar"){
+	    
+	} else if (head == "simul lifebar"){
+	} else if (head == "turns lifebar"){
+	} else if (head == "powerbar"){
+	} else if (head == "face"){
+	} else if (head == "simul face"){
+	} else if (head == "turns face"){
+	} else if (head == "name"){
+	} else if (head == "simul name"){
+	} else if (head == "turns name"){
+	} else if (head == "time"){
+	} else if (head == "combo"){
+	} else if (head == "round"){
+	} else if (head == "winicon"){
 	} else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
 }

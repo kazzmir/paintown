@@ -70,7 +70,7 @@ void OptionMugenMenu::run(bool &endGame){
     // Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
     pthread_t loading;
     Level::LevelInfo info;
-    info.setLoadingMessage("Loading Mugen");
+    info.setLoadingMessage("Loading M.U.G.E.N");
     Loader::startLoading(&loading, (void*) &info);
     try {
         _menu->loadData();
