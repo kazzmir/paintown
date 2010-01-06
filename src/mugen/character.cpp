@@ -1017,6 +1017,11 @@ void Character::loadCnsFile(const string & path){
 
                 VelocityWalker walker(*this);
                 section->walk(walker);
+            } else if (head == "data"){
+                /* TODO */
+            } else if (head == "size"){
+                /* TODO */
+            } else if (head == "movement"){
             }
         }
     } catch (const Mugen::Cmd::ParseException & e){
@@ -1481,7 +1486,7 @@ void Character::fixAssumptions(){
      * or holdback is pressed
      */
 
-    {
+    if (states[-1] != 0){
         StateController * controller = new StateController("walk");
         controller->setType(StateController::ChangeState);
         controller->setValue1(new Ast::Number(20));
@@ -1500,6 +1505,18 @@ void Character::fixAssumptions(){
     /* need a 20 state controller that changes to state 0 if holdfwd
      * or holdback is not pressed
      */
+    if (states[20] != 0){
+        StateController * controller = new StateController("stop walking");
+        controller->setType(StateController::ChangeState);
+        controller->setValue1(new Ast::Number(0));
+        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
+                    new Ast::SimpleIdentifier("command"),
+                    new Ast::String(new string("holdfwd"))));
+        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
+                    new Ast::SimpleIdentifier("command"),
+                    new Ast::String(new string("holdback"))));
+        states[20]->addController(controller);
+    }
 }
 
 // Render sprite
