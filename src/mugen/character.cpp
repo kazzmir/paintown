@@ -335,6 +335,18 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case PosSet : {
+            if (value1 != NULL){
+                RuntimeValue result = evaluate(value1, Environment(guy));
+                if (result.isDouble()){
+                    guy.setX(result.getDoubleValue());
+                }
+            }
+            if (value2 != NULL){
+                RuntimeValue result = evaluate(value2, Environment(guy));
+                if (result.isDouble()){
+                    guy.setY(result.getDoubleValue());
+                }
+            }
             break;
         }
         case PowerAdd : {
@@ -1765,6 +1777,9 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
             const StateController * controller = *it;
             Global::debug(2) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
 
+            if (stateNumber == 105){
+                int x = 2;
+            }
 #if 0
             /* more debugging */
             bool hasFF = false;

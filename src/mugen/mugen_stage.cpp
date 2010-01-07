@@ -531,7 +531,7 @@ void MugenStage::physics(Object * player){
 
     Mugen::Character * mugen = (Mugen::Character *) player;
     mugen->moveX(mugen->getXVelocity());
-    mugen->moveY(mugen->getYVelocity());
+    mugen->moveY(-mugen->getYVelocity());
 
     /* friction */
     if (mugen->getY() == 0){
@@ -546,7 +546,7 @@ void MugenStage::physics(Object * player){
     /* gravity */
     if (mugen->getY() > 0){
         double gravity = 0.5;
-        mugen->setYVelocity(mugen->getYVelocity() - gravity);
+        mugen->setYVelocity(mugen->getYVelocity() + gravity);
     }
 
     // Check collisions
