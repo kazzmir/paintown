@@ -422,6 +422,18 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case VelAdd : {
+            if (value1 != NULL){
+                RuntimeValue result = evaluate(value1, Environment(guy));
+                if (result.isDouble()){
+                    guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
+                }
+            }
+            if (value2 != NULL){
+                RuntimeValue result = evaluate(value2, Environment(guy));
+                if (result.isDouble()){
+                    guy.setYVelocity(guy.getYVelocity() + result.getDoubleValue());
+                }
+            }
             break;
         }
         case VelMul : {
