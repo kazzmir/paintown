@@ -133,15 +133,16 @@ int MugenAnimation::animationTime() const {
 }
 
 void MugenAnimation::logic(){
-    /* FIXME: dont put the speed here */
-    double speed = 60.0 / Global::TICS_PER_SECOND;
     if (position < frames.size()){
-        if( frames[position]->time != -1 ){
-            ticks++;
-            if(ticks >= frames[position]->time * speed){
+        if (frames[position]->time != -1){
+            ticks += 1;
+            if (ticks >= frames[position]->time){
                 ticks = 0;
-                if( position < frames.size() -1 )position++;
-                else position = loopPosition;
+                if (position < frames.size() -1){
+                    position += 1;
+                } else {
+                    position = loopPosition;
+                }
             }
         }
     }

@@ -1807,6 +1807,7 @@ void Character::draw(Bitmap * work, int x_position){
     int color = Bitmap::makeColor(255,255,255);
     font.printf( x, y, color, *work, "State %d Animation %d", 0,  getCurrentState(), currentAnimation);
     font.printf( x, y + font.getHeight() + 1, color, *work, "X %f Y %f", 0, (float) getXVelocity(), (float) getYVelocity());
+    font.printf( x, y + font.getHeight() * 2 + 1, color, *work, "Time %d", 0, getStateTime());
 
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be 0... */
