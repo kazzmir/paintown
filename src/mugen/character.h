@@ -228,6 +228,8 @@ public:
         this->control = control;
     }
 
+    virtual void setVelocity(double x, double y);
+
     virtual inline const std::vector<StateController*> & getControllers() const {
         return controllers;
     }
@@ -244,6 +246,8 @@ protected:
     bool changeControl;
     bool control;
     std::vector<StateController*> controllers;
+    bool changeVelocity;
+    double velocity_x, velocity_y;
 };
 
 /* key command */

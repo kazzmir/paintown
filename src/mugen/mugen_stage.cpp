@@ -545,7 +545,7 @@ void MugenStage::physics(Object * player){
 
     /* gravity */
     if (mugen->getY() > 0){
-        double gravity = 0.5;
+        double gravity = 0.4;
         mugen->setYVelocity(mugen->getYVelocity() + gravity);
     }
 

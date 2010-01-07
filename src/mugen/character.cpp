@@ -329,6 +329,18 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case PosAdd : {
+            if (value1 != NULL){
+                RuntimeValue result = evaluate(value1, Environment(guy));
+                if (result.isDouble()){
+                    guy.setX(guy.getX() + result.getDoubleValue());
+                }
+            }
+            if (value2 != NULL){
+                RuntimeValue result = evaluate(value2, Environment(guy));
+                if (result.isDouble()){
+                    guy.setY(guy.getY() + result.getDoubleValue());
+                }
+            }
             break;
         }
         case PosFreeze : {
@@ -478,11 +490,18 @@ void StateController::activate(Character & guy) const {
 State::State():
 animation(-1),
 changeControl(false),
-control(false){
+control(false),
+changeVelocity(false){
 }
 
 void State::addController(StateController * controller){
     controllers.push_back(controller);
+}
+
+void State::setVelocity(double x, double y){
+    changeVelocity = true;
+    velocity_x = x;
+    velocity_y = y;
 }
 
 void State::transitionTo(Character & who){
@@ -492,6 +511,11 @@ void State::transitionTo(Character & who){
 
     if (changeControl){
         who.setControl(control);
+    }
+
+    if (changeVelocity){
+        who.setXVelocity(velocity_x);
+        who.setYVelocity(velocity_y);
     }
 }
 
@@ -1134,6 +1158,9 @@ void Character::parseStateDefinition(Ast::Section * section){
                     simple >> animation;
                     definition->setAnimation(animation);
                 } else if (simple == "velset"){
+                    double x, y;
+                    simple >> x >> y;
+                    definition->setVelocity(x, y);
                 } else if (simple == "ctrl"){
                     bool control;
                     simple >> control;
@@ -1145,6 +1172,8 @@ void Character::parseStateDefinition(Ast::Section * section){
                 } else if (simple == "movehitpersist"){
                 } else if (simple == "hitcountpersist"){
                 } else if (simple == "sprpriority"){
+                } else {
+                    Global::debug(0) << "Unhandled statedef attribute: " << simple.toString() << endl;
                 }
             }
     };
