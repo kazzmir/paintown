@@ -491,7 +491,8 @@ State::State():
 animation(-1),
 changeControl(false),
 control(false),
-changeVelocity(false){
+changeVelocity(false),
+changePhysics(false){
 }
 
 void State::addController(StateController * controller){
@@ -502,6 +503,11 @@ void State::setVelocity(double x, double y){
     changeVelocity = true;
     velocity_x = x;
     velocity_y = y;
+}
+    
+void State::setPhysics(Physics::Type p){
+    changePhysics = true;
+    physics = p;
 }
 
 void State::transitionTo(Character & who){
@@ -516,6 +522,10 @@ void State::transitionTo(Character & who){
     if (changeVelocity){
         who.setXVelocity(velocity_x);
         who.setYVelocity(velocity_y);
+    }
+
+    if (changePhysics){
+        who.setCurrentPhysics(physics);
     }
 }
 
@@ -1153,6 +1163,17 @@ void Character::parseStateDefinition(Ast::Section * section){
                     }
                 } else if (simple == "movetype"){
                 } else if (simple == "physics"){
+                    string type;
+                    simple >> type;
+                    if (type == "S"){
+                        definition->setPhysics(Physics::Stand);
+                    } else if (type == "N"){
+                        definition->setPhysics(Physics::None);
+                    } else if (type == "C"){
+                        definition->setPhysics(Physics::Crouch);
+                    } else if (type == "A"){
+                        definition->setPhysics(Physics::Air);
+                    }
                 } else if (simple == "anim"){
                     int animation;
                     simple >> animation;

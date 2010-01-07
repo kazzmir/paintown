@@ -54,6 +54,17 @@ struct Constant{
     std::vector<double> doubles;
 };
 
+namespace Physics{
+
+enum Type{
+    None, /* N */
+    Air, /* A */
+    Stand, /* S */
+    Crouch, /* C */
+};
+
+}
+
 class Character;
 
 /* comes from a State */
@@ -229,6 +240,7 @@ public:
     }
 
     virtual void setVelocity(double x, double y);
+    virtual void setPhysics(Physics::Type p);
 
     virtual inline const std::vector<StateController*> & getControllers() const {
         return controllers;
@@ -248,6 +260,8 @@ protected:
     std::vector<StateController*> controllers;
     bool changeVelocity;
     double velocity_x, velocity_y;
+    bool changePhysics;
+    Physics::Type physics;
 };
 
 /* key command */
@@ -524,6 +538,14 @@ public:
         virtual void setVariable(int index, Ast::Value * value);
         virtual Ast::Value * getVariable(int index) const;
 
+        virtual inline Physics::Type getCurrentPhysics() const {
+            return currentPhysics;
+        }
+
+        virtual void setCurrentPhysics(Physics::Type p){
+            currentPhysics = p;
+        }
+
 protected:
     void initialize();
 
@@ -754,6 +776,7 @@ protected:
     
         /* dont delete these in the destructor, the state controller will do that */
         std::map<int, Ast::Value*> variables;
+        Physics::Type currentPhysics;
 };
 
 }

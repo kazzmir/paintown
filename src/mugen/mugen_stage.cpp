@@ -533,20 +533,24 @@ void MugenStage::physics(Object * player){
     mugen->moveX(mugen->getXVelocity());
     mugen->moveY(-mugen->getYVelocity());
 
-    /* friction */
-    if (mugen->getY() == 0){
-        double friction = 0.1;
-        if (mugen->getXVelocity() < -friction){
-            mugen->setXVelocity(mugen->getXVelocity() + friction);
-        } else if (mugen->getXVelocity() > friction){
-            mugen->setXVelocity(mugen->getXVelocity() - friction);
+    if (mugen->getCurrentPhysics() == Mugen::Physics::Stand){
+        /* friction */
+        if (mugen->getY() == 0){
+            double friction = 0.1;
+            if (mugen->getXVelocity() < -friction){
+                mugen->setXVelocity(mugen->getXVelocity() + friction);
+            } else if (mugen->getXVelocity() > friction){
+                mugen->setXVelocity(mugen->getXVelocity() - friction);
+            }
         }
     }
 
-    /* gravity */
-    if (mugen->getY() > 0){
-        double gravity = 0.4;
-        mugen->setYVelocity(mugen->getYVelocity() + gravity);
+    if (mugen->getCurrentPhysics() == Mugen::Physics::Air){
+        /* gravity */
+        if (mugen->getY() > 0){
+            double gravity = 0.4;
+            mugen->setYVelocity(mugen->getYVelocity() + gravity);
+        }
     }
 
     // Check collisions
