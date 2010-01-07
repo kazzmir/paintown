@@ -61,6 +61,11 @@ StateController::~StateController(){
             delete value;
         }
     }
+    
+    for (map<int, Ast::Value*>::iterator it = variables.begin(); it != variables.end(); it++){
+        Ast::Value * value = (*it).second;
+        delete value;
+    }
 
     delete value1;
     delete value2;
@@ -80,6 +85,13 @@ void StateController::addTriggerAll(Ast::Value * trigger){
 
 void StateController::addTrigger(int number, Ast::Value * trigger){
     triggers[number].push_back(trigger);
+}
+    
+void StateController::addVariable(int number, Ast::Value * variable){
+    if (variables[number] != 0){
+        delete variables[number];
+    }
+    variables[number] = variable;
 }
 
 bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
@@ -1233,6 +1245,9 @@ void Character::parseState(Ast::Section * section){
                     bool control;
                     simple >> control;
                     controller->setControl(control);
+                } else if (PaintownUtil::matchRegex(simple.idString(), "var\\([0-9]+\\)")){
+                    int index = atoi(PaintownUtil::captureRegex(simple.idString(), "var\\(([0-9]+)\\)", 0).c_str());
+                    controller->addVariable(index, (Ast::Value*) simple.getValue()->copy());
                 }
             }
     };

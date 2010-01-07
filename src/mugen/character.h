@@ -179,6 +179,7 @@ public:
     virtual void setValue2(Ast::Value * value);
     virtual void addTriggerAll(Ast::Value * trigger);
     virtual void addTrigger(int number, Ast::Value * trigger);
+    virtual void addVariable(int number, Ast::Value * variable);
 
     virtual ~StateController();
 
@@ -196,6 +197,9 @@ protected:
     Ast::Value * value1;
     Ast::Value * value2;
     std::map<int, std::vector<Ast::Value*> > triggers;
+
+    /* var(1) and whatnot */
+    std::map<int, Ast::Value*> variables;
 };
 
 /* comes from a StateDef */
