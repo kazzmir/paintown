@@ -150,9 +150,17 @@ bool StateController::canTrigger(const Character & character, const vector<strin
 
 void StateController::activate(Character & guy) const {
     Global::debug(1) << "Activate controller " << name << endl;
+
     if (changeControl){
         guy.setControl(control);
     }
+
+    for (map<int, Ast::Value*>::const_iterator it = variables.begin(); it != variables.end(); it++){
+        int index = (*it).first;
+        Ast::Value * value = (*it).second;
+        guy.setVariable(index, value);
+    }
+
     switch (getType()){
         case AfterImage : {
             break;
@@ -904,6 +912,10 @@ void Character::setConstant(std::string name, const vector<double> & values){
 
 void Character::setConstant(std::string name, double value){
     constants[name] = Constant(value);
+}
+        
+void Character::setVariable(int index, Ast::Value * value){
+    variables[index] = value;
 }
         
 void Character::resetStateTime(){

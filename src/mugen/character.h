@@ -517,6 +517,8 @@ public:
 
         virtual void resetStateTime();
 
+        virtual void setVariable(int index, Ast::Value * value);
+
 protected:
     void initialize();
 
@@ -744,6 +746,9 @@ protected:
 
         /* how much time the player has been in the current state */
         int stateTime;
+    
+        /* dont delete these in the destructor, the state controller will do that */
+        std::map<int, Ast::Value*> variables;
 };
 
 }
