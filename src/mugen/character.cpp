@@ -688,7 +688,7 @@ bool Command::handle(InputMap<Keys>::Output keys){
     }
 
     bool use = true;
-    if (needRelease != NULL){
+    if (needRelease != NULL && *needRelease == *(*current)){
         const Ast::Key * fake;
         KeyWalker walker(keys, oldKeys, holdKey, holder, fake);
         needRelease->walk(walker);
@@ -698,6 +698,8 @@ bool Command::handle(InputMap<Keys>::Output keys){
         } else {
             needRelease = NULL;
         }
+    } else {
+        needRelease = NULL;
     }
 
     bool fail = false;

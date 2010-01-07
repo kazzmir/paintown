@@ -8,6 +8,8 @@
 
 namespace Ast{
 
+class KeySingle;
+
 class Key: public Value {
 public:
     Key(){
@@ -15,6 +17,18 @@ public:
 
     virtual std::string getType() const {
         return "key";
+    }
+
+    virtual bool same(const Key & key) const {
+        return false;
+    }
+
+    virtual bool same(const KeySingle & key) const {
+        return false;
+    }
+
+    virtual bool operator==(const Key & key) const {
+        return false;
     }
 
     virtual ~Key(){
@@ -34,6 +48,15 @@ public:
 
     virtual bool operator==(const std::string & that) const {
         return name == that;
+    }
+
+    using Key::same;
+    virtual bool same(const KeySingle & key) const {
+        return std::string(name) == std::string(key.name);
+    }
+
+    virtual bool operator==(const Key & key) const {
+        return key.same(*this);
     }
     
     virtual void walk(Walker & walker) const {
@@ -115,6 +138,10 @@ public:
         return key;
     }
 
+    virtual bool operator==(const Key & key) const {
+        return key.same(*this);
+    }
+
     virtual std::string toString() const {
         std::ostringstream out;
         out << modifierName(type);
@@ -174,6 +201,10 @@ public:
     virtual const Key * getKey2() const {
         return key2;
     }
+
+    virtual bool operator==(const Key & key) const {
+        return key.same(*this);
+    }
     
     virtual std::string toString() const {
         std::ostringstream out;
@@ -208,6 +239,10 @@ public:
             Key * key = (Key *) *it;
             key->mark(marks);
         }
+    }
+
+    virtual bool operator==(const Key & key) const {
+        return key.same(*this);
     }
 
     virtual Element * copy() const {
