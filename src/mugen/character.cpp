@@ -1546,19 +1546,36 @@ void Character::fixAssumptions(){
      */
 
     if (states[-1] != 0){
-        StateController * controller = new StateController("walk");
-        controller->setType(StateController::ChangeState);
-        controller->setValue1(new Ast::Number(20));
-        controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                    new Ast::SimpleIdentifier("stateno"),
-                    new Ast::Number(0)));
-        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                    new Ast::SimpleIdentifier("command"),
-                    new Ast::String(new string("holdfwd"))));
-        controller->addTrigger(2, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                    new Ast::SimpleIdentifier("command"),
-                    new Ast::String(new string("holdback"))));
-        states[-1]->addController(controller);
+        /* walk */
+        {
+            StateController * controller = new StateController("walk");
+            controller->setType(StateController::ChangeState);
+            controller->setValue1(new Ast::Number(20));
+            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("stateno"),
+                        new Ast::Number(0)));
+            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("command"),
+                        new Ast::String(new string("holdfwd"))));
+            controller->addTrigger(2, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("command"),
+                        new Ast::String(new string("holdback"))));
+            states[-1]->addController(controller);
+        }
+
+        /* crouch */
+        {
+            StateController * controller = new StateController("crouch");
+            controller->setType(StateController::ChangeState);
+            controller->setValue1(new Ast::Number(10));
+            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("stateno"),
+                        new Ast::Number(0)));
+            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("command"),
+                        new Ast::String(new string("holddown"))));
+            states[-1]->addController(controller);
+        }
     }
 
     /* need a 20 state controller that changes to state 0 if holdfwd
@@ -1575,6 +1592,17 @@ void Character::fixAssumptions(){
                     new Ast::SimpleIdentifier("command"),
                     new Ast::String(new string("holdback"))));
         states[20]->addController(controller);
+    }
+
+    /* stand after crouching */
+    if (states[11] != 0){
+        StateController * controller = new StateController("stop walking");
+        controller->setType(StateController::ChangeState);
+        controller->setValue1(new Ast::Number(12));
+        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
+                    new Ast::SimpleIdentifier("command"),
+                    new Ast::String(new string("holddown"))));
+        states[11]->addController(controller);
     }
 }
 
