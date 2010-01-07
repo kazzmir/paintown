@@ -238,6 +238,17 @@ public:
             return RuntimeValue(fabs(toNumber(evaluate(function.getArg1()))));
         }
 
+        if (function == "var"){
+            int index = (int) toNumber(evaluate(function.getArg1()));
+            Ast::Value * value = environment.getCharacter().getVariable(index);
+            if (value == 0){
+                ostringstream out;
+                out << "No variable for index " << index;
+                throw MugenException(out.str());
+            }
+            return evaluate(value);
+        }
+
         /* Gets the animation-time elapsed since the start of a specified element
          * of the current animation action. Useful for synchronizing events to
          * elements of an animation action.

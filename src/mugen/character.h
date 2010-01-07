@@ -518,6 +518,7 @@ public:
         virtual void resetStateTime();
 
         virtual void setVariable(int index, Ast::Value * value);
+        virtual Ast::Value * getVariable(int index) const;
 
 protected:
     void initialize();

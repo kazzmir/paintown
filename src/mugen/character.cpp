@@ -155,12 +155,6 @@ void StateController::activate(Character & guy) const {
         guy.setControl(control);
     }
 
-    for (map<int, Ast::Value*>::const_iterator it = variables.begin(); it != variables.end(); it++){
-        int index = (*it).first;
-        Ast::Value * value = (*it).second;
-        guy.setVariable(index, value);
-    }
-
     switch (getType()){
         case AfterImage : {
             break;
@@ -419,6 +413,12 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case VarSet : {
+            for (map<int, Ast::Value*>::const_iterator it = variables.begin(); it != variables.end(); it++){
+                int index = (*it).first;
+                Ast::Value * value = (*it).second;
+                guy.setVariable(index, value);
+            }
+
             break;
         }
         case VelAdd : {
@@ -918,6 +918,14 @@ void Character::setVariable(int index, Ast::Value * value){
     variables[index] = value;
 }
         
+Ast::Value * Character::getVariable(int index) const {
+    map<int, Ast::Value*>::const_iterator found = variables.find(index);
+    if (found != variables.end()){
+        return (*found).second;
+    }
+    return 0;
+}
+        
 void Character::resetStateTime(){
     stateTime = 0;
 }
@@ -1144,6 +1152,14 @@ void Character::parseState(Ast::Section * section){
 
             StateController * controller;
 
+            virtual void onAttributeArray(const Ast::AttributeArray & simple){
+                if (simple == "var"){
+                    int index = simple.getIndex();
+                    const Ast::Value * value = simple.getValue();
+                    controller->addVariable(index, (Ast::Value*) value->copy());
+                }
+            }
+
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "type"){
                     string type;
@@ -1257,9 +1273,8 @@ void Character::parseState(Ast::Section * section){
                     bool control;
                     simple >> control;
                     controller->setControl(control);
-                } else if (PaintownUtil::matchRegex(simple.idString(), "var\\([0-9]+\\)")){
-                    int index = atoi(PaintownUtil::captureRegex(simple.idString(), "var\\(([0-9]+)\\)", 0).c_str());
-                    controller->addVariable(index, (Ast::Value*) simple.getValue()->copy());
+                } else {
+                    Global::debug(0) << "Unhandled state controller '" << controller->getName() << "' attribute: " << simple.toString() << endl;
                 }
             }
     };

@@ -35,6 +35,10 @@ public:
         return tolower(c);
     }
 
+    const std::string & getName() const {
+        return name;
+    }
+
     bool operator==(const std::string & str) const {
         return downcase(name) == downcase(str);
     }

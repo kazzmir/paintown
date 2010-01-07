@@ -58,10 +58,14 @@ public:
         return str;
     }
 
-    int getIndex(){
+    int getIndex() const {
         int i;
         *index >> i;
         return i;
+    }
+
+    const Value * getValue() const {
+        return value;
     }
 
     template <typename X>
