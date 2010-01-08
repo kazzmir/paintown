@@ -348,6 +348,7 @@ public:
                                     (int)toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Assignment : {
+                /* FIXME: is this needed? */
                 break;
             }
             case ExpressionInfix::Equals : {
@@ -390,7 +391,9 @@ public:
             }
         }
 
-        throw MugenException("Unknown expression");
+        ostringstream out;
+        out << "Unknown expression: " << expression.toString();
+        throw MugenException(out.str());
     }
 
     virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
@@ -409,7 +412,10 @@ public:
                 return RuntimeValue(~(int)toNumber(evaluate(expression.getExpression())));
             }
         }
-        throw MugenException("Unknown expression");
+
+        ostringstream out;
+        out << "Unknown expression: " << expression.toString();
+        throw MugenException(out.str());
     }
     
     virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
