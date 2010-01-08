@@ -61,6 +61,11 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
 
     MugenStage * stage = gameInfo->selectedStage;
     stage->addp1(gameInfo->team1[0]);
+
+    InputMap<int> gameInput;
+    gameInput.set(Keyboard::Key_F1, 10, false, 0);
+    gameInput.set(Keyboard::Key_F2, 10, false, 1);
+    gameInput.set(Keyboard::Key_F3, 10, false, 2);
     
     // Load the stage
     try{
@@ -87,6 +92,20 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
                     stage->logic();
                     runCounter -= 1;
                     draw = true;
+
+                    InputMap<int>::Output out = InputManager::getMap(gameInput);
+                    if (out[0]){
+                        gameSpeed -= 0.1;
+                    }
+                    if (out[1]){
+                        gameSpeed += 0.1;
+                    }
+                    if (out[2]){
+                        gameSpeed = 1;
+                    }
+                    if (gameSpeed < 0.1){
+                        gameSpeed = 0.1;
+                    }
 
                     quit |= keyInputManager::keyState(keys::ESC, true );
                 }

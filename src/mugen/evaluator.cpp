@@ -202,7 +202,7 @@ public:
         }
         
         if (keyword == "pos y"){
-            return RuntimeValue(environment.getCharacter().getYPosition());
+            return RuntimeValue(-environment.getCharacter().getYPosition());
         }
         
         if (keyword == "p2bodydist x"){
