@@ -188,7 +188,7 @@ void MugenStoryboard::load() throw (MugenException){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
 
         // Global::debug(1) << "Name: " << head << endl;
         if (head == "info"){
@@ -306,7 +306,7 @@ void MugenStoryboard::load() throw (MugenException){
             scenes.push_back(walker.scene);
             bgname = walker.scene->backgroundName;
             bgname.erase(std::remove(bgname.begin(), bgname.end(), ' '), bgname.end());
-            Mugen::Util::fixCase(bgname);
+            bgname = Mugen::Util::fixCase(bgname);
             Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "' bgname is '" << bgname << "'" << endl;
         } else if (PaintownUtil::matchRegex(head, "begin action")){
             int h = atoi(PaintownUtil::captureRegex(head, "begin action *([0-9]+)", 0).c_str());
@@ -317,7 +317,7 @@ void MugenStoryboard::load() throw (MugenException){
                 MugenScene *scene = scenes.back();
                 /*
                 std::string name = collection[i]->getHeader();
-                Mugen::Util::fixCase(name);
+                name = Mugen::Util::fixCase(name);
                 Global::debug(1) << "Checking for background: " << scene->backgroundName << " in Head: " << name << endl;
                 */
                 vector<Ast::Section*> backgroundStuff = Mugen::Util::collectBackgroundStuff(section_it, parsed.getSections()->end(), bgname);

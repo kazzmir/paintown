@@ -905,7 +905,7 @@ void Character::loadCmdFile(const string & path){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
             /* this should really be head = Mugen::Util::fixCase(head) */
-            Util::fixCase(head);
+            head = Util::fixCase(head);
 
             if (head == "command"){
                 class CommandWalker: public Ast::Walker {
@@ -1003,7 +1003,7 @@ void Character::loadCmdFile(const string & path){
 }
 
 static bool isStateDefSection(string name){
-    Util::fixCase(name);
+    name = Util::fixCase(name);
     return PaintownUtil::matchRegex(name, "state ") ||
            PaintownUtil::matchRegex(name, "statedef ");
 }
@@ -1064,7 +1064,7 @@ void Character::loadCnsFile(const string & path){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
             /* this should really be head = Mugen::Util::fixCase(head) */
-            Util::fixCase(head);
+            head = Util::fixCase(head);
             if (false && !isStateDefSection(head)){
                 /* I dont think this is the right way to do it */
                 class AttributeWalker: public Ast::Walker {
@@ -1201,7 +1201,7 @@ void Character::loadCnsFile(const string & path){
 void Character::parseStateDefinition(Ast::Section * section){
     std::string head = section->getName();
     /* this should really be head = Mugen::Util::fixCase(head) */
-    Util::fixCase(head);
+    head = Util::fixCase(head);
 
     int state = atoi(PaintownUtil::captureRegex(head, "statedef *(-?[0-9]+)", 0).c_str());
     class StateWalker: public Ast::Walker {
@@ -1283,7 +1283,7 @@ void Character::parseStateDefinition(Ast::Section * section){
 void Character::parseState(Ast::Section * section){
     std::string head = section->getName();
     /* this should really be head = Mugen::Util::fixCase(head) */
-    Util::fixCase(head);
+    head = Util::fixCase(head);
 
     int state = atoi(PaintownUtil::captureRegex(head, "state *(-?[0-9]+)", 0).c_str());
     string name = PaintownUtil::captureRegex(head, "state *-?[0-9]+ *, *(.*)", 0);
@@ -1312,7 +1312,7 @@ void Character::parseState(Ast::Section * section){
                 if (simple == "type"){
                     string type;
                     simple >> type;
-                    Mugen::Util::fixCase(type);
+                    type = Mugen::Util::fixCase(type);
                     map<string, StateController::Type> types;
                     types["afterimage"] = StateController::AfterImage;
                     types["afterimagetime"] = StateController::AfterImageTime;
@@ -1453,7 +1453,7 @@ void Character::loadStateFile(const std::string & base, const string & path){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
             /* this should really be head = Mugen::Util::fixCase(head) */
-            Util::fixCase(head);
+            head = Util::fixCase(head);
             if (PaintownUtil::matchRegex(head, "statedef")){
                 parseStateDefinition(section);
             } else if (PaintownUtil::matchRegex(head, "state ")){
@@ -1493,7 +1493,7 @@ void Character::load(){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
 
         if (head == "info"){
             class InfoWalker: public Ast::Walker {
@@ -1856,7 +1856,7 @@ void Character::bundleAnimations(){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
         Global::debug(1, __FILE__) << "Animation section '" << head << "'" << endl;
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
         int number;
         if (PaintownUtil::matchRegex(head, "begin action [0-9]+")){
             number = atoi(PaintownUtil::captureRegex(head, "begin action ([0-9]+)", 0).c_str());

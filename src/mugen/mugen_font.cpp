@@ -299,7 +299,7 @@ void MugenFont::load(){
                 std::string itemhead = item->query();
                 Mugen::Util::removeSpaces(itemhead);
                 // This is so we don't have any problems with crap like Name, NaMe, naMe or whatever
-                Mugen::Util::fixCase( itemhead );
+                itemhead = Mugen::Util::fixCase( itemhead );
                 if ( itemhead.find("size")!=std::string::npos ){
                     *content->getNext() >> width;
                     *content->getNext() >> height;
@@ -315,7 +315,7 @@ void MugenFont::load(){
                     std::string temp;
                     *content->getNext() >> temp;
                     Mugen::Util::removeSpaces(temp);
-                    Mugen::Util::fixCase(temp);
+                    temp = Mugen::Util::fixCase(temp);
                     if (temp == "variable")type = Variable;
                     else if (temp == "fixed")type = Fixed;
                     Global::debug(1) << "Type: " << temp << endl;
@@ -343,7 +343,7 @@ void MugenFont::load(){
 		if (opt->hasItems()){
 		    *opt->getNext() >> character;
 		    if (character.size() > 1){
-			Mugen::Util::fixCase(character);
+			character = Mugen::Util::fixCase(character);
 			// 0x5b
 			if (character.compare("0x5b")==0)character = "[";
 			// 0x3b

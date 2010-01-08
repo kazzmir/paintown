@@ -142,7 +142,7 @@ static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iter
 
         section = *iterator;
         string sectionName = section->getName();
-        Mugen::Util::fixCase(sectionName);
+        sectionName = Mugen::Util::fixCase(sectionName);
         // Global::debug(2, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
         if (PaintownUtil::matchRegex(sectionName, "select")){
             stuff.push_back(section);
@@ -178,7 +178,7 @@ void Mugen::CharacterSelect::load(){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
         if (head == "info"){
 	    // Not really needed right now but can add later
 	    /*
@@ -800,7 +800,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
     /* Extract info for our first section of our menu */
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
 	if( head == "characters" ){
 	    int row = 0;
 	    int column = 0;
@@ -881,7 +881,7 @@ void Mugen::CharacterSelect::parseSelectInfo(const std::vector<Ast::Section*> & 
         Ast::Section * section = *it;
         std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
 
 	if (head == "select info"){ 
             class SelectInfoWalker: public Ast::Walker{

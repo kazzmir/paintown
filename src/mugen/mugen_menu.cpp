@@ -109,7 +109,7 @@ void MugenMenu::loadData() throw (MugenException){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
         if (head == "info"){
             class InfoWalker: public Ast::Walker{
             public:

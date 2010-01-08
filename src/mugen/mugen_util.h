@@ -21,9 +21,9 @@ namespace Ast{
 
 namespace Mugen{
 namespace Util{
-    void fixCase( std::string &str );
-    void removeSpaces( std::string &str );
-    void invertSlashes( std::string &str );
+    const std::string fixCase (const std::string &str);
+    const std::string removeSpaces (const std::string &str);
+    const std::string invertSlashes (const std::string &str);
     std::string stripDir( const std::string &str );
     std::string fixFileName( const std::string &dir, std::string str );
     std::string getFileDir( const std::string &dir );

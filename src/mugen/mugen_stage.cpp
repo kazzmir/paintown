@@ -440,7 +440,7 @@ void MugenStage::load(){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
 	if (head == "info"){
             loadSectionInfo(section);
         } else if (head == "camera"){

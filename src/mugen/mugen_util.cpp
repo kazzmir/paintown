@@ -36,26 +36,32 @@ namespace PaintownUtil = ::Util;
 
 static int lowerCase( int c ){ return tolower( c );}
 
-void Mugen::Util::fixCase( std::string &str ){
-    transform( str.begin(), str.end(), str.begin(), lowerCase );
+const std::string Mugen::Util::fixCase( const std::string &str ){
+    std::string tempStr = str;
+    transform( tempStr.begin(), tempStr.end(), tempStr.begin(), lowerCase );
+    return tempStr;
 }
 
-void Mugen::Util::removeSpaces( std::string &str ){
-    if( str.find(' ') != std::string::npos ){
-	Global::debug(2) << "Removing spaces from: " << str << endl;
-	for( int i = str.size()-1; i>-1; --i){
-	    if( str[i] == ' ' )str.erase( str.begin()+i );
-	    else if( str[i] == '\t' )str.erase( str.begin()+i );
+const std::string Mugen::Util::removeSpaces( const std::string &str ){
+    std::string tempStr = str;
+    if( tempStr.find(' ') != std::string::npos ){
+	Global::debug(2) << "Removing spaces from: " << tempStr << endl;
+	for( int i = tempStr.size()-1; i>-1; --i){
+	    if( tempStr[i] == ' ' )tempStr.erase( tempStr.begin()+i );
+	    else if( tempStr[i] == '\t' )tempStr.erase( tempStr.begin()+i );
 	}
     }
+    return tempStr;
 }
 
-void Mugen::Util::invertSlashes( std::string &str ){
-    if( str.find('\\') != std::string::npos ){
-	for( int i = str.size()-1; i>-1; --i){
-	    if( str[i] == '\\' )str[i] = '/';
+const std::string Mugen::Util::invertSlashes( const std::string &str ){
+    std::string tempStr = str;
+    if( tempStr.find('\\') != std::string::npos ){
+	for( int i = tempStr.size()-1; i>-1; --i){
+	    if( tempStr[i] == '\\' )tempStr[i] = '/';
 	}
     }
+    return tempStr;
 }
 /*
 std:string getHeadDir( const std::string & dir ){
@@ -77,7 +83,7 @@ std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
 	Global::debug(2) << "Correcting file: " << str << ", in directory: "<< dir <<".\nGot " << files.size() << " files." << endl;
 	for( unsigned int i = 0; i < files.size(); ++i ){
 	    std::string temp = files[i].c_str();
-	    Mugen::Util::fixCase( temp );
+	    temp = Mugen::Util::fixCase( temp );
 	    if( std::string( dir + str ) == temp ){
 		// We got number one chinese retaurant
 		returnString = files[i];
@@ -493,7 +499,7 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
     /* better to do case insensitive regex matching rather than
      * screw up the original string
      */
-    Mugen::Util::fixCase(head);
+    head = Mugen::Util::fixCase(head);
     string prefix = PaintownUtil::captureRegex(head, "(.*)" + name + "def", 0);
     stuff.push_back(section);
     section_it++;
@@ -505,7 +511,7 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
 
         section = *section_it;
         string sectionName = section->getName();
-        Mugen::Util::fixCase(sectionName);
+        sectionName = Mugen::Util::fixCase(sectionName);
         Global::debug(2, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
         if (PaintownUtil::matchRegex(sectionName, prefix + name + ".*") || PaintownUtil::matchRegex(sectionName, ".*begin *action.*")){
             stuff.push_back(section);
@@ -688,8 +694,8 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
             } catch (const Ast::Exception & e){
             }
 
-            Mugen::Util::fixCase(flip);
-            Mugen::Util::fixCase(blend);
+            flip = Mugen::Util::fixCase(flip);
+            blend = Mugen::Util::fixCase(blend);
             
             Global::debug(2) << "Group: " << group << " | Sprite: " << spriteNumber << " | x: " << frame->xoffset << " | y: " << frame->yoffset << " | time: " << frame->time << " | flip " << flip << " blend '" << blend << "'" << endl;
 
@@ -871,11 +877,11 @@ const std::string Mugen::Util::probeDef(const std::string &file, const std::stri
     collection = reader.getCollection();
     std::string ourSection = section;
     std::string ourSearch = search;
-    Mugen::Util::fixCase(ourSection);
-    Mugen::Util::fixCase(ourSearch);
+    ourSection = Mugen::Util::fixCase(ourSection);
+    ourSearch = Mugen::Util::fixCase(ourSearch);
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
 	if( head.compare(ourSection) == 0 ){
 	    while( collection[i]->hasItems() ){
 		MugenItemContent *content = collection[i]->getNext();

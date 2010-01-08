@@ -482,7 +482,7 @@ spriteFile(""){
     
     for (vector<Ast::Section*>::const_iterator section_it = section.begin(); section_it != section.end(); section_it++){
         string head = (*section_it)->getName();
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
 	Global::debug(1) <<  "Header: " << head << " | Extracted name: " << name << endl;
 	if (matchRegex(head, ".*" + baseName + "def.*")){
             Ast::Section * section = *section_it;
@@ -637,7 +637,7 @@ spriteFile(""){
                     if (simple == "type"){
                         string type;
                         simple >> type;
-                        Mugen::Util::fixCase(type);
+                        type = Mugen::Util::fixCase(type);
                         if (type == "Anim") controller->type = Ctrl_Animation;
                         else if( type == "enabled" ) controller->type = Ctrl_Enabled;
                         else if( type == "null" ) controller->type = Ctrl_Null;

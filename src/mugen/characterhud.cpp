@@ -324,7 +324,7 @@ void CharacterHUD::load() throw (MugenException){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         /* this should really be head = Mugen::Util::fixCase(head) */
-	Mugen::Util::fixCase(head);
+	head = Mugen::Util::fixCase(head);
 
         // Global::debug(1) << "Name: " << head << endl;
         if (head == "files"){
