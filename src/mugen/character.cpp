@@ -832,6 +832,7 @@ Character::~Character(){
 
 void Character::initialize(){
     currentState = Standing;
+    previousState = currentState;
     currentAnimation = Standing;
     has_control = true;
 
@@ -1014,6 +1015,7 @@ void Character::resetStateTime(){
         
 void Character::changeState(int stateNumber){
     Global::debug(1) << "Change to state " << stateNumber << endl;
+    previousState = currentState;
     currentState = stateNumber;
     resetStateTime();
     if (states[currentState] != 0){

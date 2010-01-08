@@ -175,6 +175,14 @@ public:
             return RuntimeValue(environment.getCharacter().getRunForwardX());
         }
         
+        if (identifier == "velocity.jump.y"){
+            return RuntimeValue(environment.getCharacter().getNeutralJumpingY());
+        }
+
+        if (identifier == "prevstateno"){
+            return RuntimeValue(environment.getCharacter().getPreviousState());
+        }
+        
         if (identifier == "velocity.run.back.x"){
             return RuntimeValue(environment.getCharacter().getRunBackX());
         }

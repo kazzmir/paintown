@@ -517,6 +517,10 @@ public:
             return stateTime;
         }
 
+        virtual inline int getPreviousState() const {
+            return previousState;
+        }
+
         virtual void resetStateTime();
 
         virtual void setVariable(int index, Ast::Value * value);
@@ -761,6 +765,7 @@ protected:
         std::map<int, State*> states;
 
         int currentState;
+        int previousState;
         int currentAnimation;
 
         InputMap<Command::Keys> input;
