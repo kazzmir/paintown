@@ -546,6 +546,22 @@ public:
             currentPhysics = p;
         }
 
+        virtual void setGravity(double n){
+            gravity = n;
+        }
+
+        virtual double getGravity() const {
+            return gravity;
+        }
+
+        virtual void setStandingFriction(double n){
+            standFriction = n;
+        }
+
+        virtual double getStandingFriction() const {
+            return standFriction;
+        }
+
 protected:
     void initialize();
 
@@ -777,6 +793,12 @@ protected:
         /* dont delete these in the destructor, the state controller will do that */
         std::map<int, Ast::Value*> variables;
         Physics::Type currentPhysics;
+
+        /* yaccel */
+        double gravity;
+
+        /* stand.friction */
+        double standFriction;
 };
 
 }

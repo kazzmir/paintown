@@ -847,6 +847,9 @@ void Character::initialize(){
     velocity_x = 0;
     velocity_y = 0;
 
+    gravity = 0.1;
+    standFriction = 1;
+
     stateTime = 0;
 
     input.set(Keyboard::Key_UP, 0, false, Command::Up);
@@ -1138,6 +1141,29 @@ void Character::loadCnsFile(const string & path){
             } else if (head == "size"){
                 /* TODO */
             } else if (head == "movement"){
+                class MovementWalker: public Ast::Walker {
+                public:
+                    MovementWalker(Character & who):
+                    self(who){
+                    }
+
+                    Character & self;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "yaccel"){
+                            double n;
+                            simple >> n;
+                            self.setGravity(n);
+                        } else if (simple == "stand.friction"){
+                            double n;
+                            simple >> n;
+                            self.setStandingFriction(n);
+                        }
+                    }
+                };
+
+                MovementWalker walker(*this);
+                section->walk(walker);
             }
         }
     } catch (const Mugen::Cmd::ParseException & e){

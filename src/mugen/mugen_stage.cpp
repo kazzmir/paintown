@@ -536,7 +536,7 @@ void MugenStage::physics(Object * player){
     if (mugen->getCurrentPhysics() == Mugen::Physics::Stand){
         /* friction */
         if (mugen->getY() == 0){
-            double friction = 0.1;
+            double friction = mugen->getStandingFriction();
             if (mugen->getXVelocity() < -friction){
                 mugen->setXVelocity(mugen->getXVelocity() + friction);
             } else if (mugen->getXVelocity() > friction){
@@ -548,7 +548,7 @@ void MugenStage::physics(Object * player){
     if (mugen->getCurrentPhysics() == Mugen::Physics::Air){
         /* gravity */
         if (mugen->getY() > 0){
-            double gravity = 0.4;
+            double gravity = mugen->getGravity();
             mugen->setYVelocity(mugen->getYVelocity() + gravity);
         }
     }
