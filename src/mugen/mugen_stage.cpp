@@ -550,6 +550,9 @@ void MugenStage::physics(Object * player){
         if (mugen->getY() > 0){
             double gravity = mugen->getGravity();
             mugen->setYVelocity(mugen->getYVelocity() + gravity);
+            /* if y reaches 0 then auto-transition to state 52.
+             * probably just add a trigger to state 50
+             */
         }
     }
 

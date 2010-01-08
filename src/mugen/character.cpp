@@ -109,9 +109,8 @@ void StateController::addSystemVariable(int number, Ast::Value * variable){
 
 bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
     RuntimeValue result = evaluate(expression, Environment(character, commands));
-    /* non-zero numbers count as true */
-    return (result.isBool() && result.getBoolValue() == true) ||
-           (result.isDouble() && result.getDoubleValue() != 0);
+    /* might throw an exception */
+    return toBool(result);
 }
 
 bool StateController::canTrigger(const Character & character, const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
@@ -237,6 +236,8 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case CtrlSet : {
+            RuntimeValue result = evaluate(value1, Environment(guy));
+            guy.setControl(toBool(result));
             break;
         }
         case DefenceMulSet : {
