@@ -68,7 +68,7 @@ std:string getHeadDir( const std::string & dir ){
     return dir.substr( ( dir.find_lastof( '/' ) != std::string::npos ? dir.find_lastof( '/' ) : 0 ), lastslash,dir.size() );
 }*/
 
-std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
+const std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
     Global::debug(2) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
     str = Mugen::Util::removeSpaces(str);
@@ -98,7 +98,7 @@ std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
 
 
 /* this is basename() */
-std::string Mugen::Util::stripDir( const std::string &str ){ 
+const std::string Mugen::Util::stripDir( const std::string &str ){ 
     std::string temp = str;
     if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
 	size_t rem = temp.find_last_of( "/" );
@@ -115,7 +115,7 @@ std::string Mugen::Util::stripDir( const std::string &str ){
 
 
 /* this is dirname() */
-std::string Mugen::Util::getFileDir( const std::string &str ){
+const std::string Mugen::Util::getFileDir( const std::string &str ){
     std::string temp = str;
     if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
 	size_t rem = temp.find_last_of( "/" );
@@ -843,7 +843,7 @@ static std::string removeLastDir( const std::string &dir ){
     return dir;
 }
 
-std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, const std::string &file ){
+const std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, const std::string &file ){
     // First check initial location else it should be in the base dir
     std::string ourFile = file;
     ourFile = Mugen::Util::removeSpaces(ourFile);

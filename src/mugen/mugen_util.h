@@ -24,9 +24,9 @@ namespace Util{
     const std::string fixCase (const std::string &str);
     const std::string removeSpaces (const std::string &str);
     const std::string invertSlashes (const std::string &str);
-    std::string stripDir( const std::string &str );
-    std::string fixFileName( const std::string &dir, std::string str );
-    std::string getFileDir( const std::string &dir );
+    const std::string stripDir( const std::string &str );
+    const std::string fixFileName( const std::string &dir, std::string str );
+    const std::string getFileDir( const std::string &dir );
     // If you use this, please delete the item after you use it, this isn't java ok
     MugenItemContent *parseOpt( const std::string &opt );
     std::vector<Ast::Section*> collectBackgroundStuff(std::list<Ast::Section*>::iterator & section_it, const std::list<Ast::Section*>::iterator & end, const std::string & name = "bg");
@@ -37,7 +37,7 @@ namespace Util{
     MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
     MugenAnimation *getAnimation( Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
-    std::string getCorrectFileLocation( const std::string &dir, const std::string &file );
+    const std::string getCorrectFileLocation( const std::string &dir, const std::string &file );
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
     // Usefull for getting names of maps, characters, etc without loading the entire Object....
     const std::string probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException);
