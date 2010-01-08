@@ -489,8 +489,16 @@ public:
             jumpback = x;
         }
 
+        virtual inline double getJumpBack() const {
+            return jumpback;
+        }
+
         virtual inline void setJumpForward(double x){
             jumpfwd = x;
+        }
+
+        virtual inline double getJumpForward() const {
+            return jumpfwd;
         }
         
         virtual inline void setRunJumpBack(double x){
@@ -499,6 +507,10 @@ public:
 
         virtual inline void setRunJumpForward(double x){
             runjumpfwd = x;
+        }
+
+        virtual inline double getRunJumpForward() const {
+            return runjumpfwd;
         }
 
         virtual inline void setAirJumpNeutralX(double x){

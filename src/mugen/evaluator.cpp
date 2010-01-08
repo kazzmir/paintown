@@ -198,6 +198,18 @@ public:
             return RuntimeValue(environment.getCharacter().getRunBackY());
         }
 
+        if (identifier == "velocity.jump.back.x"){
+            return RuntimeValue(environment.getCharacter().getJumpBack());
+        }
+
+        if (identifier == "velocity.jump.fwd.x"){
+            return RuntimeValue(environment.getCharacter().getJumpForward());
+        }
+
+        if (identifier == "velocity.runjump.fwd.x"){
+            return RuntimeValue(environment.getCharacter().getRunJumpForward());
+        }
+
         ostringstream out;
         out << "Unknown identifier '" << identifier.toString() << "'";
         throw MugenException(out.str());

@@ -1697,6 +1697,7 @@ void Character::fixAssumptions(){
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
                         new Ast::Number(0)));
+            controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
             controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holdfwd"))));
@@ -1711,6 +1712,7 @@ void Character::fixAssumptions(){
             StateController * controller = new StateController("crouch");
             controller->setType(StateController::ChangeState);
             controller->setValue1(new Ast::Number(10));
+            controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
                         new Ast::Number(0)));
@@ -1722,12 +1724,13 @@ void Character::fixAssumptions(){
 
         /* jump */
         {
-            StateController * controller = new StateController("crouch");
+            StateController * controller = new StateController("jump");
             controller->setType(StateController::ChangeState);
             controller->setValue1(new Ast::Number(40));
+            controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("stateno"),
-                        new Ast::Number(0)));
+                        new Ast::SimpleIdentifier("statetype"),
+                        new Ast::String(new string("S"))));
             controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holdup"))));
@@ -1945,11 +1948,11 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
             /* more debugging */
             bool hasFF = false;
             for (vector<string>::const_iterator it = active.begin(); it != active.end(); it++){
-                if (*it == "a"){
+                if (*it == "holdup"){
                     hasFF = true;
                 }
             }
-            if (stateNumber == 1051 && controller->getName() == "2" && hasFF){
+            if (stateNumber == -1 && controller->getName() == "jump" && hasFF){
             // if (controller->getName() == "run fwd"){
                 int x = 2;
             }
