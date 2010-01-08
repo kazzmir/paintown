@@ -260,6 +260,18 @@ public:
             return evaluate(value);
         }
 
+        if (function == "sysvar"){
+            int index = (int) toNumber(evaluate(function.getArg1()));
+            Ast::Value * value = environment.getCharacter().getSystemVariable(index);
+            if (value == 0){
+                ostringstream out;
+                out << "No system variable for index " << index;
+                throw MugenException(out.str());
+            }
+            return evaluate(value);
+        }
+
+
         if (function == "ifelse"){
             if (toBool(evaluate(function.getArg1()))){
                 return evaluate(function.getArg2());

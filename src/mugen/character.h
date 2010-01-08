@@ -191,6 +191,7 @@ public:
     virtual void addTriggerAll(Ast::Value * trigger);
     virtual void addTrigger(int number, Ast::Value * trigger);
     virtual void addVariable(int number, Ast::Value * variable);
+    virtual void addSystemVariable(int number, Ast::Value * variable);
 
     virtual ~StateController();
 
@@ -211,6 +212,9 @@ protected:
 
     /* var(1) and whatnot */
     std::map<int, Ast::Value*> variables;
+    
+    /* sysvar(1) and whatnot */
+    std::map<int, Ast::Value*> systemVariables;
 };
 
 /* comes from a StateDef */
@@ -524,7 +528,9 @@ public:
         virtual void resetStateTime();
 
         virtual void setVariable(int index, Ast::Value * value);
+        virtual void setSystemVariable(int index, Ast::Value * value);
         virtual Ast::Value * getVariable(int index) const;
+        virtual Ast::Value * getSystemVariable(int index) const;
 
         virtual inline Physics::Type getCurrentPhysics() const {
             return currentPhysics;
@@ -779,6 +785,7 @@ protected:
     
         /* dont delete these in the destructor, the state controller will do that */
         std::map<int, Ast::Value*> variables;
+        std::map<int, Ast::Value*> systemVariables;
         Physics::Type currentPhysics;
 
         /* yaccel */

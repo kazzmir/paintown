@@ -67,6 +67,11 @@ StateController::~StateController(){
         delete value;
     }
 
+    for (map<int, Ast::Value*>::iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
+        Ast::Value * value = (*it).second;
+        delete value;
+    }
+
     delete value1;
     delete value2;
 }
@@ -92,6 +97,14 @@ void StateController::addVariable(int number, Ast::Value * variable){
         delete variables[number];
     }
     variables[number] = variable;
+}
+    
+void StateController::addSystemVariable(int number, Ast::Value * variable){
+    if (systemVariables[number] != 0){
+        delete systemVariables[number];
+    }
+
+    systemVariables[number] = variable;
 }
 
 bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
@@ -441,6 +454,12 @@ void StateController::activate(Character & guy) const {
                 int index = (*it).first;
                 Ast::Value * value = (*it).second;
                 guy.setVariable(index, value);
+            }
+
+            for (map<int, Ast::Value*>::const_iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
+                int index = (*it).first;
+                Ast::Value * value = (*it).second;
+                guy.setSystemVariable(index, value);
             }
 
             break;
@@ -1009,6 +1028,18 @@ Ast::Value * Character::getVariable(int index) const {
     return 0;
 }
         
+void Character::setSystemVariable(int index, Ast::Value * value){
+    variables[index] = value;
+}
+
+Ast::Value * Character::getSystemVariable(int index) const {
+    map<int, Ast::Value*>::const_iterator found = variables.find(index);
+    if (found != variables.end()){
+        return (*found).second;
+    }
+    return 0;
+}
+        
 void Character::resetStateTime(){
     stateTime = 0;
 }
@@ -1270,6 +1301,10 @@ void Character::parseState(Ast::Section * section){
                     int index = simple.getIndex();
                     const Ast::Value * value = simple.getValue();
                     controller->addVariable(index, (Ast::Value*) value->copy());
+                } else if (simple == "sysvar"){
+                    int index = simple.getIndex();
+                    const Ast::Value * value = simple.getValue();
+                    controller->addSystemVariable(index, (Ast::Value*) value->copy());
                 }
             }
 
