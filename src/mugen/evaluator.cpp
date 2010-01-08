@@ -178,6 +178,10 @@ public:
             return RuntimeValue(environment.getCharacter().getRunForwardX());
         }
         
+        if (identifier == "velocity.jump.neu.x"){
+            return RuntimeValue(environment.getCharacter().getNeutralJumpingX());
+        }
+        
         if (identifier == "velocity.jump.y"){
             return RuntimeValue(environment.getCharacter().getNeutralJumpingY());
         }
