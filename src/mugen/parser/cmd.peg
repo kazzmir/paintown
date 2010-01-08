@@ -400,7 +400,7 @@ rules:
     section_item(ast) = s comment
                       | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
-	assignment = "command" s "=" s all:keys {{ value = makeAttribute("command", all); }}
+	assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
                | name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
 	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
 	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}

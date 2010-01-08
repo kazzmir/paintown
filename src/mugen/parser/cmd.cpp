@@ -2114,7 +2114,7 @@ Result rule_assignment(Stream & stream, const int position){
     {
     
         for (int i = 0; i < 7; i++){
-                if (compareChar("command"[i], stream.get(result_peg_131.getPosition()))){
+                if (compareCharCase("command"[i], stream.get(result_peg_131.getPosition()))){
                     result_peg_131.nextPosition();
                 } else {
                     goto out_peg_133;

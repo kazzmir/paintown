@@ -683,7 +683,7 @@ bool Command::handle(InputMap<Keys>::Output keys){
     
     if (successTime > 0){
         successTime -= 1;
-        Global::debug(0) << "Pressed " << name << endl;
+        Global::debug(1) << "Pressed " << name << endl;
         return true;
     }
 
@@ -692,10 +692,13 @@ bool Command::handle(InputMap<Keys>::Output keys){
         const Ast::Key * fake;
         KeyWalker walker(keys, oldKeys, holdKey, holder, fake);
         needRelease->walk(walker);
-        Global::debug(1) << "Waiting for key " << needRelease->toString() << " to be released: " << walker.ok << endl;
+        // Global::debug(0) << "Waiting for key " << needRelease->toString() << " to be released: " << walker.ok << endl;
+
         if (walker.ok){
+            /* if the key is still held down then don't continue */
             use = false;
         } else {
+            /* otherwise the key is released so reset the release key */
             needRelease = NULL;
         }
     } else {
@@ -711,6 +714,11 @@ bool Command::handle(InputMap<Keys>::Output keys){
 
         ok = walker.ok;
         fail = walker.fail;
+        /*
+        if (name == "a"){
+            Global::debug(0) << "Tried move " << (*current)->toString() << " was " << ok << endl;
+        }
+        */
         if (holder != 0){
             holder->walk(walker);
             ok &= walker.ok;
@@ -719,26 +727,35 @@ bool Command::handle(InputMap<Keys>::Output keys){
     }
 
     oldKeys = keys;
-    ticks += 1;
-    if (ticks > maxTime){
-        fail = true;
-        Global::debug(2) << name << " ran out of time" << endl;
+    if (ticks > 0){
+        ticks += 1;
+        if (ticks > maxTime){
+            fail = true;
+            /*
+            if (name == "a"){
+                Global::debug(0) << name << " ran out of time" << endl;
+            }
+            */
+        }
     }
 
     if (fail){
         current = this->keys->getKeys().begin();
-        ticks = 0;
-        needRelease = NULL;
+        ticks = -1;
+        // needRelease = NULL;
         holdKey = -1;
         holder = 0;
     } else if (ok){
         current++;
+        if (ticks == -1){
+            ticks = 1;
+        }
         holdKey = -1;
         if (current == this->keys->getKeys().end()){
             /* success! */
             current = this->keys->getKeys().begin();
-            ticks = 0;
-            needRelease = NULL;
+            ticks = -1;
+            // needRelease = NULL;
             holder = 0;
             successTime = bufferTime - 1;
             Global::debug(1) << "Pressed " << name << endl;
@@ -829,6 +846,8 @@ void Character::initialize(){
 
     velocity_x = 0;
     velocity_y = 0;
+
+    stateTime = 0;
 
     input.set(Keyboard::Key_UP, 0, false, Command::Up);
     input.set(Keyboard::Key_DOWN, 0, false, Command::Down);
@@ -1788,7 +1807,7 @@ MugenAnimation * Character::getCurrentAnimation() const {
 vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
     vector<string> out;
 
-    if (hasControl()){
+    // if (hasControl()){
         Global::debug(2) << "Commands" << endl;
         for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
             Command * command = *it;
@@ -1797,7 +1816,7 @@ vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
                 out.push_back(command->getName());
             }
         }
-    }
+    // }
 
     return out;
 }
@@ -1811,7 +1830,9 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
 
     stateTime += 1;
 
+    /* active is the current set of commands */
     vector<string> active = doInput(InputManager::getMap(input));
+    /* always run through the negative states */
     doStates(active, -3);
     doStates(active, -2);
     doStates(active, -1);
@@ -1829,18 +1850,15 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
             const StateController * controller = *it;
             Global::debug(2) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
 
-            if (stateNumber == 105){
-                int x = 2;
-            }
 #if 0
             /* more debugging */
             bool hasFF = false;
             for (vector<string>::const_iterator it = active.begin(); it != active.end(); it++){
-                if (*it == "x"){
+                if (*it == "a"){
                     hasFF = true;
                 }
             }
-            if (controller->getName() == "stand light punch" && hasFF){
+            if (stateNumber == 1051 && controller->getName() == "2" && hasFF){
             // if (controller->getName() == "run fwd"){
                 int x = 2;
             }
@@ -1853,14 +1871,15 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
 
             try{
                 if (controller->canTrigger(*this, active)){
+                    /* activate may modify the current state */
                     controller->activate(*this);
+
+                    if (stateNumber >= 0 && getCurrentState() != oldState){
+                        return true;
+                    }
                 }
             } catch (const MugenException & me){
                 Global::debug(0) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
-            }
-
-            if (stateNumber >= 0 && getCurrentState() != oldState){
-                return true;
             }
         }
     }
