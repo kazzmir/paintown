@@ -1675,6 +1675,20 @@ void Character::fixAssumptions(){
                         new Ast::String(new string("holddown"))));
             states[-1]->addController(controller);
         }
+
+        /* jump */
+        {
+            StateController * controller = new StateController("crouch");
+            controller->setType(StateController::ChangeState);
+            controller->setValue1(new Ast::Number(40));
+            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("stateno"),
+                        new Ast::Number(0)));
+            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("command"),
+                        new Ast::String(new string("holdup"))));
+            states[-1]->addController(controller);
+        }
     }
 
     /* need a 20 state controller that changes to state 0 if holdfwd
