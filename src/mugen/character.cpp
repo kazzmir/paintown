@@ -1761,6 +1761,23 @@ void Character::fixAssumptions(){
                     new Ast::String(new string("holddown"))));
         states[11]->addController(controller);
     }
+
+    /* if y reaches 0 then auto-transition to state 52.
+     * probably just add a trigger to state 50
+     */
+    if (states[50] != 0){
+        StateController * controller = new StateController("jump land");
+        controller->setType(StateController::ChangeState);
+        controller->setValue1(new Ast::Number(52));
+        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
+                    new Ast::Keyword("pos y"),
+                    new Ast::Number(0)));
+        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThan,
+                    new Ast::Keyword("vel y"),
+                    new Ast::Number(0)));
+        states[50]->addController(controller);
+
+    }
 }
 
 // Render sprite
