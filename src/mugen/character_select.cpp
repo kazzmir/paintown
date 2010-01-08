@@ -808,7 +808,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
+		itemhead = Mugen::Util::removeSpaces(itemhead);
 		if (itemhead=="random"){
 		    // set random flag
 		    cells[row][column]->random = true;
@@ -852,7 +852,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
+		itemhead = Mugen::Util::removeSpaces(itemhead);
 		// Next item will be a stage lets add it to the list of stages
 		stageNames.push_back(itemhead);
 		Global::debug(1) << "Got stage: " << itemhead << endl;

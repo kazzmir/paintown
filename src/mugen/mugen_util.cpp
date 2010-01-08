@@ -71,9 +71,9 @@ std:string getHeadDir( const std::string & dir ){
 std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
     Global::debug(2) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
-    Mugen::Util::removeSpaces(str);
+    str = Mugen::Util::removeSpaces(str);
     // Fixes windows paths
-    Mugen::Util::invertSlashes(str);
+    str = Mugen::Util::invertSlashes(str);
     // Lets check if we need to fix anything first
     Global::debug(2) << "Checking for file in " << (dir+str) << endl;
     if( ::Util::exists( dir + str ) == false ){
@@ -539,7 +539,7 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
             if (*simple == "type"){
                 std::string type;
                 *simple >> type;
-                Mugen::Util::removeSpaces(type);
+                type = Mugen::Util::removeSpaces(type);
                 if (type == "normal" )temp->type = Normal;
                 else if( type == "anim" )temp->type = Anim;
                 else if( type == "parallax" )temp->type = Parallax;
@@ -568,7 +568,7 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
             } else if (*simple == "trans"){
                 std::string type;
                 *simple >> type;
-                Mugen::Util::removeSpaces(type);
+                type = Mugen::Util::removeSpaces(type);
                 if( type == "none" )temp->effects.trans = NONE;
                 else if( type == "add" )temp->effects.trans =  ADD;
                 else if( type == "add1" )temp->effects.trans = ADD1;
@@ -846,7 +846,7 @@ static std::string removeLastDir( const std::string &dir ){
 std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, const std::string &file ){
     // First check initial location else it should be in the base dir
     std::string ourFile = file;
-    Mugen::Util::removeSpaces(ourFile);
+    ourFile = Mugen::Util::removeSpaces(ourFile);
     if (::Util::exists(dir + ourFile) == true){
 	Global::debug(1) << "No correction needed found File: " << dir + ourFile << endl;
 	return dir + ourFile;
@@ -887,7 +887,7 @@ const std::string Mugen::Util::probeDef(const std::string &file, const std::stri
 		MugenItemContent *content = collection[i]->getNext();
 		const MugenItem *item = content->getNext();
 		std::string itemhead = item->query();
-		Mugen::Util::removeSpaces(itemhead);
+		itemhead = Mugen::Util::removeSpaces(itemhead);
 		if ( itemhead.find(ourSearch)!=std::string::npos ){
 		    std::string foundText;
 		    *content->getNext() >> foundText;
