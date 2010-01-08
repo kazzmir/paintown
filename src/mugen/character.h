@@ -245,6 +245,7 @@ public:
 
     virtual void setVelocity(double x, double y);
     virtual void setPhysics(Physics::Type p);
+    virtual void setPower(int power);
 
     virtual inline const std::vector<StateController*> & getControllers() const {
         return controllers;
@@ -266,6 +267,8 @@ protected:
     double velocity_x, velocity_y;
     bool changePhysics;
     Physics::Type physics;
+    bool changePower;
+    int powerAdd;
 };
 
 /* key command */

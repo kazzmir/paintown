@@ -512,7 +512,8 @@ animation(-1),
 changeControl(false),
 control(false),
 changeVelocity(false),
-changePhysics(false){
+changePhysics(false),
+changePower(false){
 }
 
 void State::addController(StateController * controller){
@@ -523,6 +524,11 @@ void State::setVelocity(double x, double y){
     changeVelocity = true;
     velocity_x = x;
     velocity_y = y;
+}
+
+void State::setPower(int power){
+    powerAdd = power;
+    changePower = true;
 }
     
 void State::setPhysics(Physics::Type p){
@@ -1258,6 +1264,9 @@ void Character::parseStateDefinition(Ast::Section * section){
                     simple >> control;
                     definition->setControl(control);
                 } else if (simple == "poweradd"){
+                    int power;
+                    simple >> power;
+                    definition->setPower(power);
                 } else if (simple == "juggle"){
                 } else if (simple == "facep2"){
                 } else if (simple == "hitdefpersist"){
