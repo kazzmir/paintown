@@ -1092,31 +1092,21 @@ void Character::loadCnsFile(const string & path){
                             self.setNeutralJumpingX(x);
                             self.setNeutralJumpingY(y);
                         } else if (simple == "jump.back"){
-                            double x = 0, y = 0;
-                            try{
-                                simple >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.setJumpBackX(x);
-                            self.setJumpBackY(y);
+                            double speed;
+                            simple >> speed;
+                            self.setJumpBack(speed);
                         } else if (simple == "jump.fwd"){
-                            double x = 0, y = 0;
-                            try{
-                                simple >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.setJumpForwardX(x);
-                            self.setJumpForwardY(y);
+                            double speed;
+                            simple >> speed;
+                            self.setJumpForward(speed);
                         } else if (simple == "runjump.back"){
-                            double x,y ;
-                            simple >> x >> y;
-                            self.setRunJumpBackX(x);
-                            self.setRunJumpBackY(y);
+                            double speed;
+                            simple >> speed;
+                            self.setRunJumpBack(speed);
                         } else if (simple == "runjump.fwd"){
-                            double x, y;
-                            simple >> x >> y;
-                            self.setRunJumpForwardX(x);
-                            self.setRunJumpForwardY(y);
+                            double speed;
+                            simple >> speed;
+                            self.setRunJumpForward(speed);
                         } else if (simple == "airjump.neu"){
                             double x, y;
                             simple >> x >> y;

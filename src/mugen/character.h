@@ -481,36 +481,20 @@ public:
             has_control = b;
         }
 
-        virtual inline void setJumpBackX(double x){
-            jumpbackx = x;
+        virtual inline void setJumpBack(double x){
+            jumpback = x;
         }
 
-        virtual inline void setJumpBackY(double y){
-            jumpbacky = y;
-        }
-
-        virtual inline void setJumpForwardX(double x){
-            jumpfwdx = x;
+        virtual inline void setJumpForward(double x){
+            jumpfwd = x;
         }
         
-        virtual inline void setJumpForwardY(double y){
-            jumpfwdy = y;
+        virtual inline void setRunJumpBack(double x){
+            runjumpback = x;
         }
 
-        virtual inline void setRunJumpBackX(double x){
-            runjumpbackx = x;
-        }
-
-        virtual inline void setRunJumpBackY(double y){
-            runjumpbacky = y;
-        }
-
-        virtual inline void setRunJumpForwardX(double x){
-            runjumpfwdx = x;
-        }
-
-        virtual inline void setRunJumpForwardY(double y){
-            runjumpbacky = y;
+        virtual inline void setRunJumpForward(double x){
+            runjumpfwd = x;
         }
 
         virtual inline void setAirJumpNeutralX(double x){
@@ -727,17 +711,13 @@ protected:
 	double jumpneux;
 	double jumpneuy;
 	// = -2.55    ;Jump back Speed (x, y)
-	double jumpbackx;
-	double jumpbacky;
+	double jumpback;
 	// = 2.5       ;Jump forward Speed (x, y)
-	double jumpfwdx;
-	double jumpfwdy;
+	double jumpfwd;
 	// = -2.55,-8.1 ;Running jump speeds (opt)
-	double runjumpbackx;
-	double runjumpbacky;
+	double runjumpback;
 	// = 4,-8.1      ;.
-	double runjumpfwdx;
-	double runjumpfwdy;
+	double runjumpfwd;
 	// = 0,-8.1      ;.
 	double airjumpneux;
 	double airjumpneuy;
