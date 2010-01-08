@@ -879,6 +879,15 @@ Ast::Value * makeFunction(const Value & name, const Value & arg1){
     return function;
 }
 
+Ast::Value * makeFunction(const Value & name, const Value & arg1, const Value & arg2, const Value & arg3){
+    Ast::Value * function = new Ast::Function(std::string(as<const char*>(name)),
+                                              as<Ast::Value*>(arg1),
+                                              as<Ast::Value*>(arg2),
+                                              as<Ast::Value*>(arg3));
+    GC::save(function);
+    return function;
+}
+
 Ast::Value * makeRange(Ast::Range::RangeType type, const Value & low, const Value & high){
     Ast::Value * range = new Ast::Range(type, as<Ast::Value*>(low), as<Ast::Value*>(high));
     GC::save(range);
@@ -6626,7 +6635,7 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                value = makeFunction("ifelse", arg1, arg2, arg3);
                 result_peg_653.setValue(value);
             }
         

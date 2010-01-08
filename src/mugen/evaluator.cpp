@@ -38,6 +38,9 @@ bool toBool(const RuntimeValue & value){
     if (value.isBool()){
         return value.getBoolValue();
     }
+    if (value.isDouble()){
+        return value.getDoubleValue() != 0;
+    }
     throw MugenException("Not a bool");
 }
 
@@ -255,6 +258,14 @@ public:
                 throw MugenException(out.str());
             }
             return evaluate(value);
+        }
+
+        if (function == "ifelse"){
+            if (toBool(evaluate(function.getArg1()))){
+                return evaluate(function.getArg2());
+            } else {
+                return evaluate(function.getArg3());
+            }
         }
 
         if (function == "selfanimexist"){
