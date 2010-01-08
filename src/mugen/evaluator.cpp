@@ -31,6 +31,13 @@ double toNumber(const RuntimeValue & value){
     if (value.isDouble()){
         return value.getDoubleValue();
     }
+    if (value.isBool()){
+        if (value.getBoolValue()){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
     throw MugenException("Not a number");
 }
 
