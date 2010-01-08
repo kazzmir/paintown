@@ -546,6 +546,8 @@ public:
             return standFriction;
         }
 
+        virtual bool hasAnimation(int index) const;
+
 protected:
     void initialize();
 

@@ -1638,6 +1638,12 @@ void Character::load(){
     }
     */
 }
+        
+bool Character::hasAnimation(int index) const {
+    typedef std::map< int, MugenAnimation * > Animations;
+    Animations::const_iterator it = getAnimations().find(index);
+    return it != getAnimations().end();
+}
 
 void Character::fixAssumptions(){
     /* need a -1 state controller that changes to state 20 if holdfwd

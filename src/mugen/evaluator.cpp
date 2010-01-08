@@ -249,6 +249,11 @@ public:
             return evaluate(value);
         }
 
+        if (function == "selfanimexist"){
+            int animation = (int) toNumber(evaluate(function.getArg1()));
+            return RuntimeValue(environment.getCharacter().hasAnimation(animation));
+        }
+
         /* Gets the animation-time elapsed since the start of a specified element
          * of the current animation action. Useful for synchronizing events to
          * elements of an animation action.
