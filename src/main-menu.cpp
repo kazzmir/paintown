@@ -3,6 +3,7 @@
 #include "factory/collector.h"
 #include "network/network.h"
 #include "util/token_exception.h"
+#include "mugen/mugen_exception.h"
 #include "music.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"
@@ -206,6 +207,8 @@ int paintown_main( int argc, char ** argv ){
     } catch (const ReturnException & ex){
     } catch (const ShutdownException & shutdown){
         Global::debug(1) << "Forced a shutdown. Cya!" << endl;
+    } catch (const MugenException & m){
+        Global::debug(0) << "Mugen exception: " << m.getReason() << endl;
     } catch (...){
         Global::debug(0) << "Uncaught exception!" << endl;
     }

@@ -327,6 +327,9 @@ Mugen::SelectedChars *Mugen::CharacterSelect::run(const std::string &title, cons
     stageInfo.selected = false;
     stageInfo.altCounter = 0;
     std::vector< MugenStage *> stageSelections;
+    if (stages.size() == 0){
+        throw MugenException("No stages available");
+    }
     unsigned int random = PaintownUtil::rnd(0,stages.size()-1);
     stageSelections.push_back(stages[random]);
     for (std::vector<MugenStage *>::iterator i = stages.begin(); i != stages.end(); ++i){
@@ -851,11 +854,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 			} else {
 			    // Get character
 			    Mugen::Character *character = new Mugen::Character(temp);
-			    try{
-				character->load();
-			    } catch (const MugenException & ex){
-				throw ex;
-			    }
+                            character->load();
 			    characters.push_back(character);
 			    Global::debug(1) << "Got character: " << character->getName() << endl;
 			    // set cell 
@@ -879,7 +878,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 				return;
 			    }
 			}
-		    } catch (MugenException & me){
+		    } catch (const MugenException & me){
 			throw me;
 		    } catch (...){
 		    }

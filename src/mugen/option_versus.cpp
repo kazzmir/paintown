@@ -50,7 +50,7 @@ MugenOptionVersus::~MugenOptionVersus(){
 void MugenOptionVersus::logic(){
 }
 
-void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
+void MugenOptionVersus::run(bool &endGame){
     Bitmap screen(GFX_X, GFX_Y);
     // Do select screen change back to 2 once finished testing
     int ticker = 0;

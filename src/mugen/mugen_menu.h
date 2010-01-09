@@ -56,7 +56,7 @@ class MugenMenu : public Menu {
 	virtual void loadData() throw (MugenException);
 	
 	/*! do logic, draw whatever */
-	virtual void run() throw (ReturnException);
+	virtual void run();
 	
 	/*! get character select */
 	inline Mugen::CharacterSelect *getSelect() { return characterSelect; }
