@@ -857,6 +857,14 @@ void MugenStage::toggleConsole(){
     console->toggle(); 
 }
 
+void MugenStage::toggleDebug(){
+    debugMode = !debugMode;
+    for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+        Mugen::Character *player = (Mugen::Character *)(*it);
+	player->toggleDebug();
+    }
+}
+
 void MugenStage::act(){
     logic();
 }

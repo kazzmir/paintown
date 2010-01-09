@@ -572,6 +572,10 @@ public:
         }
 
         virtual bool hasAnimation(int index) const;
+	
+	virtual inline void toggleDebug(){
+	    debug = !debug;
+	}
 
 protected:
     void initialize();
@@ -788,6 +792,9 @@ protected:
         int currentState;
         int previousState;
         int currentAnimation;
+	
+	// Debug state
+	bool debug;
 
         InputMap<Command::Keys> input;
 

@@ -92,7 +92,7 @@ public:
 	virtual void toggleConsole();
 	
 	// Render debug stuff like lines and crap
-	inline void toggleDebug(){ debugMode = !debugMode; }
+	virtual void toggleDebug();
 	
 	// Inherited world actions
 	virtual void act();

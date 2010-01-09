@@ -860,6 +860,7 @@ void Character::initialize(){
     currentState = Standing;
     previousState = currentState;
     currentAnimation = Standing;
+    debug = false;
     has_control = true;
 
     /* provide sensible defaults */
@@ -1928,6 +1929,22 @@ vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
 void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
     MugenAnimation * animation = getCurrentAnimation();
     if (animation != 0){
+	/* Check debug state */
+	if (debug){
+	    if (!animation->showingDefense()){
+		animation->toggleDefense();
+	    }
+	    if (!animation->showingOffense()){
+		animation->toggleOffense();
+	    }
+	} else {
+	    if (animation->showingDefense()){
+		animation->toggleDefense();
+	    }
+	    if (animation->showingOffense()){
+		animation->toggleOffense();
+	    }
+	}
         animation->logic();
     }
 

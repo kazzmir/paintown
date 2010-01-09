@@ -66,6 +66,7 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
     gameInput.set(Keyboard::Key_F1, 10, false, 0);
     gameInput.set(Keyboard::Key_F2, 10, false, 1);
     gameInput.set(Keyboard::Key_F3, 10, false, 2);
+    gameInput.set(Keyboard::Key_F4, 10, true, 3);
     
     // Load the stage
     try{
@@ -103,6 +104,9 @@ void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
                     if (out[2]){
                         gameSpeed = 1;
                     }
+		    if (out[3]){
+			stage->toggleDebug();
+		    }
                     if (gameSpeed < 0.1){
                         gameSpeed = 0.1;
                     }
