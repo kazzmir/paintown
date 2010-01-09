@@ -53,8 +53,13 @@ void MugenOptionVersus::logic(){
 void MugenOptionVersus::run(bool &endGame) throw (ReturnException) {
     Bitmap screen(GFX_X, GFX_Y);
     // Do select screen change back to 2 once finished testing
-    Mugen::SelectedChars *gameInfo = ((MugenMenu *)getParent())->getSelect()->run(getText(), 1, true, &screen);
-    
+    int ticker = 0;
+    Mugen::CharacterSelect select(ticker, ((MugenMenu*) getParent())->getSelectInfoFile());
+    select.load();
+    Mugen::SelectedChars * gameInfo = select.run(getText(), 1, true, &screen);
+
+    // Mugen::SelectedChars *gameInfo = ((MugenMenu *)getParent())->getSelect()->run(getText(), 1, true, &screen);
+
     if (gameInfo == 0){
         return;
     }

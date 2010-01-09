@@ -45,8 +45,7 @@ struct MugenMenuArea{
 	
 typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > MugenSprites;
 
-class MugenMenu : public Menu
-{
+class MugenMenu : public Menu {
     public:
 	/*! ctor dtor */
         explicit MugenMenu(const MugenMenu & menu);
@@ -61,6 +60,10 @@ class MugenMenu : public Menu
 	
 	/*! get character select */
 	inline Mugen::CharacterSelect *getSelect() { return characterSelect; }
+
+        virtual inline std::string getSelectInfoFile() const {
+            return selectInfoFile;
+        }
 	
     private:
 	// Option offset
@@ -163,7 +166,8 @@ class MugenMenu : public Menu
 	
 	// Draw text
 	void renderText(Bitmap *bmp);
+
+        std::string selectInfoFile;
 };
+
 #endif
-
-

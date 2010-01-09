@@ -1130,5 +1130,3 @@ void Mugen::CharacterSelect::parseSelectInfo(const std::vector<Ast::Section*> & 
 	}
     }
 }
-
-

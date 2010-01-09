@@ -334,9 +334,10 @@ void MugenMenu::loadData() throw (MugenException){
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
         } else if (head == "select info"){ 
-	    // Pass off to selectInfo
-	    characterSelect = new Mugen::CharacterSelect(ticker, ourDefFile);
-            characterSelect->load();
+	    /* Pass off to selectInfo */
+	    // characterSelect = new Mugen::CharacterSelect(ticker, ourDefFile);
+            // characterSelect->load();
+            selectInfoFile = ourDefFile;
         } else if (head == "selectbgdef" ){ /* Ignore for now */ }
 	else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
 	else if (head == "vs screen" ){ /* Ignore for now */ }
