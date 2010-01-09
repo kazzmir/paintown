@@ -1488,8 +1488,17 @@ void Character::parseState(Ast::Section * section){
 
 }
 
+static string findStateFile(const string & base, const string & path){
+    try{
+        return Filesystem::find(base + "/" + path);
+    } catch (const Filesystem::NotFound & f){
+        return Filesystem::find("mugen/data/" + path);
+    }
+}
+
 void Character::loadStateFile(const std::string & base, const string & path){
-    string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
+    string full = findStateFile(base, PaintownUtil::trim(path));
+    // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     try{
         /* st can use the Cmd parser */
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
@@ -1603,7 +1612,7 @@ void Character::load(){
                     } else if (simple == "stcommon"){
                         string path;
                         simple >> path;
-                        stateFiles.insert(stateFiles.begin(), Location("mugen/data/", path));
+                        stateFiles.insert(stateFiles.begin(), Location("mugen/chars/" + location, path));
                     } else if (simple == "st"){
                         string path;
                         simple >> path;
