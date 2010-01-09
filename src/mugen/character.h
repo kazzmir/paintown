@@ -65,6 +65,13 @@ enum Type{
 
 }
 
+namespace StateType{
+    extern std::string Stand;
+    extern std::string Crouch;
+    extern std::string Air;
+    extern std::string LyingDown;
+}
+
 class Character;
 
 /* comes from a State */
@@ -815,6 +822,9 @@ protected:
 
         /* stand.friction */
         double standFriction;
+
+        /* S (stand), C (crouch), A (air), L (lying down) */
+        std::string stateType;
 };
 
 }

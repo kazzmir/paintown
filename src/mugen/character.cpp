@@ -42,6 +42,16 @@ using namespace std;
 
 namespace Mugen{
 
+namespace StateType{
+
+std::string Stand = "S";
+std::string Crouch = "C";
+std::string Air = "A";
+std::string LyingDown = "L";
+
+}
+
+
 namespace PaintownUtil = ::Util;
 
 StateController::StateController(const string & name):
@@ -859,6 +869,7 @@ Character::~Character(){
 void Character::initialize(){
     currentState = Standing;
     previousState = currentState;
+    stateType = StateType::Stand;
     currentAnimation = Standing;
     debug = false;
     has_control = true;
