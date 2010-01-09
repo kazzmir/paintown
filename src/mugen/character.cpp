@@ -520,7 +520,7 @@ void StateController::activate(Character & guy) const {
 State::State():
 animation(0),
 changeControl(false),
-control(false),
+control(0),
 changeVelocity(false),
 changePhysics(false),
 changePower(false){
@@ -552,7 +552,7 @@ void State::transitionTo(Character & who){
     }
 
     if (changeControl){
-        who.setControl(control);
+        who.setControl(toBool(evaluate(control, Environment(who))));
     }
 
     if (changeVelocity){
@@ -593,6 +593,7 @@ State::~State(){
     }
 
     delete animation;
+    delete control;
 }
     
 Command::Command(std::string name, Ast::KeyList * keys, int maxTime, int bufferTime):
@@ -1294,9 +1295,7 @@ void Character::parseStateDefinition(Ast::Section * section){
                     simple >> x >> y;
                     definition->setVelocity(x, y);
                 } else if (simple == "ctrl"){
-                    bool control;
-                    simple >> control;
-                    definition->setControl(control);
+                    definition->setControl((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "poweradd"){
                     int power;
                     simple >> power;
@@ -1630,7 +1629,7 @@ void Character::load(){
                         simple >> what;
                         self.palFile[num] = what;
                     } else {
-                        throw MugenException("Unhandled option in Files Section: " + simple.toString());
+                        Global::debug(0) << "Unhandled option in Files Section: " + simple.toString() << endl;
                     }
                 }
             };

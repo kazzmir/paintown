@@ -180,9 +180,9 @@ public:
         this->type = type;
     }
 
-    virtual inline void setControl(bool control){
+    virtual inline void setControl(bool value){
         changeControl = true;
-        this->control = control;
+        this->control = value;
     }
 
     virtual inline Type getType() const {
@@ -245,7 +245,7 @@ public:
         this->animation = animation;
     }
 
-    virtual inline void setControl(bool control){
+    virtual inline void setControl(Ast::Value * control){
         changeControl = true;
         this->control = control;
     }
@@ -268,7 +268,7 @@ protected:
     Type type;
     Ast::Value * animation;
     bool changeControl;
-    bool control;
+    Ast::Value * control;
     std::vector<StateController*> controllers;
     bool changeVelocity;
     double velocity_x, velocity_y;
