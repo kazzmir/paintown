@@ -809,6 +809,8 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
             class CharacterWalker: public Ast::Walker{
             public:
 		CharacterWalker(const int rows, const int columns, std::vector< std::vector< Cell *> > &cells,std::vector< Mugen::Character *> &characters, std::vector< std::string > &stageNames):
+		row(0),
+		column(0),
 		rows(rows),
 		columns(columns),
 		cells(cells),
@@ -816,78 +818,75 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 		stageNames(stageNames){}
 		virtual ~CharacterWalker(){}
 		
+		int row, column;
 		const int rows,columns;
 		std::vector< std::vector< Cell *> > &cells;
 		std::vector< Mugen::Character *> &characters;
 		std::vector< std::string > &stageNames;
 		virtual void onValueList(const Ast::ValueList & list){
 		    // Get Stage info and save it
-		    int row = 0, column = 0;
-		    for (;;){
-			try {
-			    std::string temp;
-			    list >> temp;
-			    /* **TODO** need to create identifier to house Character 
-			            base data so we don't have to load the entire thing
-				- Filename
-				- Character Name
-				- Character Screen Name
-				- Image 9000 and 9001
-				- Is stage random?
-				- Stage name def
-				- music
-				- includestage
-				- order
-			    */
+		    try {
+			std::string temp;
+			list >> temp;
+			/* **TODO** need to create identifier to house Character 
+				base data so we don't have to load the entire thing
+			    - Filename
+			    - Character Name
+			    - Character Screen Name
+			    - Image 9000 and 9001
+			    - Is stage random?
+			    - Stage name def
+			    - music
+			    - includestage
+			    - order
+			*/
+			
+			/* **TODO** check whether it is one of the below 
+			    - the character directory
+			    - a specified character def file
+			    - randomselect
+			*/
+			temp = Mugen::Util::removeSpaces(temp);
+			if (temp=="random"){
+			    // set random flag
+			    cells[row][column]->random = true;
+			    cells[row][column]->empty = false;
+			} else {
+			    // Get character
+			    Mugen::Character *character = new Mugen::Character(temp);
+			    try{
+				character->load();
+			    } catch (const MugenException & ex){
+				throw ex;
+			    }
+			    characters.push_back(character);
+			    Global::debug(1) << "Got character: " << character->getName() << endl;
+			    // set cell 
+			    cells[row][column]->character = character;
+			    cells[row][column]->empty = false;
 			    
-			    /* **TODO** check whether it is one of the below 
-				- the character directory
-				- a specified character def file
-				- randomselect
-			    */
-			    temp = Mugen::Util::removeSpaces(temp);
-			    if (temp=="random"){
-				// set random flag
-				cells[row][column]->random = true;
-				cells[row][column]->empty = false;
-			    } else {
-				// Get character
-				Mugen::Character *character = new Mugen::Character(temp);
-				try{
-				    character->load();
-				} catch (const MugenException & ex){
-				    throw ex;
-				}
-				characters.push_back(character);
-				Global::debug(1) << "Got character: " << character->getName() << endl;
-				// set cell 
-				cells[row][column]->character = character;
-				cells[row][column]->empty = false;
-				
-				// Hack get stage
-				std::string stageTemp;
-				list >> stageTemp;
-				// Next item will be a stage lets add it to the list of stages
-				stageNames.push_back(stageTemp);
-				Global::debug(1) << "Got stage: " << stageTemp << endl;
-			    }
-			    column++;
-			    if (column >=columns){
-				column = 0;
-				row++;
-				// Have we met our quota?
-				if (row >= rows){
-				    // can't add any more characters... breakage
-				    break;
-				}
-			    }
-			} catch (MugenException & me){
-			    throw me;
-			} catch (...){
-			    break;
+			    // Hack get stage
+			    std::string stageTemp;
+			    list >> stageTemp;
+			    // Next item will be a stage lets add it to the list of stages
+			    stageNames.push_back(stageTemp);
+			    Global::debug(1) << "Got stage: " << stageTemp << endl;
 			}
+			column++;
+			if (column >=columns){
+			    column = 0;
+			    row++;
+			    // Have we met our quota?
+			    if (row >= rows){
+				// can't add any more characters... breakage
+				return;
+			    }
+			}
+		    } catch (MugenException & me){
+			throw me;
+		    } catch (...){
 		    }
-                }
+		}
             };
 
             CharacterWalker walk(rows,columns,cells,characters,stageNames);
@@ -902,15 +901,12 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 		std::vector< std::string > &names;
                 virtual void onValueList(const Ast::ValueList & list){
 		    // Get Stage info and save it
-		    for (;;){
-			try {
-			    std::string temp;
-			    list >> temp;
-			    Global::debug(0) << "stage: " << temp << endl;
-			    names.push_back(temp);
-			} catch (...){
-			    break;
-			}
+		    try {
+			std::string temp;
+			list >> temp;
+			Global::debug(0) << "stage: " << temp << endl;
+			names.push_back(temp);
+		    } catch (...){
 		    }
                 }
             };
@@ -922,81 +918,6 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 	}
     }
     
-    /* FIXME!! Replace with peg parser */
-   /* MugenReader reader( Mugen::Util::getCorrectFileLocation(dir,file) );
-    std::vector< MugenSection * > collection;
-    collection = reader.getCollection();
-    
-    std::vector< std::string > stageNames;
-    */
-   
-    /* Extract info for our first section of our menu */
-    /*
-    for( unsigned int i = 0; i < collection.size(); ++i ){
-	std::string head = collection[i]->getHeader();
-	head = Mugen::Util::fixCase(head);
-	if( head == "characters" ){
-	    int row = 0;
-	    int column = 0;
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		itemhead = Mugen::Util::removeSpaces(itemhead);
-		if (itemhead=="random"){
-		    // set random flag
-		    cells[row][column]->random = true;
-		    cells[row][column]->empty = false;
-		} else {
-		    // Get character
-                    Mugen::Character *character = new Mugen::Character(itemhead);
-		    try{
-			character->load();
-		    } catch (const MugenException & ex){
-                        throw ex;
-		    }
-		    characters.push_back(character);
-		    Global::debug(1) << "Got character: " << character->getName() << endl;
-		    // set cell 
-		    cells[row][column]->character = character;
-		    cells[row][column]->empty = false;
-		    if (content->hasItems()){
-			// Next item will be a stage lets add it to the list of stages
-			std::string temp;
-			*content->getNext() >> temp;
-			stageNames.push_back(temp);
-			Global::debug(1) << "Got stage: " << temp << endl;
-		    }
-		    // Need to add in other options and assign their respective stages to them....
-		}
-		column++;
-		if (column >=columns){
-		    column = 0;
-		    row++;
-		    // Have we met our quota?
-		    if (row >= rows){
-			// can't add any more characters... breakage
-			break;
-		    }
-		}
-	    }
-	}
-	else if( head == "extrastages" ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		itemhead = Mugen::Util::removeSpaces(itemhead);
-		// Next item will be a stage lets add it to the list of stages
-		stageNames.push_back(itemhead);
-		Global::debug(1) << "Got stage: " << itemhead << endl;
-	    }
-	}
-	else if( head == "options" ){ */
-	/* ignore for now } */
-	/*else throw MugenException("Unhandled Section in '" + selectFile + "': " + head, __FILE__, __LINE__); 
-    }
-    */
     // Prepare stages
     for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
 	MugenStage *stage = new MugenStage(*i);
