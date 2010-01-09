@@ -241,7 +241,7 @@ public:
         type = t;
     }
 
-    virtual inline void setAnimation(int animation){
+    virtual inline void setAnimation(Ast::Value * animation){
         this->animation = animation;
     }
 
@@ -266,7 +266,7 @@ public:
 
 protected:
     Type type;
-    int animation;
+    Ast::Value * animation;
     bool changeControl;
     bool control;
     std::vector<StateController*> controllers;

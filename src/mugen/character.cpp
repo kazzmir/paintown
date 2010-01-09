@@ -518,7 +518,7 @@ void StateController::activate(Character & guy) const {
 }
 
 State::State():
-animation(-1),
+animation(0),
 changeControl(false),
 control(false),
 changeVelocity(false),
@@ -547,8 +547,8 @@ void State::setPhysics(Physics::Type p){
 }
 
 void State::transitionTo(Character & who){
-    if (animation != -1){
-        who.setAnimation(animation);
+    if (animation != 0){
+        who.setAnimation((int) toNumber(evaluate(animation, Environment(who))));
     }
 
     if (changeControl){
@@ -591,6 +591,8 @@ State::~State(){
     for (vector<StateController*>::iterator it = controllers.begin(); it != controllers.end(); it++){
         delete (*it);
     }
+
+    delete animation;
 }
     
 Command::Command(std::string name, Ast::KeyList * keys, int maxTime, int bufferTime):
@@ -1286,9 +1288,7 @@ void Character::parseStateDefinition(Ast::Section * section){
                         definition->setPhysics(Physics::Air);
                     }
                 } else if (simple == "anim"){
-                    int animation;
-                    simple >> animation;
-                    definition->setAnimation(animation);
+                    definition->setAnimation((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "velset"){
                     double x, y;
                     simple >> x >> y;

@@ -215,6 +215,12 @@ Ast::Attribute * makeAttribute(const Value & id, const Value & data){
     return object;
 }
 
+Ast::Attribute * makeAttribute(const Value & id){
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id));
+    GC::save(object);
+    return object;
+}
+
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
     Ast::Attribute * object = new Ast::AttributeArray(as<Ast::Identifier*>(id), as<Ast::Value*>(index), as<Ast::Value*>(data));
     GC::save(object);
@@ -411,6 +417,7 @@ rules:
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
                | name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
+               | name:identifier s "=" s &line_end {{ value = makeAttribute(name); }}
 	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
 	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}
 	integer = sign? digit+ {{ value = makeInteger($1, $2); }}
@@ -524,11 +531,12 @@ rules:
 		     | name:"animelemno"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"animexist"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"projguarded"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"projcontact"{case} s "=" s integer function_rest {{ value = makeExpression(); }}
+		     | name:"projcontact"{case} s "(" s arg1:expr_c s ")" s "=" s integer function_rest {{ value = makeExpression(); }}
 		     | name:"animelem"{case} s "=" s integer function_rest {{ value = makeExpression(); }}
 		     | name:"numhelper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 	function_rest = s "," s all_compare s integer
+                  | <void>
 
     # Keys and key modifiers need their own AST structures
     keys = key_value_list
