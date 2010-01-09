@@ -355,6 +355,10 @@ public:
         virtual inline const std::map<int, MugenAnimation*> & getAnimations() const {
             return animations;
         }
+
+        virtual inline void setInput(const InputMap<Command::Keys> & input){
+            this->input = input;
+        }
 	
 	virtual inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
             return sounds;

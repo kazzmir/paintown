@@ -61,7 +61,24 @@ public:
     }
     
     InputMap(const InputMap & copy){
-        Global::debug(0) << "*BUG* InputMap should not be copied! Pass it by reference instead" << std::endl;
+        for (typename std::map<Keyboard::KeyType, KeyState<X>* >::const_iterator it = copy.key_states.begin(); it != copy.key_states.end(); it++){
+            key_states[(*it).first] = new KeyState<X>(*(*it).second);
+        }
+        for (typename std::map<typename Joystick::Key, JoystickState<X>* >::const_iterator it = copy.joy_states.begin(); it != copy.joy_states.end(); it++){
+            joy_states[(*it).first] = new JoystickState<X>(*(*it).second);
+        }
+        last_read = copy.last_read;
+    }
+
+    InputMap & operator=(const InputMap & copy){
+        for (typename std::map<Keyboard::KeyType, KeyState<X>* >::const_iterator it = copy.key_states.begin(); it != copy.key_states.end(); it++){
+            key_states[(*it).first] = new KeyState<X>(*(*it).second);
+        }
+        for (typename std::map<typename Joystick::Key, JoystickState<X>* >::const_iterator it = copy.joy_states.begin(); it != copy.joy_states.end(); it++){
+            joy_states[(*it).first] = new JoystickState<X>(*(*it).second);
+        }
+        last_read = copy.last_read;
+        return *this;
     }
 
     virtual ~InputMap(){

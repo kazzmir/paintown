@@ -915,18 +915,6 @@ void Character::initialize(){
     standFriction = 1;
 
     stateTime = 0;
-
-    input.set(Keyboard::Key_UP, 0, false, Command::Up);
-    input.set(Keyboard::Key_DOWN, 0, false, Command::Down);
-    input.set(Keyboard::Key_RIGHT, 0, false, Command::Forward);
-    input.set(Keyboard::Key_LEFT, 0, false, Command::Back);
-
-    input.set(Keyboard::Key_A, 0, false, Command::A);
-    input.set(Keyboard::Key_S, 0, false, Command::B);
-    input.set(Keyboard::Key_D, 0, false, Command::C);
-    input.set(Keyboard::Key_Z, 0, false, Command::X);
-    input.set(Keyboard::Key_X, 0, false, Command::Y);
-    input.set(Keyboard::Key_C, 0, false, Command::Z);
 }
     
 void Character::addCommand(Command * command){

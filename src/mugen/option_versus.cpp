@@ -26,6 +26,7 @@
 #include "mugen_menu.h"
 #include "mugen_stage.h"
 #include "character_select.h"
+#include "input/input-map.h"
 
 #include "gui/keyinput_manager.h"
 
@@ -50,6 +51,28 @@ MugenOptionVersus::~MugenOptionVersus(){
 void MugenOptionVersus::logic(){
 }
 
+static Mugen::Character * loadKfm(){
+    Mugen::Character * kfm = new Mugen::Character("kfm");
+    kfm->load();
+    return kfm;
+}
+
+static InputMap<Mugen::Command::Keys> getPlayer1Input(){
+    InputMap<Mugen::Command::Keys> input;
+    input.set(Keyboard::Key_UP, 0, false, Mugen::Command::Up);
+    input.set(Keyboard::Key_DOWN, 0, false, Mugen::Command::Down);
+    input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Command::Forward);
+    input.set(Keyboard::Key_LEFT, 0, false, Mugen::Command::Back);
+
+    input.set(Keyboard::Key_A, 0, false, Mugen::Command::A);
+    input.set(Keyboard::Key_S, 0, false, Mugen::Command::B);
+    input.set(Keyboard::Key_D, 0, false, Mugen::Command::C);
+    input.set(Keyboard::Key_Z, 0, false, Mugen::Command::X);
+    input.set(Keyboard::Key_X, 0, false, Mugen::Command::Y);
+    input.set(Keyboard::Key_C, 0, false, Mugen::Command::Z);
+    return input;
+}
+
 void MugenOptionVersus::run(bool &endGame){
     Bitmap screen(GFX_X, GFX_Y);
     // Do select screen change back to 2 once finished testing
@@ -65,7 +88,11 @@ void MugenOptionVersus::run(bool &endGame){
     }
 
     MugenStage * stage = gameInfo->selectedStage;
+    gameInfo->team1[0]->setInput(getPlayer1Input());
     stage->addp1(gameInfo->team1[0]);
+
+    /* for testing, load kfm as player 2 */
+    stage->addp2(loadKfm());
 
     InputMap<int> gameInput;
     gameInput.set(Keyboard::Key_F1, 10, false, 0);
