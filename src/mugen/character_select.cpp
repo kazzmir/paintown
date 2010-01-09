@@ -789,15 +789,141 @@ void Mugen::CharacterSelect::movePlayer2Cursor(int x, int y){
 }
 
 void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw (MugenException){
-    std::string dir = Mugen::Util::getFileDir(selectFile);
-    std::string file = Mugen::Util::stripDir(selectFile);
+    const std::string file = Mugen::Util::getCorrectFileLocation(Mugen::Util::getFileDir(selectFile), Mugen::Util::stripDir(selectFile));
+    
+    TimeDifference diff;
+    diff.startTime();
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(file));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
+    
+    std::vector< std::string > stageNames;
+    
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+	Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        
+	head = Mugen::Util::fixCase(head);
+
+        if (head == "characters"){
+            class CharacterWalker: public Ast::Walker{
+            public:
+		CharacterWalker(const int rows, const int columns, std::vector< std::vector< Cell *> > &cells,std::vector< Mugen::Character *> &characters):
+		rows(rows),
+		columns(columns),
+		cells(cells),
+		characters(characters){}
+		virtual ~CharacterWalker(){}
+		
+		const int rows,columns;
+		std::vector< std::vector< Cell *> > &cells;
+		std::vector< Mugen::Character *> &characters;
+	
+		virtual void onValueList(const Ast::ValueList & list){
+		    // Get Stage info and save it
+		    int row = 0, column = 0;
+		    for (;;){
+			try {
+			    std::string temp;
+			    list >> temp;
+			    /* **TODO** need to create identifier to house Character 
+			            base data so we don't have to load the entire thing
+				- Filename
+				- Character Name
+				- Character Screen Name
+				- Image 9000 and 9001
+				- Is stage random?
+				- Stage name def
+				- music
+				- includestage
+				- order
+			    */
+			    
+			    /* **TODO** check whether it is one of the below 
+				- the character directory
+				- a specified character def file
+				- randomselect
+			    */
+			    temp = Mugen::Util::removeSpaces(temp);
+			    if (temp=="random"){
+				// set random flag
+				cells[row][column]->random = true;
+				cells[row][column]->empty = false;
+			    } else {
+				// Get character
+				Mugen::Character *character = new Mugen::Character(temp);
+				try{
+				    character->load();
+				} catch (const MugenException & ex){
+				    throw ex;
+				}
+				characters.push_back(character);
+				Global::debug(1) << "Got character: " << character->getName() << endl;
+				// set cell 
+				cells[row][column]->character = character;
+				cells[row][column]->empty = false;
+			    }
+			    column++;
+			    if (column >=columns){
+				column = 0;
+				row++;
+				// Have we met our quota?
+				if (row >= rows){
+				    // can't add any more characters... breakage
+				    break;
+				}
+			    }
+			} catch (MugenException & me){
+			    throw me;
+			} catch (...){
+			    break;
+			}
+		    }
+                }
+            };
+
+            CharacterWalker walk(rows,columns,cells,characters);
+            section->walk(walk);
+	} else if (head == "extrastages"){
+	    class StageWalker: public Ast::Walker{
+            public:
+		StageWalker(std::vector< std::string > &names):
+		names(names){
+		}
+		virtual ~StageWalker(){}
+		std::vector< std::string > &names;
+                virtual void onValueList(const Ast::ValueList & list){
+		    // Get Stage info and save it
+		    for (;;){
+			try {
+			    std::string temp;
+			    list >> temp;
+			    Global::debug(0) << "stage: " << temp << endl;
+			    names.push_back(temp);
+			} catch (...){
+			    break;
+			}
+		    }
+                }
+            };
+	    StageWalker walk(stageNames);
+	    section->walk(walk);
+	} else if (head == "options"){
+	} else {
+	    throw MugenException("Unhandled Section in '" + file + "': " + head, __FILE__, __LINE__); 
+	}
+    }
+    
     /* FIXME!! Replace with peg parser */
-    MugenReader reader( Mugen::Util::getCorrectFileLocation(dir,file) );
+   /* MugenReader reader( Mugen::Util::getCorrectFileLocation(dir,file) );
     std::vector< MugenSection * > collection;
     collection = reader.getCollection();
     
     std::vector< std::string > stageNames;
+    */
+   
     /* Extract info for our first section of our menu */
+    /*
     for( unsigned int i = 0; i < collection.size(); ++i ){
 	std::string head = collection[i]->getHeader();
 	head = Mugen::Util::fixCase(head);
@@ -858,10 +984,11 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 		Global::debug(1) << "Got stage: " << itemhead << endl;
 	    }
 	}
-	else if( head == "options" ){ /* ignore for now */}
-	else throw MugenException("Unhandled Section in '" + selectFile + "': " + head, __FILE__, __LINE__); 
+	else if( head == "options" ){ */
+	/* ignore for now } */
+	/*else throw MugenException("Unhandled Section in '" + selectFile + "': " + head, __FILE__, __LINE__); 
     }
-    
+    */
     // Prepare stages
     for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
 	MugenStage *stage = new MugenStage(*i);
