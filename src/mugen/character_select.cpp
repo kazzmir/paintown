@@ -808,17 +808,18 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
         if (head == "characters"){
             class CharacterWalker: public Ast::Walker{
             public:
-		CharacterWalker(const int rows, const int columns, std::vector< std::vector< Cell *> > &cells,std::vector< Mugen::Character *> &characters):
+		CharacterWalker(const int rows, const int columns, std::vector< std::vector< Cell *> > &cells,std::vector< Mugen::Character *> &characters, std::vector< std::string > &stageNames):
 		rows(rows),
 		columns(columns),
 		cells(cells),
-		characters(characters){}
+		characters(characters),
+		stageNames(stageNames){}
 		virtual ~CharacterWalker(){}
 		
 		const int rows,columns;
 		std::vector< std::vector< Cell *> > &cells;
 		std::vector< Mugen::Character *> &characters;
-	
+		std::vector< std::string > &stageNames;
 		virtual void onValueList(const Ast::ValueList & list){
 		    // Get Stage info and save it
 		    int row = 0, column = 0;
@@ -862,6 +863,13 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 				// set cell 
 				cells[row][column]->character = character;
 				cells[row][column]->empty = false;
+				
+				// Hack get stage
+				std::string stageTemp;
+				list >> stageTemp;
+				// Next item will be a stage lets add it to the list of stages
+				stageNames.push_back(stageTemp);
+				Global::debug(1) << "Got stage: " << stageTemp << endl;
 			    }
 			    column++;
 			    if (column >=columns){
@@ -882,7 +890,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
                 }
             };
 
-            CharacterWalker walk(rows,columns,cells,characters);
+            CharacterWalker walk(rows,columns,cells,characters,stageNames);
             section->walk(walk);
 	} else if (head == "extrastages"){
 	    class StageWalker: public Ast::Walker{
