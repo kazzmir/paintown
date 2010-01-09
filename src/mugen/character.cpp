@@ -1808,6 +1808,7 @@ void Character::fixAssumptions(){
         states[11]->addController(controller);
     }
 
+#if 0
     /* if y reaches 0 then auto-transition to state 52.
      * probably just add a trigger to state 50
      */
@@ -1824,6 +1825,7 @@ void Character::fixAssumptions(){
         states[50]->addController(controller);
 
     }
+#endif
 }
 
 // Render sprite

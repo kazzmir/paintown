@@ -550,6 +550,9 @@ void MugenStage::physics(Object * player){
         if (mugen->getY() > 0){
             double gravity = mugen->getGravity();
             mugen->setYVelocity(mugen->getYVelocity() + gravity);
+        } else if (mugen->getYVelocity() > 0){
+            /* change to the landing state */
+            mugen->changeState(52);
         }
     }
 
