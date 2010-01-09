@@ -399,6 +399,14 @@ public:
             this->currentState = state;
         }
 
+        virtual inline std::string getStateType() const {
+            return stateType;
+        }
+
+        virtual inline void setStateType(const std::string & str){
+            stateType = str;
+        }
+
         virtual inline void setXVelocity(double x){
             this->velocity_x = x;
         }

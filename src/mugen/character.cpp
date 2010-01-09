@@ -563,6 +563,28 @@ void State::transitionTo(Character & who){
     if (changePhysics){
         who.setCurrentPhysics(physics);
     }
+
+    switch (type){
+        case Standing : {
+            who.setStateType(StateType::Stand);
+            break;
+        }
+        case Crouching : {
+            who.setStateType(StateType::Crouch);
+            break;
+        }
+        case Air : {
+            who.setStateType(StateType::Air);
+            break;
+        }
+        case LyingDown : {
+            who.setStateType(StateType::LyingDown);
+            break;
+        }
+        case Unchanged : {
+            break;
+        }
+    }
 }
 
 State::~State(){

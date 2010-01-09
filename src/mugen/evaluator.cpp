@@ -141,23 +141,24 @@ public:
         }
 
         if (identifier == "A"){
-            /* FIXME */
             return RuntimeValue(string("A"));
         }
         
         if (identifier == "S"){
-            /* FIXME */
+            /* states are just strings */
             return RuntimeValue(string("S"));
         }
 
         if (identifier == "C"){
-            /* FIXME */
             return RuntimeValue(string("C"));
+        }
+        
+        if (identifier == "L"){
+            return RuntimeValue(string("L"));
         }
 
         if (identifier == "statetype"){
-            /* FIXME */
-            return RuntimeValue(string("S"));
+            return RuntimeValue(environment.getCharacter().getStateType());
         }
 
         /* true if the player has control */
