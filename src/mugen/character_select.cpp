@@ -788,7 +788,7 @@ void Mugen::CharacterSelect::movePlayer2Cursor(int x, int y){
     }
 }
 
-void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw (MugenException){
+void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile){
     const std::string file = Mugen::Util::getCorrectFileLocation(Mugen::Util::getFileDir(selectFile), Mugen::Util::stripDir(selectFile));
     
     TimeDifference diff;
@@ -823,69 +823,65 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile) throw
 		std::vector< std::vector< Cell *> > &cells;
 		std::vector< Mugen::Character *> &characters;
 		std::vector< std::string > &stageNames;
-		virtual void onValueList(const Ast::ValueList & list){
-		    // Get Stage info and save it
-		    try {
-			std::string temp;
-			list >> temp;
-			/* **TODO** need to create identifier to house Character 
-				base data so we don't have to load the entire thing
-			    - Filename
-			    - Character Name
-			    - Character Screen Name
-			    - Image 9000 and 9001
-			    - Is stage random?
-			    - Stage name def
-			    - music
-			    - includestage
-			    - order
-			*/
-			
-			/* **TODO** check whether it is one of the below 
-			    - the character directory
-			    - a specified character def file
-			    - randomselect
-			*/
-			temp = Mugen::Util::removeSpaces(temp);
-			if (temp=="random"){
-			    // set random flag
-			    cells[row][column]->random = true;
-			    cells[row][column]->empty = false;
-			} else {
-			    // Get character
-			    Mugen::Character *character = new Mugen::Character(temp);
-                            character->load();
-			    characters.push_back(character);
-			    Global::debug(1) << "Got character: " << character->getName() << endl;
-			    // set cell 
-			    cells[row][column]->character = character;
-			    cells[row][column]->empty = false;
-			    
-			    // Hack get stage
-			    std::string stageTemp;
-			    list >> stageTemp;
-			    // Next item will be a stage lets add it to the list of stages
-			    stageNames.push_back(stageTemp);
-			    Global::debug(1) << "Got stage: " << stageTemp << endl;
-			}
-			column++;
-			if (column >=columns){
-			    column = 0;
-			    row++;
-			    // Have we met our quota?
-			    if (row >= rows){
-				// can't add any more characters... breakage
-				return;
-			    }
-			}
-		    } catch (const MugenException & me){
-			throw me;
-		    } catch (...){
-		    }
-		}
+                virtual void onValueList(const Ast::ValueList & list){
+                    // Get Stage info and save it
+                    std::string temp;
+                    list >> temp;
+                    /* **TODO** need to create identifier to house Character 
+                       base data so we don't have to load the entire thing
+                       - Filename
+                       - Character Name
+                       - Character Screen Name
+                       - Image 9000 and 9001
+                       - Is stage random?
+                       - Stage name def
+                       - music
+                       - includestage
+                       - order
+                       */
+
+                    /* **TODO** check whether it is one of the below 
+                       - the character directory
+                       - a specified character def file
+                       - randomselect
+                       */
+                    temp = Mugen::Util::removeSpaces(temp);
+                    if (temp == "random"){
+                        // set random flag
+                        cells[row][column]->random = true;
+                        cells[row][column]->empty = false;
+                    } else {
+                        // Get character
+                        Mugen::Character *character = new Mugen::Character(temp);
+                        character->load();
+                        characters.push_back(character);
+                        Global::debug(1) << "Got character: " << character->getName() << endl;
+                        // set cell 
+                        cells[row][column]->character = character;
+                        cells[row][column]->empty = false;
+
+                        // Hack get stage
+                        std::string stageTemp;
+                        list >> stageTemp;
+                        // Next item will be a stage lets add it to the list of stages
+                        stageNames.push_back(stageTemp);
+                        Global::debug(1) << "Got stage: " << stageTemp << endl;
+                    }
+
+                    column++;
+                    if (column >=columns){
+                        column = 0;
+                        row++;
+                        // Have we met our quota?
+                        if (row >= rows){
+                            // can't add any more characters... breakage
+                            return;
+                        }
+                    }
+                }
             };
 
-            CharacterWalker walk(rows,columns,cells,characters,stageNames);
+            CharacterWalker walk(rows, columns, cells, characters, stageNames);
             section->walk(walk);
 	} else if (head == "extrastages"){
 	    class StageWalker: public Ast::Walker{

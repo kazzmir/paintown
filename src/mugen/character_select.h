@@ -172,7 +172,7 @@ class CharacterSelect{
 	
 	void movePlayer2Cursor(int x, int y);
 	
-	void loadCharacters(const std::string &selectFile)throw (MugenException);
+	void loadCharacters(const std::string &selectFile);
 	
 	SelectedChars *characterList;
 	
