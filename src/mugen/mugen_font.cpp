@@ -216,7 +216,7 @@ unsigned char * MugenFont::findBank(int bank){
 }
 
 void MugenFont::changeBank(int bank){
-    if (bank < 0 || bank > (colors -1))return;
+    if (bank < 0 || bank > (colors -1) || currentBank == bank)return;
     currentBank = bank;
     unsigned char newpal[768];
     // Reset palette
