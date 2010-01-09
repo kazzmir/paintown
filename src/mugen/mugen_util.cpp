@@ -14,6 +14,8 @@
 #include <stdlib.h>
 
 #include "util/funcs.h"
+#include "util/file-system.h"
+#include "util/timedifference.h"
 
 #include "mugen_animation.h"
 #include "mugen_background.h"
@@ -29,6 +31,7 @@
 
 #include "mugen_util.h"
 #include "ast/all.h"
+#include "parser/all.h"
 
 using namespace std;
 
@@ -870,34 +873,47 @@ const std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, c
 }
 
 const std::string Mugen::Util::probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException){
+    TimeDifference diff;
+    diff.startTime();
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(file));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
     
-    /* FIXME!! Replace with peg parser */
-    MugenReader reader( file );
-    std::vector< MugenSection * > collection;
-    collection = reader.getCollection();
-    std::string ourSection = section;
-    std::string ourSearch = search;
-    ourSection = Mugen::Util::fixCase(ourSection);
-    ourSearch = Mugen::Util::fixCase(ourSearch);
-    for( unsigned int i = 0; i < collection.size(); ++i ){
-	std::string head = collection[i]->getHeader();
+    std::string ourSection = Mugen::Util::fixCase(section);;
+    std::string ourSearch = Mugen::Util::fixCase(search);;
+   
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+	Ast::Section * astSection = *section_it;
+	std::string head = astSection->getName();
+        
 	head = Mugen::Util::fixCase(head);
-	if( head.compare(ourSection) == 0 ){
-	    while( collection[i]->hasItems() ){
-		MugenItemContent *content = collection[i]->getNext();
-		const MugenItem *item = content->getNext();
-		std::string itemhead = item->query();
-		itemhead = Mugen::Util::removeSpaces(itemhead);
-		if ( itemhead.find(ourSearch)!=std::string::npos ){
-		    std::string foundText;
-		    *content->getNext() >> foundText;
-                    Global::debug(1) << "Found '" << search << "' in Section '" << section << "' in Definition file '" << file << "'" << endl;
-		    return foundText;
-		}
+
+        if( head.compare(ourSection) == 0 ){
+	    class SearchWalker: public Ast::Walker{
+		public:
+		    SearchWalker(const std::string &search, std::string &result):
+		    search(search),
+		    result(result){}
+		    virtual ~SearchWalker(){}
+		    const std::string &search;
+		    std::string &result;
+		    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+			if (simple.idString().find(search)!=std::string::npos){
+			    simple >> result;
+			    Global::debug(1) << "Found result: " << result << endl;
+			} 
+		    }
+	    };
+	    std::string result = "";
+	    SearchWalker walk(ourSearch,result);
+	    astSection->walk(walk);
+	    
+	    if (!result.empty()){
+		Global::debug(1) << "Found '" << search << "' in Section '" << section << "' in Definition file '" << file << "'" << endl;
+		return result;
 	    }
 	}
     }
-    
     // Couldn't find search item throw exception
     throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file + "'");
 }
