@@ -90,13 +90,13 @@ Ast::Attribute * makeAttribute(const Value & id){
 
 Ast::Attribute * makeAttributeFilename(const Value & id, const Value & data){
     /* TODO */
-    throw ParseException("not implemented");
+    throw ParseException("makeAttributeFilename not implemented");
     // return makeAttribute(id, data);
 }
 
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
     /* TODO: fix this */
-    throw ParseException("not implemented");
+    throw ParseException("makeIndexedAttribute not implemented");
     /*
     Ast::Attribute * object = new Ast::Attribute(Ast::Attribute::None);
     GC::save(object);
@@ -112,7 +112,7 @@ Ast::Keyword * makeKeyword(const Value & value){
 
 Ast::Attribute * makeAttributes(const Value & id, const Value & data){
     /* TODO */
-    throw ParseException("not implemented");
+    throw ParseException("makeAttributes not implemented");
     /*
     Ast::Attribute * object = new Ast::Attribute(Ast::Attribute::None);
     GC::save(object);
@@ -244,15 +244,17 @@ rules:
 	filename_char = !"," !"\n" !"[" !<ascii 13> !";" .
 	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); }}
               | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); }}
-	          | id:identifier s "=" s data:filename {{ value = makeAttributeFilename(id, data); }}
+	          | id:identifier s "=" s data:filename {{ value = makeAttribute(id, data); }}
 		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
 		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
+    attribute_simple = id:identifier s "=" s data:value {{ value = makeAttribute(id, data); }}
 	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); }}
 	identifier_list = identifier (s "," s filename)+
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
 	value = string
 	      | date
 	      | number
+          | attribute_simple
           | keyword {{ value = makeKeyword($1); }}
 	      | "s"{case} !letter !"." {{ value = makeKeyword($1); }}
 	      | "h"{case} !letter !"." {{ value = makeKeyword($1); }}
