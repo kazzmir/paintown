@@ -969,7 +969,7 @@ MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int
     
     Global::debug(2) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
-    MugenSprite *spriteIndex[totalImages + 1];
+    std::vector<MugenSprite *>spriteIndex;
     
     // Palette related
     int islinked = 0;
@@ -1031,20 +1031,22 @@ MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int
 	else islinked = 0;
 	
 	// Add to our lists
-	spriteIndex[i] = sprite;
+	spriteIndex.push_back(sprite);
+	
+	// Check if this is the sprite we're after
+	Global::debug(1) << "Matching group: (" << groupNumber << ") with (" << sprite->getGroupNumber() << ") | sprite: (" << spriteNumber << ") with (" << sprite->getImageNumber() << ")" << endl;
+	if ((sprite->getGroupNumber() == groupNumber) && (sprite->getImageNumber() == spriteNumber)){
+	    // Create copy
+	    ourSpriteFile = new MugenSprite(*sprite);
+	    ourSpriteFile->loadPCX(ifile,islinked,useact,palsave1);
+	    break;
+	}
 	
 	// Set the next file location
 	location = sprite->getNext();
 	
 	if( !location ){
 	    Global::debug(1) << "End of Sprites or File. Continuing...." << endl;
-	    break;
-	}
-	
-	Global::debug(1) << "Matching group: (" << groupNumber << ") with (" << sprite->getGroupNumber() << ") | sprite: (" << spriteNumber << ") with (" << sprite->getImageNumber() << ")" << endl;
-	if ((sprite->getGroupNumber() == groupNumber) && (sprite->getImageNumber() == spriteNumber)){
-	    // Create copy
-	    ourSpriteFile = new MugenSprite(*sprite);
 	    break;
 	}
 	
@@ -1055,16 +1057,14 @@ MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int
     ifile.close();
     
     // Destroy sprites
-    for (unsigned int i = 0; i < (totalImages + 1); ++i){
-	if (spriteIndex[i]){
-	    delete spriteIndex[i];
+    for (std::vector<MugenSprite *>::iterator i = spriteIndex.begin(); i != spriteIndex.end(); ++i){
+	if ((*i)){
+	    delete (*i);
 	}
     }
     
     //Did we get our file?
     if (ourSpriteFile){
-	// Load it up and return it
-	ourSpriteFile->loadPCX(ifile,islinked,useact,palsave1);
 	return ourSpriteFile;
     } else throw MugenException("Could not find sprite in " + file);
 }
