@@ -1552,6 +1552,98 @@ void Character::parseState(Ast::Section * section){
                     string flags;
                     simple >> flags;
                     controller->getHit().guardFlag = flags;
+                } else if (simple == "animtype"){
+                    string anim;
+                    simple >> anim;
+                    controller->getHit().animationType = anim;
+                } else if (simple == "air.animtype"){
+                    string anim;
+                    simple >> anim;
+                    controller->getHit().animationTypeAir = anim;
+                } else if (simple == "fall.animtype"){
+                    string anim;
+                    simple >> anim;
+                    controller->getHit().animationTypeFall = anim;
+                } else if (simple == "priority"){
+                    int hit;
+                    simple >> hit;
+                    controller->getHit().priority.hit = hit;
+                    try{
+                        string type;
+                        simple >> type;
+                        controller->getHit().priority.type = type;
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "damage"){
+                    try{
+                        simple >> controller->getHit().damage.damage;
+                        simple >> controller->getHit().damage.guardDamage;
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "pausetime"){
+                    try{
+                        simple >> controller->getHit().pause.player1;
+                        simple >> controller->getHit().pause.player1;
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "guard.pausetime"){
+                    try{
+                        simple >> controller->getHit().guardPause.player1;
+                        simple >> controller->getHit().guardPause.player1;
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "sparkno"){
+                    simple >> controller->getHit().spark;
+                } else if (simple == "guard.sparkno"){
+                    simple >> controller->getHit().guardSpark;
+                } else if (simple == "sparkxy"){
+                    try{
+                        simple >> controller->getHit().sparkPosition.x;
+                        simple >> controller->getHit().sparkPosition.y;
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "hitsound"){
+                    string first;
+                    bool own = false;
+                    int group;
+                    int item;
+                    simple >> first >> item;
+                    if (first[0] == 'S'){
+                        own = true;
+                        group = atoi(first.substr(1).c_str());
+                    } else {
+                        group = atoi(first.c_str());
+                    }
+                    controller->getHit().hitSound.own = own;
+                    controller->getHit().hitSound.group = group;
+                    controller->getHit().hitSound.item = item;
+                } else if (simple == "guard.hitsound"){
+                    string first;
+                    bool own = false;
+                    int group;
+                    int item;
+                    simple >> first >> item;
+                    if (first[0] == 'S'){
+                        own = true;
+                        group = atoi(first.substr(1).c_str());
+                    } else {
+                        group = atoi(first.c_str());
+                    }
+                    controller->getHit().guardHitSound.own = own;
+                    controller->getHit().guardHitSound.group = group;
+                    controller->getHit().guardHitSound.item = item;
+                } else if (simple == "ground.type"){
+                    simple >> controller->getHit().groundType;
+                } else if (simple == "air.type"){
+                    simple >> controller->getHit().airType;
+                } else if (simple == "ground.slidetime"){
+                    simple >> controller->getHit().groundSlideTime;
+                } else if (simple == "guard.slidetime"){
+                    simple >> controller->getHit().guardSlideTime;
+                } else if (simple == "ground.hittime"){
+                    simple >> controller->getHit().groundHitTime;
+                } else if (simple == "guard.hittime"){
+                    simple >> controller->getHit().guardGroundHitTime;
                 } else {
                     Global::debug(0) << "Unhandled state controller '" << controller->getName() << "' attribute: " << simple.toString() << endl;
                 }
