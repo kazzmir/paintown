@@ -36,15 +36,31 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
-    memcpy( this->comments, &copy.comments, sizeof(MugenSprite::comments) );
-    this->pcx = new char[this->reallength];
-    memcpy(this->pcx, &copy.pcx, this->reallength);
+
+    if (copy.comments != 0){
+        /* this line is right */
+        memcpy(this->comments, copy.comments, sizeof(MugenSprite::comments));
+    }
+
+    /* why do we need to copy the pcx data if we already have the bitmap? */
+    if (copy.pcx != 0){
+        this->pcx = new char[this->reallength];
+        /* this line is right */
+        memcpy(this->pcx, copy.pcx, this->reallength);
+    } else {
+        this->pcx = 0;
+    }
+
     if (copy.bitmap){
 	this->bitmap = new Bitmap(*copy.bitmap);
+    } else {
+        this->bitmap = 0;
     }
 }
 
 MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
+    cleanup();
+
     this->next = copy.next;
     this->location = copy.location;
     this->length = copy.length;
@@ -56,9 +72,15 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
-    memcpy( this->comments, &copy.comments, sizeof(MugenSprite::comments) );
-    this->pcx = new char[this->reallength];
-    memcpy(this->pcx, &copy.pcx, this->reallength);
+    if (copy.comments){
+        memcpy( this->comments, copy.comments, sizeof(MugenSprite::comments) );
+    }
+
+    if (copy.pcx){
+        this->pcx = new char[this->reallength];
+        memcpy(this->pcx, copy.pcx, this->reallength);
+    }
+
     if (copy.bitmap){
 	this->bitmap = new Bitmap(*copy.bitmap);
     }
@@ -70,15 +92,21 @@ bool MugenSprite::operator<( const MugenSprite &copy ){
     return ( (this->groupNumber < copy.groupNumber) && (this->imageNumber < copy.imageNumber) );
 }
 
-MugenSprite::~MugenSprite(){
+void MugenSprite::cleanup(){
     /* **FIXME** this needs fixing on determining pcx is empty or not */
     if (pcx){
         delete[] pcx;
         pcx = NULL;
     }
+
     if (bitmap){
 	delete bitmap;
+        bitmap = NULL;
     }
+}
+
+MugenSprite::~MugenSprite(){
+    cleanup();
 }
 
 // Set sprite info

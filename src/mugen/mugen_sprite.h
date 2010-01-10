@@ -63,8 +63,16 @@ class MugenSprite{
 	inline const unsigned short getPrevious() const { return prev; }
 	inline const bool getSamePalette() const { return samePalette; }
 	inline const char *getComments() const { return comments; }
+
+    protected:
+        /* destroy allocated things */
+        void cleanup();
 	
     private:
+        /* FIXME: replace these types with explicitly sized types like
+         * unsigned long -> uint32
+         * short -> int16
+         */
 	unsigned long next;
 	unsigned long location;
 	unsigned long length;
@@ -76,7 +84,7 @@ class MugenSprite{
 	unsigned short imageNumber;
 	unsigned short prev;
 	bool samePalette;
-	char comments[13];
+	char comments[12];
 	char * pcx;
 	
 	Bitmap *bitmap;
