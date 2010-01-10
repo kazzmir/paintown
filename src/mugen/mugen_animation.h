@@ -35,6 +35,14 @@ class MugenFrame{
 	
 	MugenFrame & operator=( const MugenFrame &copy );
 
+        virtual inline const std::vector<MugenArea> & getDefenseBoxes() const {
+            return defenseCollision;
+        }
+        
+        virtual inline const std::vector<MugenArea> & getAttackBoxes() const {
+            return attackCollision;
+        }
+
 	// We'll keep them, but they probably won't be used
 	std::vector< MugenArea > defenseCollision;
 	// This is the only one will be worried about
@@ -106,6 +114,9 @@ class MugenAnimation{
 	
 	// Render current frame overriding flipping
 	void render( const int facing, const int vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex=1, const double scaley=1  );
+
+        virtual const std::vector<MugenArea> & getDefenseBoxes() const;
+        virtual const std::vector<MugenArea> & getAttackBoxes() const;
 	
 	// Go forward a frame 
 	void forwardFrame();

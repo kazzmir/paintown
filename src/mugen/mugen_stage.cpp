@@ -527,6 +527,13 @@ void MugenStage::moveCamera( const double x, const double y ){
     else if( cameray > boundlow )cameray = boundlow;
 }
 
+bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2){
+    const vector<MugenArea> & attacks = obj1->getCurrentAnimation()->getAttackBoxes();
+    const vector<MugenArea> & defense = obj2->getCurrentAnimation()->getDefenseBoxes();
+
+    return false;
+}
+
 void MugenStage::physics(Object * player){
 
     Mugen::Character * mugen = (Mugen::Character *) player;
@@ -541,6 +548,17 @@ void MugenStage::physics(Object * player){
                 mugen->setXVelocity(mugen->getXVelocity() + friction);
             } else if (mugen->getXVelocity() > friction){
                 mugen->setXVelocity(mugen->getXVelocity() - friction);
+            }
+        }
+    }
+
+    if (mugen->getMoveType() == Mugen::Move::Attack){
+        for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+            Mugen::Character * enemy = (Mugen::Character*) *enem;
+            if (enemy->getAlliance() != mugen->getAlliance()){
+                if (doCollisionDetection(mugen, enemy)){
+                    /* do hitdef stuff */
+                }
             }
         }
     }
@@ -644,7 +662,7 @@ void MugenStage::logic( ){
     
     //zoffsetlink
     const MugenBackground *zlinkbackground = 0;
-    if( zoffsetlink != DEFAULT_BACKGROUND_ID ){
+    if (zoffsetlink != DEFAULT_BACKGROUND_ID){
 	zlinkbackground = background->getBackground(zoffsetlink);
 	zoffset = zlinkbackground->y;
     }

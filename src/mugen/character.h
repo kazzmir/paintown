@@ -72,6 +72,11 @@ namespace StateType{
     extern std::string LyingDown;
 }
 
+namespace Move{
+    extern std::string Attack;
+    extern std::string Idle;
+}
+
 class Character;
 
 /* comes from a State */
@@ -559,6 +564,10 @@ public:
             return previousState;
         }
 
+        virtual inline const std::string & getMoveType() const {
+            return moveType;
+        }
+
         virtual void resetStateTime();
 
         virtual void setVariable(int index, Ast::Value * value);
@@ -837,6 +846,7 @@ protected:
 
         /* S (stand), C (crouch), A (air), L (lying down) */
         std::string stateType;
+        std::string moveType;
 };
 
 }

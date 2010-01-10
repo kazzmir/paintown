@@ -132,6 +132,16 @@ int MugenAnimation::animationTime() const {
     return (int) position - (int) frames.size() + 1;
 }
 
+const std::vector<MugenArea> & MugenAnimation::getDefenseBoxes() const {
+    MugenFrame * frame = frames[position];
+    return frame->getDefenseBoxes();
+}
+
+const std::vector<MugenArea> & MugenAnimation::getAttackBoxes() const {
+    MugenFrame * frame = frames[position];
+    return frame->getAttackBoxes();
+}
+
 void MugenAnimation::logic(){
     if (position < frames.size()){
         if (frames[position]->time != -1){

@@ -51,6 +51,14 @@ std::string LyingDown = "L";
 
 }
 
+namespace Move{
+
+std::string Attack = "A";
+std::string Idle = "I";
+
+}
+
+
 
 namespace PaintownUtil = ::Util;
 

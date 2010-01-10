@@ -14,6 +14,10 @@ namespace Console{
     class Console;
 }
 
+namespace Mugen{
+    class Character;
+}
+
 namespace Ast{
     class Section;
 }
@@ -140,6 +144,7 @@ protected:
 
     void updatePlayer(Object *o);
     void physics(Object * o);
+    bool doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2);
 	
 protected:
 
