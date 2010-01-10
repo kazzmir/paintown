@@ -1785,7 +1785,7 @@ void Character::fixAssumptions(){
         {
             StateController * controller = new StateController("walk");
             controller->setType(StateController::ChangeState);
-            controller->setValue1(new Ast::Number(20));
+            controller->setValue1(new Ast::Number(WalkingForwards));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
                         new Ast::Number(0)));
@@ -1803,7 +1803,7 @@ void Character::fixAssumptions(){
         {
             StateController * controller = new StateController("crouch");
             controller->setType(StateController::ChangeState);
-            controller->setValue1(new Ast::Number(10));
+            controller->setValue1(new Ast::Number(StandToCrouch));
             controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
@@ -1818,7 +1818,7 @@ void Character::fixAssumptions(){
         {
             StateController * controller = new StateController("jump");
             controller->setType(StateController::ChangeState);
-            controller->setValue1(new Ast::Number(40));
+            controller->setValue1(new Ast::Number(JumpStart));
             controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
@@ -1836,7 +1836,7 @@ void Character::fixAssumptions(){
     if (states[20] != 0){
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
-        controller->setValue1(new Ast::Number(0));
+        controller->setValue1(new Ast::Number(Standing));
         controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
                     new Ast::String(new string("holdfwd"))));
@@ -1850,7 +1850,7 @@ void Character::fixAssumptions(){
     if (states[11] != 0){
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
-        controller->setValue1(new Ast::Number(12));
+        controller->setValue1(new Ast::Number(CrouchToStand));
         controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
                     new Ast::String(new string("holddown"))));
