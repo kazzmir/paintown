@@ -46,6 +46,25 @@ MugenArea & MugenArea::operator=( const MugenArea &copy ){
 MugenArea::~MugenArea(){
 }
 
+bool MugenArea::collision(const MugenArea & area) const {
+
+    const int x3 = area.x1;
+    const int x4 = area.x2;
+    const int y3 = area.y1;
+    const int y4 = area.y2;
+
+    if (x1 < x3 && x1 < x4 &&
+        x2 < x3 && x2 < x4) return false;
+    if (x1 > x3 && x1 > x4 &&
+        x2 > x3 && x2 > x4) return false;
+    if (y1 < y3 && y1 < y4 &&
+        y2 < y3 && y2 < y4) return false;
+    if (y1 > y3 && y1 > y4 &&
+        y2 > y3 && y2 > y4) return false;
+
+    return true;
+}
+
 /*
 Frame
 */

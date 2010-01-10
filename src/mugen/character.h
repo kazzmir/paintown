@@ -75,6 +75,7 @@ namespace StateType{
 namespace Move{
     extern std::string Attack;
     extern std::string Idle;
+    extern std::string Hit;
 }
 
 class Character;
@@ -258,6 +259,7 @@ public:
     virtual void setVelocity(double x, double y);
     virtual void setPhysics(Physics::Type p);
     virtual void setPower(int power);
+    virtual void setMoveType(const std::string & type);
 
     virtual inline const std::vector<StateController*> & getControllers() const {
         return controllers;
@@ -281,6 +283,7 @@ protected:
     Physics::Type physics;
     bool changePower;
     int powerAdd;
+    std::string moveType;
 };
 
 /* key command */
@@ -566,6 +569,10 @@ public:
 
         virtual inline const std::string & getMoveType() const {
             return moveType;
+        }
+
+        virtual inline void setMoveType(const std::string & str){
+            moveType = str;
         }
 
         virtual void resetStateTime();

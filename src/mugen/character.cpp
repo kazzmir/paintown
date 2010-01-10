@@ -55,6 +55,7 @@ namespace Move{
 
 std::string Attack = "A";
 std::string Idle = "I";
+std::string Hit = "H";
 
 }
 
@@ -531,7 +532,8 @@ changeControl(false),
 control(0),
 changeVelocity(false),
 changePhysics(false),
-changePower(false){
+changePower(false),
+moveType(Move::Idle){
 }
 
 void State::addController(StateController * controller){
@@ -549,6 +551,10 @@ void State::setPower(int power){
     changePower = true;
 }
     
+void State::setMoveType(const std::string & type){
+    moveType = type;
+}
+    
 void State::setPhysics(Physics::Type p){
     changePhysics = true;
     physics = p;
@@ -562,6 +568,8 @@ void State::transitionTo(Character & who){
     if (changeControl){
         who.setControl(toBool(evaluate(control, Environment(who))));
     }
+
+    who.setMoveType(moveType);
 
     if (changeVelocity){
         who.setXVelocity(velocity_x);
@@ -1272,6 +1280,9 @@ void Character::parseStateDefinition(Ast::Section * section){
                         throw MugenException(out.str());
                     }
                 } else if (simple == "movetype"){
+                    string type;
+                    simple >> type;
+                    definition->setMoveType(type);
                 } else if (simple == "physics"){
                     string type;
                     simple >> type;

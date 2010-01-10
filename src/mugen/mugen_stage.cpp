@@ -531,6 +531,16 @@ bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character 
     const vector<MugenArea> & attacks = obj1->getCurrentAnimation()->getAttackBoxes();
     const vector<MugenArea> & defense = obj2->getCurrentAnimation()->getDefenseBoxes();
 
+    for (vector<MugenArea>::const_iterator attack_i = attacks.begin(); attack_i != attacks.begin(); attack_i++){
+        for (vector<MugenArea>::const_iterator defense_i = defense.begin(); defense_i != defense.begin(); defense_i++){
+            const MugenArea & attack = *attack_i;
+            const MugenArea & defense = *defense_i;
+            if (attack.collision(defense)){
+                return true;
+            }
+        }
+    }
+
     return false;
 }
 
@@ -558,6 +568,7 @@ void MugenStage::physics(Object * player){
             if (enemy->getAlliance() != mugen->getAlliance()){
                 if (doCollisionDetection(mugen, enemy)){
                     /* do hitdef stuff */
+                    Global::debug(0) << "Collision!" << endl;
                 }
             }
         }
