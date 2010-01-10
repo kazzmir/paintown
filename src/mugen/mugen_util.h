@@ -20,6 +20,11 @@ namespace Ast{
 }
 
 namespace Mugen{
+
+/* Makes the use of the sprite maps easier */
+typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > SpriteMap;
+typedef std::map< unsigned int, std::map< unsigned int, MugenSound * > > SoundMap;
+    
 namespace Util{
     const std::string fixCase (const std::string &str);
     const std::string removeSpaces (const std::string &str);
@@ -31,16 +36,20 @@ namespace Util{
     MugenItemContent *parseOpt( const std::string &opt );
     std::vector<Ast::Section*> collectBackgroundStuff(std::list<Ast::Section*>::iterator & section_it, const std::list<Ast::Section*>::iterator & end, const std::string & name = "bg");
     bool readPalette(const std::string &filename, unsigned char *pal);
-    void readSprites(const std::string & filename, const std::string & palette, std::map<unsigned int, std::map<unsigned int, MugenSprite *> > & sprites) throw (MugenException);
+    void readSprites(const std::string & filename, const std::string & palette, Mugen::SpriteMap & sprites) throw (MugenException);
     void readSounds(const std::string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException);
     // Get background: The background must be deleted if used outside of stage/menus (Note: we give the background a ticker to whatever is running it)
-    MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
+    MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
-    MugenAnimation *getAnimation( Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites );
+    MugenAnimation *getAnimation( Ast::Section *section, Mugen::SpriteMap &sprites );
     const std::string getCorrectFileLocation( const std::string &dir, const std::string &file );
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
     // Usefull for getting names of maps, characters, etc without loading the entire Object....
     const std::string probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException);
+    /*! Use to probe a SFF file for a specific sprite without loading the whole sprite list
+       Throws exception if not found
+    */
+    MugenSprite *probeSff(const std::string &file, int groupNumber, int spriteNumber) throw (MugenException);
 }
 
 class Point{
@@ -88,9 +97,6 @@ struct FontInfo{
     int bank;
     int position;
 };
-
-/* Makes the use of the sprite maps easier */
-typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > SpriteMap;
 
 }
 

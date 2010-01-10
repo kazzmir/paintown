@@ -260,7 +260,7 @@ bool Mugen::Util::readPalette(const string &filename, unsigned char *pal){
     return false;
 }
 
-void Mugen::Util::readSprites(const string & filename, const string & palette, map<unsigned int,map<unsigned int, MugenSprite *> > & sprites) throw (MugenException){
+void Mugen::Util::readSprites(const string & filename, const string & palette, Mugen::SpriteMap & sprites) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
@@ -417,6 +417,14 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, m
 	
 	// Add to our lists
 	spriteIndex[i] = sprite;
+	// Check if the sprite exists already so we can delete it and overwrite
+	Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
+	if (first_it != sprites.end()){
+	    std::map< unsigned int, MugenSprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
+	    if (it != first_it->second.end()){
+		delete it->second;
+	    }
+	}
 	sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = sprite;
 	/*
 	// Dump to file just so we can test the pcx in something else
@@ -529,7 +537,7 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
     return stuff;
 }
 
-MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Ast::Section *section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
+MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites ){
     MugenBackground *temp = new MugenBackground(ticker);
     std::string head = section->getName();
     head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
@@ -655,13 +663,13 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
     return temp;
 }
 
-MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > &sprites ){
+MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, Mugen::SpriteMap &sprites ){
     MugenAnimation *animation = new MugenAnimation();
 
     /* see parser/air.peg */
     class Walker: public Ast::Walker{
     public:
-        Walker(MugenAnimation * animation, std::map<unsigned int, std::map<unsigned int, MugenSprite*> > & sprites):
+        Walker(MugenAnimation * animation, Mugen::SpriteMap & sprites):
         Ast::Walker(),
         animation(animation),
         sprites(sprites),
@@ -672,7 +680,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, std::map< unsi
 
         /* data */
         MugenAnimation * animation;
-        std::map<unsigned int, std::map<unsigned int, MugenSprite*> > & sprites;
+        Mugen::SpriteMap & sprites;
         std::vector<MugenArea> clsn1Holder;
         std::vector<MugenArea> clsn2Holder;
         bool clsn1Reset;
@@ -916,6 +924,145 @@ const std::string Mugen::Util::probeDef(const std::string &file, const std::stri
     }
     // Couldn't find search item throw exception
     throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file + "'");
+}
+
+MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int spriteNumber) throw (MugenException){
+    
+    /* Our sprite */
+    MugenSprite *ourSpriteFile = 0;
+    
+    /* 16 skips the header stuff */
+    int location = 16;
+    ifstream ifile;
+    ifile.open(file.c_str(), ios::binary);
+    if (!ifile){
+	throw MugenException("Could not open SFF file: '" + file + "'");
+    }
+    
+    // Lets get the filesize
+    FILE *tempstream = fopen( file.c_str(), "r" );
+    fseek( tempstream, 0, SEEK_END );
+    int filesize = ftell( tempstream );
+    fclose( tempstream );
+    
+
+    /* Lets go ahead and skip the crap -> (Elecbyte signature and version)
+     * start at the 16th byte
+     */
+    ifile.seekg(location,ios::beg);
+    unsigned long totalGroups = 0;
+    unsigned long totalImages = 0;
+    unsigned long suboffset = 0;
+    unsigned long subhead = 0;
+    unsigned int sharedPal = 0;
+    
+    /* this probably isn't endian safe.. */
+    ifile.read((char *)&totalGroups, sizeof(unsigned long));
+    ifile.read((char *)&totalImages, sizeof(unsigned long));
+    ifile.read((char *)&suboffset, sizeof(unsigned long));
+    ifile.read((char *)&subhead, sizeof(unsigned long));
+    ifile.read((char *)&sharedPal, sizeof(bool));
+    if( sharedPal && sharedPal != 1 )sharedPal = 0;
+    location = suboffset;
+    if( location < 512 || location > 2147482717 )location = 512;
+    
+    Global::debug(2) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
+
+    MugenSprite *spriteIndex[totalImages + 1];
+    
+    // Palette related
+    int islinked = 0;
+    bool useact = false;
+    
+    //unsigned char colorsave[3]; // rgb pal save
+    unsigned char palsave1[768]; // First image palette
+    
+    // Load in first palette
+    /*if (Mugen::Util::readPalette(palette,palsave1)){
+	useact = true;
+    }*/
+    
+    if( location < 512 || location > 2147482717 )location = 512;
+    else location = suboffset;
+    
+    
+    for (unsigned int i = 0; i < totalImages; ++i){
+	if( location > filesize ){
+	    throw MugenException("Error in SFF file: " + file + ". Offset of image beyond the end of the file.");
+	}
+	
+        MugenSprite * sprite = new MugenSprite();//readSprite(ifile, location);    
+	sprite->read(ifile,location);
+	
+	if( sprite->getLength() == 0 ){ // Lets get the linked sprite
+	    // This is linked
+	    islinked = 1;
+	    /* Lets check if this is a duplicate sprite if so copy it
+	    * if prev is larger than index then this file is corrupt */
+	    if( sprite->getPrevious() >= i ) throw MugenException("Error in SFF file: " + file + ". Incorrect reference to sprite.");
+	    if( sprite->getPrevious() > 32767 ) throw MugenException("Error in SFF file: " + file + ". Reference too large in image.");
+	    while( sprite->getLength() == 0 ){
+		const MugenSprite *temp = spriteIndex[sprite->getPrevious()];
+		if( !temp ) throw MugenException("Error in SFF file: " + file + ". Referenced sprite is NULL.");
+		
+		// Seek to the location of the pcx data
+		ifile.seekg(temp->getLocation() + 32, ios::beg);
+		sprite->setLocation(temp->getLocation());
+		sprite->setLength(temp->getNext() - temp->getLocation() - 32);
+		
+		if( (sprite->getPrevious() <= temp->getPrevious()) && ((sprite->getPrevious() != 0) || (i == 0)) && temp->getLength()==0 ) {
+		    std::ostringstream st;
+		    st << "Image " << i << "(" << sprite->getGroupNumber() << "," << sprite->getImageNumber() << ") : circular definition or forward linking. Aborting.\n"; 
+		    throw MugenException( st.str() );
+		}
+		else{
+		    if(sprite->getLength() == 0){
+			sprite->setPrevious(temp->getPrevious());
+		    } else {
+			sprite->setNewLength(temp->getNext() - temp->getLocation() -32);
+			sprite->setRealLength(sprite->getNewLength());
+		    }
+		}
+		
+		Global::debug(2) << "Referenced Sprite Location: " << temp->getLocation() << " | Group: " << temp->getGroupNumber() << " | Sprite: " << temp->getGroupNumber() << " | at index: " << sprite->getPrevious() << endl;
+	    }
+	}
+	else islinked = 0;
+	
+	// Add to our lists
+	spriteIndex[i] = sprite;
+	
+	// Set the next file location
+	location = sprite->getNext();
+	
+	if( !location ){
+	    Global::debug(1) << "End of Sprites or File. Continuing...." << endl;
+	    break;
+	}
+	
+	if ((sprite->getGroupNumber() == groupNumber) && (sprite->getImageNumber() == spriteNumber)){
+	    // Create copy
+	    ourSpriteFile = new MugenSprite(*sprite);
+	    break;
+	}
+	
+	Global::debug(2) << "Index: " << i << ", Location: " << sprite->getLocation()  << ", Next Sprite: "  << sprite->getNext() << ", Length: " << sprite->getRealLength() << ", x|y: " << sprite->getX() << "|" << sprite->getY() << ", Group|Image Number: " << sprite->getGroupNumber() << "|" << sprite->getImageNumber() << ", Prev: " << sprite->getPrevious() << ", Same Pal: " << sprite->getSamePalette() << ", Comments: " << sprite->getComments() << endl;
+	
+    }
+    
+    ifile.close();
+    
+    // Destroy sprites
+    for (unsigned int i = 0; i < (totalImages + 1); ++i){
+	delete spriteIndex[i];
+    }
+    
+    //Did we get our file?
+    if (ourSpriteFile){
+	// Load it up and return it
+	ourSpriteFile->loadPCX(ifile,islinked,useact,palsave1);
+	return ourSpriteFile;
+    } else throw MugenException("Could not find sprite in " + file);
 }
 
 

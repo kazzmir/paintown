@@ -831,7 +831,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile){
                        base data so we don't have to load the entire thing
                        - Filename
                        - Character Name
-                       - Character Screen Name
+                       - Character Display Name
                        - Image 9000 and 9001
                        - Is stage random?
                        - Stage name def
@@ -853,7 +853,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile){
                     } else {
                         // Get character
                         Mugen::Character *character = new Mugen::Character(temp);
-                        character->load();
+                        //character->load();
                         characters.push_back(character);
                         Global::debug(1) << "Got character: " << character->getName() << endl;
                         // set cell 

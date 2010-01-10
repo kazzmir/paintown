@@ -88,6 +88,8 @@ void MugenOptionVersus::run(bool &endGame){
     }
 
     MugenStage * stage = gameInfo->selectedStage;
+    // Load player 1
+    gameInfo->team1[0]->load();
     gameInfo->team1[0]->setInput(getPlayer1Input());
     stage->addp1(gameInfo->team1[0]);
 

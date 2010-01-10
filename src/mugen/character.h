@@ -614,6 +614,8 @@ public:
 
 protected:
     void initialize();
+    
+    virtual void loadSelectData();
 
     /* This creates the animations no need for a new class to handle this */
     virtual void bundleAnimations();

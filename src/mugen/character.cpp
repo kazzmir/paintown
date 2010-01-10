@@ -914,6 +914,9 @@ void Character::initialize(){
     currentAnimation = Standing;
     debug = false;
     has_control = true;
+    
+    /* Load up info for the select screen */
+    loadSelectData();
 
     /* provide sensible defaults */
     walkfwd = 0;
@@ -931,6 +934,32 @@ void Character::initialize(){
     standFriction = 1;
 
     stateTime = 0;
+}
+
+void Character::loadSelectData(){
+    /* Load up info for the select screen */
+    try{
+	baseDir = Filesystem::find("mugen/chars/" + location + "/");
+	Global::debug(1) << baseDir << endl;
+	std::string str = Mugen::Util::stripDir(this->location);
+	const std::string ourDefFile = Mugen::Util::fixFileName(baseDir, std::string(str + ".def"));
+	
+	if (ourDefFile.empty()){
+	    Global::debug(1) << "Cannot locate player definition file for: " << location << endl;
+	}
+	
+	// Set name of character
+	this->name = Mugen::Util::probeDef(ourDefFile, "info", "name");
+	this->displayName = Mugen::Util::probeDef(ourDefFile, "info", "displayname");
+	this->sffFile = Mugen::Util::probeDef(ourDefFile, "files", "sprite");
+	// Get necessary sprites 9000 & 9001 for select screen
+	this->sprites[9000][0] = Mugen::Util::probeSff(this->sffFile, 9000,0);
+	this->sprites[9000][1] = Mugen::Util::probeSff(this->sffFile, 9000,1);
+	
+    } catch (const MugenException &ex){
+	Global::debug(1) << "Couldn't grab details for character!" << endl;
+	Global::debug(1) << "Error was: " << ex.getReason() << endl;
+    }
 }
     
 void Character::addCommand(Command * command){
