@@ -136,6 +136,21 @@ public:
             return RuntimeValue(0);
         }
 
+        if (identifier == "hitshakeover"){
+            /* FIXME */
+            return RuntimeValue(1);
+        }
+
+        if (identifier == "hitover"){
+            /* FIXME */
+            return RuntimeValue(1);
+        }
+
+        if (identifier == "hitfall"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
         if (identifier == "time"){
             return RuntimeValue(environment.getCharacter().getStateTime());
         }
@@ -282,6 +297,46 @@ public:
                 throw MugenException(out.str());
             }
             return evaluate(value);
+        }
+
+        if (function == "gethitvar"){
+            if (function.getArg1() == 0){
+                throw MugenException("No argument given to gethitvar");
+            }
+            string var = function.getArg1()->toString();
+            if (var == "xveladd"){
+            } else if (var == "yveladd"){
+            } else if (var == "type"){
+            } else if (var == "animtype"){
+            } else if (var == "airtype"){
+            } else if (var == "groundtype"){
+            } else if (var == "damage"){
+            } else if (var == "hitcount"){
+            } else if (var == "fallcount"){
+            } else if (var == "hitshaketime"){
+            } else if (var == "hittime"){
+            } else if (var == "slidetime"){
+            } else if (var == "ctrltime"){
+            } else if (var == "recovertime"){
+            } else if (var == "xoff"){
+            } else if (var == "yoff"){
+            } else if (var == "zoff"){
+            } else if (var == "xvel"){
+            } else if (var == "yvel"){
+            } else if (var == "yaccel"){
+            } else if (var == "hitid"){
+            } else if (var == "chainid"){
+            } else if (var == "guarded"){
+            } else if (var == "fall"){
+            } else if (var == "fall.damage"){
+            } else if (var == "fall.xvel"){
+            } else if (var == "fall.yvel"){
+            } else if (var == "fall.recover"){
+            } else if (var == "fall.time"){
+            } else if (var == "fall.recovertime"){
+            }
+
+            throw MugenException("Unknown gethitvar variable " + var);
         }
 
         if (function == "sysvar"){
