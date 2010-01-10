@@ -9,7 +9,9 @@
 #include "init.h"
 #include "input/keyboard.h"
 #include "input/input-manager.h"
+#include "input/input-map.h"
 #include "util/funcs.h"
+#include "loading.h"
 
 #include "character.h"
 #include "mugen_animation.h"
@@ -26,8 +28,8 @@
 #include "mugen_menu.h"
 #include "mugen_stage.h"
 #include "character_select.h"
-#include "input/input-map.h"
 
+/* get rid of this at some point */
 #include "gui/keyinput_manager.h"
 
 using namespace std;
@@ -73,29 +75,7 @@ static InputMap<Mugen::Command::Keys> getPlayer1Input(){
     return input;
 }
 
-void MugenOptionVersus::run(bool &endGame){
-    Bitmap screen(GFX_X, GFX_Y);
-    // Do select screen change back to 2 once finished testing
-    int ticker = 0;
-    Mugen::CharacterSelect select(ticker, ((MugenMenu*) getParent())->getSelectInfoFile());
-    select.load();
-    Mugen::SelectedChars * gameInfo = select.run(getText(), 1, true, &screen);
-
-    // Mugen::SelectedChars *gameInfo = ((MugenMenu *)getParent())->getSelect()->run(getText(), 1, true, &screen);
-
-    if (gameInfo == 0){
-        return;
-    }
-
-    MugenStage * stage = gameInfo->selectedStage;
-    // Load player 1
-    gameInfo->team1[0]->load();
-    gameInfo->team1[0]->setInput(getPlayer1Input());
-    stage->addp1(gameInfo->team1[0]);
-
-    /* for testing, load kfm as player 2 */
-    stage->addp2(loadKfm());
-
+void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
     InputMap<int> gameInput;
     gameInput.set(Keyboard::Key_F1, 10, false, 0);
     gameInput.set(Keyboard::Key_F2, 10, false, 1);
@@ -104,8 +84,6 @@ void MugenOptionVersus::run(bool &endGame){
     
     // Load the stage
     try{
-        stage->load();
-
         /* FIXME: replace hard coded numbers */
         Bitmap work(320,240);
         bool quit = false;
@@ -162,6 +140,43 @@ void MugenOptionVersus::run(bool &endGame){
             }
         }
     } catch (const MugenException &ex){
-	Global::debug(0) << "Problem with stage: " << gameInfo->selectedStage->getName() << " Problem was: " << ex.getReason() << endl;
+	Global::debug(0) << "Problem with stage: " << stage->getName() << " Problem was: " << ex.getReason() << endl;
+    }
+}
+
+void MugenOptionVersus::run(bool &endGame){
+    Bitmap screen(GFX_X, GFX_Y);
+    // Do select screen change back to 2 once finished testing
+    int ticker = 0;
+
+    /* an ugly way to get the select info file */
+    Mugen::CharacterSelect select(ticker, ((MugenMenu*) getParent())->getSelectInfoFile());
+    select.load();
+    Mugen::SelectedChars * gameInfo = select.run(getText(), 1, true, &screen);
+
+    if (gameInfo == 0){
+        return;
+    }
+
+    pthread_t loader;
+    try{
+        Level::LevelInfo info;
+        info.setLoadingMessage("Loading M.U.G.E.N");
+        Loader::startLoading(&loader, (void*) &info);
+
+        MugenStage * stage = gameInfo->selectedStage;
+        // Load player 1
+        gameInfo->team1[0]->load();
+        gameInfo->team1[0]->setInput(getPlayer1Input());
+        stage->addp1(gameInfo->team1[0]);
+
+        /* for testing, load kfm as player 2 */
+        stage->addp2(loadKfm());
+        stage->load();
+        Loader::stopLoading(loader);
+        runGame(stage, screen);
+    } catch (const MugenException & e){
+        Loader::stopLoading(loader);
+        throw e;
     }
 }

@@ -244,6 +244,7 @@ const int MugenSprite::getHeight(){
 }
 
 void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsigned char palsave1[]){
+    /* TODO: 768 is littered everywhere, replace with a constant */
     ifile.seekg(location + 32, ios::beg);
     if (samePalette){
 	// Lets give it space for the palette
@@ -268,6 +269,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsi
 	    if ( samePalette){
 		memcpy( pcx + (reallength), palsave1, 768);
 	    } else {
+                /* TODO: add an explanation of what group 9000 means here */
 		if (!(groupNumber == 9000 && imageNumber == 1)){
 		    memcpy( pcx + (reallength)-768, palsave1, 768);
 		} 
@@ -279,6 +281,8 @@ void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsi
 void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
     const int placex = (xaxis - this->x );
     const int placey = (yaxis - this->y );
+
+    /* TODO: replace -1 with an enum */
     
     if ( (effects.facing == -1) && (effects.vfacing == 1)){
 	if (effects.trans != NONE){
