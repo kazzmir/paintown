@@ -19,7 +19,7 @@ public:
     MugenArea( const MugenArea &copy );
     ~MugenArea();
 
-    bool collision(const MugenArea & area) const;
+    bool collision(int mx, int my, const MugenArea & area, int ax, int ay) const;
     
     MugenArea & operator=( const MugenArea &copy );
     

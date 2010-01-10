@@ -535,7 +535,7 @@ bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character 
         for (vector<MugenArea>::const_iterator defense_i = defense.begin(); defense_i != defense.end(); defense_i++){
             const MugenArea & attack = *attack_i;
             const MugenArea & defense = *defense_i;
-            if (attack.collision(defense)){
+            if (attack.collision(obj1->getX(), obj1->getY(), defense, obj2->getX(), obj2->getY())){
                 return true;
             }
         }

@@ -926,6 +926,7 @@ const std::string Mugen::Util::probeDef(const std::string &file, const std::stri
     throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file + "'");
 }
 
+/* clean this function up */
 MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int spriteNumber) throw (MugenException){
     
     /* Our sprite */
