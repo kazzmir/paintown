@@ -394,7 +394,7 @@ protected:
 	
 	// Alliance setting
 	enum teams{
-	    Player1Side=5,
+	    Player1Side = 5,
 	    Player2Side
 	};
 	
