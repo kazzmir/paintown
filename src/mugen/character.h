@@ -398,6 +398,9 @@ public:
         virtual void changeState(int state);
 
         virtual void setAnimation(int animation);
+
+        /* true if enemy can hit this */
+        virtual bool canBeHit(Character * enemy);
         
         virtual inline int getAnimation() const {
             return this->currentAnimation;

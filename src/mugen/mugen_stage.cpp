@@ -566,10 +566,12 @@ void MugenStage::physics(Object * player){
 
         for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Character * enemy = (Mugen::Character*) *enem;
-            if (enemy->getAlliance() != mugen->getAlliance()){
+            if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit(mugen)){
                 if (doCollisionDetection(mugen, enemy)){
                     /* do hitdef stuff */
-                    Global::debug(0) << "Collision!" << endl;
+                    // Global::debug(0) << "Collision!" << endl;
+                    /* the hit state */
+                    enemy->changeState(5000);
                 }
             }
         }

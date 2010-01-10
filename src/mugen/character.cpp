@@ -909,6 +909,7 @@ Character::~Character(){
 
 void Character::initialize(){
     currentState = Standing;
+    moveType = Move::Idle;
     previousState = currentState;
     stateType = StateType::Stand;
     currentAnimation = Standing;
@@ -1083,6 +1084,10 @@ static bool isStateDefSection(string name){
     name = Util::fixCase(name);
     return PaintownUtil::matchRegex(name, "state ") ||
            PaintownUtil::matchRegex(name, "statedef ");
+}
+
+bool Character::canBeHit(Character * enemy){
+    return moveType != Move::Hit;
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
