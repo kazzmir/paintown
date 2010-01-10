@@ -59,7 +59,17 @@ std::string Hit = "H";
 
 }
 
+namespace AttackType{
+    std::string Normal = "N";
+    std::string Special = "S";
+    std::string Hyper = "H";
+}
 
+namespace PhysicalAttack{
+    std::string Normal = "A";
+    std::string Throw = "T";
+    std::string Projectile = "P";
+}
 
 namespace PaintownUtil = ::Util;
 
@@ -1380,6 +1390,12 @@ void Character::parseState(Ast::Section * section){
 
             StateController * controller;
 
+            string toString(char x){
+                ostringstream out;
+                out << x;
+                return out.str();
+            }
+
             virtual void onAttributeArray(const Ast::AttributeArray & simple){
                 if (simple == "var"){
                     int index = simple.getIndex();
@@ -1505,6 +1521,37 @@ void Character::parseState(Ast::Section * section){
                     bool control;
                     simple >> control;
                     controller->setControl(control);
+                } else if (simple == "attr"){
+                    string type, attack;
+                    simple >> type >> attack;
+                    if (type == StateType::Stand ||
+                        type == StateType::Crouch ||
+                        type == StateType::Air){
+                        controller->getHit().attribute.state = type;
+                    }
+
+                    if (attack.size() >= 2){
+                        string type = toString(attack[0]);
+                        string physics = toString(attack[1]);
+                        if (type == AttackType::Normal ||
+                            type == AttackType::Special ||
+                            type == AttackType::Hyper){
+                            controller->getHit().attribute.attackType = type;
+                        }
+                        if (physics == PhysicalAttack::Normal ||
+                            physics == PhysicalAttack::Throw ||
+                            physics == PhysicalAttack::Projectile){
+                            controller->getHit().attribute.physics = physics;
+                        }
+                    }
+                } else if (simple == "hitflag"){
+                    string flags;
+                    simple >> flags;
+                    controller->getHit().hitFlag = flags;
+                } else if (simple == "guardflag"){
+                    string flags;
+                    simple >> flags;
+                    controller->getHit().guardFlag = flags;
                 } else {
                     Global::debug(0) << "Unhandled state controller '" << controller->getName() << "' attribute: " << simple.toString() << endl;
                 }
