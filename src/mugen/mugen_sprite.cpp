@@ -36,10 +36,12 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
-    memcpy( this->comments, copy.comments, sizeof(MugenSprite::comments) );
+    memcpy( this->comments, &copy.comments, sizeof(MugenSprite::comments) );
     this->pcx = new char[this->reallength];
-    memcpy(this->pcx, copy.pcx, this->reallength);
-    this->bitmap = new Bitmap(*copy.bitmap);
+    memcpy(this->pcx, &copy.pcx, this->reallength);
+    if (copy.bitmap){
+	this->bitmap = new Bitmap(*copy.bitmap);
+    }
 }
 
 MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
@@ -54,10 +56,12 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
-    memcpy( this->comments, copy.comments, sizeof(MugenSprite::comments) );
+    memcpy( this->comments, &copy.comments, sizeof(MugenSprite::comments) );
     this->pcx = new char[this->reallength];
-    memcpy(this->pcx, copy.pcx, this->reallength);
-    this->bitmap = new Bitmap(*copy.bitmap);
+    memcpy(this->pcx, &copy.pcx, this->reallength);
+    if (copy.bitmap){
+	this->bitmap = new Bitmap(*copy.bitmap);
+    }
     
     return *this;
 }
@@ -67,6 +71,7 @@ bool MugenSprite::operator<( const MugenSprite &copy ){
 }
 
 MugenSprite::~MugenSprite(){
+    /* **FIXME** this needs fixing on determining pcx is empty or not */
     if (pcx){
         delete[] pcx;
         pcx = NULL;

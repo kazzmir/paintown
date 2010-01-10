@@ -1041,6 +1041,7 @@ MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int
 	    break;
 	}
 	
+	Global::debug(1) << "Matching group: (" << groupNumber << ") with (" << sprite->getGroupNumber() << ") | sprite: (" << spriteNumber << ") with (" << sprite->getImageNumber() << ")" << endl;
 	if ((sprite->getGroupNumber() == groupNumber) && (sprite->getImageNumber() == spriteNumber)){
 	    // Create copy
 	    ourSpriteFile = new MugenSprite(*sprite);
@@ -1055,7 +1056,9 @@ MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int
     
     // Destroy sprites
     for (unsigned int i = 0; i < (totalImages + 1); ++i){
-	delete spriteIndex[i];
+	if (spriteIndex[i]){
+	    delete spriteIndex[i];
+	}
     }
     
     //Did we get our file?
