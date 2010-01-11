@@ -144,23 +144,15 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
     }
 }
 
-void MugenOptionVersus::run(bool &endGame){
-    Bitmap screen(GFX_X, GFX_Y);
-    // Do select screen change back to 2 once finished testing
-    int ticker = 0;
-
-    /* an ugly way to get the select info file */
-    Mugen::CharacterSelect select(ticker, ((MugenMenu*) getParent())->getSelectInfoFile());
-    select.load();
-    Mugen::SelectedChars * gameInfo = select.run(getText(), 1, true, &screen);
-
-    if (gameInfo == 0){
-        return;
-    }
+MugenStage * MugenOptionVersus::setupStage(Mugen::SelectedChars * gameInfo){
+    Bitmap background;
+    ((MugenMenu*) getParent())->copyBackground(background);
+    background.resize(GFX_X, GFX_Y);
 
     pthread_t loader;
     try{
         Level::LevelInfo info;
+        info.setBackground(&background);
         info.setLoadingMessage("Loading M.U.G.E.N");
         /* TODO: set the background to some mugen background */
         Loader::startLoading(&loader, (void*) &info);
@@ -175,9 +167,26 @@ void MugenOptionVersus::run(bool &endGame){
         stage->addp2(loadKfm());
         stage->load();
         Loader::stopLoading(loader);
-        runGame(stage, screen);
+        return stage;
     } catch (const MugenException & e){
         Loader::stopLoading(loader);
         throw e;
     }
+}
+
+void MugenOptionVersus::run(bool &endGame){
+    Bitmap screen(GFX_X, GFX_Y);
+    // Do select screen change back to 2 once finished testing
+    int ticker = 0;
+
+    /* an ugly way to get the select info file */
+    Mugen::CharacterSelect select(ticker, ((MugenMenu*) getParent())->getSelectInfoFile());
+    select.load();
+    Mugen::SelectedChars * gameInfo = select.run(getText(), 1, true, &screen);
+
+    if (gameInfo == 0){
+        return;
+    }
+
+    runGame(setupStage(gameInfo), screen);
 }

@@ -3,7 +3,6 @@
 
 #include "menu/menu_option.h"
 #include "util/load_exception.h"
-#include "return_exception.h"
 
 #include <string>
 
@@ -11,6 +10,10 @@ class Token;
 class Configuration;
 class MugenStage;
 class Bitmap;
+
+namespace Mugen{
+    class SelectedChars;
+}
 
 /*! Handles key reconfiguration */
 class MugenOptionVersus: public MenuOption {
@@ -28,6 +31,7 @@ public:
 
 protected:
     void runGame(MugenStage * stage, const Bitmap & screen);
+    MugenStage * setupStage(Mugen::SelectedChars * gameInfo);
     
 private:
 	    

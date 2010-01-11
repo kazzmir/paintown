@@ -63,6 +63,14 @@ void stopLoading(pthread_t thread){
     pthread_join(thread, NULL );
 }
 
+static void setupBackground(const Bitmap & background, int load_x, int load_y, int load_width, int load_height, int infobox_x, int infobox_y, int infoWidth, int infoHeight, const Bitmap & infoBackground, const Bitmap & work){
+    background.Blit(load_x, load_y, load_width, load_height, 0, 0, work);
+    Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2 - Font::getDefaultFont().getHeight(), Bitmap::makeColor( 192, 192, 192 ), background, "Paintown version %s", 0, Global::getVersionString().c_str());
+    Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), background, "Made by Jon Rafkind", 0 );
+    background.BlitToScreen();
+    background.Blit(infobox_x, infobox_y, infoWidth, infoHeight, 0, 0, infoBackground);
+}
+
 void * loadingScreen( void * arg ){
     const int load_x = 80;
     const int load_y = 220;
@@ -120,13 +128,18 @@ void * loadingScreen( void * arg ){
 
     Global::speed_counter = 0;
 
-    { /* force scoping */
+    if (levelInfo.getBackground() != 0){
+        setupBackground(*levelInfo.getBackground(), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
+    } else {
+        setupBackground(Bitmap(levelInfo.loadingBackground()), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
+        /*
         Bitmap background(levelInfo.loadingBackground());
-        background.Blit( load_x, load_y, load_width, load_height, 0, 0, work );
+        background.Blit(load_x, load_y, load_width, load_height, 0, 0, work);
         Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2 - Font::getDefaultFont().getHeight(), Bitmap::makeColor( 192, 192, 192 ), background, "Paintown version %s", 0, Global::getVersionString().c_str());
         Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), background, "Made by Jon Rafkind", 0 );
         background.BlitToScreen();
         background.Blit(infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), 0, 0, infoBackground);
+        */
     }
     bool quit = false;
 

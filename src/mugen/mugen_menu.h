@@ -58,8 +58,7 @@ class MugenMenu : public Menu {
 	/*! do logic, draw whatever */
 	virtual void run();
 	
-    /*! get background */
-    virtual Bitmap *getBackground();
+        virtual void copyBackground(Bitmap & copyTo);
 	
 	/*! get character select */
 	inline Mugen::CharacterSelect *getSelect() { return characterSelect; }

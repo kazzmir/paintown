@@ -13,7 +13,8 @@ LevelInfo::LevelInfo():
 playerPath("players/"),
 name("Level set"),
 _loadingMessage("Loading Paintown"),
-_loadingBackground(Global::titleScreen()){
+_loadingBackground(Global::titleScreen()),
+background(0){
 }
 
 LevelInfo::LevelInfo(const LevelInfo & info){
@@ -22,6 +23,7 @@ LevelInfo::LevelInfo(const LevelInfo & info){
     this->_loadingBackground = info._loadingBackground;
     this->playerPath = info.getPlayerPath();
     this->name = info.getName();
+    this->background = info.getBackground();
 }
     
 LevelInfo & LevelInfo::operator=(const LevelInfo & info){
@@ -30,6 +32,7 @@ LevelInfo & LevelInfo::operator=(const LevelInfo & info){
     this->_loadingBackground = info._loadingBackground;
     this->playerPath = info.getPlayerPath();
     this->name = info.getName();
+    this->background = info.getBackground();
     return *this;
 }
     

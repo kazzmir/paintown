@@ -5,6 +5,7 @@
 #include <vector>
 
 class Token;
+class Bitmap;
 
 namespace Level{
 
@@ -20,6 +21,13 @@ public:
     virtual const std::string & loadingMessage() const;
     virtual const std::string & loadingBackground() const;
     virtual const std::string & getPlayerPath() const;
+    virtual inline void setBackground(const Bitmap * background){
+        this->background = background;
+    }
+
+    virtual inline const Bitmap * getBackground() const {
+        return this->background;
+    }
 
     virtual void setLoadingMessage(const std::string & str);
 
@@ -36,6 +44,7 @@ protected:
     std::string name;
     std::string _loadingMessage;
     std::string _loadingBackground;
+    const Bitmap * background;
 };
 
 // LevelInfo readLevels(const std::string & filename);
