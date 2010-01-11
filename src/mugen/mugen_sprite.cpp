@@ -269,40 +269,42 @@ void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsi
 }
 
 void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
-    const int placex = (xaxis - this->x );
-    const int placey = (yaxis - this->y );
+    const int normalX = (xaxis - this->x);
+    const int normalY = (yaxis - this->y);
+    const int flippedX = (xaxis - bmp.getWidth() + this->x);
+    const int flippedY = (yaxis - bmp.getHeight() + this->y);
 
     /* TODO: replace -1 with an enum */
     
     if ( (effects.facing == -1) && (effects.vfacing == 1)){
 	if (effects.trans != NONE){
-	    bmp.drawTransHFlip(placex + bmp.getWidth(), placey, where);
+	    bmp.drawTransHFlip(flippedX, normalY, where);
 	} else {
-	    bmp.drawHFlip(placex + bmp.getWidth(), placey, where);
+	    // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
+	    bmp.drawHFlip(flippedX, normalY, where);
 	}
 	
     } else if ( (effects.vfacing == -1) && (effects.facing == 1)){
 	if (effects.trans != NONE){
-	    bmp.drawTransVFlip(placex, placey - bmp.getHeight(), where);
+	    bmp.drawTransVFlip(normalX, flippedY, where);
 	} else {
-	    bmp.drawVFlip(placex, placey - bmp.getHeight(), where);
+	    bmp.drawVFlip(normalX, flippedY, where);
 	}
-    } else if ( (effects.vfacing == -1) && (effects.facing == -1) ){
+    } else if ((effects.vfacing == -1) && (effects.facing == -1)){
 	if (effects.trans != NONE){
-	    bmp.drawTransHVFlip(placex + bmp.getWidth(), placey - bmp.getHeight(), where);
+	    bmp.drawTransHVFlip(flippedX, flippedY, where);
 	} else {
-	    bmp.drawHVFlip(placex + bmp.getWidth(), placey - bmp.getHeight(), where);
+	    bmp.drawHVFlip(flippedX, flippedY, where);
 	}
     } else{
 	//if( effects.mask ){
 	if (effects.trans != NONE){
-	    bmp.drawTrans( placex,placey, where );
+	    bmp.drawTrans(normalX, normalY, where);
 	} else {
-	    bmp.draw( placex,placey, where );
+	    bmp.draw(normalX, normalY, where);
 	}
 	//} else {
 	//    bmp.Blit( placex, placey, where );
 //	}
     }
 }
-

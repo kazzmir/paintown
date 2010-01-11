@@ -581,13 +581,15 @@ void MugenMenu::run(){
     }
 }
 
-/*! get background */
+/* get background */
 Bitmap *MugenMenu::getBackground(){
+    /*
     Bitmap temp = Bitmap::temporaryBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&temp);
     return &temp;
+    */
+    return 0;
 }
-
 
 void MugenMenu::cleanup(){
     
