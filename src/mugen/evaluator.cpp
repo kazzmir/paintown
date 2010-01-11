@@ -63,6 +63,9 @@ public:
 
     /* value1 == value2 */
     RuntimeValue same(const RuntimeValue & value1, const RuntimeValue & value2){
+        if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
+            throw MugenException("invalid value");
+        }
         switch (value1.type){
             case RuntimeValue::ListOfString : {
                 switch (value2.type){
