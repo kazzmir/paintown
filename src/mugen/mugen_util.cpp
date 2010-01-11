@@ -279,7 +279,6 @@ public:
     filename(filename),
     currentSprite(0){
         /* 16 skips the header stuff */
-        location = 16;
         sffStream.open(filename.c_str(), ios::binary);
         if (!sffStream){
             throw MugenException("Could not open SFF file: '" + filename + "'");
@@ -287,9 +286,10 @@ public:
 
         filesize = computeFileSize(filename);
 
-        /* Lets go ahead and skip the crap -> (Elecbyte signature and version)
-         * start at the 16th byte
+        /* TODO: read the first 16 bytes to get the version info.
+         * Data starts at the 16th byte.
          */
+        location = 16;
         sffStream.seekg(location,ios::beg);
         /* FIXME: change these to uint32 or whatever */
         unsigned long totalGroups = 0;
@@ -316,7 +316,6 @@ public:
 
         Global::debug(2) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
-        // MugenSprite *spriteIndex[totalImages + 1];
         spriteIndex = new MugenSprite*[totalImages + 1];
 
         // Palette related
@@ -328,14 +327,6 @@ public:
         if (Mugen::Util::readPalette(palette, palsave1)){
             useact = true;
         }
-
-        /*
-        if (location < 512 || location > 2147482717){
-            location = 512;
-        } else {
-            location = suboffset;
-        }
-        */
     }
 
     virtual ~SffReader(){
@@ -349,14 +340,15 @@ public:
             throw MugenException("Error in SFF file: " + filename + ". Offset of image beyond the end of the file.");
         }
 
-        MugenSprite * sprite = new MugenSprite();//readSprite(ifile, location);    
+        MugenSprite * sprite = new MugenSprite();
         sprite->read(sffStream, location);
 
         if (sprite->getLength() == 0){ // Lets get the linked sprite
             // This is linked
             islinked = true;
             /* Lets check if this is a duplicate sprite if so copy it
-             * if prev is larger than index then this file is corrupt */
+             * if prev is larger than index then this file is corrupt
+             */
             if (sprite->getPrevious() >= currentSprite){
                 throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
             }
@@ -383,8 +375,7 @@ public:
                     std::ostringstream st;
                     st << "Image " << currentSprite << "(" << sprite->getGroupNumber() << "," << sprite->getImageNumber() << ") : circular definition or forward linking. Aborting.\n"; 
                     throw MugenException( st.str() );
-                }
-                else{
+                } else {
                     if(sprite->getLength() == 0){
                         sprite->setPrevious(temp->getPrevious());
                     } else {
@@ -399,20 +390,7 @@ public:
 
         try{
             sprite->loadPCX(sffStream, islinked, useact, palsave1);
-
-            // Add to our lists
             spriteIndex[currentSprite] = sprite;
-            // Check if the sprite exists already so we can delete it and overwrite
-            /*
-            Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
-            if (first_it != sprites.end()){
-                std::map< unsigned int, MugenSprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
-                if (it != first_it->second.end()){
-                    delete it->second;
-                }
-            }
-            sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = sprite;
-            */
             location = sprite->getNext();
 
             if (!location){
@@ -427,8 +405,6 @@ public:
         } catch (const LoadException & le){
             /* ignore this error?? */
             location = sprite->getNext();
-            // Global::debug(0) << "Could not load sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << endl;
-            // sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = 0;
             spriteIndex[currentSprite] = 0;
             currentSprite += 1;
             delete sprite;
@@ -436,20 +412,6 @@ public:
             out << "Could not load sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << ": " << le.getReason() << endl;
             throw MugenException(out.str());
         }
-        /*
-        // Dump to file just so we can test the pcx in something else
-        if( Global::getDebug() == 3 ){
-        std::ostringstream st;
-        st << "pcxdump/g" << sprite->getGroupNumber() << "i" << sprite->getImageNumber() << ".pcx";
-        FILE *pcx;
-        if( (pcx = fopen( st.str().c_str(), "wb" )) != NULL ){
-        size_t bleh = fwrite( sprite->pcx, sprite->newlength, 1, pcx );
-        bleh = bleh;
-        fclose( pcx );
-        }
-        }
-        */
-        // Set the next file location
     }
 
     bool moreSprites(){
@@ -720,6 +682,7 @@ void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std:
 	    // next sprite
 	    MugenSound *temp = new MugenSound();
 	    
+            /* FIXME: change 4 to sizeof(...) */
 	    ifile.read( (char *)&temp->next, 4 );
 	    ifile.read( (char *)&temp->length, 4 );
 	    ifile.read( (char *)&temp->groupNumber, 4 );
