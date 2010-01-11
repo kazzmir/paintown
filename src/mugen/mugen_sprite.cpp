@@ -167,17 +167,19 @@ void MugenSprite::render(int facing, int vfacing, const int xaxis, const int yax
     }
 }
 */
-void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, Mugen::Effects &effects){
+void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, const Mugen::Effects &effects){
+    /*
     if (!bitmap){
 	load();
     }
+    */
     
     // temp for scaling
     Bitmap modImage = Bitmap::temporaryBitmap(bitmap->getWidth() * effects.scalex, bitmap->getHeight() * effects.scaley);
     bitmap->Stretch(modImage);
     
     // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
-    switch( effects.trans ){
+    switch (effects.trans){
 	case ADDALPHA:{
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
 	    Bitmap::transBlender( 255, 255, 255, effects.alphalow );
@@ -212,7 +214,7 @@ void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, Mugen:
 
 void MugenSprite::load(bool mask){
     if (!bitmap){
-	bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength),mask);
+	bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
     }
 }
 
@@ -220,26 +222,32 @@ void MugenSprite::reload(bool mask){
     if (bitmap){
 	delete bitmap;
     }
-    bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength),mask);
+    bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
 }
 
 // get bitmap
 Bitmap *MugenSprite::getBitmap(){
+    /*
     if (!bitmap){
 	load();
     }
+    */
     return bitmap;
 }
 const int MugenSprite::getWidth(){
+    /*
     if (!bitmap){
 	load();
     }
+    */
     return bitmap->getWidth();
 }
 const int MugenSprite::getHeight(){
+    /*
     if (!bitmap){
 	load();
     }
+    */
     return bitmap->getHeight();
 }
 
@@ -249,7 +257,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsi
     if (samePalette){
 	// Lets give it space for the palette
 	Global::debug(1) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
-	newlength+= 768;
+	newlength += 768;
 	pcx = new char[newlength];
     }
     else {
@@ -276,6 +284,8 @@ void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsi
 	    }
 	}
     }
+    
+    load();
 }
 
 void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){

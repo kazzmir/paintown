@@ -162,6 +162,7 @@ void MugenOptionVersus::run(bool &endGame){
     try{
         Level::LevelInfo info;
         info.setLoadingMessage("Loading M.U.G.E.N");
+        /* TODO: set the background to some mugen background */
         Loader::startLoading(&loader, (void*) &info);
 
         MugenStage * stage = gameInfo->selectedStage;

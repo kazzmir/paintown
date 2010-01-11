@@ -182,7 +182,21 @@ void MugenAnimation::logic(){
     }
 }
 
-void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, double scaley ){
+void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, Bitmap & work, double scalex, double scaley, const Mugen::Effects & effects){
+    const int placex = xaxis+frames[position]->xoffset;
+    const int placey = yaxis+frames[position]->yoffset;
+    frame->sprite->render(placex, placey, work, effects);
+
+    if (showDefense){
+        renderCollision(frame->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor(0, 255, 0));
+    }
+
+    if (showOffense){
+        renderCollision(frame->attackCollision, work, xaxis, yaxis, Bitmap::makeColor(255,0,0 ));
+    }
+}
+
+void MugenAnimation::render(int xaxis, int yaxis, Bitmap &work, double scalex, double scaley){
     if (position >= frames.size()){
         return;
     }
@@ -190,6 +204,10 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
     if (frames[position]->sprite == 0){
 	return;
     }
+
+    renderFrame(frames[position], xaxis, yaxis, work, scalex, scaley, frames[position]->effects);
+
+#if 0
     // Modify with frame adjustment
     const int placex = xaxis+frames[position]->xoffset;
     const int placey = yaxis+frames[position]->yoffset;
@@ -208,6 +226,7 @@ void MugenAnimation::render( int xaxis, int yaxis, Bitmap &work, double scalex, 
         /* FIXME: do something sensible here */
         frames[position]->sprite = 0;
     }
+#endif
 }
 
 void MugenAnimation::render( const int facing, const int vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex, const double scaley ){
@@ -218,6 +237,7 @@ void MugenAnimation::render( const int facing, const int vfacing, const int xaxi
     if (frames[position]->sprite == 0){
 	return;
     }
+
     // Override flip and set back to original when done
     const int horizontal = frames[position]->effects.facing;
     const int vertical = frames[position]->effects.vfacing;

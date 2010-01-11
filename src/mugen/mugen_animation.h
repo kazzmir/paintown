@@ -149,6 +149,10 @@ class MugenAnimation{
         }
 
         int animationTime() const;
+
+    protected:
+
+        void renderFrame(MugenFrame * frame, int xaxis, int yaxis, Bitmap & work, double scalex, double scaley, const Mugen::Effects & effects);
 	
     private:
 	

@@ -25,7 +25,7 @@ class MugenSprite{
 	// Render sprite
 	//void render(const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
 	//void render(int facing, int vfacing, const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
-	void render(const int xaxis, const int yaxis, Bitmap &where, Mugen::Effects &effects);
+	void render(const int xaxis, const int yaxis, Bitmap &where, const Mugen::Effects &effects);
 	
 	// load/reload sprite
 	void load(bool mask=true);

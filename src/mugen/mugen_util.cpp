@@ -260,6 +260,16 @@ bool Mugen::Util::readPalette(const string &filename, unsigned char *pal){
     return false;
 }
 
+/* maybe move this to Filesystem */
+static int computeFileSize(const string & path){
+    // Lets get the filesize
+    FILE * stream = fopen(path.c_str(), "r" );
+    fseek(stream, 0, SEEK_END);
+    int filesize = ftell(stream);
+    fclose(stream);
+    return filesize;
+}
+
 void Mugen::Util::readSprites(const string & filename, const string & palette, Mugen::SpriteMap & sprites) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
@@ -269,12 +279,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
 	throw MugenException("Could not open SFF file: '" + filename + "'");
     }
     
-    // Lets get the filesize
-    FILE *tempstream = fopen( filename.c_str(), "r" );
-    fseek( tempstream, 0, SEEK_END );
-    int filesize = ftell( tempstream );
-    fclose( tempstream );
-    
+    int filesize = computeFileSize(filename);
 
     /* Lets go ahead and skip the crap -> (Elecbyte signature and version)
      * start at the 16th byte
@@ -315,16 +320,15 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
     if( location < 512 || location > 2147482717 )location = 512;
     else location = suboffset;
     
-    
     for (unsigned int i = 0; i < totalImages; ++i){
-	if( location > filesize ){
+	if (location > filesize){
 	    throw MugenException("Error in SFF file: " + filename + ". Offset of image beyond the end of the file.");
 	}
 	
         MugenSprite * sprite = new MugenSprite();//readSprite(ifile, location);    
 	sprite->read(ifile,location);
 	
-	if( sprite->getLength() == 0 ){ // Lets get the linked sprite
+	if (sprite->getLength() == 0){ // Lets get the linked sprite
 	    // This is linked
 	    islinked = 1;
 	    /* Lets check if this is a duplicate sprite if so copy it
@@ -413,19 +417,29 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
 	}
 	*/
 	
-	sprite->loadPCX(ifile,islinked,useact,palsave1);
-	
-	// Add to our lists
-	spriteIndex[i] = sprite;
-	// Check if the sprite exists already so we can delete it and overwrite
-	Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
-	if (first_it != sprites.end()){
-	    std::map< unsigned int, MugenSprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
-	    if (it != first_it->second.end()){
-		delete it->second;
-	    }
-	}
-	sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = sprite;
+        try{
+            sprite->loadPCX(ifile, islinked, useact, palsave1);
+            
+            // Add to our lists
+            spriteIndex[i] = sprite;
+            // Check if the sprite exists already so we can delete it and overwrite
+            Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
+            if (first_it != sprites.end()){
+                std::map< unsigned int, MugenSprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
+                if (it != first_it->second.end()){
+                    delete it->second;
+                }
+            }
+            sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = sprite;
+            location = sprite->getNext();
+        } catch (const LoadException & le){
+            /* ignore this error?? */
+            location = sprite->getNext();
+            Global::debug(0) << "Could not load sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << endl;
+            sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = 0;
+            spriteIndex[i] = 0;
+            delete sprite;
+        }
 	/*
 	// Dump to file just so we can test the pcx in something else
 	if( Global::getDebug() == 3 ){
@@ -440,7 +454,6 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
 	}
 	*/
 	// Set the next file location
-	location = sprite->getNext();
 	
 	if( !location ){
 	    Global::debug(1) << "End of Sprites or File. Continuing...." << endl;
@@ -1038,7 +1051,7 @@ MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int
 	if ((sprite->getGroupNumber() == groupNumber) && (sprite->getImageNumber() == spriteNumber)){
 	    // Create copy
 	    ourSpriteFile = new MugenSprite(*sprite);
-	    ourSpriteFile->loadPCX(ifile,islinked,useact,palsave1);
+	    ourSpriteFile->loadPCX(ifile, islinked, useact, palsave1);
 	    break;
 	}
 	
@@ -1100,6 +1113,7 @@ vfacing(1),
 scalex(1),
 scaley(1){
 }
+
 const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->trans = e.trans;
     this->alphalow = e.alphalow;
@@ -1111,6 +1125,6 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->scaley = e.scaley;
     return *this;
 }
+
 Mugen::Effects::~Effects(){
 }
-
