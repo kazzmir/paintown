@@ -93,6 +93,9 @@ namespace PhysicalAttack{
 class Character;
 
 struct HitDefinition{
+    HitDefinition():
+    hitFlag("MAF"){
+    }
     /*
      * Required parameters:
      * attr = hit_attribute (string)
@@ -261,75 +264,191 @@ struct HitDefinition{
 
     /* air.hittime = hit_time (int)
     * Time that p2 stays in the hit state after being hit in or into the air, before being able to guard again. This parameter has no effect if the "fall" parameter is set to 1. Defaults to 20 if omitted.
-    * guard.ctrltime = ctrl_time (int)
+    */
+    int airHitTime;
+
+    /* guard.ctrltime = ctrl_time (int)
     * This is the time before p2 regains control in the ground guard state. Defaults to the same value as "guard.slidetime" if omitted.
-    * guard.dist = x_dist (int)
+    */
+    int guardControlTime;
+
+    /* guard.dist = x_dist (int)
     * This is the x-distance from P1 in which P2 will go into a guard state if P2 is holding the direction away from P1. Defaults to the value in the player variables if omitted. You normally do not need to use this parameter.
-    * yaccel = accel (float)
+    */
+    int guardDistance;
+
+    /* yaccel = accel (float)
     * Specifies the y acceleration to impart to P2 if the hit connects. Defaults to .35 in 240p, .7 in 480p, 1.4 in 720p.
-    * ground.velocity = x_velocity, y_velocity (float, float)
+    */
+    double yAccleration;
+
+    /* ground.velocity = x_velocity, y_velocity (float, float)
     * Initial velocity to give P2 after being hit, if P2 is on the ground. If y_velocity is not zero, P2 will be knocked into the air. Both values default to 0 if omitted. You can leave out the y_velocity if you want P2 to remain on the ground.
-    * guard.velocity = x_velocity (float)
+    */
+    struct GroundVelocity{
+        GroundVelocity():
+            x(0), y(0){}
+        double x, y;
+    } groundVelocity;
+
+    /* guard.velocity = x_velocity (float)
     * Velocity to give P2 if P2 guards the hit on the ground. Defaults to the x_velocity value of the "ground.velocity" parameter if omitted.
-    * air.velocity = x_velocity, y_velocity (float, float)
+    */
+    double guardVelocity;
+
+    /* air.velocity = x_velocity, y_velocity (float, float)
     * Initial velocity to give P2 if P2 is hit in the air. Defaults to 0,0 if omitted.
-    * airguard.velocity = x_velocity, y_velocity (float float)
+    */
+    struct AirVelocity{
+        double x, y;
+    } airVelocity;
+
+    /* airguard.velocity = x_velocity, y_velocity (float float)
     * Velocity to give P2 if P2 guards the hit in the air. Defaults to x_velocity * 1.5, y_velocity / 2, where x_velocity and y_velocity are values of the "air.velocity" parameter.
-    * ground.cornerpush.veloff = x_velocity (float)
+    */
+    struct AirGuardVelocity{
+        double x, y;
+    } airGuardVelocity;
+
+    /* ground.cornerpush.veloff = x_velocity (float)
     * Determines the additional velocity (velocity offset) to impart to the player if he lands a ground hit in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. If omitted, default value depends on the attr parameter. If arg1 of attr is "A", default value is 0. Otherwise, defaults to 1.3 * guard.velocity.
-    * air.cornerpush.veloff = x_velocity (float)
+    */
+    double groundCornerPushoff;
+
+    /* air.cornerpush.veloff = x_velocity (float)
     * Determines the additional velocity (velocity offset) to impart to the player if he lands a hit to an aerial opponent in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to ground.cornerpush.veloff if omitted.
-    * down.cornerpush.veloff = x_velocity (float)
+    */
+    double airCornerPushoff;
+
+    /* down.cornerpush.veloff = x_velocity (float)
     * Determines the additional velocity (velocity offset) to impart to the player if he lands a hit on a downed opponent in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to ground.cornerpush.veloff if omitted.
-    * guard.cornerpush.veloff = x_velocity (float)
+    */
+    double downCornerPushoff;
+
+    /* guard.cornerpush.veloff = x_velocity (float)
     * Determines the additional velocity (velocity offset) to impart to the player if his hit is guarded in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to ground.cornerpush.veloff if omitted.
-    * airguard.cornerpush.veloff = x_velocity (float)
+    */
+    double guardCornerPushoff;
+
+    /* airguard.cornerpush.veloff = x_velocity (float)
     * Determines the additional velocity (velocity offset) to impart to the player if his hit is guarded in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to guard.cornerpush.veloff if omitted.
-    * airguard.ctrltime = ctrl_time (int)
+    */
+    double airGuardCornerPushoff;
+
+    /* airguard.ctrltime = ctrl_time (int)
     * This is the time before p2 regains control in the air guard state. Defaults to the same value as "guard.ctrltime" if omitted.
-    * air.juggle = juggle_points (int)
+    */
+    int airGuardControlTime;
+
+    /* air.juggle = juggle_points (int)
     * The amount of additional juggle points the hit requires. Not to be confused with the "juggle" parameter in the StateDef. You typically do not need this parameter, except for HitDefs of projectiles. Defaults to 0 if omitted.
-    * mindist = x_pos, y_pos (int, int)
+    */
+    int airJuggle;
+
+    /* mindist = x_pos, y_pos (int, int)
     * See below.
     * maxdist = x_pos, y_pos (int, int)
     * These let you control the minimum and maximum distance of P2 relative to P1, after P2 has been hit. These parameters are not commonly used. Defaults to no change in P2's position if omitted.
-    * snap = x_pos, y_pos (int, int)
+    */
+    struct Distance{
+        int x, y;
+    };
+
+    Distance minimum, maximum;
+
+    /* snap = x_pos, y_pos (int, int)
     * This moves P2 to the specified position relative to P1 if hit. This parameter is not normally used. If you want to snap P2 to a particular position for a throw, it is recommended you use a "TargetBind" controller in P1's throwing state instead. Defaults to no change in P2's position if omitted.
-    * p1sprpriority = drawing_priority (int)
+    */
+    Distance snap;
+
+    /* p1sprpriority = drawing_priority (int)
     * This is the drawing priority of P1's sprite if the move hits or is guarded by P2. Together with the p2sprpriority parameter, it controls whether or not P1 is drawn in front of or behind P2. The default value is 1.
-    * p2sprpriority = drawing_priority (int)
+    */
+    int player1SpritePriority;
+
+    /* p2sprpriority = drawing_priority (int)
     * This is the drawing priority of P2's sprite if the move hits or is guarded by P2. The default value is 0.
-    * p1facing = facing (int)
+    */
+    int player2SpritePriority;
+
+    /* p1facing = facing (int)
     * Set to -1 to make P1 turn around if the hit is successful. The default value is no change in where P1 is facing.
-    * p1getp2facing = facing (int)
+    */
+    int player1Facing;
+
+    /* p1getp2facing = facing (int)
     * Set to 1 to have P1 face in the same direction as P2 is facing after the hit connects, and -1 to have P1 face the opposite direction from P2. Defaults to 0 (no change). If nonzero, this parameter takes precedence over p1facing.
-    * p2facing = facing (int)
+    */
+    int player1GetPlayer2Facing;
+
+    /* p2facing = facing (int)
     * Set to 1 to make P2 face the same direction as P1 if the hit is successful, -1 to make P2 face away. The default value is 0, no change in where P2 is facing.
-    * p1stateno = state_no (int)
+    */
+    int player2Facing;
+
+    /* p1stateno = state_no (int)
     * This is the number of the state to set P1 to if the hit is successful. The state must be an attack state (movetype = A) for at least 1 tick. Used mainly for throws. Defaults to -1, no change.
-    * p2stateno = state_no (int)
+    */
+    int player1State;
+
+    /* p2stateno = state_no (int)
     * This is the number of the state to set P2 to if the hit is successful. P2 will get P1's state and animation data. P2 will retain P1's states and animation data until P2 is hit, or a SelfState controller is used to return P2 to his own states. The state must be a get-hit state (movetype = H) for at least 1 tick. Used mainly for throws; can also be used for custom hit reactions. Defaults to -1, no change.
-    * p2getp1state = bvalue (boolean)
+    */
+    int player2State;
+
+    /* p2getp1state = bvalue (boolean)
     * Set to 0 to prevent P2 from getting P1's state and animation data, in case you do not want that default behaviour of the "p2stateno" parameter. Defaults to 1 if the "p2stateno" parameter is used. Ignored otherwise.
-    * forcestand = bvalue (boolean)
+    */
+    int player2GetPlayer1State;
+
+    /* forcestand = bvalue (boolean)
     * Set to 1 to force P2 to a standing state-type if the hit is successful, and P2 is in a crouching state. Has no effect if P2 is in an air state. Normally defaults to 0, but if the y_velocity of the "ground.velocity" parameter is non-zero, it defaults to 1.
-    * fall = bvalue (boolean)
-    * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air). Use if you want a move to "knock down" P2. Defaults to 0.
-    * fall.xvelocity = x_velocity (float)
-    * This is the x-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to no change if omitted.
-    * fall.yvelocity = y_velocity (float)
-    * This is the y-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to -4.5 in 240p, -9 in 480p, -18 in 720p.
-    * fall.recover = bvalue (boolean)
-    * Set to 0 if you do not want P2 to be able to recover from the "fall" state. Defaults to 1 if omitted (can recover).
-    * fall.recovertime = recover_time (int)
-    * This is the time that must pass before P2 is able to recover from the "fall" state by inputting his recovery command. Does not include the time that P2 is paused for while shaking from the hit. Defaults to 4 if omitted.
-    * fall.damage = damage_amt (int)
-    * Indicates the amount of damage to deal when P2 hits the ground out of a falling state. Defaults to 0 if omitted.
-    * air.fall = bvalue (boolean)
-    * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air) if hit while P2 is in the air. Defaults to the same value as fall.
-    * forcenofall = bvalue (boolean)
-    * Set to 1 to force P2 out of a "fall" state, if he is in one. This parameter has no effect on P2 if he is not in a "fall" state. This parameter is ignored if the "fall" parameter is set to 1. Defaults to 0 if omitted.
-    * down.velocity = x_velocity, y_velocity (float, float)
+    */
+    int forceStand;
+
+    struct Fall{
+        /* fall = bvalue (boolean)
+         * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air). Use if you want a move to "knock down" P2. Defaults to 0.
+         */
+        int fall;
+
+        /* fall.xvelocity = x_velocity (float)
+         * This is the x-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to no change if omitted.
+         */
+        double xVelocity;
+
+        /* fall.yvelocity = y_velocity (float)
+         * This is the y-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to -4.5 in 240p, -9 in 480p, -18 in 720p.
+         */
+        double yVelocity;
+
+        /* fall.recover = bvalue (boolean)
+         * Set to 0 if you do not want P2 to be able to recover from the "fall" state. Defaults to 1 if omitted (can recover).
+         */
+        int recover;
+
+         /* fall.recovertime = recover_time (int)
+         * This is the time that must pass before P2 is able to recover from the "fall" state by inputting his recovery command. Does not include the time that P2 is paused for while shaking from the hit. Defaults to 4 if omitted.
+         */
+        int recoverTime;
+
+        /* fall.damage = damage_amt (int)
+         * Indicates the amount of damage to deal when P2 hits the ground out of a falling state. Defaults to 0 if omitted.
+         */
+        int damage;
+
+         /* air.fall = bvalue (boolean)
+         * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air) if hit while P2 is in the air. Defaults to the same value as fall.
+         */
+        int airFall;
+
+         /* forcenofall = bvalue (boolean)
+         * Set to 1 to force P2 out of a "fall" state, if he is in one. This parameter has no effect on P2 if he is not in a "fall" state. This parameter is ignored if the "fall" parameter is set to 1. Defaults to 0 if omitted.
+         */
+        int forceNoFall;
+    } fall;
+
+    /* down.velocity = x_velocity, y_velocity (float, float)
     * This is the velocity to assign P2 if P2 is hit while lying down. If the y_velocity is non-zero, P2 will be hit into the air. If it is zero, then P2 will slide back on the ground. Defaults to the same values as the "air.velocity" parameter if omitted.
     * down.hittime = hit_time (int)
     * This is the time that P2 will slide back for if P2 is hit while lying down. This parameter is ignored if the y_velocity is non- zero for the "down.velocity" parameter.
@@ -508,6 +627,10 @@ public:
     virtual void addSystemVariable(int number, Ast::Value * variable);
 
     virtual inline HitDefinition & getHit(){
+        return hit;
+    }
+    
+    virtual inline const HitDefinition & getHit() const {
         return hit;
     }
 
@@ -922,6 +1045,14 @@ public:
 	    debug = !debug;
 	}
 
+        virtual inline void setHitDef(const HitDefinition & hit){
+            this->hit = hit;
+        }
+
+        virtual const HitDefinition & getHit() const {
+            return this->hit;
+        }
+
 protected:
     void initialize();
     
@@ -1166,6 +1297,8 @@ protected:
         /* S (stand), C (crouch), A (air), L (lying down) */
         std::string stateType;
         std::string moveType;
+
+        HitDefinition hit;
 };
 
 }

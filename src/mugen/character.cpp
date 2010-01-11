@@ -312,6 +312,7 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case HitDef : {
+            guy.setHitDef(getHit());
             break;
         }
         case HitFallDamage : {
@@ -1644,6 +1645,91 @@ void Character::parseState(Ast::Section * section){
                     simple >> controller->getHit().groundHitTime;
                 } else if (simple == "guard.hittime"){
                     simple >> controller->getHit().guardGroundHitTime;
+                } else if (simple == "air.hittime"){
+                    simple >> controller->getHit().airHitTime;
+                } else if (simple == "guard.ctrltime"){
+                    simple >> controller->getHit().guardControlTime;
+                } else if (simple == "guard.dist"){
+                    simple >> controller->getHit().guardDistance;
+                } else if (simple == "yaccel"){
+                    simple >> controller->getHit().yAccleration;
+                } else if (simple == "ground.velocity"){
+                    try{
+                        simple >> controller->getHit().groundVelocity.x;
+                        simple >> controller->getHit().groundVelocity.y;
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "guard.velocity"){
+                    simple >> controller->getHit().guardVelocity;
+                } else if (simple == "air.velocity"){
+                    try{
+                        simple >> controller->getHit().airVelocity.x;
+                        simple >> controller->getHit().airVelocity.y;
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "airguard.velocity"){
+                    try{
+                        simple >> controller->getHit().airGuardVelocity.x;
+                        simple >> controller->getHit().airGuardVelocity.y;
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "ground.cornerpush.veloff"){
+                    simple >> controller->getHit().groundCornerPushoff;
+                } else if (simple == "air.cornerpush.veloff"){
+                    simple >> controller->getHit().airCornerPushoff;
+                } else if (simple == "down.cornerpush.veloff"){
+                    simple >> controller->getHit().downCornerPushoff;
+                } else if (simple == "guard.cornerpush.veloff"){
+                    simple >> controller->getHit().guardCornerPushoff;
+                } else if (simple == "airguard.cornerpush.veloff"){
+                    simple >> controller->getHit().airGuardCornerPushoff;
+                } else if (simple == "airguard.ctrltime"){
+                    simple >> controller->getHit().airGuardControlTime;
+                } else if (simple == "air.juggle"){
+                    simple >> controller->getHit().airJuggle;
+                } else if (simple == "mindist"){
+                    simple >> controller->getHit().minimum.x;
+                    simple >> controller->getHit().minimum.y;
+                } else if (simple == "maxdist"){
+                    simple >> controller->getHit().maximum.x;
+                    simple >> controller->getHit().maximum.y;
+                } else if (simple == "snap"){
+                    simple >> controller->getHit().snap.x;
+                    simple >> controller->getHit().snap.y;
+                } else if (simple == "p1sprpriority"){
+                    simple >> controller->getHit().player1SpritePriority;
+                } else if (simple == "p2sprpriority"){
+                    simple >> controller->getHit().player2SpritePriority;
+                } else if (simple == "p1facing"){
+                    simple >> controller->getHit().player1Facing;
+                } else if (simple == "p1getp2facing"){
+                    simple >> controller->getHit().player1GetPlayer2Facing;
+                } else if (simple == "player2Facing"){
+                    simple >> controller->getHit().player2Facing;
+                } else if (simple == "p1stateno"){
+                    simple >> controller->getHit().player1State;
+                } else if (simple == "p2stateno"){
+                    simple >> controller->getHit().player2State;
+                } else if (simple == "p2getp1state"){
+                    simple >> controller->getHit().player2GetPlayer1State;
+                } else if (simple == "forcestand"){
+                    simple >> controller->getHit().forceStand;
+                } else if (simple == "fall"){
+                    simple >> controller->getHit().fall.fall;
+                } else if (simple == "fall.xvelocity"){
+                    simple >> controller->getHit().fall.xVelocity;
+                } else if (simple == "fall.yvelocity"){
+                    simple >> controller->getHit().fall.yVelocity;
+                } else if (simple == "fall.recover"){
+                    simple >> controller->getHit().fall.recover;
+                } else if (simple == "fall.recovertime"){
+                    simple >> controller->getHit().fall.recoverTime;
+                } else if (simple == "fall.damage"){
+                    simple >> controller->getHit().fall.damage;
+                } else if (simple == "air.fall"){
+                    simple >> controller->getHit().fall.airFall;
+                } else if (simple == "forcenofall"){
+                    simple >> controller->getHit().fall.forceNoFall;
                 } else {
                     Global::debug(0) << "Unhandled state controller '" << controller->getName() << "' attribute: " << simple.toString() << endl;
                 }

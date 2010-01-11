@@ -323,11 +323,15 @@ public:
             } else if (var == "zoff"){
             } else if (var == "xvel"){
             } else if (var == "yvel"){
+                /* FIXME */
+                return RuntimeValue(environment.getCharacter().getHit().groundVelocity.y);
             } else if (var == "yaccel"){
+                return RuntimeValue(environment.getCharacter().getHit().yAccleration);
             } else if (var == "hitid"){
             } else if (var == "chainid"){
             } else if (var == "guarded"){
             } else if (var == "fall"){
+                return RuntimeValue(environment.getCharacter().getHit().fall.fall);
             } else if (var == "fall.damage"){
             } else if (var == "fall.xvel"){
             } else if (var == "fall.yvel"){
