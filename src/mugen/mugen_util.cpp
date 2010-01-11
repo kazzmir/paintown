@@ -414,12 +414,23 @@ public:
             sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = sprite;
             */
             location = sprite->getNext();
+
+            if (!location){
+                Global::debug(1) << "End of Sprites or File. Continuing...." << endl;
+                throw MugenException("No sprites left");
+            }
+
+            Global::debug(2) << "Index: " << currentSprite << ", Location: " << sprite->getLocation()  << ", Next Sprite: "  << sprite->getNext() << ", Length: " << sprite->getRealLength() << ", x|y: " << sprite->getX() << "|" << sprite->getY() << ", Group|Image Number: " << sprite->getGroupNumber() << "|" << sprite->getImageNumber() << ", Prev: " << sprite->getPrevious() << ", Same Pal: " << sprite->getSamePalette() << ", Comments: " << sprite->getComments() << endl;
+
+            currentSprite += 1;
+            return sprite;
         } catch (const LoadException & le){
             /* ignore this error?? */
             location = sprite->getNext();
             // Global::debug(0) << "Could not load sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << endl;
             // sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = 0;
             spriteIndex[currentSprite] = 0;
+            currentSprite += 1;
             delete sprite;
             ostringstream out;
             out << "Could not load sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << ": " << le.getReason() << endl;
@@ -439,14 +450,6 @@ public:
         }
         */
         // Set the next file location
-
-        if (!location){
-            Global::debug(1) << "End of Sprites or File. Continuing...." << endl;
-            throw MugenException("No sprites left");
-        }
-
-        Global::debug(2) << "Index: " << currentSprite << ", Location: " << sprite->getLocation()  << ", Next Sprite: "  << sprite->getNext() << ", Length: " << sprite->getRealLength() << ", x|y: " << sprite->getX() << "|" << sprite->getY() << ", Group|Image Number: " << sprite->getGroupNumber() << "|" << sprite->getImageNumber() << ", Prev: " << sprite->getPrevious() << ", Same Pal: " << sprite->getSamePalette() << ", Comments: " << sprite->getComments() << endl;
-
     }
 
     bool moreSprites(){
@@ -470,6 +473,27 @@ protected:
 }
 
 void Mugen::Util::readSprites(const string & filename, const string & palette, Mugen::SpriteMap & sprites) throw (MugenException){
+    SffReader reader(filename, palette);
+    while (reader.moreSprites()){
+        try{
+            MugenSprite * sprite = reader.readSprite();
+
+            Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
+            if (first_it != sprites.end()){
+                std::map< unsigned int, MugenSprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
+                if (it != first_it->second.end()){
+                    delete it->second;
+                }
+            }
+            sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = sprite;
+        } catch (const MugenException & e){
+            Global::debug(0) << e.getReason() << endl;
+        }
+    }
+}
+
+#if 0
+void Mugen::Util::readSprites2(const string & filename, const string & palette, Mugen::SpriteMap & sprites) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
@@ -668,6 +692,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
     
     //return sprites;
 }
+#endif
 
 void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException){
     /* 16 skips the header stuff */
