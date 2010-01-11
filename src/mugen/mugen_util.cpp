@@ -306,7 +306,6 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
     MugenSprite *spriteIndex[totalImages + 1];
     
     // Palette related
-    int islinked = 0;
     bool useact = false;
     
     //unsigned char colorsave[3]; // rgb pal save
@@ -321,6 +320,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
     else location = suboffset;
     
     for (unsigned int i = 0; i < totalImages; ++i){
+        bool islinked = false;
 	if (location > filesize){
 	    throw MugenException("Error in SFF file: " + filename + ". Offset of image beyond the end of the file.");
 	}
@@ -330,7 +330,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
 	
 	if (sprite->getLength() == 0){ // Lets get the linked sprite
 	    // This is linked
-	    islinked = 1;
+	    islinked = true;
 	    /* Lets check if this is a duplicate sprite if so copy it
 	    * if prev is larger than index then this file is corrupt */
 	    if( sprite->getPrevious() >= i ) throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
@@ -361,7 +361,6 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
 		Global::debug(2) << "Referenced Sprite Location: " << temp->getLocation() << " | Group: " << temp->getGroupNumber() << " | Sprite: " << temp->getGroupNumber() << " | at index: " << sprite->getPrevious() << endl;
 	    }
 	}
-	else islinked = 0;
 	/*
 	// Read in pcx header
 	pcx_header pcxhead;

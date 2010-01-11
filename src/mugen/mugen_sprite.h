@@ -49,7 +49,7 @@ class MugenSprite{
 	inline void setPrevious(const unsigned short p){ prev = p; }
 	inline void setSamePalette(const bool p){ samePalette = p; };
 	
-	void loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsigned char palsave1[]);
+	void loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[]);
 	
 	inline const unsigned long getNext() const { return next; }
 	inline const unsigned long getLocation() const { return location; }

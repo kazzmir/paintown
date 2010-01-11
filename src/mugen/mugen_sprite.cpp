@@ -231,7 +231,7 @@ const int MugenSprite::getHeight(){
     return bitmap->getHeight();
 }
 
-void MugenSprite::loadPCX(std::ifstream & ifile,bool islinked, bool useact, unsigned char palsave1[]){
+void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[]){
     /* TODO: 768 is littered everywhere, replace with a constant */
     ifile.seekg(location + 32, ios::beg);
     if (samePalette){
