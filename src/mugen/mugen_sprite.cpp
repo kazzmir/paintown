@@ -168,12 +168,6 @@ void MugenSprite::render(int facing, int vfacing, const int xaxis, const int yax
 }
 */
 void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, const Mugen::Effects &effects){
-    /*
-    if (!bitmap){
-	load();
-    }
-    */
-    
     // temp for scaling
     Bitmap modImage = Bitmap::temporaryBitmap(bitmap->getWidth() * effects.scalex, bitmap->getHeight() * effects.scaley);
     bitmap->Stretch(modImage);
@@ -225,29 +219,15 @@ void MugenSprite::reload(bool mask){
     bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
 }
 
-// get bitmap
 Bitmap *MugenSprite::getBitmap(){
-    /*
-    if (!bitmap){
-	load();
-    }
-    */
     return bitmap;
 }
+
 const int MugenSprite::getWidth(){
-    /*
-    if (!bitmap){
-	load();
-    }
-    */
     return bitmap->getWidth();
 }
+
 const int MugenSprite::getHeight(){
-    /*
-    if (!bitmap){
-	load();
-    }
-    */
     return bitmap->getHeight();
 }
 

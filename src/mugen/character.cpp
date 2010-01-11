@@ -2327,7 +2327,7 @@ void Character::draw(Bitmap * work, int x_position){
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be 0... */
     if (animation != 0){
-        animation->render(getRX(), getRY(), *work, 0, 0);
+        animation->render(getFacing() == Object::FACING_LEFT, false, getRX(), getRY(), *work, 0, 0);
     }
 }                      
 

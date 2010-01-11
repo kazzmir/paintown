@@ -229,7 +229,7 @@ void MugenAnimation::render(int xaxis, int yaxis, Bitmap &work, double scalex, d
 #endif
 }
 
-void MugenAnimation::render( const int facing, const int vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex, const double scaley ){
+void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex, const double scaley ){
     if (position >= frames.size()){
         return;
     }
@@ -238,6 +238,13 @@ void MugenAnimation::render( const int facing, const int vfacing, const int xaxi
 	return;
     }
 
+    MugenFrame * frame = frames[position];
+    Mugen::Effects effects = frame->effects;
+    effects.facing = (facing ? -1 : 1);
+    effects.vfacing = (vfacing ? -1 : 1);
+
+    renderFrame(frame, xaxis, yaxis, work, scalex, scaley, effects);
+    /*
     // Override flip and set back to original when done
     const int horizontal = frames[position]->effects.facing;
     const int vertical = frames[position]->effects.vfacing;
@@ -248,7 +255,7 @@ void MugenAnimation::render( const int facing, const int vfacing, const int xaxi
     // Set original setting
     frames[position]->effects.facing = horizontal;
     frames[position]->effects.vfacing = vertical;
-    
+    */
 }
 
 void MugenAnimation::forwardFrame(){

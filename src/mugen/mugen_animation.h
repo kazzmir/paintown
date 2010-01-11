@@ -115,7 +115,7 @@ class MugenAnimation{
 	void render( int xaxis, int yaxis, Bitmap &work, double scalex=1, double scaley=1 );
 	
 	// Render current frame overriding flipping
-	void render( const int facing, const int vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex=1, const double scaley=1  );
+	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex=1, const double scaley=1  );
 
         virtual const std::vector<MugenArea> & getDefenseBoxes() const;
         virtual const std::vector<MugenArea> & getAttackBoxes() const;
