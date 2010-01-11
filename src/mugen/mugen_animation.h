@@ -17,7 +17,7 @@ class MugenArea{
 public:
     MugenArea();
     MugenArea( const MugenArea &copy );
-    ~MugenArea();
+    virtual ~MugenArea();
 
     bool collision(int mx, int my, const MugenArea & area, int ax, int ay) const;
     
@@ -90,7 +90,7 @@ class MugenAnimation{
     public:
 	MugenAnimation();
 	MugenAnimation( const MugenAnimation &copy );
-	~MugenAnimation();
+	virtual ~MugenAnimation();
 	
 	// Get next Frame
 	const MugenFrame *getNext();
