@@ -12,6 +12,18 @@ namespace Mugen{
 
 class Character;
 
+struct Range{
+    Range():
+    low(0), high(0){
+    }
+
+    Range(int low, int high):
+    low(low), high(high){
+    }
+
+    int low, high;
+};
+
 struct RuntimeValue{
     enum Type{
         Invalid,
@@ -19,6 +31,7 @@ struct RuntimeValue{
         String,
         Double,
         ListOfString,
+        RangeType,
     };
 
     RuntimeValue():
@@ -50,6 +63,11 @@ struct RuntimeValue{
     strings_value(strings){
     }
 
+    RuntimeValue(int low, int high):
+    type(RangeType),
+    range(low, high){
+    }
+
     inline bool isBool() const {
         return type == Bool;
     }
@@ -60,6 +78,10 @@ struct RuntimeValue{
     
     inline bool isString() const {
         return type == String;
+    }
+
+    inline bool isRange() const {
+        return type == RangeType;
     }
 
     inline bool getBoolValue() const {
@@ -74,11 +96,20 @@ struct RuntimeValue{
         return double_value;
     }
 
+    inline int getRangeLow() const {
+        return range.low;
+    }
+    
+    inline int getRangeHigh() const {
+        return range.high;
+    }
+
     Type type;
     std::string string_value;
     bool bool_value;
     double double_value;
     std::vector<std::string> strings_value;
+    Range range;
 };
 
 class Environment{

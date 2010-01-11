@@ -17,11 +17,19 @@ public:
     low(low),
     high(high){
     }
+    
+    virtual void walk(Walker & walker) const {
+        walker.onRange(*this);
+    }
 
     virtual std::string toString(char left, char right) const {
         std::ostringstream out;
         out << left << low->toString() << ", " << high->toString() << right;
         return out.str();
+    }
+
+    virtual RangeType getRangeType() const {
+        return type;
     }
     
     virtual std::string toString() const {
@@ -32,6 +40,14 @@ public:
             case LeftExclusiveRightInclusive : return toString('(', ']');
             default : return "";
         }
+    }
+
+    virtual const Value * getLow() const {
+        return low;
+    }
+
+    virtual const Value * getHigh() const {
+        return high;
     }
     
     virtual void mark(std::map<const void*, bool> & marks) const {

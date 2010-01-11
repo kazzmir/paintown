@@ -41,6 +41,21 @@ double toNumber(const RuntimeValue & value){
     throw MugenException("Not a number");
 }
 
+int toRangeLow(const RuntimeValue & value){
+    if (value.isRange()){
+        return value.getRangeLow();
+    }
+    throw MugenException("Not a range");
+}
+
+int toRangeHigh(const RuntimeValue & value){
+    if (value.isRange()){
+        return value.getRangeHigh();
+    }
+    throw MugenException("Not a range");
+}
+
+
 bool toBool(const RuntimeValue & value){
     if (value.isBool()){
         return value.getBoolValue();
@@ -93,11 +108,20 @@ public:
                 }
                 break;
             }
+            case RuntimeValue::RangeType : {
+                switch (value2.type){
+                    case RuntimeValue::Double : return same(value2, value1);
+                }
+            }
             case RuntimeValue::Double : {
                 switch (value2.type){
                     case RuntimeValue::Double : {
                         double epsilon = 0.0000001;
                         return RuntimeValue(fabs(value1.getDoubleValue() - value2.getDoubleValue()) < epsilon);
+                    }
+                    case RuntimeValue::RangeType : {
+                        return RuntimeValue(toNumber(value1) > toRangeLow(value2) &&
+                                            toNumber(value1) < toRangeHigh(value2));
                     }
                 }
                 break;
@@ -105,6 +129,23 @@ public:
         }
 
         return RuntimeValue(false);
+    }
+    
+    RuntimeValue evalRange(const Ast::Range & range){
+        int low, high;
+        *range.getLow() >> low;
+        *range.getHigh() >> high;
+        switch (range.getRangeType()){
+            case Ast::Range::AllInclusive : return RuntimeValue(low - 1, high + 1);
+            case Ast::Range::AllExclusive : return RuntimeValue(low, high);
+            case Ast::Range::LeftInclusiveRightExclusive : return RuntimeValue(low - 1, high);
+            case Ast::Range::LeftExclusiveRightInclusive : return RuntimeValue(low, high + 1);
+        }
+        throw MugenException("Unexpected range type");
+    }
+    
+    virtual void onRange(const Ast::Range & range){
+        result = evalRange(range);
     }
    
     RuntimeValue evaluate(const Ast::Value * value){
@@ -126,6 +167,11 @@ public:
         }
 
         if (identifier == "p2statetype"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
+        if (identifier == "movecontact"){
             /* FIXME */
             return RuntimeValue(0);
         }
