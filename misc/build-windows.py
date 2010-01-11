@@ -16,8 +16,10 @@
 
 # This is completely arbitrary but the server and client need to agree on it.
 port = 15421
+# Default network settings
+server_ip = '10.0.2.2'
 # network settings in jon's virtual box 
-server_ip = '192.168.90.2'
+# server_ip = '192.168.90.2'
 quit_message = '**quit**'
 
 # higher numbers of verbose output more stuff
