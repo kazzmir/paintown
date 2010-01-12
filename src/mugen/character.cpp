@@ -432,6 +432,7 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case StateTypeSet : {
+            guy.setMoveType(moveType);
             break;
         }
         case SndPan : {
@@ -1533,6 +1534,10 @@ void Character::parseState(Ast::Section * section){
                     controller->setValue1((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "y"){
                     controller->setValue2((Ast::Value*) simple.getValue()->copy());
+                } else if (simple == "movetype"){
+                    string type;
+                    simple >> type;
+                    controller->setMoveType(type);
                 } else if (simple == "ctrl"){
                     bool control;
                     simple >> control;

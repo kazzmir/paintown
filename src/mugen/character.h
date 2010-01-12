@@ -670,8 +670,13 @@ public:
         return hit;
     }
     
+    /* const version */
     virtual inline const HitDefinition & getHit() const {
         return hit;
+    }
+
+    virtual inline void setMoveType(const std::string & str){
+        this->moveType = str;
     }
 
     virtual ~StateController();
@@ -698,6 +703,7 @@ protected:
     std::map<int, Ast::Value*> systemVariables;
 
     HitDefinition hit;
+    std::string moveType;
 };
 
 /* comes from a StateDef */
