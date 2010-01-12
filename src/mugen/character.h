@@ -426,10 +426,14 @@ struct HitDefinition{
     int forceStand;
 
     struct Fall{
+        Fall():
+            fall(false){
+            }
+
         /* fall = bvalue (boolean)
          * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air). Use if you want a move to "knock down" P2. Defaults to 0.
          */
-        int fall;
+        bool fall;
 
         /* fall.xvelocity = x_velocity (float)
          * This is the x-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to no change if omitted.
