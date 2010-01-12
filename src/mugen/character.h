@@ -112,7 +112,8 @@ struct HitDefinition{
     HitDefinition():
     hitFlag("MAF"),
     animationType(AttackType::Light),
-    groundType(AttackType::None)
+    groundType(AttackType::None),
+    groundHitTime(0)
     {}
     /*
      * Required parameters:
@@ -203,6 +204,8 @@ struct HitDefinition{
      * This is the time that each player will pause on the hit. p1_pausetime is the time to freeze P1, measured in game-ticks. p2_pausetime is the time to make P2 shake before recoiling from the hit. Defaults to 0,0 if omitted.
      */
     struct PauseTime{
+        PauseTime():
+            player1(0), player2(0){}
         int player1;
         int player2;
     } pause;

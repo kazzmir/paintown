@@ -180,11 +180,6 @@ public:
             return RuntimeValue(environment.getCharacter().getCurrentAnimation()->animationTime());
         }
 
-        if (identifier == "animelem"){
-            /* FIXME! */
-            return RuntimeValue(0);
-        }
-
         if (identifier == "hitshakeover"){
             return RuntimeValue(environment.getCharacter().getHitState().shakeTime <= 0);
         }
@@ -404,6 +399,10 @@ public:
             return evaluate(value);
         }
 
+        if (function == "animelem"){
+            unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
+            return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() == index);
+        }
 
         if (function == "ifelse"){
             if (toBool(evaluate(function.getArg1()))){

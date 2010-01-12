@@ -899,6 +899,8 @@ void HitState::update(const HitDefinition & hit){
     yVelocity = hit.groundVelocity.y;
     xVelocity = hit.groundVelocity.x;
     fall = hit.fall.fall;
+
+    // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
 
 Character::Character( const string & s ):
@@ -2414,6 +2416,10 @@ void Character::draw(Bitmap * work, int x_position){
     render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "X %f Y %f", getXVelocity(), getYVelocity());
     y += font.getHeight();
     render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Time %d", getStateTime());
+    y += font.getHeight();
+    if (getMoveType() == Move::Hit){
+        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
+    }
 
     /*
     int color = Bitmap::makeColor(255,255,255);

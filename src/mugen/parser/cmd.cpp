@@ -8249,6 +8249,7 @@ Result rule_function(Stream & stream, const int position){
             if (result_peg_836.error()){
                 goto out_peg_838;
             }
+            arg1 = result_peg_836.getValues();
         
         
         
@@ -8261,7 +8262,8 @@ Result rule_function(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeExpression();
+                /* FIXME: handle function rest */
+                                value = makeFunction(name, arg1);
                 result_peg_836.setValue(value);
             }
         
