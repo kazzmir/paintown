@@ -1053,6 +1053,8 @@ public:
             return this->hit;
         }
 
+        void doHit();
+
 protected:
     void initialize();
     

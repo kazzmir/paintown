@@ -11,6 +11,7 @@
 #include "input/input-manager.h"
 #include "input/input-map.h"
 #include "util/funcs.h"
+#include "factory/font_render.h"
 #include "loading.h"
 
 #include "character.h"
@@ -131,6 +132,10 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
             if (draw){
                 stage->render(&work);
                 work.Stretch(screen);
+
+                FontRender * render = FontRender::getInstance();
+                render->render(&screen);
+    
                 screen.BlitToScreen();
             }
 

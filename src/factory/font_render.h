@@ -68,7 +68,7 @@ public:
 	void addMessage( const Font & f, int x, int y, int fg, int bg, int translucency, const std::string & str );
 	void addMessage( const Font & f, int x, int y, int fg, int bg, const char * str, ... );
 	void addMessage( const char * font_name, int x, int y, int fg, int bg, const std::string & str );
-	void render( Bitmap * work );
+	void render(const Bitmap * work);
 
 private:
 

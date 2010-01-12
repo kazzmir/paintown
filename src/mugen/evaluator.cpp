@@ -187,12 +187,12 @@ public:
 
         if (identifier == "hitshakeover"){
             /* FIXME */
-            return RuntimeValue(1);
+            return RuntimeValue(0);
         }
 
         if (identifier == "hitover"){
             /* FIXME */
-            return RuntimeValue(1);
+            return RuntimeValue(0);
         }
 
         if (identifier == "hitfall"){

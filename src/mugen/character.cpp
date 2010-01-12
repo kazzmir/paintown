@@ -18,6 +18,7 @@
 #include "util/funcs.h"
 #include "util/font.h"
 #include "util/file-system.h"
+#include "factory/font_render.h"
 
 #include "mugen_animation.h"
 #include "mugen_item.h"
@@ -28,6 +29,7 @@
 #include "mugen_reader.h"
 #include "mugen_sprite.h"
 #include "mugen_util.h"
+#include "mugen_stage.h"
 #include "globals.h"
 #include "state.h"
 #include "evaluator.h"
@@ -2270,6 +2272,13 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     }
 }
 
+void Character::doHit(){
+    changeState(5000);
+    vector<string> active;
+    while (doStates(active, currentState)){
+    }
+}
+
 /* returns true if a state change occured */
 bool Character::doStates(const vector<string> & active, int stateNumber){
     int oldState = getCurrentState();
@@ -2316,13 +2325,25 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
 }
 
 void Character::draw(Bitmap * work, int x_position){
-    const Font & font = Font::getFont(Filesystem::find("/fonts/arial.ttf"), 10, 10);
-    int x = 300;
-    int y = 80;
+    const Font & font = Font::getFont(Filesystem::find("/fonts/arial.ttf"), 18, 18);
+    int x = 0;
+    if (getAlliance() == MugenStage::Player2Side){
+        x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
+    }
+    int y = 1;
+    FontRender * render = FontRender::getInstance();
+    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "State %d Animation %d", getCurrentState(), currentAnimation);
+    y += font.getHeight();
+    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "X %f Y %f", getXVelocity(), getYVelocity());
+    y += font.getHeight();
+    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Time %d", getStateTime());
+
+    /*
     int color = Bitmap::makeColor(255,255,255);
     font.printf( x, y, color, *work, "State %d Animation %d", 0,  getCurrentState(), currentAnimation);
     font.printf( x, y + font.getHeight() + 1, color, *work, "X %f Y %f", 0, (float) getXVelocity(), (float) getYVelocity());
     font.printf( x, y + font.getHeight() * 2 + 1, color, *work, "Time %d", 0, getStateTime());
+    */
 
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be 0... */

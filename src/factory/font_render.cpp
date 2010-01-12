@@ -50,7 +50,7 @@ void FontRender::destroy(){
 		delete my_render;
 }
 
-void FontRender::render( Bitmap * work ){
+void FontRender::render(const Bitmap * work ){
 	for ( vector<render_message>::iterator it = messages.begin(); it != messages.end(); it++ ){
 		const render_message & r = *it;
 

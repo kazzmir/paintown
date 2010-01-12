@@ -127,6 +127,13 @@ public:
 	
     static const std::string getStageName(const std::string &filename) throw (MugenException);
 
+    // Alliance setting
+    enum teams{
+        Player1Side = 5,
+        Player2Side
+    };
+	
+
 protected:
     struct cymk_holder{
         cymk_holder():c(0),m(0),y(0),k(0){}
@@ -145,7 +152,7 @@ protected:
     void updatePlayer(Object *o);
     void physics(Object * o);
     bool doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2);
-	
+
 protected:
 
 	/* Location is the directory passed in ctor
@@ -391,12 +398,6 @@ protected:
 	
 	// Debug enabled?
 	bool debugMode;
-	
-	// Alliance setting
-	enum teams{
-	    Player1Side = 5,
-	    Player2Side
-	};
 	
 	void cleanup();
 	bool isaPlayer( Object * o );
