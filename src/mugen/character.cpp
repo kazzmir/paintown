@@ -1559,17 +1559,17 @@ void Character::parseState(Ast::Section * section){
                     string anim;
                     simple >> anim;
                     anim = Util::fixCase(anim);
-                    if (simple == "light"){
+                    if (anim == "light"){
                         controller->getHit().animationType = AttackType::Light;
-                    } else if (simple == "medium"){
+                    } else if (anim == "medium"){
                         controller->getHit().animationType = AttackType::Medium;
-                    } else if (simple == "hard"){
+                    } else if (anim == "hard"){
                         controller->getHit().animationType = AttackType::Hard;
-                    } else if (simple == "back"){
+                    } else if (anim == "back"){
                         controller->getHit().animationType = AttackType::Back;
-                    } else if (simple == "up"){
+                    } else if (anim == "up"){
                         controller->getHit().animationType = AttackType::Up;
-                    } else if (simple == "diagup"){
+                    } else if (anim == "diagup"){
                         controller->getHit().animationType = AttackType::DiagonalUp;
                     } else {
                         Global::debug(0) << "Unknown hitdef animation type " << anim << endl;
@@ -1651,7 +1651,16 @@ void Character::parseState(Ast::Section * section){
                     controller->getHit().guardHitSound.group = group;
                     controller->getHit().guardHitSound.item = item;
                 } else if (simple == "ground.type"){
-                    simple >> controller->getHit().groundType;
+                    string type;
+                    simple >> type;
+                    type = Util::fixCase(type);
+                    if (type == "low"){
+                        controller->getHit().groundType = AttackType::Low;
+                    } else if (type == "high"){
+                        controller->getHit().groundType = AttackType::High;
+                    } else if (type == "trip"){
+                        controller->getHit().groundType = AttackType::Trip;
+                    }
                 } else if (simple == "air.type"){
                     simple >> controller->getHit().airType;
                 } else if (simple == "ground.slidetime"){

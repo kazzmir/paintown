@@ -360,6 +360,7 @@ public:
                 return RuntimeValue(environment.getCharacter().getHit().animationType);
             } else if (var == "airtype"){
             } else if (var == "groundtype"){
+                return RuntimeValue(environment.getCharacter().getHit().groundType);
             } else if (var == "damage"){
             } else if (var == "hitcount"){
             } else if (var == "fallcount"){

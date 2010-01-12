@@ -91,6 +91,13 @@ namespace AttackType{
         Up = 4,
         DiagonalUp = 5
     };
+
+    enum Ground{
+        None = 0,
+        High,
+        Low,
+        Trip
+    };
 }
 
 namespace PhysicalAttack{
@@ -104,7 +111,8 @@ class Character;
 struct HitDefinition{
     HitDefinition():
     hitFlag("MAF"),
-    animationType(AttackType::Light)
+    animationType(AttackType::Light),
+    groundType(AttackType::None)
     {}
     /*
      * Required parameters:
@@ -246,7 +254,7 @@ struct HitDefinition{
      * This is the kind of attack if P2 is on the ground. Choose from: - "High": for attacks that make P2's head snap backwards. - "Low": for attacks that hit P2 in the stomach. - "Trip": for low sweep attacks. If you use "Trip" type, the ground.velocity parameter should have a non-zero y-velocity, and the fall parameter should be set to 1. A tripped opponent does not bounce upon falling on the ground. - "None": for attacks that do nothing besides pause P1 and P2 for the duration in the pausetime parameter.
      * If P2 is hit from behind, "High" will be displayed as "Low" and vice-versa. P2's animation for "High" and "Low" types will be superseded if the AnimType parameter is "Back". Defaults to "High" if omitted.
      */
-    std::string groundType;
+    AttackType::Ground groundType;
 
     /* air.type = attack_type (string)
      * This is the kind of attack if P2 is in the air. Defaults to the same value as "ground.type" if omitted.
