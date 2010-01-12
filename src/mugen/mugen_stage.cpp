@@ -501,6 +501,22 @@ void MugenStage::load(){
      */
     shadowIntensity = Util::min((shadow.c + shadow.y + shadow.m + shadow.k * 2) / 3, 255);
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
+
+    Mugen::Util::readSprites(Filesystem::find("mugen/data/fightfx.sff"), "", effects);
+    for (Mugen::SpriteMap::iterator it = effects.begin(); it != effects.end(); it++){
+        Global::debug(-1) << "Effect group " << (*it).first << endl;
+    }
+
+    spark = new MugenAnimation();
+    for (Mugen::GroupMap::iterator it = effects[0].begin(); it != effects[0].end(); it++){
+        MugenFrame * frame = new MugenFrame();
+        frame->sprite = (*it).second;
+        frame->xoffset = 0;
+        frame->yoffset = 0;
+        frame->time = 2;
+        frame->effects.trans = Mugen::ADD;
+        spark->addFrame(frame);
+    }
     
     // Console stuff
     console->setTextHeight(10);
@@ -665,6 +681,8 @@ void MugenStage::logic( ){
     if (!stageStart){
         stageStart = true;
     }
+
+    spark->logic();
     
     // Run our ticker on and on like energizer bunnies (tm)
     ticker++;
@@ -765,6 +783,8 @@ void MugenStage::render( Bitmap *work ){
 	board->vLine( 0, xaxis, board->getHeight(), Bitmap::makeColor(255,0,0));
     }
     
+    spark->render(400, 50, *board);
+    
     board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
     
     // Debug crap for screen coordinates
@@ -790,6 +810,7 @@ void MugenStage::render( Bitmap *work ){
 	    }
 	}
     }
+
     
     // Render console
     console->draw( *work );
@@ -1024,6 +1045,8 @@ void MugenStage::cleanup(){
 	    delete console;
 	    console = 0;
 	}
+
+        /* FIXME: delete effects sprites */
     }
 }
 

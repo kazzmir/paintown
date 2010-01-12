@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include "mugen_exception.h"
+#include "mugen_util.h"
 
 #include "world.h"
 
@@ -416,7 +417,6 @@ protected:
 	
 	bool loaded;
 	
-	
 	// Controllers
 	//std::vector<MugenBackgroundController *> controllers;
 	
@@ -426,8 +426,10 @@ protected:
 	// What garbage
         std::deque<Bitmap*> garbage;
 	
-	
 	void initializeName();
+
+        Mugen::SpriteMap effects;
+        MugenAnimation * spark;
 };
 
 #endif

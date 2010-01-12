@@ -22,7 +22,8 @@ namespace Ast{
 namespace Mugen{
 
 /* Makes the use of the sprite maps easier */
-typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > SpriteMap;
+typedef std::map< unsigned int, MugenSprite *> GroupMap;
+typedef std::map< unsigned int, GroupMap> SpriteMap;
 typedef std::map< unsigned int, std::map< unsigned int, MugenSound * > > SoundMap;
     
 namespace Util{

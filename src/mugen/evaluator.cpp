@@ -368,6 +368,7 @@ public:
             } else if (var == "yoff"){
             } else if (var == "zoff"){
             } else if (var == "xvel"){
+                return RuntimeValue(state.xVelocity);
             } else if (var == "yvel"){
                 return RuntimeValue(state.yVelocity);
             } else if (var == "yaccel"){
