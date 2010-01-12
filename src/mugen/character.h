@@ -113,7 +113,8 @@ struct HitDefinition{
     hitFlag("MAF"),
     animationType(AttackType::Light),
     groundType(AttackType::None),
-    groundHitTime(0)
+    groundHitTime(0),
+    yAcceleration(0.35)
     {}
     /*
      * Required parameters:
@@ -302,7 +303,7 @@ struct HitDefinition{
     /* yaccel = accel (float)
     * Specifies the y acceleration to impart to P2 if the hit connects. Defaults to .35 in 240p, .7 in 480p, 1.4 in 720p.
     */
-    double yAccleration;
+    double yAcceleration;
 
     /* ground.velocity = x_velocity, y_velocity (float, float)
     * Initial velocity to give P2 after being hit, if P2 is on the ground. If y_velocity is not zero, P2 will be knocked into the air. Both values default to 0 if omitted. You can leave out the y_velocity if you want P2 to remain on the ground.

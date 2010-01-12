@@ -896,6 +896,7 @@ void HitState::update(const HitDefinition & hit){
     slideTime = hit.groundSlideTime;
     animationType = hit.animationType;
     groundType = hit.groundType;
+    yAcceleration = hit.yAcceleration;
     xVelocity = hit.groundVelocity.x;
     yVelocity = hit.groundVelocity.y;
     fall = hit.fall.fall;
@@ -1725,7 +1726,7 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "guard.dist"){
                     simple >> controller->getHit().guardDistance;
                 } else if (simple == "yaccel"){
-                    simple >> controller->getHit().yAccleration;
+                    simple >> controller->getHit().yAcceleration;
                 } else if (simple == "ground.velocity"){
                     if (simple.getValue()->hasMultiple()){
                         try{
@@ -2361,6 +2362,9 @@ void Character::doHit(const HitDefinition & hisHit){
     changeState(5000);
 
     hitState.update(hisHit);
+    setXVelocity(hitState.xVelocity);
+    setYVelocity(hitState.yVelocity);
+
     vector<string> active;
     while (doStates(active, currentState)){
     }
