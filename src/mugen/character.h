@@ -526,6 +526,7 @@ struct HitState{
         slideTime(0),
         yAcceleration(0),
         yVelocity(0),
+        xVelocity(0),
         fall(false){
         }
 
@@ -535,6 +536,7 @@ struct HitState{
     int slideTime;
     double yAcceleration;
     double yVelocity;
+    double xVelocity;
     AttackType::Animation animationType;
     AttackType::Ground groundType;
     bool fall;

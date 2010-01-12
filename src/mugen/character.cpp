@@ -330,6 +330,10 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case HitVelSet : {
+            RuntimeValue result = evaluate(value1, Environment(guy));
+            if (result.getBoolValue()){
+                guy.setXVelocity(guy.getHitState().xVelocity);
+            }
             break;
         }
         case LifeAdd : {
@@ -871,6 +875,7 @@ void HitState::update(const HitDefinition & hit){
     animationType = hit.animationType;
     groundType = hit.groundType;
     yVelocity = hit.groundVelocity.y;
+    xVelocity = hit.groundVelocity.x;
     fall = hit.fall.fall;
 }
 
