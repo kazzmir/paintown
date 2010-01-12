@@ -896,8 +896,8 @@ void HitState::update(const HitDefinition & hit){
     slideTime = hit.groundSlideTime;
     animationType = hit.animationType;
     groundType = hit.groundType;
-    yVelocity = hit.groundVelocity.y;
     xVelocity = hit.groundVelocity.x;
+    yVelocity = hit.groundVelocity.y;
     fall = hit.fall.fall;
 
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
@@ -1727,18 +1727,26 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "yaccel"){
                     simple >> controller->getHit().yAccleration;
                 } else if (simple == "ground.velocity"){
-                    try{
-                        simple >> controller->getHit().groundVelocity.x;
-                        simple >> controller->getHit().groundVelocity.y;
-                    } catch (const Ast::Exception & e){
+                    if (simple.getValue()->hasMultiple()){
+                        try{
+                            simple >> controller->getHit().groundVelocity.x;
+                            simple >> controller->getHit().groundVelocity.y;
+                        } catch (const Ast::Exception & e){
+                        }
+                    } else {
+                            simple >> controller->getHit().groundVelocity.x;
                     }
                 } else if (simple == "guard.velocity"){
                     simple >> controller->getHit().guardVelocity;
                 } else if (simple == "air.velocity"){
-                    try{
+                    if (simple.getValue()->hasMultiple()){
+                        try{
+                            simple >> controller->getHit().airVelocity.x;
+                            simple >> controller->getHit().airVelocity.y;
+                        } catch (const Ast::Exception & e){
+                        }
+                    } else {
                         simple >> controller->getHit().airVelocity.x;
-                        simple >> controller->getHit().airVelocity.y;
-                    } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "airguard.velocity"){
                     try{
@@ -2349,10 +2357,10 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     }
 }
 
-void Character::doHit(const HitDefinition & doHit){
+void Character::doHit(const HitDefinition & hisHit){
     changeState(5000);
 
-    hitState.update(doHit);
+    hitState.update(hisHit);
     vector<string> active;
     while (doStates(active, currentState)){
     }
@@ -2419,6 +2427,8 @@ void Character::draw(Bitmap * work, int x_position){
     y += font.getHeight();
     if (getMoveType() == Move::Hit){
         render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
+        y += font.getHeight();
+        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Hit velocity x %f y %f", getHitState().xVelocity, getHitState().yVelocity);
     }
 
     /*
