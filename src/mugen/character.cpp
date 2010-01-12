@@ -941,6 +941,9 @@ void Character::initialize(){
     runforwardy = 0;
     power = 0;
 
+    shakeTime = 0;
+    hitTime = -1;
+
     velocity_x = 0;
     velocity_y = 0;
 
@@ -2283,6 +2286,12 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
         animation->logic();
     }
 
+    if (shakeTime > 0){
+        shakeTime -= 1;
+    } else if (hitTime > -1){
+        hitTime -= 1;
+    }
+
     stateTime += 1;
 
     /* active is the current set of commands */
@@ -2296,8 +2305,10 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     }
 }
 
-void Character::doHit(){
+void Character::doHit(const HitDefinition & doHit){
     changeState(5000);
+    shakeTime = doHit.pause.player2;
+    hitTime = doHit.groundHitTime;
     vector<string> active;
     while (doStates(active, currentState)){
     }

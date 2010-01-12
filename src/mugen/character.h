@@ -1072,7 +1072,15 @@ public:
             return this->hit;
         }
 
-        void doHit();
+        void doHit(const HitDefinition & hit);
+
+        virtual inline int getShakeTime() const {
+            return shakeTime;
+        }
+        
+        virtual inline int getHitTime() const {
+            return hitTime;
+        }
 
 protected:
     void initialize();
@@ -1320,6 +1328,9 @@ protected:
         std::string moveType;
 
         HitDefinition hit;
+
+        int shakeTime;
+        int hitTime;
 };
 
 }

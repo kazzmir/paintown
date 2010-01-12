@@ -571,7 +571,7 @@ void MugenStage::physics(Object * player){
                     /* do hitdef stuff */
                     // Global::debug(0) << "Collision!" << endl;
                     /* the hit state */
-                    enemy->doHit();
+                    enemy->doHit(mugen->getHit());
                     // enemy->changeState(5000);
                 }
             }

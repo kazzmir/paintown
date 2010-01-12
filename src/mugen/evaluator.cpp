@@ -186,13 +186,11 @@ public:
         }
 
         if (identifier == "hitshakeover"){
-            /* FIXME */
-            return RuntimeValue(0);
+            return RuntimeValue(environment.getCharacter().getShakeTime() <= 0);
         }
 
         if (identifier == "hitover"){
-            /* FIXME */
-            return RuntimeValue(0);
+            return RuntimeValue(environment.getCharacter().getHitTime() <= -1);
         }
 
         if (identifier == "hitfall"){
