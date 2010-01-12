@@ -357,6 +357,7 @@ public:
             } else if (var == "yveladd"){
             } else if (var == "type"){
             } else if (var == "animtype"){
+                return RuntimeValue(environment.getCharacter().getHit().animationType);
             } else if (var == "airtype"){
             } else if (var == "groundtype"){
             } else if (var == "damage"){

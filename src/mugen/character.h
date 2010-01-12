@@ -82,6 +82,15 @@ namespace AttackType{
     extern std::string Normal;
     extern std::string Special;
     extern std::string Hyper;
+
+    enum Animation{
+        Light = 0,
+        Medium = 1,
+        Hard = 2,
+        Back = 3,
+        Up = 4,
+        DiagonalUp = 5
+    };
 }
 
 namespace PhysicalAttack{
@@ -94,8 +103,9 @@ class Character;
 
 struct HitDefinition{
     HitDefinition():
-    hitFlag("MAF"){
-    }
+    hitFlag("MAF"),
+    animationType(AttackType::Light)
+    {}
     /*
      * Required parameters:
      * attr = hit_attribute (string)
@@ -141,8 +151,9 @@ struct HitDefinition{
 
     /* animtype = anim_type (string)
      * This refers to the type of animation that P2 will go into when hit by the attack. Choose from "light", "medium", "hard", "back", "up", or "diagup". The first three are self-explanatory. "Back" is the animation where P2 is knocked off her feet. "Up" should be used when the character is knocked straight up in the air (for instance, by an uppercut), and "DiagUp" should be used when the character is knocked up and backwards in the air, eventually landing on his head. The default is "Light".
+     * animtype: Returns the animation type of the hit. (0 for light, 1 for medium, 2 for hard, 3 for back, 4 for up, 5 for diag-up)
      */
-    std::string animationType;
+    AttackType::Animation animationType;
 
     /* air.animtype = anim_type (string)
      * Similar to the "animtype" parameter, this is the animtype to set P2 to if P2 is in the air, instead of on the ground. Defaults to the same value as the "animtype" parameter if omitted.

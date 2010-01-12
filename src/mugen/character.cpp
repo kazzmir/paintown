@@ -1558,7 +1558,22 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "animtype"){
                     string anim;
                     simple >> anim;
-                    controller->getHit().animationType = anim;
+                    anim = Util::fixCase(anim);
+                    if (simple == "light"){
+                        controller->getHit().animationType = AttackType::Light;
+                    } else if (simple == "medium"){
+                        controller->getHit().animationType = AttackType::Medium;
+                    } else if (simple == "hard"){
+                        controller->getHit().animationType = AttackType::Hard;
+                    } else if (simple == "back"){
+                        controller->getHit().animationType = AttackType::Back;
+                    } else if (simple == "up"){
+                        controller->getHit().animationType = AttackType::Up;
+                    } else if (simple == "diagup"){
+                        controller->getHit().animationType = AttackType::DiagonalUp;
+                    } else {
+                        Global::debug(0) << "Unknown hitdef animation type " << anim << endl;
+                    }
                 } else if (simple == "air.animtype"){
                     string anim;
                     simple >> anim;
