@@ -1604,13 +1604,13 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "pausetime"){
                     try{
                         simple >> controller->getHit().pause.player1;
-                        simple >> controller->getHit().pause.player1;
+                        simple >> controller->getHit().pause.player2;
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "guard.pausetime"){
                     try{
                         simple >> controller->getHit().guardPause.player1;
-                        simple >> controller->getHit().guardPause.player1;
+                        simple >> controller->getHit().guardPause.player2;
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "sparkno"){
