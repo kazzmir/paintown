@@ -519,6 +519,27 @@ struct HitDefinition{
      */
 };
 
+struct HitState{
+    HitState():
+        shakeTime(0),
+        hitTime(-1),
+        slideTime(0),
+        yAcceleration(0),
+        yVelocity(0),
+        fall(false){
+        }
+
+    void update(const HitDefinition & hit);
+    int shakeTime;
+    int hitTime;
+    int slideTime;
+    double yAcceleration;
+    double yVelocity;
+    AttackType::Animation animationType;
+    AttackType::Ground groundType;
+    bool fall;
+};
+
 /* comes from a State */
 class StateController{
 public:
@@ -1074,12 +1095,8 @@ public:
 
         void doHit(const HitDefinition & hit);
 
-        virtual inline int getShakeTime() const {
-            return shakeTime;
-        }
-        
-        virtual inline int getHitTime() const {
-            return hitTime;
+        virtual const HitState & getHitState() const {
+            return hitState;
         }
 
 protected:
@@ -1329,8 +1346,7 @@ protected:
 
         HitDefinition hit;
 
-        int shakeTime;
-        int hitTime;
+        HitState hitState;
 };
 
 }

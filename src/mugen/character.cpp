@@ -860,6 +860,19 @@ Command::~Command(){
     delete keys;
 }
 
+
+void HitState::update(const HitDefinition & hit){
+    /* FIXME: choose the proper ground/air/guard types */
+
+    shakeTime = hit.pause.player2;
+    hitTime = hit.groundHitTime;
+    slideTime = hit.groundSlideTime;
+    animationType = hit.animationType;
+    groundType = hit.groundType;
+    yVelocity = hit.groundVelocity.y;
+    fall = hit.fall.fall;
+}
+
 Character::Character( const string & s ):
 ObjectAttack(0){
     this->location = s;
@@ -940,9 +953,6 @@ void Character::initialize(){
     runforwardx = 0;
     runforwardy = 0;
     power = 0;
-
-    shakeTime = 0;
-    hitTime = -1;
 
     velocity_x = 0;
     velocity_y = 0;
@@ -2286,10 +2296,10 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
         animation->logic();
     }
 
-    if (shakeTime > 0){
-        shakeTime -= 1;
-    } else if (hitTime > -1){
-        hitTime -= 1;
+    if (hitState.shakeTime > 0){
+        hitState.shakeTime -= 1;
+    } else if (hitState.hitTime > -1){
+        hitState.hitTime -= 1;
     }
 
     stateTime += 1;
@@ -2307,8 +2317,8 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
 
 void Character::doHit(const HitDefinition & doHit){
     changeState(5000);
-    shakeTime = doHit.pause.player2;
-    hitTime = doHit.groundHitTime;
+
+    hitState.update(doHit);
     vector<string> active;
     while (doStates(active, currentState)){
     }

@@ -186,11 +186,11 @@ public:
         }
 
         if (identifier == "hitshakeover"){
-            return RuntimeValue(environment.getCharacter().getShakeTime() <= 0);
+            return RuntimeValue(environment.getCharacter().getHitState().shakeTime <= 0);
         }
 
         if (identifier == "hitover"){
-            return RuntimeValue(environment.getCharacter().getHitTime() <= -1);
+            return RuntimeValue(environment.getCharacter().getHitState().hitTime <= -1);
         }
 
         if (identifier == "hitfall"){
@@ -347,6 +347,7 @@ public:
         }
 
         if (function == "gethitvar"){
+            const HitState & state = environment.getCharacter().getHitState();
             if (function.getArg1() == 0){
                 throw MugenException("No argument given to gethitvar");
             }
@@ -355,16 +356,17 @@ public:
             } else if (var == "yveladd"){
             } else if (var == "type"){
             } else if (var == "animtype"){
-                return RuntimeValue(environment.getCharacter().getHit().animationType);
+                return RuntimeValue(state.animationType);
             } else if (var == "airtype"){
             } else if (var == "groundtype"){
-                return RuntimeValue(environment.getCharacter().getHit().groundType);
+                return RuntimeValue(state.groundType);
             } else if (var == "damage"){
             } else if (var == "hitcount"){
             } else if (var == "fallcount"){
             } else if (var == "hitshaketime"){
             } else if (var == "hittime"){
             } else if (var == "slidetime"){
+                return RuntimeValue(state.slideTime);
             } else if (var == "ctrltime"){
             } else if (var == "recovertime"){
             } else if (var == "xoff"){
@@ -372,15 +374,14 @@ public:
             } else if (var == "zoff"){
             } else if (var == "xvel"){
             } else if (var == "yvel"){
-                /* FIXME */
-                return RuntimeValue(environment.getCharacter().getHit().groundVelocity.y);
+                return RuntimeValue(state.yVelocity);
             } else if (var == "yaccel"){
-                return RuntimeValue(environment.getCharacter().getHit().yAccleration);
+                return RuntimeValue(state.yAcceleration);
             } else if (var == "hitid"){
             } else if (var == "chainid"){
             } else if (var == "guarded"){
             } else if (var == "fall"){
-                return RuntimeValue(environment.getCharacter().getHit().fall.fall);
+                return RuntimeValue(state.fall);
             } else if (var == "fall.damage"){
             } else if (var == "fall.xvel"){
             } else if (var == "fall.yvel"){
