@@ -93,6 +93,19 @@ CharacterInfo::~CharacterInfo(){
     }
 }
 
+void CharacterInfo::setAct(int number){
+    if (number == currentAct)return;
+    currentAct = number;
+    if (icon){
+        delete icon;
+    }
+    if (portrait){
+        delete portrait;
+    }
+    icon = Util::probeSff(baseDirectory + spriteFile,9000,0,baseDirectory + actCollection[currentAct]);
+    portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
+}
+
 Cursor::Cursor():
 blink(false),
 blinkCounter(0),

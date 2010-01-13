@@ -43,6 +43,24 @@ class CharacterInfo {
         CharacterInfo(const std::string &definitionFile);
         virtual ~CharacterInfo();
 
+        virtual inline MugenSprite * getIcon() const{
+            return icon;
+        }
+
+        virtual inline MugenSprite * getPortrait() const{
+            return portrait;
+        }
+
+        virtual inline const std::string & getName() const{
+            return name;
+        }
+
+        virtual inline const std::string & getDisplayName() const{
+            return displayName;
+        }
+
+        virtual void setAct(int index);
+
         virtual inline void setRandomStage(bool r){
             randomStage = r;
         }
