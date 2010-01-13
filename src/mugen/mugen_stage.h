@@ -429,7 +429,7 @@ protected:
 	void initializeName();
 
         Mugen::SpriteMap effects;
-        MugenAnimation * spark;
+        std::map<int, MugenAnimation*> sparks;
 };
 
 #endif

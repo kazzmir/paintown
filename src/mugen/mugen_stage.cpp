@@ -503,6 +503,9 @@ void MugenStage::load(){
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 
     Mugen::Util::readSprites(Filesystem::find("mugen/data/fightfx.sff"), "", effects);
+    sparks = Mugen::Util::loadAnimations(Filesystem::find("mugen/data/fightfx.air"), effects);
+
+    /*
     for (Mugen::SpriteMap::iterator it = effects.begin(); it != effects.end(); it++){
         Global::debug(-1) << "Effect group " << (*it).first << endl;
     }
@@ -517,6 +520,7 @@ void MugenStage::load(){
         frame->effects.trans = Mugen::ADD;
         spark->addFrame(frame);
     }
+    */
     
     // Console stuff
     console->setTextHeight(10);
@@ -682,8 +686,6 @@ void MugenStage::logic( ){
         stageStart = true;
     }
 
-    spark->logic();
-    
     // Run our ticker on and on like energizer bunnies (tm)
     ticker++;
     
@@ -782,8 +784,6 @@ void MugenStage::render( Bitmap *work ){
 	board->hLine( 0, abs(boundhigh) + zoffset, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
 	board->vLine( 0, xaxis, board->getHeight(), Bitmap::makeColor(255,0,0));
     }
-    
-    spark->render(400, 50, *board);
     
     board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
     
@@ -1046,7 +1046,16 @@ void MugenStage::cleanup(){
 	    console = 0;
 	}
 
-        /* FIXME: delete effects sprites */
+        for (Mugen::SpriteMap::iterator it1 = effects.begin(); it1 != effects.end(); it1++){
+            for (Mugen::GroupMap::iterator it2 = (*it1).second.begin(); it2 != (*it1).second.end(); it2++){
+                MugenSprite * sprite = (*it2).second;
+                delete sprite;
+            }
+        }
+        for (map<int, MugenAnimation*>::iterator it = sparks.begin(); it != sparks.end(); it++){
+            MugenAnimation * animation = (*it).second;
+            delete animation;
+        }
     }
 }
 

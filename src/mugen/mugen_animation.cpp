@@ -103,6 +103,9 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
 }
 
 MugenFrame::~MugenFrame(){
+    /* the sprite is not deleted because it should be referenced from some
+     * Mugen::SpriteMap.
+     */
 }
 
 /*
