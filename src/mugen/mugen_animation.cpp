@@ -13,7 +13,7 @@
 
 using namespace std;
 
-static void renderCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int color ){
+static void renderCollision( const std::vector< MugenArea > &vec, const Bitmap &bmp, int x, int y, int color ){
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
     }
@@ -121,12 +121,14 @@ ticks(0){
 }
 
 MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
-    this->frames = copy.frames;
     this->loopPosition = copy.loopPosition;
     this->position = copy.position;
     this->type = copy.type;
     this->showDefense = copy.showDefense;
     this->showOffense = copy.showOffense;
+    for (vector<MugenFrame*>::const_iterator it = copy.frames.begin(); it != copy.frames.end(); it++){
+        this->frames.push_back(new MugenFrame(*(*it)));
+    }
 }
 
 MugenAnimation::~MugenAnimation(){
@@ -185,7 +187,7 @@ void MugenAnimation::logic(){
     }
 }
 
-void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, Bitmap & work, double scalex, double scaley, const Mugen::Effects & effects){
+void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Bitmap & work, double scalex, double scaley, const Mugen::Effects & effects){
     const int placex = xaxis+frames[position]->xoffset;
     const int placey = yaxis+frames[position]->yoffset;
     frame->sprite->render(placex, placey, work, effects);
@@ -199,7 +201,7 @@ void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, Bitma
     }
 }
 
-void MugenAnimation::render(int xaxis, int yaxis, Bitmap &work, double scalex, double scaley){
+void MugenAnimation::render(int xaxis, int yaxis, const Bitmap &work, double scalex, double scaley){
     if (position >= frames.size()){
         return;
     }
@@ -232,7 +234,7 @@ void MugenAnimation::render(int xaxis, int yaxis, Bitmap &work, double scalex, d
 #endif
 }
 
-void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, Bitmap &work, const double scalex, const double scaley ){
+void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Bitmap &work, const double scalex, const double scaley ){
     if (position >= frames.size()){
         return;
     }

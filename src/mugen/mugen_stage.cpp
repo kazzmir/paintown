@@ -51,6 +51,30 @@ static const double DEFAULT_JUMP_VELOCITY = 7.2;
 static const int CONSOLE_SIZE = 95;
 static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
+namespace Mugen{
+Spark::Spark(int x, int y, MugenAnimation * animation):
+x(x), y(y), animation(animation){
+}
+
+void Spark::draw(const Bitmap & work){
+    animation->render(x, y, work);
+}
+
+void Spark::logic(){
+    animation->logic();
+}
+
+bool Spark::isDead(){
+    return animation->getPosition() == 0;
+}
+
+Spark::~Spark(){
+    delete animation;
+}
+
+}
+
+
 static bool centerCollision( Mugen::Character *p1, Mugen::Character *p2 ){
     //p1->getCurrentMovement()->getCurrentFrame();
     /* FIXME! */
@@ -564,6 +588,16 @@ bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character 
     return false;
 }
 
+void MugenStage::addSpark(int x, int y, int sparkNumber){
+    if (sparks[sparkNumber] == 0){
+        ostringstream out;
+        out << "No spark number for " << sparkNumber;
+        throw MugenException(out.str());
+    }
+    Mugen::Spark * spark = new Mugen::Spark(x, y, new MugenAnimation(*sparks[sparkNumber]));
+    showSparks.push_back(spark);
+}
+
 void MugenStage::physics(Object * player){
 
     Mugen::Character * mugen = (Mugen::Character *) player;
@@ -591,6 +625,7 @@ void MugenStage::physics(Object * player){
                     /* do hitdef stuff */
                     // Global::debug(0) << "Collision!" << endl;
                     /* the hit state */
+                    addSpark(mugen->getHit().sparkPosition.x + enemy->getRX(), mugen->getHit().sparkPosition.y + mugen->getRY(), mugen->getHit().spark);
                     enemy->doHit(mugen->getHit());
                     // enemy->changeState(5000);
                 }
@@ -680,6 +715,19 @@ void MugenStage::logic( ){
     if (quake_time > 0){
 	quake_time--;
     }
+
+    for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end();){ 
+        Mugen::Spark * spark = *it;
+        spark->logic();
+
+        /* if the spark looped then kill it */
+        if (spark->isDead()){
+            delete spark;
+            it = showSparks.erase(it);
+        } else {
+            it++;
+        }
+    }
     
     // implement some stuff before we actually begin the round then start the round
     if (!stageStart){
@@ -764,6 +812,12 @@ void MugenStage::render( Bitmap *work ){
 	obj->drawShade( board, 0, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         obj->draw( board, 0);
     }
+
+    for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
+        Mugen::Spark * spark = *it;
+        spark->draw(*board);
+    }
+
     // Foreground
     background->renderFront( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     

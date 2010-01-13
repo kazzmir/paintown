@@ -112,6 +112,7 @@ struct HitDefinition{
     HitDefinition():
     hitFlag("MAF"),
     animationType(AttackType::Light),
+    spark(0),
     groundType(AttackType::None),
     groundHitTime(0),
     yAcceleration(0.35)

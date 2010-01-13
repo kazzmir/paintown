@@ -40,6 +40,24 @@ struct PlayerData {
     bool jumped;
 };
 
+namespace Mugen{
+
+class Spark{
+public:
+    Spark(int x, int y, MugenAnimation * animation);
+    virtual void draw(const Bitmap & work);
+    virtual void logic();
+    virtual bool isDead();
+
+    virtual ~Spark();
+protected:
+    int x;
+    int y;
+    MugenAnimation * animation;
+};
+
+}
+
 class MugenStage: public World {
 public:
 	// Location at dataPath() + "mugen/stages/"
@@ -155,6 +173,8 @@ protected:
     bool doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2);
 
 protected:
+
+    void addSpark(int x, int y, int sparkNumber);
 
 	/* Location is the directory passed in ctor
 	This is where the def is loaded and all the relevant files
@@ -430,6 +450,7 @@ protected:
 
         Mugen::SpriteMap effects;
         std::map<int, MugenAnimation*> sparks;
+        std::vector<Mugen::Spark*> showSparks;
 };
 
 #endif
