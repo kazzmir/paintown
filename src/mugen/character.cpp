@@ -2064,7 +2064,7 @@ void Character::load(){
     Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]), sprites);
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
-    bundleAnimations();
+    animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
 
     fixAssumptions();
 
@@ -2265,27 +2265,6 @@ void Character::priorPalette(){
 	    if( i->second )i->second->reloadBitmaps();
 	}
     }*/
-}
-
-/* parse animations.
- * badly named and doesn't return anything.. maybe return an std::map ?
- */
-void Character::bundleAnimations(){
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Air::main(Mugen::Util::fixFileName(baseDir, airFile)));
-    Global::debug(1, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
-    
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
-        Ast::Section * section = *section_it;
-        std::string head = section->getName();
-        Global::debug(1, __FILE__) << "Animation section '" << head << "'" << endl;
-	head = Mugen::Util::fixCase(head);
-        int number;
-        if (PaintownUtil::matchRegex(head, "begin action [0-9]+")){
-            number = atoi(PaintownUtil::captureRegex(head, "begin action ([0-9]+)", 0).c_str());
-            Global::debug(1, __FILE__) << "Parse animation " << number << endl;
-            animations[number] = Mugen::Util::getAnimation(section, sprites);
-        }
-    }
 }
 
 MugenAnimation * Character::getCurrentAnimation() const {

@@ -454,6 +454,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
     }
 }
 
+/* TODO: turn this code into a class like SffReader */
 void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException){
     /* 16 skips the header stuff */
     int location = 16;
@@ -660,13 +661,13 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
     return temp;
 }
 
-MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, Mugen::SpriteMap &sprites ){
+MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::SpriteMap &sprites ){
     MugenAnimation *animation = new MugenAnimation();
 
     /* see parser/air.peg */
     class Walker: public Ast::Walker{
     public:
-        Walker(MugenAnimation * animation, Mugen::SpriteMap & sprites):
+        Walker(MugenAnimation * animation, const Mugen::SpriteMap & sprites):
         Ast::Walker(),
         animation(animation),
         sprites(sprites),
@@ -677,12 +678,26 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, Mugen::SpriteM
 
         /* data */
         MugenAnimation * animation;
-        Mugen::SpriteMap & sprites;
+        const Mugen::SpriteMap & sprites;
         std::vector<MugenArea> clsn1Holder;
         std::vector<MugenArea> clsn2Holder;
         bool clsn1Reset;
         bool clsn2Reset;
         bool setloop;
+
+        MugenSprite * getSprite(int group, int item){
+            Mugen::SpriteMap::const_iterator map = sprites.find(group);
+            if (map == sprites.end()){
+                return 0;
+            }
+            
+            const Mugen::GroupMap & groupMap = (*map).second;
+            Mugen::GroupMap::const_iterator it = groupMap.find(item);
+            if (it != groupMap.end()){
+                return (*it).second;
+            }
+            return 0;
+        }
 
         /* callbacks */
         virtual void onValueList(const Ast::ValueList & values){
@@ -746,7 +761,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, Mugen::SpriteM
             }
 
             // Add sprite
-            frame->sprite = this->sprites[(unsigned short)group][(unsigned short)spriteNumber];
+            frame->sprite = getSprite(group, spriteNumber);
             if (frame->sprite == 0){
                 Global::debug(0) << "No sprite for group " << group << " number " << spriteNumber << endl;
             }
@@ -837,6 +852,26 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, Mugen::SpriteM
     animation->setType(Mugen::AnimationType(h));
     Global::debug(1) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(animation->getType()) << "'" << endl;
     return animation;
+}
+
+std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const string & filename, const SpriteMap sprites){
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Air::main(filename));
+    Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
+    
+    map<int, MugenAnimation*> animations;
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+        std::string head = section->getName();
+        Global::debug(1, __FILE__) << "Animation section '" << head << "'" << endl;
+	head = Mugen::Util::fixCase(head);
+        int number;
+        if (PaintownUtil::matchRegex(head, "begin action [0-9]+")){
+            number = atoi(PaintownUtil::captureRegex(head, "begin action ([0-9]+)", 0).c_str());
+            Global::debug(1, __FILE__) << "Parse animation " << number << endl;
+            animations[number] = Mugen::Util::getAnimation(section, sprites);
+        }
+    }
+    return animations;
 }
 
 static std::string removeLastDir( const std::string &dir ){

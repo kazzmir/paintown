@@ -1120,8 +1120,6 @@ protected:
     
     virtual void loadSelectData();
 
-    /* This creates the animations no need for a new class to handle this */
-    virtual void bundleAnimations();
     virtual void loadCmdFile(const std::string & path);
     virtual void loadCnsFile(const std::string & path);
     virtual void loadStateFile(const std::string & base, const std::string & path);
