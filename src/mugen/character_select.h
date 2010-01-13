@@ -36,6 +36,107 @@ class MugenStage;
 
 /* Encapsulate in Mugen namespace */
 namespace Mugen{
+
+/* Character Info handler, portrait name and etc */
+class CharacterInfo {
+    public:
+        CharacterInfo(const std::string &definitionFile);
+        virtual ~CharacterInfo();
+
+        virtual inline void setRandomStage(bool r){
+            randomStage = r;
+        }
+
+        virtual inline const bool hasRandomStage() const{
+            return randomStage;
+        }
+
+        virtual inline void setStage(const std::string &str){
+            stageFile = str;
+        }
+
+        virtual inline const std::string &getStage() const{
+            return stageFile;
+        }
+
+        virtual inline void setMusic(const std::string &str){
+            music = str;
+        }
+
+        virtual inline const std::string &getMusic() const{
+            return music;
+        }
+
+        virtual inline void setOrder(int o){
+            order = o;
+        }
+
+        virtual inline const int getOrder() const{
+            return order;
+        }
+
+    private:
+        /* The characters definition File to pass on to stage or anything else */
+        const std::string definitionFile;
+        /* Character base directory */
+        const std::string baseDirectory;
+        /* Sprite File */
+        const std::string spriteFile;
+        /* Characters Name */
+        std::string name;
+        /* Characters Display Name */
+        std::string displayName;
+        /* Current Act */
+        int currentAct;
+        /* Act Collection */
+        std::vector< std::string > actCollection;
+        /* image 9000 */
+        MugenSprite *icon;
+        /* image 9001 */
+        MugenSprite *portrait;
+        /* Random Stage */
+        bool randomStage;
+        /* Stage File */
+        std::string stageFile;
+        /* Music for stage */
+        std::string music;
+        /* Order in which to be set during Arcade mode */
+        int order;
+};
+
+/* Handle an individual cell which contains the data required to render itself */
+class Cell{
+    public:
+        Cell();
+        virtual ~Cell();
+
+        virtual void act();
+        virtual void render(const Bitmap &);
+        
+        virtual inline void setSpriteIndex(int x, int y){
+            spriteIndex.x = x;
+            spriteIndex.y = y;
+        }
+        virtual inline void setPosition(int x, int y){
+            position.x = x;
+            position.y = y;
+        }
+        virtual inline void setRandom(bool r){
+            random = r;
+        }
+        virtual inline void setEmpty(bool e){
+            empty = e;
+        }
+    private:
+        // Character table so that we can rotate through the characters on random
+        
+        Mugen::Point spriteIndex;
+        Mugen::Point position;
+        bool random;
+        bool empty;
+};
+
+typedef std::vector< std::vector< Cell * > > CellMap;
     
 /* Handles the select screen grid */
 class Grid{
@@ -44,7 +145,43 @@ class Grid{
 	virtual ~Grid();
 	
 	virtual void render(const Bitmap &);
-	
+        
+        virtual inline void setRows(int r){
+                this->rows = r;
+        }
+        virtual inline void setColumns(int c){
+                this->columns = c;
+        }
+        virtual inline void setWrapping(bool w){
+                this->wrapping = w;
+        }
+        virtual inline void setPosition(int x, int y){
+                this->position.x = x;
+                this->position.y = y;
+        }
+        virtual inline void setShowEmptyBoxes(bool s){
+                this->showEmptyBoxes = s;
+        }
+        virtual inline void setMoveOverEmptyBoxes(bool m){
+                this->moveOverEmptyBoxes = m;
+        }
+        virtual inline void setCellSize(int x, int y){
+                this->cellSize.x = x;
+                this->cellSize.y = y;
+        }
+        virtual inline void setCellSpacing(int c){
+                this->cellSpacing = c;
+        }
+        virtual inline void setCellBackgroundSprite(MugenSprite *s){
+                this->cellBackgroundSprite = s;
+        }
+        virtual inline void setRandomSprite(MugenSprite *s){
+                this->cellRandomSprite = s;
+        }
+        virtual inline void setRandomSwitchTime(int t){
+                this->cellRandomSwitchTime = t;
+        }
+    
     private:
 	int rows;
 	int columns;
@@ -55,9 +192,7 @@ class Grid{
 	Mugen::Point cellSize;
 	int cellSpacing;
 	MugenSprite *cellBackgroundSprite;
-	Bitmap *cellBackgroundBitmap;
 	MugenSprite *cellRandomSprite;
-	Bitmap *cellRandomBitmap;
 	int cellRandomSwitchTime;
 };
 
@@ -178,7 +313,7 @@ struct PlayerCell{
     Mugen::FontInfo nameFont;
 };
 
-struct Cell{
+struct OldCell{
     // Location
     Mugen::Point position;
     Mugen::Character *character;
@@ -277,7 +412,7 @@ class CharacterSelect{
 	
 	const unsigned long int &selectTicker;
 	
-	std::vector< std::vector< Cell *> > cells;
+	std::vector< std::vector< OldCell *> > cells;
 	
 	std::vector< Mugen::Character *> characters;
 	

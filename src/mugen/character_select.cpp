@@ -60,6 +60,39 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+CharacterInfo::CharacterInfo(const std::string &definitionFile):
+definitionFile(definitionFile),
+baseDirectory(Util::getFileDir(definitionFile)),
+spriteFile(Util::probeDef(definitionFile,"files","sprite")),
+name(Util::probeDef(definitionFile,"info","name")),
+displayName(Util::probeDef(definitionFile,"info","displayname")),
+currentAct(0),
+icon(0),
+portrait(0){
+    /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
+    for (int i = 0; i < 12; ++i){
+        stringstream act;
+        act << "pal" << i;
+        try {
+            std::string actFile = Util::probeDef(definitionFile,"files",act.str());
+            actCollection.push_back(actFile);
+        } catch (const MugenException &me){
+            // Ran its course got what we needed
+        }
+    }
+    icon = Util::probeSff(baseDirectory + spriteFile,9000,0,baseDirectory + actCollection[currentAct]);
+    portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
+}
+
+CharacterInfo::~CharacterInfo(){
+    if (icon){
+        delete icon;
+    }
+    if (portrait){
+        delete portrait;
+    }
+}
+
 Cursor::Cursor():
 blink(false),
 blinkCounter(0),
@@ -132,10 +165,10 @@ Mugen::CharacterSelect::~CharacterSelect(){
     if (background){
 	delete background;
     }
-    for (std::vector< std::vector< Cell *> >::iterator i = cells.begin(); i != cells.end(); ++i){
-	std::vector< Cell *> &row = *i;
-	for (std::vector< Cell *>::iterator c = row.begin(); c != row.end(); ++c){
-	    Cell *cell = *c;
+    for (std::vector< std::vector< OldCell *> >::iterator i = cells.begin(); i != cells.end(); ++i){
+	std::vector< OldCell *> &row = *i;
+	for (std::vector< OldCell *>::iterator c = row.begin(); c != row.end(); ++c){
+	    OldCell *cell = *c;
 	    if (cell) delete cell;
 	}
     }
@@ -321,9 +354,9 @@ void Mugen::CharacterSelect::load(){
     currentPosition.y = position.y;
     for (int row = 0; row < rows; ++row){
 	currentPosition.x = position.x;
-	std::vector< Cell *> cellRow;
+	std::vector< OldCell *> cellRow;
 	for (int column = 0; column < columns; ++column){
-	    Cell *cell = new Cell;
+	    OldCell *cell = new OldCell;
 	    cell->position.x = currentPosition.x;
 	    cell->position.y = currentPosition.y;
 	    cell->character = 0;
@@ -550,7 +583,7 @@ void Mugen::CharacterSelect::drawCursors(const int players, Bitmap *work){
     for (int row = 0; row < rows; ++row){
 	currentPosition.x = position.x;
 	for (int column = 0; column < columns; ++column){
-	    Cell *cell = cells[row][column];
+	    OldCell *cell = cells[row][column];
 	    if (!cell->empty){
 		if (!cell->random){
 		    cell->character->renderSprite(cell->position.x,cell->position.y,9000,0,work);
@@ -574,7 +607,7 @@ void Mugen::CharacterSelect::drawCursors(const int players, Bitmap *work){
 	p1Cursor.done->draw(cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.x,cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->position.y,*work);
     }
     if ( !cells[p1Cursor.cursor.x][p1Cursor.cursor.y]->empty ){
-	Cell *cell = cells[p1Cursor.cursor.x][p1Cursor.cursor.y];
+	OldCell *cell = cells[p1Cursor.cursor.x][p1Cursor.cursor.y];
 	if (!cell->empty){
 	    if (!cell->random){
 		// Portrait
@@ -608,7 +641,7 @@ void Mugen::CharacterSelect::drawCursors(const int players, Bitmap *work){
 	    }
 	}
 	if ( !cells[p2Cursor.cursor.x][p2Cursor.cursor.y]->empty ){
-	    Cell *cell = cells[p2Cursor.cursor.x][p2Cursor.cursor.y];
+	    OldCell *cell = cells[p2Cursor.cursor.x][p2Cursor.cursor.y];
 	    if (!cell->empty){
 		if (!cell->random){
 		    // Portrait
@@ -851,7 +884,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile){
         if (head == "characters"){
             class CharacterWalker: public Ast::Walker{
             public:
-		CharacterWalker(const int rows, const int columns, std::vector< std::vector< Cell *> > &cells,std::vector< Mugen::Character *> &characters, std::vector< std::string > &stageNames):
+		CharacterWalker(const int rows, const int columns, std::vector< std::vector< OldCell *> > &cells,std::vector< Mugen::Character *> &characters, std::vector< std::string > &stageNames):
 		row(0),
 		column(0),
 		rows(rows),
@@ -863,7 +896,7 @@ void Mugen::CharacterSelect::loadCharacters(const std::string &selectFile){
 		
 		int row, column;
 		const int rows,columns;
-		std::vector< std::vector< Cell *> > &cells;
+		std::vector< std::vector< OldCell *> > &cells;
 		std::vector< Mugen::Character *> &characters;
 		std::vector< std::string > &stageNames;
                 virtual void onValueList(const Ast::ValueList & list){

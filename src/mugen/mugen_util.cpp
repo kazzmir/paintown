@@ -959,8 +959,8 @@ const std::string Mugen::Util::probeDef(const std::string &file, const std::stri
 }
 
 /* clean this function up */
-MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int spriteNumber) throw (MugenException){
-    SffReader reader(file, "");
+MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile) throw (MugenException){
+    SffReader reader(file, actFile);
     while (reader.moreSprites()){
         try{
             MugenSprite * sprite = reader.readSprite();            

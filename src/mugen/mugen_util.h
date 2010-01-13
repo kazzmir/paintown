@@ -53,7 +53,7 @@ namespace Util{
     /*! Use to probe a SFF file for a specific sprite without loading the whole sprite list
        Throws exception if not found
     */
-    MugenSprite *probeSff(const std::string &file, int groupNumber, int spriteNumber) throw (MugenException);
+    MugenSprite *probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile="") throw (MugenException);
 }
 
 class Point{

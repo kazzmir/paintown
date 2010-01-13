@@ -199,4 +199,5 @@ MugenStage * Game::setupStage(Mugen::SelectedChars * gameInfo){
         throw e;
     }
 }
-	
+
+
