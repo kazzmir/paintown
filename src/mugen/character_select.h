@@ -9,7 +9,10 @@
 
 #include "menu/menu.h"
 
+#include "input/input-map.h"
+
 #include "mugen_util.h"
+#include "mugen/character.h"
 #include "return_exception.h"
 
 #include "ast/all.h"
@@ -34,7 +37,123 @@ class MugenStage;
 /* Encapsulate in Mugen namespace */
 namespace Mugen{
     
-class Character;
+/* Handles the select screen grid */
+class Grid{
+    public:
+	Grid();
+	virtual ~Grid();
+	
+	virtual void render(const Bitmap &);
+	
+    private:
+	int rows;
+	int columns;
+	bool wrapping;
+	Mugen::Point position;
+	bool showEmptyBoxes;
+	bool moveOverEmptyBoxes;
+	Mugen::Point cellSize;
+	int cellSpacing;
+	MugenSprite *cellBackgroundSprite;
+	Bitmap *cellBackgroundBitmap;
+	MugenSprite *cellRandomSprite;
+	Bitmap *cellRandomBitmap;
+	int cellRandomSwitchTime;
+};
+
+/* Handles player cursors */
+class Cursor{
+    public:
+	Cursor();
+	virtual ~Cursor();
+	
+	virtual void act();
+	
+	virtual void render(const Bitmap &);
+	
+	/*virtual inline void setInput(const InputMap<Command::Keys> & input){
+	    this->input = input;
+	}*/
+	
+	virtual inline void setStart(int x, int y){
+	    this->start.x = x;
+	    this->start.y = y;
+	}
+	virtual inline void setCursor(int x, int y){
+	    this->cursor.x = x;
+	    this->cursor.y = y;
+	}
+	
+	virtual inline void setCursorActiveSprite(MugenSprite *spr){
+	    this->cursorActiveSprite = spr;
+	}
+	
+	virtual inline void setCursorDoneSprite(MugenSprite *spr){
+	    this->cursorDoneSprite = spr;
+	}
+	
+	virtual inline void setBlink(bool b){
+	    this->blink = b;
+	}
+	
+	virtual inline void setBlinkCounter(int b){
+	    this->blinkCounter = b;
+	}
+	
+	virtual inline void setFacingOffset(int x, int y){
+	    this->faceOffset.x = x;
+	    this->faceOffset.y = y;
+	}
+	
+	virtual inline void setFaceScaleX(double x){
+	    this->faceScalex = x;
+	}
+	
+	virtual inline void setFaceScaleY(double y){
+	    this->faceScaley = y;
+	}
+	
+	virtual inline void setFacing(int f){
+	    this->facing = f;
+	}
+	
+	virtual inline void setSelecting(bool s){
+	    this->selecting = s;
+	}
+	
+	virtual inline void setActive(bool a){
+	    this->active = a;
+	}
+	
+	virtual inline void setNameOffset(int x, int y){
+	    this->nameOffset.x = x;
+	    this->nameOffset.y = y;
+	}
+	
+	virtual inline void setFontInfo(Mugen::FontInfo info){
+	    this->nameFont = info;
+	}
+	
+    private:
+	/*InputMap<Command::Keys> &input;*/
+	// Cell
+	Mugen::Point start;
+	Mugen::Point cursor;
+	MugenSprite *cursorActiveSprite;
+	MugenSprite *cursorDoneSprite;
+	bool blink;
+	int blinkCounter;
+	//Facing
+	Mugen::Point faceOffset;
+	double faceScalex;
+	double faceScaley;
+	int facing;
+	bool selecting;
+	bool active;
+	// Name
+	Mugen::Point nameOffset;
+	Mugen::FontInfo nameFont;
+};
 
 struct PlayerCell{
     // Cell
@@ -81,8 +200,6 @@ struct SelectedChars{
     std::vector<Mugen::Character *> team2;
     MugenStage *selectedStage;
 };
-    
-typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > MugenSprites;
 
 class CharacterSelect{
     public:

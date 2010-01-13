@@ -198,6 +198,7 @@ src/mugen/mugen_background.cpp
 src/mugen/character.cpp
 src/mugen/character_select.cpp
 src/mugen/evaluator.cpp
+src/mugen/game.cpp
 src/mugen/mugen_exception.cpp
 src/mugen/mugen_fadetool.cpp
 src/mugen/mugen_font.cpp

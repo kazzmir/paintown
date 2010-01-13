@@ -53,11 +53,54 @@
 namespace PaintownUtil = ::Util;
 
 using namespace std;
+using namespace Mugen;
 
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
+
+Cursor::Cursor():
+blink(false),
+blinkCounter(0),
+faceScalex(0),
+faceScaley(0),
+facing(0),
+selecting(true),
+active(false){
+}
+
+Cursor::~Cursor(){
+}
+
+void Cursor::act(){
+    
+    // if up
+    
+    // if down
+    
+    // if left
+    
+    // if right
+    
+    // if a
+    
+    // if b
+    
+    // if c 
+    
+    // if x
+    
+    // if y
+    
+    // if z
+    
+    // if start
+    
+}
+
+void Cursor::render(const Bitmap & bmp){
+}
 
 Mugen::CharacterSelect::CharacterSelect(const unsigned long int &ticker, const std::string &filename):
 location(filename),
@@ -934,13 +977,13 @@ void Mugen::CharacterSelect::parseSelectInfo(const std::vector<Ast::Section*> & 
 	if (head == "select info"){ 
             class SelectInfoWalker: public Ast::Walker{
             public:
-                SelectInfoWalker(CharacterSelect & self, MugenSprites & sprites):
+                SelectInfoWalker(CharacterSelect & self, Mugen::SpriteMap & sprites):
                     self(self),
                     sprites(sprites){
                     }
 
                 CharacterSelect & self;
-                MugenSprites & sprites;
+                Mugen::SpriteMap & sprites;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		if (simple == "fadein.time" ){
