@@ -77,8 +77,10 @@ enum TransType{
 class Effects{
     public:
 	Effects();
+        Effects(const Effects & copy);
 	const Effects &operator=(const Effects &e);
-	~Effects();
+	virtual ~Effects();
+
 	TransType trans;
 	int alphalow;
 	int alphahigh;

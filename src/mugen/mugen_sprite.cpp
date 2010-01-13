@@ -182,7 +182,8 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
 	}
 	case ADD:{
 	    // this additive 100% I assume... not totally sure
-	    Bitmap::addBlender( 255, 255, 255, 255 );
+	    // Bitmap::addBlender( 255, 255, 255, 255 );
+	    Bitmap::addBlender(0, 0, 0, 255);
 	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}

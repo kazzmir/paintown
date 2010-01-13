@@ -709,7 +709,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             /* Get sprite details */
             int group, spriteNumber;
             // Need to get the parsed data and populate these above items
-            values >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;;
+            values >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;
             string flip;
             string blend;
             try{
@@ -1011,6 +1011,17 @@ facing(1),
 vfacing(1),
 scalex(1),
 scaley(1){
+}
+
+Mugen::Effects::Effects(const Mugen::Effects & copy){
+    this->trans = copy.trans;
+    this->alphalow = copy.alphalow;
+    this->alphahigh = copy.alphahigh;
+    this->mask = copy.mask;
+    this->facing = copy.facing;
+    this->vfacing = copy.vfacing;
+    this->scalex = copy.scalex;
+    this->scaley = copy.scaley;
 }
 
 const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
