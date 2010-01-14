@@ -732,9 +732,9 @@ void Mugen::CharacterSelect::movePlayer1Cursor(int x, int y){
 	    }
 	}
 	else {
-	    int cury = p1Cursor.cursor.y;
-	    while (!cells[p1Cursor.cursor.x][cury]->empty){
-		cury+=y;
+	    int cury = (p1Cursor.cursor.y += y) % columns;
+	    while (cells[p1Cursor.cursor.x][cury]->empty){
+		cury += y;
 		if (wrapping && cury >= columns){
 		    cury = 0;
 		} else if (cury >= columns) {
@@ -744,7 +744,9 @@ void Mugen::CharacterSelect::movePlayer1Cursor(int x, int y){
 		    break;
 		}
 	    }
-	    if (!cells[p1Cursor.cursor.x][cury]->empty)p1Cursor.cursor.y = cury;
+	    if (!cells[p1Cursor.cursor.x][cury]->empty){
+                p1Cursor.cursor.y = cury;
+            }
 	}
     } else if (y < 0){
 	if (moveOverEmptyBoxes){
