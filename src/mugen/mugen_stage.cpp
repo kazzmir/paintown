@@ -604,6 +604,18 @@ void MugenStage::physics(Object * player){
     mugen->moveX(mugen->getXVelocity());
     mugen->moveY(-mugen->getYVelocity());
 
+    if (mugen->canTurn()){
+        for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+            Mugen::Character * enemy = (Mugen::Character*) *enem;
+            if (enemy->getAlliance() != mugen->getAlliance()){
+                if ((enemy->getX() > mugen->getX() && mugen->getFacing() != Object::FACING_RIGHT) ||
+                    (enemy->getX() < mugen->getX() && mugen->getFacing() != Object::FACING_LEFT)){
+                    mugen->doTurn();
+                }
+            }
+        }
+    }
+
     if (mugen->getCurrentPhysics() == Mugen::Physics::Stand){
         /* friction */
         if (mugen->getY() == 0){
@@ -1275,5 +1287,3 @@ void MugenStage::initializeName(){
 	Global::debug(1) << "Error was: " << ex.getReason() << endl;
     }
 }
-
-

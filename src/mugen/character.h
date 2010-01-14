@@ -1116,6 +1116,9 @@ public:
             return hitState;
         }
 
+        bool canTurn() const;
+        void doTurn();
+
 protected:
     void initialize();
     

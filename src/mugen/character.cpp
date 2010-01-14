@@ -2164,6 +2164,22 @@ void Character::fixAssumptions(){
         states[11]->addController(controller);
     }
 
+    /* standing turn state */
+    {
+        State * turn = new State();
+        turn->setType(State::Unchanged);
+        turn->setAnimation(new Ast::Number(5));
+        states[5] = turn;
+
+        StateController * controller = new StateController("stand");
+        controller->setType(StateController::ChangeState);
+        controller->setValue1(new Ast::Number(Standing));
+        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                    new Ast::SimpleIdentifier("animtime"),
+                    new Ast::Number(0)));
+        turn->addController(controller);
+    }
+
 #if 0
     /* if y reaches 0 then auto-transition to state 52.
      * probably just add a trigger to state 50
@@ -2426,7 +2442,16 @@ void Character::draw(Bitmap * work, int x_position){
     if (animation != 0){
         animation->render(getFacing() == Object::FACING_LEFT, false, getRX(), getRY(), *work, 0, 0);
     }
-}                      
+}
+
+bool Character::canTurn() const {
+    return getCurrentState() == Standing;
+}
+
+void Character::doTurn(){
+    changeState(5);
+    reverseFacing();
+}
 
 void Character::grabbed(Object*){
 }
