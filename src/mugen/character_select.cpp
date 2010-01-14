@@ -106,6 +106,39 @@ void CharacterInfo::setAct(int number){
     portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
 }
 
+Cell::Cell(){
+}
+
+Cell::~Cell(){
+}
+
+void Cell::act(){
+}
+
+void Cell::render(const Bitmap & bmp){
+}
+
+Grid::Grid():
+rows(0),
+columns(0),
+wrapping(false),
+showEmptyBoxes(false),
+moveOverEmptyBoxes(false),
+cellSpacing(0),
+cellBackgroundSprite(0),
+cellRandomSprite(0),
+cellRandomSwitchTime(0){
+}
+
+Grid::~Grid(){
+}
+
+void Grid::act(){
+}
+
+void Grid::render(const Bitmap & bmp){
+}
+
 Cursor::Cursor():
 blink(false),
 blinkCounter(0),
@@ -147,6 +180,16 @@ void Cursor::act(){
 
 void Cursor::render(const Bitmap & bmp){
 }
+
+New::CharacterSelect::CharacterSelect(){
+}
+
+New::CharacterSelect::~CharacterSelect(){
+}
+
+
+
+/* OLD STUFF */
 
 Mugen::CharacterSelect::CharacterSelect(const unsigned long int &ticker, const std::string &filename):
 location(filename),

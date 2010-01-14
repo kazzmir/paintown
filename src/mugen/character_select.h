@@ -161,6 +161,8 @@ class Grid{
     public:
 	Grid();
 	virtual ~Grid();
+
+        virtual void act();
 	
 	virtual void render(const Bitmap &);
         
@@ -212,6 +214,11 @@ class Grid{
 	MugenSprite *cellBackgroundSprite;
 	MugenSprite *cellRandomSprite;
 	int cellRandomSwitchTime;
+
+        /* Character list */
+        std::vector< CharacterInfo * > characters;
+        /* Cells of the grid */
+        CellMap cells;
 };
 
 /* Handles player cursors */
@@ -307,6 +314,22 @@ class Cursor{
 	Mugen::Point nameOffset;
 	Mugen::FontInfo nameFont;
 };
+
+/* Temporary namespace remove later */
+
+namespace New{
+
+class CharacterSelect {
+    public:
+        CharacterSelect();
+        ~CharacterSelect();
+    private:
+
+};
+
+}
+
+/* Older data */
 
 struct PlayerCell{
     // Cell
