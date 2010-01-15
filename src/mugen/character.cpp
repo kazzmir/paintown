@@ -1609,7 +1609,7 @@ void Character::parseState(Ast::Section * section){
                     anim = Util::fixCase(anim);
                     if (anim == "light"){
                         controller->getHit().animationType = AttackType::Light;
-                    } else if (anim == "medium"){
+                    } else if (anim == "medium" || anim == "med"){
                         controller->getHit().animationType = AttackType::Medium;
                     } else if (anim == "hard"){
                         controller->getHit().animationType = AttackType::Hard;
@@ -2310,6 +2310,13 @@ vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
 
     return out;
 }
+        
+InputMap<Command::Keys> & Character::getInput(){
+    if (getFacing() == Object::FACING_RIGHT){
+        return inputLeft;
+    }
+    return inputRight;
+}
 
 /* Inherited members */
 void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
@@ -2343,7 +2350,7 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     stateTime += 1;
 
     /* active is the current set of commands */
-    vector<string> active = doInput(InputManager::getMap(input));
+    vector<string> active = doInput(InputManager::getMap(getInput()));
     /* always run through the negative states */
     doStates(active, -3);
     doStates(active, -2);
@@ -2445,7 +2452,9 @@ void Character::draw(Bitmap * work, int x_position){
 }
 
 bool Character::canTurn() const {
-    return getCurrentState() == Standing;
+    return getCurrentState() == Standing ||
+           getCurrentState() == WalkingForwards ||
+           getCurrentState() == WalkingBackwards;
 }
 
 void Character::doTurn(){

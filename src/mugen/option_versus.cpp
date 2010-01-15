@@ -60,12 +60,31 @@ static Mugen::Character * loadKfm(){
     return kfm;
 }
 
-static InputMap<Mugen::Command::Keys> getPlayer1Input(){
+static InputMap<Mugen::Command::Keys> getPlayer1InputRight(){
     InputMap<Mugen::Command::Keys> input;
     input.set(Keyboard::Key_UP, 0, false, Mugen::Command::Up);
     input.set(Keyboard::Key_DOWN, 0, false, Mugen::Command::Down);
     input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Command::Forward);
     input.set(Keyboard::Key_LEFT, 0, false, Mugen::Command::Back);
+
+    input.set(Keyboard::Key_A, 0, false, Mugen::Command::A);
+    input.set(Keyboard::Key_S, 0, false, Mugen::Command::B);
+    input.set(Keyboard::Key_D, 0, false, Mugen::Command::C);
+    input.set(Keyboard::Key_Z, 0, false, Mugen::Command::X);
+    input.set(Keyboard::Key_X, 0, false, Mugen::Command::Y);
+    input.set(Keyboard::Key_C, 0, false, Mugen::Command::Z);
+    return input;
+}
+
+/* kind of dumb to just copy/paste the above. find a better solution */
+static InputMap<Mugen::Command::Keys> getPlayer1InputLeft(){
+    InputMap<Mugen::Command::Keys> input;
+    input.set(Keyboard::Key_UP, 0, false, Mugen::Command::Up);
+    input.set(Keyboard::Key_DOWN, 0, false, Mugen::Command::Down);
+
+    /* these keys are flipped from ...InputRight */
+    input.set(Keyboard::Key_LEFT, 0, false, Mugen::Command::Forward);
+    input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Command::Back);
 
     input.set(Keyboard::Key_A, 0, false, Mugen::Command::A);
     input.set(Keyboard::Key_S, 0, false, Mugen::Command::B);
@@ -164,7 +183,7 @@ MugenStage * MugenOptionVersus::setupStage(Mugen::SelectedChars * gameInfo){
         MugenStage * stage = gameInfo->selectedStage;
         // Load player 1
         gameInfo->team1[0]->load();
-        gameInfo->team1[0]->setInput(getPlayer1Input());
+        gameInfo->team1[0]->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
         stage->addp1(gameInfo->team1[0]);
 
         /* for testing, load kfm as player 2 */

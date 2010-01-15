@@ -188,7 +188,7 @@ MugenStage * Game::setupStage(Mugen::SelectedChars * gameInfo){
 	MugenStage * stage = gameInfo->selectedStage;
         // Load player 1
         gameInfo->team1[0]->load();
-        gameInfo->team1[0]->setInput(getPlayer1Input());
+        gameInfo->team1[0]->setInput(getPlayer1Input(), getPlayer1Input());
         stage->addp1(gameInfo->team1[0]);
 
         /* for testing, load kfm as player 2 */

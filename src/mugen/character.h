@@ -851,8 +851,9 @@ public:
             return animations;
         }
 
-        virtual inline void setInput(const InputMap<Command::Keys> & input){
-            this->input = input;
+        virtual inline void setInput(const InputMap<Command::Keys> & inputLeft, const InputMap<Command::Keys> & inputRight){
+            this->inputLeft = inputLeft;
+            this->inputRight = inputRight;
         }
 	
 	virtual inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
@@ -1140,6 +1141,8 @@ protected:
     virtual void parseState(Ast::Section * section);
     virtual void parseStateDefinition(Ast::Section * section);
 
+    InputMap<Command::Keys> & getInput();
+
 protected:
 
 	/* Location is the directory passed in ctor
@@ -1338,7 +1341,8 @@ protected:
 	// Debug state
 	bool debug;
 
-        InputMap<Command::Keys> input;
+        InputMap<Command::Keys> inputLeft;
+        InputMap<Command::Keys> inputRight;
 
         double velocity_x, velocity_y;
 
