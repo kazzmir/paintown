@@ -43,13 +43,18 @@ class FontHandler{
 	virtual ~FontHandler();
 	
 	void act();
-	void render(Mugen::Point location, const std::string &text, const Bitmap &);
+	void render(const std::string &text, const Bitmap &);
 	
 	enum State{
 	    Normal,
 	    Blink,
 	    Done
 	};
+	
+	virtual inline void setLocation(int x, int y){
+	    location.x = x;
+	    location.y = y;
+	}
 	
 	virtual inline void setState(State state){
 	    this->state = state;
@@ -82,6 +87,8 @@ class FontHandler{
     private:
 	//! Current state
 	State state;
+	//! Position
+	Mugen::Point location;
 	//! primary font
 	MugenFont *font;
 	int bank;
@@ -389,7 +396,52 @@ class CharacterSelect {
 	virtual void run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &);
 	
     private:
-
+	
+	//! Location of file
+	const std::string systemFile;
+	
+	//! sprite file
+	std::string sffFile;
+	
+	//! music
+	std::string sndFile;
+	
+	//! Select file
+	std::string selectFile;
+	
+	//! Fonts
+	std::vector<MugenFont *>fonts;
+	
+	//! Fade tool
+	MugenFadeTool fader;
+	
+	//!Player 1 Cursor
+	Cursor player1;
+	
+	//!Player 2 Cursor
+	Cursor player2;
+	
+	//! Portrait offset -- need to find out what this is for
+	Mugen::Point portraitOffset;
+	
+	//! portrait.scale = 1,1 -- need to find out what this is for
+	Mugen::Point portraitScale;
+	
+	//! Title
+	FontHandler titleFont;
+	
+	// Stage
+	//StageInfo stageInfo;
+	
+	std::vector< CharacterInfo *> characters;
+	
+	std::vector< MugenStage *> stages;
+	
+	//! Sprites
+	Mugen::SpriteMap sprites;
+	
+	//! Select background
+	MugenBackgroundManager *background;
 };
 
 }

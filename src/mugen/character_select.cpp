@@ -99,7 +99,7 @@ void FontHandler::act(){
     }
 }
 
-void FontHandler::render(Mugen::Point location, const std::string &text, const Bitmap &bmp){
+void FontHandler::render(const std::string &text, const Bitmap &bmp){
     switch(state){
 	default:
 	case Normal:
@@ -239,7 +239,11 @@ void Cursor::act(){
 void Cursor::render(const Bitmap & bmp){
 }
 
-New::CharacterSelect::CharacterSelect(const std::string &file){
+New::CharacterSelect::CharacterSelect(const std::string &file):
+systemFile(file),
+sffFile(""),
+sndFile(""),
+selectFile(""){
 }
 
 New::CharacterSelect::~CharacterSelect(){
