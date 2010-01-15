@@ -2361,11 +2361,11 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
 }
 
 void Character::doHit(const HitDefinition & hisHit){
-    changeState(5000);
-
     hitState.update(hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
+    
+    changeState(5000);
 
     vector<string> active;
     while (doStates(active, currentState)){

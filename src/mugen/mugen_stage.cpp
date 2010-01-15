@@ -616,15 +616,19 @@ void MugenStage::physics(Object * player){
         }
     }
 
-    if (mugen->getCurrentPhysics() == Mugen::Physics::Stand){
+    if (mugen->getCurrentPhysics() == Mugen::Physics::Stand ||
+        mugen->getCurrentPhysics() == Mugen::Physics::Crouch){
         /* friction */
         if (mugen->getY() == 0){
             double friction = mugen->getStandingFriction();
+            /*
             if (mugen->getXVelocity() < -friction){
                 mugen->setXVelocity(mugen->getXVelocity() + friction);
             } else if (mugen->getXVelocity() > friction){
                 mugen->setXVelocity(mugen->getXVelocity() - friction);
             }
+            */
+            mugen->setXVelocity(mugen->getXVelocity() * friction);
         }
     }
 
