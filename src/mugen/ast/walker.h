@@ -67,7 +67,7 @@ public:
     virtual void onExpressionUnary(const ExpressionUnary & expression){
     }
 
-    virtual void onIdenfitier(const Identifier & identifier){
+    virtual void onIdentifier(const Identifier & identifier){
     }
 
     virtual void onString(const String & string){

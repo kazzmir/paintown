@@ -41,7 +41,10 @@ def useLLVM():
 
 # todo: read from an environment variable or something
 def enableProfiled():
-    return False
+    try:
+        return int(os.environ[ 'PROFILE' ])
+    except KeyError:
+        return 0
 
 def checkLex(context):
     context.Message("Checking for flex... ")

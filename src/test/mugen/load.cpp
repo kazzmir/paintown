@@ -8,9 +8,11 @@ int main(){
     set_color_depth(16);
     set_color_conversion(COLORCONV_NONE);
 
-    try{
-        Mugen::Character kfm("kfm");
-        kfm.load();
-    } catch (const MugenException & e){
-    }
+    // for (int i = 0; i < 3; i++){
+        try{
+            Mugen::Character kfm("kfm");
+            kfm.load();
+        } catch (const MugenException & e){
+        }
+    // }
 }

@@ -32,7 +32,7 @@ public:
     }
     
     virtual void walk(Walker & walker) const {
-        walker.onIdenfitier(*this);
+        walker.onIdentifier(*this);
     }
 
     bool operator==(const std::string & str) const {
