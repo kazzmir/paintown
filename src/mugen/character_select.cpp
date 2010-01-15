@@ -250,6 +250,312 @@ New::CharacterSelect::~CharacterSelect(){
 }
 
 void New::CharacterSelect::load() throw (MugenException){
+    // Lets look for our def since some people think that all file systems are case insensitive
+    std::string baseDir = Mugen::Util::getFileDir(systemFile);
+    
+    Global::debug(1) << baseDir << endl;
+    
+    if (systemFile.empty()){
+        throw MugenException( "Cannot locate character select definition file for: " + systemFile );
+    }
+
+    TimeDifference diff;
+    diff.startTime();
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(systemFile));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + systemFile + " in" + diff.printTime("") << endl;
+    
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        /* this should really be head = Mugen::Util::fixCase(head) */
+	head = Mugen::Util::fixCase(head);
+        if (head == "info"){
+	    /* Nothing right now */
+        } else if (head == "files"){
+            class FileWalker: public Ast::Walker{
+                public:
+                    FileWalker(Mugen::New::CharacterSelect & select, const string & baseDir):
+                        select(select),
+                        baseDir(baseDir){
+                        }
+
+                    Mugen::New::CharacterSelect & select;
+                    const string & baseDir;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "spr"){
+                            simple >> select.sffFile;
+                            Global::debug(1) << "Got Sprite File: '" << select.sffFile << "'" << endl;
+                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, select.sffFile), "", select.sprites);
+                        } else if (simple == "snd"){
+                            simple >> select.sndFile;
+                            Global::debug(1) << "Got Sound File: '" << select.sndFile << "'" << endl;
+                        } else if (simple == "logo.storyboard"){
+                            // Ignore
+                        } else if (simple == "intro.storyboard"){
+                            // Ignore
+                        } else if (simple == "select"){
+                            simple >> select.selectFile;
+                            Global::debug(1) << "Got Select File: '" << select.selectFile << "'" << endl;
+                        } else if (simple == "fight"){
+                            // Ignore
+                        } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                            string temp;
+                            simple >> temp;
+                            select.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
+                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+
+                        } else {
+                            throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
+                        }
+                    }
+            };
+            
+            FileWalker walker(*this, baseDir);
+            section->walk(walker);
+        } else if (head == "title info"){
+	    /* Nothing */
+	} else if (PaintownUtil::matchRegex(head, "^titlebg")){
+	    /* Nothing */
+	} else if (head == "select info"){ 
+            class SelectInfoWalker: public Ast::Walker{
+            public:
+                SelectInfoWalker(New::CharacterSelect & self, Mugen::SpriteMap & sprites):
+                    self(self),
+                    sprites(sprites){
+                    }
+
+                New::CharacterSelect & self;
+                Mugen::SpriteMap & sprites;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		if (simple == "fadein.time" ){
+		    int time;
+                    simple >> time;
+		    //self.fader.setFadeInTime(time);
+		} else if (simple == "fadein.color" ){
+		    int r,g,b;
+                    simple >> r >> g >> b;
+		    //self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+		} else if (simple == "fadeout.time"){
+		    int time;
+                    simple >> time;
+		    //self.fader.setFadeOutTime(time);
+		} else if (simple == "fadeout.color"){
+		    int r,g,b;
+                    simple >> r >> g >> b;
+		    //self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+		} else if (simple == "rows"){
+                    //simple >> self.rows;
+		} else if (simple == "columns"){
+                    //simple >> self.columns;
+		} else if (simple == "wrapping"){
+                    //simple >> self.wrapping;
+		} else if (simple == "pos"){
+                    //simple >> self.position.x >> self.position.y;
+		} else if (simple == "showemptyboxes"){
+                    //simple >> self.showEmptyBoxes;
+		} else if (simple == "moveoveremptyboxes"){
+                    //simple >> self.moveOverEmptyBoxes;
+		} else if (simple == "cell.size"){
+                    //simple >> self.cellSize.x >> self.cellSize.y;
+		} else if (simple == "cell.spacing"){
+                    //simple >> self.cellSpacing;
+		} else if (simple == "cell.bg.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    //self.cellBackgroundSprite = sprites[group][sprite];
+		    //self.cellBackgroundSprite->load();
+		    //self.cellBackgroundBitmap = self.cellBackgroundSprite->getBitmap();
+		} else if (simple == "cell.random.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    //self.cellRandomSprite = sprites[group][sprite];
+		    //self.cellRandomSprite->load();
+		    //self.cellRandomBitmap = self.cellRandomSprite->getBitmap();
+		} else if (simple == "cell.random.switchtime"){
+                    //simple >> self.cellRandomSwitchTime;
+		} else if (simple == "p1.cursor.startcell"){
+                    //simple >> self.p1Cursor.cursor.x;
+		    //simple >> self.p1Cursor.cursor.y;
+		    //self.p1Cursor.start.x = self.p1Cursor.cursor.x;
+		    //self.p1Cursor.start.y = self.p1Cursor.cursor.y;
+		} else if (simple == "p1.cursor.active.spr"){
+		    int group, sprite;
+		    //simple >> group >> sprite;
+		    //self.p1Cursor.cursorActiveSprite = sprites[group][sprite];
+		    //self.p1Cursor.cursorActiveSprite->load();
+		    //self.p1Cursor.active = self.p1Cursor.cursorActiveSprite->getBitmap();
+		} else if (simple == "p1.cursor.done.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    //self.p1Cursor.cursorDoneSprite = sprites[group][sprite];
+		    //self.p1Cursor.cursorDoneSprite->load();
+		    //self.p1Cursor.done = self.p1Cursor.cursorDoneSprite->getBitmap();
+		} else if (simple == "p1.cursor.move.snd"){ /* nothing */ }
+                else if (simple == "p1.cursor.done.snd"){ /* nothing */ }
+		else if (simple == "p1.random.move.snd"){ /* nothing */ }
+		else if (simple == "p2.cursor.startcell"){
+                    //simple >> self.p2Cursor.cursor.x;
+		    //simple >> self.p2Cursor.cursor.y;
+		    //self.p2Cursor.start.x = self.p2Cursor.cursor.x;
+		    //self.p2Cursor.start.y = self.p2Cursor.cursor.y;
+		} if (simple == "p2.cursor.active.spr"){
+		    int group, sprite;
+                    //simple >> group >> sprite;
+		    //self.p2Cursor.cursorActiveSprite = sprites[group][sprite];
+		    //self.p2Cursor.cursorActiveSprite->load();
+		    //self.p2Cursor.active = self.p2Cursor.cursorActiveSprite->getBitmap();
+		} else if (simple == "p2.cursor.done.spr"){
+		    int group, sprite;
+                    simple >> group >> sprite;
+		    //self.p2Cursor.cursorDoneSprite = sprites[group][sprite];
+		    //self.p2Cursor.cursorDoneSprite->load();
+		    //self.p2Cursor.done = self.p2Cursor.cursorDoneSprite->getBitmap();
+		} else if (simple == "p2.cursor.blink"){
+		    //simple >> self.p2Cursor.blink;
+		    //self.p2Cursor.blinkCounter = 0;
+		} 
+		else if ( simple == "p2.cursor.move.snd"){ /* nothing */ }
+		else if ( simple == "p2.cursor.done.snd"){ /* nothing */ }
+		else if ( simple == "p2.random.move.snd"){ /* nothing */ }
+		else if ( simple == "stage.move.snd"){ /* nothing */ }
+		else if ( simple == "stage.done.snd"){ /* nothing */ }
+		else if ( simple == "cancel.snd"){ /* nothing */ }
+		else if (simple == "portrait.offset"){
+		    //simple >> self.portraitOffset.x;
+		    //simple >> self.portraitOffset.y;
+		} else if (simple == "portrait.scale"){
+		    //simple >> self.portraitScale.x;
+		    //simple >> self.portraitScale.y;
+		} else if ( simple == "title.offset"){
+		    //simple >> self.titleOffset.x;
+		    //simple >> self.titleOffset.y;
+		} else if ( simple == "title.font"){
+		    //simple >> self.titleFont.index;
+		    //simple >> self.titleFont.bank;
+		    //simple >> self.titleFont.position;
+		} else if ( simple == "p1.face.offset"){
+		    //simple >> self.p1Cursor.faceOffset.x;
+		    //simple >> self.p1Cursor.faceOffset.y;
+		} else if ( simple == "p1.face.scale"){
+		    //simple >> self.p1Cursor.faceScalex;
+		    //simple >> self.p1Cursor.faceScaley;
+		} else if ( simple == "p1.face.facing"){
+		    //simple >> self.p1Cursor.facing;
+		} else if ( simple == "p2.face.offset"){
+		    //simple >> self.p2Cursor.faceOffset.x;
+		    //simple >> self.p2Cursor.faceOffset.y;
+		} else if ( simple == "p2.face.scale"){
+		    //simple >> self.p2Cursor.faceScalex;
+		    //simple >> self.p2Cursor.faceScaley;
+		} else if ( simple == "p2.face.facing"){
+		    //simple >> self.p2Cursor.facing;
+		} else if ( simple == "p1.name.offset"){
+		    //simple >> self.p1Cursor.nameOffset.x;
+		    //simple >> self.p1Cursor.nameOffset.y;
+		}  else if ( simple == "p1.name.font"){
+		    //simple >> self.p1Cursor.nameFont.index;
+		    //simple >> self.p1Cursor.nameFont.bank;
+		    //simple >> self.p1Cursor.nameFont.position;
+		} else if ( simple == "p2.name.offset"){
+		    //simple >> self.p2Cursor.nameOffset.x;
+		    //simple >> self.p2Cursor.nameOffset.y;
+		} else if ( simple == "p2.name.font"){
+		    //simple >> self.p2Cursor.nameFont.index;
+		    //simple >> self.p2Cursor.nameFont.bank;
+		    //simple >> self.p2Cursor.nameFont.position;
+		} else if ( simple == "stage.pos"){
+		    //simple >> self.stageInfo.stagePosition.x;
+		    //simple >> self.stageInfo.stagePosition.y;
+		} else if ( simple == "stage.active.font"){
+		    //simple >> self.stageInfo.stageActiveFont.index;
+		    //simple >> self.stageInfo.stageActiveFont.bank;
+		    //simple >> self.stageInfo.stageActiveFont.position;
+		} else if ( simple == "stage.active2.font"){
+                    try{
+                        //simple >> self.stageInfo.stageActiveFont2.index;
+                        //simple >> self.stageInfo.stageActiveFont2.bank;
+                        //simple >> self.stageInfo.stageActiveFont2.position;
+                    } catch (const Ast::Exception & e){
+                        /* ignore I guess */
+                    }
+		} else if ( simple == "stage.done.font"){
+                    try{
+                        //simple >> self.stageInfo.stageDoneFont.index;
+                        //simple >> self.stageInfo.stageDoneFont.bank;
+                        //simple >> self.stageInfo.stageDoneFont.position;
+                    } catch (const Ast::Exception & e){
+                        /* ignore */
+                    }
+		}
+#if 0
+                else if ( simple.find("teammenu")!=std::string::npos ){
+                    /* Ignore for now */
+                }
+#endif
+		//else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
+                }
+            };
+
+            SelectInfoWalker walker(*this, sprites);
+            section->walk(walker);
+	} else if (head == "selectbgdef"){ 
+	    /* Background management */
+	    //MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir(selectFile), sections, selectTicker, &sprites, "selectbg");
+	    //background = manager;
+	    //Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+	} else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "vs screen" ){ /* Ignore for now */ }
+	else if (head == "versusbgdef" ){ /* Ignore for now */ }
+	else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "demo mode" ){ /* Ignore for now */ }
+	else if (head == "continue screen" ){ /* Ignore for now */ }
+	else if (head == "game over screen" ){ /* Ignore for now */ }
+	else if (head == "win screen" ){ /* Ignore for now */ }
+	else if (head == "default ending" ){ /* Ignore for now */ }
+	else if (head == "end credits" ){ /* Ignore for now */ }
+	else if (head == "survival results screen" ){ /* Ignore for now */ }
+	else if (head == "option info" ){ /* Ignore for now */ }
+	else if (head == "optionbgdef" ){ /* Ignore for now */ }
+	else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
+	else if (head == "music" ){ /* Ignore for now */ }
+	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
+        else {
+            throw MugenException("Unhandled Section in '" + systemFile + "': " + head, __FILE__, __LINE__ ); 
+        }
+    }
+    
+    // Set up cell table
+    /*Mugen::Point currentPosition;
+    currentPosition.y = position.y;
+    for (int row = 0; row < rows; ++row){
+	currentPosition.x = position.x;
+	std::vector< OldCell *> cellRow;
+	for (int column = 0; column < columns; ++column){
+	    OldCell *cell = new OldCell;
+	    cell->position.x = currentPosition.x;
+	    cell->position.y = currentPosition.y;
+	    cell->character = 0;
+	    cell->random = false;
+	    cell->empty = true;
+	    cellRow.push_back(cell);
+	    currentPosition.x += cellSize.x + cellSpacing;
+	}
+	cells.push_back(cellRow);
+	currentPosition.y += cellSize.y + cellSpacing;
+    }*/
+    // Now load up our characters
+    //loadCharacters(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
+    
+    // Set stage info
+    //stageInfo.selected = false;
+    //stageInfo.altCounter = 0;
+    
+    // Set up the animations for those that have action numbers assigned (not -1 )
+    // Also do their preload
+    //if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS )
 }
 
 void New::CharacterSelect::run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &bmp){
