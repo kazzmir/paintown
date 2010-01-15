@@ -60,6 +60,64 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+FontHandler::FontHandler():
+state(Normal),
+font(0),
+bank(0),
+position(0),
+blinkFont(0),
+blinkBank(0),
+blinkPosition(0),
+doneFont(0),
+doneBank(0),
+donePosition(0),
+ticker(0),
+blinkTime(10),
+blinkState(Normal){
+}
+
+FontHandler::~FontHandler(){
+}
+
+void FontHandler::act(){
+    switch(state){
+	case Blink:
+	    ticker++;
+	    if (ticker == blinkTime){
+		ticker = 0;
+		if (blinkState == Normal){
+		    blinkState = Blink;
+		} else if (blinkState == Blink){
+		    blinkState = Normal;
+		}
+	    }
+	    break;
+	case Normal:
+	case Done:
+	default:
+	    break;
+    }
+}
+
+void FontHandler::render(Mugen::Point location, const std::string &text, const Bitmap &bmp){
+    switch(state){
+	default:
+	case Normal:
+	    font->render(location.x, location.y, position, bank, bmp, text);
+	    break;
+	case Blink:
+	    if (blinkState == Normal){
+		font->render(location.x, location.y, position, bank, bmp, text);
+	    } else if (blinkState == Blink){
+		blinkFont->render(location.x, location.y, blinkPosition, blinkBank, bmp, text);
+	    }
+	    break;
+	case Done:
+	    doneFont->render(location.x, location.y, donePosition, doneBank, bmp, text);
+	    break;
+    }
+}
+
 CharacterInfo::CharacterInfo(const std::string &definitionFile):
 definitionFile(definitionFile),
 baseDirectory(Util::getFileDir(definitionFile)),
@@ -181,13 +239,17 @@ void Cursor::act(){
 void Cursor::render(const Bitmap & bmp){
 }
 
-New::CharacterSelect::CharacterSelect(){
+New::CharacterSelect::CharacterSelect(const std::string &file){
 }
 
 New::CharacterSelect::~CharacterSelect(){
 }
 
+void New::CharacterSelect::load() throw (MugenException){
+}
 
+void New::CharacterSelect::run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &bmp){
+}
 
 /* OLD STUFF */
 

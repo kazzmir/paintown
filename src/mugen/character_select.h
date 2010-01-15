@@ -36,6 +36,71 @@ class MugenStage;
 
 /* Encapsulate in Mugen namespace */
 namespace Mugen{
+    
+class FontHandler{
+    public:
+	FontHandler();
+	virtual ~FontHandler();
+	
+	void act();
+	void render(Mugen::Point location, const std::string &text, const Bitmap &);
+	
+	enum State{
+	    Normal,
+	    Blink,
+	    Done
+	};
+	
+	virtual inline void setState(State state){
+	    this->state = state;
+	}
+	
+	virtual inline State getState() const {
+	    return state;
+	}
+	
+	virtual inline void setBlinkTime(int time){
+	    this->blinkTime = time;
+	}
+	
+	virtual inline void setPrimary(MugenFont *font, int bank, int position){
+	    this->font = font;
+	    this->bank = bank;
+	    this->position = position;
+	}
+	virtual inline void setBlink(MugenFont *font, int bank, int position){
+	    this->state = Blink;
+	    this->blinkFont = font;
+	    this->blinkBank = bank;
+	    this->blinkPosition = position;
+	}
+	virtual inline void setDone(MugenFont *font, int bank, int position){
+	    this->doneFont = font;
+	    this->doneBank = bank;
+	    this->donePosition = position;
+	}
+    private:
+	//! Current state
+	State state;
+	//! primary font
+	MugenFont *font;
+	int bank;
+	int position;
+	//! secondary font for blinking
+	MugenFont *blinkFont;
+	int blinkBank;
+	int blinkPosition;
+	//! third font for when completed
+	MugenFont *doneFont;
+	int doneBank;
+	int donePosition;
+	//! ticker for font switching when blinking
+	int ticker;
+	//! blink time defaults to 10
+	int blinkTime;
+	//! Blink setting
+	State blinkState;
+};
 
 /* Character Info handler, portrait name and etc */
 class CharacterInfo {
@@ -290,10 +355,6 @@ class Cursor{
 	    this->nameOffset.y = y;
 	}
 	
-	virtual inline void setFontInfo(Mugen::FontInfo info){
-	    this->nameFont = info;
-	}
-	
     private:
 	/*InputMap<Command::Keys> &input;*/
 	// Cell
@@ -312,7 +373,6 @@ class Cursor{
 	bool active;
 	// Name
 	Mugen::Point nameOffset;
-	Mugen::FontInfo nameFont;
 };
 
 /* Temporary namespace remove later */
@@ -321,8 +381,13 @@ namespace New{
 
 class CharacterSelect {
     public:
-        CharacterSelect();
-        ~CharacterSelect();
+        CharacterSelect(const std::string & file);
+        virtual ~CharacterSelect();
+	
+	virtual void load() throw (MugenException);
+	
+	virtual void run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &);
+	
     private:
 
 };
