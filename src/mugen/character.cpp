@@ -962,6 +962,11 @@ Character::~Character(){
     for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
         delete (*it);
     }
+        
+    for (map<int, State*>::iterator it = states.begin(); it != states.end(); it++){
+        State * state = (*it).second;
+        delete state;
+    }
 }
 
 void Character::initialize(){

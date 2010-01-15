@@ -240,8 +240,10 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
 	Global::debug(1) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
 	newlength += 768;
 	pcx = new char[newlength];
+        memset(pcx, 0, newlength);
     } else {
 	pcx = new char[reallength];
+        memset(pcx, 0, reallength);
     }
     ifile.read((char *)pcx, reallength); 
     if ( !islinked ){

@@ -407,9 +407,9 @@ public:
             location = sprite->getNext();
             spriteIndex[currentSprite] = 0;
             currentSprite += 1;
-            delete sprite;
             ostringstream out;
             out << "Could not load sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << ": " << le.getReason() << endl;
+            delete sprite;
             throw MugenException(out.str());
         }
     }
