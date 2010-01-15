@@ -448,7 +448,7 @@ env['LEX'] = 'flex'
 # env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
 env.Append( CCFLAGS = cflags,
             CXXFLAGS = cppflags,
-            CPPPATH = [ ".", 'hawknl' ],
+            CPPPATH = [ "#src", '#src/hawknl' ],
             CPPDEFINES = cdefines )
 
 def buildDumb(where, env):

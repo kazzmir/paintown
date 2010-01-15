@@ -2,7 +2,7 @@
 #define _paintown_parser_gc_h
 
 #include <list>
-#include "../ast/all.h"
+#include "mugen/ast/all.h"
 
 namespace GC{
 

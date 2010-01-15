@@ -2,7 +2,7 @@ start-symbol: start
 options: debug0
 module: Mugen.Cmd
 include: {{
-#include "../ast/all.h"
+#include "mugen/ast/all.h"
 #include <map>
 #include "gc.h"
 typedef std::list<Ast::Section*> SectionList;
