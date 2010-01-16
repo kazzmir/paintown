@@ -165,8 +165,13 @@ void CharacterInfo::setAct(int number){
 }
 
 Cell::Cell():
+background(0),
+randomSprite(0),
 random(false),
-empty(true){
+empty(true),
+active(false),
+characterScaleX(1),
+characterScaleY(1){
 }
 
 Cell::~Cell(){
@@ -176,6 +181,17 @@ void Cell::act(){
 }
 
 void Cell::render(const Bitmap & bmp){
+    background->render(position.x,position.y,bmp);
+    if (!empty){
+	Mugen::Effects effects;
+	effects.scalex = characterScaleX;
+	effects.scaley = characterScaleY;
+	if (random){
+	    randomSprite->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
+	} else {
+	    character->getIcon()->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
+	}
+    }
 }
 
 Grid::Grid():
@@ -188,23 +204,80 @@ cellSpacing(0),
 cellBackgroundSprite(0),
 cellRandomSprite(0),
 cellRandomSwitchTime(0),
-portraitScale(1,1){
+portraitScaleX(1),
+portraitScaleY(1){
 }
 
 Grid::~Grid(){
 }
 
+void Grid::initialize(){
+    Mugen::Point currentPosition;
+    currentPosition.y = position.y;
+    for (int row = 0; row < rows; ++row){
+	currentPosition.x = position.x;
+	std::vector< Cell *> cellRow;
+	for (int column = 0; column < columns; ++column){
+	    Cell *cell = new Cell;
+	    cell->setBackground(cellBackgroundSprite);
+	    cell->setPosition(currentPosition.x,currentPosition.y);
+	    cell->setCharacterOffset(portraitOffset.x, portraitOffset.y);
+	    cell->setCharacterScale(portraitScaleX, portraitScaleY);
+	    cellRow.push_back(cell);
+	    currentPosition.x += cellSize.x + cellSpacing;
+	}
+	cells.push_back(cellRow);
+	currentPosition.y += cellSize.y + cellSpacing;
+    }
+}
+
 void Grid::act(){
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	std::vector< Cell *> &row = (*i);
+	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+	    cell->act();
+	}
+    }
 }
 
 void Grid::render(const Bitmap & bmp){
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	std::vector< Cell *> &row = (*i);
+	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+	    if (cell->isEmpty()){
+		if (showEmptyBoxes){
+		    cell->render(bmp);
+		}
+	    } else {
+		cell->render(bmp);
+	    }
+	}
+    }
+}
+
+void Grid::addCharacter(CharacterInfo *character, bool isRandom){
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	std::vector< Cell *> &row = (*i);
+	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+	    if (cell->isEmpty()){
+		if (isRandom){
+		    cell->setRandom(true);
+		}
+		cell->setCharacter(character);
+		return;
+	    } 
+	}
+    }
 }
 
 Cursor::Cursor():
 blink(false),
 blinkCounter(10),
-faceScalex(0),
-faceScaley(0),
+faceScaleX(0),
+faceScaleY(0),
 facing(0),
 selecting(true),
 active(false){
@@ -476,7 +549,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    simple >> x >> y;
 		    self.grid.setPortraitOffset(x,y);
 		} else if (simple == "portrait.scale"){
-		    int x,y;
+		    double x,y;
 		    simple >> x >> y;
 		    self.grid.setPortraitScale(x,y);
 		} else if ( simple == "title.offset"){
@@ -492,7 +565,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    simple >> x >> y;
 		    self.player1.setFaceOffset(x,y);
 		} else if ( simple == "p1.face.scale"){
-		    int x, y;
+		    double x, y;
 		    simple >> x >> y;
 		    self.player1.setFaceScale(x,y);
 		} else if ( simple == "p1.face.facing"){
@@ -504,7 +577,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    simple >> x >> y;
 		    self.player2.setFaceOffset(x,y);
 		} else if ( simple == "p2.face.scale"){
-		    int x, y;
+		    double x, y;
 		    simple >> x >> y;
 		    self.player2.setFaceScale(x,y);
 		} else if ( simple == "p2.face.facing"){
@@ -582,25 +655,9 @@ void New::CharacterSelect::load() throw (MugenException){
         }
     }
     
-    // Set up cell table
-    /*Mugen::Point currentPosition;
-    currentPosition.y = position.y;
-    for (int row = 0; row < rows; ++row){
-	currentPosition.x = position.x;
-	std::vector< OldCell *> cellRow;
-	for (int column = 0; column < columns; ++column){
-	    OldCell *cell = new OldCell;
-	    cell->position.x = currentPosition.x;
-	    cell->position.y = currentPosition.y;
-	    cell->character = 0;
-	    cell->random = false;
-	    cell->empty = true;
-	    cellRow.push_back(cell);
-	    currentPosition.x += cellSize.x + cellSpacing;
-	}
-	cells.push_back(cellRow);
-	currentPosition.y += cellSize.y + cellSpacing;
-    }*/
+    // Set up Grid
+    grid.initialize();
+    
     // Now load up our characters
     //loadCharacters(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
     

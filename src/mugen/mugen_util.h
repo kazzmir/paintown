@@ -87,8 +87,8 @@ class Effects{
 	bool mask;
 	int facing;
 	int vfacing;
-	int scalex;
-	int scaley;
+	double scalex;
+	double scaley;
 };
 
 /* Use with fonts */

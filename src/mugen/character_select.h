@@ -202,11 +202,20 @@ class Cell{
 
         virtual void act();
         virtual void render(const Bitmap &);
+	
+	virtual inline void setBackground(MugenSprite *sprite){
+	    this->background = sprite;
+	}
+	
+	virtual inline void setCharacter(CharacterInfo *character){
+	    this->empty = false;
+	    this->character = character;
+	}
+	
+	virtual inline void setRandomSprite(MugenSprite *random){
+	    randomSprite = random;
+	}
         
-        virtual inline void setSpriteIndex(int x, int y){
-            spriteIndex.x = x;
-            spriteIndex.y = y;
-        }
         virtual inline void setPosition(int x, int y){
             position.x = x;
             position.y = y;
@@ -214,12 +223,38 @@ class Cell{
         virtual inline void setRandom(bool r){
             random = r;
         }
+	virtual inline bool isRandom() const {
+	    return random;
+	}
         virtual inline void setEmpty(bool e){
             empty = e;
         }
+	virtual inline bool isEmpty() const {
+	    return empty;
+	}
+	virtual inline void setActive(bool a){
+	    active = a;
+	}
+	virtual inline bool isActive() const {
+	    return active;
+	}
+	virtual inline void setCharacterOffset(int x, int y){
+	    this->characterOffset.x = x;
+	    this->characterOffset.y = y;
+	}
+	virtual inline void setCharacterScale(double x, double y){
+	    this->characterScaleX = x;
+	    this->characterScaleY = y;
+	}
     private:
-	//! Set sprite for this cell (it can be updated in the case of random)
-        Mugen::Point spriteIndex;
+	//! Set sprite background
+	MugenSprite *background;
+	
+	//! Set Character
+        CharacterInfo *character;
+	
+	//! Set Random Sprite
+	MugenSprite *randomSprite;
 	
 	//! Position of this cell
         Mugen::Point position;
@@ -229,6 +264,17 @@ class Cell{
 	
 	//! Is this cell empty
         bool empty;
+	
+	//! Is this cell active currently (cursor above it)?
+	bool active;
+	
+	//! Offset in which the portrait is placed in the cell
+	Mugen::Point characterOffset;
+	
+	//! Scale values of the portrait placed in the cell
+	double characterScaleX;
+	double characterScaleY;
+	
 };
 
 typedef std::vector< std::vector< Cell * > > CellMap;
@@ -238,10 +284,14 @@ class Grid{
     public:
 	Grid();
 	virtual ~Grid();
+	
+	virtual void initialize();
 
         virtual void act();
 	
 	virtual void render(const Bitmap &);
+	
+	virtual void addCharacter(CharacterInfo *character, bool isRandom = false);
         
         virtual inline void setRows(int r){
 	    this->rows = r;
@@ -284,9 +334,9 @@ class Grid{
 	    portraitOffset.y = y;
 	}
 	
-	virtual inline void setPortraitScale(int x, int y){
-	    portraitScale.x = x;
-	    portraitScale.y = y;
+	virtual inline void setPortraitScale(double x, double y){
+	    this->portraitScaleX = x;
+	    this->portraitScaleY = y;
 	}
     
     private:
@@ -306,10 +356,12 @@ class Grid{
 	Mugen::Point portraitOffset;
 	
 	//! portrait scale for resizing if need be
-	Mugen::Point portraitScale;
+	double portraitScaleX;
+	double portraitScaleY;
 
         /* Character list */
         std::vector< CharacterInfo * > characters;
+	
         /* Cells of the grid */
         CellMap cells;
 };
@@ -359,8 +411,8 @@ class Cursor{
 	}
 	
 	virtual inline void setFaceScale(double x, double y){
-	    this->faceScalex = x;
-	    this->faceScaley = y;
+	    this->faceScaleX = x;
+	    this->faceScaleY = y;
 	}
 	
 	virtual inline void setFacing(int f){
@@ -391,8 +443,8 @@ class Cursor{
 	int blinkCounter;
 	//Facing
 	Mugen::Point faceOffset;
-	double faceScalex;
-	double faceScaley;
+	double faceScaleX;
+	double faceScaleY;
 	int facing;
 	bool selecting;
 	bool active;
