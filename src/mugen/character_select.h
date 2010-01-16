@@ -109,11 +109,18 @@ class FontHandler{
 	State blinkState;
 };
 
+/* Forward declaration of Cell */
+class Cell;
+
 /* Character Info handler, portrait name and etc */
 class CharacterInfo {
     public:
         CharacterInfo(const std::string &definitionFile);
         virtual ~CharacterInfo();
+	
+	inline bool operator==(CharacterInfo &character){
+	    return (this->definitionFile.compare(character.definitionFile) == 0);
+	}
 
         virtual inline MugenSprite * getIcon() const{
             return icon;
@@ -164,6 +171,10 @@ class CharacterInfo {
         virtual inline const int getOrder() const{
             return order;
         }
+	
+	virtual inline void setReferenceCell(Cell *cell){
+	    this->referenceCell = cell;
+	}
 
     private:
         /* The characters definition File to pass on to stage or anything else */
@@ -192,6 +203,9 @@ class CharacterInfo {
         std::string music;
         /* Order in which to be set during Arcade mode */
         int order;
+	
+	//! Reference Cell mainly for random so that we can light it up when it selected
+	Cell *referenceCell;
 };
 
 /* Handle an individual cell which contains the data required to render itself */
@@ -200,7 +214,7 @@ class Cell{
         Cell();
         virtual ~Cell();
 
-        virtual void act();
+        virtual void act(std::vector<CharacterInfo *> &characters);
         virtual void render(const Bitmap &);
 	
 	virtual inline void setBackground(MugenSprite *sprite){

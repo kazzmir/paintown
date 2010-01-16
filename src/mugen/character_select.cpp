@@ -126,7 +126,8 @@ name(Util::probeDef(definitionFile,"info","name")),
 displayName(Util::probeDef(definitionFile,"info","displayname")),
 currentAct(0),
 icon(0),
-portrait(0){
+portrait(0),
+referenceCell(0){
     /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
     for (int i = 0; i < 12; ++i){
         stringstream act;
@@ -177,7 +178,11 @@ characterScaleY(1){
 Cell::~Cell(){
 }
 
-void Cell::act(){
+void Cell::act(std::vector<CharacterInfo *> &characters){
+    if (active && random){
+	unsigned int num = PaintownUtil::rnd(0,characters.size()-1);
+	character = characters[num];
+    }
 }
 
 void Cell::render(const Bitmap & bmp){
@@ -209,6 +214,16 @@ portraitScaleY(1){
 }
 
 Grid::~Grid(){
+    // Destroy cell map
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	std::vector< Cell *> &row = (*i);
+	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+	    if (cell){
+		delete cell;
+	    }
+	}
+    }
 }
 
 void Grid::initialize(){
@@ -236,7 +251,7 @@ void Grid::act(){
 	std::vector< Cell *> &row = (*i);
 	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
 	    Cell *cell = (*column);
-	    cell->act();
+	    cell->act(characters);
 	}
     }
 }
@@ -266,7 +281,9 @@ void Grid::addCharacter(CharacterInfo *character, bool isRandom){
 		if (isRandom){
 		    cell->setRandom(true);
 		}
+		character->setReferenceCell(cell);
 		cell->setCharacter(character);
+		characters.push_back(character);
 		return;
 	    } 
 	}
@@ -357,6 +374,20 @@ selectFile(""){
 }
 
 New::CharacterSelect::~CharacterSelect(){
+    // Get rid of sprites
+    for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
+    }
+    // Cleanup fonts
+    for (std::vector< MugenFont *>::iterator f = fonts.begin(); f != fonts.end(); ++f){
+	    if (*f) delete (*f);
+    }
+    /* background */
+    if (background){
+	delete background;
+    }
 }
 
 void New::CharacterSelect::load() throw (MugenException){
@@ -667,7 +698,9 @@ void New::CharacterSelect::load() throw (MugenException){
     
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
-    //if (background) background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS )
+    if (background){
+	background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
+    }
 }
 
 void New::CharacterSelect::run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &bmp){
