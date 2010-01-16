@@ -415,6 +415,9 @@ class CharacterSelect {
 	//! Fade tool
 	MugenFadeTool fader;
 	
+	//! Grid (Cell container)
+	Grid grid;
+	
 	//!Player 1 Cursor
 	Cursor player1;
 	

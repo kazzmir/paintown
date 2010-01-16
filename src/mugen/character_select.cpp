@@ -288,6 +288,12 @@ void New::CharacterSelect::load() throw (MugenException){
                             simple >> select.sffFile;
                             Global::debug(1) << "Got Sprite File: '" << select.sffFile << "'" << endl;
                             Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, select.sffFile), "", select.sprites);
+			    for( Mugen::SpriteMap::iterator i = select.sprites.begin() ; i != select.sprites.end() ; ++i ){
+				// Load these sprites so they are ready to use
+				for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+				    if( j->second )j->second->load();
+				}
+			    }
                         } else if (simple == "snd"){
                             simple >> select.sndFile;
                             Global::debug(1) << "Got Sound File: '" << select.sndFile << "'" << endl;
@@ -333,49 +339,63 @@ void New::CharacterSelect::load() throw (MugenException){
 		if (simple == "fadein.time" ){
 		    int time;
                     simple >> time;
-		    //self.fader.setFadeInTime(time);
+		    self.fader.setFadeInTime(time);
 		} else if (simple == "fadein.color" ){
 		    int r,g,b;
                     simple >> r >> g >> b;
-		    //self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+		    self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
 		} else if (simple == "fadeout.time"){
 		    int time;
                     simple >> time;
-		    //self.fader.setFadeOutTime(time);
+		    self.fader.setFadeOutTime(time);
 		} else if (simple == "fadeout.color"){
 		    int r,g,b;
                     simple >> r >> g >> b;
-		    //self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+		    self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
 		} else if (simple == "rows"){
-                    //simple >> self.rows;
+                    int rows;
+		    simple >> rows;
+		    self.grid.setRows(rows);
 		} else if (simple == "columns"){
-                    //simple >> self.columns;
+                    int columns;
+		    simple >> columns;
+		    self.grid.setColumns(columns);
 		} else if (simple == "wrapping"){
-                    //simple >> self.wrapping;
+		    bool wrap;
+                    simple >> wrap;
+		    self.grid.setWrapping(wrap);
 		} else if (simple == "pos"){
-                    //simple >> self.position.x >> self.position.y;
+		    int x,y;
+                    simple >> x >> y;
+		    self.grid.setPosition(x,y);
 		} else if (simple == "showemptyboxes"){
-                    //simple >> self.showEmptyBoxes;
+                    bool boxes;
+		    simple >> boxes;
+		    self.grid.setShowEmptyBoxes(boxes);
 		} else if (simple == "moveoveremptyboxes"){
-                    //simple >> self.moveOverEmptyBoxes;
+		    bool boxes;
+                    simple >> boxes;
+		    self.grid.setMoveOverEmptyBoxes(boxes);
 		} else if (simple == "cell.size"){
-                    //simple >> self.cellSize.x >> self.cellSize.y;
+                    int x, y;
+		    simple >> x >> y;
+		    self.grid.setCellSize(x,y);
 		} else if (simple == "cell.spacing"){
-                    //simple >> self.cellSpacing;
+		    int spacing;
+                    simple >> spacing;
+		    self.grid.setCellSpacing(spacing);
 		} else if (simple == "cell.bg.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
-		    //self.cellBackgroundSprite = sprites[group][sprite];
-		    //self.cellBackgroundSprite->load();
-		    //self.cellBackgroundBitmap = self.cellBackgroundSprite->getBitmap();
+		    self.grid.setCellBackgroundSprite(sprites[group][sprite]);
 		} else if (simple == "cell.random.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
-		    //self.cellRandomSprite = sprites[group][sprite];
-		    //self.cellRandomSprite->load();
-		    //self.cellRandomBitmap = self.cellRandomSprite->getBitmap();
+		    self.grid.setRandomSprite(sprites[group][sprite]);
 		} else if (simple == "cell.random.switchtime"){
-                    //simple >> self.cellRandomSwitchTime;
+		    int time;
+		    simple >> time;
+		    self.grid.setRandomSwitchTime(time);
 		} else if (simple == "p1.cursor.startcell"){
                     //simple >> self.p1Cursor.cursor.x;
 		    //simple >> self.p1Cursor.cursor.y;
@@ -613,7 +633,7 @@ Mugen::CharacterSelect::~CharacterSelect(){
 	delete characterList;
     }
     // Get rid of sprites
-    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+    for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
