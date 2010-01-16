@@ -139,6 +139,8 @@ referenceCell(0){
             // Ran its course got what we needed
         }
     }
+    // just a precaution
+    spriteFile = Util::removeSpaces(spriteFile);
     icon = Util::probeSff(baseDirectory + spriteFile,9000,0,baseDirectory + actCollection[currentAct]);
     portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
 }
@@ -588,8 +590,12 @@ void New::CharacterSelect::load() throw (MugenException){
 		    simple >> x >> y;
 		    self.titleFont.setLocation(x,y);
 		} else if ( simple == "title.font"){
-		    int index, bank, position;
-		    simple >> index >> bank >> position;
+		    int index=0, bank=0, position=0;
+		    try {
+			simple >> index >> bank >> position;
+		    } catch (const Ast::Exception & e){
+			//ignore for now
+		    }
 		    self.titleFont.setPrimary(self.fonts[index],bank,position);
 		} else if ( simple == "p1.face.offset"){
 		    int x, y;
@@ -620,8 +626,12 @@ void New::CharacterSelect::load() throw (MugenException){
 		    simple >> x >> y;
 		    self.player1Font.setLocation(x,y);
 		}  else if ( simple == "p1.name.font"){
-		    int index, bank, position;
-		    simple >> index >> bank >> position;
+		    int index=0, bank=0, position=0;
+		    try {
+			simple >> index >> bank >> position;
+		    } catch (const Ast::Exception & e){
+			//ignore for now
+		    }
 		    self.player1Font.setPrimary(self.fonts[index],bank,position);
 		} else if ( simple == "p2.name.offset"){
 		    int x, y;
@@ -636,16 +646,28 @@ void New::CharacterSelect::load() throw (MugenException){
 		    simple >> x >> y;
 		    self.stageFont.setLocation(x,y);
 		} else if ( simple == "stage.active.font"){
-		    int index, bank, position;
-		    simple >> index >> bank >> position;
+		    int index=0, bank=0, position=0;
+		    try {
+			simple >> index >> bank >> position;
+		    } catch (const Ast::Exception & e){
+			//ignore for now
+		    }
 		    self.stageFont.setPrimary(self.fonts[index],bank,position);
 		} else if ( simple == "stage.active2.font"){
-                    int index, bank, position;
-		    simple >> index >> bank >> position;
+                    int index=0, bank=0, position=0;
+		    try {
+			simple >> index >> bank >> position;
+		    } catch (const Ast::Exception & e){
+			//ignore for now
+		    }
 		    self.stageFont.setBlink(self.fonts[index],bank,position);
 		} else if ( simple == "stage.done.font"){
-                    int index, bank, position;
-		    simple >> index >> bank >> position;
+                    int index=0, bank=0, position=0;
+		    try {
+			simple >> index >> bank >> position;
+		    } catch (const Ast::Exception & e){
+			//ignore for now
+		    }
 		    self.stageFont.setDone(self.fonts[index],bank,position);
 		}
 #if 0
@@ -739,7 +761,12 @@ void New::CharacterSelect::parseSelect(const std::string &selectFile){
                         grid.addCharacter(0,true);
                     } else {
                         // Get character
-			CharacterInfo *character = new CharacterInfo(temp);
+			// *FIXME Not an elegant solution for character location
+			const std::string baseDir = Filesystem::find("mugen/chars/" + temp + "/");
+			std::string str = Mugen::Util::stripDir(temp);
+			const std::string charDefFile = Mugen::Util::fixFileName(baseDir, std::string(str + ".def"));
+			Global::debug(0) << "Got character def: " << charDefFile << endl;
+			CharacterInfo *character = new CharacterInfo(charDefFile);
                         
 			// Add to our character list
                         characters.push_back(character);

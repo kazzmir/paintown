@@ -75,13 +75,14 @@ static bool isArg( const char * s1, const char * s2 ){
 }
 
 static void showOptions(){
-    Global::debug(0) << "M.U.G.E.N. Config Reader:" << endl;
-    Global::debug(0) << "-f <file>: Load a M.U.G.E.N. config file and output to screen." << endl;
-    Global::debug(0) << "-c <name>: Load a M.U.G.E.N. character and output some data about it.\n         ie: 'data/mugen/chars/name' only pass name." << endl;
-    Global::debug(0) << "-s <name> (p1) (p2): Load a M.U.G.E.N. stage and output some data about it.\n         ie: 'data/mugen/stages/name.def'.\n         (p1) and (p2) are player names and is optional." << endl;
-    Global::debug(0) << "-font <file>: Load a M.U.G.E.N. font and print out Hello World!" << endl;
-    Global::debug(0) << "-sff <file>: Load a M.U.G.E.N. SFF File and browse contents.\n         ie: 'data/mugen/data/some.sff'." << endl;
-    Global::debug(0) << "-storyboard <file>: Load a M.U.G.E.N. storyboard and render it!" << endl;
+    Global::debug(0) << "M.U.G.E.N Config Reader:" << endl;
+    Global::debug(0) << "-f <file>: Load a M.U.G.E.N config file and output to screen." << endl;
+    Global::debug(0) << "-c <name>: Load a M.U.G.E.N character and output some data about it.\n         ie: 'data/mugen/chars/name' only pass name." << endl;
+    Global::debug(0) << "-s <name> (p1) (p2): Load a M.U.G.E.N stage and output some data about it.\n         ie: 'data/mugen/stages/name.def'.\n         (p1) and (p2) are player names and is optional." << endl;
+    Global::debug(0) << "-font <file>: Load a M.U.G.E.N font and print out Hello World!" << endl;
+    Global::debug(0) << "-sff <file>: Load a M.U.G.E.N SFF File and browse contents.\n         ie: 'data/mugen/data/some.sff'." << endl;
+    Global::debug(0) << "-storyboard <file>: Load a M.U.G.E.N storyboard and render it!" << endl;
+    Global::debug(0) << "-select <file>: Load a M.U.G.E.N select screen from a given system.def" << endl;
     Global::debug(0) << "-l <level>: Set debug level." << endl;
     Global::debug(0) << endl;
 }
@@ -501,6 +502,16 @@ void showSFF(const string & ourFile){
     }
 }
 
+void doSelectScreen(const std::string &file){
+    Mugen::New::CharacterSelect selector(file);
+    try {
+	selector.load();
+	selector.run("Test", false, false, Bitmap::temporaryBitmap(640,480));
+    } catch (const MugenException &me){
+	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
+    }
+}
+
 int main( int argc, char ** argv ){
 	
 	if(argc <= 1){
@@ -520,6 +531,7 @@ int main( int argc, char ** argv ){
         const char * PARSE_DEF_ARG = "-parse-def";
 	const char * STORY_ARG = "-storyboard";
 	const char * SFF_ARG = "-sff";
+	const char * SELECT_ARG = "-select";
 	std::string ourFile;
 	int configLoaded = -1;
 	
@@ -675,6 +687,17 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
+		} else if ( isArg( argv[ q ], SELECT_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				ourFile = std::string( argv[ q ] );
+				configLoaded = 6;
+			}
+			else{
+                            Global::debug(0) << "Error no file given!" << endl;
+			  showOptions();
+			  return 0;
+			}
 		} else if (isArg(argv[q], DEBUG_ARG)){
 		    //debuglevel:
                     q += 1;
@@ -781,6 +804,16 @@ int main( int argc, char ** argv ){
 	} else if ( configLoaded == 5 ){
 	    try{
                 showSFF(ourFile);
+            } catch( MugenException &ex){
+                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+		return 1;
+	    } catch(...){
+		Global::debug(0) << "Unknown problem loading file" << endl;
+		return 1;
+	    }
+	} else if ( configLoaded == 6 ){
+	    try{
+                doSelectScreen(ourFile);
             } catch( MugenException &ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;

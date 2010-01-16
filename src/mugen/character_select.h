@@ -182,7 +182,7 @@ class CharacterInfo {
         /* Character base directory */
         const std::string baseDirectory;
         /* Sprite File */
-        const std::string spriteFile;
+        std::string spriteFile;
         /* Characters Name */
         std::string name;
         /* Characters Display Name */
