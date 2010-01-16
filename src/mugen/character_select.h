@@ -479,6 +479,8 @@ class CharacterSelect {
 	
 	virtual void run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &);
 	
+	virtual void parseSelect(const std::string &selectFile);
+	
     private:
 	
 	//! Location of file

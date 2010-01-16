@@ -690,11 +690,7 @@ void New::CharacterSelect::load() throw (MugenException){
     grid.initialize();
     
     // Now load up our characters
-    //loadCharacters(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
-    
-    // Set stage info
-    //stageInfo.selected = false;
-    //stageInfo.altCounter = 0;
+    parseSelect(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
     
     // Set up the animations for those that have action numbers assigned (not -1 )
     // Also do their preload
@@ -703,7 +699,205 @@ void New::CharacterSelect::load() throw (MugenException){
     }
 }
 
+void New::CharacterSelect::parseSelect(const std::string &selectFile){
+    const std::string file = Mugen::Util::getCorrectFileLocation(Mugen::Util::getFileDir(selectFile), Mugen::Util::stripDir(selectFile));
+    
+    TimeDifference diff;
+    diff.startTime();
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(file));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
+    
+    std::vector< std::string > stageNames;
+    
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+	Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        
+	head = Mugen::Util::fixCase(head);
+
+        if (head == "characters"){
+            class CharacterWalker: public Ast::Walker{
+            public:
+		CharacterWalker(Grid &grid, std::vector< CharacterInfo *> &characters, std::vector< std::string > &stageNames):
+		grid(grid),
+		characters(characters),
+		stageNames(stageNames){}
+		virtual ~CharacterWalker(){}
+		
+		Grid &grid;
+		std::vector< CharacterInfo *> &characters;
+		std::vector< std::string > &stageNames;
+                virtual void onValueList(const Ast::ValueList & list){
+                    // Get Stage info and save it
+                    std::string temp;
+                    list >> temp;
+                    
+		    // Check if it's random
+		    if (temp == "random"){
+                        // Add random
+                        grid.addCharacter(0,true);
+                    } else {
+                        // Get character
+			CharacterInfo *character = new CharacterInfo(temp);
+                        
+			// Add to our character list
+                        characters.push_back(character);
+                        Global::debug(1) << "Got character: " << character->getName() << endl;
+                        
+			// Add to grid 
+                        grid.addCharacter(character);
+
+                        /* **TODO** get values for:
+				    stage
+				    includestage
+				    random
+				    music
+				    order
+				    
+				    For now we'll assume a stage
+			*/
+                        std::string stageTemp;
+                        list >> stageTemp;
+                        // and add it to our stages
+                        stageNames.push_back(stageTemp);
+                        Global::debug(1) << "Got stage: " << stageTemp << endl;
+                    }
+                }
+            };
+
+            CharacterWalker walk(grid, characters, stageNames);
+            section->walk(walk);
+	} else if (head == "extrastages"){
+	    class StageWalker: public Ast::Walker{
+            public:
+		StageWalker(std::vector< std::string > &names):
+		names(names){
+		}
+		virtual ~StageWalker(){}
+		std::vector< std::string > &names;
+                virtual void onValueList(const Ast::ValueList & list){
+		    // Get Stage info and save it
+		    try {
+			std::string temp;
+			list >> temp;
+			Global::debug(0) << "stage: " << temp << endl;
+			names.push_back(temp);
+		    } catch (...){
+		    }
+                }
+            };
+	    StageWalker walk(stageNames);
+	    section->walk(walk);
+	} else if (head == "options"){
+	    /* Add in later */
+	} else {
+	    throw MugenException("Unhandled Section in '" + file + "': " + head, __FILE__, __LINE__); 
+	}
+    }
+    
+    // Prepare stages
+    for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
+	/* We'll clean this up later */
+	MugenStage *stage = new MugenStage(*i);
+	stages.push_back(stage);
+    }
+}
+
 void New::CharacterSelect::run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &bmp){
+    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+    bool done = false;
+    
+    // Set the fade state
+    fader.setState(FADEIN);
+  
+    double runCounter = 0;
+    Global::speed_counter = 0;
+    Global::second_counter = 0;
+    int game_time = 100;
+    
+    // *TODO need implement better strategy for stages
+    std::vector< MugenStage *> stageSelections;
+    
+    if (stages.size() == 0){
+        throw MugenException("No stages available");
+    }
+    
+    unsigned int random = PaintownUtil::rnd(0,stages.size()-1);
+    stageSelections.push_back(stages[random]);
+    
+    for (std::vector<MugenStage *>::iterator i = stages.begin(); i != stages.end(); ++i){
+	stageSelections.push_back(*i);
+    }
+    
+    unsigned int currentStage =  0;
+    
+    while ( ! done && fader.getState() != RUNFADE ){
+    
+	bool draw = false;
+	
+	if ( Global::speed_counter > 0 ){
+	    draw = true;
+	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+	    while ( runCounter >= 1.0 ){
+		runCounter -= 1;
+		// Logic
+		
+		// Fader
+		fader.act();
+		
+		// Backgrounds
+		background->logic( 0, 0, 0, 0 );
+		
+		// Grid
+		grid.act();
+		
+		// Cursors
+		
+		// Check status ?
+		/*
+		done = true;
+		fader.setState(FADEOUT);
+		*/
+	    }
+	    
+	    Global::speed_counter = 0;
+	}
+		
+	while ( Global::second_counter > 0 ){
+	    game_time--;
+	    Global::second_counter--;
+	    if ( game_time < 0 ){
+		    game_time = 0;
+	    }
+	}
+
+	if ( draw ){
+	    // render backgrounds
+	    background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+	    // Render Grid
+	    grid.render(workArea);
+	    // Render cursors
+	    
+	    // render title
+	    
+	    // render stage
+	    
+	    // render Foregrounds
+	    background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+	    
+	    // render fades
+	    fader.draw(&workArea);
+	    
+	    // Finally render to screen
+	    workArea.Stretch(bmp);
+	    bmp.BlitToScreen();
+	}
+
+	while ( Global::speed_counter < 1 ){
+		PaintownUtil::rest( 1 );
+	}
+    }
 }
 
 /* OLD STUFF */
