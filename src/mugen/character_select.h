@@ -218,11 +218,16 @@ class Cell{
             empty = e;
         }
     private:
-        // Character table so that we can rotate through the characters on random
-        
+	//! Set sprite for this cell (it can be updated in the case of random)
         Mugen::Point spriteIndex;
+	
+	//! Position of this cell
         Mugen::Point position;
+	
+	//! Is this a random select cell
         bool random;
+	
+	//! Is this cell empty
         bool empty;
 };
 
@@ -239,40 +244,50 @@ class Grid{
 	virtual void render(const Bitmap &);
         
         virtual inline void setRows(int r){
-                this->rows = r;
+	    this->rows = r;
         }
         virtual inline void setColumns(int c){
-                this->columns = c;
+	    this->columns = c;
         }
         virtual inline void setWrapping(bool w){
-                this->wrapping = w;
+	    this->wrapping = w;
         }
         virtual inline void setPosition(int x, int y){
-                this->position.x = x;
-                this->position.y = y;
+	    this->position.x = x;
+	    this->position.y = y;
         }
         virtual inline void setShowEmptyBoxes(bool s){
-                this->showEmptyBoxes = s;
+	    this->showEmptyBoxes = s;
         }
         virtual inline void setMoveOverEmptyBoxes(bool m){
-                this->moveOverEmptyBoxes = m;
+	    this->moveOverEmptyBoxes = m;
         }
         virtual inline void setCellSize(int x, int y){
-                this->cellSize.x = x;
-                this->cellSize.y = y;
+	    this->cellSize.x = x;
+	    this->cellSize.y = y;
         }
         virtual inline void setCellSpacing(int c){
-                this->cellSpacing = c;
+            this->cellSpacing = c;
         }
         virtual inline void setCellBackgroundSprite(MugenSprite *s){
-                this->cellBackgroundSprite = s;
+            this->cellBackgroundSprite = s;
         }
         virtual inline void setRandomSprite(MugenSprite *s){
-                this->cellRandomSprite = s;
+            this->cellRandomSprite = s;
         }
         virtual inline void setRandomSwitchTime(int t){
-                this->cellRandomSwitchTime = t;
+            this->cellRandomSwitchTime = t;
         }
+	
+	virtual inline void setPortraitOffset(int x, int y){
+	    portraitOffset.x = x;
+	    portraitOffset.y = y;
+	}
+	
+	virtual inline void setPortraitScale(int x, int y){
+	    portraitScale.x = x;
+	    portraitScale.y = y;
+	}
     
     private:
 	int rows;
@@ -286,6 +301,12 @@ class Grid{
 	MugenSprite *cellBackgroundSprite;
 	MugenSprite *cellRandomSprite;
 	int cellRandomSwitchTime;
+	
+	//! Portrait offset for placement of the picture
+	Mugen::Point portraitOffset;
+	
+	//! portrait scale for resizing if need be
+	Mugen::Point portraitScale;
 
         /* Character list */
         std::vector< CharacterInfo * > characters;
@@ -316,12 +337,12 @@ class Cursor{
 	    this->cursor.y = y;
 	}
 	
-	virtual inline void setCursorActiveSprite(MugenSprite *spr){
-	    this->cursorActiveSprite = spr;
+	virtual inline void setActiveSprite(MugenSprite *spr){
+	    this->activeSprite = spr;
 	}
 	
-	virtual inline void setCursorDoneSprite(MugenSprite *spr){
-	    this->cursorDoneSprite = spr;
+	virtual inline void setDoneSprite(MugenSprite *spr){
+	    this->doneSprite = spr;
 	}
 	
 	virtual inline void setBlink(bool b){
@@ -332,16 +353,13 @@ class Cursor{
 	    this->blinkCounter = b;
 	}
 	
-	virtual inline void setFacingOffset(int x, int y){
+	virtual inline void setFaceOffset(int x, int y){
 	    this->faceOffset.x = x;
 	    this->faceOffset.y = y;
 	}
 	
-	virtual inline void setFaceScaleX(double x){
+	virtual inline void setFaceScale(double x, double y){
 	    this->faceScalex = x;
-	}
-	
-	virtual inline void setFaceScaleY(double y){
 	    this->faceScaley = y;
 	}
 	
@@ -367,8 +385,8 @@ class Cursor{
 	// Cell
 	Mugen::Point start;
 	Mugen::Point cursor;
-	MugenSprite *cursorActiveSprite;
-	MugenSprite *cursorDoneSprite;
+	MugenSprite *activeSprite;
+	MugenSprite *doneSprite;
 	bool blink;
 	int blinkCounter;
 	//Facing
@@ -378,7 +396,7 @@ class Cursor{
 	int facing;
 	bool selecting;
 	bool active;
-	// Name
+	//! Name offset
 	Mugen::Point nameOffset;
 };
 
@@ -421,20 +439,20 @@ class CharacterSelect {
 	//!Player 1 Cursor
 	Cursor player1;
 	
+	//!Player 1 font handler
+	FontHandler player1Font;
+	
 	//!Player 2 Cursor
 	Cursor player2;
 	
-	//! Portrait offset -- need to find out what this is for
-	Mugen::Point portraitOffset;
+	//!Player 2 Font Handler
+	FontHandler player2Font;
 	
-	//! portrait.scale = 1,1 -- need to find out what this is for
-	Mugen::Point portraitScale;
-	
-	//! Title
+	//! Title font handler
 	FontHandler titleFont;
 	
-	// Stage
-	//StageInfo stageInfo;
+	//! Stage Font Handler
+	FontHandler stageFont;
 	
 	std::vector< CharacterInfo *> characters;
 	

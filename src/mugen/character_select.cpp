@@ -164,7 +164,9 @@ void CharacterInfo::setAct(int number){
     portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
 }
 
-Cell::Cell(){
+Cell::Cell():
+random(false),
+empty(true){
 }
 
 Cell::~Cell(){
@@ -185,7 +187,8 @@ moveOverEmptyBoxes(false),
 cellSpacing(0),
 cellBackgroundSprite(0),
 cellRandomSprite(0),
-cellRandomSwitchTime(0){
+cellRandomSwitchTime(0),
+portraitScale(1,1){
 }
 
 Grid::~Grid(){
@@ -199,7 +202,7 @@ void Grid::render(const Bitmap & bmp){
 
 Cursor::Cursor():
 blink(false),
-blinkCounter(0),
+blinkCounter(10),
 faceScalex(0),
 faceScaley(0),
 facing(0),
@@ -237,6 +240,40 @@ void Cursor::act(){
 }
 
 void Cursor::render(const Bitmap & bmp){
+}
+
+static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end){
+    Ast::AstParse::section_iterator last = iterator;
+    vector<Ast::Section*> stuff;
+
+    Ast::Section * section = *iterator;
+    std::string head = section->getName();
+    /* better to do case insensitive regex matching rather than
+     * screw up the original string
+     */
+    stuff.push_back(section);
+    iterator++;
+
+    while (true){
+        if (iterator == end){
+            break;
+        }
+
+        section = *iterator;
+        string sectionName = section->getName();
+        sectionName = Mugen::Util::fixCase(sectionName);
+        // Global::debug(2, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
+        if (PaintownUtil::matchRegex(sectionName, "select")){
+            stuff.push_back(section);
+        } else {
+            break;
+        }
+
+        last = iterator;
+        iterator++;
+    }
+    iterator = last;
+    return stuff;
 }
 
 New::CharacterSelect::CharacterSelect(const std::string &file):
@@ -397,45 +434,36 @@ void New::CharacterSelect::load() throw (MugenException){
 		    simple >> time;
 		    self.grid.setRandomSwitchTime(time);
 		} else if (simple == "p1.cursor.startcell"){
-                    //simple >> self.p1Cursor.cursor.x;
-		    //simple >> self.p1Cursor.cursor.y;
-		    //self.p1Cursor.start.x = self.p1Cursor.cursor.x;
-		    //self.p1Cursor.start.y = self.p1Cursor.cursor.y;
+		    int x,y;
+                    simple >> x >> y;
+		    self.player1.setStart(x,y);
 		} else if (simple == "p1.cursor.active.spr"){
 		    int group, sprite;
-		    //simple >> group >> sprite;
-		    //self.p1Cursor.cursorActiveSprite = sprites[group][sprite];
-		    //self.p1Cursor.cursorActiveSprite->load();
-		    //self.p1Cursor.active = self.p1Cursor.cursorActiveSprite->getBitmap();
+		    simple >> group >> sprite;
+		    self.player1.setActiveSprite(sprites[group][sprite]);
 		} else if (simple == "p1.cursor.done.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
-		    //self.p1Cursor.cursorDoneSprite = sprites[group][sprite];
-		    //self.p1Cursor.cursorDoneSprite->load();
-		    //self.p1Cursor.done = self.p1Cursor.cursorDoneSprite->getBitmap();
+		    self.player1.setDoneSprite(sprites[group][sprite]);
 		} else if (simple == "p1.cursor.move.snd"){ /* nothing */ }
                 else if (simple == "p1.cursor.done.snd"){ /* nothing */ }
 		else if (simple == "p1.random.move.snd"){ /* nothing */ }
 		else if (simple == "p2.cursor.startcell"){
-                    //simple >> self.p2Cursor.cursor.x;
-		    //simple >> self.p2Cursor.cursor.y;
-		    //self.p2Cursor.start.x = self.p2Cursor.cursor.x;
-		    //self.p2Cursor.start.y = self.p2Cursor.cursor.y;
+                    int x,y;
+                    simple >> x >> y;
+		    self.player2.setStart(x,y);
 		} if (simple == "p2.cursor.active.spr"){
 		    int group, sprite;
-                    //simple >> group >> sprite;
-		    //self.p2Cursor.cursorActiveSprite = sprites[group][sprite];
-		    //self.p2Cursor.cursorActiveSprite->load();
-		    //self.p2Cursor.active = self.p2Cursor.cursorActiveSprite->getBitmap();
+                    simple >> group >> sprite;
+		    self.player2.setActiveSprite(sprites[group][sprite]);
 		} else if (simple == "p2.cursor.done.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
-		    //self.p2Cursor.cursorDoneSprite = sprites[group][sprite];
-		    //self.p2Cursor.cursorDoneSprite->load();
-		    //self.p2Cursor.done = self.p2Cursor.cursorDoneSprite->getBitmap();
+		    self.player2.setDoneSprite(sprites[group][sprite]);
 		} else if (simple == "p2.cursor.blink"){
-		    //simple >> self.p2Cursor.blink;
-		    //self.p2Cursor.blinkCounter = 0;
+		    bool blink;
+		    simple >> blink;
+		    self.player2.setBlink(blink);
 		} 
 		else if ( simple == "p2.cursor.move.snd"){ /* nothing */ }
 		else if ( simple == "p2.cursor.done.snd"){ /* nothing */ }
@@ -444,71 +472,77 @@ void New::CharacterSelect::load() throw (MugenException){
 		else if ( simple == "stage.done.snd"){ /* nothing */ }
 		else if ( simple == "cancel.snd"){ /* nothing */ }
 		else if (simple == "portrait.offset"){
-		    //simple >> self.portraitOffset.x;
-		    //simple >> self.portraitOffset.y;
+		    int x,y;
+		    simple >> x >> y;
+		    self.grid.setPortraitOffset(x,y);
 		} else if (simple == "portrait.scale"){
-		    //simple >> self.portraitScale.x;
-		    //simple >> self.portraitScale.y;
+		    int x,y;
+		    simple >> x >> y;
+		    self.grid.setPortraitScale(x,y);
 		} else if ( simple == "title.offset"){
-		    //simple >> self.titleOffset.x;
-		    //simple >> self.titleOffset.y;
+		    int x, y;
+		    simple >> x >> y;
+		    self.titleFont.setLocation(x,y);
 		} else if ( simple == "title.font"){
-		    //simple >> self.titleFont.index;
-		    //simple >> self.titleFont.bank;
-		    //simple >> self.titleFont.position;
+		    int index, bank, position;
+		    simple >> index >> bank >> position;
+		    self.titleFont.setPrimary(self.fonts[index],bank,position);
 		} else if ( simple == "p1.face.offset"){
-		    //simple >> self.p1Cursor.faceOffset.x;
-		    //simple >> self.p1Cursor.faceOffset.y;
+		    int x, y;
+		    simple >> x >> y;
+		    self.player1.setFaceOffset(x,y);
 		} else if ( simple == "p1.face.scale"){
-		    //simple >> self.p1Cursor.faceScalex;
-		    //simple >> self.p1Cursor.faceScaley;
+		    int x, y;
+		    simple >> x >> y;
+		    self.player1.setFaceScale(x,y);
 		} else if ( simple == "p1.face.facing"){
-		    //simple >> self.p1Cursor.facing;
+		    int f;
+		    simple >> f;
+		    self.player1.setFacing(f);
 		} else if ( simple == "p2.face.offset"){
-		    //simple >> self.p2Cursor.faceOffset.x;
-		    //simple >> self.p2Cursor.faceOffset.y;
+		    int x, y;
+		    simple >> x >> y;
+		    self.player2.setFaceOffset(x,y);
 		} else if ( simple == "p2.face.scale"){
-		    //simple >> self.p2Cursor.faceScalex;
-		    //simple >> self.p2Cursor.faceScaley;
+		    int x, y;
+		    simple >> x >> y;
+		    self.player2.setFaceScale(x,y);
 		} else if ( simple == "p2.face.facing"){
-		    //simple >> self.p2Cursor.facing;
+		    int f;
+		    simple >> f;
+		    self.player2.setFacing(f);
 		} else if ( simple == "p1.name.offset"){
-		    //simple >> self.p1Cursor.nameOffset.x;
-		    //simple >> self.p1Cursor.nameOffset.y;
+		    int x, y;
+		    simple >> x >> y;
+		    self.player1Font.setLocation(x,y);
 		}  else if ( simple == "p1.name.font"){
-		    //simple >> self.p1Cursor.nameFont.index;
-		    //simple >> self.p1Cursor.nameFont.bank;
-		    //simple >> self.p1Cursor.nameFont.position;
+		    int index, bank, position;
+		    simple >> index >> bank >> position;
+		    self.player1Font.setPrimary(self.fonts[index],bank,position);
 		} else if ( simple == "p2.name.offset"){
-		    //simple >> self.p2Cursor.nameOffset.x;
-		    //simple >> self.p2Cursor.nameOffset.y;
+		    int x, y;
+		    simple >> x >> y;
+		    self.player2Font.setLocation(x,y);
 		} else if ( simple == "p2.name.font"){
-		    //simple >> self.p2Cursor.nameFont.index;
-		    //simple >> self.p2Cursor.nameFont.bank;
-		    //simple >> self.p2Cursor.nameFont.position;
+		    int index, bank, position;
+		    simple >> index >> bank >> position;
+		    self.player2Font.setPrimary(self.fonts[index],bank,position);
 		} else if ( simple == "stage.pos"){
-		    //simple >> self.stageInfo.stagePosition.x;
-		    //simple >> self.stageInfo.stagePosition.y;
+		    int x, y;
+		    simple >> x >> y;
+		    self.stageFont.setLocation(x,y);
 		} else if ( simple == "stage.active.font"){
-		    //simple >> self.stageInfo.stageActiveFont.index;
-		    //simple >> self.stageInfo.stageActiveFont.bank;
-		    //simple >> self.stageInfo.stageActiveFont.position;
+		    int index, bank, position;
+		    simple >> index >> bank >> position;
+		    self.stageFont.setPrimary(self.fonts[index],bank,position);
 		} else if ( simple == "stage.active2.font"){
-                    try{
-                        //simple >> self.stageInfo.stageActiveFont2.index;
-                        //simple >> self.stageInfo.stageActiveFont2.bank;
-                        //simple >> self.stageInfo.stageActiveFont2.position;
-                    } catch (const Ast::Exception & e){
-                        /* ignore I guess */
-                    }
+                    int index, bank, position;
+		    simple >> index >> bank >> position;
+		    self.stageFont.setBlink(self.fonts[index],bank,position);
 		} else if ( simple == "stage.done.font"){
-                    try{
-                        //simple >> self.stageInfo.stageDoneFont.index;
-                        //simple >> self.stageInfo.stageDoneFont.bank;
-                        //simple >> self.stageInfo.stageDoneFont.position;
-                    } catch (const Ast::Exception & e){
-                        /* ignore */
-                    }
+                    int index, bank, position;
+		    simple >> index >> bank >> position;
+		    self.stageFont.setDone(self.fonts[index],bank,position);
 		}
 #if 0
                 else if ( simple.find("teammenu")!=std::string::npos ){
@@ -523,9 +557,10 @@ void New::CharacterSelect::load() throw (MugenException){
             section->walk(walker);
 	} else if (head == "selectbgdef"){ 
 	    /* Background management */
-	    //MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir(selectFile), sections, selectTicker, &sprites, "selectbg");
-	    //background = manager;
-	    //Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
+	    const int ticker = 0;
+	    MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir(selectFile), collectSelectStuff(section_it, parsed.getSections()->end()), ticker, &sprites, "selectbg");
+	    background = manager;
+	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
 	} else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
 	else if (head == "vs screen" ){ /* Ignore for now */ }
 	else if (head == "versusbgdef" ){ /* Ignore for now */ }
@@ -642,40 +677,6 @@ Mugen::CharacterSelect::~CharacterSelect(){
     for (std::vector< MugenFont *>::iterator f = fonts.begin(); f != fonts.end(); ++f){
 	    if (*f) delete (*f);
     }
-}
-
-static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end){
-    Ast::AstParse::section_iterator last = iterator;
-    vector<Ast::Section*> stuff;
-
-    Ast::Section * section = *iterator;
-    std::string head = section->getName();
-    /* better to do case insensitive regex matching rather than
-     * screw up the original string
-     */
-    stuff.push_back(section);
-    iterator++;
-
-    while (true){
-        if (iterator == end){
-            break;
-        }
-
-        section = *iterator;
-        string sectionName = section->getName();
-        sectionName = Mugen::Util::fixCase(sectionName);
-        // Global::debug(2, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
-        if (PaintownUtil::matchRegex(sectionName, "select")){
-            stuff.push_back(section);
-        } else {
-            break;
-        }
-
-        last = iterator;
-        iterator++;
-    }
-    iterator = last;
-    return stuff;
 }
 
 void Mugen::CharacterSelect::load(){
