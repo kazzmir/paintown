@@ -1148,6 +1148,8 @@ public:
         /* recover after falling */
         virtual bool canRecover() const;
 
+        virtual MugenSound * getSound(int group, int item) const;
+
 protected:
     void initialize();
     

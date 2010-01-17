@@ -20,6 +20,10 @@ public:
     virtual void walk(Walker & walker) const {
         walker.onValueList(*this);
     }
+    
+    virtual void reset(){
+        current_value = this->values.begin();
+    }
 
     virtual bool hasMultiple() const {
         return true;

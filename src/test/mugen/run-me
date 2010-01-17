@@ -3,3 +3,14 @@ Run valgrind on load with leak-checking enabled
 $ valgrind --leak-check=full build/test/mugen/load
 
 It should take about 8 minutes to complete.
+
+Expected output should say something about 0 errors and 0 bytes in use at exit:
+
+$ valgrind --leak-check=full build/test/mugen/load
+  ...
+  ==32434== 
+  ==32434== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 57 from 1)
+  ==32434== malloc/free: in use at exit: 0 bytes in 0 blocks.
+  ==32434== malloc/free: 2,925,707 allocs, 2,925,707 frees, 178,751,209 bytes allocated.
+  ==32434== For counts of detected errors, rerun with: -v
+  ==32434== All heap blocks were freed -- no leaks are possible.

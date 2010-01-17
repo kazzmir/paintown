@@ -32,6 +32,10 @@ public:
         return false;
     }
 
+    /* resets the internals so that operator>> starts over */
+    virtual void reset(){
+    }
+
     virtual void debugExplain(){
         std::cout << toString() << std::endl;
     }

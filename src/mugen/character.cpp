@@ -386,6 +386,21 @@ void StateController::activate(Character & guy) const {
             break;
         }
         case PlaySnd : {
+            try{
+                /* FIXME: group could start with F */
+                int group;
+                int item;
+                value1->reset();
+                *value1 >> group >> item;
+                MugenSound * sound = guy.getSound(group, item);
+                if (sound != 0){
+                    sound->play();
+                } else {
+                    Global::debug(0) << "Error with PlaySnd " << name << ": no sound for " << group << ", " << item << endl;
+                }
+            } catch (const Ast::Exception & e){
+                Global::debug(0) << "Error with PlaySnd " << name << ": " << e.getReason() << endl;
+            }
             break;
         }
         case PosAdd : {
@@ -2535,6 +2550,18 @@ bool Character::canTurn() const {
     return getCurrentState() == Standing ||
            getCurrentState() == WalkingForwards ||
            getCurrentState() == WalkingBackwards;
+}
+        
+MugenSound * Character::getSound(int group, int item) const {
+    map<unsigned int, map<unsigned int, MugenSound*> >::const_iterator findGroup = sounds.find(group);
+    if (findGroup != sounds.end()){
+        const map<unsigned int, MugenSound*> & found = (*findGroup).second;
+        map<unsigned int, MugenSound*>::const_iterator sound = found.find(item);
+        if (sound != found.end()){
+            return (*sound).second;
+        }
+    }
+    return 0;
 }
 
 void Character::doTurn(){
