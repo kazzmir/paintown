@@ -173,7 +173,6 @@ background(0),
 randomSprite(0),
 random(false),
 empty(true),
-active(false),
 characterScaleX(1),
 characterScaleY(1){
 }
@@ -182,7 +181,7 @@ Cell::~Cell(){
 }
 
 void Cell::act(std::vector<CharacterInfo *> &characters){
-    if (active && random){
+    if (random){
 	unsigned int num = PaintownUtil::rnd(0,characters.size()-1);
 	character = characters[num];
     }
@@ -295,17 +294,112 @@ void Grid::addCharacter(CharacterInfo *character, bool isRandom){
     }
 }
 
-void Grid::moveCursorLeft(Cursor &cursor){
-    //if (cursor.currentCell =
-}
-void Grid::moveCursorRight(Cursor &cursor){
-}
-void Grid::moveCursorUp(Cursor &cursor){
-}
-void Grid::moveCursorDown(Cursor &cursor){
+void Grid::setCursorStart(Cursor &cursor){
+    cursor.setCurrentCell(getCell(cursor.getStart().x,cursor.getStart().y));
 }
 
-Cell *Grid::getCell(int row, int column){
+void Grid::moveCursorLeft(Cursor &cursor){
+    Mugen::Point current = cursor.getCurrentCell()->getLocation();
+    current.x--;
+    if (current.x < 0){
+	if (wrapping){
+	    current.x = rows-1;
+	} else {
+	    return;
+	}
+    }
+    Cell *cell;
+    try {
+	cell = getCell(current.x,current.y);
+    } catch (MugenException &me){
+	// Shouldn't happen but you never know lets not continue
+	return;
+    }
+    
+    if (cell->isEmpty()){
+	if (!moveOverEmptyBoxes){
+	    return;
+	}
+    }
+    cursor.setCurrentCell(cell);
+}
+void Grid::moveCursorRight(Cursor &cursor){
+    Mugen::Point current = cursor.getCurrentCell()->getLocation();
+    current.x++;
+    if (current.x >= rows){
+	if (wrapping){
+	    current.x = 0;
+	} else {
+	    return;
+	}
+    }
+    Cell *cell;
+    try {
+	cell = getCell(current.x,current.y);
+    } catch (MugenException &me){
+	// Shouldn't happen but you never know lets not continue
+	return;
+    }
+    
+    if (cell->isEmpty()){
+	if (!moveOverEmptyBoxes){
+	    return;
+	}
+    }
+    cursor.setCurrentCell(cell);
+}
+void Grid::moveCursorUp(Cursor &cursor){
+    Mugen::Point current = cursor.getCurrentCell()->getLocation();
+    current.y--;
+    if (current.y < 0){
+	if (wrapping){
+	    current.y = columns-1;
+	} else {
+	    return;
+	}
+    }
+    Cell *cell;
+    try {
+	cell = getCell(current.x,current.y);
+    } catch (MugenException &me){
+	// Shouldn't happen but you never know lets not continue
+	return;
+    }
+    
+    if (cell->isEmpty()){
+	if (!moveOverEmptyBoxes){
+	    return;
+	}
+    }
+    cursor.setCurrentCell(cell);
+}
+void Grid::moveCursorDown(Cursor &cursor){
+    Mugen::Point current = cursor.getCurrentCell()->getLocation();
+    current.y++;
+    if (current.y >= columns){
+	if (wrapping){
+	    current.y = 0;
+	} else {
+	    return;
+	}
+    }
+    Cell *cell;
+    try {
+	cell = getCell(current.x,current.y);
+    } catch (MugenException &me){
+	// Shouldn't happen but you never know lets not continue
+	return;
+    }
+    
+    if (cell->isEmpty()){
+	if (!moveOverEmptyBoxes){
+	    return;
+	}
+    }
+    cursor.setCurrentCell(cell);
+}
+
+Cell *Grid::getCell(int row, int column) throw (MugenException){
     for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
 	std::vector< Cell *> &rowIterator = (*i);
 	for (std::vector< Cell *>::iterator columnIterator = rowIterator.begin(); columnIterator != rowIterator.end(); ++columnIterator){
@@ -315,6 +409,8 @@ Cell *Grid::getCell(int row, int column){
 	    }
 	}
     }
+    
+    throw MugenException("Could not find cell.");
 }
 
 Cursor::Cursor():
@@ -333,7 +429,9 @@ Cursor::~Cursor(){
 }
 
 void Cursor::act(Grid &grid){
-    
+    if (!active){
+	return;
+    }
     // if up
     grid.moveCursorUp(*this);
     // if down
@@ -358,8 +456,20 @@ void Cursor::act(Grid &grid){
     
 }
 
-void Cursor::render(const Bitmap & bmp){
+void Cursor::render(Grid &grid, const Bitmap & bmp){
+    if (!active){
+	return;
+    }
+    activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
     
+    // Lets do the portrait and name
+    const CharacterInfo *character = currentCell->getCharacter();
+    Mugen::Effects effects;
+    effects.facing = facing;
+    effects.scalex = faceScaleX;
+    effects.scaley = faceScaleY;
+    character->getPortrait()->render(faceOffset.x,faceOffset.y,bmp,effects);
+    font.render(character->getName(),bmp);
 }
 
 static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end){
@@ -652,23 +762,22 @@ void New::CharacterSelect::load() throw (MugenException){
 		} else if ( simple == "p1.name.offset"){
 		    int x, y;
 		    simple >> x >> y;
-		    self.player1Font.setLocation(x,y);
+		    self.player1.getFontHandler().setLocation(x,y);
 		}  else if ( simple == "p1.name.font"){
 		    int index=0, bank=0, position=0;
 		    try {
 			simple >> index >> bank >> position;
 		    } catch (const Ast::Exception & e){
 			//ignore for now
-		    }
-		    self.player1Font.setPrimary(self.fonts[index-1],bank,position);
+		    } self.player1.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "p2.name.offset"){
 		    int x, y;
 		    simple >> x >> y;
-		    self.player2Font.setLocation(x,y);
+		    self.player2.getFontHandler().setLocation(x,y);
 		} else if ( simple == "p2.name.font"){
 		    int index, bank, position;
 		    simple >> index >> bank >> position;
-		    self.player2Font.setPrimary(self.fonts[index-1],bank,position);
+		    self.player2.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "stage.pos"){
 		    int x, y;
 		    simple >> x >> y;
@@ -738,6 +847,10 @@ void New::CharacterSelect::load() throw (MugenException){
     
     // Set up Grid
     grid.initialize();
+    
+    // Setup cursors
+    grid.setCursorStart(player1);
+    grid.setCursorStart(player2);
     
     // Now load up our characters
     parseSelect(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
@@ -887,6 +1000,9 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
     
     unsigned int currentStage =  0;
     
+    // set first cursor1
+    player1.setActive(true);
+    
     while ( ! done && fader.getState() != RUNFADE ){
     
 	bool draw = false;
@@ -908,6 +1024,8 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
 		grid.act();
 		
 		// Cursors
+		player1.act(grid);
+		player2.act(grid);
 		
 		// Title
 		titleFont.act();
@@ -936,6 +1054,8 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
 	    // Render Grid
 	    grid.render(workArea);
 	    // Render cursors
+	    player1.render(grid, workArea);
+	    player2.render(grid, workArea);
 	    
 	    // render title
 	    titleFont.render(title,workArea);
@@ -1160,6 +1280,7 @@ void Mugen::CharacterSelect::load(){
 	cells.push_back(cellRow);
 	currentPosition.y += cellSize.y + cellSpacing;
     }
+    
     // Now load up our characters
     loadCharacters(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
     

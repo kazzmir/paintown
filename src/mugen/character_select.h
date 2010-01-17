@@ -234,6 +234,10 @@ class Cell{
 	    this->character = character;
 	}
 	
+	virtual inline const CharacterInfo *getCharacter() const{
+	    return this->character;
+	}
+	
 	virtual inline void setRandomSprite(MugenSprite *random){
 	    randomSprite = random;
 	}
@@ -242,6 +246,11 @@ class Cell{
             position.x = x;
             position.y = y;
         }
+	
+	virtual inline const Mugen::Point &getPosition() const {
+	    return this->position;
+	}
+	
         virtual inline void setRandom(bool r){
 	    empty = false;
             random = r;
@@ -254,12 +263,6 @@ class Cell{
         }
 	virtual inline bool isEmpty() const {
 	    return empty;
-	}
-	virtual inline void setActive(bool a){
-	    active = a;
-	}
-	virtual inline bool isActive() const {
-	    return active;
 	}
 	virtual inline void setCharacterOffset(int x, int y){
 	    this->characterOffset.x = x;
@@ -291,9 +294,6 @@ class Cell{
 	//! Is this cell empty
         bool empty;
 	
-	//! Is this cell active currently (cursor above it)?
-	bool active;
-	
 	//! Offset in which the portrait is placed in the cell
 	Mugen::Point characterOffset;
 	
@@ -322,6 +322,8 @@ class Grid{
 	virtual void render(const Bitmap &);
 	
 	virtual void addCharacter(CharacterInfo *character, bool isRandom = false);
+	
+	virtual void setCursorStart(Cursor &cursor);
 	
 	virtual void moveCursorLeft(Cursor &cursor);
 	virtual void moveCursorRight(Cursor &cursor);
@@ -376,7 +378,7 @@ class Grid{
     
     private:
 	
-	Cell *getCell(int row, int column);
+	Cell *getCell(int row, int column) throw (MugenException);
 	
 	//! Total rows
 	int rows;
@@ -433,7 +435,7 @@ class Cursor{
 	
 	virtual void act(Grid &grid);
 	
-	virtual void render(const Bitmap &);
+	virtual void render(Grid &grid, const Bitmap &);
 	
 	/*virtual inline void setInput(const InputMap<Command::Keys> & input){
 	    this->input = input;
@@ -444,8 +446,16 @@ class Cursor{
 	    this->start.y = y;
 	}
 	
+	virtual inline const Mugen::Point &getStart() const {
+	    return this->start;
+	}
+	
 	virtual inline void setCurrentCell(Cell *cell){
 	    this->currentCell = cell;
+	}
+	
+	virtual const Cell *getCurrentCell() const {
+	    return this->currentCell;
 	}
 	
 	virtual inline void setActiveSprite(MugenSprite *spr){
@@ -486,9 +496,8 @@ class Cursor{
 	    this->active = a;
 	}
 	
-	virtual inline void setNameOffset(int x, int y){
-	    this->nameOffset.x = x;
-	    this->nameOffset.y = y;
+	virtual inline FontHandler &getFontHandler(){
+	    return this->font;
 	}
 	
     private:
@@ -527,9 +536,8 @@ class Cursor{
 	//! Is active?
 	bool active;
 	
-	//! Name offset
-	Mugen::Point nameOffset;
-	
+	//! Font
+	FontHandler font;
 };
 
 /* Temporary namespace remove later */
@@ -573,14 +581,8 @@ class CharacterSelect {
 	//!Player 1 Cursor
 	Cursor player1;
 	
-	//!Player 1 font handler
-	FontHandler player1Font;
-	
 	//!Player 2 Cursor
 	Cursor player2;
-	
-	//!Player 2 Font Handler
-	FontHandler player2Font;
 	
 	//! Title font handler
 	FontHandler titleFont;
