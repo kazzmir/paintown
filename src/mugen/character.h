@@ -11,6 +11,7 @@
 #include "object/object_attack.h"
 #include "network/network.h"
 #include "input/input-map.h"
+#include "mugen_animation.h"
 
 namespace Ast{
     class KeyList;
@@ -1116,6 +1117,9 @@ public:
         virtual const HitState & getHitState() const {
             return hitState;
         }
+
+        const std::vector<MugenArea> getAttackBoxes() const;
+        const std::vector<MugenArea> getDefenseBoxes() const;
 
         bool canTurn() const;
         void doTurn();
