@@ -104,6 +104,18 @@ struct RuntimeValue{
         return range.high;
     }
 
+    const char * canonicalName() const {
+        switch (type){
+            case Invalid : return "invalid";
+            case Bool : return "bool";
+            case String : return "string";
+            case Double : return "double";
+            case ListOfString : return "list of string";
+            case RangeType : return "range";
+            default : return "???";
+        }
+    }
+
     Type type;
     std::string string_value;
     bool bool_value;

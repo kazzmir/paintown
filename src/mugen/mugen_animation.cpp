@@ -161,13 +161,36 @@ int MugenAnimation::animationTime() const {
     return (int) position - (int) frames.size() + 1;
 }
 
-const std::vector<MugenArea> & MugenAnimation::getDefenseBoxes() const {
+/* reverses through the y-axis (just the x coordinates */
+static MugenArea reverseBox(const MugenArea & area){
+    MugenArea reversed(area);
+    reversed.x1 = -reversed.x1;
+    reversed.x2 = -reversed.x2;
+    return reversed;
+}
+
+static vector<MugenArea> reverseBoxes(const vector<MugenArea> & boxes){
+    vector<MugenArea> out;
+    for (vector<MugenArea>::const_iterator it = boxes.begin(); it != boxes.end(); it++){
+        out.push_back(reverseBox(*it));
+    }
+
+    return out;
+}
+
+const std::vector<MugenArea> MugenAnimation::getDefenseBoxes(bool reverse) const {
     MugenFrame * frame = frames[position];
+    if (reverse){
+        return reverseBoxes(frame->getDefenseBoxes());
+    }
     return frame->getDefenseBoxes();
 }
 
-const std::vector<MugenArea> & MugenAnimation::getAttackBoxes() const {
+const std::vector<MugenArea> MugenAnimation::getAttackBoxes(bool reverse) const {
     MugenFrame * frame = frames[position];
+    if (reverse){
+        return reverseBoxes(frame->getAttackBoxes());
+    }
     return frame->getAttackBoxes();
 }
 
@@ -193,11 +216,11 @@ void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const
     frame->sprite->render(placex, placey, work, effects);
 
     if (showDefense){
-        renderCollision(frame->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor(0, 255, 0));
+        renderCollision(getDefenseBoxes(effects.facing == -1), work, xaxis, yaxis, Bitmap::makeColor(0, 255, 0));
     }
 
     if (showOffense){
-        renderCollision(frame->attackCollision, work, xaxis, yaxis, Bitmap::makeColor(255,0,0 ));
+        renderCollision(getAttackBoxes(effects.facing == -1), work, xaxis, yaxis, Bitmap::makeColor(255,0,0 ));
     }
 }
 

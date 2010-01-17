@@ -20,11 +20,17 @@ using namespace std;
 
 namespace Mugen{
 
+static void raise(const RuntimeValue & value, const string & expected){
+    ostringstream out;
+    out << "Not a " << expected << " instead was " << value.canonicalName();
+    throw MugenException(out.str());
+}
+
 string toString(const RuntimeValue & value){
     if (value.isString()){
         return value.getStringValue();
     }
-    throw MugenException("Not a string");
+    raise(value, "string");
 }
 
 double toNumber(const RuntimeValue & value){
@@ -38,21 +44,21 @@ double toNumber(const RuntimeValue & value){
             return 0;
         }
     }
-    throw MugenException("Not a number");
+    raise(value, "number");
 }
 
 int toRangeLow(const RuntimeValue & value){
     if (value.isRange()){
         return value.getRangeLow();
     }
-    throw MugenException("Not a range");
+    raise(value, "range");
 }
 
 int toRangeHigh(const RuntimeValue & value){
     if (value.isRange()){
         return value.getRangeHigh();
     }
-    throw MugenException("Not a range");
+    raise(value, "range");
 }
 
 
@@ -63,7 +69,7 @@ bool toBool(const RuntimeValue & value){
     if (value.isDouble()){
         return value.getDoubleValue() != 0;
     }
-    throw MugenException("Not a bool");
+    raise(value, "bool");
 }
 
 /* a meta-circular evaluator! */
@@ -280,7 +286,7 @@ public:
         throw MugenException(out.str());
     }
 
-    virtual void onIdenfitier(const Ast::Identifier & identifier){
+    virtual void onIdentifier(const Ast::Identifier & identifier){
         result = evalIdentifier(identifier);
     }
 

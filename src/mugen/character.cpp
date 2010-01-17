@@ -657,7 +657,7 @@ name(name),
 keys(keys),
 maxTime(maxTime),
 bufferTime(bufferTime),
-ticks(0),
+ticks(-1),
 holdKey(-1),
 current(keys->getKeys().begin()),
 holder(0),
@@ -809,7 +809,7 @@ bool Command::handle(InputMap<Keys>::Output keys){
         const Ast::Key * fake;
         KeyWalker walker(keys, oldKeys, holdKey, holder, fake);
         needRelease->walk(walker);
-        // Global::debug(0) << "Waiting for key " << needRelease->toString() << " to be released: " << walker.ok << endl;
+        Global::debug(1) << "Waiting for key " << needRelease->toString() << " to be released: " << walker.ok << endl;
 
         if (walker.ok){
             /* if the key is still held down then don't continue */
@@ -855,6 +855,8 @@ bool Command::handle(InputMap<Keys>::Output keys){
             */
         }
     }
+
+    // Global::debug(0) << "Command " << name << " at ticks " << ticks << endl;
 
     if (fail){
         current = this->keys->getKeys().begin();
