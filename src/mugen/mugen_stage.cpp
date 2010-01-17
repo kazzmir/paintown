@@ -1143,6 +1143,13 @@ void MugenStage::cleanup(){
             MugenAnimation * animation = (*it).second;
             delete animation;
         }
+
+        for (map<unsigned int, map<unsigned int, MugenSound*> >::iterator it1 = sounds.begin(); it1 != sounds.end(); it1++){
+            map<unsigned int, MugenSound*> & group = (*it1).second;
+            for (map<unsigned int, MugenSound*>::iterator it2 = group.begin(); it2 != group.end(); it2++){
+                delete (*it2).second;
+            }
+        }
     }
 }
 
