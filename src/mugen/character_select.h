@@ -52,7 +52,8 @@ enum CharacterKeys{
     Z,
     START
 };
-    
+
+/*! Font Handling */
 class FontHandler{
     public:
 	FontHandler();
@@ -62,9 +63,9 @@ class FontHandler{
 	void render(const std::string &text, const Bitmap &);
 	
 	enum State{
-	    Normal,
-	    Blink,
-	    Done
+	    NORMAL,
+	    BLINK,
+	    DONE
 	};
 	
 	virtual inline void setLocation(int x, int y){
@@ -72,11 +73,11 @@ class FontHandler{
 	    location.y = y;
 	}
 	
-	virtual inline void setState(State state){
+	virtual inline void setState(const State &state){
 	    this->state = state;
 	}
 	
-	virtual inline State getState() const {
+	virtual inline const State & getState() const {
 	    return state;
 	}
 	
@@ -90,7 +91,7 @@ class FontHandler{
 	    this->position = position;
 	}
 	virtual inline void setBlink(MugenFont *font, int bank, int position){
-	    this->state = Blink;
+	    this->state = BLINK;
 	    this->blinkFont = font;
 	    this->blinkBank = bank;
 	    this->blinkPosition = position;
@@ -128,7 +129,7 @@ class FontHandler{
 /* Forward declaration of Cell */
 class Cell;
 
-/* Character Info handler, portrait name and etc */
+/*! Character Info handler, portrait name and etc */
 class CharacterInfo {
     public:
         CharacterInfo(const std::string &definitionFile);
@@ -224,6 +225,62 @@ class CharacterInfo {
 	Cell *referenceCell;
 };
 
+/*! Stage handler */
+class StageHandler{
+    public:
+	StageHandler();
+	virtual ~StageHandler();
+	
+	virtual void act();
+	virtual void render(const Bitmap &);
+	
+	//! Get current selected stage
+	virtual const std::string &getStage();
+	
+	//! Set Next Stage
+	virtual void next();
+	
+	//! Set Prev Stage
+	virtual void prev();
+	
+	//! Add stage to list
+	virtual void addStage(const std::string &stage);
+	
+	//! Get font handler
+	virtual inline FontHandler & getFontHandler() {
+	    return this->font;
+	}
+	
+	//! Is Selecting?
+	virtual inline bool isSelecting(){
+	    return selecting;
+	}
+	
+	//! Set Selection
+	virtual inline void toggleSelecting(){
+	    selecting = !selecting;
+	    if (!selecting) {
+		font.setState(font.DONE);
+	    }
+	}
+	
+    private:
+	//! Font handler
+	FontHandler font;
+	
+	//! Current stage
+	unsigned int currentStage;
+	
+	//! Stage list First stage is reserved for random
+	std::vector< std::string > stages;
+	
+	//! Actual Stage names first is reserved for random
+	std::vector< std::string > stageNames;
+	
+	//! Selection still active?
+	bool selecting;
+};
+
 /* Handle an individual cell which contains the data required to render itself */
 class Cell{
     public:
@@ -263,6 +320,11 @@ class Cell{
             position.y = y;
         }
 	
+	virtual inline void setDimensions(int x, int y){
+	    dimensions.x = x;
+	    dimensions.y = y;
+	}
+	
 	virtual inline const Mugen::Point &getPosition() const {
 	    return this->position;
 	}
@@ -288,6 +350,10 @@ class Cell{
 	    this->characterScaleX = x;
 	    this->characterScaleY = y;
 	}
+	
+	virtual inline void startFlash(){
+	    flash = 10;
+	}
     private:
 	//! Location on grid
 	const Mugen::Point location;
@@ -304,6 +370,9 @@ class Cell{
 	//! Position of this cell
         Mugen::Point position;
 	
+	//! Width and height
+	Mugen::Point dimensions;
+	
 	//! Is this a random select cell
         bool random;
 	
@@ -316,6 +385,9 @@ class Cell{
 	//! Scale values of the portrait placed in the cell
 	double characterScaleX;
 	double characterScaleY;
+	
+	//! Flashes cell, when selected
+	int flash;
 	
 };
 
@@ -391,6 +463,10 @@ class Grid{
 	    this->portraitScaleX = x;
 	    this->portraitScaleY = y;
 	}
+	
+	virtual inline StageHandler & getStageHandler() {
+	    return stages;
+	}
     
     private:
 	
@@ -436,11 +512,14 @@ class Grid{
 	double portraitScaleX;
 	double portraitScaleY;
 
-        /* Character list */
+        //! Character list 
         std::vector< CharacterInfo * > characters;
 	
         //! Cells of the grid
         CellMap cells;
+	
+	//! Stages
+	StageHandler stages;
 };
 
 /* Handles player cursors */
@@ -504,19 +583,30 @@ class Cursor{
 	    this->facing = f;
 	}
 	
-	virtual inline void setSelecting(bool s){
-	    this->selecting = s;
-	}
-	
-	virtual inline void setActive(bool a){
-	    this->active = a;
-	}
-	
-	virtual inline FontHandler &getFontHandler(){
+	virtual inline FontHandler & getFontHandler(){
 	    return this->font;
 	}
 	
+	enum State{
+	    NOT_ACTIVE,
+	    TEAM_SELECT,
+	    CHARACTER_SELECT,
+	    CHARACTER_SELECTED,
+	    STAGE_SELECT
+	};
+	
+	virtual inline void setState(const State &state){
+	    this->state = state;
+	}
+	
+	virtual inline const State & getState() const {
+	    return state;
+	}
+	
     private:
+	
+	void renderPortrait(const Bitmap &);
+	
 	InputMap<CharacterKeys> input;
 	//! Starting cell position in terms of row and column
 	Mugen::Point start;
@@ -546,17 +636,19 @@ class Cursor{
 	//! Which direction facing
 	int facing;
 	
-	//! Is currently selecting?
-	bool selecting;
-	
-	//! Is active?
-	bool active;
-	
 	//! Font
 	FontHandler font;
+	
+	//! Current state for proper handling of selection
+	State state;
 };
 
 /* Temporary namespace remove later */
+
+enum SelectType {
+    ARCADE,
+    VERSUS
+};
 
 namespace New{
 
@@ -567,7 +659,7 @@ class CharacterSelect {
 	
 	virtual void load() throw (MugenException);
 	
-	virtual void run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &);
+	virtual void run(const std::string & title, const SelectType &type, const Bitmap &);
 	
 	virtual void parseSelect(const std::string &selectFile);
 	
@@ -611,12 +703,8 @@ class CharacterSelect {
 	//! Title font handler
 	FontHandler titleFont;
 	
-	//! Stage Font Handler
-	FontHandler stageFont;
-	
+	//! Characters
 	std::vector< CharacterInfo *> characters;
-	
-	std::vector< MugenStage *> stages;
 	
 	//! Sprites
 	Mugen::SpriteMap sprites;

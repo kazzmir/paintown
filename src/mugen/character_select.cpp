@@ -63,7 +63,7 @@ static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
 FontHandler::FontHandler():
-state(Normal),
+state(NORMAL),
 font(0),
 bank(0),
 position(0),
@@ -75,7 +75,7 @@ doneBank(0),
 donePosition(0),
 ticker(0),
 blinkTime(10),
-blinkState(Normal){
+blinkState(NORMAL){
 }
 
 FontHandler::~FontHandler(){
@@ -83,19 +83,19 @@ FontHandler::~FontHandler(){
 
 void FontHandler::act(){
     switch(state){
-	case Blink:
+	case BLINK:
 	    ticker++;
 	    if (ticker == blinkTime){
 		ticker = 0;
-		if (blinkState == Normal){
-		    blinkState = Blink;
-		} else if (blinkState == Blink){
-		    blinkState = Normal;
+		if (blinkState == NORMAL){
+		    blinkState = BLINK;
+		} else if (blinkState == BLINK){
+		    blinkState = NORMAL;
 		}
 	    }
 	    break;
-	case Normal:
-	case Done:
+	case NORMAL:
+	case DONE:
 	default:
 	    break;
     }
@@ -104,17 +104,17 @@ void FontHandler::act(){
 void FontHandler::render(const std::string &text, const Bitmap &bmp){
     switch(state){
 	default:
-	case Normal:
+	case NORMAL:
 	    font->render(location.x, location.y, position, bank, bmp, text);
 	    break;
-	case Blink:
-	    if (blinkState == Normal){
+	case BLINK:
+	    if (blinkState == NORMAL){
 		font->render(location.x, location.y, position, bank, bmp, text);
-	    } else if (blinkState == Blink){
+	    } else if (blinkState == BLINK){
 		blinkFont->render(location.x, location.y, blinkPosition, blinkBank, bmp, text);
 	    }
 	    break;
-	case Done:
+	case DONE:
 	    doneFont->render(location.x, location.y, donePosition, doneBank, bmp, text);
 	    break;
     }
@@ -169,6 +169,71 @@ void CharacterInfo::setAct(int number){
     portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
 }
 
+// Stage selector
+StageHandler::StageHandler():
+currentStage(0),
+selecting(true){
+    stages.push_back("Random");
+    stageNames.push_back("Random");
+}
+
+StageHandler::~StageHandler(){
+}
+
+void StageHandler::act(){
+    font.act();
+}
+
+void StageHandler::render(const Bitmap &bmp){
+    font.render(stageNames[currentStage],bmp);
+}
+	
+//! Get current selected stage
+const std::string &StageHandler::getStage(){
+    // check if random first;
+    if (currentStage == 0){
+	return stages[PaintownUtil::rnd(0,stages.size()-1)];
+    }
+    return stages[currentStage];
+}
+
+//! Set Next Stage
+void StageHandler::next(){
+    currentStage++;
+    if (currentStage >= stages.size()){
+	currentStage = 0;
+    }
+}
+
+//! Set Prev Stage
+void StageHandler::prev(){
+    currentStage--;
+    if (currentStage < 0){
+	currentStage = stages.size()-1;
+    }
+}
+
+//! Add stage to list
+void StageHandler::addStage(const std::string &stage){
+    try {
+	// *FIXME not a good solution to get file
+	std::string ourDefFile = stage;
+	std::string baseDir = Filesystem::find("mugen/stages/");
+	if (ourDefFile.find(".def")==std::string::npos){
+	    ourDefFile+=".def";
+	}
+	// Get correct directory
+	baseDir = Mugen::Util::getFileDir(baseDir + ourDefFile);
+	ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, Mugen::Util::stripDir(ourDefFile));
+	std::string temp = Util::probeDef(ourDefFile,"info","name");
+	stageNames.push_back(temp);
+    } catch (const MugenException &ex){
+	Global::debug(0) << "Problem adding stage. Reason: " << ex.getReason() << endl;
+    }
+    stages.push_back(stage);
+}
+
+// Cell
 Cell::Cell(int x, int y):
 location(x,y),
 background(0),
@@ -176,7 +241,8 @@ randomSprite(0),
 random(false),
 empty(true),
 characterScaleX(1),
-characterScaleY(1){
+characterScaleY(1),
+flash(0){
 }
 
 Cell::~Cell(){
@@ -186,6 +252,9 @@ void Cell::act(std::vector<CharacterInfo *> &characters){
     if (random){
 	unsigned int num = PaintownUtil::rnd(0,characters.size()-1);
 	character = characters[num];
+    }
+    if (flash){
+	flash--;
     }
 }
 
@@ -200,6 +269,12 @@ void Cell::render(const Bitmap & bmp){
 	} else {
 	    character->getIcon()->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
 	}
+    }
+    if (flash){
+	Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
+	bmp.rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Bitmap::makeColor(255,255,255));
+	Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
 
@@ -241,6 +316,7 @@ void Grid::initialize(){
 	    cell->setBackground(cellBackgroundSprite);
 	    cell->setRandomSprite(cellRandomSprite);
 	    cell->setPosition(currentPosition.x,currentPosition.y);
+	    cell->setDimensions(cellSize.x,cellSize.y);
 	    cell->setCharacterOffset(portraitOffset.x, portraitOffset.y);
 	    cell->setCharacterScale(portraitScaleX, portraitScaleY);
 	    cellRow.push_back(cell);
@@ -259,6 +335,8 @@ void Grid::act(){
 	    cell->act(characters);
 	}
     }
+    
+    stages.getFontHandler().act();
 }
 
 void Grid::render(const Bitmap & bmp){
@@ -423,63 +501,128 @@ blinkCounter(10),
 faceScaleX(0),
 faceScaleY(0),
 facing(0),
-selecting(true),
-active(false){
+state(NOT_ACTIVE){
 }
 
 Cursor::~Cursor(){
 }
 
 void Cursor::act(Grid &grid){
-    if (!active){
-	return;
-    }
-    
     InputMap<CharacterKeys>::Output out = InputManager::getMap(input);
-    if (out[UP]){
-	// if up
-	grid.moveCursorUp(*this);
-    }
-    if (out[DOWN]){
-	// if down
-	grid.moveCursorDown(*this);
-    }
-    if (out[LEFT]){
-	// if left
-	grid.moveCursorLeft(*this);
-    }
-    if (out[RIGHT]){
-	// if right
-	grid.moveCursorRight(*this);
-    }
-    if (out[A]){
-	// if a
-    }
-    if (out[B]){
-	// if b
-    }
-    if (out[C]){
-	// if c
-    }
-    if (out[X]){
-	// if x
-    }
-    if (out[Y]){
-	// if y
-    }
-    if (out[Z]){
-	// if z
-    }if (out[START]){
-	// if start
+    switch (state){
+	default:
+	case NOT_ACTIVE:
+	    return;
+	    break;
+	case TEAM_SELECT:
+	    if (out[UP]){
+		grid.moveCursorUp(*this);
+	    }
+	    if (out[DOWN]){
+		grid.moveCursorDown(*this);
+	    }
+	    if (out[LEFT]){
+		grid.moveCursorLeft(*this);
+	    }
+	    if (out[RIGHT]){
+		grid.moveCursorRight(*this);
+	    }
+	    if (out[A]){
+	    }
+	    if (out[B]){
+	    }
+	    if (out[C]){
+	    }
+	    if (out[X]){
+	    }
+	    if (out[Y]){
+	    }
+	    if (out[Z]){
+	    }
+	    if (out[START]){
+	    }
+	    break;
+	case CHARACTER_SELECTED:
+	    break;
+	case CHARACTER_SELECT:
+	    if (out[UP]){
+		grid.moveCursorUp(*this);
+	    }
+	    if (out[DOWN]){
+		grid.moveCursorDown(*this);
+	    }
+	    if (out[LEFT]){
+		grid.moveCursorLeft(*this);
+	    }
+	    if (out[RIGHT]){
+		grid.moveCursorRight(*this);
+	    }
+	    if (out[A]){
+	    }
+	    if (out[B]){
+	    }
+	    if (out[C]){
+	    }
+	    if (out[X]){
+	    }
+	    if (out[Y]){
+	    }
+	    if (out[Z]){
+	    }
+	    if (out[START]){
+	    }
+	    break;
+	case STAGE_SELECT:
+	    if (out[LEFT]){
+		grid.moveCursorLeft(*this);
+	    }
+	    if (out[RIGHT]){
+		grid.moveCursorRight(*this);
+	    }
+	    if (out[A]){
+	    }
+	    if (out[B]){
+	    }
+	    if (out[C]){
+	    }
+	    if (out[X]){
+	    }
+	    if (out[Y]){
+	    }
+	    if (out[Z]){
+	    }
+	    if (out[START]){
+	    }
+	    break;
     }
 }
 
 void Cursor::render(Grid &grid, const Bitmap & bmp){
-    if (!active){
-	return;
+    switch (state){
+	case NOT_ACTIVE:
+	    return;
+	    break;
+	case TEAM_SELECT:
+	    break;
+	case CHARACTER_SELECT:
+	    activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+	    renderPortrait(bmp);
+	    break;
+	case CHARACTER_SELECTED:
+	    doneSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+	    renderPortrait(bmp);
+	    break;
+	default:
+	    renderPortrait(bmp);
     }
-    activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
     
+    /* Have to make sure stage select is prominent kinda stupid */
+    if (state == STAGE_SELECT){
+	grid.getStageHandler().render(bmp);
+    }
+}
+
+void Cursor::renderPortrait(const Bitmap &bmp){
     // Lets do the portrait and name
     if (!currentCell->isEmpty()){
 	const CharacterInfo *character = currentCell->getCharacter();
@@ -801,7 +944,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		} else if ( simple == "stage.pos"){
 		    int x, y;
 		    simple >> x >> y;
-		    self.stageFont.setLocation(x,y);
+		    self.grid.getStageHandler().getFontHandler().setLocation(x,y);
 		} else if ( simple == "stage.active.font"){
 		    int index=0, bank=0, position=0;
 		    try {
@@ -809,7 +952,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.stageFont.setPrimary(self.fonts[index-1],bank,position);
+		    self.grid.getStageHandler().getFontHandler().setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "stage.active2.font"){
                     int index=0, bank=0, position=0;
 		    try {
@@ -817,7 +960,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.stageFont.setBlink(self.fonts[index-1],bank,position);
+		    self.grid.getStageHandler().getFontHandler().setBlink(self.fonts[index-1],bank,position);
 		} else if ( simple == "stage.done.font"){
                     int index=0, bank=0, position=0;
 		    try {
@@ -825,7 +968,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.stageFont.setDone(self.fonts[index-1],bank,position);
+		    self.grid.getStageHandler().getFontHandler().setDone(self.fonts[index-1],bank,position);
 		}
 #if 0
                 else if ( simple.find("teammenu")!=std::string::npos ){
@@ -986,13 +1129,11 @@ void New::CharacterSelect::parseSelect(const std::string &selectFile){
     
     // Prepare stages
     for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
-	/* We'll clean this up later */
-	MugenStage *stage = new MugenStage(*i);
-	stages.push_back(stage);
+	grid.getStageHandler().addStage((*i));
     }
 }
 
-void New::CharacterSelect::run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &bmp){
+void New::CharacterSelect::run(const std::string & title, const SelectType &type, const Bitmap &bmp){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     
@@ -1004,24 +1145,8 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
     Global::second_counter = 0;
     int game_time = 100;
     
-    // *TODO need implement better strategy for stages
-    std::vector< MugenStage *> stageSelections;
-    
-    if (stages.size() == 0){
-        throw MugenException("No stages available");
-    }
-    
-    unsigned int random = PaintownUtil::rnd(0,stages.size()-1);
-    stageSelections.push_back(stages[random]);
-    
-    for (std::vector<MugenStage *>::iterator i = stages.begin(); i != stages.end(); ++i){
-	stageSelections.push_back(*i);
-    }
-    
-    unsigned int currentStage =  0;
-    
     // set first cursor1
-    player1.setActive(true);
+    player1.setState(Cursor::CHARACTER_SELECT);
     
     // Set game keys temporary
     InputMap<int> gameInput;

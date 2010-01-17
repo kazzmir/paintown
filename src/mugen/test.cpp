@@ -524,7 +524,7 @@ void doSelectScreen(const std::string &file){
     try {
 	selector.load();
 	selector.setPlayer1Keys(getPlayer1Keys());
-	selector.run("Test", false, false, Bitmap::temporaryBitmap(640,480));
+	selector.run("Test", Mugen::ARCADE, Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
     }
