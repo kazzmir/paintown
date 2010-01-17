@@ -269,6 +269,9 @@ public:
 	void moveY( const double y );
 	void moveZ( const double z );
 
+        /* for mugen support so we can have negative y values */
+        void moveYNoCheck(double y);
+
 	void moveX( int dir, const int x );
         void moveX(int dir, const double x);
 

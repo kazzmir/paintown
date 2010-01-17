@@ -399,7 +399,7 @@ void StateController::activate(Character & guy) const {
             if (value2 != NULL){
                 RuntimeValue result = evaluate(value2, Environment(guy));
                 if (result.isDouble()){
-                    guy.moveY(-result.getDoubleValue());
+                    guy.moveYNoCheck(-result.getDoubleValue());
                     // guy.setY(guy.getY() + result.getDoubleValue());
                 }
             }
@@ -904,7 +904,8 @@ void HitState::update(const HitDefinition & hit){
     yAcceleration = hit.yAcceleration;
     xVelocity = hit.groundVelocity.x;
     yVelocity = hit.groundVelocity.y;
-    fall = hit.fall.fall;
+    fall.fall = hit.fall.fall;
+    fall.yVelocity = hit.fall.yVelocity;
 
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
@@ -2234,6 +2235,11 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
 	}
     }
 }
+        
+bool Character::canRecover() const {
+    return true;
+    // return getY() == 0;
+}
 
 void Character::nextPalette(){
     if (currentPalette < palDefaults.size()-1){
@@ -2364,12 +2370,14 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
         animation->logic();
     }
 
+    /* redundant for now */
     if (hitState.shakeTime > 0){
         hitState.shakeTime -= 1;
     } else if (hitState.hitTime > -1){
         hitState.hitTime -= 1;
     }
 
+    /* if shakeTime is non-zero should we update stateTime? */
     stateTime += 1;
 
     /* active is the current set of commands */
@@ -2455,7 +2463,9 @@ void Character::draw(Bitmap * work, int x_position){
     FontRender * render = FontRender::getInstance();
     render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "State %d Animation %d", getCurrentState(), currentAnimation);
     y += font.getHeight();
-    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "X %f Y %f", getXVelocity(), getYVelocity());
+    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Vx %f Vy %f", getXVelocity(), getYVelocity());
+    y += font.getHeight();
+    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "X %f Y %f", getX(), getY());
     y += font.getHeight();
     render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Time %d", getStateTime());
     y += font.getHeight();
@@ -2477,9 +2487,11 @@ void Character::draw(Bitmap * work, int x_position){
     if (animation != 0){
         int x = getRX();
         int y = getRY();
+
         if (isPaused() && moveType == Move::Hit){
             x += PaintownUtil::rnd(3) - 1;
         }
+
         animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, 0, 0);
     }
 }

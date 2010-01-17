@@ -164,6 +164,11 @@ void Object::moveY( double y ){
 		actualy = 0;
 	}
 }
+
+void Object::moveYNoCheck(double y){
+    virtualy += y;
+    actualy = (int) virtualy;
+}
 	
 int Object::getAlliance() const{
 	return alliance;

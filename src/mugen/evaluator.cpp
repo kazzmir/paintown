@@ -194,9 +194,13 @@ public:
             return RuntimeValue(environment.getCharacter().getHitState().hitTime <= -1);
         }
 
+        if (identifier == "canrecover"){
+            return RuntimeValue(environment.getCharacter().canRecover());
+        }
+
         if (identifier == "hitfall"){
-            /* FIXME */
-            return RuntimeValue(0);
+            const HitState & state = environment.getCharacter().getHitState();
+            return RuntimeValue(state.fall.fall);
         }
 
         if (identifier == "time"){
@@ -383,10 +387,11 @@ public:
             } else if (var == "chainid"){
             } else if (var == "guarded"){
             } else if (var == "fall"){
-                return RuntimeValue(state.fall);
+                return RuntimeValue(state.fall.fall);
             } else if (var == "fall.damage"){
             } else if (var == "fall.xvel"){
             } else if (var == "fall.yvel"){
+                return RuntimeValue(state.fall.yVelocity);
             } else if (var == "fall.recover"){
             } else if (var == "fall.time"){
             } else if (var == "fall.recovertime"){
@@ -399,9 +404,13 @@ public:
             int index = (int) toNumber(evaluate(function.getArg1()));
             Ast::Value * value = environment.getCharacter().getSystemVariable(index);
             if (value == 0){
+                /* non-existant variables are just false */
+                return RuntimeValue(false);
+                /*
                 ostringstream out;
                 out << "No system variable for index " << index;
                 throw MugenException(out.str());
+                */
             }
             return evaluate(value);
         }

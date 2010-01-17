@@ -433,7 +433,8 @@ struct HitDefinition{
 
     struct Fall{
         Fall():
-            fall(false){
+            fall(false),
+            yVelocity(0){
             }
 
         /* fall = bvalue (boolean)
@@ -536,8 +537,7 @@ struct HitState{
         slideTime(0),
         yAcceleration(0),
         yVelocity(0),
-        xVelocity(0),
-        fall(false){
+        xVelocity(0){
         }
 
     void update(const HitDefinition & hit);
@@ -549,7 +549,16 @@ struct HitState{
     double xVelocity;
     AttackType::Animation animationType;
     AttackType::Ground groundType;
-    bool fall;
+
+    struct Fall{
+        Fall():
+            fall(false),
+            yVelocity(0){
+            }
+
+        bool fall;
+        double yVelocity;
+    } fall;
 };
 
 /* comes from a State */
@@ -1127,6 +1136,9 @@ public:
 
         bool canTurn() const;
         void doTurn();
+
+        /* recover after falling */
+        virtual bool canRecover() const;
 
 protected:
     void initialize();

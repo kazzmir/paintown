@@ -601,11 +601,13 @@ void MugenStage::addSpark(int x, int y, int sparkNumber){
 void MugenStage::physics(Object * player){
 
     Mugen::Character * mugen = (Mugen::Character *) player;
+    /* ignore physics while the player is paused */
     if (mugen->isPaused()){
         return;
     }
+
     mugen->moveX(mugen->getXVelocity());
-    mugen->moveY(-mugen->getYVelocity());
+    mugen->moveYNoCheck(-mugen->getYVelocity());
 
     if (mugen->canTurn()){
         for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
