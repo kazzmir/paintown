@@ -3,24 +3,14 @@
 
 #include <string>
 
+#include "mugen/mugen_util.h"
+
 class Bitmap;
 class MugenStage;
 
 namespace Mugen{
     
 class SelectedChars;
-    
-enum GameType {
-    Arcade = 0,
-    Versus,
-    TeamArcade,
-    TeamVersus,
-    TeamCoop,
-    Survival,
-    SurvivalCoop,
-    Training,
-    Watch
-};
 
 /* Our game definition, this is to facilitate running a game */
 class Game {

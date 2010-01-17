@@ -40,17 +40,17 @@ class Character;
 
 /*! Key handler for now change later*/
 enum CharacterKeys{
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
+    Up,
+    Down,
+    Left,
+    Right,
     A,
     B,
     C,
     X,
     Y,
     Z,
-    START
+    Start
 };
 
 /*! Font Handling */
@@ -63,9 +63,9 @@ class FontHandler{
 	void render(const std::string &text, const Bitmap &);
 	
 	enum State{
-	    NORMAL,
-	    BLINK,
-	    DONE
+	    Normal,
+	    Blink,
+	    Done
 	};
 	
 	virtual inline void setLocation(int x, int y){
@@ -91,7 +91,7 @@ class FontHandler{
 	    this->position = position;
 	}
 	virtual inline void setBlink(MugenFont *font, int bank, int position){
-	    this->state = BLINK;
+	    this->state = Blink;
 	    this->blinkFont = font;
 	    this->blinkBank = bank;
 	    this->blinkPosition = position;
@@ -260,7 +260,7 @@ class StageHandler{
 	virtual inline void toggleSelecting(){
 	    selecting = !selecting;
 	    if (!selecting) {
-		font.setState(font.DONE);
+		font.setState(font.Done);
 	    }
 	}
 	
@@ -588,11 +588,11 @@ class Cursor{
 	}
 	
 	enum State{
-	    NOT_ACTIVE,
-	    TEAM_SELECT,
-	    CHARACTER_SELECT,
-	    CHARACTER_SELECTED,
-	    STAGE_SELECT
+	    NotActive,
+	    TeamSelect,
+	    CharacterSelect,
+	    CharacterSelected,
+	    StageSelect
 	};
 	
 	virtual inline void setState(const State &state){
@@ -645,11 +645,6 @@ class Cursor{
 
 /* Temporary namespace remove later */
 
-enum SelectType {
-    ARCADE,
-    VERSUS
-};
-
 namespace New{
 
 class CharacterSelect {
@@ -659,7 +654,7 @@ class CharacterSelect {
 	
 	virtual void load() throw (MugenException);
 	
-	virtual void run(const std::string & title, const SelectType &type, const Bitmap &);
+	virtual void run(const std::string & title, const GameType &type, const Bitmap &);
 	
 	virtual void parseSelect(const std::string &selectFile);
 	
