@@ -3,17 +3,23 @@
 
 #include <string>
 
+class Sound;
+
 class MugenSound{
 public:
     MugenSound();
-    MugenSound( const MugenSound &copy );
-    ~MugenSound();
+    MugenSound(const MugenSound &copy);
+    virtual ~MugenSound();
+
+    void load();
+    void play();
     
     int next;
     int length;
     int groupNumber;
     int sampleNumber;
     char * sample;
+    Sound * sound;
 
 };
 

@@ -455,7 +455,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
 }
 
 /* TODO: turn this code into a class like SffReader */
-void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds) throw (MugenException){
+void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std::map<unsigned int, MugenSound *> > & sounds){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
@@ -491,8 +491,9 @@ void Mugen::Util::readSounds(const string & filename, std::map<unsigned int,std:
 	    
 	    // Set the next file location
 	    location = temp->next;
+            temp->load();
 	    
-	    sounds[ temp->groupNumber ][ temp->sampleNumber ] = temp;
+	    sounds[temp->groupNumber][temp->sampleNumber] = temp;
 	}
     }
     
