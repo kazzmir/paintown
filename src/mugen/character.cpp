@@ -2322,7 +2322,11 @@ vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
 
     return out;
 }
-        
+
+bool Character::isPaused(){
+    return hitState.shakeTime > 0;
+}
+
 InputMap<Command::Keys> & Character::getInput(){
     if (getFacing() == Object::FACING_RIGHT){
         return inputLeft;
@@ -2332,6 +2336,13 @@ InputMap<Command::Keys> & Character::getInput(){
 
 /* Inherited members */
 void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
+
+    // if (hitState.shakeTime > 0 && moveType != Move::Hit){
+    if (hitState.shakeTime > 0){
+        hitState.shakeTime -= 1;
+        return;
+    }
+
     MugenAnimation * animation = getCurrentAnimation();
     if (animation != 0){
 	/* Check debug state */
@@ -2371,8 +2382,12 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
         /* empty */
     }
 }
+        
+void Character::didHit(Character * enemy){
+    hitState.shakeTime = getHit().pause.player1;
+}
 
-void Character::doHit(Character * enemy, const HitDefinition & hisHit){
+void Character::wasHit(Character * enemy, const HitDefinition & hisHit){
     hitState.update(hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
@@ -2460,7 +2475,12 @@ void Character::draw(Bitmap * work, int x_position){
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be 0... */
     if (animation != 0){
-        animation->render(getFacing() == Object::FACING_LEFT, false, getRX(), getRY(), *work, 0, 0);
+        int x = getRX();
+        int y = getRY();
+        if (isPaused() && moveType == Move::Hit){
+            x += PaintownUtil::rnd(3) - 1;
+        }
+        animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, 0, 0);
     }
 }
 

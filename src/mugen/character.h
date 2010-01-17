@@ -1112,7 +1112,8 @@ public:
             return this->hit;
         }
 
-        void doHit(Character * enemy, const HitDefinition & hit);
+        void didHit(Character * enemy);
+        void wasHit(Character * enemy, const HitDefinition & hit);
 
         virtual const HitState & getHitState() const {
             return hitState;
@@ -1120,6 +1121,9 @@ public:
 
         const std::vector<MugenArea> getAttackBoxes() const;
         const std::vector<MugenArea> getDefenseBoxes() const;
+
+        /* paused from an attack */
+        virtual bool isPaused();
 
         bool canTurn() const;
         void doTurn();
@@ -1373,7 +1377,7 @@ protected:
         HitDefinition hit;
 
         HitState hitState;
-        int lastTicket;
+        unsigned int lastTicket;
 };
 
 }

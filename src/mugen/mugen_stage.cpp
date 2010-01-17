@@ -601,6 +601,9 @@ void MugenStage::addSpark(int x, int y, int sparkNumber){
 void MugenStage::physics(Object * player){
 
     Mugen::Character * mugen = (Mugen::Character *) player;
+    if (mugen->isPaused()){
+        return;
+    }
     mugen->moveX(mugen->getXVelocity());
     mugen->moveY(-mugen->getYVelocity());
 
@@ -642,7 +645,8 @@ void MugenStage::physics(Object * player){
                     // Global::debug(0) << "Collision!" << endl;
                     /* the hit state */
                     addSpark(mugen->getHit().sparkPosition.x + enemy->getRX(), mugen->getHit().sparkPosition.y + mugen->getRY(), mugen->getHit().spark);
-                    enemy->doHit(mugen, mugen->getHit());
+                    mugen->didHit(enemy);
+                    enemy->wasHit(mugen, mugen->getHit());
                     // enemy->changeState(5000);
                 }
             }
