@@ -1112,7 +1112,7 @@ public:
             return this->hit;
         }
 
-        void doHit(const HitDefinition & hit);
+        void doHit(Character * enemy, const HitDefinition & hit);
 
         virtual const HitState & getHitState() const {
             return hitState;
@@ -1373,6 +1373,7 @@ protected:
         HitDefinition hit;
 
         HitState hitState;
+        int lastTicket;
 };
 
 }

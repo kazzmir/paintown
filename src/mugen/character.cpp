@@ -315,6 +315,7 @@ void StateController::activate(Character & guy) const {
         }
         case HitDef : {
             guy.setHitDef(getHit());
+            guy.nextTicket();
             break;
         }
         case HitFallDamage : {
@@ -981,6 +982,8 @@ void Character::initialize(){
     currentAnimation = Standing;
     debug = false;
     has_control = true;
+
+    lastTicket = 0;
     
     /* Load up info for the select screen */
     loadSelectData();
@@ -1153,7 +1156,7 @@ static bool isStateDefSection(string name){
 }
 
 bool Character::canBeHit(Character * enemy){
-    return moveType != Move::Hit;
+    return moveType != Move::Hit && lastTicket < enemy->getTicket();
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
@@ -2369,10 +2372,11 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     }
 }
 
-void Character::doHit(const HitDefinition & hisHit){
+void Character::doHit(Character * enemy, const HitDefinition & hisHit){
     hitState.update(hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
+    lastTicket = enemy->getTicket();
     
     changeState(5000);
 
