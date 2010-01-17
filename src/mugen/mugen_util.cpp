@@ -342,7 +342,26 @@ public:
 
         MugenSprite * sprite = new MugenSprite();
         sprite->read(sffStream, location);
+        location = sprite->getNext();
 
+        if (sprite->getLength() == 0){
+            const MugenSprite * temp = spriteIndex[sprite->getPrevious()];
+            if (!temp){
+                ostringstream out;
+                out << "Unknown linked sprite " << sprite->getPrevious() << endl;
+                throw MugenException(out.str());
+            }
+            sprite->copyImage(temp);
+        } else {
+            sprite->loadPCX(sffStream, islinked, useact, palsave1);
+        }
+            
+        spriteIndex[currentSprite] = sprite;
+        currentSprite += 1;
+
+        return sprite;
+
+#if 0
         if (sprite->getLength() == 0){ // Lets get the linked sprite
             // This is linked
             islinked = true;
@@ -374,7 +393,7 @@ public:
 
                     std::ostringstream st;
                     st << "Image " << currentSprite << "(" << sprite->getGroupNumber() << "," << sprite->getImageNumber() << ") : circular definition or forward linking. Aborting.\n"; 
-                    throw MugenException( st.str() );
+                    throw MugenException(st.str());
                 } else {
                     if(sprite->getLength() == 0){
                         sprite->setPrevious(temp->getPrevious());
@@ -412,6 +431,7 @@ public:
             delete sprite;
             throw MugenException(out.str());
         }
+#endif
     }
 
     bool moreSprites(){
@@ -444,6 +464,7 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
             if (first_it != sprites.end()){
                 std::map< unsigned int, MugenSprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
                 if (it != first_it->second.end()){
+                    Global::debug(0) << "Warning: replacing sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << endl;
                     delete it->second;
                 }
             }
@@ -962,6 +983,7 @@ const std::string Mugen::Util::probeDef(const std::string &file, const std::stri
 /* clean this function up */
 MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile) throw (MugenException){
     SffReader reader(file, actFile);
+    vector<MugenSprite*> sprites;
     while (reader.moreSprites()){
         try{
             MugenSprite * sprite = reader.readSprite();            
@@ -969,13 +991,19 @@ MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int
 	    Global::debug(1) << "Matching group: (" << groupNumber << ") with (" << sprite->getGroupNumber() << ") | sprite: (" << spriteNumber << ") with (" << sprite->getImageNumber() << ")" << endl;
 	    if ((sprite->getGroupNumber() == groupNumber) && (sprite->getImageNumber() == spriteNumber)){
 	        // we got it return it
+                for (vector<MugenSprite*>::iterator it = sprites.begin(); it != sprites.end(); it++){
+                    delete *it;
+                }
                 return sprite;
 	    } else {
-                delete sprite;
+                sprites.push_back(sprite);
             }
         } catch (const MugenException & e){
             Global::debug(0) << e.getReason() << endl;
         }
+    }
+    for (vector<MugenSprite*>::iterator it = sprites.begin(); it != sprites.end(); it++){
+        delete *it;
     }
     /* Not found */
     ostringstream out;

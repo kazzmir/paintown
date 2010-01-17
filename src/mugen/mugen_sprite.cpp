@@ -87,6 +87,17 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     
     return *this;
 }
+        
+void MugenSprite::copyImage(const MugenSprite * copy){
+    if (bitmap){
+        delete bitmap;
+        bitmap = NULL;
+    }
+
+    if (copy->getBitmap() != NULL){
+        bitmap = new Bitmap(*copy->getBitmap());
+    }
+}
 
 bool MugenSprite::operator<( const MugenSprite &copy ){
     return ( (this->groupNumber < copy.groupNumber) && (this->imageNumber < copy.imageNumber) );
@@ -220,7 +231,7 @@ void MugenSprite::reload(bool mask){
     bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
 }
 
-Bitmap *MugenSprite::getBitmap(){
+Bitmap *MugenSprite::getBitmap() const {
     return bitmap;
 }
 

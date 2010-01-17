@@ -30,9 +30,12 @@ class MugenSprite{
 	// load/reload sprite
 	void load(bool mask=true);
 	void reload(bool mask=true);
+
+        /* just copies the bitmap */
+        void copyImage(const MugenSprite * copy);
 	
 	// get sprite
-	Bitmap *getBitmap();
+	Bitmap *getBitmap() const;
 	const int getWidth();
 	const int getHeight();
 	
