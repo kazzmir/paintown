@@ -175,6 +175,7 @@ protected:
 protected:
 
     void addSpark(int x, int y, int sparkNumber);
+    void playSound(int group, int item, bool own);
 
 	/* Location is the directory passed in ctor
 	This is where the def is loaded and all the relevant files
@@ -371,7 +372,7 @@ protected:
 	//std::vector< MugenBackground * > foregrounds;
 	
 	/* Sounds */
-	//std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
+	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
 	
 	MugenBackgroundManager *background;
 	

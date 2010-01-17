@@ -529,6 +529,8 @@ void MugenStage::load(){
     Mugen::Util::readSprites(Filesystem::find("mugen/data/fightfx.sff"), "", effects);
     sparks = Mugen::Util::loadAnimations(Filesystem::find("mugen/data/fightfx.air"), effects);
 
+    Mugen::Util::readSounds(Filesystem::find("mugen/data/common.snd"), sounds);
+
     /*
     for (Mugen::SpriteMap::iterator it = effects.begin(); it != effects.end(); it++){
         Global::debug(-1) << "Effect group " << (*it).first << endl;
@@ -598,6 +600,14 @@ void MugenStage::addSpark(int x, int y, int sparkNumber){
     showSparks.push_back(spark);
 }
 
+void MugenStage::playSound(int group, int item, bool own){
+    /* FIXME: handle own */
+    MugenSound * sound = sounds[group][item];
+    if (sound != 0){
+        sound->play();
+    }
+}
+
 void MugenStage::physics(Object * player){
 
     Mugen::Character * mugen = (Mugen::Character *) player;
@@ -647,6 +657,7 @@ void MugenStage::physics(Object * player){
                     // Global::debug(0) << "Collision!" << endl;
                     /* the hit state */
                     addSpark(mugen->getHit().sparkPosition.x + enemy->getRX(), mugen->getHit().sparkPosition.y + mugen->getRY(), mugen->getHit().spark);
+                    playSound(mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
                     mugen->didHit(enemy);
                     enemy->wasHit(mugen, mugen->getHit());
                     // enemy->changeState(5000);

@@ -2003,7 +2003,7 @@ void Character::load(){
                         simple >> self.airFile;
                     } else if (simple == "sound"){
                         simple >> self.sndFile;
-                        Mugen::Util::readSounds( Mugen::Util::fixFileName(self.baseDir, self.sndFile ), self.sounds );
+                        Mugen::Util::readSounds( Mugen::Util::fixFileName(self.baseDir, self.sndFile ), self.sounds);
                     } else if (PaintownUtil::matchRegex(simple.idString(), "pal[0-9]+")){
                         int num = atoi(PaintownUtil::captureRegex(simple.idString(), "pal([0-9]+)", 0).c_str());
                         string what;
