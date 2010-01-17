@@ -50,6 +50,8 @@
 #include "ast/all.h"
 #include "parser/all.h"
 
+#include "input/input-manager.h"
+
 namespace PaintownUtil = ::Util;
 
 using namespace std;
@@ -300,56 +302,6 @@ void Grid::setCursorStart(Cursor &cursor){
 
 void Grid::moveCursorLeft(Cursor &cursor){
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
-    current.x--;
-    if (current.x < 0){
-	if (wrapping){
-	    current.x = rows-1;
-	} else {
-	    return;
-	}
-    }
-    Cell *cell;
-    try {
-	cell = getCell(current.x,current.y);
-    } catch (MugenException &me){
-	// Shouldn't happen but you never know lets not continue
-	return;
-    }
-    
-    if (cell->isEmpty()){
-	if (!moveOverEmptyBoxes){
-	    return;
-	}
-    }
-    cursor.setCurrentCell(cell);
-}
-void Grid::moveCursorRight(Cursor &cursor){
-    Mugen::Point current = cursor.getCurrentCell()->getLocation();
-    current.x++;
-    if (current.x >= rows){
-	if (wrapping){
-	    current.x = 0;
-	} else {
-	    return;
-	}
-    }
-    Cell *cell;
-    try {
-	cell = getCell(current.x,current.y);
-    } catch (MugenException &me){
-	// Shouldn't happen but you never know lets not continue
-	return;
-    }
-    
-    if (cell->isEmpty()){
-	if (!moveOverEmptyBoxes){
-	    return;
-	}
-    }
-    cursor.setCurrentCell(cell);
-}
-void Grid::moveCursorUp(Cursor &cursor){
-    Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.y--;
     if (current.y < 0){
 	if (wrapping){
@@ -373,12 +325,62 @@ void Grid::moveCursorUp(Cursor &cursor){
     }
     cursor.setCurrentCell(cell);
 }
-void Grid::moveCursorDown(Cursor &cursor){
+void Grid::moveCursorRight(Cursor &cursor){
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.y++;
     if (current.y >= columns){
 	if (wrapping){
 	    current.y = 0;
+	} else {
+	    return;
+	}
+    }
+    Cell *cell;
+    try {
+	cell = getCell(current.x,current.y);
+    } catch (MugenException &me){
+	// Shouldn't happen but you never know lets not continue
+	return;
+    }
+    
+    if (cell->isEmpty()){
+	if (!moveOverEmptyBoxes){
+	    return;
+	}
+    }
+    cursor.setCurrentCell(cell);
+}
+void Grid::moveCursorUp(Cursor &cursor){
+    Mugen::Point current = cursor.getCurrentCell()->getLocation();
+    current.x--;
+    if (current.x < 0){
+	if (wrapping){
+	    current.x = rows-1;
+	} else {
+	    return;
+	}
+    }
+    Cell *cell;
+    try {
+	cell = getCell(current.x,current.y);
+    } catch (MugenException &me){
+	// Shouldn't happen but you never know lets not continue
+	return;
+    }
+    
+    if (cell->isEmpty()){
+	if (!moveOverEmptyBoxes){
+	    return;
+	}
+    }
+    cursor.setCurrentCell(cell);
+}
+void Grid::moveCursorDown(Cursor &cursor){
+    Mugen::Point current = cursor.getCurrentCell()->getLocation();
+    current.x++;
+    if (current.x >= rows){
+	if (wrapping){
+	    current.x = 0;
 	} else {
 	    return;
 	}
@@ -432,28 +434,44 @@ void Cursor::act(Grid &grid){
     if (!active){
 	return;
     }
-    // if up
-    grid.moveCursorUp(*this);
-    // if down
-    grid.moveCursorDown(*this);
-    // if left
-    grid.moveCursorLeft(*this);
-    // if right
-    grid.moveCursorRight(*this);
-    // if a
     
-    // if b
-    
-    // if c 
-    
-    // if x
-    
-    // if y
-    
-    // if z
-    
-    // if start
-    
+    InputMap<CharacterKeys>::Output out = InputManager::getMap(input);
+    if (out[UP]){
+	// if up
+	grid.moveCursorUp(*this);
+    }
+    if (out[DOWN]){
+	// if down
+	grid.moveCursorDown(*this);
+    }
+    if (out[LEFT]){
+	// if left
+	grid.moveCursorLeft(*this);
+    }
+    if (out[RIGHT]){
+	// if right
+	grid.moveCursorRight(*this);
+    }
+    if (out[A]){
+	// if a
+    }
+    if (out[B]){
+	// if b
+    }
+    if (out[C]){
+	// if c
+    }
+    if (out[X]){
+	// if x
+    }
+    if (out[Y]){
+	// if y
+    }
+    if (out[Z]){
+	// if z
+    }if (out[START]){
+	// if start
+    }
 }
 
 void Cursor::render(Grid &grid, const Bitmap & bmp){
@@ -463,13 +481,15 @@ void Cursor::render(Grid &grid, const Bitmap & bmp){
     activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
     
     // Lets do the portrait and name
-    const CharacterInfo *character = currentCell->getCharacter();
-    Mugen::Effects effects;
-    effects.facing = facing;
-    effects.scalex = faceScaleX;
-    effects.scaley = faceScaleY;
-    character->getPortrait()->render(faceOffset.x,faceOffset.y,bmp,effects);
-    font.render(character->getName(),bmp);
+    if (!currentCell->isEmpty()){
+	const CharacterInfo *character = currentCell->getCharacter();
+	Mugen::Effects effects;
+	effects.facing = facing;
+	effects.scalex = faceScaleX;
+	effects.scaley = faceScaleY;
+	character->getPortrait()->render(faceOffset.x,faceOffset.y,bmp,effects);
+	font.render(character->getName(),bmp);
+    }
 }
 
 static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end){
@@ -1003,6 +1023,10 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
     // set first cursor1
     player1.setActive(true);
     
+    // Set game keys temporary
+    InputMap<int> gameInput;
+    gameInput.set(Keyboard::Key_ESC, 10, true, 0);
+    
     while ( ! done && fader.getState() != RUNFADE ){
     
 	bool draw = false;
@@ -1012,6 +1036,15 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
 	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
 	    while ( runCounter >= 1.0 ){
 		runCounter -= 1;
+		// Key handler
+		InputManager::poll();
+		
+		InputMap<int>::Output out = InputManager::getMap(gameInput);
+		if (out[0]){
+		    done = true;
+		    fader.setState(FADEOUT);
+		}
+		
 		// Logic
 		
 		// Fader
@@ -1029,12 +1062,6 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
 		
 		// Title
 		titleFont.act();
-		
-		// Check status ?
-		/*
-		done = true;
-		fader.setState(FADEOUT);
-		*/
 	    }
 	    
 	    Global::speed_counter = 0;

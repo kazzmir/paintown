@@ -12,7 +12,6 @@
 #include "input/input-map.h"
 
 #include "mugen_util.h"
-#include "mugen/character.h"
 #include "return_exception.h"
 
 #include "ast/all.h"
@@ -36,6 +35,23 @@ class MugenStage;
 
 /* Encapsulate in Mugen namespace */
 namespace Mugen{
+    
+class Character;
+
+/*! Key handler for now change later*/
+enum CharacterKeys{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    A,
+    B,
+    C,
+    X,
+    Y,
+    Z,
+    START
+};
     
 class FontHandler{
     public:
@@ -437,9 +453,9 @@ class Cursor{
 	
 	virtual void render(Grid &grid, const Bitmap &);
 	
-	/*virtual inline void setInput(const InputMap<Command::Keys> & input){
+	virtual inline void setInput(const InputMap<CharacterKeys> & input){
 	    this->input = input;
-	}*/
+	}
 	
 	virtual inline void setStart(int x, int y){
 	    this->start.x = x;
@@ -501,7 +517,7 @@ class Cursor{
 	}
 	
     private:
-	/*InputMap<Command::Keys> &input;*/
+	InputMap<CharacterKeys> input;
 	//! Starting cell position in terms of row and column
 	Mugen::Point start;
 	
@@ -554,6 +570,14 @@ class CharacterSelect {
 	virtual void run(const std::string & title, bool player2Enabled, bool selectStage, const Bitmap &);
 	
 	virtual void parseSelect(const std::string &selectFile);
+	
+	virtual inline void setPlayer1Keys(const InputMap<CharacterKeys> &input){
+	    player1.setInput(input);
+	}
+	
+	virtual inline void setPlayer2Keys(const InputMap<CharacterKeys> &input){
+	    player2.setInput(input);
+	}
 	
     private:
 	

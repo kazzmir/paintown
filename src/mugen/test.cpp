@@ -502,10 +502,28 @@ void showSFF(const string & ourFile){
     }
 }
 
+static InputMap<Mugen::CharacterKeys> getPlayer1Keys(){
+    InputMap<Mugen::CharacterKeys> input;
+    input.set(Keyboard::Key_UP, 0, true, Mugen::UP);
+    input.set(Keyboard::Key_DOWN, 0, true, Mugen::DOWN);
+    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::RIGHT);
+    input.set(Keyboard::Key_LEFT, 0, true, Mugen::LEFT);
+
+    input.set(Keyboard::Key_A, 0, true, Mugen::A);
+    input.set(Keyboard::Key_S, 0, true, Mugen::B);
+    input.set(Keyboard::Key_D, 0, true, Mugen::C);
+    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
+    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::START);
+    return input;
+}
+
 void doSelectScreen(const std::string &file){
     Mugen::New::CharacterSelect selector(file);
     try {
 	selector.load();
+	selector.setPlayer1Keys(getPlayer1Keys());
 	selector.run("Test", false, false, Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
