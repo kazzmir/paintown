@@ -211,11 +211,19 @@ class CharacterInfo {
 /* Handle an individual cell which contains the data required to render itself */
 class Cell{
     public:
-        Cell();
+        Cell(int x, int y);
         virtual ~Cell();
 
         virtual void act(std::vector<CharacterInfo *> &characters);
         virtual void render(const Bitmap &);
+	
+	virtual inline const bool operator==(const Cell &cell) const{
+	    return (this->location == cell.location);
+	}
+	
+	virtual inline const Mugen::Point &getLocation() const{
+	    return this->location;
+	}
 	
 	virtual inline void setBackground(MugenSprite *sprite){
 	    this->background = sprite;
@@ -235,6 +243,7 @@ class Cell{
             position.y = y;
         }
         virtual inline void setRandom(bool r){
+	    empty = false;
             random = r;
         }
 	virtual inline bool isRandom() const {
@@ -261,6 +270,9 @@ class Cell{
 	    this->characterScaleY = y;
 	}
     private:
+	//! Location on grid
+	const Mugen::Point location;
+	
 	//! Set sprite background
 	MugenSprite *background;
 	
@@ -291,8 +303,12 @@ class Cell{
 	
 };
 
+/* Cell map */
 typedef std::vector< std::vector< Cell * > > CellMap;
-    
+
+/* forward declare Cursor */
+class Cursor;
+
 /* Handles the select screen grid */
 class Grid{
     public:
@@ -306,6 +322,11 @@ class Grid{
 	virtual void render(const Bitmap &);
 	
 	virtual void addCharacter(CharacterInfo *character, bool isRandom = false);
+	
+	virtual void moveCursorLeft(Cursor &cursor);
+	virtual void moveCursorRight(Cursor &cursor);
+	virtual void moveCursorUp(Cursor &cursor);
+	virtual void moveCursorDown(Cursor &cursor);
         
         virtual inline void setRows(int r){
 	    this->rows = r;
@@ -336,10 +357,10 @@ class Grid{
         virtual inline void setCellBackgroundSprite(MugenSprite *s){
             this->cellBackgroundSprite = s;
         }
-        virtual inline void setRandomSprite(MugenSprite *s){
+        virtual inline void setCellRandomSprite(MugenSprite *s){
             this->cellRandomSprite = s;
         }
-        virtual inline void setRandomSwitchTime(int t){
+        virtual inline void setCellRandomSwitchTime(int t){
             this->cellRandomSwitchTime = t;
         }
 	
@@ -354,16 +375,40 @@ class Grid{
 	}
     
     private:
+	
+	Cell *getCell(int row, int column);
+	
+	//! Total rows
 	int rows;
+	
+	//! Total columns
 	int columns;
+	
+	//! Allow a cursor to wrap?
 	bool wrapping;
+	
+	//! Starting position of the grid
 	Mugen::Point position;
+	
+	//! Show empty boxes?
 	bool showEmptyBoxes;
+	
+	//! Allow cursor to move over empty boxes?
 	bool moveOverEmptyBoxes;
+	
+	//! Size of cell
 	Mugen::Point cellSize;
+	
+	//! Spacing between cells
 	int cellSpacing;
+	
+	//! The background of the cell
 	MugenSprite *cellBackgroundSprite;
+	
+	//! Random sprite portrait
 	MugenSprite *cellRandomSprite;
+	
+	//! Random sprite switch time
 	int cellRandomSwitchTime;
 	
 	//! Portrait offset for placement of the picture
@@ -376,7 +421,7 @@ class Grid{
         /* Character list */
         std::vector< CharacterInfo * > characters;
 	
-        /* Cells of the grid */
+        //! Cells of the grid
         CellMap cells;
 };
 
@@ -386,7 +431,7 @@ class Cursor{
 	Cursor();
 	virtual ~Cursor();
 	
-	virtual void act();
+	virtual void act(Grid &grid);
 	
 	virtual void render(const Bitmap &);
 	
@@ -398,9 +443,9 @@ class Cursor{
 	    this->start.x = x;
 	    this->start.y = y;
 	}
-	virtual inline void setCursor(int x, int y){
-	    this->cursor.x = x;
-	    this->cursor.y = y;
+	
+	virtual inline void setCurrentCell(Cell *cell){
+	    this->currentCell = cell;
 	}
 	
 	virtual inline void setActiveSprite(MugenSprite *spr){
@@ -448,22 +493,43 @@ class Cursor{
 	
     private:
 	/*InputMap<Command::Keys> &input;*/
-	// Cell
+	//! Starting cell position in terms of row and column
 	Mugen::Point start;
-	Mugen::Point cursor;
+	
+	//! Cell
+	Cell *currentCell;
+	
+	//! Sprite to display while selecting
 	MugenSprite *activeSprite;
+	
+	//! Sprite to display when selected
 	MugenSprite *doneSprite;
+	
+	//! Blink when overlapping player1 ?
 	bool blink;
+	
+	//! Our blink counter at 10
 	int blinkCounter;
-	//Facing
+	
+	//! the placement of the portrait
 	Mugen::Point faceOffset;
+	
+	//! Scale data of the portrait
 	double faceScaleX;
 	double faceScaleY;
+	
+	//! Which direction facing
 	int facing;
+	
+	//! Is currently selecting?
 	bool selecting;
+	
+	//! Is active?
 	bool active;
+	
 	//! Name offset
 	Mugen::Point nameOffset;
+	
 };
 
 /* Temporary namespace remove later */

@@ -167,7 +167,8 @@ void CharacterInfo::setAct(int number){
     portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
 }
 
-Cell::Cell():
+Cell::Cell(int x, int y):
+location(x,y),
 background(0),
 randomSprite(0),
 random(false),
@@ -235,8 +236,9 @@ void Grid::initialize(){
 	currentPosition.x = position.x;
 	std::vector< Cell *> cellRow;
 	for (int column = 0; column < columns; ++column){
-	    Cell *cell = new Cell;
+	    Cell *cell = new Cell(row,column);
 	    cell->setBackground(cellBackgroundSprite);
+	    cell->setRandomSprite(cellRandomSprite);
 	    cell->setPosition(currentPosition.x,currentPosition.y);
 	    cell->setCharacterOffset(portraitOffset.x, portraitOffset.y);
 	    cell->setCharacterScale(portraitScaleX, portraitScaleY);
@@ -282,6 +284,7 @@ void Grid::addCharacter(CharacterInfo *character, bool isRandom){
 	    if (cell->isEmpty()){
 		if (isRandom){
 		    cell->setRandom(true);
+		    return;
 		}
 		character->setReferenceCell(cell);
 		cell->setCharacter(character);
@@ -292,7 +295,31 @@ void Grid::addCharacter(CharacterInfo *character, bool isRandom){
     }
 }
 
+void Grid::moveCursorLeft(Cursor &cursor){
+    //if (cursor.currentCell =
+}
+void Grid::moveCursorRight(Cursor &cursor){
+}
+void Grid::moveCursorUp(Cursor &cursor){
+}
+void Grid::moveCursorDown(Cursor &cursor){
+}
+
+Cell *Grid::getCell(int row, int column){
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	std::vector< Cell *> &rowIterator = (*i);
+	for (std::vector< Cell *>::iterator columnIterator = rowIterator.begin(); columnIterator != rowIterator.end(); ++columnIterator){
+	    Cell *cell = (*columnIterator);
+	    if (cell->getLocation() == Mugen::Point(row,column)){
+		return cell;
+	    }
+	}
+    }
+}
+
 Cursor::Cursor():
+activeSprite(0),
+doneSprite(0),
 blink(false),
 blinkCounter(10),
 faceScaleX(0),
@@ -305,16 +332,16 @@ active(false){
 Cursor::~Cursor(){
 }
 
-void Cursor::act(){
+void Cursor::act(Grid &grid){
     
     // if up
-    
+    grid.moveCursorUp(*this);
     // if down
-    
+    grid.moveCursorDown(*this);
     // if left
-    
+    grid.moveCursorLeft(*this);
     // if right
-    
+    grid.moveCursorRight(*this);
     // if a
     
     // if b
@@ -332,6 +359,7 @@ void Cursor::act(){
 }
 
 void Cursor::render(const Bitmap & bmp){
+    
 }
 
 static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end){
@@ -534,11 +562,11 @@ void New::CharacterSelect::load() throw (MugenException){
 		} else if (simple == "cell.random.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
-		    self.grid.setRandomSprite(sprites[group][sprite]);
+		    self.grid.setCellRandomSprite(sprites[group][sprite]);
 		} else if (simple == "cell.random.switchtime"){
 		    int time;
 		    simple >> time;
-		    self.grid.setRandomSwitchTime(time);
+		    self.grid.setCellRandomSwitchTime(time);
 		} else if (simple == "p1.cursor.startcell"){
 		    int x,y;
                     simple >> x >> y;
@@ -596,7 +624,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.titleFont.setPrimary(self.fonts[index],bank,position);
+		    self.titleFont.setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "p1.face.offset"){
 		    int x, y;
 		    simple >> x >> y;
@@ -632,7 +660,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.player1Font.setPrimary(self.fonts[index],bank,position);
+		    self.player1Font.setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "p2.name.offset"){
 		    int x, y;
 		    simple >> x >> y;
@@ -640,7 +668,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		} else if ( simple == "p2.name.font"){
 		    int index, bank, position;
 		    simple >> index >> bank >> position;
-		    self.player2Font.setPrimary(self.fonts[index],bank,position);
+		    self.player2Font.setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "stage.pos"){
 		    int x, y;
 		    simple >> x >> y;
@@ -652,7 +680,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.stageFont.setPrimary(self.fonts[index],bank,position);
+		    self.stageFont.setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "stage.active2.font"){
                     int index=0, bank=0, position=0;
 		    try {
@@ -660,7 +688,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.stageFont.setBlink(self.fonts[index],bank,position);
+		    self.stageFont.setBlink(self.fonts[index-1],bank,position);
 		} else if ( simple == "stage.done.font"){
                     int index=0, bank=0, position=0;
 		    try {
@@ -668,7 +696,7 @@ void New::CharacterSelect::load() throw (MugenException){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.stageFont.setDone(self.fonts[index],bank,position);
+		    self.stageFont.setDone(self.fonts[index-1],bank,position);
 		}
 #if 0
                 else if ( simple.find("teammenu")!=std::string::npos ){
@@ -756,7 +784,7 @@ void New::CharacterSelect::parseSelect(const std::string &selectFile){
                     list >> temp;
                     
 		    // Check if it's random
-		    if (temp == "random"){
+		    if (temp == "randomselect"){
                         // Add random
                         grid.addCharacter(0,true);
                     } else {
@@ -881,6 +909,9 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
 		
 		// Cursors
 		
+		// Title
+		titleFont.act();
+		
 		// Check status ?
 		/*
 		done = true;
@@ -907,6 +938,7 @@ void New::CharacterSelect::run(const std::string & title, bool player2Enabled, b
 	    // Render cursors
 	    
 	    // render title
+	    titleFont.render(title,workArea);
 	    
 	    // render stage
 	    

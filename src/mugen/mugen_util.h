@@ -63,6 +63,9 @@ class Point{
 	Point();
 	Point(int x, int y);
 	Point &operator=(const Point &p);
+	inline const bool operator==(const Point &p) const{
+	    return ((this->x == p.x) && (this->y == p.y));
+	}
 	~Point();
 };
 
