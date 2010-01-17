@@ -391,13 +391,15 @@ void StateController::activate(Character & guy) const {
             if (value1 != NULL){
                 RuntimeValue result = evaluate(value1, Environment(guy));
                 if (result.isDouble()){
-                    guy.setX(guy.getX() + result.getDoubleValue());
+                    guy.moveX(result.getDoubleValue());
+                    // guy.setX(guy.getX() + result.getDoubleValue());
                 }
             }
             if (value2 != NULL){
                 RuntimeValue result = evaluate(value2, Environment(guy));
                 if (result.isDouble()){
-                    guy.setY(guy.getY() + result.getDoubleValue());
+                    guy.moveY(-result.getDoubleValue());
+                    // guy.setY(guy.getY() + result.getDoubleValue());
                 }
             }
             break;
