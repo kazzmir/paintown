@@ -192,6 +192,10 @@ class CharacterInfo {
 	virtual inline void setReferenceCell(Cell *cell){
 	    this->referenceCell = cell;
 	}
+	
+	virtual inline Cell * getReferenceCell() {
+	    return this->referenceCell;
+	}
 
     private:
         /* The characters definition File to pass on to stage or anything else */
@@ -307,7 +311,7 @@ class Cell{
 	    this->character = character;
 	}
 	
-	virtual inline const CharacterInfo *getCharacter() const{
+	virtual inline CharacterInfo *getCharacter(){
 	    return this->character;
 	}
 	
@@ -354,6 +358,49 @@ class Cell{
 	virtual inline void startFlash(){
 	    flash = 10;
 	}
+	
+	enum CursorState{
+	    None,
+	    One,
+	    Two,
+	};
+	
+	virtual inline void setCursorState(const CursorState &cursors){
+	    this->cursors = cursors;
+	}
+	
+	virtual inline void popCursor() {
+	    switch (cursors){
+		case One:
+		    cursors = None;
+		    break;
+		case Two:
+		    cursors = One;
+		    break;
+		case None:
+		default:
+		    break;
+	    }
+	}
+	
+	virtual inline void pushCursor() {
+	     switch (cursors){
+		case None:
+		    cursors = One;
+		    break;
+		case One:
+		    cursors = Two;
+		    break;
+		case Two:
+		default:
+		    break;
+	    }
+	}
+	
+	virtual inline const CursorState & getCursorState() const{
+	    return cursors;
+	}
+	
     private:
 	//! Location on grid
 	const Mugen::Point location;
@@ -389,6 +436,9 @@ class Cell{
 	//! Flashes cell, when selected
 	int flash;
 	
+	//! Cursor state
+	CursorState cursors;
+
 };
 
 /* Cell map */
@@ -413,10 +463,12 @@ class Grid{
 	
 	virtual void setCursorStart(Cursor &cursor);
 	
-	virtual void moveCursorLeft(Cursor &cursor);
-	virtual void moveCursorRight(Cursor &cursor);
-	virtual void moveCursorUp(Cursor &cursor);
-	virtual void moveCursorDown(Cursor &cursor);
+	virtual void moveCursorLeft(Cursor & cursor);
+	virtual void moveCursorRight(Cursor & cursor);
+	virtual void moveCursorUp(Cursor & cursor);
+	virtual void moveCursorDown(Cursor & cursor);
+	virtual void selectCell(Cursor &cursor, const CharacterKeys & key);
+	virtual void selectStage();
         
         virtual inline void setRows(int r){
 	    this->rows = r;
@@ -466,6 +518,10 @@ class Grid{
 	
 	virtual inline StageHandler & getStageHandler() {
 	    return stages;
+	}
+	
+	virtual inline void setGameType(const GameType &type){
+	    this->type = type;
 	}
     
     private:
@@ -520,6 +576,9 @@ class Grid{
 	
 	//! Stages
 	StageHandler stages;
+	
+	//! Game Type
+	GameType type;
 };
 
 /* Handles player cursors */
@@ -549,7 +608,7 @@ class Cursor{
 	    this->currentCell = cell;
 	}
 	
-	virtual const Cell *getCurrentCell() const {
+	virtual Cell *getCurrentCell(){
 	    return this->currentCell;
 	}
 	
@@ -565,8 +624,8 @@ class Cursor{
 	    this->blink = b;
 	}
 	
-	virtual inline void setBlinkCounter(int b){
-	    this->blinkCounter = b;
+	virtual inline void setBlinkRate(int b){
+	    this->blinkRate = b;
 	}
 	
 	virtual inline void setFaceOffset(int x, int y){
@@ -591,8 +650,8 @@ class Cursor{
 	    NotActive,
 	    TeamSelect,
 	    CharacterSelect,
-	    CharacterSelected,
-	    StageSelect
+	    StageSelect,
+	    Done
 	};
 	
 	virtual inline void setState(const State &state){
@@ -623,8 +682,14 @@ class Cursor{
 	//! Blink when overlapping player1 ?
 	bool blink;
 	
-	//! Our blink counter at 10
+	//! Our blink rate at 10
+	int blinkRate;
+	
+	//! Blink counter
 	int blinkCounter;
+	
+	//! is it Time to show
+	bool hideForBlink;
 	
 	//! the placement of the portrait
 	Mugen::Point faceOffset;
@@ -649,12 +714,12 @@ namespace New{
 
 class CharacterSelect {
     public:
-        CharacterSelect(const std::string & file);
+        CharacterSelect(const std::string & file, const GameType &type);
         virtual ~CharacterSelect();
 	
 	virtual void load() throw (MugenException);
 	
-	virtual void run(const std::string & title, const GameType &type, const Bitmap &);
+	virtual void run(const std::string & title, const Bitmap &);
 	
 	virtual void parseSelect(const std::string &selectFile);
 	
@@ -679,6 +744,9 @@ class CharacterSelect {
 	
 	//! Select file
 	std::string selectFile;
+	
+	//! Game Type
+	GameType type;
 	
 	//! Fonts
 	std::vector<MugenFont *>fonts;

@@ -199,16 +199,24 @@ const std::string &StageHandler::getStage(){
 
 //! Set Next Stage
 void StageHandler::next(){
-    currentStage++;
-    if (currentStage >= stages.size()){
+    if (!selecting){
+	return;
+    }
+    if (currentStage < stages.size()-1){
+	currentStage++;
+    } else {
 	currentStage = 0;
     }
 }
 
 //! Set Prev Stage
 void StageHandler::prev(){
-    currentStage--;
-    if (currentStage < 0){
+    if (!selecting){
+	return;
+    }
+    if (currentStage > 0){
+	currentStage--;
+    } else {
 	currentStage = stages.size()-1;
     }
 }
@@ -242,7 +250,8 @@ random(false),
 empty(true),
 characterScaleX(1),
 characterScaleY(1),
-flash(0){
+flash(0),
+cursors(None){
 }
 
 Cell::~Cell(){
@@ -289,7 +298,8 @@ cellBackgroundSprite(0),
 cellRandomSprite(0),
 cellRandomSwitchTime(0),
 portraitScaleX(1),
-portraitScaleY(1){
+portraitScaleY(1),
+type(Mugen::Arcade){
 }
 
 Grid::~Grid(){
@@ -375,7 +385,9 @@ void Grid::addCharacter(CharacterInfo *character, bool isRandom){
 }
 
 void Grid::setCursorStart(Cursor &cursor){
-    cursor.setCurrentCell(getCell(cursor.getStart().x,cursor.getStart().y));
+    Cell *cell = getCell(cursor.getStart().x,cursor.getStart().y);
+    cell->setCursorState(Cell::One);
+    cursor.setCurrentCell(cell);
 }
 
 void Grid::moveCursorLeft(Cursor &cursor){
@@ -401,6 +413,8 @@ void Grid::moveCursorLeft(Cursor &cursor){
 	    return;
 	}
     }
+    cursor.getCurrentCell()->popCursor();
+    cell->pushCursor();
     cursor.setCurrentCell(cell);
 }
 void Grid::moveCursorRight(Cursor &cursor){
@@ -426,6 +440,8 @@ void Grid::moveCursorRight(Cursor &cursor){
 	    return;
 	}
     }
+    cursor.getCurrentCell()->popCursor();
+    cell->pushCursor();
     cursor.setCurrentCell(cell);
 }
 void Grid::moveCursorUp(Cursor &cursor){
@@ -451,6 +467,8 @@ void Grid::moveCursorUp(Cursor &cursor){
 	    return;
 	}
     }
+    cursor.getCurrentCell()->popCursor();
+    cell->pushCursor();
     cursor.setCurrentCell(cell);
 }
 void Grid::moveCursorDown(Cursor &cursor){
@@ -476,7 +494,47 @@ void Grid::moveCursorDown(Cursor &cursor){
 	    return;
 	}
     }
+    cursor.getCurrentCell()->popCursor();
+    cell->pushCursor();
     cursor.setCurrentCell(cell);
+}
+
+void Grid::selectCell(Cursor &cursor, const CharacterKeys & key){
+    // *TODO use the key to determine which map(act) is used
+    // Get the appropriate cell for flashing in case of random
+    cursor.getCurrentCell()->getCharacter()->getReferenceCell()->startFlash();
+    // set cursor state depending on state
+    switch (type){
+	case Arcade:
+	    cursor.setState(Cursor::Done);
+	    break;
+	case Versus:
+	    cursor.setState(Cursor::StageSelect);
+	    break;
+	case TeamArcade:
+	    break;
+	case TeamVersus:
+	    break;
+	case TeamCoop:
+	    break;
+	case Survival:
+	    break;
+	case SurvivalCoop:
+	    break;
+	case Training:
+	    break;
+	case Watch:
+	    break;
+	default:
+	    break;
+    }
+}
+
+void Grid::selectStage(){
+    // Set stage so that doesn't infinitely toggle
+    if (stages.isSelecting()){
+	stages.toggleSelecting();
+    }
 }
 
 Cell *Grid::getCell(int row, int column) throw (MugenException){
@@ -497,7 +555,9 @@ Cursor::Cursor():
 activeSprite(0),
 doneSprite(0),
 blink(false),
-blinkCounter(10),
+blinkRate(10),
+blinkCounter(0),
+hideForBlink(false),
 faceScaleX(0),
 faceScaleY(0),
 facing(0),
@@ -510,22 +570,17 @@ Cursor::~Cursor(){
 void Cursor::act(Grid &grid){
     InputMap<CharacterKeys>::Output out = InputManager::getMap(input);
     switch (state){
-	default:
 	case NotActive:
 	    return;
 	    break;
 	case TeamSelect:
 	    if (out[Up]){
-		grid.moveCursorUp(*this);
 	    }
 	    if (out[Down]){
-		grid.moveCursorDown(*this);
 	    }
 	    if (out[Left]){
-		grid.moveCursorLeft(*this);
 	    }
 	    if (out[Right]){
-		grid.moveCursorRight(*this);
 	    }
 	    if (out[A]){
 	    }
@@ -541,8 +596,6 @@ void Cursor::act(Grid &grid){
 	    }
 	    if (out[Start]){
 	    }
-	    break;
-	case CharacterSelected:
 	    break;
 	case CharacterSelect:
 	    if (out[Up]){
@@ -558,41 +611,65 @@ void Cursor::act(Grid &grid){
 		grid.moveCursorRight(*this);
 	    }
 	    if (out[A]){
+		grid.selectCell(*this,A);
 	    }
 	    if (out[B]){
+		grid.selectCell(*this,B);
 	    }
 	    if (out[C]){
+		grid.selectCell(*this,C);
 	    }
 	    if (out[X]){
+		grid.selectCell(*this,X);
 	    }
 	    if (out[Y]){
+		grid.selectCell(*this,Y);
 	    }
 	    if (out[Z]){
+		grid.selectCell(*this,Z);
 	    }
 	    if (out[Start]){
+	    }
+	    if (blink && (currentCell->getCursorState() == Cell::Two)){
+		blinkCounter++;
+		if (blinkCounter > blinkRate){
+		    blinkCounter = 0;
+		    hideForBlink = !hideForBlink;
+		}
+	    } else {
+		hideForBlink = false;
 	    }
 	    break;
 	case StageSelect:
 	    if (out[Left]){
-		grid.moveCursorLeft(*this);
+		grid.getStageHandler().prev();
 	    }
 	    if (out[Right]){
-		grid.moveCursorRight(*this);
+		grid.getStageHandler().next();
 	    }
 	    if (out[A]){
+		grid.selectStage();
 	    }
 	    if (out[B]){
+		grid.selectStage();
 	    }
 	    if (out[C]){
+		grid.selectStage();
 	    }
 	    if (out[X]){
+		grid.selectStage();
 	    }
 	    if (out[Y]){
+		grid.selectStage();
 	    }
 	    if (out[Z]){
+		grid.selectStage();
 	    }
 	    if (out[Start]){
 	    }
+	    break;
+	case Done:
+	default:
 	    break;
     }
 }
@@ -605,14 +682,16 @@ void Cursor::render(Grid &grid, const Bitmap & bmp){
 	case TeamSelect:
 	    break;
 	case CharacterSelect:
-	    activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+	    if (!hideForBlink){
+		activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+	    }
 	    renderPortrait(bmp);
 	    break;
-	case CharacterSelected:
-	    doneSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
-	    renderPortrait(bmp);
-	    break;
+	case Done:
 	default:
+	    if (!hideForBlink){
+		doneSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+	    }
 	    renderPortrait(bmp);
     }
     
@@ -669,11 +748,47 @@ static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iter
     return stuff;
 }
 
-New::CharacterSelect::CharacterSelect(const std::string &file):
+New::CharacterSelect::CharacterSelect(const std::string &file, const GameType &type):
 systemFile(file),
 sffFile(""),
 sndFile(""),
-selectFile(""){
+selectFile(""),
+type(type){
+    grid.setGameType(type);
+    
+    switch (type){
+	case Arcade:
+	    // set first cursor1
+	    player1.setState(Cursor::CharacterSelect);
+	    break;
+	case Versus:
+	    player1.setState(Cursor::CharacterSelect);
+	    player2.setState(Cursor::CharacterSelect);
+	    break;
+	case TeamArcade:
+	    player1.setState(Cursor::TeamSelect);
+	    break;
+	case TeamVersus:
+	    player1.setState(Cursor::TeamSelect);
+	    player2.setState(Cursor::TeamSelect);
+	    break;
+	case TeamCoop:
+	    player1.setState(Cursor::CharacterSelect);
+	    break;
+	case Survival:
+	    player1.setState(Cursor::TeamSelect);
+	    break;
+	case SurvivalCoop:
+	    player1.setState(Cursor::CharacterSelect);
+	    break;
+	case Training:
+	    player1.setState(Cursor::CharacterSelect);
+	    break;
+	case Watch:
+	    break;
+	default:
+	    break;
+    }
 }
 
 New::CharacterSelect::~CharacterSelect(){
@@ -1133,7 +1248,7 @@ void New::CharacterSelect::parseSelect(const std::string &selectFile){
     }
 }
 
-void New::CharacterSelect::run(const std::string & title, const GameType &type, const Bitmap &bmp){
+void New::CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     
@@ -1144,9 +1259,6 @@ void New::CharacterSelect::run(const std::string & title, const GameType &type, 
     Global::speed_counter = 0;
     Global::second_counter = 0;
     int game_time = 100;
-    
-    // set first cursor1
-    player1.setState(Cursor::CharacterSelect);
     
     // Set game keys temporary
     InputMap<int> gameInput;
