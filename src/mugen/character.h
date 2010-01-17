@@ -1099,6 +1099,14 @@ public:
             return gravity;
         }
 
+        virtual void setLieDownTime(int x){
+            lieDownTime = x;
+        }
+
+        virtual int getLieDownTime() const {
+            return lieDownTime;
+        }
+
         virtual void setStandingFriction(double n){
             standFriction = n;
         }
@@ -1233,7 +1241,7 @@ protected:
 	// How much to bring up defese on fall
 	int falldefenseup;
 	// How long to lie down when fall
-	int liedowntime;
+	int lieDownTime;
 	// Air juggle points this charcter is worth?
 	int airjuggle;
 	// Default Hit Spark Number for hitdefs ???

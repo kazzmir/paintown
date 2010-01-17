@@ -981,6 +981,7 @@ void Character::initialize(){
     previousState = currentState;
     stateType = StateType::Stand;
     currentAnimation = Standing;
+    lieDownTime = 0;
     debug = false;
     has_control = true;
 
@@ -1312,7 +1313,26 @@ void Character::loadCnsFile(const string & path){
                 VelocityWalker walker(*this);
                 section->walk(walker);
             } else if (head == "data"){
-                /* TODO */
+                class DataWalker: public Ast::Walker {
+                public:
+                    DataWalker(Character & who):
+                    self(who){
+                    }
+                    
+                    Character & self;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "liedown.time"){
+                            int x;
+                            simple >> x;
+                            self.setLieDownTime(x);
+                        }
+                    }
+
+                };
+                
+                DataWalker walker(*this);
+                section->walk(walker);
             } else if (head == "size"){
                 /* TODO */
             } else if (head == "movement"){
@@ -2186,7 +2206,7 @@ void Character::fixAssumptions(){
         /* FIXME: this is totally made up */
         controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
                     new Ast::SimpleIdentifier("time"),
-                    new Ast::Number(60)));
+                    new Ast::Number(getLieDownTime())));
 
         states[Liedown]->addController(controller);
     }
