@@ -2177,6 +2177,20 @@ void Character::fixAssumptions(){
         states[11]->addController(controller);
     }
 
+    /* get up kids */
+    if (states[Liedown] != 0){
+        StateController * controller = new StateController("get up");
+        controller->setType(StateController::ChangeState);
+        controller->setValue1(new Ast::Number(GetUpFromLiedown));
+
+        /* FIXME: this is totally made up */
+        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
+                    new Ast::SimpleIdentifier("time"),
+                    new Ast::Number(60)));
+
+        states[Liedown]->addController(controller);
+    }
+
     /* standing turn state */
     {
         State * turn = new State();
@@ -2237,6 +2251,7 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
 }
         
 bool Character::canRecover() const {
+    /* FIXME */
     return true;
     // return getY() == 0;
 }
