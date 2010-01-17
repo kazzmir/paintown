@@ -1,0 +1,5 @@
+Run valgrind on load with leak-checking enabled
+
+$ valgrind --leak-check=full build/test/mugen/load
+
+It should take about 8 minutes to complete.
