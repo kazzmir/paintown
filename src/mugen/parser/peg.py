@@ -271,7 +271,7 @@ public:
         stream.open(filename.c_str(), std::ios::in | std::ios::binary);
         if (stream.fail()){
             std::ostringstream out;
-            out << "Cannot open '" << filename << "'";
+            out << __FILE__  << " cannot open '" << filename << "'";
             throw ParseException(out.str());
         }
         stream.seekg(0, std::ios_base::end);
