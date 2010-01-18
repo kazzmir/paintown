@@ -21,10 +21,12 @@ class Game {
 	/*! Runs everything */
 	virtual void run();
     private:
+#if 0
 	/*! Run the actual game */
 	void runGame(MugenStage * stage, const Bitmap & screen);
 	/*! Setup the stage and players */
 	MugenStage * setupStage(Mugen::SelectedChars * gameInfo);
+#endif
 	/*! Game type */
 	GameType type;
 	/*! System file */

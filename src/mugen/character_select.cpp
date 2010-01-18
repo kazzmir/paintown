@@ -33,9 +33,6 @@
 #include "menu/option_quit.h"
 #include "menu/option_dummy.h"
 
-#include "gui/keyinput_manager.h"
-#include "gui/keys.h"
-
 #include "mugen_animation.h"
 #include "mugen_background.h"
 #include "character.h"
@@ -51,6 +48,8 @@
 #include "parser/all.h"
 
 #include "input/input-manager.h"
+
+#include "return_exception.h"
 
 namespace PaintownUtil = ::Util;
 
@@ -641,6 +640,10 @@ void Cursor::act(Grid &grid){
 	    }
 	    break;
 	case StageSelect:
+	    /* Check if selecting is still possible else set done state */
+	    if (!grid.getStageHandler().isSelecting()){
+		state = Done;
+	    }
 	    if (out[Left]){
 		grid.getStageHandler().prev();
 	    }
@@ -696,7 +699,7 @@ void Cursor::render(Grid &grid, const Bitmap & bmp){
     }
     
     /* Have to make sure stage select is prominent kinda stupid */
-    if (state == StageSelect){
+    if (state != NotActive || state != CharacterSelect){
 	grid.getStageHandler().render(bmp);
     }
 }
@@ -748,7 +751,7 @@ static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iter
     return stuff;
 }
 
-New::CharacterSelect::CharacterSelect(const std::string &file, const GameType &type):
+CharacterSelect::CharacterSelect(const std::string &file, const GameType &type):
 systemFile(file),
 sffFile(""),
 sndFile(""),
@@ -791,7 +794,7 @@ type(type){
     }
 }
 
-New::CharacterSelect::~CharacterSelect(){
+CharacterSelect::~CharacterSelect(){
     // Get rid of sprites
     for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
@@ -808,7 +811,7 @@ New::CharacterSelect::~CharacterSelect(){
     }
 }
 
-void New::CharacterSelect::load() throw (MugenException){
+void CharacterSelect::load() throw (MugenException){
     // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Mugen::Util::getFileDir(systemFile);
     
@@ -834,12 +837,12 @@ void New::CharacterSelect::load() throw (MugenException){
         } else if (head == "files"){
             class FileWalker: public Ast::Walker{
                 public:
-                    FileWalker(Mugen::New::CharacterSelect & select, const string & baseDir):
+                    FileWalker(Mugen::CharacterSelect & select, const string & baseDir):
                         select(select),
                         baseDir(baseDir){
                         }
 
-                    Mugen::New::CharacterSelect & select;
+                    Mugen::CharacterSelect & select;
                     const string & baseDir;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
@@ -886,12 +889,12 @@ void New::CharacterSelect::load() throw (MugenException){
 	} else if (head == "select info"){ 
             class SelectInfoWalker: public Ast::Walker{
             public:
-                SelectInfoWalker(New::CharacterSelect & self, Mugen::SpriteMap & sprites):
+                SelectInfoWalker(CharacterSelect & self, Mugen::SpriteMap & sprites):
                     self(self),
                     sprites(sprites){
                     }
 
-                New::CharacterSelect & self;
+                CharacterSelect & self;
                 Mugen::SpriteMap & sprites;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
@@ -1140,7 +1143,7 @@ void New::CharacterSelect::load() throw (MugenException){
     }
 }
 
-void New::CharacterSelect::parseSelect(const std::string &selectFile){
+void CharacterSelect::parseSelect(const std::string &selectFile){
     const std::string file = Mugen::Util::getCorrectFileLocation(Mugen::Util::getFileDir(selectFile), Mugen::Util::stripDir(selectFile));
     
     TimeDifference diff;
@@ -1248,9 +1251,10 @@ void New::CharacterSelect::parseSelect(const std::string &selectFile){
     }
 }
 
-void New::CharacterSelect::run(const std::string & title, const Bitmap &bmp){
+void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
+    bool escaped = false;
     
     // Set the fade state
     fader.setState(FADEIN);
@@ -1278,6 +1282,12 @@ void New::CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		
 		InputMap<int>::Output out = InputManager::getMap(gameInput);
 		if (out[0]){
+		    done = escaped = true;
+		    fader.setState(FADEOUT);
+		}
+		
+		/* *FIXME remove later when solution is found */
+		if (checkPlayerData()){
 		    done = true;
 		    fader.setState(FADEOUT);
 		}
@@ -1341,10 +1351,55 @@ void New::CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		PaintownUtil::rest( 1 );
 	}
     }
+    
+    // **FIXME Hack figure something out
+    if (escaped){
+	throw ReturnException();
+    }
+}
+
+bool CharacterSelect::checkPlayerData(){
+    switch (type){
+	case Arcade:
+	    if (player1.getState() == Cursor::Done){
+		return true;
+	    }
+	    break;
+	case Versus:
+	    if ((player1.getState() == Cursor::Done) && (player2.getState() == Cursor::Done)){
+		return true;
+	    }
+	    break;
+	case TeamArcade:
+	    /* Ignore */
+	    break;
+	case TeamVersus:
+	    /* Ignore */
+	    break;
+	case TeamCoop:
+	    /* Ignore */
+	    break;
+	case Survival:
+	    /* Ignore */
+	    break;
+	case SurvivalCoop:
+	    /* Ignore */
+	    break;
+	case Training:
+	    /* Ignore */
+	    break;
+	case Watch:
+	    /* Ignore */
+	    break;
+	default:
+	    /* Ignore */
+	    break;
+    }
+    return false;
 }
 
 /* OLD STUFF */
-
+#if 0
 Mugen::CharacterSelect::CharacterSelect(const unsigned long int &ticker, const std::string &filename):
 location(filename),
 cellBackgroundBitmap(0),
@@ -2377,3 +2432,6 @@ void Mugen::CharacterSelect::parseSelectInfo(const std::vector<Ast::Section*> & 
 	}
     }
 }
+#endif
+
+

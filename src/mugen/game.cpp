@@ -64,7 +64,7 @@ void Game::run(){
     Bitmap screen(GFX_X, GFX_Y);
     
     int ticker = 0;
-    
+#if 0    
     std::string selectFile = Util::probeDef(systemFile, "files", "select");
     Mugen::CharacterSelect select(ticker, selectFile);
     select.load();
@@ -106,8 +106,9 @@ void Game::run(){
     }
     
     runGame(setupStage(gameInfo), screen);
+#endif
 }
-
+#if 0
 void Game::runGame(MugenStage * stage, const Bitmap & screen){
     InputMap<int> gameInput;
     gameInput.set(Keyboard::Key_F1, 10, false, 0);
@@ -199,5 +200,5 @@ MugenStage * Game::setupStage(Mugen::SelectedChars * gameInfo){
         throw e;
     }
 }
-
+#endif
 

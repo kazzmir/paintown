@@ -66,8 +66,8 @@ mugen
 * mugen main system
   - load in menus
     Select Screens:
-	DONE - Character select
-	DONE - Team Character select
+	80% - Character select - Need to add in support for modes and teams
+	20% - Team Character select
 	DONE - Allow to be used independently from menu
     - Option Menu (To an extent.... Mainly rely on paintowns system)
     90% - Storyboards - Needs correction, mainly due to background issues...

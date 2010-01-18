@@ -1003,7 +1003,7 @@ void Character::initialize(){
     lastTicket = 0;
     
     /* Load up info for the select screen */
-    loadSelectData();
+    //loadSelectData();
 
     /* provide sensible defaults */
     walkfwd = 0;
@@ -1059,7 +1059,7 @@ void Character::setAnimation(int animation){
 }
 
 void Character::loadCmdFile(const string & path){
-    string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
+    string full = Filesystem::find(baseDir + PaintownUtil::trim(path));
     try{
         int defaultTime = 15;
         int defaultBufferTime = 1;
@@ -1224,7 +1224,7 @@ void Character::changeState(int stateNumber){
 }
 
 void Character::loadCnsFile(const string & path){
-    string full = Filesystem::find("mugen/chars/" + location + "/" + PaintownUtil::trim(path));
+    string full = Filesystem::find(baseDir + PaintownUtil::trim(path));
     try{
         /* cns can use the Cmd parser */
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
@@ -1925,6 +1925,7 @@ struct Location{
 };
 
 void Character::load(){
+#if 0
     // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/chars/" + location + "/");
     Global::debug(1) << baseDir << endl;
@@ -1934,6 +1935,10 @@ void Character::load(){
     if (ourDefFile.empty()){
         throw MugenException( "Cannot locate player definition file for: " + location );
     }
+#endif
+    
+    baseDir = Mugen::Util::getFileDir(location);
+    const std::string ourDefFile = location;
      
     Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
     /* Extract info for our first section of our stage */
@@ -2001,17 +2006,17 @@ void Character::load(){
                         if (num >= 0 && num <= 12){
                             string path;
                             simple >> path;
-                            stateFiles.push_back(Location("mugen/chars/" + location, path));
+                            stateFiles.push_back(Location(self.baseDir, path));
                             // simple >> self.stFile[num];
                         }
                     } else if (simple == "stcommon"){
                         string path;
                         simple >> path;
-                        stateFiles.insert(stateFiles.begin(), Location("mugen/chars/" + location, path));
+                        stateFiles.insert(stateFiles.begin(), Location(self.baseDir, path));
                     } else if (simple == "st"){
                         string path;
                         simple >> path;
-                        stateFiles.push_back(Location("mugen/chars/" + location, path));
+                        stateFiles.push_back(Location(self.baseDir, path));
                     } else if (simple == "sprite"){
                         simple >> self.sffFile;
                     } else if (simple == "anim"){

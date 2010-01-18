@@ -164,7 +164,7 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false){
-    initializeName();
+    //initializeName();
 }
 
 MugenStage::MugenStage( const char * location ):
@@ -424,7 +424,7 @@ void MugenStage::load(){
     if (loaded){
         return;
     }
-
+#if 0
     // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/stages/");
     Global::debug(1) << baseDir << endl;
@@ -439,6 +439,9 @@ void MugenStage::load(){
     if (ourDefFile.empty()){
         throw MugenException( "Cannot locate stage definition file for: " + location );
     }
+#endif
+    baseDir = Mugen::Util::getFileDir(location);
+    const std::string ourDefFile = location;
     
     std::string filesdir = "";
     

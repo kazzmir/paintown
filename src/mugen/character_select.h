@@ -135,8 +135,12 @@ class CharacterInfo {
         CharacterInfo(const std::string &definitionFile);
         virtual ~CharacterInfo();
 	
-	inline bool operator==(CharacterInfo &character){
+	virtual inline bool operator==(CharacterInfo &character){
 	    return (this->definitionFile.compare(character.definitionFile) == 0);
+	}
+	
+	virtual inline const std::string &getDefinitionFile(){
+	    return this->definitionFile;
 	}
 
         virtual inline MugenSprite * getIcon() const{
@@ -581,7 +585,59 @@ class Grid{
 	GameType type;
 };
 
-/* Handles player cursors */
+/*! Handles Team Menu */
+class TeamMenu{
+    public:
+	TeamMenu();
+	virtual ~TeamMenu();
+	
+	void act();
+	void render(const Bitmap &);
+	
+    private:
+	/*! Allow cursor to wrap up and down the menu */
+	bool wrapping;
+	/*! Menu Position */
+	Mugen::Point position;
+	/*! Background Sprite */
+	MugenSprite *backgroundSprite;
+	/*! Self title Font */
+	FontHandler selfTitleFont;
+	/*! Self title text */
+	std::string selfTitleText;
+	/*! Enemy title Font */
+	FontHandler enemyTitleFont;
+	/*! Enemy title text */
+	std::string enemyTitleText;
+	/*! Move sound */
+	MugenSound *moveSound;
+	/*! Value Sound (left <-> right ?) */
+	MugenSound *valueSound;
+	/*! Done Sound */
+	MugenSound *doneSound;
+	/*! Item offset */
+	Mugen::Point itemOffset;
+	/*! Item spacing */
+	Mugen::Point itemSpacing;
+	/*! itemFont */
+	FontHandler itemFont;
+	/* *TODO figure this out
+	p1.teammenu.item.cursor.offset = -10, 0
+	p1.teammenu.item.cursor.anim = 180
+	*/ 
+	/*! value Icon offset */
+	Mugen::Point valueIconOffset;
+	/*! value Icon Sprite */
+	MugenSprite *valueIconSprite;
+	/*! value empty Icon offset */
+	Mugen::Point valueEmptyIconOffset;
+	/*! value empty Icon sprite */
+	MugenSprite *valueEmptyIconSprite;
+	/*! value Icon spacing */
+	Mugen::Point valueIconSpacing;
+};
+
+/*! Handles player cursors */
 class Cursor{
     public:
 	Cursor();
@@ -708,10 +764,6 @@ class Cursor{
 	State state;
 };
 
-/* Temporary namespace remove later */
-
-namespace New{
-
 class CharacterSelect {
     public:
         CharacterSelect(const std::string & file, const GameType &type);
@@ -731,7 +783,22 @@ class CharacterSelect {
 	    player2.setInput(input);
 	}
 	
+	/*! **FIXME These are temporary until a method is 
+	    figured to handling teams and multiple players elegantly */
+	virtual inline const std::string &getPlayer1(){
+	    return player1.getCurrentCell()->getCharacter()->getDefinitionFile();
+	}
+	virtual inline const std::string &getPlayer2(){
+	    return player1.getCurrentCell()->getCharacter()->getDefinitionFile();
+	}
+	virtual inline const std::string &getStage(){
+	    return grid.getStageHandler().getStage();
+	}
+	
     private:
+	
+	/*! Temporary to accomodate above above condition */
+	bool checkPlayerData();
 	
 	//! Location of file
 	const std::string systemFile;
@@ -776,10 +843,8 @@ class CharacterSelect {
 	MugenBackgroundManager *background;
 };
 
-}
-
 /* Older data */
-
+#if 0
 struct PlayerCell{
     // Cell
     Mugen::Point start;
@@ -922,6 +987,10 @@ class CharacterSelect{
 	Mugen::SpriteMap sprites;
 };
 }
+#endif 
+
+}
+
 #endif
 
 

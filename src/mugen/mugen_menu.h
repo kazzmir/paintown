@@ -60,9 +60,6 @@ class MugenMenu : public Menu {
 	
         virtual void copyBackground(Bitmap & copyTo);
 	
-	/*! get character select */
-	inline Mugen::CharacterSelect *getSelect() { return characterSelect; }
-
         virtual inline std::string getSelectInfoFile() const {
             return selectInfoFile;
         }

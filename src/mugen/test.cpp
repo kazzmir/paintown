@@ -249,6 +249,24 @@ const char *music[] = {
 
 const int musicHits = sizeof(music) / sizeof(char*);
 
+
+static InputMap<Mugen::CharacterKeys> getPlayer1Keys(){
+    InputMap<Mugen::CharacterKeys> input;
+    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_A, 0, true, Mugen::A);
+    input.set(Keyboard::Key_S, 0, true, Mugen::B);
+    input.set(Keyboard::Key_D, 0, true, Mugen::C);
+    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
+    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
+    return input;
+}
+
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
@@ -299,11 +317,17 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     VersusEnemy p2v( *(Player *) p2 );
     //VersusPlayer p2v( *(Player *) p2 );
     */
-    int ticker = 0;
-    Mugen::CharacterSelect selector(ticker,"data/mugen/data/system.def");
-    selector.load();
-    Mugen::SelectedChars *gameInfo = selector.run("Select a Character", 1, false, &back);
-    stage.addp1(gameInfo->team1[0]);
+    Mugen::CharacterSelect selector("data/mugen/data/system.def", Mugen::Arcade);
+    try {
+	selector.load();
+	selector.setPlayer1Keys(getPlayer1Keys());
+	selector.run("Test", Bitmap::temporaryBitmap(640,480));
+    } catch (const MugenException &me){
+	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
+    }
+    Mugen::Character *player1 = new Mugen::Character(selector.getPlayer1());
+    player1->load();
+    stage.addp1(player1);
     //stage.addp1(&p1v);
     //stage.addp2(&p2v);
 
@@ -372,6 +396,8 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     
     //delete p1;
     //delete p2;
+    
+    delete player1;
 
 }
 
@@ -502,25 +528,8 @@ void showSFF(const string & ourFile){
     }
 }
 
-static InputMap<Mugen::CharacterKeys> getPlayer1Keys(){
-    InputMap<Mugen::CharacterKeys> input;
-    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
-    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
-    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
-    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
-
-    input.set(Keyboard::Key_A, 0, true, Mugen::A);
-    input.set(Keyboard::Key_S, 0, true, Mugen::B);
-    input.set(Keyboard::Key_D, 0, true, Mugen::C);
-    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
-    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
-    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
-    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
-    return input;
-}
-
 void doSelectScreen(const std::string &file){
-    Mugen::New::CharacterSelect selector(file, Mugen::Versus);
+    Mugen::CharacterSelect selector(file, Mugen::Versus);
     try {
 	selector.load();
 	selector.setPlayer1Keys(getPlayer1Keys());

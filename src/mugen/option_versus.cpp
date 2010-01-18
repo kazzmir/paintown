@@ -30,9 +30,6 @@
 #include "mugen_stage.h"
 #include "character_select.h"
 
-/* get rid of this at some point */
-#include "gui/keyinput_manager.h"
-
 using namespace std;
 
 MugenOptionVersus::MugenOptionVersus(Token *token) throw (LoadException): 
@@ -101,6 +98,7 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
     gameInput.set(Keyboard::Key_F2, 10, false, 1);
     gameInput.set(Keyboard::Key_F3, 10, false, 2);
     gameInput.set(Keyboard::Key_F4, 10, true, 3);
+    gameInput.set(Keyboard::Key_ESC, 10, true, 4);
     
     // Load the stage
     try{
@@ -120,8 +118,8 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
             if ( Global::speed_counter > 0 ){
                 runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
                 while (runCounter > 1){
-                    keyInputManager::update();
-                    InputManager::poll();
+                    
+		    InputManager::poll();
                     stage->logic();
                     runCounter -= 1;
                     draw = true;
@@ -139,11 +137,12 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
 		    if (out[3]){
 			stage->toggleDebug();
 		    }
+		    if (out[4]){
+			quit = true;
+		    }
                     if (gameSpeed < 0.1){
                         gameSpeed = 0.1;
                     }
-
-                    quit |= keyInputManager::keyState(keys::ESC, true );
                 }
                 Global::speed_counter = 0;
             }
@@ -160,7 +159,6 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
 
             while (Global::speed_counter == 0){
                 Util::rest(1);
-                keyInputManager::update();
             }
         }
     } catch (const MugenException &ex){
@@ -168,7 +166,7 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
     }
 }
 
-MugenStage * MugenOptionVersus::setupStage(Mugen::SelectedChars * gameInfo){
+void MugenOptionVersus::setupStage(MugenStage *stage, Mugen::Character *player1, Mugen::Character *player2){
     Bitmap background;
     ((MugenMenu*) getParent())->copyBackground(background);
     background.resize(GFX_X, GFX_Y);
@@ -180,21 +178,54 @@ MugenStage * MugenOptionVersus::setupStage(Mugen::SelectedChars * gameInfo){
         info.setLoadingMessage("Loading M.U.G.E.N");
         Loader::startLoading(&loader, (void*) &info);
 
-        MugenStage * stage = gameInfo->selectedStage;
         // Load player 1
-        gameInfo->team1[0]->load();
-        gameInfo->team1[0]->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
-        stage->addp1(gameInfo->team1[0]);
+        player1->load();
+        player1->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
+        stage->addp1(player1);
 
         /* for testing, load kfm as player 2 */
-        stage->addp2(loadKfm());
+	player2->load();
+        stage->addp2(player2);
         stage->load();
         Loader::stopLoading(loader);
-        return stage;
     } catch (const MugenException & e){
         Loader::stopLoading(loader);
         throw e;
     }
+}
+
+static InputMap<Mugen::CharacterKeys> getSelect1Keys(){
+    InputMap<Mugen::CharacterKeys> input;
+    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_A, 0, true, Mugen::A);
+    input.set(Keyboard::Key_S, 0, true, Mugen::B);
+    input.set(Keyboard::Key_D, 0, true, Mugen::C);
+    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
+    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
+    return input;
+}
+
+static InputMap<Mugen::CharacterKeys> getSelect2Keys(){
+    InputMap<Mugen::CharacterKeys> input;
+    input.set(Keyboard::Key_H, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_Y, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_J, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_G, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_I, 0, true, Mugen::A);
+    input.set(Keyboard::Key_O, 0, true, Mugen::B);
+    input.set(Keyboard::Key_P, 0, true, Mugen::C);
+    input.set(Keyboard::Key_8, 0, true, Mugen::X);
+    input.set(Keyboard::Key_9, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_0, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_L, 0, true, Mugen::Start);
+    return input;
 }
 
 void MugenOptionVersus::run(bool &endGame){
@@ -203,13 +234,23 @@ void MugenOptionVersus::run(bool &endGame){
     int ticker = 0;
 
     /* an ugly way to get the select info file */
-    Mugen::CharacterSelect select(ticker, ((MugenMenu*) getParent())->getSelectInfoFile());
-    select.load();
-    Mugen::SelectedChars * gameInfo = select.run(getText(), 1, true, &screen);
-
-    if (gameInfo == 0){
-        return;
+    Mugen::CharacterSelect select(((MugenMenu*) getParent())->getSelectInfoFile(), Mugen::Versus);
+    try {
+	select.load();
+	select.setPlayer1Keys(getSelect1Keys());
+	select.setPlayer2Keys(getSelect2Keys());
+	select.run(getText(), screen);
+    } catch (const MugenException &me){
+	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
+	return;
     }
-
-    runGame(setupStage(gameInfo), screen);
+    // Setup and go
+    MugenStage *stage = new MugenStage(select.getStage());
+    Mugen::Character *player1 = new Mugen::Character(select.getPlayer1());
+    Mugen::Character *player2 = new Mugen::Character(select.getPlayer2());
+    setupStage(stage,player1,player2);
+    runGame(stage, screen);
+    delete stage;
+    delete player1;
+    delete player2;
 }

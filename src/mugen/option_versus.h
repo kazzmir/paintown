@@ -12,7 +12,7 @@ class MugenStage;
 class Bitmap;
 
 namespace Mugen{
-    class SelectedChars;
+    class Character;
 }
 
 /*! Handles key reconfiguration */
@@ -31,7 +31,7 @@ public:
 
 protected:
     void runGame(MugenStage * stage, const Bitmap & screen);
-    MugenStage * setupStage(Mugen::SelectedChars * gameInfo);
+    void setupStage(MugenStage *stage, Mugen::Character *player1, Mugen::Character *player2);
     
 private:
 	    
