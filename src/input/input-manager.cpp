@@ -17,6 +17,7 @@ capture(0){
 }
 
 InputManager::~InputManager(){
+    delete joystick;
 }
 
 vector<Input::PaintownInput> InputManager::getInput(const Configuration & configuration, const int facing){

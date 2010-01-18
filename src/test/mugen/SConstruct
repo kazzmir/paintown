@@ -6,7 +6,7 @@ testEnv.BuildDir('test', '../../')
 use = testEnv
 SConscript('../../mugen/parser/SConstruct', exports = ['use'], build_dir = 'test-parser')
 
-source = Split("""
+load_source = Split("""
 load.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
@@ -49,6 +49,53 @@ test/factory/font_render.cpp
 test/factory/font_factory.cpp
 """)
 
+stage_source = Split("""
+load-stage.cpp
+test/mugen/mugen_stage.cpp
+test/mugen/character.cpp
+test/mugen/evaluator.cpp
+test/mugen/mugen_sprite.cpp
+test/mugen/mugen_sound.cpp
+test/mugen/mugen_exception.cpp
+test/mugen/mugen_util.cpp
+test/mugen/mugen_animation.cpp
+test/mugen/mugen_background.cpp
+test/mugen/mugen_item_content.cpp
+test/mugen/mugen_item.cpp
+test-parser/air.cpp
+test-parser/def.cpp
+test-parser/cmd.cpp
+test/object/object.cpp
+test/object/object_attack.cpp
+test/util/sound.cpp
+test/script/script.cpp
+test/util/load_exception.cpp
+test/network/network.cpp
+test/input/input-manager.cpp
+test/input/keyboard.cpp
+test/input/joystick.cpp
+test/input/allegro-joystick.cpp
+test/globals.cpp
+test/configuration.cpp
+test/util/bitmap.cpp
+test/util/timedifference.cpp
+test/util/funcs.cpp
+test/util/font.cpp
+test/util/ftalleg.cpp
+test/util/regex.cpp
+test/util/system.cpp
+test/util/file-system.cpp
+test/util/message-queue.cpp
+test/util/token.cpp
+test/util/tokenreader.cpp
+test/util/token_exception.cpp
+test/world.cpp
+test/game/console.cpp
+test/factory/font_render.cpp
+test/factory/font_factory.cpp
+""")
+
 x = []
-x.append(testEnv.Program('load', source))
+x.append(testEnv.Program('load', load_source))
+x.append(testEnv.Program('load-stage', stage_source))
 Return('x')

@@ -466,7 +466,6 @@ void MugenStage::load(){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
-        /* this should really be head = Mugen::Util::fixCase(head) */
 	head = Mugen::Util::fixCase(head);
 	if (head == "info"){
             loadSectionInfo(section);
@@ -560,7 +559,8 @@ void MugenStage::load(){
 }
 
 void MugenStage::setCamera( const double x, const double y ){ 
-    camerax = x; cameray = y; 
+    camerax = x;
+    cameray = y; 
     // Camera boundaries
     if( camerax < boundleft ) camerax = boundleft;
     else if( camerax > boundright )camerax = boundright;
@@ -794,7 +794,7 @@ void MugenStage::logic( ){
     *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
     
     // Backgrounds
-    background->logic( diffx, diffy, xaxis + camerax, yaxis + cameray );
+    background->logic(diffx, diffy, xaxis + camerax, yaxis + cameray);
     
     // Players go in here
     std::vector<Object *> add;
@@ -848,11 +848,16 @@ void MugenStage::render( Bitmap *work ){
     // Players go in here
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *obj = *it;
-	// Reflection
-	if (reflectionIntensity)obj->drawReflection( board, 0, reflectionIntensity );
-	// Shadow
-	obj->drawShade( board, 0, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
-        obj->draw( board, 0);
+	/* Reflection */
+	if (reflectionIntensity > 0){
+            obj->drawReflection(board, 0, reflectionIntensity );
+        }
+
+	/* Shadow */
+	obj->drawShade(board, 0, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+        
+        /* draw the player */
+        obj->draw(board, 0);
     }
 
     for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
@@ -898,22 +903,22 @@ void MugenStage::render( Bitmap *work ){
 	    if ( character->getAlliance() == Player1Side ){
                 /* FIXME! */
 		// character->drawLifeBar( 5, p1Side, work );
-		p1Side +=10;
+		p1Side += 10;
 	    } else if ( character->getAlliance() == Player2Side ){
                 /* FIXME! */
 		// character->drawLifeBar( 215, p2Side, work );
-		p2Side +=10;
+		p2Side += 10;
 	    }
 	}
     }
-
     
     // Render console
-    console->draw( *work );
+    console->draw(*work);
 }
 
 void MugenStage::reset( ){
-    camerax = startx; cameray = starty;
+    camerax = startx;
+    cameray = starty;
     /*for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	// reset just reloads it to default
 	MugenBackground *background = *i;
@@ -928,7 +933,7 @@ void MugenStage::reset( ){
 	    background->preload( startx, starty );
 	}
     }*/
-    background->reset(startx,starty,resetBG);
+    background->reset(startx, starty, resetBG);
     
     // Reset player positions
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){

@@ -76,22 +76,23 @@ static Tile getTileData( int location, int length, int spacing, int total ){
 
 static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, double yoffset, bool mask){
     const int height = bmp.getHeight();
-    const int w = bmp.getWidth();
-    int movex = 0;
+    const int width = bmp.getWidth();
     //double z = 1.0 / z1;
     //const double z_add = ((1.0 / z2) - z) / (y2 - y1);
 
 
-    Global::debug(3) << "background leftx " << leftx << endl;
+    Global::debug(0) << "background leftx " << leftx << endl;
 
     for (int localy = 0; localy < height; ++localy ){
+        int movex = 0;
 	//int width = bmp.getWidth()*z;
         const double range = (double)localy / (double)height;
 	const double scale = interpolate(top, bot, range) - top;
 	//const double newHeight = height*((yscalestart+(yoffset*yscaledelta))/100);
 	//const double yscale = (newHeight/height);
 	movex = (int)(leftx + (leftx - xoffset) * scale);
-	bmp.Stretch(work, 0, localy, w, 1,movex, lefty+localy, w,1);
+	// bmp.Stretch(work, 0, localy, w, 1, movex, lefty+localy, w, 1);
+        bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
 	//z +=  z_add;
 	//Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
     }
@@ -183,10 +184,14 @@ void MugenBackground::logic( const double x, const double y, const double placem
 	sinx_angle += 0.00005;
 	siny_angle += 0.00005;
 	
-	if( type == Anim ) action->logic();
+	if (type == Anim){
+            action->logic();
+        }
 	
 	this->x = (int)(placementx + xoffset + movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
 	this->y = (int)(placementy + yoffset + movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
+	// this->x = (int)(xoffset + movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
+	// this->y = (int)(yoffset + movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
     }
 }
     
@@ -194,7 +199,7 @@ void MugenBackground::render( const double windowx, const double windowy, const 
     if (visible){
 	// Set clipping rect
 	work->setClipRect(int(windowx + window.x1), int(windowy + window.y1),int(windowx + window.x2),int(windowy + window.y2));
-	switch( type ){
+	switch (type){
 	    case Normal:{
 		// Normal is a sprite
 		// Tile it
@@ -213,6 +218,7 @@ void MugenBackground::render( const double windowx, const double windowy, const 
 	    }
 	    case Parallax:{
 		// This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
+                // Global::debug(0) << "Background at " << x << ", " << y << endl;
 		const int addw = sprite->getWidth() + tilespacingx;
 		const int addh = sprite->getHeight() + tilespacingy;
 		Tile tilev = getTileData(y, totalHeight, addh, tiley);
@@ -220,9 +226,9 @@ void MugenBackground::render( const double windowx, const double windowy, const 
 		    Tile tileh = getTileData(x, totalLength, addw, tilex);
 		    for (int h = 0; h < tileh.total; ++h){
 			doParallax( *sprite->getBitmap(), *work, tileh.start, tilev.start, xoffset+((totalLength)/2), xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
-			tileh.start+=addw;
+			tileh.start += addw;
 		    }
-		    tilev.start+=addh;
+		    tilev.start += addh;
 		}
 		break;
 	    }
@@ -285,8 +291,7 @@ void MugenBackground::draw( const int ourx, const int oury, Bitmap &work ){
     sprite->render(ourx,oury,work,effects);
 }
 
-
-    // Lets do our positionlink stuff
+// Lets do our positionlink stuff
 void MugenBackground::setPositionLink(MugenBackground *bg){
     if (positionlink){
 	if (linked){
@@ -533,9 +538,8 @@ spriteFile(""){
 	    
 	    // This is so we can have our positionlink info for the next item if true
 	    prior = temp;
-	}
-	/* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
-	else if(matchRegex(head, "begin *action")){
+	} else if(matchRegex(head, "begin *action")){
+            /* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	    head.replace(0,13,"");
 	    int h;
             istringstream out(head);
@@ -545,8 +549,7 @@ spriteFile(""){
 	    } else {
 		animations[h] = Mugen::Util::getAnimation(*section_it, *sprites);
 	    }
-	}
-	else if (matchRegex(head, ".*bgctrldef")){
+	} else if (matchRegex(head, ".*bgctrldef")){
 	    head.replace(0,10,"");
 	    MugenBackgroundController *temp = new MugenBackgroundController(head);
 	    Global::debug(1) << "Found background controller definition: " << temp->name << endl;
@@ -807,6 +810,7 @@ void MugenBackgroundManager::reset( const int startx, const int starty, bool res
 	    background->preload( startx, starty );
 	}
     }
+
     for( std::vector< MugenBackground * >::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	// reset
 	MugenBackground *background = *i;
