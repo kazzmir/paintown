@@ -8,10 +8,22 @@
 namespace Mugen{
     namespace Def{
         extern const void * main(const std::string & filename, bool stats = false);
+
+        class ParseException: std::exception {
+        public:
+            std::string getReason() const;
+            virtual ~ParseException() throw();
+        };
     }
 
     namespace Air{
         extern const void * main(const std::string & filename, bool stats = false);
+
+        class ParseException: std::exception {
+        public:
+            std::string getReason() const;
+            virtual ~ParseException() throw();
+        };
     }
     
     namespace Cmd{

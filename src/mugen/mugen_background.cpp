@@ -81,7 +81,7 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoff
     //const double z_add = ((1.0 / z2) - z) / (y2 - y1);
 
 
-    Global::debug(0) << "background leftx " << leftx << endl;
+    Global::debug(3) << "background leftx " << leftx << endl;
 
     for (int localy = 0; localy < height; ++localy ){
         int movex = 0;

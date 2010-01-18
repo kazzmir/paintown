@@ -420,6 +420,14 @@ static string regexResult(const string & str, const string & regex){
     return "";
 }
 
+static list<Ast::Section*>* parseDef(const string & path){
+    try{
+        return (list<Ast::Section*>*) Mugen::Def::main(path);
+    } catch (const Mugen::Def::ParseException & p){
+        throw MugenException(p.getReason());
+    }
+}
+
 void MugenStage::load(){
     if (loaded){
         return;
@@ -455,7 +463,7 @@ void MugenStage::load(){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    Ast::AstParse parsed(parseDef(ourDefFile));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
