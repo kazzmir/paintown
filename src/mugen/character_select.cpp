@@ -985,7 +985,7 @@ void CharacterSelect::load() throw (MugenException){
                     int x,y;
                     simple >> x >> y;
 		    self.player2.setStart(x,y);
-		} if (simple == "p2.cursor.active.spr"){
+		} else if (simple == "p2.cursor.active.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
 		    self.player2.setActiveSprite(sprites[group][sprite]);

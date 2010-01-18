@@ -12,7 +12,7 @@ class MugenAnimation;
 class MugenFont;
 
 namespace Mugen{
-
+/*
 class Element{
     public:
 	Element();
@@ -56,6 +56,7 @@ class Element{
 	int layerno;
 	std::string text;
 };
+*/
 
 class Bar{
     public:

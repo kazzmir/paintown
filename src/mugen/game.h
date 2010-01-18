@@ -9,8 +9,6 @@ class Bitmap;
 class MugenStage;
 
 namespace Mugen{
-    
-class SelectedChars;
 
 /* Our game definition, this is to facilitate running a game */
 class Game {

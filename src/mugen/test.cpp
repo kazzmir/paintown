@@ -35,6 +35,8 @@
 #include "parser/parsers.h"
 #include "parser/parse-exception.h"
 
+#include "mugen/background.h"
+
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -83,6 +85,7 @@ static void showOptions(){
     Global::debug(0) << "-sff <file>: Load a M.U.G.E.N SFF File and browse contents.\n         ie: 'data/mugen/data/some.sff'." << endl;
     Global::debug(0) << "-storyboard <file>: Load a M.U.G.E.N storyboard and render it!" << endl;
     Global::debug(0) << "-select <file>: Load a M.U.G.E.N select screen from a given system.def" << endl;
+    Global::debug(0) << "-background <file> <section>: Load a M.U.G.E.N background from a given *.def" << endl;
     Global::debug(0) << "-l <level>: Set debug level." << endl;
     Global::debug(0) << endl;
 }
@@ -539,6 +542,72 @@ void doSelectScreen(const std::string &file){
     }
 }
 
+void doBackground(const std::string &file, const std::string &section){
+    Mugen::Background background(file, section);
+    Bitmap workArea(320,240);
+    Bitmap screen(640,480);
+    
+    double runCounter = 0;
+    Global::speed_counter = 0;
+    Global::second_counter = 0;
+    int game_time = 100;
+    
+    // Set game keys temporary
+    InputMap<int> gameInput;
+    gameInput.set(Keyboard::Key_ESC, 10, true, 0);
+    
+    bool done = false;
+    
+    while ( ! done ){
+    
+	bool draw = false;
+	
+	if ( Global::speed_counter > 0 ){
+	    draw = true;
+	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+	    while ( runCounter >= 1.0 ){
+		runCounter -= 1;
+		// Key handler
+		InputManager::poll();
+		
+		InputMap<int>::Output out = InputManager::getMap(gameInput);
+		if (out[0]){
+		    done = true;
+		}
+		
+		// Backgrounds
+		background.act();
+	    }
+	    
+	    Global::speed_counter = 0;
+	}
+		
+	while ( Global::second_counter > 0 ){
+	    game_time--;
+	    Global::second_counter--;
+	    if ( game_time < 0 ){
+		    game_time = 0;
+	    }
+	}
+
+	if ( draw ){
+	    // render backgrounds
+	    background.renderBackground(workArea);
+	    
+	    // render Foregrounds
+	    background.renderForeground(workArea);
+	    
+	    // Finally render to screen
+	    workArea.Stretch(screen);
+	    screen.BlitToScreen();
+	}
+
+	while ( Global::speed_counter < 1 ){
+		Util::rest( 1 );
+	}
+    }
+}
+
 int main( int argc, char ** argv ){
 	
 	if(argc <= 1){
@@ -559,7 +628,9 @@ int main( int argc, char ** argv ){
 	const char * STORY_ARG = "-storyboard";
 	const char * SFF_ARG = "-sff";
 	const char * SELECT_ARG = "-select";
+	const char * BG_ARG = "-background";
 	std::string ourFile;
+	std::string other;
 	int configLoaded = -1;
 	
 	std::string player1_name = "";
@@ -725,6 +796,26 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
+		} else if ( isArg( argv[ q ], BG_ARG ) ){
+			q += 1;
+			if ( q < argc ){
+				ourFile = std::string( argv[ q ] );
+				configLoaded = 7;
+			}
+			else{
+                            Global::debug(0) << "Error no file given!" << endl;
+			  showOptions();
+			  return 0;
+			}
+			q += 1;
+			if ( q < argc ){
+				other = std::string( argv[ q ] );
+			}
+			else{
+                            Global::debug(0) << "Error no Section Given!" << endl;
+			  showOptions();
+			  return 0;
+			}
 		} else if (isArg(argv[q], DEBUG_ARG)){
 		    //debuglevel:
                     q += 1;
@@ -841,6 +932,16 @@ int main( int argc, char ** argv ){
 	} else if ( configLoaded == 6 ){
 	    try{
                 doSelectScreen(ourFile);
+            } catch( MugenException &ex){
+                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+		return 1;
+	    } catch(...){
+		Global::debug(0) << "Unknown problem loading file" << endl;
+		return 1;
+	    }
+	} else if ( configLoaded == 7 ){
+	    try{
+                doBackground(ourFile,other);
             } catch( MugenException &ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;

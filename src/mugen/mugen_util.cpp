@@ -1067,3 +1067,11 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
 
 Mugen::Effects::~Effects(){
 }
+
+Mugen::Element::Element():
+ID(0),
+layer(Background){
+}
+
+Mugen::Element::~Element(){
+}

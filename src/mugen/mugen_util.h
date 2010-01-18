@@ -107,7 +107,7 @@ struct FontInfo{
     int position;
 };
 
-/* Game types currently in M.U.G.E.N */
+/*! Game types currently in M.U.G.E.N */
 enum GameType {
     Arcade,
     Versus,
@@ -118,6 +118,43 @@ enum GameType {
     SurvivalCoop,
     Training,
     Watch
+};
+
+/*! Base Element Type */
+class Element {
+    public:
+	Element();
+	virtual ~Element();
+	
+	virtual void act()=0;
+	virtual void render(const Bitmap &)=0;
+	
+	enum Layer {
+	    Background,
+	    Foreground
+	};
+	
+	virtual inline void setID(int id){
+	    this->ID = id;
+	}
+	
+	virtual inline int getID() const {
+	    return this->ID;
+	}
+	
+	virtual inline void setLayer(const Layer &layer){
+	    this->layer = layer;
+	}
+	
+	virtual inline const Layer & getLayer() const {
+	    return this->layer;
+	}
+    
+    private:
+	//! ID of said element
+	int ID;
+	//! Layer where element will be drawn (background or foreground)
+	Layer layer;
 };
 
 }

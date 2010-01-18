@@ -38,25 +38,38 @@ Game::~Game(){
 }
 
 /* This needs to be changed so that it's grabbed from configuration or whatever */
-static InputMap<Mugen::Command::Keys> getPlayer1Input(){
-    InputMap<Mugen::Command::Keys> input;
-    input.set(Keyboard::Key_UP, 0, false, Mugen::Command::Up);
-    input.set(Keyboard::Key_DOWN, 0, false, Mugen::Command::Down);
-    input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Command::Forward);
-    input.set(Keyboard::Key_LEFT, 0, false, Mugen::Command::Back);
 
-    input.set(Keyboard::Key_A, 0, false, Mugen::Command::A);
-    input.set(Keyboard::Key_S, 0, false, Mugen::Command::B);
-    input.set(Keyboard::Key_D, 0, false, Mugen::Command::C);
-    input.set(Keyboard::Key_Z, 0, false, Mugen::Command::X);
-    input.set(Keyboard::Key_X, 0, false, Mugen::Command::Y);
-    input.set(Keyboard::Key_C, 0, false, Mugen::Command::Z);
+static InputMap<Mugen::CharacterKeys> getSelect1Keys(){
+    InputMap<Mugen::CharacterKeys> input;
+    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_A, 0, true, Mugen::A);
+    input.set(Keyboard::Key_S, 0, true, Mugen::B);
+    input.set(Keyboard::Key_D, 0, true, Mugen::C);
+    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
+    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
     return input;
 }
 
-static InputMap<Mugen::Command::Keys> getPlayer2Input(){
-    InputMap<Mugen::Command::Keys> input;
-    /* figure out the keys */
+static InputMap<Mugen::CharacterKeys> getSelect2Keys(){
+    InputMap<Mugen::CharacterKeys> input;
+    input.set(Keyboard::Key_H, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_Y, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_J, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_G, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_I, 0, true, Mugen::A);
+    input.set(Keyboard::Key_O, 0, true, Mugen::B);
+    input.set(Keyboard::Key_P, 0, true, Mugen::C);
+    input.set(Keyboard::Key_8, 0, true, Mugen::X);
+    input.set(Keyboard::Key_9, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_0, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_L, 0, true, Mugen::Start);
     return input;
 }
 

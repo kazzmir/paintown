@@ -28,7 +28,7 @@ namespace PaintownUtil = ::Util;
 using namespace std;
 using namespace Mugen;
 
-
+/*
 Element::Element():
 type(IS_NOTSET),
 action(0),
@@ -93,6 +93,7 @@ void Element::setFont(MugenFont *fnt){
 	font = fnt;
     }
 }
+*/
 
 Bar::Bar(const int x, const int y):
 back0(0),
@@ -171,7 +172,7 @@ void Bar::act(){
     }
 }
 void Bar::render(const int xaxis, const int yaxis, Bitmap &bmp){
-    if (back0){
+    /*if (back0){
 	back0->render(xaxis,yaxis,bmp);
     }
     if (back1){
@@ -192,6 +193,7 @@ void Bar::render(const int xaxis, const int yaxis, Bitmap &bmp){
     if (sound){
 	//sound->render(xaxis,yaxis,bmp);
     }
+    */
 }
 
 
@@ -222,10 +224,10 @@ void Face::act(){
 }
 void Face::render(const int xaxis, const int yaxis, Bitmap &bmp){
     if (background){
-	background->render(xaxis + position.x + spacing.x,yaxis + position.y + spacing.y,bmp);
+	/*background->render(xaxis + position.x + spacing.x,yaxis + position.y + spacing.y,bmp);*/
     }
     if (face){
-	face->render(xaxis + position.x + spacing.x,yaxis + position.y + spacing.y,bmp);
+	//face->render(xaxis + position.x + spacing.x,yaxis + position.y + spacing.y,bmp);
     }
 }
 void Face::setPosition(const int x, const int y){
@@ -262,7 +264,7 @@ void Name::act(){
 }
 void Name::render(const int xaxis, const int yaxis, Bitmap &bmp){
     if (font){
-	font->render(xaxis + position.x,yaxis + position.y,bmp);
+	//font->render(xaxis + position.x,yaxis + position.y,bmp);
     }
 }
 void Name::setPosition(const int x, const int y){
