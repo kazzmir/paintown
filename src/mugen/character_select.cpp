@@ -171,6 +171,7 @@ void CharacterInfo::setAct(int number){
 // Stage selector
 StageHandler::StageHandler():
 currentStage(0),
+display(false),
 selecting(true){
     stages.push_back("Random");
     stageNames.push_back("Random");
@@ -184,7 +185,9 @@ void StageHandler::act(){
 }
 
 void StageHandler::render(const Bitmap &bmp){
-    font.render(stageNames[currentStage],bmp);
+    if (display){
+	font.render(stageNames[currentStage],bmp);
+    }
 }
 	
 //! Get current selected stage
@@ -508,6 +511,7 @@ void Grid::selectCell(Cursor &cursor, const CharacterKeys & key){
 	    cursor.setState(Cursor::Done);
 	    break;
 	case Versus:
+	    stages.setDisplay(true);
 	    cursor.setState(Cursor::StageSelect);
 	    break;
 	case TeamArcade:
@@ -699,9 +703,7 @@ void Cursor::render(Grid &grid, const Bitmap & bmp){
     }
     
     /* Have to make sure stage select is prominent kinda stupid */
-    if (state != NotActive || state != CharacterSelect){
-	grid.getStageHandler().render(bmp);
-    }
+    grid.getStageHandler().render(bmp);
 }
 
 void Cursor::renderPortrait(const Bitmap &bmp){

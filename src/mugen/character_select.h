@@ -259,6 +259,10 @@ class StageHandler{
 	    return this->font;
 	}
 	
+	virtual inline void setDisplay(bool display){
+	    this->display = display;
+	}
+	
 	//! Is Selecting?
 	virtual inline bool isSelecting(){
 	    return selecting;
@@ -284,6 +288,9 @@ class StageHandler{
 	
 	//! Actual Stage names first is reserved for random
 	std::vector< std::string > stageNames;
+	
+	//! Display
+	bool display;
 	
 	//! Selection still active?
 	bool selecting;
