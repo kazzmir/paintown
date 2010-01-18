@@ -234,7 +234,7 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false){
-    initializeName();
+    //initializeName();
 }
 
 MugenStage::~MugenStage(){

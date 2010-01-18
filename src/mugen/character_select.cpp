@@ -179,7 +179,7 @@ currentStage(0),
 display(false),
 selecting(true){
     stages.push_back("Random");
-    stageNames.push_back("Random");
+    stageNames.push_back("Stage: Random");
 }
 
 StageHandler::~StageHandler(){
@@ -199,7 +199,7 @@ void StageHandler::render(const Bitmap &bmp){
 const std::string &StageHandler::getStage(){
     // check if random first;
     if (currentStage == 0){
-	return stages[PaintownUtil::rnd(0,stages.size()-1)];
+	return stages[PaintownUtil::rnd(1,stages.size()-1)];
     }
     return stages[currentStage];
 }
@@ -240,9 +240,10 @@ void StageHandler::addStage(const std::string &stage){
 	// Get correct directory
 	baseDir = Mugen::Util::getFileDir(baseDir + ourDefFile);
 	ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, Mugen::Util::stripDir(ourDefFile));
-	std::string temp = Util::probeDef(ourDefFile,"info","name");
-	stageNames.push_back(temp);
-	stages.push_back(stage);
+	stringstream temp;
+        temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile,"info","name");
+	stageNames.push_back(temp.str());
+	stages.push_back(ourDefFile);
     } catch (const MugenException &ex){
 	Global::debug(0) << "Problem adding stage. Reason: " << ex.getReason() << endl;
     }
