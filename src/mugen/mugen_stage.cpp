@@ -573,21 +573,24 @@ void MugenStage::moveCamera( const double x, const double y ){
     else if( cameray > boundlow )cameray = boundlow;
 }
 
-bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2){
-    const vector<MugenArea> & attacks = obj1->getAttackBoxes();
-    const vector<MugenArea> & defense = obj2->getDefenseBoxes();
+static bool anyCollisions(const vector<MugenArea> & boxes1, int x1, int y1, const vector<MugenArea> & boxes2, int x2, int y2){
 
-    for (vector<MugenArea>::const_iterator attack_i = attacks.begin(); attack_i != attacks.end(); attack_i++){
-        for (vector<MugenArea>::const_iterator defense_i = defense.begin(); defense_i != defense.end(); defense_i++){
+    for (vector<MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
+        for (vector<MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
             const MugenArea & attack = *attack_i;
             const MugenArea & defense = *defense_i;
-            if (attack.collision(obj1->getX(), obj1->getY(), defense, obj2->getX(), obj2->getY())){
+            if (attack.collision(x1, y1, defense, x2, y2)){
                 return true;
             }
         }
     }
 
     return false;
+
+}
+
+bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2){
+    return anyCollisions(obj1->getAttackBoxes(), obj1->getX(), obj1->getY(), obj2->getDefenseBoxes(), obj2->getX(), obj2->getY());
 }
 
 void MugenStage::addSpark(int x, int y, int sparkNumber){
@@ -684,15 +687,18 @@ void MugenStage::physics(Object * player){
             // Do stuff for players
             if (isaPlayer( enemy )){
                 // He collides with another push him away
-                if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
-                    if ( enemy->getX() < player->getX() ){
+                // if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
+                Mugen::Character * mplayer = (Mugen::Character *) player;
+                Mugen::Character * menemy = (Mugen::Character *) enemy;
+                // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
+                while (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy))){
+                    if (enemy->getX() < player->getX()){
                         /* FIXME! */
-                        enemy->moveLeft(1);
+                        enemy->moveLeft(0.5);
                         // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
-                    }
-                    else if ( enemy->getX() > player->getX() ){
+                    } else if (enemy->getX() > player->getX()){
                         /* FIXME! */
-                        enemy->moveRight(1);
+                        enemy->moveRight(0.5);
                         // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
                     }
                 }
