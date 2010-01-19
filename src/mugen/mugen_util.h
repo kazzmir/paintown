@@ -149,12 +149,22 @@ class Element {
 	virtual inline const Layer & getLayer() const {
 	    return this->layer;
 	}
+	
+	virtual inline void setName(const std::string & name){
+	    this->name = name;
+	}
+	
+	virtual inline const std::string & getName() const {
+	    return this->name;
+	}
     
     private:
 	//! ID of said element
 	int ID;
 	//! Layer where element will be drawn (background or foreground)
 	Layer layer;
+	//! Name of element
+	std::string name;
 };
 
 }

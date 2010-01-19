@@ -22,7 +22,6 @@ using namespace Mugen;
 BackgroundElement::BackgroundElement():
 deltaX(1),
 deltaY(1),
-trans(NONE),
 mask(false),
 windowDeltaX(0),
 windowDeltaY(0),
@@ -31,6 +30,232 @@ velocityX(0),
 velocityY(0){
 }
 BackgroundElement::~BackgroundElement(){
+}
+
+NormalElement::NormalElement():
+sprite(0){
+}
+NormalElement::~NormalElement(){
+}
+void NormalElement::act(){
+}
+void NormalElement::render(const Bitmap &bmp){
+}
+
+AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animations):
+animation(0),
+animations(animations){
+}
+AnimationElement::~AnimationElement(){
+}
+void AnimationElement::act(){
+}
+void AnimationElement::render(const Bitmap &bmp){
+}
+
+ParallaxElement::ParallaxElement():
+sprite(0),
+xscaleX(0),
+xscaleY(0),
+yscale(100),
+yscaleDelta(0){
+}
+ParallaxElement::~ParallaxElement(){
+}
+void ParallaxElement::act(){
+}
+void ParallaxElement::render(const Bitmap &bmp){
+}
+
+DummyElement::DummyElement(){
+}
+DummyElement::~DummyElement(){
+}
+void DummyElement::act(){
+}
+void DummyElement::render(const Bitmap &bmp){
+}
+
+//! Type of element
+enum ElementType{
+    Normal,
+    Parallax,
+    Anim,
+    Dummy,
+};
+
+//! Get Element
+static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &sprites, std::map< int, MugenAnimation * > &animations ){
+    BackgroundElement *element;
+    ElementType elementType;
+    std::string head = section->getName();
+    head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
+    std::string name = head;
+    Global::debug(1) << "Found background element: " << name << endl;
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "type"){
+                std::string type;
+                *simple >> type;
+                type = Mugen::Util::removeSpaces(type);
+                if (type == "normal" ){
+		    elementType = Normal;
+		    element = new NormalElement();
+		} else if( type == "anim" ){
+		    elementType = Anim;
+		    element = new AnimationElement(animations);
+		} else if( type == "parallax" ){
+		    elementType = Parallax;
+		    element = new ParallaxElement();
+		} else if( type == "dummy" ){ 
+		    elementType = Dummy;
+		    element = new DummyElement();
+		}
+		element->setName(name);
+            } else if (*simple == "spriteno"){
+                int group, sprite;
+                *simple >> group >> sprite;
+		if (elementType == Normal){
+		    ((NormalElement *)element)->setSprite(sprites[group][sprite]);
+                } else if (elementType == Parallax){
+		    ((ParallaxElement *)element)->setSprite(sprites[group][sprite]);
+		}
+            } else if (*simple == "actionno"){
+		if (elementType == Anim){
+		    int action;
+		    *simple >> action;
+		    ((AnimationElement *)element)->setAnimation(action);
+		}
+            } else if (*simple == "id"){
+		int id;
+                *simple >> id;
+		element->setID(id);
+            } else if (*simple == "layerno"){
+		int layerno;
+                *simple >> layerno;
+		if (layerno == 0){
+		    element->setLayer(Element::Background);
+		} else if (layerno == 1){
+		    element->setLayer(Element::Foreground);
+		}
+            } else if (*simple == "start"){
+		Mugen::Point point;
+                *simple >> point.x >> point.y;
+		element->setStart(point);
+            } else if (*simple == "delta"){
+		double x=0,y=0;
+		try {
+		    *simple >> x >> y;
+                    /* the y part is not always given */
+                } catch (const Ast::Exception & e){
+                }
+		element->setDelta(x,y);
+            } else if (*simple == "trans"){
+                std::string type;
+                *simple >> type;
+                type = Mugen::Util::removeSpaces(type);
+		TransType trans;
+                if( type == "none" ){
+		    trans = NONE;
+		} else if( type == "add" ){
+		    trans =  ADD;
+		} else if( type == "add1" ){
+		    trans = ADD1;
+		} else if( type == "sub" ){
+		    trans = SUB;
+		} else if( type == "addalpha" ){
+		    trans = ADDALPHA;
+		}
+		element->setTrans(trans);
+            } else if (*simple == "alpha"){
+		int l = 0,h=0;
+                try{
+                    *simple >> l >> h;
+                } catch (const Ast::Exception & e){
+                }
+		element->setAlpha(l,h);
+            } else if (*simple == "mask"){
+		bool mask;
+                *simple >> mask;
+		element->setMask(mask);
+            } else if (*simple == "tile"){
+		Mugen::Point point;
+                try{
+                    *simple >> point.x >> point.y;
+                } catch (const Ast::Exception & e){
+                }
+		element->setTile(point);
+            } else if (*simple == "tilespacing"){
+		Mugen::Point point;
+                try{
+                    *simple >> point.x >> point.y;
+                } catch (const Ast::Exception & e){
+                }
+		element->setTileSpacing(point);
+            } else if (*simple == "window"){
+                int x1,y1,x2,y2;
+                *simple >> x1 >> y1 >> x2 >> y2;
+		element->setWindow(x1,y1,x2,y2);
+            } else if (*simple == "windowdelta"){
+		double x,y;
+                *simple >> x >> y;
+		element->setWindowDelta(x,y);
+            } else if (*simple == "xscale"){
+                if (elementType == Parallax){
+		    double x, y;
+		    *simple >> x >> y;
+		    ((ParallaxElement *)element)->setXScale(x,y);
+		}
+            } else if (*simple == "width"){
+                if (elementType == Parallax){
+		    Mugen::Point point;
+		    *simple >> point.x >> point.y;
+		    ((ParallaxElement *)element)->setWidth(point);
+		}
+            } else if (*simple == "yscalestart"){
+                if (elementType == Parallax){
+		    double x;
+		    *simple >> x;
+		    ((ParallaxElement *)element)->setYScale(x);
+		}
+            } else if (*simple == "yscaledelta"){
+                if (elementType == Parallax){
+		    double x;
+		    *simple >> x;
+		    ((ParallaxElement *)element)->setYScaleDelta(x);
+		}
+            } else if (*simple == "positionlink"){
+		bool link;
+                *simple >> link;
+		element->setPositionLink(link);
+            } else if (*simple == "velocity"){
+                double x=0,y=0;
+		try{
+		    *simple >> x >> y;
+                } catch (const Ast::Exception & e){
+                }
+		element->setVelocity(x,y);
+            } else if (*simple == "sin.x"){
+		Sin x;
+                try{
+                    *simple >> x.amp >> x.period >> x.offset;
+                } catch (const Ast::Exception & e){
+                }
+		element->setSinX(x);
+            } else if (*simple == "sin.y"){
+                Sin y;
+                try{
+                    *simple >> y.amp >> y.period >> y.offset;
+                } catch (const Ast::Exception & e){
+                }
+		element->setSinY(y);
+            } else throw MugenException( "Unhandled option in BG " + head + " Section: " + simple->toString());
+        }
+    }
+    
+    return element;
 }
 
 Background::Background(const std::string &file, const std::string &header):
@@ -88,21 +313,18 @@ clearColor(-1){
 	// This our background data definitions
         /* probably need a better regex here */
 	} else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " ")){
-#if 0
-	    MugenBackground *temp;
-	    if (!spriteFile.empty()){
-		temp = Mugen::Util::getBackground(ticker, *section_it, this->sprites);
-	    } else {
-		temp = Mugen::Util::getBackground(ticker, *section_it, *sprites);
-	    }
-	    // Do some fixups and necessary things
-	    // lets see where we lay
-	    if (temp->layerno == 0){
-                backgrounds.push_back(temp);
-            } else if (temp->layerno == 1){
-                foregrounds.push_back(temp);
+	    BackgroundElement *element;
+	    element = getElement(*section_it, sprites, animations);
+	    
+	    // Background or Forgeground?
+	    if (element->getLayer() == Element::Background){
+                backgrounds.push_back(element);
+            } else if (element->getLayer() == Element::Foreground){
+                foregrounds.push_back(element);
             }
 	    
+#if 0	    
+	    *FIXME
 	    // If position link lets set to previous item
 	    if( temp->positionlink ){
 		temp->linked = prior;

@@ -9,18 +9,12 @@
 #include "gui/rectarea.h"
 #include "ast/all.h"
 
+#include "return_exception.h"
+
 class Bitmap;
 
 namespace Mugen{
     
-//! Type of element
-enum ElementType{
-    Normal,
-    Parallax,
-    Anim,
-    Dummy,
-};
-
 struct Sin {
     Sin():
     amp(0),period(0),offset(0){}
@@ -60,11 +54,16 @@ class BackgroundElement : public Element{
 	}
 	
 	virtual inline void setTrans(const TransType &trans){
-	    this->trans = trans;
+	    this->effects.trans = trans;
+	}
+	
+	virtual inline void setAlpha(int low, int high){
+	    this->effects.alphalow = low;
+	    this->effects.alphahigh = high;
 	}
 	
 	virtual inline const TransType & getTrans() const {
-	    return this->trans;
+	    return this->effects.trans;
 	}
 	
 	virtual inline void setMask(bool mask){
@@ -133,6 +132,21 @@ class BackgroundElement : public Element{
 	    return this->velocityY;
 	}
 	
+	virtual inline void setSinX(const Sin &sin){
+	    this->sinX = sin;
+	}
+	
+	virtual inline const Sin & getSinX() const {
+	    return this->sinX;
+	}
+	
+	virtual inline void setSinY(const Sin &sin){
+	    this->sinY = sin;
+	}
+	
+	virtual inline const Sin & getSinY() const {
+	    return this->sinY;
+	}
     private:
 	//! The starting coordinate relative to 0,0 which is center of screen
 	Mugen::Point start;
@@ -140,7 +154,7 @@ class BackgroundElement : public Element{
 	double deltaX;
 	double deltaY;
 	//! Transparency defaults to None
-	Mugen::TransType trans;
+	Mugen::Effects effects;
 	//! Masking?
 	bool mask;
 	//! Does this element tile 0 = no tile 1 = infinite above 1 = tile that many times
@@ -160,6 +174,90 @@ class BackgroundElement : public Element{
 	//! Sin components
 	Sin sinX;
 	Sin sinY;
+};
+
+/*! Normal element */
+class NormalElement : public BackgroundElement {
+    public:
+	NormalElement();
+	virtual ~NormalElement();
+	virtual void act();
+	virtual void render(const Bitmap &);
+	virtual inline void setSprite(MugenSprite *sprite){
+	    this->sprite = sprite;
+	}
+    private:
+	//! Sprite Based
+	MugenSprite *sprite;
+};
+
+/*! Animation Element */
+class AnimationElement : public BackgroundElement {
+    public:
+	AnimationElement(std::map< int, MugenAnimation * > & animations);
+	virtual ~AnimationElement();
+	virtual void act();
+	virtual void render(const Bitmap &);
+	virtual inline void setAnimation(int animation){
+	    this->animation = animation;
+	}
+    private:
+	//! Animation Based
+	int animation;
+	
+	//! Animation list
+	std::map< int, MugenAnimation * > & animations;
+};
+
+/*! Parallax Element */
+class ParallaxElement : public BackgroundElement {
+    public:
+	ParallaxElement();
+	virtual ~ParallaxElement();
+	virtual void act();
+	virtual void render(const Bitmap &);
+	virtual inline void setSprite(MugenSprite *sprite){
+	    this->sprite = sprite;
+	}
+	virtual inline void setXScale(double x, double y){
+	    this->xscaleX = x;
+	    this->xscaleY = y;
+	    width.x = 0;
+	    width.y = 0;
+	}
+	virtual inline void setWidth(const Mugen::Point &point){
+	    this->width = point;
+	    xscaleX = 0;
+	    xscaleY = 0;
+	}
+	virtual inline void setYScale(double x){
+	    this->yscale = x;
+	}
+	virtual inline void setYScaleDelta(double x){
+	    this->yscaleDelta = x;
+	}
+    private:
+	//! Sprite Based
+	MugenSprite *sprite;
+	//! xscale x = top y = bottom
+	double xscaleX;
+	double xscaleY;
+	//! Same as xscale but just ints x = top y = bottom
+	Mugen::Point width;
+	//! yscale starting y-scale in percent (defaults to 100) use either xscale or width but not both
+	double yscale;
+	//! Delta for yscale per unit in percent (defaults to 0)
+	double yscaleDelta; 
+};
+
+/*! Dummy Element */
+class DummyElement : public BackgroundElement {
+    public:
+	DummyElement();
+	virtual ~DummyElement();
+	virtual void act();
+	virtual void render(const Bitmap &);
+    private:
 };
 
 /*! Our Background */
