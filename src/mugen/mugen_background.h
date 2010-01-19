@@ -27,7 +27,7 @@ class MugenBackground{
 public:
     MugenBackground( const unsigned long int &ticker );
     MugenBackground( const MugenBackground &copy );
-    ~MugenBackground();
+    virtual ~MugenBackground();
     
     inline const std::string &getName() { return name; }
     inline void setVisible(const bool vis){ visible = vis; }
@@ -36,12 +36,21 @@ public:
     inline const bool getEnabled(){ return enabled; }
     inline const int getActionNumber() const { return actionno; }
     inline const int getLayerNumber() const { return layerno; }
+
+    inline int getX() const {
+        return x;
+    }
+
+    inline int getY() const {
+        return y;
+    }
     
     MugenBackground & operator=( const MugenBackground &copy );
     
-    void logic( const double x, const double y, const double placementx, const double placementy );
+    void logic();
     
     void render( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
+    void render(int cameraX, int cameraY, int centerX, int centerY, Bitmap *work);
     
     void setAnimation(MugenAnimation *animation);
     
@@ -189,8 +198,9 @@ class MugenBackgroundManager{
 	*/
 	MugenBackgroundManager(const std::string &baseDir, const std::vector<Ast::Section *> & section, const unsigned long int &ticker, std::map< unsigned int, std::map< unsigned int, MugenSprite * > > *sprites=0, const std::string & baseName = "bg" );
 	~MugenBackgroundManager();
-	void logic( const double x, const double y, const double placementx, const double placementy );
-	void renderBack( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
+	void logic();
+	void renderBack2( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
+	void renderBack( int cameraX, int cameraY, int centerX, int centerY, Bitmap *work);
 	void renderFront( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work );
 	MugenBackground *getBackground( int ID );
 	

@@ -74,7 +74,40 @@ static Tile getTileData( int location, int length, int spacing, int total ){
     return tile;
 }
 
-static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, double yoffset, bool mask){
+static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
+    const int height = bmp.getHeight();
+    const int width = bmp.getWidth();
+
+    // bmp.draw(offsetX + cameraX - width / 2, offsetY + cameraY - height / 2, work);
+    // bmp.draw(centerX - width / 2 + offsetX, centerY + offsetY, work);
+    
+    double x = centerX - width / 2 + offsetX;
+    int y = centerY + offsetY;
+
+    // Global::debug(0) << "Camera x is " << cameraX << " x is " << x << " delta top " << delta_top << " bottom " << delta_bottom << endl;
+
+    for (int liney = 0; liney < height; liney++){
+        int movex = 0;
+	//int width = bmp.getWidth()*z;
+        const double range = (double)liney / (double)height;
+	const double scale = interpolate(xscale_top, xscale_bottom, range);
+	// movex = (int)(x - cameraX * (scale - xscale_top) * 0.78);
+	movex = (int)(x - cameraX * (scale - xscale_top) + cameraX * (1 - deltaX) * scale);
+	// movex = (int)(x - cameraX * (scale * delta));
+
+	// bmp.Stretch(work, 0, liney, width, 1, movex, y + liney, width * scale, 1);
+        // bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
+        bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
+
+        // bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
+	//z +=  z_add;
+	//Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
+    }
+
+}
+
+static int ff = 0;
+static void doParallax2(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, double yoffset, bool mask){
     const int height = bmp.getHeight();
     const int width = bmp.getWidth();
     //double z = 1.0 / z1;
@@ -82,17 +115,28 @@ static void doParallax(Bitmap &bmp, Bitmap &work, int leftx, int lefty, int xoff
 
 
     Global::debug(3) << "background leftx " << leftx << endl;
+    xoffset = 0;
+
+    leftx -= 320;
+
+    // leftx = 0;
+    // leftx = ff;
+    // xoffset = 50;
+    // xoffset = ff - 300;
+    ff = (ff + 1) % 600;
 
     for (int localy = 0; localy < height; ++localy ){
         int movex = 0;
 	//int width = bmp.getWidth()*z;
         const double range = (double)localy / (double)height;
-	const double scale = interpolate(top, bot, range) - top;
+	const double scale = interpolate(top, bot, range);
 	//const double newHeight = height*((yscalestart+(yoffset*yscaledelta))/100);
 	//const double yscale = (newHeight/height);
-	movex = (int)(leftx + (leftx - xoffset) * scale);
-	// bmp.Stretch(work, 0, localy, w, 1, movex, lefty+localy, w, 1);
-        bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
+	// movex = (int)(leftx + (leftx - xoffset) * (scale - top));
+	movex = (int)(xoffset + (xoffset - leftx) * (scale - top));
+	bmp.Stretch(work, 0, localy, width, 1, movex, lefty+localy, width, 1);
+        // bmp.BlitMasked(0, localy, width, 1, movex, lefty + localy, work);
+        // bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
 	//z +=  z_add;
 	//Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
     }
@@ -165,7 +209,7 @@ MugenBackground & MugenBackground::operator=( const MugenBackground &copy ){
     return *this;
 }
     
-void MugenBackground::logic( const double x, const double y, const double placementx, const double placementy ){
+void MugenBackground::logic(){
     if (enabled){
 	movex = movey = 0;
 	movex += x * deltax;
@@ -188,10 +232,74 @@ void MugenBackground::logic( const double x, const double y, const double placem
             action->logic();
         }
 	
-	this->x = (int)(placementx + xoffset + movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
-	this->y = (int)(placementy + yoffset + movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
+	// this->x = (int)(placementx + xoffset + movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
+	// this->y = (int)(placementy + yoffset + movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
+	this->x = (int)(movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
+	this->y = (int)(movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
 	// this->x = (int)(xoffset + movex + velx + controller_offsetx + sinx_amp * sin(sinx_angle*sinx_period + sinx_offset));
 	// this->y = (int)(yoffset + movey + vely + controller_offsety + siny_amp * sin(siny_angle*siny_period + siny_offset));
+    }
+}
+
+void MugenBackground::render(int cameraX, int cameraY, int centerX, int centerY, Bitmap * work){
+    int totalHeight = 1;
+    int totalLength = 1;
+    if (visible){
+	switch (type){
+	    case Normal: {
+		// Normal is a sprite
+		// Tile it
+		const int addw = sprite->getWidth() + tilespacingx;
+		const int addh = sprite->getHeight() + tilespacingy;
+		Tile tilev = getTileData(getY(), totalHeight, addh, tiley);
+		for (int v = 0; v < tilev.total; ++v){
+		    Tile tileh = getTileData(getX(), totalLength, addw, tilex);
+		    for (int h = 0; h < tileh.total; ++h){
+			draw(tileh.start, tilev.start, *work);
+			tileh.start+=addw;
+		    }
+		    tilev.start+=addh;
+		}
+		break;
+	    }
+	    case Parallax: {
+		// This is also a sprite but we must parallax it across the top and bottom to give the illusion of depth
+                // Global::debug(0) << "Background at " << x << ", " << y << endl;
+		const int addw = sprite->getWidth() + tilespacingx;
+		const int addh = sprite->getHeight() + tilespacingy;
+		Tile tilev = getTileData(getY(), totalHeight, addh, tiley);
+		for (int v = 0; v < tilev.total; ++v){
+		    Tile tileh = getTileData(getX(), totalLength, addw, tilex);
+		    for (int h = 0; h < tileh.total; ++h){
+			doParallax(*sprite->getBitmap(), *work, cameraX, cameraY, startx, starty, xscaletop, xscalebot, centerX, centerY, deltax, deltay);
+			// doParallax( *sprite->getBitmap(), *work, tileh.start, tilev.start, xoffset, xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
+			tileh.start += addw;
+		    }
+		    tilev.start += addh;
+		}
+		break;
+	    }
+	    case Anim: {
+		// there is no sprite use our action!
+		// Tiling action
+		const int addw = tilespacingx;
+		const int addh = tilespacingy;
+		Tile tilev = getTileData(getY(), totalHeight, addh, tiley);
+		for (int v = 0; v < tilev.total; ++v){
+		    Tile tileh = getTileData(getX(), totalLength, addw, tilex);
+		    for (int h = 0; h < tileh.total; ++h){
+			action->render( tileh.start, tilev.start, *work);
+			tileh.start+=addw;
+		    }
+		    tilev.start+=addh;
+		}
+		break;
+	    }
+	    case Dummy:
+		// Do nothing
+	    default:
+		break;
+	}
     }
 }
     
@@ -225,7 +333,8 @@ void MugenBackground::render( const double windowx, const double windowy, const 
 		for (int v = 0; v < tilev.total; ++v){
 		    Tile tileh = getTileData(x, totalLength, addw, tilex);
 		    for (int h = 0; h < tileh.total; ++h){
-			doParallax( *sprite->getBitmap(), *work, tileh.start, tilev.start, xoffset+((totalLength)/2), xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
+			doParallax2( *sprite->getBitmap(), *work, tileh.start, tilev.start, xoffset+((totalLength)/2), xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
+			// doParallax( *sprite->getBitmap(), *work, tileh.start, tilev.start, xoffset, xscaletop, xscalebot, yscalestart, yscaledelta, (movey-deltay), mask);
 			tileh.start += addw;
 		    }
 		    tilev.start += addh;
@@ -281,9 +390,11 @@ void MugenBackground::preload( const int xaxis, const int yaxis ){
 	runLink = true;
     }
     
+    /*
     // Set our initial offsets
     xoffset = (xaxis) + startx;
     yoffset = (yaxis) + starty;
+    */
     velx = vely = 0;
 }
 
@@ -748,16 +859,16 @@ MugenBackgroundManager::~MugenBackgroundManager(){
 	if( (*i) )delete (*i);
     }
 }
-void MugenBackgroundManager::logic( const double x, const double y, const double placementx, const double placementy ){
+void MugenBackgroundManager::logic(){
     
     // Backgrounds
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	(*i)->logic( x, y, placementx, placementy );
+	(*i)->logic();
     }
     
      // Foregrounds
     for( vector< MugenBackground *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	(*i)->logic( x, y, placementx, placementy );
+	(*i)->logic();
     }
     
     // Controllers
@@ -766,10 +877,30 @@ void MugenBackgroundManager::logic( const double x, const double y, const double
     }
     
 }
-void MugenBackgroundManager::renderBack( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work ){
-    if ( clearColor != -1)work->fill(clearColor);
+
+void MugenBackgroundManager::renderBack( int cameraX, int cameraY, int centerX, int centerY, Bitmap *work){
+    if (clearColor != -1){
+        work->fill(clearColor);
+    }
 	// debug overrides it
-    if ( debugbg )work->fill( Bitmap::makeColor(255,0,255) );
+    if (debugbg){
+        work->fill( Bitmap::makeColor(255,0,255) );
+    }
+
+    for (vector<MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	(*i)->render(cameraX, cameraY, centerX, centerY, work);
+    }
+}
+
+void MugenBackgroundManager::renderBack2( const double windowx, const double windowy, const int totalLength, const int totalHeight, Bitmap *work ){
+    if (clearColor != -1){
+        work->fill(clearColor);
+    }
+	// debug overrides it
+    if (debugbg){
+        work->fill( Bitmap::makeColor(255,0,255) );
+    }
+
     for( vector< MugenBackground *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	(*i)->render( windowx, windowy, totalLength, totalHeight, work );
     }

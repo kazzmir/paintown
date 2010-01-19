@@ -802,7 +802,7 @@ void MugenStage::logic( ){
     *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
     
     // Backgrounds
-    background->logic(diffx, diffy, xaxis + camerax, yaxis + cameray);
+    background->logic();
     
     // Players go in here
     std::vector<Object *> add;
@@ -848,10 +848,11 @@ void MugenStage::logic( ){
     console->act();
 }
 	
-void MugenStage::render( Bitmap *work ){
+void MugenStage::render(Bitmap *work){
     
     // Background
-    background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
+    // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
+    background->renderBack(camerax, cameray, xaxis, yaxis, board);
     
     // Players go in here
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){

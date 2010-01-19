@@ -490,7 +490,7 @@ void MugenMenu::run(){
 				}
 				
 				// Backgrounds
-				background->logic( 0, 0, 0, 0 );
+				background->logic();
 			    }
 			    
 			    Global::speed_counter = 0;

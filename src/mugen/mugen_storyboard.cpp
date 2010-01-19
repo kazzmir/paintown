@@ -99,7 +99,7 @@ MugenScene::~MugenScene(){
 void MugenScene::act(){
     // backgrounds
     if (background){
-        background->logic(0,0,0,0);
+        background->logic();
     }
     // layers
     for ( std::vector< MugenLayer *>::iterator i = layers.begin(); i != layers.end(); ++i ){

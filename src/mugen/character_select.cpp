@@ -1306,7 +1306,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		fader.act();
 		
 		// Backgrounds
-		background->logic( 0, 0, 0, 0 );
+		background->logic();
 		
 		// Grid
 		grid.act();
