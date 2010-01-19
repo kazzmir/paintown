@@ -169,13 +169,13 @@ void NormalElement::render(int x, int y, const Bitmap &bmp){
 AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animations):
 animation(0),
 animations(animations){
-    getSinX().act();
-    getSinY().act();
 }
 AnimationElement::~AnimationElement(){
 }
 void AnimationElement::act(){
     animations[animation]->logic();
+    getSinX().act();
+    getSinY().act();
 }
 void AnimationElement::render(int x, int y, const Bitmap &bmp){
     const int addw = getTileSpacing().x;

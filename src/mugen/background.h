@@ -19,8 +19,6 @@ namespace Mugen{
 struct Sin {
     Sin():
     amp(0),period(0),offset(0),angle(0){}
-    Sin(const Sin & sin):
-    amp(sin.amp),period(sin.period),offset(sin.offset),angle(sin.angle){}
     ~Sin(){}
     inline void act(){
         angle += 0.00005;
@@ -28,13 +26,7 @@ struct Sin {
     inline const double get() const {
         return amp * sin(angle*period + offset);
     }
-    inline const Sin & operator=(const Sin &sin){
-        this->amp = sin.amp;
-        this->period = sin.period;
-        this->offset = sin.offset;
-        this->angle = sin.angle;
-        return *this;
-    }
+
     double amp;
     double period;
     double offset;
