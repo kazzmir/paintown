@@ -19,12 +19,21 @@ namespace Mugen{
 struct Sin {
     Sin():
     amp(0),period(0),offset(0),angle(0){}
+    Sin(const Sin & sin):
+    amp(sin.amp),period(sin.period),offset(sin.offset),angle(sin.angle){}
     ~Sin(){}
     inline void act(){
         angle += 0.00005;
     }
     inline const double get() const {
         return amp * sin(angle*period + offset);
+    }
+    inline const Sin & operator=(const Sin &sin){
+        this->amp = sin.amp;
+        this->period = sin.period;
+        this->offset = sin.offset;
+        this->angle = sin.angle;
+        return *this;
     }
     double amp;
     double period;
@@ -40,6 +49,8 @@ class BackgroundElement : public Element{
 	
 	virtual void act()=0;
 	virtual void render(int x, int y, const Bitmap &)=0;
+
+        //! Set the passed element to this elements values, this is called when the next element is linked to this one
         virtual void setLink(BackgroundElement *element);
 	
 	virtual inline void setStart(const Mugen::Point &point){
@@ -181,15 +192,15 @@ class BackgroundElement : public Element{
 	//! Window delta
 	double windowDeltaX;
 	double windowDeltaY;
-	//! linked?
+	//! The current element is linked to the previous element in the definion file. It takes on the start,delta,and sin properties of the linked element
 	bool positionLink;
 	//! Velocity of this element
 	double velocityX;
 	double velocityY;
-	//! Sin components
+	//! Sin components (sinusodial (sp?) values to simulate the effect of bobbing or weaving back and forth)
 	Sin sinX;
 	Sin sinY;
-        //! Linked element
+        //! The previous element that this one is linked to it used by setLink
         BackgroundElement *linkedElement;
 };
 

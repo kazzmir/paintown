@@ -124,21 +124,21 @@ BackgroundElement::~BackgroundElement(){
 }
 
 void BackgroundElement::setLink(BackgroundElement *element){
-    if (getPositionLink()){
-        if (element){
-            linkedElement = element;
-	    if (element->getPositionLink()){
-	        element->setPositionLink(this);
-	        return;
-	    }
-            Mugen::Point newStart(start.x + element->getStart().x,getStart().y + element->getStart().y);
-            setStart(newStart);
-            setDelta(element->getDeltaX(), element->getDeltaY());
-            setVelocity(element->getVelocityX(), element->getVelocityY());
-            setSinX(element->getSinX());
-            setSinY(element->getSinY());
-        }
+    element->linkedElement = this;
+    if (positionLink){
+	if (linkedElement){
+	    linkedElement->setLink(element);
+	    return;
+	}
     }
+    Mugen::Point newStart = element->getStart();
+    newStart.x += start.x;
+    newStart.y += start.y;
+    element->setStart(newStart);
+    element->setDelta(deltaX, deltaY);
+    element->setVelocity(velocityX, velocityY);
+    element->setSinX(sinX);
+    element->setSinY(sinY);
 }
 
 NormalElement::NormalElement():
@@ -503,8 +503,14 @@ clearColor(-1){
             } else if (element->getLayer() == Element::Foreground){
                 foregrounds.push_back(element);
             }
-            // Do linked elements
-	    element->setLink(priorElement);
+            // Lets check if this element is linked to the prior one
+            if (element->getPositionLink()){
+                // Ensure prior exists, usually won't happen though as you can't link to any objects if there are non preceeding this one
+                if (priorElement){
+                    // use prior element to set the current elements properties
+	            priorElement->setLink(element);
+                }
+            }
             priorElement = element;
 	} else if(PaintownUtil::matchRegex(head, "begin *action")){
             /* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
