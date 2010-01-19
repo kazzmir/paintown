@@ -113,14 +113,32 @@ static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int le
 BackgroundElement::BackgroundElement():
 deltaX(1),
 deltaY(1),
-mask(false),
 windowDeltaX(0),
 windowDeltaY(0),
 positionLink(false),
 velocityX(0),
-velocityY(0){
+velocityY(0),
+linkedElement(0){
 }
 BackgroundElement::~BackgroundElement(){
+}
+
+void BackgroundElement::setLink(BackgroundElement *element){
+    if (getPositionLink()){
+        if (element){
+            linkedElement = element;
+	    if (element->getPositionLink()){
+	        element->setPositionLink(this);
+	        return;
+	    }
+            Mugen::Point newStart(start.x + element->getStart().x,getStart().y + element->getStart().y);
+            setStart(newStart);
+            setDelta(element->getDeltaX(), element->getDeltaY());
+            setVelocity(element->getVelocityX(), element->getVelocityY());
+            setSinX(element->getSinX());
+            setSinY(element->getSinY());
+        }
+    }
 }
 
 NormalElement::NormalElement():
@@ -141,7 +159,7 @@ void NormalElement::render(const Bitmap &bmp){
     for (int v = 0; v < tilev.total; ++v){
         Tile tileh = getTileData(currentX, 1, addw, getTile().x);
         for (int h = 0; h < tileh.total; ++h){
-                sprite->render(tileh.start, tilev.start, bmp);
+                sprite->render(tileh.start, tilev.start, bmp, getEffects());
                 tileh.start+=addw;
         }
         tilev.start+=addh;
@@ -409,7 +427,7 @@ clearColor(-1){
     Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
     
     // for linked position in backgrounds
-    //MugenBackground *prior = 0;
+    BackgroundElement *priorElement = 0;
     
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;;
@@ -485,18 +503,9 @@ clearColor(-1){
             } else if (element->getLayer() == Element::Foreground){
                 foregrounds.push_back(element);
             }
-	    
-#if 0	    
-	    *FIXME
-	    // If position link lets set to previous item
-	    if( temp->positionlink ){
-		temp->linked = prior;
-		Global::debug(1) << "Set positionlink to id: '" << prior->id << "' Position at x(" << prior->startx << ")y(" << prior->starty << ")" << endl;
-	    } 
-	    
-	    // This is so we can have our positionlink info for the next item if true
-	    prior = temp;
-#endif
+            // Do linked elements
+	    element->setLink(priorElement);
+            priorElement = element;
 	} else if(PaintownUtil::matchRegex(head, "begin *action")){
             /* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	    head.replace(0,13,"");

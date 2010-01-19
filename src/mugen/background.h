@@ -40,6 +40,7 @@ class BackgroundElement : public Element{
 	
 	virtual void act()=0;
 	virtual void render(const Bitmap &)=0;
+        virtual void setLink(BackgroundElement *element);
 	
 	virtual inline void setStart(const Mugen::Point &point){
 	    this->start = point;
@@ -76,12 +77,16 @@ class BackgroundElement : public Element{
 	}
 	
 	virtual inline void setMask(bool mask){
-	    this->mask = mask;
+	    this->effects.mask = mask;
 	}
 	
 	virtual inline bool getMask() const {
-	    return this->mask;
+	    return this->effects.mask;
 	}
+
+        virtual inline const Mugen::Effects & getEffects() const{
+            return this->effects;
+        }
 	
 	virtual inline void setTile(const Mugen::Point &point){
 	    this->tile = point;
@@ -163,6 +168,8 @@ class BackgroundElement : public Element{
             return this->camera;
         }
     private:
+        //! get linked element
+        BackgroundElement *getLinkedElement();
 	//! The starting coordinate relative to 0,0 which is center of screen
 	Mugen::Point start;
 	//! Delta values used for movement defaults to 1
@@ -170,8 +177,6 @@ class BackgroundElement : public Element{
 	double deltaY;
 	//! Transparency defaults to None
 	Mugen::Effects effects;
-	//! Masking?
-	bool mask;
 	//! Does this element tile 0 = no tile 1 = infinite above 1 = tile that many times
 	Mugen::Point tile;
 	//! Tile spacing
@@ -191,6 +196,8 @@ class BackgroundElement : public Element{
 	Sin sinY;
         //! Camera - Current Camera location
         Mugen::Point camera;
+        //! Linked element
+        BackgroundElement *linkedElement;
 };
 
 /*! Normal element */
