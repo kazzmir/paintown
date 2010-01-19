@@ -189,8 +189,6 @@ class BackgroundElement : public Element{
 	//! Sin components
 	Sin sinX;
 	Sin sinY;
-        //! Camera - Current Camera location
-        Mugen::Point camera;
         //! Linked element
         BackgroundElement *linkedElement;
 };
