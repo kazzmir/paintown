@@ -39,7 +39,7 @@ class BackgroundElement : public Element{
 	virtual ~BackgroundElement();
 	
 	virtual void act()=0;
-	virtual void render(const Bitmap &)=0;
+	virtual void render(int x, int y, const Bitmap &)=0;
         virtual void setLink(BackgroundElement *element);
 	
 	virtual inline void setStart(const Mugen::Point &point){
@@ -161,12 +161,7 @@ class BackgroundElement : public Element{
 	virtual inline Sin & getSinY() {
 	    return this->sinY;
 	}
-        virtual inline void setCamera(const Mugen::Point & camera){
-            this->camera = camera;
-        }
-        virtual inline const Mugen::Point & getCamera() const {
-            return this->camera;
-        }
+
     private:
         //! get linked element
         BackgroundElement *getLinkedElement();
@@ -206,7 +201,7 @@ class NormalElement : public BackgroundElement {
 	NormalElement();
 	virtual ~NormalElement();
 	virtual void act();
-	virtual void render(const Bitmap &);
+	virtual void render(int x, int y, const Bitmap &);
 	virtual inline void setSprite(MugenSprite *sprite){
 	    this->sprite = sprite;
 	}
@@ -221,7 +216,7 @@ class AnimationElement : public BackgroundElement {
 	AnimationElement(std::map< int, MugenAnimation * > & animations);
 	virtual ~AnimationElement();
 	virtual void act();
-	virtual void render(const Bitmap &);
+	virtual void render(int x, int y, const Bitmap &);
 	virtual inline void setAnimation(int animation){
 	    this->animation = animation;
 	}
@@ -239,7 +234,7 @@ class ParallaxElement : public BackgroundElement {
 	ParallaxElement();
 	virtual ~ParallaxElement();
 	virtual void act();
-	virtual void render(const Bitmap &);
+	virtual void render(int x, int y, const Bitmap &);
 	virtual inline void setSprite(MugenSprite *sprite){
 	    this->sprite = sprite;
 	}
@@ -280,7 +275,7 @@ class DummyElement : public BackgroundElement {
 	DummyElement();
 	virtual ~DummyElement();
 	virtual void act();
-	virtual void render(const Bitmap &);
+	virtual void render(int x, int y, const Bitmap &);
     private:
 };
 
@@ -292,16 +287,8 @@ class Background{
 	virtual ~Background();
 	
 	virtual void act();
-	virtual void renderBackground(const Bitmap &);
-	virtual void renderForeground(const Bitmap &);
-	
-	//! Set the position of the camera
-	virtual void setCamera(const Mugen::Point & camera);
-	
-	//! Get the position of the camera
-	virtual inline Mugen::Point getCamera() const {
-	    return this->camera;
-	}
+	virtual void renderBackground(int x, int y, const Bitmap &);
+	virtual void renderForeground(int x, int y, const Bitmap &);
 	
     private:
 	
@@ -325,9 +312,6 @@ class Background{
 	
 	//! Clear color
 	int clearColor;
-	
-	//! Camera
-	Mugen::Point camera;
 	
 	//! Backgrounds
 	std::vector< BackgroundElement * > backgrounds;

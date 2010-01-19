@@ -583,24 +583,19 @@ void doBackground(const std::string &file, const std::string &section){
 		}
                 if (out[1]){
 		    camera.y--;
-                    background.setCamera(camera);
 		}
                 if (out[2]){
 		    camera.y++;
-                    background.setCamera(camera);
 		}
                 if (out[3]){
 		    camera.x--;
-                    background.setCamera(camera);
 		}
                 if (out[4]){
 		    camera.x++;
-                    background.setCamera(camera);
 		}
                 if (out[5]){
                     // Reset camera
                     camera.x = camera.y = 0;
-                    background.setCamera(camera);
                 }
 		
 		// Backgrounds
@@ -620,10 +615,10 @@ void doBackground(const std::string &file, const std::string &section){
 
 	if ( draw ){
 	    // render backgrounds
-	    background.renderBackground(workArea);
+	    background.renderBackground(camera.x, camera.y, workArea);
 	    
 	    // render Foregrounds
-	    background.renderForeground(workArea);
+	    background.renderForeground(camera.x, camera.y, workArea);
 
             // This is a reminder of where the current 0,0 position is
             workArea.vLine(0,160,240,Bitmap::makeColor(0,255,0));

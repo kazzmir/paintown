@@ -150,11 +150,11 @@ void NormalElement::act(){
     getSinX().act();
     getSinY().act();
 }
-void NormalElement::render(const Bitmap &bmp){
+void NormalElement::render(int x, int y, const Bitmap &bmp){
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
-    const int currentX = MAP_X + int((getStart().x + getCamera().x + getVelocityX() + getSinX().get()) * getDeltaX());
-    const int currentY = MAP_Y + int((getStart().y + getCamera().y + getVelocityY() + getSinY().get()) * getDeltaY());
+    const int currentX = MAP_X + int((getStart().x + x + getVelocityX() + getSinX().get()) * getDeltaX());
+    const int currentY = MAP_Y + int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
     Tile tilev = getTileData(currentY, 1, addh, getTile().y);
     for (int v = 0; v < tilev.total; ++v){
         Tile tileh = getTileData(currentX, 1, addw, getTile().x);
@@ -177,11 +177,11 @@ AnimationElement::~AnimationElement(){
 void AnimationElement::act(){
     animations[animation]->logic();
 }
-void AnimationElement::render(const Bitmap &bmp){
+void AnimationElement::render(int x, int y, const Bitmap &bmp){
     const int addw = getTileSpacing().x;
     const int addh = getTileSpacing().y;
-    const int currentX = MAP_X + int((getStart().x + getCamera().x + getVelocityX() + getSinX().get()) * getDeltaX());
-    const int currentY = MAP_Y + int((getStart().y + getCamera().y + getVelocityY() + getSinY().get()) * getDeltaY());
+    const int currentX = MAP_X + int((getStart().x + x + getVelocityX() + getSinX().get()) * getDeltaX());
+    const int currentY = MAP_Y + int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
     Tile tilev = getTileData(currentY, 1, addh, getTile().y);
     for (int v = 0; v < tilev.total; ++v){
         Tile tileh = getTileData(currentX, 1, addw, getTile().x);
@@ -204,11 +204,11 @@ ParallaxElement::~ParallaxElement(){
 }
 void ParallaxElement::act(){
 }
-void ParallaxElement::render(const Bitmap &bmp){
+void ParallaxElement::render(int x, int y, const Bitmap &bmp){
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
-    const int currentX = MAP_X + int((getStart().x + getCamera().x + getVelocityX()) * getDeltaX());
-    const int currentY = MAP_Y + int((getStart().y + getCamera().y + getVelocityY()) * getDeltaY());
+    const int currentX = MAP_X + int((getStart().x + x + getVelocityX()) * getDeltaX());
+    const int currentY = MAP_Y + int((getStart().y + y + getVelocityY()) * getDeltaY());
     Tile tilev = getTileData(currentY, 1, addh, getTile().y);
     for (int v = 0; v < tilev.total; ++v){
         Tile tileh = getTileData(currentX, 1, addw, getTile().x);
@@ -230,7 +230,7 @@ DummyElement::~DummyElement(){
 }
 void DummyElement::act(){
 }
-void DummyElement::render(const Bitmap &bmp){
+void DummyElement::render(int x, int y, const Bitmap &bmp){
 }
 
 //! Type of element
@@ -725,7 +725,7 @@ void Background::act(){
 	element->act();
     }
 }
-void Background::renderBackground(const Bitmap &bmp){
+void Background::renderBackground(int x, int y, const Bitmap &bmp){
     if ( clearColor != -1){
 	bmp.fill(clearColor);
     }
@@ -735,27 +735,13 @@ void Background::renderBackground(const Bitmap &bmp){
     }
     for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	BackgroundElement *element = *i;
-	element->render(bmp);
+	element->render(x, y, bmp);
     }
 }
-void Background::renderForeground(const Bitmap &bmp){
+void Background::renderForeground(int x, int y, const Bitmap &bmp){
     for( vector< BackgroundElement *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	BackgroundElement *element = *i;
-	element->render(bmp);
-    }
-}
-
-void Background::setCamera(const Mugen::Point & camera){
-    // Backgrounds
-    for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
-	BackgroundElement *element = *i;
-	element->setCamera(camera);
-    }
-    
-     // Foregrounds
-    for( vector< BackgroundElement *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
-	BackgroundElement *element = *i;
-	element->setCamera(camera);
+	element->render(x, y, bmp);
     }
 }
 

@@ -127,7 +127,7 @@ class Element {
 	virtual ~Element();
 	
 	virtual void act()=0;
-	virtual void render(const Bitmap &)=0;
+	virtual void render(int x, int y, const Bitmap &)=0;
 	
 	enum Layer {
 	    Background,
