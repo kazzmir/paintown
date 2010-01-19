@@ -555,8 +555,15 @@ void doBackground(const std::string &file, const std::string &section){
     // Set game keys temporary
     InputMap<int> gameInput;
     gameInput.set(Keyboard::Key_ESC, 10, true, 0);
+    gameInput.set(Keyboard::Key_UP, 1, false, 1);
+    gameInput.set(Keyboard::Key_DOWN, 1, false, 2);
+    gameInput.set(Keyboard::Key_LEFT, 1, false, 3);
+    gameInput.set(Keyboard::Key_RIGHT, 1, false, 4);
+    gameInput.set(Keyboard::Key_F1, 10, true, 5);
     
     bool done = false;
+
+    Mugen::Point camera;
     
     while ( ! done ){
     
@@ -574,6 +581,27 @@ void doBackground(const std::string &file, const std::string &section){
 		if (out[0]){
 		    done = true;
 		}
+                if (out[1]){
+		    camera.y--;
+                    background.setCamera(camera);
+		}
+                if (out[2]){
+		    camera.y++;
+                    background.setCamera(camera);
+		}
+                if (out[3]){
+		    camera.x--;
+                    background.setCamera(camera);
+		}
+                if (out[4]){
+		    camera.x++;
+                    background.setCamera(camera);
+		}
+                if (out[5]){
+                    // Reset camera
+                    camera.x = camera.y = 0;
+                    background.setCamera(camera);
+                }
 		
 		// Backgrounds
 		background.act();
@@ -596,6 +624,11 @@ void doBackground(const std::string &file, const std::string &section){
 	    
 	    // render Foregrounds
 	    background.renderForeground(workArea);
+
+            // This is a reminder of where the current 0,0 position is
+            workArea.vLine(0,160,240,Bitmap::makeColor(0,255,0));
+            Font::getDefaultFont().printf( 5, 0, Bitmap::makeColor(255,0,0), workArea, "Camera X: %i",0, camera.x );
+            Font::getDefaultFont().printf( 5, 10, Bitmap::makeColor(255,0,0), workArea, "Camera Y: %i",0, camera.y );
 	    
 	    // Finally render to screen
 	    workArea.Stretch(screen);

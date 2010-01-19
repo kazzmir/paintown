@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <math.h>
 #include "mugen_animation.h"
 #include "mugen_util.h"
 #include "gui/rectarea.h"
@@ -17,10 +18,18 @@ namespace Mugen{
     
 struct Sin {
     Sin():
-    amp(0),period(0),offset(0){}
+    amp(0),period(0),offset(0),angle(0){}
+    ~Sin(){}
+    inline void act(){
+        angle += 0.00005;
+    }
+    inline const double get() const {
+        return amp * sin(angle*period + offset);
+    }
     double amp;
     double period;
     double offset;
+    double angle;
 };
 
 /*! Base Element for backgrounds only uses a sprite as background */
@@ -136,7 +145,7 @@ class BackgroundElement : public Element{
 	    this->sinX = sin;
 	}
 	
-	virtual inline const Sin & getSinX() const {
+	virtual inline Sin & getSinX() {
 	    return this->sinX;
 	}
 	
@@ -144,9 +153,15 @@ class BackgroundElement : public Element{
 	    this->sinY = sin;
 	}
 	
-	virtual inline const Sin & getSinY() const {
+	virtual inline Sin & getSinY() {
 	    return this->sinY;
 	}
+        virtual inline void setCamera(const Mugen::Point & camera){
+            this->camera = camera;
+        }
+        virtual inline const Mugen::Point & getCamera() const {
+            return this->camera;
+        }
     private:
 	//! The starting coordinate relative to 0,0 which is center of screen
 	Mugen::Point start;
@@ -174,6 +189,8 @@ class BackgroundElement : public Element{
 	//! Sin components
 	Sin sinX;
 	Sin sinY;
+        //! Camera - Current Camera location
+        Mugen::Point camera;
 };
 
 /*! Normal element */
@@ -272,9 +289,7 @@ class Background{
 	virtual void renderForeground(const Bitmap &);
 	
 	//! Set the position of the camera
-	virtual inline void setCamera(const Mugen::Point & camera){
-	    this->camera = camera;
-	}
+	virtual void setCamera(const Mugen::Point & camera);
 	
 	//! Get the position of the camera
 	virtual inline Mugen::Point getCamera() const {
