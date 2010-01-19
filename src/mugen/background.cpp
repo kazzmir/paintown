@@ -123,6 +123,10 @@ linkedElement(0){
 BackgroundElement::~BackgroundElement(){
 }
 
+/* Copy the contents of this into element
+ * If this element is linked then we will call it recursively until we've come to the end of the chain
+ * and then copy the contents of the last link of the chain into our passed element
+ */
 void BackgroundElement::setLink(BackgroundElement *element){
     element->linkedElement = this;
     if (positionLink){
