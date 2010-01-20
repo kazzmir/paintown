@@ -105,11 +105,15 @@ void NormalElement::act(){
     getSinX().act();
     getSinY().act();
 }
-void NormalElement::render(int x, int y, const Bitmap &bmp){
+void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
-    const int currentX = (bmp.getWidth()/2) + int((getStart().x + x + getVelocityX() + getSinX().get()) * getDeltaX());
-    const int currentY =  int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
+    const int currentX = (bmp.getWidth()/2) + (int) ((getStart().x - cameraX + getVelocityX() + getSinX().get()) + cameraX * (1 - getDeltaX()));
+    const int currentY = (int) ((getStart().y + cameraY + getVelocityY() + getSinY().get()) + cameraY * (1 - getDeltaY()));
+
+    // const int currentX = (bmp.getWidth()/2) + int((getStart().x + cameraX + getVelocityX() + getSinX().get()) * getDeltaX());
+    // const int currentY =  int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
+    // const int currentY = (int) (getStart().y - cameraY);
     // Render initial sprite
     sprite->render(currentX, currentY, bmp, getEffects());
     // Do tiling
@@ -190,11 +194,11 @@ void AnimationElement::act(){
     getSinX().act();
     getSinY().act();
 }
-void AnimationElement::render(int x, int y, const Bitmap &bmp){
+void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     const int addw = getTileSpacing().x;
     const int addh = getTileSpacing().y;
-    const int currentX = (bmp.getWidth()/2) + int((getStart().x + x + getVelocityX() + getSinX().get()) * getDeltaX());
-    const int currentY =  int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
+    const int currentX = (bmp.getWidth()/2) + int((getStart().x - cameraX + getVelocityX() + getSinX().get()) * getDeltaX());
+    const int currentY =  int((getStart().y - cameraY + getVelocityY() + getSinY().get()) * getDeltaY());
     // Render initial sprite
     animations[animation]->render(currentX, currentY, bmp);
     // Do tiling
