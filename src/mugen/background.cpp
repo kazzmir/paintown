@@ -438,7 +438,10 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
 		}
             } else if (*simple == "start"){
 		Mugen::Point point;
-                *simple >> point.x >> point.y;
+		try {
+		    *simple >> point.x >> point.y;
+		} catch (const Ast::Exception & e){
+		}
 		element->setStart(point);
             } else if (*simple == "delta"){
 		double x=0,y=0;
