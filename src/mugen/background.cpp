@@ -64,12 +64,33 @@ static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int le
 BackgroundElement::BackgroundElement():
 deltaX(1),
 deltaY(1),
+window(0,0,319,239),
 windowDeltaX(0),
 windowDeltaY(0),
 positionLink(false),
 velocityX(0),
 velocityY(0),
 linkedElement(0){
+}
+BackgroundElement::BackgroundElement(const BackgroundElement &copy){
+    this->setID(copy.getID());
+    this->setLayer(copy.getLayer());
+    this->setName(copy.getName());
+    this->start = copy.start;
+    this->deltaX = copy.deltaX;
+    this->deltaY = copy.deltaY;
+    this->effects = copy.effects;
+    this->tile = copy.tile;
+    this->tileSpacing = copy.tileSpacing;
+    this->window = copy.window;
+    this->windowDeltaX = copy.windowDeltaX;
+    this->windowDeltaY = copy.windowDeltaX;
+    this->positionLink = copy.positionLink;
+    this->velocityX = copy.velocityX;
+    this->velocityY = copy.velocityY;
+    this->sinX = copy.sinX;
+    this->sinY = copy.sinY;
+    this->linkedElement = copy.linkedElement;
 }
 BackgroundElement::~BackgroundElement(){
 }
@@ -96,6 +117,30 @@ void BackgroundElement::setLink(BackgroundElement *element){
     element->setSinY(sinY);
 }
 
+// Copy operator so we can make an initial copy of are starting values to restore on a reset
+const BackgroundElement & BackgroundElement::operator=(const BackgroundElement &copy){
+    this->setID(copy.getID());
+    this->setLayer(copy.getLayer());
+    this->setName(copy.getName());
+    this->start = copy.start;
+    this->deltaX = copy.deltaX;
+    this->deltaY = copy.deltaY;
+    this->effects = copy.effects;
+    this->tile = copy.tile;
+    this->tileSpacing = copy.tileSpacing;
+    this->window = copy.window;
+    this->windowDeltaX = copy.windowDeltaX;
+    this->windowDeltaY = copy.windowDeltaX;
+    this->positionLink = copy.positionLink;
+    this->velocityX = copy.velocityX;
+    this->velocityY = copy.velocityY;
+    this->sinX = copy.sinX;
+    this->sinY = copy.sinY;
+    this->linkedElement = copy.linkedElement;
+    return *this;
+}
+
+
 NormalElement::NormalElement():
 sprite(0){
 }
@@ -110,10 +155,15 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     const int addh = sprite->getHeight() + getTileSpacing().y;
     const int currentX = (bmp.getWidth()/2) + (int) ((getStart().x - cameraX + getVelocityX() + getSinX().get()) + cameraX * (1 - getDeltaX()));
     const int currentY = (int) ((getStart().y - cameraY + getVelocityY() + getSinY().get()) + cameraY * (1 - getDeltaY()));
+    const int windowAddX = (int) (getWindowDeltaX() * cameraX);
+    const int windowAddY = (int) (getWindowDeltaY() * cameraY);
 
     // const int currentX = (bmp.getWidth()/2) + int((getStart().x + cameraX + getVelocityX() + getSinX().get()) * getDeltaX());
     // const int currentY =  int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
     // const int currentY = (int) (getStart().y - cameraY);
+    
+    // Set the clipping window
+    bmp.setClipRect( getWindow().x + windowAddX, getWindow().y + windowAddY, getWindow().getX2() + windowAddX, getWindow().getY2() + windowAddY );
     // Render initial sprite
     sprite->render(currentX, currentY, bmp, getEffects());
     // Do tiling
@@ -181,6 +231,8 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 	    }
 	}
     }
+    // Reset clip state
+    bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
 
 AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animations):
@@ -203,8 +255,12 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 
     const int currentX = (bmp.getWidth()/2) + (int) ((getStart().x - cameraX + getVelocityX() + getSinX().get()) + cameraX * (1 - getDeltaX()));
     const int currentY = (int) ((getStart().y - cameraY + getVelocityY() + getSinY().get()) + cameraY * (1 - getDeltaY()));
+    const int windowAddX = (int) (getWindowDeltaX() * cameraX);
+    const int windowAddY = (int) (getWindowDeltaY() * cameraY);
 
-    // Render initial sprite
+    // Set the clipping window
+    bmp.setClipRect( getWindow().x + windowAddX, getWindow().y + windowAddY, getWindow().getX2() + windowAddX, getWindow().getY2() + windowAddY );
+    // Render initial animation
     animations[animation]->render(currentX, currentY, bmp);
     // Do tiling
     if (getTile().x > 1){
@@ -271,6 +327,8 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 	    }
 	}
     }
+    // Reset clip state
+    bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
 
 ParallaxElement::ParallaxElement():
@@ -324,6 +382,12 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
 void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
 
     const Bitmap & show = *sprite->getBitmap();
+    const int windowAddX = (int) (getWindowDeltaX() * cameraX);
+    const int windowAddY = (int) (getWindowDeltaY() * cameraY);
+
+    // Set the clipping window
+    work.setClipRect( getWindow().x + windowAddX, getWindow().y + windowAddY, getWindow().getX2() + windowAddX, getWindow().getY2() + windowAddY );
+   
     /* Remember only do either or if xscale is set then ignore width
      * otherwise do width.
      */
@@ -332,6 +396,8 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
     } else {
 	doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
     }
+    // Reset clip state
+    work.setClipRect(0, 0,work.getWidth(),work.getHeight());
 #if 0
     /* FIXME */
     const int addw = sprite->getWidth() + getTileSpacing().x;
@@ -905,3 +971,27 @@ void Background::renderForeground(int x, int y, const Bitmap &bmp){
 	element->render(x, y, bmp);
     }
 }
+
+//! Returns a vector of Elements by given ID usefull for when assigning elements to a background controller
+std::vector< BackgroundElement * > Background::getIDList(int ID){
+    std::vector< BackgroundElement *> ourElements;
+    // Do backgrounds
+    for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
+	BackgroundElement *element = *i;
+	if (element->getID() == ID){
+            ourElements.push_back(element);
+        }
+    }
+    
+     // do foregrounds
+    for( vector< BackgroundElement *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
+	BackgroundElement *element = *i;
+	if (element->getID() == ID){
+            ourElements.push_back(element);
+        }
+    }
+
+    return ourElements;
+}
+
+

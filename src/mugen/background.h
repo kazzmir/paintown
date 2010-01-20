@@ -37,6 +37,7 @@ struct Sin {
 class BackgroundElement : public Element{
     public:
 	BackgroundElement();
+        BackgroundElement(const BackgroundElement &);
 	virtual ~BackgroundElement();
 	
 	virtual void act()=0;
@@ -44,6 +45,10 @@ class BackgroundElement : public Element{
 
         //! Set the passed element to this elements values, this is called when the next element is linked to this one
         virtual void setLink(BackgroundElement *element);
+
+        // Copy operator so we can make an initial copy of are starting values to restore on a reset
+        const BackgroundElement & operator=(const BackgroundElement &);
+
 	
 	virtual inline void setStart(const Mugen::Point &point){
 	    this->start = point;
@@ -267,7 +272,7 @@ class ParallaxElement : public BackgroundElement {
 	//! yscale starting y-scale in percent (defaults to 100) use either xscale or width but not both
 	double yscale;
 	//! Delta for yscale per unit in percent (defaults to 0)
-	double yscaleDelta; 
+	double yscaleDelta;
 };
 
 /*! Dummy Element */
@@ -292,6 +297,17 @@ class Background{
 	virtual void renderForeground(int x, int y, const Bitmap &);
 	
     private:
+
+        //! Returns a vector of Elements by given ID
+        std::vector< BackgroundElement * > getIDList(int ID);
+
+        //! Returns a vector of all elements in backgrounds and foregrounds
+        inline std::vector< BackgroundElement * > getElements() { 
+            std::vector< BackgroundElement *> temp;
+            std::copy(backgrounds.begin(),backgrounds.end(),temp.end());
+            std::copy(foregrounds.begin(),foregrounds.end(),temp.end());
+            return temp;
+        }
 	
 	//! File where background is in
 	std::string file;
