@@ -19,7 +19,7 @@ namespace PaintownUtil = ::Util;
 using namespace Mugen;
 
 // Default to center of screen
-const unsigned int MAP_X = 120;
+const unsigned int MAP_X = 160;
 const unsigned int MAP_Y = 0;
 
 struct Tile {
@@ -73,6 +73,8 @@ static Tile getTileData( int location, int length, int spacing, int total ){
 static double interpolate(double f1, double f2, double p){
     return (f1 * (1.0 - p)) + (f2 * p);
 }
+
+#if 0
 static int ff = 0;
 static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, double yoffset, bool mask){
     const int height = bmp.getHeight();
@@ -108,6 +110,7 @@ static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int le
 	//Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
     }
 }
+#endif
 
 
 BackgroundElement::BackgroundElement():
@@ -148,12 +151,15 @@ void BackgroundElement::setLink(BackgroundElement *element){
 NormalElement::NormalElement():
 sprite(0){
 }
+
 NormalElement::~NormalElement(){
 }
+
 void NormalElement::act(){
     getSinX().act();
     getSinY().act();
 }
+
 void NormalElement::render(int x, int y, const Bitmap &bmp){
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
@@ -174,13 +180,16 @@ AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animatio
 animation(0),
 animations(animations){
 }
+
 AnimationElement::~AnimationElement(){
 }
+
 void AnimationElement::act(){
     animations[animation]->logic();
     getSinX().act();
     getSinY().act();
 }
+
 void AnimationElement::render(int x, int y, const Bitmap &bmp){
     const int addw = getTileSpacing().x;
     const int addh = getTileSpacing().y;
@@ -204,15 +213,72 @@ xscaleY(0),
 yscale(100),
 yscaleDelta(0){
 }
+
 ParallaxElement::~ParallaxElement(){
 }
+
 void ParallaxElement::act(){
 }
-void ParallaxElement::render(int x, int y, const Bitmap &bmp){
+
+static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
+    const int height = bmp.getHeight();
+    const int width = bmp.getWidth();
+
+    // bmp.draw(offsetX + cameraX - width / 2, offsetY + cameraY - height / 2, work);
+    // bmp.draw(centerX - width / 2 + offsetX, centerY + offsetY, work);
+    
+    double x = centerX - width / 2 + offsetX - cameraX;
+    int y = centerY + offsetY;
+
+    // Global::debug(0) << "Camera x is " << cameraX << " x is " << x << " delta top " << delta_top << " bottom " << delta_bottom << endl;
+
+    for (int liney = 0; liney < height; liney++){
+        int movex = 0;
+	//int width = bmp.getWidth()*z;
+        const double range = (double)liney / (double)height;
+	const double scale = interpolate(xscale_top, xscale_bottom, range);
+	// movex = (int)(x - cameraX * (scale - xscale_top) * 0.78);
+	movex = (int)(x - cameraX * (scale - xscale_top) + cameraX * (1 - deltaX) * scale);
+	// movex = (int)(x - cameraX * (scale * delta));
+
+	// bmp.Stretch(work, 0, liney, width, 1, movex, y + liney, width * scale, 1);
+        // bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
+        bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
+
+        // bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
+	//z +=  z_add;
+	//Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
+    }
+
+}
+
+void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
+
+    const Bitmap & show = *sprite->getBitmap();
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
-    const int currentX = MAP_X + int((getStart().x + x + getVelocityX()) * getDeltaX());
-    const int currentY = MAP_Y + int((getStart().y + y + getVelocityY()) * getDeltaY());
+    /* FIXME */
+    int x = 0;
+    int y = 0;
+    Tile tilev = getTileData(x, 1, addh, getTile().y);
+    for (int v = 0; v < tilev.total; ++v){
+        Tile tileh = getTileData(y, 1, addw, getTile().x);
+        for (int h = 0; h < tileh.total; ++h){
+                if (xscaleX && xscaleY){
+                    doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, xscaleX, xscaleY, MAP_X, MAP_Y, getDeltaX(), getDeltaY());
+                } else {
+                    // doParallax2( *sprite->getBitmap(), bmp, tileh.start, tilev.start, MAP_X, width.x, width.y, yscale, yscaleDelta, currentX, getMask());
+                }
+                tileh.start += addw;
+        }
+        tilev.start += addh;
+    }
+
+    /*
+    const int addw = sprite->getWidth() + getTileSpacing().x;
+    const int addh = sprite->getHeight() + getTileSpacing().y;
+    const int currentX = MAP_X + int((getStart().x + cameraX + getVelocityX()) * getDeltaX());
+    const int currentY = MAP_Y + int((getStart().y + cameraY + getVelocityY()) * getDeltaY());
     Tile tilev = getTileData(currentY, 1, addh, getTile().y);
     for (int v = 0; v < tilev.total; ++v){
         Tile tileh = getTileData(currentX, 1, addw, getTile().x);
@@ -226,14 +292,18 @@ void ParallaxElement::render(int x, int y, const Bitmap &bmp){
         }
         tilev.start+=addh;
     }
+    */
 }
 
 DummyElement::DummyElement(){
 }
+
 DummyElement::~DummyElement(){
 }
+
 void DummyElement::act(){
 }
+
 void DummyElement::render(int x, int y, const Bitmap &bmp){
 }
 
@@ -754,6 +824,3 @@ void Background::renderForeground(int x, int y, const Bitmap &bmp){
 	element->render(x, y, bmp);
     }
 }
-
-
-
