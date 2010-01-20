@@ -23,7 +23,6 @@ struct RectArea
 	bool operator!=( const RectArea &);
 	bool operator==( const Bitmap &);
 	bool operator!=( const Bitmap &);
-	RectArea &operator=( const RectArea &);
 };
 
 #endif

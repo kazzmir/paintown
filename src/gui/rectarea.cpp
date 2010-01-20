@@ -41,16 +41,4 @@ bool RectArea::operator!=( const Bitmap &bmp){
             (height != bmp.getHeight()));
 }
 
-RectArea &RectArea::operator=( const RectArea &copy){
-    x =  copy.x;
-    y = copy.y;
-    width = copy.width; 
-    height =  copy.height;
-    body =  copy.body;
-    bodyAlpha =  copy.bodyAlpha;
-    border = copy.border;
-    borderAlpha = copy.borderAlpha;
-    radius = copy.radius;
 
-    return *this;
-}
