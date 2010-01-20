@@ -289,7 +289,8 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
     // bmp.draw(offsetX + cameraX - width / 2, offsetY + cameraY - height / 2, work);
     // bmp.draw(centerX - width / 2 + offsetX, centerY + offsetY, work);
     
-    double x = centerX - width / 2 + offsetX - cameraX;
+    // double x = centerX - width / 2 + offsetX - cameraX;
+    double x = centerX + offsetX - cameraX;
     int y = centerY + offsetY - cameraY;
 
     // Global::debug(0) << "Camera x is " << cameraX << " x is " << x << " delta top " << delta_top << " bottom " << delta_bottom << endl;
@@ -318,16 +319,18 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
 void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
 
     const Bitmap & show = *sprite->getBitmap();
-    const int addw = sprite->getWidth() + getTileSpacing().x;
-    const int addh = sprite->getHeight() + getTileSpacing().y;
-    /* FIXME */
-     // Remember only do either or if xscale is set then ignore width otherwise do width
+    /* Remember only do either or if xscale is set then ignore width
+     * otherwise do width.
+     */
     if (xscaleX || xscaleY){
-	doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+	doParallax(show, work, cameraX, cameraY, getStart().x - sprite->getX(), getStart().y - sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
     } else {
 	doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
     }
 #if 0
+    /* FIXME */
+    const int addw = sprite->getWidth() + getTileSpacing().x;
+    const int addh = sprite->getHeight() + getTileSpacing().y;
     int x = 0;
     int y = 0;
     Tile tilev = getTileData(x, 1, addh, getTile().y);
