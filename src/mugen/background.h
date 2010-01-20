@@ -285,6 +285,44 @@ class DummyElement : public BackgroundElement {
     private:
 };
 
+/*! Background Controller */
+class BackgroundController {
+    public:
+        BackgroundController(Ast::Section *section);
+        virtual ~BackgroundController();
+
+        virtual void act()=0;
+        /* Manual override */
+        virtual void reset()=0;
+        
+        virtual inline void setName(const std::string & name){
+            this->name = name;
+        }
+        virtual inline void setTimeStart(int time){
+            this->timeStart = time;
+        }
+        virtual inline void setEndTime(int time){
+            this->endTime = time;
+        }
+        virtual inline void setLoopTime(int time){
+            this->loopTime = time;
+        }
+    protected:
+        /*! Name of controller */
+        std::string name;
+        /*! How many ticks before controller becomes active */
+        int timeStart;
+        /*! How many ticks before controller is deactivated */
+	int endTime;
+        /*! How many ticks before controller is reset (-1 means no reset) */
+	int loopTime;
+        /*! Tick handler */
+	int ticker;
+        /*! Current Elements this controller has governance over */
+        std::vector< BackgroundElement * > elements;
+
+};
+
 /*! Our Background */
 class Background{
     public:
