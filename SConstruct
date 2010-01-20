@@ -513,16 +513,16 @@ if isWindows():
     #     Exit(1)
     env = config.Finish()
     
-    staticEnv.Append( LIBS = [hawknl_static, dumb_static, 'regex.dll'] )
-    env.Append( LIBS = [dumb,hawknl,'regex.dll'] )
+    staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
+    env.Append( LIBS = [dumb,hawknl] )
     
     env.Append( LIBS = ['alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     env.Append( CPPDEFINES = 'WINDOWS' )
-    #env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
-    #env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
+    env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
+    env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
-    env.Append( CCFLAGS = ['-mthreads'] )
-    env.Append( LINKFLAGS = ['-mthreads'] )
+    #env.Append( CCFLAGS = ['-mthreads'] )
+    #env.Append( LINKFLAGS = ['-mthreads'] )
 
     staticEnv.Append(LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     staticEnv.Append(CPPDEFINES = 'WINDOWS')
