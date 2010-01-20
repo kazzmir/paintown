@@ -109,7 +109,7 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
     const int currentX = (bmp.getWidth()/2) + (int) ((getStart().x - cameraX + getVelocityX() + getSinX().get()) + cameraX * (1 - getDeltaX()));
-    const int currentY = (int) ((getStart().y + cameraY + getVelocityY() + getSinY().get()) + cameraY * (1 - getDeltaY()));
+    const int currentY = (int) ((getStart().y - cameraY + getVelocityY() + getSinY().get()) + cameraY * (1 - getDeltaY()));
 
     // const int currentX = (bmp.getWidth()/2) + int((getStart().x + cameraX + getVelocityX() + getSinX().get()) * getDeltaX());
     // const int currentY =  int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
@@ -301,11 +301,12 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
 	const double scale = interpolate(xscale_top, xscale_bottom, range);
 	// movex = (int)(x - cameraX * (scale - xscale_top) * 0.78);
 	movex = (int)(x - cameraX * (scale - xscale_top) + cameraX * (1 - deltaX) * scale);
+        int movey = (int)(y + liney + cameraY * (1 - deltaY));
 	// movex = (int)(x - cameraX * (scale * delta));
 
 	// bmp.Stretch(work, 0, liney, width, 1, movex, y + liney, width * scale, 1);
         // bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
-        bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
+        bmp.BlitMasked(0, liney, width, 1, movex, movey, work);
 
         // bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
 	//z +=  z_add;
