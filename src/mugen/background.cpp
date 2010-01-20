@@ -18,58 +18,6 @@ using namespace std;
 namespace PaintownUtil = ::Util;
 using namespace Mugen;
 
-// Default to center of screen
-const unsigned int MAP_X = 160;
-const unsigned int MAP_Y = 0;
-
-struct Tile {
-    int start;
-    int total;
-};
-
-static Tile getTileData( int location, int length, int spacing, int total ){
-    Tile tile;
-    if (total == 0){
-	tile.start = location;
-	tile.total = 1;
-	return tile;
-    } else if (total > 1){
-	tile.start = location;
-	tile.total = total;
-	return tile;
-    } else if (total == 1){
-	// Infinite tiling.. just tile on the board
-	if (location < 0){
-	    // Less than the board itself lets get location up to that point
-	    while (location < 0){
-		location+=spacing;
-	    }
-	    // Now backup 1 so we get the wrap effect 
-	    location-=spacing;
-	} else{
-	    // Either Larger than the board or inside seek back to beginning
-	    while (location > 0){
-		location-=spacing;
-	    }
-	}
-	// Now figure out how many we need to do
-	int temp = location;
-	// Reuse total
-	total = 0;
-	while (temp < length){
-	    total++;
-	    temp+=spacing;
-	}
-	// Blammo
-	tile.start = location;
-	tile.total = total;
-	return tile;
-    }
-    tile.start = 0;
-    tile.total = 0;
-    return tile;
-}
-
 static double interpolate(double f1, double f2, double p){
     return (f1 * (1.0 - p)) + (f2 * p);
 }
@@ -151,58 +99,168 @@ void BackgroundElement::setLink(BackgroundElement *element){
 NormalElement::NormalElement():
 sprite(0){
 }
-
 NormalElement::~NormalElement(){
 }
-
 void NormalElement::act(){
     getSinX().act();
     getSinY().act();
 }
-
 void NormalElement::render(int x, int y, const Bitmap &bmp){
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
-    const int currentX = MAP_X + int((getStart().x + x + getVelocityX() + getSinX().get()) * getDeltaX());
-    const int currentY = MAP_Y + int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
-    Tile tilev = getTileData(currentY, 1, addh, getTile().y);
-    for (int v = 0; v < tilev.total; ++v){
-        Tile tileh = getTileData(currentX, 1, addw, getTile().x);
-        for (int h = 0; h < tileh.total; ++h){
-                sprite->render(tileh.start, tilev.start, bmp, getEffects());
-                tileh.start+=addw;
-        }
-        tilev.start+=addh;
-    }		
+    const int currentX = (bmp.getWidth()/2) + int((getStart().x + x + getVelocityX() + getSinX().get()) * getDeltaX());
+    const int currentY =  int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
+    // Render initial sprite
+    sprite->render(currentX, currentY, bmp, getEffects());
+    // Do tiling
+    if (getTile().x > 1){
+	int next = currentX+addw;
+	// Tile set amount of times but only forward
+	for (int t = 0; t < getTile().x; ++t){
+	    sprite->render(next, currentY, bmp, getEffects());
+	    next+=addw;
+	}
+    } else if (getTile().x == 1){
+	// infinite tiling goes in both directions
+	int next = currentX+addw;
+	int prev = currentX-addw;
+	bool prevDone = false;
+	bool nextDone = false;
+	while (!prevDone && !nextDone){
+	    if (!nextDone){
+		sprite->render(next, currentY, bmp, getEffects());
+	    }
+	    if (!prevDone){
+		sprite->render(prev, currentY, bmp, getEffects());
+	    }
+	    next+=addw;
+	    prev-=addw;
+	    // If we have gone passed the viewport, no need to draw
+	    // *FIXME Not so correct, need to figure this one out
+	    if (next >= bmp.getWidth()){
+		nextDone = true;
+	    }
+	    if (prev <= 0){
+		prevDone = true;
+	    }
+	}
+    }
+    if (getTile().y > 1){
+	int next = currentY+addh;
+	// Tile set amount of times but only forward
+	for (int t = 0; t < getTile().y; ++t){
+	    sprite->render(currentX, next, bmp, getEffects());
+	    next+=addh;
+	}
+    } else if (getTile().y == 1){
+	// infinite tiling goes in both directions
+	int next = currentY+addh;
+	int prev = currentY-addh;
+	bool prevDone = false;
+	bool nextDone = false;
+	while (!prevDone && !nextDone){
+	    if (!nextDone){
+		sprite->render(currentX, next, bmp, getEffects());
+	    }
+	    if (!prevDone){
+		sprite->render(currentX, prev, bmp, getEffects());
+	    }
+	    next+=addh;
+	    prev-=addh;
+	    // If we have gone passed the viewport, no need to draw
+	    // *FIXME Not so correct, need to figure this one out
+	    if (next >= bmp.getHeight()){
+		nextDone = true;
+	    }
+	    if (prev <= 0){
+		prevDone = true;
+	    }
+	}
+    }
 }
 
 AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animations):
 animation(0),
 animations(animations){
 }
-
 AnimationElement::~AnimationElement(){
 }
-
 void AnimationElement::act(){
     animations[animation]->logic();
     getSinX().act();
     getSinY().act();
 }
-
 void AnimationElement::render(int x, int y, const Bitmap &bmp){
     const int addw = getTileSpacing().x;
     const int addh = getTileSpacing().y;
-    const int currentX = MAP_X + int((getStart().x + x + getVelocityX() + getSinX().get()) * getDeltaX());
-    const int currentY = MAP_Y + int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
-    Tile tilev = getTileData(currentY, 1, addh, getTile().y);
-    for (int v = 0; v < tilev.total; ++v){
-        Tile tileh = getTileData(currentX, 1, addw, getTile().x);
-        for (int h = 0; h < tileh.total; ++h){
-                animations[animation]->render(tileh.start, tilev.start, bmp);
-                tileh.start+=addw;
-        }
-        tilev.start+=addh;
+    const int currentX = (bmp.getWidth()/2) + int((getStart().x + x + getVelocityX() + getSinX().get()) * getDeltaX());
+    const int currentY =  int((getStart().y + y + getVelocityY() + getSinY().get()) * getDeltaY());
+    // Render initial sprite
+    animations[animation]->render(currentX, currentY, bmp);
+    // Do tiling
+    if (getTile().x > 1){
+	int next = currentX+addw;
+	// Tile set amount of times but only forward
+	for (int t = 0; t < getTile().x; ++t){
+	    animations[animation]->render(next, currentY, bmp);
+	    next+=addw;
+	}
+    } else if (getTile().x == 1){
+	// infinite tiling goes in both directions
+	int next = currentX+addw;
+	int prev = currentX-addw;
+	bool prevDone = false;
+	bool nextDone = false;
+	while (!prevDone && !nextDone){
+	    if (!nextDone){
+		animations[animation]->render(next, currentY, bmp);
+	    }
+	    if (!prevDone){
+		animations[animation]->render(prev, currentY, bmp);
+	    }
+	    next+=addw;
+	    prev-=addw;
+	    // If we have gone passed the viewport, no need to draw
+	    // *FIXME Not so correct, need to figure this one out
+	    if (next >= bmp.getWidth()){
+		nextDone = true;
+	    }
+	    if (prev <= 0){
+		prevDone = true;
+	    }
+	}
+    }
+    if (getTile().y > 1){
+	int next = currentY+addh;
+	// Tile set amount of times but only forward
+	for (int t = 0; t < getTile().y; ++t){
+	    animations[animation]->render(currentX, next, bmp);
+	    next+=addh;
+	}
+    } else if (getTile().y == 1){
+	// infinite tiling goes in both directions
+	int next = currentY+addh;
+	int prev = currentY-addh;
+	bool prevDone = false;
+	bool nextDone = false;
+	while (!prevDone && !nextDone){
+	    if (!nextDone){
+		animations[animation]->render(currentX, next, bmp);
+	    }
+	    if (!prevDone){
+		animations[animation]->render(currentX, prev, bmp);
+	    }
+	    next+=addh;
+	    prev-=addh;
+	    // If we have gone passed the viewport, no need to draw
+	    // *FIXME Not so correct, need to figure this one out
+	    if (next >= bmp.getHeight()){
+		nextDone = true;
+	    }
+	    if (prev <= 0){
+		prevDone = true;
+	    }
+	}
     }
 }
 
@@ -258,6 +316,13 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
     /* FIXME */
+     // Remember only do either or if xscale is set then ignore width otherwise do width
+    if (xscaleX || xscaleY){
+	doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+    } else {
+	doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+    }
+#if 0
     int x = 0;
     int y = 0;
     Tile tilev = getTileData(x, 1, addh, getTile().y);
@@ -273,7 +338,7 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
         }
         tilev.start += addh;
     }
-
+#endif
     /*
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
