@@ -72,6 +72,7 @@ velocityX(0),
 velocityY(0),
 linkedElement(0){
 }
+
 BackgroundElement::BackgroundElement(const BackgroundElement &copy){
     this->setID(copy.getID());
     this->setLayer(copy.getLayer());
@@ -332,6 +333,7 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 }
 
 ParallaxElement::ParallaxElement():
+BackgroundElement(),
 sprite(0),
 xscaleX(0),
 xscaleY(0),
@@ -387,6 +389,8 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
 
     // Set the clipping window
     work.setClipRect( getWindow().x + windowAddX, getWindow().y + windowAddY, getWindow().getX2() + windowAddX, getWindow().getY2() + windowAddY );
+
+    // Global::debug(0) << "Clip rect " << (getWindow().x + windowAddX) << ", " << (getWindow().y + windowAddY) << " " << (getWindow().getX2() + windowAddX) << ", " << (getWindow().getY2() + windowAddY) << endl;
    
     /* Remember only do either or if xscale is set then ignore width
      * otherwise do width.
@@ -459,7 +463,9 @@ enum ElementType{
     Dummy,
 };
 
-//! Get Element
+/* TODO: search for the type and create the element first. Then pass the section
+ * to the element to do the rest of the parsing.
+ */
 static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &sprites, std::map< int, MugenAnimation * > &animations ){
     BackgroundElement *element = 0;
     ElementType elementType = Normal;
@@ -632,6 +638,8 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
             } else throw MugenException( "Unhandled option in BG " + head + " Section: " + simple->toString());
         }
     }
+
+    // Global::debug(0) << "Parsed element window as " << element->getWindow().getX1() << ", " << element->getWindow().getY1() << " " << element->getWindow().getX2() << ", " << element->getWindow().getY2() << endl;
     
     return element;
 }

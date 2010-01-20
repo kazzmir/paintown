@@ -17,6 +17,8 @@ struct RectArea
 	int border;
 	int borderAlpha;
 	int radius;
+        inline int getX1() const { return x; }
+        inline int getY1() const { return y; }
 	inline int getX2() const { return x + width; }
 	inline int getY2() const { return y + height; }
 	bool operator==( const RectArea &);

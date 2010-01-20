@@ -1,16 +1,15 @@
-#include "gui/rectarea.h"
-
 #include "util/bitmap.h"
+#include "gui/rectarea.h"
 
 RectArea::RectArea() : x(0), y(0), width(0), height(0), body(0), bodyAlpha(255), border(0), borderAlpha(255), radius(0)
 {
 }
 
-RectArea::RectArea(int x, int y, int w, int h){
-    this->x  = x;
-    this->y  = y;
-    this->width  = width;
-    this->height  = height;
+RectArea::RectArea(int x, int y, int w, int h):
+x(x),
+y(y),
+width(w),
+height(h){
 }
 
 bool RectArea::empty(){

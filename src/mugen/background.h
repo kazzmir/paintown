@@ -116,7 +116,7 @@ class BackgroundElement : public Element{
 	    this->window = RectArea(x1,y1,x2-x1,y2-y1);
 	}
 	
-	virtual inline RectArea getWindow() const {
+	virtual inline const RectArea & getWindow() const {
 	    return this->window;
 	}
 	
