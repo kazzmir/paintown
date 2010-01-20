@@ -197,8 +197,13 @@ void AnimationElement::act(){
 void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     const int addw = getTileSpacing().x;
     const int addh = getTileSpacing().y;
-    const int currentX = (bmp.getWidth()/2) + int((getStart().x - cameraX + getVelocityX() + getSinX().get()) * getDeltaX());
-    const int currentY =  int((getStart().y - cameraY + getVelocityY() + getSinY().get()) * getDeltaY());
+
+    // const int currentX = (bmp.getWidth()/2) + int((getStart().x - cameraX + getVelocityX() + getSinX().get()) * getDeltaX());
+    // const int currentY =  int((getStart().y - cameraY + getVelocityY() + getSinY().get()) * getDeltaY());
+
+    const int currentX = (bmp.getWidth()/2) + (int) ((getStart().x - cameraX + getVelocityX() + getSinX().get()) + cameraX * (1 - getDeltaX()));
+    const int currentY = (int) ((getStart().y - cameraY + getVelocityY() + getSinY().get()) + cameraY * (1 - getDeltaY()));
+
     // Render initial sprite
     animations[animation]->render(currentX, currentY, bmp);
     // Do tiling
