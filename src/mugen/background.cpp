@@ -228,7 +228,7 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
     // bmp.draw(centerX - width / 2 + offsetX, centerY + offsetY, work);
     
     double x = centerX - width / 2 + offsetX - cameraX;
-    int y = centerY + offsetY;
+    int y = centerY + offsetY - cameraY;
 
     // Global::debug(0) << "Camera x is " << cameraX << " x is " << x << " delta top " << delta_top << " bottom " << delta_bottom << endl;
 
