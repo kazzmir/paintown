@@ -577,7 +577,7 @@ debug(false),
 clearColor(-1){
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(file));
+    Ast::AstParse parsed(Mugen::Util::parseDef(file));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
     

@@ -876,8 +876,32 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
     return animation;
 }
 
+list<Ast::Section*>* Mugen::Util::parseAir(const string & filename){
+    try{
+        return (list<Ast::Section*>*) Mugen::Air::main(filename);
+    } catch (const Ast::Exception & e){
+        throw MugenException(e.getReason());
+    } catch (const Mugen::Air::ParseException & e){
+        ostringstream out;
+        out << "Could not parse " << filename << " because " << e.getReason();
+        throw MugenException(out.str());
+    }
+}
+
+list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
+    try{
+        return (list<Ast::Section*>*) Mugen::Def::main(filename);
+    } catch (const Ast::Exception & e){
+        throw MugenException(e.getReason());
+    } catch (const Mugen::Def::ParseException & e){
+        ostringstream out;
+        out << "Could not parse " << filename << " because " << e.getReason();
+        throw MugenException(out.str());
+    }
+}
+
 std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const string & filename, const SpriteMap sprites){
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Air::main(filename));
+    Ast::AstParse parsed(parseAir(filename));
     Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
     
     map<int, MugenAnimation*> animations;
@@ -937,7 +961,7 @@ const std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, c
 const std::string Mugen::Util::probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException){
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(file));
+    Ast::AstParse parsed(parseDef(file));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
     

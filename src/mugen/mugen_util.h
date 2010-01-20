@@ -54,6 +54,12 @@ namespace Util{
        Throws exception if not found
     */
     MugenSprite *probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile="") throw (MugenException);
+
+    /* convenient parser functions. throw MugenException on failure instead
+     * of Ast::Exception.
+     */
+    std::list<Ast::Section*>* parseAir(const std::string & filename);
+    std::list<Ast::Section*>* parseDef(const std::string & filename);
 }
 
 class Point{
