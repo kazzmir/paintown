@@ -84,7 +84,7 @@ BackgroundElement::BackgroundElement(const BackgroundElement &copy){
     this->tileSpacing = copy.tileSpacing;
     this->window = copy.window;
     this->windowDeltaX = copy.windowDeltaX;
-    this->windowDeltaY = copy.windowDeltaX;
+    this->windowDeltaY = copy.windowDeltaY;
     this->positionLink = copy.positionLink;
     this->velocityX = copy.velocityX;
     this->velocityY = copy.velocityY;
@@ -130,7 +130,7 @@ const BackgroundElement & BackgroundElement::operator=(const BackgroundElement &
     this->tileSpacing = copy.tileSpacing;
     this->window = copy.window;
     this->windowDeltaX = copy.windowDeltaX;
-    this->windowDeltaY = copy.windowDeltaX;
+    this->windowDeltaY = copy.windowDeltaY;
     this->positionLink = copy.positionLink;
     this->velocityX = copy.velocityX;
     this->velocityY = copy.velocityY;

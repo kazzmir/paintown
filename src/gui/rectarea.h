@@ -6,8 +6,7 @@ class Bitmap;
 struct RectArea
 {
 	RectArea();
-	RectArea(int x, int y, int w, int h); 
-	RectArea( const RectArea &r );
+	RectArea(int x, int y, int w, int h);
 	bool empty();
 	int x;
 	int y;

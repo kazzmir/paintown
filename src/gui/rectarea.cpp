@@ -13,13 +13,6 @@ RectArea::RectArea(int x, int y, int w, int h){
     this->height  = height;
 }
 
-RectArea::RectArea( const RectArea &r ){
-    this->x = r.x;
-    this->y = r.y;
-    this->width = r.width;
-    this->height = r.height;
-}
-
 bool RectArea::empty(){
     return (x==0 && y==0 && width==0 && height==0);
 }
