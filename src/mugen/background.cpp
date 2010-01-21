@@ -154,12 +154,18 @@ linkedElement(0){
                 }
 		self.setTileSpacing(point);
             } else if (simple == "window"){
-                int x1,y1,x2,y2;
-                simple >> x1 >> y1 >> x2 >> y2;
+                int x1=0,y1=0,x2=319,y2=239;
+                try {
+                    simple >> x1 >> y1 >> x2 >> y2;
+		} catch (const Ast::Exception & e){
+		}
 		self.setWindow(x1,y1,x2,y2);
             } else if (simple == "windowdelta"){
-		double x,y;
-                simple >> x >> y;
+		double x=0,y=0;
+                try{
+                    simple >> x >> y;
+                } catch (const Ast::Exception & e){
+                }
 		self.setWindowDelta(x,y);
             } else if (simple == "positionlink"){
 		bool link;
@@ -281,8 +287,11 @@ sprite(0){
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "spriteno"){
-                int group, sprite;
-                simple >> group >> sprite;
+                int group=0, sprite=0;
+                try{
+                    simple >> group >> sprite;
+                } catch (const Ast::Exception & e){
+                }
                 self.setSprite(sprites[group][sprite]);
             }
         }
@@ -387,7 +396,7 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 
 AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animations, const string & name, Ast::Section * data):
 BackgroundElement(name, data),
-animation(NULL),
+animation(0),
 animations(animations){
 
     class Walker: public Ast::Walker{
@@ -525,16 +534,25 @@ yscaleDelta(0){
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "spriteno"){
-                int group, sprite;
-                simple >> group >> sprite;
+                int group=0, sprite=0;
+                try{
+                    simple >> group >> sprite;
+                } catch (const Ast::Exception & e){
+                }
                 self.setSprite(sprites[group][sprite]);
             } else if (simple == "xscale"){
-                double x, y;
-                simple >> x >> y;
+                double x=0, y=0;
+                try{
+                    simple >> x >> y;
+                } catch (const Ast::Exception & e){
+                }
                 self.setXScale(x,y);
             } else if (simple == "width"){
                 Mugen::Point point;
-                simple >> point.x >> point.y;
+                try{
+                    simple >> point.x >> point.y;
+                } catch (const Ast::Exception & e){
+                }
                 self.setWidth(point);
             } else if (simple == "yscalestart"){
                 double x;
@@ -616,8 +634,8 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
     work.setClipRect(0, 0,work.getWidth(),work.getHeight());
 }
 
-#if 0
-DummyElement::DummyElement(){
+DummyElement::DummyElement(const std::string & name, Ast::Section * data):
+BackgroundElement(name,data){
 }
 
 DummyElement::~DummyElement(){
@@ -628,7 +646,7 @@ void DummyElement::act(){
 
 void DummyElement::render(int x, int y, const Bitmap &bmp){
 }
-#endif
+
 
 //! Type of element
 enum ElementType{
@@ -653,188 +671,17 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
         return new AnimationElement(animations, name, section);
     } else if (type == "parallax"){
         return new ParallaxElement(name, section, sprites);
+    } else if (type == "dummy"){
+        return new DummyElement(name, section);
     } else {
         ostringstream out;
         out << "Unknown background type '" << type << "' in " << name;
         throw MugenException(out.str());
     }
-
-#if 0
-    // ElementType elementType = Normal;
-    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
-        Ast::Attribute * attribute = *attribute_it;
-        if (attribute->getKind() == Ast::Attribute::Simple){
-            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
-            if (*simple == "type"){
-                std::string type;
-                *simple >> type;
-                type = Mugen::Util::removeSpaces(type);
-                if (type == "normal" ){
-		    elementType = Normal;
-		    element = new NormalElement();
-		} else if( type == "anim" ){
-		    elementType = Anim;
-		    element = new AnimationElement(animations);
-		} else if( type == "parallax" ){
-		    elementType = Parallax;
-		    element = new ParallaxElement();
-		} else if( type == "dummy" ){ 
-		    elementType = Dummy;
-		    element = new DummyElement();
-		}
-		element->setName(name);
-            } else if (*simple == "spriteno"){
-                int group, sprite;
-                *simple >> group >> sprite;
-		if (elementType == Normal){
-		    ((NormalElement *)element)->setSprite(sprites[group][sprite]);
-                } else if (elementType == Parallax){
-		    ((ParallaxElement *)element)->setSprite(sprites[group][sprite]);
-		}
-            } else if (*simple == "actionno"){
-		if (elementType == Anim){
-		    int action;
-		    *simple >> action;
-		    ((AnimationElement *)element)->setAnimation(action);
-		}
-            } else if (*simple == "id"){
-		int id;
-                *simple >> id;
-		element->setID(id);
-            } else if (*simple == "layerno"){
-		int layerno;
-                *simple >> layerno;
-		if (layerno == 0){
-		    element->setLayer(Element::Background);
-		} else if (layerno == 1){
-		    element->setLayer(Element::Foreground);
-		}
-            } else if (*simple == "start"){
-		Mugen::Point point;
-		try {
-		    *simple >> point.x >> point.y;
-		} catch (const Ast::Exception & e){
-		}
-		element->setStart(point);
-            } else if (*simple == "delta"){
-		double x=0,y=0;
-		try {
-		    *simple >> x >> y;
-                    /* the y part is not always given */
-                } catch (const Ast::Exception & e){
-                }
-		element->setDelta(x,y);
-            } else if (*simple == "trans"){
-                std::string type;
-                *simple >> type;
-                type = Mugen::Util::removeSpaces(type);
-		TransType trans;
-                if( type == "none" ){
-		    trans = NONE;
-		} else if( type == "add" ){
-		    trans =  ADD;
-		} else if( type == "add1" ){
-		    trans = ADD1;
-		} else if( type == "sub" ){
-		    trans = SUB;
-		} else if( type == "addalpha" ){
-		    trans = ADDALPHA;
-		}
-		element->setTrans(trans);
-            } else if (*simple == "alpha"){
-		int l = 0,h=0;
-                try{
-                    *simple >> l >> h;
-                } catch (const Ast::Exception & e){
-                }
-		element->setAlpha(l,h);
-            } else if (*simple == "mask"){
-		bool mask;
-                *simple >> mask;
-		element->setMask(mask);
-            } else if (*simple == "tile"){
-		Mugen::Point point;
-                try{
-                    *simple >> point.x >> point.y;
-                } catch (const Ast::Exception & e){
-                }
-		element->setTile(point);
-            } else if (*simple == "tilespacing"){
-		Mugen::Point point;
-                try{
-                    *simple >> point.x >> point.y;
-                } catch (const Ast::Exception & e){
-                }
-		element->setTileSpacing(point);
-            } else if (*simple == "window"){
-                int x1,y1,x2,y2;
-                *simple >> x1 >> y1 >> x2 >> y2;
-		element->setWindow(x1,y1,x2,y2);
-            } else if (*simple == "windowdelta"){
-		double x,y;
-                *simple >> x >> y;
-		element->setWindowDelta(x,y);
-            } else if (*simple == "xscale"){
-                if (elementType == Parallax){
-		    double x, y;
-		    *simple >> x >> y;
-		    ((ParallaxElement *)element)->setXScale(x,y);
-		}
-            } else if (*simple == "width"){
-                if (elementType == Parallax){
-		    Mugen::Point point;
-		    *simple >> point.x >> point.y;
-		    ((ParallaxElement *)element)->setWidth(point);
-		}
-            } else if (*simple == "yscalestart"){
-                if (elementType == Parallax){
-		    double x;
-		    *simple >> x;
-		    ((ParallaxElement *)element)->setYScale(x);
-		}
-            } else if (*simple == "yscaledelta"){
-                if (elementType == Parallax){
-		    double x;
-		    *simple >> x;
-		    ((ParallaxElement *)element)->setYScaleDelta(x);
-		}
-            } else if (*simple == "positionlink"){
-		bool link;
-                *simple >> link;
-		element->setPositionLink(link);
-            } else if (*simple == "velocity"){
-                double x=0,y=0;
-		try{
-		    *simple >> x >> y;
-                } catch (const Ast::Exception & e){
-                }
-		element->setVelocity(x,y);
-            } else if (*simple == "sin.x"){
-		Sin x;
-                try{
-                    *simple >> x.amp >> x.period >> x.offset;
-                } catch (const Ast::Exception & e){
-                }
-		element->setSinX(x);
-            } else if (*simple == "sin.y"){
-                Sin y;
-                try{
-                    *simple >> y.amp >> y.period >> y.offset;
-                } catch (const Ast::Exception & e){
-                }
-		element->setSinY(y);
-            } else throw MugenException( "Unhandled option in BG " + head + " Section: " + simple->toString());
-        }
-    }
-
-    // Global::debug(0) << "Parsed element window as " << element->getWindow().getX1() << ", " << element->getWindow().getY1() << " " << element->getWindow().getX2() << ", " << element->getWindow().getY2() << endl;
-    
-    return element;
-#endif
 }
 
 /* Background Controller */
-Controller::Controller(Ast::Section *section):
+Controller::Controller(Ast::Section * data):
 name(""),
 timeStart(0),
 endTime(0),
@@ -845,21 +692,51 @@ ticker(0){
 Controller::~Controller(){
 }
 
-BackgroundController::BackgroundController(Ast::Section *section):
+BackgroundController::BackgroundController(const std::string & name, Ast::Section * data, Background & background):
+name(name),
+ID(0),
 globalLooptime(-1),
 ticker(0){
-    std::string head = section->getName();
-    head = PaintownUtil::captureRegex(head, ".*bgctrldef", 0);
-    std::string name = head;
-    Global::debug(1) << "Found background controller definition: " << name << endl;
-    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
-	 Ast::Attribute * attribute = *attribute_it;
-        if (attribute->getKind() == Ast::Attribute::Simple){
-            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
-            if (*simple == "type"){
-	    }
-	}
-    }
+    class Walker: public Ast::Walker{
+    public:
+        Walker(BackgroundController & self, Background & background):
+            self(self),
+            background(background){
+            }
+
+        BackgroundController & self;
+        Background & background;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "eventid"){
+                simple >> self.ID;
+            } else if (simple == "looptime"){
+                simple >> self.globalLooptime;
+                if (self.globalLooptime == 0){
+                    self.globalLooptime = -1;
+                }
+            } else if (simple == "ctrlid"){
+                bool hasID = false;
+                try{
+                    while (true){
+                        int id;
+                        simple >> id;
+                        self.addElements(background.getIDList(id));
+                        hasID = true;
+                    }
+                } catch (const Ast::Exception & e){
+                }
+                if (!hasID){
+                    self.addElements(background.getElements());
+                }
+            } else {
+                throw MugenException("Unhandled option in BGCtrlDef " + self.name + " Section: " + simple.toString());
+            }
+        }
+    };
+
+    Walker walker(*this, background);
+    data->walk(walker);
 }
 
 BackgroundController::~BackgroundController(){
@@ -938,7 +815,10 @@ clearColor(-1){
 			    simple >> self.debug;
 			} else if (simple == "bgclearcolor"){
 			    int r, g, b;
-			    simple >> r >> g >> b;
+                            try{
+			        simple >> r >> g >> b;
+                            } catch (const Ast::Exception & e){
+                            }
 			    self.clearColor = Bitmap::makeColor(r,g,b);
 			} else {
 			    throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
@@ -976,6 +856,9 @@ clearColor(-1){
 	    out >> h;
 	    animations[h] = Mugen::Util::getAnimation(section, sprites);
 	} else if (PaintownUtil::matchRegex(head, ".*bgctrldef")){
+            head.replace(0,10,"");
+            BackgroundController *temp = new BackgroundController(head,section,*this);
+            controllers.push_back(temp);
 #if 0
 	    head.replace(0,10,"");
 	    MugenBackgroundController *temp = new MugenBackgroundController(head);

@@ -274,22 +274,20 @@ class ParallaxElement : public BackgroundElement {
 	double yscaleDelta;
 };
 
-#if 0
-/*! Dummy Element */
+/*! Dummy Element - Not an interactive element, it used mostly as support in Position Link chains */
 class DummyElement : public BackgroundElement {
     public:
-	DummyElement();
+	DummyElement(const std::string & name, Ast::Section * data);
 	virtual ~DummyElement();
 	virtual void act();
 	virtual void render(int x, int y, const Bitmap &);
     private:
 };
-#endif
 
 /*! Controller */
 class Controller {
     public:
-        Controller(Ast::Section *section);
+        Controller(Ast::Section * data);
         virtual ~Controller();
 
         virtual void act()=0;
@@ -331,18 +329,25 @@ class Controller {
         std::vector< BackgroundElement * > elements;
 };
 
+// Forward declaration of Background
+class Background;
+
 /*! Background Controller */
 class BackgroundController{
     public:
-	BackgroundController(Ast::Section *section);
-	~BackgroundController();
+	BackgroundController(const std::string & name, Ast::Section * data, Background & background);
+	virtual ~BackgroundController();
 	
 	virtual void act();
 	
-	virtual inline void addElements(std::vector<BackgroundElement *> & elements){
+	virtual inline void addElements(const std::vector<BackgroundElement *> & elements){
 	    std::copy(elements.begin(),elements.end(),this->elements.end());
 	}
     private:
+        /*! Name of controller */
+        std::string name;
+        /*! Controller ID */
+        int ID;
 	/*! Global Looptime if not given then it will be disabled. At looptime it will reset itself and all controllers. */
 	int globalLooptime;
 	/*! Ticker of Background Controller */ 
@@ -364,11 +369,9 @@ class Background{
 	virtual void renderBackground(int x, int y, const Bitmap &);
 	virtual void renderForeground(int x, int y, const Bitmap &);
 	
-    private:
-
         //! Returns a vector of Elements by given ID
         std::vector< BackgroundElement * > getIDList(int ID);
-
+        
         //! Returns a vector of all elements in backgrounds and foregrounds
         inline std::vector< BackgroundElement * > getElements() { 
             std::vector< BackgroundElement *> temp;
@@ -376,6 +379,8 @@ class Background{
             std::copy(foregrounds.begin(),foregrounds.end(),temp.end());
             return temp;
         }
+
+    private:
 	
 	//! File where background is in
 	std::string file;
@@ -403,6 +408,9 @@ class Background{
 	
 	//! Foregrounds
 	std::vector< BackgroundElement * > foregrounds;
+
+        //! Controllers
+        std::vector< BackgroundController *> controllers;
 };
     
 }
