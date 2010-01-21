@@ -285,11 +285,11 @@ class DummyElement : public BackgroundElement {
     private:
 };
 
-/*! Background Controller */
-class BackgroundController {
+/*! Controller */
+class Controller {
     public:
-        BackgroundController(Ast::Section *section);
-        virtual ~BackgroundController();
+        Controller(Ast::Section *section);
+        virtual ~Controller();
 
         virtual void act()=0;
         /* Manual override */
@@ -307,6 +307,9 @@ class BackgroundController {
         virtual inline void setLoopTime(int time){
             this->loopTime = time;
         }
+	virtual inline void addElements(std::vector<BackgroundElement *> & elements){
+	    std::copy(elements.begin(),elements.end(),this->elements.end());
+	}
     protected:
         /*! Name of controller */
         std::string name;
@@ -320,7 +323,28 @@ class BackgroundController {
 	int ticker;
         /*! Current Elements this controller has governance over */
         std::vector< BackgroundElement * > elements;
+};
 
+/*! Background Controller */
+class BackgroundController{
+    public:
+	BackgroundController(Ast::Section *section);
+	~BackgroundController();
+	
+	virtual void act();
+	
+	virtual inline void addElements(std::vector<BackgroundElement *> & elements){
+	    std::copy(elements.begin(),elements.end(),this->elements.end());
+	}
+    private:
+	/*! Global Looptime if not given then it will be disabled. At looptime it will reset itself and all controllers. */
+	int globalLooptime;
+	/*! Ticker of Background Controller */ 
+	int ticker;
+	/*! BackgroundElement list */
+	std::vector < BackgroundElement *> elements;
+	/*! Controllers */
+	std::vector < Controller *> controllers;
 };
 
 /*! Our Background */

@@ -644,6 +644,44 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
     return element;
 }
 
+/* Background Controller */
+Controller::Controller(Ast::Section *section):
+name(""),
+timeStart(0),
+endTime(0),
+loopTime(0),
+ticker(0){
+}
+
+Controller::~Controller(){
+}
+
+BackgroundController::BackgroundController(Ast::Section *section):
+globalLooptime(-1),
+ticker(0){
+    std::string head = section->getName();
+    head = PaintownUtil::captureRegex(head, ".*bgctrldef", 0);
+    std::string name = head;
+    Global::debug(1) << "Found background controller definition: " << name << endl;
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+	 Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "type"){
+	    }
+	}
+    }
+}
+
+BackgroundController::~BackgroundController(){
+}
+
+void BackgroundController::act(){
+}
+
+
+
+
 Background::Background(const std::string &file, const std::string &header):
 file(file),
 header(header),
