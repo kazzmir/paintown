@@ -681,8 +681,8 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
 }
 
 /* Background Controller */
-Controller::Controller(Ast::Section * data):
-name(""),
+Controller::Controller(const std::string & name, Ast::Section * data, BackgroundController & control):
+name(name),
 timeStart(0),
 endTime(0),
 loopTime(0),
@@ -814,7 +814,7 @@ clearColor(-1){
 			} else if (simple == "debugbg"){
 			    simple >> self.debug;
 			} else if (simple == "bgclearcolor"){
-			    int r, g, b;
+			    int r=0, g=0, b=0;
                             try{
 			        simple >> r >> g >> b;
                             } catch (const Ast::Exception & e){
@@ -856,82 +856,68 @@ clearColor(-1){
 	    out >> h;
 	    animations[h] = Mugen::Util::getAnimation(section, sprites);
 	} else if (PaintownUtil::matchRegex(head, ".*bgctrldef")){
+            // Grabs the Background Controller Definition so that we can go through the child controllers
             head.replace(0,10,"");
             BackgroundController *temp = new BackgroundController(head,section,*this);
             controllers.push_back(temp);
-#if 0
-	    head.replace(0,10,"");
-	    MugenBackgroundController *temp = new MugenBackgroundController(head);
-	    Global::debug(1) << "Found background controller definition: " << temp->name << endl;
-            class BackgroundControllerWalker: public Ast::Walker {
-            public:
-                BackgroundControllerWalker(MugenBackgroundManager & manager, MugenBackgroundController * controller, vector<MugenBackground*> & backgrounds, vector<MugenBackground*> & foregrounds):
-                    hasId(false),
-                    manager(manager),
-                    controller(controller),
-                    backgrounds(backgrounds),
-                    foregrounds(foregrounds){
-                }
-
-                bool hasId;
-                MugenBackgroundManager & manager;
-                MugenBackgroundController * controller;
-                vector<MugenBackground*> & backgrounds;
-                vector<MugenBackground*> & foregrounds;
-
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "eventid"){
-		        simple >> controller->id;
-                    } else if (simple == "looptime"){
-                        simple >> controller->looptime;
-                        if (controller->looptime == 0){
-                            controller->looptime = -1;
-                        }
-                    } else if (simple == "ctrlid"){
-                        hasId = true;
-                        // Max 10
-                        try{
-                            while (true){
-                                int id;
-                                simple >> id;
-                                manager.getBackgrounds(controller->backgrounds, id);
-                            }
-                        } catch (const Ast::Exception & e){
-                        }
-                    } else {
-                        string name; // = controller->getName()
-                        throw MugenException("Unhandled option in BGCtrlDef " + name + " Section: " + simple.toString());
-                    }
-                }
-
-                virtual ~BackgroundControllerWalker(){
-                    if (!hasId && controller->backgrounds.empty()){
-                        controller->backgrounds.insert(controller->backgrounds.end(), backgrounds.begin(), backgrounds.end());
-                        controller->backgrounds.insert(controller->backgrounds.end(), foregrounds.begin(), foregrounds.end());
-                    }
-                }
-            };
-
-            {
-                BackgroundControllerWalker walker(*this, temp, backgrounds, foregrounds);
-                Ast::Section * section = *section_it;
-                section->walk(walker);
-            }
-	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
-	    controllers.push_back(temp);
-#endif
 	} else if (PaintownUtil::matchRegex(head, ".*bgctrl")){
-#if 0
 	    if (controllers.empty()){
 		/* This is a hack to get mugen to do some fancy controlling in a regular
                  * game to accomplish stage fatalities and other tricks
+                 * Maybe we can support this later, for now just ignore
                  */
-		Global::debug(1) << "Found a BgCtrl without a parent definition... must be hackery!" << endl;
+		Global::debug(1) << "Found a BgCtrl without a parent Def definition... its not a bowl!" << endl;
 		continue;
 	    }
-
 	    // else we got ourselves some controls... under the last controller added
-	    MugenBackgroundController *control = controllers.back();
+	    BackgroundController *control = controllers.back();
+
+            // Get name
+            head.replace(0,7,"");
+            //Controller *controller = new Controller(head,section,control);
+            string type;
+            *section->findAttribute("type") >> type;
+            type = Util::fixCase(type);
+            
+            Controller *controller;
+            if (type == "anim"){
+                //controller = 
+            } else if (type == "enabled"){
+                
+            } else if (type == "null"){
+                
+            } else if (type == "posadd"){
+                
+            } else if (type == "posset"){
+                
+            } else if (type == "sinx"){
+                
+            } else if (type == "siny"){
+                
+            } else if (type == "veladd"){
+                
+            } else if (type == "velset"){
+                
+            } else if (type == "visible"){
+                
+            } else if (type == "time"){
+                
+            } else if (type == "value"){
+                
+            } else if (type == "x"){
+                
+            } else if (type == "y"){
+                
+            } else if (type == "ctrlid"){
+                
+            } else {
+                ostringstream out;
+                out << "Unknown background type '" << type << "' in " << head;
+                throw MugenException(out.str());
+            }
+            // Finally add it to our background controller
+            control->addController(controller);
+#if 0
 	    head.replace(0,7,"");
 	    BackgroundController *temp = new BackgroundController();
 	    temp->name = head;
@@ -1056,6 +1042,14 @@ Background::~Background(){
             delete element;
         }
     }
+
+    // Controllers
+    for( vector< BackgroundController *>::iterator i = controllers.begin(); i != controllers.end(); ++i ){
+	BackgroundController *controller = *i;
+	if (controller){
+            delete controller;
+        }
+    }
 }
 void Background::act(){
     // Backgrounds
@@ -1068,6 +1062,11 @@ void Background::act(){
     for( vector< BackgroundElement *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	BackgroundElement *element = *i;
 	element->act();
+    }
+    // Controllers
+    for( vector< BackgroundController *>::iterator i = controllers.begin(); i != controllers.end(); ++i ){
+	BackgroundController *controller = *i;
+	controller->act();
     }
 }
 void Background::renderBackground(int x, int y, const Bitmap &bmp){

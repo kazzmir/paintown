@@ -284,10 +284,13 @@ class DummyElement : public BackgroundElement {
     private:
 };
 
+// Forward declare Background Controller
+class BackgroundController;
+
 /*! Controller */
 class Controller {
     public:
-        Controller(Ast::Section * data);
+        Controller(const std::string & name, Ast::Section * data, BackgroundController & control);
         virtual ~Controller();
 
         virtual void act()=0;
@@ -311,7 +314,7 @@ class Controller {
         }
 
 	virtual inline void addElements(std::vector<BackgroundElement *> & elements){
-	    std::copy(elements.begin(),elements.end(),this->elements.end());
+	    this->elements.insert(this->elements.end(),elements.begin(),elements.end());
 	}
 
     protected:
@@ -341,8 +344,11 @@ class BackgroundController{
 	virtual void act();
 	
 	virtual inline void addElements(const std::vector<BackgroundElement *> & elements){
-	    std::copy(elements.begin(),elements.end(),this->elements.end());
+	    this->elements.insert(this->elements.end(),elements.begin(),elements.end());
 	}
+        virtual inline void addController(Controller * controller){
+            this->controllers.push_back(controller);
+        }
     private:
         /*! Name of controller */
         std::string name;
@@ -375,8 +381,8 @@ class Background{
         //! Returns a vector of all elements in backgrounds and foregrounds
         inline std::vector< BackgroundElement * > getElements() { 
             std::vector< BackgroundElement *> temp;
-            std::copy(backgrounds.begin(),backgrounds.end(),temp.end());
-            std::copy(foregrounds.begin(),foregrounds.end(),temp.end());
+            temp.insert(temp.end(),backgrounds.begin(),backgrounds.end());
+            temp.insert(temp.end(),foregrounds.begin(),foregrounds.end());
             return temp;
         }
 
