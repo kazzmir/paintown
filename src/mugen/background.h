@@ -436,6 +436,10 @@ class BackgroundController{
 	virtual ~BackgroundController();
 	
 	virtual void act();
+
+        virtual inline const std::string & getName() const {
+            return this->name;
+        }
 	
 	virtual inline void addElements(const std::vector<BackgroundElement *> & elements){
 	    this->elements.insert(this->elements.end(),elements.begin(),elements.end());

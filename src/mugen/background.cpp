@@ -710,16 +710,19 @@ timeStart(0),
 endTime(0),
 loopTime(-1),
 ticker(0){
+    bool hasID = false;
     class Walker: public Ast::Walker{
     public:
-        Walker(Controller & self, BackgroundController & control, Background & background):
+        Walker(Controller & self, BackgroundController & control, Background & background,bool & hasID):
             self(self),
             control(control),
-            background(background){
+            background(background),
+            hasID(hasID){
             }
         Controller & self;
         BackgroundController & control;
         Background & background;
+        bool & hasID;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "time"){
@@ -732,7 +735,6 @@ ticker(0){
                 self.endTime = end;
                 self.loopTime = loop;
             } else if (simple == "ctrlid"){
-                bool hasID = false;
                 try{
                     while (true){
                         int id;
@@ -742,15 +744,16 @@ ticker(0){
                     }
                 } catch (const Ast::Exception & e){
                 }
-                if (!hasID){
-                    // No IDs set, use the global ID's that the BackgroundController has
-                    self.addElements(control.getElements());
-                }  
-            } 
+            }  
         }
     };
-    Walker walker(*this, control,background);
+    Walker walker(*this, control,background,hasID);
     data->walk(walker);
+    
+    if (!hasID){
+        // No IDs set, use the global ID's that the BackgroundController has
+        addElements(control.getElements());
+    } 
 }
 
 Controller::~Controller(){
@@ -1065,15 +1068,18 @@ name(name),
 ID(0),
 globalLooptime(-1),
 ticker(0){
+    bool hasID = false;
     class Walker: public Ast::Walker{
     public:
-        Walker(BackgroundController & self, Background & background):
+        Walker(BackgroundController & self, Background & background, bool & hasID):
             self(self),
-            background(background){
+            background(background),
+            hasID(hasID){
             }
 
         BackgroundController & self;
         Background & background;
+        bool & hasID;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "eventid"){
@@ -1084,7 +1090,6 @@ ticker(0){
                     self.globalLooptime = -1;
                 }
             } else if (simple == "ctrlid"){
-                bool hasID = false;
                 try{
                     while (true){
                         int id;
@@ -1094,17 +1099,19 @@ ticker(0){
                     }
                 } catch (const Ast::Exception & e){
                 }
-                if (!hasID){
-                    self.addElements(background.getElements());
-                }
             } else {
                 throw MugenException("Unhandled option in BGCtrlDef " + self.name + " Section: " + simple.toString());
             }
         }
     };
 
-    Walker walker(*this, background);
+    Walker walker(*this, background,hasID);
     data->walk(walker);
+    
+    if (!hasID){
+        // Has no ids set. Default to all background elements.
+        addElements(background.getElements());
+    }
 }
 
 BackgroundController::~BackgroundController(){
