@@ -61,7 +61,7 @@ static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int le
 #endif
 
 
-BackgroundElement::BackgroundElement():
+BackgroundElement::BackgroundElement(const string & name, Ast::Section * data):
 deltaX(1),
 deltaY(1),
 window(0,0,319,239),
@@ -71,6 +71,129 @@ positionLink(false),
 velocityX(0),
 velocityY(0),
 linkedElement(0){
+    setName(name);
+
+    class Walker: public Ast::Walker{
+    public:
+        Walker(BackgroundElement & self):
+            self(self){
+            }
+
+        BackgroundElement & self;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "type"){
+                /* ignore.. */
+            } else if (simple == "id"){
+		int id;
+                simple >> id;
+		self.setID(id);
+            } else if (simple == "layerno"){
+		int layerno;
+                simple >> layerno;
+		if (layerno == 0){
+		    self.setLayer(Element::Background);
+		} else if (layerno == 1){
+		    self.setLayer(Element::Foreground);
+		}
+            } else if (simple == "start"){
+		Mugen::Point point;
+		try {
+		    simple >> point.x >> point.y;
+		} catch (const Ast::Exception & e){
+		}
+		self.setStart(point);
+            } else if (simple == "delta"){
+		double x = 0, y = 0;
+		try {
+		    simple >> x >> y;
+                    /* the y part is not always given */
+                } catch (const Ast::Exception & e){
+                }
+		self.setDelta(x,y);
+            } else if (simple == "trans"){
+                std::string type;
+                simple >> type;
+                type = Mugen::Util::removeSpaces(type);
+		TransType trans;
+                if (type == "none" ){
+		    trans = NONE;
+		} else if( type == "add" ){
+		    trans =  ADD;
+		} else if( type == "add1" ){
+		    trans = ADD1;
+		} else if( type == "sub" ){
+		    trans = SUB;
+		} else if( type == "addalpha" ){
+		    trans = ADDALPHA;
+		}
+		self.setTrans(trans);
+            } else if (simple == "alpha"){
+		int l = 0,h=0;
+                try{
+                    simple >> l >> h;
+                } catch (const Ast::Exception & e){
+                }
+		self.setAlpha(l,h);
+            } else if (simple == "mask"){
+		bool mask;
+                simple >> mask;
+		self.setMask(mask);
+            } else if (simple == "tile"){
+		Mugen::Point point;
+                try{
+                    simple >> point.x >> point.y;
+                } catch (const Ast::Exception & e){
+                }
+		self.setTile(point);
+            } else if (simple == "tilespacing"){
+		Mugen::Point point;
+                try{
+                    simple >> point.x >> point.y;
+                } catch (const Ast::Exception & e){
+                }
+		self.setTileSpacing(point);
+            } else if (simple == "window"){
+                int x1,y1,x2,y2;
+                simple >> x1 >> y1 >> x2 >> y2;
+		self.setWindow(x1,y1,x2,y2);
+            } else if (simple == "windowdelta"){
+		double x,y;
+                simple >> x >> y;
+		self.setWindowDelta(x,y);
+            } else if (simple == "positionlink"){
+		bool link;
+                simple >> link;
+		self.setPositionLink(link);
+            } else if (simple == "velocity"){
+                double x=0,y=0;
+		try{
+		    simple >> x >> y;
+                } catch (const Ast::Exception & e){
+                }
+		self.setVelocity(x,y);
+            } else if (simple == "sin.x"){
+		Sin x;
+                try{
+                    simple >> x.amp >> x.period >> x.offset;
+                } catch (const Ast::Exception & e){
+                }
+		self.setSinX(x);
+            } else if (simple == "sin.y"){
+                Sin y;
+                try{
+                    simple >> y.amp >> y.period >> y.offset;
+                } catch (const Ast::Exception & e){
+                }
+		self.setSinY(y);
+            } else {
+                // throw MugenException("Unhandled option in BG '" + self.getName() + "' Section: " + simple.toString());
+            }
+        }
+    };
+
+    Walker walker(*this);
+    data->walk(walker);
 }
 
 BackgroundElement::BackgroundElement(const BackgroundElement &copy){
@@ -142,15 +265,41 @@ const BackgroundElement & BackgroundElement::operator=(const BackgroundElement &
 }
 
 
-NormalElement::NormalElement():
+NormalElement::NormalElement(const string & name, Ast::Section * data, Mugen::SpriteMap & sprites):
+BackgroundElement(name, data),
 sprite(0){
+
+    class Walker: public Ast::Walker{
+    public:
+        Walker(NormalElement & self, Mugen::SpriteMap & sprites):
+            self(self),
+            sprites(sprites){
+            }
+
+        NormalElement & self;
+        Mugen::SpriteMap & sprites;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "spriteno"){
+                int group, sprite;
+                simple >> group >> sprite;
+                self.setSprite(sprites[group][sprite]);
+            }
+        }
+    };
+
+    Walker walker(*this, sprites);
+    data->walk(walker);
 }
+
 NormalElement::~NormalElement(){
 }
+
 void NormalElement::act(){
     getSinX().act();
     getSinY().act();
 }
+
 void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
@@ -236,17 +385,41 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
 
-AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animations):
-animation(0),
+AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animations, const string & name, Ast::Section * data):
+BackgroundElement(name, data),
+animation(NULL),
 animations(animations){
+
+    class Walker: public Ast::Walker{
+    public:
+        Walker(AnimationElement & self):
+            self(self){
+            }
+
+        AnimationElement & self;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "actionno"){
+                int action;
+                simple >> action;
+                self.setAnimation(action);
+            }
+        }
+    };
+
+    Walker walker(*this);
+    data->walk(walker);
 }
+
 AnimationElement::~AnimationElement(){
 }
+
 void AnimationElement::act(){
     animations[animation]->logic();
     getSinX().act();
     getSinY().act();
 }
+
 void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     const int addw = getTileSpacing().x;
     const int addh = getTileSpacing().y;
@@ -332,13 +505,51 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
 
-ParallaxElement::ParallaxElement():
-BackgroundElement(),
+ParallaxElement::ParallaxElement(const string & name, Ast::Section * data, Mugen::SpriteMap & sprites):
+BackgroundElement(name, data),
 sprite(0),
 xscaleX(0),
 xscaleY(0),
 yscale(100),
 yscaleDelta(0){
+
+    class Walker: public Ast::Walker{
+    public:
+        Walker(ParallaxElement & self, Mugen::SpriteMap & sprites):
+            self(self),
+            sprites(sprites){
+            }
+
+        ParallaxElement & self;
+        Mugen::SpriteMap & sprites;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "spriteno"){
+                int group, sprite;
+                simple >> group >> sprite;
+                self.setSprite(sprites[group][sprite]);
+            } else if (simple == "xscale"){
+                double x, y;
+                simple >> x >> y;
+                self.setXScale(x,y);
+            } else if (simple == "width"){
+                Mugen::Point point;
+                simple >> point.x >> point.y;
+                self.setWidth(point);
+            } else if (simple == "yscalestart"){
+                double x;
+                simple >> x;
+                self.setYScale(x);
+            } else if (simple == "yscaledelta"){
+                double x;
+                simple >> x;
+                self.setYScaleDelta(x);
+            }
+        }
+    };
+
+    Walker walker(*this, sprites);
+    data->walk(walker);
 }
 
 ParallaxElement::~ParallaxElement(){
@@ -400,49 +611,12 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
     } else {
 	doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
     }
+
     // Reset clip state
     work.setClipRect(0, 0,work.getWidth(),work.getHeight());
-#if 0
-    /* FIXME */
-    const int addw = sprite->getWidth() + getTileSpacing().x;
-    const int addh = sprite->getHeight() + getTileSpacing().y;
-    int x = 0;
-    int y = 0;
-    Tile tilev = getTileData(x, 1, addh, getTile().y);
-    for (int v = 0; v < tilev.total; ++v){
-        Tile tileh = getTileData(y, 1, addw, getTile().x);
-        for (int h = 0; h < tileh.total; ++h){
-                if (xscaleX && xscaleY){
-                    doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, xscaleX, xscaleY, MAP_X, MAP_Y, getDeltaX(), getDeltaY());
-                } else {
-                    // doParallax2( *sprite->getBitmap(), bmp, tileh.start, tilev.start, MAP_X, width.x, width.y, yscale, yscaleDelta, currentX, getMask());
-                }
-                tileh.start += addw;
-        }
-        tilev.start += addh;
-    }
-#endif
-    /*
-    const int addw = sprite->getWidth() + getTileSpacing().x;
-    const int addh = sprite->getHeight() + getTileSpacing().y;
-    const int currentX = MAP_X + int((getStart().x + cameraX + getVelocityX()) * getDeltaX());
-    const int currentY = MAP_Y + int((getStart().y + cameraY + getVelocityY()) * getDeltaY());
-    Tile tilev = getTileData(currentY, 1, addh, getTile().y);
-    for (int v = 0; v < tilev.total; ++v){
-        Tile tileh = getTileData(currentX, 1, addw, getTile().x);
-        for (int h = 0; h < tileh.total; ++h){
-                if (xscaleX && xscaleY){
-                    doParallax2( *sprite->getBitmap(), bmp, tileh.start, tilev.start,MAP_X, xscaleX, xscaleY, yscale, yscaleDelta, currentX, getMask());
-                } else {
-                    doParallax2( *sprite->getBitmap(), bmp, tileh.start, tilev.start, MAP_X, width.x, width.y, yscale, yscaleDelta, currentX, getMask());
-                }
-                tileh.start+=addw;
-        }
-        tilev.start+=addh;
-    }
-    */
 }
 
+#if 0
 DummyElement::DummyElement(){
 }
 
@@ -454,6 +628,7 @@ void DummyElement::act(){
 
 void DummyElement::render(int x, int y, const Bitmap &bmp){
 }
+#endif
 
 //! Type of element
 enum ElementType{
@@ -466,13 +641,30 @@ enum ElementType{
 /* TODO: search for the type and create the element first. Then pass the section
  * to the element to do the rest of the parsing.
  */
-static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &sprites, std::map< int, MugenAnimation * > &animations ){
-    BackgroundElement *element = 0;
-    ElementType elementType = Normal;
+static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &sprites, std::map< int, MugenAnimation * > & animations ){
+    // ElementType elementType = Normal;
     std::string head = section->getName();
     head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
     std::string name = head;
     Global::debug(1) << "Found background element: " << name << endl;
+
+    string type;
+    *section->findAttribute("type") >> type;
+
+    // BackgroundElement * element = 0;
+    if (type == "normal"){
+        return new NormalElement(name, section, sprites);
+    } else if (type == "anim"){
+        return new AnimationElement(animations, name, section);
+    } else if (type == "parallax"){
+        return new ParallaxElement(name, section, sprites);
+    } else {
+        ostringstream out;
+        out << "Unknown background type '" << type << "' in " << name;
+        throw MugenException(out.str());
+    }
+
+#if 0
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
@@ -642,6 +834,7 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
     // Global::debug(0) << "Parsed element window as " << element->getWindow().getX1() << ", " << element->getWindow().getY1() << " " << element->getWindow().getX2() << ", " << element->getWindow().getY2() << endl;
     
     return element;
+#endif
 }
 
 /* Background Controller */

@@ -34,9 +34,9 @@ struct Sin {
 };
 
 /*! Base Element for backgrounds only uses a sprite as background */
-class BackgroundElement : public Element{
+class BackgroundElement : public Element {
     public:
-	BackgroundElement();
+	BackgroundElement(const std::string & name, Ast::Section * data);
         BackgroundElement(const BackgroundElement &);
 	virtual ~BackgroundElement();
 	
@@ -48,7 +48,6 @@ class BackgroundElement : public Element{
 
         // Copy operator so we can make an initial copy of are starting values to restore on a reset
         const BackgroundElement & operator=(const BackgroundElement &);
-
 	
 	virtual inline void setStart(const Mugen::Point &point){
 	    this->start = point;
@@ -204,7 +203,7 @@ class BackgroundElement : public Element{
 /*! Normal element */
 class NormalElement : public BackgroundElement {
     public:
-	NormalElement();
+	NormalElement(const std::string & name, Ast::Section * data, Mugen::SpriteMap & sprites);
 	virtual ~NormalElement();
 	virtual void act();
 	virtual void render(int x, int y, const Bitmap &);
@@ -219,7 +218,7 @@ class NormalElement : public BackgroundElement {
 /*! Animation Element */
 class AnimationElement : public BackgroundElement {
     public:
-	AnimationElement(std::map< int, MugenAnimation * > & animations);
+	AnimationElement(std::map< int, MugenAnimation * > & animations, const std::string & name, Ast::Section * data);
 	virtual ~AnimationElement();
 	virtual void act();
 	virtual void render(int x, int y, const Bitmap &);
@@ -237,7 +236,7 @@ class AnimationElement : public BackgroundElement {
 /*! Parallax Element */
 class ParallaxElement : public BackgroundElement {
     public:
-	ParallaxElement();
+	ParallaxElement(const std::string & name, Ast::Section * data, Mugen::SpriteMap & sprites);
 	virtual ~ParallaxElement();
 	virtual void act();
 	virtual void render(int x, int y, const Bitmap &);
@@ -275,6 +274,7 @@ class ParallaxElement : public BackgroundElement {
 	double yscaleDelta;
 };
 
+#if 0
 /*! Dummy Element */
 class DummyElement : public BackgroundElement {
     public:
@@ -284,6 +284,7 @@ class DummyElement : public BackgroundElement {
 	virtual void render(int x, int y, const Bitmap &);
     private:
 };
+#endif
 
 /*! Controller */
 class Controller {
@@ -298,18 +299,23 @@ class Controller {
         virtual inline void setName(const std::string & name){
             this->name = name;
         }
+
         virtual inline void setTimeStart(int time){
             this->timeStart = time;
         }
+
         virtual inline void setEndTime(int time){
             this->endTime = time;
         }
+
         virtual inline void setLoopTime(int time){
             this->loopTime = time;
         }
+
 	virtual inline void addElements(std::vector<BackgroundElement *> & elements){
 	    std::copy(elements.begin(),elements.end(),this->elements.end());
 	}
+
     protected:
         /*! Name of controller */
         std::string name;
