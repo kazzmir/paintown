@@ -609,7 +609,7 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
     if (xscaleX || xscaleY){
 	doParallax(show, work, cameraX, cameraY, getStart().x - sprite->getX(), getStart().y - sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
     } else {
-	doParallax(show, work, cameraX, cameraY, getStart().x, getStart().y, width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+	doParallax(show, work, cameraX, cameraY, getStart().x - sprite->getX(), getStart().y - sprite->getY(), width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
     }
 
     // Reset clip state
@@ -638,11 +638,7 @@ enum ElementType{
     Dummy,
 };
 
-/* TODO: search for the type and create the element first. Then pass the section
- * to the element to do the rest of the parsing.
- */
 static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &sprites, std::map< int, MugenAnimation * > & animations ){
-    // ElementType elementType = Normal;
     std::string head = section->getName();
     head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
     std::string name = head;
@@ -651,7 +647,6 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
     string type;
     *section->findAttribute("type") >> type;
 
-    // BackgroundElement * element = 0;
     if (type == "normal"){
         return new NormalElement(name, section, sprites);
     } else if (type == "anim"){
@@ -665,6 +660,7 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
     }
 
 #if 0
+    // ElementType elementType = Normal;
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
