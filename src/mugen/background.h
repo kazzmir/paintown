@@ -49,7 +49,23 @@ class BackgroundElement : public Element {
         // Copy operator so we can make an initial copy of are starting values to restore on a reset
         const BackgroundElement & operator=(const BackgroundElement &);
 	
-	virtual inline void setStart(const Mugen::Point &point){
+	virtual inline void setVisible(bool visible){
+            this->visible = visible;
+        }
+
+        virtual inline bool getVisible(){
+            return this->visible;
+        }
+
+        virtual inline void setEnabled(bool enabled){
+            this->enabled = enabled;
+        }
+
+        virtual inline bool getEnabled(){
+            return this->enabled;
+        }
+
+        virtual inline void setStart(const Mugen::Point &point){
 	    this->start = point;
 	}
 	
@@ -172,7 +188,11 @@ class BackgroundElement : public Element {
     private:
         //! get linked element
         BackgroundElement *getLinkedElement();
-	//! The starting coordinate relative to 0,0 which is center of screen
+	//! Visible
+        bool visible;
+        //! Enabled
+        bool enabled;
+        //! The starting coordinate relative to 0,0 which is center of screen
 	Mugen::Point start;
 	//! Delta values used for movement defaults to 1
 	double deltaX;
@@ -284,36 +304,21 @@ class DummyElement : public BackgroundElement {
     private:
 };
 
-// Forward declare Background Controller
+// Forward declare Background Controller and Background
+class Background;
 class BackgroundController;
 
 /*! Controller */
 class Controller {
     public:
-        Controller(const std::string & name, Ast::Section * data, BackgroundController & control);
+        Controller(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
         virtual ~Controller();
 
         virtual void act()=0;
-        /* Manual override */
-        virtual void reset()=0;
+        /*! Reset Counter */
+        virtual void reset();
         
-        virtual inline void setName(const std::string & name){
-            this->name = name;
-        }
-
-        virtual inline void setTimeStart(int time){
-            this->timeStart = time;
-        }
-
-        virtual inline void setEndTime(int time){
-            this->endTime = time;
-        }
-
-        virtual inline void setLoopTime(int time){
-            this->loopTime = time;
-        }
-
-	virtual inline void addElements(std::vector<BackgroundElement *> & elements){
+        virtual inline void addElements(const std::vector<BackgroundElement *> & elements){
 	    this->elements.insert(this->elements.end(),elements.begin(),elements.end());
 	}
 
@@ -332,8 +337,97 @@ class Controller {
         std::vector< BackgroundElement * > elements;
 };
 
-// Forward declaration of Background
-class Background;
+/*! Null Controller doesn't do anything */
+class NullController : public Controller{
+    public:
+        NullController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~NullController();
+        virtual void act();
+    private:
+};
+
+/*! Add to start by values given */
+class PosAddController : public Controller{
+    public:
+        PosAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~PosAddController();
+        virtual void act();
+    private:
+        int x, y;
+};
+
+/*! Set start to values given */
+class PosSetController : public Controller{
+    public:
+        PosSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~PosSetController();
+        virtual void act();
+    private:
+        int x, y;
+};
+
+/*! Set Sin X to values given */
+class SinXController : public Controller{
+    public:
+        SinXController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~SinXController();
+        virtual void act();
+    private:
+};
+
+/*! Set Sin Y to values given */
+class SinYController : public Controller{
+    public:
+        SinYController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~SinYController();
+        virtual void act();
+    private:
+};
+
+/*! Add to current Velocity setting */
+class VelAddController : public Controller{
+    public:
+        VelAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~VelAddController();
+        virtual void act();
+    private:
+};
+
+/*! Set current velocity to values given */
+class VelSetController : public Controller{
+    public:
+        VelSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~VelSetController();
+        virtual void act();
+    private:
+};
+
+/*! Enable or Disables Background */
+class EnabledController : public Controller{
+    public:
+        EnabledController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~EnabledController();
+        virtual void act();
+    private:
+};
+
+/*! Make Background Visible, if not visible it will still act */
+class VisibleController : public Controller{
+    public:
+        VisibleController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~VisibleController();
+        virtual void act();
+    private:
+};
+
+/*! Change current animation of Background to given value */
+class AnimationController : public Controller{
+    public:
+        AnimationController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background);
+        virtual ~AnimationController();
+        virtual void act();
+    private:
+};
 
 /*! Background Controller */
 class BackgroundController{
@@ -346,6 +440,9 @@ class BackgroundController{
 	virtual inline void addElements(const std::vector<BackgroundElement *> & elements){
 	    this->elements.insert(this->elements.end(),elements.begin(),elements.end());
 	}
+        virtual inline const std::vector< BackgroundElement *> & getElements() const {
+            return this->elements;
+        }
         virtual inline void addController(Controller * controller){
             this->controllers.push_back(controller);
         }

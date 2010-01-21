@@ -62,6 +62,8 @@ static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int le
 
 
 BackgroundElement::BackgroundElement(const string & name, Ast::Section * data):
+visible(true),
+enabled(true),
 deltaX(1),
 deltaY(1),
 window(0,0,319,239),
@@ -206,6 +208,8 @@ BackgroundElement::BackgroundElement(const BackgroundElement &copy){
     this->setID(copy.getID());
     this->setLayer(copy.getLayer());
     this->setName(copy.getName());
+    this->visible = copy.visible;
+    this->enabled = copy.enabled;
     this->start = copy.start;
     this->deltaX = copy.deltaX;
     this->deltaY = copy.deltaY;
@@ -252,6 +256,8 @@ const BackgroundElement & BackgroundElement::operator=(const BackgroundElement &
     this->setID(copy.getID());
     this->setLayer(copy.getLayer());
     this->setName(copy.getName());
+    this->visible = copy.visible;
+    this->enabled = copy.enabled;
     this->start = copy.start;
     this->deltaX = copy.deltaX;
     this->deltaY = copy.deltaY;
@@ -305,11 +311,17 @@ NormalElement::~NormalElement(){
 }
 
 void NormalElement::act(){
+    if (!getEnabled()){
+        return;
+    }
     getSinX().act();
     getSinY().act();
 }
 
 void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
+    if (!getVisible()){
+        return;
+    }
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
     const int currentX = (bmp.getWidth()/2) + (int) ((getStart().x - cameraX + getVelocityX() + getSinX().get()) + cameraX * (1 - getDeltaX()));
@@ -424,12 +436,18 @@ AnimationElement::~AnimationElement(){
 }
 
 void AnimationElement::act(){
+    if (!getEnabled()){
+        return;
+    }
     animations[animation]->logic();
     getSinX().act();
     getSinY().act();
 }
 
 void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
+    if (!getVisible()){
+        return;
+    }
     const int addw = getTileSpacing().x;
     const int addh = getTileSpacing().y;
 
@@ -574,6 +592,9 @@ ParallaxElement::~ParallaxElement(){
 }
 
 void ParallaxElement::act(){
+    if (!getEnabled()){
+        return;
+    }
 }
 
 static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
@@ -611,7 +632,9 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
 }
 
 void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
-
+    if (!getVisible()){
+        return;
+    }
     const Bitmap & show = *sprite->getBitmap();
     const int windowAddX = (int) (getWindowDeltaX() * cameraX);
     const int windowAddY = (int) (getWindowDeltaY() * cameraY);
@@ -680,18 +703,363 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
     }
 }
 
-/* Background Controller */
-Controller::Controller(const std::string & name, Ast::Section * data, BackgroundController & control):
+/* Controller */
+Controller::Controller(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
 name(name),
 timeStart(0),
 endTime(0),
-loopTime(0),
+loopTime(-1),
 ticker(0){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(Controller & self, BackgroundController & control, Background & background):
+            self(self),
+            control(control),
+            background(background){
+            }
+        Controller & self;
+        BackgroundController & control;
+        Background & background;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "time"){
+                int start=0,end=0,loop=0;
+                try {
+                    simple >> start >> end >> loop;
+                } catch (const Ast::Exception & e){
+                }
+                self.timeStart = start;
+                self.endTime = end;
+                self.loopTime = loop;
+            } else if (simple == "ctrlid"){
+                bool hasID = false;
+                try{
+                    while (true){
+                        int id;
+                        simple >> id;
+                        self.addElements(background.getIDList(id));
+                        hasID = true;
+                    }
+                } catch (const Ast::Exception & e){
+                }
+                if (!hasID){
+                    // No IDs set, use the global ID's that the BackgroundController has
+                    self.addElements(control.getElements());
+                }  
+            } 
+        }
+    };
+    Walker walker(*this, control,background);
+    data->walk(walker);
 }
 
 Controller::~Controller(){
 }
 
+void Controller::reset(){
+    ticker = 0;
+}
+
+// Null Controller
+NullController::NullController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background){
+}
+
+NullController::~NullController(){
+}
+
+void NullController::act(){
+}
+
+// Position Add Controller
+PosAddController::PosAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background),
+x(0),
+y(0){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(PosAddController & self):
+            self(self){
+            }
+        PosAddController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "x"){
+                simple >> self.x;
+            } else if (simple == "y"){
+                simple >> self.y;
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+PosAddController::~PosAddController(){
+}
+
+void PosAddController::act(){
+    if ( ticker >= timeStart && ticker <= endTime){
+        for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+            BackgroundElement *element = *i;
+            element->setStart(Mugen::Point(element->getStart().x + x,element->getStart().y + y));
+        }
+    }
+    if (loopTime != -1){
+        if (ticker == loopTime){
+            reset();
+        }
+    }
+    ticker++;
+}
+
+// Position Set Controller
+PosSetController::PosSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background),
+x(0),
+y(0){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(PosSetController & self):
+            self(self){
+            }
+        PosSetController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "x"){
+                simple >> self.x;
+            } else if (simple == "y"){
+                simple >> self.y;
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+PosSetController::~PosSetController(){
+}
+
+void PosSetController::act(){
+    if ( ticker >= timeStart && ticker <= endTime){
+        for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+            BackgroundElement *element = *i;
+            element->setStart(Mugen::Point(x,y));
+        }
+    }
+    if (loopTime != -1){
+        if (ticker == loopTime){
+            reset();
+        }
+    }
+    ticker++;
+}
+
+// Sin X Controller
+SinXController::SinXController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(SinXController & self):
+            self(self){
+            }
+        SinXController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "value"){
+                
+            } else if (simple == "x"){
+                
+            } else if (simple == "y"){
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+SinXController::~SinXController(){
+}
+
+void SinXController::act(){
+}
+
+// Sin Y Controller
+SinYController::SinYController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(SinYController & self):
+            self(self){
+            }
+        SinYController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "value"){
+                
+            } else if (simple == "x"){
+                
+            } else if (simple == "y"){
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+SinYController::~SinYController(){
+}
+
+void SinYController::act(){
+}
+
+// Velocity Add Controller
+VelAddController::VelAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(VelAddController & self):
+            self(self){
+            }
+        VelAddController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "value"){
+                
+            } else if (simple == "x"){
+                
+            } else if (simple == "y"){
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+VelAddController::~VelAddController(){
+}
+
+void VelAddController::act(){
+}
+
+// Position Set Controller
+VelSetController::VelSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(VelSetController & self):
+            self(self){
+            }
+        VelSetController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "value"){
+                
+            } else if (simple == "x"){
+                
+            } else if (simple == "y"){
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+VelSetController::~VelSetController(){
+}
+
+void VelSetController::act(){
+}
+
+// Enabled Controller
+EnabledController::EnabledController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(EnabledController & self):
+            self(self){
+            }
+        EnabledController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "value"){
+                
+            } else if (simple == "x"){
+                
+            } else if (simple == "y"){
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+EnabledController::~EnabledController(){
+}
+
+void EnabledController::act(){
+}
+
+// Visible Controller
+VisibleController::VisibleController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(VisibleController & self):
+            self(self){
+            }
+        VisibleController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "value"){
+                
+            } else if (simple == "x"){
+                
+            } else if (simple == "y"){
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+VisibleController::~VisibleController(){
+}
+
+void VisibleController::act(){
+}
+
+// Animation Controller
+AnimationController::AnimationController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+Controller(name,data,control,background){
+    class Walker: public Ast::Walker{
+    public:
+        Walker(AnimationController & self):
+            self(self){
+            }
+        AnimationController & self;
+        
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "value"){
+                
+            } else if (simple == "x"){
+                
+            } else if (simple == "y"){
+            } 
+        }
+    };
+    Walker walker(*this);
+    data->walk(walker);
+}
+
+AnimationController::~AnimationController(){
+}
+
+void AnimationController::act(){
+}
+
+
+/* Background controller which handles all individual controllers under it */
 BackgroundController::BackgroundController(const std::string & name, Ast::Section * data, Background & background):
 name(name),
 ID(0),
@@ -740,9 +1108,29 @@ ticker(0){
 }
 
 BackgroundController::~BackgroundController(){
+    for (std::vector< Controller *>::iterator i = controllers.begin(); i != controllers.end(); ++i){
+        Controller *controller = *i;
+        if (controller){
+            delete controller;
+        }
+    }
 }
 
 void BackgroundController::act(){
+    for (std::vector< Controller *>::iterator i = controllers.begin(); i != controllers.end(); ++i){
+        Controller *controller = *i;
+        controller->act();
+    }
+    if (globalLooptime != -1){
+        if (ticker == globalLooptime){
+            ticker = 0;
+            for (std::vector< Controller *>::iterator i = controllers.begin(); i != controllers.end(); ++i){
+               Controller *controller = *i;
+                controller->reset();
+            }
+        }
+        ticker++;
+    }
 }
 
 
@@ -874,42 +1262,34 @@ clearColor(-1){
 
             // Get name
             head.replace(0,7,"");
-            //Controller *controller = new Controller(head,section,control);
+            
+            // Check type
             string type;
             *section->findAttribute("type") >> type;
             type = Util::fixCase(type);
             
-            Controller *controller;
+            // Our Controller
+            Controller *controller=0;
             if (type == "anim"){
-                //controller = 
+                controller = new AnimationController(head,section,*control,*this);
             } else if (type == "enabled"){
-                
+                controller = new EnabledController(head,section,*control,*this);
             } else if (type == "null"){
-                
+                controller = new NullController(head,section,*control,*this);
             } else if (type == "posadd"){
-                
+                controller = new PosAddController(head,section,*control,*this);
             } else if (type == "posset"){
-                
+                controller = new PosSetController(head,section,*control,*this);
             } else if (type == "sinx"){
-                
+                controller = new SinXController(head,section,*control,*this);
             } else if (type == "siny"){
-                
+                controller = new SinYController(head,section,*control,*this);
             } else if (type == "veladd"){
-                
+                controller = new VelAddController(head,section,*control,*this);
             } else if (type == "velset"){
-                
+                controller = new VelSetController(head,section,*control,*this);
             } else if (type == "visible"){
-                
-            } else if (type == "time"){
-                
-            } else if (type == "value"){
-                
-            } else if (type == "x"){
-                
-            } else if (type == "y"){
-                
-            } else if (type == "ctrlid"){
-                
+                controller = new VisibleController(head,section,*control,*this);
             } else {
                 ostringstream out;
                 out << "Unknown background type '" << type << "' in " << head;
@@ -917,101 +1297,6 @@ clearColor(-1){
             }
             // Finally add it to our background controller
             control->addController(controller);
-#if 0
-	    head.replace(0,7,"");
-	    BackgroundController *temp = new BackgroundController();
-	    temp->name = head;
-
-            class CtrlWalker: public Ast::Walker {
-            public:
-                CtrlWalker(BackgroundController * controller, MugenBackgroundController * control, MugenBackgroundManager & manager):
-                    controller(controller),
-                    control(control),
-                    manager(manager){
-                }
-
-                BackgroundController * controller;
-                MugenBackgroundController * control;
-                MugenBackgroundManager & manager;
-                
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "type"){
-                        string type;
-                        simple >> type;
-                        type = Mugen::Util::fixCase(type);
-                        if (type == "Anim") controller->type = Ctrl_Animation;
-                        else if( type == "enabled" ) controller->type = Ctrl_Enabled;
-                        else if( type == "null" ) controller->type = Ctrl_Null;
-                        else if( type == "posadd" ) controller->type = Ctrl_PosAdd;
-                        else if( type == "posset" ) controller->type = Ctrl_PosSet;
-                        else if( type == "sinx" ) controller->type = Ctrl_Sinx;
-                        else if( type == "siny" ) controller->type = Ctrl_Siny;
-                        else if( type == "veladd" ) controller->type = Ctrl_VelAdd;
-                        else if( type == "velset" ) controller->type = Ctrl_VelSet;
-                        else if( type == "visible" ) controller->type = Ctrl_Visible;
-                    } else if (simple == "time"){
-                        int start = 0, end =0, loop = 0;
-                        try{
-                            simple >> start;
-                            simple >> end;
-                            simple >> loop;
-                        } catch (const Ast::Exception & e){
-                        }
-
-                        controller->timestart = start;
-                        if (end == 0){
-                            controller->endtime = start;
-                        } else {
-                            controller->endtime = end;
-                        }
-
-                        if (loop == 0){
-                            controller->looptime = -1;
-                        } else {
-                            controller->looptime = loop;
-                        }
-
-                        Global::debug(1) << "start: " << controller->timestart << " | end: " << controller->endtime << " | loop: " << controller->looptime << endl;
-                    } else if (simple == "value"){
-                        simple >> controller->value1;
-                        simple >> controller->value2;		    
-                        simple >> controller->value3;
-                    } else if (simple == "x"){
-                        simple >> controller->value1;
-                    } else if (simple == "y"){
-                        simple >> controller->value2;
-                    } else if (simple == "ctrlid"){
-                        try{
-                            // Max 10
-                            while (true){
-                                int id;
-                                simple >> id;
-                                manager.getBackgrounds(controller->backgrounds, id);
-                            }
-                        } catch (const Ast::Exception & e){
-                        }
-                    } else {
-                        string name;
-                        throw MugenException( "Unhandled option in BGCtrl " + name + " Section: " + simple.toString());
-                    }
-                }
-
-                virtual ~CtrlWalker(){
-                    if (controller->backgrounds.empty()){
-                        controller->backgrounds.insert(controller->backgrounds.end(), control->backgrounds.begin(), control->backgrounds.end());
-                    }
-                }
-            };
-
-            {
-                CtrlWalker walker(temp, control, *this);
-                Ast::Section * section = *section_it;
-                section->walk(walker);
-            }
-
-	    Global::debug(1) << "Controlling total backgrounds: " << temp->backgrounds.size() << endl;
-	    control->addControl(temp);
-#endif
 	}
     }
     
