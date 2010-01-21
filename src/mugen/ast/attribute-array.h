@@ -43,7 +43,8 @@ public:
         walker.onAttributeArray(*this);
     }
 
-    bool operator==(const std::string & str) const {
+    using Attribute::operator==;
+    virtual bool operator==(const std::string & str) const {
         if (keyword_name != 0){
             return *keyword_name == str;
         } else if (identifier_name != 0){

@@ -28,7 +28,8 @@ public:
         walker.onAttributeSimple(*this);
     }
 
-    bool operator==(const std::string & str) const {
+    using Attribute::operator==;
+    virtual bool operator==(const std::string & str) const {
         return *name == str;
     }
 
