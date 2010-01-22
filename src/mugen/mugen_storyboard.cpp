@@ -132,7 +132,7 @@ void MugenScene::draw(Bitmap *bmp){
         background->renderForeground(0,0, *bmp);
     }
     // fader
-    fader.draw(bmp);
+    fader.draw(*bmp);
 }
 
 bool MugenScene::isDone(){

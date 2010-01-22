@@ -55,18 +55,18 @@ void MugenFadeTool::act(){
     }
 }
 
-void MugenFadeTool::draw(Bitmap *bmp){
+void MugenFadeTool::draw(const Bitmap &bmp){
     switch (currentState){
 	case FADEIN:
 	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	    Bitmap::transBlender(0,0,0,fader);
-	    bmp->rectangleFill(0, 0, bmp->getWidth(),bmp->getHeight(),fadeInColor);
+	    bmp.rectangleFill(0, 0, bmp.getWidth(),bmp.getHeight(),fadeInColor);
 	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    break;
 	case FADEOUT:
 	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	    Bitmap::transBlender(0,0,0,fader);
-	    bmp->rectangleFill(0, 0, bmp->getWidth(),bmp->getHeight(),fadeOutColor);
+	    bmp.rectangleFill(0, 0, bmp.getWidth(),bmp.getHeight(),fadeOutColor);
 	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    break;
 	case NOFADE:

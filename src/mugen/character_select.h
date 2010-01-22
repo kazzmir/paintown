@@ -38,21 +38,6 @@ namespace Mugen{
 class Character;
 class Background;
 
-/*! Key handler for now change later*/
-enum CharacterKeys{
-    Up,
-    Down,
-    Left,
-    Right,
-    A,
-    B,
-    C,
-    X,
-    Y,
-    Z,
-    Start
-};
-
 /*! Font Handling */
 class FontHandler{
     public:

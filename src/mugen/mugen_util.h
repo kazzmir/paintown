@@ -126,6 +126,21 @@ enum GameType {
     Watch
 };
 
+/*! Key handler for keys for now change later*/
+enum CharacterKeys{
+    Up,
+    Down,
+    Left,
+    Right,
+    A,
+    B,
+    C,
+    X,
+    Y,
+    Z,
+    Start
+};
+
 /*! Base Element Type */
 class Element {
     public:

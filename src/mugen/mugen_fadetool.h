@@ -25,7 +25,7 @@ public:
 	void act();
 	
 	// Fade to whatever state it is at
-	virtual void draw(Bitmap *bmp);
+	virtual void draw(const Bitmap &);
 	
 	inline FadeType getState() const { return currentState; }
 	inline void setFadeInTime(const int time){ fadeInTime = time; }

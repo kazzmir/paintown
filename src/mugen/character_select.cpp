@@ -1338,7 +1338,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	    background->renderForeground(0,0,workArea);
 	    
 	    // render fades
-	    fader.draw(&workArea);
+	    fader.draw(workArea);
 	    
 	    // Finally render to screen
 	    workArea.Stretch(bmp);

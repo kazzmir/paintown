@@ -507,7 +507,7 @@ void MugenMenu::run(){
 			    // Draw any misc stuff in the foreground of the menu of selected object 
 			    (*selectedOption)->drawAbove(work);
 			    // Do fades
-			    fader.draw(&workArea);
+			    fader.draw(workArea);
 			    // Finally render to screen
 			    workArea.Stretch(*work);
 			    work->BlitToScreen();
