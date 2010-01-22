@@ -868,10 +868,12 @@ class SinXController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "value"){
-			
-		    } else if (simple == "x"){
-			
-		    } else if (simple == "y"){
+			if (simple == "value"){
+			  try{
+			      simple >> self.sin.amp >> self.sin.period >> self.sin.offset;
+			  } catch (const Ast::Exception & e){
+			  }
+			} 
 		    } 
 		}
 	    };
@@ -881,8 +883,21 @@ class SinXController : public Controller{
 	virtual ~SinXController(){
 	}
 	virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    element->setSinX(sin);
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
 	}
     private:
+	Sin sin;
 };
 
 /*! Set Sin Y to values given */
@@ -899,10 +914,10 @@ class SinYController : public Controller{
 		    
 		    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 			if (simple == "value"){
-			    
-			} else if (simple == "x"){
-			    
-			} else if (simple == "y"){
+			  try{
+			      simple >> self.sin.amp >> self.sin.period >> self.sin.offset;
+			  } catch (const Ast::Exception & e){
+			  }
 			} 
 		    }
 	    };
@@ -912,15 +927,30 @@ class SinYController : public Controller{
 	virtual ~SinYController(){
 	}
 	virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    element->setSinY(sin);
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
 	}
     private:
+	Sin sin;
 };
 
 /*! Add to current Velocity setting */
 class VelAddController : public Controller{
     public:
         VelAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-	Controller(name,data,control,background){
+	Controller(name,data,control,background),
+	x(0),
+	y(0){
 	    class Walker: public Ast::Walker{
 	    public:
 		Walker(VelAddController & self):
@@ -929,11 +959,10 @@ class VelAddController : public Controller{
 		VelAddController & self;
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		    if (simple == "value"){
-			
-		    } else if (simple == "x"){
-			
+		    if (simple == "x"){
+			simple >> self.x;
 		    } else if (simple == "y"){
+			simple >> self.y;
 		    } 
 		}
 	    };
@@ -943,15 +972,30 @@ class VelAddController : public Controller{
         virtual ~VelAddController(){
 	}
         virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    element->setVelocity(element->getVelocityX() + x,element->getVelocityY() + y);
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
 	}
     private:
+	double x, y;
 };
 
 /*! Set current velocity to values given */
 class VelSetController : public Controller{
     public:
         VelSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-	Controller(name,data,control,background){
+	Controller(name,data,control,background),
+	x(0),
+	y(0){
 	    class Walker: public Ast::Walker{
 	    public:
 		Walker(VelSetController & self):
@@ -960,11 +1004,10 @@ class VelSetController : public Controller{
 		VelSetController & self;
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		    if (simple == "value"){
-			
-		    } else if (simple == "x"){
-			
+		    if (simple == "x"){
+			simple >> self.x;
 		    } else if (simple == "y"){
+			simple >> self.y;
 		    } 
 		}
 	    };
@@ -974,15 +1017,29 @@ class VelSetController : public Controller{
         virtual ~VelSetController(){
 	}
         virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    element->setVelocity(x,y);
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
 	}
     private:
+	double x, y;
 };
 
 /*! Enable or Disables Background */
 class EnabledController : public Controller{
     public:
         EnabledController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-	Controller(name,data,control,background){
+	Controller(name,data,control,background),
+	enabled(true){
 	    class Walker: public Ast::Walker{
 	    public:
 		Walker(EnabledController & self):
@@ -992,11 +1049,8 @@ class EnabledController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "value"){
-			
-		    } else if (simple == "x"){
-			
-		    } else if (simple == "y"){
-		    } 
+			simple >> self.enabled;
+		    }
 		}
 	    };
 	    Walker walker(*this);
@@ -1005,15 +1059,29 @@ class EnabledController : public Controller{
         virtual ~EnabledController(){
 	}
         virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    element->setEnabled(enabled);
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
 	}
     private:
+	bool enabled;
 };
 
 /*! Make Background Visible, if not visible it will still act */
 class VisibleController : public Controller{
     public:
         VisibleController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-	Controller(name,data,control,background){
+	Controller(name,data,control,background),
+	visible(true){
 	    class Walker: public Ast::Walker{
 	    public:
 		Walker(VisibleController & self):
@@ -1023,10 +1091,7 @@ class VisibleController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "value"){
-			
-		    } else if (simple == "x"){
-			
-		    } else if (simple == "y"){
+			simple >> self.visible;
 		    } 
 		}
 	    };
@@ -1036,15 +1101,29 @@ class VisibleController : public Controller{
         virtual ~VisibleController(){
 	}
         virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    element->setVisible(visible);
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
 	}
     private:
+	bool visible;
 };
 
 /*! Change current animation of Background to given value */
 class AnimationController : public Controller{
     public:
         AnimationController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-	Controller(name,data,control,background){
+	Controller(name,data,control,background),
+	animation(0){
 	    class Walker: public Ast::Walker{
 	    public:
 		Walker(AnimationController & self):
@@ -1054,10 +1133,7 @@ class AnimationController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "value"){
-			
-		    } else if (simple == "x"){
-			
-		    } else if (simple == "y"){
+			simple >> self.animation;
 		    } 
 		}
 	    };
@@ -1067,8 +1143,21 @@ class AnimationController : public Controller{
         virtual ~AnimationController(){
 	}
         virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    ((AnimationElement *)element)->setAnimation(animation);
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
 	}
     private:
+	int animation;
 };
 
 /* Background controller which handles all individual controllers under it */
