@@ -18,6 +18,7 @@ namespace Console{
 namespace Mugen{
     class Character;
     class Background;
+    class Spark;
 }
 
 namespace Ast{
@@ -40,24 +41,6 @@ struct PlayerData {
     bool above;
     bool jumped;
 };
-
-namespace Mugen{
-
-class Spark{
-public:
-    Spark(int x, int y, MugenAnimation * animation);
-    virtual void draw(const Bitmap & work);
-    virtual void logic();
-    virtual bool isDead();
-
-    virtual ~Spark();
-protected:
-    int x;
-    int y;
-    MugenAnimation * animation;
-};
-
-}
 
 class MugenStage: public World {
 public:

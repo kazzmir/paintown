@@ -52,12 +52,27 @@ static const int CONSOLE_SIZE = 95;
 static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
+
+class Spark{
+public:
+    Spark(int x, int y, MugenAnimation * animation);
+    virtual void draw(const Bitmap & work, int cameraX, int cameraY);
+    virtual void logic();
+    virtual bool isDead();
+
+    virtual ~Spark();
+protected:
+    int x;
+    int y;
+    MugenAnimation * animation;
+};
+
 Spark::Spark(int x, int y, MugenAnimation * animation):
 x(x), y(y), animation(animation){
 }
 
-void Spark::draw(const Bitmap & work){
-    animation->render(x, y, work);
+void Spark::draw(const Bitmap & work, int cameraX, int cameraY){
+    animation->render(x - cameraX, y - cameraY, work);
 }
 
 void Spark::logic(){
@@ -899,6 +914,7 @@ void MugenStage::render(Bitmap *work){
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *obj = *it;
 	/* Reflection */
+        /* FIXME: reflection and shade need camerax/y */
 	if (reflectionIntensity > 0){
             obj->drawReflection(board, 0, reflectionIntensity );
         }
@@ -912,7 +928,7 @@ void MugenStage::render(Bitmap *work){
 
     for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
         Mugen::Spark * spark = *it;
-        spark->draw(*board);
+        spark->draw(*board, camerax - DEFAULT_WIDTH / 2, cameray);
     }
 
     // Foreground
