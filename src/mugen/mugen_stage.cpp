@@ -882,7 +882,7 @@ void MugenStage::render(Bitmap *work){
 	obj->drawShade(board, 0, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         
         /* draw the player */
-        obj->draw(board, 0);
+        obj->draw(board, camerax);
     }
 
     for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
@@ -969,9 +969,9 @@ void MugenStage::reset( ){
 	Object *player = *it;
 	if( player->getAlliance() == Player1Side ){
 	    //((Player *)player)->deathReset();
-	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p1startx );
-	    player->setY( p1starty );
-	    player->setZ( zoffset );
+	    player->setX(p1startx);
+	    player->setY(p1starty);
+	    player->setZ(zoffset);
 	    player->setFacing( Object::FACING_RIGHT );
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
@@ -982,9 +982,9 @@ void MugenStage::reset( ){
 	    playerInfo[player].jumped = false;
 	} else if( player->getAlliance() == Player2Side ){
 	    //((Player *)player)->deathReset();
-	    player->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p2startx );
-	    player->setY( p2starty );
-	    player->setZ( zoffset );
+	    player->setX(p2startx);
+	    player->setY(p2starty);
+	    player->setZ(zoffset);
 	    player->setFacing( Object::FACING_LEFT );
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
@@ -1002,9 +1002,9 @@ void MugenStage::reset( ){
 // Add player1 people
 void MugenStage::addp1( Object * o ){
     o->setAlliance(Player1Side);
-    o->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p1startx );
-    o->setY( p1starty );
-    o->setZ( zoffset );
+    o->setX(p1startx);
+    o->setY(p1starty);
+    o->setZ(zoffset);
     o->setFacing( Object::FACING_RIGHT );
     objects.push_back(o);
     players.push_back(o);
@@ -1022,9 +1022,9 @@ void MugenStage::addp1( Object * o ){
 // Add player2 people
 void MugenStage::addp2( Object * o ){
     o->setAlliance(Player2Side);
-    o->setX( DEFAULT_OBJECT_OFFSET + abs(boundleft) + p2startx );
-    o->setY( p2starty );
-    o->setZ( zoffset );
+    o->setX(p2startx);
+    o->setY(p2starty);
+    o->setZ(zoffset);
     o->setFacing( Object::FACING_LEFT );
     objects.push_back(o);
     players.push_back(o);
@@ -1209,17 +1209,21 @@ bool MugenStage::isaPlayer( Object * o ){
 void MugenStage::updatePlayer( Object *o ){
     // Z/Y offset
     if (zoffsetlink == DEFAULT_BACKGROUND_ID){
-	o->setZ( zoffset + abs(boundhigh) );
+	o->setZ(zoffset + abs(boundhigh));
     } else {
-	o->setZ( zoffset );
+	o->setZ(zoffset);
     }
     
     // Move X and Camera
     const double px = o->getX();
     const double py = o->getY();
     const double pdiffx = px - playerInfo[o].oldx;
+    const double screenLeft = camerax - DEFAULT_WIDTH / 2;
+    const double screenRight = camerax + DEFAULT_WIDTH / 2;
+    /*
     const double screenLeft = abs(boundleft) + camerax;
     const double screenRight = abs(boundleft) + camerax + DEFAULT_WIDTH;
+    */
     const double leftTension = screenLeft + tension;
     const double rightTension = screenRight - tension;
     // Check leftbound rightbound

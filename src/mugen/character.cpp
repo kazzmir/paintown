@@ -2540,7 +2540,7 @@ void Character::draw(Bitmap * work, int x_position){
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be 0... */
     if (animation != 0){
-        int x = getRX();
+        int x = getRX() - x_position;
         int y = getRY();
 
         if (isPaused() && moveType == Move::Hit){
