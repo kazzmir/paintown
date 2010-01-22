@@ -17,6 +17,7 @@ namespace Console{
 
 namespace Mugen{
     class Character;
+    class Background;
 }
 
 namespace Ast{
@@ -27,7 +28,7 @@ class MugenItemContent;
 class MugenSprite;
 class MugenSound;
 class MugenAnimation;
-class MugenBackgroundManager;
+// class MugenBackgroundManager;
 
 struct PlayerData {
     double oldx;
@@ -374,7 +375,8 @@ protected:
 	/* Sounds */
 	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
 	
-	MugenBackgroundManager *background;
+	// MugenBackgroundManager *background;
+        Mugen::Background * background;
 	
 	/* Commands, Triggers or whatever else we come up with */
 	

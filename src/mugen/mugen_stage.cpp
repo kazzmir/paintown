@@ -30,7 +30,7 @@
 #include "parser/all.h"
 
 #include "mugen_animation.h"
-#include "mugen_background.h"
+#include "background.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
@@ -492,37 +492,49 @@ void MugenStage::load(){
 	} else if (head == "reflection"){
             loadSectionReflection(section);
         /* search for bgdef instead of just assuming its there */
+        /*
 	} else if (matchRegex(head, ".*bgdef.*")){
 	    // Background management
             vector<Ast::Section*> backgroundStuff = Mugen::Util::collectBackgroundStuff(section_it, parsed.getSections()->end());
 	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, ticker, 0);
 	    background = manager;
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
-	} else if (head == "music" ){
+	}*/
+        } else if (head == "music" ){
             /* Ignore for now */
         } else {
-            throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
+            // throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
         }
     }
+
+    /* backgrounds should always use `BG' as their name */
+    /* FIXME: pass in the parsed data instead of making the background reparse it */
+    background = new Mugen::Background(ourDefFile, "BG");
     
     // Setup board our worksurface to the proper size of the entire stage 320x240 :P
     Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
     //board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
     // Nope we need it to be the size of the entire board... we then pan the blit so our characters will stay put without fiddling with their x coordinates
-    board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
+    // board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
+    board = new Bitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     camerax = startx;
     cameray = starty;
-    xaxis = (abs(boundleft) + boundright + DEFAULT_WIDTH)/2;//abs(boundleft);
-    yaxis = abs(boundhigh);
+    // xaxis = (abs(boundleft) + boundright + DEFAULT_WIDTH)/2;//abs(boundleft);
+    // yaxis = abs(boundhigh);
+    /* FIXME: do we need xaxis and yaxis anymore? I don't think so */
+    xaxis = DEFAULT_WIDTH / 2;
+    yaxis = 0;
     
     // Preload background
-    background->preload( startx, starty );
+    // background->preload( startx, starty );
     
+    /* FIXME: is this relevant?
     // zoffsetlink
-    if( zoffsetlink != DEFAULT_BACKGROUND_ID ){
+    if (zoffsetlink != DEFAULT_BACKGROUND_ID){
 	// Link zoffset to id
 	zoffset = background->getBackground(zoffsetlink)->y;
     }
+    */
 
     int r, g, b;
     Bitmap::cymkToRGB(shadow.c, shadow.y, shadow.m, shadow.k, &r, &g, &b);
@@ -795,14 +807,17 @@ void MugenStage::logic( ){
     
     //zoffsetlink
     const MugenBackground *zlinkbackground = 0;
+
+    /* FIXME
     if (zoffsetlink != DEFAULT_BACKGROUND_ID){
 	zlinkbackground = background->getBackground(zoffsetlink);
 	zoffset = zlinkbackground->y;
     }
+    */
     *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
     
     // Backgrounds
-    background->logic();
+    background->act();
     
     // Players go in here
     std::vector<Object *> add;
@@ -852,7 +867,8 @@ void MugenStage::render(Bitmap *work){
     
     // Background
     // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
-    background->renderBack(camerax, cameray, xaxis, yaxis, board);
+    // background->renderBackground(camerax, cameray, xaxis, yaxis, board);
+    background->renderBackground((int) camerax, (int) cameray, *board);
     
     // Players go in here
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
@@ -875,7 +891,8 @@ void MugenStage::render(Bitmap *work){
     }
 
     // Foreground
-    background->renderFront( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
+    // background->renderForeground( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
+    background->renderForeground((int) camerax, (int) cameray, *board);
     
     // Player debug
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
@@ -942,7 +959,9 @@ void MugenStage::reset( ){
 	    background->preload( startx, starty );
 	}
     }*/
-    background->reset(startx, starty, resetBG);
+
+    /* FIXME: implement this again */
+    // background->reset(startx, starty, resetBG);
     
     // Reset player positions
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){

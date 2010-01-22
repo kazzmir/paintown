@@ -381,8 +381,8 @@ class Background{
 	virtual ~Background();
 	
 	virtual void act();
-	virtual void renderBackground(int x, int y, const Bitmap &);
-	virtual void renderForeground(int x, int y, const Bitmap &);
+	virtual void renderBackground(int cameraX, int cameraY, const Bitmap &);
+	virtual void renderForeground(int cameraX, int cameraY, const Bitmap &);
 	
         //! Returns a vector of Elements by given ID
         std::vector< BackgroundElement * > getIDList(int ID);

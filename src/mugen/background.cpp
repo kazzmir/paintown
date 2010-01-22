@@ -1238,9 +1238,6 @@ void BackgroundController::act(){
     }
 }
 
-
-
-
 Background::Background(const std::string &file, const std::string &header):
 file(file),
 header(header),
@@ -1500,5 +1497,3 @@ std::vector< BackgroundElement * > Background::getIDList(int ID){
 
     return ourElements;
 }
-
-
