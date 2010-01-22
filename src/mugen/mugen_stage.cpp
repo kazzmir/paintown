@@ -912,7 +912,8 @@ void MugenStage::render(Bitmap *work){
 	board->vLine( 0, xaxis, board->getHeight(), Bitmap::makeColor(255,0,0));
     }
     
-    board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
+    // board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
+    board->Blit((int)(quake_time > 0 ? Util::rnd( 9 ) - 4 : 0), (int)(quake_time > 0 ? Util::rnd( 9 ) - 4 : 0), *work);
     
     // Debug crap for screen coordinates
     if (debugMode){
