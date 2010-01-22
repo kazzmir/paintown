@@ -763,304 +763,313 @@ void Controller::reset(){
     ticker = 0;
 }
 
-// Null Controller
-NullController::NullController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background){
-}
-
-NullController::~NullController(){
-}
-
-void NullController::act(){
-}
-
-// Position Add Controller
-PosAddController::PosAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background),
-x(0),
-y(0){
-    class Walker: public Ast::Walker{
+/*! Null Controller doesn't do anything */
+class NullController : public Controller{
     public:
-        Walker(PosAddController & self):
-            self(self){
-            }
-        PosAddController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "x"){
-                simple >> self.x;
-            } else if (simple == "y"){
-                simple >> self.y;
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        NullController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background){
+	}
+        virtual ~NullController(){
+	}
+        virtual void act(){
+	}
+    private:
+};
 
-PosAddController::~PosAddController(){
-}
-
-void PosAddController::act(){
-    if ( ticker >= timeStart && ticker <= endTime){
-        for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
-            BackgroundElement *element = *i;
-            element->setStart(Mugen::Point(element->getStart().x + x,element->getStart().y + y));
-        }
-    }
-    if (loopTime != -1){
-        if (ticker == loopTime){
-            reset();
-        }
-    }
-    ticker++;
-}
-
-// Position Set Controller
-PosSetController::PosSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background),
-x(0),
-y(0){
-    class Walker: public Ast::Walker{
+/*! Add to start by values given */
+class PosAddController : public Controller{
     public:
-        Walker(PosSetController & self):
-            self(self){
-            }
-        PosSetController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "x"){
-                simple >> self.x;
-            } else if (simple == "y"){
-                simple >> self.y;
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        PosAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background),
+	x(0),
+	y(0){
+	    class Walker: public Ast::Walker{
+	    public:
+		Walker(PosAddController & self):
+		    self(self){
+		    }
+		PosAddController & self;
+		
+		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "x"){
+			simple >> self.x;
+		    } else if (simple == "y"){
+			simple >> self.y;
+		    } 
+		}
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+        virtual ~PosAddController(){
+	}
+        virtual void act(){
+	}
+    private:
+        int x, y;
+};
 
-PosSetController::~PosSetController(){
-}
-
-void PosSetController::act(){
-    if ( ticker >= timeStart && ticker <= endTime){
-        for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
-            BackgroundElement *element = *i;
-            element->setStart(Mugen::Point(x,y));
-        }
-    }
-    if (loopTime != -1){
-        if (ticker == loopTime){
-            reset();
-        }
-    }
-    ticker++;
-}
-
-// Sin X Controller
-SinXController::SinXController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background){
-    class Walker: public Ast::Walker{
+/*! Set start to values given */
+class PosSetController : public Controller{
     public:
-        Walker(SinXController & self):
-            self(self){
-            }
-        SinXController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "value"){
-                
-            } else if (simple == "x"){
-                
-            } else if (simple == "y"){
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        PosSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background),
+	x(0),
+	y(0){
+	    class Walker: public Ast::Walker{
+	    public:
+		Walker(PosSetController & self):
+		    self(self){
+		    }
+		PosSetController & self;
+		
+		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "x"){
+			simple >> self.x;
+		    } else if (simple == "y"){
+			simple >> self.y;
+		    } 
+		}
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+        virtual ~PosSetController(){
+	}
+        virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    element->setStart(Mugen::Point(x,y));
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
+	}
+    private:
+        int x, y;
+};
 
-SinXController::~SinXController(){
-}
-
-void SinXController::act(){
-}
-
-// Sin Y Controller
-SinYController::SinYController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background){
-    class Walker: public Ast::Walker{
+/*! Set Sin X to values given */
+class SinXController : public Controller{
     public:
-        Walker(SinYController & self):
-            self(self){
-            }
-        SinYController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "value"){
-                
-            } else if (simple == "x"){
-                
-            } else if (simple == "y"){
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        SinXController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background){
+	    class Walker: public Ast::Walker{
+	    public:
+		Walker(SinXController & self):
+		    self(self){
+		    }
+		SinXController & self;
+		
+		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "value"){
+			
+		    } else if (simple == "x"){
+			
+		    } else if (simple == "y"){
+		    } 
+		}
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+	virtual ~SinXController(){
+	}
+	virtual void act(){
+	}
+    private:
+};
 
-SinYController::~SinYController(){
-}
-
-void SinYController::act(){
-}
-
-// Velocity Add Controller
-VelAddController::VelAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background){
-    class Walker: public Ast::Walker{
+/*! Set Sin Y to values given */
+class SinYController : public Controller{
     public:
-        Walker(VelAddController & self):
-            self(self){
-            }
-        VelAddController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "value"){
-                
-            } else if (simple == "x"){
-                
-            } else if (simple == "y"){
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        SinYController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background){
+	    class Walker: public Ast::Walker{
+		public:
+		    Walker(SinYController & self):
+			self(self){
+			}
+		    SinYController & self;
+		    
+		    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+			if (simple == "value"){
+			    
+			} else if (simple == "x"){
+			    
+			} else if (simple == "y"){
+			} 
+		    }
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+	virtual ~SinYController(){
+	}
+	virtual void act(){
+	}
+    private:
+};
 
-VelAddController::~VelAddController(){
-}
-
-void VelAddController::act(){
-}
-
-// Position Set Controller
-VelSetController::VelSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background){
-    class Walker: public Ast::Walker{
+/*! Add to current Velocity setting */
+class VelAddController : public Controller{
     public:
-        Walker(VelSetController & self):
-            self(self){
-            }
-        VelSetController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "value"){
-                
-            } else if (simple == "x"){
-                
-            } else if (simple == "y"){
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        VelAddController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background){
+	    class Walker: public Ast::Walker{
+	    public:
+		Walker(VelAddController & self):
+		    self(self){
+		    }
+		VelAddController & self;
+		
+		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "value"){
+			
+		    } else if (simple == "x"){
+			
+		    } else if (simple == "y"){
+		    } 
+		}
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+        virtual ~VelAddController(){
+	}
+        virtual void act(){
+	}
+    private:
+};
 
-VelSetController::~VelSetController(){
-}
-
-void VelSetController::act(){
-}
-
-// Enabled Controller
-EnabledController::EnabledController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background){
-    class Walker: public Ast::Walker{
+/*! Set current velocity to values given */
+class VelSetController : public Controller{
     public:
-        Walker(EnabledController & self):
-            self(self){
-            }
-        EnabledController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "value"){
-                
-            } else if (simple == "x"){
-                
-            } else if (simple == "y"){
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        VelSetController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background){
+	    class Walker: public Ast::Walker{
+	    public:
+		Walker(VelSetController & self):
+		    self(self){
+		    }
+		VelSetController & self;
+		
+		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "value"){
+			
+		    } else if (simple == "x"){
+			
+		    } else if (simple == "y"){
+		    } 
+		}
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+        virtual ~VelSetController(){
+	}
+        virtual void act(){
+	}
+    private:
+};
 
-EnabledController::~EnabledController(){
-}
-
-void EnabledController::act(){
-}
-
-// Visible Controller
-VisibleController::VisibleController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background){
-    class Walker: public Ast::Walker{
+/*! Enable or Disables Background */
+class EnabledController : public Controller{
     public:
-        Walker(VisibleController & self):
-            self(self){
-            }
-        VisibleController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "value"){
-                
-            } else if (simple == "x"){
-                
-            } else if (simple == "y"){
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        EnabledController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background){
+	    class Walker: public Ast::Walker{
+	    public:
+		Walker(EnabledController & self):
+		    self(self){
+		    }
+		EnabledController & self;
+		
+		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "value"){
+			
+		    } else if (simple == "x"){
+			
+		    } else if (simple == "y"){
+		    } 
+		}
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+        virtual ~EnabledController(){
+	}
+        virtual void act(){
+	}
+    private:
+};
 
-VisibleController::~VisibleController(){
-}
-
-void VisibleController::act(){
-}
-
-// Animation Controller
-AnimationController::AnimationController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-Controller(name,data,control,background){
-    class Walker: public Ast::Walker{
+/*! Make Background Visible, if not visible it will still act */
+class VisibleController : public Controller{
     public:
-        Walker(AnimationController & self):
-            self(self){
-            }
-        AnimationController & self;
-        
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "value"){
-                
-            } else if (simple == "x"){
-                
-            } else if (simple == "y"){
-            } 
-        }
-    };
-    Walker walker(*this);
-    data->walk(walker);
-}
+        VisibleController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background){
+	    class Walker: public Ast::Walker{
+	    public:
+		Walker(VisibleController & self):
+		    self(self){
+		    }
+		VisibleController & self;
+		
+		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "value"){
+			
+		    } else if (simple == "x"){
+			
+		    } else if (simple == "y"){
+		    } 
+		}
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+        virtual ~VisibleController(){
+	}
+        virtual void act(){
+	}
+    private:
+};
 
-AnimationController::~AnimationController(){
-}
-
-void AnimationController::act(){
-}
-
+/*! Change current animation of Background to given value */
+class AnimationController : public Controller{
+    public:
+        AnimationController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+	Controller(name,data,control,background){
+	    class Walker: public Ast::Walker{
+	    public:
+		Walker(AnimationController & self):
+		    self(self){
+		    }
+		AnimationController & self;
+		
+		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "value"){
+			
+		    } else if (simple == "x"){
+			
+		    } else if (simple == "y"){
+		    } 
+		}
+	    };
+	    Walker walker(*this);
+	    data->walk(walker);
+	}
+        virtual ~AnimationController(){
+	}
+        virtual void act(){
+	}
+    private:
+};
 
 /* Background controller which handles all individual controllers under it */
 BackgroundController::BackgroundController(const std::string & name, Ast::Section * data, Background & background):
