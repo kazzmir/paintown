@@ -323,7 +323,7 @@ void MugenStoryboard::load() throw (MugenException){
                 Mugen::Background *manager = new Mugen::Background(ourDefFile, bgname);
                 scenes.back()->background = manager;
             }
-        } else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
+        } //else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
 
     // position
