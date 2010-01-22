@@ -226,7 +226,16 @@ BackgroundElement::BackgroundElement(const BackgroundElement &copy){
     this->sinY = copy.sinY;
     this->linkedElement = copy.linkedElement;
 }
+
 BackgroundElement::~BackgroundElement(){
+}
+
+double BackgroundElement::getCurrentX() const {
+    return getStart().x + getVelocityX() + getSinX().get();
+}
+
+double BackgroundElement::getCurrentY() const {
+    return getStart().y + getVelocityY() + getSinY().get();
 }
 
 /* Copy the contents of this into element

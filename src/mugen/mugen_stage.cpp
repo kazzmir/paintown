@@ -528,13 +528,15 @@ void MugenStage::load(){
     // Preload background
     // background->preload( startx, starty );
     
-    /* FIXME: is this relevant?
     // zoffsetlink
     if (zoffsetlink != DEFAULT_BACKGROUND_ID){
 	// Link zoffset to id
-	zoffset = background->getBackground(zoffsetlink)->y;
+        vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
+        if (elements.size() != 0){
+            Mugen::BackgroundElement * element = elements[0];
+            zoffset = element->getCurrentY();
+        }
     }
-    */
 
     int r, g, b;
     Bitmap::cymkToRGB(shadow.c, shadow.y, shadow.m, shadow.k, &r, &g, &b);
@@ -806,14 +808,20 @@ void MugenStage::logic( ){
     console->clear();
     
     //zoffsetlink
-    const MugenBackground *zlinkbackground = 0;
+    const Mugen::Background *zlinkbackground = 0;
 
-    /* FIXME
     if (zoffsetlink != DEFAULT_BACKGROUND_ID){
+        /*
 	zlinkbackground = background->getBackground(zoffsetlink);
 	zoffset = zlinkbackground->y;
+        */
+        vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
+        if (elements.size() != 0){
+            Mugen::BackgroundElement * element = elements[0];
+            zoffset = element->getCurrentY();
+        }
     }
-    */
+
     *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
     
     // Backgrounds
@@ -1209,7 +1217,8 @@ bool MugenStage::isaPlayer( Object * o ){
 void MugenStage::updatePlayer(Object * player){
     // Z/Y offset
     if (zoffsetlink == DEFAULT_BACKGROUND_ID){
-	player->setZ(zoffset + abs(boundhigh));
+	// player->setZ(zoffset + abs(boundhigh));
+	player->setZ(zoffset);
     } else {
 	player->setZ(zoffset);
     }

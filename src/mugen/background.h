@@ -19,10 +19,14 @@ namespace Mugen{
 struct Sin {
     Sin():
     amp(0),period(0),offset(0),angle(0){}
+
     ~Sin(){}
+
     inline void act(){
+        /* where did this number come from? */
         angle += 0.00005;
     }
+
     inline const double get() const {
         return amp * sin(angle*period + offset);
     }
@@ -48,6 +52,9 @@ class BackgroundElement : public Element {
 
         // Copy operator so we can make an initial copy of are starting values to restore on a reset
         const BackgroundElement & operator=(const BackgroundElement &);
+
+        virtual double getCurrentX() const;
+        virtual double getCurrentY() const;
 	
 	virtual inline void setVisible(bool visible){
             this->visible = visible;
@@ -177,11 +184,19 @@ class BackgroundElement : public Element {
 	    return this->sinX;
 	}
 	
+        virtual inline const Sin & getSinX() const {
+	    return this->sinX;
+	}
+	
 	virtual inline void setSinY(const Sin &sin){
 	    this->sinY = sin;
 	}
 	
 	virtual inline Sin & getSinY() {
+	    return this->sinY;
+	}
+	
+        virtual inline const Sin & getSinY() const {
 	    return this->sinY;
 	}
 
