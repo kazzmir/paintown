@@ -114,7 +114,7 @@ void Projectile::act( vector< Object * > * others, World * world, vector< Object
 	}
 }
 
-void Projectile::draw( Bitmap * work, int rel_x ){
+void Projectile::draw( Bitmap * work, int rel_x, int rel_y ){
 	if ( getFacing() == Object::FACING_RIGHT ){
 		currentAnimation->Draw( getRX() - rel_x, getRY(), work );
 	} else {

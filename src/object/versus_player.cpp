@@ -19,8 +19,8 @@ VersusPlayer::VersusPlayer(const Player & player) throw( LoadException ):
 Player(player){
 }
 
-void VersusPlayer::draw( Bitmap * work, int rel_x ){
-    Character::draw( work, rel_x );
+void VersusPlayer::draw( Bitmap * work, int rel_x, int rel_y ){
+    Character::draw( work, rel_x, rel_y );
 }
 
 bool VersusPlayer::canGrab( Object * enemy ){

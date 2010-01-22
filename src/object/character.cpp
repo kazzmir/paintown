@@ -1568,7 +1568,7 @@ int Character::getInvincibility() const {
     return invincibility;
 }
 
-void Character::draw( Bitmap * work, int rel_x ){
+void Character::draw( Bitmap * work, int rel_x, int rel_y ){
 
     /* this makes a character blink when they die. death increases
      * so after 15 game ticks the character will start blinking.

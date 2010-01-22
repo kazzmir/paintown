@@ -874,7 +874,7 @@ public:
 	
 	/*! This all the inherited members */
 	virtual void act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*);                       
-	virtual void draw(Bitmap*, int);                      
+	virtual void draw(Bitmap*, int cameraX, int cameraY);
 	virtual void grabbed(Object*);
 	virtual void unGrab();
 	virtual bool isGrabbed();

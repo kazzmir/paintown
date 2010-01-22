@@ -61,7 +61,7 @@ public:
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
 	/* drawing */
-	virtual void draw( Bitmap * work, int rel_x );
+	virtual void draw( Bitmap * work, int rel_x, int rel_y );
 	
 	virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
 	virtual void drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);

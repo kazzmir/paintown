@@ -298,7 +298,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     // preview.fill( 0 );
                     // reflection.fill( 0 );
 
-                    copy.draw( &preview, 0 );
+                    copy.draw( &preview, 0, 0 );
                     preview.drawVFlip( 0, 0, reflection );
 
                     Bitmap::transBlender( 0, 0, 0, 255 );
@@ -306,7 +306,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     s2.draw( 0, preview.getHeight() - stand - stand, preview );
                     Bitmap::transBlender( 0, 0, 0, 128 );
                     reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
-                    copy.draw( &preview, 0 );
+                    copy.draw( &preview, 0, 0 );
 
                     // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
                     // preview.floodfill( 0, 0, Bitmap::MaskColor );
@@ -347,7 +347,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         smaller.setX( temp.getWidth() / 2 );
                         smaller.setY( 0 );
                         smaller.setZ( temp.getHeight() );
-                        smaller.draw( &temp, 0 );
+                        smaller.draw( &temp, 0, 0 );
                     }
 
                     temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
@@ -705,7 +705,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
 			copy1.setZ( preview1.getHeight() - 20 );
 			preview1.fill( Bitmap::MaskColor );
 
-			copy1.draw( &preview1, 0 );
+			copy1.draw( &preview1, 0, 0 );
 			preview1.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
 			const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT));
 			font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy1.getName(), 0 );
@@ -719,7 +719,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
 			copy2.setZ( preview2.getHeight() - 20 );
 			preview2.fill( Bitmap::MaskColor );
 			
-			copy2.draw( &preview2, 0 );
+			copy2.draw( &preview2, 0, 0 );
 			preview2.drawStretched( 200, 0, GFX_X, GFX_Y, work );
 			font.printf( GFX_Y - 30, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy2.getName(), 0 );
 			
@@ -770,7 +770,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
 					smaller.setX( temp.getWidth() / 2 );
 					smaller.setY( 0 );
 					smaller.setZ( temp.getHeight() );
-					smaller.draw( &temp, 0 );
+					smaller.draw( &temp, 0, 0 );
 					temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 					
 					/*
@@ -809,7 +809,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
 					smaller.setX( temp.getWidth() / 2 );
 					smaller.setY( 0 );
 					smaller.setZ( temp.getHeight() );
-					smaller.draw( &temp, 0 );
+					smaller.draw( &temp, 0, 0 );
 					temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 					box.border( 0, 3, selectedColor1 );
 					// font.printf( 5, 5, selectedColor1, box, "1", 0 );
@@ -819,7 +819,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
 					smaller.setX( temp.getWidth() / 2 );
 					smaller.setY( 0 );
 					smaller.setZ( temp.getHeight() );
-					smaller.draw( &temp, 0 );
+					smaller.draw( &temp, 0, 0 );
 					temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 					box.border( 0, 3, selectedColor2 );
 					// font.printf( 5, 5, selectedColor2, box, "2", 0 );
@@ -830,7 +830,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
 					smaller.setX( temp.getWidth() / 2 );
 					smaller.setY( 0 );
 					smaller.setZ( temp.getHeight() );
-					smaller.draw( &temp, 0 );
+					smaller.draw( &temp, 0, 0 );
 					temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
 					box.border( 0, 3, color );
 				}

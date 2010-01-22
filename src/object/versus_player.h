@@ -16,7 +16,7 @@ public:
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	
-	virtual void draw( Bitmap * work, int rel_x );
+	virtual void draw( Bitmap * work, int rel_x, int rel_y );
 	virtual bool canGrab( Object * enemy );
 
 	virtual ~VersusPlayer();

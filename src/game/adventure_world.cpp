@@ -514,7 +514,7 @@ void AdventureWorld::drawWorld( const PlayerTracker & tracker, Bitmap * where, c
 		const vector<Object *> & xx = (*it).second;
 		for ( vector<Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 
-			(*mm)->draw( where, min_x );
+			(*mm)->draw( where, min_x, 0 );
 		}
 	}
 

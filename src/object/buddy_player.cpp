@@ -30,8 +30,8 @@ leader( leader ){
 	NamePlacer::getPlacement( x, y, name_id );
 }
 	
-void BuddyPlayer::draw( Bitmap * work, int rel_x ){
-	Character::draw( work, rel_x );
+void BuddyPlayer::draw( Bitmap * work, int rel_x, int rel_y ){
+	Character::draw(work, rel_x, rel_y);
 
 	int x1, y1;
 	NamePlacer::getPlacement( x1, y1, name_id );

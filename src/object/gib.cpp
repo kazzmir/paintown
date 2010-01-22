@@ -23,7 +23,7 @@ Gib::Gib( const Gib & g ):
 ObjectNonAttack( g ){
 }
 
-void Gib::draw( Bitmap * work, int rel_x ){
+void Gib::draw( Bitmap * work, int rel_x, int rel_y ){
 	if ( fade > 0 ){
 		// Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
 		Bitmap::transBlender( 0, 0, 0, 255 - fade );

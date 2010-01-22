@@ -907,7 +907,7 @@ void MugenStage::render(Bitmap *work){
 	obj->drawShade(board, 0, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         
         /* draw the player */
-        obj->draw(board, camerax - DEFAULT_WIDTH / 2);
+        obj->draw(board, camerax - DEFAULT_WIDTH / 2, cameray);
     }
 
     for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){

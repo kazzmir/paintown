@@ -120,7 +120,7 @@ void Item::act( vector< Object * > * others, World * world, vector< Object * > *
 	// cout << "tough actin tinactin: " << this << endl;
 }
 
-void Item::draw( Bitmap * work, int rel_x ){
+void Item::draw( Bitmap * work, int rel_x, int rel_y ){
 	// cout << "draw item at " << getRX() - rel_x << " " << getRY() << endl;
 	picture.draw( getRX() - rel_x - picture.getWidth() / 2, getRY() - picture.getHeight(), *work );
 

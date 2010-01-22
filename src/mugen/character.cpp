@@ -2508,7 +2508,7 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
     return false;
 }
 
-void Character::draw(Bitmap * work, int x_position){
+void Character::draw(Bitmap * work, int cameraX, int cameraY){
     const Font & font = Font::getFont(Filesystem::find("/fonts/arial.ttf"), 18, 18);
     int x = 0;
     if (getAlliance() == MugenStage::Player2Side){
@@ -2540,8 +2540,8 @@ void Character::draw(Bitmap * work, int x_position){
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be 0... */
     if (animation != 0){
-        int x = getRX() - x_position;
-        int y = getRY();
+        int x = getRX() - cameraX;
+        int y = getRY() - cameraY;
 
         if (isPaused() && moveType == Move::Hit){
             x += PaintownUtil::rnd(3) - 1;

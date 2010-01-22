@@ -17,7 +17,7 @@ public:
 	Cat( const Cat & cat );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	virtual void draw( Bitmap * work, int rel_x );
+	virtual void draw( Bitmap * work, int rel_x, int rel_y );
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
 	virtual int getWidth() const;

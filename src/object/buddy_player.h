@@ -16,7 +16,7 @@ public:
 	BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException );
 	
 	/* drawing */
-	virtual void draw( Bitmap * work, int rel_x );
+	virtual void draw( Bitmap * work, int rel_x, int rel_y );
 
 	using Character::drawLifeBar;
 	virtual void drawLifeBar( int x, int y, Bitmap * work );

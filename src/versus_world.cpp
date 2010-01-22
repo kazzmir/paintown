@@ -140,7 +140,7 @@ void VersusWorld::draw( Bitmap * work ){
 		vector<Object *> & xx = (*it).second;
 		for ( vector<Object *>::iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 
-			(*mm)->draw( work, 0 );
+			(*mm)->draw( work, 0, 0 );
 		}
 	}
 }
