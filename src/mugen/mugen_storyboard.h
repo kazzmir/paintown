@@ -14,8 +14,10 @@ class MugenItemContent;
 class MugenSprite;
 class MugenSound;
 class MugenAnimation;
-class MugenBackground;
-class MugenBackgroundManager;
+
+namespace Mugen{
+    class Background;
+}
 
 class MugenLayer{
     public:
@@ -53,7 +55,7 @@ class MugenScene {
 	
 	std::string backgroundName;
 	
-	MugenBackgroundManager *background;
+	Mugen::Background *background;
 	
 	// layers
 	std::vector<MugenLayer *>layers;

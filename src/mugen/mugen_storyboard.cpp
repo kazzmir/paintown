@@ -14,7 +14,7 @@
 #include "factory/font_render.h"
 
 #include "mugen_animation.h"
-#include "mugen_background.h"
+#include "mugen/background.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
@@ -99,7 +99,7 @@ MugenScene::~MugenScene(){
 void MugenScene::act(){
     // backgrounds
     if (background){
-        background->logic();
+        background->act();
     }
     // layers
     for ( std::vector< MugenLayer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
@@ -120,7 +120,7 @@ void MugenScene::draw(Bitmap *bmp){
     }
     // backgrounds
     if (background){
-        background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT, bmp);
+        background->renderBackground(0,0, *bmp);
     }
     // layers
     for (std::vector< MugenLayer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
@@ -129,7 +129,7 @@ void MugenScene::draw(Bitmap *bmp){
     }
     // foregrounds
     if (background){
-        background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT, bmp);
+        background->renderForeground(0,0, *bmp);
     }
     // fader
     fader.draw(bmp);
@@ -320,8 +320,7 @@ void MugenStoryboard::load() throw (MugenException){
                 name = Mugen::Util::fixCase(name);
                 Global::debug(1) << "Checking for background: " << scene->backgroundName << " in Head: " << name << endl;
                 */
-                vector<Ast::Section*> backgroundStuff = Mugen::Util::collectBackgroundStuff(section_it, parsed.getSections()->end(), bgname);
-                MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, scenes.back()->ticker, &sprites, bgname);
+                Mugen::Background *manager = new Mugen::Background(ourDefFile, bgname);
                 scenes.back()->background = manager;
             }
         } else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
@@ -338,10 +337,6 @@ void MugenStoryboard::load() throw (MugenException){
     // Also do their preload
     for( std::vector< MugenScene * >::iterator s = scenes.begin(); s != scenes.end(); ++s ){
         MugenScene *scene = *s;
-        // backgrounds
-        if (scene->background){
-            scene->background->preload( DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
-        }
         // layers
         for( std::vector< MugenLayer *>::iterator i = scene->layers.begin(); i != scene->layers.end(); ++i ){
             MugenLayer *layer = *i;
