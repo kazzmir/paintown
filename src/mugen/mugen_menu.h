@@ -17,7 +17,6 @@
  */
 
 class MugenAnimation;
-class MugenBackgroundManager;
 class MugenFont;
 class MugenSprite;
 class MugenStoryboard;
@@ -28,6 +27,7 @@ namespace Ast{
 }
 
 namespace Mugen{
+    class Background;
     class Character;
     class CharacterSelect;
 }
@@ -146,7 +146,7 @@ class MugenMenu : public Menu {
 	MugenSprites sprites;
 	
 	// Title background
-	MugenBackgroundManager *background;
+	Mugen::Background *background;
 	
 	// Logo
 	MugenStoryboard *logo;

@@ -37,7 +37,7 @@
 #include "gui/keys.h"
 
 #include "mugen_animation.h"
-#include "mugen_background.h"
+#include "mugen/background.h"
 #include "character_select.h"
 #include "character.h"
 #include "mugen_item.h"
@@ -328,11 +328,9 @@ void MugenMenu::loadData() throw (MugenException){
             TitleInfoWalker walker(*this);
             section->walk(walker);
         } else if (PaintownUtil::matchRegex(head, "^titlebgdef")){
-            vector<Ast::Section*> backgroundStuff = Mugen::Util::collectBackgroundStuff(section_it, parsed.getSections()->end());
-	    MugenBackgroundManager *manager = new MugenBackgroundManager(baseDir, backgroundStuff, ticker, &sprites);
+            Mugen::Background *manager = new Mugen::Background(ourDefFile, "titlebg");
 	    background = manager;
-	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
-        } else if (head == "select info"){ 
+	} else if (head == "select info"){ 
 	    selectInfoFile = ourDefFile;
         } else if (head == "selectbgdef" ){ /* Ignore for now */ }
 	else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
@@ -352,16 +350,9 @@ void MugenMenu::loadData() throw (MugenException){
 	else if (head == "music" ){ /* Ignore for now */ }
 	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
         else {
-            throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
+            //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
         }
-    }
-    
-    /* Set up the animations for those that have action numbers assigned (not -1 )
-     * Also do their preload
-     */
-    if (background){
-        background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
-    }
+    }  
 }
 
 MugenMenu::~MugenMenu(){
@@ -490,7 +481,7 @@ void MugenMenu::run(){
 				}
 				
 				// Backgrounds
-				background->logic();
+				background->act();
 			    }
 			    
 			    Global::speed_counter = 0;
@@ -506,13 +497,13 @@ void MugenMenu::run(){
 	    
 		    if ( draw ){
 			    // backgrounds
-			    background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+			    background->renderBackground(0,0,workArea);
 			    // Draw any misc stuff in the background of the menu of selected object 
 			    (*selectedOption)->drawBelow(work);
 			    // Draw text
 			    renderText(&workArea);
 			    // Foregrounds
-			    background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+			    background->renderForeground(0,0,workArea);
 			    // Draw any misc stuff in the foreground of the menu of selected object 
 			    (*selectedOption)->drawAbove(work);
 			    // Do fades
@@ -579,7 +570,7 @@ void MugenMenu::run(){
 
 void MugenMenu::copyBackground(Bitmap & copyTo){
     copyTo.resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    background->renderBack(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, &copyTo);
+    background->renderBackground(0, 0, copyTo);
 }
 
 void MugenMenu::cleanup(){
