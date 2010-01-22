@@ -1258,8 +1258,32 @@ clearColor(-1){
 	head = Mugen::Util::fixCase(head);
 	std::string tempHeader = Mugen::Util::fixCase(header);
 	Global::debug(1) << "Checking head: " << head << " for Header: " << tempHeader << endl;
-        // Lets check if this is a storyboard so we can get our sprite file, otherwise treat it as a normal background */
-        if ( head == "scenedef") {
+        // Lets check if this is a normal def so we can get our sprite file, otherwise treat it as a normal background */
+        if ( head == "files") {
+            class SceneDefWalker: public Ast::Walker{
+                public:
+                    SceneDefWalker(Background & self, Mugen::SpriteMap & sprites):
+                        self(self),
+                        sprites(sprites){
+                        }
+                    Background & self;
+                    Mugen::SpriteMap & sprites;
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+			if (simple == "spr"){
+			    simple >> self.spriteFile;
+			    Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
+			    // Strip it of any directory it might have
+			    std::string baseDir = Util::getFileDir(self.file);
+			    self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
+			    Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
+			    Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, self.spriteFile), "", sprites);
+			} 
+		    }
+            };
+            SceneDefWalker walker(*this,sprites);
+            section->walk(walker);
+        } else if ( head == "scenedef") {
+	    // Lets check if this is a storyboard so we can get our sprite file, otherwise treat it as a normal background */
             class SceneDefWalker: public Ast::Walker{
                 public:
                     SceneDefWalker(Background & self, Mugen::SpriteMap & sprites):

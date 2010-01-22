@@ -34,7 +34,7 @@
 #include "menu/option_dummy.h"
 
 #include "mugen_animation.h"
-#include "mugen_background.h"
+#include "mugen/background.h"
 #include "character.h"
 #include "mugen_sound.h"
 #include "mugen_reader.h"
@@ -1109,10 +1109,8 @@ void CharacterSelect::load() throw (MugenException){
             section->walk(walker);
 	} else if (head == "selectbgdef"){ 
 	    /* Background management */
-	    const int ticker = 0;
-	    MugenBackgroundManager *manager = new MugenBackgroundManager(Mugen::Util::getFileDir(selectFile), collectSelectStuff(section_it, parsed.getSections()->end()), ticker, &sprites, "selectbg");
+	    Mugen::Background *manager = new Mugen::Background(systemFile, "selectbg");
 	    background = manager;
-	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
 	} else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
 	else if (head == "vs screen" ){ /* Ignore for now */ }
 	else if (head == "versusbgdef" ){ /* Ignore for now */ }
@@ -1143,12 +1141,6 @@ void CharacterSelect::load() throw (MugenException){
     
     // Now load up our characters
     parseSelect(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
-    
-    // Set up the animations for those that have action numbers assigned (not -1 )
-    // Also do their preload
-    if (background){
-	background->preload(DEFAULT_SCREEN_X_AXIS, DEFAULT_SCREEN_Y_AXIS );
-    }
 }
 
 void CharacterSelect::parseSelect(const std::string &selectFile){
@@ -1306,7 +1298,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		fader.act();
 		
 		// Backgrounds
-		background->logic();
+		background->act();
 		
 		// Grid
 		grid.act();
@@ -1332,7 +1324,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 
 	if ( draw ){
 	    // render backgrounds
-	    background->renderBack(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+	    background->renderBackground(0,0,workArea);
 	    // Render Grid
 	    grid.render(workArea);
 	    // Render cursors
@@ -1342,10 +1334,8 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	    // render title
 	    titleFont.render(title,workArea);
 	    
-	    // render stage
-	    
 	    // render Foregrounds
-	    background->renderFront(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT,&workArea);
+	    background->renderForeground(0,0,workArea);
 	    
 	    // render fades
 	    fader.draw(&workArea);

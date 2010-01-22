@@ -21,7 +21,6 @@
  */
 
 class MugenAnimation;
-class MugenBackgroundManager;
 class MugenFont;
 class MugenSprite;
 class MugenStoryboard;
@@ -37,6 +36,7 @@ class MugenStage;
 namespace Mugen{
     
 class Character;
+class Background;
 
 /*! Key handler for now change later*/
 enum CharacterKeys{
@@ -847,7 +847,7 @@ class CharacterSelect {
 	Mugen::SpriteMap sprites;
 	
 	//! Select background
-	MugenBackgroundManager *background;
+	Mugen::Background *background;
 };
 
 /* Older data */
