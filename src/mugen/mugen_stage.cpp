@@ -412,6 +412,19 @@ void MugenStage::loadSectionReflection(Ast::Section * section){
     }
 }
 
+int MugenStage::currentZOffset() const {
+    if (zoffsetlink != DEFAULT_BACKGROUND_ID){
+	// Link zoffset to id
+        vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
+        if (elements.size() != 0){
+            Mugen::BackgroundElement * element = elements[0];
+            return element->getCurrentY();
+        }
+    }
+
+    return zoffset;
+}
+
 static bool matchRegex(const string & str, const string & regex){
     return Util::matchRegex(str, regex);
 }
@@ -529,6 +542,7 @@ void MugenStage::load(){
     // background->preload( startx, starty );
     
     // zoffsetlink
+    /*
     if (zoffsetlink != DEFAULT_BACKGROUND_ID){
 	// Link zoffset to id
         vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
@@ -537,6 +551,7 @@ void MugenStage::load(){
             zoffset = element->getCurrentY();
         }
     }
+    */
 
     int r, g, b;
     Bitmap::cymkToRGB(shadow.c, shadow.y, shadow.m, shadow.k, &r, &g, &b);
@@ -807,20 +822,22 @@ void MugenStage::logic( ){
     // Clear console so we can see our debug
     console->clear();
     
+    /*
     //zoffsetlink
     const Mugen::Background *zlinkbackground = 0;
 
     if (zoffsetlink != DEFAULT_BACKGROUND_ID){
-        /*
+        / *
 	zlinkbackground = background->getBackground(zoffsetlink);
 	zoffset = zlinkbackground->y;
-        */
+        * /
         vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
         if (elements.size() != 0){
             Mugen::BackgroundElement * element = elements[0];
             zoffset = element->getCurrentY();
         }
     }
+    */
 
     *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
     
@@ -916,7 +933,7 @@ void MugenStage::render(Bitmap *work){
     
     // Debug crap for board coordinates
     if (debugMode){
-	board->hLine( 0, abs(boundhigh) + zoffset, board->getWidth(), Bitmap::makeColor( 0,255,0 ));
+	board->hLine( 0, abs(boundhigh) + currentZOffset(), board->getWidth(), Bitmap::makeColor( 0,255,0 ));
 	board->vLine( 0, xaxis, board->getHeight(), Bitmap::makeColor(255,0,0));
     }
     
@@ -979,7 +996,7 @@ void MugenStage::reset( ){
 	    //((Player *)player)->deathReset();
 	    player->setX(p1startx);
 	    player->setY(p1starty);
-	    player->setZ(zoffset);
+	    player->setZ(currentZOffset());
 	    player->setFacing( Object::FACING_RIGHT );
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
@@ -992,7 +1009,7 @@ void MugenStage::reset( ){
 	    //((Player *)player)->deathReset();
 	    player->setX(p2startx);
 	    player->setY(p2starty);
-	    player->setZ(zoffset);
+	    player->setZ(currentZOffset());
 	    player->setFacing( Object::FACING_LEFT );
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
@@ -1012,7 +1029,7 @@ void MugenStage::addp1( Object * o ){
     o->setAlliance(Player1Side);
     o->setX(p1startx);
     o->setY(p1starty);
-    o->setZ(zoffset);
+    o->setZ(currentZOffset());
     o->setFacing( Object::FACING_RIGHT );
     objects.push_back(o);
     players.push_back(o);
@@ -1032,7 +1049,7 @@ void MugenStage::addp2( Object * o ){
     o->setAlliance(Player2Side);
     o->setX(p2startx);
     o->setY(p2starty);
-    o->setZ(zoffset);
+    o->setZ(currentZOffset());
     o->setFacing( Object::FACING_LEFT );
     objects.push_back(o);
     players.push_back(o);
@@ -1103,9 +1120,11 @@ Object * MugenStage::findObject(int id){
     }
     return NULL;
 }
+
 // These should be the same, but we'll see, mugen has some funny parameters
 int MugenStage::getMaximumZ(){ return zoffset; }
 int MugenStage::getMinimumZ(){ return zoffset; }
+
 void MugenStage::drawMiniMaps( bool b ){ /* Not likely */ }
 bool MugenStage::shouldDrawMiniMaps(){ return false; }
 void MugenStage::killAllHumans( Object * player ){ 
@@ -1218,9 +1237,9 @@ void MugenStage::updatePlayer(Object * player){
     // Z/Y offset
     if (zoffsetlink == DEFAULT_BACKGROUND_ID){
 	// player->setZ(zoffset + abs(boundhigh));
-	player->setZ(zoffset);
+	player->setZ(currentZOffset());
     } else {
-	player->setZ(zoffset);
+	player->setZ(currentZOffset());
     }
     
     // Move X and Camera

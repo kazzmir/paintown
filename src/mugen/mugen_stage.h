@@ -107,6 +107,8 @@ public:
 	// Add player2 people
 	virtual void addp2( Object * o );
 
+        virtual int currentZOffset() const;
+
         virtual void pause();
         virtual void unpause();
         virtual void changePause();
