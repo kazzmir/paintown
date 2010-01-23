@@ -199,12 +199,20 @@ class BackgroundElement : public Element {
         virtual inline const Sin & getSinY() const {
 	    return this->sinY;
 	}
+	
+	virtual inline void setX(int x){
+	    this->x = x;
+	}
+	
+	virtual inline void setY(int y){
+	    this->y = y;
+	}
 
-        virtual int getX() const {
+        virtual inline int getX() const {
             return x;
         }
 
-        virtual int getY() const {
+        virtual inline int getY() const {
             return y;
         }
 

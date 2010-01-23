@@ -828,6 +828,19 @@ class PosAddController : public Controller{
         virtual ~PosAddController(){
 	}
         virtual void act(){
+	    if ( ticker >= timeStart && ticker <= endTime){
+		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+		    BackgroundElement *element = *i;
+		    element->setX(element->getX() + x);
+		    element->setY(element->getY() + y);
+		}
+	    }
+	    if (loopTime != -1){
+		if (ticker == loopTime){
+		    reset();
+		}
+	    }
+	    ticker++;
 	}
     private:
         int x, y;
@@ -864,7 +877,8 @@ class PosSetController : public Controller{
 	    if ( ticker >= timeStart && ticker <= endTime){
 		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
 		    BackgroundElement *element = *i;
-		    element->setStart(Mugen::Point(x,y));
+		    element->setX(x);
+		    element->setY(y);
 		}
 	    }
 	    if (loopTime != -1){
