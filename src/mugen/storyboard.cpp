@@ -59,24 +59,32 @@ void Layer::reset(){
     enabled = false;
     animation->reset();
 }
+
+static Ast::Section * getSectionAnimation(const std::string & file, const std::string & number){
+    Ast::AstParse parsed((list<Ast::Section*>*) Def::main(file));
+    return parsed.findSection("Begin Action " + number);
+}
 	
 Scene::Scene(Ast::Section * data, const std::string & storyBoardFile, SpriteMap & sprites):
 clearColor(-2),
 ticker(0),
 endTime(0),
 backgroundName(""),
-background(0){
+background(0),
+layers(9){
     class SceneWalker: public Ast::Walker {
 	public:
-	    SceneWalker(Scene & scene, SpriteMap & sprites):
+	    SceneWalker(Scene & scene, SpriteMap & sprites, const std::string & storyBoardFile):
 	    scene(scene),
-	    sprites(sprites){
+	    sprites(sprites),
+	    storyBoardFile(storyBoardFile){
 	    }
 	    ~SceneWalker(){
 	    }
 	    
 	    Scene & scene;
 	    SpriteMap & sprites;
+	    const std::string storyBoardFile;
 	    
 	    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		if (simple == "fadein.time"){
@@ -119,9 +127,13 @@ background(0){
 		    } catch (const Ast::Exception & e){
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
-		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
+		    std::string action = PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0);
+		    int num = atoi(action.c_str());
 		    if (num >= 0 && num < 10){
-			//simple >> scene.layers[num]->actionno;
+			Layer *layer = scene.layers[num];
+			Ast::Section * section = getSectionAnimation(storyBoardFile,action);
+			layer->setAnimation(Util::getAnimation(section,sprites));
+			delete section;
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
@@ -144,7 +156,7 @@ background(0){
 	    }
     };
 
-    SceneWalker walker(*this,sprites);
+    SceneWalker walker(*this,sprites,storyBoardFile);
     data->walk(walker);
 
 #if 0	
@@ -192,7 +204,6 @@ Scene::~Scene(){
 }
 
 void Scene::act(){
-#if 0
     // backgrounds
     if (background){
         background->act();
@@ -200,7 +211,7 @@ void Scene::act(){
     // layers
     for ( std::vector< Layer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
         Layer *layer = *i;
-        if(ticker >= layer->startTime)layer->act();
+        layer->act(ticker);
     }
     // Fader
     fader.act();
@@ -209,10 +220,8 @@ void Scene::act(){
     }
     // tick tick
     ticker++;
-#endif
 }
 void Scene::render(const Bitmap & bmp){
-#if 0
     if (clearColor != -1 && clearColor != -2){
         bmp.fill(clearColor);
     }
@@ -223,7 +232,7 @@ void Scene::render(const Bitmap & bmp){
     // layers
     for (std::vector< Layer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
         Layer *layer = *i;
-        layer->render(defaultAxis.x,defaultAxis.y,bmp);
+        layer->render(defaultPosition.x,defaultPosition.y,bmp);
     }
     // foregrounds
     if (background){
@@ -231,7 +240,6 @@ void Scene::render(const Bitmap & bmp){
     }
     // fader
     fader.draw(bmp);
-#endif
 }
 
 bool Scene::isDone(){
@@ -239,7 +247,6 @@ bool Scene::isDone(){
 }
 
 void Scene::reset(){
-#if 0
     ticker = 0;
     fader.setState(FADEIN);
     // layers
@@ -247,33 +254,11 @@ void Scene::reset(){
 	Layer *layer = *i;
 	layer->reset();
     }
-#endif 
 }
 
-Storyboard::Storyboard( const string & s ):
+Storyboard::Storyboard( const string & s )throw (MugenException):
 storyBoardFile(s),
 startscene(0){
-}
-
-Storyboard::~Storyboard(){
-    // Get rid of animation lists;
-    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-        if( i->second )delete i->second;
-    }
-
-    // Get rid of scene lists;
-    for( std::vector< Scene * >::iterator i = scenes.begin() ; i != scenes.end() ; ++i ){
-        if( (*i) )delete (*i);
-    }
-    // sprites
-    for( SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            if( j->second )delete j->second;
-        }
-    }
-}
-
-void Storyboard::load() throw (MugenException){
     // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Util::getFileDir(storyBoardFile);
     const std::string ourDefFile = Util::fixFileName( baseDir, Util::stripDir(storyBoardFile) );
@@ -301,10 +286,9 @@ void Storyboard::load() throw (MugenException){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
-        /* this should really be head = Util::fixCase(head) */
+	
 	head = Util::fixCase(head);
-
-        // Global::debug(1) << "Name: " << head << endl;
+	
         if (head == "info"){
             class InfoWalk: public Ast::Walker{
             public:
@@ -354,14 +338,31 @@ void Storyboard::load() throw (MugenException){
             SceneWalk walk(baseDir, *this);
             section->walk(walk);
         } else if (PaintownUtil::matchRegex(head, "^scene")){
-	    Scene *scene = new Scene(section,storyBoardFile,sprites);
+	    Scene *scene = new Scene(section,ourDefFile,sprites);
 	    scenes.push_back(scene);
 	}
     }
 }
 
+Storyboard::~Storyboard(){
+    // Get rid of animation lists;
+    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+        if( i->second )delete i->second;
+    }
+
+    // Get rid of scene lists;
+    for( std::vector< Scene * >::iterator i = scenes.begin() ; i != scenes.end() ; ++i ){
+        if( (*i) )delete (*i);
+    }
+    // sprites
+    for( SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            if( j->second )delete j->second;
+        }
+    }
+}
+
 void Storyboard::run(const Bitmap &bmp, bool repeat){
-#if 0
     double gameSpeed = 1.0;
     double runCounter = 0;
     bool quit = false;
@@ -449,7 +450,7 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
             scene->render(work);
             work.Stretch(bmp);
             if (Global::getDebug() > 0){
-                Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor(0,255,128), bmp, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->ticker,scene->endTime,scene->fader.getFadeInTime(),scene->fader.getFadeOutTime() );
+                Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor(0,255,128), bmp, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->getTicker(),scene->getEndTime(),scene->getFadeTool().getFadeInTime(),scene->getFadeTool().getFadeOutTime() );
             }
             bmp.BlitToScreen();
         }
@@ -458,6 +459,5 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
             PaintownUtil::rest(1);
         }
     }
-#endif
 }
 

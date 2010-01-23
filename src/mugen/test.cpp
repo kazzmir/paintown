@@ -30,7 +30,7 @@
 #include "mugen_sprite.h"
 #include "mugen_stage.h"
 #include "mugen_font.h"
-#include "mugen_storyboard.h"
+#include "mugen/storyboard.h"
 #include "state.h"
 #include "parser/parsers.h"
 #include "parser/parse-exception.h"
@@ -933,11 +933,11 @@ int main( int argc, char ** argv ){
 	}
 	else if ( configLoaded == 4 ){
 	    try{
-                MugenStoryboard story = MugenStoryboard(ourFile);
-		story.load();
+                Mugen::Storyboard story(ourFile);
+		story.setInput(getPlayer1Keys());
 		// run it and repeat
 		Bitmap screen(640, 480);
-		story.run( &screen,true);
+		story.run( screen,true);
             } catch (const MugenException & ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;

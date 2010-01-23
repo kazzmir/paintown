@@ -31,7 +31,7 @@ class Layer{
         virtual inline void setStartTime(int time){
             this->startTime = time;
         }
-        virtual inline void setSetAnimation(MugenAnimation * animation){
+        virtual inline void setAnimation(MugenAnimation * animation){
             this->animation = animation;
         }
         //! Override
@@ -57,6 +57,18 @@ class Scene {
 	virtual bool isDone();
 	
 	virtual void reset();
+	
+	virtual inline const MugenFadeTool & getFadeTool() const {
+	    return this->fader;
+	}
+	
+	virtual inline int getTicker() const {
+	    return this->ticker;
+	}
+	
+	virtual inline int getEndTime() const {
+	    return this->endTime;
+	}
 
     private:
 	
@@ -86,13 +98,12 @@ class Scene {
 class Storyboard {
     public:
 	//! Location at dataPath() + "mugen/stages/"
-	Storyboard( const std::string & s );
+	Storyboard( const std::string & s ) throw (MugenException);
 
 	virtual ~Storyboard();
 	
-	void load() throw (MugenException);
 	//! give it the default bitmap to blit to the screen
-	void run(const Bitmap &, bool repeat = false);
+	virtual void run(const Bitmap &, bool repeat = false);
 
         virtual void setInput(const InputMap<CharacterKeys> & input){
             this->input = input;
