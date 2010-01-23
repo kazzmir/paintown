@@ -44,7 +44,7 @@ class BackgroundElement : public Element {
         BackgroundElement(const BackgroundElement &);
 	virtual ~BackgroundElement();
 	
-	virtual void act()=0;
+	virtual void act();
 	virtual void render(int x, int y, const Bitmap &)=0;
 
         //! Set the passed element to this elements values, this is called when the next element is linked to this one
@@ -200,6 +200,14 @@ class BackgroundElement : public Element {
 	    return this->sinY;
 	}
 
+        virtual int getX() const {
+            return x;
+        }
+
+        virtual int getY() const {
+            return y;
+        }
+
     private:
         //! get linked element
         BackgroundElement *getLinkedElement();
@@ -209,6 +217,11 @@ class BackgroundElement : public Element {
         bool enabled;
         //! The starting coordinate relative to 0,0 which is center of screen
 	Mugen::Point start;
+
+        /* virtual coordinates, affected by velocity */
+        double x;
+        double y;
+
 	//! Delta values used for movement defaults to 1
 	double deltaX;
 	double deltaY;

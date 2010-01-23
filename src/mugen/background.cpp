@@ -63,6 +63,8 @@ static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int le
 
 BackgroundElement::BackgroundElement(const string & name, Ast::Section * data):
 visible(true),
+x(0),
+y(0),
 enabled(true),
 deltaX(1),
 deltaY(1),
@@ -231,11 +233,16 @@ BackgroundElement::~BackgroundElement(){
 }
 
 double BackgroundElement::getCurrentX() const {
-    return getStart().x + getVelocityX() + getSinX().get();
+    return getStart().x + getX() + getSinX().get();
 }
 
 double BackgroundElement::getCurrentY() const {
-    return getStart().y + getVelocityY() + getSinY().get();
+    return getStart().y + getY() + getSinY().get();
+}
+	
+void BackgroundElement::act(){
+    x += getVelocityX();
+    y += getVelocityY();
 }
 
 /* Copy the contents of this into element
@@ -323,6 +330,7 @@ void NormalElement::act(){
     if (!getEnabled()){
         return;
     }
+    BackgroundElement::act();
     getSinX().act();
     getSinY().act();
 }
@@ -333,8 +341,8 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     }
     const int addw = sprite->getWidth() + getTileSpacing().x;
     const int addh = sprite->getHeight() + getTileSpacing().y;
-    const int currentX = (bmp.getWidth()/2) + (int) ((getStart().x - cameraX + getVelocityX() + getSinX().get()) + cameraX * (1 - getDeltaX()));
-    const int currentY = (int) ((getStart().y - cameraY + getVelocityY() + getSinY().get()) + cameraY * (1 - getDeltaY()));
+    const int currentX = (int)(bmp.getWidth()/2 + getCurrentX() - cameraX + cameraX * (1 - getDeltaX()));
+    const int currentY = (int)(getCurrentY() - cameraY + cameraY * (1 - getDeltaY()));
     const int windowAddX = (int) (getWindowDeltaX() * cameraX);
     const int windowAddY = (int) (getWindowDeltaY() * cameraY);
 
@@ -449,6 +457,7 @@ void AnimationElement::act(){
         return;
     }
     animations[animation]->logic();
+    BackgroundElement::act();
     getSinX().act();
     getSinY().act();
 }
@@ -463,8 +472,8 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     // const int currentX = (bmp.getWidth()/2) + int((getStart().x - cameraX + getVelocityX() + getSinX().get()) * getDeltaX());
     // const int currentY =  int((getStart().y - cameraY + getVelocityY() + getSinY().get()) * getDeltaY());
 
-    const int currentX = (bmp.getWidth()/2) + (int) ((getStart().x - cameraX + getVelocityX() + getSinX().get()) + cameraX * (1 - getDeltaX()));
-    const int currentY = (int) ((getStart().y - cameraY + getVelocityY() + getSinY().get()) + cameraY * (1 - getDeltaY()));
+    const int currentX = (bmp.getWidth()/2) + (int) (getCurrentX() - cameraX + cameraX * (1 - getDeltaX()));
+    const int currentY = (int) (getCurrentY() - cameraY + cameraY * (1 - getDeltaY()));
     const int windowAddX = (int) (getWindowDeltaX() * cameraX);
     const int windowAddY = (int) (getWindowDeltaY() * cameraY);
 
