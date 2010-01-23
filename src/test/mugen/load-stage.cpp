@@ -20,10 +20,11 @@ int main(int argc, char ** argv){
         try{
             MugenStage stage(Filesystem::find("mugen/stages/kfm.def"));
             stage.load();
+            Global::debug(0, "test") << "Success" << endl;
         } catch (const MugenException & e){
-            Global::debug(0) << "Exception: " << e.getReason() << endl;
+            Global::debug(0, "test") << "Exception: " << e.getReason() << endl;
         } catch (const Filesystem::NotFound & e){
-            Global::debug(0) << "Exception: " << e.getReason() << endl;
+            Global::debug(0, "test") << "Exception: " << e.getReason() << endl;
         }
     // }
 }

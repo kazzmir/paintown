@@ -16,8 +16,9 @@ int main(){
         try{
             Mugen::Character kfm(Filesystem::find("mugen/chars/kfm/kfm.def"));
             kfm.load();
+            Global::debug(0, "test") << "Success" << endl;
         } catch (const MugenException & e){
-            cout << "Test failure!: " << e.getReason() << endl;
+            Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
         }
     // }
 }
