@@ -59,13 +59,8 @@ void Layer::reset(){
     enabled = false;
     animation->reset();
 }
-
-static Ast::Section * getSectionAnimation(const std::string & file, const std::string & number){
-    Ast::AstParse parsed((list<Ast::Section*>*) Def::main(file));
-    return parsed.findSection("Begin Action " + number);
-}
 	
-Scene::Scene(Ast::Section * data, const std::string & storyBoardFile, SpriteMap & sprites):
+Scene::Scene(Ast::Section * data, Ast::AstParse & parsed, SpriteMap & sprites):
 clearColor(-2),
 ticker(0),
 endTime(0),
@@ -74,17 +69,17 @@ background(0),
 layers(9){
     class SceneWalker: public Ast::Walker {
 	public:
-	    SceneWalker(Scene & scene, SpriteMap & sprites, const std::string & storyBoardFile):
+	    SceneWalker(Scene & scene, SpriteMap & sprites, Ast::AstParse & parse):
 	    scene(scene),
 	    sprites(sprites),
-	    storyBoardFile(storyBoardFile){
+	    parsed(parsed){
 	    }
 	    ~SceneWalker(){
 	    }
 	    
 	    Scene & scene;
 	    SpriteMap & sprites;
-	    const std::string storyBoardFile;
+	    Ast::AstParse & parsed;
 	    
 	    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		if (simple == "fadein.time"){
@@ -127,13 +122,12 @@ layers(9){
 		    } catch (const Ast::Exception & e){
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
-		    string action = PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0);
+		    std::string action = PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0);
 		    int num = atoi(action.c_str());
 		    if (num >= 0 && num < 10){
 			Layer *layer = scene.layers[num];
-			Ast::Section * section = getSectionAnimation(storyBoardFile, action);
+			Ast::Section * section = parsed.findSection("Begin Action " + action);
 			layer->setAnimation(Util::getAnimation(section,sprites));
-			delete section;
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
@@ -156,7 +150,7 @@ layers(9){
 	    }
     };
 
-    SceneWalker walker(*this,sprites,storyBoardFile);
+    SceneWalker walker(*this,sprites,parsed);
     data->walk(walker);
 
 #if 0	
@@ -338,7 +332,7 @@ startscene(0){
             SceneWalk walk(baseDir, *this);
             section->walk(walk);
         } else if (PaintownUtil::matchRegex(head, "^scene")){
-	    Scene *scene = new Scene(section,ourDefFile,sprites);
+	    Scene *scene = new Scene(section,parsed,sprites);
 	    scenes.push_back(scene);
 	}
     }

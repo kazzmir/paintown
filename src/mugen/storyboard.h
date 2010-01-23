@@ -16,6 +16,10 @@ class MugenSprite;
 class MugenSound;
 class MugenAnimation;
 
+namespace Ast{
+class AstParse;
+}
+
 namespace Mugen{
  
 class Background;
@@ -47,7 +51,7 @@ class Layer{
 
 class Scene {
     public:
-	Scene(Ast::Section * data, const std::string & storyBoardFile, SpriteMap & sprites);
+	Scene(Ast::Section * data, Ast::AstParse & parsed, SpriteMap & sprites);
 	virtual ~Scene();
 	
         virtual void act();
