@@ -1,6 +1,7 @@
 #include <allegro.h>
 
 #include <iostream>
+#include "util/file-system.h"
 #include "mugen/character.h"
 #include "mugen/mugen_exception.h"
 
@@ -13,7 +14,7 @@ int main(){
 
     // for (int i = 0; i < 3; i++){
         try{
-            Mugen::Character kfm("kfm");
+            Mugen::Character kfm(Filesystem::find("mugen/chars/kfm/kfm.def"));
             kfm.load();
         } catch (const MugenException & e){
             cout << "Test failure!: " << e.getReason() << endl;
