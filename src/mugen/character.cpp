@@ -1964,7 +1964,7 @@ void Character::load(){
     baseDir = Mugen::Util::getFileDir(location);
     const std::string ourDefFile = location;
      
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    Ast::AstParse parsed(Util::parseDef(ourDefFile));
     /* Extract info for our first section of our stage */
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;

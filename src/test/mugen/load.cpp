@@ -1,7 +1,10 @@
 #include <allegro.h>
 
+#include <iostream>
 #include "mugen/character.h"
 #include "mugen/mugen_exception.h"
+
+using namespace std;
 
 int main(){
     install_allegro(SYSTEM_NONE, &errno, atexit);
@@ -13,6 +16,7 @@ int main(){
             Mugen::Character kfm("kfm");
             kfm.load();
         } catch (const MugenException & e){
+            cout << "Test failure!: " << e.getReason() << endl;
         }
     // }
 }
