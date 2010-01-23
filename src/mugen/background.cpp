@@ -358,13 +358,18 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     
     // Set the clipping window
     bmp.setClipRect( getWindow().x + windowAddX, getWindow().y + windowAddY, getWindow().getX2() + windowAddX, getWindow().getY2() + windowAddY );
-    // Render initial sprite
-    sprite->render(currentX, currentY, bmp, getEffects());
-    // Do tiling
+
+    /* Render initial sprite */
+    if (getTile().x == 0 && getTile().y == 0){
+        sprite->render(currentX, currentY, bmp, getEffects());
+    }
+
+    /* Do tiling */
     if (getTile().x > 1){
-	int next = currentX+addw;
+        // sprite->render(currentX, currentY, bmp, getEffects());
+	int next = currentX;
 	// Tile set amount of times but only forward
-	for (int t = 0; t < getTile().x; ++t){
+	for (int t = 0; t <= getTile().x; ++t){
 	    sprite->render(next, currentY, bmp, getEffects());
 	    next += addw;
 	}
