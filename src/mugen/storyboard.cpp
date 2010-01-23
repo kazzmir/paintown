@@ -44,35 +44,40 @@ void Layer::act(int currentTime){
     if (startTime >= currentTime && !enabled){
         enabled = true;
     }
-    if (enabled){
+    if (enabled && animation){
         animation->logic();
     }
 }
 
 void Layer::render(int x, int y, const Bitmap &bmp){
-    if (enabled){
+    if (enabled && animation){
         animation->render(x + offset.x, y + offset.y, bmp);
     }
 }
 
 void Layer::reset(){
     enabled = false;
-    animation->reset();
+    if (animation){
+	animation->reset();
+    }
 }
 	
 Scene::Scene(Ast::Section * data, const std::string & file, Ast::AstParse & parsed, SpriteMap & sprites):
 clearColor(-2),
 ticker(0),
 endTime(0),
-background(0),
-layers(9){
+background(0){
+    for (int i = 0; i < 10; ++i){
+	Layer *layer = new Layer();
+	layers.push_back(layer);
+    }
     class SceneWalker: public Ast::Walker {
 	public:
 	    SceneWalker(Scene & scene, const std::string & file, SpriteMap & sprites, Ast::AstParse & parse):
 	    scene(scene),
 	    file(file),
 	    sprites(sprites),
-	    parsed(parsed){
+	    parsed(parse){
 	    }
 	    ~SceneWalker(){
 	    }
@@ -125,9 +130,10 @@ layers(9){
 		    } catch (const Ast::Exception & e){
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
-		    std::string action = PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0);
-		    int num = atoi(action.c_str());
+		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
 		    if (num >= 0 && num < 10){
+			std::string action;
+			simple >> action;
 			Layer *layer = scene.layers[num];
 			Ast::Section * section = parsed.findSection("begin action " + action);
 			layer->setAnimation(Util::getAnimation(section,sprites));
@@ -141,7 +147,7 @@ layers(9){
 			} catch (Ast::Exception & e){
 			}
 			Layer *layer = scene.layers[num];
-			layer->setOffset(x,y);
+			layer->setOffset(x, y);
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
@@ -161,7 +167,7 @@ layers(9){
 	    }
     };
 
-    SceneWalker walker(*this,file,sprites,parsed);
+    SceneWalker walker(*this, file, sprites, parsed);
     data->walk(walker);
 
     // set initial fade state
