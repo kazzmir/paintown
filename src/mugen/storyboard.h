@@ -127,9 +127,6 @@ class Storyboard {
 	//! Sprites
         Mugen::SpriteMap sprites;
 	
-	//! Animation Lists stored by action number
-	std::map< int, MugenAnimation * > animations;
-	
 	//! Scenes
 	std::vector<Scene *>scenes;
 

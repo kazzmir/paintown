@@ -136,9 +136,8 @@ maxLayers(10){
 		    if (num >= 0 && num < scene.maxLayers){
 			std::string action;
 			simple >> action;
-			Layer *layer = scene.layers[num];
 			Ast::Section * section = parsed.findSection("begin action " + action);
-			layer->setAnimation(Util::getAnimation(section,sprites));
+			scene.layers[num]->setAnimation(Util::getAnimation(section,sprites));
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
@@ -148,16 +147,14 @@ maxLayers(10){
 			    simple >> x >> y;
 			} catch (Ast::Exception & e){
 			}
-			Layer *layer = scene.layers[num];
-			layer->setOffset(x, y);
+			scene.layers[num]->setOffset(x, y);
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
 		    if (num >= 0 && num < scene.maxLayers){
 			int time;
 			simple >> time;
-			Layer *layer = scene.layers[num];
-			layer->setStartTime(time);
+			scene.layers[num]->setStartTime(time);
 		    }
 		} else if (simple == "bgm"){
 		    // do nothing
@@ -265,9 +262,6 @@ startscene(0){
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
 
-    /* set by bg.name = "foo" */
-    string bgname;
-
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
@@ -330,11 +324,7 @@ startscene(0){
 }
 
 Storyboard::~Storyboard(){
-    // Get rid of animation lists;
-    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-        if( i->second )delete i->second;
-    }
-
+    
     // Get rid of scene lists;
     for( std::vector< Scene * >::iterator i = scenes.begin() ; i != scenes.end() ; ++i ){
         if( (*i) )delete (*i);
