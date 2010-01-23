@@ -133,7 +133,7 @@ maxLayers(10){
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
-		    if (num >= 0 && num < 10){
+		    if (num >= 0 && num < scene.maxLayers){
 			std::string action;
 			simple >> action;
 			Layer *layer = scene.layers[num];
@@ -142,7 +142,7 @@ maxLayers(10){
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
-		    if (num >= 0 && num < 10){
+		    if (num >= 0 && num < scene.maxLayers){
 			int x=0,y=0;
 			try{
 			    simple >> x >> y;
@@ -153,7 +153,7 @@ maxLayers(10){
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
-		    if (num >= 0 && num < 10){
+		    if (num >= 0 && num < scene.maxLayers){
 			int time;
 			simple >> time;
 			Layer *layer = scene.layers[num];
