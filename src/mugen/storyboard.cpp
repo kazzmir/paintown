@@ -60,17 +60,17 @@ void Layer::reset(){
     animation->reset();
 }
 	
-Scene::Scene(Ast::Section * data, Ast::AstParse & parsed, SpriteMap & sprites):
+Scene::Scene(Ast::Section * data, const std::string & file, Ast::AstParse & parsed, SpriteMap & sprites):
 clearColor(-2),
 ticker(0),
 endTime(0),
-backgroundName(""),
 background(0),
 layers(9){
     class SceneWalker: public Ast::Walker {
 	public:
-	    SceneWalker(Scene & scene, SpriteMap & sprites, Ast::AstParse & parse):
+	    SceneWalker(Scene & scene, const std::string & file, SpriteMap & sprites, Ast::AstParse & parse):
 	    scene(scene),
+	    file(file),
 	    sprites(sprites),
 	    parsed(parsed){
 	    }
@@ -78,6 +78,7 @@ layers(9){
 	    }
 	    
 	    Scene & scene;
+	    const std::string & file;
 	    SpriteMap & sprites;
 	    Ast::AstParse & parsed;
 	    
@@ -105,7 +106,9 @@ layers(9){
 		    }
 		    scene.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
 		} else if (simple == "bg.name"){
-		    simple >> scene.backgroundName;
+		    std::string name;
+		    simple >> name;
+		    scene.background = new Background(file,name);
 		} else if (simple == "clearcolor"){
 		    int r=0,g=0,b=0;
 		    try {
@@ -158,37 +161,9 @@ layers(9){
 	    }
     };
 
-    SceneWalker walker(*this,sprites,parsed);
+    SceneWalker walker(*this,file,sprites,parsed);
     data->walk(walker);
 
-#if 0	
-	scenes.push_back(walker.scene);
-	bgname = walker.scene->backgroundName;
-	bgname.erase(std::remove(bgname.begin(), bgname.end(), ' '), bgname.end());
-	bgname = Util::fixCase(bgname);
-	Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "' bgname is '" << bgname << "'" << endl;
-   
-        if (PaintownUtil::matchRegex(head, "^scene")){
-            
-
-        } else if (PaintownUtil::matchRegex(head, "begin action")){
-            //int h = atoi(PaintownUtil::captureRegex(head, "begin action *([0-9]+)", 0).c_str());
-            //animations[h] = Util::getAnimation(section, sprites);
-        } else if (PaintownUtil::matchRegex(head, bgname + "def$")){
-            Global::debug(1) << "Checking def!" << endl;
-            if (scenes.back()){
-                Scene *scene = scenes.back();
-                /*
-                std::string name = collection[i]->getHeader();
-                name = Util::fixCase(name);
-                Global::debug(1) << "Checking for background: " << scene->backgroundName << " in Head: " << name << endl;
-                */
-                //Background *manager = new Background(ourDefFile, bgname);
-                //scenes.back()->background = manager;
-            }
-        } //else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
-    }
-#endif
     // set initial fade state
     fader.setState(FADEIN);
 }
@@ -340,7 +315,7 @@ startscene(0){
             SceneWalk walk(baseDir, *this);
             section->walk(walk);
         } else if (PaintownUtil::matchRegex(head, "^scene")){
-	    Scene *scene = new Scene(section,parsed,sprites);
+	    Scene *scene = new Scene(section,ourDefFile,parsed,sprites);
 	    scenes.push_back(scene);
 	}
     }

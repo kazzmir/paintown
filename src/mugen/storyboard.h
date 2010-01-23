@@ -55,7 +55,7 @@ class Layer{
 
 class Scene {
     public:
-	Scene(Ast::Section * data, Ast::AstParse & parsed, SpriteMap & sprites);
+	Scene(Ast::Section * data, const std::string & file, Ast::AstParse & parsed, SpriteMap & sprites);
 	virtual ~Scene();
 	
         virtual void act();
@@ -92,9 +92,6 @@ class Scene {
 	
         //! Default position
 	Mugen::Point defaultPosition;
-	
-        //! Background name for given scene
-	std::string backgroundName;
 	
         //! Background
 	Mugen::Background *background;
