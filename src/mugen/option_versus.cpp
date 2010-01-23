@@ -25,7 +25,6 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 #include "mugen_font.h"
-#include "mugen_storyboard.h"
 #include "mugen_menu.h"
 #include "mugen_stage.h"
 #include "character_select.h"

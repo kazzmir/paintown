@@ -41,7 +41,6 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 #include "mugen_font.h"
-#include "mugen_storyboard.h"
 
 #include "mugen/option_versus.h"
 #include "ast/all.h"

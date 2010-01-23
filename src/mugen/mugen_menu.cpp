@@ -48,7 +48,7 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 #include "mugen_font.h"
-#include "mugen_storyboard.h"
+#include "mugen/storyboard.h"
 
 #include "mugen/option_versus.h"
 #include "ast/all.h"
@@ -158,8 +158,7 @@ void MugenMenu::loadData() throw (MugenException){
                                 simple >> menu.logoFile;
                                 try{
                                     Global::debug(1) << "Logo file " << baseDir << "/" << menu.logoFile << endl;
-                                    menu.logo = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
-                                    menu.logo->load();
+                                    menu.logo = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
                                     Global::debug(1) << "Got Logo Storyboard File: '" << menu.logoFile << "'" << endl;
                                 } catch (const MugenException &ex){
                                     throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
@@ -171,8 +170,7 @@ void MugenMenu::loadData() throw (MugenException){
                                 simple >> menu.introFile;
                                 try{
                                     Global::debug(1) << "Intro file " << baseDir << "/" << menu.introFile << endl;
-                                    menu.intro = new MugenStoryboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
-                                    menu.intro->load();
+                                    menu.intro = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.introFile));
                                     Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
                                 } catch (const MugenException &ex){
                                     throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);
@@ -387,11 +385,11 @@ void MugenMenu::run(){
     // Do we have logos or intros?
     // Logo run it no repeat
     if (logo){
-	logo->run( work,false);
+	logo->run( *work,false);
     }
     // Intro run it no repeat
     if (intro){
-	intro->run( work,false);
+	intro->run( *work,false);
     }
   
     double runCounter = 0;

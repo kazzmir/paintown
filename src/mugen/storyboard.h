@@ -98,6 +98,9 @@ class Scene {
 	
 	//! layers
 	std::vector<Layer *>layers;
+	
+	//! Max Layers - capped at 10
+	const int maxLayers;
 };
 
 class Storyboard {

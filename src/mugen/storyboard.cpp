@@ -66,8 +66,9 @@ Scene::Scene(Ast::Section * data, const std::string & file, Ast::AstParse & pars
 clearColor(-2),
 ticker(0),
 endTime(0),
-background(0){
-    for (int i = 0; i < 10; ++i){
+background(0),
+maxLayers(10){
+    for (int i = 0; i < maxLayers; ++i){
 	Layer *layer = new Layer();
 	layers.push_back(layer);
     }

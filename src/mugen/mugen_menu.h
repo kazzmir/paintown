@@ -19,7 +19,6 @@
 class MugenAnimation;
 class MugenFont;
 class MugenSprite;
-class MugenStoryboard;
 class MugenSection;
 
 namespace Ast{
@@ -30,6 +29,7 @@ namespace Mugen{
     class Background;
     class Character;
     class CharacterSelect;
+    class Storyboard;
 }
 
 class MugenStage;
@@ -149,10 +149,10 @@ class MugenMenu : public Menu {
 	Mugen::Background *background;
 	
 	// Logo
-	MugenStoryboard *logo;
+	Mugen::Storyboard *logo;
 	
 	// Intro
-	MugenStoryboard *intro;
+	Mugen::Storyboard *intro;
 	
 	// Select Info
 	Mugen::CharacterSelect *characterSelect;
