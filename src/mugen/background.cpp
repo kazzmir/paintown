@@ -1410,8 +1410,7 @@ clearColor(-1){
 	// This our background data definitions
         /* probably need a better regex here */
 	} else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " ")){
-	    BackgroundElement *element;
-	    element = getElement(*section_it, sprites, animations);
+	    BackgroundElement * element = getElement(*section_it, sprites, animations);
 	    
 	    // Background or Forgeground?
 	    if (element->getLayer() == Element::Background){
@@ -1464,7 +1463,7 @@ clearColor(-1){
             Controller *controller=0;
             if (type == "anim"){
                 controller = new AnimationController(head,section,*control,*this);
-            } else if (type == "enabled"){
+            } else if (type == "enabled" || type == "enable"){
                 controller = new EnabledController(head,section,*control,*this);
             } else if (type == "null"){
                 controller = new NullController(head,section,*control,*this);
