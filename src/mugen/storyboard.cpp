@@ -66,94 +66,96 @@ ticker(0),
 endTime(0),
 backgroundName(""),
 background(0){
-#if 0
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
-        Ast::Section * section = *section_it;
-	std::string head = section->getName();
-        
-        head = Util::fixCase(head);
+    class SceneWalker: public Ast::Walker {
+	public:
+	    SceneWalker(Scene & scene, SpriteMap & sprites):
+	    scene(scene),
+	    sprites(sprites){
+	    }
+	    ~SceneWalker(){
+	    }
+	    
+	    Scene & scene;
+	    SpriteMap & sprites;
+	    
+	    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		if (simple == "fadein.time"){
+		    int time;
+		    simple >> time;
+		    scene.fader.setFadeInTime(time);
+		} else if (simple == "fadein.col"){
+		    int r=0,g=0,b=0;
+		    try{
+			simple >> r >> g >> b;
+		    } catch (const Ast::Exception & e){
+		    }
+		    scene.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+		} else if (simple == "fadeout.time"){
+		    int time;
+		    simple >> time;
+		    scene.fader.setFadeOutTime(time);
+		} else if (simple == "fadeout.col"){
+		    int r=0,g=0,b=0;
+		    try {
+			simple >> r >> g >> b;
+		    } catch (const Ast::Exception & e){
+		    }
+		    scene.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+		} else if (simple == "bg.name"){
+		    simple >> scene.backgroundName;
+		} else if (simple == "clearcolor"){
+		    int r=0,g=0,b=0;
+		    try {
+			simple >> r >> g >> b;
+		    } catch (const Ast::Exception & e){
+		    }
+		    scene.clearColor = (r == -1 ? r : Bitmap::makeColor(r,g,b));
+		} else if (simple == "end.time"){
+		    simple >> scene.endTime;
+		} else if (simple == "layerall.pos"){
+		    try{
+			simple >> scene.defaultPosition.x;
+			simple >> scene.defaultPosition.y;
+		    } catch (const Ast::Exception & e){
+		    }
+		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
+		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
+		    if (num >= 0 && num < 10){
+			//simple >> scene.layers[num]->actionno;
+		    }
+		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
+		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
+		    if (num >= 0 && num < 10){
+			//simple >> scene.layers[num]->offset.x;
+			//simple >> scene.layers[num]->offset.y;
+		    }
+		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
+		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
+		    if (num >= 0 && num < 10){
+			//simple >> scene.layers[num]->startTime;
+		    }
+		} else if (simple == "bgm"){
+		    // do nothing
+		} else if (simple == "bgm.loop"){
+		    // do nothing
+		} else {
+			Global::debug(0) << "Unhandled option in Scene Section: " << simple.toString();
+		}
+	    }
+    };
+
+    SceneWalker walker(*this,sprites);
+    data->walk(walker);
+
+#if 0	
+	scenes.push_back(walker.scene);
+	bgname = walker.scene->backgroundName;
+	bgname.erase(std::remove(bgname.begin(), bgname.end(), ' '), bgname.end());
+	bgname = Util::fixCase(bgname);
+	Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "' bgname is '" << bgname << "'" << endl;
+   
         if (PaintownUtil::matchRegex(head, "^scene")){
-            class SceneWalker: public Ast::Walker(Scene & scene, SpriteMap & sprites){
-            public:
-                SceneWalker():
-                scene(scene){
-                }
-
-                Scene & scene;
-
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "fadein.time"){
-                        int time;
-                        simple >> time;
-                        scene.fader.setFadeInTime(time);
-                    } else if (simple == "fadein.col"){
-                        int r=0,g=0,b=0;
-                        try{
-                            simple >> r >> g >> b;
-                        } catch (const Ast::Exception & e){
-                        }
-                        scene.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
-                    } else if (simple == "fadeout.time"){
-                        int time;
-                        simple >> time;
-                        scene.fader.setFadeOutTime(time);
-                    } else if (simple == "fadeout.col"){
-                        int r=0,g=0,b=0;
-                        try {
-                            simple >> r >> g >> b;
-                        } catch (const Ast::Exception & e){
-                        }
-                        scene.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
-                    } else if (simple == "bg.name"){
-                        simple >> scene.backgroundName;
-                    } else if (simple == "clearcolor"){
-                        int r=0,g=0,b=0;
-                        try {
-                            simple >> r >> g >> b;
-                        } catch (const Ast::Exception & e){
-                        }
-                        scene.clearColor = (r == -1 ? r : Bitmap::makeColor(r,g,b));
-                    } else if (simple == "end.time"){
-                        simple >> scene.endTime;
-                    } else if (simple == "layerall.pos"){
-                        try{
-                            simple >> scene.defaultAxis.x;
-                            simple >> scene.defaultAxis.y;
-                        } catch (const Ast::Exception & e){
-                        }
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
-                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
-                        if (num >= 0 && num < 10){
-                            simple >> scene->layers[num]->actionno;
-                        }
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
-                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
-                        if (num >= 0 && num < 10){
-                            simple >> scene->layers[num]->offset.x;
-                            simple >> scene->layers[num]->offset.y;
-                        }
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
-                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
-                        if (num >= 0 && num < 10){
-                            simple >> scene->layers[num]->startTime;
-                        }
-                    } else if (simple == "bgm"){
-                        // do nothing
-                    } else if (simple == "bgm.loop"){
-                        // do nothing
-                    } else {
-                            Global::debug(0) << "Unhandled option in Scene Section: " << simple.toString();
-                    }
-                }
-            };
-
-            SceneWalker walker;
-            section->walk(walker);
-            scenes.push_back(walker.scene);
-            bgname = walker.scene->backgroundName;
-            bgname.erase(std::remove(bgname.begin(), bgname.end(), ' '), bgname.end());
-            bgname = Util::fixCase(bgname);
-            Global::debug(1) << "Got Scene number: '" << scenes.size() - 1 << "' bgname is '" << bgname << "'" << endl;
+            
 
         } else if (PaintownUtil::matchRegex(head, "begin action")){
             //int h = atoi(PaintownUtil::captureRegex(head, "begin action *([0-9]+)", 0).c_str());
@@ -172,10 +174,9 @@ background(0){
             }
         } //else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
     }
-        
+#endif
     // set initial fade state
     fader.setState(FADEIN);
-#endif
 }
 
 Scene::~Scene(){
@@ -273,7 +274,6 @@ Storyboard::~Storyboard(){
 }
 
 void Storyboard::load() throw (MugenException){
-#if 0
     // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Util::getFileDir(storyBoardFile);
     const std::string ourDefFile = Util::fixFileName( baseDir, Util::stripDir(storyBoardFile) );
@@ -339,8 +339,9 @@ void Storyboard::load() throw (MugenException){
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "spr"){
-                        simple >> board.spriteFile;
-                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, board.spriteFile), "", board.sprites);
+			std::string temp;
+                        simple >> temp;
+                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), "", board.sprites);
                     } else if (simple == "startscene"){
                         simple >> board.startscene;
                         Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;
@@ -352,9 +353,11 @@ void Storyboard::load() throw (MugenException){
 
             SceneWalk walk(baseDir, *this);
             section->walk(walk);
-        }  
+        } else if (PaintownUtil::matchRegex(head, "^scene")){
+	    Scene *scene = new Scene(section,storyBoardFile,sprites);
+	    scenes.push_back(scene);
+	}
     }
-#endif
 }
 
 void Storyboard::run(const Bitmap &bmp, bool repeat){
