@@ -887,7 +887,6 @@ public:
 	virtual bool isGrabbable(Object*);
 	virtual bool isAttacking();
 	virtual int getWidth() const;
-	virtual int getHeight() const;
 	virtual Network::Message getCreateMessage();
 	virtual void getAttackCoords(int&, int&);
 	virtual double minZDistance() const;
@@ -1127,6 +1126,14 @@ public:
 
         virtual const HitDefinition & getHit() const {
             return this->hit;
+        }
+
+        virtual inline int getHeight() const {
+            return height;
+        }
+
+        virtual inline void setHeight(int h){
+            height = h;
         }
 
         void didHit(Character * enemy);

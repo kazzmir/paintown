@@ -1349,7 +1349,26 @@ void Character::loadCnsFile(const string & path){
                 DataWalker walker(*this);
                 section->walk(walker);
             } else if (head == "size"){
-                /* TODO */
+                class SizeWalker: public Ast::Walker {
+                public:
+                    SizeWalker(Character & self):
+                        self(self){
+                        }
+
+                    Character & self;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "height"){
+                            int x;
+                            simple >> x;
+                            self.setHeight(x);
+                        }
+                    }
+                };
+                
+                SizeWalker walker(*this);
+                section->walk(walker);
+
             } else if (head == "movement"){
                 class MovementWalker: public Ast::Walker {
                 public:
@@ -2626,10 +2645,6 @@ bool Character::isAttacking(){
 
 int Character::getWidth() const{
     return groundfront;
-}
-
-int Character::getHeight() const{
-    return height;
 }
 
 Network::Message Character::getCreateMessage(){
