@@ -79,6 +79,7 @@ background(0){
 	    sprites(sprites),
 	    parsed(parse){
 	    }
+
 	    ~SceneWalker(){
 	    }
 	    
@@ -239,8 +240,8 @@ void Scene::reset(){
     }
 }
 
-Storyboard::Storyboard( const string & s )throw (MugenException):
-storyBoardFile(s),
+Storyboard::Storyboard(const string & file):
+storyBoardFile(file),
 startscene(0){
     // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Util::getFileDir(storyBoardFile);

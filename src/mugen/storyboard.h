@@ -103,7 +103,7 @@ class Scene {
 class Storyboard {
     public:
 	//! Location at dataPath() + "mugen/stages/"
-	Storyboard( const std::string & s ) throw (MugenException);
+	Storyboard(const std::string & file);
 
 	virtual ~Storyboard();
 	
