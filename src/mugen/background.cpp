@@ -118,7 +118,7 @@ linkedElement(0){
             } else if (simple == "trans"){
                 std::string type;
                 simple >> type;
-                type = Mugen::Util::removeSpaces(type);
+                type = Mugen::Util::fixCase(Mugen::Util::removeSpaces(type));
 		TransType trans;
                 if (type == "none" ){
 		    trans = NONE;
