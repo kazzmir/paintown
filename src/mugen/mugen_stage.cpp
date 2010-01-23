@@ -731,7 +731,9 @@ void MugenStage::physics(Object * player){
             mugen->setYVelocity(mugen->getYVelocity() + gravity);
         } else if (mugen->getYVelocity() > 0){
             /* change to the landing state */
-            mugen->changeState(52);
+            // mugen->setXVelocity(0);
+            vector<string> inputs;
+            mugen->changeState(52, inputs);
         }
     }
 
@@ -746,6 +748,7 @@ void MugenStage::physics(Object * player){
                 Mugen::Character * mplayer = (Mugen::Character *) player;
                 Mugen::Character * menemy = (Mugen::Character *) enemy;
                 // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
+                /* TODO: make this cleaner */
                 while (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight()){
                     if (enemy->getX() < player->getX()){
                         /* FIXME! */

@@ -191,7 +191,7 @@ bool StateController::canTrigger(const Character & character, const vector<strin
     return false;
 }
 
-void StateController::activate(Character & guy) const {
+void StateController::activate(Character & guy, const vector<string> & commands) const {
     Global::debug(1) << "Activate controller " << name << endl;
 
     if (changeControl){
@@ -259,7 +259,7 @@ void StateController::activate(Character & guy) const {
             RuntimeValue result = evaluate(value1, Environment(guy));
             if (result.isDouble()){
                 int value = (int) result.getDoubleValue();
-                guy.changeState(value);
+                guy.changeState(value, commands);
             }
             break;
         }
@@ -1212,7 +1212,7 @@ void Character::resetStateTime(){
     stateTime = 0;
 }
         
-void Character::changeState(int stateNumber){
+void Character::changeState(int stateNumber, const vector<string> & inputs){
     Global::debug(1) << "Change to state " << stateNumber << endl;
     previousState = currentState;
     currentState = stateNumber;
@@ -1220,6 +1220,9 @@ void Character::changeState(int stateNumber){
     if (states[currentState] != 0){
         State * state = states[currentState];
         state->transitionTo(*this);
+        doStates(inputs, currentState);
+    } else {
+        Global::debug(0) << "Unknown state " << currentState << endl;
     }
 }
 
@@ -1619,6 +1622,8 @@ void Character::parseState(Ast::Section * section){
                     if (types.find(type) != types.end()){
                         map<string, StateController::Type>::iterator what = types.find(type);
                         controller->setType((*what).second);
+                    } else {
+                        Global::debug(0) << "Unknown state controller type " << type << endl;
                     }
                 } else if (simple == "value"){
                     controller->setValue1((Ast::Value*) simple.getValue()->copy());
@@ -2460,9 +2465,13 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     doStates(active, -3);
     doStates(active, -2);
     doStates(active, -1);
+    doStates(active, currentState);
+
+    /*
     while (doStates(active, currentState)){
-        /* empty */
+        / * empty * /
     }
+    */
 }
         
 void Character::didHit(Character * enemy){
@@ -2475,11 +2484,14 @@ void Character::wasHit(Character * enemy, const HitDefinition & hisHit){
     setYVelocity(hitState.yVelocity);
     lastTicket = enemy->getTicket();
     
-    changeState(5000);
+    vector<string> active;
+    changeState(5000, active);
 
+    /*
     vector<string> active;
     while (doStates(active, currentState)){
     }
+    */
 }
 
 /* returns true if a state change occured */
@@ -2513,7 +2525,7 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
             try{
                 if (controller->canTrigger(*this, active)){
                     /* activate may modify the current state */
-                    controller->activate(*this);
+                    controller->activate(*this, active);
 
                     if (stateNumber >= 0 && getCurrentState() != oldState){
                         return true;
@@ -2589,7 +2601,8 @@ MugenSound * Character::getSound(int group, int item) const {
 }
 
 void Character::doTurn(){
-    changeState(5);
+    vector<string> active;
+    changeState(5, active);
     reverseFacing();
 }
 

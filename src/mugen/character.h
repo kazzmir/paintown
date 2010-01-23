@@ -661,7 +661,7 @@ public:
     };
 
     bool canTrigger(const Character & character, const std::vector<std::string> & commands) const;
-    void activate(Character & who) const;
+    void activate(Character & who, const std::vector<std::string> & commands) const;
 
     virtual inline void setType(Type type){
         this->type = type;
@@ -892,7 +892,7 @@ public:
 	virtual double minZDistance() const;
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
-        virtual void changeState(int state);
+        virtual void changeState(int state, const std::vector<std::string> & inputs);
 
         virtual void setAnimation(int animation);
 
