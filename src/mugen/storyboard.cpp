@@ -127,11 +127,11 @@ layers(9){
 		    } catch (const Ast::Exception & e){
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
-		    std::string action = PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0);
+		    string action = PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0);
 		    int num = atoi(action.c_str());
 		    if (num >= 0 && num < 10){
 			Layer *layer = scene.layers[num];
-			Ast::Section * section = getSectionAnimation(storyBoardFile,action);
+			Ast::Section * section = getSectionAnimation(storyBoardFile, action);
 			layer->setAnimation(Util::getAnimation(section,sprites));
 			delete section;
 		    }
