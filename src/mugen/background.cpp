@@ -119,16 +119,16 @@ linkedElement(0){
                 std::string type;
                 simple >> type;
                 type = Mugen::Util::fixCase(Mugen::Util::removeSpaces(type));
-		TransType trans;
+		TransType trans = NONE;
                 if (type == "none" ){
 		    trans = NONE;
-		} else if( type == "add" ){
-		    trans =  ADD;
-		} else if( type == "add1" ){
+		} else if (type == "add"){
+		    trans = ADD;
+		} else if (type == "add1"){
 		    trans = ADD1;
-		} else if( type == "sub" ){
+		} else if (type == "sub"){
 		    trans = SUB;
-		} else if( type == "addalpha" ){
+		} else if (type == "addalpha"){
 		    trans = ADDALPHA;
 		}
 		self.setTrans(trans);
@@ -366,14 +366,36 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 	// Tile set amount of times but only forward
 	for (int t = 0; t < getTile().x; ++t){
 	    sprite->render(next, currentY, bmp, getEffects());
-	    next+=addw;
+	    next += addw;
 	}
     } else if (getTile().x == 1){
 	// infinite tiling goes in both directions
+        int start = currentX;
 	int next = currentX+addw;
 	int prev = currentX-addw;
 	bool prevDone = false;
 	bool nextDone = false;
+
+        int x1 = 0;
+        int x2 = bmp.getWidth();
+
+        while (start - sprite->getX() > x1){
+            start -= addw;
+        }
+
+        while (start - sprite->getX() + sprite->getWidth() < x1){
+            start += addw;
+        }
+
+        while (start - sprite->getX() < x2){
+            sprite->render(start, currentY, bmp, getEffects());
+            // Global::debug(0) << "Render background at " << start << endl;
+            start += addw;
+        }
+
+        // Global::debug(0) << "Done tiling" << endl;
+
+        /*
 	while (!prevDone && !nextDone){
 	    if (!nextDone){
 		sprite->render(next, currentY, bmp, getEffects());
@@ -392,6 +414,7 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 		prevDone = true;
 	    }
 	}
+        */
     }
     if (getTile().y > 1){
 	int next = currentY+addh;
