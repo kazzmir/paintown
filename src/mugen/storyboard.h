@@ -32,6 +32,10 @@ class Layer{
         virtual void act(int currentTime);
         virtual void render(int x, int y, const Bitmap &);
         virtual void reset();
+	virtual inline void setOffset(int x, int y){
+	    this->offset.x = x;
+	    this->offset.y = y;
+	}
         virtual inline void setStartTime(int time){
             this->startTime = time;
         }

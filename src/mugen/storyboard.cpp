@@ -126,19 +126,27 @@ layers(9){
 		    int num = atoi(action.c_str());
 		    if (num >= 0 && num < 10){
 			Layer *layer = scene.layers[num];
-			Ast::Section * section = parsed.findSection("Begin Action " + action);
+			Ast::Section * section = parsed.findSection("begin action " + action);
 			layer->setAnimation(Util::getAnimation(section,sprites));
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
 		    if (num >= 0 && num < 10){
-			//simple >> scene.layers[num]->offset.x;
-			//simple >> scene.layers[num]->offset.y;
+			int x=0,y=0;
+			try{
+			    simple >> x >> y;
+			} catch (Ast::Exception & e){
+			}
+			Layer *layer = scene.layers[num];
+			layer->setOffset(x,y);
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
 		    if (num >= 0 && num < 10){
-			//simple >> scene.layers[num]->startTime;
+			int time;
+			simple >> time;
+			Layer *layer = scene.layers[num];
+			layer->setStartTime(time);
 		    }
 		} else if (simple == "bgm"){
 		    // do nothing
