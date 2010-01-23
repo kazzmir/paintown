@@ -63,9 +63,9 @@ static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int le
 
 BackgroundElement::BackgroundElement(const string & name, Ast::Section * data):
 visible(true),
+enabled(true),
 x(0),
 y(0),
-enabled(true),
 deltaX(1),
 deltaY(1),
 window(0,0,319,239),
@@ -239,7 +239,13 @@ double BackgroundElement::getCurrentX() const {
 double BackgroundElement::getCurrentY() const {
     return getStart().y + getY() + getSinY().get();
 }
-	
+        
+void BackgroundElement::reset(){
+    x = 0;
+    y = 0;
+    /* TODO: set velocity to its original velocity and whatever else */
+}
+
 void BackgroundElement::act(){
     x += getVelocityX();
     y += getVelocityY();

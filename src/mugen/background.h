@@ -208,6 +208,8 @@ class BackgroundElement : public Element {
             return y;
         }
 
+        virtual void reset();
+
     private:
         //! get linked element
         BackgroundElement *getLinkedElement();
