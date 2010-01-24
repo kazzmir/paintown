@@ -8,6 +8,7 @@
 #include <map>
 
 #include "Value.h"
+#include "util/funcs.h"
 
 namespace Ast{
 
@@ -54,7 +55,7 @@ public:
             }
             out << *it;
         }
-        return out.str();
+        return Util::trim(out.str());
     }
     
     /*

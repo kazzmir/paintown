@@ -3,23 +3,24 @@
 
 #include "Value.h"
 #include <string>
+#include "util/funcs.h"
 
 namespace Ast{
 
-class Filename: public Value{
+class Filename: public Value {
 public:
     Filename(const std::string * str):
     str(str){
     }
 
     virtual std::string toString() const {
-        return *str;
+        return Util::trim(*str);
     }
 
     using Value::operator>>;
 
     virtual const Value & operator>>(std::string & str) const {
-        str = *(this->str);
+        str = Util::trim(*(this->str));
         return *this;
     }
     

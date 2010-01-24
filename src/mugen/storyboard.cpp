@@ -121,7 +121,7 @@ maxLayers(10){
 		} else if (simple == "bg.name"){
 		    std::string name;
 		    simple >> name;
-		    scene.background = new Background(file, PaintownUtil::trim(name));
+		    scene.background = new Background(file, name);
 		} else if (simple == "clearcolor"){
 		    int r=0,g=0,b=0;
 		    try {

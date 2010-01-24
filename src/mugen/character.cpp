@@ -1059,7 +1059,7 @@ void Character::setAnimation(int animation){
 }
 
 void Character::loadCmdFile(const string & path){
-    string full = Filesystem::find(baseDir + PaintownUtil::trim(path));
+    string full = Filesystem::find(baseDir + path);
     try{
         int defaultTime = 15;
         int defaultBufferTime = 1;
@@ -1227,7 +1227,7 @@ void Character::changeState(int stateNumber, const vector<string> & inputs){
 }
 
 void Character::loadCnsFile(const string & path){
-    string full = Filesystem::find(baseDir + PaintownUtil::trim(path));
+    string full = Filesystem::find(baseDir + path);
     try{
         /* cns can use the Cmd parser */
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
@@ -1916,7 +1916,7 @@ static string findStateFile(const string & base, const string & path){
 }
 
 void Character::loadStateFile(const std::string & base, const string & path){
-    string full = findStateFile(base, PaintownUtil::trim(path));
+    string full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     try{
         /* st can use the Cmd parser */
