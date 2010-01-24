@@ -450,7 +450,7 @@ public:
 };
 
 void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
-    if (!getVisible()){
+    if (!getVisible() || !getEnabled()){
         return;
     }
     const int addw = sprite->getWidth() + getTileSpacing().x;
@@ -614,7 +614,7 @@ void AnimationElement::act(){
 }
 
 void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
-    if (!getVisible()){
+    if (!getVisible() || !getEnabled()){
         return;
     }
     const int addw = getTileSpacing().x;
