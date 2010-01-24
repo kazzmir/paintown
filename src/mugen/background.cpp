@@ -16,7 +16,8 @@
 
 using namespace std;
 namespace PaintownUtil = ::Util;
-using namespace Mugen;
+
+namespace Mugen{
 
 static double interpolate(double f1, double f2, double p){
     return (f1 * (1.0 - p)) + (f2 * p);
@@ -341,6 +342,48 @@ void NormalElement::act(){
     getSinY().act();
 }
 
+class Tiler{
+public:
+    Tiler(const Point & tile, int startX, int startY, int nextX, int nextY, int spriteOffsetX, int spriteWidth, int maxSize){
+        if (tile.x == 0 && tile.y == 0){
+            points.push_back(Point(startX, startY));
+        } else if (tile.x == 1 && tile.y != 1){
+            int start = startX;
+
+            int x1 = 0;
+            int x2 = maxSize;
+
+            while (start - spriteOffsetX > x1){
+                start -= nextX;
+            }
+
+            while (start - spriteOffsetX + spriteWidth < x1){
+                start += nextX;
+            }
+
+            while (start - spriteOffsetX < x2){
+                points.push_back(Point(start, startY));
+                start += nextX;
+            }
+        }
+
+        current_point = points.begin();
+    }
+
+    bool hasMore(){
+        return current_point != points.end();
+    }
+
+    Point nextPoint(){
+        Point point = *current_point;
+        current_point++;
+        return point;
+    }
+
+    vector<Point> points;
+    vector<Point>::iterator current_point;
+};
+
 void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     if (!getVisible()){
         return;
@@ -359,6 +402,13 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     // Set the clipping window
     bmp.setClipRect( getWindow().x + windowAddX, getWindow().y + windowAddY, getWindow().getX2() + windowAddX, getWindow().getY2() + windowAddY );
 
+    Tiler tiler(getTile(), currentX, currentY, addw, addh, sprite->getX(), sprite->getWidth(), bmp.getWidth());
+    while (tiler.hasMore()){
+        Point where = tiler.nextPoint();
+        sprite->render(where.x, where.y, bmp, getEffects());
+    }
+
+#if 0
     /* Render initial sprite */
     if (getTile().x == 0 && getTile().y == 0){
         sprite->render(currentX, currentY, bmp, getEffects());
@@ -369,7 +419,7 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
         // sprite->render(currentX, currentY, bmp, getEffects());
 	int next = currentX;
 	// Tile set amount of times but only forward
-	for (int t = 0; t <= getTile().x; ++t){
+	for (int t = 0; t < getTile().x; ++t){
 	    sprite->render(next, currentY, bmp, getEffects());
 	    next += addw;
 	}
@@ -453,6 +503,7 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 	    }
 	}
     }
+#endif
     // Reset clip state
     bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
@@ -1585,4 +1636,6 @@ std::vector< BackgroundElement * > Background::getIDList(int ID){
     }
 
     return ourElements;
+}
+
 }
