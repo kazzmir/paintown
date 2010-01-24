@@ -907,17 +907,22 @@ dontReset(false){
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "time"){
-                int start=0, end=0, loop=-1;
+                int start=0, end=0, loop=-2;
                 try {
                     simple >> start >> end >> loop;
                 } catch (const Ast::Exception & e){
                 }
                 self.timeStart = start;
                 self.endTime = end;
-                self.loopTime = loop;
+                if (loop != -2){
+                    self.loopTime = loop;
+                    self.dontReset = true;
+                }
+                /*
                 if (loop == -1){
                     self.dontReset = true;
                 }
+                */
             } else if (simple == "ctrlid"){
                 try{
                     while (true){
