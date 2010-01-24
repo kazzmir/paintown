@@ -1556,7 +1556,7 @@ clearColor(-1){
                 }
             }
             priorElement = element;
-	} else if(PaintownUtil::matchRegex(head, "begin *action")){
+	} else if (PaintownUtil::matchRegex(head, "begin *action")){
             /* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
 	    head.replace(0,13,"");
 	    int h;

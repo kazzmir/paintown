@@ -115,18 +115,18 @@ maxLayers(10){
 			simple >> r >> g >> b;
 		    } catch (const Ast::Exception & e){
 		    }
-		    scene.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+		    scene.fader.setFadeOutColor(Bitmap::makeColor(r, g, b));
 		} else if (simple == "bg.name"){
 		    std::string name;
 		    simple >> name;
-		    scene.background = new Background(file,name);
+		    scene.background = new Background(file, PaintownUtil::trim(name));
 		} else if (simple == "clearcolor"){
 		    int r=0,g=0,b=0;
 		    try {
 			simple >> r >> g >> b;
 		    } catch (const Ast::Exception & e){
 		    }
-		    scene.clearColor = (r == -1 ? r : Bitmap::makeColor(r,g,b));
+		    scene.clearColor = (r == -1 ? r : Bitmap::makeColor(r, g, b));
 		} else if (simple == "end.time"){
 		    simple >> scene.endTime;
 		} else if (simple == "layerall.pos"){
@@ -215,8 +215,9 @@ void Scene::render(const Bitmap & bmp){
     }
     // backgrounds
     if (background){
-        background->renderBackground(0,0, bmp);
+        background->renderBackground(0, 0, bmp);
     }
+
     // layers
     for (std::vector< Layer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
         Layer *layer = *i;
@@ -462,4 +463,3 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
         }
     }
 }
-
