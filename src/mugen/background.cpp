@@ -574,7 +574,7 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
 
-AnimationElement::AnimationElement(std::map< int, MugenAnimation * >  & animations, const string & name, Ast::Section * data):
+AnimationElement::AnimationElement(std::map< int, MugenAnimation * > & animations, const string & name, Ast::Section * data):
 BackgroundElement(name, data),
 animation(0),
 animations(animations){
@@ -630,6 +630,17 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 
     // Set the clipping window
     bmp.setClipRect( getWindow().x + windowAddX, getWindow().y + windowAddY, getWindow().getX2() + windowAddX, getWindow().getY2() + windowAddY );
+
+    Tiler tiler(getTile(), currentX, currentY, addw, addh, 0, 0, 0, 0, bmp.getWidth(), bmp.getHeight());
+
+    MugenAnimation * ani = animations[animation];
+
+    while (tiler.hasMore()){
+        Point where = tiler.nextPoint();
+        ani->render(where.x, where.y, bmp);
+    }
+
+#if 0
     // Render initial animation
     animations[animation]->render(currentX, currentY, bmp);
     // Do tiling
@@ -697,6 +708,7 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 	    }
 	}
     }
+#endif
     // Reset clip state
     bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
