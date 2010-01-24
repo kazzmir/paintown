@@ -761,7 +761,7 @@ class VersusScreen {
 	VersusScreen();
 	virtual ~VersusScreen();
 	
-	virtual void loadCharacters(CharacterInfo & player1, CharacterInfo & player2, const Bitmap &);
+	virtual void render(CharacterInfo & player1, CharacterInfo & player2, const Bitmap &);
 	
 	virtual inline void setBackground(Background * background){
 	    this->background = background;
@@ -784,7 +784,7 @@ class VersusScreen {
 	}
 	
 	virtual inline void setPlayer1Facing(int facing){
-	    this->player2Effects.facing = facing;
+	    this->player1Effects.facing = facing;
 	}
 	
 	virtual inline void setPlayer2Facing(int facing){
@@ -840,6 +840,8 @@ class CharacterSelect {
 	
 	virtual void parseSelect(const std::string &selectFile);
 	
+	virtual void renderVersusScreen(const Bitmap &);
+	
 	virtual inline void setPlayer1Keys(const InputMap<CharacterKeys> &input){
 	    player1.setInput(input);
 	}
@@ -854,7 +856,7 @@ class CharacterSelect {
 	    return player1.getCurrentCell()->getCharacter()->getDefinitionFile();
 	}
 	virtual inline const std::string &getPlayer2(){
-	    return player1.getCurrentCell()->getCharacter()->getDefinitionFile();
+	    return player2.getCurrentCell()->getCharacter()->getDefinitionFile();
 	}
 	virtual inline const std::string &getStage(){
 	    return grid.getStageHandler().getStage();

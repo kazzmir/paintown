@@ -732,7 +732,7 @@ time(0){
 VersusScreen::~VersusScreen(){
 }
 
-void VersusScreen::loadCharacters(CharacterInfo & player1, CharacterInfo & player2, const Bitmap &bmp){
+void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, const Bitmap &bmp){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool escaped = false;
@@ -773,6 +773,10 @@ void VersusScreen::loadCharacters(CharacterInfo & player1, CharacterInfo & playe
 		}
 		
 		// Logic
+		if (ticker >= time){
+		    done = true;
+		    fader.setState(FADEOUT);
+		}
 		
 		// Fader
 		fader.act();
@@ -799,6 +803,10 @@ void VersusScreen::loadCharacters(CharacterInfo & player1, CharacterInfo & playe
 	if ( draw ){
 	    // render backgrounds
 	    background->renderBackground(0,0,workArea);
+	    
+	    // render portraits
+	    player1.getPortrait()->render(player1Position.x,player1Position.y,workArea,player1Effects);
+	    player2.getPortrait()->render(player2Position.x,player2Position.y,workArea,player2Effects);
 	    
 	    // render fonts
 	    player1Font.render(player1.getName(),workArea);
@@ -1556,6 +1564,11 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	throw ReturnException();
     }
 }
+
+void CharacterSelect::renderVersusScreen(const Bitmap & bmp){
+    versus.render(*player1.getCurrentCell()->getCharacter(),*player2.getCurrentCell()->getCharacter(),bmp);
+}
+	
 
 bool CharacterSelect::checkPlayerData(){
     switch (type){

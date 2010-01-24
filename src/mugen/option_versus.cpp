@@ -238,6 +238,7 @@ void MugenOptionVersus::run(bool &endGame){
 	select.setPlayer1Keys(getSelect1Keys());
 	select.setPlayer2Keys(getSelect2Keys());
 	select.run(getText(), screen);
+	select.renderVersusScreen(screen);
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
 	return;

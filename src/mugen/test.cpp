@@ -270,6 +270,23 @@ static InputMap<Mugen::CharacterKeys> getPlayer1Keys(){
     return input;
 }
 
+static InputMap<Mugen::CharacterKeys> getPlayer2Keys(){
+     InputMap<Mugen::CharacterKeys> input;
+    input.set(Keyboard::Key_H, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_Y, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_J, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_G, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_I, 0, true, Mugen::A);
+    input.set(Keyboard::Key_O, 0, true, Mugen::B);
+    input.set(Keyboard::Key_P, 0, true, Mugen::C);
+    input.set(Keyboard::Key_8, 0, true, Mugen::X);
+    input.set(Keyboard::Key_9, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_0, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_L, 0, true, Mugen::Start);
+    return input;
+}
+
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
@@ -536,7 +553,9 @@ void doSelectScreen(const std::string &file){
     try {
 	selector.load();
 	selector.setPlayer1Keys(getPlayer1Keys());
+	selector.setPlayer2Keys(getPlayer2Keys());
 	selector.run("Test", Bitmap::temporaryBitmap(640,480));
+	selector.renderVersusScreen(Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
     }
