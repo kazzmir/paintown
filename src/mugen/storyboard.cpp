@@ -38,6 +38,9 @@ animation(0){
 }
 
 Layer::~Layer(){
+    if (animation){
+	delete animation;
+    }
 }
 
 void Layer::act(int currentTime){
