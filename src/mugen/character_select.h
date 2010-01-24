@@ -756,6 +756,79 @@ class Cursor{
 	State state;
 };
 
+class VersusScreen {
+    public:
+	VersusScreen();
+	virtual ~VersusScreen();
+	
+	virtual void loadCharacters(CharacterInfo & player1, CharacterInfo & player2, const Bitmap &);
+	
+	virtual inline void setBackground(Background * background){
+	    this->background = background;
+	}
+	
+	virtual inline void setTime(int time){
+	    this->time = time;
+	}
+	
+	virtual inline MugenFadeTool & getFadeTool(){
+	    return this->fader;
+	}
+	
+	virtual inline void setPlayer1Position(const Mugen::Point & point){
+	    this->player1Position = point;
+	}
+	
+	virtual inline void setPlayer2Position(const Mugen::Point & point){
+	    this->player2Position = point;
+	}
+	
+	virtual inline void setPlayer1Facing(int facing){
+	    this->player2Effects.facing = facing;
+	}
+	
+	virtual inline void setPlayer2Facing(int facing){
+	    this->player2Effects.facing = facing;
+	}
+	
+	virtual inline void setPlayer1Scale(double x, double y){
+	    this->player1Effects.scalex = x;
+	    this->player1Effects.scaley = y;
+	}
+	
+	virtual inline void setPlayer2Scale(double x, double y){
+	    this->player2Effects.scalex = x;
+	    this->player2Effects.scaley = y;
+	}
+	
+	virtual inline FontHandler & getPlayer1Font(){
+	    return this->player1Font;
+	}
+	
+	virtual inline FontHandler & getPlayer2Font(){
+	    return this->player2Font;
+	}
+    private:
+	//! Background
+	Background *background;
+	//! Time to display
+	int time;
+	//! Fade tool
+	MugenFadeTool fader;
+	//! Player 1 portrait
+	Mugen::Point player1Position;
+	//! Player 1 effects (facing, scale)
+	Mugen::Effects player1Effects;
+	//! Player 2 portrait
+	Mugen::Point player2Position;
+	//! Player 2 effects (facing, scale)
+	Mugen::Effects player2Effects;
+	//! Player 1 font
+	FontHandler player1Font;
+	//! Player 2 font
+	FontHandler player2Font;
+};
+
 class CharacterSelect {
     public:
         CharacterSelect(const std::string & file, const GameType &type);
@@ -833,6 +906,9 @@ class CharacterSelect {
 	
 	//! Select background
 	Mugen::Background *background;
+	
+	//! Versus Screen
+	VersusScreen versus;
 };
 
 /* Older data */

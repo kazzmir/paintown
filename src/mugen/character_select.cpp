@@ -724,6 +724,108 @@ void Cursor::renderPortrait(const Bitmap &bmp){
     }
 }
 
+VersusScreen::VersusScreen():
+background(0),
+time(0){
+}
+
+VersusScreen::~VersusScreen(){
+}
+
+void VersusScreen::loadCharacters(CharacterInfo & player1, CharacterInfo & player2, const Bitmap &bmp){
+    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+    bool done = false;
+    bool escaped = false;
+    
+    int ticker = 0;
+    
+    // Set the fade state
+    fader.setState(FADEIN);
+  
+    double runCounter = 0;
+    Global::speed_counter = 0;
+    Global::second_counter = 0;
+    int game_time = 100;
+    
+    // Set game keys temporary
+    InputMap<int> gameInput;
+    gameInput.set(Keyboard::Key_ESC, 10, true, 0);
+    
+    while ( ! done && fader.getState() != RUNFADE ){
+    
+	bool draw = false;
+	
+	if ( Global::speed_counter > 0 ){
+	    draw = true;
+	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+	    while ( runCounter >= 1.0 ){
+		// tick tock
+		ticker++;
+		
+		runCounter -= 1;
+		// Key handler
+		InputManager::poll();
+		
+		InputMap<int>::Output out = InputManager::getMap(gameInput);
+		if (out[0]){
+		    done = escaped = true;
+		    fader.setState(FADEOUT);
+		}
+		
+		// Logic
+		
+		// Fader
+		fader.act();
+		
+		// Backgrounds
+		background->act();
+		
+		// Player fonts
+		player1Font.act();
+		player2Font.act();
+	    }
+	    
+	    Global::speed_counter = 0;
+	}
+		
+	while ( Global::second_counter > 0 ){
+	    game_time--;
+	    Global::second_counter--;
+	    if ( game_time < 0 ){
+		    game_time = 0;
+	    }
+	}
+
+	if ( draw ){
+	    // render backgrounds
+	    background->renderBackground(0,0,workArea);
+	    
+	    // render fonts
+	    player1Font.render(player1.getName(),workArea);
+	    player2Font.render(player2.getName(),workArea);
+	    
+	    // render Foregrounds
+	    background->renderForeground(0,0,workArea);
+	    
+	    // render fades
+	    fader.draw(workArea);
+	    
+	    // Finally render to screen
+	    workArea.Stretch(bmp);
+	    bmp.BlitToScreen();
+	}
+
+	while ( Global::speed_counter < 1 ){
+		PaintownUtil::rest( 1 );
+	}
+    }
+    
+    // **FIXME Hack figure something out
+    if (escaped){
+	throw ReturnException();
+    }
+}
+
 static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end){
     Ast::AstParse::section_iterator last = iterator;
     vector<Ast::Section*> stuff;
@@ -1111,8 +1213,108 @@ void CharacterSelect::load() throw (MugenException){
 	    Mugen::Background *manager = new Mugen::Background(systemFile, "selectbg");
 	    background = manager;
 	} else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
-	else if (head == "vs screen" ){ /* Ignore for now */ }
-	else if (head == "versusbgdef" ){ /* Ignore for now */ }
+	else if (head == "vs screen" ){
+	    class VersusWalker: public Ast::Walker{
+            public:
+                VersusWalker(VersusScreen & self, std::vector<MugenFont *> & fonts):
+                    self(self),
+		    fonts(fonts){
+                    }
+
+                VersusScreen & self;
+		std::vector<MugenFont *> & fonts;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "time" ){
+			int time;
+			simple >> time;
+			self.setTime(time);
+		    } else if (simple == "fadein.time"){
+			int time;
+			simple >> time;
+			self.getFadeTool().setFadeInTime(time);
+		    } else if (simple == "fadeout.time"){
+			int time;
+			simple >> time;
+			self.getFadeTool().setFadeOutTime(time);
+		    } else if (simple == "p1.pos"){
+			int x=0,y=0;
+			try{
+			    simple >> x >> y;
+			} catch (Ast::Exception & e){
+			}
+			self.setPlayer1Position(Mugen::Point(x,y));
+		    } else if (simple == "p1.facing"){
+			int face;
+			simple >> face;
+			self.setPlayer1Facing(face);
+		    } else if (simple == "p1.scale"){
+			double x,y;
+			try{
+			    simple >> x >> y;
+			} catch (Ast::Exception & e){
+			}
+			self.setPlayer1Scale(x,y);
+		    } else if (simple == "p2.pos"){
+			int x=0,y=0;
+			try{
+			    simple >> x >> y;
+			} catch (Ast::Exception & e){
+			}
+			self.setPlayer2Position(Mugen::Point(x,y));
+		    } else if (simple == "p2.facing"){
+			int face;
+			simple >> face;
+			self.setPlayer2Facing(face);
+		    } else if (simple == "p2.scale"){
+			double x,y;
+			try{
+			    simple >> x >> y;
+			} catch (Ast::Exception & e){
+			}
+			self.setPlayer2Scale(x,y);
+		    } else if (simple == "p1.name.pos"){
+			int x, y;
+			try {
+			    simple >> x >> y;
+			} catch (Ast::Exception & e){
+			}
+			self.getPlayer1Font().setLocation(x,y);
+		    } else if (simple == "p1.name.font"){
+			int index=0, bank=0, position=0;
+			try {
+			    simple >> index >> bank >> position;
+			} catch (const Ast::Exception & e){
+			    //ignore for now
+			}
+			self.getPlayer1Font().setPrimary(fonts[index-1],bank,position);
+		    } else if (simple == "p2.name.pos"){
+			int x, y;
+			try {
+			    simple >> x >> y;
+			} catch (Ast::Exception & e){
+			}
+			self.getPlayer2Font().setLocation(x,y);
+		    } else if (simple == "p2.name.font"){
+			int index=0, bank=0, position=0;
+			try {
+			    simple >> index >> bank >> position;
+			} catch (const Ast::Exception & e){
+			    //ignore for now
+			}
+			self.getPlayer2Font().setPrimary(fonts[index-1],bank,position);
+		    }
+		}
+	    };
+	    
+            VersusWalker walker(versus,fonts);
+            section->walk(walker);
+	}
+	else if (head == "versusbgdef" ){
+	    /* Background management */
+	    Mugen::Background *manager = new Mugen::Background(systemFile, "versusbg");
+	    versus.setBackground(manager);
+	}
 	else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
 	else if (head == "demo mode" ){ /* Ignore for now */ }
 	else if (head == "continue screen" ){ /* Ignore for now */ }
