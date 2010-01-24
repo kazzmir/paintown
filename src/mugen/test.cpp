@@ -937,7 +937,7 @@ int main( int argc, char ** argv ){
 		story.setInput(getPlayer1Keys());
 		// run it and repeat
 		Bitmap screen(640, 480);
-		story.run(screen, false);
+		story.run(screen, true);
             } catch (const MugenException & ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;

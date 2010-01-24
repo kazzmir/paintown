@@ -68,6 +68,7 @@ void Layer::reset(){
 	
 Scene::Scene(Ast::Section * data, const std::string & file, Ast::AstParse & parsed, SpriteMap & sprites):
 clearColor(-2),
+clearColorSet(false),
 ticker(0),
 endTime(0),
 defaultPositionSet(false),
@@ -128,6 +129,7 @@ maxLayers(10){
 		    } catch (const Ast::Exception & e){
 		    }
 		    scene.clearColor = (r == -1 ? r : Bitmap::makeColor(r, g, b));
+		    scene.clearColorSet = true;
 		} else if (simple == "end.time"){
 		    simple >> scene.endTime;
 		} else if (simple == "layerall.pos"){
@@ -272,7 +274,12 @@ startscene(0){
     Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
 
     // Default position for all layers
+    bool defaultPositionSet = false;
     Mugen::Point defaultPosition;
+    
+    // Default clear color for all scenes
+    bool clearColorSet = false;
+    int clearColor;
     
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
@@ -331,10 +338,22 @@ startscene(0){
         } else if (PaintownUtil::matchRegex(head, "^scene")){
 	    Scene *scene = new Scene(section, ourDefFile, parsed, sprites);
 	    scenes.push_back(scene);
-	    if (!scene->getDefaultPositionSet()){
+	    // Check default position
+	    if (!scene->getDefaultPositionSet() && defaultPositionSet){
 		scene->setDefaultPosition(defaultPosition);
 	    }
-	    defaultPosition = scene->getDefaultPosition();
+	    if (scene->getDefaultPositionSet()){
+		defaultPosition = scene->getDefaultPosition();
+		defaultPositionSet = true;
+	    }
+	    // Check default clear color
+	    if (!scene->getClearColorSet() && clearColorSet){
+		scene->setClearColor(clearColor);
+	    }
+	    if (scene->getClearColorSet()){
+		clearColor = scene->getClearColor();
+		clearColorSet = true;
+	    }
 	}
     }
 }

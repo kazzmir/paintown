@@ -76,6 +76,18 @@ class Scene {
 	    return this->fader;
 	}
 	
+	virtual inline void setClearColor(int color){
+	    this->clearColor = color;
+	}
+	
+	virtual inline const int getClearColor() const {
+	    return this->clearColor;
+	}
+	
+	virtual inline const bool getClearColorSet() const {
+	    return this->clearColorSet;
+	}
+	
 	virtual inline int getTicker() const {
 	    return this->ticker;
 	}
@@ -103,6 +115,8 @@ class Scene {
 	
         //! Clear color for the scene
 	int clearColor;
+	//! Clear color set?
+	bool clearColorSet;
         //! Ticker for the scene
 	int ticker;
         //! End time for this sceen
