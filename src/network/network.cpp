@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include "util/system.h"
+#include "util/compress.h"
 
 using namespace std;
 
@@ -157,6 +158,7 @@ static void doSendAllMessages(const vector<M> & messages, Socket socket){
     int length = totalSize<M>(messages);
     uint8_t * data = new uint8_t[length];
     dump<M>(messages, data);
+    // Compress::testCompression((unsigned char *) data, length);
     sendBytes(socket, data, length);
     delete[] data;
 }
