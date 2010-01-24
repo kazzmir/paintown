@@ -8,6 +8,7 @@ SConscript('../../mugen/parser/SConstruct', exports = ['use'], build_dir = 'test
 
 load_source = Split("""
 load.cpp
+init.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
 test/mugen/mugen_sprite.cpp
@@ -53,6 +54,7 @@ test/factory/font_factory.cpp
 
 stage_source = Split("""
 load-stage.cpp
+init.cpp
 test/mugen/mugen_stage.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
