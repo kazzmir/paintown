@@ -374,7 +374,29 @@ public:
                 yPosition += nextY;
             }
         } else if (tile.x != 1 && tile.y == 1){
-            /* copy/paste the above code and swap the x/y stuff */
+            /* y is infinite, x is a single tile or some repetition */
+            int yPosition = startY;
+
+            int y1 = 0;
+            int y2 = maxHeight;
+
+            while (yPosition - spriteOffsetY > y1){
+                yPosition -= nextY;
+            }
+
+            while (yPosition - spriteOffsetY + spriteHeight < y1){
+                yPosition += nextY;
+            }
+
+            int xTiles = tile.x == 0 ? 1 : tile.x;
+            int xPosition = startX;
+            for (int x = 0; x < xTiles; x++){
+                while (yPosition - spriteOffsetY < y2){
+                    points.push_back(Point(xPosition, yPosition));
+                    yPosition += nextY;
+                }
+                xPosition += nextX;
+            }
         } else if (tile.x == 1 && tile.y == 1){
             int xPosition = startX;
             int yPosition = startY;
