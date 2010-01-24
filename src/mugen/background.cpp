@@ -890,11 +890,11 @@ name(name),
 timeStart(0),
 endTime(0),
 loopTime(-1),
-ticker(0){
-    bool hasID = false;
+ticker(0),
+dontReset(false){
     class Walker: public Ast::Walker{
     public:
-        Walker(Controller & self, BackgroundController & control, Background & background,bool & hasID):
+        Walker(Controller & self, BackgroundController & control, Background & background, bool & hasID):
             self(self),
             control(control),
             background(background),
@@ -907,7 +907,7 @@ ticker(0){
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "time"){
-                int start=0,end=0,loop=0;
+                int start=0, end=0, loop=-1;
                 try {
                     simple >> start >> end >> loop;
                 } catch (const Ast::Exception & e){
@@ -915,6 +915,9 @@ ticker(0){
                 self.timeStart = start;
                 self.endTime = end;
                 self.loopTime = loop;
+                if (loop == -1){
+                    self.dontReset = true;
+                }
             } else if (simple == "ctrlid"){
                 try{
                     while (true){
@@ -928,7 +931,9 @@ ticker(0){
             }  
         }
     };
-    Walker walker(*this, control,background,hasID);
+
+    bool hasID = false;
+    Walker walker(*this, control, background, hasID);
     data->walk(walker);
     
     if (!hasID){
@@ -941,7 +946,9 @@ Controller::~Controller(){
 }
 
 void Controller::reset(){
-    ticker = 0;
+    if (!dontReset){
+        ticker = 0;
+    }
 }
 
 /*! Null Controller doesn't do anything */
@@ -1028,8 +1035,10 @@ class PosSetController : public Controller{
 	    Walker walker(*this);
 	    data->walk(walker);
 	}
+
         virtual ~PosSetController(){
 	}
+
         virtual void act(){
 	    if ( ticker >= timeStart && ticker <= endTime){
 		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
@@ -1215,7 +1224,7 @@ class VelSetController : public Controller{
 	    if ( ticker >= timeStart && ticker <= endTime){
 		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
 		    BackgroundElement *element = *i;
-		    element->setVelocity(x,y);
+		    element->setVelocity(x, y);
 		}
 	    }
 	    if (loopTime != -1){
@@ -1361,7 +1370,6 @@ name(name),
 ID(0),
 globalLooptime(-1),
 ticker(0){
-    bool hasID = false;
     class Walker: public Ast::Walker{
     public:
         Walker(BackgroundController & self, Background & background, bool & hasID):
@@ -1398,7 +1406,8 @@ ticker(0){
         }
     };
 
-    Walker walker(*this, background,hasID);
+    bool hasID = false;
+    Walker walker(*this, background, hasID);
     data->walk(walker);
     
     if (!hasID){
@@ -1426,7 +1435,7 @@ void BackgroundController::act(){
             ticker = 0;
             for (std::vector< Controller *>::iterator i = controllers.begin(); i != controllers.end(); ++i){
                Controller *controller = *i;
-                controller->reset();
+               controller->reset();
             }
         }
         ticker++;
@@ -1557,7 +1566,9 @@ clearColor(-1){
             }
             priorElement = element;
 	} else if (PaintownUtil::matchRegex(head, "begin *action")){
-            /* This creates the animations it differs from character animation since these are included in the stage.def file with the other defaults */
+            /* This creates the animations. It differs from character animation since
+             * these are included in the stage.def file with the other defaults
+             */
 	    head.replace(0,13,"");
 	    int h;
             istringstream out(head);
@@ -1566,7 +1577,7 @@ clearColor(-1){
 	} else if (PaintownUtil::matchRegex(head, ".*bgctrldef")){
             // Grabs the Background Controller Definition so that we can go through the child controllers
             head.replace(0,10,"");
-            BackgroundController *temp = new BackgroundController(head,section,*this);
+            BackgroundController *temp = new BackgroundController(head, section, *this);
             controllers.push_back(temp);
 	} else if (PaintownUtil::matchRegex(head, ".*bgctrl")){
 	    if (controllers.empty()){

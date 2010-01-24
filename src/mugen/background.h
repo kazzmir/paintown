@@ -357,7 +357,7 @@ class Controller {
         virtual void reset();
         
         virtual inline void addElements(const std::vector<BackgroundElement *> & elements){
-	    this->elements.insert(this->elements.end(),elements.begin(),elements.end());
+	    this->elements.insert(this->elements.end(), elements.begin(), elements.end());
 	}
 
     protected:
@@ -373,6 +373,9 @@ class Controller {
 	int ticker;
         /*! Current Elements this controller has governance over */
         std::vector< BackgroundElement * > elements;
+
+        /* dont allow the global reset time affect this controller */
+        bool dontReset;
 };
 
 /*! Background Controller */
@@ -388,11 +391,13 @@ class BackgroundController{
         }
 	
 	virtual inline void addElements(const std::vector<BackgroundElement *> & elements){
-	    this->elements.insert(this->elements.end(),elements.begin(),elements.end());
+	    this->elements.insert(this->elements.end(), elements.begin(), elements.end());
 	}
+
         virtual inline const std::vector< BackgroundElement *> & getElements() const {
             return this->elements;
         }
+
         virtual inline void addController(Controller * controller){
             this->controllers.push_back(controller);
         }

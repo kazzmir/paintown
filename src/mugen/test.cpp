@@ -560,6 +560,7 @@ void doBackground(const std::string &file, const std::string &section){
     gameInput.set(Keyboard::Key_LEFT, 1, false, 3);
     gameInput.set(Keyboard::Key_RIGHT, 1, false, 4);
     gameInput.set(Keyboard::Key_F1, 10, true, 5);
+    gameInput.set(Keyboard::Key_LSHIFT, 1, false, 6);
     
     bool done = false;
 
@@ -581,17 +582,23 @@ void doBackground(const std::string &file, const std::string &section){
 		if (out[0]){
 		    done = true;
 		}
+
+                int speed = 1;
+                if (out[6]){
+                    speed = 10;
+                }
+
                 if (out[1]){
-		    camera.y--;
+		    camera.y -= speed;
 		}
                 if (out[2]){
-		    camera.y++;
+		    camera.y += speed;
 		}
                 if (out[3]){
-		    camera.x--;
+		    camera.x -= speed;
 		}
                 if (out[4]){
-		    camera.x++;
+		    camera.x += speed;
 		}
                 if (out[5]){
                     // Reset camera
