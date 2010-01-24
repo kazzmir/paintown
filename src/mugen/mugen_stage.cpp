@@ -749,7 +749,7 @@ void MugenStage::physics(Object * player){
                 Mugen::Character * menemy = (Mugen::Character *) enemy;
                 // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
                 /* TODO: make this cleaner */
-                while (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight()){
+                while (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
                     if (enemy->getX() < player->getX()){
                         /* FIXME! */
                         enemy->moveLeft(0.5);
