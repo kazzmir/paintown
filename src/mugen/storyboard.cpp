@@ -70,6 +70,7 @@ Scene::Scene(Ast::Section * data, const std::string & file, Ast::AstParse & pars
 clearColor(-2),
 ticker(0),
 endTime(0),
+defaultPositionSet(false),
 background(0),
 maxLayers(10){
     for (int i = 0; i < maxLayers; ++i){
@@ -133,6 +134,7 @@ maxLayers(10){
 		    try{
 			simple >> scene.defaultPosition.x;
 			simple >> scene.defaultPosition.y;
+			scene.defaultPositionSet = true;
 		    } catch (const Ast::Exception & e){
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
@@ -269,6 +271,9 @@ startscene(0){
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
 
+    // Default position for all layers
+    Mugen::Point defaultPosition;
+    
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
@@ -326,6 +331,10 @@ startscene(0){
         } else if (PaintownUtil::matchRegex(head, "^scene")){
 	    Scene *scene = new Scene(section, ourDefFile, parsed, sprites);
 	    scenes.push_back(scene);
+	    if (!scene->getDefaultPositionSet()){
+		scene->setDefaultPosition(defaultPosition);
+	    }
+	    defaultPosition = scene->getDefaultPosition();
 	}
     }
 }

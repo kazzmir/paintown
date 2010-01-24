@@ -83,6 +83,18 @@ class Scene {
 	virtual inline int getEndTime() const {
 	    return this->endTime;
 	}
+	
+	virtual inline void setDefaultPosition(const Mugen::Point & position){
+	    this->defaultPosition = position;
+	}
+	
+	virtual inline const Mugen::Point & getDefaultPosition() const {
+	    return this->defaultPosition;
+	}
+	
+	virtual inline const bool getDefaultPositionSet() const {
+	    return this->defaultPositionSet;
+	}
 
     private:
 	
@@ -98,6 +110,9 @@ class Scene {
 	
         //! Default position
 	Mugen::Point defaultPosition;
+	
+	//! Was default position set
+	bool defaultPositionSet;
 	
         //! Background
 	Mugen::Background *background;
