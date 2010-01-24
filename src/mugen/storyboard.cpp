@@ -44,9 +44,10 @@ Layer::~Layer(){
 }
 
 void Layer::act(int currentTime){
-    if (startTime >= currentTime && !enabled){
+    if (currentTime >= startTime && !enabled){
         enabled = true;
     }
+
     if (enabled && animation){
         animation->logic();
     }
@@ -158,6 +159,7 @@ maxLayers(10){
 			int time;
 			simple >> time;
 			scene.layers[num]->setStartTime(time);
+                        // Global::debug(0) << "Setting layer " << scene.layers[num] << " [" << num << "] start time to " << time << endl;
 		    }
 		} else if (simple == "bgm"){
 		    // do nothing
@@ -197,6 +199,7 @@ void Scene::act(){
     for ( std::vector< Layer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
         Layer *layer = *i;
         layer->act(ticker);
+        // Global::debug(0) << "Layer " << layer << " start time is " << layer->getStartTime() << endl;
     }
     // Fader
     fader.act();
@@ -320,7 +323,7 @@ startscene(0){
             SceneWalk walk(baseDir, *this);
             section->walk(walk);
         } else if (PaintownUtil::matchRegex(head, "^scene")){
-	    Scene *scene = new Scene(section,ourDefFile,parsed,sprites);
+	    Scene *scene = new Scene(section, ourDefFile, parsed, sprites);
 	    scenes.push_back(scene);
 	}
     }
@@ -329,13 +332,18 @@ startscene(0){
 Storyboard::~Storyboard(){
     
     // Get rid of scene lists;
-    for( std::vector< Scene * >::iterator i = scenes.begin() ; i != scenes.end() ; ++i ){
-        if( (*i) )delete (*i);
+    for (std::vector<Scene *>::iterator i = scenes.begin(); i != scenes.end(); ++i){
+        if (*i){
+            delete *i;
+        }
     }
+
     // sprites
-    for( SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            if( j->second )delete j->second;
+    for (SpriteMap::iterator i = sprites.begin(); i != sprites.end(); ++i){
+        for (map<unsigned int, MugenSprite *>::iterator j = i->second.begin(); j != i->second.end(); ++j){
+            if (j->second){
+                delete j->second;
+            }
         }
     }
 }

@@ -36,9 +36,15 @@ class Layer{
 	    this->offset.x = x;
 	    this->offset.y = y;
 	}
+
         virtual inline void setStartTime(int time){
             this->startTime = time;
         }
+
+        virtual inline int getStartTime() const {
+            return this->startTime;
+        }
+
         virtual inline void setAnimation(MugenAnimation * animation){
             this->animation = animation;
         }
