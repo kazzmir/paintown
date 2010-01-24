@@ -342,29 +342,72 @@ void NormalElement::act(){
     getSinY().act();
 }
 
+/* this would be a generator if c++ had coroutines */
 class Tiler{
 public:
-    Tiler(const Point & tile, int startX, int startY, int nextX, int nextY, int spriteOffsetX, int spriteWidth, int maxSize){
+    Tiler(const Point & tile, int startX, int startY, int nextX, int nextY, int spriteOffsetX, int spriteOffsetY, int spriteWidth, int spriteHeight, int maxWidth, int maxHeight){
         if (tile.x == 0 && tile.y == 0){
+            /* just a single position */
             points.push_back(Point(startX, startY));
         } else if (tile.x == 1 && tile.y != 1){
-            int start = startX;
+            /* x is infinite, y is a single tile or some repetition */
+            int xPosition = startX;
 
             int x1 = 0;
-            int x2 = maxSize;
+            int x2 = maxWidth;
 
-            while (start - spriteOffsetX > x1){
-                start -= nextX;
+            while (xPosition - spriteOffsetX > x1){
+                xPosition -= nextX;
             }
 
-            while (start - spriteOffsetX + spriteWidth < x1){
-                start += nextX;
+            while (xPosition - spriteOffsetX + spriteWidth < x1){
+                xPosition += nextX;
             }
 
-            while (start - spriteOffsetX < x2){
-                points.push_back(Point(start, startY));
-                start += nextX;
+            int yTiles = tile.y == 0 ? 1 : tile.y;
+            int yPosition = startY;
+            for (int y = 0; y < yTiles; y++){
+                while (xPosition - spriteOffsetX < x2){
+                    points.push_back(Point(xPosition, yPosition));
+                    xPosition += nextX;
+                }
+                yPosition += nextY;
             }
+        } else if (tile.x != 1 && tile.y == 1){
+            /* copy/paste the above code and swap the x/y stuff */
+        } else if (tile.x == 1 && tile.y == 1){
+            int xPosition = startX;
+            int yPosition = startY;
+
+            int y1 = 0;
+            int y2 = maxHeight;
+            int x1 = 0;
+            int x2 = maxWidth;
+
+            while (xPosition - spriteOffsetX > x1){
+                xPosition -= nextX;
+            }
+
+            while (xPosition - spriteOffsetX + spriteWidth < x1){
+                xPosition += nextX;
+            }
+
+            while (yPosition - spriteOffsetY > y1){
+                yPosition -= nextY;
+            }
+            
+            while (yPosition - spriteOffsetY + spriteHeight < y1){
+                yPosition += nextY;
+            }
+
+            // Global::debug(0) << "Tile both start " << startX << ", " << startY << " upper left " << xPosition << ", " << yPosition << endl;
+            for (int ypos = yPosition; ypos - spriteOffsetY < y2; ypos += nextY){
+                for (int xpos = xPosition; xpos - spriteOffsetX < x2; xpos += nextX){
+                    // Global::debug(0) << xpos << ", " << ypos << endl;
+                    points.push_back(Point(xpos, ypos));
+                }
+            }
+            // Global::debug(0) << "Done tile both" << endl;
         }
 
         current_point = points.begin();
@@ -402,7 +445,8 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
     // Set the clipping window
     bmp.setClipRect( getWindow().x + windowAddX, getWindow().y + windowAddY, getWindow().getX2() + windowAddX, getWindow().getY2() + windowAddY );
 
-    Tiler tiler(getTile(), currentX, currentY, addw, addh, sprite->getX(), sprite->getWidth(), bmp.getWidth());
+    Tiler tiler(getTile(), currentX, currentY, addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), bmp.getWidth(), bmp.getHeight());
+
     while (tiler.hasMore()){
         Point where = tiler.nextPoint();
         sprite->render(where.x, where.y, bmp, getEffects());
