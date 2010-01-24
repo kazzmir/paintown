@@ -27,6 +27,7 @@
 #include "mugen_reader.h"
 #include "mugen_sprite.h"
 #include "globals.h"
+#include "init.h"
 #include "state.h"
 
 #include "mugen_util.h"
@@ -162,6 +163,11 @@ MugenItemContent *Mugen::Util::parseOpt( const std::string &opt ){
 	Global::debug(3) << "Got content: " << contentHolder << endl;
     }
     return temp;
+}
+
+double Mugen::Util::gameTicks(double gameSpeed){
+    int mugenSpeed = 60;
+    return Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
 }
 
 /* PCX HEADER */

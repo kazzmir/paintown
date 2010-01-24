@@ -106,7 +106,6 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
         bool quit = false;
         double gameSpeed = 1.0;
         double runCounter = 0;
-        double mugenSpeed = 60;
 
         // Lets reset the stage for good measure
         stage->reset();
@@ -115,7 +114,7 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
             bool draw = false;
 
             if ( Global::speed_counter > 0 ){
-                runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+                runCounter += Mugen::Util::gameTicks(gameSpeed);
                 while (runCounter > 1){
                     
 		    InputManager::poll();

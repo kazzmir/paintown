@@ -1,10 +1,10 @@
 #include "mugen/storyboard.h"
 
 #include "util/bitmap.h"
-#include "init.h"
 #include "resource.h"
 #include "util/funcs.h"
 #include "globals.h"
+#include "init.h"
 #include "factory/font_render.h"
 
 #include "mugen_animation.h"
@@ -396,16 +396,15 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
     InputMap<int> keyInput;
     keyInput.set(Keyboard::Key_ESC, 10, true, 0);
     keyInput.set(Keyboard::Key_ENTER, 10, true, 1);
-    int mugenSpeed = 60;
     
     while( !quit ){
         bool draw = false;
 
         Scene *scene = *sceneIterator;
-        if ( Global::speed_counter > 0 ){
+        if (Global::speed_counter > 0){
 
             // runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;//(double) 90 / (double) 60;
-            runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+            runCounter += Util::gameTicks();
             while (runCounter > 1){
                 runCounter -= 1;
                 draw = true;
