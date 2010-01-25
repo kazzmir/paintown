@@ -841,6 +841,8 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
         return;
     }
     const Bitmap & show = *sprite->getBitmap();
+    const int addw = show.getWidth() + getTileSpacing().x;
+    const int addh = show.getHeight() + getTileSpacing().y;
     const int windowAddX = (int) (getWindowDeltaX() * cameraX);
     const int windowAddY = (int) (getWindowDeltaY() * cameraY);
 
@@ -852,11 +854,26 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
     /* Remember only do either or if xscale is set then ignore width
      * otherwise do width.
      */
+
+    Tiler tiler(getTile(), getCurrentX(), getCurrentY(), addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
+
+    while (tiler.hasMore()){
+        Point where = tiler.nextPoint();
+
+        if (xscaleX || xscaleY){
+            doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+        } else {
+            doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+        }
+    }
+
+    /*
     if (xscaleX || xscaleY){
 	doParallax(show, work, cameraX, cameraY, getStart().x - sprite->getX(), getStart().y - sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
     } else {
 	doParallax(show, work, cameraX, cameraY, getStart().x - sprite->getX(), getStart().y - sprite->getY(), width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
     }
+    */
 
     // Reset clip state
     work.setClipRect(0, 0,work.getWidth(),work.getHeight());

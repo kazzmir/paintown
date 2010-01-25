@@ -410,7 +410,7 @@ void Grid::moveCursorLeft(Cursor &cursor){
     Cell *cell;
     try {
 	cell = getCell(current.x,current.y);
-    } catch (MugenException &me){
+    } catch (const MugenException &me){
 	// Shouldn't happen but you never know lets not continue
 	return;
     }
@@ -424,6 +424,7 @@ void Grid::moveCursorLeft(Cursor &cursor){
     cell->pushCursor();
     cursor.setCurrentCell(cell);
 }
+
 void Grid::moveCursorRight(Cursor &cursor){
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.y++;
@@ -437,7 +438,7 @@ void Grid::moveCursorRight(Cursor &cursor){
     Cell *cell;
     try {
 	cell = getCell(current.x,current.y);
-    } catch (MugenException &me){
+    } catch (const MugenException &me){
 	// Shouldn't happen but you never know lets not continue
 	return;
     }
@@ -451,6 +452,7 @@ void Grid::moveCursorRight(Cursor &cursor){
     cell->pushCursor();
     cursor.setCurrentCell(cell);
 }
+
 void Grid::moveCursorUp(Cursor &cursor){
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.x--;
@@ -464,7 +466,7 @@ void Grid::moveCursorUp(Cursor &cursor){
     Cell *cell;
     try {
 	cell = getCell(current.x,current.y);
-    } catch (MugenException &me){
+    } catch (const MugenException &me){
 	// Shouldn't happen but you never know lets not continue
 	return;
     }
@@ -478,6 +480,7 @@ void Grid::moveCursorUp(Cursor &cursor){
     cell->pushCursor();
     cursor.setCurrentCell(cell);
 }
+
 void Grid::moveCursorDown(Cursor &cursor){
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.x++;
@@ -491,7 +494,7 @@ void Grid::moveCursorDown(Cursor &cursor){
     Cell *cell;
     try {
 	cell = getCell(current.x,current.y);
-    } catch (MugenException &me){
+    } catch (const MugenException &me){
 	// Shouldn't happen but you never know lets not continue
 	return;
     }
@@ -618,6 +621,16 @@ void Cursor::act(Grid &grid){
 	    if (out[Right]){
 		grid.moveCursorRight(*this);
 	    }
+
+            if (!getCurrentCell()->isEmpty()){
+                CharacterKeys selectable[] = {A, B, C, X, Y, Z};
+                for (unsigned int key = 0; key < sizeof(selectable) / sizeof(CharacterKeys); key++){
+                    if (out[selectable[key]]){
+                        grid.selectCell(*this, selectable[key]);
+                    }
+                }
+            }
+            /*
 	    if (out[A]){
 		grid.selectCell(*this,A);
 	    }
@@ -636,6 +649,8 @@ void Cursor::act(Grid &grid){
 	    if (out[Z]){
 		grid.selectCell(*this,Z);
 	    }
+            */
+
 	    if (out[Start]){
 	    }
 	    if (blink && (currentCell->getCursorState() == Cell::Two)){
