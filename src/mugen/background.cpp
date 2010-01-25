@@ -346,10 +346,13 @@ void NormalElement::act(){
 class Tiler{
 public:
     Tiler(const Point & tile, int startX, int startY, int nextX, int nextY, int spriteOffsetX, int spriteOffsetY, int spriteWidth, int spriteHeight, int maxWidth, int maxHeight){
+        /*
         if (tile.x == 0 && tile.y == 0){
-            /* just a single position */
+            / * just a single position * /
             points.push_back(Point(startX, startY));
-        } else if (tile.x == 1 && tile.y != 1){
+        } else */
+        /* infinite x, finite y */
+        if (tile.x == 1 && tile.y != 1){
             /* x is infinite, y is a single tile or some repetition */
             int xPosition = startX;
 
@@ -373,6 +376,7 @@ public:
                 }
                 yPosition += nextY;
             }
+        /* infinite y, finite x */
         } else if (tile.x != 1 && tile.y == 1){
             /* y is infinite, x is a single tile or some repetition */
             int yPosition = startY;
@@ -397,6 +401,7 @@ public:
                 }
                 xPosition += nextX;
             }
+        /* infinite x and y */
         } else if (tile.x == 1 && tile.y == 1){
             int xPosition = startX;
             int yPosition = startY;
@@ -430,6 +435,19 @@ public:
                 }
             }
             // Global::debug(0) << "Done tile both" << endl;
+        /* finite x and y */
+        } else {
+            int xTiles = tile.x == 0 ? 1 : tile.x;
+            int xPosition = startX;
+            int yTiles = tile.y == 0 ? 1 : tile.y;
+            int yPosition = startY;
+            for (int x = 0; x < xTiles; x++){
+                for (int y = 0; y < yTiles; y++){
+                    points.push_back(Point(xPosition, yPosition));
+                    yPosition += nextY;
+                }
+                xPosition += nextX;
+            }
         }
 
         current_point = points.begin();

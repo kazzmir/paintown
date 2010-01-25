@@ -30,6 +30,15 @@ struct Sin {
             return 0;
         }
 
+        /* period is the number of game ticks that must pass before a
+         * complete circle can be made, where a circle is all the values
+         * between 0 and 2pi.
+         * if period is 360 then after 360 ticks angle will be 360 and so
+         * the full angle should be 2pi.
+         * if period is 720 then after 360 ticks the full angle should be
+         * just pi.
+         * offset is added to angle before multiplying by the period.
+         */
         return amp * sin((360.0 / period * (angle + offset)) * 3.141592526 / 180);
     }
 
