@@ -72,7 +72,7 @@ class BackgroundElement : public Element {
         }
 
         virtual inline bool getVisible(){
-            return this->visible;
+            return this->visible && this->enabled;
         }
 
         virtual inline void setEnabled(bool enabled){

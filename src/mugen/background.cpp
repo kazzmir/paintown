@@ -370,10 +370,12 @@ public:
             int yTiles = tile.y == 0 ? 1 : tile.y;
             int yPosition = startY;
             for (int y = 0; y < yTiles; y++){
+                int save = xPosition;
                 while (xPosition - spriteOffsetX < x2){
                     points.push_back(Point(xPosition, yPosition));
                     xPosition += nextX;
                 }
+                xPosition = save;
                 yPosition += nextY;
             }
         /* infinite y, finite x */
@@ -395,10 +397,12 @@ public:
             int xTiles = tile.x == 0 ? 1 : tile.x;
             int xPosition = startX;
             for (int x = 0; x < xTiles; x++){
+                int save = yPosition;
                 while (yPosition - spriteOffsetY < y2){
                     points.push_back(Point(xPosition, yPosition));
                     yPosition += nextY;
                 }
+                yPosition = save;
                 xPosition += nextX;
             }
         /* infinite x and y */
@@ -442,10 +446,12 @@ public:
             int yTiles = tile.y == 0 ? 1 : tile.y;
             int yPosition = startY;
             for (int x = 0; x < xTiles; x++){
+                int save = yPosition;
                 for (int y = 0; y < yTiles; y++){
                     points.push_back(Point(xPosition, yPosition));
                     yPosition += nextY;
                 }
+                yPosition = save;
                 xPosition += nextX;
             }
         }
@@ -468,7 +474,7 @@ public:
 };
 
 void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
-    if (!getVisible() || !getEnabled()){
+    if (!getVisible()){
         return;
     }
     const int addw = sprite->getWidth() + getTileSpacing().x;
@@ -632,7 +638,7 @@ void AnimationElement::act(){
 }
 
 void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
-    if (!getVisible() || !getEnabled()){
+    if (!getVisible()){
         return;
     }
     const int addw = getTileSpacing().x;
