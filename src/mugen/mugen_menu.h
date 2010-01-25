@@ -42,8 +42,6 @@ struct MugenMenuArea{
     int alpha;
     int alphaMove;
 };
-	
-typedef std::map< unsigned int, std::map< unsigned int, MugenSprite * > > MugenSprites;
 
 class MugenMenu : public Menu {
     public:
@@ -143,7 +141,7 @@ class MugenMenu : public Menu {
 	unsigned long int ticker;
 	
 	/* Sprites */
-	MugenSprites sprites;
+	Mugen::SpriteMap sprites;
 	
 	// Title background
 	Mugen::Background *background;

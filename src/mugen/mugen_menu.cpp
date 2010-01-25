@@ -33,8 +33,7 @@
 #include "menu/option_quit.h"
 #include "menu/option_dummy.h"
 
-#include "gui/keyinput_manager.h"
-#include "gui/keys.h"
+#include "input/input-manager.h"
 
 #include "mugen_animation.h"
 #include "mugen/background.h"
@@ -362,6 +361,24 @@ MugenMenu::~MugenMenu(){
     cleanup();
 }
 
+
+static InputMap<Mugen::CharacterKeys> getPlayer1Keys(){
+    InputMap<Mugen::CharacterKeys> input;
+    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_A, 0, true, Mugen::A);
+    input.set(Keyboard::Key_S, 0, true, Mugen::B);
+    input.set(Keyboard::Key_D, 0, true, Mugen::C);
+    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
+    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
+    return input;
+}
+
 void MugenMenu::run(){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
@@ -377,6 +394,12 @@ void MugenMenu::run(){
     
     // Set the fade state
     fader.setState(FADEIN);
+    
+    // Keys
+    InputMap<int> gameInput;
+    gameInput.set(Keyboard::Key_ESC, 10, true, 0);
+    gameInput.set(Keyboard::Key_ENTER, 10, true, 1);
+    InputMap<Mugen::CharacterKeys> input = getPlayer1Keys();
   
     // Do we have logos or intros?
     // Logo run it no repeat
@@ -398,7 +421,8 @@ void MugenMenu::run(){
 
 	    bool draw = false;
 	    
-	    keyInputManager::update();
+	    //input
+	    InputManager::poll();
 
 	    if ( Global::speed_counter > 0 ){
 		draw = true;
@@ -407,62 +431,59 @@ void MugenMenu::run(){
 		    ticker++;
 		    runCounter -= 1;
 		    // Keys
+		    InputMap<int>::Output out = InputManager::getMap(gameInput);
+		    InputMap<Mugen::CharacterKeys>::Output playerOut = InputManager::getMap(input);
+		    
 		    if (fader.getState() == NOFADE){
-			if ( keyInputManager::keyState(keys::UP, true ) ||
-				/* for vi people like me */
-			    keyInputManager::keyState('k', true )){	
-				(*selectedOption)->setState(MenuOption::Deselected);
-				if ( selectedOption > menuOptions.begin() ){
-					selectedOption--;
-					optionLocation--;
-				} else { 
-				    selectedOption = menuOptions.end() -1;
-				    optionLocation = menuOptions.size() -1;
-				}
-				(*selectedOption)->setState(MenuOption::Selected);
-				//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+			if ( playerOut[Mugen::Up]){	
+			    (*selectedOption)->setState(MenuOption::Deselected);
+			    if ( selectedOption > menuOptions.begin() ){
+				    selectedOption--;
+				    optionLocation--;
+			    } else { 
+				selectedOption = menuOptions.end() -1;
+				optionLocation = menuOptions.size() -1;
+			    }
+			    (*selectedOption)->setState(MenuOption::Selected);
+			    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 			}
 
-			if ( keyInputManager::keyState(keys::DOWN, true ) ||
-				/* for vi people like me */
-			    keyInputManager::keyState('j', true )){
-				(*selectedOption)->setState(MenuOption::Deselected);
-				if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
-					selectedOption++;
-					optionLocation++;
-				} else {
-				    selectedOption = menuOptions.begin();
-				    optionLocation = 0;
-				}
-				(*selectedOption)->setState(MenuOption::Selected);
-				//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+			if (playerOut[Mugen::Down]){
+			    (*selectedOption)->setState(MenuOption::Deselected);
+			    if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
+				    selectedOption++;
+				    optionLocation++;
+			    } else {
+				selectedOption = menuOptions.begin();
+				optionLocation = 0;
+			    }
+			    (*selectedOption)->setState(MenuOption::Selected);
+			    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 			}
 			
-			if ( keyInputManager::keyState(keys::LEFT, true) ||
-			    keyInputManager::keyState('h', true)){
-				if ( (*selectedOption)->leftKey()){
-				    /* ??? */
-				}
+			if (playerOut[Mugen::Left]){
+			    if ( (*selectedOption)->leftKey()){
+				/* ??? */
+			    }
 			}
 			
-			if ( keyInputManager::keyState(keys::RIGHT, true )||
-			    keyInputManager::keyState('l', true )){
-				if ( (*selectedOption)->rightKey()){
-				    /* ??? */
-				}
+			if (playerOut[Mugen::Right]){
+			    if ( (*selectedOption)->rightKey()){
+				/* ??? */
+			    }
 			}
 			
-			if ( keyInputManager::keyState(keys::ENTER, true ) ){
-				if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
-				// Set the fade state
-				fader.setState(FADEOUT);
+			if ( out[1] ){
+			    if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
+			    // Set the fade state
+			    fader.setState(FADEOUT);
 			}
 			
-			if ( keyInputManager::keyState(keys::ESC, true ) ){
-				endGame = done = true;
-				// Set the fade state
-				fader.setState(FADEOUT);
-				(*selectedOption)->setState(MenuOption::Deselected);
+			if ( out[0] ){
+			    endGame = done = true;
+			    // Set the fade state
+			    fader.setState(FADEOUT);
+			    (*selectedOption)->setState(MenuOption::Deselected);
 			}
 		    }
 		    // Fader
@@ -508,7 +529,6 @@ void MugenMenu::run(){
 
 	    while ( Global::speed_counter < 1 ){
 		Util::rest( 1 );
-		keyInputManager::update();
 	    }              
 	}
 	    
@@ -546,7 +566,7 @@ void MugenMenu::cleanup(){
 
 void MugenMenu::cleanupSprites(){
     // Get rid of sprites
-    for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+    for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
