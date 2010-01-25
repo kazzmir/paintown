@@ -374,17 +374,9 @@ void MugenMenu::run(){
     selectedOption = menuOptions.begin();
     optionLocation = 0;
     menuOptions.front()->setState(MenuOption::Selected);
-  /*  
-    if ( !music.empty() ){
-	    MenuGlobals::setMusic(music);
-    }
     
-    if ( !selectSound.empty() ){
-	    MenuGlobals::setSelectSound(selectSound);
-    }
-    */
-  // Set the fade state
-  fader.setState(FADEIN);
+    // Set the fade state
+    fader.setState(FADEIN);
   
     // Do we have logos or intros?
     // Logo run it no repeat
@@ -398,176 +390,144 @@ void MugenMenu::run(){
   
     double runCounter = 0;
     while( ! endGame ){
-	    Global::speed_counter = 0;
-	    Global::second_counter = 0;
-	    int game_time = 100;
-	 
-	    while ( ! done && (*selectedOption)->getState() != MenuOption::Run && fader.getState() != RUNFADE ){
+	Global::speed_counter = 0;
+	Global::second_counter = 0;
+	int game_time = 100;
     
-		    bool draw = false;
-		    
-		    keyInputManager::update();
-    
-		    if ( Global::speed_counter > 0 ){
-			    draw = true;
-			    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-			    while ( runCounter >= 1.0 ){
-				ticker++;
-				runCounter -= 1;
-				// Keys
-				if (fader.getState() == NOFADE){
-				    if ( keyInputManager::keyState(keys::UP, true ) ||
-					    /* for vi people like me */
-					keyInputManager::keyState('k', true )){	
-					    (*selectedOption)->setState(MenuOption::Deselected);
-					    if ( selectedOption > menuOptions.begin() ){
-						    selectedOption--;
-						    optionLocation--;
-					    } else { 
-						selectedOption = menuOptions.end() -1;
-						optionLocation = menuOptions.size() -1;
-					    }
-					    (*selectedOption)->setState(MenuOption::Selected);
-					    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
-				    }
+	while ( ! done && (*selectedOption)->getState() != MenuOption::Run && fader.getState() != RUNFADE ){
 
-				    if ( keyInputManager::keyState(keys::DOWN, true ) ||
-					    /* for vi people like me */
-					keyInputManager::keyState('j', true )){
-					    (*selectedOption)->setState(MenuOption::Deselected);
-					    if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
-						    selectedOption++;
-						    optionLocation++;
-					    } else {
-						selectedOption = menuOptions.begin();
-						optionLocation = 0;
-					    }
-					    (*selectedOption)->setState(MenuOption::Selected);
-					    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
-				    }
-				    
-				    if ( keyInputManager::keyState(keys::LEFT, true) ||
-					keyInputManager::keyState('h', true)){
-					    if ( (*selectedOption)->leftKey()){
-						/* ??? */
-					    }
-				    }
-				    
-				    if ( keyInputManager::keyState(keys::RIGHT, true )||
-					keyInputManager::keyState('l', true )){
-					    if ( (*selectedOption)->rightKey()){
-						/* ??? */
-					    }
-				    }
-				    
-				    if ( keyInputManager::keyState(keys::ENTER, true ) ){
-					    if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
-					    // Set the fade state
-					    fader.setState(FADEOUT);
-				    }
-				    
-				    if ( keyInputManager::keyState(keys::ESC, true ) ){
-					    endGame = done = true;
-					    // Set the fade state
-					    fader.setState(FADEOUT);
-					    (*selectedOption)->setState(MenuOption::Deselected);
-					    throw ReturnException();
-				    }
-				}
-				// Fader
-				fader.act();
-				
-				// Options
-				for( vector< MenuOption *>::iterator b = menuOptions.begin(); b != menuOptions.end(); ++b ){
-					(*b)->logic();
-				}
-				
-				// Backgrounds
-				background->act();
-			    }
-			    
-			    Global::speed_counter = 0;
-		    }
-		    
-		    while ( Global::second_counter > 0 ){
-			    game_time--;
-			    Global::second_counter--;
-			    if ( game_time < 0 ){
-				    game_time = 0;
-			    }
-		    }
+	    bool draw = false;
 	    
-		    if ( draw ){
-			    // backgrounds
-			    background->renderBackground(0,0,workArea);
-			    // Draw any misc stuff in the background of the menu of selected object 
-			    (*selectedOption)->drawBelow(work);
-			    // Draw text
-			    renderText(&workArea);
-			    // Foregrounds
-			    background->renderForeground(0,0,workArea);
-			    // Draw any misc stuff in the foreground of the menu of selected object 
-			    (*selectedOption)->drawAbove(work);
-			    // Do fades
-			    fader.draw(workArea);
-			    // Finally render to screen
-			    workArea.Stretch(*work);
-			    work->BlitToScreen();
-		    }
-    
-		    while ( Global::speed_counter < 1 ){
-			    Util::rest( 1 );
-			    keyInputManager::update();
-		    }              
-	    }
-	    
-	    // do we got an option to run, lets do it
-	    if ((*selectedOption)->getState() == MenuOption::Run){
-		   try{
-			/*if (backSound != ""){
-			    Sound * ok = Resource::getSound(okSound);
-			    ok->play();
-			}*/
-			(*selectedOption)->run(endGame);
-			if (!endGame){
-			    //characterSelect->run((*selectedOption)->getText(), 1, true, work);
+	    keyInputManager::update();
+
+	    if ( Global::speed_counter > 0 ){
+		draw = true;
+		runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+		while ( runCounter >= 1.0 ){
+		    ticker++;
+		    runCounter -= 1;
+		    // Keys
+		    if (fader.getState() == NOFADE){
+			if ( keyInputManager::keyState(keys::UP, true ) ||
+				/* for vi people like me */
+			    keyInputManager::keyState('k', true )){	
+				(*selectedOption)->setState(MenuOption::Deselected);
+				if ( selectedOption > menuOptions.begin() ){
+					selectedOption--;
+					optionLocation--;
+				} else { 
+				    selectedOption = menuOptions.end() -1;
+				    optionLocation = menuOptions.size() -1;
+				}
+				(*selectedOption)->setState(MenuOption::Selected);
+				//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 			}
-		    } catch ( const ReturnException & re ){
+
+			if ( keyInputManager::keyState(keys::DOWN, true ) ||
+				/* for vi people like me */
+			    keyInputManager::keyState('j', true )){
+				(*selectedOption)->setState(MenuOption::Deselected);
+				if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
+					selectedOption++;
+					optionLocation++;
+				} else {
+				    selectedOption = menuOptions.begin();
+				    optionLocation = 0;
+				}
+				(*selectedOption)->setState(MenuOption::Selected);
+				//if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+			}
+			
+			if ( keyInputManager::keyState(keys::LEFT, true) ||
+			    keyInputManager::keyState('h', true)){
+				if ( (*selectedOption)->leftKey()){
+				    /* ??? */
+				}
+			}
+			
+			if ( keyInputManager::keyState(keys::RIGHT, true )||
+			    keyInputManager::keyState('l', true )){
+				if ( (*selectedOption)->rightKey()){
+				    /* ??? */
+				}
+			}
+			
+			if ( keyInputManager::keyState(keys::ENTER, true ) ){
+				if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
+				// Set the fade state
+				fader.setState(FADEOUT);
+			}
+			
+			if ( keyInputManager::keyState(keys::ESC, true ) ){
+				endGame = done = true;
+				// Set the fade state
+				fader.setState(FADEOUT);
+				(*selectedOption)->setState(MenuOption::Deselected);
+			}
 		    }
-		    // Reset it's state
-		    (*selectedOption)->setState(MenuOption::Selected);
-		    /*if ( !music.empty() ){
-			    MenuGlobals::setMusic(music);
-		    }
-		    if ( !selectSound.empty() ){
-			    MenuGlobals::setSelectSound(selectSound);
-		    }*/
+		    // Fader
+		    fader.act();
 		    
-		    // reset the fade state
-		    fader.setState(FADEIN);
-	    }
-/*
-	    if (!music.empty()){
-		    if(MenuGlobals::currentMusic() != music){
-			    MenuGlobals::popMusic();
+		    // Options
+		    for( vector< MenuOption *>::iterator b = menuOptions.begin(); b != menuOptions.end(); ++b ){
+			    (*b)->logic();
 		    }
+		    
+		    // Backgrounds
+		    background->act();
+		}
+		    
+		Global::speed_counter = 0;
 	    }
+		
+	    while ( Global::second_counter > 0 ){
+		game_time--;
+		Global::second_counter--;
+		if ( game_time < 0 ){
+			game_time = 0;
+		}
+	    }
+	
+	    if ( draw ){
+		// backgrounds
+		background->renderBackground(0,0,workArea);
+		// Draw any misc stuff in the background of the menu of selected object 
+		(*selectedOption)->drawBelow(work);
+		// Draw text
+		renderText(&workArea);
+		// Foregrounds
+		background->renderForeground(0,0,workArea);
+		// Draw any misc stuff in the foreground of the menu of selected object 
+		(*selectedOption)->drawAbove(work);
+		// Do fades
+		fader.draw(workArea);
+		// Finally render to screen
+		workArea.Stretch(*work);
+		work->BlitToScreen();
+	    }
+
+	    while ( Global::speed_counter < 1 ){
+		Util::rest( 1 );
+		keyInputManager::update();
+	    }              
+	}
 	    
-	    if (!selectSound.empty()){
-		    if(MenuGlobals::currentSelectSound() != selectSound){
-			    MenuGlobals::popSelectSound();
-		    }
+	// do we got an option to run, lets do it
+	if ((*selectedOption)->getState() == MenuOption::Run){
+	    try{
+		(*selectedOption)->run(endGame);
+	    } catch ( const ReturnException & re ){
 	    }
-*/
-	    if (endGame){
-		    // Deselect selected entry
-		    (*selectedOption)->setState(MenuOption::Deselected);
-		    /*if (backSound != ""){
-			Sound * back = Resource::getSound(backSound);
-			back->play();
-		    }*/
-	    }
+	    // Reset it's state
+	    (*selectedOption)->setState(MenuOption::Selected);
+	    fader.setState(FADEIN);
+	}
+	if (endGame){
+	    // Deselect selected entry
+	    (*selectedOption)->setState(MenuOption::Deselected);
+	}
     }
+    throw ReturnException();
 }
 
 void MugenMenu::copyBackground(Bitmap & copyTo){
