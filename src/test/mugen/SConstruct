@@ -17,7 +17,6 @@ test/mugen/mugen_exception.cpp
 test/mugen/mugen_util.cpp
 test/mugen/mugen_animation.cpp
 test/mugen/mugen_item_content.cpp
-test/mugen/mugen_background.cpp
 test/mugen/mugen_item.cpp
 test/mugen/background.cpp
 test/gui/rectarea.cpp
@@ -63,7 +62,6 @@ test/mugen/mugen_sound.cpp
 test/mugen/mugen_exception.cpp
 test/mugen/mugen_util.cpp
 test/mugen/mugen_animation.cpp
-test/mugen/mugen_background.cpp
 test/mugen/background.cpp
 test/mugen/mugen_item_content.cpp
 test/mugen/mugen_item.cpp

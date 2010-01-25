@@ -18,7 +18,6 @@
 #include "util/timedifference.h"
 
 #include "mugen_animation.h"
-#include "mugen_background.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
@@ -563,6 +562,8 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
     return stuff;
 }
 
+/* replaced by background.cpp */
+#if 0
 MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites ){
     MugenBackground *temp = new MugenBackground(ticker);
     std::string head = section->getName();
@@ -688,6 +689,7 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
     
     return temp;
 }
+#endif
 
 MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::SpriteMap &sprites ){
     MugenAnimation *animation = new MugenAnimation();
