@@ -1065,48 +1065,54 @@ class PosSetController : public Controller{
 
 /*! Set Sin X to values given */
 class SinXController : public Controller{
-    public:
-        SinXController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
-	Controller(name,data,control,background){
-	    class Walker: public Ast::Walker{
-	    public:
-		Walker(SinXController & self):
-		    self(self){
-		    }
-		SinXController & self;
-		
-		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		    if (simple == "value"){
-			if (simple == "value"){
-			  try{
-			      simple >> self.sin.amp >> self.sin.period >> self.sin.offset;
-			  } catch (const Ast::Exception & e){
-			  }
-			} 
-		    } 
-		}
-	    };
-	    Walker walker(*this);
-	    data->walk(walker);
-	}
-	virtual ~SinXController(){
-	}
-	virtual void act(){
-	    if ( ticker >= timeStart && ticker <= endTime){
-		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
-		    BackgroundElement *element = *i;
-		    element->setSinX(sin);
-		}
-	    }
-	    if (loopTime != -1){
-		if (ticker == loopTime){
-		    reset();
-		}
-	    }
-	    ticker++;
-	}
-    private:
-	Sin sin;
+public:
+    SinXController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+    Controller(name,data,control,background){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(SinXController & self):
+                self(self){
+                }
+
+            SinXController & self;
+            
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    if (simple == "value"){
+                      try{
+                          simple >> self.sin.amp >> self.sin.period >> self.sin.offset;
+                      } catch (const Ast::Exception & e){
+                      }
+                    } 
+                } 
+            }
+        };
+        Walker walker(*this);
+        data->walk(walker);
+    }
+
+    virtual ~SinXController(){
+    }
+
+    virtual void act(){
+        if (ticker >= timeStart && ticker <= endTime){
+            for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+                BackgroundElement *element = *i;
+                element->setSinX(sin);
+            }
+        }
+
+        if (loopTime != -1){
+            if (ticker == loopTime){
+                reset();
+            }
+        }
+
+        ticker += 1;
+    }
+
+private:
+    Sin sin;
 };
 
 /*! Set Sin Y to values given */

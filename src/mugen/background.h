@@ -20,15 +20,17 @@ struct Sin {
     Sin():
     amp(0),period(0),offset(0),angle(0){}
 
-    ~Sin(){}
-
     inline void act(){
-        /* where did this number come from? */
-        angle += 0.00005;
+        angle += 1;
     }
 
     inline const double get() const {
-        return amp * sin(angle*period + offset);
+        // return amp * sin(angle*period * 3.14159 / 180 + offset);
+        if (period == 0){
+            return 0;
+        }
+
+        return amp * sin((360.0 / period * (angle + offset)) * 3.141592526 / 180);
     }
 
     double amp;
