@@ -870,7 +870,10 @@ public:
             return sounds;
         }
 
+        virtual const Bitmap * getCurrentFrame() const;
         MugenAnimation * getCurrentAnimation() const;
+
+        virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
 	
 	/*! This all the inherited members */
 	virtual void act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*);                       

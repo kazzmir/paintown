@@ -45,6 +45,10 @@ class MugenFrame{
             return attackCollision;
         }
 
+        virtual inline MugenSprite * getSprite() const {
+            return sprite;
+        }
+
 	// We'll keep them, but they probably won't be used
 	std::vector< MugenArea > defenseCollision;
 	// This is the only one will be worried about
@@ -116,6 +120,9 @@ class MugenAnimation{
 	
 	// Render current frame overriding flipping
 	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, const Bitmap &work, const double scalex=1, const double scaley=1  );
+
+        /* automatically sets the effect trans type to ADDALPHA */
+	void renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Bitmap &work, const double scalex = 1, const double scaley = 1);
 
         virtual const std::vector<MugenArea> getDefenseBoxes(bool reverse) const;
         virtual const std::vector<MugenArea> getAttackBoxes(bool reverse) const;

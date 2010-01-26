@@ -187,8 +187,8 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
     switch (effects.trans){
 	case ADDALPHA:{
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
-	    Bitmap::transBlender( 255, 255, 255, effects.alphalow );
-	    draw(modImage,xaxis,yaxis,where,effects);
+	    Bitmap::transBlender(0, 0, 0, effects.alphalow);
+	    draw(modImage, xaxis, yaxis, where, effects);
 	    break;
 	}
 	case ADD:{
@@ -200,7 +200,7 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
 	}
 	case ADD1:{
 	    // 50%
-	    Bitmap::addBlender( 128, 128, 128, 255 );
+	    Bitmap::addBlender(128, 128, 128, 255);
 	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}

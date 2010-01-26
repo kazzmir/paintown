@@ -2380,6 +2380,14 @@ void Character::priorPalette(){
     }*/
 }
 
+const Bitmap * Character::getCurrentFrame() const {
+    return getCurrentAnimation()->getCurrentFrame()->getSprite()->getBitmap();
+}
+
+void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
+    getCurrentAnimation()->renderReflection(getFacing() == Object::FACING_LEFT, true, intensity, getRX() - rel_x, getRY(), *work);
+}
+
 MugenAnimation * Character::getCurrentAnimation() const {
     typedef std::map< int, MugenAnimation * > Animations;
     Animations::const_iterator it = getAnimations().find(currentAnimation);

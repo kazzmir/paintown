@@ -1612,15 +1612,23 @@ void Character::draw( Bitmap * work, int rel_x, int rel_y ){
     }
 }
 
-void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
+const Bitmap * Character::getCurrentFrame() const {
     if (animation_current){
-        Bitmap::transBlender( 0, 0, 0, intensity );
-        int x = (int)((getRX() - rel_x) - animation_current->getCurrentFrame()->getWidth()/2);
+        return animation_current->getCurrentFrame();
+    }
+    return NULL;
+}
+
+void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
+    const Bitmap * frame = this->getCurrentFrame();
+    if (frame){
+        Bitmap::transBlender(0, 0, 0, intensity);
+        int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            animation_current->getCurrentFrame()->drawTransVFlip(x , y, *work);
+            frame->drawTransVFlip(x , y, *work);
         } else { 
-            animation_current->getCurrentFrame()->drawTransHVFlip(x, y, *work );
+            frame->drawTransHVFlip(x, y, *work );
         }
     }
 }

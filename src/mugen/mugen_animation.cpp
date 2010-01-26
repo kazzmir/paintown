@@ -286,6 +286,25 @@ void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const in
     */
 }
 
+void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Bitmap &work, const double scalex, const double scaley){
+    if (position >= frames.size()){
+        return;
+    }
+
+    if (frames[position]->sprite == 0){
+	return;
+    }
+
+    MugenFrame * frame = frames[position];
+    Mugen::Effects effects = frame->effects;
+    effects.facing = (facing ? -1 : 1);
+    effects.vfacing = (vfacing ? -1 : 1);
+    effects.trans = Mugen::ADDALPHA;
+    effects.alphalow = alpha;
+
+    renderFrame(frame, xaxis, yaxis, work, scalex, scaley, effects);
+}
+
 void MugenAnimation::forwardFrame(){
     if( position < frames.size() -1 )position++;
     else position = loopPosition;

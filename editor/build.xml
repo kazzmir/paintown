@@ -24,6 +24,7 @@
 
 	<target name="jar" depends="compile">
 		<unjar src="lib/jdom.jar" dest="classes" />
+		<unjar src="lib/substance.jar" dest="classes" />
 		<!--
 		<unjar src="lib/ui.jar" dest="classes" />
 		-->
