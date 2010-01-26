@@ -210,8 +210,8 @@ static InputMap<Mugen::CharacterKeys> getSelect1Keys(){
 
 static InputMap<Mugen::CharacterKeys> getSelect2Keys(){
     InputMap<Mugen::CharacterKeys> input;
-    input.set(Keyboard::Key_H, 0, true, Mugen::Up);
-    input.set(Keyboard::Key_Y, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_Y, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_H, 0, true, Mugen::Down);
     input.set(Keyboard::Key_J, 0, true, Mugen::Right);
     input.set(Keyboard::Key_G, 0, true, Mugen::Left);
 

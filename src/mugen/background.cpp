@@ -887,6 +887,13 @@ DummyElement::~DummyElement(){
 }
 
 void DummyElement::act(){
+    if (!getEnabled()){
+        return;
+    }
+    BackgroundElement::act();
+    getSinX().act();
+    getSinY().act();
+
 }
 
 void DummyElement::render(int x, int y, const Bitmap &bmp){

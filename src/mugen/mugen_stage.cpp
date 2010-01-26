@@ -1254,12 +1254,7 @@ bool MugenStage::isaPlayer( Object * o ){
 
 void MugenStage::updatePlayer(Object * player){
     // Z/Y offset
-    if (zoffsetlink == DEFAULT_BACKGROUND_ID){
-	// player->setZ(zoffset + abs(boundhigh));
-	player->setZ(currentZOffset());
-    } else {
-	player->setZ(currentZOffset());
-    }
+    player->setZ(currentZOffset());
     
     // Move X and Camera
     const double px = player->getX();
