@@ -206,8 +206,9 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
 	}
 	case SUB:{
 	    // Shadow effect
-	    Bitmap::multiplyBlender( 0, 0, 0, 128 );
-	    draw(modImage,xaxis,yaxis,where,effects);
+	    // Bitmap::multiplyBlender( 0, 0, 0, 128 );
+	    Bitmap::differenceBlender(0, 0, 0, 128);
+	    draw(modImage, xaxis, yaxis, where, effects);
 	    break;
 	}
 	case NONE:
@@ -309,7 +310,7 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 	} else {
 	    bmp.drawHVFlip(flippedX, flippedY, where);
 	}
-    } else{
+    } else {
 	//if( effects.mask ){
 	if (effects.trans != NONE){
 	    bmp.drawTrans(normalX, normalY, where);
