@@ -417,7 +417,7 @@ public:
 
         if (function == "animelem"){
             unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
-            return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() == index);
+            return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index);
         }
 
         if (function == "ifelse"){

@@ -114,6 +114,10 @@ void MugenOptionVersus::runGame(MugenStage * stage, const Bitmap & screen){
 
             if ( Global::speed_counter > 0 ){
                 runCounter += Mugen::Util::gameTicks(gameSpeed);
+                if (runCounter > 10){
+                    runCounter = 10;
+                }
+
                 while (runCounter > 1){
                     
 		    InputManager::poll();
