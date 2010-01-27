@@ -1619,7 +1619,7 @@ const Bitmap * Character::getCurrentFrame() const {
     return NULL;
 }
 
-void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
+void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
     const Bitmap * frame = this->getCurrentFrame();
     if (frame){
         Bitmap::transBlender(0, 0, 0, intensity);

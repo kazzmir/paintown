@@ -873,7 +873,7 @@ public:
         virtual const Bitmap * getCurrentFrame() const;
         MugenAnimation * getCurrentAnimation() const;
 
-        virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
+        virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
 	
 	/*! This all the inherited members */
 	virtual void act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*);                       

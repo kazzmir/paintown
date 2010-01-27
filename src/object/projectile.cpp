@@ -122,7 +122,7 @@ void Projectile::draw( Bitmap * work, int rel_x, int rel_y ){
 	}
 }
 
-void Projectile::drawReflection(Bitmap * work, int rel_x, int intensity){
+void Projectile::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
     if (currentAnimation){
         Bitmap::transBlender( 0, 0, 0, intensity );
         Bitmap::drawingMode( Bitmap::MODE_TRANS );

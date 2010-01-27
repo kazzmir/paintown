@@ -919,7 +919,7 @@ void MugenStage::render(Bitmap *work){
 	/* Reflection */
         /* FIXME: reflection and shade need camerax/y */
 	if (reflectionIntensity > 0){
-            obj->drawReflection(board, camerax - DEFAULT_WIDTH / 2, reflectionIntensity);
+            obj->drawReflection(board, camerax - DEFAULT_WIDTH / 2, cameray, reflectionIntensity);
         }
 
 	/* Shadow */

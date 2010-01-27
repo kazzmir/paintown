@@ -17,7 +17,7 @@ public:
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x, int rel_y );
-	virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
+	virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	virtual bool isGrabbed();

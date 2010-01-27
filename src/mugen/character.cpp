@@ -2384,8 +2384,8 @@ const Bitmap * Character::getCurrentFrame() const {
     return getCurrentAnimation()->getCurrentFrame()->getSprite()->getBitmap();
 }
 
-void Character::drawReflection(Bitmap * work, int rel_x, int intensity){
-    getCurrentAnimation()->renderReflection(getFacing() == Object::FACING_LEFT, true, intensity, getRX() - rel_x, getZ() + getY(), *work);
+void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
+    getCurrentAnimation()->renderReflection(getFacing() == Object::FACING_LEFT, true, intensity, getRX() - rel_x, getZ() + getY() - rel_y, *work);
 }
 
 MugenAnimation * Character::getCurrentAnimation() const {

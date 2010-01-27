@@ -63,7 +63,7 @@ public:
 	/* drawing */
 	virtual void draw( Bitmap * work, int rel_x, int rel_y );
 	
-	virtual void drawReflection(Bitmap * work, int rel_x, int intensity);
+	virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
 	virtual void drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
 
         virtual const Bitmap * getCurrentFrame() const;
