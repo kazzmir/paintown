@@ -463,7 +463,7 @@ class Grid{
 	virtual void moveCursorRight(Cursor & cursor);
 	virtual void moveCursorUp(Cursor & cursor);
 	virtual void moveCursorDown(Cursor & cursor);
-	virtual void selectCell(Cursor &cursor, const CharacterKeys & key);
+	virtual void selectCell(Cursor &cursor, const Mugen::Keys & key);
 	virtual void selectStage();
         
         virtual inline void setRows(int r){
@@ -639,7 +639,7 @@ class Cursor{
 	
 	virtual void render(Grid &grid, const Bitmap &);
 	
-	virtual inline void setInput(const InputMap<CharacterKeys> & input){
+	virtual inline void setInput(const InputMap<Mugen::Keys> & input){
 	    this->input = input;
 	}
 	
@@ -714,7 +714,7 @@ class Cursor{
 	
 	void renderPortrait(const Bitmap &);
 	
-	InputMap<CharacterKeys> input;
+	InputMap<Mugen::Keys> input;
 	//! Starting cell position in terms of row and column
 	Mugen::Point start;
 	
@@ -842,11 +842,11 @@ class CharacterSelect {
 	
 	virtual void renderVersusScreen(const Bitmap &);
 	
-	virtual inline void setPlayer1Keys(const InputMap<CharacterKeys> &input){
+	virtual inline void setPlayer1Keys(const InputMap<Mugen::Keys> &input){
 	    player1.setInput(input);
 	}
 	
-	virtual inline void setPlayer2Keys(const InputMap<CharacterKeys> &input){
+	virtual inline void setPlayer2Keys(const InputMap<Mugen::Keys> &input){
 	    player2.setInput(input);
 	}
 	

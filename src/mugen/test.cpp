@@ -252,41 +252,6 @@ const char *music[] = {
 
 const int musicHits = sizeof(music) / sizeof(char*);
 
-
-static InputMap<Mugen::CharacterKeys> getPlayer1Keys(){
-    InputMap<Mugen::CharacterKeys> input;
-    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
-    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
-    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
-    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
-
-    input.set(Keyboard::Key_A, 0, true, Mugen::A);
-    input.set(Keyboard::Key_S, 0, true, Mugen::B);
-    input.set(Keyboard::Key_D, 0, true, Mugen::C);
-    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
-    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
-    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
-    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
-    return input;
-}
-
-static InputMap<Mugen::CharacterKeys> getPlayer2Keys(){
-     InputMap<Mugen::CharacterKeys> input;
-    input.set(Keyboard::Key_H, 0, true, Mugen::Up);
-    input.set(Keyboard::Key_Y, 0, true, Mugen::Down);
-    input.set(Keyboard::Key_J, 0, true, Mugen::Right);
-    input.set(Keyboard::Key_G, 0, true, Mugen::Left);
-
-    input.set(Keyboard::Key_I, 0, true, Mugen::A);
-    input.set(Keyboard::Key_O, 0, true, Mugen::B);
-    input.set(Keyboard::Key_P, 0, true, Mugen::C);
-    input.set(Keyboard::Key_8, 0, true, Mugen::X);
-    input.set(Keyboard::Key_9, 0, true, Mugen::Y);
-    input.set(Keyboard::Key_0, 0, true, Mugen::Z);
-    input.set(Keyboard::Key_L, 0, true, Mugen::Start);
-    return input;
-}
-
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);
@@ -340,7 +305,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     Mugen::CharacterSelect selector("data/mugen/data/system.def", Mugen::Arcade);
     try {
 	selector.load();
-	selector.setPlayer1Keys(getPlayer1Keys());
+	selector.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
 	selector.run("Test", Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
@@ -552,8 +517,8 @@ void doSelectScreen(const std::string &file){
     Mugen::CharacterSelect selector(file, Mugen::Versus);
     try {
 	selector.load();
-	selector.setPlayer1Keys(getPlayer1Keys());
-	selector.setPlayer2Keys(getPlayer2Keys());
+	selector.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
+	selector.setPlayer2Keys(Mugen::getPlayer2MenuKeys());
 	selector.run("Test", Bitmap::temporaryBitmap(640,480));
 	selector.renderVersusScreen(Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
@@ -960,7 +925,7 @@ int main( int argc, char ** argv ){
 	else if ( configLoaded == 4 ){
 	    try{
                 Mugen::Storyboard story(ourFile);
-		story.setInput(getPlayer1Keys());
+		story.setInput(Mugen::getPlayer1MenuKeys());
 		// run it and repeat
 		Bitmap screen(640, 480);
 		story.run(screen, true);

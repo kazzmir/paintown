@@ -392,11 +392,6 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
 
     std::vector< Scene * >::iterator sceneIterator = scenes.begin() + startscene;
     
-    // Start and enter interrupts this as well
-    InputMap<int> keyInput;
-    keyInput.set(Keyboard::Key_ESC, 10, true, 0);
-    keyInput.set(Keyboard::Key_ENTER, 10, true, 1);
-    
     while( !quit ){
         bool draw = false;
 
@@ -411,7 +406,7 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
                 // Key handler
 		InputManager::poll();
 
-                InputMap<CharacterKeys>::Output out = InputManager::getMap(input);
+                InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
 
                 if (out[Up]){
 	        }
@@ -448,14 +443,12 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
 	        if (out[Start]){
                     quit = true;
                     return;
-	        }
-		
-		InputMap<int>::Output keyBoard = InputManager::getMap(keyInput);
-		if (keyBoard[0]){
+	        }	
+		if (out[Esc]){
 		    quit = true;
 		    return;
 		}
-		if (keyBoard[1]){
+		if (out[Enter]){
 		    quit = true;
 		    return;
 		}

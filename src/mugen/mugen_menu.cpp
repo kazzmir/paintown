@@ -361,24 +361,6 @@ MugenMenu::~MugenMenu(){
     cleanup();
 }
 
-
-static InputMap<Mugen::CharacterKeys> getPlayer1Keys(){
-    InputMap<Mugen::CharacterKeys> input;
-    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
-    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
-    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
-    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
-
-    input.set(Keyboard::Key_A, 0, true, Mugen::A);
-    input.set(Keyboard::Key_S, 0, true, Mugen::B);
-    input.set(Keyboard::Key_D, 0, true, Mugen::C);
-    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
-    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
-    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
-    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
-    return input;
-}
-
 void MugenMenu::run(){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
@@ -396,18 +378,17 @@ void MugenMenu::run(){
     fader.setState(FADEIN);
     
     // Keys
-    InputMap<int> gameInput;
-    gameInput.set(Keyboard::Key_ESC, 10, true, 0);
-    gameInput.set(Keyboard::Key_ENTER, 10, true, 1);
-    InputMap<Mugen::CharacterKeys> input = getPlayer1Keys();
+    InputMap<Mugen::Keys> input = Mugen::getPlayer1MenuKeys();
   
     // Do we have logos or intros?
     // Logo run it no repeat
     if (logo){
+        logo->setInput(input);
 	logo->run( *work,false);
     }
     // Intro run it no repeat
     if (intro){
+        intro->setInput(input);
 	intro->run( *work,false);
     }
   
@@ -431,11 +412,10 @@ void MugenMenu::run(){
 		    ticker++;
 		    runCounter -= 1;
 		    // Keys
-		    InputMap<int>::Output out = InputManager::getMap(gameInput);
-		    InputMap<Mugen::CharacterKeys>::Output playerOut = InputManager::getMap(input);
+		    InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
 		    
 		    if (fader.getState() == NOFADE){
-			if ( playerOut[Mugen::Up]){	
+			if ( out[Mugen::Up]){	
 			    (*selectedOption)->setState(MenuOption::Deselected);
 			    if ( selectedOption > menuOptions.begin() ){
 				    selectedOption--;
@@ -448,7 +428,7 @@ void MugenMenu::run(){
 			    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 			}
 
-			if (playerOut[Mugen::Down]){
+			if (out[Mugen::Down]){
 			    (*selectedOption)->setState(MenuOption::Deselected);
 			    if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
 				    selectedOption++;
@@ -461,25 +441,25 @@ void MugenMenu::run(){
 			    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
 			}
 			
-			if (playerOut[Mugen::Left]){
+			if (out[Mugen::Left]){
 			    if ( (*selectedOption)->leftKey()){
 				/* ??? */
 			    }
 			}
 			
-			if (playerOut[Mugen::Right]){
+			if (out[Mugen::Right]){
 			    if ( (*selectedOption)->rightKey()){
 				/* ??? */
 			    }
 			}
 			
-			if ( out[1] ){
+			if ( out[Mugen::Enter] ){
 			    if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
 			    // Set the fade state
 			    fader.setState(FADEOUT);
 			}
 			
-			if ( out[0] ){
+                        if ( out[Mugen::Esc] ){
 			    endGame = done = true;
 			    // Set the fade state
 			    fader.setState(FADEOUT);

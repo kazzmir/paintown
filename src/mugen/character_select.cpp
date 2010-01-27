@@ -509,7 +509,7 @@ void Grid::moveCursorDown(Cursor &cursor){
     cursor.setCurrentCell(cell);
 }
 
-void Grid::selectCell(Cursor &cursor, const CharacterKeys & key){
+void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key){
     // *TODO use the key to determine which map(act) is used
     // Get the appropriate cell for flashing in case of random
     cursor.getCurrentCell()->getCharacter()->getReferenceCell()->startFlash();
@@ -579,7 +579,7 @@ Cursor::~Cursor(){
 }
 
 void Cursor::act(Grid &grid){
-    InputMap<CharacterKeys>::Output out = InputManager::getMap(input);
+    InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
     switch (state){
 	case NotActive:
 	    return;
@@ -623,8 +623,8 @@ void Cursor::act(Grid &grid){
 	    }
 
             if (!getCurrentCell()->isEmpty()){
-                CharacterKeys selectable[] = {A, B, C, X, Y, Z};
-                for (unsigned int key = 0; key < sizeof(selectable) / sizeof(CharacterKeys); key++){
+                    Mugen::Keys selectable[] = {A, B, C, X, Y, Z};
+                for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
                     if (out[selectable[key]]){
                         grid.selectCell(*this, selectable[key]);
                     }
@@ -1489,8 +1489,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     int game_time = 100;
     
     // Set game keys temporary
-    InputMap<int> gameInput;
-    gameInput.set(Keyboard::Key_ESC, 10, true, 0);
+    InputMap<Mugen::Keys> gameInput = Mugen::getPlayer1MenuKeys();
     
     while ( ! done && fader.getState() != RUNFADE ){
     
@@ -1504,8 +1503,8 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		// Key handler
 		InputManager::poll();
 		
-		InputMap<int>::Output out = InputManager::getMap(gameInput);
-		if (out[0]){
+		InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
+		if (out[Mugen::Esc]){
 		    done = escaped = true;
 		    fader.setState(FADEOUT);
 		}

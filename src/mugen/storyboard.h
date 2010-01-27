@@ -148,7 +148,7 @@ class Storyboard {
 	//! give it the default bitmap to blit to the screen
 	virtual void run(const Bitmap &, bool repeat = false);
 
-        virtual void setInput(const InputMap<CharacterKeys> & input){
+        virtual void setInput(const InputMap<Mugen::Keys> & input){
             this->input = input;
         }
 	
@@ -166,7 +166,7 @@ class Storyboard {
 	std::vector<Scene *>scenes;
 
         //! Input
-        InputMap<CharacterKeys> input;
+        InputMap<Mugen::Keys> input;
     
 };
 

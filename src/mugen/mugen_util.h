@@ -7,6 +7,8 @@
 #include <list>
 #include "mugen_exception.h"
 
+#include "input/input-manager.h"
+
 class Bitmap;
 class MugenAnimation;
 class MugenBackground;
@@ -133,7 +135,7 @@ enum GameType {
 };
 
 /*! Key handler for keys for now change later*/
-enum CharacterKeys{
+enum Keys{
     Up,
     Down,
     Left,
@@ -144,8 +146,48 @@ enum CharacterKeys{
     X,
     Y,
     Z,
-    Start
+    Start,
+    Enter,
+    Esc
 };
+
+/*! Player1 keys for menus including keyboard shortcuts */
+inline static InputMap<Mugen::Keys> getPlayer1MenuKeys(){
+    InputMap<Mugen::Keys> input;
+    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_A, 0, true, Mugen::A);
+    input.set(Keyboard::Key_S, 0, true, Mugen::B);
+    input.set(Keyboard::Key_D, 0, true, Mugen::C);
+    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
+    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
+    input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
+    return input;
+}
+
+/*! Player2 keys for menus */
+inline static InputMap<Mugen::Keys> getPlayer2MenuKeys(){
+    InputMap<Mugen::Keys> input;
+    input.set(Keyboard::Key_H, 0, true, Mugen::Up);
+    input.set(Keyboard::Key_Y, 0, true, Mugen::Down);
+    input.set(Keyboard::Key_J, 0, true, Mugen::Right);
+    input.set(Keyboard::Key_G, 0, true, Mugen::Left);
+
+    input.set(Keyboard::Key_I, 0, true, Mugen::A);
+    input.set(Keyboard::Key_O, 0, true, Mugen::B);
+    input.set(Keyboard::Key_P, 0, true, Mugen::C);
+    input.set(Keyboard::Key_8, 0, true, Mugen::X);
+    input.set(Keyboard::Key_9, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_0, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_L, 0, true, Mugen::Start);
+    return input;
+}
 
 /*! Base Element Type */
 class Element {
