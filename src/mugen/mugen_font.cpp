@@ -216,14 +216,14 @@ unsigned char * MugenFont::findBank(int bank){
 }
 
 void MugenFont::changeBank(int bank){
-    if (bank < 0 || bank > (colors -1) || currentBank == bank)return;
+    if (bank < 0 || bank > (colors -1) || currentBank == bank) return;
     currentBank = bank;
     unsigned char newpal[768];
     // Reset palette
     memcpy(pcx + (pcxsize - 768), palette, 768);
     memcpy( newpal, pcx+(pcxsize)-768, 768);
     unsigned char * newBank = findBank(bank);
-    Global::debug(1) << "palette start: " << (void*)(pcx + pcxsize - 768) << ". new bank: " << (void*)newBank << endl;
+    // Global::debug(1) << "palette start: " << (void*)(pcx + pcxsize - 768) << ". new bank: " << (void*)newBank << endl;
     memcpy((void*) &newpal[768 - colors*3], (void*) newBank, colors * 3);
 
     /* hack to get around the 16-bit masking color */
