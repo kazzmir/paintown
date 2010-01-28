@@ -151,6 +151,7 @@ void MugenMenu::loadData() throw (MugenException){
                             Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, menu.spriteFile), "", menu.sprites);
                         } else if (simple == "snd"){
                             simple >> menu.soundFile;
+                            Mugen::Util::readSounds( Mugen::Util::getCorrectFileLocation(baseDir, menu.soundFile ), menu.sounds);
                             Global::debug(1) << "Got Sound File: '" << menu.soundFile << "'" << endl;
                         } else if (simple == "logo.storyboard"){
                             try{
@@ -315,11 +316,21 @@ void MugenMenu::loadData() throw (MugenException){
                        menu.boxCursorCoords.alpha = 128;
                        menu.boxCursorCoords.alphaMove = -6;
                    } else if (simple == "cursor.move.snd"){
-                       /* FIXME! parse cursor.move.snd */
+                       try{
+                            simple >> menu.moveSound.x >> menu.moveSound.y;
+                       } catch (const Ast::Exception & e){
+                       }
                    } else if (simple == "cursor.done.snd"){
-                       /* FIXME! parse cursor.done.snd */
+                       try{
+                            simple >> menu.doneSound.x >> menu.doneSound.y;
+                       } catch (const Ast::Exception & e){
+                       }
                    } else if (simple == "cancel.snd"){
-                       /* FIXME! parse cancel.snd */
+                       int g=0,s=0;
+                       try{
+                            simple >> menu.cancelSound.x >> menu.cancelSound.y;
+                       } catch (const Ast::Exception & e){
+                       }
                    } else {
                        throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
                    }
@@ -425,7 +436,9 @@ void MugenMenu::run(){
 				optionLocation = menuOptions.size() -1;
 			    }
 			    (*selectedOption)->setState(MenuOption::Selected);
-			    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+			    if (sounds[moveSound.x][moveSound.y] != 0){
+                                sounds[moveSound.x][moveSound.y]->play();
+                            }
 			}
 
 			if (out[Mugen::Down]){
@@ -438,7 +451,9 @@ void MugenMenu::run(){
 				optionLocation = 0;
 			    }
 			    (*selectedOption)->setState(MenuOption::Selected);
-			    //if(menuOptions.size() > 1)MenuGlobals::playSelectSound();
+			    if (sounds[moveSound.x][moveSound.y] != 0){
+                                sounds[moveSound.x][moveSound.y]->play();
+                            }
 			}
 			
 			if (out[Mugen::Left]){
@@ -457,6 +472,9 @@ void MugenMenu::run(){
 			    if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
 			    // Set the fade state
 			    fader.setState(FADEOUT);
+                            if (sounds[doneSound.x][doneSound.y] != 0){
+                                sounds[doneSound.x][doneSound.y]->play();
+                            }
 			}
 			
                         if ( out[Mugen::Esc] ){
@@ -465,6 +483,9 @@ void MugenMenu::run(){
 			    fader.setState(FADEOUT);
 			    (*selectedOption)->setState(MenuOption::Deselected);
                             InputManager::waitForRelease(input, Mugen::Esc);
+                            if (sounds[cancelSound.x][cancelSound.y] != 0){
+                                sounds[cancelSound.x][cancelSound.y]->play();
+                            }
 			}
 		    }
 		    // Fader
@@ -543,6 +564,13 @@ void MugenMenu::cleanup(){
     
     // Get rid of sprites
     cleanupSprites();
+
+    // Get rid of sounds
+    for( std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
+      for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
+    }
 }
 
 void MugenMenu::cleanupSprites(){

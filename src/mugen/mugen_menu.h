@@ -142,6 +142,13 @@ class MugenMenu : public Menu {
 	
 	/* Sprites */
 	Mugen::SpriteMap sprites;
+
+        /*! Sounds */
+        Mugen::SoundMap sounds;
+
+        Mugen::Point moveSound;
+        Mugen::Point doneSound;
+        Mugen::Point cancelSound;
 	
 	// Title background
 	Mugen::Background *background;
