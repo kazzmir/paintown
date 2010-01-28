@@ -203,7 +203,10 @@ public:
             return RuntimeValue(state.fall.fall);
         }
 
-        if (identifier == "time"){
+        /* the mugen docs don't say anything about `statetime' but its
+         * most likely the same thing as `time'
+         */
+        if (identifier == "time" || identifier == "statetime"){
             return RuntimeValue(environment.getCharacter().getStateTime());
         }
 
