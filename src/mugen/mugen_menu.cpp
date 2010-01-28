@@ -464,6 +464,7 @@ void MugenMenu::run(){
 			    // Set the fade state
 			    fader.setState(FADEOUT);
 			    (*selectedOption)->setState(MenuOption::Deselected);
+                            InputManager::waitForRelease(input, Mugen::Esc);
 			}
 		    }
 		    // Fader
