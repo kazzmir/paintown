@@ -295,7 +295,6 @@ void Cell::act(){
 void Cell::randomize(std::vector<CharacterInfo *> &characters){
     if (random){
 	unsigned int num = PaintownUtil::rnd(0,characters.size());
-        Global::debug(0) << "Total Characters: " << characters.size() << " | Got Number: " << num << endl;
         character = characters[num];
     }
 }
