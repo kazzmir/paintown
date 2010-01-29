@@ -154,10 +154,10 @@ enum Keys{
 /*! Player1 keys for menus including keyboard shortcuts */
 inline static InputMap<Mugen::Keys> getPlayer1MenuKeys(){
     InputMap<Mugen::Keys> input;
-    input.set(Keyboard::Key_UP, 0, true, Mugen::Up);
-    input.set(Keyboard::Key_DOWN, 0, true, Mugen::Down);
-    input.set(Keyboard::Key_RIGHT, 0, true, Mugen::Right);
-    input.set(Keyboard::Key_LEFT, 0, true, Mugen::Left);
+    input.set(Keyboard::Key_UP, 20, false, Mugen::Up);
+    input.set(Keyboard::Key_DOWN, 20, false, Mugen::Down);
+    input.set(Keyboard::Key_RIGHT, 20, false, Mugen::Right);
+    input.set(Keyboard::Key_LEFT, 20, false, Mugen::Left);
 
     input.set(Keyboard::Key_A, 0, true, Mugen::A);
     input.set(Keyboard::Key_S, 0, true, Mugen::B);
@@ -174,10 +174,10 @@ inline static InputMap<Mugen::Keys> getPlayer1MenuKeys(){
 /*! Player2 keys for menus */
 inline static InputMap<Mugen::Keys> getPlayer2MenuKeys(){
     InputMap<Mugen::Keys> input;
-    input.set(Keyboard::Key_H, 0, true, Mugen::Up);
-    input.set(Keyboard::Key_Y, 0, true, Mugen::Down);
-    input.set(Keyboard::Key_J, 0, true, Mugen::Right);
-    input.set(Keyboard::Key_G, 0, true, Mugen::Left);
+    input.set(Keyboard::Key_H, 20, false, Mugen::Up);
+    input.set(Keyboard::Key_Y, 20, false, Mugen::Down);
+    input.set(Keyboard::Key_J, 20, false, Mugen::Right);
+    input.set(Keyboard::Key_G, 20, false, Mugen::Left);
 
     input.set(Keyboard::Key_I, 0, true, Mugen::A);
     input.set(Keyboard::Key_O, 0, true, Mugen::B);
