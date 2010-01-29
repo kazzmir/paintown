@@ -22,6 +22,12 @@ void MugenSound::play(){
     }
 }
 
+void MugenSound::stop(){
+    if (sound){
+        sound->stop();
+    }
+}
+
 MugenSound::MugenSound( const MugenSound &copy ){
     this->next = copy.next;
     this->length = copy.length;

@@ -254,12 +254,17 @@ class StageHandler{
 	}
 	
 	//! Set Selection
-	virtual inline void toggleSelecting(){
-	    selecting = !selecting;
-	    if (!selecting) {
-		font.setState(font.Done);
-	    }
-	}
+	virtual void toggleSelecting();
+
+        //! Set move sound
+        virtual inline void setMoveSound(MugenSound * sound){
+            this->moveSound = sound;
+        }
+
+        //! Set select sound
+        virtual inline void setSelectSound(MugenSound * sound){
+            this->selectSound = sound;
+        }
 	
     private:
 	//! Font handler
@@ -279,6 +284,12 @@ class StageHandler{
 	
 	//! Selection still active?
 	bool selecting;
+
+        //! Move Sound
+        MugenSound *moveSound;
+
+        //! Select Sound
+        MugenSound *selectSound;
 };
 
 /* Handle an individual cell which contains the data required to render itself */
@@ -287,7 +298,8 @@ class Cell{
         Cell(int x, int y);
         virtual ~Cell();
 
-        virtual void act(std::vector<CharacterInfo *> &characters);
+        virtual void act();
+        virtual void randomize(std::vector<CharacterInfo *> &characters);
         virtual void render(const Bitmap &);
 	
 	virtual inline const bool operator==(const Cell &cell) const{
@@ -451,7 +463,7 @@ class Grid{
 	
 	virtual void initialize();
 
-        virtual void act();
+        virtual void act(Cursor & player1, Cursor & player2);
 	
 	virtual void render(const Bitmap &);
 	
@@ -556,6 +568,9 @@ class Grid{
 	
 	//! Random sprite switch time
 	int cellRandomSwitchTime;
+
+        //! Random switch time ticker
+        int randomSwitchTimeTicker;
 	
 	//! Portrait offset for placement of the picture
 	Mugen::Point portraitOffset;
@@ -709,6 +724,28 @@ class Cursor{
 	virtual inline const State & getState() const {
 	    return state;
 	}
+
+        virtual inline void setMoveSound(MugenSound * sound){
+            this->moveSound = sound;
+        }
+
+        virtual void playMoveSound();
+
+        virtual inline void setSelectSound(MugenSound * sound){
+            this->selectSound = sound;
+        }
+
+        virtual void playSelectSound();
+
+        virtual inline void setRandomSound(MugenSound * sound){
+            this->randomSound = sound;
+        }
+
+        virtual void playRandomSound();
+        
+        virtual inline void setRandomCancel(bool cancel){
+            this->cancelRandom = cancel;
+        }
 	
     private:
 	
@@ -754,6 +791,18 @@ class Cursor{
 	
 	//! Current state for proper handling of selection
 	State state;
+
+        //! Move Sound
+        MugenSound *moveSound;
+
+        //! Select Sound
+        MugenSound *selectSound;
+
+        //! Random Sound
+        MugenSound *randomSound;
+
+        //! Cancel Random
+        bool cancelRandom;
 };
 
 class VersusScreen {
@@ -905,6 +954,12 @@ class CharacterSelect {
 	
 	//! Sprites
 	Mugen::SpriteMap sprites;
+
+        //! Sounds
+        Mugen::SoundMap sounds;
+
+        //! Cancel sound
+        MugenSound *cancelSound;
 	
 	//! Select background
 	Mugen::Background *background;

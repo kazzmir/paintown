@@ -13,6 +13,7 @@ public:
 
     void load();
     void play();
+    void stop();
     
     int next;
     int length;

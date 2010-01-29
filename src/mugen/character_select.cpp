@@ -176,7 +176,9 @@ void CharacterInfo::setAct(int number){
 StageHandler::StageHandler():
 currentStage(0),
 display(false),
-selecting(true){
+selecting(true),
+moveSound(0),
+selectSound(0){
     stages.push_back("Random");
     stageNames.push_back("Stage: Random");
 }
@@ -213,6 +215,11 @@ void StageHandler::next(){
     } else {
 	currentStage = 0;
     }
+    if (stages.size() > 1){
+        if (moveSound){
+            moveSound->play();
+        }
+    }
 }
 
 //! Set Prev Stage
@@ -224,6 +231,21 @@ void StageHandler::prev(){
 	currentStage--;
     } else {
 	currentStage = stages.size()-1;
+    }
+    if (stages.size() > 1){
+        if (moveSound){
+            moveSound->play();
+        }
+    }
+}
+
+void StageHandler::toggleSelecting(){
+    selecting = !selecting;
+    if (!selecting) {
+	font.setState(font.Done);
+        if (selectSound){
+            selectSound->play();
+        }
     }
 }
 
@@ -264,13 +286,16 @@ cursors(None){
 Cell::~Cell(){
 }
 
-void Cell::act(std::vector<CharacterInfo *> &characters){
-    if (random){
-	unsigned int num = PaintownUtil::rnd(0,characters.size()-1);
-	character = characters[num];
-    }
+void Cell::act(){
     if (flash){
 	flash--;
+    }
+}
+
+void Cell::randomize(std::vector<CharacterInfo *> &characters){
+    if (random){
+	unsigned int num = PaintownUtil::rnd(0,characters.size()-1);
+        character = characters[num];
     }
 }
 
@@ -304,6 +329,7 @@ cellSpacing(0),
 cellBackgroundSprite(0),
 cellRandomSprite(0),
 cellRandomSwitchTime(0),
+randomSwitchTimeTicker(0),
 portraitScaleX(1),
 portraitScaleY(1),
 type(Mugen::Arcade){
@@ -336,6 +362,10 @@ void Grid::initialize(){
 	    cell->setDimensions(cellSize.x,cellSize.y);
 	    cell->setCharacterOffset(portraitOffset.x, portraitOffset.y);
 	    cell->setCharacterScale(portraitScaleX, portraitScaleY);
+            // Set random cell with a default character
+            if (cell->isRandom()){
+                cell->setCharacter(characters.front());
+            }
 	    cellRow.push_back(cell);
 	    currentPosition.x += cellSize.x + cellSpacing;
 	}
@@ -344,15 +374,34 @@ void Grid::initialize(){
     }
 }
 
-void Grid::act(){
+void Grid::act(Cursor & player1, Cursor & player2){
     for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
 	std::vector< Cell *> &row = (*i);
 	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
 	    Cell *cell = (*column);
-	    cell->act(characters);
+	    cell->act();
+            if (randomSwitchTimeTicker == cellRandomSwitchTime){
+                if (player1.getState() == Cursor::CharacterSelect){
+                    if (player1.getCurrentCell() == cell && cell->isRandom()){
+                        cell->randomize(characters);
+                        player1.playRandomSound();
+                    }
+                }
+                if (player2.getState() == Cursor::CharacterSelect){
+                    if (player2.getCurrentCell() == cell && cell->isRandom()){
+                        cell->randomize(characters);
+                        player2.playRandomSound();
+                    }
+                }
+            }
 	}
     }
-    
+
+    if (randomSwitchTimeTicker == cellRandomSwitchTime){
+        randomSwitchTimeTicker = 0;
+    }
+    randomSwitchTimeTicker++;
+
     stages.getFontHandler().act();
 }
 
@@ -423,6 +472,7 @@ void Grid::moveCursorLeft(Cursor &cursor){
     cursor.getCurrentCell()->popCursor();
     cell->pushCursor();
     cursor.setCurrentCell(cell);
+    cursor.playMoveSound();
 }
 
 void Grid::moveCursorRight(Cursor &cursor){
@@ -451,6 +501,7 @@ void Grid::moveCursorRight(Cursor &cursor){
     cursor.getCurrentCell()->popCursor();
     cell->pushCursor();
     cursor.setCurrentCell(cell);
+    cursor.playMoveSound();
 }
 
 void Grid::moveCursorUp(Cursor &cursor){
@@ -479,6 +530,7 @@ void Grid::moveCursorUp(Cursor &cursor){
     cursor.getCurrentCell()->popCursor();
     cell->pushCursor();
     cursor.setCurrentCell(cell);
+    cursor.playMoveSound();
 }
 
 void Grid::moveCursorDown(Cursor &cursor){
@@ -507,6 +559,7 @@ void Grid::moveCursorDown(Cursor &cursor){
     cursor.getCurrentCell()->popCursor();
     cell->pushCursor();
     cursor.setCurrentCell(cell);
+    cursor.playMoveSound();
 }
 
 void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key){
@@ -517,10 +570,12 @@ void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key){
     switch (type){
 	case Arcade:
 	    cursor.setState(Cursor::Done);
+            cursor.playSelectSound();
 	    break;
 	case Versus:
 	    stages.setDisplay(true);
 	    cursor.setState(Cursor::StageSelect);
+            cursor.playSelectSound();
 	    break;
 	case TeamArcade:
 	    break;
@@ -572,7 +627,11 @@ hideForBlink(false),
 faceScaleX(0),
 faceScaleY(0),
 facing(0),
-state(NotActive){
+state(NotActive),
+moveSound(0),
+selectSound(0),
+randomSound(0),
+cancelRandom(false){
 }
 
 Cursor::~Cursor(){
@@ -726,6 +785,27 @@ void Cursor::render(Grid &grid, const Bitmap & bmp){
     grid.getStageHandler().render(bmp);
 }
 
+void Cursor::playMoveSound(){
+    if (moveSound){
+        moveSound->play();
+    }
+}
+
+void Cursor::playSelectSound(){
+    if (selectSound){
+        selectSound->play();
+    }
+}
+
+void Cursor::playRandomSound(){
+    if (randomSound){
+        if (cancelRandom){
+            randomSound->stop();
+        }
+        randomSound->play();
+    } 
+}
+
 void Cursor::renderPortrait(const Bitmap &bmp){
     // Lets do the portrait and name
     if (!currentCell->isEmpty()){
@@ -763,8 +843,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, cons
     int game_time = 100;
     
     // Set game keys temporary
-    InputMap<int> gameInput;
-    gameInput.set(Keyboard::Key_ESC, 10, true, 0);
+    InputMap<Mugen::Keys> gameInput;
+    gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
     
     while ( ! done && fader.getState() != RUNFADE ){
     
@@ -781,8 +861,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, cons
 		// Key handler
 		InputManager::poll();
 		
-		InputMap<int>::Output out = InputManager::getMap(gameInput);
-		if (out[0]){
+		InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
+		if (out[Mugen::Esc]){
 		    done = escaped = true;
 		    fader.setState(FADEOUT);
 		}
@@ -888,7 +968,8 @@ systemFile(file),
 sffFile(""),
 sndFile(""),
 selectFile(""),
-type(type){
+type(type),
+cancelSound(0){
     grid.setGameType(type);
     
     switch (type){
@@ -930,6 +1011,12 @@ CharacterSelect::~CharacterSelect(){
     // Get rid of sprites
     for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second )delete j->second;
+      }
+    }
+    // Get rid of sounds
+    for( std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
+      for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }
@@ -990,6 +1077,7 @@ void CharacterSelect::load() throw (MugenException){
 			    }
                         } else if (simple == "snd"){
                             simple >> select.sndFile;
+                            Mugen::Util::readSounds( Mugen::Util::getCorrectFileLocation(baseDir, select.sndFile ), select.sounds);
                             Global::debug(1) << "Got Sound File: '" << select.sndFile << "'" << endl;
                         } else if (simple == "logo.storyboard"){
                             // Ignore
@@ -1102,10 +1190,28 @@ void CharacterSelect::load() throw (MugenException){
 		    int group, sprite;
                     simple >> group >> sprite;
 		    self.player1.setDoneSprite(sprites[group][sprite]);
-		} else if (simple == "p1.cursor.move.snd"){ /* nothing */ }
-                else if (simple == "p1.cursor.done.snd"){ /* nothing */ }
-		else if (simple == "p1.random.move.snd"){ /* nothing */ }
-		else if (simple == "p2.cursor.startcell"){
+		} else if (simple == "p1.cursor.move.snd"){
+                   try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.player1.setMoveSound(self.sounds[group][sound]);
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if (simple == "p1.cursor.done.snd"){
+                    try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.player1.setSelectSound(self.sounds[group][sound]);
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if (simple == "p1.random.move.snd"){
+                    try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.player1.setRandomSound(self.sounds[group][sound]);
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if (simple == "p2.cursor.startcell"){
                     int x,y;
                     simple >> x >> y;
 		    self.player2.setStart(x,y);
@@ -1122,13 +1228,54 @@ void CharacterSelect::load() throw (MugenException){
 		    simple >> blink;
 		    self.player2.setBlink(blink);
 		} 
-		else if ( simple == "p2.cursor.move.snd"){ /* nothing */ }
-		else if ( simple == "p2.cursor.done.snd"){ /* nothing */ }
-		else if ( simple == "p2.random.move.snd"){ /* nothing */ }
-		else if ( simple == "stage.move.snd"){ /* nothing */ }
-		else if ( simple == "stage.done.snd"){ /* nothing */ }
-		else if ( simple == "cancel.snd"){ /* nothing */ }
-		else if (simple == "portrait.offset"){
+		else if ( simple == "p2.cursor.move.snd"){ 
+                    try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.player2.setMoveSound(self.sounds[group][sound]);
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if ( simple == "p2.cursor.done.snd"){
+                    try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.player2.setSelectSound(self.sounds[group][sound]);
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if ( simple == "p2.random.move.snd"){
+                   try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.player2.setRandomSound(self.sounds[group][sound]);
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if (simple == "random.move.snd.cancel"){
+                   bool cancel;
+                   simple >> cancel;
+                   self.player1.setRandomCancel(cancel);
+                   self.player2.setRandomCancel(cancel);
+                } else if ( simple == "stage.move.snd"){
+                   try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.grid.getStageHandler().setMoveSound(self.sounds[group][sound]);
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if ( simple == "stage.done.snd"){
+                   try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.grid.getStageHandler().setSelectSound(self.sounds[group][sound]);
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if ( simple == "cancel.snd"){
+                   try{
+                        int group, sound;
+                        simple >> group >> sound;
+                        self.cancelSound = self.sounds[group][sound];
+                   } catch (const Ast::Exception & e){
+                   }
+                } else if (simple == "portrait.offset"){
 		    int x,y;
 		    simple >> x >> y;
 		    self.grid.setPortraitOffset(x,y);
@@ -1507,6 +1654,10 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		if (out[Mugen::Esc]){
 		    done = escaped = true;
 		    fader.setState(FADEOUT);
+                    // play cancel sound
+                    if (cancelSound){
+                        cancelSound->play();
+                    }
 		}
 		
 		/* *FIXME remove later when solution is found */
@@ -1524,7 +1675,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		background->act();
 		
 		// Grid
-		grid.act();
+		grid.act(player1,player2);
 		
 		// Cursors
 		player1.act(grid);
