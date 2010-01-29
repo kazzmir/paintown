@@ -429,6 +429,7 @@ void Grid::addCharacter(CharacterInfo *character, bool isRandom){
 	    if (cell->isEmpty()){
 		if (isRandom){
 		    cell->setRandom(true);
+                    cell->setCharacter(character);
 		    return;
 		}
 		character->setReferenceCell(cell);
@@ -1549,9 +1550,16 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
                     list >> temp;
                     
 		    // Check if it's random
+                    /* TODO: process randomselect last so that the other characters
+                     * exist, otherwise the `characters' array might be empty if
+                     * randomselect is the first thing that is parsed.
+                     * One easy way to do this is to keep track of the randomselect
+                     * and then do grid.addCharacter(...) in the destructor of
+                     * CharacterWalker.
+                     */
 		    if (temp == "randomselect"){
                         // Add random
-                        grid.addCharacter(0,true);
+                        grid.addCharacter(characters.front(),true);
                     } else {
                         // Get character
 			// *FIXME Not an elegant solution for character location

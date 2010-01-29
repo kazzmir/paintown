@@ -334,6 +334,7 @@ PythonEngine::PythonEngine(const string & path):
 Script::Engine(),
 path(path){
     Global::debug(1) << "Loading python.." << endl;
+    /* TODO: call PyMac_Iniitialize() for OSX. I read that somewhere online. */
     Py_Initialize();
 
     Py_InitModule((char*) paintown_internal, PaintownModule);

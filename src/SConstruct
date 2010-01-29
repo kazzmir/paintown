@@ -57,13 +57,13 @@ def icon():
         return []
 
 x = []
-x.append(use.Program( 'paintown', obj_files + ['xmain.cpp'] + icon()))
+x.append(use.Program('paintown', obj_files + ['xmain.cpp'] + icon()))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
-x.append( use.Program( 'mugentest', obj_files + ['mugen/test.cpp'] ) )
+x.append(use.Program('mugentest', obj_files + ['mugen/test.cpp']))
 # x.append( use.Program( 'mugentest2', obj_files + ['mugen/test2.cpp'] ) )
 
 SConscript('mugen/parser/SConstruct', exports = ['use']);
 SConscript('test/SConstruct', exports = ['use'])
 
-Return( 'x' )
+Return('x')
