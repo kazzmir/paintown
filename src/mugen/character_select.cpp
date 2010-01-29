@@ -200,7 +200,7 @@ void StageHandler::render(const Bitmap &bmp){
 const std::string &StageHandler::getStage(){
     // check if random first;
     if (currentStage == 0){
-	return stages[PaintownUtil::rnd(1,stages.size()-1)];
+	return stages[PaintownUtil::rnd(1,stages.size())];
     }
     return stages[currentStage];
 }
@@ -294,7 +294,8 @@ void Cell::act(){
 
 void Cell::randomize(std::vector<CharacterInfo *> &characters){
     if (random){
-	unsigned int num = PaintownUtil::rnd(0,characters.size()-1);
+	unsigned int num = PaintownUtil::rnd(0,characters.size());
+        Global::debug(0) << "Total Characters: " << characters.size() << " | Got Number: " << num << endl;
         character = characters[num];
     }
 }
