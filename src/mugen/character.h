@@ -1160,6 +1160,14 @@ public:
 
         virtual MugenSound * getSound(int group, int item) const;
 
+        virtual inline void setJugglePoints(int x){
+            airjuggle = x;
+        }
+
+        virtual inline int getJugglePoints() const {
+            return airjuggle;
+        }
+
 protected:
     void initialize();
     
@@ -1254,7 +1262,7 @@ protected:
 	int falldefenseup;
 	// How long to lie down when fall
 	int lieDownTime;
-	// Air juggle points this charcter is worth?
+        /* starting air juggle points */
 	int airjuggle;
 	// Default Hit Spark Number for hitdefs ???
 	int sparkno;

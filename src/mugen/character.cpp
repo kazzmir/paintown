@@ -1344,6 +1344,10 @@ void Character::loadCnsFile(const string & path){
                             int x;
                             simple >> x;
                             self.setLieDownTime(x);
+                        } else if (simple == "airjuggle"){
+                            int x;
+                            simple >> x;
+                            self.setJugglePoints(x);
                         }
                     }
 
