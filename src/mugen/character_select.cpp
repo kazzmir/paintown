@@ -1515,6 +1515,28 @@ void CharacterSelect::load() throw (MugenException){
     parseSelect(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
 }
 
+class CharacterCollect{
+    public:
+	CharacterCollect():
+	random(false),
+	randomStage(false),
+	name(""),
+	stage(""),
+	includeStage(true),
+	order(1),
+	song(""){
+	}
+	~CharacterCollect(){
+	}
+	bool random;
+	bool randomStage;
+	std::string name;
+	std::string stage;
+	bool includeStage;
+	int order;
+	std::string song;
+};
+
 void CharacterSelect::parseSelect(const std::string &selectFile){
     const std::string file = Mugen::Util::getCorrectFileLocation(Mugen::Util::getFileDir(selectFile), Mugen::Util::stripDir(selectFile));
     
@@ -1524,6 +1546,7 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
     
+    std::vector< CharacterCollect > characterCollection;
     std::vector< std::string > stageNames;
     
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
@@ -1535,66 +1558,52 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
         if (head == "characters"){
             class CharacterWalker: public Ast::Walker{
             public:
-		CharacterWalker(Grid &grid, std::vector< CharacterInfo *> &characters, std::vector< std::string > &stageNames):
-		grid(grid),
-		characters(characters),
-		stageNames(stageNames){}
+		CharacterWalker(std::vector< CharacterCollect > & characters):
+		characters(characters){}
 		virtual ~CharacterWalker(){}
 		
-		Grid &grid;
-		std::vector< CharacterInfo *> &characters;
-		std::vector< std::string > &stageNames;
+		std::vector< CharacterCollect > &characters;
                 virtual void onValueList(const Ast::ValueList & list){
-                    // Get Stage info and save it
-                    std::string temp;
-                    list >> temp;
-                    
-		    // Check if it's random
-                    /* TODO: process randomselect last so that the other characters
-                     * exist, otherwise the `characters' array might be empty if
-                     * randomselect is the first thing that is parsed.
-                     * One easy way to do this is to keep track of the randomselect
-                     * and then do grid.addCharacter(...) in the destructor of
-                     * CharacterWalker.
-                     */
+                    CharacterCollect character;
+		    // Grab Character
+		    std::string temp;
+		    list >> temp;
 		    if (temp == "randomselect"){
-                        // Add random
-                        grid.addCharacter(characters.front(),true);
-                    } else {
-                        // Get character
-			// *FIXME Not an elegant solution for character location
-			const std::string baseDir = Filesystem::find("mugen/chars/" + temp + "/");
-			std::string str = Mugen::Util::stripDir(temp);
-			const std::string charDefFile = Mugen::Util::fixFileName(baseDir, std::string(str + ".def"));
-			Global::debug(0) << "Got character def: " << charDefFile << endl;
-			CharacterInfo *character = new CharacterInfo(charDefFile);
-                        
-			// Add to our character list
-                        characters.push_back(character);
-                        Global::debug(1) << "Got character: " << character->getName() << endl;
-                        
-			// Add to grid 
-                        grid.addCharacter(character);
-
-                        /* **TODO** get values for:
-				    stage
-				    includestage
-				    random
-				    music
-				    order
-				    
-				    For now we'll assume a stage
-			*/
-                        std::string stageTemp;
-                        list >> stageTemp;
-                        // and add it to our stages
-                        stageNames.push_back(stageTemp);
-                        Global::debug(1) << "Got stage: " << stageTemp << endl;
-                    }
+			character.random = true;
+			return;
+		    } else {
+			character.name = temp;
+		    }
+		    // Grab stage
+		    list >> temp;
+		    if (temp == "random"){
+			character.randomStage = true;
+		    } else {
+			character.stage = temp;
+		    }
+		    // Grab options
+		    while(true){
+			try{
+			    list >> temp;
+			    if (PaintownUtil::matchRegex(temp,"includestage=")){
+				temp.replace(0,std::string("includestage=").size(),"");
+				character.includeStage = (bool)atoi(temp.c_str());
+			    } else if (PaintownUtil::matchRegex(temp,"music=")){
+				temp.replace(0,std::string("music=").size(),"");
+				character.song = temp;
+			    } else if (PaintownUtil::matchRegex(temp,"order=")){
+				temp.replace(0,std::string("order=").size(),"");
+				character.order = (bool)atoi(temp.c_str());
+			    }
+			} catch (const Ast::Exception & e){
+			    break;
+			}
+		    }
+		    characters.push_back(character);
                 }
             };
 
-            CharacterWalker walk(grid, characters, stageNames);
+            CharacterWalker walk(characterCollection);
             section->walk(walk);
 	} else if (head == "extrastages"){
 	    class StageWalker: public Ast::Walker{
@@ -1621,6 +1630,44 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 	    /* Add in later */
 	} else {
 	    throw MugenException("Unhandled Section in '" + file + "': " + head, __FILE__, __LINE__); 
+	}
+    }
+    
+    // Set up our characters along the grid (excluding random select)
+    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
+	CharacterCollect & character = *i;
+	if (!character.random){
+	    // Get character
+	    // *FIXME Not an elegant solution for character location
+	    const std::string baseDir = Filesystem::find("mugen/chars/" + character.name + "/");
+	    std::string str = Mugen::Util::stripDir(character.name);
+	    const std::string charDefFile = Mugen::Util::fixFileName(baseDir, std::string(str + ".def"));
+	    Global::debug(0) << "Got character def: " << charDefFile << endl;
+	    CharacterInfo *charInfo = new CharacterInfo(charDefFile);
+	    characters.push_back(charInfo);
+	    
+	    // Add the stages
+	    if (!character.stage.empty()){
+		stageNames.insert(stageNames.begin(),character.stage);
+	    }
+	    /* **TODO** figure out what to do with:
+		includestage
+		music
+		order
+		randomStage
+	    */
+	}
+    }
+    
+    // Now setup Grid
+    std::vector<CharacterInfo *>::iterator nextChar = characters.begin();
+    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
+	CharacterCollect & character = *i;
+	if (character.random){
+	    grid.addCharacter(characters.front(),true);
+	} else {
+	    grid.addCharacter(*nextChar);
+	    nextChar++;
 	}
     }
     
