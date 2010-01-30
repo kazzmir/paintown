@@ -125,6 +125,7 @@ void OptionCredits::run( bool &endGame ){
 
     /* use Bitmap::temporaryBitmap here? */
     Bitmap tmp(GFX_X, GFX_Y);
+    // Bitmap fireWork(GFX_X, GFX_Y);
     if (! music.empty()){
         MenuGlobals::setMusic(music);
     }
@@ -134,6 +135,8 @@ void OptionCredits::run( bool &endGame ){
     const Font & vFont = Font::getFont(Menu::getFont(), Menu::getFontWidth(), Menu::getFontHeight());
 
     bool quit = false;
+
+    Bitmap::transBlender(0, 0, 0, 128);
 
     double think = 0;
     while (!quit){
@@ -167,6 +170,10 @@ void OptionCredits::run( bool &endGame ){
             }
 
             fire.draw(tmp);
+            /*
+            fire.draw(fireWork);
+            fireWork.drawTrans(0, 0, tmp);
+            */
 
             int y = (int) min_y;
             vector<std::string>::iterator b = credits.begin();
