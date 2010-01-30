@@ -1637,6 +1637,8 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
     }
     
     // Set up our characters along the grid (excluding random select)
+    // Offset for stage placement
+    int stageOffset = 0;
     for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
 	CharacterCollect & character = *i;
 	if (!character.random){
@@ -1650,11 +1652,11 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 	    characters.push_back(charInfo);
 	    
 	    // Add the stages
-	    if (!character.stage.empty()){
-		stageNames.insert(stageNames.begin(),character.stage);
+	    if (!character.stage.empty() && character.includeStage){
+		stageNames.insert(stageNames.begin()+stageOffset,character.stage);
+		stageOffset++;
 	    }
 	    /* **TODO** figure out what to do with:
-		includestage
 		music
 		order
 		randomStage
