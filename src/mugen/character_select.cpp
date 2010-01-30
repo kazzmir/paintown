@@ -1583,6 +1583,9 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
                             character.stage = temp;
                         }
                         // Grab options
+                        /* TODO: make the parser turn these into better AST nodes.
+                         * something like Assignment(Id(music), Filename(whatever))
+                         */
                         while(true){
                             list >> temp;
                             if (PaintownUtil::matchRegex(temp,"includestage=")){

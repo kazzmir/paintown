@@ -23,6 +23,26 @@ static double interpolate(double f1, double f2, double p){
     return (f1 * (1.0 - p)) + (f2 * p);
 }
 
+double Sin::get() const {
+    // return amp * sin(angle*period * 3.14159 / 180 + offset);
+    if (period == 0){
+        return 0;
+    }
+
+    /* period is the number of game ticks that must pass before a
+     * complete circle can be made, where a circle is all the values
+     * between 0 and 2pi.
+     * if period is 360 then after 360 ticks angle will be 360 and so
+     * the full angle should be 2pi.
+     * if period is 720 then after 360 ticks the full angle should be
+     * just pi.
+     * offset is added to angle before multiplying by the period.
+     */
+    namespace P = ::Util;
+    return amp * sin(P::radians(360.0 / period * (angle + offset)));
+}
+
+
 #if 0
 static int ff = 0;
 static void doParallax2(const Bitmap &bmp, const Bitmap &work, int leftx, int lefty, int xoffset, double top, double bot, int yscalestart, double yscaledelta, double yoffset, bool mask){

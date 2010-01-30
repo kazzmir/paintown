@@ -121,7 +121,7 @@ void OptionCredits::run( bool &endGame ){
     const int maxCredits = credits.size();
 
     Global::speed_counter = 0;
-    int min_y = GFX_Y;
+    double min_y = GFX_Y;
 
     /* use Bitmap::temporaryBitmap here? */
     Bitmap tmp(GFX_X, GFX_Y);
@@ -135,6 +135,7 @@ void OptionCredits::run( bool &endGame ){
 
     bool quit = false;
 
+    double think = 0;
     while (!quit){
 
         InputManager::poll();
@@ -142,13 +143,13 @@ void OptionCredits::run( bool &endGame ){
         quit = out[Exit];
 
         bool draw = false;
-        if ( Global::speed_counter / 2 > 0 ){
-            double think = Global::speed_counter / 2 * Global::LOGIC_MULTIPLIER;
+        if (Global::speed_counter > 0){
+            think += Global::speed_counter * Global::LOGIC_MULTIPLIER;
             draw = true;
 
-            while ( think >= 1.0 ){
+            while (think >= 1.0){
                 think -= 1;
-                min_y -= 1;
+                min_y -= 0.5;
                 if (min_y < -(int)(maxCredits * vFont.getHeight() * 1.1)){
                     min_y = GFX_Y;
                 }
@@ -158,8 +159,8 @@ void OptionCredits::run( bool &endGame ){
             Global::speed_counter = 0;
         }
 
-        if ( draw ){
-            if ( background ){
+        if (draw){
+            if (background ){
                 background->Blit(tmp);
             } else {
                 tmp.fill(Bitmap::makeColor(0,0,0));
@@ -167,7 +168,7 @@ void OptionCredits::run( bool &endGame ){
 
             fire.draw(tmp);
 
-            int y = min_y;
+            int y = (int) min_y;
             vector<std::string>::iterator b = credits.begin();
             vector<std::string>::iterator e = credits.end();
             bool isTitle = true;
