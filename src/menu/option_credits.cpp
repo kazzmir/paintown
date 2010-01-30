@@ -5,8 +5,8 @@
 #include "globals.h"
 #include "init.h"
 #include "util/funcs.h"
+#include "util/fire.h"
 
-/* todo: replace keyboard with input-map */
 #include "input/keyboard.h"
 #include "util/token.h"
 #include "util/token_exception.h"
@@ -116,74 +116,80 @@ void OptionCredits::logic(){
 }
 
 void OptionCredits::run( bool &endGame ){
-	Keyboard key;
+    Keyboard key;
 
-	const int maxCredits = credits.size();
+    const int maxCredits = credits.size();
 
-	Global::speed_counter = 0;
-	int min_y = GFX_Y;
-	
-	Bitmap tmp( GFX_X, GFX_Y );
-	if ( ! music.empty() ){
-		MenuGlobals::setMusic( music );
-	}
-	
-	const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
+    Global::speed_counter = 0;
+    int min_y = GFX_Y;
+
+    /* use Bitmap::temporaryBitmap here? */
+    Bitmap tmp(GFX_X, GFX_Y);
+    if (! music.empty()){
+        MenuGlobals::setMusic(music);
+    }
+
+    Paintown::Fire fire;
+
+    const Font & vFont = Font::getFont(Menu::getFont(), Menu::getFontWidth(), Menu::getFontHeight());
 
     bool quit = false;
 
-	while (!quit){
+    while (!quit){
 
         InputManager::poll();
         InputMap<CreditKey>::Output out = InputManager::getMap(input);
         quit = out[Exit];
 
-		bool draw = false;
-		if ( Global::speed_counter / 2 > 0 ){
-			double think = Global::speed_counter / 2 * Global::LOGIC_MULTIPLIER;
-			draw = true;
+        bool draw = false;
+        if ( Global::speed_counter / 2 > 0 ){
+            double think = Global::speed_counter / 2 * Global::LOGIC_MULTIPLIER;
+            draw = true;
 
-			while ( think >= 1.0 ){
-				think -= 1;
-				min_y -= 1;
-				if ( min_y < -(int)(maxCredits * vFont.getHeight() * 1.1) ){
-					min_y = GFX_Y;
-				}
-			}
+            while ( think >= 1.0 ){
+                think -= 1;
+                min_y -= 1;
+                if (min_y < -(int)(maxCredits * vFont.getHeight() * 1.1)){
+                    min_y = GFX_Y;
+                }
+                fire.update();
+            }
 
-			Global::speed_counter = 0;
-		}
+            Global::speed_counter = 0;
+        }
 
-		if ( draw ){
-			if ( background ){
-				background->Blit( tmp );
-			} else {
-				tmp.fill( Bitmap::makeColor(0,0,0) );
-			}
+        if ( draw ){
+            if ( background ){
+                background->Blit(tmp);
+            } else {
+                tmp.fill(Bitmap::makeColor(0,0,0));
+            }
 
-			int y = min_y;
-			vector<std::string>::iterator b = credits.begin();
-			vector<std::string>::iterator e = credits.end();
-			bool isTitle = true;
-			for ( /**/ ; b != e; b++ ){
-				if ( isTitle ){
-					vFont.printf( 100, y, title, tmp, (*b), 0 );
-					isTitle = false;
-				} else {
-					vFont.printf( 100, y, color, tmp, (*b), 0 );
-				}
-				y += vFont.getHeight() + 2;
+            fire.draw(tmp);
 
-				if ( (*b).empty() ){
-					isTitle = true;
-				}
-			}
+            int y = min_y;
+            vector<std::string>::iterator b = credits.begin();
+            vector<std::string>::iterator e = credits.end();
+            bool isTitle = true;
+            for ( /**/ ; b != e; b++ ){
+                if ( isTitle ){
+                    vFont.printf( 100, y, title, tmp, (*b), 0 );
+                    isTitle = false;
+                } else {
+                    vFont.printf( 100, y, color, tmp, (*b), 0 );
+                }
+                y += vFont.getHeight() + 2;
 
-			tmp.BlitToScreen();
-		} else {
-			Util::rest( 1 );
-		}
-	}
+                if ( (*b).empty() ){
+                    isTitle = true;
+                }
+            }
+
+            tmp.BlitToScreen();
+        } else {
+            Util::rest( 1 );
+        }
+    }
 
     InputManager::waitForRelease(input, Exit);
 }
