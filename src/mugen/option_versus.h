@@ -7,9 +7,6 @@
 #include <string>
 
 class Token;
-class Configuration;
-class MugenStage;
-class Bitmap;
 
 namespace Mugen{
     class Character;
@@ -29,10 +26,6 @@ public:
 
     virtual ~MugenOptionVersus();
 
-protected:
-    void runGame(MugenStage * stage, const Bitmap & screen);
-    void setupStage(MugenStage *stage, Mugen::Character *player1, Mugen::Character *player2);
-    
 private:
 	    
 };

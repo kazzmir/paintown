@@ -26,6 +26,9 @@ namespace PaintownUtil = ::Util;
 
 using namespace Mugen;
 
+const int DEFAULT_WIDTH = 320;
+const int DEFAULT_HEIGHT = 240;
+
 Game::Game(GameType type, const std::string & systemFile):
 type(type),
 systemFile(systemFile),
@@ -37,9 +40,9 @@ Game::~Game(){
 
 void Game::run(){
     Bitmap screen(GFX_X, GFX_Y);
-
-    std::string selectFile = Util::probeDef(systemFile, "files", "select");
-    Mugen::CharacterSelect select(selectFile,type);
+    Mugen::CharacterSelect select(systemFile,type);
+    select.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
+    select.setPlayer2Keys(Mugen::getPlayer2MenuKeys());
     select.load();
     
     switch (type){
@@ -74,105 +77,117 @@ void Game::run(){
     }
 }
 
+
+static InputMap<Mugen::Command::Keys> getPlayer1InputRight(){
+    InputMap<Mugen::Command::Keys> input;
+    input.set(Keyboard::Key_UP, 0, false, Mugen::Command::Up);
+    input.set(Keyboard::Key_DOWN, 0, false, Mugen::Command::Down);
+    input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Command::Forward);
+    input.set(Keyboard::Key_LEFT, 0, false, Mugen::Command::Back);
+
+    input.set(Keyboard::Key_A, 0, false, Mugen::Command::A);
+    input.set(Keyboard::Key_S, 0, false, Mugen::Command::B);
+    input.set(Keyboard::Key_D, 0, false, Mugen::Command::C);
+    input.set(Keyboard::Key_Z, 0, false, Mugen::Command::X);
+    input.set(Keyboard::Key_X, 0, false, Mugen::Command::Y);
+    input.set(Keyboard::Key_C, 0, false, Mugen::Command::Z);
+    return input;
+}
+
+/* kind of dumb to just copy/paste the above. find a better solution */
+static InputMap<Mugen::Command::Keys> getPlayer1InputLeft(){
+    InputMap<Mugen::Command::Keys> input;
+    input.set(Keyboard::Key_UP, 0, false, Mugen::Command::Up);
+    input.set(Keyboard::Key_DOWN, 0, false, Mugen::Command::Down);
+
+    /* these keys are flipped from ...InputRight */
+    input.set(Keyboard::Key_LEFT, 0, false, Mugen::Command::Forward);
+    input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Command::Back);
+
+    input.set(Keyboard::Key_A, 0, false, Mugen::Command::A);
+    input.set(Keyboard::Key_S, 0, false, Mugen::Command::B);
+    input.set(Keyboard::Key_D, 0, false, Mugen::Command::C);
+    input.set(Keyboard::Key_Z, 0, false, Mugen::Command::X);
+    input.set(Keyboard::Key_X, 0, false, Mugen::Command::Y);
+    input.set(Keyboard::Key_C, 0, false, Mugen::Command::Z);
+    return input;
+}
+
 void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
     select.run("Arcade", bmp);
 }
 
 void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){
-    select.run("Versus Mode", bmp);
-}
+    bool quit = false;
+    while(!quit){
+	select.run("Versus Mode", bmp);
+	select.renderVersusScreen(bmp);
+	select.getPlayer1()->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
+	MugenStage *stage = select.getStage();
+	InputMap<int> gameInput;
+	gameInput.set(Keyboard::Key_F1, 10, false, 0);
+	gameInput.set(Keyboard::Key_F2, 10, false, 1);
+	gameInput.set(Keyboard::Key_F3, 10, false, 2);
+	gameInput.set(Keyboard::Key_F4, 10, true, 3);
+	gameInput.set(Keyboard::Key_ESC, 0, true, 4);
+	
+	Bitmap work(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+	double gameSpeed = 1.0;
+	double runCounter = 0;
+	double mugenSpeed = 60;
 
-#if 0
-void Game::runGame(MugenStage * stage, const Bitmap & screen){
-    InputMap<int> gameInput;
-    gameInput.set(Keyboard::Key_F1, 10, false, 0);
-    gameInput.set(Keyboard::Key_F2, 10, false, 1);
-    gameInput.set(Keyboard::Key_F3, 10, false, 2);
-    gameInput.set(Keyboard::Key_F4, 10, true, 3);
-    gameInput.set(Keyboard::Key_ESC, 0, true, 4);
-    
-    // Load the stage
-    try{
-        /* FIXME: replace hard coded numbers */
-        Bitmap work(320,240);
-        bool quit = false;
-        double gameSpeed = 1.0;
-        double runCounter = 0;
-        double mugenSpeed = 60;
+	// Lets reset the stage for good measure
+	stage->reset();
 
-        // Lets reset the stage for good measure
-        stage->reset();
+	while( !quit ){
+	    bool draw = false;
 
-        while( !quit ){
-            bool draw = false;
+	    if ( Global::speed_counter > 0 ){
+		runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+		while (runCounter > 1){
+		    InputManager::poll();
+		    stage->logic();
+		    runCounter -= 1;
+		    draw = true;
 
-            if ( Global::speed_counter > 0 ){
-                runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
-                while (runCounter > 1){
-                    InputManager::poll();
-                    stage->logic();
-                    runCounter -= 1;
-                    draw = true;
-
-                    InputMap<int>::Output out = InputManager::getMap(gameInput);
-                    if (out[0]){
-                        gameSpeed -= 0.1;
-                    }
-                    if (out[1]){
-                        gameSpeed += 0.1;
-                    }
-                    if (out[2]){
-                        gameSpeed = 1;
-                    }
+		    InputMap<int>::Output out = InputManager::getMap(gameInput);
+		    if (out[0]){
+			gameSpeed -= 0.1;
+		    }
+		    if (out[1]){
+			gameSpeed += 0.1;
+		    }
+		    if (out[2]){
+			gameSpeed = 1;
+		    }
 		    if (out[3]){
 			stage->toggleDebug();
 		    }
 		    if (out[4]){
 			quit = true;
 		    }
-                    if (gameSpeed < 0.1){
-                        gameSpeed = 0.1;
-                    }
-                }
-                Global::speed_counter = 0;
-            }
+		    if (gameSpeed < 0.1){
+			gameSpeed = 0.1;
+		    }
+		}
+		Global::speed_counter = 0;
+	    }
 
-            if (draw){
-                stage->render(&work);
-                work.Stretch(screen);
+	    if (draw){
+		stage->render(&work);
+		work.Stretch(bmp);
 
-                FontRender * render = FontRender::getInstance();
-                render->render(&screen);
+		FontRender * render = FontRender::getInstance();
+		render->render(&bmp);
     
-                screen.BlitToScreen();
-            }
+		bmp.BlitToScreen();
+	    }
 
-            while (Global::speed_counter == 0){
-                PaintownUtil::rest(1);
-            }
-        }
-    } catch (const MugenException &ex){
-	Global::debug(0) << "Problem with stage: " << stage->getName() << " Problem was: " << ex.getReason() << std::endl;
+	    while (Global::speed_counter == 0){
+		PaintownUtil::rest(1);
+	    }
+	}
     }
 }
 
-MugenStage * Game::setupStage(Mugen::SelectedChars * gameInfo){
-    try{
-        /* Need to display VS Screen here */
-	
-	MugenStage * stage = gameInfo->selectedStage;
-        // Load player 1
-        gameInfo->team1[0]->load();
-        gameInfo->team1[0]->setInput(getPlayer1Input(), getPlayer1Input());
-        stage->addp1(gameInfo->team1[0]);
-
-        /* for testing, load kfm as player 2 */
-       // stage->addp2(loadKfm());
-        stage->load();
-        return stage;
-    } catch (const MugenException & e){
-        throw e;
-    }
-}
-#endif
 
