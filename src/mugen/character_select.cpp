@@ -46,6 +46,8 @@
 #include "ast/all.h"
 #include "parser/all.h"
 
+#include "loading.h"
+
 #include "input/input-manager.h"
 
 #include "return_exception.h"
@@ -127,7 +129,8 @@ displayName(Util::probeDef(definitionFile,"info","displayname")),
 currentAct(0),
 icon(0),
 portrait(0),
-referenceCell(0){
+referenceCell(0),
+character(0){
     /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
     for (int i = 0; i < 12; ++i){
         stringstream act;
@@ -152,6 +155,17 @@ CharacterInfo::~CharacterInfo(){
     if (portrait){
         delete portrait;
     }
+    if (character){
+	delete character;
+    }
+}
+
+void CharacterInfo::load(){
+    if (character){
+	return;
+    }
+    character = new Mugen::Character(definitionFile);
+    character->load();
 }
 
 void CharacterInfo::setAct(int number){
@@ -200,9 +214,14 @@ void StageHandler::render(const Bitmap &bmp){
 const std::string &StageHandler::getStage(){
     // check if random first;
     if (currentStage == 0){
-	return stages[PaintownUtil::rnd(1,stages.size())];
+	return getRandomStage();
     }
     return stages[currentStage];
+}
+
+//! Get random stage
+const std::string &StageHandler::getRandomStage(){
+    return stages[PaintownUtil::rnd(1,stages.size())];
 }
 
 //! Set Next Stage
@@ -374,23 +393,23 @@ void Grid::initialize(){
     }
 }
 
-void Grid::act(Cursor & player1, Cursor & player2){
+void Grid::act(Cursor & player1Cursor, Cursor & player2Cursor){
     for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
 	std::vector< Cell *> &row = (*i);
 	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
 	    Cell *cell = (*column);
 	    cell->act();
             if (randomSwitchTimeTicker == cellRandomSwitchTime){
-                if (player1.getState() == Cursor::CharacterSelect){
-                    if (player1.getCurrentCell() == cell && cell->isRandom()){
+                if (player1Cursor.getState() == Cursor::CharacterSelect){
+                    if (player1Cursor.getCurrentCell() == cell && cell->isRandom()){
                         cell->randomize(characters);
-                        player1.playRandomSound();
+                        player1Cursor.playRandomSound();
                     }
                 }
-                if (player2.getState() == Cursor::CharacterSelect){
-                    if (player2.getCurrentCell() == cell && cell->isRandom()){
+                if (player2Cursor.getState() == Cursor::CharacterSelect){
+                    if (player2Cursor.getCurrentCell() == cell && cell->isRandom()){
                         cell->randomize(characters);
-                        player2.playRandomSound();
+                        player2Cursor.playRandomSound();
                     }
                 }
             }
@@ -828,7 +847,7 @@ time(0){
 VersusScreen::~VersusScreen(){
 }
 
-void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, const Bitmap &bmp){
+void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, MugenStage * stage, const Bitmap &bmp){
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool escaped = false;
@@ -866,10 +885,30 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, cons
 		if (out[Mugen::Esc]){
 		    done = escaped = true;
 		    fader.setState(FADEOUT);
+		    InputManager::waitForRelease(gameInput, Mugen::Esc);
 		}
 		
 		// Logic
 		if (ticker >= time){
+		    pthread_t loader;
+		    try{
+			Level::LevelInfo info;
+			info.setBackground(&bmp);
+			info.setLoadingMessage("Loading...");
+			Loader::startLoading(&loader, (void*) &info);
+			// Load player 1
+			player1.load();
+			// Load player 2
+			player2.load();
+			// Load stage
+			stage->addp1(player1.getCharacter());
+			stage->addp2(player2.getCharacter());
+			stage->load();
+			Loader::stopLoading(loader);
+		    } catch (const MugenException & e){
+			Loader::stopLoading(loader);
+			throw e;
+		    }
 		    done = true;
 		    fader.setState(FADEOUT);
 		}
@@ -970,36 +1009,39 @@ sffFile(""),
 sndFile(""),
 selectFile(""),
 type(type),
-cancelSound(0){
+cancelSound(0),
+currentPlayer1(0),
+currentPlayer2(0),
+currentStage(0){
     grid.setGameType(type);
     
     switch (type){
 	case Arcade:
 	    // set first cursor1
-	    player1.setState(Cursor::CharacterSelect);
+	    player1Cursor.setState(Cursor::CharacterSelect);
 	    break;
 	case Versus:
-	    player1.setState(Cursor::CharacterSelect);
-	    player2.setState(Cursor::CharacterSelect);
+	    player1Cursor.setState(Cursor::CharacterSelect);
+	    player2Cursor.setState(Cursor::CharacterSelect);
 	    break;
 	case TeamArcade:
-	    player1.setState(Cursor::TeamSelect);
+	    player1Cursor.setState(Cursor::TeamSelect);
 	    break;
 	case TeamVersus:
-	    player1.setState(Cursor::TeamSelect);
-	    player2.setState(Cursor::TeamSelect);
+	    player1Cursor.setState(Cursor::TeamSelect);
+	    player2Cursor.setState(Cursor::TeamSelect);
 	    break;
 	case TeamCoop:
-	    player1.setState(Cursor::CharacterSelect);
+	    player1Cursor.setState(Cursor::CharacterSelect);
 	    break;
 	case Survival:
-	    player1.setState(Cursor::TeamSelect);
+	    player1Cursor.setState(Cursor::TeamSelect);
 	    break;
 	case SurvivalCoop:
-	    player1.setState(Cursor::CharacterSelect);
+	    player1Cursor.setState(Cursor::CharacterSelect);
 	    break;
 	case Training:
-	    player1.setState(Cursor::CharacterSelect);
+	    player1Cursor.setState(Cursor::CharacterSelect);
 	    break;
 	case Watch:
 	    break;
@@ -1028,6 +1070,10 @@ CharacterSelect::~CharacterSelect(){
     /* background */
     if (background){
 	delete background;
+    }
+    // Kill stage
+    if (currentStage){
+	delete currentStage;
     }
 }
 
@@ -1182,79 +1228,79 @@ void CharacterSelect::load() throw (MugenException){
 		} else if (simple == "p1.cursor.startcell"){
 		    int x,y;
                     simple >> x >> y;
-		    self.player1.setStart(x,y);
+		    self.player1Cursor.setStart(x,y);
 		} else if (simple == "p1.cursor.active.spr"){
 		    int group, sprite;
 		    simple >> group >> sprite;
-		    self.player1.setActiveSprite(sprites[group][sprite]);
+		    self.player1Cursor.setActiveSprite(sprites[group][sprite]);
 		} else if (simple == "p1.cursor.done.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
-		    self.player1.setDoneSprite(sprites[group][sprite]);
+		    self.player1Cursor.setDoneSprite(sprites[group][sprite]);
 		} else if (simple == "p1.cursor.move.snd"){
                    try{
                         int group, sound;
                         simple >> group >> sound;
-                        self.player1.setMoveSound(self.sounds[group][sound]);
+                        self.player1Cursor.setMoveSound(self.sounds[group][sound]);
                    } catch (const Ast::Exception & e){
                    }
                 } else if (simple == "p1.cursor.done.snd"){
                     try{
                         int group, sound;
                         simple >> group >> sound;
-                        self.player1.setSelectSound(self.sounds[group][sound]);
+                        self.player1Cursor.setSelectSound(self.sounds[group][sound]);
                    } catch (const Ast::Exception & e){
                    }
                 } else if (simple == "p1.random.move.snd"){
                     try{
                         int group, sound;
                         simple >> group >> sound;
-                        self.player1.setRandomSound(self.sounds[group][sound]);
+                        self.player1Cursor.setRandomSound(self.sounds[group][sound]);
                    } catch (const Ast::Exception & e){
                    }
                 } else if (simple == "p2.cursor.startcell"){
                     int x,y;
                     simple >> x >> y;
-		    self.player2.setStart(x,y);
+		    self.player2Cursor.setStart(x,y);
 		} else if (simple == "p2.cursor.active.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
-		    self.player2.setActiveSprite(sprites[group][sprite]);
+		    self.player2Cursor.setActiveSprite(sprites[group][sprite]);
 		} else if (simple == "p2.cursor.done.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
-		    self.player2.setDoneSprite(sprites[group][sprite]);
+		    self.player2Cursor.setDoneSprite(sprites[group][sprite]);
 		} else if (simple == "p2.cursor.blink"){
 		    bool blink;
 		    simple >> blink;
-		    self.player2.setBlink(blink);
+		    self.player2Cursor.setBlink(blink);
 		} 
 		else if ( simple == "p2.cursor.move.snd"){ 
                     try{
                         int group, sound;
                         simple >> group >> sound;
-                        self.player2.setMoveSound(self.sounds[group][sound]);
+                        self.player2Cursor.setMoveSound(self.sounds[group][sound]);
                    } catch (const Ast::Exception & e){
                    }
                 } else if ( simple == "p2.cursor.done.snd"){
                     try{
                         int group, sound;
                         simple >> group >> sound;
-                        self.player2.setSelectSound(self.sounds[group][sound]);
+                        self.player2Cursor.setSelectSound(self.sounds[group][sound]);
                    } catch (const Ast::Exception & e){
                    }
                 } else if ( simple == "p2.random.move.snd"){
                    try{
                         int group, sound;
                         simple >> group >> sound;
-                        self.player2.setRandomSound(self.sounds[group][sound]);
+                        self.player2Cursor.setRandomSound(self.sounds[group][sound]);
                    } catch (const Ast::Exception & e){
                    }
                 } else if (simple == "random.move.snd.cancel"){
                    bool cancel;
                    simple >> cancel;
-                   self.player1.setRandomCancel(cancel);
-                   self.player2.setRandomCancel(cancel);
+                   self.player1Cursor.setRandomCancel(cancel);
+                   self.player2Cursor.setRandomCancel(cancel);
                 } else if ( simple == "stage.move.snd"){
                    try{
                         int group, sound;
@@ -1299,46 +1345,46 @@ void CharacterSelect::load() throw (MugenException){
 		} else if ( simple == "p1.face.offset"){
 		    int x, y;
 		    simple >> x >> y;
-		    self.player1.setFaceOffset(x,y);
+		    self.player1Cursor.setFaceOffset(x,y);
 		} else if ( simple == "p1.face.scale"){
 		    double x, y;
 		    simple >> x >> y;
-		    self.player1.setFaceScale(x,y);
+		    self.player1Cursor.setFaceScale(x,y);
 		} else if ( simple == "p1.face.facing"){
 		    int f;
 		    simple >> f;
-		    self.player1.setFacing(f);
+		    self.player1Cursor.setFacing(f);
 		} else if ( simple == "p2.face.offset"){
 		    int x, y;
 		    simple >> x >> y;
-		    self.player2.setFaceOffset(x,y);
+		    self.player2Cursor.setFaceOffset(x,y);
 		} else if ( simple == "p2.face.scale"){
 		    double x, y;
 		    simple >> x >> y;
-		    self.player2.setFaceScale(x,y);
+		    self.player2Cursor.setFaceScale(x,y);
 		} else if ( simple == "p2.face.facing"){
 		    int f;
 		    simple >> f;
-		    self.player2.setFacing(f);
+		    self.player2Cursor.setFacing(f);
 		} else if ( simple == "p1.name.offset"){
 		    int x, y;
 		    simple >> x >> y;
-		    self.player1.getFontHandler().setLocation(x,y);
+		    self.player1Cursor.getFontHandler().setLocation(x,y);
 		}  else if ( simple == "p1.name.font"){
 		    int index=0, bank=0, position=0;
 		    try {
 			simple >> index >> bank >> position;
 		    } catch (const Ast::Exception & e){
 			//ignore for now
-		    } self.player1.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+		    } self.player1Cursor.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "p2.name.offset"){
 		    int x, y;
 		    simple >> x >> y;
-		    self.player2.getFontHandler().setLocation(x,y);
+		    self.player2Cursor.getFontHandler().setLocation(x,y);
 		} else if ( simple == "p2.name.font"){
 		    int index, bank, position;
 		    simple >> index >> bank >> position;
-		    self.player2.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+		    self.player2Cursor.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
 		} else if ( simple == "stage.pos"){
 		    int x, y;
 		    simple >> x >> y;
@@ -1508,11 +1554,23 @@ void CharacterSelect::load() throw (MugenException){
     grid.initialize();
     
     // Setup cursors
-    grid.setCursorStart(player1);
-    grid.setCursorStart(player2);
+    grid.setCursorStart(player1Cursor);
+    grid.setCursorStart(player2Cursor);
     
     // Now load up our characters
     parseSelect(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
+}
+
+//! Get group of characters by order number
+std::vector<CharacterInfo *> CharacterSelect::getCharacterGroup(int orderNumber){
+    std::vector<CharacterInfo *> tempCharacters;
+    for (std::vector<CharacterInfo *>::iterator i = characters.begin(); i != characters.end(); ++i){
+	CharacterInfo *character = *i;
+	if (character->getOrder() == orderNumber){
+	    tempCharacters.push_back(character);
+	}
+    }
+    return tempCharacters;
 }
 
 class CharacterCollect{
@@ -1546,8 +1604,15 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
     
+    // Characters
     std::vector< CharacterCollect > characterCollection;
+    // Stages
     std::vector< std::string > stageNames;
+    
+    // Arcade max matches
+    std::vector<int> arcadeMaxMatches;
+    // Team max matches
+    std::vector<int> teamMaxMatches;
     
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
 	Ast::Section * section = *section_it;
@@ -1630,7 +1695,51 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 	    StageWalker walk(stageNames);
 	    section->walk(walk);
 	} else if (head == "options"){
-	    /* Add in later */
+	    class OptionWalker: public Ast::Walker{
+            public:
+		OptionWalker(std::vector<int> & arcade, std::vector<int> & team):
+		arcade(arcade),
+		team(team){
+		}
+		virtual ~OptionWalker(){}
+		std::vector<int> & arcade;
+		std::vector<int> & team;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+		    if (simple == "arcade.maxmatches"){
+			// only 10 max matches
+			for (int i = 0; i < 10; ++i){
+			    try{
+				int matches;
+				simple >> matches;
+				// No need to save the remaining of the matchup setup
+				if (matches == 0){
+				    break;
+				}
+				arcade.push_back(matches);
+			    } catch (const Ast::Exception & e){
+				break;
+			    }
+			}
+		    } else if (simple == "team.maxmatches"){
+			// only 10 max matches
+			for (int i = 0; i < 10; ++i){
+			    try{
+				int matches;
+				simple >> matches;
+				// No need to save the remaining of the matchup setup
+				if (matches == 0){
+				    break;
+				}
+				team.push_back(matches);
+			    } catch (const Ast::Exception & e){
+				break;
+			    }
+			}
+		    }
+		}
+            };
+	    OptionWalker walk(arcadeMaxMatches,teamMaxMatches);
+	    section->walk(walk);
 	} else {
 	    throw MugenException("Unhandled Section in '" + file + "': " + head, __FILE__, __LINE__); 
 	}
@@ -1649,18 +1758,22 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 	    const std::string charDefFile = Mugen::Util::fixFileName(baseDir, std::string(str + ".def"));
 	    Global::debug(0) << "Got character def: " << charDefFile << endl;
 	    CharacterInfo *charInfo = new CharacterInfo(charDefFile);
-	    characters.push_back(charInfo);
-	    
-	    // Add the stages
-	    if (!character.stage.empty() && character.includeStage){
-		stageNames.insert(stageNames.begin()+stageOffset,character.stage);
-		stageOffset++;
+	    charInfo->setRandomStage(character.randomStage);
+	    // Set stage
+	    if (character.stage.empty()){
+		// lets assume random then
+		charInfo->setRandomStage(true);
+	    } else {
+		charInfo->setStage(character.stage);
+		// also add the stage
+		if (character.includeStage){
+		    stageNames.insert(stageNames.begin()+stageOffset,character.stage);
+		    stageOffset++;
+		}
 	    }
-	    /* **TODO** figure out what to do with:
-		music
-		order
-		randomStage
-	    */
+	    charInfo->setOrder(character.order);
+	    charInfo->setMusic(character.song);
+	    characters.push_back(charInfo);
 	}
     }
     
@@ -1679,6 +1792,50 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
     // Prepare stages
     for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
 	grid.getStageHandler().addStage((*i));
+    }
+    
+    // Setup arcade matches
+    int order = 1;
+    for (std::vector<int>::iterator i =  arcadeMaxMatches.begin(); i != arcadeMaxMatches.end();++i){
+	std::vector<CharacterInfo *> tempCharacters = getCharacterGroup(order);
+	std::random_shuffle(tempCharacters.begin(),tempCharacters.end());
+	std::vector<CharacterInfo *>::iterator currentCharacter = tempCharacters.begin();
+	std::queue<CharacterInfo *> characters;
+	for (int m = 0; m < *i; ++m){
+	    if (currentCharacter != tempCharacters.end()){
+		characters.push(*currentCharacter);
+		currentCharacter++;
+	    } else {
+		// No more
+		break;
+	    }
+	}
+	if (!characters.empty()){
+	    arcadeMatches.push(characters);
+	}
+	order++;
+    }
+    
+    // Setup team matches
+    order = 1;
+    for (std::vector<int>::iterator i =  teamMaxMatches.begin(); i != teamMaxMatches.end();++i){
+	std::vector<CharacterInfo *> tempCharacters = getCharacterGroup(order);
+	std::random_shuffle(tempCharacters.begin(),tempCharacters.end());
+	std::vector<CharacterInfo *>::iterator currentCharacter = tempCharacters.begin();
+	std::queue<CharacterInfo *> characters;
+	for (int m = 0; m < *i; ++m){
+	    if (currentCharacter != tempCharacters.end()){
+		characters.push(*currentCharacter);
+		currentCharacter++;
+	    } else {
+		// No more
+		break;
+	    }
+	}
+	if (!characters.empty()){
+	    teamMatches.push(characters);
+	}
+	order++;
     }
 }
 
@@ -1718,6 +1875,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
                     if (cancelSound){
                         cancelSound->play();
                     }
+		    InputManager::waitForRelease(gameInput, Mugen::Esc);
 		}
 		
 		/* *FIXME remove later when solution is found */
@@ -1735,11 +1893,11 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		background->act();
 		
 		// Grid
-		grid.act(player1,player2);
+		grid.act(player1Cursor,player2Cursor);
 		
 		// Cursors
-		player1.act(grid);
-		player2.act(grid);
+		player1Cursor.act(grid);
+		player2Cursor.act(grid);
 		
 		// Title
 		titleFont.act();
@@ -1762,8 +1920,8 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	    // Render Grid
 	    grid.render(workArea);
 	    // Render cursors
-	    player1.render(grid, workArea);
-	    player2.render(grid, workArea);
+	    player1Cursor.render(grid, workArea);
+	    player2Cursor.render(grid, workArea);
 	    
 	    // render title
 	    titleFont.render(title,workArea);
@@ -1791,19 +1949,56 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 }
 
 void CharacterSelect::renderVersusScreen(const Bitmap & bmp){
-    versus.render(*player1.getCurrentCell()->getCharacter(),*player2.getCurrentCell()->getCharacter(),bmp);
+    versus.render(*currentPlayer1,*currentPlayer2, currentStage, bmp);
 }
-	
+
+bool CharacterSelect::setNextArcadeMatch(){
+    if (arcadeMatches.empty()){
+	return false;
+    }
+    std::queue<CharacterInfo *> & characters = arcadeMatches.front();
+    if (characters.empty()){
+	arcadeMatches.pop();
+	if (arcadeMatches.empty()){
+	    return false;
+	}
+	characters = arcadeMatches.front();
+    }
+    currentPlayer2 = characters.front();
+    characters.pop();
+    return true;
+}
+
+bool CharacterSelect::setNextTeamMatch(){
+    return false;
+}
 
 bool CharacterSelect::checkPlayerData(){
     switch (type){
 	case Arcade:
-	    if (player1.getState() == Cursor::Done){
+	    if (player1Cursor.getState() == Cursor::Done){
+		currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+		// Set initial player
+		setNextArcadeMatch();
+		if (currentStage){
+		    delete currentStage;
+		}
+		if (currentPlayer2->hasRandomStage()){
+		    currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
+		} else {
+		    currentStage = new MugenStage(currentPlayer2->getStage());
+		}
 		return true;
 	    }
 	    break;
 	case Versus:
-	    if ((player1.getState() == Cursor::Done) && (player2.getState() == Cursor::Done)){
+	    if ((player1Cursor.getState() == Cursor::Done) && (player2Cursor.getState() == Cursor::Done)){
+		currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+		currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
+		if (currentStage){
+		    delete currentStage;
+		}
+		currentStage = new MugenStage(grid.getStageHandler().getStage());
 		return true;
 	    }
 	    break;

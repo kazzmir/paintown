@@ -213,12 +213,7 @@ void MugenOptionVersus::run(bool &endGame){
 	return;
     }
     // Setup and go
-    MugenStage *stage = new MugenStage(select.getStage());
-    Mugen::Character *player1 = new Mugen::Character(select.getPlayer1());
-    Mugen::Character *player2 = new Mugen::Character(select.getPlayer2());
-    setupStage(stage, player1, player2);
-    runGame(stage, screen);
-    delete stage;
-    delete player1;
-    delete player2;
+    select.getPlayer1()->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
+    //setupStage(stage, player1, player2);
+    runGame(select.getStage(), screen);
 }

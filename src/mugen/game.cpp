@@ -29,9 +29,7 @@ using namespace Mugen;
 Game::Game(GameType type, const std::string & systemFile):
 type(type),
 systemFile(systemFile),
-motifDirectory(Util::getFileDir(systemFile)),
-team1(0),
-team2(0){
+motifDirectory(Util::getFileDir(systemFile)){
 }
 
 Game::~Game(){
@@ -39,52 +37,51 @@ Game::~Game(){
 
 void Game::run(){
     Bitmap screen(GFX_X, GFX_Y);
-    
-    int ticker = 0;
-#if 0    
+
     std::string selectFile = Util::probeDef(systemFile, "files", "select");
-    Mugen::CharacterSelect select(ticker, selectFile);
+    Mugen::CharacterSelect select(selectFile,type);
     select.load();
     
-    /* This will change with select screen */
-    Mugen::SelectedChars * gameInfo = 0;
     switch (type){
 	default:
 	case Arcade:
-	    gameInfo = select.run("Arcade" , 1, true, &screen);
+	    doArcade(screen, select);
 	    break;
 	case Versus:
-	    gameInfo = select.run("Versus Mode" , 2, true, &screen);
+	    doVersus(screen,select);
 	    break;
 	case TeamArcade:
-	    gameInfo = select.run("Team Arcade" , 1, true, &screen);
+	    //select.run("Team Arcade" , 1, true, &screen);
 	    break;
 	case TeamVersus:
-	    gameInfo = select.run("Team Versus" , 2, true, &screen);
+	    //gameInfo = select.run("Team Versus" , 2, true, &screen);
 	    break;
 	case TeamCoop:
-	    gameInfo = select.run("Team Cooperative" , 1, true, &screen);
+	    //gameInfo = select.run("Team Cooperative" , 1, true, &screen);
 	    break;
 	case Survival:
-	    gameInfo = select.run("Survival" , 1, true, &screen);
+	    //gameInfo = select.run("Survival" , 1, true, &screen);
 	    break;
 	case SurvivalCoop:
-	    gameInfo = select.run("Survival Cooperative" , 1, true, &screen);
+	    //gameInfo = select.run("Survival Cooperative" , 1, true, &screen);
 	    break;
 	case Training:
-	    gameInfo = select.run("Training Mode" , 1, true, &screen);
+	    //gameInfo = select.run("Training Mode" , 1, true, &screen);
 	    break;
 	case Watch:
-	    gameInfo = select.run("Watch Mode" , 1, true, &screen);
+	    //gameInfo = select.run("Watch Mode" , 1, true, &screen);
 	    break;
     }
-    if (gameInfo == 0){
-        return;
-    }
-    
-    runGame(setupStage(gameInfo), screen);
-#endif
 }
+
+void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
+    select.run("Arcade", bmp);
+}
+
+void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){
+    select.run("Versus Mode", bmp);
+}
+
 #if 0
 void Game::runGame(MugenStage * stage, const Bitmap & screen){
     InputMap<int> gameInput;

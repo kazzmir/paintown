@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <queue>
 
 #include "mugen_exception.h"
 #include "mugen_fadetool.h"
@@ -25,12 +26,11 @@ class MugenFont;
 class MugenSprite;
 class MugenStoryboard;
 class MugenSection;
+class MugenStage;
 
 namespace Ast{
     class Section;
 }
-
-class MugenStage;
 
 /* Encapsulate in Mugen namespace */
 namespace Mugen{
@@ -120,6 +120,8 @@ class CharacterInfo {
         CharacterInfo(const std::string &definitionFile);
         virtual ~CharacterInfo();
 	
+	virtual void load();
+	
 	virtual inline bool operator==(CharacterInfo &character){
 	    return (this->definitionFile.compare(character.definitionFile) == 0);
 	}
@@ -185,6 +187,10 @@ class CharacterInfo {
 	virtual inline Cell * getReferenceCell() {
 	    return this->referenceCell;
 	}
+	
+	virtual inline Character *getCharacter() {
+	    return this->character;
+	}
 
     private:
         /* The characters definition File to pass on to stage or anything else */
@@ -216,6 +222,9 @@ class CharacterInfo {
 	
 	//! Reference Cell mainly for random so that we can light it up when it selected
 	Cell *referenceCell;
+	
+	//! Actual character
+	Character *character;
 };
 
 /*! Stage handler */
@@ -229,6 +238,9 @@ class StageHandler{
 	
 	//! Get current selected stage
 	virtual const std::string &getStage();
+	
+	//! Get random stage
+	virtual const std::string &getRandomStage();
 	
 	//! Set Next Stage
 	virtual void next();
@@ -810,7 +822,8 @@ class VersusScreen {
 	VersusScreen();
 	virtual ~VersusScreen();
 	
-	virtual void render(CharacterInfo & player1, CharacterInfo & player2, const Bitmap &);
+	//! Renders the versus screen as well as loads the characters and stage
+	virtual void render(CharacterInfo & player1, CharacterInfo & player2, MugenStage * stage, const Bitmap &);
 	
 	virtual inline void setBackground(Background * background){
 	    this->background = background;
@@ -887,27 +900,44 @@ class CharacterSelect {
 	
 	virtual void run(const std::string & title, const Bitmap &);
 	
-	virtual void parseSelect(const std::string &selectFile);
-	
+	//! This will load the character and stage so that you can retrieve them when setting up
 	virtual void renderVersusScreen(const Bitmap &);
 	
+	//! Get next arcade match character returns false if there are no more characters
+	virtual bool setNextArcadeMatch();
+	
+	//! Get next team match character returns false if there are no more characters
+	virtual bool setNextTeamMatch();
+	
 	virtual inline void setPlayer1Keys(const InputMap<Mugen::Keys> &input){
-	    player1.setInput(input);
+	    player1Cursor.setInput(input);
 	}
 	
 	virtual inline void setPlayer2Keys(const InputMap<Mugen::Keys> &input){
-	    player2.setInput(input);
+	    player2Cursor.setInput(input);
+	}
+	
+	virtual inline Character * getPlayer1(){
+	    return this->currentPlayer1->getCharacter();
+	}
+	
+	virtual inline Character * getPlayer2(){
+	    return this->currentPlayer2->getCharacter();
+	}
+	
+	virtual inline MugenStage * getStage(){
+	    return this->currentStage;
 	}
 	
 	/*! **FIXME These are temporary until a method is 
 	    figured to handling teams and multiple players elegantly */
-	virtual inline const std::string &getPlayer1(){
-	    return player1.getCurrentCell()->getCharacter()->getDefinitionFile();
+	virtual inline const std::string &getPlayer1Old(){
+	    return currentPlayer1->getDefinitionFile();
 	}
-	virtual inline const std::string &getPlayer2(){
-	    return player2.getCurrentCell()->getCharacter()->getDefinitionFile();
+	virtual inline const std::string &getPlayer2Old(){
+	    return currentPlayer2->getDefinitionFile();
 	}
-	virtual inline const std::string &getStage(){
+	virtual inline const std::string &getStageOld(){
 	    return grid.getStageHandler().getStage();
 	}
 	
@@ -915,6 +945,12 @@ class CharacterSelect {
 	
 	/*! Temporary to accomodate above above condition */
 	bool checkPlayerData();
+	
+	//! Get group of characters by order number
+	std::vector<CharacterInfo *> getCharacterGroup(int orderNumber);
+	
+	//! Parse select file to get characters and stages
+	void parseSelect(const std::string &selectFile);
 	
 	//! Location of file
 	const std::string systemFile;
@@ -941,10 +977,10 @@ class CharacterSelect {
 	Grid grid;
 	
 	//!Player 1 Cursor
-	Cursor player1;
+	Cursor player1Cursor;
 	
 	//!Player 2 Cursor
-	Cursor player2;
+	Cursor player2Cursor;
 	
 	//! Title font handler
 	FontHandler titleFont;
@@ -966,6 +1002,19 @@ class CharacterSelect {
 	
 	//! Versus Screen
 	VersusScreen versus;
+	
+	//! Arcade matches
+	std::queue< std::queue<CharacterInfo *> > arcadeMatches;
+	
+	//! Team matches
+	std::queue< std::queue<CharacterInfo *> > teamMatches;
+	
+	//! Current set Player 1
+	CharacterInfo *currentPlayer1;
+	//! Current set Player 2
+	CharacterInfo *currentPlayer2;
+	//! Current set Stage
+	MugenStage *currentStage;
 };
 
 }
