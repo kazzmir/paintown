@@ -120,7 +120,9 @@ class CharacterInfo {
         CharacterInfo(const std::string &definitionFile);
         virtual ~CharacterInfo();
 	
-	virtual void load();
+	virtual void loadPlayer1();
+	
+	virtual void loadPlayer2();
 	
 	virtual inline bool operator==(CharacterInfo &character){
 	    return (this->definitionFile.compare(character.definitionFile) == 0);
@@ -188,8 +190,12 @@ class CharacterInfo {
 	    return this->referenceCell;
 	}
 	
-	virtual inline Character *getCharacter() {
-	    return this->character;
+	virtual inline Character *getPlayer1() {
+	    return this->character1;
+	}
+	
+	virtual inline Character *getPlayer2() {
+	    return this->character2;
 	}
 
     private:
@@ -223,8 +229,10 @@ class CharacterInfo {
 	//! Reference Cell mainly for random so that we can light it up when it selected
 	Cell *referenceCell;
 	
-	//! Actual character
-	Character *character;
+	//! Actual character for player 1
+	Character *character1;
+	//! Actual character for player 2
+	Character *character2;
 };
 
 /*! Stage handler */
@@ -918,11 +926,11 @@ class CharacterSelect {
 	}
 	
 	virtual inline Character * getPlayer1(){
-	    return this->currentPlayer1->getCharacter();
+	    return this->currentPlayer1->getPlayer1();
 	}
 	
 	virtual inline Character * getPlayer2(){
-	    return this->currentPlayer2->getCharacter();
+	    return this->currentPlayer2->getPlayer2();
 	}
 	
 	virtual inline MugenStage * getStage(){

@@ -130,7 +130,8 @@ currentAct(0),
 icon(0),
 portrait(0),
 referenceCell(0),
-character(0){
+character1(0),
+character2(0){
     /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
     for (int i = 0; i < 12; ++i){
         stringstream act;
@@ -155,17 +156,28 @@ CharacterInfo::~CharacterInfo(){
     if (portrait){
         delete portrait;
     }
-    if (character){
-	delete character;
+    if (character1){
+	delete character1;
+    }
+    if (character2){
+	delete character2;
     }
 }
 
-void CharacterInfo::load(){
-    if (character){
+void CharacterInfo::loadPlayer1(){
+    if (character1){
 	return;
     }
-    character = new Mugen::Character(definitionFile);
-    character->load();
+    character1 = new Mugen::Character(definitionFile);
+    character1->load();
+}
+
+void CharacterInfo::loadPlayer2(){
+    if (character2){
+	return;
+    }
+    character2 = new Mugen::Character(definitionFile);
+    character2->load();
 }
 
 void CharacterInfo::setAct(int number){
@@ -897,12 +909,12 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 			info.setLoadingMessage("Loading...");
 			Loader::startLoading(&loader, (void*) &info);
 			// Load player 1
-			player1.load();
+			player1.loadPlayer1();
 			// Load player 2
-			player2.load();
+			player2.loadPlayer2();
 			// Load stage
-			stage->addp1(player1.getCharacter());
-			stage->addp2(player2.getCharacter());
+			stage->addp1(player1.getPlayer1());
+			stage->addp2(player2.getPlayer2());
 			stage->load();
 			Loader::stopLoading(loader);
 		    } catch (const MugenException & e){
