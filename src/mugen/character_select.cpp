@@ -1570,35 +1570,35 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 		    list >> temp;
 		    if (temp == "randomselect"){
 			character.random = true;
-			return;
 		    } else {
 			character.name = temp;
 		    }
-		    // Grab stage
-		    list >> temp;
-		    if (temp == "random"){
-			character.randomStage = true;
-		    } else {
-			character.stage = temp;
-		    }
-		    // Grab options
-		    while(true){
-			try{
-			    list >> temp;
-			    if (PaintownUtil::matchRegex(temp,"includestage=")){
-				temp.replace(0,std::string("includestage=").size(),"");
-				character.includeStage = (bool)atoi(temp.c_str());
-			    } else if (PaintownUtil::matchRegex(temp,"music=")){
-				temp.replace(0,std::string("music=").size(),"");
-				character.song = temp;
-			    } else if (PaintownUtil::matchRegex(temp,"order=")){
-				temp.replace(0,std::string("order=").size(),"");
-				character.order = (bool)atoi(temp.c_str());
-			    }
-			} catch (const Ast::Exception & e){
-			    break;
-			}
-		    }
+
+                    try{
+                        // Grab stage
+                        list >> temp;
+                        if (temp == "random"){
+                            character.randomStage = true;
+                        } else {
+                            character.stage = temp;
+                        }
+                        // Grab options
+                        while(true){
+                            list >> temp;
+                            if (PaintownUtil::matchRegex(temp,"includestage=")){
+                                temp.replace(0,std::string("includestage=").size(),"");
+                                character.includeStage = (bool)atoi(temp.c_str());
+                            } else if (PaintownUtil::matchRegex(temp,"music=")){
+                                temp.replace(0,std::string("music=").size(),"");
+                                character.song = temp;
+                            } else if (PaintownUtil::matchRegex(temp,"order=")){
+                                temp.replace(0,std::string("order=").size(),"");
+                                character.order = (bool)atoi(temp.c_str());
+                            }
+                        }
+                    } catch (const Ast::Exception & e){
+                    }
+
 		    characters.push_back(character);
                 }
             };
@@ -1664,7 +1664,7 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
     for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
 	CharacterCollect & character = *i;
 	if (character.random){
-	    grid.addCharacter(characters.front(),true);
+	    grid.addCharacter(characters.front(), true);
 	} else {
 	    grid.addCharacter(*nextChar);
 	    nextChar++;
