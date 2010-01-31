@@ -1664,7 +1664,6 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
                         if (temp == "random"){
                             character.randomStage = true;
                         } else {
-                            // character.stage = fixStageName(temp);
                             character.stage = temp;
                         }
                         // Grab options
@@ -1784,9 +1783,11 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 		// lets assume random then
 		charInfo->setRandomStage(true);
 	    } else {
-		charInfo->setStage(character.stage);
+		// Fix the stage name before handing it the character
+		charInfo->setStage(fixStageName(character.stage));
 		// also add the stage
 		if (character.includeStage){
+		    // Pass base stage name, StageHandler will fix the stage name
 		    stageNames.insert(stageNames.begin()+stageOffset,character.stage);
 		    stageOffset++;
 		}
