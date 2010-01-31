@@ -143,6 +143,8 @@ displayName(Util::probeDef(definitionFile,"info","displayname")),
 currentAct(0),
 icon(0),
 portrait(0),
+randomStage(false),
+order(1),
 referenceCell(0),
 character1(0),
 character2(0){

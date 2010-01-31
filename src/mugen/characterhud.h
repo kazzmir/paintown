@@ -12,14 +12,14 @@ class MugenAnimation;
 class MugenFont;
 
 namespace Mugen{
-/*
-class Element{
+
+class FightElement : public Element{
     public:
-	Element();
-	virtual ~Element();
+	FightElement();
+	virtual ~FightElement();
 	
 	virtual void act();
-	virtual void render(const int xaxis, const int yaxis, Bitmap &);
+	virtual void render(int x, int yaxis, Bitmap &);
 	
 	enum ElementType{
 	    IS_NOTSET =0,
@@ -56,7 +56,6 @@ class Element{
 	int layerno;
 	std::string text;
 };
-*/
 
 class Bar{
     public:

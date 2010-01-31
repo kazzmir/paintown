@@ -171,7 +171,7 @@ void Bar::act(){
 	sound->act();
     }
 }
-void Bar::render(const int xaxis, const int yaxis, Bitmap &bmp){
+void Bar::render(int x, int y, Bitmap & bmp){
     /*if (back0){
 	back0->render(xaxis,yaxis,bmp);
     }
