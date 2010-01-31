@@ -1566,6 +1566,26 @@ void Character::parseState(Ast::Section * section){
                 return out.str();
             }
 
+            AttackType::Animation parseAnimationType(string type){
+                type = Util::fixCase(type);
+                if (type == "light"){
+                    return AttackType::Light;
+                } else if (type == "medium" || type == "med"){
+                    return AttackType::Medium;
+                } else if (type == "hard" || type == "heavy"){
+                    return AttackType::Hard;
+                } else if (type == "back"){
+                    return AttackType::Back;
+                } else if (type == "up"){
+                    return AttackType::Up;
+                } else if (type == "diagup"){
+                    return AttackType::DiagonalUp;
+                } else {
+                    Global::debug(0) << "Unknown hitdef animation type " << type << endl;
+                }
+                return AttackType::NoAnimation;
+            }
+
             virtual void onAttributeArray(const Ast::AttributeArray & simple){
                 if (simple == "var"){
                     int index = simple.getIndex();
@@ -1731,60 +1751,15 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "animtype"){
                     string anim;
                     simple >> anim;
-                    anim = Util::fixCase(anim);
-                    if (anim == "light"){
-                        controller->getHit().animationType = AttackType::Light;
-                    } else if (anim == "medium" || anim == "med"){
-                        controller->getHit().animationType = AttackType::Medium;
-                    } else if (anim == "hard"){
-                        controller->getHit().animationType = AttackType::Hard;
-                    } else if (anim == "back"){
-                        controller->getHit().animationType = AttackType::Back;
-                    } else if (anim == "up"){
-                        controller->getHit().animationType = AttackType::Up;
-                    } else if (anim == "diagup"){
-                        controller->getHit().animationType = AttackType::DiagonalUp;
-                    } else {
-                        Global::debug(0) << "Unknown hitdef animation type " << anim << endl;
-                    }
+                    controller->getHit().animationType = parseAnimationType(anim);
                 } else if (simple == "air.animtype"){
                     string anim;
                     simple >> anim;
-                    anim = Util::fixCase(anim);
-                    if (anim == "light"){
-                        controller->getHit().animationTypeAir = AttackType::Light;
-                    } else if (anim == "medium" || anim == "med"){
-                        controller->getHit().animationTypeAir = AttackType::Medium;
-                    } else if (anim == "hard"){
-                        controller->getHit().animationTypeAir = AttackType::Hard;
-                    } else if (anim == "back"){
-                        controller->getHit().animationTypeAir = AttackType::Back;
-                    } else if (anim == "up"){
-                        controller->getHit().animationTypeAir = AttackType::Up;
-                    } else if (anim == "diagup"){
-                        controller->getHit().animationTypeAir = AttackType::DiagonalUp;
-                    } else {
-                        Global::debug(0) << "Unknown hitdef animation type " << anim << endl;
-                    }
+                    controller->getHit().animationTypeAir = parseAnimationType(anim);
                 } else if (simple == "fall.animtype"){
                     string anim;
                     simple >> anim;
-                    anim = Util::fixCase(anim);
-                    if (anim == "light"){
-                        controller->getHit().animationTypeFall = AttackType::Light;
-                    } else if (anim == "medium" || anim == "med"){
-                        controller->getHit().animationTypeFall = AttackType::Medium;
-                    } else if (anim == "hard"){
-                        controller->getHit().animationTypeFall = AttackType::Hard;
-                    } else if (anim == "back"){
-                        controller->getHit().animationTypeFall = AttackType::Back;
-                    } else if (anim == "up"){
-                        controller->getHit().animationTypeFall = AttackType::Up;
-                    } else if (anim == "diagup"){
-                        controller->getHit().animationTypeFall = AttackType::DiagonalUp;
-                    } else {
-                        Global::debug(0) << "Unknown hitdef animation type " << anim << endl;
-                    }
+                    controller->getHit().animationTypeFall = parseAnimationType(anim);
                 } else if (simple == "priority"){
                     int hit;
                     simple >> hit;
