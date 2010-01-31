@@ -310,7 +310,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
     }
-    Mugen::Character *player1 = new Mugen::Character(selector.getPlayer1Old());
+    Mugen::Character *player1 = new Mugen::Character(selector.getPlayer1Def());
     player1->load();
     stage.addp1(player1);
     //stage.addp1(&p1v);

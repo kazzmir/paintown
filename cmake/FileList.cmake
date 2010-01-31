@@ -215,6 +215,7 @@ src/mugen/mugen_sound.cpp
 src/mugen/mugen_sprite.cpp
 src/mugen/mugen_stage.cpp
 src/mugen/mugen_util.cpp
+src/mugen/option_arcade.cpp
 src/mugen/option_versus.cpp
 src/mugen/parser/parse-exception.cpp
 src/mugen/parser/def.cpp

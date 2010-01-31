@@ -49,6 +49,7 @@
 #include "mugen_font.h"
 #include "mugen/storyboard.h"
 
+#include "mugen/option_arcade.h"
 #include "mugen/option_versus.h"
 #include "ast/all.h"
 #include "parser/all.h"
@@ -245,7 +246,7 @@ void MugenMenu::loadData() throw (MugenException){
                         simple >> menu.fontSpacing.y;
 		    } else if (simple == "menu.itemname.arcade"){
                         try{
-                            menu.addOption(new OptionDummy(simple.valueAsString()));
+                            menu.addOption(new Mugen::OptionArcade(simple.valueAsString()));
                         } catch (const Ast::Exception & e){
                         }
                     } else if (simple == "menu.itemname.versus"){

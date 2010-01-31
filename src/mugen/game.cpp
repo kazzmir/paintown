@@ -21,6 +21,7 @@
 #include "mugen_menu.h"
 #include "mugen_stage.h"
 #include "character_select.h"
+#include "storyboard.h"
 
 namespace PaintownUtil = ::Util;
 
@@ -115,6 +116,95 @@ static InputMap<Mugen::Command::Keys> getPlayer1InputLeft(){
 
 void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
     select.run("Arcade", bmp);
+    std::string intro;
+    std::string ending;  
+    try{
+	std::string file = Filesystem::find(select.getPlayer1Def());
+	std::string baseDir = Util::getFileDir(file);
+	intro = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","intro.storyboard"));
+	ending = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","ending.storyboard"));
+    } catch (const MugenException & e){
+    }
+    // Run intro before we begin game
+    if (!intro.empty()){
+	Storyboard story(intro);
+	story.setInput(Mugen::getPlayer1MenuKeys());
+	story.run(bmp);
+    }
+    bool quit = false;
+    while(!quit){
+	select.renderVersusScreen(bmp);
+	select.getPlayer1()->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
+	MugenStage *stage = select.getStage();
+	InputMap<int> gameInput;
+	gameInput.set(Keyboard::Key_F1, 10, false, 0);
+	gameInput.set(Keyboard::Key_F2, 10, false, 1);
+	gameInput.set(Keyboard::Key_F3, 10, false, 2);
+	gameInput.set(Keyboard::Key_F4, 10, true, 3);
+	gameInput.set(Keyboard::Key_ESC, 0, true, 4);
+	
+	Bitmap work(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+	double gameSpeed = 1.0;
+	double runCounter = 0;
+	double mugenSpeed = 60;
+
+	// Lets reset the stage for good measure
+	stage->reset();
+
+	while( !quit ){
+	    bool draw = false;
+
+	    if ( Global::speed_counter > 0 ){
+		runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+		while (runCounter > 1){
+		    InputManager::poll();
+		    stage->logic();
+		    runCounter -= 1;
+		    draw = true;
+
+		    InputMap<int>::Output out = InputManager::getMap(gameInput);
+		    if (out[0]){
+			gameSpeed -= 0.1;
+		    }
+		    if (out[1]){
+			gameSpeed += 0.1;
+		    }
+		    if (out[2]){
+			gameSpeed = 1;
+		    }
+		    if (out[3]){
+			stage->toggleDebug();
+		    }
+		    if (out[4]){
+			quit = true;
+		    }
+		    if (gameSpeed < 0.1){
+			gameSpeed = 0.1;
+		    }
+		}
+		Global::speed_counter = 0;
+	    }
+
+	    if (draw){
+		stage->render(&work);
+		work.Stretch(bmp);
+
+		FontRender * render = FontRender::getInstance();
+		render->render(&bmp);
+    
+		bmp.BlitToScreen();
+	    }
+
+	    while (Global::speed_counter == 0){
+		PaintownUtil::rest(1);
+	    }
+	}
+	/*! *FIXME *TODO
+	* Set next match and check if we have 
+	* completed the game to handle appropriately and other misc arcade stuff
+	*/
+	select.setNextArcadeMatch();
+    }
 }
 
 void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){

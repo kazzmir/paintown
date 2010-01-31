@@ -937,14 +937,16 @@ class CharacterSelect {
 	    return this->currentStage;
 	}
 	
-	/*! **FIXME These are temporary until a method is 
-	    figured to handling teams and multiple players elegantly */
-	virtual inline const std::string &getPlayer1Old(){
+	
+	virtual inline const std::string &getPlayer1Def(){
 	    return currentPlayer1->getDefinitionFile();
 	}
-	virtual inline const std::string &getPlayer2Old(){
+	virtual inline const std::string &getPlayer2Def(){
 	    return currentPlayer2->getDefinitionFile();
 	}
+	
+	/*! **FIXME These are temporary until a method is 
+	    figured to handling teams and multiple players elegantly */
 	virtual inline const std::string &getStageOld(){
 	    return grid.getStageHandler().getStage();
 	}
