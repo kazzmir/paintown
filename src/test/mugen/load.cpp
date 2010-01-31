@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int main(){
+int main(int argc, char ** argv){
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
     set_color_conversion(COLORCONV_NONE);
