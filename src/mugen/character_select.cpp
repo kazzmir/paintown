@@ -62,6 +62,20 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+
+static const std::string fixStageName(const std::string &stage){
+    // *FIXME not a good solution to get file
+    std::string ourDefFile = stage;
+    std::string baseDir = Filesystem::find("mugen/stages/");
+    if (ourDefFile.find(".def")==std::string::npos){
+	ourDefFile+=".def";
+    }
+    // Get correct directory
+    baseDir = Mugen::Util::getFileDir(baseDir + ourDefFile);
+    ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, Mugen::Util::stripDir(ourDefFile));
+    return ourDefFile;
+}
+
 FontHandler::FontHandler():
 state(Normal),
 font(0),
@@ -284,14 +298,7 @@ void StageHandler::toggleSelecting(){
 void StageHandler::addStage(const std::string &stage){
     try {
 	// *FIXME not a good solution to get file
-	std::string ourDefFile = stage;
-	std::string baseDir = Filesystem::find("mugen/stages/");
-	if (ourDefFile.find(".def")==std::string::npos){
-	    ourDefFile+=".def";
-	}
-	// Get correct directory
-	baseDir = Mugen::Util::getFileDir(baseDir + ourDefFile);
-	ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, Mugen::Util::stripDir(ourDefFile));
+	std::string ourDefFile = fixStageName(stage);
 	stringstream temp;
         temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile,"info","name");
 	stageNames.push_back(temp.str());
@@ -1657,7 +1664,7 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
                         if (temp == "random"){
                             character.randomStage = true;
                         } else {
-                            character.stage = temp;
+                            character.stage = fixStageName(temp);
                         }
                         // Grab options
                         /* TODO: make the parser turn these into better AST nodes.
