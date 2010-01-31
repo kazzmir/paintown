@@ -125,8 +125,6 @@ Topics:
     * pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
     * freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
     * Python headers, usually this comes with python
-    * bison - http://gnuwin32.sourceforge.net/packages/bison.htm
-    * flex - http://gnuwin32.sourceforge.net/packages/flex.htm
 
   * Quick instructions for ubuntu
     $ sudo apt-get install python-dev libfreetype6-dev liballegro4.2 zlib1g-dev
