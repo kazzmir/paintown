@@ -393,15 +393,23 @@ void StateController::activate(Character & guy, const vector<string> & commands)
         case PlaySnd : {
             try{
                 /* FIXME: group could start with F */
-                int group;
-                int item;
+                string group;
+                Ast::Value * item = 0;
                 value1->reset();
                 *value1 >> group >> item;
-                MugenSound * sound = guy.getSound(group, item);
+                int realItem = (int) toNumber(evaluate(item, Environment(guy)));
+                MugenSound * sound = 0;
+                if (PaintownUtil::matchRegex(group, "F[0-9]+")){
+                    int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
+                    sound = guy.getCommonSound(realGroup, realItem);
+                } else if (PaintownUtil::matchRegex(group, "[0-9]+")){
+                    sound = guy.getSound(atoi(group.c_str()), realItem);
+                }
+
                 if (sound != 0){
                     sound->play();
                 } else {
-                    Global::debug(0) << "Error with PlaySnd " << name << ": no sound for " << group << ", " << item << endl;
+                    Global::debug(0) << "Error with PlaySnd " << name << ": no sound for " << group << ", " << item->toString() << endl;
                 }
             } catch (const Ast::Exception & e){
                 Global::debug(0) << "Error with PlaySnd " << name << ": " << e.getReason() << endl;
@@ -971,6 +979,7 @@ void HitState::update(bool inAir, const HitDefinition & hit){
 
 Character::Character( const string & s ):
 ObjectAttack(0),
+commonSounds(NULL),
 hit(noHit){
     this->location = s;
     initialize();
@@ -978,6 +987,7 @@ hit(noHit){
 
 Character::Character( const char * location ):
 ObjectAttack(0),
+commonSounds(NULL),
 hit(noHit){
     this->location = std::string(location);
     initialize();
@@ -985,6 +995,7 @@ hit(noHit){
 
 Character::Character( const string & s, int alliance ):
 ObjectAttack(alliance),
+commonSounds(NULL),
 hit(noHit){
     this->location = s;
     initialize();
@@ -992,6 +1003,7 @@ hit(noHit){
 
 Character::Character( const string & s, const int x, const int y, int alliance ):
 ObjectAttack(x,y,alliance),
+commonSounds(NULL),
 hit(noHit){
     this->location = s;
     initialize();
@@ -999,6 +1011,7 @@ hit(noHit){
 
 Character::Character( const Character & copy ):
 ObjectAttack(copy),
+commonSounds(NULL),
 hit(noHit){
 }
 
@@ -2680,8 +2693,29 @@ bool Character::canTurn() const {
            getCurrentState() == WalkingForwards ||
            getCurrentState() == WalkingBackwards;
 }
+
+static MugenSound * findSound(const map<unsigned int, map<unsigned int, MugenSound*> > & sounds, int group, int item){
+    map<unsigned int, map<unsigned int, MugenSound*> >::const_iterator findGroup = sounds.find(group);
+    if (findGroup != sounds.end()){
+        const map<unsigned int, MugenSound*> & found = (*findGroup).second;
+        map<unsigned int, MugenSound*>::const_iterator sound = found.find(item);
+        if (sound != found.end()){
+            return (*sound).second;
+        }
+    }
+    return NULL;
+}
+
+MugenSound * Character::getCommonSound(int group, int item) const {
+    if (getCommonSounds() == NULL){
+        return NULL;
+    }
+    return findSound(*getCommonSounds(), group, item);
+}
         
 MugenSound * Character::getSound(int group, int item) const {
+    return findSound(getSounds(), group, item);
+    /*
     map<unsigned int, map<unsigned int, MugenSound*> >::const_iterator findGroup = sounds.find(group);
     if (findGroup != sounds.end()){
         const map<unsigned int, MugenSound*> & found = (*findGroup).second;
@@ -2691,6 +2725,7 @@ MugenSound * Character::getSound(int group, int item) const {
         }
     }
     return 0;
+    */
 }
 
 void Character::doTurn(){

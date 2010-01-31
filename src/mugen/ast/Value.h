@@ -39,6 +39,11 @@ public:
     virtual void debugExplain(){
         std::cout << toString() << std::endl;
     }
+    
+    virtual const Value & operator>>(Value *& value) const {
+        fail("value");
+        return *this;
+    }
 
     virtual const Value & operator>>(std::string & str) const {
         str = toString();

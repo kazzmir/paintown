@@ -1061,6 +1061,8 @@ void MugenStage::addp1( Object * o ){
     playerInfo[o].leftSide = false;
     playerInfo[o].rightSide = false;
     playerInfo[o].jumped = false;
+
+    ((Mugen::Character *) o)->setCommonSounds(&sounds);
 }
 
 // Add player2 people
@@ -1081,6 +1083,8 @@ void MugenStage::addp2( Object * o ){
     playerInfo[o].leftSide = false;
     playerInfo[o].rightSide = false;
     playerInfo[o].jumped = false;
+
+    ((Mugen::Character *) o)->setCommonSounds(&sounds);
 }
 
 // Console

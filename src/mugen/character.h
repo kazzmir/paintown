@@ -888,6 +888,10 @@ public:
             return sounds;
         }
 
+	virtual inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >* getCommonSounds() const {
+            return commonSounds;
+        }
+
         virtual const Bitmap * getCurrentFrame() const;
         MugenAnimation * getCurrentAnimation() const;
 
@@ -1180,6 +1184,7 @@ public:
         virtual bool canRecover() const;
 
         virtual MugenSound * getSound(int group, int item) const;
+        virtual MugenSound * getCommonSound(int group, int item) const;
 
         virtual inline void setJugglePoints(int x){
             airjuggle = x;
@@ -1195,6 +1200,10 @@ public:
 
         virtual inline int getCurrentJuggle() const {
             return currentJuggle;
+        }
+
+        virtual void inline setCommonSounds(const std::map< unsigned int, std::map< unsigned int, MugenSound * > > * sounds){
+            this->commonSounds = sounds;
         }
 
 protected:
@@ -1410,6 +1419,8 @@ protected:
 	
 	/* Sounds */
 	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
+        /* sounds from the stage */
+        const std::map< unsigned int, std::map< unsigned int, MugenSound * > > * commonSounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
         std::map<std::string, Constant> constants;

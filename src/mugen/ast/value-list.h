@@ -40,6 +40,15 @@ public:
 
     using Value::operator>>;
     
+    virtual const Value & operator>>(Value *& value) const {
+        if (current_value == this->values.end()){
+            throw Exception("No more values in this value list: " + toString());
+        }
+        value = *current_value;
+        current_value++;
+        return *this;
+    }
+    
     virtual const Value & operator>>(std::string & item) const {
         if (current_value == this->values.end()){
             throw Exception("No more values in this value list: " + toString());

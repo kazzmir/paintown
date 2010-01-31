@@ -363,6 +363,10 @@ public:
             return RuntimeValue(fabs(toNumber(evaluate(function.getArg1()))));
         }
 
+        if (function == "floor"){
+            return RuntimeValue((int) toNumber(evaluate(function.getArg1())));
+        }
+
         if (function == "var"){
             int index = (int) toNumber(evaluate(function.getArg1()));
             Ast::Value * value = environment.getCharacter().getVariable(index);
