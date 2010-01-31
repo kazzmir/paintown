@@ -85,6 +85,7 @@ namespace AttackType{
     extern std::string Hyper;
 
     enum Animation{
+        NoAnimation = -1,
         Light = 0,
         Medium = 1,
         Hard = 2,
@@ -113,9 +114,12 @@ struct HitDefinition{
     HitDefinition():
     hitFlag("MAF"),
     animationType(AttackType::Light),
+    animationTypeAir(AttackType::NoAnimation),
+    animationTypeFall(AttackType::NoAnimation),
     spark(0),
     groundType(AttackType::None),
     groundHitTime(0),
+    airHitTime(20),
     yAcceleration(0.35),
     airJuggle(0)
     {}
@@ -171,12 +175,12 @@ struct HitDefinition{
     /* air.animtype = anim_type (string)
      * Similar to the "animtype" parameter, this is the animtype to set P2 to if P2 is in the air, instead of on the ground. Defaults to the same value as the "animtype" parameter if omitted.
      */
-    std::string animationTypeAir;
+    AttackType::Animation animationTypeAir;
 
     /* fall.animtype = anim_type (string)
      * Similar to the "animtype" parameter, this is the animtype to set P2 to if P2 is hit while falling. Defaults to Up if air.animtype is Up, or Back otherwise.
      */
-    std::string animationTypeFall;
+    AttackType::Animation animationTypeFall;
 
     /* priority = hit_prior (int), hit_type (string)
      * Specifies the priority for this hit. Hits with higher priorities take precedence over hits with lower priorities. Valid values for hit_prior are 1-7. Defaults to 4.
@@ -326,6 +330,9 @@ struct HitDefinition{
     * Initial velocity to give P2 if P2 is hit in the air. Defaults to 0,0 if omitted.
     */
     struct AirVelocity{
+        AirVelocity():
+            x(0), y(0){}
+
         double x, y;
     } airVelocity;
 
@@ -333,6 +340,9 @@ struct HitDefinition{
     * Velocity to give P2 if P2 guards the hit in the air. Defaults to x_velocity * 1.5, y_velocity / 2, where x_velocity and y_velocity are values of the "air.velocity" parameter.
     */
     struct AirGuardVelocity{
+        AirGuardVelocity():
+            x(0), y(0){}
+
         double x, y;
     } airGuardVelocity;
 
@@ -541,7 +551,7 @@ struct HitState{
         xVelocity(0){
         }
 
-    void update(const HitDefinition & hit);
+    void update(bool inAir, const HitDefinition & hit);
     int shakeTime;
     int hitTime;
     int slideTime;

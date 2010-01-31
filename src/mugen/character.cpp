@@ -915,20 +915,51 @@ Command::~Command(){
     delete keys;
 }
 
-
-void HitState::update(const HitDefinition & hit){
+void HitState::update(bool inAir, const HitDefinition & hit){
     /* FIXME: choose the proper ground/air/guard types */
 
     shakeTime = hit.pause.player2;
-    hitTime = hit.groundHitTime;
-    slideTime = hit.groundSlideTime;
-    animationType = hit.animationType;
     groundType = hit.groundType;
     yAcceleration = hit.yAcceleration;
-    xVelocity = hit.groundVelocity.x;
-    yVelocity = hit.groundVelocity.y;
-    fall.fall = hit.fall.fall;
-    fall.yVelocity = hit.fall.yVelocity;
+    
+    /* if in the air */
+    if (inAir){
+        if (fall.fall){
+            if (hit.animationTypeFall == AttackType::NoAnimation){
+                if (hit.animationTypeAir == AttackType::Up){
+                    animationType = AttackType::Up;
+                } else {
+                    animationType = AttackType::Back;
+                }
+            } else {
+                animationType = hit.animationTypeFall;
+            }
+
+            hitTime = 0;
+        } else {
+            if (hit.animationTypeAir != AttackType::NoAnimation){
+                animationType = hit.animationTypeAir;
+            } else {
+                animationType = hit.animationType;
+            }
+
+            hitTime = hit.airHitTime;
+        }
+        
+        xVelocity = hit.airVelocity.x;
+        yVelocity = hit.airVelocity.y;
+
+        fall.fall |= hit.fall.fall;
+        fall.yVelocity = hit.fall.yVelocity;
+    } else {
+        animationType = hit.animationType;
+        hitTime = hit.groundHitTime;
+        slideTime = hit.groundSlideTime;
+        xVelocity = hit.groundVelocity.x;
+        yVelocity = hit.groundVelocity.y;
+        fall.fall = hit.fall.fall;
+        fall.yVelocity = hit.fall.yVelocity;
+    }
 
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
@@ -1181,7 +1212,9 @@ static bool isStateDefSection(string name){
 }
 
 bool Character::canBeHit(Character * enemy){
-    return moveType != Move::Hit && lastTicket < enemy->getTicket();
+    return (moveType != Move::Hit && lastTicket < enemy->getTicket()) ||
+           (moveType == Move::Hit && lastTicket < enemy->getTicket() &&
+            juggleRemaining >= enemy->getCurrentJuggle());
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
@@ -1717,11 +1750,41 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "air.animtype"){
                     string anim;
                     simple >> anim;
-                    controller->getHit().animationTypeAir = anim;
+                    anim = Util::fixCase(anim);
+                    if (anim == "light"){
+                        controller->getHit().animationTypeAir = AttackType::Light;
+                    } else if (anim == "medium" || anim == "med"){
+                        controller->getHit().animationTypeAir = AttackType::Medium;
+                    } else if (anim == "hard"){
+                        controller->getHit().animationTypeAir = AttackType::Hard;
+                    } else if (anim == "back"){
+                        controller->getHit().animationTypeAir = AttackType::Back;
+                    } else if (anim == "up"){
+                        controller->getHit().animationTypeAir = AttackType::Up;
+                    } else if (anim == "diagup"){
+                        controller->getHit().animationTypeAir = AttackType::DiagonalUp;
+                    } else {
+                        Global::debug(0) << "Unknown hitdef animation type " << anim << endl;
+                    }
                 } else if (simple == "fall.animtype"){
                     string anim;
                     simple >> anim;
-                    controller->getHit().animationTypeFall = anim;
+                    anim = Util::fixCase(anim);
+                    if (anim == "light"){
+                        controller->getHit().animationTypeFall = AttackType::Light;
+                    } else if (anim == "medium" || anim == "med"){
+                        controller->getHit().animationTypeFall = AttackType::Medium;
+                    } else if (anim == "hard"){
+                        controller->getHit().animationTypeFall = AttackType::Hard;
+                    } else if (anim == "back"){
+                        controller->getHit().animationTypeFall = AttackType::Back;
+                    } else if (anim == "up"){
+                        controller->getHit().animationTypeFall = AttackType::Up;
+                    } else if (anim == "diagup"){
+                        controller->getHit().animationTypeFall = AttackType::DiagonalUp;
+                    } else {
+                        Global::debug(0) << "Unknown hitdef animation type " << anim << endl;
+                    }
                 } else if (simple == "priority"){
                     int hit;
                     simple >> hit;
@@ -2506,7 +2569,7 @@ void Character::didHit(Character * enemy){
 }
 
 void Character::wasHit(Character * enemy, const HitDefinition & hisHit){
-    hitState.update(hisHit);
+    hitState.update(getY() > 0, hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
     lastTicket = enemy->getTicket();
