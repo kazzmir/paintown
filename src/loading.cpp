@@ -72,8 +72,8 @@ static void setupBackground(const Bitmap & background, int load_x, int load_y, i
 }
 
 void * loadingScreen( void * arg ){
-    const int load_x = 80;
-    const int load_y = 220;
+    int load_x = 80;
+    int load_y = 220;
     const int infobox_width = 300;
     const int infobox_height = 150;
     Info info;
@@ -84,6 +84,15 @@ void * loadingScreen( void * arg ){
     if (arg != NULL){
         levelInfo = *(Level::LevelInfo*) arg;
     }
+
+    if (levelInfo.getPositionX() != -1){
+        load_x = levelInfo.getPositionX();
+    }
+    
+    if (levelInfo.getPositionY() != -1){
+        load_y = levelInfo.getPositionY();
+    }
+
     // const char * the_string = (arg != NULL) ? (const char *) arg : "Loading...";
     int load_width = myFont.textLength(levelInfo.loadingMessage().c_str());
     int load_height = myFont.getHeight(levelInfo.loadingMessage().c_str());

@@ -14,7 +14,9 @@ playerPath("players/"),
 name("Level set"),
 _loadingMessage("Loading Paintown"),
 _loadingBackground(Global::titleScreen()),
-background(0){
+background(0),
+x(-1),
+y(-1){
 }
 
 LevelInfo::LevelInfo(const LevelInfo & info){
@@ -24,6 +26,8 @@ LevelInfo::LevelInfo(const LevelInfo & info){
     this->playerPath = info.getPlayerPath();
     this->name = info.getName();
     this->background = info.getBackground();
+    this->x = info.getPositionX();
+    this->y = info.getPositionY();
 }
     
 LevelInfo & LevelInfo::operator=(const LevelInfo & info){
@@ -33,11 +37,18 @@ LevelInfo & LevelInfo::operator=(const LevelInfo & info){
     this->playerPath = info.getPlayerPath();
     this->name = info.getName();
     this->background = info.getBackground();
+    this->x = info.getPositionX();
+    this->y = info.getPositionY();
     return *this;
 }
     
 void LevelInfo::setLoadingMessage(const std::string & str){
     this->_loadingMessage = str;
+}
+
+void LevelInfo::setPosition(int x, int y){
+    this->x = x;
+    this->y = y;
 }
     
 const std::string & LevelInfo::loadingMessage() const {

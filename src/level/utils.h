@@ -21,6 +21,16 @@ public:
     virtual const std::string & loadingMessage() const;
     virtual const std::string & loadingBackground() const;
     virtual const std::string & getPlayerPath() const;
+    virtual void setPosition(int x, int y);
+
+    virtual inline int getPositionX() const {
+        return x;
+    }
+
+    virtual inline int getPositionY() const {
+        return y;
+    }
+
     virtual inline void setBackground(const Bitmap * background){
         this->background = background;
     }
@@ -45,6 +55,8 @@ protected:
     std::string _loadingMessage;
     std::string _loadingBackground;
     const Bitmap * background;
+
+    int x, y;
 };
 
 // LevelInfo readLevels(const std::string & filename);

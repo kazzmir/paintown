@@ -914,6 +914,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 			Level::LevelInfo info;
 			info.setBackground(&bmp);
 			info.setLoadingMessage("Loading...");
+                        info.setPosition(-1, 400);
 			Loader::startLoading(&loader, (void*) &info);
 			// Load player 1
 			player1.loadPlayer1();
