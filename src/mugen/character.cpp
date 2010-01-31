@@ -75,6 +75,11 @@ namespace PhysicalAttack{
 
 namespace PaintownUtil = ::Util;
 
+
+HitDefinition::~HitDefinition(){
+    delete player1Facing;
+}
+
 StateController::StateController(const string & name):
 type(Unknown),
 name(name),
@@ -965,31 +970,36 @@ void HitState::update(bool inAir, const HitDefinition & hit){
 }
 
 Character::Character( const string & s ):
-ObjectAttack(0){
+ObjectAttack(0),
+hit(noHit){
     this->location = s;
     initialize();
 }
 
 Character::Character( const char * location ):
-ObjectAttack(0){
+ObjectAttack(0),
+hit(noHit){
     this->location = std::string(location);
     initialize();
 }
 
 Character::Character( const string & s, int alliance ):
-ObjectAttack(alliance){
+ObjectAttack(alliance),
+hit(noHit){
     this->location = s;
     initialize();
 }
 
 Character::Character( const string & s, const int x, const int y, int alliance ):
-ObjectAttack(x,y,alliance){
+ObjectAttack(x,y,alliance),
+hit(noHit){
     this->location = s;
     initialize();
 }
 
 Character::Character( const Character & copy ):
-ObjectAttack(copy){
+ObjectAttack(copy),
+hit(noHit){
 }
 
 Character::~Character(){
@@ -1913,7 +1923,7 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "p2sprpriority"){
                     simple >> controller->getHit().player2SpritePriority;
                 } else if (simple == "p1facing"){
-                    simple >> controller->getHit().player1Facing;
+                    controller->getHit().player1Facing = (Ast::Value*) simple.getValue()->copy();
                 } else if (simple == "p1getp2facing"){
                     simple >> controller->getHit().player1GetPlayer2Facing;
                 } else if (simple == "player2Facing"){
@@ -1973,7 +1983,7 @@ static string findStateFile(const string & base, const string & path){
     }
 }
 
-void Character::loadStateFile(const std::string & base, const string & path){
+void Character::loadStateFile(const std::string & base, const string & path, bool allowDefinitions, bool allowStates){
     string full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     try{
@@ -1984,9 +1994,9 @@ void Character::loadStateFile(const std::string & base, const string & path){
             std::string head = section->getName();
             /* this should really be head = Mugen::Util::fixCase(head) */
             head = Util::fixCase(head);
-            if (PaintownUtil::matchRegex(head, "statedef")){
+            if (allowDefinitions && PaintownUtil::matchRegex(head, "statedef")){
                 parseStateDefinition(section);
-            } else if (PaintownUtil::matchRegex(head, "state ")){
+            } else if (allowStates && PaintownUtil::matchRegex(head, "state ")){
                 parseState(section);
             }
         }
@@ -2121,10 +2131,25 @@ void Character::load(){
             Ast::Section * section = *section_it;
             section->walk(walker);
 
+            /* we have to load all the definitions first, then go back and load all
+             * the states.
+             */
             for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
                 Location & where = *it;
                 try{
-                    loadStateFile(where.base, where.file);
+                    loadStateFile(where.base, where.file, true, false);
+                } catch (const MugenException & e){
+                    ostringstream out;
+                    out << "Problem loading state file " << where.file << ": " << e.getReason();
+                    throw MugenException(out.str());
+                }
+            }
+
+            /* now just load the state controllers */
+            for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
+                Location & where = *it;
+                try{
+                    loadStateFile(where.base, where.file, false, true);
                 } catch (const MugenException & e){
                     ostringstream out;
                     out << "Problem loading state file " << where.file << ": " << e.getReason();

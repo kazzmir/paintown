@@ -121,8 +121,12 @@ struct HitDefinition{
     groundHitTime(0),
     airHitTime(20),
     yAcceleration(0.35),
-    airJuggle(0)
+    airJuggle(0),
+    player1Facing(NULL)
     {}
+
+    ~HitDefinition();
+
     /*
      * Required parameters:
      * attr = hit_attribute (string)
@@ -410,7 +414,7 @@ struct HitDefinition{
     /* p1facing = facing (int)
     * Set to -1 to make P1 turn around if the hit is successful. The default value is no change in where P1 is facing.
     */
-    int player1Facing;
+    Ast::Value * player1Facing;
 
     /* p1getp2facing = facing (int)
     * Set to 1 to have P1 face in the same direction as P2 is facing after the hit connects, and -1 to have P1 face the opposite direction from P2. Defaults to 0 (no change). If nonzero, this parameter takes precedence over p1facing.
@@ -1200,7 +1204,7 @@ protected:
 
     virtual void loadCmdFile(const std::string & path);
     virtual void loadCnsFile(const std::string & path);
-    virtual void loadStateFile(const std::string & base, const std::string & path);
+    virtual void loadStateFile(const std::string & base, const std::string & path, bool allowDefinitions, bool allowStates);
 
     virtual void addCommand(Command * command);
 
@@ -1446,7 +1450,8 @@ protected:
         std::string stateType;
         std::string moveType;
 
-        HitDefinition hit;
+        HitDefinition & hit;
+        HitDefinition noHit;
 
         HitState hitState;
         unsigned int lastTicket;
