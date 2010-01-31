@@ -1664,7 +1664,8 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
                         if (temp == "random"){
                             character.randomStage = true;
                         } else {
-                            character.stage = fixStageName(temp);
+                            // character.stage = fixStageName(temp);
+                            character.stage = temp;
                         }
                         // Grab options
                         /* TODO: make the parser turn these into better AST nodes.
