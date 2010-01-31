@@ -152,7 +152,7 @@ void OptionCredits::run( bool &endGame ){
 
             while (think >= 1.0){
                 think -= 1;
-                min_y -= 0.5;
+                min_y -= 0.9;
                 if (min_y < -(int)(maxCredits * vFont.getHeight() * 1.1)){
                     min_y = GFX_Y;
                 }
@@ -169,7 +169,6 @@ void OptionCredits::run( bool &endGame ){
                 tmp.fill(Bitmap::makeColor(0,0,0));
             }
 
-            fire.draw(tmp);
             /*
             fire.draw(fireWork);
             fireWork.drawTrans(0, 0, tmp);
@@ -192,6 +191,8 @@ void OptionCredits::run( bool &endGame ){
                     isTitle = true;
                 }
             }
+            
+            fire.draw(tmp);
 
             tmp.BlitToScreen();
         } else {
