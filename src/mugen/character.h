@@ -706,7 +706,7 @@ public:
         return hit;
     }
     
-    /* const version */
+    /* const */
     virtual inline const HitDefinition & getHit() const {
         return hit;
     }
@@ -1145,11 +1145,11 @@ public:
 	    debug = !debug;
 	}
 
-        virtual inline void setHitDef(const HitDefinition & hit){
+        virtual inline void setHitDef(const HitDefinition * hit){
             this->hit = hit;
         }
 
-        virtual const HitDefinition & getHit() const {
+        virtual const HitDefinition * getHit() const {
             return this->hit;
         }
 
@@ -1461,8 +1461,7 @@ protected:
         std::string stateType;
         std::string moveType;
 
-        HitDefinition & hit;
-        HitDefinition noHit;
+        const HitDefinition * hit;
 
         HitState hitState;
         unsigned int lastTicket;

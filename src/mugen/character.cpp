@@ -319,7 +319,7 @@ void StateController::activate(Character & guy, const vector<string> & commands)
             break;
         }
         case HitDef : {
-            guy.setHitDef(getHit());
+            guy.setHitDef(&getHit());
             guy.nextTicket();
             break;
         }
@@ -980,7 +980,7 @@ void HitState::update(bool inAir, const HitDefinition & hit){
 Character::Character( const string & s ):
 ObjectAttack(0),
 commonSounds(NULL),
-hit(noHit){
+hit(NULL){
     this->location = s;
     initialize();
 }
@@ -988,7 +988,7 @@ hit(noHit){
 Character::Character( const char * location ):
 ObjectAttack(0),
 commonSounds(NULL),
-hit(noHit){
+hit(NULL){
     this->location = std::string(location);
     initialize();
 }
@@ -996,7 +996,7 @@ hit(noHit){
 Character::Character( const string & s, int alliance ):
 ObjectAttack(alliance),
 commonSounds(NULL),
-hit(noHit){
+hit(NULL){
     this->location = s;
     initialize();
 }
@@ -1004,7 +1004,7 @@ hit(noHit){
 Character::Character( const string & s, const int x, const int y, int alliance ):
 ObjectAttack(x,y,alliance),
 commonSounds(NULL),
-hit(noHit){
+hit(NULL){
     this->location = s;
     initialize();
 }
@@ -1012,7 +1012,7 @@ hit(noHit){
 Character::Character( const Character & copy ):
 ObjectAttack(copy),
 commonSounds(NULL),
-hit(noHit){
+hit(NULL){
 }
 
 Character::~Character(){
@@ -2578,7 +2578,9 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
 }
         
 void Character::didHit(Character * enemy){
-    hitState.shakeTime = getHit().pause.player1;
+    if (getHit() != NULL){
+        hitState.shakeTime = getHit()->pause.player1;
+    }
 }
 
 void Character::wasHit(Character * enemy, const HitDefinition & hisHit){
