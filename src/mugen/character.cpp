@@ -2648,25 +2648,28 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
 }
 
 void Character::draw(Bitmap * work, int cameraX, int cameraY){
-    const Font & font = Font::getFont(Filesystem::find("/fonts/arial.ttf"), 18, 18);
-    int x = 0;
-    if (getAlliance() == MugenStage::Player2Side){
-        x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
-    }
-    int y = 1;
-    FontRender * render = FontRender::getInstance();
-    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "State %d Animation %d", getCurrentState(), currentAnimation);
-    y += font.getHeight();
-    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Vx %f Vy %f", getXVelocity(), getYVelocity());
-    y += font.getHeight();
-    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "X %f Y %f", getX(), getY());
-    y += font.getHeight();
-    render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Time %d", getStateTime());
-    y += font.getHeight();
-    if (getMoveType() == Move::Hit){
-        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
+
+    if (debug){
+        const Font & font = Font::getFont(Filesystem::find("/fonts/arial.ttf"), 18, 18);
+        int x = 0;
+        if (getAlliance() == MugenStage::Player2Side){
+            x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
+        }
+        int y = 1;
+        FontRender * render = FontRender::getInstance();
+        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "State %d Animation %d", getCurrentState(), currentAnimation);
         y += font.getHeight();
-        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Hit velocity x %f y %f", getHitState().xVelocity, getHitState().yVelocity);
+        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Vx %f Vy %f", getXVelocity(), getYVelocity());
+        y += font.getHeight();
+        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "X %f Y %f", getX(), getY());
+        y += font.getHeight();
+        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Time %d", getStateTime());
+        y += font.getHeight();
+        if (getMoveType() == Move::Hit){
+            render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
+            y += font.getHeight();
+            render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Hit velocity x %f y %f", getHitState().xVelocity, getHitState().yVelocity);
+        }
     }
 
     /*
