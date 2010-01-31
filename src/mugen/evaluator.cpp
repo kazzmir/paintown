@@ -186,6 +186,26 @@ public:
             return RuntimeValue(environment.getCharacter().getCurrentAnimation()->animationTime());
         }
 
+        if (identifier == "palno"){
+            /* FIXME */
+            return RuntimeValue(1);
+        }
+
+        if (identifier == "winko"){
+            /* FIXME */
+            return RuntimeValue(false);
+        }
+
+        if (identifier == "movehit"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
+        if (identifier == "projhit"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
         if (identifier == "hitshakeover"){
             return RuntimeValue(environment.getCharacter().getHitState().shakeTime <= 0);
         }
