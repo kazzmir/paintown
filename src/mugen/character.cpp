@@ -591,11 +591,17 @@ control(0),
 changeVelocity(false),
 changePhysics(false),
 changePower(false),
-moveType(Move::Idle){
+moveType(Move::Idle),
+/* FIXME: whats the default juggle? */
+juggle(1){
 }
 
 void State::addController(StateController * controller){
     controllers.push_back(controller);
+}
+
+void State::setJuggle(int juggle){
+    this->juggle = juggle;
 }
 
 void State::setVelocity(double x, double y){
@@ -626,6 +632,8 @@ void State::transitionTo(Character & who){
     if (changeControl){
         who.setControl(toBool(evaluate(control, Environment(who))));
     }
+
+    who.setCurrentJuggle(juggle);
 
     who.setMoveType(moveType);
 
@@ -1213,6 +1221,11 @@ void Character::resetStateTime(){
 }
         
 void Character::changeState(int stateNumber, const vector<string> & inputs){
+    /* reset juggle points once the player gets up */
+    if (stateNumber == GetUpFromLiedown){
+        juggleRemaining = getJugglePoints();
+    }
+
     Global::debug(1) << "Change to state " << stateNumber << endl;
     previousState = currentState;
     currentState = stateNumber;
@@ -1473,6 +1486,9 @@ void Character::parseStateDefinition(Ast::Section * section){
                     simple >> power;
                     definition->setPower(power);
                 } else if (simple == "juggle"){
+                    int j;
+                    simple >> j;
+                    definition->setJuggle(j);
                 } else if (simple == "facep2"){
                 } else if (simple == "hitdefpersist"){
                 } else if (simple == "movehitpersist"){
@@ -2251,7 +2267,6 @@ void Character::fixAssumptions(){
         controller->setType(StateController::ChangeState);
         controller->setValue1(new Ast::Number(GetUpFromLiedown));
 
-        /* FIXME: this is totally made up */
         controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
                     new Ast::SimpleIdentifier("time"),
                     new Ast::Number(getLieDownTime())));
@@ -2495,8 +2510,11 @@ void Character::wasHit(Character * enemy, const HitDefinition & hisHit){
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
     lastTicket = enemy->getTicket();
+
+    juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
     
     vector<string> active;
+    /* FIXME: replace 5000 with some constant */
     changeState(5000, active);
 
     /*

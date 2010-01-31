@@ -116,7 +116,8 @@ struct HitDefinition{
     spark(0),
     groundType(AttackType::None),
     groundHitTime(0),
-    yAcceleration(0.35)
+    yAcceleration(0.35),
+    airJuggle(0)
     {}
     /*
      * Required parameters:
@@ -753,6 +754,8 @@ public:
         this->control = control;
     }
 
+    virtual void setJuggle(int juggle);
+
     virtual void setVelocity(double x, double y);
     virtual void setPhysics(Physics::Type p);
     virtual void setPower(int power);
@@ -781,6 +784,7 @@ protected:
     bool changePower;
     int powerAdd;
     std::string moveType;
+    int juggle;
 };
 
 /* key command */
@@ -1139,7 +1143,10 @@ public:
             height = h;
         }
 
+        /* `this' hit `enemy' */
         void didHit(Character * enemy);
+
+        /* `enemy' hit `this' with hitdef `hit' */
         void wasHit(Character * enemy, const HitDefinition & hit);
 
         virtual const HitState & getHitState() const {
@@ -1166,6 +1173,14 @@ public:
 
         virtual inline int getJugglePoints() const {
             return airjuggle;
+        }
+
+        virtual inline void setCurrentJuggle(int j){
+            currentJuggle = j;
+        }
+
+        virtual inline int getCurrentJuggle() const {
+            return currentJuggle;
         }
 
 protected:
@@ -1264,6 +1279,13 @@ protected:
 	int lieDownTime;
         /* starting air juggle points */
 	int airjuggle;
+
+        /* number of juggle points left */
+        int juggleRemaining;
+
+        /* number of juggle points the current move will take */
+        int currentJuggle;
+
 	// Default Hit Spark Number for hitdefs ???
 	int sparkno;
 	// Default guard spark number
