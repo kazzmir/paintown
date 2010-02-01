@@ -1417,6 +1417,10 @@ void Character::loadCnsFile(const string & path){
                             int x;
                             simple >> x;
                             self.setJugglePoints(x);
+                        } else if (simple == "life"){
+                            int x;
+                            simple >> x;
+                            self.setHealth(x);
                         }
                     }
 
