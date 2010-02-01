@@ -57,7 +57,7 @@ class FightElement : public Element{
 	virtual ~FightElement();
 	
 	virtual void act();
-	virtual void render(int x, int yaxis, Bitmap &);
+	virtual void render(int x, int y, const Bitmap &);
 	
 	enum ElementType{
 	    IS_NOTSET =0,
@@ -71,16 +71,24 @@ class FightElement : public Element{
 	virtual void setAction(MugenAnimation *);
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *);
-	virtual inline void setOffset(int x, int y) { offset = Mugen::Point(x,y); }
-	virtual inline void setRange(int x, int y) { range = Mugen::Point(x,y); }
-	virtual inline void setDisplayTime(int t) { displaytime = t; }
-	virtual inline void setFacing(int f) { effects.facing = f; }
-	virtual inline void setVFacing(int f) { effects.vfacing = f; }
-	virtual inline void setLayer(Element::Layer layer) { layerno = layer; }
-	virtual inline void setScale(double x, double y) { effects.scalex = x, effects.scaley = y; }
-	virtual inline void setText(const std::string &t) { text = t; }
-	
-	virtual inline int getLayer() { return layerno; }
+	virtual inline void setOffset (int x, int y){ 
+            offset = Mugen::Point(x,y); 
+        }
+	virtual inline void setDisplayTime (int t){ 
+            displaytime = t; 
+        }
+	virtual inline void setFacing (int f){ 
+            effects.facing = f; 
+        }
+	virtual inline void setVFacing (int f){ 
+            effects.vfacing = f; 
+        }
+	virtual inline void setScale(double x, double y){ 
+            effects.scalex = x, effects.scaley = y; 
+        }
+	virtual inline void setText(const std::string &t){ 
+            text = t; 
+        }
 	
     private:
 	ElementType type;
@@ -95,6 +103,7 @@ class FightElement : public Element{
 	std::string text;
 };
 
+//! Base Bar made up of different components
 class Bar{
     public:
 	Bar();
@@ -102,7 +111,7 @@ class Bar{
 	virtual ~Bar();
 	
 	virtual void act();
-	virtual void render(Element::Layer layer, int x, int y, Bitmap &);
+	virtual void render(Element::Layer layer, int x, int y, const Bitmap &);
 	
 	virtual const Bar & operator=(const Bar &);
 	
@@ -116,18 +125,52 @@ class Bar{
 	    this->range.y = y;
 	}
 	
-	virtual void addElement(FightElement * element);
+	virtual void setBack0(FightElement * element){
+            this->back0 = element;
+        }
+        virtual void setBack1(FightElement * element){
+            this->back1 = element;
+        }
+        virtual void setMiddle(FightElement * element){
+            this->middle = element;
+        }
+        virtual void setFront(FightElement * element){
+            this->front = element;
+        }
+
+        virtual void setHitPoints(int hp){
+            this->hitPoints = hp;
+        }
+
+        virtual void addDamage(int damage){
+            this->damage +=damage;
+        }
 	
     private:
+        //! Position of this Bar
 	Mugen::Point position;
 	
-	std::vector<FightElement *> layer0;
+        //! Background 0 of the Bar 
+        FightElement * back0;
 	
-	std::vector<FightElement *> layer1;
+        //! Second Background of the Bar
+	FightElement * back1;
 	
-	std::vector<FightElement *> layer2;
+        //! Third Background of the Bar
+	FightElement * middle;
+
+        //! Fourth Background of the Bar
+        FightElement * front;
 	
+        //! Range of the actual bar (range.x * range.y / hitPoints)
 	Mugen::Point range;
+        
+        //! Default hit points
+        int hitPoints;
+        //! Current hit points
+        int currentHitPoints;
+        //! Damage that has been done, will be reduced to 0 and subtract from current hit points
+        int damage;
 };
 
 class Face{

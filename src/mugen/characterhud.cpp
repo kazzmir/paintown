@@ -95,21 +95,25 @@ void Element::setFont(MugenFont *fnt){
 }
 */
 
-Bar::Bar(){
+Bar::Bar():
+hitPoints(0),
+currentHitPoints(0),
+damage(0){
 }
 Bar::Bar(const Bar & copy){
 }
 Bar::~Bar(){
 }
 const Bar & Bar::operator=(const Bar & copy){
-}
-void Bar::addElement(FightElement * element){
+
+
+    return *this;
 }
 
 void Bar::act(){
     
 }
-void Bar::render(Element::Layer layer, int x, int y, Bitmap & bmp){
+void Bar::render(Element::Layer layer, int x, int y, const Bitmap & bmp){
     switch (layer){
 	default:
 	case Element::Background:
