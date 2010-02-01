@@ -12,6 +12,8 @@ class MugenAnimation;
 class MugenFont;
 
 namespace Mugen{
+
+class Character;
     
 class Component {
     public:
@@ -71,16 +73,16 @@ class FightElement : public Element{
 	virtual void setAction(MugenAnimation *);
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *);
-	virtual inline void setOffset (int x, int y){ 
+	virtual inline void setOffset(int x, int y){ 
             offset = Mugen::Point(x,y); 
         }
-	virtual inline void setDisplayTime (int t){ 
+	virtual inline void setDisplayTime(int t){ 
             displaytime = t; 
         }
-	virtual inline void setFacing (int f){ 
+	virtual inline void setFacing(int f){ 
             effects.facing = f; 
         }
-	virtual inline void setVFacing (int f){ 
+	virtual inline void setVFacing(int f){ 
             effects.vfacing = f; 
         }
 	virtual inline void setScale(double x, double y){ 
@@ -96,24 +98,20 @@ class FightElement : public Element{
 	MugenSprite *sprite;
 	MugenFont *font;
 	Mugen::Point offset;
-	Mugen::Point range;
 	int displaytime;
 	Effects effects;
-	Layer layerno;
 	std::string text;
 };
 
 //! Base Bar made up of different components
 class Bar{
     public:
+        //! Pass in the fight.def and the character so that we can initialize to it's max health
 	Bar();
-	Bar(const Bar &);
 	virtual ~Bar();
 	
-	virtual void act();
+	virtual void act(const Character &);
 	virtual void render(Element::Layer layer, int x, int y, const Bitmap &);
-	
-	virtual const Bar & operator=(const Bar &);
 	
 	virtual inline void setPosition(int x, int y){
 	    this->position.x = x;
@@ -137,38 +135,32 @@ class Bar{
         virtual void setFront(FightElement * element){
             this->front = element;
         }
-
-        virtual void setHitPoints(int hp){
-            this->hitPoints = hp;
-        }
-
-        virtual void addDamage(int damage){
-            this->damage +=damage;
-        }
 	
     private:
         //! Position of this Bar
 	Mugen::Point position;
 	
-        //! Background 0 of the Bar 
+        //! Background 0 of the Bar background behind mid and front
         FightElement * back0;
 	
-        //! Second Background of the Bar
+        //! Second Background of the Bar usually a container around the bars
 	FightElement * back1;
 	
-        //! Third Background of the Bar
+        //! Third Background of the Bar which is the second bar that decreases by tick
 	FightElement * middle;
 
-        //! Fourth Background of the Bar
+        //! Fourth Background of the Bar 
         FightElement * front;
 	
         //! Range of the actual bar (range.x * range.y / hitPoints)
 	Mugen::Point range;
+
+        //! Max Health
+        int maxHealth;
+
+        //! Current Set Health
+        int currentHealth;
         
-        //! Default hit points
-        int hitPoints;
-        //! Current hit points
-        int currentHitPoints;
         //! Damage that has been done, will be reduced to 0 and subtract from current hit points
         int damage;
 };

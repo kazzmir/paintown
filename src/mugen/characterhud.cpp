@@ -18,6 +18,7 @@
 #include "mugen/mugen_sprite.h"
 #include "mugen/mugen_animation.h"
 #include "mugen/mugen_font.h"
+#include "mugen/character.h"
 
 #include "util/timedifference.h"
 #include "ast/all.h"
@@ -96,22 +97,21 @@ void Element::setFont(MugenFont *fnt){
 */
 
 Bar::Bar():
-hitPoints(0),
-currentHitPoints(0),
+back0(0),
+back1(0),
+middle(0),
+front(0),
 damage(0){
-}
-Bar::Bar(const Bar & copy){
 }
 Bar::~Bar(){
 }
-const Bar & Bar::operator=(const Bar & copy){
-
-
-    return *this;
-}
-
-void Bar::act(){
-    
+void Bar::act(const Mugen::Character & character){
+    // Update damage counter if char has been damaged
+    if (character.hasControl()){
+        if (damage > 0){
+            damage--;
+        }
+    }
 }
 void Bar::render(Element::Layer layer, int x, int y, const Bitmap & bmp){
     switch (layer){
