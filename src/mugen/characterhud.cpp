@@ -18,6 +18,7 @@
 #include "mugen/mugen_sprite.h"
 #include "mugen/mugen_animation.h"
 #include "mugen/mugen_font.h"
+#include "mugen/mugen_sound.h"
 #include "mugen/character.h"
 
 #include "util/timedifference.h"
@@ -29,28 +30,33 @@ namespace PaintownUtil = ::Util;
 using namespace std;
 using namespace Mugen;
 
-/*
-Element::Element():
+FightElement::FightElement():
 type(IS_NOTSET),
 action(0),
 sprite(0),
 font(0),
+sound(0),
 offset(0,0),
-range(0,0),
 displaytime(0),
-layerno(0),
 text(""){
 }
-Element::~Element(){
+FightElement::~FightElement(){
 }
 
-void Element::act(){
+void FightElement::act(){
     switch (type){
 	case IS_ACTION:
 	    action->logic();
 	    break;
 	case IS_SPRITE:
+            break;
 	case IS_FONT:
+            break;
+        case IS_SOUND:
+            if (sound){
+                sound->play();
+            }
+            break;
 	case IS_NOTSET:
 	default:
 	    // nothing
@@ -58,17 +64,17 @@ void Element::act(){
     }
 }
 
-void Element::render(const int xaxis, const int yaxis, Bitmap &bmp){
+void FightElement::render(int x, int y, const Bitmap & bmp){
     switch (type){
 	case IS_ACTION:
-	    action->render(effects.facing,effects.vfacing,xaxis,yaxis,bmp,effects.scalex,effects.scaley);
+	    action->render(effects.facing, effects.vfacing, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
 	    break;
 	case IS_SPRITE:
-	    sprite->render(xaxis,yaxis,bmp,effects);
-	    //sprite->render(facing,vfacing,xaxis,yaxis,bmp,scalex,scaley);
+	    sprite->render(x + offset.x, y + offset.y, bmp,effects);
 	    break;
 	case IS_FONT:
 	    break;
+        case IS_SOUND:
 	case IS_NOTSET:
 	default:
 	    // nothing
@@ -76,25 +82,31 @@ void Element::render(const int xaxis, const int yaxis, Bitmap &bmp){
     }
 }
 
-void Element::setAction(MugenAnimation *anim){
+void FightElement::setAction(MugenAnimation *anim){
     if (anim){
 	setType(IS_ACTION);
 	action = anim;
     }
 }
-void Element::setSprite(MugenSprite *spr){
+void FightElement::setSprite(MugenSprite *spr){
     if (spr){
 	setType(IS_SPRITE);
 	sprite = spr;
     }
 }
-void Element::setFont(MugenFont *fnt){
+void FightElement::setFont(MugenFont *fnt){
     if (fnt){
 	setType(IS_FONT);
 	font = fnt;
     }
 }
-*/
+
+void FightElement::setSound(MugenSound * sound){
+    if (sound){
+        setType(IS_SOUND);
+        this->sound = sound;
+    }
+}
 
 static void interpolateRange(FightElement * element, int max, int current, const Mugen::Point & position, const Mugen::Point & range, const Bitmap & bmp){
     if (range.y > 0){
@@ -109,15 +121,27 @@ static void interpolateRange(FightElement * element, int max, int current, const
 } 
 
 Bar::Bar():
-back0(0),
-back1(0),
-middle(0),
-front(0),
+back0(new FightElement()),
+back1(new FightElement()),
+middle(new FightElement()),
+front(new FightElement()),
 maxHealth(0),
 currentHealth(0),
 damage(0){
 }
 Bar::~Bar(){
+    if (back0){
+        delete back0;
+    }
+    if (back1){
+        delete back1;
+    }
+    if (middle){
+        delete middle;
+    }
+    if (front){
+        delete front;
+    }
 }
 void Bar::act(const Mugen::Character & character){
     maxHealth = character.getMaxHealth();
@@ -262,25 +286,86 @@ void Name::setFont(Element *e){
     font = e;
 }
 
-PlayerInfo::PlayerInfo():
-lifeBar(0),
-powerBar(0),
-face(0),
-name(0){}
-PlayerInfo::~PlayerInfo(){}
-void PlayerInfo::setLifeBar(Bar *b){
-    lifeBar = b;
-}
-void PlayerInfo::setPowerbar(Bar *b){
-    powerBar = b;
-}
-void PlayerInfo::setFace(Face *f){
-    face = f;
-}
-void PlayerInfo::setName(Name *n){
-    name = n;
-}
+PlayerInfo::PlayerInfo(const std::string & fightFile):
+player1LifeBar(new Bar()),
+player2LifeBar(new Bar()),
+player1PowerBar(0),
+player2PowerBar(0),
+player1Face(0),
+player2Face(0),
+player1Name(0),
+player2Name(0){
     
+    std::string baseDir = Mugen::Util::getFileDir(fightFile);
+    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(fightFile) );
+    
+    if( ourDefFile.empty() )throw MugenException( "Cannot locate fight definition file for: " + fightFile );
+    
+    TimeDifference diff;
+    diff.startTime();
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
+    
+    std::string spriteFile; 
+
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        
+        if (head == "files"){
+            class FileWalk: public Ast::Walker{
+            public:
+                FileWalk(std::string & spriteFile):
+                spriteFile(spriteFile){
+                }
+                std::string & spriteFile;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "sff"){
+                        simple >> spriteFile;
+                    } 
+                }
+            };
+
+            FileWalk walk(spriteFile);
+            section->walk(walk);
+        } else if (head == "lifebar"){
+            class BarWalk: public Ast::Walker{
+            public:
+                BarWalk(PlayerInfo & self):
+                self(self){
+                }
+                PlayerInfo & self;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "p1.pos"){
+                    } 
+                }
+            };
+
+            BarWalk walk(*this);
+            section->walk(walk);
+        }
+    }
+}
+
+PlayerInfo::~PlayerInfo(){
+    if (player1LifeBar){
+        delete player1LifeBar;
+    }
+    if (player2LifeBar){
+        delete player2LifeBar;
+    }
+}
+
+void PlayerInfo::act(const Mugen::Character & player1, const Mugen::Character & player2){
+    player1LifeBar->act(player1);
+    player2LifeBar->act(player2);
+}
+
+void PlayerInfo::render(){
+}
+
+
 CharacterHUD::CharacterHUD( const std::string & s ):
 location(s){
 }

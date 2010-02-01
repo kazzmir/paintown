@@ -10,6 +10,7 @@ class Bitmap;
 class MugenSprite;
 class MugenAnimation;
 class MugenFont;
+class MugenSound;
 
 namespace Mugen{
 
@@ -53,6 +54,7 @@ class Component {
 	std::vector<Element *> elements;
 };
 
+/*! *TODO implement display time and ticker */
 class FightElement : public Element{
     public:
 	FightElement();
@@ -73,6 +75,7 @@ class FightElement : public Element{
 	virtual void setAction(MugenAnimation *);
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *);
+        virtual void setSound(MugenSound *);
 	virtual inline void setOffset(int x, int y){ 
             offset = Mugen::Point(x,y); 
         }
@@ -97,6 +100,7 @@ class FightElement : public Element{
 	MugenAnimation *action;
 	MugenSprite *sprite;
 	MugenFont *font;
+        MugenSound *sound;
 	Mugen::Point offset;
 	int displaytime;
 	Effects effects;
@@ -123,17 +127,29 @@ class Bar{
 	    this->range.y = y;
 	}
 	
-	virtual void setBack0(FightElement * element){
+	virtual inline void setBack0(FightElement * element){
             this->back0 = element;
         }
-        virtual void setBack1(FightElement * element){
+        virtual inline FightElement * getBack0(){
+            return this->back0;
+        }
+        virtual inline void setBack1(FightElement * element){
             this->back1 = element;
         }
-        virtual void setMiddle(FightElement * element){
+        virtual inline FightElement * getBack1(){
+            return this->back1;
+        }
+        virtual inline void setMiddle(FightElement * element){
             this->middle = element;
         }
-        virtual void setFront(FightElement * element){
+        virtual inline FightElement * getMiddle(){
+            return this->middle;
+        }
+        virtual inline void setFront(FightElement * element){
             this->front = element;
+        }
+        virtual inline FightElement * getFront(){
+            return this->front;
         }
 	
     private:
@@ -201,22 +217,24 @@ class Name{
 	Element *font;
 };
 
-/*! HUD collection for character data */
+/*! Player HUD *TODO Need to compensate for team stuff later */
 class PlayerInfo{
     public:
-	PlayerInfo();
+	PlayerInfo(const std::string & fightFile);
 	virtual ~PlayerInfo();
-	
-	virtual void setLifeBar(Bar *);
-	virtual void setPowerbar(Bar *);
-	virtual void setFace(Face *);
-	virtual void setName(Name *);
+
+        virtual void act(const Mugen::Character & player1, const Mugen::Character & player2);
+        virtual void render();
     
     private:
-	Bar *lifeBar;
-	Bar *powerBar;
-	Face *face;
-	Name *name;
+	Bar *player1LifeBar;
+        Bar *player2LifeBar;
+	Bar *player1PowerBar;
+        Bar *player2PowerBar;
+	Face *player1Face;
+        Face *player2Face;
+	Name *player1Name;
+        Name *player2Name;
 	
 };
 
