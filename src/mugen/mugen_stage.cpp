@@ -751,12 +751,22 @@ void MugenStage::physics(Object * player){
                 /* TODO: make this cleaner */
                 while (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
                     if (enemy->getX() < player->getX()){
-                        /* FIXME! */
-                        enemy->moveLeft(0.5);
+                        if (enemy->getX() <= leftbound){
+                            /* FIXME */
+                            player->moveRight(0.5);
+                        } else {
+                            /* FIXME! */
+                            enemy->moveLeft(0.5);
+                        }
                         // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
                     } else if (enemy->getX() > player->getX()){
-                        /* FIXME! */
-                        enemy->moveRight(0.5);
+                        if (enemy->getX() >= rightbound){
+                            /* FIXME */
+                            player->moveLeft(0.5);
+                        } else {
+                            /* FIXME! */
+                            enemy->moveRight(0.5);
+                        }
                         // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
                     }
                 }

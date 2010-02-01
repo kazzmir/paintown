@@ -132,7 +132,7 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 	story.run(bmp);
     }
     bool quit = false;
-    while(!quit){
+    while (!quit){
 	select.renderVersusScreen(bmp);
 	select.getPlayer1()->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
 	MugenStage *stage = select.getStage();
