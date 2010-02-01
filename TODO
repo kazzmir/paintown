@@ -61,8 +61,8 @@ DONE * make "Loading Paintown" text configurable
 mugen
 -----
 * mugen sound system
-  - turn MugenSound objects collected from .snd file into something useable 
-    within paintown's sound system 
+  - Handle oggs and digi files (ignore mp3 for now)
+  - Sounds are loadable now and play fine. Make MugenSound implement paintown's interface instead of wrapping it.
 * mugen main system
   - load in menus
     Select Screens:
