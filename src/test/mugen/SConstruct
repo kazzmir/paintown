@@ -49,6 +49,7 @@ test/util/tokenreader.cpp
 test/util/token_exception.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
+test/windows/system.cpp
 """)
 
 stage_source = Split("""
@@ -97,6 +98,7 @@ test/world.cpp
 test/game/console.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
+test/windows/system.cpp
 """)
 
 x = []
