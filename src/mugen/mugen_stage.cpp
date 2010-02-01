@@ -751,7 +751,7 @@ void MugenStage::physics(Object * player){
                 /* TODO: make this cleaner */
                 while (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
                     if (enemy->getX() < player->getX()){
-                        if (enemy->getX() <= leftbound){
+                        if (enemy->getX() <= maximumLeft()){
                             /* FIXME */
                             player->moveRight(0.5);
                         } else {
@@ -760,7 +760,7 @@ void MugenStage::physics(Object * player){
                         }
                         // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
                     } else if (enemy->getX() > player->getX()){
-                        if (enemy->getX() >= rightbound){
+                        if (enemy->getX() >= maximumRight()){
                             /* FIXME */
                             player->moveLeft(0.5);
                         } else {
@@ -768,6 +768,12 @@ void MugenStage::physics(Object * player){
                             enemy->moveRight(0.5);
                         }
                         // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
+                    } else if (enemy->getX() == player->getX()){
+                        if (enemy->getX() >= maximumRight()){
+                            player->moveLeft(0.5);
+                        } else {
+                            player->moveRight(0.5);
+                        }
                     }
                 }
                 // autoturn need to do turning actions
@@ -1265,6 +1271,13 @@ bool MugenStage::isaPlayer( Object * o ){
     return false;
 }
 
+int MugenStage::maximumRight() const {
+    return camerax + DEFAULT_WIDTH / 2;
+}
+
+int MugenStage::maximumLeft() const {
+    return camerax - DEFAULT_WIDTH / 2;
+}
 
 void MugenStage::updatePlayer(Object * player){
     // Z/Y offset
@@ -1274,8 +1287,13 @@ void MugenStage::updatePlayer(Object * player){
     const double px = player->getX();
     const double py = player->getY();
     const double pdiffx = px - playerInfo[player].oldx;
+    /*
     const double screenLeft = camerax - DEFAULT_WIDTH / 2;
     const double screenRight = camerax + DEFAULT_WIDTH / 2;
+    */
+    const double screenLeft = maximumLeft();
+    const double screenRight = maximumRight();
+
     /*
     const double screenLeft = abs(boundleft) + camerax;
     const double screenRight = abs(boundleft) + camerax + DEFAULT_WIDTH;

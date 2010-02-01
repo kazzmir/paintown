@@ -158,6 +158,9 @@ protected:
     void physics(Object * o);
     bool doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2);
 
+    int maximumRight() const;
+    int maximumLeft() const;
+
 protected:
 
     void addSpark(int x, int y, int sparkNumber);
