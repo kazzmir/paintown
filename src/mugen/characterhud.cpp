@@ -96,31 +96,89 @@ void Element::setFont(MugenFont *fnt){
 }
 */
 
+static void interpolateRange(FightElement * element, int max, int current, const Mugen::Point & position, const Mugen::Point & range, const Bitmap & bmp){
+    if (range.y > 0){
+        for (int i = range.x; i < range.y; ++i){
+            element->render(position.x + i, position.y, bmp);
+        }
+    } else {
+        for (int i = range.x; i > range.y; --i){
+            element->render(position.x + i, position.y, bmp);
+        }
+    }
+} 
+
 Bar::Bar():
 back0(0),
 back1(0),
 middle(0),
 front(0),
+maxHealth(0),
+currentHealth(0),
 damage(0){
 }
 Bar::~Bar(){
 }
 void Bar::act(const Mugen::Character & character){
+    maxHealth = character.getMaxHealth();
+    currentHealth = character.getHealth();
     // Update damage counter if char has been damaged
     if (character.hasControl()){
-        if (damage > 0){
+        if (damage > currentHealth){
             damage--;
+        } else {
+            damage = currentHealth;
         }
     }
 }
-void Bar::render(Element::Layer layer, int x, int y, const Bitmap & bmp){
+void Bar::render(Element::Layer layer, const Bitmap & bmp){
     switch (layer){
 	default:
 	case Element::Background:
+            // Background is full range
+            if (back0 && back0->getLayer() == Element::Background){
+                interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
+            }
+            // This is a container just render it normally 
+            if (back1 && back1->getLayer() == Element::Background){
+                back1->render(position.x, position.y, bmp);
+            }
+            // Middle is the damage indicator
+            if (middle && middle->getLayer() == Element::Background){
+                interpolateRange( middle, maxHealth, damage, position, range, bmp);
+            }
+            // Front is the actual current health
+            if (front && front->getLayer() == Element::Background){
+                interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
+            }
 	    break;
 	case Element::Foreground:
+            if (back0 && back0->getLayer() == Element::Foreground){
+                interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
+            }
+            if (back1 && back1->getLayer() == Element::Foreground){
+                back1->render(position.x, position.y, bmp);
+            }
+            if (middle && middle->getLayer() == Element::Foreground){
+                interpolateRange( middle, maxHealth, damage, position, range, bmp);
+            }
+            if (front && front->getLayer() == Element::Foreground){
+                interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
+            }
 	    break;
 	case Element::Top:
+            if (back0 && back0->getLayer() == Element::Top){
+                interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
+            }
+            if (back1 && back1->getLayer() == Element::Top){
+                back1->render(position.x, position.y, bmp);
+            }
+            if (middle && middle->getLayer() == Element::Top){
+                interpolateRange( middle, maxHealth, damage, position, range, bmp);
+            }
+            if (front && front->getLayer() == Element::Top){
+                interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
+            }
 	    break;
     }
 }

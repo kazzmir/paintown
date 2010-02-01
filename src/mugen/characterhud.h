@@ -111,7 +111,7 @@ class Bar{
 	virtual ~Bar();
 	
 	virtual void act(const Character &);
-	virtual void render(Element::Layer layer, int x, int y, const Bitmap &);
+	virtual void render(Element::Layer layer, const Bitmap &);
 	
 	virtual inline void setPosition(int x, int y){
 	    this->position.x = x;
