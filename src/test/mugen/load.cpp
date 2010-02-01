@@ -4,6 +4,7 @@
 #include "util/file-system.h"
 #include "mugen/character.h"
 #include "mugen/mugen_exception.h"
+#include "util/timedifference.h"
 
 using namespace std;
 
@@ -14,9 +15,12 @@ int main(int argc, char ** argv){
 
     // for (int i = 0; i < 3; i++){
         try{
+            TimeDifference diff;
+            diff.startTime();
             Mugen::Character kfm(Filesystem::find("mugen/chars/kfm/kfm.def"));
             kfm.load();
-            Global::debug(0, "test") << "Success" << endl;
+            diff.endTime();
+            Global::debug(0, "test") << "Success! Took " << diff.printTime() << endl;
         } catch (const MugenException & e){
             Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
         }
