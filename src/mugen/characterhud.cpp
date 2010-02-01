@@ -95,105 +95,30 @@ void Element::setFont(MugenFont *fnt){
 }
 */
 
-Bar::Bar(const int x, const int y):
-back0(0),
-back1(0),
-back2(0),
-middle(0),
-front(0),
-counter(0),
-sound(0){
+Bar::Bar(){
+}
+Bar::Bar(const Bar & copy){
 }
 Bar::~Bar(){
-    if (back0){
-	delete back0;
-    }
-    if (back1){
-	delete back1;
-    }
-    if (back2){
-	delete back2;
-    }
-    if (middle){
-	delete middle;
-    }
-    if (front){
-	delete front;
-    }
-    if (counter){
-	delete counter;
-    }
-    if (sound){
-	delete sound;
-    }
 }
-void Bar::setBack0(Element *e){
-    back0 = e;
+const Bar & Bar::operator=(const Bar & copy){
 }
-void Bar::setBack1(Element *e){
-    back1 = e;
+void Bar::addElement(FightElement * element){
 }
-void Bar::setBack2(Element *e){
-    back2 = e;
-}
-void Bar::setMiddle(Element *e){
-    middle = e;
-}
-void Bar::setFront(Element *e){
-    front = e;
-}
-void Bar::setCounter(Element *e){
-    counter = e;
-}
-void Bar::setSound(Element *e){
-    sound = e;
-}
+
 void Bar::act(){
-    if (back0){
-	back0->act();
-    }
-    if (back1){
-	back1->act();
-    }
-    if (back2){
-	back2->act();
-    }
-    if (middle){
-	middle->act();
-    }
-    if (front){
-	front->act();
-    }
-    if (counter){
-	counter->act();
-    }
-    if (sound){
-	sound->act();
-    }
+    
 }
-void Bar::render(int x, int y, Bitmap & bmp){
-    /*if (back0){
-	back0->render(xaxis,yaxis,bmp);
+void Bar::render(Element::Layer layer, int x, int y, Bitmap & bmp){
+    switch (layer){
+	default:
+	case Element::Background:
+	    break;
+	case Element::Foreground:
+	    break;
+	case Element::Top:
+	    break;
     }
-    if (back1){
-	back1->render(xaxis,yaxis,bmp);
-    }
-    if (back2){
-	back2->render(xaxis,yaxis,bmp);
-    }
-    if (middle){
-	middle->render(xaxis,yaxis,bmp);
-    }
-    if (front){
-	front->render(xaxis,yaxis,bmp);
-    }
-    if (counter){
-	counter->render(xaxis,yaxis,bmp);
-    }
-    if (sound){
-	//sound->render(xaxis,yaxis,bmp);
-    }
-    */
 }
 
 

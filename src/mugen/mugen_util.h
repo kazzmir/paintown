@@ -200,7 +200,8 @@ class Element {
 	
 	enum Layer {
 	    Background,
-	    Foreground
+	    Foreground,
+	    Top
 	};
 	
 	virtual inline void setID(int id){

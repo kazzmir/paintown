@@ -12,6 +12,44 @@ class MugenAnimation;
 class MugenFont;
 
 namespace Mugen{
+    
+class Component {
+    public:
+	Component();
+	virtual ~Component();
+	
+	virtual void act();
+	
+	virtual void render(int x, int y, const Bitmap &);
+	
+	virtual inline void setName(const std::string &name){
+	    this->name = name;
+	}
+	
+	virtual inline const std::string & getName() const {
+	    return this->name;
+	}
+	
+	virtual inline void setPosition(const Mugen::Point &point){
+	    this->position = point;
+	}
+	
+	virtual inline const Mugen::Point & getPosition() const {
+	    return this->position;
+	}
+	
+	virtual inline void addElement(Element * element){
+	    this->elements.push_back(element);
+	}
+
+    private:
+	//! Name of component
+	std::string name;
+	//! Position of component
+	Mugen::Point position;
+	//! List of elements
+	std::vector<Element *> elements;
+};
 
 class FightElement : public Element{
     public:
@@ -33,13 +71,13 @@ class FightElement : public Element{
 	virtual void setAction(MugenAnimation *);
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *);
-	virtual inline void setOffset(const int x, const int y) { offset = Mugen::Point(x,y); }
-	virtual inline void setRange(const int x, const int y) { range = Mugen::Point(x,y); }
-	virtual inline void setDisplayTime(const int t) { displaytime = t; }
-	virtual inline void setFacing(const int f) { effects.facing = f; }
-	virtual inline void setVFacing(const int f) { effects.vfacing = f; }
-	virtual inline void setLayer(const int i) { layerno = i; }
-	virtual inline void setScale(const double x, const double y) { effects.scalex = x, effects.scaley = y; }
+	virtual inline void setOffset(int x, int y) { offset = Mugen::Point(x,y); }
+	virtual inline void setRange(int x, int y) { range = Mugen::Point(x,y); }
+	virtual inline void setDisplayTime(int t) { displaytime = t; }
+	virtual inline void setFacing(int f) { effects.facing = f; }
+	virtual inline void setVFacing(int f) { effects.vfacing = f; }
+	virtual inline void setLayer(Element::Layer layer) { layerno = layer; }
+	virtual inline void setScale(double x, double y) { effects.scalex = x, effects.scaley = y; }
 	virtual inline void setText(const std::string &t) { text = t; }
 	
 	virtual inline int getLayer() { return layerno; }
@@ -53,36 +91,43 @@ class FightElement : public Element{
 	Mugen::Point range;
 	int displaytime;
 	Effects effects;
-	int layerno;
+	Layer layerno;
 	std::string text;
 };
 
 class Bar{
     public:
 	Bar();
-	Bar(const int x, const int y);
+	Bar(const Bar &);
 	virtual ~Bar();
 	
-	virtual void setBack0(Element *);
-	virtual void setBack1(Element *);
-	virtual void setBack2(Element *);
-	virtual void setMiddle(Element *);
-	virtual void setFront(Element *);
-	virtual void setCounter(Element *);
-	virtual void setSound(Element *);
-	
 	virtual void act();
-	virtual void render(const int xaxis, const int yaxis, Bitmap &);
+	virtual void render(Element::Layer layer, int x, int y, Bitmap &);
+	
+	virtual const Bar & operator=(const Bar &);
+	
+	virtual inline void setPosition(int x, int y){
+	    this->position.x = x;
+	    this->position.y = y;
+	}
+	
+	virtual inline void setRange(int x, int y){
+	    this->range.x = x;
+	    this->range.y = y;
+	}
+	
+	virtual void addElement(FightElement * element);
 	
     private:
 	Mugen::Point position;
-	Element *back0;
-	Element *back1;
-	Element *back2;
-	Element *middle;
-	Element *front;
-	Element *counter;
-	Element *sound;
+	
+	std::vector<FightElement *> layer0;
+	
+	std::vector<FightElement *> layer1;
+	
+	std::vector<FightElement *> layer2;
+	
+	Mugen::Point range;
 };
 
 class Face{
