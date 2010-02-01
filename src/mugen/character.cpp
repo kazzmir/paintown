@@ -1420,6 +1420,7 @@ void Character::loadCnsFile(const string & path){
                         } else if (simple == "life"){
                             int x;
                             simple >> x;
+                            self.setMaxHealth(x);
                             self.setHealth(x);
                         }
                     }
