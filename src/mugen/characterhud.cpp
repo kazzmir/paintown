@@ -286,8 +286,8 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
-        
-        if (head == "files"){
+        Global::debug(1) << "Trying head: " << head << endl;
+        if (head == "Files"){
             class FileWalk: public Ast::Walker{
             public:
                 FileWalk(std::string & baseDir, PlayerInfo & self):
@@ -318,7 +318,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
             // Get animations so we can set up the lifebars
             parseAnimations(parsed);
 
-        } else if (head == "lifebar"){
+        } else if (head == "Lifebar"){
             class BarWalk: public Ast::Walker{
             public:
                 BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations):
@@ -490,6 +490,7 @@ void PlayerInfo::parseAnimations(Ast::AstParse & parsed){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
+        head = Util::fixCase(head);
         if (PaintownUtil::matchRegex(head, "begin *action")){
             /* This creates the animations. It differs from character animation since
              * these are included in the stage.def file with the other defaults

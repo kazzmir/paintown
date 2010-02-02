@@ -612,7 +612,11 @@ void MugenStage::load(){
     console->setTextWidth(10); 
     
     // *FIXME Use current motif instead of direct file access
-    playerHUD = new Mugen::PlayerInfo(Filesystem::find("mugen/data/fight.def"));
+    try{
+        playerHUD = new Mugen::PlayerInfo(Filesystem::find("mugen/data/fight.def"));
+    } catch (const MugenException &e){
+        Global::debug(0) << "Problem loading HUD. Reason: " << e.getReason() << endl;
+    }
 
     // Stage is loaded
     loaded = true;
