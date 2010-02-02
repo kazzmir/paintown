@@ -314,53 +314,166 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 
             FileWalk walk(baseDir, *this);
             section->walk(walk);
+            
+            // Get animations so we can set up the lifebars
+            parseAnimations(parsed);
+
         } else if (head == "lifebar"){
             class BarWalk: public Ast::Walker{
             public:
-                BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites):
+                BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations):
                 self(self),
-		sprites(sprites){
+		sprites(sprites),
+                animations(animations){
                 }
                 PlayerInfo & self;
 		Mugen::SpriteMap & sprites;
+                std::map<int,MugenAnimation *> & animations;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		    if (simple == "p1.pos"){
+		    Global::debug(0) << "Trying simple: " << simple.toString() << endl;
+                    if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                        getBar(simple,"p1",self.player1LifeBar);
+                    } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                        getBar(simple,"p2",self.player2LifeBar);
+                    }
+                }
+                void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
+                    Global::debug(0) << "Trying simple: " << simple.toString() << endl;
+                    if (simple == component + ".pos"){
 			int x=0, y=0;
 			try{
 			    simple >> x >> y;
 			} catch (const Ast::Exception & e){
 			}
-			self.player1LifeBar.setPosition(x,y);
-                    } else if (simple == "p1.bg0.spr"){
+			bar.setPosition(x,y);
+                    } else if (simple == component + ".bg0.spr"){
 			int g=0, s=0;
 			try{
 			    simple >> g >> s;
 			} catch (const Ast::Exception & e){
 			}
-			self.player1LifeBar.getBack0().setSprite(sprites[g][s]);
-		    } else if (simple == "p1.bg0.anim"){
-		    } else if (simple == "p1.bg0.facing"){
-		    } else if (simple == "p1.bg1.spr"){
-		    } else if (simple == "p1.bg1.anim"){
-		    } else if (simple == "p1.bg1.facing"){
-		    } else if (simple == "p1.mid.spr"){
-		    } else if (simple == "p1.mid.anim"){
-		    } else if (simple == "p1.mid.facing"){
-		    } else if (simple == "p1.front.spr"){
-		    } else if (simple == "p1.front.anim"){
-		    } else if (simple == "p1.front.facing"){
-		    } else if (simple == "p1.range.x"){
+			bar.getBack0().setSprite(sprites[g][s]);
+		    } else if (simple == component + ".bg0.anim"){
+                        int anim;
+                        simple >> anim;
+                        bar.getBack0().setAction(animations[anim]);
+		    } else if (simple == component + ".bg0.facing"){
+                        int face;
+                        simple >> face;
+                        bar.getBack0().setFacing(face);
+		    } else if (simple == component + ".bg0.layerno"){
+                        int layer = 0;
+                        simple >> layer;
+                        if (layer == 0){
+                            bar.getBack0().setLayer(Element::Background);
+                        } else if (layer == 1){
+                            bar.getBack0().setLayer(Element::Foreground);
+                        } else if (layer == 2){
+                            bar.getBack0().setLayer(Element::Top);
+                        }
+		    } else if (simple == component + ".bg1.spr"){
+			int g=0, s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			bar.getBack1().setSprite(sprites[g][s]);
+		    } else if (simple == component + ".bg1.anim"){
+                        int anim;
+                        simple >> anim;
+                        bar.getBack1().setAction(animations[anim]);
+		    } else if (simple == component + ".bg1.facing"){
+                        int face;
+                        simple >> face;
+                        bar.getBack1().setFacing(face);
+		    } else if (simple == component + ".bg1.layerno"){
+                        int layer = 0;
+                        simple >> layer;
+                        if (layer == 0){
+                            bar.getBack1().setLayer(Element::Background);
+                        } else if (layer == 1){
+                            bar.getBack1().setLayer(Element::Foreground);
+                        } else if (layer == 2){
+                            bar.getBack1().setLayer(Element::Top);
+                        }
+		    } else if (simple == component + ".mid.spr"){
+                        int g=0, s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			bar.getMiddle().setSprite(sprites[g][s]);
+		    } else if (simple == component + ".mid.anim"){
+                        int anim;
+                        simple >> anim;
+                        bar.getMiddle().setAction(animations[anim]);
+		    } else if (simple == component + ".mid.facing"){
+                        int face;
+                        simple >> face;
+                        bar.getMiddle().setFacing(face);
+		    } else if (simple == component + ".mid.layerno"){
+                        int layer = 0;
+                        simple >> layer;
+                        if (layer == 0){
+                            bar.getMiddle().setLayer(Element::Background);
+                        } else if (layer == 1){
+                            bar.getMiddle().setLayer(Element::Foreground);
+                        } else if (layer == 2){
+                            bar.getMiddle().setLayer(Element::Top);
+                        }
+		    } else if (simple == component + ".front.spr"){
+                        int g=0, s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			bar.getFront().setSprite(sprites[g][s]);
+		    } else if (simple == component + ".front.anim"){
+                        int anim;
+                        simple >> anim;
+                        bar.getFront().setAction(animations[anim]);
+		    } else if (simple == component + ".front.facing"){
+                        int face;
+                        simple >> face;
+                        bar.getFront().setFacing(face);
+		    } else if (simple == component + ".front.layerno"){
+                        int layer = 0;
+                        simple >> layer;
+                        if (layer == 0){
+                            bar.getFront().setLayer(Element::Background);
+                        } else if (layer == 1){
+                            bar.getFront().setLayer(Element::Foreground);
+                        } else if (layer == 2){
+                            bar.getFront().setLayer(Element::Top);
+                        }
+		    } else if (simple == component + ".range.x"){
+                        int x=0,y=0;
+                        try{
+                            simple >> x >> y;
+                        } catch (const Ast::Exception & e){
+                        }
+                        bar.setRange(x,y);
 		    }
                 }
             };
 
-            BarWalk walk(*this,sprites);
+            BarWalk walk(*this,sprites,animations);
             section->walk(walk);
         }
     }
 }
 
 PlayerInfo::~PlayerInfo(){
+    // Get rid of sprites
+    for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+	for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	    if( j->second )delete j->second;
+	}
+    }
+     // Get rid of animation lists;
+    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+	if( i->second )delete i->second;
+    }
 }
 
 void PlayerInfo::act(const Mugen::Character & player1, const Mugen::Character & player2){
@@ -368,7 +481,26 @@ void PlayerInfo::act(const Mugen::Character & player1, const Mugen::Character & 
     player2LifeBar.act(player2);
 }
 
-void PlayerInfo::render(){
+void PlayerInfo::render(Element::Layer layer, const Bitmap &bmp){
+    player1LifeBar.render(layer,bmp);
+    player2LifeBar.render(layer,bmp);
+}
+
+void PlayerInfo::parseAnimations(Ast::AstParse & parsed){
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+	std::string head = section->getName();
+        if (PaintownUtil::matchRegex(head, "begin *action")){
+            /* This creates the animations. It differs from character animation since
+             * these are included in the stage.def file with the other defaults
+             */
+	    head.replace(0,13,"");
+	    int h;
+            istringstream out(head);
+	    out >> h;
+	    animations[h] = Mugen::Util::getAnimation(section, sprites);
+	} 
+    }
 }
 
 

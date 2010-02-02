@@ -2,6 +2,7 @@
 #define _mugen_character_hud_h
 
 #include <string>
+#include <map>
 
 #include "mugen/mugen_util.h"
 #include "mugen/mugen_exception.h"
@@ -12,47 +13,13 @@ class MugenAnimation;
 class MugenFont;
 class MugenSound;
 
+namespace Ast{
+    class AstParse;
+}
+
 namespace Mugen{
 
 class Character;
-    
-class Component {
-    public:
-	Component();
-	virtual ~Component();
-	
-	virtual void act();
-	
-	virtual void render(int x, int y, const Bitmap &);
-	
-	virtual inline void setName(const std::string &name){
-	    this->name = name;
-	}
-	
-	virtual inline const std::string & getName() const {
-	    return this->name;
-	}
-	
-	virtual inline void setPosition(const Mugen::Point &point){
-	    this->position = point;
-	}
-	
-	virtual inline const Mugen::Point & getPosition() const {
-	    return this->position;
-	}
-	
-	virtual inline void addElement(Element * element){
-	    this->elements.push_back(element);
-	}
-
-    private:
-	//! Name of component
-	std::string name;
-	//! Position of component
-	Mugen::Point position;
-	//! List of elements
-	std::vector<Element *> elements;
-};
 
 /*! *TODO implement display time and ticker */
 class FightElement : public Element{
@@ -212,9 +179,12 @@ class PlayerInfo{
 	virtual ~PlayerInfo();
 
         virtual void act(const Mugen::Character & player1, const Mugen::Character & player2);
-        virtual void render();
+        virtual void render(Element::Layer layer, const Bitmap &);
     
     private:
+        
+        void parseAnimations(Ast::AstParse & parsed);
+
 	Bar player1LifeBar;
         Bar player2LifeBar;
 	Bar player1PowerBar;
@@ -225,6 +195,7 @@ class PlayerInfo{
         Name player2Name;
 	
 	Mugen::SpriteMap sprites;
+        std::map<int, MugenAnimation *> animations;
 };
 
 /*! Character HUD ... lifebar, face, etc */

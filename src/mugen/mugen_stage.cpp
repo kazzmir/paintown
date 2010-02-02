@@ -39,6 +39,8 @@
 #include "mugen_sprite.h"
 #include "mugen_util.h"
 
+#include "mugen/characterhud.h"
+
 using namespace std;
 
 // Some static variables
@@ -178,8 +180,9 @@ inright(0),
 onLeftSide(0),
 onRightSide(0),
 inabove(0),
-loaded(false){
-    //initializeName();
+loaded(false),
+// *FIXME Use current motif instead of direct file access
+playerHUD(new Mugen::PlayerInfo("data/mugen/data/fight.def")){
 }
 
 MugenStage::MugenStage( const char * location ):
@@ -248,12 +251,16 @@ inright(0),
 onLeftSide(0),
 onRightSide(0),
 inabove(0),
-loaded(false){
-    //initializeName();
+loaded(false),
+// *FIXME Use current motif instead of direct file access
+playerHUD(new Mugen::PlayerInfo("data/mugen/data/fight.def")){
 }
 
 MugenStage::~MugenStage(){
     cleanup();
+    if (playerHUD){
+        delete playerHUD;
+    }
 }
 
 /* fix */
@@ -920,6 +927,9 @@ void MugenStage::logic( ){
     *console << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY() << cend;
     *console << "Frames: " << getTicks() << cend;
     console->act();
+
+    // Player HUD Need to make this more ellegant than casting and passing from array
+    playerHUD->act(*((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 }
 	
 void MugenStage::render(Bitmap *work){
@@ -928,6 +938,9 @@ void MugenStage::render(Bitmap *work){
     // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     // background->renderBackground(camerax, cameray, xaxis, yaxis, board);
     background->renderBackground((int) camerax, (int) cameray, *board);
+
+    //! Render layer 0 HUD
+    playerHUD->render(Mugen::Element::Background, *board);
     
     // Players go in here
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
@@ -950,10 +963,16 @@ void MugenStage::render(Bitmap *work){
         spark->draw(*board, camerax - DEFAULT_WIDTH / 2, cameray);
     }
 
+    //! Render layer 1 HUD
+    playerHUD->render(Mugen::Element::Foreground, *board);
+
     // Foreground
     // background->renderForeground( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     background->renderForeground((int) camerax, (int) cameray, *board);
     
+    //! Render layer 2 HUD
+    playerHUD->render(Mugen::Element::Top, *board);
+
     // Player debug
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	if (isaPlayer(*it)){
