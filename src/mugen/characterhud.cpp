@@ -67,12 +67,36 @@ void FightElement::act(){
 void FightElement::render(int x, int y, const Bitmap & bmp){
     switch (type){
 	case IS_ACTION:
-	    action->render(effects.facing, effects.vfacing, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
+            action->render(effects.facing, effects.vfacing, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
+            break;
+	case IS_SPRITE:
+            sprite->render(x + offset.x, y + offset.y, bmp,effects);
+            break;
+	case IS_FONT:
+            break;
+        case IS_SOUND:
+	case IS_NOTSET:
+	default:
+	    // nothing
+	    break;
+    }
+}
+
+void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp){
+    switch (type){
+	case IS_ACTION:
+            if (layer == getLayer()){
+	        action->render(effects.facing, effects.vfacing, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
+            }
 	    break;
 	case IS_SPRITE:
-	    sprite->render(x + offset.x, y + offset.y, bmp,effects);
+            if (layer == getLayer()){
+	        sprite->render(x + offset.x, y + offset.y, bmp,effects);
+            }
 	    break;
 	case IS_FONT:
+            if (layer == getLayer()){
+            }
 	    break;
         case IS_SOUND:
 	case IS_NOTSET:
@@ -108,7 +132,10 @@ void FightElement::setSound(MugenSound * sound){
     }
 }
 
-static void interpolateRange(FightElement & element, int max, int current, const Mugen::Point & position, const Mugen::Point & range, const Bitmap & bmp){
+static void interpolateRange(const Element::Layer & layer, FightElement & element, int max, int current, const Mugen::Point & position, const Mugen::Point & range, const Bitmap & bmp){
+    if (layer != element.getLayer()){
+        return;
+    }
     if (range.y > 0){
         for (int i = range.x; i < range.y; ++i){
             element.render(position.x + i, position.y, bmp);
@@ -127,7 +154,7 @@ damage(0){
 }
 Bar::~Bar(){
 }
-void Bar::act(const Mugen::Character & character){
+void Bar::act(Mugen::Character & character){
     maxHealth = character.getMaxHealth();
     currentHealth = character.getHealth();
     // Update damage counter if char has been damaged
@@ -140,134 +167,37 @@ void Bar::act(const Mugen::Character & character){
     }
 }
 void Bar::render(Element::Layer layer, const Bitmap & bmp){
-    switch (layer){
-	default:
-	case Element::Background:
-            // Background is full range
-            if (back0.getLayer() == Element::Background){
-                interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
-            }
-            // This is a container just render it normally 
-            if (back1.getLayer() == Element::Background){
-                back1.render(position.x, position.y, bmp);
-            }
-            // Middle is the damage indicator
-            if (middle.getLayer() == Element::Background){
-                interpolateRange( middle, maxHealth, damage, position, range, bmp);
-            }
-            // Front is the actual current health
-            if (front.getLayer() == Element::Background){
-                interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
-            }
-	    break;
-	case Element::Foreground:
-            if (back0.getLayer() == Element::Foreground){
-                interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
-            }
-            if (back1.getLayer() == Element::Foreground){
-                back1.render(position.x, position.y, bmp);
-            }
-            if (middle.getLayer() == Element::Foreground){
-                interpolateRange( middle, maxHealth, damage, position, range, bmp);
-            }
-            if (front.getLayer() == Element::Foreground){
-                interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
-            }
-	    break;
-	case Element::Top:
-            if (back0.getLayer() == Element::Top){
-                interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
-            }
-            if (back1.getLayer() == Element::Top){
-                back1.render(position.x, position.y, bmp);
-            }
-            if (middle.getLayer() == Element::Top){
-                interpolateRange( middle, maxHealth, damage, position, range, bmp);
-            }
-            if (front.getLayer() == Element::Top){
-                interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
-            }
-	    break;
-    }
+    // Background is full range
+    interpolateRange(layer, back0, maxHealth, maxHealth, position, range, bmp);
+    // This is a container just render it normally 
+    back1.render(layer, position.x, position.y, bmp);
+    // Middle is the damage indicator
+    interpolateRange(layer, middle, maxHealth, damage, position, range, bmp);
+    // Front is the actual current health
+    interpolateRange(layer, front, maxHealth, currentHealth, position, range, bmp);
 }
 
 
-Face::Face():
-background(0),
-face(0){
-}
-Face::Face(const int x, const int y):
-background(0),
-face(0){
-    setPosition(x,y);
+Face::Face(){
 }
 Face::~Face(){
-    if (background){
-	delete background;
-    }
-    if (face){
-	delete face;
-    }
 }
-void Face::act(){
-    if (background){
-	background->act();
-    }
-    if (face){
-	face->act();
-    }
+void Face::act(Character & character){
+    face.setSprite(character.getSprite(face.getSpriteData().x,face.getSpriteData().y));
 }
-void Face::render(const int xaxis, const int yaxis, Bitmap &bmp){
-    if (background){
-	/*background->render(xaxis + position.x + spacing.x,yaxis + position.y + spacing.y,bmp);*/
-    }
-    if (face){
-	//face->render(xaxis + position.x + spacing.x,yaxis + position.y + spacing.y,bmp);
-    }
-}
-void Face::setPosition(const int x, const int y){
-    position.x = x;
-    position.y = y;
-}
-void Face::setSpacing(const int x, const int y){
-    spacing.x = x;
-    spacing.y = y;
-}
-void Face::setBackground(Element *e){
-    background = e;
-}
-void Face::setFace(Element *e){
-    face = e;
+void Face::render(const Element::Layer & layer, const Bitmap & bmp){
+    background.render(layer,position.x,position.y,bmp);
+    face.render(layer,position.x,position.y,bmp);
 }
 
-Name::Name():
-font(0){
-}
-Name::Name(const int x, const int y):
-font(0){
-    setPosition(x,y);
+Name::Name(){
 }
 Name::~Name(){
-    if (font){
-	delete font;
-    }
 }
-void Name::act(){
-    if (font){
-	font->act();
-    }
+void Name::act(Mugen::Character & character){
+    
 }
-void Name::render(const int xaxis, const int yaxis, Bitmap &bmp){
-    if (font){
-	//font->render(xaxis + position.x,yaxis + position.y,bmp);
-    }
-}
-void Name::setPosition(const int x, const int y){
-    position.x = x;
-    position.y = y;
-}
-void Name::setFont(Element *e){
-    font = e;
+void Name::render(const Element::Layer & layer, const Bitmap & bmp){
 }
 
 PlayerInfo::PlayerInfo(const std::string & fightFile){
@@ -286,7 +216,6 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
-        Global::debug(1) << "Trying head: " << head << endl;
         if (head == "Files"){
             class FileWalk: public Ast::Walker{
             public:
@@ -330,7 +259,6 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		    Global::debug(0) << "Trying simple: " << simple.toString() << endl;
                     if (PaintownUtil::matchRegex(simple.toString(), "p1")){
                         getBar(simple,"p1",self.player1LifeBar);
                     } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
@@ -338,7 +266,6 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
                     }
                 }
                 void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
-                    Global::debug(0) << "Trying simple: " << simple.toString() << endl;
                     if (simple == component + ".pos"){
 			int x=0, y=0;
 			try{
@@ -352,6 +279,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 			    simple >> g >> s;
 			} catch (const Ast::Exception & e){
 			}
+                        bar.getBack0().setSpriteData(g,s);
 			bar.getBack0().setSprite(sprites[g][s]);
 		    } else if (simple == component + ".bg0.anim"){
                         int anim;
@@ -377,6 +305,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 			    simple >> g >> s;
 			} catch (const Ast::Exception & e){
 			}
+                        bar.getBack1().setSpriteData(g,s);
 			bar.getBack1().setSprite(sprites[g][s]);
 		    } else if (simple == component + ".bg1.anim"){
                         int anim;
@@ -402,6 +331,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 			    simple >> g >> s;
 			} catch (const Ast::Exception & e){
 			}
+                        bar.getMiddle().setSpriteData(g,s);
 			bar.getMiddle().setSprite(sprites[g][s]);
 		    } else if (simple == component + ".mid.anim"){
                         int anim;
@@ -427,6 +357,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 			    simple >> g >> s;
 			} catch (const Ast::Exception & e){
 			}
+                        bar.getFront().setSpriteData(g,s);
 			bar.getFront().setSprite(sprites[g][s]);
 		    } else if (simple == component + ".front.anim"){
                         int anim;
@@ -459,6 +390,113 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 
             BarWalk walk(*this,sprites,animations);
             section->walk(walk);
+        } else if (head == "Face"){
+            class FaceWalk: public Ast::Walker{
+            public:
+                FaceWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations):
+                self(self),
+		sprites(sprites),
+                animations(animations){
+                }
+                PlayerInfo & self;
+		Mugen::SpriteMap & sprites;
+                std::map<int,MugenAnimation *> & animations;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                        getFace(simple,"p1",self.player1Face);
+                    } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                        getFace(simple,"p2",self.player2Face);
+                    }
+                }
+                void getFace(const Ast::AttributeSimple & simple, const std::string & component, Face & face){
+                    if (simple == component + ".pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			face.setPosition(x,y);
+                    } else if (simple == component + ".bg.spr"){
+			int g=0, s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+                        face.getBackground().setSpriteData(g,s);
+			face.getBackground().setSprite(sprites[g][s]);
+		    } else if (simple == component + ".bg.anim"){
+                        int anim;
+                        simple >> anim;
+                        face.getBackground().setAction(animations[anim]);
+		    } else if (simple == component + ".bg.offset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			face.getBackground().setOffset(x,y);
+		    } else if (simple == component + ".bg.scale"){
+			double x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			face.getBackground().setScale(x,y);
+		    } else if (simple == component + ".bg.facing"){
+                        int facing;
+                        simple >> facing;
+                        face.getBackground().setFacing(facing);
+		    } else if (simple == component + ".bg.layerno"){
+                        int layer = 0;
+                        simple >> layer;
+                        if (layer == 0){
+                            face.getBackground().setLayer(Element::Background);
+                        } else if (layer == 1){
+                            face.getBackground().setLayer(Element::Foreground);
+                        } else if (layer == 2){
+                            face.getBackground().setLayer(Element::Top);
+                        }
+		    } else if (simple == component + ".face.spr"){
+			int g=0, s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+                        face.getFace().setSpriteData(g,s);
+		    } else if (simple == component + ".face.offset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			face.getFace().setOffset(x,y);
+		    } else if (simple == component + ".face.scale"){
+			double x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			face.getFace().setScale(x,y);
+		    } else if (simple == component + ".face.facing"){
+                        int facing;
+                        simple >> facing;
+                        face.getFace().setFacing(facing);
+		    } else if (simple == component + ".face.layerno"){
+                        int layer = 0;
+                        simple >> layer;
+                        if (layer == 0){
+                            face.getFace().setLayer(Element::Background);
+                        } else if (layer == 1){
+                            face.getFace().setLayer(Element::Foreground);
+                        } else if (layer == 2){
+                            face.getFace().setLayer(Element::Top);
+                        }
+		    } 
+                }
+            };
+
+            FaceWalk walk(*this,sprites,animations);
+            section->walk(walk);
         }
     }
 }
@@ -476,14 +514,18 @@ PlayerInfo::~PlayerInfo(){
     }
 }
 
-void PlayerInfo::act(const Mugen::Character & player1, const Mugen::Character & player2){
+void PlayerInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     player1LifeBar.act(player1);
     player2LifeBar.act(player2);
+    player1Face.act(player1);
+    player2Face.act(player2);
 }
 
 void PlayerInfo::render(Element::Layer layer, const Bitmap &bmp){
     player1LifeBar.render(layer,bmp);
     player2LifeBar.render(layer,bmp);
+    player1Face.render(layer,bmp);
+    player2Face.render(layer,bmp);
 }
 
 void PlayerInfo::parseAnimations(Ast::AstParse & parsed){

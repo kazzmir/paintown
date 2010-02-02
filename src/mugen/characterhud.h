@@ -28,7 +28,8 @@ class FightElement : public Element{
 	virtual ~FightElement();
 	
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &);
+        virtual void render(int x, int y, const Bitmap &);
+	virtual void render(const Element::Layer & layer, int x, int y, const Bitmap &);
 	
 	enum ElementType{
 	    IS_NOTSET =0,
@@ -40,6 +41,13 @@ class FightElement : public Element{
 	
 	virtual inline void setType(ElementType t){ type = t; }
 	virtual void setAction(MugenAnimation *);
+        virtual inline void setSpriteData(int g, int s){
+            this->spriteData.x = g;
+            this->spriteData.y = s;
+        }
+        virtual inline const Mugen::Point & getSpriteData() const {
+            return this->spriteData;
+        }
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *);
         virtual void setSound(MugenSound *);
@@ -65,6 +73,7 @@ class FightElement : public Element{
     private:
 	ElementType type;
 	MugenAnimation *action;
+        Mugen::Point spriteData;
 	MugenSprite *sprite;
 	MugenFont *font;
         MugenSound *sound;
@@ -81,7 +90,7 @@ class Bar{
 	Bar();
 	virtual ~Bar();
 	
-	virtual void act(const Character &);
+	virtual void act(Character &);
 	virtual void render(Element::Layer layer, const Bitmap &);
 	
 	virtual inline void setPosition(int x, int y){
@@ -139,37 +148,50 @@ class Bar{
 class Face{
     public:
 	Face();
-	Face(const int x, const int y);
 	virtual ~Face();
 	
-	virtual void act();
-	virtual void render(const int xaxis, const int yaxis, Bitmap &);
-	virtual void setPosition(const int x, const int y);
-	virtual void setSpacing(const int x, const int y);
-	virtual void setBackground(Element *);
-	virtual void setFace(Element *);
+	virtual void act(Character &);
+	virtual void render(const Element::Layer & layer, const Bitmap & bmp);
+	virtual inline void setPosition(int x, int y){
+            position.x = x;
+            position.y = y;
+        }
+	virtual inline void setSpacing(int x, int y){
+            spacing.x = x;
+            spacing.y = y;
+        }
+	virtual inline FightElement & getBackground(){
+            return this->background;
+        }
+	virtual inline FightElement & getFace(){
+            return this->face;
+        }
 	
     private:
 	Mugen::Point position;
 	Mugen::Point spacing;
-	Element *background;
-	Element *face;
+	FightElement background;
+	FightElement face;
 };
 
 class Name{
     public:
 	Name();
-	Name(const int x, const int y);
 	virtual ~Name();
 	
-	virtual void act();
-	virtual void render(const int xaxis, const int yaxis, Bitmap &);
-	virtual void setPosition(const int x, const int y);
-	virtual void setFont(Element *);
+	virtual void act(Mugen::Character & character);
+	virtual void render(const Element::Layer &, const Bitmap &);
+	virtual void setPosition(int x, int y){
+            this->position.x = x;
+            this->position.y = y;
+        }
+	virtual inline FightElement & getFont(){
+            return this->font;
+        }
 	
     private:
 	Mugen::Point position;
-	Element *font;
+	FightElement font;
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */
@@ -178,7 +200,7 @@ class PlayerInfo{
 	PlayerInfo(const std::string & fightFile);
 	virtual ~PlayerInfo();
 
-        virtual void act(const Mugen::Character & player1, const Mugen::Character & player2);
+        virtual void act(Mugen::Character & player1, Mugen::Character & player2);
         virtual void render(Element::Layer layer, const Bitmap &);
     
     private:

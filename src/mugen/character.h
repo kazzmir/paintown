@@ -901,6 +901,10 @@ public:
             return commonSounds;
         }
 
+        virtual inline MugenSprite * getSprite(int group, int image){
+            return this->sprites[group][image];
+        }
+
         virtual const Bitmap * getCurrentFrame() const;
         MugenAnimation * getCurrentAnimation() const;
 
