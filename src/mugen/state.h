@@ -18,7 +18,7 @@ enum AnimationType{
     JumpForwardsUp = 42, //Jump forwards (upwards)      Shown when player is going up-towards
     JumpBackUp = 43, //Jump back (upwards)          Shown when player is going up-back
     JumpNeutralDown = 44, //  opt   Jump neutral (downwards)     Activated when Y-velocity > -2
-    JumpForwardsDown = 45, //  opt   Jump fwd (downwards)         Same as above
+    AirJumpStart = 45, //  opt   Jump fwd (downwards)         Same as above
     JumpBackDown = 46, //  opt   Jump back (downwards)        Same as above
     JumpLanding = 47, //Jump landing                 Shown as player lands on ground
     RunForwards = 100, //       Run fwd/hop forward

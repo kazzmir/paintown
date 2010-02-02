@@ -673,6 +673,9 @@ public:
         VelSet,
         Width,
         Unknown,
+
+        /* only for internal use */
+        InternalCommand,
     };
 
     bool canTrigger(const Character & character, const std::vector<std::string> & commands) const;
@@ -715,6 +718,10 @@ public:
         this->moveType = str;
     }
 
+    virtual inline void setInternal(void (Character::*v)(const std::vector<std::string> & inputs)){
+        internal = v;
+    }
+
     virtual ~StateController();
 
 protected:
@@ -740,6 +747,8 @@ protected:
 
     HitDefinition hit;
     std::string moveType;
+
+    void (Character::*internal)(const std::vector<std::string> & inputs);
 };
 
 /* comes from a StateDef */
@@ -1071,17 +1080,33 @@ public:
         virtual inline void setAirJumpNeutralX(double x){
             airjumpneux = x;
         }
+
+        virtual inline double getAirJumpNeutralX() const {
+            return airjumpneux;
+        }
         
         virtual inline void setAirJumpNeutralY(double y){
             airjumpneuy = y;
+        }
+
+        virtual inline double getAirJumpNeutralY() const {
+            return airjumpneuy;
         }
 
         virtual inline void setAirJumpBack(double x){
             airjumpback = x;
         }
 
+        virtual inline double getAirJumpBack() const {
+            return airjumpback;
+        }
+
         virtual inline void setAirJumpForward(double x){
             airjumpfwd = x;
+        }
+
+        virtual inline double getAirJumpForward() const {
+            return airjumpfwd;
         }
 
         virtual inline int getStateTime() const {
@@ -1202,8 +1227,24 @@ public:
             return currentJuggle;
         }
 
-        virtual void inline setCommonSounds(const std::map< unsigned int, std::map< unsigned int, MugenSound * > > * sounds){
+        virtual inline void setCommonSounds(const std::map< unsigned int, std::map< unsigned int, MugenSound * > > * sounds){
             this->commonSounds = sounds;
+        }
+
+        virtual inline void setExtraJumps(int a){
+            airjumpnum = a;
+        }
+
+        virtual inline int getExtraJumps() const {
+            return airjumpnum;
+        }
+
+        virtual inline double getAirJumpHeight() const {
+            return airjumpheight;
+        }
+
+        virtual inline void setAirJumpHeight(double f){
+            airjumpheight = f;
         }
 
 protected:
@@ -1222,6 +1263,9 @@ protected:
 
     virtual std::vector<std::string> doInput(InputMap<Command::Keys>::Output output);
     virtual bool doStates(const std::vector<std::string> & active, int state);
+
+    void resetJump(const std::vector<std::string> & inputs);
+    void doubleJump(const std::vector<std::string> & inputs);
 
     virtual void fixAssumptions();
     virtual void parseState(Ast::Section * section);

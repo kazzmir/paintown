@@ -263,6 +263,14 @@ public:
         if (identifier == "power"){
             return RuntimeValue(environment.getCharacter().getPower());
         }
+        
+        if (identifier == "internal:extra-jumps"){
+            return RuntimeValue(environment.getCharacter().getExtraJumps());
+        }
+
+        if (identifier == "internal:airjump-height"){
+            return RuntimeValue(environment.getCharacter().getAirJumpHeight());
+        }
 
         if (identifier == "velocity.walk.back.x"){
             return RuntimeValue(environment.getCharacter().getWalkBackX());
@@ -306,6 +314,22 @@ public:
 
         if (identifier == "velocity.runjump.fwd.x"){
             return RuntimeValue(environment.getCharacter().getRunJumpForward());
+        }
+
+        if (identifier == "velocity.airjump.neu.x"){
+            return RuntimeValue(environment.getCharacter().getAirJumpNeutralX());
+        }
+        
+        if (identifier == "velocity.airjump.y"){
+            return RuntimeValue(environment.getCharacter().getAirJumpNeutralY());
+        }
+        
+        if (identifier == "velocity.airjump.back.x"){
+            return RuntimeValue(environment.getCharacter().getAirJumpBack());
+        }
+        
+        if (identifier == "velocity.airjump.fwd.x"){
+            return RuntimeValue(environment.getCharacter().getAirJumpForward());
         }
 
         ostringstream out;

@@ -342,7 +342,7 @@ const std::string MugenAnimation::getName(const Mugen::AnimationType t){
 	case Mugen::JumpForwardsUp : return "Jump forwards (upwards)";break;
 	case Mugen::JumpBackUp : return "Jump back (upwards)";break;
 	case Mugen::JumpNeutralDown : return "Jump neutral (downwards)";break;
-	case Mugen::JumpForwardsDown : return "Jump fwd (downwards)";break;
+	case Mugen::AirJumpStart : return "AirJumpStart";break;
 	case Mugen::JumpBackDown : return "Jump back (downwards)";break;
 	case Mugen::JumpLanding : return "Jump landing";break;
 	case Mugen::RunForwards : return "Run fwd/hop forward";break;

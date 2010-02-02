@@ -87,7 +87,8 @@ name(name),
 changeControl(false),
 control(false),
 value1(NULL),
-value2(NULL){
+value2(NULL),
+internal(0){
 }
 
 StateController::~StateController(){
@@ -595,6 +596,12 @@ void StateController::activate(Character & guy, const vector<string> & commands)
         case Unknown : {
             break;
         }
+        case InternalCommand : {
+            typedef void (Character::*func)(const vector<string> & inputs);
+            func f = (func) internal;
+            (guy.*f)(commands);
+            break;
+        }
     }
 }
 
@@ -1062,6 +1069,8 @@ void Character::initialize(){
     lieDownTime = 0;
     debug = false;
     has_control = true;
+    airjumpnum = 0;
+    airjumpheight = 35;
 
     lastTicket = 0;
     
@@ -1469,6 +1478,14 @@ void Character::loadCnsFile(const string & path){
                             double n;
                             simple >> n;
                             self.setStandingFriction(n);
+                        } else if (simple == "airjump.num"){
+                            int x;
+                            simple >> x;
+                            self.setExtraJumps(x);
+                        } else if (simple == "airjump.height"){
+                            double x;
+                            simple >> x;
+                            self.setAirJumpHeight(x);
                         }
                     }
                 };
@@ -2261,6 +2278,27 @@ bool Character::hasAnimation(int index) const {
     return it != getAnimations().end();
 }
 
+/* completely arbitrary number, just has to be unique and unlikely to
+ * be used by the system. maybe negative numbers are better?
+ */
+static const int JumpIndex = 234823;
+
+void Character::resetJump(const vector<string> & inputs){
+    /* FIXME: creating a new ast node is a leak. put it in some global array
+     * or something.
+     */
+    setSystemVariable(JumpIndex, new Ast::Number(0));
+    changeState(JumpStart, inputs);
+}
+
+void Character::doubleJump(const vector<string> & inputs){
+    int current;
+    *getSystemVariable(JumpIndex) >> current;
+    /* FIXME: this leaks memory */
+    setSystemVariable(JumpIndex, new Ast::Number(1 + current));
+    changeState(AirJumpStart, inputs);
+}
+
 void Character::fixAssumptions(){
     /* need a -1 state controller that changes to state 20 if holdfwd
      * or holdback is pressed
@@ -2303,12 +2341,33 @@ void Character::fixAssumptions(){
         /* jump */
         {
             StateController * controller = new StateController("jump");
-            controller->setType(StateController::ChangeState);
-            controller->setValue1(new Ast::Number(JumpStart));
+            controller->setType(StateController::InternalCommand);
+            controller->setInternal(&Mugen::Character::resetJump);
             controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
                         new Ast::String(new string("S"))));
+            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("command"),
+                        new Ast::String(new string("holdup"))));
+            states[-1]->addController(controller);
+        }
+
+        {
+            StateController * controller = new StateController("double jump");
+            controller->setType(StateController::InternalCommand);
+            controller->setInternal(&Mugen::Character::doubleJump);
+            controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
+            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("statetype"),
+                        new Ast::String(new string("A"))));
+            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThan,
+                        new Ast::ExpressionUnary(Ast::ExpressionUnary::Minus,
+                            new Ast::Keyword("pos y")),
+                        new Ast::SimpleIdentifier("internal:airjump-height")));
+            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::LessThan,
+                        new Ast::Function("sysvar", new Ast::Number(JumpIndex)),
+                        new Ast::SimpleIdentifier("internal:extra-jumps")));
             controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holdup"))));
