@@ -108,40 +108,24 @@ void FightElement::setSound(MugenSound * sound){
     }
 }
 
-static void interpolateRange(FightElement * element, int max, int current, const Mugen::Point & position, const Mugen::Point & range, const Bitmap & bmp){
+static void interpolateRange(FightElement & element, int max, int current, const Mugen::Point & position, const Mugen::Point & range, const Bitmap & bmp){
     if (range.y > 0){
         for (int i = range.x; i < range.y; ++i){
-            element->render(position.x + i, position.y, bmp);
+            element.render(position.x + i, position.y, bmp);
         }
     } else {
         for (int i = range.x; i > range.y; --i){
-            element->render(position.x + i, position.y, bmp);
+            element.render(position.x + i, position.y, bmp);
         }
     }
 } 
 
 Bar::Bar():
-back0(new FightElement()),
-back1(new FightElement()),
-middle(new FightElement()),
-front(new FightElement()),
 maxHealth(0),
 currentHealth(0),
 damage(0){
 }
 Bar::~Bar(){
-    if (back0){
-        delete back0;
-    }
-    if (back1){
-        delete back1;
-    }
-    if (middle){
-        delete middle;
-    }
-    if (front){
-        delete front;
-    }
 }
 void Bar::act(const Mugen::Character & character){
     maxHealth = character.getMaxHealth();
@@ -160,47 +144,47 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
 	default:
 	case Element::Background:
             // Background is full range
-            if (back0 && back0->getLayer() == Element::Background){
+            if (back0.getLayer() == Element::Background){
                 interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
             }
             // This is a container just render it normally 
-            if (back1 && back1->getLayer() == Element::Background){
-                back1->render(position.x, position.y, bmp);
+            if (back1.getLayer() == Element::Background){
+                back1.render(position.x, position.y, bmp);
             }
             // Middle is the damage indicator
-            if (middle && middle->getLayer() == Element::Background){
+            if (middle.getLayer() == Element::Background){
                 interpolateRange( middle, maxHealth, damage, position, range, bmp);
             }
             // Front is the actual current health
-            if (front && front->getLayer() == Element::Background){
+            if (front.getLayer() == Element::Background){
                 interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
             }
 	    break;
 	case Element::Foreground:
-            if (back0 && back0->getLayer() == Element::Foreground){
+            if (back0.getLayer() == Element::Foreground){
                 interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
             }
-            if (back1 && back1->getLayer() == Element::Foreground){
-                back1->render(position.x, position.y, bmp);
+            if (back1.getLayer() == Element::Foreground){
+                back1.render(position.x, position.y, bmp);
             }
-            if (middle && middle->getLayer() == Element::Foreground){
+            if (middle.getLayer() == Element::Foreground){
                 interpolateRange( middle, maxHealth, damage, position, range, bmp);
             }
-            if (front && front->getLayer() == Element::Foreground){
+            if (front.getLayer() == Element::Foreground){
                 interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
             }
 	    break;
 	case Element::Top:
-            if (back0 && back0->getLayer() == Element::Top){
+            if (back0.getLayer() == Element::Top){
                 interpolateRange( back0, maxHealth, maxHealth, position, range, bmp);
             }
-            if (back1 && back1->getLayer() == Element::Top){
-                back1->render(position.x, position.y, bmp);
+            if (back1.getLayer() == Element::Top){
+                back1.render(position.x, position.y, bmp);
             }
-            if (middle && middle->getLayer() == Element::Top){
+            if (middle.getLayer() == Element::Top){
                 interpolateRange( middle, maxHealth, damage, position, range, bmp);
             }
-            if (front && front->getLayer() == Element::Top){
+            if (front.getLayer() == Element::Top){
                 interpolateRange( front, maxHealth, currentHealth, position, range, bmp);
             }
 	    break;
@@ -286,15 +270,7 @@ void Name::setFont(Element *e){
     font = e;
 }
 
-PlayerInfo::PlayerInfo(const std::string & fightFile):
-player1LifeBar(new Bar()),
-player2LifeBar(new Bar()),
-player1PowerBar(0),
-player2PowerBar(0),
-player1Face(0),
-player2Face(0),
-player1Name(0),
-player2Name(0){
+PlayerInfo::PlayerInfo(const std::string & fightFile){
     
     std::string baseDir = Mugen::Util::getFileDir(fightFile);
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(fightFile) );
@@ -337,8 +313,32 @@ player2Name(0){
                 }
                 PlayerInfo & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "p1.pos"){
-                    } 
+		    if (simple == "p1.pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			self.player1LifeBar.setPosition(x,y);
+                    } else if (simple == "p1.bg0.spr"){
+			int g=0, s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+		    } else if (simple == "p1.bg0.anim"){
+		    } else if (simple == "p1.bg0.facing"){
+		    } else if (simple == "p1.bg1.spr"){
+		    } else if (simple == "p1.bg1.anim"){
+		    } else if (simple == "p1.bg1.facing"){
+		    } else if (simple == "p1.mid.spr"){
+		    } else if (simple == "p1.mid.anim"){
+		    } else if (simple == "p1.mid.facing"){
+		    } else if (simple == "p1.front.spr"){
+		    } else if (simple == "p1.front.anim"){
+		    } else if (simple == "p1.front.facing"){
+		    } else if (simple == "p1.range.x"){
+		    }
                 }
             };
 
@@ -349,17 +349,11 @@ player2Name(0){
 }
 
 PlayerInfo::~PlayerInfo(){
-    if (player1LifeBar){
-        delete player1LifeBar;
-    }
-    if (player2LifeBar){
-        delete player2LifeBar;
-    }
 }
 
 void PlayerInfo::act(const Mugen::Character & player1, const Mugen::Character & player2){
-    player1LifeBar->act(player1);
-    player2LifeBar->act(player2);
+    player1LifeBar.act(player1);
+    player2LifeBar.act(player2);
 }
 
 void PlayerInfo::render(){

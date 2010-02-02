@@ -127,28 +127,16 @@ class Bar{
 	    this->range.y = y;
 	}
 	
-	virtual inline void setBack0(FightElement * element){
-            this->back0 = element;
-        }
-        virtual inline FightElement * getBack0(){
+        virtual inline FightElement & getBack0(){
             return this->back0;
         }
-        virtual inline void setBack1(FightElement * element){
-            this->back1 = element;
-        }
-        virtual inline FightElement * getBack1(){
+        virtual inline FightElement & getBack1(){
             return this->back1;
         }
-        virtual inline void setMiddle(FightElement * element){
-            this->middle = element;
-        }
-        virtual inline FightElement * getMiddle(){
+        virtual inline FightElement & getMiddle(){
             return this->middle;
         }
-        virtual inline void setFront(FightElement * element){
-            this->front = element;
-        }
-        virtual inline FightElement * getFront(){
+        virtual inline FightElement & getFront(){
             return this->front;
         }
 	
@@ -157,16 +145,16 @@ class Bar{
 	Mugen::Point position;
 	
         //! Background 0 of the Bar background behind mid and front
-        FightElement * back0;
+        FightElement back0;
 	
         //! Second Background of the Bar usually a container around the bars
-	FightElement * back1;
+	FightElement back1;
 	
         //! Third Background of the Bar which is the second bar that decreases by tick
-	FightElement * middle;
+	FightElement middle;
 
         //! Fourth Background of the Bar 
-        FightElement * front;
+        FightElement front;
 	
         //! Range of the actual bar (range.x * range.y / hitPoints)
 	Mugen::Point range;
@@ -227,14 +215,14 @@ class PlayerInfo{
         virtual void render();
     
     private:
-	Bar *player1LifeBar;
-        Bar *player2LifeBar;
-	Bar *player1PowerBar;
-        Bar *player2PowerBar;
-	Face *player1Face;
-        Face *player2Face;
-	Name *player1Name;
-        Name *player2Name;
+	Bar player1LifeBar;
+        Bar player2LifeBar;
+	Bar player1PowerBar;
+        Bar player2PowerBar;
+	Face player1Face;
+        Face player2Face;
+	Name player1Name;
+        Name player2Name;
 	
 };
 
