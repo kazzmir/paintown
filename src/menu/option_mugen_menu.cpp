@@ -9,6 +9,7 @@
 #include "loading.h"
 #include <pthread.h>
 
+#include "mugen/parse-cache.h"
 #include "mugen/mugen_menu.h"
 #include "mugen/mugen_exception.h"
 #include "return_exception.h"
@@ -66,6 +67,7 @@ void OptionMugenMenu::logic(){
 }
 
 void OptionMugenMenu::run(bool &endGame){
+    Mugen::ParseCache cache;
     // Load er up and throw up a load box to inform the user
     // Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
     pthread_t loading;

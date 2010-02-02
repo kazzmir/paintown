@@ -84,7 +84,17 @@ public:
     }
     
     virtual Element * copy() const {
-        throw Exception("Copy not implemented yet");
+        Section * out = new Section(new std::string(getName()));
+        out->walkList = walkList;
+        for (std::list<Attribute*>::const_iterator attribute_it = attributes.begin(); attribute_it != attributes.end(); attribute_it++){
+            out->attributes.push_back((Attribute*) (*attribute_it)->copy());
+        }
+
+        for (std::list<Value*>::const_iterator value_it = values.begin(); value_it != values.end(); value_it++){
+            out->values.push_back((Value*) (*value_it)->copy());
+        }
+
+        return out;
     }
 
     const std::list<Attribute *> & getAttributes() const {
