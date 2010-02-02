@@ -181,8 +181,7 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false),
-// *FIXME Use current motif instead of direct file access
-playerHUD(new Mugen::PlayerInfo("data/mugen/data/fight.def")){
+playerHUD(0){
 }
 
 MugenStage::MugenStage( const char * location ):
@@ -252,8 +251,7 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false),
-// *FIXME Use current motif instead of direct file access
-playerHUD(new Mugen::PlayerInfo("data/mugen/data/fight.def")){
+playerHUD(0){
 }
 
 MugenStage::~MugenStage(){
@@ -611,8 +609,11 @@ void MugenStage::load(){
     
     // Console stuff
     console->setTextHeight(10);
-    console->setTextWidth(10);
+    console->setTextWidth(10); 
     
+    // *FIXME Use current motif instead of direct file access
+    playerHUD = new Mugen::PlayerInfo(Filesystem::find("mugen/data/fight.def"));
+
     // Stage is loaded
     loaded = true;
 }
