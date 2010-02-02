@@ -282,8 +282,6 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
     Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
-    
-    std::string spriteFile; 
 
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
@@ -292,26 +290,39 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
         if (head == "files"){
             class FileWalk: public Ast::Walker{
             public:
-                FileWalk(std::string & spriteFile):
-                spriteFile(spriteFile){
+                FileWalk(std::string & baseDir, PlayerInfo & self):
+                baseDir(baseDir),
+		self(self){
                 }
-                std::string & spriteFile;
+                std::string & baseDir;
+		PlayerInfo & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "sff"){
-                        simple >> spriteFile;
+			std::string sff;
+			simple >> sff;
+                        Global::debug(1) << "Got Sprite File: '" << sff << "'" << endl;
+			Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, sff), "", self.sprites);
+			for( Mugen::SpriteMap::iterator i = self.sprites.begin() ; i != self.sprites.end() ; ++i ){
+			    // Load these sprites so they are ready to use
+			    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+				if( j->second )j->second->load();
+			    }
+			}
                     } 
                 }
             };
 
-            FileWalk walk(spriteFile);
+            FileWalk walk(baseDir, *this);
             section->walk(walk);
         } else if (head == "lifebar"){
             class BarWalk: public Ast::Walker{
             public:
-                BarWalk(PlayerInfo & self):
-                self(self){
+                BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites):
+                self(self),
+		sprites(sprites){
                 }
                 PlayerInfo & self;
+		Mugen::SpriteMap & sprites;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "p1.pos"){
 			int x=0, y=0;
@@ -326,6 +337,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 			    simple >> g >> s;
 			} catch (const Ast::Exception & e){
 			}
+			self.player1LifeBar.getBack0().setSprite(sprites[g][s]);
 		    } else if (simple == "p1.bg0.anim"){
 		    } else if (simple == "p1.bg0.facing"){
 		    } else if (simple == "p1.bg1.spr"){
@@ -342,7 +354,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
                 }
             };
 
-            BarWalk walk(*this);
+            BarWalk walk(*this,sprites);
             section->walk(walk);
         }
     }

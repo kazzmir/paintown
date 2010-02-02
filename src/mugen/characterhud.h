@@ -224,6 +224,7 @@ class PlayerInfo{
 	Name player1Name;
         Name player2Name;
 	
+	Mugen::SpriteMap sprites;
 };
 
 /*! Character HUD ... lifebar, face, etc */
