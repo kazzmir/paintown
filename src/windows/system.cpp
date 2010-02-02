@@ -7,7 +7,11 @@
 namespace System{
 
 bool isDirectory(const std::string & path){
-    return GetFileAttributes(path.c_str()) & FILE_ATTRIBUTE_DIRECTORY;
+    unsigned int f = GetFileAttributes(path.c_str());
+    if (f == INVALID_FILE_ATTRIBUTES){
+        return false;
+    }
+    return f & FILE_ATTRIBUTE_DIRECTORY;
 }
 
 bool readableFile(const std::string & path){
