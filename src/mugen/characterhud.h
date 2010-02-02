@@ -218,6 +218,7 @@ class PlayerInfo{
 	
 	Mugen::SpriteMap sprites;
         std::map<int, MugenAnimation *> animations;
+        std::vector<MugenFont *> fonts;
 };
 
 /*! Character HUD ... lifebar, face, etc */

@@ -237,7 +237,12 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 				if( j->second )j->second->load();
 			    }
 			}
-                    } 
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                        string temp;
+                        simple >> temp;
+                        self.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
+                        Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+                    }  
                 }
             };
 
@@ -505,12 +510,22 @@ PlayerInfo::~PlayerInfo(){
     // Get rid of sprites
     for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
 	for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	    if( j->second )delete j->second;
+	    if (j->second){
+                delete j->second;
+            }
 	}
     }
      // Get rid of animation lists;
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-	if( i->second )delete i->second;
+	if (i->second){
+            delete i->second;
+        }
+    }
+    // Get rid of fonts
+    for (std::vector< MugenFont *>::iterator f = fonts.begin(); f != fonts.end(); ++f){
+	if (*f){
+            delete (*f);
+        }
     }
 }
 
