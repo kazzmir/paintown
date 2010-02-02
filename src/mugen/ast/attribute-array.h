@@ -34,7 +34,7 @@ public:
         if (keyword_name != 0){
             return new AttributeArray((Keyword*) keyword_name->copy(), (Value*) index->copy(), (Value*) value->copy());
         } else if (identifier_name != 0){
-            return new AttributeArray((Identifier*) keyword_name->copy(), (Value*) index->copy(), (Value*) value->copy());
+            return new AttributeArray((Identifier*) identifier_name->copy(), (Value*) index->copy(), (Value*) value->copy());
         }
         throw Exception("don't copy that floppy!");
     }

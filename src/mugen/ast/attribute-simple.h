@@ -33,6 +33,14 @@ public:
         return *name == str;
     }
 
+    virtual Element * copy() const {
+        if (value != 0){
+            return new AttributeSimple((Identifier*) name->copy(), (Value*) value->copy());
+        } else {
+            return new AttributeSimple((Identifier*) name->copy());
+        }
+    }
+
     std::string valueAsString() const {
         std::string str;
         *this >> str;

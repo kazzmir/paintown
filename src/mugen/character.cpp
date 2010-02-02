@@ -37,6 +37,7 @@
 #include "input/input-map.h"
 #include "input/input-manager.h"
 
+#include "parse-cache.h"
 #include "parser/all.h"
 #include "ast/all.h"
 
@@ -1126,7 +1127,7 @@ void Character::loadCmdFile(const string & path){
         int defaultTime = 15;
         int defaultBufferTime = 1;
 
-        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
+        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full));
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
@@ -1299,7 +1300,7 @@ void Character::loadCnsFile(const string & path){
     string full = Filesystem::find(baseDir + path);
     try{
         /* cns can use the Cmd parser */
-        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
+        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full));
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
@@ -2006,7 +2007,7 @@ void Character::loadStateFile(const std::string & base, const string & path, boo
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     try{
         /* st can use the Cmd parser */
-        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::main(full));
+        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full));
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();

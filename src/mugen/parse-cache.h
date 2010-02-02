@@ -11,15 +11,18 @@ namespace Ast{
     class Section;
 }
 
+int main(int argc, char ** argv);
+
 namespace Mugen{
 
 class ParseCache{
 public:
     /* pass in the full path to the file */
-    std::list<Ast::Section*> * parseCmd(const std::string & path);
+    static std::list<Ast::Section*> * parseCmd(const std::string & path);
 
 protected:
     friend class ::OptionMugenMenu;
+    friend int ::main(int argc, char ** argv);
     ParseCache();
     ~ParseCache();
 

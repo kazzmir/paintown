@@ -4,6 +4,7 @@
 #include "util/file-system.h"
 #include "mugen/character.h"
 #include "mugen/mugen_exception.h"
+#include "mugen/parse-cache.h"
 #include "util/timedifference.h"
 
 using namespace std;
@@ -12,6 +13,7 @@ int main(int argc, char ** argv){
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
     set_color_conversion(COLORCONV_NONE);
+    Mugen::ParseCache cache;
 
     // for (int i = 0; i < 3; i++){
         try{
