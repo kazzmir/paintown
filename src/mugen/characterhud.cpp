@@ -99,6 +99,7 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
 	    break;
 	case IS_FONT:
             if (layer == getLayer()){
+		font->render(x + offset.x, y + offset.y, bank, position, bmp, text);
             }
 	    break;
         case IS_SOUND:
@@ -137,21 +138,6 @@ void FightElement::setSound(MugenSound * sound){
     }
 }
 
-static void interpolateRange(const Element::Layer & layer, FightElement & element, int max, int current, const Mugen::Point & position, const Mugen::Point & range, const Bitmap & bmp){
-    if (layer != element.getLayer()){
-        return;
-    }
-    if (range.y > 0){
-        for (int i = range.x; i < range.y; ++i){
-            element.render(position.x + i, position.y, bmp);
-        }
-    } else {
-        for (int i = range.x; i > range.y; --i){
-            element.render(position.x + i, position.y, bmp);
-        }
-    }
-} 
-
 Bar::Bar():
 maxHealth(0),
 currentHealth(0),
@@ -163,6 +149,7 @@ void Bar::act(Mugen::Character & character){
     maxHealth = character.getMaxHealth();
     currentHealth = character.getHealth();
     // Update damage counter if char has been damaged
+    // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
     if (character.hasControl()){
         if (damage > currentHealth){
             damage--;
@@ -170,16 +157,18 @@ void Bar::act(Mugen::Character & character){
             damage = currentHealth;
         }
     }
+    //middle.setScale(abs(((damage*range.y)/maxHealth)),1);
+    //front.setScale(abs(((currentHealth*range.y)/maxHealth)),1);
 }
 void Bar::render(Element::Layer layer, const Bitmap & bmp){
     // Background is full range
-    interpolateRange(layer, back0, maxHealth, maxHealth, position, range, bmp);
+    back0.render(layer, position.x, position.y, bmp);
     // This is a container just render it normally 
     back1.render(layer, position.x, position.y, bmp);
     // Middle is the damage indicator
-    interpolateRange(layer, middle, maxHealth, damage, position, range, bmp);
+    middle.render(layer, position.x, position.y, bmp);
     // Front is the actual current health
-    interpolateRange(layer, front, maxHealth, currentHealth, position, range, bmp);
+    front.render(layer, position.x, position.y, bmp);
 }
 
 
@@ -200,7 +189,7 @@ Name::Name(){
 Name::~Name(){
 }
 void Name::act(Mugen::Character & character){
-    font.setText(character.getDisplayName());
+    font.setText(character.getName());
 }
 void Name::render(const Element::Layer & layer, const Bitmap & bmp){
     background.render(layer, position.x, position.y, bmp);
@@ -311,6 +300,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
                         } else if (layer == 2){
                             bar.getBack0().setLayer(Element::Top);
                         }
+		    } else if (simple == component + ".bg0.offset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			bar.getBack0().setOffset(x,y);
 		    } else if (simple == component + ".bg1.spr"){
 			int g=0, s=0;
 			try{
@@ -337,6 +333,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
                         } else if (layer == 2){
                             bar.getBack1().setLayer(Element::Top);
                         }
+		    } else if (simple == component + ".bg1.offset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			bar.getBack1().setOffset(x,y);
 		    } else if (simple == component + ".mid.spr"){
                         int g=0, s=0;
 			try{
@@ -363,6 +366,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
                         } else if (layer == 2){
                             bar.getMiddle().setLayer(Element::Top);
                         }
+		    } else if (simple == component + ".mid.offset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			bar.getMiddle().setOffset(x,y);
 		    } else if (simple == component + ".front.spr"){
                         int g=0, s=0;
 			try{
@@ -389,6 +399,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
                         } else if (layer == 2){
                             bar.getFront().setLayer(Element::Top);
                         }
+		    } else if (simple == component + ".front.offset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			bar.getFront().setOffset(x,y);
 		    } else if (simple == component + ".range.x"){
                         int x=0,y=0;
                         try{
