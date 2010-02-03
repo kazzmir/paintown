@@ -49,7 +49,7 @@ class FightElement : public Element{
             return this->spriteData;
         }
 	virtual void setSprite(MugenSprite *);
-	virtual void setFont(MugenFont *);
+	virtual void setFont(MugenFont *, int bank, int position);
         virtual void setSound(MugenSound *);
 	virtual inline void setOffset(int x, int y){ 
             offset = Mugen::Point(x,y); 
@@ -81,6 +81,8 @@ class FightElement : public Element{
 	int displaytime;
 	Effects effects;
 	std::string text;
+	int bank;
+	int position;
 };
 
 //! Base Bar made up of different components
@@ -185,12 +187,16 @@ class Name{
             this->position.x = x;
             this->position.y = y;
         }
+	virtual inline FightElement & getBackground(){
+	    return this->background;
+	}
 	virtual inline FightElement & getFont(){
             return this->font;
         }
 	
     private:
 	Mugen::Point position;
+	FightElement background;
 	FightElement font;
 };
 

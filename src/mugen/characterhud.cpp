@@ -38,7 +38,9 @@ font(0),
 sound(0),
 offset(0,0),
 displaytime(0),
-text(""){
+text(""),
+bank(0),
+position(0){
 }
 FightElement::~FightElement(){
 }
@@ -73,6 +75,7 @@ void FightElement::render(int x, int y, const Bitmap & bmp){
             sprite->render(x + offset.x, y + offset.y, bmp,effects);
             break;
 	case IS_FONT:
+	    font->render(x + offset.x, y + offset.y, bank, position, bmp, text);
             break;
         case IS_SOUND:
 	case IS_NOTSET:
@@ -118,10 +121,12 @@ void FightElement::setSprite(MugenSprite *spr){
 	sprite = spr;
     }
 }
-void FightElement::setFont(MugenFont *fnt){
+void FightElement::setFont(MugenFont *fnt, int bank, int position){
     if (fnt){
 	setType(IS_FONT);
 	font = fnt;
+	this->bank = bank;
+	this->position = position;
     }
 }
 
@@ -195,9 +200,11 @@ Name::Name(){
 Name::~Name(){
 }
 void Name::act(Mugen::Character & character){
-    
+    font.setText(character.getDisplayName());
 }
 void Name::render(const Element::Layer & layer, const Bitmap & bmp){
+    background.render(layer, position.x, position.y, bmp);
+    font.render(layer, position.x, position.y, bmp);
 }
 
 PlayerInfo::PlayerInfo(const std::string & fightFile){
@@ -502,6 +509,88 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 
             FaceWalk walk(*this,sprites,animations);
             section->walk(walk);
+        } else if (head == "Name"){
+            class NameWalk: public Ast::Walker{
+            public:
+                NameWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                self(self),
+		sprites(sprites),
+		animations(animations),
+		fonts(fonts){
+                }
+                PlayerInfo & self;
+		Mugen::SpriteMap & sprites;
+		std::map<int,MugenAnimation *> & animations;
+		std::vector<MugenFont *> & fonts;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                        getName(simple,"p1",self.player1Name);
+                    } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                        getName(simple,"p2",self.player2Name);
+                    }
+                }
+                void getName(const Ast::AttributeSimple & simple, const std::string & component, Name & name){
+                    if (simple == component + ".pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			name.setPosition(x,y);
+                    } else if (simple == component + ".bg.spr"){
+			int g=0, s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+                        name.getBackground().setSpriteData(g,s);
+			name.getBackground().setSprite(sprites[g][s]);
+		    } else if (simple == component + ".bg.anim"){
+                        int anim;
+                        simple >> anim;
+                        name.getBackground().setAction(animations[anim]);
+		    } else if (simple == component + ".bg.offset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			name.getBackground().setOffset(x,y);
+		    } else if (simple == component + ".bg.scale"){
+			double x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			name.getBackground().setScale(x,y);
+		    } else if (simple == component + ".bg.facing"){
+                        int facing;
+                        simple >> facing;
+                        name.getBackground().setFacing(facing);
+		    } else if (simple == component + ".bg.layerno"){
+                        int layer = 0;
+                        simple >> layer;
+                        if (layer == 0){
+                            name.getBackground().setLayer(Element::Background);
+                        } else if (layer == 1){
+                            name.getBackground().setLayer(Element::Foreground);
+                        } else if (layer == 2){
+                            name.getBackground().setLayer(Element::Top);
+                        }
+		    } else if ( simple == "title.font"){
+			int index=0, bank=0, position=0;
+			try {
+			    simple >> index >> bank >> position;
+			} catch (const Ast::Exception & e){
+			    //ignore for now
+			}
+			name.getFont().setFont(self.fonts[index-1],bank,position);
+		    } 
+                }
+            };
+
+            NameWalk walk(*this,sprites,animations,fonts);
+            section->walk(walk);
         }
     }
 }
@@ -534,6 +623,8 @@ void PlayerInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     player2LifeBar.act(player2);
     player1Face.act(player1);
     player2Face.act(player2);
+    player1Name.act(player1);
+    player2Name.act(player2);
 }
 
 void PlayerInfo::render(Element::Layer layer, const Bitmap &bmp){
@@ -541,6 +632,8 @@ void PlayerInfo::render(Element::Layer layer, const Bitmap &bmp){
     player2LifeBar.render(layer,bmp);
     player1Face.render(layer,bmp);
     player2Face.render(layer,bmp);
+    player1Name.render(layer,bmp);
+    player2Name.render(layer,bmp);
 }
 
 void PlayerInfo::parseAnimations(Ast::AstParse & parsed){
