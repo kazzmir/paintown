@@ -37,6 +37,7 @@
 
 #include "mugen_animation.h"
 #include "mugen/background.h"
+#include "mugen/config.h"
 #include "character_select.h"
 #include "character.h"
 #include "mugen_item.h"
@@ -82,7 +83,7 @@ intro(0){
 
 void MugenMenu::loadData() throw (MugenException){
      // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Filesystem::find("mugen/data/" + Mugen::Util::getFileDir(location));
+    std::string baseDir = Filesystem::find( Mugen::Data::getMugenDirectory() + Mugen::Util::getFileDir(location));
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
     // get real basedir
     //baseDir = Mugen::Util::getFileDir( ourDefFile );

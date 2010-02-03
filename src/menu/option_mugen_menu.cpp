@@ -12,6 +12,7 @@
 #include "mugen/parse-cache.h"
 #include "mugen/mugen_menu.h"
 #include "mugen/mugen_exception.h"
+#include "mugen/config.h"
 #include "return_exception.h"
 
 using namespace std;
@@ -20,6 +21,10 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
     if ( *token != "mugen" ){
         throw LoadException("Not a mugen motif menu");
     }
+    
+    // Load up configuration
+    Mugen::Data::initialize();
+
     while ( token->hasTokens() ){
         try{
             Token * tok;
@@ -34,7 +39,8 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
                 std::string temp;
                 // Filename
                 *tok >> temp;
-                _menu = new MugenMenu(temp);
+                // Set the default motif
+                Mugen::Data::setMotif(temp);
             }else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -48,6 +54,8 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
             throw LoadException( m );
         } 
     }
+    // Load menu with default motif
+    _menu = new MugenMenu(Mugen::Data::getMotif());
     // Set this menu as an option
     _menu->setAsOption(true);
 

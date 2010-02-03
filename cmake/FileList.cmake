@@ -198,6 +198,7 @@ src/mugen/background.cpp
 src/mugen/characterhud.cpp
 src/mugen/character.cpp
 src/mugen/character_select.cpp
+src/mugen/config.cpp
 src/mugen/evaluator.cpp
 src/mugen/game.cpp
 src/mugen/storyboard.cpp
