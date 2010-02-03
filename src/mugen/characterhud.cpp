@@ -140,6 +140,7 @@ void FightElement::setSound(MugenSound * sound){
 }
 
 Bar::Bar():
+type(Health),
 maxHealth(0),
 currentHealth(0),
 damage(0){
@@ -149,19 +150,27 @@ Bar::~Bar(){
 }
 
 void Bar::act(Mugen::Character & character){
-    maxHealth = character.getMaxHealth();
-    currentHealth = character.getHealth();
-    // Update damage counter if char has been damaged
-    // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
-    if (character.hasControl()){
-        if (damage > currentHealth){
-            damage--;
-        } else {
-            damage = currentHealth;
-        }
+    switch (type){
+        default:
+        case Health:
+            maxHealth = character.getMaxHealth();
+            currentHealth = character.getHealth();
+            // Update damage counter if char has been damaged
+            // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
+            if (character.hasControl()){
+                if (damage > currentHealth){
+                    damage--;
+                } else {
+                    damage = currentHealth;
+                }
+            }
+            //middle.setScale(abs(((damage*range.y)/maxHealth)),1);
+            //front.setScale(abs(((currentHealth*range.y)/maxHealth)),1);
+            break;
+        case Power:
+            // Update power bar and count number counter.setText()
+            break;
     }
-    //middle.setScale(abs(((damage*range.y)/maxHealth)),1);
-    //front.setScale(abs(((currentHealth*range.y)/maxHealth)),1);
 }
 
 void Bar::render(Element::Layer layer, const Bitmap & bmp){
@@ -173,6 +182,8 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     middle.render(layer, position.x, position.y, bmp);
     // Front is the actual current health
     front.render(layer, position.x, position.y, bmp);
+    // Counter Number for powerbars
+    counter.render(layer, position.x, position.y, bmp);
 }
 
 Face::Face(){
@@ -203,6 +214,66 @@ void Name::act(Mugen::Character & character){
 void Name::render(const Element::Layer & layer, const Bitmap & bmp){
     background.render(layer, position.x, position.y, bmp);
     font.render(layer, position.x, position.y, bmp);
+}
+
+static void getElementProperties(const Ast::AttributeSimple & simple, const std::string & component, const std::string & elementName, FightElement & element, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts){
+    if (simple == component + "." + elementName + ".spr"){
+        int g=0, s=0;
+        try{
+            simple >> g >> s;
+        } catch (const Ast::Exception & e){
+        }
+        element.setSpriteData(g,s);
+        element.setSprite(sprites[g][s]);
+    } else if (simple == component + "." + elementName + ".anim"){
+        int anim;
+        simple >> anim;
+        element.setAction(animations[anim]);
+    } else if ( simple == component + "." + elementName + ".font"){
+	int index=0, bank=0, position=0;
+	try {
+	    simple >> index >> bank >> position;
+	} catch (const Ast::Exception & e){
+	    //ignore for now
+	}
+	element.setFont(fonts[index-1],bank,position);
+    } else if (simple == component + "." + elementName + ".facing"){
+        int face;
+        simple >> face;
+        element.setFacing(face);
+    } else if (simple == component + "." + elementName + ".vfacing"){
+        int face;
+        simple >> face;
+        element.setVFacing(face);
+    } else if (simple == component + "." + elementName + ".layerno"){
+        int layer = 0;
+        simple >> layer;
+        if (layer == 0){
+            element.setLayer(Element::Background);
+        } else if (layer == 1){
+            element.setLayer(Element::Foreground);
+        } else if (layer == 2){
+            element.setLayer(Element::Top);
+        }
+    } else if (simple == component + "." +  elementName + ".offset"){
+        int x=0, y=0;
+        try{
+            simple >> x >> y;
+        } catch (const Ast::Exception & e){
+        }
+        element.setOffset(x,y);
+    } else if (simple == component + "." + elementName + ".scale"){
+        double x=1, y=1;
+        try{
+            simple >> x >> y;
+        } catch (const Ast::Exception & e){
+        }
+        element.setScale(x,y);
+    } else if (simple == component + "." + elementName + ".displaytime"){
+        int time;
+        simple >> time;
+        element.setDisplayTime(time);
+    } 
 }
 
 PlayerInfo::PlayerInfo(const std::string & fightFile){
@@ -261,14 +332,16 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
         } else if (head == "Lifebar"){
             class BarWalk: public Ast::Walker{
             public:
-                BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations):
+                BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
                 self(self),
 		sprites(sprites),
-                animations(animations){
+                animations(animations),
+                fonts(fonts){
                 }
                 PlayerInfo & self;
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
+                std::vector<MugenFont *> & fonts;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (PaintownUtil::matchRegex(simple.toString(), "p1")){
                         getBar(simple,"p1",self.player1LifeBar);
@@ -284,139 +357,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			bar.setPosition(x,y);
-                    } else if (simple == component + ".bg0.spr"){
-			int g=0, s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-                        bar.getBack0().setSpriteData(g,s);
-			bar.getBack0().setSprite(sprites[g][s]);
-		    } else if (simple == component + ".bg0.anim"){
-                        int anim;
-                        simple >> anim;
-                        bar.getBack0().setAction(animations[anim]);
-		    } else if (simple == component + ".bg0.facing"){
-                        int face;
-                        simple >> face;
-                        bar.getBack0().setFacing(face);
-		    } else if (simple == component + ".bg0.layerno"){
-                        int layer = 0;
-                        simple >> layer;
-                        if (layer == 0){
-                            bar.getBack0().setLayer(Element::Background);
-                        } else if (layer == 1){
-                            bar.getBack0().setLayer(Element::Foreground);
-                        } else if (layer == 2){
-                            bar.getBack0().setLayer(Element::Top);
-                        }
-		    } else if (simple == component + ".bg0.offset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			bar.getBack0().setOffset(x,y);
-		    } else if (simple == component + ".bg1.spr"){
-			int g=0, s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-                        bar.getBack1().setSpriteData(g,s);
-			bar.getBack1().setSprite(sprites[g][s]);
-		    } else if (simple == component + ".bg1.anim"){
-                        int anim;
-                        simple >> anim;
-                        bar.getBack1().setAction(animations[anim]);
-		    } else if (simple == component + ".bg1.facing"){
-                        int face;
-                        simple >> face;
-                        bar.getBack1().setFacing(face);
-		    } else if (simple == component + ".bg1.layerno"){
-                        int layer = 0;
-                        simple >> layer;
-                        if (layer == 0){
-                            bar.getBack1().setLayer(Element::Background);
-                        } else if (layer == 1){
-                            bar.getBack1().setLayer(Element::Foreground);
-                        } else if (layer == 2){
-                            bar.getBack1().setLayer(Element::Top);
-                        }
-		    } else if (simple == component + ".bg1.offset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			bar.getBack1().setOffset(x,y);
-		    } else if (simple == component + ".mid.spr"){
-                        int g=0, s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-                        bar.getMiddle().setSpriteData(g,s);
-			bar.getMiddle().setSprite(sprites[g][s]);
-		    } else if (simple == component + ".mid.anim"){
-                        int anim;
-                        simple >> anim;
-                        bar.getMiddle().setAction(animations[anim]);
-		    } else if (simple == component + ".mid.facing"){
-                        int face;
-                        simple >> face;
-                        bar.getMiddle().setFacing(face);
-		    } else if (simple == component + ".mid.layerno"){
-                        int layer = 0;
-                        simple >> layer;
-                        if (layer == 0){
-                            bar.getMiddle().setLayer(Element::Background);
-                        } else if (layer == 1){
-                            bar.getMiddle().setLayer(Element::Foreground);
-                        } else if (layer == 2){
-                            bar.getMiddle().setLayer(Element::Top);
-                        }
-		    } else if (simple == component + ".mid.offset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			bar.getMiddle().setOffset(x,y);
-		    } else if (simple == component + ".front.spr"){
-                        int g=0, s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-                        bar.getFront().setSpriteData(g,s);
-			bar.getFront().setSprite(sprites[g][s]);
-		    } else if (simple == component + ".front.anim"){
-                        int anim;
-                        simple >> anim;
-                        bar.getFront().setAction(animations[anim]);
-		    } else if (simple == component + ".front.facing"){
-                        int face;
-                        simple >> face;
-                        bar.getFront().setFacing(face);
-		    } else if (simple == component + ".front.layerno"){
-                        int layer = 0;
-                        simple >> layer;
-                        if (layer == 0){
-                            bar.getFront().setLayer(Element::Background);
-                        } else if (layer == 1){
-                            bar.getFront().setLayer(Element::Foreground);
-                        } else if (layer == 2){
-                            bar.getFront().setLayer(Element::Top);
-                        }
-		    } else if (simple == component + ".front.offset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			bar.getFront().setOffset(x,y);
-		    } else if (simple == component + ".range.x"){
+                    } else if (simple == component + ".range.x"){
                         int x=0,y=0;
                         try{
                             simple >> x >> y;
@@ -424,22 +365,74 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
                         }
                         bar.setRange(x,y);
 		    }
+                    getElementProperties(simple,component,"bg0", bar.getBack0(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"bg1", bar.getBack1(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"mid", bar.getMiddle(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"front", bar.getFront(),sprites,animations,fonts);
                 }
             };
 
-            BarWalk walk(*this,sprites,animations);
+            BarWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
-        } else if (head == "Face"){
-            class FaceWalk: public Ast::Walker{
+        } else if (head == "Powerbar"){
+            class BarWalk: public Ast::Walker{
             public:
-                FaceWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations):
+                BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
                 self(self),
 		sprites(sprites),
-                animations(animations){
+                animations(animations),
+                fonts(fonts){
                 }
                 PlayerInfo & self;
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
+                std::vector<MugenFont *> & fonts;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                        getBar(simple,"p1",self.player1PowerBar);
+                    } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                        getBar(simple,"p2",self.player2PowerBar);
+                    }
+                }
+                void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
+                    if (simple == component + ".pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			bar.setPosition(x,y);
+                    } else if (simple == component + ".range.x"){
+                        int x=0,y=0;
+                        try{
+                            simple >> x >> y;
+                        } catch (const Ast::Exception & e){
+                        }
+                        bar.setRange(x,y);
+		    }
+                    getElementProperties(simple,component,"bg0", bar.getBack0(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"bg1", bar.getBack1(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"mid", bar.getMiddle(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"front", bar.getFront(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"counter", bar.getCounter(),sprites,animations,fonts);
+                }
+            };
+
+            BarWalk walk(*this,sprites,animations,fonts);
+            section->walk(walk);
+        } else if (head == "Face"){
+            class FaceWalk: public Ast::Walker{
+            public:
+                FaceWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                self(self),
+		sprites(sprites),
+                animations(animations),
+                fonts(fonts){
+                }
+                PlayerInfo & self;
+		Mugen::SpriteMap & sprites;
+                std::map<int,MugenAnimation *> & animations;
+                std::vector<MugenFont *> & fonts;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (PaintownUtil::matchRegex(simple.toString(), "p1")){
                         getFace(simple,"p1",self.player1Face);
@@ -455,86 +448,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			face.setPosition(x,y);
-                    } else if (simple == component + ".bg.spr"){
-			int g=0, s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-                        face.getBackground().setSpriteData(g,s);
-			face.getBackground().setSprite(sprites[g][s]);
-		    } else if (simple == component + ".bg.anim"){
-                        int anim;
-                        simple >> anim;
-                        face.getBackground().setAction(animations[anim]);
-		    } else if (simple == component + ".bg.offset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			face.getBackground().setOffset(x,y);
-		    } else if (simple == component + ".bg.scale"){
-			double x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			face.getBackground().setScale(x,y);
-		    } else if (simple == component + ".bg.facing"){
-                        int facing;
-                        simple >> facing;
-                        face.getBackground().setFacing(facing);
-		    } else if (simple == component + ".bg.layerno"){
-                        int layer = 0;
-                        simple >> layer;
-                        if (layer == 0){
-                            face.getBackground().setLayer(Element::Background);
-                        } else if (layer == 1){
-                            face.getBackground().setLayer(Element::Foreground);
-                        } else if (layer == 2){
-                            face.getBackground().setLayer(Element::Top);
-                        }
-		    } else if (simple == component + ".face.spr"){
-			int g=0, s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-                        face.getFace().setSpriteData(g,s);
-		    } else if (simple == component + ".face.offset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			face.getFace().setOffset(x,y);
-		    } else if (simple == component + ".face.scale"){
-			double x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			face.getFace().setScale(x,y);
-		    } else if (simple == component + ".face.facing"){
-                        int facing;
-                        simple >> facing;
-                        face.getFace().setFacing(facing);
-		    } else if (simple == component + ".face.layerno"){
-                        int layer = 0;
-                        simple >> layer;
-                        if (layer == 0){
-                            face.getFace().setLayer(Element::Background);
-                        } else if (layer == 1){
-                            face.getFace().setLayer(Element::Foreground);
-                        } else if (layer == 2){
-                            face.getFace().setLayer(Element::Top);
-                        }
-		    } 
+                    }
+                    getElementProperties(simple,component,"bg", face.getBackground(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"face", face.getFace(),sprites,animations,fonts);
                 }
             };
 
-            FaceWalk walk(*this,sprites,animations);
+            FaceWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
         } else if (head == "Name"){
             class NameWalk: public Ast::Walker{
@@ -564,55 +484,9 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			name.setPosition(x,y);
-                    } else if (simple == component + ".bg.spr"){
-			int g=0, s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-                        name.getBackground().setSpriteData(g,s);
-			name.getBackground().setSprite(sprites[g][s]);
-		    } else if (simple == component + ".bg.anim"){
-                        int anim;
-                        simple >> anim;
-                        name.getBackground().setAction(animations[anim]);
-		    } else if (simple == component + ".bg.offset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			name.getBackground().setOffset(x,y);
-		    } else if (simple == component + ".bg.scale"){
-			double x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			name.getBackground().setScale(x,y);
-		    } else if (simple == component + ".bg.facing"){
-                        int facing;
-                        simple >> facing;
-                        name.getBackground().setFacing(facing);
-		    } else if (simple == component + ".bg.layerno"){
-                        int layer = 0;
-                        simple >> layer;
-                        if (layer == 0){
-                            name.getBackground().setLayer(Element::Background);
-                        } else if (layer == 1){
-                            name.getBackground().setLayer(Element::Foreground);
-                        } else if (layer == 2){
-                            name.getBackground().setLayer(Element::Top);
-                        }
-		    } else if ( simple == "title.font"){
-			int index=0, bank=0, position=0;
-			try {
-			    simple >> index >> bank >> position;
-			} catch (const Ast::Exception & e){
-			    //ignore for now
-			}
-			name.getFont().setFont(self.fonts[index-1],bank,position);
-		    } 
+                    }
+                    getElementProperties(simple,component,"bg", name.getBackground(),sprites,animations,fonts);
+                    getElementProperties(simple,component,"name", name.getFont(),sprites,animations,fonts); 
                 }
             };
 
@@ -620,6 +494,10 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
             section->walk(walk);
         }
     }
+
+    // Set power bars
+    player1PowerBar.setType(Bar::Power);
+    player2PowerBar.setType(Bar::Power);
 }
 
 PlayerInfo::~PlayerInfo(){
@@ -648,6 +526,8 @@ PlayerInfo::~PlayerInfo(){
 void PlayerInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     player1LifeBar.act(player1);
     player2LifeBar.act(player2);
+    player1PowerBar.act(player1);
+    player2PowerBar.act(player2);
     player1Face.act(player1);
     player2Face.act(player2);
     player1Name.act(player1);
@@ -657,6 +537,8 @@ void PlayerInfo::act(Mugen::Character & player1, Mugen::Character & player2){
 void PlayerInfo::render(Element::Layer layer, const Bitmap &bmp){
     player1LifeBar.render(layer,bmp);
     player2LifeBar.render(layer,bmp);
+    player1PowerBar.render(layer,bmp);
+    player2PowerBar.render(layer,bmp);
     player1Face.render(layer,bmp);
     player2Face.render(layer,bmp);
     player1Name.render(layer,bmp);

@@ -94,6 +94,15 @@ class Bar{
 	
 	virtual void act(Character &);
 	virtual void render(Element::Layer layer, const Bitmap &);
+
+        enum Type{
+            Health,
+            Power,
+        };
+
+        virtual inline void setType(Type type){
+            this->type = type;
+        }
 	
 	virtual inline void setPosition(int x, int y){
 	    this->position.x = x;
@@ -120,6 +129,10 @@ class Bar{
         virtual inline FightElement & getFront(){
             return this->front;
         }
+
+        virtual inline FightElement & getCounter(){
+            return this->counter;
+        }
 	
     private:
         //! Position of this Bar
@@ -139,6 +152,12 @@ class Bar{
 	
         //! Range of the actual bar (range.x * range.y / hitPoints)
 	Mugen::Point range;
+
+        //! Counter for Powerbars
+        FightElement counter;
+
+        //! Type of bar defaults to health
+        Type type;
 
         //! Max Health
         int maxHealth;
