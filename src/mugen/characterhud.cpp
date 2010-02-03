@@ -1,6 +1,6 @@
 #include "util/bitmap.h"
 
-#include "mugen/characterhud.h"
+#include "characterhud.h"
 
 #include "util/bitmap.h"
 #include "init.h"
@@ -15,11 +15,11 @@
 #include "globals.h"
 #include "factory/font_render.h"
 
-#include "mugen/mugen_sprite.h"
-#include "mugen/mugen_animation.h"
-#include "mugen/mugen_font.h"
-#include "mugen/mugen_sound.h"
-#include "mugen/character.h"
+#include "mugen_sprite.h"
+#include "mugen_animation.h"
+#include "mugen_font.h"
+#include "mugen_sound.h"
+#include "character.h"
 
 #include "util/timedifference.h"
 #include "ast/all.h"
@@ -42,6 +42,7 @@ text(""),
 bank(0),
 position(0){
 }
+
 FightElement::~FightElement(){
 }
 
@@ -69,7 +70,7 @@ void FightElement::act(){
 void FightElement::render(int x, int y, const Bitmap & bmp){
     switch (type){
 	case IS_ACTION:
-            action->render(effects.facing, effects.vfacing, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
+            action->render(effects.facing == -1, effects.vfacing == -1, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
             break;
 	case IS_SPRITE:
             sprite->render(x + offset.x, y + offset.y, bmp,effects);
@@ -89,7 +90,7 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
     switch (type){
 	case IS_ACTION:
             if (layer == getLayer()){
-	        action->render(effects.facing, effects.vfacing, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
+	        action->render(effects.facing == -1, effects.vfacing == -1, x + offset.x, y + offset.y, bmp, effects.scalex, effects.scaley);
             }
 	    break;
 	case IS_SPRITE:
@@ -143,8 +144,10 @@ maxHealth(0),
 currentHealth(0),
 damage(0){
 }
+
 Bar::~Bar(){
 }
+
 void Bar::act(Mugen::Character & character){
     maxHealth = character.getMaxHealth();
     currentHealth = character.getHealth();
@@ -160,6 +163,7 @@ void Bar::act(Mugen::Character & character){
     //middle.setScale(abs(((damage*range.y)/maxHealth)),1);
     //front.setScale(abs(((currentHealth*range.y)/maxHealth)),1);
 }
+
 void Bar::render(Element::Layer layer, const Bitmap & bmp){
     // Background is full range
     back0.render(layer, position.x, position.y, bmp);
@@ -171,14 +175,16 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     front.render(layer, position.x, position.y, bmp);
 }
 
-
 Face::Face(){
 }
+
 Face::~Face(){
 }
+
 void Face::act(Character & character){
     face.setSprite(character.getSprite(face.getSpriteData().x,face.getSpriteData().y));
 }
+
 void Face::render(const Element::Layer & layer, const Bitmap & bmp){
     background.render(layer,position.x,position.y,bmp);
     face.render(layer,position.x,position.y,bmp);
@@ -186,22 +192,26 @@ void Face::render(const Element::Layer & layer, const Bitmap & bmp){
 
 Name::Name(){
 }
+
 Name::~Name(){
 }
+
 void Name::act(Mugen::Character & character){
     font.setText(character.getName());
 }
+
 void Name::render(const Element::Layer & layer, const Bitmap & bmp){
     background.render(layer, position.x, position.y, bmp);
     font.render(layer, position.x, position.y, bmp);
 }
 
 PlayerInfo::PlayerInfo(const std::string & fightFile){
-    
     std::string baseDir = Mugen::Util::getFileDir(fightFile);
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(fightFile) );
     
-    if( ourDefFile.empty() )throw MugenException( "Cannot locate fight definition file for: " + fightFile );
+    if (ourDefFile.empty()){
+        throw MugenException( "Cannot locate fight definition file for: " + fightFile );
+    }
     
     TimeDifference diff;
     diff.startTime();
@@ -614,8 +624,8 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
 
 PlayerInfo::~PlayerInfo(){
     // Get rid of sprites
-    for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-	for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    for (Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i){
+	for (std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j){
 	    if (j->second){
                 delete j->second;
             }
@@ -671,24 +681,23 @@ void PlayerInfo::parseAnimations(Ast::AstParse & parsed){
     }
 }
 
-
 CharacterHUD::CharacterHUD( const std::string & s ):
 location(s){
 }
 
 CharacterHUD::~CharacterHUD(){
-    
 }
 
 void CharacterHUD::load() throw (MugenException){
-     // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Mugen::Util::getFileDir(location);
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
     // get real basedir
     //baseDir = Mugen::Util::getFileDir( ourDefFile );
     Global::debug(1) << baseDir << endl;
     
-    if( ourDefFile.empty() )throw MugenException( "Cannot locate fight definition file for: " + location );
+    if (ourDefFile.empty()){
+        throw MugenException( "Cannot locate fight definition file for: " + location );
+    }
     
     std::string filesdir = "";
     
@@ -778,6 +787,6 @@ void CharacterHUD::load() throw (MugenException){
 
 void CharacterHUD::act(){
 }
+
 void CharacterHUD::render(const int xaxis, const int yaxis, Bitmap &){
 }
-

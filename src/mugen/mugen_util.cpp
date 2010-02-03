@@ -1062,7 +1062,6 @@ Mugen::Point &Mugen::Point::operator=(const Mugen::Point &p){
 Mugen::Point::~Point(){
 }
 
-
 Mugen::Effects::Effects():
 trans(NONE),
 alphalow(255),

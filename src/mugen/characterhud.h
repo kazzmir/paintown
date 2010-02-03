@@ -108,12 +108,15 @@ class Bar{
         virtual inline FightElement & getBack0(){
             return this->back0;
         }
+
         virtual inline FightElement & getBack1(){
             return this->back1;
         }
+
         virtual inline FightElement & getMiddle(){
             return this->middle;
         }
+
         virtual inline FightElement & getFront(){
             return this->front;
         }

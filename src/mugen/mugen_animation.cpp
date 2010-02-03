@@ -80,6 +80,7 @@ xoffset(0),
 yoffset(0),
 time(0){
 }
+
 MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->loopstart = copy.loopstart;
     this->sprite = copy.sprite;
@@ -87,7 +88,6 @@ MugenFrame::MugenFrame( const MugenFrame &copy ){
     this->yoffset = copy.yoffset;
     this->time = copy.time;
     this->effects = copy.effects;
-
 }
 
 MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
@@ -99,7 +99,6 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
     this->effects = copy.effects;
     
     return *this;
-
 }
 
 MugenFrame::~MugenFrame(){
