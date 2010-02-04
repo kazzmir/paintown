@@ -30,6 +30,7 @@ class FightElement : public Element{
 	virtual void act();
         virtual void render(int x, int y, const Bitmap &);
 	virtual void render(const Element::Layer & layer, int x, int y, const Bitmap &);
+	virtual void play();
 	
 	enum ElementType{
 	    IS_NOTSET =0,
@@ -134,6 +135,18 @@ class Bar{
             return this->counter;
         }
 	
+	virtual inline FightElement & getLevel1Sound(){
+	    return this->level1Sound;
+	}
+	
+	virtual inline FightElement & getLevel2Sound(){
+	    return this->level2Sound;
+	}
+	
+	virtual inline FightElement & getLevel3Sound(){
+	    return this->level3Sound;
+	}
+	
     private:
         //! Position of this Bar
 	Mugen::Point position;
@@ -155,6 +168,15 @@ class Bar{
 
         //! Counter for Powerbars
         FightElement counter;
+	
+	//! Level 1 Sound
+	FightElement level1Sound;
+	
+	//! Level 2 Sound
+	FightElement level2Sound;
+	
+	//! Level 3 Sound
+	FightElement level3Sound;
 
         //! Type of bar defaults to health
         Type type;
@@ -247,6 +269,7 @@ class GameInfo{
 	Mugen::SpriteMap sprites;
         std::map<int, MugenAnimation *> animations;
         std::vector<MugenFont *> fonts;
+	Mugen::SoundMap sounds;
 };
 
 }

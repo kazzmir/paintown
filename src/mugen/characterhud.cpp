@@ -111,6 +111,24 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
     }
 }
 
+void FightElement::play(){
+    switch (type){
+	case IS_ACTION:
+            break;
+	case IS_SPRITE:
+            break;
+	case IS_FONT:
+            break;
+        case IS_SOUND:
+	    sound->play();
+	    break;
+	case IS_NOTSET:
+	default:
+	    // nothing
+	    break;
+    }
+}
+
 void FightElement::setAction(MugenAnimation *anim){
     if (anim){
 	setType(IS_ACTION);
@@ -168,7 +186,18 @@ void Bar::act(Mugen::Character & character){
             //front.setScale(abs(((currentHealth*range.y)/maxHealth)),1);
             break;
         case Power:
-            // Update power bar and count number counter.setText()
+	    // Update power bar and count number counter.setText()
+	    // Play sounds at level 1 2 3
+	    // Level 1 = 1000
+	    // Level 2 = 2000
+	    // Level 3 = 3000
+	    if (character.getPower() == 3000){
+		counter.setText("3");
+	    } else if (character.getPower() >= 2000){
+		counter.setText("2");
+	    } else if (character.getPower() >= 1000){
+		counter.setText("1");
+	    } else counter.setText("0");
             break;
     }
 }
@@ -319,7 +348,12 @@ GameInfo::GameInfo(const std::string & fightFile){
                         simple >> temp;
                         self.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
                         Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
-                    }  
+                    } else if (simple == "snd"){
+			string temp;
+                        simple >> temp;
+                        Mugen::Util::readSounds( Mugen::Util::getCorrectFileLocation(baseDir, temp ), self.sounds);
+                        Global::debug(1) << "Got Sound File: '" << temp << "'" << endl;
+		    } 
                 }
             };
 
@@ -377,22 +411,48 @@ GameInfo::GameInfo(const std::string & fightFile){
         } else if (head == "Powerbar"){
             class BarWalk: public Ast::Walker{
             public:
-                BarWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                BarWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts, Mugen::SoundMap & sounds):
                 self(self),
 		sprites(sprites),
                 animations(animations),
-                fonts(fonts){
+                fonts(fonts),
+		sounds(sounds){
                 }
                 GameInfo & self;
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
                 std::vector<MugenFont *> & fonts;
+		Mugen::SoundMap & sounds;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (PaintownUtil::matchRegex(simple.toString(), "p1")){
                         getBar(simple,"p1",self.player1PowerBar);
                     } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
                         getBar(simple,"p2",self.player2PowerBar);
-                    }
+                    } else if (simple == "level1.snd"){
+			int g=0,s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			self.player1PowerBar.getLevel1Sound().setSound(sounds[g][s]);
+			self.player2PowerBar.getLevel1Sound().setSound(sounds[g][s]);
+		    } else if (simple == "level2.snd"){
+			int g=0,s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			self.player1PowerBar.getLevel2Sound().setSound(sounds[g][s]);
+			self.player2PowerBar.getLevel2Sound().setSound(sounds[g][s]);
+		    } else if (simple == "level3.snd"){
+			int g=0,s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			self.player1PowerBar.getLevel3Sound().setSound(sounds[g][s]);
+			self.player2PowerBar.getLevel3Sound().setSound(sounds[g][s]);
+		    }
                 }
                 void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
                     if (simple == component + ".pos"){
@@ -418,7 +478,7 @@ GameInfo::GameInfo(const std::string & fightFile){
                 }
             };
 
-            BarWalk walk(*this,sprites,animations,fonts);
+            BarWalk walk(*this,sprites,animations,fonts,sounds);
             section->walk(walk);
         } else if (head == "Face"){
             class FaceWalk: public Ast::Walker{
@@ -520,6 +580,15 @@ GameInfo::~GameInfo(){
 	if (*f){
             delete (*f);
         }
+    }
+    
+    // Get rid of sounds
+    for( Mugen::SoundMap::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
+      for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+	  if( j->second ){
+	      delete j->second;
+	  }
+      }
     }
 }
 
