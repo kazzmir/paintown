@@ -16,8 +16,7 @@ namespace PaintownUtil = ::Util;
 using namespace std;
 using namespace Mugen;
 
-//! Data holder
-static Data * data = 0;
+Data *Data::data = 0;
 
 Data::Data(const std::string & configFile):
 motif(""),
@@ -92,191 +91,116 @@ firstRun(){
 Data::~Data(){
 }
 
-void Data::initialize(){
-    if (data){
-        return;
+Data & Data::getInstance(){
+    if (!data){
+        // Grab mugen.cfg
+	data = new Data(Filesystem::find("mugen/data/mugen.cfg")); 
     }
-    // Grab mugen.cfg
-    data = new Data(Filesystem::find("mugen/data/mugen.cfg")); 
+    return *data;
 }
 
-std::string Data::getMugenDirectory(){
+std::string Data::getDirectory(){
     return Filesystem::find("mugen/");
 }
 
-std::string Data::getMugenDataDirectory(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return Filesystem::find(data->getMugenDirectory() + Util::getFileDir(data->getMotif()));
+std::string Data::getDataDirectory(){
+    return Filesystem::find(getDirectory() + Util::getFileDir(getMotif()));
 }
 
-std::string Data::getMugenCharDirectory(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return Filesystem::find(data->getMugenDirectory() + "chars/");
+std::string Data::getCharDirectory(){
+    return Filesystem::find(getDirectory() + "chars/");
 }
 
-std::string Data::getMugenFontDirectory(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return Filesystem::find(data->getMugenDirectory() + "font/");
+std::string Data::getFontDirectory(){
+    return Filesystem::find(getDirectory() + "font/");
 }
 
-std::string Data::getMugenStageDirectory(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return Filesystem::find(data->getMugenDirectory() + "stages/");
+std::string Data::getStageDirectory(){
+    return Filesystem::find(getDirectory() + "stages/");
 }
 
 void Data::setMotif(const std::string & motif){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    data->motif = motif;
+    this->motif = motif;
 }
 
 const std::string & Data::getMotif(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->motif;
+    return motif;
 }
 
 void Data::setDifficulty(int difficulty){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    data->difficulty = difficulty;
+    this->difficulty = difficulty;
 }
 
 int Data::getDifficulty(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->difficulty;
+    return difficulty;
 }
 
 void Data::setLife(int life){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    data->life = life;
+    this->life = life;
 }
 
 int Data::getLife(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    } 
-    return data->life;
+    return life;
 }
 
 void Data::setTime(int time){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    data->time = time;
+    this->time = time;
 }
 
 int Data::getTime(){ 
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->time;
+    return time;
 }
 
 void Data::setSpeed(int speed){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    data->speed = speed;
+    this->speed = speed;
 }
 
 int Data::getSpeed(){ 
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->speed;
+    return speed;
 }
 
 void Data::setTeam1vs2Life(int life){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    data->team1vs2Life = life;
+    this->team1vs2Life = life;
 }
 
 int Data::getTeam1vs2Life(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->team1vs2Life;
+    return team1vs2Life;
 }
 
 void Data::setTeamLoseOnKO(bool lose){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    data->teamLoseOnKO = lose;
+    this->teamLoseOnKO = lose;
 }
 
 bool Data::getTeamLoseOnKO(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    } 
-    return data->teamLoseOnKO;
+    return teamLoseOnKO;
 }
 
 const std::string & Data::getGameType(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->gameType;
+    return gameType;
 }
 
 double Data::getDefaultAttackLifeToPowerMultiplier(){ 
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->defaultAttackLifeToPowerMultiplier;
+    return defaultAttackLifeToPowerMultiplier;
 }
 
 double Data::getDefaultGetHitLifeToPowerMultiplier(){ 
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->defaultGetHitLifeToPowerMultiplier;
+    return defaultGetHitLifeToPowerMultiplier;
 }
 
 double Data::getSuperTargetDefenceMultiplier(){ 
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->superTargetDefenceMultiplier;
+    return superTargetDefenceMultiplier;
 }
 
 void Data::setGameSpeed(int speed){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    data->gameSpeed = speed;
+    this->gameSpeed = speed;
 }
 
 int Data::getGameSpeed(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }
-    return data->gameSpeed;
+    return gameSpeed;
 }
 
 bool Data::getDrawShadows(){
-    if (!data){
-        throw MugenException("Data not initialized!");
-    }    
-    return data->drawShadows;
+    return drawShadows;
 }
 
 

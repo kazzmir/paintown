@@ -22,9 +22,6 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
         throw LoadException("Not a mugen motif menu");
     }
     
-    // Load up configuration
-    Mugen::Data::initialize();
-
     while ( token->hasTokens() ){
         try{
             Token * tok;
@@ -40,7 +37,7 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
                 // Filename
                 *tok >> temp;
                 // Set the default motif
-                Mugen::Data::setMotif(temp);
+                Mugen::Data::getInstance().setMotif(temp);
             }else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -55,7 +52,7 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
         } 
     }
     // Load menu with default motif
-    _menu = new MugenMenu(Mugen::Data::getMotif());
+    _menu = new MugenMenu(Mugen::Data::getInstance().getMotif());
     // Set this menu as an option
     _menu->setAsOption(true);
 

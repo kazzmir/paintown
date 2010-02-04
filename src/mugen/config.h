@@ -10,65 +10,68 @@ namespace Mugen{
 class Data{
     public:
 
-        static void initialize();
+        static Data & getInstance();
 
-        static std::string getMugenDirectory();
+        std::string getDirectory();
 
-        static std::string getMugenDataDirectory();
+        std::string getDataDirectory();
 
-        static std::string getMugenCharDirectory();
+        std::string getCharDirectory();
         
-        static std::string getMugenFontDirectory();
+        std::string getFontDirectory();
 
-        static std::string getMugenStageDirectory();
+        std::string getStageDirectory();
         
-        static void setMotif(const std::string & motif);
+        void setMotif(const std::string & motif);
 
-        static const std::string & getMotif();
+        const std::string & getMotif();
 
-        static void setDifficulty(int difficulty);
+        void setDifficulty(int difficulty);
 
-        static int getDifficulty();
+        int getDifficulty();
 
-        static void setLife(int life);
+        void setLife(int life);
 
-        static int getLife();
+        int getLife();
 
-        static void setTime(int time);
+        void setTime(int time);
         
-        static int getTime();
+        int getTime();
 
-        static void setSpeed(int speed);
+        void setSpeed(int speed);
         
-        static int getSpeed();
+        int getSpeed();
 
-        static void setTeam1vs2Life(int life);
+        void setTeam1vs2Life(int life);
 
-        static int getTeam1vs2Life();
+        int getTeam1vs2Life();
 
-        static void setTeamLoseOnKO(bool lose);
+        void setTeamLoseOnKO(bool lose);
 
-        static bool getTeamLoseOnKO();
+        bool getTeamLoseOnKO();
 
-        static const std::string & getGameType();
+        const std::string & getGameType();
 
-        static double getDefaultAttackLifeToPowerMultiplier();
+        double getDefaultAttackLifeToPowerMultiplier();
 
-        static double getDefaultGetHitLifeToPowerMultiplier();
+        double getDefaultGetHitLifeToPowerMultiplier();
 
-        static double getSuperTargetDefenceMultiplier();
+        double getSuperTargetDefenceMultiplier();
 
-        static void setGameSpeed(int speed);
+        void setGameSpeed(int speed);
         
-        static int getGameSpeed();
+        int getGameSpeed();
 
-        static bool getDrawShadows();
+        bool getDrawShadows();
 
         /* *TODO add in remaining getters */ 
 
     private:
         Data(const std::string & configFile);
         ~Data();
+	
+	//! Instance
+	static Data * data;
 
         //! Current Set Motif
         std::string motif;
