@@ -244,6 +244,43 @@ class Name{
 	FightElement font;
 };
 
+class GameTime{
+    public:
+	GameTime();
+	virtual ~GameTime();
+	virtual void act();
+	virtual void render(const Element::Layer &, const Bitmap &);
+	virtual void start();
+	virtual void stop();
+	virtual void setPosition(int x, int y){
+            this->position.x = x;
+            this->position.y = y;
+        }
+	virtual void setFrameCount(int x){
+	    this->frameCount = x;
+	}
+	virtual inline FightElement & getBackground(){
+	    return this->background;
+	}
+	virtual inline FightElement & getTimer(){
+	    return this->timer;
+	}
+	virtual inline bool hasExpired(){
+	    if (time <=0){
+		return true;
+	    }
+	    return false;
+	}
+    private:
+	Mugen::Point position;
+	FightElement background;
+	FightElement timer;
+	int frameCount;
+	int time;
+	int ticker;
+	bool started;
+};
+
 /*! Player HUD *TODO Need to compensate for team stuff later */
 class GameInfo{
     public:
@@ -252,11 +289,27 @@ class GameInfo{
 
         virtual void act(Mugen::Character & player1, Mugen::Character & player2);
         virtual void render(Element::Layer layer, const Bitmap &);
-    
+	
+	enum State{
+	    Intro,
+	    RoundIndicator,
+	    StartGame,
+	    KO,
+	    Draw,
+	    EndGame,
+	};
+	
+	virtual void setState(const State & state, Character & player1, Character & player2);
+	
+	virtual inline const State & getState(){
+	    return this->state;
+	}
+	
     private:
         
         void parseAnimations(Ast::AstParse & parsed);
-
+	
+	//! Player Data
 	Bar player1LifeBar;
         Bar player2LifeBar;
 	Bar player1PowerBar;
@@ -266,10 +319,16 @@ class GameInfo{
 	Name player1Name;
         Name player2Name;
 	
+	//! Game Timer
+	GameTime timer;
+	
 	Mugen::SpriteMap sprites;
         std::map<int, MugenAnimation *> animations;
         std::vector<MugenFont *> fonts;
 	Mugen::SoundMap sounds;
+	
+	//! Game State
+	State state;
 };
 
 }

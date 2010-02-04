@@ -2,6 +2,8 @@
 
 #include "characterhud.h"
 
+#include <ostream>
+
 #include "util/bitmap.h"
 #include "init.h"
 #include "resource.h"
@@ -15,6 +17,7 @@
 #include "globals.h"
 #include "factory/font_render.h"
 
+#include "mugen/config.h"
 #include "mugen_sprite.h"
 #include "mugen_animation.h"
 #include "mugen_font.h"
@@ -246,7 +249,11 @@ void Name::render(const Element::Layer & layer, const Bitmap & bmp){
 }
 
 static void getElementProperties(const Ast::AttributeSimple & simple, const std::string & component, const std::string & elementName, FightElement & element, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts){
-    if (simple == component + "." + elementName + ".spr"){
+    std::string compCopy = component;
+    if (!compCopy.empty()){
+	compCopy+=".";
+    }
+    if (simple == compCopy + elementName + ".spr"){
         int g=0, s=0;
         try{
             simple >> g >> s;
@@ -254,11 +261,11 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
         }
         element.setSpriteData(g,s);
         element.setSprite(sprites[g][s]);
-    } else if (simple == component + "." + elementName + ".anim"){
+    } else if (simple == compCopy + elementName + ".anim"){
         int anim;
         simple >> anim;
         element.setAction(animations[anim]);
-    } else if ( simple == component + "." + elementName + ".font"){
+    } else if ( simple == compCopy + elementName + ".font"){
 	int index=0, bank=0, position=0;
 	try {
 	    simple >> index >> bank >> position;
@@ -266,15 +273,15 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
 	    //ignore for now
 	}
 	element.setFont(fonts[index-1],bank,position);
-    } else if (simple == component + "." + elementName + ".facing"){
+    } else if (simple == compCopy + elementName + ".facing"){
         int face;
         simple >> face;
         element.setFacing(face);
-    } else if (simple == component + "." + elementName + ".vfacing"){
+    } else if (simple == compCopy + elementName + ".vfacing"){
         int face;
         simple >> face;
         element.setVFacing(face);
-    } else if (simple == component + "." + elementName + ".layerno"){
+    } else if (simple == compCopy + elementName + ".layerno"){
         int layer = 0;
         simple >> layer;
         if (layer == 0){
@@ -284,25 +291,62 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
         } else if (layer == 2){
             element.setLayer(Element::Top);
         }
-    } else if (simple == component + "." +  elementName + ".offset"){
+    } else if (simple == compCopy +  elementName + ".offset"){
         int x=0, y=0;
         try{
             simple >> x >> y;
         } catch (const Ast::Exception & e){
         }
         element.setOffset(x,y);
-    } else if (simple == component + "." + elementName + ".scale"){
+    } else if (simple == compCopy + elementName + ".scale"){
         double x=1, y=1;
         try{
             simple >> x >> y;
         } catch (const Ast::Exception & e){
         }
         element.setScale(x,y);
-    } else if (simple == component + "." + elementName + ".displaytime"){
+    } else if (simple == compCopy + elementName + ".displaytime"){
         int time;
         simple >> time;
         element.setDisplayTime(time);
     } 
+}
+
+GameTime::GameTime():
+frameCount(0),
+time(Mugen::Data::getInstance().getTime()),
+ticker(0),
+started(false){
+}
+
+GameTime::~GameTime(){
+}
+
+void GameTime::act(){
+    if (started){
+	ticker++;
+	if (ticker >= frameCount){
+	    time--;
+	    ticker = 0;
+	}
+    }
+    std::ostringstream str;
+    str << time;
+    timer.setText(str.str());
+}
+
+void GameTime::render(const Element::Layer & layer, const Bitmap & bmp){
+    background.render(layer, position.x, position.y, bmp);
+    timer.render(layer, position.x, position.y, bmp);
+}
+void GameTime::start(){
+    // Resets the time just in case
+    time = Mugen::Data::getInstance().getTime();
+    started = true;
+    ticker = 0;
+}
+void GameTime::stop(){
+    started = false;
 }
 
 GameInfo::GameInfo(const std::string & fightFile){
@@ -552,6 +596,39 @@ GameInfo::GameInfo(const std::string & fightFile){
 
             NameWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
+        } else if (head == "Time"){
+            class TimeWalk: public Ast::Walker{
+            public:
+                TimeWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                self(self),
+		sprites(sprites),
+		animations(animations),
+		fonts(fonts){
+                }
+                GameInfo & self;
+		Mugen::SpriteMap & sprites;
+		std::map<int,MugenAnimation *> & animations;
+		std::vector<MugenFont *> & fonts;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			self.timer.setPosition(x,y);
+		    } else if (simple == "framespercount"){
+			int x=0;
+			simple >> x;
+			self.timer.setFrameCount(x);
+		    } 
+		    getElementProperties(simple,"","bg", self.timer.getBackground(),sprites,animations,fonts);
+		    getElementProperties(simple,"","counter", self.timer.getTimer(),sprites,animations,fonts);
+		}
+            };
+
+            TimeWalk walk(*this,sprites,animations,fonts);
+            section->walk(walk);
         }
     }
 
@@ -601,6 +678,7 @@ void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     player2Face.act(player2);
     player1Name.act(player1);
     player2Name.act(player2);
+    timer.act();
 }
 
 void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
@@ -612,6 +690,35 @@ void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
     player2Face.render(layer,bmp);
     player1Name.render(layer,bmp);
     player2Name.render(layer,bmp);
+    timer.render(layer,bmp);
+}
+
+void GameInfo::setState(const State & state, Character & player1, Character & player2){
+    this->state = state;
+    switch (state){
+	case Intro:
+	    // Set both character intro state
+	    break;
+	case RoundIndicator:
+	    // Set both character Control to no control stand
+	    break;
+	case StartGame:
+	    // Resume control state to characters and start time
+	    timer.start();
+	    break;
+	case KO:
+	    // Set character state to win for player that wins
+	    break;
+	case Draw:
+	    // Set both character state to draw
+	    break;
+	case EndGame:
+	    timer.stop();
+	    // End the game
+	    break;
+	default:
+	    break;
+    }
 }
 
 void GameInfo::parseAnimations(Ast::AstParse & parsed){
