@@ -214,5 +214,3 @@ int Data::getGameSpeed(){
 bool Data::getDrawShadows(){
     return drawShadows;
 }
-
-

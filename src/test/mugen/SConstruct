@@ -20,7 +20,6 @@ test/mugen/mugen_item_content.cpp
 test/mugen/mugen_item.cpp
 test/mugen/background.cpp
 test/mugen/parse-cache.cpp
-test/mugen/characterhud.cpp
 test/gui/rectarea.cpp
 test-parser/air.cpp
 test-parser/def.cpp
@@ -68,8 +67,8 @@ test/mugen/mugen_animation.cpp
 test/mugen/background.cpp
 test/mugen/mugen_item_content.cpp
 test/mugen/mugen_item.cpp
-test/mugen/characterhud.cpp
 test/mugen/parse-cache.cpp
+test/mugen/characterhud.cpp
 test/gui/rectarea.cpp
 test-parser/air.cpp
 test-parser/def.cpp
@@ -107,5 +106,5 @@ test/windows/system.cpp
 
 x = []
 x.append(testEnv.Program('load', load_source))
-x.append(testEnv.Program('load-stage', stage_source))
+# x.append(testEnv.Program('load-stage', stage_source))
 Return('x')
