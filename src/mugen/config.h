@@ -15,12 +15,17 @@ class Data{
         std::string getDirectory();
 
         std::string getDataDirectory();
+	
+	std::string getMotifDirectory();
 
         std::string getCharDirectory();
         
         std::string getFontDirectory();
 
         std::string getStageDirectory();
+	
+	//! Gets a file from the current motif, if it doesn't exist then check the default motif
+	std::string getFileFromMotif(const std::string & file);
         
         void setMotif(const std::string & motif);
 

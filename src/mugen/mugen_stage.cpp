@@ -31,6 +31,7 @@
 
 #include "mugen_animation.h"
 #include "background.h"
+#include "mugen/config.h"
 #include "mugen_item.h"
 #include "mugen_item_content.h"
 #include "mugen_section.h"
@@ -181,7 +182,7 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false),
-playerHUD(0){
+gameHUD(0){
 }
 
 MugenStage::MugenStage( const char * location ):
@@ -251,13 +252,13 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false),
-playerHUD(0){
+gameHUD(0){
 }
 
 MugenStage::~MugenStage(){
     cleanup();
-    if (playerHUD){
-        delete playerHUD;
+    if (gameHUD){
+        delete gameHUD;
     }
 }
 
@@ -585,10 +586,10 @@ void MugenStage::load(){
     shadowIntensity = Util::min((shadow.c + shadow.y + shadow.m + shadow.k * 2) / 3, 255);
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 
-    Mugen::Util::readSprites(Filesystem::find("mugen/data/fightfx.sff"), "", effects);
-    sparks = Mugen::Util::loadAnimations(Filesystem::find("mugen/data/fightfx.air"), effects);
+    Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif("fightfx.sff"), "", effects);
+    sparks = Mugen::Util::loadAnimations(Mugen::Data::getInstance().getFileFromMotif("fightfx.air"), effects);
 
-    Mugen::Util::readSounds(Filesystem::find("mugen/data/common.snd"), sounds);
+    Mugen::Util::readSounds(Mugen::Data::getInstance().getFileFromMotif("common.snd"), sounds);
 
     /*
     for (Mugen::SpriteMap::iterator it = effects.begin(); it != effects.end(); it++){
@@ -613,7 +614,7 @@ void MugenStage::load(){
     
     // *FIXME Use current motif instead of direct file access
     try{
-        playerHUD = new Mugen::PlayerInfo(Filesystem::find("mugen/data/fight.def"));
+        gameHUD = new Mugen::GameInfo(Mugen::Data::getInstance().getFileFromMotif("fight.def"));
     } catch (const MugenException &e){
         Global::debug(0) << "Problem loading HUD. Reason: " << e.getReason() << endl;
     }
@@ -934,7 +935,7 @@ void MugenStage::logic( ){
     console->act();
 
     // Player HUD Need to make this more ellegant than casting and passing from array
-    playerHUD->act(*((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
+    gameHUD->act(*((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 }
 	
 void MugenStage::render(Bitmap *work){
@@ -945,7 +946,7 @@ void MugenStage::render(Bitmap *work){
     background->renderBackground((int) camerax, (int) cameray, *board);
 
     //! Render layer 0 HUD
-    playerHUD->render(Mugen::Element::Background, *board);
+    gameHUD->render(Mugen::Element::Background, *board);
     
     // Players go in here
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
@@ -969,14 +970,14 @@ void MugenStage::render(Bitmap *work){
     }
 
     //! Render layer 1 HUD
-    playerHUD->render(Mugen::Element::Foreground, *board);
+    gameHUD->render(Mugen::Element::Foreground, *board);
 
     // Foreground
     // background->renderForeground( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     background->renderForeground((int) camerax, (int) cameray, *board);
     
     //! Render layer 2 HUD
-    playerHUD->render(Mugen::Element::Top, *board);
+    gameHUD->render(Mugen::Element::Top, *board);
 
     // Player debug
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){

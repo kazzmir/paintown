@@ -104,6 +104,10 @@ std::string Data::getDirectory(){
 }
 
 std::string Data::getDataDirectory(){
+    return Filesystem::find(getDirectory() + "data/");
+}
+
+std::string Data::getMotifDirectory(){
     return Filesystem::find(getDirectory() + Util::getFileDir(getMotif()));
 }
 
@@ -117,6 +121,14 @@ std::string Data::getFontDirectory(){
 
 std::string Data::getStageDirectory(){
     return Filesystem::find(getDirectory() + "stages/");
+}
+
+std::string Data::getFileFromMotif(const std::string & file){
+    try{
+	return Filesystem::find(getMotifDirectory() + Util::stripDir(file));
+    } catch (const Filesystem::NotFound & nf){
+	return Filesystem::find(getDataDirectory() + Util::stripDir(file));
+    }
 }
 
 void Data::setMotif(const std::string & motif){

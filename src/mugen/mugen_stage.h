@@ -19,7 +19,7 @@ namespace Mugen{
     class Character;
     class Background;
     class Spark;
-    class PlayerInfo;
+    class GameInfo;
 }
 
 namespace Ast{
@@ -445,7 +445,7 @@ protected:
         std::vector<Mugen::Spark*> showSparks;
         
         // Character huds
-        Mugen::PlayerInfo *playerHUD;
+        Mugen::GameInfo *gameHUD;
 };
 
 #endif

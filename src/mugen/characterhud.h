@@ -223,10 +223,10 @@ class Name{
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */
-class PlayerInfo{
+class GameInfo{
     public:
-	PlayerInfo(const std::string & fightFile);
-	virtual ~PlayerInfo();
+	GameInfo(const std::string & fightFile);
+	virtual ~GameInfo();
 
         virtual void act(Mugen::Character & player1, Mugen::Character & player2);
         virtual void render(Element::Layer layer, const Bitmap &);
@@ -247,48 +247,6 @@ class PlayerInfo{
 	Mugen::SpriteMap sprites;
         std::map<int, MugenAnimation *> animations;
         std::vector<MugenFont *> fonts;
-};
-
-/*! Character HUD ... lifebar, face, etc */
-class CharacterHUD{
-    public:
-	CharacterHUD( const std::string & s );
-	virtual ~CharacterHUD();
-	
-	virtual void load() throw (MugenException);
-	
-	void act();
-	void render(const int xaxis, const int yaxis, Bitmap &);
-	
-    private:
-	/* files */
-	std::string location;
-	std::string sffFile;
-	std::string sndFile;
-	std::vector<std::string>fontFiles;
-	std::string fightfx_sff_File;
-	std::string fightfx_air_File;
-	std::string common_snd_File;
-	
-	/* player data */
-	std::vector<PlayerInfo *> regularTeam1;
-	std::vector<PlayerInfo *> regularTeam2;
-	std::vector<PlayerInfo *> simultaneousTeam1;
-	std::vector<PlayerInfo *> simultaneousTeam2;
-	std::vector<PlayerInfo *> turnsTeam1;
-	std::vector<PlayerInfo *> turnsTeam2;
-	
-	/* Time Display */
-	
-	/* Combo Display */
-	
-	/* Round and Fight Display */
-	
-	/* KO Display */
-	
-	/* Win Icon... I guess this is the markers for wins */
-	
-	
 };
 
 }

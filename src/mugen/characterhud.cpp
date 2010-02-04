@@ -276,7 +276,7 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
     } 
 }
 
-PlayerInfo::PlayerInfo(const std::string & fightFile){
+GameInfo::GameInfo(const std::string & fightFile){
     std::string baseDir = Mugen::Util::getFileDir(fightFile);
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(fightFile) );
     
@@ -296,12 +296,12 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
         if (head == "Files"){
             class FileWalk: public Ast::Walker{
             public:
-                FileWalk(std::string & baseDir, PlayerInfo & self):
+                FileWalk(std::string & baseDir, GameInfo & self):
                 baseDir(baseDir),
 		self(self){
                 }
                 std::string & baseDir;
-		PlayerInfo & self;
+		GameInfo & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "sff"){
 			std::string sff;
@@ -332,13 +332,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
         } else if (head == "Lifebar"){
             class BarWalk: public Ast::Walker{
             public:
-                BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                BarWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
                 self(self),
 		sprites(sprites),
                 animations(animations),
                 fonts(fonts){
                 }
-                PlayerInfo & self;
+                GameInfo & self;
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
                 std::vector<MugenFont *> & fonts;
@@ -377,13 +377,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
         } else if (head == "Powerbar"){
             class BarWalk: public Ast::Walker{
             public:
-                BarWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                BarWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
                 self(self),
 		sprites(sprites),
                 animations(animations),
                 fonts(fonts){
                 }
-                PlayerInfo & self;
+                GameInfo & self;
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
                 std::vector<MugenFont *> & fonts;
@@ -423,13 +423,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
         } else if (head == "Face"){
             class FaceWalk: public Ast::Walker{
             public:
-                FaceWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                FaceWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
                 self(self),
 		sprites(sprites),
                 animations(animations),
                 fonts(fonts){
                 }
-                PlayerInfo & self;
+                GameInfo & self;
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
                 std::vector<MugenFont *> & fonts;
@@ -459,13 +459,13 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
         } else if (head == "Name"){
             class NameWalk: public Ast::Walker{
             public:
-                NameWalk(PlayerInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                NameWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
                 self(self),
 		sprites(sprites),
 		animations(animations),
 		fonts(fonts){
                 }
-                PlayerInfo & self;
+                GameInfo & self;
 		Mugen::SpriteMap & sprites;
 		std::map<int,MugenAnimation *> & animations;
 		std::vector<MugenFont *> & fonts;
@@ -500,7 +500,7 @@ PlayerInfo::PlayerInfo(const std::string & fightFile){
     player2PowerBar.setType(Bar::Power);
 }
 
-PlayerInfo::~PlayerInfo(){
+GameInfo::~GameInfo(){
     // Get rid of sprites
     for (Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i){
 	for (std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j){
@@ -523,7 +523,7 @@ PlayerInfo::~PlayerInfo(){
     }
 }
 
-void PlayerInfo::act(Mugen::Character & player1, Mugen::Character & player2){
+void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     player1LifeBar.act(player1);
     player2LifeBar.act(player2);
     player1PowerBar.act(player1);
@@ -534,7 +534,7 @@ void PlayerInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     player2Name.act(player2);
 }
 
-void PlayerInfo::render(Element::Layer layer, const Bitmap &bmp){
+void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
     player1LifeBar.render(layer,bmp);
     player2LifeBar.render(layer,bmp);
     player1PowerBar.render(layer,bmp);
@@ -545,7 +545,7 @@ void PlayerInfo::render(Element::Layer layer, const Bitmap &bmp){
     player2Name.render(layer,bmp);
 }
 
-void PlayerInfo::parseAnimations(Ast::AstParse & parsed){
+void GameInfo::parseAnimations(Ast::AstParse & parsed){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
@@ -563,112 +563,4 @@ void PlayerInfo::parseAnimations(Ast::AstParse & parsed){
     }
 }
 
-CharacterHUD::CharacterHUD( const std::string & s ):
-location(s){
-}
 
-CharacterHUD::~CharacterHUD(){
-}
-
-void CharacterHUD::load() throw (MugenException){
-    std::string baseDir = Mugen::Util::getFileDir(location);
-    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
-    // get real basedir
-    //baseDir = Mugen::Util::getFileDir( ourDefFile );
-    Global::debug(1) << baseDir << endl;
-    
-    if (ourDefFile.empty()){
-        throw MugenException( "Cannot locate fight definition file for: " + location );
-    }
-    
-    std::string filesdir = "";
-    
-    Global::debug(1) << "Got subdir: " << filesdir << endl;
-    
-    TimeDifference diff;
-    diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
-    diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
-    
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
-        Ast::Section * section = *section_it;
-	std::string head = section->getName();
-        /* this should really be head = Mugen::Util::fixCase(head) */
-	head = Mugen::Util::fixCase(head);
-
-        // Global::debug(1) << "Name: " << head << endl;
-        if (head == "files"){
-            class FileWalk: public Ast::Walker{
-            public:
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "sff"){
-                        // Sprite file
-                    } else if (simple == "snd"){
-                        // Sound file
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
-                            /*string temp;
-                            simple >> temp;
-                            fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
-                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
-			    */
-		    } else if (simple == "fightfx.sff"){
-		    } else if (simple == "fightfx.air"){
-		    } else if (simple == "common.snd"){
-		    } else {
-                        Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
-                    }
-                }
-            };
-
-            FileWalk walk;
-            section->walk(walk);
-	} if (head == "lifebar"){
-            class LifeBarWalk: public Ast::Walker{
-            public:
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "sff"){
-                        // Sprite file
-                    } else if (simple == "snd"){
-                        // Sound file
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
-                            /*string temp;
-                            simple >> temp;
-                            fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
-                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
-			    */
-		    } else if (simple == "fightfx.sff"){
-		    } else if (simple == "fightfx.air"){
-		    } else if (simple == "common.snd"){
-		    } else {
-                        Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
-                    }
-                }
-            };
-
-            LifeBarWalk walk;
-            section->walk(walk);
-	} else if (head == "lifebar"){
-	    
-	} else if (head == "simul lifebar"){
-	} else if (head == "turns lifebar"){
-	} else if (head == "powerbar"){
-	} else if (head == "face"){
-	} else if (head == "simul face"){
-	} else if (head == "turns face"){
-	} else if (head == "name"){
-	} else if (head == "simul name"){
-	} else if (head == "turns name"){
-	} else if (head == "time"){
-	} else if (head == "combo"){
-	} else if (head == "round"){
-	} else if (head == "winicon"){
-	} else throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
-    }
-}
-
-void CharacterHUD::act(){
-}
-
-void CharacterHUD::render(const int xaxis, const int yaxis, Bitmap &){
-}
