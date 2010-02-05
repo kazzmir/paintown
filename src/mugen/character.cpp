@@ -2894,5 +2894,9 @@ double Character::minZDistance() const{
 
 void Character::attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&){
 }
+        
+int Character::getCurrentCombo() const {
+    return 0;
+}
 
 }

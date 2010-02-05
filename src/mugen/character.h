@@ -1263,6 +1263,8 @@ public:
             airjumpheight = f;
         }
 
+        virtual int getCurrentCombo() const;
+
 protected:
     void initialize();
     
