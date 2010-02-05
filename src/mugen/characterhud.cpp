@@ -1,21 +1,18 @@
 #include "util/bitmap.h"
-
 #include "characterhud.h"
 
 #include <ostream>
 
-#include "util/bitmap.h"
-#include "init.h"
-#include "resource.h"
-#include "util/funcs.h"
-#include "game/console.h"
-#include "object/animation.h"
-#include "object/object.h"
-#include "object/character.h"
-#include "object/object_attack.h"
-#include "object/player.h"
-#include "globals.h"
-#include "factory/font_render.h"
+// #include "init.h"
+// #include "resource.h"
+// #include "util/funcs.h"
+// #include "object/animation.h"
+// #include "object/object.h"
+// #include "object/character.h"
+// #include "object/object_attack.h"
+// #include "object/player.h"
+// #include "globals.h"
+// #include "factory/font_render.h"
 
 #include "mugen/config.h"
 #include "mugen_sprite.h"
@@ -738,5 +735,3 @@ void GameInfo::parseAnimations(Ast::AstParse & parsed){
 	} 
     }
 }
-
-
