@@ -2355,6 +2355,14 @@ void Character::fixAssumptions(){
         }
 
         {
+
+            string jumpCommand = "internal:double-jump-command";
+            vector<Ast::Key*> keys;
+            keys.push_back(new Ast::KeyModifier(Ast::KeyModifier::Release, new Ast::KeySingle("U")));
+            keys.push_back(new Ast::KeySingle("U"));
+            Command * doubleJumpCommand = new Command(jumpCommand, new Ast::KeyList(keys), 5, 0);
+            addCommand(doubleJumpCommand);
+
             StateController * controller = new StateController("double jump");
             controller->setType(StateController::InternalCommand);
             controller->setInternal(&Mugen::Character::doubleJump);
@@ -2371,7 +2379,9 @@ void Character::fixAssumptions(){
                         new Ast::SimpleIdentifier("internal:extra-jumps")));
             controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holdup"))));
+                        // new Ast::String(new string("holdup")
+                        new Ast::String(new string(jumpCommand)
+                            )));
             states[-1]->addController(controller);
         }
     }
