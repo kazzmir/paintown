@@ -147,8 +147,13 @@ void StateController::addSystemVariable(int number, Ast::Value * variable){
 
 bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
     RuntimeValue result = evaluate(expression, Environment(character, commands));
-    /* might throw an exception */
-    return toBool(result);
+    try{
+        return toBool(result);
+    } catch (const MugenException & e){
+        ostringstream out;
+        out << "Expression `" << expression->toString() << "' " << e.getReason();
+        throw MugenException(out.str());
+    }
 }
 
 bool StateController::canTrigger(const Character & character, const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
