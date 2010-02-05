@@ -316,6 +316,7 @@ class Combo{
 	}
     private:
 	Mugen::Point position;
+	Mugen::Point currentPosition;
 	Side side;
 	int startOffset;
 	bool showing;
@@ -323,6 +324,7 @@ class Combo{
 	int ticker;
 	bool shake;
 	int shakeTime;
+	int total;
 	FightElement combo;
 	FightElement text;
 };
@@ -368,6 +370,10 @@ class GameInfo{
 	
 	//! Game Timer
 	GameTime timer;
+	
+	//! Combo
+	Combo team1Combo;
+	Combo team2Combo;
 	
 	Mugen::SpriteMap sprites;
         std::map<int, MugenAnimation *> animations;

@@ -378,12 +378,57 @@ showing(false),
 displayTime(0),
 ticker(0),
 shake(false),
-shakeTime(0){
+shakeTime(0),
+total(0){
 }
 Combo::~Combo(){
 }
 void Combo::act(Mugen::Character & character){
-    
+    if (character.getCurrentCombo()){
+	if (total == 0){
+	    showing = true;
+	    ticker = 0;
+	    switch (side){
+		case Left:
+		    currentPosition = position;
+		    currentPosition.x += startOffset;
+		    break;
+		case Right:
+		    currentPosition = position;
+		    currentPosition.x += abs(startOffset);
+		    break;
+		default:
+		    break;
+	    }
+	}
+	if (total != character.getCurrentCombo()){
+	    if (shake){
+		shakeTime = 10;
+		ticker = 0;
+	    }
+	}
+	total = character.getCurrentCombo();
+    }
+    if (shakeTime > 0){
+	shakeTime--;
+    }
+    if (showing && !(currentPosition == position)){
+	switch (side){
+	    case Left:
+		currentPosition.x++;
+		break;
+	    case Right:
+		currentPosition.x--;
+		break;
+	    default:
+		break;
+	}
+    } else if (showing && (currentPosition == position)){
+	if (ticker == displayTime){
+	    showing = false;
+	}
+	ticker++;
+    }
 }
 void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
 }
@@ -721,6 +766,8 @@ void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     player1Name.act(player1);
     player2Name.act(player2);
     timer.act();
+    team1Combo.act(player1);
+    team2Combo.act(player2);
 }
 
 void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
@@ -733,6 +780,8 @@ void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
     player1Name.render(layer,bmp);
     player2Name.render(layer,bmp);
     timer.render(layer,bmp);
+    team1Combo.render(layer,bmp);
+    team2Combo.render(layer,bmp);
 }
 
 void GameInfo::setState(const State & state, Character & player1, Character & player2){
