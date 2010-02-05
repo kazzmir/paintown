@@ -2654,11 +2654,13 @@ void Character::didHit(Character * enemy){
     addPower(states[getCurrentState()]->getPower());
 }
 
-void Character::wasHit(Character * enemy, const HitDefinition & hisHit){
+void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hisHit){
     hitState.update(getY() > 0, hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
     lastTicket = enemy->getTicket();
+
+    takeDamage(stage, enemy, hisHit.damage.damage);
 
     juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
     

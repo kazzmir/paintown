@@ -25,6 +25,7 @@ class MugenItemContent;
 class MugenSprite;
 class MugenSound;
 class MugenAnimation;
+class MugenStage;
 
 namespace Mugen{
 
@@ -208,6 +209,10 @@ struct HitDefinition{
      * hit_damage is the damage that P2 takes when hit by P2. The optional guard_damage parameter is the damage taken by P2 if the hit is guarded. Both default to zero if omitted.
      */
     struct Damage{
+        Damage():
+            damage(0), guardDamage(0){
+            }
+
         int damage;
         int guardDamage;
     } damage;
@@ -1201,7 +1206,7 @@ public:
         void didHit(Character * enemy);
 
         /* `enemy' hit `this' with hitdef `hit' */
-        void wasHit(Character * enemy, const HitDefinition & hit);
+        void wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hit);
 
         virtual const HitState & getHitState() const {
             return hitState;

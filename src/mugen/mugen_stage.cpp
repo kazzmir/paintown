@@ -730,7 +730,7 @@ void MugenStage::physics(Object * player){
                     addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), mugen->getHit()->spark);
                     playSound(mugen->getHit()->hitSound.group, mugen->getHit()->hitSound.item, mugen->getHit()->hitSound.own);
                     mugen->didHit(enemy);
-                    enemy->wasHit(mugen, *mugen->getHit());
+                    enemy->wasHit(*this, mugen, *mugen->getHit());
                     // enemy->changeState(5000);
                 }
             }
