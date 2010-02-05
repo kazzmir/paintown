@@ -612,6 +612,7 @@ control(0),
 changeVelocity(false),
 changePhysics(false),
 changePower(false),
+powerAdd(0),
 moveType(Move::Idle),
 /* FIXME: whats the default juggle? */
 juggle(1){
@@ -2642,10 +2643,15 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
     */
 }
         
+void Character::addPower(double d){
+    power += d;
+}
+        
 void Character::didHit(Character * enemy){
     if (getHit() != NULL){
         hitState.shakeTime = getHit()->pause.player1;
     }
+    addPower(states[getCurrentState()]->getPower());
 }
 
 void Character::wasHit(Character * enemy, const HitDefinition & hisHit){

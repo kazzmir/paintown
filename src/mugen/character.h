@@ -782,6 +782,11 @@ public:
     virtual void setVelocity(double x, double y);
     virtual void setPhysics(Physics::Type p);
     virtual void setPower(int power);
+
+    virtual inline int getPower() const {
+        return powerAdd;
+    }
+
     virtual void setMoveType(const std::string & type);
 
     virtual inline const std::vector<StateController*> & getControllers() const {
@@ -1044,6 +1049,8 @@ public:
         virtual inline double getPower() const {
             return power;
         }
+
+        virtual void addPower(double d);
 
         virtual inline bool hasControl() const {
             return has_control;
