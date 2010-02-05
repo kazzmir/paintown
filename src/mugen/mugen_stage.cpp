@@ -936,6 +936,9 @@ void MugenStage::logic( ){
 
     // Player HUD Need to make this more ellegant than casting and passing from array
     gameHUD->act(*((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
+    if (gameHUD->getState() == Mugen::GameInfo::NotStarted){
+	gameHUD->setState(Mugen::GameInfo::StartGame,*((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
+    }
 }
 	
 void MugenStage::render(Bitmap *work){

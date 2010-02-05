@@ -291,6 +291,7 @@ class GameInfo{
         virtual void render(Element::Layer layer, const Bitmap &);
 	
 	enum State{
+	    NotStarted,
 	    Intro,
 	    RoundIndicator,
 	    StartGame,

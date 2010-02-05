@@ -322,13 +322,17 @@ GameTime::~GameTime(){
 void GameTime::act(){
     if (started){
 	ticker++;
-	if (ticker >= frameCount){
+	if (ticker >= frameCount && time > 0){
 	    time--;
 	    ticker = 0;
 	}
     }
     std::ostringstream str;
-    str << time;
+    if (time <= 9){
+	str << "0" << time;
+    } else {
+	str << time;
+    }
     timer.setText(str.str());
 }
 
@@ -346,7 +350,8 @@ void GameTime::stop(){
     started = false;
 }
 
-GameInfo::GameInfo(const std::string & fightFile){
+GameInfo::GameInfo(const std::string & fightFile):
+state(NotStarted){
     std::string baseDir = Mugen::Util::getFileDir(fightFile);
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(fightFile) );
     
@@ -713,6 +718,7 @@ void GameInfo::setState(const State & state, Character & player1, Character & pl
 	    timer.stop();
 	    // End the game
 	    break;
+	case NotStarted:
 	default:
 	    break;
     }
