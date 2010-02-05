@@ -77,6 +77,10 @@ class Point{
 	Point();
 	Point(int x, int y);
 	Point &operator=(const Point &p);
+	inline void set(int x, int y){
+	    this->x = x;
+	    this->y = y;
+	}
 	inline const bool operator==(const Point &p) const{
 	    return ((this->x == p.x) && (this->y == p.y));
 	}

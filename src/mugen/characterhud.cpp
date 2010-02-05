@@ -157,6 +157,27 @@ void FightElement::setSound(MugenSound * sound){
     }
 }
 
+int FightElement::getWidth(){
+    switch (type){
+	case IS_ACTION:
+	    return 0;
+            break;
+	case IS_SPRITE:
+	    return sprite->getWidth();
+            break;
+	case IS_FONT:
+	    return font->textLength(text.c_str());
+            break;
+        case IS_SOUND:
+	    return 0;
+	    break;
+	case IS_NOTSET:
+	default:
+	    return 0;
+	    break;
+    }
+}
+
 Bar::Bar():
 type(Health),
 maxHealth(0),
@@ -349,6 +370,25 @@ void GameTime::start(){
 void GameTime::stop(){
     started = false;
 }
+
+Combo::Combo():
+side(Left),
+startOffset(0),
+showing(false),
+displayTime(0),
+ticker(0),
+shake(false),
+shakeTime(0){
+}
+Combo::~Combo(){
+}
+void Combo::act(Mugen::Character & character){
+    
+}
+void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
+}
+	
+
 
 GameInfo::GameInfo(const std::string & fightFile):
 state(NotStarted){

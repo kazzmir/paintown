@@ -52,12 +52,16 @@ class FightElement : public Element{
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *, int bank, int position);
         virtual void setSound(MugenSound *);
+	virtual int getWidth();
 	virtual inline void setOffset(int x, int y){ 
             offset = Mugen::Point(x,y); 
         }
 	virtual inline void setDisplayTime(int t){ 
             displaytime = t; 
         }
+	virtual inline int getDisplayTime() const{
+	    return this->displaytime;
+	}
 	virtual inline void setFacing(int f){ 
             effects.facing = f; 
         }
@@ -279,6 +283,48 @@ class GameTime{
 	int time;
 	int ticker;
 	bool started;
+};
+
+class Combo{
+    public:
+	Combo();
+	virtual ~Combo();
+	virtual void act(Mugen::Character & character);
+	virtual void render(const Element::Layer &, const Bitmap &);
+	
+	enum Side{
+	    Left,
+	    Right,
+	};
+	virtual inline void setSide(Side side){
+	    this->side = Left;
+	}
+	virtual inline void setPosition(int x, int y){
+	    position.set(x,y);
+	}
+	virtual inline void setDisplayTime(int time){
+	    this->displayTime = time;
+	}
+	virtual inline void setShake(bool shake){
+	    this->shake = shake;
+	}
+	virtual inline FightElement & getCombo(){
+	    return this->combo;
+	}
+	virtual inline FightElement & getText(){
+	    return this->text;
+	}
+    private:
+	Mugen::Point position;
+	Side side;
+	int startOffset;
+	bool showing;
+	int displayTime;
+	int ticker;
+	bool shake;
+	int shakeTime;
+	FightElement combo;
+	FightElement text;
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */
