@@ -60,6 +60,27 @@ protected:
     double value;
 };
 
+/* this is hack to make double jumping work. try not to use this class if you
+ * can help it.
+ */
+class MutableNumber: public Number {
+public:
+    MutableNumber(double value):
+    Number(value){
+    }
+
+    virtual ~MutableNumber(){
+    }
+
+    double get() const {
+        return this->value;
+    }
+
+    void set(double v){
+        this->value = v;
+    }
+};
+
 }
 
 #endif

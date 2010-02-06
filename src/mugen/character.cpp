@@ -2293,18 +2293,25 @@ bool Character::hasAnimation(int index) const {
 static const int JumpIndex = 234823;
 
 void Character::resetJump(const vector<string> & inputs){
+    Ast::MutableNumber * number = (Ast::MutableNumber*) getSystemVariable(JumpIndex);
+    number->set(0);
+
     /* FIXME: creating a new ast node is a leak. put it in some global array
      * or something.
      */
-    setSystemVariable(JumpIndex, new Ast::Number(0));
+    // setSystemVariable(JumpIndex, new Ast::Number(0));
     changeState(JumpStart, inputs);
 }
 
 void Character::doubleJump(const vector<string> & inputs){
+    Ast::MutableNumber * number = (Ast::MutableNumber*) getSystemVariable(JumpIndex);
+    number->set(number->get() + 1);
+
+    /*
     int current;
     *getSystemVariable(JumpIndex) >> current;
-    /* FIXME: this leaks memory */
     setSystemVariable(JumpIndex, new Ast::Number(1 + current));
+    */
     changeState(AirJumpStart, inputs);
 }
 
@@ -2370,6 +2377,8 @@ void Character::fixAssumptions(){
             keys.push_back(new Ast::KeySingle("U"));
             Command * doubleJumpCommand = new Command(jumpCommand, new Ast::KeyList(keys), 5, 0);
             addCommand(doubleJumpCommand);
+
+            setSystemVariable(JumpIndex, new Ast::MutableNumber(0));
 
             StateController * controller = new StateController("double jump");
             controller->setType(StateController::InternalCommand);
