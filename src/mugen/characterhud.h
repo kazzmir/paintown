@@ -37,10 +37,16 @@ class FightElement : public Element{
 	    IS_ACTION,
 	    IS_SPRITE,
 	    IS_FONT,
-	    IS_SOUND
+	    IS_SOUND,
+	    IS_SOUND_AND_ACTION,
+	    IS_SOUND_AND_SPRITE,
+	    IS_SOUND_AND_FONT,
 	};
 	
 	virtual inline void setType(ElementType t){ type = t; }
+	virtual inline bool isSet() const {
+	    return (type != IS_NOTSET);
+	}
 	virtual void setAction(MugenAnimation *);
         virtual inline void setSpriteData(int g, int s){
             this->spriteData.x = g;
@@ -57,11 +63,13 @@ class FightElement : public Element{
 	virtual inline void setOffset(int x, int y){ 
             offset = Mugen::Point(x,y); 
         }
-	virtual inline void setDisplayTime(int t){ 
-            displaytime = t; 
+	virtual inline void setDisplayTime(int time){ 
+            this->displaytime = time;
+	    this->useDisplayTime = true;
         }
-	virtual inline int getDisplayTime() const{
-	    return this->displaytime;
+	virtual inline void setSoundTime(int time){
+	    this->soundtime = time;
+	    this->useSoundTime = true;
 	}
 	virtual inline void setFacing(int f){ 
             effects.facing = f; 
@@ -85,10 +93,15 @@ class FightElement : public Element{
         MugenSound *sound;
 	Mugen::Point offset;
 	int displaytime;
+	int soundtime;
 	Effects effects;
 	std::string text;
 	int bank;
 	int position;
+	bool useDisplayTime;
+	bool useSoundTime;
+	int ticker;
+	int soundTicker;
 };
 
 //! Base Bar made up of different components
@@ -351,6 +364,54 @@ class Combo{
 	FightElement text;
 	std::string message;
 	State state;
+};
+
+class Round{
+    public:
+	Round();
+	virtual ~Round();
+	
+	void act();
+	void render(const Element::Layer &, const Bitmap &);
+	
+	enum State{
+	    WaitForIntro,
+	    DisplayIntro,
+	    WaitForRound,
+	    DisplayRound,
+	    WaitForFight,
+	    DisplayFight,
+	    WaitForControl,
+	    WaitForOver,
+	    DisplayKO,
+	    DisplayDoubleKO,
+	    DisplayTimeOver,
+	};
+	
+    private:
+	
+	// Current State
+	State state;
+	
+	int matchWins;
+	int matchMaxDrawGames;
+	int startWaitTime;
+	
+	Mugen::Point position;
+	//! How long before displaying round
+	int roundDisplayTime;
+	FightElement defaultRound;
+	//! Up to 9 only
+	std::vector< FightElement > rounds;
+	//! How long before playing sound
+	int soundTime;
+	
+	//! How long before displaying Fight!
+	int fightDisplayTime;
+	FightElement fight;
+	
+	//! Time before handling off control to players
+	int controlTime;
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */

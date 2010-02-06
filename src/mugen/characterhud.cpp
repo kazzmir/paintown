@@ -30,6 +30,16 @@ namespace PaintownUtil = ::Util;
 using namespace std;
 using namespace Mugen;
 
+static std::string replaceString(const std::string & replace, const std::string & replaceWith, const std::string & string){
+    std::string temp = string;
+    for(std::string::size_type i = 0; (i = temp.find(replace, i)) != std::string::npos;)
+    {
+	    temp.replace(i, replace.length(), replaceWith);
+	    i += replaceWith.length() - replace.length() + 1;
+    }
+    return temp;
+}
+
 FightElement::FightElement():
 type(IS_NOTSET),
 action(0),
@@ -38,9 +48,14 @@ font(0),
 sound(0),
 offset(0,0),
 displaytime(0),
+soundtime(0),
 text(""),
 bank(0),
-position(0){
+position(0),
+useDisplayTime(false),
+useSoundTime(false),
+ticker(0),
+soundTicker(0){
 }
 
 FightElement::~FightElement(){
@@ -48,33 +63,51 @@ FightElement::~FightElement(){
 
 void FightElement::act(){
     switch (type){
+	case IS_SOUND_AND_ACTION:
 	case IS_ACTION:
 	    action->logic();
 	    break;
+	case IS_SOUND_AND_SPRITE:
 	case IS_SPRITE:
             break;
+	case IS_SOUND_AND_FONT:
 	case IS_FONT:
             break;
         case IS_SOUND:
-            if (sound){
-                sound->play();
-            }
             break;
 	case IS_NOTSET:
 	default:
 	    // nothing
 	    break;
     }
+    
+    if (useDisplayTime && ticker < displaytime){
+	ticker++;
+    }
+    if (useSoundTime && soundTicker == soundtime){
+	if (sound){
+	    sound->play();
+	}
+	soundTicker++;
+    } else if (useSoundTime && soundTicker < soundtime){
+	soundTicker++;
+    }
 }
 
 void FightElement::render(int x, int y, const Bitmap & bmp){
+    if (useDisplayTime && ticker == displaytime){
+	return;
+    }
     switch (type){
+	case IS_SOUND_AND_ACTION:
 	case IS_ACTION:
             action->render(effects.facing == -1, effects.vfacing == -1, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
             break;
+	case IS_SOUND_AND_SPRITE:
 	case IS_SPRITE:
             sprite->render(x + offset.x, y + offset.y, bmp,effects);
             break;
+	case IS_SOUND_AND_FONT:
 	case IS_FONT:
 	    font->render(x + offset.x, y + offset.y, bank, position, bmp, text);
             break;
@@ -87,17 +120,23 @@ void FightElement::render(int x, int y, const Bitmap & bmp){
 }
 
 void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp){
+    if (useDisplayTime && ticker == displaytime){
+	return;
+    }
     switch (type){
+	case IS_SOUND_AND_ACTION:
 	case IS_ACTION:
             if (layer == getLayer()){
 	        action->render(effects.facing == -1, effects.vfacing == -1, x + offset.x, y + offset.y, bmp, effects.scalex, effects.scaley);
             }
 	    break;
+	case IS_SOUND_AND_SPRITE:
 	case IS_SPRITE:
             if (layer == getLayer()){
 	        sprite->render(x + offset.x, y + offset.y, bmp,effects);
             }
 	    break;
+	case IS_SOUND_AND_FONT:
 	case IS_FONT:
             if (layer == getLayer()){
 		font->render(x + offset.x, y + offset.y, bank, position, bmp, text);
@@ -113,10 +152,22 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
 
 void FightElement::play(){
     switch (type){
+	case IS_SOUND_AND_ACTION:
+	    sound->play();
 	case IS_ACTION:
+	    ticker = 0;
             break;
+	case IS_SOUND_AND_SPRITE:
+	    if (useSoundTime){
+		soundTicker = 0;
+	    } else {
+		sound->play();
+	    }
 	case IS_SPRITE:
+	    ticker = 0;
             break;
+	case IS_SOUND_AND_FONT:
+	    sound->play();
 	case IS_FONT:
             break;
         case IS_SOUND:
@@ -131,19 +182,35 @@ void FightElement::play(){
 
 void FightElement::setAction(MugenAnimation *anim){
     if (anim){
-	setType(IS_ACTION);
+	if (type == IS_SOUND){
+	    setType(IS_SOUND_AND_ACTION);
+	} else {
+	    setType(IS_ACTION);
+	}
 	action = anim;
     }
 }
 void FightElement::setSprite(MugenSprite *spr){
     if (spr){
-	setType(IS_SPRITE);
+	if (type == IS_SOUND){
+	    setType(IS_SOUND_AND_SPRITE);
+	} else {
+	    setType(IS_SPRITE);
+	}
 	sprite = spr;
     }
 }
 void FightElement::setFont(MugenFont *fnt, int bank, int position){
+    if (type == IS_ACTION){
+	// Animation trumps font
+	return;
+    }
     if (fnt){
-	setType(IS_FONT);
+	if (type == IS_SOUND){
+	    setType(IS_SOUND_AND_FONT);
+	} else {
+	    setType(IS_FONT);
+	}
 	font = fnt;
 	this->bank = bank;
 	this->position = position;
@@ -152,8 +219,16 @@ void FightElement::setFont(MugenFont *fnt, int bank, int position){
 
 void FightElement::setSound(MugenSound * sound){
     if (sound){
-        setType(IS_SOUND);
-        this->sound = sound;
+	if (type == IS_FONT){
+	    setType(IS_SOUND_AND_FONT);
+	} else if (type == IS_SPRITE){
+	    setType(IS_SOUND_AND_SPRITE);
+	} else if (type == IS_ACTION){
+	    setType(IS_SOUND_AND_ACTION);
+	} else {
+	    setType(IS_SOUND);
+	}
+	this->sound = sound;
     }
 }
 
@@ -270,7 +345,7 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     if (range.y < 0){
 	bmp.setClipRect(position.x + ((damage*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
     } else {
-	bmp.setClipRect(position.x + range.x,position.y,position.x + (damage*range.y)/maxHealth,middle.getHeight());
+	//bmp.setClipRect(position.x + range.x,position.y,position.x + (damage*range.y)/maxHealth,middle.getHeight());
     }
     middle.render(layer, position.x, position.y, bmp);
     bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
@@ -278,7 +353,7 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     if (range.y < 0){
 	bmp.setClipRect(position.x + ((currentHealth*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
     } else {
-	bmp.setClipRect(position.x + range.x,position.y,position.x + (currentHealth*range.y)/maxHealth,middle.getHeight());
+	//bmp.setClipRect(position.x + range.x,position.y,position.x + (currentHealth*range.y)/maxHealth,middle.getHeight());
     }
     front.render(layer, position.x, position.y, bmp);
     bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
@@ -457,13 +532,7 @@ void Combo::act(Mugen::Character & character){
 	std::ostringstream str;
 	str << total;
 	combo.setText(str.str());
-	std::string temp = message;
-	const std::string replaceStr("%i");
-	for(std::string::size_type i = 0; (i = temp.find(replaceStr, i)) != std::string::npos;)
-	{
-		temp.replace(i, replaceStr.length(), str.str());
-		i += str.str().length() - replaceStr.length() + 1;
-	}
+	std::string temp = replaceString("%i",str.str(),message);
 	text.setText(temp);
     }
     if (shakeTime > 0){
@@ -533,7 +602,14 @@ void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
     }
 }
 	
-
+Round::Round(){
+}
+Round::~Round(){
+}
+void Round::act(){
+}
+void Round::render(const Element::Layer &, const Bitmap &){
+}
 
 GameInfo::GameInfo(const std::string & fightFile):
 state(NotStarted){
