@@ -268,17 +268,17 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     back1.render(layer, position.x, position.y, bmp);
     // Middle is the damage indicator
     if (range.y < 0){
-	bmp.setClipRect(position.x + range.x + ((damage*range.y)/maxHealth),position.y,middle.getWidth(),middle.getHeight());
+	bmp.setClipRect(position.x + ((damage*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
     } else {
-	bmp.setClipRect(position.x + range.x,position.y,(damage*range.y)/maxHealth,middle.getHeight());
+	bmp.setClipRect(position.x + range.x,position.y,position.x + (damage*range.y)/maxHealth,middle.getHeight());
     }
     middle.render(layer, position.x, position.y, bmp);
     bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
     // Front is the actual current health
     if (range.y < 0){
-	bmp.setClipRect(position.x + range.x + ((currentHealth*range.y)/maxHealth),position.y,middle.getWidth(),middle.getHeight());
+	bmp.setClipRect(position.x + ((currentHealth*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
     } else {
-	bmp.setClipRect(position.x + range.x,position.y,(currentHealth*range.y)/maxHealth,middle.getHeight());
+	bmp.setClipRect(position.x + range.x,position.y,position.x + (currentHealth*range.y)/maxHealth,middle.getHeight());
     }
     front.render(layer, position.x, position.y, bmp);
     bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
