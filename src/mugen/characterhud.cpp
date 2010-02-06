@@ -384,7 +384,7 @@ total(0){
 Combo::~Combo(){
 }
 void Combo::act(Mugen::Character & character){
-    if (character.getCurrentCombo()){
+    if (character.getCurrentCombo() >= 2){
 	if (total == 0){
 	    showing = true;
 	    ticker = 0;
@@ -426,10 +426,16 @@ void Combo::act(Mugen::Character & character){
     if (showing && !(currentPosition == position)){
 	switch (side){
 	    case Left:
-		currentPosition.x++;
+		currentPosition.x+=2;
+		if (currentPosition.x > position.x){
+		    currentPosition = position;
+		}
 		break;
 	    case Right:
-		currentPosition.x--;
+		currentPosition.x-=2;
+		if (currentPosition.x < position.x){
+		    currentPosition = position;
+		}
 		break;
 	    default:
 		break;
@@ -437,6 +443,7 @@ void Combo::act(Mugen::Character & character){
     } else if (showing && (currentPosition == position)){
 	if (ticker == displayTime){
 	    showing = false;
+	    total = 0;
 	}
 	ticker++;
     }
@@ -730,6 +737,56 @@ state(NotStarted){
             };
 
             TimeWalk walk(*this,sprites,animations,fonts);
+            section->walk(walk);
+        } else if (head == "Combo"){
+            class ComboWalk: public Ast::Walker{
+            public:
+                ComboWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                self(self),
+		sprites(sprites),
+		animations(animations),
+		fonts(fonts){
+                }
+                GameInfo & self;
+		Mugen::SpriteMap & sprites;
+		std::map<int,MugenAnimation *> & animations;
+		std::vector<MugenFont *> & fonts;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			self.team1Combo.setPosition(x,y);
+			self.team2Combo.setPosition(x,y);
+		    } else if (simple == "start.x"){
+			int x=0;
+			simple >> x;
+			self.team1Combo.setStartOffset(x);
+			self.team2Combo.setStartOffset(x);
+		    } else if (simple == "counter.shake"){
+			bool shake;
+			simple >> shake;
+			self.team1Combo.setShake(shake);
+			self.team2Combo.setShake(shake);
+		    } else if (simple == "text.text"){
+			std::string text;
+			simple >> text;
+			self.team1Combo.setMessage(text);
+			self.team2Combo.setMessage(text);
+		    } else if (simple == "display.time"){
+			int time;
+			simple >> time;
+			self.team1Combo.setDisplayTime(time);
+			self.team2Combo.setDisplayTime(time);
+		    } 
+		    getElementProperties(simple,"","counter", self.team1Combo.getCombo(),sprites,animations,fonts);
+		    getElementProperties(simple,"","text", self.team1Combo.getText(),sprites,animations,fonts);
+		}
+            };
+
+            ComboWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
         }
     }

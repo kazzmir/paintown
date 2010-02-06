@@ -302,6 +302,9 @@ class Combo{
 	virtual inline void setPosition(int x, int y){
 	    position.set(x,y);
 	}
+	virtual inline void setStartOffset(int x){
+	    this->startOffset = x;
+	}
 	virtual inline void setDisplayTime(int time){
 	    this->displayTime = time;
 	}
@@ -313,6 +316,9 @@ class Combo{
 	}
 	virtual inline FightElement & getText(){
 	    return this->text;
+	}
+	virtual inline void setMessage(const std::string & str){
+	    this->message = str;
 	}
     private:
 	Mugen::Point position;
