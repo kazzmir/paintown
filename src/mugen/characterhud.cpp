@@ -470,6 +470,7 @@ void Combo::act(Mugen::Character & character){
 	default:
 	    break;
     }
+    total = character.getCurrentCombo();
 }
 
 void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
