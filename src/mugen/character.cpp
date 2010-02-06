@@ -2679,7 +2679,7 @@ void Character::didHit(Character * enemy){
     addPower(states[getCurrentState()]->getPower());
 
     combo += 1;
-    nextCombo = 100;
+    nextCombo = 15;
 }
 
 void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hisHit){
