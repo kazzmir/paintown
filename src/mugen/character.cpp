@@ -1078,6 +1078,9 @@ void Character::initialize(){
     airjumpnum = 0;
     airjumpheight = 35;
 
+    combo = 0;
+    nextCombo = 0;
+
     lastTicket = 0;
     
     /* Load up info for the select screen */
@@ -2612,6 +2615,13 @@ void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std
         return;
     }
 
+    if (nextCombo > 0){
+        nextCombo -= 1;
+        if (nextCombo <= 0){
+            combo = 0;
+        }
+    }
+
     MugenAnimation * animation = getCurrentAnimation();
     if (animation != 0){
 	/* Check debug state */
@@ -2667,6 +2677,9 @@ void Character::didHit(Character * enemy){
         hitState.shakeTime = getHit()->pause.player1;
     }
     addPower(states[getCurrentState()]->getPower());
+
+    combo += 1;
+    nextCombo = 100;
 }
 
 void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hisHit){
@@ -2896,7 +2909,7 @@ void Character::attacked(World*, Object*, std::vector<Object*, std::allocator<Ob
 }
         
 int Character::getCurrentCombo() const {
-    return 0;
+    return combo;
 }
 
 }

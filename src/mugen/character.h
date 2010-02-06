@@ -1527,6 +1527,9 @@ protected:
 
         HitState hitState;
         unsigned int lastTicket;
+
+        int combo;
+        int nextCombo;
 };
 
 }
