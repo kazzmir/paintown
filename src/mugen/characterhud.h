@@ -327,6 +327,7 @@ class Combo{
 	int total;
 	FightElement combo;
 	FightElement text;
+	std::string message;
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */

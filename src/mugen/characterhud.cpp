@@ -408,6 +408,17 @@ void Combo::act(Mugen::Character & character){
 	    }
 	}
 	total = character.getCurrentCombo();
+	std::ostringstream str;
+	str << total;
+	combo.setText(str.str());
+	std::string temp = message;
+	const std::string replaceStr("%i");
+	for(std::string::size_type i = 0; (i = temp.find(replaceStr, i)) != std::string::npos;)
+	{
+		temp.replace(i, replaceStr.length(), str.str());
+		i += str.str().length() - replaceStr.length() + 1;
+	}
+	text.setText(temp);
     }
     if (shakeTime > 0){
 	shakeTime--;
@@ -431,6 +442,10 @@ void Combo::act(Mugen::Character & character){
     }
 }
 void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
+    if (showing){
+	combo.render(layer,currentPosition.x,currentPosition.y,bmp);
+	text.render(layer,currentPosition.x + combo.getWidth(),currentPosition.y,bmp);
+    }
 }
 	
 
