@@ -178,11 +178,34 @@ int FightElement::getWidth(){
     }
 }
 
+
+int FightElement::getHeight(){
+    switch (type){
+	case IS_ACTION:
+	    return 0;
+            break;
+	case IS_SPRITE:
+	    return sprite->getHeight();
+            break;
+	case IS_FONT:
+	    return font->getHeight();
+            break;
+        case IS_SOUND:
+	    return 0;
+	    break;
+	case IS_NOTSET:
+	default:
+	    return 0;
+	    break;
+    }
+}
+
 Bar::Bar():
 type(Health),
-maxHealth(0),
-currentHealth(0),
-damage(0){
+maxHealth(1000),
+currentHealth(1000),
+damage(0),
+powerLevel(Level0){
 }
 
 Bar::~Bar(){
@@ -203,22 +226,37 @@ void Bar::act(Mugen::Character & character){
                     damage = currentHealth;
                 }
             }
-            //middle.setScale(abs(((damage*range.y)/maxHealth)),1);
-            //front.setScale(abs(((currentHealth*range.y)/maxHealth)),1);
             break;
         case Power:
+	    maxHealth = 3000;
+	    currentHealth = (int)character.getPower();
 	    // Update power bar and count number counter.setText()
 	    // Play sounds at level 1 2 3
 	    // Level 1 = 1000
 	    // Level 2 = 2000
 	    // Level 3 = 3000
 	    if (character.getPower() == 3000){
+		if (powerLevel != Level3){
+		    level3Sound.play();
+		}
+		powerLevel = Level3;
 		counter.setText("3");
 	    } else if (character.getPower() >= 2000){
+		if (powerLevel != Level2){
+		    level2Sound.play();
+		}
+		powerLevel = Level2;
 		counter.setText("2");
 	    } else if (character.getPower() >= 1000){
+		if (powerLevel != Level1){
+		    level1Sound.play();
+		}
+		powerLevel = Level1;
 		counter.setText("1");
-	    } else counter.setText("0");
+	    } else {
+		powerLevel = Level0;
+		counter.setText("0");
+	    }
             break;
     }
 }
@@ -229,9 +267,21 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     // This is a container just render it normally 
     back1.render(layer, position.x, position.y, bmp);
     // Middle is the damage indicator
+    if (range.y < 0){
+	bmp.setClipRect(position.x + range.x + ((damage*range.y)/maxHealth),position.y,middle.getWidth(),middle.getHeight());
+    } else {
+	bmp.setClipRect(position.x + range.x,position.y,(damage*range.y)/maxHealth,middle.getHeight());
+    }
     middle.render(layer, position.x, position.y, bmp);
+    bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
     // Front is the actual current health
+    if (range.y < 0){
+	bmp.setClipRect(position.x + range.x + ((currentHealth*range.y)/maxHealth),position.y,middle.getWidth(),middle.getHeight());
+    } else {
+	bmp.setClipRect(position.x + range.x,position.y,(currentHealth*range.y)/maxHealth,middle.getHeight());
+    }
     front.render(layer, position.x, position.y, bmp);
+    bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
     // Counter Number for powerbars
     counter.render(layer, position.x, position.y, bmp);
 }

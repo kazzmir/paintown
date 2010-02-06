@@ -53,6 +53,7 @@ class FightElement : public Element{
 	virtual void setFont(MugenFont *, int bank, int position);
         virtual void setSound(MugenSound *);
 	virtual int getWidth();
+	virtual int getHeight();
 	virtual inline void setOffset(int x, int y){ 
             offset = Mugen::Point(x,y); 
         }
@@ -104,6 +105,13 @@ class Bar{
             Health,
             Power,
         };
+	
+	enum PowerState{
+	    Level0,
+	    Level1,
+	    Level2,
+	    Level3,
+	};
 
         virtual inline void setType(Type type){
             this->type = type;
@@ -193,6 +201,9 @@ class Bar{
         
         //! Damage that has been done, will be reduced to 0 and subtract from current hit points
         int damage;
+	
+	//! Power Level
+	PowerState powerLevel;
 };
 
 class Face{
