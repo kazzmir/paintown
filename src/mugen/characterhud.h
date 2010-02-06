@@ -321,11 +321,16 @@ class Combo{
 	    this->message = str;
 	}
     private:
+	enum State{
+	    Disabled,
+	    Forward,
+	    Wait,
+	    Retracting,
+	};
 	Mugen::Point position;
 	Mugen::Point currentPosition;
 	Side side;
 	int startOffset;
-	bool showing;
 	int displayTime;
 	int ticker;
 	bool shake;
@@ -334,6 +339,7 @@ class Combo{
 	FightElement combo;
 	FightElement text;
 	std::string message;
+	State state;
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */

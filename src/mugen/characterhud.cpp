@@ -374,20 +374,18 @@ void GameTime::stop(){
 Combo::Combo():
 side(Left),
 startOffset(0),
-showing(false),
 displayTime(0),
 ticker(0),
 shake(false),
 shakeTime(0),
-total(0){
+total(0),
+state(Disabled){
 }
 Combo::~Combo(){
 }
 void Combo::act(Mugen::Character & character){
-    if (character.getCurrentCombo() >= 2){
-	if (total == 0){
-	    showing = true;
-	    ticker = 0;
+    if (character.getCurrentCombo() >= 2 && total !=character.getCurrentCombo()){
+	if (state == Disabled){
 	    switch (side){
 		case Left:
 		    currentPosition = position;
@@ -401,11 +399,9 @@ void Combo::act(Mugen::Character & character){
 		    break;
 	    }
 	}
-	if (total != character.getCurrentCombo()){
-	    if (shake){
-		shakeTime = 10;
-		ticker = 0;
-	    }
+	state = Forward;
+	if (shake){
+	    shakeTime = 10;
 	}
 	total = character.getCurrentCombo();
 	std::ostringstream str;
@@ -423,35 +419,66 @@ void Combo::act(Mugen::Character & character){
     if (shakeTime > 0){
 	shakeTime--;
     }
-    if (showing && !(currentPosition == position)){
-	switch (side){
-	    case Left:
-		currentPosition.x+=2;
-		if (currentPosition.x > position.x){
-		    currentPosition = position;
-		}
-		break;
-	    case Right:
-		currentPosition.x-=2;
-		if (currentPosition.x < position.x){
-		    currentPosition = position;
-		}
-		break;
-	    default:
-		break;
-	}
-    } else if (showing && (currentPosition == position)){
-	if (ticker == displayTime){
-	    showing = false;
-	    total = 0;
-	}
-	ticker++;
+    switch (state){
+	case Forward:
+	    switch (side){
+		case Left:
+		    currentPosition.x+=2;
+		    if (currentPosition.x >= position.x){
+			currentPosition = position;
+			state = Wait;
+			ticker = 0;
+		    }
+		    break;
+		case Right:
+		    currentPosition.x-=2;
+		    if (currentPosition.x <= position.x){
+			currentPosition = position;
+			state = Wait;
+			ticker = 0;
+		    }
+		    break;
+		default:
+		    break;
+	    }
+	    break;
+	case Wait:
+	    if (ticker == displayTime){
+		state = Retracting;
+	    }
+	    ticker++;
+	    break;
+	case Retracting:
+	    switch (side){
+		case Left:
+		    currentPosition.x-=2;
+		    if (currentPosition.x <= (position.x + startOffset)){
+			state = Disabled;
+		    }
+		    break;
+		case Right:
+		    currentPosition.x+=2;
+		    if (currentPosition.x >= (position.x + abs(startOffset))){
+			state = Disabled;
+		    }
+		    break;
+		default:
+		    break;
+	    }
+	    break;
+	case Disabled:
+	default:
+	    break;
     }
 }
+
 void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
-    if (showing){
-	combo.render(layer,currentPosition.x,currentPosition.y,bmp);
-	text.render(layer,currentPosition.x + combo.getWidth(),currentPosition.y,bmp);
+    if (state != Disabled){
+	const int modifierX = (shakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
+	const int modifierY = (shakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
+	combo.render(layer,currentPosition.x + modifierX,currentPosition.y + modifierY,bmp);
+	// Hacking in adjustment for now, need to get correct width from font which is wrong
+	text.render(layer,currentPosition.x + combo.getWidth() + (total > 9 ? 10 : 15),currentPosition.y,bmp);
     }
 }
 	
@@ -775,7 +802,7 @@ state(NotStarted){
 			simple >> text;
 			self.team1Combo.setMessage(text);
 			self.team2Combo.setMessage(text);
-		    } else if (simple == "display.time"){
+		    } else if (simple == "displaytime"){
 			int time;
 			simple >> time;
 			self.team1Combo.setDisplayTime(time);
