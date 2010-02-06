@@ -132,6 +132,11 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 	story.run(bmp);
     }
     bool quit = false;
+    unsigned int second_counter = Global::second_counter;
+    int frames = 0;
+    double fps = Global::TICS_PER_SECOND;
+    bool show_fps = true;
+
     while (!quit){
 	select.renderVersusScreen(bmp);
 	select.getPlayer1()->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
@@ -154,8 +159,12 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 	while( !quit ){
 	    bool draw = false;
 
-	    if ( Global::speed_counter > 0 ){
+	    if (Global::speed_counter > 0){
 		runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+                if (runCounter > 10){
+                    runCounter = 10;
+                }
+
 		while (runCounter > 1){
 		    InputManager::poll();
 		    stage->logic();
@@ -185,12 +194,32 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 		Global::speed_counter = 0;
 	    }
 
+            if (second_counter != Global::second_counter){
+                int difference = Global::second_counter - second_counter;
+                /* unlikely, but just in case */
+                if (difference == 0){
+                    difference = 1;
+                }
+                fps = (0.75 * fps) + (0.25 * (double) frames / difference);
+                // fps[fps_index] = (double) frames / (double) difference;
+                // fps_index = (fps_index+1) % max_fps_index;
+                second_counter = Global::second_counter;
+                frames = 0;
+            }
+
 	    if (draw){
+                frames += 1;
 		stage->render(&work);
 		work.Stretch(bmp);
 
 		FontRender * render = FontRender::getInstance();
 		render->render(&bmp);
+
+                if (show_fps){
+                    static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+                    const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 20, 20 );
+                    font.printf(bmp.getWidth() - 120, bmp.getHeight() - font.getHeight() - 1, Bitmap::makeColor(255,255,255), bmp, "FPS: %0.2f", 0, fps );
+                }
     
 		bmp.BlitToScreen();
 	    }
