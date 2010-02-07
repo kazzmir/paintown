@@ -310,6 +310,9 @@ void Bar::act(Mugen::Character & character){
         case Health: {
             maxHealth = character.getMaxHealth();
             currentHealth = character.getHealth();
+            if (maxHealth == 0){
+                throw MugenException("Character max health is 0. It should have been set in the [Life] section of the constants file");
+            }
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
             if (character.hasControl()){
@@ -362,37 +365,39 @@ void Bar::act(Mugen::Character & character){
 }
 
 void Bar::render(Element::Layer layer, const Bitmap & bmp){
-    // Background is full range
-    back0.render(layer, position.x, position.y, bmp);
-    // This is a container just render it normally 
-    back1.render(layer, position.x, position.y, bmp);
-    
-    /* Q: how is range.x supposed to be used? isn't it always 0? */
-    middle.render(layer, position.x, position.y, bmp, (int)(damage * range.y / maxHealth));
+    if (type != None){
+        // Background is full range
+        back0.render(layer, position.x, position.y, bmp);
+        // This is a container just render it normally 
+        back1.render(layer, position.x, position.y, bmp);
 
-    double width = currentHealth * range.y / maxHealth;
-    front.render(layer, position.x, position.y, bmp, width);
+        /* Q: how is range.x supposed to be used? isn't it always 0? */
+        middle.render(layer, position.x, position.y, bmp, (int)(damage * range.y / maxHealth));
+
+        double width = currentHealth * range.y / maxHealth;
+        front.render(layer, position.x, position.y, bmp, width);
 
 #if 0
-    // Middle is the damage indicator
-    if (range.y < 0){
-	bmp.setClipRect(position.x + ((damage*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
-    } else {
-	//bmp.setClipRect(position.x + range.x,position.y,position.x + (damage*range.y)/maxHealth,middle.getHeight());
-    }
-    middle.render(layer, position.x, position.y, bmp);
-    bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
-    // Front is the actual current health
-    if (range.y < 0){
-	bmp.setClipRect(position.x + ((currentHealth*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
-    } else {
-	//bmp.setClipRect(position.x + range.x,position.y,position.x + (currentHealth*range.y)/maxHealth,middle.getHeight());
-    }
-    front.render(layer, position.x, position.y, bmp);
-    bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
+        // Middle is the damage indicator
+        if (range.y < 0){
+            bmp.setClipRect(position.x + ((damage*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
+        } else {
+            //bmp.setClipRect(position.x + range.x,position.y,position.x + (damage*range.y)/maxHealth,middle.getHeight());
+        }
+        middle.render(layer, position.x, position.y, bmp);
+        bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
+        // Front is the actual current health
+        if (range.y < 0){
+            bmp.setClipRect(position.x + ((currentHealth*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
+        } else {
+            //bmp.setClipRect(position.x + range.x,position.y,position.x + (currentHealth*range.y)/maxHealth,middle.getHeight());
+        }
+        front.render(layer, position.x, position.y, bmp);
+        bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
 #endif
-    // Counter Number for powerbars
-    counter.render(layer, position.x, position.y, bmp);
+        // Counter Number for powerbars
+        counter.render(layer, position.x, position.y, bmp);
+    }
 }
 
 Face::Face(){
@@ -659,6 +664,7 @@ ticker(0){
 	rounds.push_back(element);
     }
 }
+
 Round::~Round(){
     for (std::vector< FightElement * >::iterator i = roundSounds.begin(); i != roundSounds.end(); ++i){
 	delete *i;
@@ -667,6 +673,7 @@ Round::~Round(){
 	delete *i;
     }
 }
+
 void Round::act(Mugen::Character & player1, Mugen::Character & player2){
     switch (state){
 	case WaitForIntro:
@@ -746,6 +753,7 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
     fight.act();
     ticker++;
 }
+
 void Round::render(const Element::Layer & layer, const Bitmap & bmp){
     switch (this->state){
 	case WaitForIntro:
