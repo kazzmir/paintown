@@ -16,6 +16,8 @@
 #include "input/input-manager.h"
 #include "return_exception.h"
 
+#include "gui/box.h"
+
 #include "globals.h"
 
 namespace PaintownUtil = ::Util;
@@ -161,6 +163,18 @@ void OptionOptions::run(bool &endGame){
     // Our Font
     MugenFont * font = fonts[1];
     
+    // Box
+    Box optionArea;
+    optionArea.position.width = 200;
+    optionArea.position.height = 180;
+    optionArea.position.x = (DEFAULT_WIDTH/2) - (optionArea.position.width/2);
+    optionArea.position.y = (DEFAULT_HEIGHT/2) - (optionArea.position.height/2);
+    optionArea.position.radius = 5;
+    optionArea.position.body = Bitmap::makeColor(0,0,60);
+    optionArea.position.bodyAlpha = 150;
+    optionArea.position.border = Bitmap::makeColor(0,0,20);
+    
+    
     while (!done){
     
 	bool draw = false;
@@ -207,6 +221,8 @@ void OptionOptions::run(bool &endGame){
 	    
 	    // render fonts
 	    font->render(DEFAULT_WIDTH/2, 20, 0, 0, workArea, "OPTIONS" );
+	    
+	    optionArea.render(&workArea);
 	    
 	    // render Foregrounds
 	    background->renderForeground(0,0,workArea);
