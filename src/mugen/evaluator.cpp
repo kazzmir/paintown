@@ -156,6 +156,22 @@ public:
     virtual void onRange(const Ast::Range & range){
         result = evalRange(range);
     }
+
+    /* trigger redirection:
+     *  But sometimes, one might wish to check the statetime of the
+     *  player's target, or the player's parent (if the player is a helper),
+     *  etc. This can be accomplished by preceding the trigger name by a keyword indicating whose information should be returned. This process is known as trigger redirection. For example:
+     * 5 + parent, time
+     *
+     * returns 5 + the player's parent's statetime.
+     */
+    RuntimeValue evalValueList(const Ast::ValueList & value){
+        return RuntimeValue(false);
+    }
+
+    virtual void onValueList(const Ast::ValueList & value){
+        result = evalValueList(value);
+    }
    
     RuntimeValue evaluate(const Ast::Value * value){
         return Mugen::evaluate(value, environment);
@@ -377,6 +393,10 @@ public:
         
         if (identifier == "velocity.airjump.fwd.x"){
             return RuntimeValue(environment.getCharacter().getAirJumpForward());
+        }
+
+        if (identifier == "movement.yaccel"){
+            return RuntimeValue(environment.getCharacter().getGravity());
         }
 
         ostringstream out;
