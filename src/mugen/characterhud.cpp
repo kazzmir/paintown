@@ -339,7 +339,7 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     // This is a container just render it normally 
     back1.render(layer, position.x, position.y, bmp);
     
-    middle.render(layer, position.x, position.y, bmp);
+    middle.render(layer, position.x, position.y, bmp, (int)(damage * fabs(range.y) / maxHealth));
 
     double width = currentHealth * fabs(range.y) / maxHealth;
     front.render(layer, position.x, position.y, bmp, width);
