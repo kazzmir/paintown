@@ -38,16 +38,13 @@ class FightElement: public Element {
 	    IS_SPRITE,
 	    IS_FONT,
 	    IS_SOUND,
-	    IS_SOUND_AND_ACTION,
-	    IS_SOUND_AND_SPRITE,
-	    IS_SOUND_AND_FONT,
 	};
 	
 	enum DisplayState{
 	    NoDisplayTimer,
 	    DisplayNotStarted,
-	    Showing,
-	    Ended,
+	    DisplayStarted,
+	    DisplayEnded,
 	};
 	
 	enum SoundState{
@@ -60,11 +57,6 @@ class FightElement: public Element {
 	virtual inline void setType(ElementType t){ type = t; }
 	virtual inline bool isSet() const {
 	    return (type != IS_NOTSET);
-	}
-	
-	virtual inline bool hasMedia() const {
-	    return (type == IS_ACTION || type == IS_SPRITE || type == IS_SOUND_AND_ACTION
-	    || type == IS_SOUND_AND_SPRITE);
 	}
 
 	virtual void setAction(MugenAnimation *);
@@ -91,27 +83,18 @@ class FightElement: public Element {
 	    this->displayState = DisplayNotStarted;
         }
 	
-	virtual inline bool isDisplaying(){
-	    switch (displayState){
-		case NoDisplayTimer:
-		case Showing:
-		    return true;
-		    break;
-		case DisplayNotStarted:
-		case Ended:
-		default:
-		    return false;
-	    }
+	virtual inline bool notStarted(){
+	    return (displayState == DisplayNotStarted);
 	}
 	
 	virtual inline bool isDone(){
 	    switch (displayState){
 		case DisplayNotStarted:
 		case NoDisplayTimer:
-		case Showing:
+		case DisplayStarted:
 		    return false;
 		    break;
-		case Ended:
+		case DisplayEnded:
 		default:
 		    return true;
 	    }
@@ -483,7 +466,11 @@ class Round{
 	    this->defaultText = text;
 	}
 	
-	virtual inline FightElement & getRound(int number){
+	virtual inline FightElement & getRoundSound(unsigned int number){
+	    return *this->roundSounds[number];
+	}
+	
+	virtual inline FightElement & getRound(unsigned int number){
 	    // Max 9 so 0-8
 	    return *this->rounds[number];
 	}
@@ -517,6 +504,8 @@ class Round{
 	int roundDisplayTime;
 	FightElement defaultRound;
 	std::string defaultText;
+	//! Round Sounds
+	std::vector< FightElement * > roundSounds;
 	//! Up to 9 only
 	std::vector< FightElement * > rounds;
 	

@@ -52,17 +52,11 @@ FightElement::~FightElement(){
 
 void FightElement::act(){
     switch (type){
-	case IS_SOUND_AND_ACTION:
 	case IS_ACTION:
-	    if (action->animationTime() == 0){
-		displayState = Ended;
-	    }
 	    action->logic();
 	    break;
-	case IS_SOUND_AND_SPRITE:
 	case IS_SPRITE:
             break;
-	case IS_SOUND_AND_FONT:
 	case IS_FONT:
             break;
         case IS_SOUND:
@@ -74,14 +68,14 @@ void FightElement::act(){
     }
     
     switch (displayState){
-	case Showing:
+	case DisplayStarted:
 	    if (ticker >= displaytime){
-		displayState = Ended;
+		displayState = DisplayEnded;
 	    } else {
 		ticker++;
 	    }
 	    break;
-	case Ended:
+	case DisplayEnded:
 	case NoDisplayTimer:
 	default:
 	    break;
@@ -106,19 +100,16 @@ void FightElement::act(){
 }
 
 void FightElement::render(int x, int y, const Bitmap & bmp){
-    if (displayState == Ended){
+    if (displayState == DisplayEnded){
 	return;
     }
     switch (type){
-	case IS_SOUND_AND_ACTION:
 	case IS_ACTION:
             action->render(effects.facing == -1, effects.vfacing == -1, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
             break;
-	case IS_SOUND_AND_SPRITE:
 	case IS_SPRITE:
             sprite->render(x + offset.x, y + offset.y, bmp,effects);
             break;
-	case IS_SOUND_AND_FONT:
 	case IS_FONT:
 	    font->render(x + offset.x, y + offset.y, bank, position, bmp, text);
             break;
@@ -131,7 +122,7 @@ void FightElement::render(int x, int y, const Bitmap & bmp){
 }
 
 void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp, int width = -99999){
-    if (displayState == Ended){
+    if (displayState == DisplayEnded){
 	return;
     }
 
@@ -139,13 +130,11 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
     int realY = y + offset.y;
 
     switch (type){
-	case IS_SOUND_AND_ACTION:
 	case IS_ACTION:
             if (layer == getLayer()){
 	        action->render(effects.facing == -1, effects.vfacing == -1, realX, realY, bmp, effects.scalex, effects.scaley);
             }
 	    break;
-	case IS_SOUND_AND_SPRITE:
 	case IS_SPRITE:
             if (layer == getLayer()){
                 // Global::debug(0) << "Draw bar with width " << width << endl;
@@ -163,7 +152,6 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
 	        sprite->render(realX, realY, bmp, realEffects);
             }
 	    break;
-	case IS_SOUND_AND_FONT:
 	case IS_FONT:
             if (layer == getLayer()){
 		font->render(realX, realY, bank, position, bmp, text);
@@ -179,30 +167,13 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
 
 void FightElement::play(){
     switch (type){
-	case IS_SOUND_AND_ACTION:
-	    if (soundState != NoSoundTimer){
-		soundTicker = 0;
-		soundState = Waiting;
-	    } else {
-		sound->play();
-	    }
 	case IS_ACTION:
-	    ticker = 0;
-	    displayState = Showing;
-            break;
-	case IS_SOUND_AND_SPRITE:
-	    if (soundState != NoSoundTimer){
-		soundTicker = 0;
-		soundState = Waiting;
-	    } else {
-		sound->play();
-	    }
 	case IS_SPRITE:
-	    ticker = 0;
-            break;
-	case IS_SOUND_AND_FONT:
-	    sound->play();
 	case IS_FONT:
+	    if (displayState == DisplayNotStarted || displayState == DisplayEnded){
+		ticker = 0;
+		displayState = DisplayStarted;
+	    }
             break;
         case IS_SOUND:
 	    if (soundState != NoSoundTimer){
@@ -221,22 +192,13 @@ void FightElement::play(){
 
 void FightElement::setAction(MugenAnimation *anim){
     if (anim){
-	if (type == IS_SOUND){
-	    setType(IS_SOUND_AND_ACTION);
-	} else {
-	    setType(IS_ACTION);
-	}
+	setType(IS_ACTION);
 	action = anim;
-	displayState = Showing;
     }
 }
 void FightElement::setSprite(MugenSprite *spr){
     if (spr){
-	if (type == IS_SOUND){
-	    setType(IS_SOUND_AND_SPRITE);
-	} else {
-	    setType(IS_SPRITE);
-	}
+	setType(IS_SPRITE);
 	sprite = spr;
     }
 }
@@ -246,11 +208,7 @@ void FightElement::setFont(MugenFont *fnt, int bank, int position){
 	return;
     }
     if (fnt){
-	if (type == IS_SOUND){
-	    setType(IS_SOUND_AND_FONT);
-	} else {
-	    setType(IS_FONT);
-	}
+	setType(IS_FONT);
 	font = fnt;
 	this->bank = bank;
 	this->position = position;
@@ -259,15 +217,7 @@ void FightElement::setFont(MugenFont *fnt, int bank, int position){
 
 void FightElement::setSound(MugenSound * sound){
     if (sound){
-	if (type == IS_FONT){
-	    setType(IS_SOUND_AND_FONT);
-	} else if (type == IS_SPRITE){
-	    setType(IS_SOUND_AND_SPRITE);
-	} else if (type == IS_ACTION){
-	    setType(IS_SOUND_AND_ACTION);
-	} else {
-	    setType(IS_SOUND);
-	}
+	setType(IS_SOUND);
 	this->sound = sound;
     }
 }
@@ -667,6 +617,11 @@ roundDisplayTime(0),
 fightDisplayTime(0),
 controlTime(0),
 ticker(0){
+    // Initiate default round sounds 9 total
+    for (int i = 0; i < 9; ++i){
+	FightElement * element = new FightElement();
+	roundSounds.push_back(element);
+    }
     // Initiate default rounds 9 total
     for (int i = 0; i < 9; ++i){
 	FightElement * element = new FightElement();
@@ -674,6 +629,9 @@ ticker(0){
     }
 }
 Round::~Round(){
+    for (std::vector< FightElement * >::iterator i = roundSounds.begin(); i != roundSounds.end(); ++i){
+	delete *i;
+    }
     for (std::vector< FightElement * >::iterator i = rounds.begin(); i != rounds.end(); ++i){
 	delete *i;
     }
@@ -684,55 +642,59 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
 	    if (ticker >= startWaitTime){
 		setState(DisplayIntro,player1,player2);
 	    }
-	    Global::debug(0) << "Round Ticker: " << ticker << " | Waiting for Intro: " << startWaitTime << endl;
+	    Global::debug(1) << "Round Ticker: " << ticker << " | Waiting for Intro: " << startWaitTime << endl;
 	    break;
 	case DisplayIntro:
 	    // Check if player states are done with intro move on to next
 	    // for now just go ahead and start the round
 	    setState(WaitForRound,player1,player2);
-	    Global::debug(0) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
+	    Global::debug(1) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
 	    break;
 	case WaitForRound:
 	    if (ticker >= roundDisplayTime){
 		setState(DisplayRound,player1,player2);
 	    }
-	    Global::debug(0) << "Round Ticker: " << ticker << " | Wait for round: " << roundDisplayTime << endl;
+	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for round: " << roundDisplayTime << endl;
 	    break;
 	case DisplayRound:
-	    if (!rounds[currentRound]->hasMedia() && !defaultRound.isDisplaying()){
+	    if (!rounds[currentRound-1]->isSet() && defaultRound.notStarted()){
 		ostringstream str;
 		str << currentRound;
 		std::string temp = replaceString("%i",str.str(),defaultText);
+		Global::debug(1) << "Displaying Round info: " << temp << endl;
 		defaultRound.setText(temp);
 		defaultRound.play();
-		rounds[currentRound]->play();
-	    } else if(rounds[currentRound]->hasMedia() && !rounds[currentRound]->isDisplaying()){
-		rounds[currentRound]->play();
+		roundSounds[currentRound-1]->play();
+	    } else if(rounds[currentRound-1]->notStarted()){
+		rounds[currentRound-1]->play();
+		roundSounds[currentRound-1]->play();
 	    }
-	    if (!rounds[currentRound]->hasMedia() && defaultRound.isDone()){
-		setState(WaitForFight,player1,player2);
-	    } else if(rounds[currentRound]->hasMedia() && rounds[currentRound]->isDone()){
-		setState(WaitForFight,player1,player2);
+	    if (!rounds[currentRound-1]->isSet()){
+		if (defaultRound.isDone()){
+		    setState(WaitForFight,player1,player2);
+		}
+	    } else if (rounds[currentRound-1]->isDone()){
+		    setState(WaitForFight,player1,player2);
 	    }
-	    Global::debug(0) << "Round Ticker: " << ticker << " | Playing round. " << endl;
+	    Global::debug(1) << "Round Ticker: " << ticker << " | Playing round. " << endl;
 	    break;
 	case WaitForFight:
 	    if (ticker >= fightDisplayTime){
 		setState(DisplayFight,player1,player2);
 	    }
-	    Global::debug(0) << "Round Ticker: " << ticker << " | Wait for Fight: " << fightDisplayTime << endl;
+	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Fight: " << fightDisplayTime << endl;
 	    break;
 	case DisplayFight:
-	    if (!fight.isDisplaying()){
-		fight.play();
-	    } else if (fight.isDone()){
-		setState(WaitForControl,player1,player2);
-	    }
+	    fight.play();
+	    setState(WaitForControl,player1,player2);
+	    Global::debug(1) << "Round Ticker: " << ticker << " | Playing Fight. " << endl;
 	    break;
 	case WaitForControl:
 	    if (ticker >= controlTime){
 		setState(WaitForOver,player1,player2);
+		Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Fight to end." << endl;
 	    }
+	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Player Control: " << controlTime << endl;
 	    break;
 	case WaitForOver:
 	    // Evaluate players and then go to the appropriate finish
@@ -746,6 +708,11 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
 	default:
 	    break;
     }
+    
+    defaultRound.act();
+    rounds[currentRound-1]->act();
+    roundSounds[currentRound-1]->act();
+    fight.act();
     ticker++;
 }
 void Round::render(const Element::Layer & layer, const Bitmap & bmp){
@@ -756,19 +723,17 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
 	    break;
 	case WaitForRound:
 	    break;
+	case WaitForFight:
 	case DisplayRound:
-	    if (!rounds[currentRound]->hasMedia()){
+	    if (!rounds[currentRound-1]->isSet()){
 		defaultRound.render(layer, position.x, position.y, bmp);
-	    } else if(rounds[currentRound]->hasMedia()){
-		rounds[currentRound]->render(layer, position.x, position.y, bmp);
+	    } else {
+		rounds[currentRound-1]->render(layer, position.x, position.y, bmp);
 	    }
 	    break;
-	case WaitForFight:
-	    break;
+	case WaitForControl:
 	case DisplayFight:
 	    fight.render(layer, position.x, position.y, bmp);
-	    break;
-	case WaitForControl:
 	    break;
 	case WaitForOver:
 	    break;
@@ -1162,14 +1127,16 @@ state(NotStarted){
                     if (simple == "match.wins"){
 		    } else if (simple == "match.maxdrawgames"){
 		    } else if (simple == "start.waittime"){
+			int time = 0;
+			simple >> time;
+			self.roundControl.setStartWaitTime(time);
 		    } else if (simple == "pos"){
 			int x=0, y=0;
 			try{
 			    simple >> x >> y;
 			} catch (const Ast::Exception & e){
 			}
-			self.team1Combo.setPosition(x,y);
-			self.team2Combo.setPosition(x,y);
+			self.roundControl.setPosition(x,y);
 		    } else if (simple == "round.time"){
 			int time=0;
 			simple >> time;
@@ -1196,10 +1163,19 @@ state(NotStarted){
 		    getElementProperties(simple,"round","default", self.roundControl.getDefaultRound(),sprites,animations,fonts);
 		    for (unsigned int i = 0; i < 9; ++i){
 			ostringstream str;
-			str << "round" << i;
-			getElementProperties(simple,"",str.str(), self.roundControl.getRound(i),sprites,animations,fonts);
+			str << "round" << i+1;
+			if (simple == str.str() + ".snd"){
+			    int g=0,s=0;
+			    try{
+				simple >> g >> s;
+			    } catch (const Ast::Exception & e){
+			    }
+			    self.roundControl.getRoundSound(i).setSound(self.sounds[g][s]);
+			} else {
+			    getElementProperties(simple,"",str.str(), self.roundControl.getRound(i),sprites,animations,fonts);
+			}
 		    }
-		    getElementProperties(simple,"","fight", self.roundControl.getDefaultRound(),sprites,animations,fonts);
+		    getElementProperties(simple,"","fight", self.roundControl.getFight(),sprites,animations,fonts);
 		}
             };
 
@@ -1262,7 +1238,8 @@ void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
 
 void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
     player1LifeBar.render(layer,bmp);
-    player2LifeBar.render(layer,bmp);
+    // Program received signal SIGFPE, Arithmetic exception.
+    //player2LifeBar.render(layer,bmp);
     player1PowerBar.render(layer,bmp);
     player2PowerBar.render(layer,bmp);
     player1Face.render(layer,bmp);
