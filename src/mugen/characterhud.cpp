@@ -266,7 +266,7 @@ int FightElement::getHeight(){
 }
 
 Bar::Bar():
-type(Health),
+type(None),
 maxHealth(1000),
 currentHealth(1000),
 damage(0),
@@ -278,10 +278,12 @@ Bar::~Bar(){
 
 void Bar::act(Mugen::Character & character){
     switch (type){
-        default:
-        case Health:
+        case Health: {
             maxHealth = character.getMaxHealth();
             currentHealth = character.getHealth();
+            if (currentHealth >= maxHealth - 20){
+                Global::debug(0) << "Current health " << currentHealth << endl;
+            }
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
             if (character.hasControl()){
@@ -292,7 +294,8 @@ void Bar::act(Mugen::Character & character){
                 }
             }
             break;
-        case Power:
+        }
+        case Power: {
 	    maxHealth = 3000;
 	    currentHealth = (int)character.getPower();
             if (currentHealth > 3000){
@@ -326,6 +329,9 @@ void Bar::act(Mugen::Character & character){
 		counter.setText("0");
 	    }
             break;
+        }
+        case None : break;
+        default: break;
     }
 }
 
@@ -335,7 +341,6 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     // This is a container just render it normally 
     back1.render(layer, position.x, position.y, bmp);
     
-
     /* Q: how is range.x supposed to be used? isn't it always 0? */
     middle.render(layer, position.x, position.y, bmp, (int)(damage * range.y / maxHealth));
 
@@ -855,13 +860,14 @@ state(NotStarted){
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (PaintownUtil::matchRegex(simple.toString(), "p1")){
-                        getBar(simple,"p1",self.player1LifeBar);
+                        getBar(simple,"p1", self.player1LifeBar);
                     } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
-                        getBar(simple,"p2",self.player2LifeBar);
+                        getBar(simple,"p2", self.player2LifeBar);
                     }
                 }
 
                 void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
+                    bar.setType(Bar::Health);
                     if (simple == component + ".pos"){
 			int x=0, y=0;
 			try{
@@ -897,11 +903,13 @@ state(NotStarted){
                 fonts(fonts),
 		sounds(sounds){
                 }
+
                 GameInfo & self;
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
                 std::vector<MugenFont *> & fonts;
 		Mugen::SoundMap & sounds;
+
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (PaintownUtil::matchRegex(simple.toString(), "p1")){
                         getBar(simple,"p1",self.player1PowerBar);
@@ -933,7 +941,9 @@ state(NotStarted){
 			self.player2PowerBar.getLevel3Sound().setSound(sounds[g][s]);
 		    }
                 }
+
                 void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
+                    bar.setType(Bar::Power);
                     if (simple == component + ".pos"){
 			int x=0, y=0;
 			try{
@@ -1040,10 +1050,12 @@ state(NotStarted){
 		animations(animations),
 		fonts(fonts){
                 }
+
                 GameInfo & self;
 		Mugen::SpriteMap & sprites;
 		std::map<int,MugenAnimation *> & animations;
 		std::vector<MugenFont *> & fonts;
+
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "pos"){
 			int x=0, y=0;
@@ -1187,10 +1199,6 @@ state(NotStarted){
             section->walk(walk);
         }
     }
-
-    // Set power bars
-    player1PowerBar.setType(Bar::Power);
-    player2PowerBar.setType(Bar::Power);
 }
 
 GameInfo::~GameInfo(){

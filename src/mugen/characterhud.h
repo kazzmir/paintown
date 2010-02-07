@@ -155,6 +155,7 @@ class Bar{
 	virtual void render(Element::Layer layer, const Bitmap &);
 
         enum Type{
+            None,
             Health,
             Power,
         };

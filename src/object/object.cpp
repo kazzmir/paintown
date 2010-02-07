@@ -244,7 +244,7 @@ void Object::fall( double x_vel, double y_vel ){
 }
 	
 void Object::hurt( int x ){
-	setHealth( getHealth() - x );
+    setHealth(getHealth() - x);
 }
 	
 void Object::reduceDamage( const double much ){
