@@ -101,6 +101,12 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
     return *this;
 }
 
+void MugenFrame::render(int x, int y, const Bitmap & work, const Mugen::Effects & effects){
+    const int placex = x+xoffset;
+    const int placey = y+yoffset;
+    sprite->render(placex, placey, work, effects);
+}
+
 MugenFrame::~MugenFrame(){
     /* the sprite is not deleted because it should be referenced from some
      * Mugen::SpriteMap.
@@ -113,6 +119,7 @@ Holds mugen animations, ie: player.air
 MugenAnimation::MugenAnimation():
 loopPosition(0),
 position(0),
+playOnce(false),
 type(Mugen::Unknown),
 showDefense(false),
 showOffense(false),
@@ -202,7 +209,9 @@ void MugenAnimation::logic(){
                 if (position < frames.size() -1){
                     position += 1;
                 } else {
-                    position = loopPosition;
+		    if (!playOnce){
+			position = loopPosition;
+		    }
                 }
             }
         }
@@ -210,9 +219,8 @@ void MugenAnimation::logic(){
 }
 
 void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Bitmap & work, double scalex, double scaley, const Mugen::Effects & effects){
-    const int placex = xaxis+frames[position]->xoffset;
-    const int placey = yaxis+frames[position]->yoffset;
-    frame->sprite->render(placex, placey, work, effects);
+    
+    frame->render(xaxis, yaxis, work, effects);
 
     if (showDefense){
         renderCollision(getDefenseBoxes(effects.facing == -1), work, xaxis, yaxis, Bitmap::makeColor(0, 255, 0));

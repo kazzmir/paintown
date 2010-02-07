@@ -168,6 +168,8 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
 void FightElement::play(){
     switch (type){
 	case IS_ACTION:
+	    action->play();
+	    break;
 	case IS_SPRITE:
 	case IS_FONT:
 	    if (displayState == DisplayNotStarted || displayState == DisplayEnded){
@@ -263,6 +265,33 @@ int FightElement::getHeight(){
 	    return 0;
 	    break;
     }
+}
+
+bool FightElement::isDone(){
+    switch (type){
+	case IS_ACTION:
+	    return action->isDone();
+            break;
+	case IS_SPRITE:
+	case IS_FONT:
+	    switch (displayState){
+		case DisplayNotStarted:
+		case NoDisplayTimer:
+		case DisplayStarted:
+		    return false;
+		    break;
+		case DisplayEnded:
+		default:
+		    return true;
+	    }
+            break;
+        case IS_SOUND:
+	    break;
+	case IS_NOTSET:
+	default:
+	    break;
+    }
+    return false;
 }
 
 Bar::Bar():

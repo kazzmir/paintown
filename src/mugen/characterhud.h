@@ -87,18 +87,7 @@ class FightElement: public Element {
 	    return (displayState == DisplayNotStarted);
 	}
 	
-	virtual inline bool isDone(){
-	    switch (displayState){
-		case DisplayNotStarted:
-		case NoDisplayTimer:
-		case DisplayStarted:
-		    return false;
-		    break;
-		case DisplayEnded:
-		default:
-		    return true;
-	    }
-	}
+	virtual bool isDone();
 
 	virtual inline void setSoundTime(int time){
 	    if (time == 0){

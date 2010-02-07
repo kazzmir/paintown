@@ -36,6 +36,8 @@ class MugenFrame{
 	virtual ~MugenFrame();
 	
 	MugenFrame & operator=( const MugenFrame &copy );
+	
+	virtual void render(int x, int y, const Bitmap & work, const Mugen::Effects & effects);
 
         virtual inline const std::vector<MugenArea> & getDefenseBoxes() const {
             return defenseCollision;
@@ -156,6 +158,15 @@ class MugenAnimation{
         }
 
         int animationTime() const;
+	
+	virtual inline void play(){
+	    this->position = 0;
+	    this->playOnce = true;
+	}
+	
+	virtual inline bool isDone(){
+	    return (position < frames.size() -1);
+	}
 
     protected:
 
@@ -167,6 +178,8 @@ class MugenAnimation{
 	
 	unsigned int loopPosition;
 	unsigned int position;
+	
+	bool playOnce;
 	
         Mugen::AnimationType type;
 	
