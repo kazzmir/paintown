@@ -298,9 +298,10 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
     const int flippedX = (xaxis - bmp.getWidth() + this->x);
     const int flippedY = (yaxis - bmp.getHeight() + this->y);
 
-    /* TODO: replace -1 with an enum */
-    
-    if ( (effects.facing == -1) && (effects.vfacing == 1)){
+    const int FLIPPED = -1;
+    const int NOT_FLIPPED = 1;
+
+    if ( (effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
 	if (effects.trans != NONE){
 	    bmp.drawTransHFlip(flippedX, normalY, where);
 	} else {
@@ -308,13 +309,13 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 	    bmp.drawHFlip(flippedX, normalY, width, height, where);
 	}
 	
-    } else if ( (effects.vfacing == -1) && (effects.facing == 1)){
+    } else if ( (effects.vfacing == FLIPPED) && (effects.facing == NOT_FLIPPED)){
 	if (effects.trans != NONE){
 	    bmp.drawTransVFlip(normalX, flippedY, where);
 	} else {
 	    bmp.drawVFlip(normalX, flippedY, where);
 	}
-    } else if ((effects.vfacing == -1) && (effects.facing == -1)){
+    } else if ((effects.vfacing == FLIPPED) && (effects.facing == FLIPPED)){
 	if (effects.trans != NONE){
 	    bmp.drawTransHVFlip(flippedX, flippedY, where);
 	} else {

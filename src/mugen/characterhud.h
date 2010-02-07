@@ -22,7 +22,7 @@ namespace Mugen{
 class Character;
 
 /*! *TODO implement display time and ticker */
-class FightElement : public Element{
+class FightElement: public Element {
     public:
 	FightElement();
 	virtual ~FightElement();
@@ -47,14 +47,17 @@ class FightElement : public Element{
 	virtual inline bool isSet() const {
 	    return (type != IS_NOTSET);
 	}
+
 	virtual void setAction(MugenAnimation *);
         virtual inline void setSpriteData(int g, int s){
             this->spriteData.x = g;
             this->spriteData.y = s;
         }
+
         virtual inline const Mugen::Point & getSpriteData() const {
             return this->spriteData;
         }
+
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *, int bank, int position);
         virtual void setSound(MugenSound *);
@@ -63,23 +66,29 @@ class FightElement : public Element{
 	virtual inline void setOffset(int x, int y){ 
             offset = Mugen::Point(x,y); 
         }
+
 	virtual inline void setDisplayTime(int time){ 
             this->displaytime = time;
 	    this->useDisplayTime = true;
         }
+
 	virtual inline void setSoundTime(int time){
 	    this->soundtime = time;
 	    this->useSoundTime = true;
 	}
+
 	virtual inline void setFacing(int f){ 
             effects.facing = f; 
         }
+
 	virtual inline void setVFacing(int f){ 
             effects.vfacing = f; 
         }
+
 	virtual inline void setScale(double x, double y){ 
             effects.scalex = x, effects.scaley = y; 
         }
+
 	virtual inline void setText(const std::string &t){ 
             text = t; 
         }

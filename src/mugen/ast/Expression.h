@@ -62,6 +62,15 @@ public:
 
     virtual const Value & operator>>(double & x) const {
         *expression >> x;
+        switch (type){
+            case Minus : {
+                x = -x;
+                break;
+            }
+            default : {
+                break;
+            }
+        }
         return *this;
     }
 

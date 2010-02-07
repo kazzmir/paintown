@@ -2616,7 +2616,7 @@ InputMap<Command::Keys> & Character::getInput(){
 }
 
 /* Inherited members */
-void Character::act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*){
+void Character::act(vector<Object*>* others, World* world, vector<Object*>* add){
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
     if (hitState.shakeTime > 0){

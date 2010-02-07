@@ -109,7 +109,7 @@ void FightElement::render(int x, int y, const Bitmap & bmp){
     }
 }
 
-void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp, int width = -1){
+void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp, int width = -99999){
     if (useDisplayTime && ticker == displaytime){
 	return;
     }
@@ -129,7 +129,16 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
             if (layer == getLayer()){
                 // Global::debug(0) << "Draw bar with width " << width << endl;
                 Effects realEffects(effects);
-                realEffects.dimension.x = width;
+                if (width != -99999){
+                    if (width < 0){
+                        /* flip facing */
+                        realEffects.facing *= -1;
+                        realEffects.dimension.x = -width;
+                        realX += width;
+                    } else {
+                        realEffects.dimension.x = width;
+                    }
+                }
 	        sprite->render(realX, realY, bmp, realEffects);
             }
 	    break;
@@ -339,9 +348,11 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     // This is a container just render it normally 
     back1.render(layer, position.x, position.y, bmp);
     
-    middle.render(layer, position.x, position.y, bmp, (int)(damage * fabs(range.y) / maxHealth));
 
-    double width = currentHealth * fabs(range.y) / maxHealth;
+    /* Q: how is range.x supposed to be used? isn't it always 0? */
+    middle.render(layer, position.x, position.y, bmp, (int)(damage * range.y / maxHealth));
+
+    double width = currentHealth * range.y / maxHealth;
     front.render(layer, position.x, position.y, bmp, width);
 
 #if 0
@@ -706,12 +717,12 @@ state(NotStarted){
 			}
 			bar.setPosition(x,y);
                     } else if (simple == component + ".range.x"){
-                        int x=0,y=0;
+                        int x = 0, y = 0;
                         try{
                             simple >> x >> y;
                         } catch (const Ast::Exception & e){
                         }
-                        bar.setRange(x,y);
+                        bar.setRange(x, y);
 		    }
                     getElementProperties(simple,component,"bg0", bar.getBack0(),sprites,animations,fonts);
                     getElementProperties(simple,component,"bg1", bar.getBack1(),sprites,animations,fonts);
