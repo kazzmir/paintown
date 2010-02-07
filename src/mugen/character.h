@@ -1265,6 +1265,10 @@ public:
 
         virtual int getCurrentCombo() const;
 
+        virtual inline int getHitCount() const {
+            return hitCount;
+        }
+
 protected:
     void initialize();
     
@@ -1530,6 +1534,8 @@ protected:
 
         int combo;
         int nextCombo;
+        
+        int hitCount;
 };
 
 }

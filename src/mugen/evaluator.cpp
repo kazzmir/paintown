@@ -3,6 +3,7 @@
 #include "character.h"
 #include "mugen_animation.h"
 #include "ast/all.h"
+#include "util/funcs.h"
 #include <math.h>
 
 /* TODO:
@@ -17,6 +18,8 @@
  */
 
 using namespace std;
+
+namespace PaintownUtil = ::Util;
 
 namespace Mugen{
 
@@ -172,6 +175,36 @@ public:
             return RuntimeValue(true);
         }
 
+        if (identifier == "life"){
+            return RuntimeValue(environment.getCharacter().getHealth());
+        }
+
+        if (identifier == "movetype"){
+            return RuntimeValue(environment.getCharacter().getMoveType());
+        }
+
+        if (identifier == "random"){
+            /* Returns a random number between 0 and 999, inclusive. */
+            return RuntimeValue(PaintownUtil::rnd(1000));
+        }
+
+        if (identifier == "I"){
+            return RuntimeValue("I");
+        }
+
+        if (identifier == "H"){
+            return RuntimeValue("H");
+        }
+
+        if (identifier == "p2stateno"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
+        if (identifier == "hitcount"){
+            return RuntimeValue(environment.getCharacter().getHitCount());
+        }
+
         if (identifier == "p2statetype"){
             /* FIXME */
             return RuntimeValue(0);
@@ -185,6 +218,15 @@ public:
         if (identifier == "movecontact"){
             /* FIXME */
             return RuntimeValue(0);
+        }
+
+        if (identifier == "numtarget"){
+            return RuntimeValue(1);
+        }
+
+        if (identifier == "inguarddist"){
+            /* FIXME */
+            return RuntimeValue(false);
         }
 
         if (identifier == "animtime"){
@@ -364,6 +406,11 @@ public:
             return RuntimeValue(0);
         }
 
+        if (keyword == "p2dist x"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
         ostringstream out;
         out << "Unknown keyword '" << keyword.toString() << "'";
         throw MugenException(out.str());
@@ -408,6 +455,11 @@ public:
                 */
             }
             return evaluate(value);
+        }
+
+        if (function == "numtarget"){
+            /* FIXME */
+            return RuntimeValue(0);
         }
 
         if (function == "gethitvar"){
@@ -472,6 +524,11 @@ public:
                 */
             }
             return evaluate(value);
+        }
+
+        if (function == "numexplod"){
+            /* FIXME */
+            return RuntimeValue(0);
         }
 
         if (function == "animelem"){

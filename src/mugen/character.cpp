@@ -1302,6 +1302,9 @@ void Character::changeState(const MugenStage & stage, int stateNumber, const vec
         juggleRemaining = getJugglePoints();
     }
 
+    /* reset hit count */
+    hitCount = 0;
+
     Global::debug(1) << "Change to state " << stateNumber << endl;
     previousState = currentState;
     currentState = stateNumber;
@@ -2711,6 +2714,8 @@ void Character::didHit(Character * enemy){
 
     combo += 1;
     nextCombo = 15;
+
+    hitCount += 1;
 }
 
 void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hisHit){
