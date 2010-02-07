@@ -311,6 +311,9 @@ void Bar::act(Mugen::Character & character){
         case Power:
 	    maxHealth = 3000;
 	    currentHealth = (int)character.getPower();
+            if (currentHealth > 3000){
+                currentHealth = 3000;
+            }
 	    // Update power bar and count number counter.setText()
 	    // Play sounds at level 1 2 3
 	    // Level 1 = 1000
