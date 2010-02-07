@@ -548,6 +548,13 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
                 guy.setSystemVariable(index, value);
             }
 
+            if (value1 != NULL && value2 != NULL){
+                /* 'value = 23' is value1
+                 * 'v = 9' is value2
+                 */
+                guy.setVariable((int) toNumber(evaluate(value2, Environment(stage, guy, commands))), value1);
+            }
+
             break;
         }
         case VelAdd : {
@@ -1767,6 +1774,8 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "x"){
                     controller->setValue1((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "y"){
+                    controller->setValue2((Ast::Value*) simple.getValue()->copy());
+                } else if (simple == "v"){
                     controller->setValue2((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "movetype"){
                     string type;

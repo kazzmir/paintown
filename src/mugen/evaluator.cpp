@@ -564,6 +564,12 @@ public:
             }
         }
 
+        if (function == "animelemno"){
+            /* FIXME */
+            unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
+            return RuntimeValue((int) (environment.getCharacter().getCurrentAnimation()->getPosition() + 1));
+        }
+
         if (function == "selfanimexist"){
             int animation = (int) toNumber(evaluate(function.getArg1()));
             return RuntimeValue(environment.getCharacter().hasAnimation(animation));
