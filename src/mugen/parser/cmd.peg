@@ -529,6 +529,7 @@ rules:
 		     | name:"enemynear"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"target"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"ishelper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"numtarget"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"animelemtime"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"animelemno"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"animexist"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
