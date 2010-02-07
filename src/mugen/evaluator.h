@@ -8,6 +8,8 @@ namespace Ast{
     class Value;
 }
 
+class MugenStage;
+
 namespace Mugen{
 
 class Character;
@@ -126,16 +128,19 @@ struct RuntimeValue{
 
 class Environment{
 public:
-    Environment(const Character & character, const std::vector<std::string> commands):
+    Environment(const MugenStage & stage, const Character & character, const std::vector<std::string> commands):
+    stage(stage),
     character(character),
     commands(commands){
     }
 
-    Environment(const Character & character):
+    Environment(const MugenStage & stage, const Character & character):
+    stage(stage),
     character(character){
     }
 
     Environment(const Environment & copy):
+    stage(copy.stage),
     character(copy.character),
     commands(copy.commands){
     }
@@ -149,6 +154,7 @@ public:
     }
 
 protected:
+    const MugenStage & stage;
     const Character & character;
     std::vector<std::string> commands;
 };

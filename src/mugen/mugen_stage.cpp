@@ -696,7 +696,7 @@ void MugenStage::physics(Object * player){
             if (enemy->getAlliance() != mugen->getAlliance()){
                 if ((enemy->getX() > mugen->getX() && mugen->getFacing() != Object::FACING_RIGHT) ||
                     (enemy->getX() < mugen->getX() && mugen->getFacing() != Object::FACING_LEFT)){
-                    mugen->doTurn();
+                    mugen->doTurn(*this);
                 }
             }
         }
@@ -746,7 +746,8 @@ void MugenStage::physics(Object * player){
             /* change to the landing state */
             // mugen->setXVelocity(0);
             vector<string> inputs;
-            mugen->changeState(52, inputs);
+            /* FIXME: replace 52 with a constant */
+            mugen->changeState(*this, 52, inputs);
         }
     }
 
@@ -1057,7 +1058,7 @@ void MugenStage::reset( ){
 	Object *player = *it;
         Mugen::Character * character = (Mugen::Character*) player;
         vector<string> inputs;
-        character->changeState(Mugen::Intro, inputs);
+        character->changeState(*this, Mugen::Intro, inputs);
 	if (player->getAlliance() == Player1Side){
 	    //((Player *)player)->deathReset();
 	    player->setX(p1startx);

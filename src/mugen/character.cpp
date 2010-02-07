@@ -145,8 +145,8 @@ void StateController::addSystemVariable(int number, Ast::Value * variable){
     systemVariables[number] = variable;
 }
 
-bool StateController::canTrigger(const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
-    RuntimeValue result = evaluate(expression, Environment(character, commands));
+bool StateController::canTrigger(const MugenStage & stage, const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
+    RuntimeValue result = evaluate(expression, Environment(stage, character, commands));
     try{
         return toBool(result);
     } catch (const MugenException & e){
@@ -156,10 +156,10 @@ bool StateController::canTrigger(const Character & character, const Ast::Value *
     }
 }
 
-bool StateController::canTrigger(const Character & character, const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
+bool StateController::canTrigger(const MugenStage & stage, const Character & character, const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
     for (vector<Ast::Value*>::const_iterator it = expressions.begin(); it != expressions.end(); it++){
         const Ast::Value * value = *it;
-        if (!canTrigger(character, value, commands)){
+        if (!canTrigger(stage, character, value, commands)){
             return false;
         }
     }
@@ -182,11 +182,11 @@ vector<int> StateController::sortTriggers() const {
     return out;
 }
 
-bool StateController::canTrigger(const Character & character, const vector<string> & commands) const {
+bool StateController::canTrigger(const MugenStage & stage, const Character & character, const vector<string> & commands) const {
     if (triggers.find(-1) != triggers.end()){
         vector<Ast::Value*> values = triggers.find(-1)->second;
         /* if the triggerall fails then no triggers will work */
-        if (!canTrigger(character, values, commands)){
+        if (!canTrigger(stage, character, values, commands)){
             return false;
         }
     }
@@ -195,7 +195,7 @@ bool StateController::canTrigger(const Character & character, const vector<strin
     for (vector<int>::iterator it = keys.begin(); it != keys.end(); it++){
         vector<Ast::Value*> values = triggers.find(*it)->second;
         /* if a trigger succeeds then stop processing and just return true */
-        if (canTrigger(character, values, commands)){
+        if (canTrigger(stage, character, values, commands)){
             return true;
         }
     }
@@ -203,7 +203,7 @@ bool StateController::canTrigger(const Character & character, const vector<strin
     return false;
 }
 
-void StateController::activate(Character & guy, const vector<string> & commands) const {
+void StateController::activate(const MugenStage & stage, Character & guy, const vector<string> & commands) const {
     Global::debug(1) << "Activate controller " << name << endl;
 
     if (changeControl){
@@ -257,7 +257,7 @@ void StateController::activate(Character & guy, const vector<string> & commands)
             break;
         }
         case ChangeAnim : {
-            RuntimeValue result = evaluate(value1, Environment(guy));
+            RuntimeValue result = evaluate(value1, Environment(stage, guy));
             if (result.isDouble()){
                 int value = (int) result.getDoubleValue();
                 guy.setAnimation(value);
@@ -268,10 +268,10 @@ void StateController::activate(Character & guy, const vector<string> & commands)
             break;
         }
         case ChangeState : {
-            RuntimeValue result = evaluate(value1, Environment(guy));
+            RuntimeValue result = evaluate(value1, Environment(stage, guy));
             if (result.isDouble()){
                 int value = (int) result.getDoubleValue();
-                guy.changeState(value, commands);
+                guy.changeState(stage, value, commands);
             }
             break;
         }
@@ -279,7 +279,7 @@ void StateController::activate(Character & guy, const vector<string> & commands)
             break;
         }
         case CtrlSet : {
-            RuntimeValue result = evaluate(value1, Environment(guy));
+            RuntimeValue result = evaluate(value1, Environment(stage, guy));
             guy.setControl(toBool(result));
             break;
         }
@@ -344,14 +344,14 @@ void StateController::activate(Character & guy, const vector<string> & commands)
         }
         case HitVelSet : {
             if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(guy));
+                RuntimeValue result = evaluate(value1, Environment(stage, guy));
                 if (result.getBoolValue()){
                     guy.setXVelocity(guy.getHitState().xVelocity);
                 }
             }
 
             if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(guy));
+                RuntimeValue result = evaluate(value2, Environment(stage, guy));
                 if (result.getBoolValue()){
                     guy.setYVelocity(guy.getHitState().yVelocity);
                 }
@@ -404,7 +404,7 @@ void StateController::activate(Character & guy, const vector<string> & commands)
                 Ast::Value * item = 0;
                 value1->reset();
                 *value1 >> group >> item;
-                int realItem = (int) toNumber(evaluate(item, Environment(guy)));
+                int realItem = (int) toNumber(evaluate(item, Environment(stage, guy)));
                 MugenSound * sound = 0;
                 if (PaintownUtil::matchRegex(group, "F[0-9]+")){
                     int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
@@ -425,14 +425,14 @@ void StateController::activate(Character & guy, const vector<string> & commands)
         }
         case PosAdd : {
             if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(guy));
+                RuntimeValue result = evaluate(value1, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.moveX(result.getDoubleValue());
                     // guy.setX(guy.getX() + result.getDoubleValue());
                 }
             }
             if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(guy));
+                RuntimeValue result = evaluate(value2, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.moveYNoCheck(-result.getDoubleValue());
                     // guy.setY(guy.getY() + result.getDoubleValue());
@@ -445,13 +445,13 @@ void StateController::activate(Character & guy, const vector<string> & commands)
         }
         case PosSet : {
             if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(guy));
+                RuntimeValue result = evaluate(value1, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setX(result.getDoubleValue());
                 }
             }
             if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(guy));
+                RuntimeValue result = evaluate(value2, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setY(result.getDoubleValue());
                 }
@@ -551,13 +551,13 @@ void StateController::activate(Character & guy, const vector<string> & commands)
         }
         case VelAdd : {
             if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(guy));
+                RuntimeValue result = evaluate(value1, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
                 }
             }
             if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(guy));
+                RuntimeValue result = evaluate(value2, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(guy.getYVelocity() + result.getDoubleValue());
                 }
@@ -566,14 +566,14 @@ void StateController::activate(Character & guy, const vector<string> & commands)
         }
         case VelMul : {
             if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(guy));
+                RuntimeValue result = evaluate(value1, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(guy.getXVelocity() * result.getDoubleValue());
                 }
             }
 
             if (value2 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(guy));
+                RuntimeValue result = evaluate(value1, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(guy.getYVelocity() * result.getDoubleValue());
                 }
@@ -582,13 +582,13 @@ void StateController::activate(Character & guy, const vector<string> & commands)
         }
         case VelSet : {
             if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(guy));
+                RuntimeValue result = evaluate(value1, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(result.getDoubleValue());
                 }
             }
             if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(guy));
+                RuntimeValue result = evaluate(value2, Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(result.getDoubleValue());
                 }
@@ -602,9 +602,9 @@ void StateController::activate(Character & guy, const vector<string> & commands)
             break;
         }
         case InternalCommand : {
-            typedef void (Character::*func)(const vector<string> & inputs);
+            typedef void (Character::*func)(const MugenStage & stage, const vector<string> & inputs);
             func f = (func) internal;
-            (guy.*f)(commands);
+            (guy.*f)(stage, commands);
             break;
         }
     }
@@ -651,13 +651,13 @@ void State::setPhysics(Physics::Type p){
     physics = p;
 }
 
-void State::transitionTo(Character & who){
+void State::transitionTo(const MugenStage & stage, Character & who){
     if (animation != 0){
-        who.setAnimation((int) toNumber(evaluate(animation, Environment(who))));
+        who.setAnimation((int) toNumber(evaluate(animation, Environment(stage, who))));
     }
 
     if (changeControl){
-        who.setControl(toBool(evaluate(control, Environment(who))));
+        who.setControl(toBool(evaluate(control, Environment(stage, who))));
     }
 
     who.setCurrentJuggle(juggle);
@@ -1295,7 +1295,7 @@ void Character::resetStateTime(){
     stateTime = 0;
 }
         
-void Character::changeState(int stateNumber, const vector<string> & inputs){
+void Character::changeState(const MugenStage & stage, int stateNumber, const vector<string> & inputs){
     /* reset juggle points once the player gets up */
     if (stateNumber == GetUpFromLiedown){
         juggleRemaining = getJugglePoints();
@@ -1307,8 +1307,8 @@ void Character::changeState(int stateNumber, const vector<string> & inputs){
     resetStateTime();
     if (states[currentState] != 0){
         State * state = states[currentState];
-        state->transitionTo(*this);
-        doStates(inputs, currentState);
+        state->transitionTo(stage, *this);
+        doStates(stage, inputs, currentState);
     } else {
         Global::debug(0) << "Unknown state " << currentState << endl;
     }
@@ -2292,7 +2292,7 @@ bool Character::hasAnimation(int index) const {
  */
 static const int JumpIndex = 234823;
 
-void Character::resetJump(const vector<string> & inputs){
+void Character::resetJump(const MugenStage & stage, const vector<string> & inputs){
     Ast::MutableNumber * number = (Ast::MutableNumber*) getSystemVariable(JumpIndex);
     number->set(0);
 
@@ -2300,10 +2300,10 @@ void Character::resetJump(const vector<string> & inputs){
      * or something.
      */
     // setSystemVariable(JumpIndex, new Ast::Number(0));
-    changeState(JumpStart, inputs);
+    changeState(stage, JumpStart, inputs);
 }
 
-void Character::doubleJump(const vector<string> & inputs){
+void Character::doubleJump(const MugenStage & stage, const vector<string> & inputs){
     Ast::MutableNumber * number = (Ast::MutableNumber*) getSystemVariable(JumpIndex);
     number->set(number->get() + 1);
 
@@ -2312,7 +2312,7 @@ void Character::doubleJump(const vector<string> & inputs){
     *getSystemVariable(JumpIndex) >> current;
     setSystemVariable(JumpIndex, new Ast::Number(1 + current));
     */
-    changeState(AirJumpStart, inputs);
+    changeState(stage, AirJumpStart, inputs);
 }
 
 void Character::fixAssumptions(){
@@ -2669,10 +2669,13 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
     /* active is the current set of commands */
     vector<string> active = doInput(InputManager::getMap(getInput()));
     /* always run through the negative states */
-    doStates(active, -3);
-    doStates(active, -2);
-    doStates(active, -1);
-    doStates(active, currentState);
+
+    /* hack! */
+    const MugenStage & stage = *(MugenStage*) world;
+    doStates(stage, active, -3);
+    doStates(stage, active, -2);
+    doStates(stage, active, -1);
+    doStates(stage, active, currentState);
 
     /*
     while (doStates(active, currentState)){
@@ -2707,7 +2710,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
     
     vector<string> active;
     /* FIXME: replace 5000 with some constant */
-    changeState(5000, active);
+    changeState(stage, 5000, active);
 
     /*
     vector<string> active;
@@ -2717,7 +2720,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
 }
 
 /* returns true if a state change occured */
-bool Character::doStates(const vector<string> & active, int stateNumber){
+bool Character::doStates(const MugenStage & stage, const vector<string> & active, int stateNumber){
     int oldState = getCurrentState();
     if (states[stateNumber] != 0){
         State * state = states[stateNumber];
@@ -2745,9 +2748,9 @@ bool Character::doStates(const vector<string> & active, int stateNumber){
 #endif
 
             try{
-                if (controller->canTrigger(*this, active)){
+                if (controller->canTrigger(stage, *this, active)){
                     /* activate may modify the current state */
-                    controller->activate(*this, active);
+                    controller->activate(stage, *this, active);
 
                     if (stateNumber >= 0 && getCurrentState() != oldState){
                         return true;
@@ -2847,9 +2850,9 @@ MugenSound * Character::getSound(int group, int item) const {
     */
 }
 
-void Character::doTurn(){
+void Character::doTurn(const MugenStage & stage){
     vector<string> active;
-    changeState(5, active);
+    changeState(stage, 5, active);
     reverseFacing();
 }
 

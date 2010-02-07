@@ -683,8 +683,8 @@ public:
         InternalCommand,
     };
 
-    bool canTrigger(const Character & character, const std::vector<std::string> & commands) const;
-    void activate(Character & who, const std::vector<std::string> & commands) const;
+    bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<std::string> & commands) const;
+    void activate(const MugenStage & stage, Character & who, const std::vector<std::string> & commands) const;
 
     virtual inline void setType(Type type){
         this->type = type;
@@ -723,7 +723,7 @@ public:
         this->moveType = str;
     }
 
-    virtual inline void setInternal(void (Character::*v)(const std::vector<std::string> & inputs)){
+    virtual inline void setInternal(void (Character::*v)(const MugenStage & stage, const std::vector<std::string> & inputs)){
         internal = v;
     }
 
@@ -731,8 +731,8 @@ public:
 
 protected:
 
-    bool canTrigger(const Character & character, const std::vector<Ast::Value*> & expressions, const std::vector<std::string> & commands) const;
-    bool canTrigger(const Character & character, const Ast::Value * expression, const std::vector<std::string> & commands) const;
+    bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<Ast::Value*> & expressions, const std::vector<std::string> & commands) const;
+    bool canTrigger(const MugenStage & stage, const Character & character, const Ast::Value * expression, const std::vector<std::string> & commands) const;
     std::vector<int> sortTriggers() const;
 
 protected:
@@ -753,7 +753,7 @@ protected:
     HitDefinition hit;
     std::string moveType;
 
-    void (Character::*internal)(const std::vector<std::string> & inputs);
+    void (Character::*internal)(const MugenStage & stage, const std::vector<std::string> & inputs);
 };
 
 /* comes from a StateDef */
@@ -800,7 +800,7 @@ public:
 
     virtual void addController(StateController * controller);
 
-    virtual void transitionTo(Character & who);
+    virtual void transitionTo(const MugenStage & stage, Character & who);
 
     virtual ~State();
 
@@ -940,7 +940,7 @@ public:
 	virtual double minZDistance() const;
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
-        virtual void changeState(int state, const std::vector<std::string> & inputs);
+        virtual void changeState(const MugenStage & stage, int state, const std::vector<std::string> & inputs);
 
         virtual void setAnimation(int animation);
 
@@ -1219,7 +1219,7 @@ public:
         virtual bool isPaused();
 
         bool canTurn() const;
-        void doTurn();
+        void doTurn(const MugenStage & stage);
 
         /* recover after falling */
         virtual bool canRecover() const;
@@ -1280,10 +1280,10 @@ protected:
     virtual void setConstant(std::string name, double value);
 
     virtual std::vector<std::string> doInput(InputMap<Command::Keys>::Output output);
-    virtual bool doStates(const std::vector<std::string> & active, int state);
+    virtual bool doStates(const MugenStage & stage, const std::vector<std::string> & active, int state);
 
-    void resetJump(const std::vector<std::string> & inputs);
-    void doubleJump(const std::vector<std::string> & inputs);
+    void resetJump(const MugenStage & stage, const std::vector<std::string> & inputs);
+    void doubleJump(const MugenStage & stage, const std::vector<std::string> & inputs);
 
     virtual void fixAssumptions();
     virtual void parseState(Ast::Section * section);

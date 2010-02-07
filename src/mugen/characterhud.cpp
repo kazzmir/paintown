@@ -281,9 +281,6 @@ void Bar::act(Mugen::Character & character){
         case Health: {
             maxHealth = character.getMaxHealth();
             currentHealth = character.getHealth();
-            if (currentHealth >= maxHealth - 20){
-                Global::debug(0) << "Current health " << currentHealth << endl;
-            }
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
             if (character.hasControl()){
