@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "mugen/mugen_util.h"
+#include "mugen/util.h"
 
 class Bitmap;
 class MugenStage;

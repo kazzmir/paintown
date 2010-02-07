@@ -2,8 +2,8 @@
 
 #include <list>
 
-#include "mugen/mugen_util.h"
-#include "mugen/mugen_exception.h"
+#include "mugen/util.h"
+#include "mugen/exception.h"
 
 #include "globals.h"
 #include "util/file-system.h"

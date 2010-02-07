@@ -1,7 +1,7 @@
 #include "util/bitmap.h"
-#include "mugen/option_arcade.h"
+#include "mugen/option-arcade.h"
 #include "mugen/game.h"
-#include "mugen/mugen_menu.h"
+#include "mugen/menu.h"
 
 using namespace std;
 using namespace Mugen;

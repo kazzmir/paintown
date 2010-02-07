@@ -1,6 +1,6 @@
 #include "util/bitmap.h"
 #include <string.h>
-#include "mugen_sprite.h"
+#include "mugen/sprite.h"
 #include "util/funcs.h"
 #include "globals.h"
 

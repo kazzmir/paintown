@@ -4,13 +4,13 @@
 #include <cstring>
 #include <vector>
 
-#include "mugen_font.h"
+#include "mugen/font.h"
 
-#include "mugen_item.h"
-#include "mugen_item_content.h"
-#include "mugen_section.h"
-#include "mugen_reader.h"
-#include "mugen_util.h"
+#include "mugen/item.h"
+#include "mugen/item-content.h"
+#include "mugen/section.h"
+#include "mugen/reader.h"
+#include "mugen/util.h"
 #include "globals.h"
 #include "util/funcs.h"
 

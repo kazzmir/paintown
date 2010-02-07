@@ -4,10 +4,10 @@
 #include <ostream>
 
 #include "config.h"
-#include "mugen_sprite.h"
-#include "mugen_animation.h"
-#include "mugen_font.h"
-#include "mugen_sound.h"
+#include "mugen/sprite.h"
+#include "mugen/animation.h"
+#include "mugen/font.h"
+#include "mugen/sound.h"
 #include "character.h"
 
 #include "util/timedifference.h"

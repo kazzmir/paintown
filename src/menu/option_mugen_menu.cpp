@@ -10,8 +10,8 @@
 #include <pthread.h>
 
 #include "mugen/parse-cache.h"
-#include "mugen/mugen_menu.h"
-#include "mugen/mugen_exception.h"
+#include "mugen/menu.h"
+#include "mugen/exception.h"
 #include "mugen/config.h"
 #include "return_exception.h"
 

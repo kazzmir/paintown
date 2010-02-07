@@ -1,5 +1,5 @@
 #include "util/bitmap.h"
-#include "mugen_animation.h"
+#include "mugen/animation.h"
 #include "state.h"
 
 #include "globals.h"
@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "init.h"
-#include "mugen_sprite.h"
-#include "mugen_util.h"
+#include "mugen/sprite.h"
+#include "mugen/util.h"
 #include "util/load_exception.h"
 
 using namespace std;

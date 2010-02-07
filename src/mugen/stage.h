@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "mugen_exception.h"
-#include "mugen_util.h"
+#include "mugen/exception.h"
+#include "mugen/util.h"
 
 #include "world.h"
 

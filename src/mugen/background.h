@@ -5,8 +5,8 @@
 #include <vector>
 #include <map>
 #include <math.h>
-#include "mugen_animation.h"
-#include "mugen_util.h"
+#include "mugen/animation.h"
+#include "mugen/util.h"
 #include "gui/rectarea.h"
 #include "ast/all.h"
 

@@ -3,7 +3,7 @@
 #include "factory/collector.h"
 #include "network/network.h"
 #include "util/token_exception.h"
-#include "mugen/mugen_exception.h"
+#include "mugen/exception.h"
 #include "music.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"

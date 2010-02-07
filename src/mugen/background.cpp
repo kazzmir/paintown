@@ -7,7 +7,7 @@
 #include <list>
 #include <algorithm>
 #include "globals.h"
-#include "mugen_sprite.h"
+#include "mugen/sprite.h"
 #include "util/regex.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"

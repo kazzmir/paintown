@@ -4,8 +4,8 @@
 #include <string>
 #include <map>
 
-#include "mugen/mugen_util.h"
-#include "mugen/mugen_exception.h"
+#include "mugen/util.h"
+#include "mugen/exception.h"
 
 class Bitmap;
 class MugenSprite;

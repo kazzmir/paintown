@@ -1,5 +1,5 @@
-#include "mugen_section.h"
-#include "mugen_item_content.h"
+#include "mugen/section.h"
+#include "mugen/item-content.h"
 
 MugenItemContent MugenSection::empty;
 

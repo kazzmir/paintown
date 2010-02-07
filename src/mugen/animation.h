@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "state.h"
-#include "mugen_util.h"
+#include "mugen/util.h"
 
 class Bitmap;
 class MugenSprite;

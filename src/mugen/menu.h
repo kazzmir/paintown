@@ -4,12 +4,12 @@
 #include <vector>
 #include <map>
 
-#include "mugen_exception.h"
-#include "mugen_fadetool.h"
+#include "mugen/exception.h"
+#include "mugen/fadetool.h"
 
 #include "menu/menu.h"
 
-#include "mugen/mugen_util.h"
+#include "mugen/util.h"
 #include "return_exception.h"
 
 /*

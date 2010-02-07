@@ -1,10 +1,10 @@
 #include "util/bitmap.h"
-#include "mugen/option_options.h"
+#include "mugen/option-options.h"
 #include "mugen/game.h"
-#include "mugen/mugen_menu.h"
+#include "mugen/menu.h"
 #include "mugen/config.h"
-#include "mugen/mugen_font.h"
-#include "mugen/mugen_sound.h"
+#include "mugen/font.h"
+#include "mugen/sound.h"
 #include "mugen/background.h"
 
 #include <ostream>

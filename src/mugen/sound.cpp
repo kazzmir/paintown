@@ -1,5 +1,5 @@
 #include <string.h>
-#include "mugen_sound.h"
+#include "mugen/sound.h"
 #include "util/sound.h"
 
 MugenSound::MugenSound():

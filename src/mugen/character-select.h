@@ -5,14 +5,14 @@
 #include <map>
 #include <queue>
 
-#include "mugen_exception.h"
-#include "mugen_fadetool.h"
+#include "mugen/exception.h"
+#include "mugen/fadetool.h"
 
 #include "menu/menu.h"
 
 #include "input/input-map.h"
 
-#include "mugen_util.h"
+#include "mugen/util.h"
 #include "return_exception.h"
 
 #include "ast/all.h"

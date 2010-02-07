@@ -2,7 +2,7 @@
 #define _paintown_ast_exception_h
 
 #include <exception>
-#include "../mugen_exception.h"
+#include "../exception.h"
 #include <string>
 
 namespace Ast{

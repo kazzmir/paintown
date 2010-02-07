@@ -1,5 +1,5 @@
 #include "util/bitmap.h"
-#include "mugen/mugen_menu.h"
+#include "mugen/menu.h"
 
 #include <fstream>
 #include <iostream>
@@ -12,7 +12,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "mugen_stage.h"
+#include "mugen/stage.h"
 
 #include "init.h"
 #include "resource.h"
@@ -35,24 +35,24 @@
 
 #include "input/input-manager.h"
 
-#include "mugen_animation.h"
+#include "mugen/animation.h"
 #include "mugen/background.h"
 #include "mugen/config.h"
-#include "character_select.h"
+#include "character-select.h"
 #include "character.h"
-#include "mugen_item.h"
-#include "mugen_item_content.h"
-#include "mugen_section.h"
-#include "mugen_sound.h"
-#include "mugen_reader.h"
-#include "mugen_sprite.h"
-#include "mugen_util.h"
-#include "mugen_font.h"
+#include "mugen/item.h"
+#include "mugen/item-content.h"
+#include "mugen/section.h"
+#include "mugen/sound.h"
+#include "mugen/reader.h"
+#include "mugen/sprite.h"
+#include "mugen/util.h"
+#include "mugen/font.h"
 #include "mugen/storyboard.h"
 
-#include "mugen/option_arcade.h"
-#include "mugen/option_options.h"
-#include "mugen/option_versus.h"
+#include "mugen/option-arcade.h"
+#include "mugen/option-options.h"
+#include "mugen/option-versus.h"
 #include "ast/all.h"
 #include "parser/all.h"
 

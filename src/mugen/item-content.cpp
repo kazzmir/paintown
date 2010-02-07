@@ -1,7 +1,7 @@
-#include "mugen_item_content.h"
-#include "mugen_item.h"
+#include "mugen/item-content.h"
+#include "mugen/item.h"
 
-#include "mugen_util.h"
+#include "mugen/util.h"
 
 MugenItem MugenItemContent::empty("empty");
 

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "mugen_exception.h"
+#include "mugen/exception.h"
 
 class MugenSection;
 class MugenItemContent;

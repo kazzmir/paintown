@@ -1,4 +1,4 @@
-#include "mugen_fadetool.h"
+#include "mugen/fadetool.h"
 #include "util/bitmap.h"
 
 MugenFadeTool::MugenFadeTool():

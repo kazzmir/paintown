@@ -1,7 +1,7 @@
 #include "evaluator.h"
-#include "mugen_exception.h"
+#include "mugen/exception.h"
 #include "character.h"
-#include "mugen_animation.h"
+#include "mugen/animation.h"
 #include "ast/all.h"
 #include "util/funcs.h"
 #include <math.h>

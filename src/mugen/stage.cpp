@@ -10,7 +10,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "mugen_stage.h"
+#include "mugen/stage.h"
 
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -29,16 +29,16 @@
 
 #include "parser/all.h"
 
-#include "mugen_animation.h"
+#include "mugen/animation.h"
 #include "background.h"
 #include "mugen/config.h"
-#include "mugen_item.h"
-#include "mugen_item_content.h"
-#include "mugen_section.h"
-#include "mugen_sound.h"
-#include "mugen_reader.h"
-#include "mugen_sprite.h"
-#include "mugen_util.h"
+#include "mugen/item.h"
+#include "mugen/item-content.h"
+#include "mugen/section.h"
+#include "mugen/sound.h"
+#include "mugen/reader.h"
+#include "mugen/sprite.h"
+#include "mugen/util.h"
 
 #include "mugen/characterhud.h"
 

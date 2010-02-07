@@ -1,7 +1,7 @@
 #include <exception>
 #include <string>
 #include <sstream>
-#include "mugen_exception.h"
+#include "mugen/exception.h"
 	
 MugenException::MugenException():
 std::exception(){

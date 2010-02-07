@@ -5,13 +5,13 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "mugen_exception.h"
+#include "mugen/exception.h"
 
 // Implement object_attack
 #include "object/object_attack.h"
 #include "network/network.h"
 #include "input/input-map.h"
-#include "mugen_animation.h"
+#include "mugen/animation.h"
 
 namespace Ast{
     class KeyList;

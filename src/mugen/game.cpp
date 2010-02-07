@@ -16,11 +16,11 @@
 #include "loading.h"
 
 #include "character.h"
-#include "mugen_util.h"
-#include "mugen_font.h"
-#include "mugen_menu.h"
-#include "mugen_stage.h"
-#include "character_select.h"
+#include "mugen/util.h"
+#include "mugen/font.h"
+#include "mugen/menu.h"
+#include "mugen/stage.h"
+#include "character-select.h"
 #include "storyboard.h"
 
 namespace PaintownUtil = ::Util;
