@@ -1055,12 +1055,15 @@ void MugenStage::reset( ){
     // Reset player positions
     for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	Object *player = *it;
-	if( player->getAlliance() == Player1Side ){
+        Mugen::Character * character = (Mugen::Character*) player;
+        vector<string> inputs;
+        character->changeState(Mugen::Intro, inputs);
+	if (player->getAlliance() == Player1Side){
 	    //((Player *)player)->deathReset();
 	    player->setX(p1startx);
 	    player->setY(p1starty);
 	    player->setZ(currentZOffset());
-	    player->setFacing( Object::FACING_RIGHT );
+	    player->setFacing(Object::FACING_RIGHT);
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
 	    playerInfo[player].leftTension = false;
@@ -1068,12 +1071,12 @@ void MugenStage::reset( ){
 	    playerInfo[player].leftSide = false;
 	    playerInfo[player].rightSide = false;
 	    playerInfo[player].jumped = false;
-	} else if( player->getAlliance() == Player2Side ){
+	} else if (player->getAlliance() == Player2Side){
 	    //((Player *)player)->deathReset();
 	    player->setX(p2startx);
 	    player->setY(p2starty);
 	    player->setZ(currentZOffset());
-	    player->setFacing( Object::FACING_LEFT );
+	    player->setFacing(Object::FACING_LEFT);
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
 	    playerInfo[player].leftTension = false;

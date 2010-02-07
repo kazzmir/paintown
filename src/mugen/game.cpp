@@ -156,7 +156,7 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 	// Lets reset the stage for good measure
 	stage->reset();
 
-	while( !quit ){
+	while (!quit){
 	    bool draw = false;
 
 	    if (Global::speed_counter > 0){
@@ -308,5 +308,3 @@ void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){
 	}
     }
 }
-
-

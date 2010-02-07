@@ -2419,6 +2419,10 @@ void Character::fixAssumptions(){
         states[20]->addController(controller);
     }
 
+    if (states[Standing] != 0){
+        states[Standing]->setControl(new Ast::Number(1));
+    }
+
     /* stand after crouching */
     if (states[11] != 0){
         StateController * controller = new StateController("stop walking");
