@@ -51,6 +51,7 @@
 #include "mugen/storyboard.h"
 
 #include "mugen/option_arcade.h"
+#include "mugen/option_options.h"
 #include "mugen/option_versus.h"
 #include "ast/all.h"
 #include "parser/all.h"
@@ -292,7 +293,7 @@ void MugenMenu::loadData() throw (MugenException){
                        }
 		   } else if (simple == "menu.itemname.options"){
                        try{
-                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                           menu.addOption(new Mugen::OptionOptions(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.exit"){

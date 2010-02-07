@@ -217,6 +217,7 @@ src/mugen/mugen_sprite.cpp
 src/mugen/mugen_stage.cpp
 src/mugen/mugen_util.cpp
 src/mugen/option_arcade.cpp
+src/mugen/option_options.cpp
 src/mugen/option_versus.cpp
 src/mugen/parse-cache.cpp
 src/mugen/parser/parse-exception.cpp
