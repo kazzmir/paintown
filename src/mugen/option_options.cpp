@@ -7,6 +7,8 @@
 #include "mugen/mugen_sound.h"
 #include "mugen/background.h"
 
+#include <ostream>
+
 #include "ast/all.h"
 #include "parser/all.h"
 #include "init.h"
@@ -224,6 +226,8 @@ void OptionOptions::run(bool &endGame){
 	    
 	    optionArea.render(&workArea);
 	    
+	    doOptions(*font,optionArea.position.x,optionArea.position.y,workArea);
+	    
 	    // render Foregrounds
 	    background->renderForeground(0,0,workArea);
 	    
@@ -258,4 +262,29 @@ void OptionOptions::run(bool &endGame){
     if (escaped){
 	throw ReturnException();
     }
+}
+
+static std::string getString(int number){
+    std::ostringstream str;
+    str << number;
+    return str.str();
+}
+
+void OptionOptions::doOptions(MugenFont & font, int x, int y, const Bitmap & bmp){
+    const int rightX = x + 195;
+    Mugen::Data & data = Mugen::Data::getInstance();
+    font.render(x+5, y+30, 1, 0, bmp, "Difficulty" );
+    font.render(rightX, y+30, -1, 0, bmp, getString(data.getDifficulty()));
+    font.render(x+5, y+50, 1, 0, bmp, "Life" );
+    font.render(rightX, y+50, -1, 0, bmp, getString(data.getLife()));
+    font.render(x+5, y+70, 1, 0, bmp, "Time Limit" );
+    font.render(rightX, y+70, -1, 0, bmp, getString(data.getTime()));
+    font.render(x+5, y+90, 1, 0, bmp, "Game Speed" );
+    font.render(rightX, y+90, -1, 0, bmp, getString(data.getSpeed()));
+    font.render(x+5, y+110, 1, 0, bmp, "1P VS Team Advantage" );
+    font.render(rightX, y+110, -1, 0, bmp, getString(data.getTeam1vs2Life()));
+    font.render(x+5, y+130, 1, 0, bmp, "If player KOed" );
+    font.render(rightX, y+130, -1, 0, bmp, getString(data.getTeamLoseOnKO()));
+    font.render(x+5, y+150, 1, 0, bmp, "Return to Main Menu" );
+    font.render(rightX, y+150, -1, 0, bmp, "(Esc)");
 }

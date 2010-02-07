@@ -7,6 +7,7 @@
 #include <string>
 
 class Token;
+class MugenFont;
 
 namespace Mugen{
 
@@ -25,6 +26,19 @@ public:
     virtual ~OptionOptions();
 
 private:
+    
+    enum Options{
+	Difficult,
+	Life,
+	TimeLimit,
+	GameSpeed,
+	OneVSTeam,
+	TeamPlayerKO,
+    };
+    
+    Options currentOption;
+    
+    void doOptions(MugenFont & font, int x, int y, const Bitmap &);
 	    
 };
 
