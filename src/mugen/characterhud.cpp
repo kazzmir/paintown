@@ -41,8 +41,8 @@ soundtime(0),
 text(""),
 bank(0),
 position(0),
-useDisplayTime(false),
-useSoundTime(false),
+displayState(NoDisplayTimer),
+soundState(NoSoundTimer),
 ticker(0),
 soundTicker(0){
 }
@@ -54,6 +54,9 @@ void FightElement::act(){
     switch (type){
 	case IS_SOUND_AND_ACTION:
 	case IS_ACTION:
+	    if (action->animationTime() == 0){
+		displayState = Ended;
+	    }
 	    action->logic();
 	    break;
 	case IS_SOUND_AND_SPRITE:
@@ -70,22 +73,40 @@ void FightElement::act(){
 	    break;
     }
     
-    if (useDisplayTime && ticker < displaytime){
-	ticker++;
+    switch (displayState){
+	case Showing:
+	    if (ticker >= displaytime){
+		displayState = Ended;
+	    } else {
+		ticker++;
+	    }
+	    break;
+	case Ended:
+	case NoDisplayTimer:
+	default:
+	    break;
     }
-
-    if (useSoundTime && soundTicker == soundtime){
-	if (sound){
-	    sound->play();
-	}
-	soundTicker++;
-    } else if (useSoundTime && soundTicker < soundtime){
-	soundTicker++;
+    
+    switch (soundState){
+	case Waiting:
+	    if (soundTicker >= soundtime){
+		if (sound){
+		    sound->play();
+		}
+	    } else {
+		soundTicker++;
+	    }
+	    break;
+	case Played:
+	case NoSoundTimer:
+	default:
+	    break;
     }
+	    
 }
 
 void FightElement::render(int x, int y, const Bitmap & bmp){
-    if (useDisplayTime && ticker == displaytime){
+    if (displayState == Ended){
 	return;
     }
     switch (type){
@@ -110,7 +131,7 @@ void FightElement::render(int x, int y, const Bitmap & bmp){
 }
 
 void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp, int width = -99999){
-    if (useDisplayTime && ticker == displaytime){
+    if (displayState == Ended){
 	return;
     }
 
@@ -159,13 +180,20 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
 void FightElement::play(){
     switch (type){
 	case IS_SOUND_AND_ACTION:
-	    sound->play();
+	    if (soundState != NoSoundTimer){
+		soundTicker = 0;
+		soundState = Waiting;
+	    } else {
+		sound->play();
+	    }
 	case IS_ACTION:
 	    ticker = 0;
+	    displayState = Showing;
             break;
 	case IS_SOUND_AND_SPRITE:
-	    if (useSoundTime){
+	    if (soundState != NoSoundTimer){
 		soundTicker = 0;
+		soundState = Waiting;
 	    } else {
 		sound->play();
 	    }
@@ -177,7 +205,12 @@ void FightElement::play(){
 	case IS_FONT:
             break;
         case IS_SOUND:
-	    sound->play();
+	    if (soundState != NoSoundTimer){
+		soundTicker = 0;
+		soundState = Waiting;
+	    } else {
+		sound->play();
+	    }
 	    break;
 	case IS_NOTSET:
 	default:
@@ -194,6 +227,7 @@ void FightElement::setAction(MugenAnimation *anim){
 	    setType(IS_ACTION);
 	}
 	action = anim;
+	displayState = Showing;
     }
 }
 void FightElement::setSprite(MugenSprite *spr){
@@ -623,13 +657,161 @@ void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
     }
 }
 	
-Round::Round(){
+Round::Round():
+state(WaitForIntro),
+currentRound(1),
+matchWins(0),
+matchMaxDrawGames(0),
+startWaitTime(0),
+roundDisplayTime(0),
+fightDisplayTime(0),
+controlTime(0),
+ticker(0){
+    // Initiate default rounds 9 total
+    for (int i = 0; i < 9; ++i){
+	FightElement * element = new FightElement();
+	rounds.push_back(element);
+    }
 }
 Round::~Round(){
+    for (std::vector< FightElement * >::iterator i = rounds.begin(); i != rounds.end(); ++i){
+	delete *i;
+    }
 }
-void Round::act(){
+void Round::act(Mugen::Character & player1, Mugen::Character & player2){
+    switch (state){
+	case WaitForIntro:
+	    if (ticker >= startWaitTime){
+		setState(DisplayIntro,player1,player2);
+	    }
+	    Global::debug(0) << "Round Ticker: " << ticker << " | Waiting for Intro: " << startWaitTime << endl;
+	    break;
+	case DisplayIntro:
+	    // Check if player states are done with intro move on to next
+	    // for now just go ahead and start the round
+	    setState(WaitForRound,player1,player2);
+	    Global::debug(0) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
+	    break;
+	case WaitForRound:
+	    if (ticker >= roundDisplayTime){
+		setState(DisplayRound,player1,player2);
+	    }
+	    Global::debug(0) << "Round Ticker: " << ticker << " | Wait for round: " << roundDisplayTime << endl;
+	    break;
+	case DisplayRound:
+	    if (!rounds[currentRound]->hasMedia() && !defaultRound.isDisplaying()){
+		ostringstream str;
+		str << currentRound;
+		std::string temp = replaceString("%i",str.str(),defaultText);
+		defaultRound.setText(temp);
+		defaultRound.play();
+		rounds[currentRound]->play();
+	    } else if(rounds[currentRound]->hasMedia() && !rounds[currentRound]->isDisplaying()){
+		rounds[currentRound]->play();
+	    }
+	    if (!rounds[currentRound]->hasMedia() && defaultRound.isDone()){
+		setState(WaitForFight,player1,player2);
+	    } else if(rounds[currentRound]->hasMedia() && rounds[currentRound]->isDone()){
+		setState(WaitForFight,player1,player2);
+	    }
+	    Global::debug(0) << "Round Ticker: " << ticker << " | Playing round. " << endl;
+	    break;
+	case WaitForFight:
+	    if (ticker >= fightDisplayTime){
+		setState(DisplayFight,player1,player2);
+	    }
+	    Global::debug(0) << "Round Ticker: " << ticker << " | Wait for Fight: " << fightDisplayTime << endl;
+	    break;
+	case DisplayFight:
+	    if (!fight.isDisplaying()){
+		fight.play();
+	    } else if (fight.isDone()){
+		setState(WaitForControl,player1,player2);
+	    }
+	    break;
+	case WaitForControl:
+	    if (ticker >= controlTime){
+		setState(WaitForOver,player1,player2);
+	    }
+	    break;
+	case WaitForOver:
+	    // Evaluate players and then go to the appropriate finish
+	    break;
+	case DisplayKO:
+	    break;
+	case DisplayDoubleKO:
+	    break;
+	case DisplayTimeOver:
+	    break;
+	default:
+	    break;
+    }
+    ticker++;
 }
-void Round::render(const Element::Layer &, const Bitmap &){
+void Round::render(const Element::Layer & layer, const Bitmap & bmp){
+    switch (this->state){
+	case WaitForIntro:
+	    break;
+	case DisplayIntro:
+	    break;
+	case WaitForRound:
+	    break;
+	case DisplayRound:
+	    if (!rounds[currentRound]->hasMedia()){
+		defaultRound.render(layer, position.x, position.y, bmp);
+	    } else if(rounds[currentRound]->hasMedia()){
+		rounds[currentRound]->render(layer, position.x, position.y, bmp);
+	    }
+	    break;
+	case WaitForFight:
+	    break;
+	case DisplayFight:
+	    fight.render(layer, position.x, position.y, bmp);
+	    break;
+	case WaitForControl:
+	    break;
+	case WaitForOver:
+	    break;
+	case DisplayKO:
+	    break;
+	case DisplayDoubleKO:
+	    break;
+	case DisplayTimeOver:
+	    break;
+	default:
+	    break;
+    }
+}
+
+void Round::setState(const State & state, Mugen::Character & player1, Mugen::Character & player2){
+    this->state = state;
+    switch (this->state){
+	case WaitForIntro:
+	    break;
+	case DisplayIntro:
+	    break;
+	case WaitForRound:
+	    break;
+	case DisplayRound:
+	    break;
+	case WaitForFight:
+	    break;
+	case DisplayFight:
+	    break;
+	case WaitForControl:
+	    break;
+	case WaitForOver:
+	    break;
+	case DisplayKO:
+	    break;
+	case DisplayDoubleKO:
+	    break;
+	case DisplayTimeOver:
+	    break;
+	default:
+	    break;
+    }
+    ticker = 0;
 }
 
 GameInfo::GameInfo(const std::string & fightFile):
@@ -963,6 +1145,66 @@ state(NotStarted){
 
             ComboWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
+        } else if (head == "Round"){
+            class RoundWalk: public Ast::Walker{
+            public:
+                RoundWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                self(self),
+		sprites(sprites),
+		animations(animations),
+		fonts(fonts){
+                }
+                GameInfo & self;
+		Mugen::SpriteMap & sprites;
+		std::map<int,MugenAnimation *> & animations;
+		std::vector<MugenFont *> & fonts;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "match.wins"){
+		    } else if (simple == "match.maxdrawgames"){
+		    } else if (simple == "start.waittime"){
+		    } else if (simple == "pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			self.team1Combo.setPosition(x,y);
+			self.team2Combo.setPosition(x,y);
+		    } else if (simple == "round.time"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setRoundDisplayTime(time);
+		    } else if (simple == "round.default.text"){
+			std::string text;
+			simple >> text;
+			self.roundControl.setDefaultText(text);
+		    } else if (simple == "fight.time"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setFightDisplayTime(time);
+		    } else if (simple == "ctrl.time"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setControlTime(time);
+		    } else if (simple == "round.sndtime"){
+			int time = 0;
+			simple >> time;
+			for (unsigned int i = 0; i < 9; ++i){
+			    self.roundControl.getRound(i).setSoundTime(time);
+			}
+		    }
+		    getElementProperties(simple,"round","default", self.roundControl.getDefaultRound(),sprites,animations,fonts);
+		    for (unsigned int i = 0; i < 9; ++i){
+			ostringstream str;
+			str << "round" << i;
+			getElementProperties(simple,"",str.str(), self.roundControl.getRound(i),sprites,animations,fonts);
+		    }
+		    getElementProperties(simple,"","fight", self.roundControl.getDefaultRound(),sprites,animations,fonts);
+		}
+            };
+
+            RoundWalk walk(*this,sprites,animations,fonts);
+            section->walk(walk);
         }
     }
 
@@ -1015,6 +1257,7 @@ void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     timer.act();
     team1Combo.act(player1);
     team2Combo.act(player2);
+    roundControl.act(player1,player2);
 }
 
 void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
@@ -1029,6 +1272,7 @@ void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
     timer.render(layer,bmp);
     team1Combo.render(layer,bmp);
     team2Combo.render(layer,bmp);
+    roundControl.render(layer,bmp);
 }
 
 void GameInfo::setState(const State & state, Character & player1, Character & player2){

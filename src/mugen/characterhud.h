@@ -43,9 +43,28 @@ class FightElement: public Element {
 	    IS_SOUND_AND_FONT,
 	};
 	
+	enum DisplayState{
+	    NoDisplayTimer,
+	    DisplayNotStarted,
+	    Showing,
+	    Ended,
+	};
+	
+	enum SoundState{
+	    NoSoundTimer,
+	    SoundNotStarted,
+	    Waiting,
+	    Played,
+	};
+	
 	virtual inline void setType(ElementType t){ type = t; }
 	virtual inline bool isSet() const {
 	    return (type != IS_NOTSET);
+	}
+	
+	virtual inline bool hasMedia() const {
+	    return (type == IS_ACTION || type == IS_SPRITE || type == IS_SOUND_AND_ACTION
+	    || type == IS_SOUND_AND_SPRITE);
 	}
 
 	virtual void setAction(MugenAnimation *);
@@ -69,12 +88,41 @@ class FightElement: public Element {
 
 	virtual inline void setDisplayTime(int time){ 
             this->displaytime = time;
-	    this->useDisplayTime = true;
+	    this->displayState = DisplayNotStarted;
         }
+	
+	virtual inline bool isDisplaying(){
+	    switch (displayState){
+		case NoDisplayTimer:
+		case Showing:
+		    return true;
+		    break;
+		case DisplayNotStarted:
+		case Ended:
+		default:
+		    return false;
+	    }
+	}
+	
+	virtual inline bool isDone(){
+	    switch (displayState){
+		case DisplayNotStarted:
+		case NoDisplayTimer:
+		case Showing:
+		    return false;
+		    break;
+		case Ended:
+		default:
+		    return true;
+	    }
+	}
 
 	virtual inline void setSoundTime(int time){
+	    if (time == 0){
+		return;
+	    }
 	    this->soundtime = time;
-	    this->useSoundTime = true;
+	    this->soundState = SoundNotStarted;
 	}
 
 	virtual inline void setFacing(int f){ 
@@ -107,8 +155,8 @@ class FightElement: public Element {
 	std::string text;
 	int bank;
 	int position;
-	bool useDisplayTime;
-	bool useSoundTime;
+	DisplayState displayState;
+	SoundState soundState;
 	int ticker;
 	int soundTicker;
 };
@@ -380,7 +428,7 @@ class Round{
 	Round();
 	virtual ~Round();
 	
-	void act();
+	void act(Mugen::Character & player1, Mugen::Character & player2);
 	void render(const Element::Layer &, const Bitmap &);
 	
 	enum State{
@@ -397,10 +445,68 @@ class Round{
 	    DisplayTimeOver,
 	};
 	
+	virtual void setRound(int round){
+	    this->currentRound = round;
+	}
+	
+	virtual int getRound() const {
+	    return this->currentRound;
+	}
+	
+	virtual void setState(const State & state, Mugen::Character & player1, Mugen::Character & player2);
+	
+	virtual inline void setMatchWins(int wins){
+	    this->matchWins = wins;
+	}
+	
+	virtual inline void setMatchMaxDrawGames(int max){
+	    this->matchMaxDrawGames = max;
+	}
+	
+	virtual inline void setStartWaitTime(int time){
+	    this->startWaitTime = time;
+	}
+	
+	virtual inline void setPosition(int x, int y){
+	    this->position.set(x,y);
+	}
+	
+	virtual inline void setRoundDisplayTime(int time){
+	    this->roundDisplayTime = time;
+	}
+	
+	virtual inline FightElement & getDefaultRound(){
+	    return this->defaultRound;
+	}
+	
+	virtual inline void setDefaultText(const std::string & text){
+	    this->defaultText = text;
+	}
+	
+	virtual inline FightElement & getRound(int number){
+	    // Max 9 so 0-8
+	    return *this->rounds[number];
+	}
+	
+	virtual inline void setFightDisplayTime(int time){
+	    this->fightDisplayTime = time;
+	}
+	
+	virtual inline FightElement & getFight(){
+	    return this->fight;
+	}
+	
+	virtual inline void setControlTime(int time){
+	    this->controlTime = time;
+	}
+	
     private:
 	
 	// Current State
 	State state;
+	
+	// Current round
+	int currentRound;
 	
 	int matchWins;
 	int matchMaxDrawGames;
@@ -410,10 +516,9 @@ class Round{
 	//! How long before displaying round
 	int roundDisplayTime;
 	FightElement defaultRound;
+	std::string defaultText;
 	//! Up to 9 only
-	std::vector< FightElement > rounds;
-	//! How long before playing sound
-	int soundTime;
+	std::vector< FightElement * > rounds;
 	
 	//! How long before displaying Fight!
 	int fightDisplayTime;
@@ -421,6 +526,9 @@ class Round{
 	
 	//! Time before handling off control to players
 	int controlTime;
+	
+	//! ticker
+	int ticker;
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */
@@ -468,6 +576,9 @@ class GameInfo{
 	//! Combo
 	Combo team1Combo;
 	Combo team2Combo;
+	
+	//! Round
+	Round roundControl;
 	
 	Mugen::SpriteMap sprites;
         std::map<int, MugenAnimation *> animations;
