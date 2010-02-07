@@ -102,14 +102,34 @@ class Effects{
 	const Effects &operator=(const Effects &e);
 	virtual ~Effects();
 
+        /* what kind of translucency to use */
 	TransType trans;
+
+        /* translucency values */
 	int alphalow;
 	int alphahigh;
+
+        /* ??? */
 	bool mask;
+
+        /* horizontal flip */
 	int facing;
+
+        /* vertical flip */
 	int vfacing;
+
+        /* scale horizontally */
 	double scalex;
+
+        /* scale vertically */
 	double scaley;
+
+        /* clipping */
+        struct Dimension{
+            Dimension():x(-1), y(-1){}
+
+            int x, y;
+        } dimension;
 };
 
 /* Use with fonts */

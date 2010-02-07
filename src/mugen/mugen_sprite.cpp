@@ -213,7 +213,7 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
 	}
 	case NONE:
 	default:{
-	    draw(modImage,xaxis,yaxis,where,effects);
+	    draw(modImage, xaxis, yaxis, where, effects);
 	    break;
 	}
     }
@@ -283,6 +283,16 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
 }
 
 void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
+    int width = bmp.getWidth();
+    int height = bmp.getHeight();
+    if (effects.dimension.x != -1){
+        width = effects.dimension.x;
+    }
+
+    if (effects.dimension.y != -1){
+        height = effects.dimension.y;
+    }
+
     const int normalX = (xaxis - this->x);
     const int normalY = (yaxis - this->y);
     const int flippedX = (xaxis - bmp.getWidth() + this->x);
@@ -295,7 +305,7 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 	    bmp.drawTransHFlip(flippedX, normalY, where);
 	} else {
 	    // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
-	    bmp.drawHFlip(flippedX, normalY, where);
+	    bmp.drawHFlip(flippedX, normalY, width, height, where);
 	}
 	
     } else if ( (effects.vfacing == -1) && (effects.facing == 1)){
@@ -315,7 +325,7 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 	if (effects.trans != NONE){
 	    bmp.drawTrans(normalX, normalY, where);
 	} else {
-	    bmp.draw(normalX, normalY, where);
+	    bmp.draw(normalX, normalY, width, height, where);
 	}
 	//} else {
 	//    bmp.Blit( placex, placey, where );

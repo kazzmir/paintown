@@ -29,7 +29,7 @@ class FightElement : public Element{
 	
 	virtual void act();
         virtual void render(int x, int y, const Bitmap &);
-	virtual void render(const Element::Layer & layer, int x, int y, const Bitmap &);
+	virtual void render(const Element::Layer & layer, int x, int y, const Bitmap &, int width);
 	virtual void play();
 	
 	enum ElementType{

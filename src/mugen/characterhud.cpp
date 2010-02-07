@@ -3,18 +3,7 @@
 
 #include <ostream>
 
-// #include "init.h"
-// #include "resource.h"
-// #include "util/funcs.h"
-// #include "object/animation.h"
-// #include "object/object.h"
-// #include "object/character.h"
-// #include "object/object_attack.h"
-// #include "object/player.h"
-// #include "globals.h"
-// #include "factory/font_render.h"
-
-#include "mugen/config.h"
+#include "config.h"
 #include "mugen_sprite.h"
 #include "mugen_animation.h"
 #include "mugen_font.h"
@@ -84,6 +73,7 @@ void FightElement::act(){
     if (useDisplayTime && ticker < displaytime){
 	ticker++;
     }
+
     if (useSoundTime && soundTicker == soundtime){
 	if (sound){
 	    sound->play();
@@ -119,27 +109,34 @@ void FightElement::render(int x, int y, const Bitmap & bmp){
     }
 }
 
-void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp){
+void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp, int width = -1){
     if (useDisplayTime && ticker == displaytime){
 	return;
     }
+
+    int realX = x + offset.x;
+    int realY = y + offset.y;
+
     switch (type){
 	case IS_SOUND_AND_ACTION:
 	case IS_ACTION:
             if (layer == getLayer()){
-	        action->render(effects.facing == -1, effects.vfacing == -1, x + offset.x, y + offset.y, bmp, effects.scalex, effects.scaley);
+	        action->render(effects.facing == -1, effects.vfacing == -1, realX, realY, bmp, effects.scalex, effects.scaley);
             }
 	    break;
 	case IS_SOUND_AND_SPRITE:
 	case IS_SPRITE:
             if (layer == getLayer()){
-	        sprite->render(x + offset.x, y + offset.y, bmp,effects);
+                // Global::debug(0) << "Draw bar with width " << width << endl;
+                Effects realEffects(effects);
+                realEffects.dimension.x = width;
+	        sprite->render(realX, realY, bmp, realEffects);
             }
 	    break;
 	case IS_SOUND_AND_FONT:
 	case IS_FONT:
             if (layer == getLayer()){
-		font->render(x + offset.x, y + offset.y, bank, position, bmp, text);
+		font->render(realX, realY, bank, position, bmp, text);
             }
 	    break;
         case IS_SOUND:
@@ -341,6 +338,13 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     back0.render(layer, position.x, position.y, bmp);
     // This is a container just render it normally 
     back1.render(layer, position.x, position.y, bmp);
+    
+    middle.render(layer, position.x, position.y, bmp);
+
+    double width = currentHealth * fabs(range.y) / maxHealth;
+    front.render(layer, position.x, position.y, bmp, width);
+
+#if 0
     // Middle is the damage indicator
     if (range.y < 0){
 	bmp.setClipRect(position.x + ((damage*range.y)/maxHealth),position.y,position.x + middle.getWidth() + range.x,middle.getHeight());
@@ -357,6 +361,7 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
     }
     front.render(layer, position.x, position.y, bmp);
     bmp.setClipRect(0,0,bmp.getWidth(),bmp.getHeight());
+#endif
     // Counter Number for powerbars
     counter.render(layer, position.x, position.y, bmp);
 }
@@ -372,8 +377,8 @@ void Face::act(Character & character){
 }
 
 void Face::render(const Element::Layer & layer, const Bitmap & bmp){
-    background.render(layer,position.x,position.y,bmp);
-    face.render(layer,position.x,position.y,bmp);
+    background.render(layer, position.x, position.y, bmp);
+    face.render(layer, position.x, position.y, bmp);
 }
 
 Name::Name(){
@@ -486,12 +491,14 @@ void GameTime::render(const Element::Layer & layer, const Bitmap & bmp){
     background.render(layer, position.x, position.y, bmp);
     timer.render(layer, position.x, position.y, bmp);
 }
+
 void GameTime::start(){
     // Resets the time just in case
     time = Mugen::Data::getInstance().getTime();
     started = true;
     ticker = 0;
 }
+
 void GameTime::stop(){
     started = false;
 }

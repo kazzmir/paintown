@@ -1082,6 +1082,7 @@ Mugen::Effects::Effects(const Mugen::Effects & copy){
     this->vfacing = copy.vfacing;
     this->scalex = copy.scalex;
     this->scaley = copy.scaley;
+    this->dimension = copy.dimension;
 }
 
 const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
@@ -1093,6 +1094,7 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->vfacing = e.vfacing;
     this->scalex = e.scalex;
     this->scaley = e.scaley;
+    this->dimension = e.dimension;
     return *this;
 }
 
