@@ -518,6 +518,7 @@ rules:
 		     | name:"gethitvar"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"floor"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"ceil"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"sin"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"sysvar"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"var"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"numexplod"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
@@ -525,12 +526,14 @@ rules:
 		     | name:"numprojid"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"helper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"fvar"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"enemynear"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"target"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"ishelper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"animelemtime"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"animelemtime"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"animelemno"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"animexist"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"projguarded"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+		     | name:"projhittime"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"projcontact"{case} s "(" s arg1:expr_c s ")" s "=" s integer function_rest {{ value = makeExpression(); }}
 		     | name:"animelem"{case} s "=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
@@ -538,7 +541,7 @@ rules:
              }}
 		     | name:"numhelper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-	function_rest = s "," s all_compare s integer
+	function_rest = s "," s all_compare s value
                   | <void>
 
     # Keys and key modifiers need their own AST structures
@@ -574,6 +577,10 @@ rules:
 	      | !keyword identifier
 	      | range
 	      | string
+          | hitflag
+
+    hitflag = "M-" {{ value = makeKeyword("M-"); }}
+            | "A-" {{ value = makeKeyword("A-"); }}
 	
 	keyword = keyword_real !alpha_digit {{ value = $1; }}
 	keyword_real = "vel"{case} s "y"{case} {{ value = makeKeyword("vel y"); }}
@@ -588,6 +595,7 @@ rules:
 	             | "p2bodydist"{case} s "y"{case} {{ value = makeKeyword("p2bodydist y"); }}
 	             | "p1bodydist"{case} s "x"{case} {{ value = makeKeyword("p1bodydist x"); }}
 	             | "p1bodydist"{case} s "y"{case} {{ value = makeKeyword("p1bodydist y"); }}
+	             | "parentdist"{case} s "x"{case} {{ value = makeKeyword("parentdist x"); }}
                  | "screenpos"{case} s "x"{case} {{ value = makeKeyword("screenpos x"); }}
                  | "screenpos"{case} s "y"{case} {{ value = makeKeyword("screenpos y"); }}
-                 | "M-" {{ value = makeKeyword("M-"); }}
+                 | hitflag

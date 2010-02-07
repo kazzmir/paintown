@@ -35,7 +35,10 @@ ParseCache::~ParseCache(){
     cache = NULL;
 
     for (map<const string, list<Ast::Section*>* >::iterator it = cmdCache.begin(); it != cmdCache.end(); it++){
-        destroySectionList((*it).second);
+        list<Ast::Section*> * sections = (*it).second;
+        if (sections != NULL){
+            destroySectionList(sections);
+        }
     }
 }
 
