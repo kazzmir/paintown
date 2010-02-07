@@ -19,12 +19,11 @@ namespace PaintownUtil = ::Util;
 using namespace std;
 using namespace Mugen;
 
-static std::string replaceString(const std::string & replace, const std::string & replaceWith, const std::string & string){
-    std::string temp = string;
-    for(std::string::size_type i = 0; (i = temp.find(replace, i)) != std::string::npos;)
-    {
-	    temp.replace(i, replace.length(), replaceWith);
-	    i += replaceWith.length() - replace.length() + 1;
+static string replaceString(const string & replace, const string & replaceWith, const string & subject){
+    string temp = subject;
+    for (string::size_type i = 0; (i = temp.find(replace, i)) != string::npos;) {
+        temp.replace(i, replace.length(), replaceWith);
+        i += replaceWith.length() - replace.length() + 1;
     }
     return temp;
 }
@@ -142,11 +141,12 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
                 if (width != -99999){
                     if (width < 0){
                         /* flip facing */
-                        realEffects.facing *= -1;
-                        realEffects.dimension.x = -width;
-                        realX += width;
+                        // realEffects.facing *= -1;
+                        // realEffects.dimension.x2 = -width;
+                        realEffects.dimension.x1 = sprite->getWidth() + width;
+                        // realX += width;
                     } else {
-                        realEffects.dimension.x = width;
+                        realEffects.dimension.x2 = width;
                     }
                 }
 	        sprite->render(realX, realY, bmp, realEffects);
@@ -847,10 +847,12 @@ state(NotStarted){
                 animations(animations),
                 fonts(fonts){
                 }
+
                 GameInfo & self;
 		Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
                 std::vector<MugenFont *> & fonts;
+
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (PaintownUtil::matchRegex(simple.toString(), "p1")){
                         getBar(simple,"p1",self.player1LifeBar);
@@ -858,6 +860,7 @@ state(NotStarted){
                         getBar(simple,"p2",self.player2LifeBar);
                     }
                 }
+
                 void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
                     if (simple == component + ".pos"){
 			int x=0, y=0;
@@ -874,10 +877,11 @@ state(NotStarted){
                         }
                         bar.setRange(x, y);
 		    }
-                    getElementProperties(simple,component,"bg0", bar.getBack0(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"bg1", bar.getBack1(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"mid", bar.getMiddle(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"front", bar.getFront(),sprites,animations,fonts);
+
+                    getElementProperties(simple, component, "bg0", bar.getBack0(),sprites, animations, fonts);
+                    getElementProperties(simple, component, "bg1", bar.getBack1(),sprites, animations, fonts);
+                    getElementProperties(simple, component, "mid", bar.getMiddle(),sprites, animations, fonts);
+                    getElementProperties(simple, component, "front", bar.getFront(),sprites, animations, fonts);
                 }
             };
 
@@ -1238,8 +1242,9 @@ void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
 
 void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
     player1LifeBar.render(layer,bmp);
+
     // Program received signal SIGFPE, Arithmetic exception.
-    //player2LifeBar.render(layer,bmp);
+    player2LifeBar.render(layer,bmp);
     player1PowerBar.render(layer,bmp);
     player2PowerBar.render(layer,bmp);
     player1Face.render(layer,bmp);

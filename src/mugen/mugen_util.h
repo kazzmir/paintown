@@ -124,11 +124,12 @@ class Effects{
         /* scale vertically */
 	double scaley;
 
-        /* clipping */
+        /* clipping. -1 means dont alter clipping */
         struct Dimension{
-            Dimension():x(-1), y(-1){}
+            Dimension():x1(-1), x2(-1), y1(-1), y2(-1){}
 
-            int x, y;
+            int x1, x2;
+            int y1, y2;
         } dimension;
 };
 
