@@ -2136,8 +2136,10 @@ void Character::load(){
                         simple >> self.cmdFile;
                         self.loadCmdFile(self.cmdFile);
                     } else if (simple == "cns"){
-                        simple >> self.constantsFile;
-                        self.loadCnsFile(self.constantsFile);
+                        string file;
+                        simple >> file;
+                        /* just loads the constants */
+                        self.loadCnsFile(file);
                     } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){
                         int num = atoi(PaintownUtil::captureRegex(simple.idString(), "st([0-9]+)", 0).c_str());
                         if (num >= 0 && num <= 12){
@@ -2176,13 +2178,13 @@ void Character::load(){
             Ast::Section * section = *section_it;
             section->walk(walker);
 
-            /* we have to load all the definitions first, then go back and load all
-             * the states.
-             */
             for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
                 Location & where = *it;
                 try{
+                    /* load definitions first */
                     loadStateFile(where.base, where.file, true, false);
+                    /* then load controllers */
+                    loadStateFile(where.base, where.file, false, true);
                 } catch (const MugenException & e){
                     ostringstream out;
                     out << "Problem loading state file " << where.file << ": " << e.getReason();
@@ -2190,6 +2192,7 @@ void Character::load(){
                 }
             }
 
+#if 0
             /* now just load the state controllers */
             for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
                 Location & where = *it;
@@ -2201,6 +2204,7 @@ void Character::load(){
                     throw MugenException(out.str());
                 }
             }
+#endif
 
             /*
             if (commonStateFile != ""){

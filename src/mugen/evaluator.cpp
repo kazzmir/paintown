@@ -177,6 +177,11 @@ public:
             return RuntimeValue(0);
         }
 
+        if (identifier == "roundstate"){
+            /* FIXME */
+            return RuntimeValue(2);
+        }
+
         if (identifier == "movecontact"){
             /* FIXME */
             return RuntimeValue(0);
