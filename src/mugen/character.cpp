@@ -85,7 +85,7 @@ StateController::StateController(const string & name):
 type(Unknown),
 name(name),
 changeControl(false),
-control(false),
+control(NULL),
 value1(NULL),
 value2(NULL),
 internal(0){
@@ -112,6 +112,7 @@ StateController::~StateController(){
 
     delete value1;
     delete value2;
+    delete control;
 }
 
 void StateController::setValue1(Ast::Value * value){
@@ -207,7 +208,7 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
     Global::debug(1) << "Activate controller " << name << endl;
 
     if (changeControl){
-        guy.setControl(control);
+        guy.setControl(toBool(evaluate(control, Environment(stage, guy, commands))));
     }
 
     switch (getType()){
@@ -1769,9 +1770,7 @@ void Character::parseState(Ast::Section * section){
                     simple >> type;
                     controller->setMoveType(type);
                 } else if (simple == "ctrl"){
-                    bool control;
-                    simple >> control;
-                    controller->setControl(control);
+                    controller->setControl((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "attr"){
                     string type, attack;
                     simple >> type >> attack;
@@ -1844,9 +1843,19 @@ void Character::parseState(Ast::Section * section){
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "sparkno"){
-                    simple >> controller->getHit().spark;
+                    string what;
+                    simple >> what;
+                    /* either S123 or 123 */
+                    if (PaintownUtil::matchRegex(what, "[0-9]+")){
+                        controller->getHit().spark = atoi(what.c_str());
+                    }
                 } else if (simple == "guard.sparkno"){
-                    simple >> controller->getHit().guardSpark;
+                    string what;
+                    simple >> what;
+                    /* either S123 or 123 */
+                    if (PaintownUtil::matchRegex(what, "[0-9]+")){
+                        controller->getHit().guardSpark = atoi(what.c_str());
+                    }
                 } else if (simple == "sparkxy"){
                     try{
                         simple >> controller->getHit().sparkPosition.x;
@@ -2134,7 +2143,7 @@ void Character::load(){
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "cmd"){
                         simple >> self.cmdFile;
-                        self.loadCmdFile(self.cmdFile);
+                        /* loaded later after the state files */
                     } else if (simple == "cns"){
                         string file;
                         simple >> file;
@@ -2191,6 +2200,8 @@ void Character::load(){
                     throw MugenException(out.str());
                 }
             }
+                        
+            loadCmdFile(cmdFile);
 
 #if 0
             /* now just load the state controllers */

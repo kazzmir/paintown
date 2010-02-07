@@ -690,7 +690,7 @@ public:
         this->type = type;
     }
 
-    virtual inline void setControl(bool value){
+    virtual inline void setControl(Ast::Value * value){
         changeControl = true;
         this->control = value;
     }
@@ -739,7 +739,7 @@ protected:
     Type type;
     std::string name;
     bool changeControl;
-    bool control;
+    Ast::Value * control;
     Ast::Value * value1;
     Ast::Value * value2;
     std::map<int, std::vector<Ast::Value*> > triggers;

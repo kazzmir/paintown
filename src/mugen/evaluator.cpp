@@ -400,9 +400,12 @@ public:
             int index = (int) toNumber(evaluate(function.getArg1()));
             Ast::Value * value = environment.getCharacter().getVariable(index);
             if (value == 0){
+                return RuntimeValue(false);
+                /*
                 ostringstream out;
                 out << "No variable for index " << index;
                 throw MugenException(out.str());
+                */
             }
             return evaluate(value);
         }
