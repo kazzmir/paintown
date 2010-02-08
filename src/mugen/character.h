@@ -957,10 +957,6 @@ public:
             return this->currentState;
         }
 
-        virtual inline void setCurrentState(int state){
-            this->currentState = state;
-        }
-
         virtual inline std::string getStateType() const {
             return stateType;
         }
@@ -1273,6 +1269,10 @@ public:
 
 protected:
     void initialize();
+
+    virtual inline void setCurrentState(int state){
+        this->currentState = state;
+    }
     
     virtual void loadSelectData();
 
