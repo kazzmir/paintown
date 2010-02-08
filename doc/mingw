@@ -1,0 +1,7 @@
+<windows.h> sometimes #define's crazy things
+
+2/8/2010 - discovered 'small' is #define'd to be 'char' so the following code magically didn't work in mingw
+
+  ...
+  Bitmap small();
+  ...
