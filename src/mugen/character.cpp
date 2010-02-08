@@ -2751,9 +2751,11 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
         takeDamage(stage, enemy, toNumber(evaluate(hisHit.damage.damage, Environment(stage, *this))));
     }
 
+    /*
     if (getHealth() <= 0){
         hitState.fall.fall = true;
     }
+    */
 
     juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
     

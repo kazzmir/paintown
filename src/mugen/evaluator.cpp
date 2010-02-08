@@ -187,8 +187,12 @@ public:
         }
 
         if (identifier == "alive"){
+            return RuntimeValue(environment.getCharacter().getHealth() > 0);
+        }
+
+        if (identifier == "matchover"){
             /* FIXME */
-            return RuntimeValue(true);
+            return RuntimeValue(false);
         }
 
         if (identifier == "life"){
