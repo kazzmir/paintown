@@ -2740,7 +2740,13 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
     setYVelocity(hitState.yVelocity);
     lastTicket = enemy->getTicket();
 
-    takeDamage(stage, enemy, toNumber(evaluate(hisHit.damage.damage, Environment(stage, *this))));
+    if (hisHit.damage.damage != 0){
+        takeDamage(stage, enemy, toNumber(evaluate(hisHit.damage.damage, Environment(stage, *this))));
+    }
+
+    if (getHealth() <= 0){
+        hitState.fall.fall = true;
+    }
 
     juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
     
@@ -2922,7 +2928,7 @@ bool Character::collision(ObjectAttack*){
     return false;
 }
 
-int Character::getDamage() const{
+int Character::getDamage() const {
     return 0;
 }
 
