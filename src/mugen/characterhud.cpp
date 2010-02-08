@@ -311,7 +311,7 @@ void Bar::act(Mugen::Character & character){
             maxHealth = character.getMaxHealth();
             currentHealth = character.getHealth();
             if (maxHealth == 0){
-                throw MugenException("Character max health is 0. It should have been set in the [Life] section of the constants file");
+                throw MugenException("Character max health is 0. It should have been set in the [Data] section of the constants file");
             }
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
