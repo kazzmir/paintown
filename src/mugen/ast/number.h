@@ -7,13 +7,19 @@
 
 namespace Ast{
 
-class Number: public Value{
+class Number: public Value {
 public:
     Number(double value):
     value(value){
     }
 
     using Value::operator>>;
+
+    virtual const Value & operator>>(Value *& v) const {
+        /* FIXME: should probably just make the parameter a `const Value *' */
+        v = (Value*) this;
+        return *this;
+    }
 
     virtual const Value & operator>>(int & x) const {
         x = (int) value;

@@ -10,7 +10,7 @@ namespace Ast{
 
 class Walker;
 
-class ValueList: public Value{
+class ValueList: public Value {
 public:
     ValueList(const std::list<Value*> & values):
     values(values){
@@ -21,7 +21,7 @@ public:
         walker.onValueList(*this);
     }
     
-    virtual void reset(){
+    virtual void reset() const {
         current_value = this->values.begin();
     }
 
@@ -172,7 +172,7 @@ public:
 
 protected:
     std::list<Value*> values;
-    mutable std::list<Value*>::iterator current_value;
+    mutable std::list<Value*>::const_iterator current_value;
 };
 
 }

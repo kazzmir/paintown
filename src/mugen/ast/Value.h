@@ -33,7 +33,7 @@ public:
     }
 
     /* resets the internals so that operator>> starts over */
-    virtual void reset(){
+    virtual void reset() const {
     }
 
     virtual void debugExplain(){

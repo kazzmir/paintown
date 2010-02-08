@@ -1842,12 +1842,19 @@ void Character::parseState(Ast::Section * section){
                     }
                 } else if (simple == "damage"){
                     try{
+                        const Ast::Value * container = simple.getValue();
+                        container->reset();
                         Ast::Value * value;
-                        simple >> value;
+                        *container >> value;
                         controller->getHit().damage.damage = (Ast::Value*) value->copy();
-                        simple >> value;
-                        controller->getHit().damage.guardDamage = (Ast::Value*) value->copy();;
+
+                        /* has guard */
+                        if (container->hasMultiple()){
+                            *container >> value;
+                            controller->getHit().damage.guardDamage = (Ast::Value*) value->copy();;
+                        }
                     } catch (const Ast::Exception & e){
+                        Global::debug(0) << "Could not read damage: " << e.getReason() << endl;
                     }
                 } else if (simple == "pausetime"){
                     try{
