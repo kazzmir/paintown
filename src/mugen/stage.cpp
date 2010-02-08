@@ -836,6 +836,18 @@ void MugenStage::physics(Object * player){
     }
 }
 
+vector<Object*> MugenStage::getOpponents(Object * who){
+    vector<Object*> out;
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+        Object * player = *it;
+        if (isaPlayer(player) && player->getAlliance() != who->getAlliance()){
+            out.push_back(player);
+        }
+    }
+
+    return out;
+}
+
 void MugenStage::logic( ){
     Console::ConsoleEnd & cend = Console::Console::endl;
     // camera crap
@@ -900,24 +912,21 @@ void MugenStage::logic( ){
         player->act( &objects, this, &add);
         physics(player);
 	
-	if ( isaPlayer(player)){
+	if (isaPlayer(player)){
 	    // Lets check their boundaries and camera whateva
 	    updatePlayer( player );
-	    
-	    // Lets put their health back on the radar until we get the stages ready for real games
-	    if ( player->getHealth() < 30){//player->getMaxHealth() ){
-		player->setHealth( player->getMaxHealth() );
-	    }
-	    
+	   	    
 	    // Update old position
 	    playerInfo[player].oldx = player->getX();
 	    playerInfo[player].oldy = player->getY();
 		
 	// Non players, objects, projectiles misc
-	} else if ( !isaPlayer(player) && player->getHealth() <= 0 ){
+	} else if (!isaPlayer(player) && player->getHealth() <= 0){
 	    delete player;
-	    it = objects.erase( it );
-	    if( it == objects.end() ) break;
+	    it = objects.erase(it);
+	    if (it == objects.end()){
+                break;
+            }
 	}
 
 	// Debug crap put it on console
@@ -937,6 +946,25 @@ void MugenStage::logic( ){
 
     // Player HUD Need to make this more ellegant than casting and passing from array
     gameHUD->act(*((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
+
+    if (!gameOver){
+        for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+            /* use local variables more often, iterators can be easily confused */
+            Object * player = *it;
+
+            if (isaPlayer(player)){
+                if (player->getHealth() <= 0){
+                    gameOver = true;
+                    vector<Object*> others = getOpponents(player);
+                    for (vector<Object*>::iterator it2 = others.begin(); it2 != others.end(); it2++){
+                        Mugen::Character * character = (Mugen::Character*) *it2;
+                        vector<string> inputs;
+                        character->changeState(*this, 180, inputs);
+                    }
+                }
+            }
+        }
+    }
 }
 	
 void MugenStage::render(Bitmap *work){
@@ -1029,9 +1057,10 @@ void MugenStage::render(Bitmap *work){
     console->draw(*work);
 }
 
-void MugenStage::reset( ){
+void MugenStage::reset(){
     camerax = startx;
     cameray = starty;
+    gameOver = false;
     /*for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	// reset just reloads it to default
 	MugenBackground *background = *i;

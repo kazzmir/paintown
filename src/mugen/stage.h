@@ -167,6 +167,8 @@ protected:
     void addSpark(int x, int y, int sparkNumber);
     void playSound(int group, int item, bool own);
 
+    std::vector<Object*> getOpponents(Object * who);
+
 	/* Location is the directory passed in ctor
 	This is where the def is loaded and all the relevant files
 	are loaded from
@@ -446,6 +448,8 @@ protected:
         
         // Character huds
         Mugen::GameInfo *gameHUD;
+
+        bool gameOver;
 };
 
 #endif
