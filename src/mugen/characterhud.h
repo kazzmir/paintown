@@ -83,9 +83,7 @@ class FightElement: public Element {
 	    this->displayState = DisplayNotStarted;
         }
 	
-	virtual inline bool notStarted(){
-	    return (displayState == DisplayNotStarted);
-	}
+	virtual bool notStarted();
 	
 	virtual bool isDone();
 

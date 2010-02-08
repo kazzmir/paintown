@@ -99,7 +99,7 @@ void FightElement::act(){
 }
 
 void FightElement::render(int x, int y, const Bitmap & bmp){
-    if (displayState == DisplayEnded){
+    if (isDone()){
 	return;
     }
     switch (type){
@@ -121,7 +121,7 @@ void FightElement::render(int x, int y, const Bitmap & bmp){
 }
 
 void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp, int width = -99999){
-    if (displayState == DisplayEnded){
+    if (isDone()){
 	return;
     }
 
@@ -265,6 +265,24 @@ int FightElement::getHeight(){
 	    return 0;
 	    break;
     }
+}
+
+bool FightElement::notStarted(){
+    switch (type){
+	case IS_ACTION:
+	    return !action->hasStarted();
+            break;
+	case IS_SPRITE:
+	case IS_FONT:
+	    return (displayState == DisplayNotStarted);
+            break;
+        case IS_SOUND:
+	    break;
+	case IS_NOTSET:
+	default:
+	    break;
+    }
+    return false;
 }
 
 bool FightElement::isDone(){
@@ -800,6 +818,7 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
 }
 
 void Round::render(const Element::Layer & layer, const Bitmap & bmp){
+    /*
     switch (this->state){
 	case WaitForIntro:
 	    break;
@@ -807,6 +826,7 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
 	    break;
 	case WaitForRound:
 	    break;
+	case WaitForFight:
 	case DisplayRound:
 	    if (!rounds[currentRound-1]->isSet()){
 		defaultRound.render(layer, position.x, position.y, bmp);
@@ -814,12 +834,9 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
 		rounds[currentRound-1]->render(layer, position.x, position.y, bmp);
 	    }
 	    break;
-	case WaitForFight:
-	    break;
+	case WaitForControl:
 	case DisplayFight:
 	    fight.render(layer, position.x, position.y, bmp);
-	    break;
-	case WaitForControl:
 	    break;
 	case WaitForOver:
 	    break;
@@ -842,6 +859,24 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
 	    break;
 	default:
 	    break;
+    }
+    */
+    if (!rounds[currentRound-1]->isSet() && !defaultRound.isDone()){
+	defaultRound.render(layer, position.x, position.y, bmp);
+    } else if(rounds[currentRound-1]->isSet() && !rounds[currentRound-1]->isDone()) {
+	rounds[currentRound-1]->render(layer, position.x, position.y, bmp);
+    }
+    if (!fight.notStarted() && !fight.isDone()){
+	fight.render(layer, position.x, position.y, bmp);
+    }
+    if (!KO.notStarted() && !KO.isDone()){
+	KO.render(layer, position.x, position.y, bmp);
+    }
+    if (!DKO.notStarted() && !DKO.isDone()){
+	DKO.render(layer, position.x, position.y, bmp);
+    }
+    if (!TO.notStarted() && !TO.isDone()){
+	TO.render(layer, position.x, position.y, bmp);
     }
 }
 

@@ -120,6 +120,7 @@ MugenAnimation::MugenAnimation():
 loopPosition(0),
 position(0),
 playOnce(false),
+started(false),
 type(Mugen::Unknown),
 showDefense(false),
 showOffense(false),

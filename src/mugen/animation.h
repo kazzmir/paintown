@@ -159,9 +159,18 @@ class MugenAnimation{
 
         int animationTime() const;
 	
+	virtual inline void setAsOneTime(bool time){
+	    this->started = time;
+	    this->playOnce = time;
+	}
+	
+	virtual inline bool hasStarted() const {
+	    return (this->playOnce && this->started);
+	}
+	
 	virtual inline void play(){
 	    this->position = 0;
-	    this->playOnce = true;
+	    this->playOnce = this->started = true;
 	}
 	
 	virtual inline bool isDone(){
@@ -180,6 +189,7 @@ class MugenAnimation{
 	unsigned int position;
 	
 	bool playOnce;
+	bool started;
 	
         Mugen::AnimationType type;
 	
