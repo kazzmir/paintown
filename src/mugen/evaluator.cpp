@@ -208,6 +208,16 @@ public:
             return RuntimeValue(PaintownUtil::rnd(1000));
         }
 
+        if (identifier == "roundno"){
+            /* FIXME */
+            return RuntimeValue(1);
+        }
+
+        if (identifier == "roundsexisted"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
         if (identifier == "I"){
             return RuntimeValue("I");
         }
