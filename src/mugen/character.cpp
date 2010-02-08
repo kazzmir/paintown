@@ -2979,4 +2979,11 @@ int Character::getCurrentCombo() const {
     return combo;
 }
 
+/* TODO: implement these */
+void Character::setUnhurtable(){
+}
+
+void Character::setHurtable(){
+}
+
 }

@@ -1216,6 +1216,12 @@ public:
         /* paused from an attack */
         virtual bool isPaused();
 
+        /* prevent character from being hit, like after a KO */
+        virtual void setUnhurtable();
+
+        /* character can be hit */
+        virtual void setHurtable();
+
         bool canTurn() const;
         void doTurn(const MugenStage & stage);
 
