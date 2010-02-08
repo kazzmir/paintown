@@ -853,8 +853,6 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
             player2.changeState(stage, Mugen::Standing, vec);
 	    break;
 	case DisplayRound:
-            player1.setControl(false);
-	    player2.setControl(false);
             /* *FIXME because if the round goes beyond 9 it'll crash */
             if (!rounds[currentRound-1]->isSet() && defaultRound.notStarted()){
 		ostringstream str;
@@ -870,25 +868,17 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 	    }
 	    break;
 	case WaitForFight:
-            player1.setControl(false);
-	    player2.setControl(false);
             break;
 	case DisplayFight:
-            player1.setControl(false);
-	    player2.setControl(false);
             if (fight.notStarted()){
 		fight.play();
 		fightSound.play();
 	    }
 	    break;
 	case WaitForControl:
-            player1.setControl(false);
-	    player2.setControl(false);
 	    break;
 	case WaitForOver:
 	    // Give control back
-	    player1.setControl(true);
-	    player2.setControl(true);
 	    break;
 	case WaitForDisplayKO:
 	    break;
