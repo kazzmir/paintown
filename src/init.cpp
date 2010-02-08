@@ -142,7 +142,10 @@ bool Global::init( int gfx ){
     out << "Allegro init: " <<allegro_init()<<endl;
     out << "Install timer: " <<install_timer()<<endl;
 
-    set_volume_per_voice( 0 );
+    /* default for alsa is 8, so reserve a few more */
+    reserve_voices(16, -1);
+    /* is calling this function a good idea? */
+    set_volume_per_voice(0);
     out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
 
     /* png */
