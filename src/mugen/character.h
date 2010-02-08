@@ -210,11 +210,13 @@ struct HitDefinition{
      */
     struct Damage{
         Damage():
-            damage(0), guardDamage(0){
+            damage(NULL), guardDamage(NULL){
             }
 
-        int damage;
-        int guardDamage;
+        ~Damage();
+
+        Ast::Value * damage;
+        Ast::Value * guardDamage;
     } damage;
 
     /* pausetime = p1_pausetime, p2_shaketime (int, int)

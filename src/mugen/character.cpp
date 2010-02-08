@@ -76,9 +76,13 @@ namespace PhysicalAttack{
 
 namespace PaintownUtil = ::Util;
 
-
 HitDefinition::~HitDefinition(){
     delete player1Facing;
+}
+
+HitDefinition::Damage::~Damage(){
+    delete damage;
+    delete guardDamage;
 }
 
 StateController::StateController(const string & name):
@@ -1838,8 +1842,11 @@ void Character::parseState(Ast::Section * section){
                     }
                 } else if (simple == "damage"){
                     try{
-                        simple >> controller->getHit().damage.damage;
-                        simple >> controller->getHit().damage.guardDamage;
+                        Ast::Value * value;
+                        simple >> value;
+                        controller->getHit().damage.damage = (Ast::Value*) value->copy();
+                        simple >> value;
+                        controller->getHit().damage.guardDamage = (Ast::Value*) value->copy();;
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "pausetime"){
@@ -2733,7 +2740,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
     setYVelocity(hitState.yVelocity);
     lastTicket = enemy->getTicket();
 
-    takeDamage(stage, enemy, hisHit.damage.damage);
+    takeDamage(stage, enemy, toNumber(evaluate(hisHit.damage.damage, Environment(stage, *this))));
 
     juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
     
