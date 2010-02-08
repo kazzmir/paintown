@@ -404,8 +404,9 @@ class Round{
 	Round();
 	virtual ~Round();
 	
-	void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
-	void render(const Element::Layer &, const Bitmap &);
+	virtual void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
+	virtual void render(const Element::Layer &, const Bitmap &);
+        virtual void reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
 	enum State{
 	    WaitForIntro,
@@ -422,6 +423,8 @@ class Round{
 	    DisplayDoubleKO,
 	    WaitForDisplayTimeOver,
 	    DisplayTimeOver,
+            WaitForDisplayWin,
+            DisplayWin,
 	    WaitForRoundEnd,
 	};
 	
@@ -572,6 +575,18 @@ class Round{
 	int TODisplayTime;
 	FightElement TO;
 	FightElement TOSound;
+
+        //! Slow time when KO'd
+        int slowTime;
+        
+        //! How long to wait before control is removed from characters
+        int overWaitTime;
+        //! How long to wait to allow chars to hit each other
+        int overHitTime;
+        //! Time before setting win state
+        int overWinTime;
+        //! Time to wait before round ends
+        int overTime;
 	
 	//! ticker
 	int ticker;
@@ -585,6 +600,8 @@ class GameInfo{
 
         virtual void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
         virtual void render(Element::Layer layer, const Bitmap &);
+
+        virtual void reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
     private:
         

@@ -1115,6 +1115,7 @@ void MugenStage::reset(){
     }
     
     inleft = inright = onLeftSide = onRightSide = 0;
+    gameHUD->reset(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 }
 
 // Add player1 people
