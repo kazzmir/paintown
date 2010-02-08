@@ -945,7 +945,7 @@ void MugenStage::logic( ){
     console->act();
 
     // Player HUD Need to make this more ellegant than casting and passing from array
-    gameHUD->act(*((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
+    gameHUD->act(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 
     if (!gameOver){
         for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
@@ -1084,7 +1084,7 @@ void MugenStage::reset(){
 	Object *player = *it;
         Mugen::Character * character = (Mugen::Character*) player;
         vector<string> inputs;
-        character->changeState(*this, Mugen::Intro, inputs);
+        //character->changeState(*this, Mugen::Intro, inputs);
 	if (player->getAlliance() == Player1Side){
 	    //((Player *)player)->deathReset();
 	    player->setX(p1startx);

@@ -12,6 +12,7 @@ class MugenSprite;
 class MugenAnimation;
 class MugenFont;
 class MugenSound;
+class MugenStage;
 
 namespace Ast{
     class AstParse;
@@ -403,7 +404,7 @@ class Round{
 	Round();
 	virtual ~Round();
 	
-	void act(Mugen::Character & player1, Mugen::Character & player2);
+	void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	void render(const Element::Layer &, const Bitmap &);
 	
 	enum State{
@@ -432,7 +433,7 @@ class Round{
 	    return this->currentRound;
 	}
 	
-	virtual void setState(const State & state, Mugen::Character & player1, Mugen::Character & player2);
+	virtual void setState(const State & state, MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
 	virtual const State & getState() const {
 	    return this->state;
@@ -582,7 +583,7 @@ class GameInfo{
 	GameInfo(const std::string & fightFile);
 	virtual ~GameInfo();
 
-        virtual void act(Mugen::Character & player1, Mugen::Character & player2);
+        virtual void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
         virtual void render(Element::Layer layer, const Bitmap &);
 	
     private:

@@ -8,6 +8,7 @@
 #include "mugen/animation.h"
 #include "mugen/font.h"
 #include "mugen/sound.h"
+#include "mugen/stage.h"
 #include "character.h"
 
 #include "util/timedifference.h"
@@ -513,6 +514,11 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
         int time;
         simple >> time;
         element.setDisplayTime(time);
+    } else if (simple == compCopy + elementName + ".text"){
+        std::string text;
+        simple.getValue()->reset();
+        simple >> text;
+        element.setText(text);
     } 
 }
 
@@ -702,11 +708,11 @@ Round::~Round(){
     }
 }
 
-void Round::act(Mugen::Character & player1, Mugen::Character & player2){
+void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
     switch (state){
 	case WaitForIntro:
 	    if (ticker >= startWaitTime){
-		setState(DisplayIntro,player1,player2);
+		setState(DisplayIntro,stage,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Waiting for Intro: " << startWaitTime << endl;
 	    break;
@@ -715,12 +721,14 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
 	    //player1.changeState(5900);
 	    //player2.changeState(5900);
 	    // for now just go ahead and start the round
-	    setState(WaitForRound,player1,player2);
+            if ((player1.getCurrentState() != 190) && (player2.getCurrentState() != 190)){
+                setState(WaitForRound,stage,player1,player2);
+            }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
 	    break;
 	case WaitForRound:
 	    if (ticker >= roundDisplayTime){
-		setState(DisplayRound,player1,player2);
+		setState(DisplayRound,stage,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for round: " << roundDisplayTime << endl;
 	    break;
@@ -728,28 +736,28 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
             // *FIXME past 9 and this will crash... needs fix
 	    if (!rounds[currentRound-1]->isSet()){
 		if (defaultRound.isDone()){
-		    setState(WaitForFight,player1,player2);
+		    setState(WaitForFight,stage,player1,player2);
 		}
 	    } else if (rounds[currentRound-1]->isSet() && rounds[currentRound-1]->isDone()){
-		    setState(WaitForFight,player1,player2);
+		    setState(WaitForFight,stage,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Playing round. " << endl;
 	    break;
 	case WaitForFight:
 	    if (ticker >= fightDisplayTime){
-		setState(DisplayFight,player1,player2);
+		setState(DisplayFight,stage,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Fight: " << fightDisplayTime << endl;
 	    break;
 	case DisplayFight:
             if(fight.isDone()){
-		setState(WaitForControl,player1,player2);
+		setState(WaitForControl,stage,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Playing Fight. " << endl;
 	    break;
 	case WaitForControl:
 	    if (ticker >= controlTime){
-		setState(WaitForOver,player1,player2);
+		setState(WaitForOver,stage,player1,player2);
 		Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Fight to end." << endl;
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Player Control: " << controlTime << endl;
@@ -759,26 +767,26 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
 	    break;
 	case WaitForDisplayKO:
 	    if (ticker >= KODisplayTime){
-		setState(DisplayKO,player1,player2);
+		setState(DisplayKO,stage,player1,player2);
 	    }
 	    break;
 	case DisplayKO:
 	    if(KO.isDone()){
-		setState(WaitForRoundEnd,player1,player2);
+		setState(WaitForRoundEnd,stage,player1,player2);
 	    }
 	    break;
 	case WaitForDisplayDoubleKO:
 	    break;
 	case DisplayDoubleKO:
 	    if(DKO.isDone()){
-		setState(WaitForRoundEnd,player1,player2);
+		setState(WaitForRoundEnd,stage,player1,player2);
 	    }
 	    break;
 	case WaitForDisplayTimeOver:
 	    break;
 	case DisplayTimeOver:
 	    if(TO.isDone()){
-		setState(WaitForRoundEnd,player1,player2);
+		setState(WaitForRoundEnd,stage,player1,player2);
 	    }
 	    break;
 	case WaitForRoundEnd:
@@ -842,9 +850,13 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
     }
     */
     if (!rounds[currentRound-1]->isSet() && !defaultRound.isDone()){
-	defaultRound.render(layer, position.x, position.y, bmp);
+        if (!defaultRound.notStarted() && !defaultRound.isDone()){
+	    defaultRound.render(layer, position.x, position.y, bmp);
+        }
     } else if(rounds[currentRound-1]->isSet() && !rounds[currentRound-1]->isDone()) {
-	rounds[currentRound-1]->render(layer, position.x, position.y, bmp);
+	if (!rounds[currentRound-1]->notStarted() && !rounds[currentRound-1]->isDone()){
+            rounds[currentRound-1]->render(layer, position.x, position.y, bmp);
+        }
     }
     if (!fight.notStarted() && !fight.isDone()){
 	fight.render(layer, position.x, position.y, bmp);
@@ -860,7 +872,7 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
     }
 }
 
-void Round::setState(const State & state, Mugen::Character & player1, Mugen::Character & player2){
+void Round::setState(const State & state, MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
     this->state = state;
     switch (this->state){
 	case WaitForIntro:
@@ -870,6 +882,11 @@ void Round::setState(const State & state, Mugen::Character & player1, Mugen::Cha
 	    player2.setControl(false);
 	    break;
 	case DisplayIntro:
+            {
+                std::vector<std::string> vec;
+                player1.changeState(stage,190,vec);
+                player2.changeState(stage,190,vec);
+            }
 	    break;
 	case WaitForRound:
 	    break;
@@ -1428,7 +1445,7 @@ GameInfo::~GameInfo(){
     }
 }
 
-void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
+void GameInfo::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
     player1LifeBar.act(player1);
     player2LifeBar.act(player2);
     player1PowerBar.act(player1);
@@ -1440,18 +1457,18 @@ void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     timer.act();
     team1Combo.act(player1);
     team2Combo.act(player2);
-    roundControl.act(player1,player2);
+    roundControl.act(stage, player1, player2);
     if (roundControl.getState() == Round::WaitForOver){
 	if (!timer.isStarted()){
 	    timer.reset();
 	    timer.start();
 	}
 	if (timer.isStarted() && timer.hasExpired()){
-	    roundControl.setState(Round::DisplayTimeOver,player1,player2);
+	    roundControl.setState(Round::DisplayTimeOver, stage, player1, player2);
 	}
     }
     if (player1.getHealth() ==0 || player2.getHealth() ==0){
-	roundControl.setState(Round::WaitForDisplayKO,player1,player2);
+	roundControl.setState(Round::WaitForDisplayKO, stage, player1, player2);
 	timer.stop();
     }
 }
