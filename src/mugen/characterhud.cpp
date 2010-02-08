@@ -50,6 +50,9 @@ FightElement::~FightElement(){
 }
 
 void FightElement::act(){
+    if (isDone()){
+        return;
+    }
     switch (type){
 	case IS_ACTION:
 	    action->logic();
@@ -196,6 +199,7 @@ void FightElement::setAction(MugenAnimation *anim){
     if (anim){
 	setType(IS_ACTION);
 	action = anim;
+        action->setAsOneTime(true);
     }
 }
 void FightElement::setSprite(MugenSprite *spr){
@@ -701,10 +705,6 @@ Round::~Round(){
 void Round::act(Mugen::Character & player1, Mugen::Character & player2){
     switch (state){
 	case WaitForIntro:
-	    //player1.changeState(-1);
-	    //player2.changeState(-1);
-	    player1.setControl(false);
-	    player2.setControl(false);
 	    if (ticker >= startWaitTime){
 		setState(DisplayIntro,player1,player2);
 	    }
@@ -725,23 +725,12 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for round: " << roundDisplayTime << endl;
 	    break;
 	case DisplayRound:
-	    if (!rounds[currentRound-1]->isSet() && defaultRound.notStarted()){
-		ostringstream str;
-		str << currentRound;
-		std::string temp = replaceString("%i",str.str(),defaultText);
-		Global::debug(1) << "Displaying Round info: " << temp << endl;
-		defaultRound.setText(temp);
-		defaultRound.play();
-		roundSounds[currentRound-1]->play();
-	    } else if(rounds[currentRound-1]->notStarted()){
-		rounds[currentRound-1]->play();
-		roundSounds[currentRound-1]->play();
-	    }
+            // *FIXME past 9 and this will crash... needs fix
 	    if (!rounds[currentRound-1]->isSet()){
 		if (defaultRound.isDone()){
 		    setState(WaitForFight,player1,player2);
 		}
-	    } else if (rounds[currentRound-1]->isDone()){
+	    } else if (rounds[currentRound-1]->isSet() && rounds[currentRound-1]->isDone()){
 		    setState(WaitForFight,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Playing round. " << endl;
@@ -753,10 +742,7 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Fight: " << fightDisplayTime << endl;
 	    break;
 	case DisplayFight:
-	    if (fight.notStarted()){
-		fight.play();
-		fightSound.play();
-	    } else if(fight.isDone()){
+            if(fight.isDone()){
 		setState(WaitForControl,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Playing Fight. " << endl;
@@ -777,30 +763,21 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
 	    }
 	    break;
 	case DisplayKO:
-	    if (KO.notStarted()){
-		KO.play();
-		KOSound.play();
-	    } else if(KO.isDone()){
+	    if(KO.isDone()){
 		setState(WaitForRoundEnd,player1,player2);
 	    }
 	    break;
 	case WaitForDisplayDoubleKO:
 	    break;
 	case DisplayDoubleKO:
-	    if (DKO.notStarted()){
-		DKO.play();
-		DKOSound.play();
-	    } else if(DKO.isDone()){
+	    if(DKO.isDone()){
 		setState(WaitForRoundEnd,player1,player2);
 	    }
 	    break;
 	case WaitForDisplayTimeOver:
 	    break;
 	case DisplayTimeOver:
-	    if (TO.notStarted()){
-		TO.play();
-		TOSound.play();
-	    } else if(TO.isDone()){
+	    if(TO.isDone()){
 		setState(WaitForRoundEnd,player1,player2);
 	    }
 	    break;
@@ -814,6 +791,9 @@ void Round::act(Mugen::Character & player1, Mugen::Character & player2){
     rounds[currentRound-1]->act();
     roundSounds[currentRound-1]->act();
     fight.act();
+    KO.act();
+    DKO.act();
+    TO.act();
     ticker++;
 }
 
@@ -884,16 +864,37 @@ void Round::setState(const State & state, Mugen::Character & player1, Mugen::Cha
     this->state = state;
     switch (this->state){
 	case WaitForIntro:
+            //player1.changeState(-1);
+	    //player2.changeState(-1);
+	    player1.setControl(false);
+	    player2.setControl(false);
 	    break;
 	case DisplayIntro:
 	    break;
 	case WaitForRound:
 	    break;
 	case DisplayRound:
+            /* *FIXME because if the round goes beyond 9 it'll crash */
+            if (!rounds[currentRound-1]->isSet() && defaultRound.notStarted()){
+		ostringstream str;
+		str << currentRound;
+		std::string temp = replaceString("%i",str.str(),defaultText);
+		Global::debug(1) << "Displaying Round info: " << temp << endl;
+		defaultRound.setText(temp);
+		defaultRound.play();
+		roundSounds[currentRound-1]->play();
+	    } else if(rounds[currentRound-1]->notStarted()){
+		rounds[currentRound-1]->play();
+		roundSounds[currentRound-1]->play();
+	    }
 	    break;
 	case WaitForFight:
 	    break;
 	case DisplayFight:
+            if (fight.notStarted()){
+		fight.play();
+		fightSound.play();
+	    }
 	    break;
 	case WaitForControl:
 	    break;
@@ -905,14 +906,26 @@ void Round::setState(const State & state, Mugen::Character & player1, Mugen::Cha
 	case WaitForDisplayKO:
 	    break;
 	case DisplayKO:
+            if (KO.notStarted()){
+		KO.play();
+		KOSound.play();
+	    } 
 	    break;
 	case WaitForDisplayDoubleKO:
 	    break;
 	case DisplayDoubleKO:
+            if (DKO.notStarted()){
+		DKO.play();
+		DKOSound.play();
+	    }
 	    break;
 	case WaitForDisplayTimeOver:
 	    break;
 	case DisplayTimeOver:
+            if (TO.notStarted()){
+		TO.play();
+		TOSound.play();
+	    }
 	    break;
 	case WaitForRoundEnd:
 	    break;
@@ -1338,7 +1351,7 @@ GameInfo::GameInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			self.roundControl.getKOSound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^ko.")){
+		    } else if (PaintownUtil::matchRegex(simple.toString(),"^KO.")){
 			getElementProperties(simple,"","ko", self.roundControl.getKO(),sprites,animations,fonts);
 		    } else if (simple == "dko.snd"){
 			int g=0,s=0;
@@ -1347,7 +1360,7 @@ GameInfo::GameInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			self.roundControl.getDKOSound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^dko.")){
+		    } else if (PaintownUtil::matchRegex(simple.toString(),"^DKO.")){
 			getElementProperties(simple,"","dko", self.roundControl.getDKO(),sprites,animations,fonts);
 		    } else if (simple == "to.snd"){
 			int g=0,s=0;
@@ -1356,7 +1369,7 @@ GameInfo::GameInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			self.roundControl.getTOSound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^to.")){
+		    } else if (PaintownUtil::matchRegex(simple.toString(),"^TO.")){
 			getElementProperties(simple,"","to", self.roundControl.getTO(),sprites,animations,fonts);
 		    }
 		    getElementProperties(simple,"round","default", self.roundControl.getDefaultRound(),sprites,animations,fonts);

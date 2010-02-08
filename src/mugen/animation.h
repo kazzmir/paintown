@@ -160,7 +160,6 @@ class MugenAnimation{
         int animationTime() const;
 	
 	virtual inline void setAsOneTime(bool time){
-	    this->started = time;
 	    this->playOnce = time;
 	}
 	
@@ -170,11 +169,11 @@ class MugenAnimation{
 	
 	virtual inline void play(){
 	    this->position = 0;
-	    this->playOnce = this->started = true;
+            this->started = true;
 	}
 	
 	virtual inline bool isDone(){
-	    return (position < frames.size() -1);
+	    return (position == frames.size() -1);
 	}
 
     protected:
