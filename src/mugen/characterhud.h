@@ -417,9 +417,13 @@ class Round{
 	    DisplayFight,
 	    WaitForControl,
 	    WaitForOver,
+	    WaitForDisplayKO,
 	    DisplayKO,
+	    WaitForDisplayDoubleKO,
 	    DisplayDoubleKO,
+	    WaitForDisplayTimeOver,
 	    DisplayTimeOver,
+	    WaitForRoundEnd,
 	};
 	
 	virtual void setRound(int round){
@@ -481,8 +485,48 @@ class Round{
 	    return this->fight;
 	}
 	
+	virtual inline FightElement & getFightSound(){
+	    return this->fightSound;
+	}
+	
 	virtual inline void setControlTime(int time){
 	    this->controlTime = time;
+	}
+	
+	virtual inline void setKODisplayTime(int time){
+	    this->KODisplayTime = time;
+	}
+	
+	virtual inline FightElement & getKO(){
+	    return this->KO;
+	}
+	
+	virtual inline FightElement & getKOSound(){
+	    return this->KOSound;
+	}
+	
+	virtual inline void setDKODisplayTime(int time){
+	    this->DKODisplayTime = time;
+	}
+	
+	virtual inline FightElement & getDKO(){
+	    return this->DKO;
+	}
+	
+	virtual inline FightElement & getDKOSound(){
+	    return this->DKOSound;
+	}
+	
+	virtual inline void setTODisplayTime(int time){
+	    this->TODisplayTime = time;
+	}
+	
+	virtual inline FightElement & getTO(){
+	    return this->TO;
+	}
+	
+	virtual inline FightElement & getTOSound(){
+	    return this->TOSound;
 	}
 	
     private:
@@ -510,9 +554,25 @@ class Round{
 	//! How long before displaying Fight!
 	int fightDisplayTime;
 	FightElement fight;
+	FightElement fightSound;
 	
 	//! Time before handling off control to players
 	int controlTime;
+	
+	//! How long before display KO
+	int KODisplayTime;
+	FightElement KO;
+	FightElement KOSound;
+	
+	//! How long before display KO
+	int DKODisplayTime;
+	FightElement DKO;
+	FightElement DKOSound;
+	
+	//! How long before display KO
+	int TODisplayTime;
+	FightElement TO;
+	FightElement TOSound;
 	
 	//! ticker
 	int ticker;
