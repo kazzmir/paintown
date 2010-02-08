@@ -310,6 +310,10 @@ class GameTime{
 	virtual void render(const Element::Layer &, const Bitmap &);
 	virtual void start();
 	virtual void stop();
+	virtual void reset();
+	virtual inline bool isStarted() const {
+	    return started;
+	}
 	virtual void setPosition(int x, int y){
             this->position.x = x;
             this->position.y = y;
@@ -428,6 +432,10 @@ class Round{
 	
 	virtual void setState(const State & state, Mugen::Character & player1, Mugen::Character & player2);
 	
+	virtual const State & getState() const {
+	    return this->state;
+	}
+	
 	virtual inline void setMatchWins(int wins){
 	    this->matchWins = wins;
 	}
@@ -519,22 +527,6 @@ class GameInfo{
         virtual void act(Mugen::Character & player1, Mugen::Character & player2);
         virtual void render(Element::Layer layer, const Bitmap &);
 	
-	enum State{
-	    NotStarted,
-	    Intro,
-	    RoundIndicator,
-	    StartGame,
-	    KO,
-	    Draw,
-	    EndGame,
-	};
-	
-	virtual void setState(const State & state, Character & player1, Character & player2);
-	
-	virtual inline const State & getState(){
-	    return this->state;
-	}
-	
     private:
         
         void parseAnimations(Ast::AstParse & parsed);
@@ -563,9 +555,6 @@ class GameInfo{
         std::map<int, MugenAnimation *> animations;
         std::vector<MugenFont *> fonts;
 	Mugen::SoundMap sounds;
-	
-	//! Game State
-	State state;
 };
 
 }

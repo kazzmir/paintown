@@ -526,9 +526,12 @@ void GameTime::render(const Element::Layer & layer, const Bitmap & bmp){
     timer.render(layer, position.x, position.y, bmp);
 }
 
+void GameTime::reset(){
+    // Resets the time
+    time = Mugen::Data::getInstance().getTime();   
+}
+
 void GameTime::start(){
-    // Resets the time just in case
-    time = Mugen::Data::getInstance().getTime();
     started = true;
     ticker = 0;
 }
@@ -818,8 +821,7 @@ void Round::setState(const State & state, Mugen::Character & player1, Mugen::Cha
     ticker = 0;
 }
 
-GameInfo::GameInfo(const std::string & fightFile):
-state(NotStarted){
+GameInfo::GameInfo(const std::string & fightFile){
     std::string baseDir = Mugen::Util::getFileDir(fightFile);
     const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(fightFile) );
     
@@ -1280,6 +1282,15 @@ void GameInfo::act(Mugen::Character & player1, Mugen::Character & player2){
     team1Combo.act(player1);
     team2Combo.act(player2);
     roundControl.act(player1,player2);
+    if (roundControl.getState() == Round::WaitForOver){
+	if (!timer.isStarted()){
+	    timer.reset();
+	    timer.start();
+	}
+	if (timer.isStarted() && timer.hasExpired()){
+	    roundControl.setState(Round::DisplayTimeOver,player1,player2);
+	}
+    }
 }
 
 void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
@@ -1297,35 +1308,6 @@ void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
     team1Combo.render(layer,bmp);
     team2Combo.render(layer,bmp);
     roundControl.render(layer,bmp);
-}
-
-void GameInfo::setState(const State & state, Character & player1, Character & player2){
-    this->state = state;
-    switch (state){
-	case Intro:
-	    // Set both character intro state
-	    break;
-	case RoundIndicator:
-	    // Set both character Control to no control stand
-	    break;
-	case StartGame:
-	    // Resume control state to characters and start time
-	    timer.start();
-	    break;
-	case KO:
-	    // Set character state to win for player that wins
-	    break;
-	case Draw:
-	    // Set both character state to draw
-	    break;
-	case EndGame:
-	    timer.stop();
-	    // End the game
-	    break;
-	case NotStarted:
-	default:
-	    break;
-    }
 }
 
 void GameInfo::parseAnimations(Ast::AstParse & parsed){
