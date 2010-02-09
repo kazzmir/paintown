@@ -120,6 +120,7 @@ MugenAnimation::MugenAnimation():
 loopPosition(0),
 position(0),
 playOnce(false),
+looped(false),
 started(false),
 type(Mugen::Unknown),
 showDefense(false),
@@ -127,7 +128,8 @@ showOffense(false),
 ticks(0){
 }
 
-MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
+MugenAnimation::MugenAnimation(const MugenAnimation &copy):
+looped(false){
     this->loopPosition = copy.loopPosition;
     this->position = copy.position;
     this->type = copy.type;
@@ -136,6 +138,8 @@ MugenAnimation::MugenAnimation( const MugenAnimation &copy ){
     for (vector<MugenFrame*>::const_iterator it = copy.frames.begin(); it != copy.frames.end(); it++){
         this->frames.push_back(new MugenFrame(*(*it)));
     }
+    this->ticks = copy.ticks;
+    this->started = copy.started;
 }
 
 MugenAnimation::~MugenAnimation(){
@@ -212,6 +216,7 @@ void MugenAnimation::logic(){
                 } else {
 		    if (!playOnce){
 			position = loopPosition;
+                        looped = true;
 		    }
                 }
             }

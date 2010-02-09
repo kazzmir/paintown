@@ -157,6 +157,10 @@ class MugenAnimation{
 	
 	inline bool showingDefense() const { return showDefense; }
 	inline bool showingOffense() const { return showOffense; }
+
+        inline bool hasLooped() const {
+            return looped;
+        }
 	
         inline const std::vector<MugenFrame*> & getFrames() const {
             return frames;
@@ -193,6 +197,7 @@ class MugenAnimation{
 	unsigned int position;
 	
 	bool playOnce;
+        bool looped;
 	bool started;
 	
         Mugen::AnimationType type;

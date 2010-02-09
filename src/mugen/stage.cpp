@@ -83,7 +83,7 @@ void Spark::logic(){
 }
 
 bool Spark::isDead(){
-    return animation->getPosition() == 0;
+    return animation->hasLooped();
 }
 
 Spark::~Spark(){
