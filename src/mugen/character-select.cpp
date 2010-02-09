@@ -27,6 +27,7 @@
 #include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
+#include "shutdown_exception.h"
 
 #include "menu/menu_option.h"
 #include "menu/menu_global.h"
@@ -901,6 +902,10 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 		runCounter -= 1;
 		// Key handler
 		InputManager::poll();
+
+                if (Global::shutdown()){
+                    throw ShutdownException();
+                }
 		
 		InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
 		if (out[Mugen::Esc]){

@@ -13,6 +13,7 @@
 #include "input/input-map.h"
 #include "util/funcs.h"
 #include "factory/font_render.h"
+#include "shutdown_exception.h"
 #include "loading.h"
 
 #include "character.h"
@@ -114,6 +115,8 @@ static InputMap<Mugen::Command::Keys> getPlayer1InputLeft(){
     return input;
 }
 
+/* is there a reason why doArcade and doVersus don't share the main loop? */
+
 void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
     select.run("Arcade", bmp);
     std::string intro;
@@ -170,6 +173,10 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 		    stage->logic();
 		    runCounter -= 1;
 		    draw = true;
+
+                    if (Global::shutdown()){
+                        throw ShutdownException();
+                    }
 
 		    InputMap<int>::Output out = InputManager::getMap(gameInput);
 		    if (out[0]){
@@ -268,6 +275,10 @@ void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){
 		    stage->logic();
 		    runCounter -= 1;
 		    draw = true;
+
+                    if (Global::shutdown()){
+                        throw ShutdownException();
+                    }
 
 		    InputMap<int>::Output out = InputManager::getMap(gameInput);
 		    if (out[0]){
