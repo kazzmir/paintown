@@ -753,7 +753,7 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    Global::debug(1) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
 	    break;
 	case WaitForRound:
-	    if (ticker >= roundDisplayTime && fader.getState() != RUNFADE){
+	    if (ticker >= roundDisplayTime && fader.getState() != FADEIN){
 		setState(DisplayRound,stage,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for round: " << roundDisplayTime << endl;
