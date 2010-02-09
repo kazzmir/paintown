@@ -30,7 +30,7 @@ void OptionNetworkHost::logic(){
 void OptionNetworkHost::run(bool &endGame){
 	Keyboard key;
         try{
-            Network::networkServer();
+            Network::networkServer(parent);
         } catch (const ReturnException &e){
         }
 	key.clear();

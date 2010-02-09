@@ -40,7 +40,7 @@ void OptionAdventure::run(bool &endGame){
     Object * player = NULL;
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
-        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels",parent);
+        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels", parent);
 
         /*
         if (level.empty()){

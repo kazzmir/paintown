@@ -1,7 +1,7 @@
 #include <sstream>
 
 #include "factory/collector.h"
-#include "network/network.h"
+// #include "network/network.h"
 #include "util/token_exception.h"
 #include "mugen/exception.h"
 #include "music.h"
@@ -16,10 +16,11 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "globals.h"
-#include "network/server.h"
+// #include "network/server.h"
 #include "configuration.h"
 #include "init.h"
 
+#include <string.h>
 #include <vector>
 
 using namespace std;
@@ -83,7 +84,7 @@ static void showOptions(){
 	Global::debug(0) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2() << endl;
 	Global::debug(0) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
 	Global::debug(0) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
-	Global::debug(0) << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
+	// Global::debug(0) << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
 	Global::debug(0) << endl;
 }
 
@@ -114,7 +115,7 @@ static string mainMenuPath() throw (TokenException, LoadException, Filesystem::N
 int paintown_main( int argc, char ** argv ){
 
     bool music_on = true;
-    bool just_network_server = false;
+    // bool just_network_server = false;
     Collector janitor;
 
     Global::setDebug( 0 );
@@ -125,7 +126,7 @@ int paintown_main( int argc, char ** argv ){
     ADD_ARGS(DATAPATH_ARG);
     ADD_ARGS(DEBUG_ARG);
     ADD_ARGS(MUSIC_ARG);
-    ADD_ARGS(NETWORK_SERVER_ARG);
+    // ADD_ARGS(NETWORK_SERVER_ARG);
 #undef ADD_ARGS
 
     for ( int q = 1; q < argc; q++ ){
@@ -146,8 +147,10 @@ int paintown_main( int argc, char ** argv ){
                 i >> f;
                 Global::setDebug( f );
             }
+            /*
         } else if (isArg(argv[q], NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG))){
             just_network_server = true;
+            */
         } else {
             const char * arg = argv[q];
             const char * closest = closestMatch(arg, all_args);
@@ -191,11 +194,7 @@ int paintown_main( int argc, char ** argv ){
     try{
         Menu game;
         game.load(mainMenuPath());
-        if (just_network_server){
-            Network::networkServer();
-        } else {
-            game.run();
-        }
+        game.run();
     } catch (const Filesystem::NotFound & ex){
         Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
     } catch (const TokenException & ex){

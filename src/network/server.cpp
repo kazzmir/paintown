@@ -18,6 +18,7 @@
 #include "object/player.h"
 #include "return_exception.h"
 #include "menu/menu_global.h"
+#include "menu/menu.h"
 #include "server.h"
 #include <sstream>
 #include "util/font.h"
@@ -488,18 +489,19 @@ static void sendAllOk(const vector<Socket> & sockets){
     sendToAll(sockets, ok);
 }
 
-static void playGame(vector<Client*> & clients){
+static void playGame(vector<Client*> & clients, Menu * menuParent){
     vector< Object * > players;
     pthread_t loading_screen_thread;
     try{
         /* first the user selects his own player */
         Level::LevelInfo info;
-        Object * player = Game::selectPlayer( false, "Pick a player", info);
+        Object * player = Game::selectPlayer(false, "Pick a player", info);
         /* ugly cast */
         ((Player *) player)->ignoreLives();
         players.push_back( player );
         /* then the user selects a set of levels to play */
-        Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
+        // Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
+        Level::LevelInfo levelInfo = MenuGlobals::doLevelMenu("/levels", menuParent);
 
         /* show the loading screen */
         Loader::startLoading( &loading_screen_thread );
@@ -726,7 +728,7 @@ static void popup( const Font & font, const string & message ){
         background.BlitToScreen();
 }
 
-void networkServer(){
+void networkServer(Menu * menu){
 
 	// const int startingLives = 4;
 	int port = getServerPort();
@@ -765,7 +767,7 @@ void networkServer(){
 		vector<Client*> clients = chat.getConnectedClients();
 		if (! clients.empty()){
 			debug( 1 ) << "Start game with " << clients.size() << " clients" << endl;
-			playGame(clients);
+			playGame(clients, menu);
 		} else {
 			key.poll();
 			popup( font, "No clients connected" );
