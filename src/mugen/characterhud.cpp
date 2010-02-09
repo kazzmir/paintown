@@ -743,7 +743,7 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	case DisplayIntro:
 	    // Check if player states are done with intro move on to next
 	    // for now just go ahead and start the round
-            if ((player1.getCurrentState() != Mugen::Intro) && (player2.getCurrentState() != Mugen::Intro)){
+            if ((player1.getCurrentState() == Mugen::Standing) && (player2.getCurrentState() == Mugen::Standing)){
                 setState(WaitForRound,stage,player1,player2);
             }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
