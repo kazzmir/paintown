@@ -318,6 +318,24 @@ bool FightElement::isDone(){
     return false;
 }
 
+void FightElement::reset(){
+    switch (type){
+	case IS_ACTION:
+	    action->reset();
+            break;
+	case IS_SPRITE:
+	case IS_FONT:
+	    ticker = 0;
+            displayState = DisplayNotStarted;
+            break;
+        case IS_SOUND:
+	    break;
+	case IS_NOTSET:
+	default:
+	    break;
+    }
+}
+
 Bar::Bar():
 type(None),
 maxHealth(1000),
@@ -685,8 +703,13 @@ roundDisplayTime(0),
 fightDisplayTime(0),
 controlTime(0),
 KODisplayTime(0),
-DKODisplayTime(0),
-TODisplayTime(0),
+slowTime(0),
+overWaitTime(0),
+overHitTime(0),
+overWinTime(0),
+overTime(0),
+winDisplayTime(0),
+roundEnd(false),
 ticker(0){
     // Initiate default round sounds 9 total
     for (int i = 0; i < 9; ++i){
@@ -756,32 +779,68 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    break;
 	case WaitForControl:
 	    if (ticker >= controlTime){
-		setState(WaitForOver,stage,player1,player2);
+		setState(PlayingGame, stage, player1, player2);
 		Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Fight to end." << endl;
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Player Control: " << controlTime << endl;
 	    break;
-	case WaitForOver:
+	case PlayingGame:
 	    // Evaluate players and then go to the appropriate finish
 	    break;
-	case WaitForDisplayKO:
-	    if (ticker >= KODisplayTime){
-		setState(DisplayKO,stage,player1,player2);
-	    }
+        case EvaluateDeath:
+            if (ticker >= overHitTime){
+                //player1.setUnHurtable();
+                //player2.setUnHurtable();
+                if (player1.getHealth() <= 0 && player2.getHealth() <= 0){
+                    setState(WaitForDisplayDoubleKO, stage, player1, player2);
+                } else {
+                    setState(WaitForDisplayKO, stage, player1, player2);
+                }
+            }
+            break;
+        case WaitForDisplayKO:
+            if (ticker >= KODisplayTime){
+                setState(DisplayKO, stage, player1, player2);
+            }
 	    break;
 	case DisplayKO:
-	    if(KO.isDone()){
-		setState(WaitForRoundEnd,stage,player1,player2);
-	    }
+            if (ticker >= overWaitTime){
+                // Remove player control
+            }
+            if (ticker >= overWinTime){
+                if(KO.isDone()){
+                    // Win state
+		    setState(WaitForDisplayWin,stage,player1,player2);
+	        }    
+            }
 	    break;
 	case WaitForDisplayDoubleKO:
+            if (ticker >= KODisplayTime){
+                setState(DisplayDoubleKO, stage, player1, player2);
+            }
 	    break;
 	case DisplayDoubleKO:
-	    if(DKO.isDone()){
-		setState(WaitForRoundEnd,stage,player1,player2);
-	    }
+            if (ticker >= overWinTime){
+                if(DKO.isDone()){
+                    // Set draw state
+		    //setState(WaitForRoundEnd,stage,player1,player2);
+	        }    
+            }
 	    break;
-	case WaitForDisplayTimeOver:
+        case WaitForDisplayWin:
+            if (ticker >= winDisplayTime){
+                setState(DisplayWin, stage, player1, player2);
+            }
+	    break;
+        case DisplayWin:
+            if (win.isDone()){
+                setState(WaitForRoundEnd, stage, player1, player2);
+            }
+            break;
+        case WaitForDisplayTimeOver:
+            if (ticker >= KODisplayTime){
+                setState(DisplayTimeOver, stage, player1, player2);
+            }
 	    break;
 	case DisplayTimeOver:
 	    if(TO.isDone()){
@@ -789,6 +848,10 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    }
 	    break;
 	case WaitForRoundEnd:
+            if (ticker >= overTime){
+                currentRound++;
+                stage.reset();
+            }
 	    break;
 	default:
 	    break;
@@ -801,6 +864,9 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
     KO.act();
     DKO.act();
     TO.act();
+    win.act();
+    win2.act();
+    draw.act();
     ticker++;
 }
 
@@ -826,14 +892,36 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
     if (!TO.notStarted() && !TO.isDone()){
 	TO.render(layer, position.x, position.y, bmp);
     }
+    if (!win.notStarted() && !win.isDone()){
+	win.render(layer, position.x, position.y, bmp);
+    }
+    if (!win2.notStarted() && !win2.isDone()){
+	win2.render(layer, position.x, position.y, bmp);
+    }
+    if (!draw.notStarted() && !draw.isDone()){
+	draw.render(layer, position.x, position.y, bmp);
+    }
 }
 
 void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
+    roundEnd = false;
     if (currentRound == 1){
         setState(WaitForIntro, stage, player1, player2);
     } else {
         setState(WaitForRound, stage, player1, player2);
     }
+
+    // Reset objects
+    defaultRound.reset();
+    rounds[currentRound-1]->reset();
+    roundSounds[currentRound-1]->reset();
+    fight.reset();
+    KO.reset();
+    DKO.reset();
+    TO.reset();
+    win.reset();
+    win2.reset();
+    draw.reset();
 }
 
 void Round::setState(const State & state, MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
@@ -877,9 +965,12 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 	    break;
 	case WaitForControl:
 	    break;
-	case WaitForOver:
+	case PlayingGame:
 	    // Give control back
 	    break;
+        case EvaluateDeath:
+            roundEnd = true;
+            break;
 	case WaitForDisplayKO:
 	    break;
 	case DisplayKO:
@@ -904,7 +995,29 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 		TOSound.play();
 	    }
 	    break;
-	case WaitForRoundEnd:
+        case WaitForDisplayWin:
+            if (player1.getHealth() > 0){
+                player1.changeState(stage,180,vec);
+            } else if (player2.getHealth() > 0){
+                player2.changeState(stage,180,vec);
+            }
+            break;
+        case DisplayWin:
+            {
+                std::string temp;
+                if (player1.getHealth() > 0){
+                    temp = replaceString("%s",player1.getName(),winText);
+                } else if (player2.getHealth() > 0){
+                    temp = replaceString("%s",player2.getName(),winText);
+                }
+                win.setText(temp);
+                if (win.notStarted()){
+                    win.play();
+                    winSound.play();
+                }
+            }
+            break;
+        case WaitForRoundEnd:
 	    break;
 	default:
 	    break;
@@ -1292,6 +1405,30 @@ GameInfo::GameInfo(const std::string & fightFile){
 			int time=0;
 			simple >> time;
 			self.roundControl.setFightDisplayTime(time);
+		    } else if (simple == "KO.time"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setKODisplayTime(time);
+		    } else if (simple == "win.time"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setWinDisplayTime(time);
+		    } else if (simple == "slow.time"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setSlowTime(time);
+		    } else if (simple == "over.waittime"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setOverWaitTime(time);
+		    } else if (simple == "over.hittime"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setOverHitTime(time);
+		    } else if (simple == "over.time"){
+			int time=0;
+			simple >> time;
+			self.roundControl.setOverTime(time);
 		    } else if (simple == "ctrl.time"){
 			int time=0;
 			simple >> time;
@@ -1348,6 +1485,41 @@ GameInfo::GameInfo(const std::string & fightFile){
 			self.roundControl.getTOSound().setSound(self.sounds[g][s]);
 		    } else if (PaintownUtil::matchRegex(simple.toString(),"^TO.")){
 			getElementProperties(simple,"","to", self.roundControl.getTO(),sprites,animations,fonts);
+		    } else if (simple == "win.snd"){
+			int g=0,s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			self.roundControl.getWinSound().setSound(self.sounds[g][s]);
+		    } else if (PaintownUtil::matchRegex(simple.toString(),"^win.")){
+			getElementProperties(simple,"","win", self.roundControl.getWin(),sprites,animations,fonts);
+		    } else if (simple == "win.text"){
+			std::string text;
+			simple >> text;
+			self.roundControl.setWinText(text);
+		    } else if (simple == "win2.snd"){
+			int g=0,s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			self.roundControl.getWin2Sound().setSound(self.sounds[g][s]);
+		    } else if (PaintownUtil::matchRegex(simple.toString(),"^win2.")){
+			getElementProperties(simple,"","win2", self.roundControl.getWin2(),sprites,animations,fonts);
+		    } else if (simple == "win2.text"){
+			std::string text;
+			simple >> text;
+			self.roundControl.setWin2Text(text);
+		    } else if (simple == "draw.snd"){
+			int g=0,s=0;
+			try{
+			    simple >> g >> s;
+			} catch (const Ast::Exception & e){
+			}
+			self.roundControl.getDrawSound().setSound(self.sounds[g][s]);
+		    } else if (PaintownUtil::matchRegex(simple.toString(),"^draw.")){
+			getElementProperties(simple,"","draw", self.roundControl.getDraw(),sprites,animations,fonts);
 		    }
 		    getElementProperties(simple,"round","default", self.roundControl.getDefaultRound(),sprites,animations,fonts);
 		    for (unsigned int i = 0; i < 9; ++i){
@@ -1418,17 +1590,17 @@ void GameInfo::act(MugenStage & stage, Mugen::Character & player1, Mugen::Charac
     team1Combo.act(player1);
     team2Combo.act(player2);
     roundControl.act(stage, player1, player2);
-    if (roundControl.getState() == Round::WaitForOver){
+    if (roundControl.getState() == Round::PlayingGame){
 	if (!timer.isStarted()){
 	    timer.reset();
 	    timer.start();
 	}
 	if (timer.isStarted() && timer.hasExpired()){
-	    roundControl.setState(Round::DisplayTimeOver, stage, player1, player2);
+	    roundControl.setState(Round::WaitForDisplayTimeOver, stage, player1, player2);
 	}
     }
-    if (player1.getHealth() ==0 || player2.getHealth() ==0){
-	roundControl.setState(Round::WaitForDisplayKO, stage, player1, player2);
+    if ((player1.getHealth() <=0 || player2.getHealth() <=0) && !roundControl.isRoundOver()){
+	roundControl.setState(Round::EvaluateDeath, stage, player1, player2);
 	timer.stop();
     }
 }

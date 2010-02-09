@@ -946,7 +946,7 @@ void MugenStage::logic( ){
 
     // Player HUD Need to make this more ellegant than casting and passing from array
     gameHUD->act(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
-
+#if 0
     if (!gameOver){
         for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
             /* use local variables more often, iterators can be easily confused */
@@ -965,6 +965,7 @@ void MugenStage::logic( ){
             }
         }
     }
+#endif
 }
 	
 void MugenStage::render(Bitmap *work){
@@ -1085,7 +1086,8 @@ void MugenStage::reset(){
         Mugen::Character * character = (Mugen::Character*) player;
         vector<string> inputs;
         //character->changeState(*this, Mugen::Intro, inputs);
-	if (player->getAlliance() == Player1Side){
+	character->setHealth(character->getMaxHealth());
+        if (player->getAlliance() == Player1Side){
 	    //((Player *)player)->deathReset();
 	    player->setX(p1startx);
 	    player->setY(p1starty);

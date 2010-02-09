@@ -88,6 +88,8 @@ class FightElement: public Element {
 	
 	virtual bool isDone();
 
+        virtual void reset();
+
 	virtual inline void setSoundTime(int time){
 	    if (time == 0){
 		return;
@@ -416,7 +418,8 @@ class Round{
 	    WaitForFight,
 	    DisplayFight,
 	    WaitForControl,
-	    WaitForOver,
+	    PlayingGame,
+            EvaluateDeath,
 	    WaitForDisplayKO,
 	    DisplayKO,
 	    WaitForDisplayDoubleKO,
@@ -425,6 +428,10 @@ class Round{
 	    DisplayTimeOver,
             WaitForDisplayWin,
             DisplayWin,
+            WaitForDisplayWin2,
+            DisplayWin2,
+            WaitForDisplayDraw,
+            DisplayDraw,
 	    WaitForRoundEnd,
 	};
 	
@@ -507,20 +514,12 @@ class Round{
 	    return this->KOSound;
 	}
 	
-	virtual inline void setDKODisplayTime(int time){
-	    this->DKODisplayTime = time;
-	}
-	
 	virtual inline FightElement & getDKO(){
 	    return this->DKO;
 	}
 	
 	virtual inline FightElement & getDKOSound(){
 	    return this->DKOSound;
-	}
-	
-	virtual inline void setTODisplayTime(int time){
-	    this->TODisplayTime = time;
 	}
 	
 	virtual inline FightElement & getTO(){
@@ -530,7 +529,67 @@ class Round{
 	virtual inline FightElement & getTOSound(){
 	    return this->TOSound;
 	}
+
+        virtual inline void setSlowTime(int time){
+            this->slowTime = time;
+        }
+
+        virtual inline void setOverWaitTime(int time){
+            this->overWaitTime = time;
+        }
+
+        virtual inline void setOverHitTime(int time){
+            this->overHitTime = time;
+        }
+
+        virtual inline void setOverWinTime(int time){
+            this->overWinTime = time;
+        }
+
+        virtual inline void setOverTime(int time){
+            this->overTime = time;
+        }
+
+        virtual inline void setWinDisplayTime(int time){
+            this->winDisplayTime = time;
+        }
+
+        virtual inline FightElement & getWin(){
+	    return this->win;
+	}
 	
+	virtual inline FightElement & getWinSound(){
+	    return this->winSound;
+	}
+
+        virtual inline void setWinText(const std::string & text){
+            this->winText = text;
+        }
+
+        virtual inline FightElement & getWin2(){
+	    return this->win2;
+	}
+	
+	virtual inline FightElement & getWin2Sound(){
+	    return this->win2Sound;
+	}
+        
+        virtual inline void setWin2Text(const std::string & text){
+            this->win2Text = text;
+        }
+
+        virtual inline FightElement & getDraw(){
+	    return this->draw;
+	}
+	
+	virtual inline FightElement & getDrawSound(){
+	    return this->drawSound;
+	}
+
+        virtual inline bool isRoundOver() const {
+            return this->roundEnd;
+        }
+
     private:
 	
 	// Current State
@@ -561,18 +620,18 @@ class Round{
 	//! Time before handling off control to players
 	int controlTime;
 	
-	//! How long before display KO
+	//! How long before display KO/DKO/TO
 	int KODisplayTime;
-	FightElement KO;
+
+	//! KO Component
+        FightElement KO;
 	FightElement KOSound;
 	
-	//! How long before display KO
-	int DKODisplayTime;
+        //! DKO Component
 	FightElement DKO;
 	FightElement DKOSound;
 	
-	//! How long before display KO
-	int TODisplayTime;
+        //! TO Component
 	FightElement TO;
 	FightElement TOSound;
 
@@ -587,6 +646,26 @@ class Round{
         int overWinTime;
         //! Time to wait before round ends
         int overTime;
+
+        //! How Long before Displaying Win/Win2/Draw
+        int winDisplayTime;
+
+        //! Win Component
+        FightElement win;
+        FightElement winSound;
+        std::string winText;
+
+        //! Win2 Component
+        FightElement win2;
+        FightElement win2Sound;
+        std::string win2Text;
+
+        //! Draw Component
+        FightElement draw;
+        FightElement drawSound;
+        
+        //! In one of the Round end states
+        bool roundEnd;
 	
 	//! ticker
 	int ticker;

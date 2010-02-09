@@ -102,7 +102,12 @@ class MugenAnimation{
 	const MugenFrame *getNext();
 	
 	// Reset
-	inline void reset(){ position = 0; }
+	inline void reset(){ 
+            this->position = 0; 
+            if (this->playOnce){
+                this->started = false;
+            }
+        }
 	
 	// Add a frame
 	void addFrame( MugenFrame * );
