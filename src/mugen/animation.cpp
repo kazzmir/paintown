@@ -129,6 +129,7 @@ ticks(0){
 }
 
 MugenAnimation::MugenAnimation(const MugenAnimation &copy):
+playOnce(copy.playOnce),
 looped(false){
     this->loopPosition = copy.loopPosition;
     this->position = copy.position;
