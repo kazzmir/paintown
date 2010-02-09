@@ -721,6 +721,10 @@ ticker(0){
 	FightElement * element = new FightElement();
 	rounds.push_back(element);
     }
+    // Setup fade tool
+    fader.setState(FADEIN);
+    fader.setFadeInTime(15);
+    fader.setFadeOutTime(10);
 }
 
 Round::~Round(){
@@ -749,7 +753,7 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    Global::debug(1) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
 	    break;
 	case WaitForRound:
-	    if (ticker >= roundDisplayTime){
+	    if (ticker >= roundDisplayTime && fader.getState() != RUNFADE){
 		setState(DisplayRound,stage,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for round: " << roundDisplayTime << endl;
@@ -852,6 +856,9 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
                 currentRound++;
                 stage.reset();
             }
+            if (ticker == overTime-fader.getFadeOutTime()){
+                fader.setState(FADEOUT);
+            }
 	    break;
 	default:
 	    break;
@@ -868,6 +875,7 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
     win2.act();
     draw.act();
     ticker++;
+    fader.act();
 }
 
 void Round::render(const Element::Layer & layer, const Bitmap & bmp){
@@ -901,6 +909,10 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
     if (!draw.notStarted() && !draw.isDone()){
 	draw.render(layer, position.x, position.y, bmp);
     }
+
+    if (layer == Element::Top){
+        fader.draw(bmp);
+    }
 }
 
 void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
@@ -922,6 +934,7 @@ void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Charact
     win.reset();
     win2.reset();
     draw.reset();
+    fader.setState(FADEIN);
 }
 
 void Round::setState(const State & state, MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){

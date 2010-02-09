@@ -6,6 +6,7 @@
 
 #include "mugen/util.h"
 #include "mugen/exception.h"
+#include "mugen/fadetool.h"
 
 class Bitmap;
 class MugenSprite;
@@ -669,6 +670,9 @@ class Round{
 	
 	//! ticker
 	int ticker;
+        
+        // Fadebetween states
+        MugenFadeTool fader;
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */
