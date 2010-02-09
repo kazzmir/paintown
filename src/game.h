@@ -18,7 +18,7 @@ bool playLevel( World & world, const std::vector< Object * > & players, int help
 /* do the required setup to play a single level */
 void realGame(const std::vector< Object * > & players, const Level::LevelInfo & levelInfo);
 
-const Level::LevelInfo selectLevelSet( const std::string & base );
+// const Level::LevelInfo selectLevelSet( const std::string & base );
 
 void fadeOut( Bitmap & work, const std::string & message );
 

@@ -601,11 +601,11 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
     // fadeOut( "You win!" );
 }
 
+#if 0
 /* use MenuGlobal::doLevelMenu instead */
 const Level::LevelInfo selectLevelSet( const string & base ){
     return MenuGlobals::doLevelMenu(base, NULL);
 
-#if 0
         Bitmap background( Global::titleScreen() );
 	// Bitmap::Screen->Blit( Global::titleScreen() );
 
@@ -704,8 +704,8 @@ const Level::LevelInfo selectLevelSet( const string & base ){
 	}
 
 	return "nothing-selected";
-#endif
 }
+#endif
 
 void fadeOut( Bitmap & work, const string & message ){
 	Bitmap dark( GFX_X, GFX_Y );
