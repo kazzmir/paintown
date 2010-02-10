@@ -712,16 +712,15 @@ winDisplayTime(0),
 roundEnd(false),
 winStateSet(false),
 ticker(0){
-    // Initiate default round sounds 9 total
-    for (int i = 0; i < 9; ++i){
-	FightElement * element = new FightElement();
-	roundSounds.push_back(element);
-    }
-    // Initiate default rounds 9 total
-    for (int i = 0; i < 9; ++i){
-	FightElement * element = new FightElement();
-	rounds.push_back(element);
-    }
+    // Set layers for top
+    defaultRound.setLayer(Element::Top);
+    fight.setLayer(Element::Top);
+    KO.setLayer(Element::Top);
+    DKO.setLayer(Element::Top);
+    TO.setLayer(Element::Top);
+    win.setLayer(Element::Top);
+    win2.setLayer(Element::Top);
+    draw.setLayer(Element::Top);
     // Setup fade tool
     fader.setState(FADEIN);
     fader.setFadeInTime(15);
@@ -729,11 +728,11 @@ ticker(0){
 }
 
 Round::~Round(){
-    for (std::vector< FightElement * >::iterator i = roundSounds.begin(); i != roundSounds.end(); ++i){
-	delete *i;
+    for (std::map< unsigned int, FightElement * >::iterator i = roundSounds.begin(); i != roundSounds.end(); ++i){
+	delete i->second;
     }
-    for (std::vector< FightElement * >::iterator i = rounds.begin(); i != rounds.end(); ++i){
-	delete *i;
+    for (std::map< unsigned int, FightElement * >::iterator i = rounds.begin(); i != rounds.end(); ++i){
+	delete i->second;
     }
 }
 
@@ -1028,22 +1027,47 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
     ticker = 0;
 }
 
+FightElement & Round::getRoundSound(unsigned int number){
+    std::map< unsigned int, FightElement *>::iterator element = roundSounds.find(number);
+    if (element == roundSounds.end()){
+        roundSounds[number] = new FightElement();
+    }
+    return *this->roundSounds[number];
+}
+
+void Round::setRoundSoundTime(int time){
+    for (std::map< unsigned int, FightElement * >::iterator i = roundSounds.begin(); i != roundSounds.end(); ++i){
+	i->second->setSoundTime(time);
+    }
+}
+
+FightElement & Round::getRound(unsigned int number){
+    std::map< unsigned int, FightElement *>::iterator element = rounds.find(number);
+    if (element == rounds.end()){
+        rounds[number] = new FightElement();
+        rounds[number]->setLayer(Element::Top);
+    }
+    return *this->rounds[number];
+}
+
 //! Get current stage element in use
 FightElement & Round::getRoundElement(){
-    const int round = currentRound-1;
-    if (round < 9){
-        if (rounds[round]->isSet()){
-            return *rounds[round];
+    const unsigned int round = currentRound;
+    std::map< unsigned int, FightElement * >::iterator element = rounds.find(round);
+    if (element != rounds.end()){
+        if (element->second->isSet()){
+            return *element->second;
         }
     }
     return defaultRound;
 }
 
 FightElement & Round::getRoundSoundElement(){
-    const int round = currentRound-1;
-    if (round < 9){
-        if (roundSounds[round]->isSet()){
-            return *roundSounds[round];
+    const unsigned int round = currentRound;
+    std::map< unsigned int, FightElement * >::iterator element = roundSounds.find(round);
+    if (element != roundSounds.end()){
+        if (element->second->isSet()){
+            return *element->second;
         }
     }   
     return defaultRoundSound;
@@ -1391,18 +1415,22 @@ GameInfo::GameInfo(const std::string & fightFile){
             ComboWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
         } else if (head == "Round"){
+            // Sound time to apply to round sounds
+            int soundTime = 0;
             class RoundWalk: public Ast::Walker{
             public:
-                RoundWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                RoundWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts, int & soundTime):
                 self(self),
 		sprites(sprites),
 		animations(animations),
-		fonts(fonts){
+		fonts(fonts),
+                soundTime(soundTime){
                 }
                 GameInfo & self;
 		Mugen::SpriteMap & sprites;
 		std::map<int,MugenAnimation *> & animations;
 		std::vector<MugenFont *> & fonts;
+                int & soundTime;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "match.wins"){
 		    } else if (simple == "match.maxdrawgames"){
@@ -1459,10 +1487,7 @@ GameInfo::GameInfo(const std::string & fightFile){
 			self.roundControl.setControlTime(time);
 		    } else if (simple == "round.sndtime"){
 			int time = 0;
-			simple >> time;
-			for (unsigned int i = 0; i < 9; ++i){
-			    self.roundControl.getRound(i).setSoundTime(time);
-			}
+			simple >> soundTime;
 		    } else if (simple == "fight.sndtime"){
 			int time = 0;
 			simple >> time;
@@ -1547,25 +1572,32 @@ GameInfo::GameInfo(const std::string & fightFile){
 			getElementProperties(simple,"","draw", self.roundControl.getDraw(),sprites,animations,fonts);
 		    }
 		    getElementProperties(simple,"round","default", self.roundControl.getDefaultRound(),sprites,animations,fonts);
-		    for (unsigned int i = 0; i < 9; ++i){
-			ostringstream str;
-			str << "round" << i+1;
+		    if (PaintownUtil::matchRegex(simple.toString(), "round[0-9]+")){
+                        std::string temp = PaintownUtil::captureRegex(simple.toString(), "round([0-9]+)",0);
+                        int num = atoi(temp.c_str());
+                        Global::debug(0) << "Round Number: " << num << endl;
+                        ostringstream str;
+			str << "round" << num;
+                        Global::debug(0) << "Round Number: " << num << " | String: " << str.str() << endl;
 			if (simple == str.str() + ".snd"){
 			    int g=0,s=0;
 			    try{
 				simple >> g >> s;
 			    } catch (const Ast::Exception & e){
 			    }
-			    self.roundControl.getRoundSound(i).setSound(self.sounds[g][s]);
+			    self.roundControl.getRoundSound(num).setSound(self.sounds[g][s]);
 			} else if (PaintownUtil::matchRegex(simple.toString(),"^"+str.str())){
-			    getElementProperties(simple,"",str.str(), self.roundControl.getRound(i),sprites,animations,fonts);
+			    getElementProperties(simple,"",str.str(), self.roundControl.getRound(num),sprites,animations,fonts);
 			}
-		    }
+                    }
 		}
             };
 
-            RoundWalk walk(*this,sprites,animations,fonts);
+            RoundWalk walk(*this, sprites, animations, fonts, soundTime);
             section->walk(walk);
+
+            // Set sound time
+            roundControl.setRoundSoundTime(soundTime);
         }
     }
 }

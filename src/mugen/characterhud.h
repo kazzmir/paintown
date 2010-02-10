@@ -467,14 +467,11 @@ class Round{
 	    this->defaultText = text;
 	}
 	
-	virtual inline FightElement & getRoundSound(unsigned int number){
-	    return *this->roundSounds[number];
-	}
+	virtual FightElement & getRoundSound(unsigned int number);
+
+        virtual void setRoundSoundTime(int time);
 	
-	virtual inline FightElement & getRound(unsigned int number){
-	    // Max 9 so 0-8
-	    return *this->rounds[number];
-	}
+	virtual FightElement & getRound(unsigned int number);
 	
 	virtual inline void setFightDisplayTime(int time){
 	    this->fightDisplayTime = time;
@@ -603,9 +600,9 @@ class Round{
         FightElement defaultRoundSound;
 	std::string defaultText;
 	//! Round Sounds
-	std::vector< FightElement * > roundSounds;
+        std::map< unsigned int, FightElement * > roundSounds;
 	//! Up to 9 only
-	std::vector< FightElement * > rounds;
+        std::map< unsigned int, FightElement * > rounds;
 	
 	//! How long before displaying Fight!
 	int fightDisplayTime;
