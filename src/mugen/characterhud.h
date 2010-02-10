@@ -422,6 +422,7 @@ class Round{
 	    PlayingGame,
 	    RoundOver,
 	    DoTimeOver,
+            DoWin,
 	};
 	
 	virtual void setRound(int round){
@@ -580,6 +581,10 @@ class Round{
         }
 
     private:
+
+        //! Get current stage element in use
+        FightElement & getRoundElement();
+        FightElement & getRoundSoundElement();
 	
 	// Current State
 	State state;
@@ -595,6 +600,7 @@ class Round{
 	//! How long before displaying round
 	int roundDisplayTime;
 	FightElement defaultRound;
+        FightElement defaultRoundSound;
 	std::string defaultText;
 	//! Round Sounds
 	std::vector< FightElement * > roundSounds;
