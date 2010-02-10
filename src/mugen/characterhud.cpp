@@ -1533,8 +1533,6 @@ GameInfo::GameInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			self.roundControl.getWinSound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^win.")){
-			getElementProperties(simple,"","win", self.roundControl.getWin(),sprites,animations,fonts);
 		    } else if (simple == "win.text"){
 			std::string text;
 			simple >> text;
@@ -1546,8 +1544,6 @@ GameInfo::GameInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			self.roundControl.getWin2Sound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^win2.")){
-			getElementProperties(simple,"","win2", self.roundControl.getWin2(),sprites,animations,fonts);
 		    } else if (simple == "win2.text"){
 			std::string text;
 			simple >> text;
@@ -1559,6 +1555,11 @@ GameInfo::GameInfo(const std::string & fightFile){
 			} catch (const Ast::Exception & e){
 			}
 			self.roundControl.getDrawSound().setSound(self.sounds[g][s]);
+		    }
+		    if (PaintownUtil::matchRegex(simple.toString(),"^win.")){
+			getElementProperties(simple,"","win", self.roundControl.getWin(),sprites,animations,fonts);
+		    } else if (PaintownUtil::matchRegex(simple.toString(),"^win2.")){
+			getElementProperties(simple,"","win2", self.roundControl.getWin2(),sprites,animations,fonts);
 		    } else if (PaintownUtil::matchRegex(simple.toString(),"^draw.")){
 			getElementProperties(simple,"","draw", self.roundControl.getDraw(),sprites,animations,fonts);
 		    }
