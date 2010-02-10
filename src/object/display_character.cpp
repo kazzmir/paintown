@@ -31,6 +31,7 @@ DisplayCharacter::DisplayCharacter(const string & path) throw (LoadException):
 Character(ALLIANCE_NONE),
 path(path),
 loaded(false){
+    setName(Filesystem::removeExtension(Filesystem::stripDir(path)));
     /* throws load-exception if the file can't be read */
     pthread_mutex_init(&load_lock, NULL );
     TokenReader reader(path);

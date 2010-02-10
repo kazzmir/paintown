@@ -102,18 +102,7 @@ const std::string Mugen::Util::fixFileName( const std::string &dir, std::string 
 
 /* this is basename() */
 const std::string Mugen::Util::stripDir( const std::string &str ){ 
-    std::string temp = str;
-    if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
-	size_t rem = temp.find_last_of( "/" );
-	if( rem != std::string::npos ){
-	    return str.substr(rem+1,str.size());
-	}
-	rem = temp.find_last_of( "\\" );
-	if( rem != std::string::npos ){
-	    return str.substr(rem+1,str.size());
-	}
-    }
-    return str; 
+    return Filesystem::stripDir(str);
 }
 
 

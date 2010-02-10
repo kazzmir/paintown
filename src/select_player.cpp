@@ -269,7 +269,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         loader.update(players[current].guy);
                     }
 
-                    done |= inputState[Select::Choose];
+                    done |= inputState[Select::Choose] && ch->isLoaded();
 
                     // think--;
                 }
@@ -334,12 +334,14 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                 int x = startX, y = startY;
                 unsigned int i;
                 for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
-                    temp.clear();
-                    Bitmap box( work, x, y, boxSize, boxSize );
+                    Bitmap box(work, x, y, boxSize, boxSize);
+                    DisplayCharacter * displayed = players[i].guy;
+                    box.clear();
                     // int color = unselectedColor;
                     // int * color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
-                    if (players[i].guy->isLoaded()){
-                        Character smaller( *players[ i ].guy );
+                    if (displayed->isLoaded()){
+                        temp.clear();
+                        Character smaller(*displayed);
 
                         /* draw a border */
                         // box.border( 0, 3, color[ clock % maxColor ] );
@@ -348,9 +350,14 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         smaller.setY( 0 );
                         smaller.setZ( temp.getHeight() );
                         smaller.draw( &temp, 0, 0 );
+                        temp.drawStretched(0, 0, box.getWidth(), box.getHeight(), box);
+                    } else {
+                        /* FIXME: center the text */
+
+                        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
+                        font.printf(box.getWidth() / 2 - font.textLength(displayed->getName().c_str()) / 2, box.getHeight() / 2 - font.getHeight() / 2, Bitmap::makeColor(255, 255, 255), box, displayed->getName(), 0);
                     }
 
-                    temp.drawStretched( 0, 0, box.getWidth(), box.getHeight(), box );
                     if (i == (unsigned int) current){
                         box.border(0, 3, selectedGradient[clock % maxColor]);
                     } else {
@@ -394,7 +401,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
             while ( Global::speed_counter == 0 ){
                 InputManager::poll();
-                Util::rest( 1 );
+                Util::rest(1);
             }
         }
     } catch (const Filesystem::NotFound & ex){
