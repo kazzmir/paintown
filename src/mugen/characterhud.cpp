@@ -596,6 +596,8 @@ shake(false),
 shakeTime(0),
 total(0),
 state(Disabled){
+    combo.setLayer(Element::Top);
+    text.setLayer(element::Top);
 }
 Combo::~Combo(){
 }
