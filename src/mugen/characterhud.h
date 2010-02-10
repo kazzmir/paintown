@@ -421,20 +421,7 @@ class Round{
 	    WaitForControl,
 	    PlayingGame,
 	    RoundOver,
-            /*EvaluateDeath,
-	    WaitForDisplayKO,
-	    DisplayKO,
-	    WaitForDisplayDoubleKO,
-	    DisplayDoubleKO,
-	    WaitForDisplayTimeOver,
-	    DisplayTimeOver,
-            WaitForDisplayWin,
-            DisplayWin,
-            WaitForDisplayWin2,
-            DisplayWin2,
-            WaitForDisplayDraw,
-            DisplayDraw,
-	    WaitForRoundEnd,*/
+	    DoTimeOver,
 	};
 	
 	virtual void setRound(int round){
