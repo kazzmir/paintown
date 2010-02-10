@@ -913,9 +913,9 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 		    if (ticker >= overWinTime + winDisplayTime){
 			if (win.notStarted()){
 			    std::string temp;
-			    if (player1.getHealth() > 0){
+			    if (player1.getHealth() > player2.getHealth()){
 				temp = replaceString("%s",player1.getName(),winText);
-			    } else if (player2.getHealth() > 0){
+			    } else if (player2.getHealth() > player1.getHealth()){
 				temp = replaceString("%s",player2.getName(),winText);
 			    }
 			    win.setText(temp);
