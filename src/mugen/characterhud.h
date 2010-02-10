@@ -420,7 +420,8 @@ class Round{
 	    DisplayFight,
 	    WaitForControl,
 	    PlayingGame,
-            EvaluateDeath,
+	    RoundOver,
+            /*EvaluateDeath,
 	    WaitForDisplayKO,
 	    DisplayKO,
 	    WaitForDisplayDoubleKO,
@@ -433,7 +434,7 @@ class Round{
             DisplayWin2,
             WaitForDisplayDraw,
             DisplayDraw,
-	    WaitForRoundEnd,
+	    WaitForRoundEnd,*/
 	};
 	
 	virtual void setRound(int round){
@@ -665,8 +666,10 @@ class Round{
         FightElement draw;
         FightElement drawSound;
         
-        //! In one of the Round end states
+        //! In the Round end states
         bool roundEnd;
+	//! In the show win state
+	bool winStateSet;
 	
 	//! ticker
 	int ticker;

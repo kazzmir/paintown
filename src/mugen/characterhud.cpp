@@ -710,6 +710,7 @@ overWinTime(0),
 overTime(0),
 winDisplayTime(0),
 roundEnd(false),
+winStateSet(false),
 ticker(0){
     // Initiate default round sounds 9 total
     for (int i = 0; i < 9; ++i){
@@ -791,7 +792,8 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	case PlayingGame:
 	    // Evaluate players and then go to the appropriate finish
 	    break;
-        case EvaluateDeath:
+        #if 0
+	case EvaluateDeath:
             if (ticker >= overHitTime){
                 //player1.setUnHurtable();
                 //player2.setUnHurtable();
@@ -860,6 +862,93 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
                 fader.setState(FADEOUT);
             }
 	    break;
+	#endif
+	case RoundOver:
+	    // Set slow time
+	    if (ticker < 1){
+		// Set slow time
+	    }
+	    // Remove hittable state
+	    if (ticker >= overHitTime){
+                //player1.setUnHurtable();
+                //player2.setUnHurtable();
+            }
+	    // Only show KO after slowtime
+	    if (ticker < slowTime){
+		break;
+	    }
+	    // Check KO State
+	    if (player1.getHealth() <= 0 && player2.getHealth() <= 0){
+		if (ticker >= KODisplayTime){
+		    if (DKO.notStarted()){
+			DKO.play();
+			DKOSound.play();
+		    }
+		}
+	    } else {
+		if (ticker >= KODisplayTime){
+		    if (KO.notStarted()){
+			KO.play();
+			KOSound.play();
+		    }
+		}
+	    }
+	    // Check wait time, remove player control
+	    if (ticker >= overWaitTime){
+                // Remove player control for now lets set 180 constantly as a hack
+		if (!winStateSet){
+		    std::vector<std::string> vec;
+		    player1.changeState(stage,180,vec);
+		    player2.changeState(stage,180,vec);
+		}
+		// Change into win state
+		if (ticker >= overWinTime){
+		    // Check ko / dko
+		    if (player1.getHealth() <= 0 && player2.getHealth() <= 0){
+			if (ticker >= overWinTime + winDisplayTime){
+			    if (draw.notStarted()){
+				draw.play();
+				drawSound.play();
+			    }
+			}
+		    } else {
+			std::vector<std::string> vec;
+			// Set win state
+			if (player1.getHealth() > 0 && !winStateSet){
+			    winStateSet = true;
+			    player1.changeState(stage,180,vec);
+			    // Add win to character
+			} else if (player2.getHealth() > 0 && !winStateSet){
+			    winStateSet = true;
+			    player2.changeState(stage,180,vec);
+			    // Add win to character
+			}
+			if (ticker >= overWinTime + winDisplayTime){
+			    if (win.notStarted()){
+				std::string temp;
+				if (player1.getHealth() > 0){
+				    temp = replaceString("%s",player1.getName(),winText);
+				} else if (player2.getHealth() > 0){
+				    temp = replaceString("%s",player2.getName(),winText);
+				}
+				win.setText(temp);
+				win.play();
+				winSound.play();
+			    }
+			}
+		    }
+		}
+            }
+	    // End round
+	    if (ticker >= overTime){
+		if (fader.getState() != FADEOUT){
+		    fader.setState(FADEOUT);
+		} else if (ticker >= overTime + fader.getFadeOutTime()) {
+		    currentRound++;
+		    stage.reset();
+		}
+            }
+	    break;
 	default:
 	    break;
     }
@@ -917,6 +1006,7 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
 
 void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
     roundEnd = false;
+    winStateSet = false;
     if (currentRound == 1){
         setState(WaitForIntro, stage, player1, player2);
     } else {
@@ -981,6 +1071,7 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 	case PlayingGame:
 	    // Give control back
 	    break;
+	#if 0
         case EvaluateDeath:
             roundEnd = true;
             break;
@@ -1031,6 +1122,10 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
             }
             break;
         case WaitForRoundEnd:
+	    break;
+	#endif
+	case RoundOver:
+	    roundEnd = true;
 	    break;
 	default:
 	    break;
@@ -1609,11 +1704,11 @@ void GameInfo::act(MugenStage & stage, Mugen::Character & player1, Mugen::Charac
 	    timer.start();
 	}
 	if (timer.isStarted() && timer.hasExpired()){
-	    roundControl.setState(Round::WaitForDisplayTimeOver, stage, player1, player2);
+	    roundControl.setState(Round::RoundOver, stage, player1, player2);
 	}
     }
     if ((player1.getHealth() <=0 || player2.getHealth() <=0) && !roundControl.isRoundOver()){
-	roundControl.setState(Round::EvaluateDeath, stage, player1, player2);
+	roundControl.setState(Round::RoundOver, stage, player1, player2);
 	timer.stop();
     }
 }
