@@ -10,3 +10,6 @@ echo When prompted for a password type the password you use to login.
 
 sudo apt-get install scons liballegro-dev libpng12-dev libfreetype6-dev g++ zlib1g-dev
 make
+
+ls -l paintown
+echo "Here is the executable. To run it type: ./paintown"
