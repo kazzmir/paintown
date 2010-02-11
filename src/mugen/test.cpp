@@ -470,16 +470,74 @@ void showSFF(const string & ourFile){
                 runCounter -= 1;
                 draw = true;
 		if( keyInputManager::keyState(keys::DOWN, true) ){
-                   currentGroup--;
+                    int group = currentGroup;
+                    bool found = false;
+                    currentSprite = 0;
+                    while (!found){
+                        group--;
+                        if (sprites[group][currentSprite]){
+                            found = true;
+                            currentGroup = group;
+                        }
+                        if (group < 0){
+                            group = 9999;
+                        }
+                        if (group == currentGroup){
+                            found = true;
+                        }
+                    }
                 }
                 if( keyInputManager::keyState(keys::UP, true) ){
-		   currentGroup++;
+		    int group = currentGroup;
+                    bool found = false;
+                    currentSprite = 0;
+                    while (!found){
+                        group++;
+                        if (sprites[group][currentSprite]){
+                            found = true;
+                            currentGroup = group;
+                        }
+                        if (group > 9999){
+                            group = 0;
+                        }
+                        if (group == currentGroup){
+                            found = true;
+                        }
+                    }
                 }
 		if( keyInputManager::keyState(keys::LEFT, true) ){
-                   currentSprite--;
+                    int sprite = currentSprite;
+                    bool found = false;
+                    while (!found){
+                        sprite--;
+                        if (sprites[currentGroup][sprite]){
+                            found = true;
+                            currentSprite = sprite;
+                        }
+                        if (sprite < 0){
+                            sprite = 1000;
+                        }
+                        if (sprite == currentSprite){
+                            found = true;
+                        }
+                    }
                 }
                 if( keyInputManager::keyState(keys::RIGHT, true) ){
-                   currentSprite++;
+                    int sprite = currentSprite;
+                    bool found = false;
+                    while (!found){
+                        sprite++;
+                        if (sprites[currentGroup][sprite]){
+                            found = true;
+                            currentSprite = sprite;
+                        }
+                        if (sprite > 1000){
+                            sprite = 0;
+                        }
+                        if (sprite == currentSprite){
+                            found = true;
+                        }
+                    }
                 }
 		if( keyInputManager::keyState(keys::PGUP, true) ){
                    currentGroup+=500;
