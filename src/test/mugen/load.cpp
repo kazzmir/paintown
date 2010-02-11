@@ -3,7 +3,7 @@
 #include <iostream>
 #include "util/file-system.h"
 #include "mugen/character.h"
-#include "mugen/mugen_exception.h"
+#include "mugen/exception.h"
 #include "mugen/parse-cache.h"
 #include "util/timedifference.h"
 
