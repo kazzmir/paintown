@@ -545,13 +545,17 @@ GameTime::GameTime():
 frameCount(0),
 time(Mugen::Data::getInstance().getTime()),
 ticker(0),
-started(false){
+started(false),
+disabled(false){
 }
 
 GameTime::~GameTime(){
 }
 
 void GameTime::act(){
+    if (disabled){
+        return;
+    }
     if (started){
 	ticker++;
 	if (ticker >= frameCount && time > 0){
@@ -575,7 +579,13 @@ void GameTime::render(const Element::Layer & layer, const Bitmap & bmp){
 
 void GameTime::reset(){
     // Resets the time
-    time = Mugen::Data::getInstance().getTime();   
+    time = Mugen::Data::getInstance().getTime();
+    // 0 or less is considered disabled
+    if (time <=0){
+        disabled = true;
+        // Mugen hides the infinity symbol in the num font and sets it to o
+        timer.setText("o");
+    }
 }
 
 void GameTime::start(){

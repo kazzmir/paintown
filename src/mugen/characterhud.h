@@ -330,7 +330,7 @@ class GameTime{
 	    return this->timer;
 	}
 	virtual inline bool hasExpired(){
-	    if (time <=0){
+	    if (time <=0 && !disabled){
 		return true;
 	    }
 	    return false;
@@ -343,6 +343,7 @@ class GameTime{
 	int time;
 	int ticker;
 	bool started;
+        bool disabled;
 };
 
 class Combo{
