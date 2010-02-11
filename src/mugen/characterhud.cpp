@@ -1577,11 +1577,9 @@ GameInfo::GameInfo(const std::string & fightFile){
 		    if (PaintownUtil::matchRegex(simple.toString(), "round[0-9]+")){
                         std::string temp = PaintownUtil::captureRegex(simple.toString(), "round([0-9]+)",0);
                         int num = atoi(temp.c_str());
-                        Global::debug(0) << "Round Number: " << num << endl;
                         ostringstream str;
 			str << "round" << num;
-                        Global::debug(0) << "Round Number: " << num << " | String: " << str.str() << endl;
-			if (simple == str.str() + ".snd"){
+                        if (simple == str.str() + ".snd"){
 			    int g=0,s=0;
 			    try{
 				simple >> g >> s;
