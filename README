@@ -30,6 +30,14 @@ Topics:
 
 * Compilation:
   
+  --------------------------------------
+  Ubuntu users: There is a script that will install the necessary packages and then
+  invoke the compilation scripts.
+
+  Type this:
+  $ ./easy-compile-ubuntu
+  --------------------------------------
+  
   You can use scons or cmake.
 
   If the scons build fails because it cannot find hawknl/nl.h it may be because of this problem, http://scons.tigris.org/issues/show_bug.cgi?id=2121. This error will manifest itself like so:
