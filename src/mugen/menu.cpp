@@ -389,7 +389,7 @@ void MugenMenu::run(){
     menuOptions.front()->setState(MenuOption::Selected);
     
     // Set the fade state
-    fader.setState(FADEIN);
+    fader.setState(Mugen::FadeTool::FadeIn);
     
     // Keys
     InputMap<Mugen::Keys> input = Mugen::getPlayer1MenuKeys();
@@ -412,7 +412,7 @@ void MugenMenu::run(){
 	Global::second_counter = 0;
 	int game_time = 100;
     
-	while ( ! done && (*selectedOption)->getState() != MenuOption::Run && fader.getState() != RUNFADE ){
+	while ( ! done && (*selectedOption)->getState() != MenuOption::Run && fader.getState() != Mugen::FadeTool::RunFade ){
 
 	    bool draw = false;
 	    
@@ -428,7 +428,7 @@ void MugenMenu::run(){
 		    // Keys
 		    InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
 		    
-		    if (fader.getState() == NOFADE){
+		    if (fader.getState() == Mugen::FadeTool::NoFade){
 			if ( out[Mugen::Up]){	
 			    (*selectedOption)->setState(MenuOption::Deselected);
 			    if ( selectedOption > menuOptions.begin() ){
@@ -474,7 +474,7 @@ void MugenMenu::run(){
 			if ( out[Mugen::Enter] ){
 			    if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
 			    // Set the fade state
-			    fader.setState(FADEOUT);
+			    fader.setState(Mugen::FadeTool::FadeOut);
                             if (sounds[doneSound.x][doneSound.y] != 0){
                                 sounds[doneSound.x][doneSound.y]->play();
                             }
@@ -483,7 +483,7 @@ void MugenMenu::run(){
                         if ( out[Mugen::Esc] ){
 			    endGame = done = true;
 			    // Set the fade state
-			    fader.setState(FADEOUT);
+			    fader.setState(Mugen::FadeTool::FadeOut);
 			    (*selectedOption)->setState(MenuOption::Deselected);
                             InputManager::waitForRelease(input, Mugen::Esc);
                             if (sounds[cancelSound.x][cancelSound.y] != 0){
@@ -545,7 +545,7 @@ void MugenMenu::run(){
 	    }
 	    // Reset it's state
 	    (*selectedOption)->setState(MenuOption::Selected);
-	    fader.setState(FADEIN);
+	    fader.setState(Mugen::FadeTool::FadeIn);
 	}
 	if (endGame){
 	    // Deselect selected entry

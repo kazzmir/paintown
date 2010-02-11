@@ -1,9 +1,11 @@
 #include "mugen/fadetool.h"
 #include "util/bitmap.h"
 
-MugenFadeTool::MugenFadeTool():
-currentState(FADEIN),
-lastState(FADEIN),
+using namespace Mugen;
+
+FadeTool::FadeTool():
+currentState(FadeIn),
+lastState(FadeIn),
 fader(0),
 fadeInTime(0),
 fadeOutTime(0),
@@ -11,67 +13,68 @@ fadeInColor(Bitmap::makeColor(0,0,0)),
 fadeOutColor(Bitmap::makeColor(0,0,0)){
 }
 
-MugenFadeTool::~MugenFadeTool(){
+FadeTool::~FadeTool(){
 }
 	
 
-void MugenFadeTool::setState( FadeType f){
+void FadeTool::setState( const State & f){
     lastState = currentState;
     currentState = f;
     
     switch (currentState){
-	case FADEIN:
+	case FadeIn:
 	    fader = 255;
 	    break;
-	case FADEOUT:
+	case FadeOut:
 	    fader = 0;
 	    break;
-	case NOFADE:
-	case RUNFADE:
+	case NoFade:
+	case RunFade:
 	default:
 	    fader = 0;
 	    break;
     }
 }
 
-void MugenFadeTool::act(){
+void FadeTool::act(){
     switch (currentState){
-	case FADEIN:
+	case FadeIn:
 	    fader-=(255/(fadeInTime <= 0 ? 1 : fadeInTime));
 	    if (fader<=0){
-		setState(NOFADE);
+		setState(NoFade);
 	    }
 	    break;
-	case FADEOUT:
+	case FadeOut:
 	    fader+=(255/(fadeOutTime <= 0 ? 1 : fadeOutTime));
 	    if (fader>=255){
-		setState(RUNFADE);
+		setState(RunFade);
 	    }
 	    break;
-	case NOFADE:
-	case RUNFADE:
+	case NoFade:
+	case RunFade:
 	default:
 	    break;
     }
 }
 
-void MugenFadeTool::draw(const Bitmap &bmp){
+void FadeTool::draw(const Bitmap &bmp){
     switch (currentState){
-	case FADEIN:
+	case FadeIn:
 	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	    Bitmap::transBlender(0,0,0,fader);
 	    bmp.rectangleFill(0, 0, bmp.getWidth(),bmp.getHeight(),fadeInColor);
 	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    break;
-	case FADEOUT:
+	case FadeOut:
 	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	    Bitmap::transBlender(0,0,0,fader);
 	    bmp.rectangleFill(0, 0, bmp.getWidth(),bmp.getHeight(),fadeOutColor);
 	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    break;
-	case NOFADE:
-	case RUNFADE:
+	case NoFade:
+	case RunFade:
 	default:
 	    break;
     }
 }
+

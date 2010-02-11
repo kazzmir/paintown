@@ -90,7 +90,7 @@ class MugenMenu : public Menu {
 	//fadein.time = 10
 	//fadeout.time = 10
 	// Utilize fade tool
-	MugenFadeTool fader;
+        Mugen::FadeTool fader;
 	
 	//menu.pos = 159,158
 	Mugen::Point position;

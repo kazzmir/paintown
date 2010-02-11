@@ -72,7 +72,7 @@ class Scene {
 	
 	virtual void reset();
 	
-	virtual inline const MugenFadeTool & getFadeTool() const {
+	virtual inline const Mugen::FadeTool & getFadeTool() const {
 	    return this->fader;
 	}
 	
@@ -111,7 +111,7 @@ class Scene {
     private:
 	
         //! fade tool
-	MugenFadeTool fader;
+        Mugen::FadeTool fader;
 	
         //! Clear color for the scene
 	int clearColor;

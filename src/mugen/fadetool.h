@@ -5,21 +5,22 @@
 
 class Bitmap;
 
-/* should wrap this in a namespace, like Mugen */
-enum FadeType{
-    FADEIN = 0,
-    FADEOUT,
-    NOFADE,
-    RUNFADE
-};
+namespace Mugen{
 
-class MugenFadeTool{
+class FadeTool{
 public:
-	MugenFadeTool();
-	virtual ~MugenFadeTool();
+	FadeTool();
+	virtual ~FadeTool();
+
+        enum State{
+            FadeIn,
+            FadeOut,
+            NoFade,
+            RunFade,
+        };
 	
 	// Fade state
-	void setState(FadeType f);
+	void setState(const State &);
 	
 	// update
 	void act();
@@ -27,19 +28,37 @@ public:
 	// Fade to whatever state it is at
 	virtual void draw(const Bitmap &);
 	
-	inline FadeType getState() const { return currentState; }
-	inline void setFadeInTime(const int time){ fadeInTime = time; }
-	inline void setFadeOutTime(const int time){ fadeOutTime = time; }
-	inline int getFadeInTime() const { return fadeInTime; }
-	inline int getFadeOutTime() const { return fadeOutTime; }
-	inline void setFadeInColor( int c ){ fadeInColor = c; }
-	inline int getFadeInColor() const { return fadeInColor; }
-	inline void setFadeOutColor( int c ){ fadeInColor = c; }
-	inline int getFadeOutColor() const { return fadeInColor; }
+	inline const State & getState() const { 
+            return currentState; 
+        }
+	inline void setFadeInTime(const int time){ 
+            fadeInTime = time; 
+        }
+	inline void setFadeOutTime(const int time){ 
+            fadeOutTime = time; 
+        }
+	inline int getFadeInTime() const { 
+            return fadeInTime; 
+        }
+	inline int getFadeOutTime() const { 
+            return fadeOutTime; 
+        }
+	inline void setFadeInColor( int c ){ 
+            fadeInColor = c; 
+        }
+	inline int getFadeInColor() const { 
+            return fadeInColor; 
+        }
+	inline void setFadeOutColor( int c ){ 
+            fadeInColor = c; 
+        }
+	inline int getFadeOutColor() const { 
+            return fadeInColor; 
+        }
 private:
 	
-	FadeType currentState;
-	FadeType lastState;
+	State currentState;
+	State lastState;
 	int fader;
 	int fadeInTime;
 	int fadeOutTime;
@@ -47,5 +66,7 @@ private:
 	int fadeOutColor;
 	
 };
+
+}
 
 #endif

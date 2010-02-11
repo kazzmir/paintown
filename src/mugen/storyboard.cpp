@@ -179,7 +179,7 @@ maxLayers(10){
     data->walk(walker);
 
     // set initial fade state
-    fader.setState(FADEIN);
+    fader.setState(Mugen::FadeTool::FadeIn);
 }
 
 Scene::~Scene(){
@@ -208,7 +208,7 @@ void Scene::act(){
     // Fader
     fader.act();
     if (ticker == endTime - fader.getFadeOutTime()){
-        fader.setState(FADEOUT);
+        fader.setState(Mugen::FadeTool::FadeOut);
     }
     // tick tick
     ticker++;
@@ -241,7 +241,7 @@ bool Scene::isDone(){
 
 void Scene::reset(){
     ticker = 0;
-    fader.setState(FADEIN);
+    fader.setState(Mugen::FadeTool::FadeIn);
     // layers
     for (std::vector< Layer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
 	Layer *layer = *i;

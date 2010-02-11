@@ -877,7 +877,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     int ticker = 0;
     
     // Set the fade state
-    fader.setState(FADEIN);
+    fader.setState(Mugen::FadeTool::FadeIn);
   
     double runCounter = 0;
     Global::speed_counter = 0;
@@ -888,7 +888,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     InputMap<Mugen::Keys> gameInput;
     gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
     
-    while ( ! done && fader.getState() != RUNFADE ){
+    while ( ! done && fader.getState() != Mugen::FadeTool::RunFade ){
     
 	bool draw = false;
 	
@@ -910,7 +910,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 		InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
 		if (out[Mugen::Esc]){
 		    done = escaped = true;
-		    fader.setState(FADEOUT);
+		    fader.setState(Mugen::FadeTool::FadeOut);
 		    InputManager::waitForRelease(gameInput, Mugen::Esc);
 		}
 		
@@ -937,7 +937,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 			throw e;
 		    }
 		    done = true;
-		    fader.setState(FADEOUT);
+		    fader.setState(Mugen::FadeTool::FadeOut);
 		}
 		
 		// Fader
@@ -1874,7 +1874,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     bool escaped = false;
     
     // Set the fade state
-    fader.setState(FADEIN);
+    fader.setState(Mugen::FadeTool::FadeIn);
   
     double runCounter = 0;
     Global::speed_counter = 0;
@@ -1884,7 +1884,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     // Set game keys temporary
     InputMap<Mugen::Keys> gameInput = Mugen::getPlayer1MenuKeys();
     
-    while ( ! done && fader.getState() != RUNFADE ){
+    while ( ! done && fader.getState() != Mugen::FadeTool::RunFade ){
     
 	bool draw = false;
 	
@@ -1899,7 +1899,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
 		if (out[Mugen::Esc]){
 		    done = escaped = true;
-		    fader.setState(FADEOUT);
+		    fader.setState(Mugen::FadeTool::FadeOut);
                     // play cancel sound
                     if (cancelSound){
                         cancelSound->play();
@@ -1910,7 +1910,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 		/* *FIXME remove later when solution is found */
 		if (checkPlayerData()){
 		    done = true;
-		    fader.setState(FADEOUT);
+		    fader.setState(Mugen::FadeTool::FadeOut);
 		}
 		
 		// Logic

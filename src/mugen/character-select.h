@@ -841,7 +841,7 @@ class VersusScreen {
 	    this->time = time;
 	}
 	
-	virtual inline MugenFadeTool & getFadeTool(){
+	virtual inline Mugen::FadeTool & getFadeTool(){
 	    return this->fader;
 	}
 	
@@ -884,7 +884,7 @@ class VersusScreen {
 	//! Time to display
 	int time;
 	//! Fade tool
-	MugenFadeTool fader;
+        Mugen::FadeTool fader;
 	//! Player 1 portrait
 	Mugen::Point player1Position;
 	//! Player 1 effects (facing, scale)
@@ -981,7 +981,7 @@ class CharacterSelect {
 	std::vector<MugenFont *>fonts;
 	
 	//! Fade tool
-	MugenFadeTool fader;
+        Mugen::FadeTool fader;
 	
 	//! Grid (Cell container)
 	Grid grid;

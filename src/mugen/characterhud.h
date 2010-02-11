@@ -666,7 +666,7 @@ class Round{
 	int ticker;
         
         // Fadebetween states
-        MugenFadeTool fader;
+        Mugen::FadeTool fader;
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */
