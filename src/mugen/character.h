@@ -103,6 +103,21 @@ namespace AttackType{
     };
 }
 
+namespace WinGame{
+    enum WinType{
+        Normal,
+        Special,
+        Hyper,
+        NormalThrow,
+        Cheese,
+        TimeOver,
+        Suicide,
+        Teammate,
+        /* overlay? */
+        Perfect,
+    };
+}
+
 namespace PhysicalAttack{
     extern std::string Normal;
     extern std::string Throw;
@@ -1273,6 +1288,12 @@ public:
             return hitCount;
         }
 
+        virtual inline const std::vector<WinGame::WinType> & getWins() const {
+            return wins;
+        }
+
+        virtual void addWin(WinGame::WinType win);
+
 protected:
     void initialize();
 
@@ -1544,6 +1565,8 @@ protected:
         int nextCombo;
         
         int hitCount;
+
+        std::vector<WinGame::WinType> wins;
 };
 
 }

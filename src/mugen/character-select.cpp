@@ -2058,10 +2058,3 @@ bool CharacterSelect::checkPlayerData(){
     }
     return false;
 }
-
-
-
-
-
-
-
