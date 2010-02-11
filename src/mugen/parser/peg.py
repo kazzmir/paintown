@@ -377,7 +377,7 @@ public:
                 column += 1;
             }
         }
-        int context = 10;
+        int context = 15;
         int left = farthest - context;
         int right = farthest + context;
         if (left < 0){
@@ -414,6 +414,24 @@ public:
             out << " ";
         }
         out << "^" << std::endl;
+        out << "Last successful rule trace" << std::endl;
+        out << makeBacktrace() << std::endl;
+        return out.str();
+    }
+
+    std::string makeBacktrace(){
+        std::ostringstream out;
+
+        bool first = true;
+        for (std::vector<std::string>::iterator it = last_trace.begin(); it != last_trace.end(); it++){
+            if (!first){
+                out << " -> ";
+            } else {
+                first = false;
+            }
+            out << *it;
+        }
+
         return out.str();
     }
 
@@ -427,7 +445,16 @@ public:
     void update(const int position){
         if (position > farthest){
             farthest = position;
+            last_trace = rule_backtrace;
         }
+    }
+
+    void push_rule(const char * name){
+        rule_backtrace.push_back(name);
+    }
+
+    void pop_rule(){
+        rule_backtrace.pop_back();
     }
 
     ~Stream(){
@@ -441,12 +468,26 @@ public:
 private:
     char * temp;
     const char * buffer;
-    // std::map<const int, Column> memo;
     Column ** memo;
     int memo_size;
-    // std::vector<Column> memo;
     int max;
     int farthest;
+    std::vector<std::string> rule_backtrace;
+    std::vector<std::string> last_trace;
+};
+
+class RuleTrace{
+public:
+    RuleTrace(Stream & stream, const char * name):
+    stream(stream){
+        stream.push_rule(name);
+    }
+
+    ~RuleTrace(){
+        stream.pop_rule();
+    }
+
+    Stream & stream;
 };
 
 static inline bool compareChar(const char a, const char b){
@@ -2321,6 +2362,7 @@ return %s;
         data = """
 Result rule_%s(Stream & %s, const int %s%s%s){
     %s
+    RuleTrace %s(%s, "%s");
     int %s = %s;
     %s
     %s
@@ -2329,7 +2371,7 @@ Result rule_%s(Stream & %s, const int %s%s%s){
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar, do_memo)), fail_code)
+        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), gensym("trace"), stream, self.name, my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar, do_memo)), fail_code)
 
         return data
 
@@ -2565,6 +2607,7 @@ namespace %s{
 
 #include <list>
 #include <string>
+#include <vector>
 #include <map>
 #include <fstream>
 #include <sstream>
