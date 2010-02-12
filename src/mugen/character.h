@@ -104,28 +104,24 @@ namespace AttackType{
     };
 }
 
-namespace WinGame{
+struct WinGame{
     enum WinType{
         Normal,
-        NormalPerfect,
         Special,
-        SpecialPerfect,
         Hyper,
-        HyperPerfect,
         NormalThrow,
-        NormalThrowPerfect,
         Cheese,
-        CheesePerfect,
         TimeOver,
-        TimeOverPerfect,
         Suicide,
-        SuicidePerfect,
         Teammate,
-        TeammatePerfect,
         /* Overlayed */
         Perfect,
     };
-}
+
+    WinType type;
+    bool perfect;
+
+};
 
 namespace PhysicalAttack{
     extern std::string Normal;
@@ -1297,7 +1293,7 @@ public:
             return hitCount;
         }
 
-        virtual inline const std::vector<WinGame::WinType> & getWins() const {
+        virtual inline const std::vector<WinGame> & getWins() const {
             return wins;
         }
 
@@ -1305,7 +1301,7 @@ public:
             wins.clear();
         }
 
-        virtual void addWin(WinGame::WinType win);
+        virtual void addWin(WinGame win);
 
         virtual inline int getMatchWins() const {
             return matchWins;
@@ -1587,7 +1583,7 @@ protected:
         
         int hitCount;
 
-        std::vector<WinGame::WinType> wins;
+        std::vector<WinGame> wins;
 
         int matchWins;
 };

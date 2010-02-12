@@ -2990,7 +2990,7 @@ void Character::setUnhurtable(){
 void Character::setHurtable(){
 }
         
-void Character::addWin(WinGame::WinType win){
+void Character::addWin(WinGame win){
     wins.push_back(win);
 }
 
