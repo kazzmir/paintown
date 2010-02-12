@@ -182,7 +182,8 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false),
-gameHUD(0){
+gameHUD(0),
+gameOver(false){
 }
 
 MugenStage::MugenStage( const char * location ):
@@ -252,7 +253,8 @@ onLeftSide(0),
 onRightSide(0),
 inabove(0),
 loaded(false),
-gameHUD(0){
+gameHUD(0),
+gameOver(false){
 }
 
 MugenStage::~MugenStage(){

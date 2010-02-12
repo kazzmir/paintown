@@ -22,9 +22,9 @@ class Game {
 	virtual void run();
     private:
 	//! do arcade mode
-	void doArcade(const Bitmap &, CharacterSelect &);
+	void doArcade(const Bitmap &);
 	//! do versus mode
-	void doVersus(const Bitmap &, CharacterSelect &);
+	void doVersus(const Bitmap &);
 	
 	//! Game type
 	GameType type;

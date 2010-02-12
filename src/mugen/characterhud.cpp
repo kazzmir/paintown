@@ -16,8 +16,6 @@
 #include "ast/all.h"
 #include "parser/all.h"
 
-#include "mugen/match-exception.h"
-
 namespace PaintownUtil = ::Util;
 
 using namespace std;
@@ -942,7 +940,7 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
                     if (matchMaxDrawGames != -1){
                         // Exit match
                         if (totalDraws > matchMaxDrawGames){
-                            throw MatchException();
+                            stage.setMatchOver(true);
                         }
                         // Check current match and draws assign winner / loser info and exit match if needed
                     } if (matchWins != -1){
@@ -950,12 +948,12 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
                             player1.addMatchWin();
                             // Later on add lose information to other player
                             // Exit match
-                            throw MatchException();
+                            stage.setMatchOver(true);
                         } else if (player2.getWins().size() >= matchWins){
                             player2.addMatchWin();
                             // Same as above
                             // Exit match
-                            throw MatchException();
+                            stage.setMatchOver(true);
                         }
                     }
 		}

@@ -91,6 +91,16 @@ public:
 	// Add player2 people
 	virtual void addPlayer2( Object * o );
 
+        //! Set match
+        virtual void setMatchOver(bool over){
+            this->gameOver = over;
+        }
+        
+        //! Check match
+        virtual const bool isMatchOver() const {
+            return this->gameOver;
+        }
+
         virtual int currentZOffset() const;
 
         virtual void pause();

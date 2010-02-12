@@ -24,7 +24,6 @@
 #include "character-select.h"
 #include "storyboard.h"
 
-#include "mugen/match-exception.h"
 #include "mugen/config.h"
 
 namespace PaintownUtil = ::Util;
@@ -45,18 +44,14 @@ Game::~Game(){
 
 void Game::run(){
     Bitmap screen(GFX_X, GFX_Y);
-    Mugen::CharacterSelect select(systemFile,type);
-    select.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
-    select.setPlayer2Keys(Mugen::getPlayer2MenuKeys());
-    select.load();
     
     switch (type){
 	default:
 	case Arcade:
-	    doArcade(screen, select);
+	    doArcade(screen);
 	    break;
 	case Versus:
-	    doVersus(screen,select);
+	    doVersus(screen);
 	    break;
 	case TeamArcade:
 	    //select.run("Team Arcade" , 1, true, &screen);
@@ -120,7 +115,10 @@ static InputMap<Mugen::Command::Keys> getPlayer1InputLeft(){
 
 /* is there a reason why doArcade and doVersus don't share the main loop? */
 
-void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
+void Game::doArcade(const Bitmap & bmp){
+    Mugen::CharacterSelect select(systemFile,type);
+    select.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
+    select.load();
     select.run("Arcade", bmp);
     std::string intro;
     std::string ending;
@@ -217,11 +215,9 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 		while (runCounter > 1){
 		    InputManager::poll();
                     // Do stage logic catch match exception to handle the next match
-                    try{
-		        stage->logic();
-                    } catch (const MatchException & e){
-                        endMatch = true;
-                    }
+                    stage->logic();
+                    endMatch = stage->isMatchOver();
+
 		    runCounter -= 1;
 		    draw = true;
 
@@ -349,9 +345,13 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
     }
 }
 
-void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){
+void Game::doVersus(const Bitmap & bmp){
     bool quit = false;
     while(!quit){
+        Mugen::CharacterSelect select(systemFile,type);
+        select.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
+        select.setPlayer2Keys(Mugen::getPlayer2MenuKeys());
+        select.load();
 	select.run("Versus Mode", bmp);
 	select.renderVersusScreen(bmp);
 	select.getPlayer1()->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
@@ -371,7 +371,9 @@ void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){
 	// Lets reset the stage for good measure
 	stage->reset();
 
-	while( !quit ){
+        bool endMatch = false;
+
+	while( !endMatch ){
 	    bool draw = false;
 
 	    if ( Global::speed_counter > 0 ){
@@ -379,6 +381,9 @@ void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){
 		while (runCounter > 1){
 		    InputManager::poll();
 		    stage->logic();
+                    if (stage->isMatchOver()){
+                        endMatch = true;
+                    }
 		    runCounter -= 1;
 		    draw = true;
 
@@ -401,6 +406,7 @@ void Game::doVersus(const Bitmap & bmp, CharacterSelect & select){
 		    }
 		    if (out[4]){
 			quit = true;
+                        endMatch = true;
 		    }
 		    if (gameSpeed < 0.1){
 			gameSpeed = 0.1;
