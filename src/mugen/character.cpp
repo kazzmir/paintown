@@ -1090,6 +1090,8 @@ void Character::initialize(){
     airjumpnum = 0;
     airjumpheight = 35;
 
+    matchWins = 0;
+
     combo = 0;
     nextCombo = 0;
 
@@ -2988,6 +2990,10 @@ void Character::setHurtable(){
         
 void Character::addWin(WinGame::WinType win){
     wins.push_back(win);
+}
+
+void Character::addMatchWin(){
+    matchWins += 1;
 }
 
 }

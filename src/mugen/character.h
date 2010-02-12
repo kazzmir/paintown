@@ -1294,6 +1294,12 @@ public:
 
         virtual void addWin(WinGame::WinType win);
 
+        virtual inline int getMatchWins() const {
+            return matchWins;
+        }
+
+        virtual void addMatchWin();
+
 protected:
     void initialize();
 
@@ -1567,6 +1573,8 @@ protected:
         int hitCount;
 
         std::vector<WinGame::WinType> wins;
+
+        int matchWins;
 };
 
 }
