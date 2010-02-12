@@ -7,6 +7,7 @@
 #include "mugen/util.h"
 #include "mugen/exception.h"
 #include "mugen/fadetool.h"
+#include "mugen/character.h"
 
 class Bitmap;
 class MugenSprite;
@@ -584,49 +585,50 @@ class Round{
         FightElement & getRoundElement();
         FightElement & getRoundSoundElement();
 	
-	// Current State
-	State state;
-	
-	// Current round
-	int currentRound;
-	
-	int matchWins;
-	int matchMaxDrawGames;
-	int startWaitTime;
-	
-	Mugen::Point position;
-	//! How long before displaying round
-	int roundDisplayTime;
-	FightElement defaultRound;
-        FightElement defaultRoundSound;
-	std::string defaultText;
-	//! Round Sounds
-        std::map< unsigned int, FightElement * > roundSounds;
-	//! Up to 9 only
-        std::map< unsigned int, FightElement * > rounds;
-	
-	//! How long before displaying Fight!
-	int fightDisplayTime;
-	FightElement fight;
-	FightElement fightSound;
-	
-	//! Time before handling off control to players
-	int controlTime;
-	
-	//! How long before display KO/DKO/TO
-	int KODisplayTime;
+		// Current State
+		State state;
+		
+		// Current round
+		int currentRound;
+		
+		int matchWins;
+		int matchMaxDrawGames;
+		int startWaitTime;
+		
+		Mugen::Point position;
+		//! How long before displaying round
+		int roundDisplayTime;
+		FightElement defaultRound;
+		FightElement defaultRoundSound;
+		std::string defaultText;
+		
+		//! Round Sounds
+		std::map< unsigned int, FightElement * > roundSounds;
+		//! Up to 9 only
+		std::map< unsigned int, FightElement * > rounds;
+		
+		//! How long before displaying Fight!
+		int fightDisplayTime;
+		FightElement fight;
+		FightElement fightSound;
+		
+		//! Time before handling off control to players
+		int controlTime;
+		
+		//! How long before display KO/DKO/TO
+		int KODisplayTime;
 
-	//! KO Component
+		//! KO Component
         FightElement KO;
-	FightElement KOSound;
-	
-        //! DKO Component
-	FightElement DKO;
-	FightElement DKOSound;
-	
-        //! TO Component
-	FightElement TO;
-	FightElement TOSound;
+		FightElement KOSound;
+		
+		//! DKO Component
+		FightElement DKO;
+		FightElement DKOSound;
+		
+			//! TO Component
+		FightElement TO;
+		FightElement TOSound;
 
         //! Slow time when KO'd
         int slowTime;
@@ -659,14 +661,83 @@ class Round{
         
         //! In the Round end states
         bool roundEnd;
-	//! In the show win state
-	bool winStateSet;
-	
-	//! ticker
-	int ticker;
+		
+		//! In the show win state
+		bool winStateSet;
+		
+		//! ticker
+		int ticker;
         
         // Fadebetween states
         Mugen::FadeTool fader;
+};
+
+class WinIcon{
+	public:
+	    WinIcon();
+	    virtual ~WinIcon();
+	    
+	    virtual void act(Mugen::Character &, Mugen::Character &);
+	    virtual void render(const Element::Layer &, const Bitmap &);
+		
+	    virtual inline void setPlayer1Position(int x, int y){
+		    this->player1Position.set(x,y);
+	    }
+	    
+	    virtual inline void setPlayer2Position(int x, int y){
+		    this->player2Position.set(x,y);
+	    }
+	    
+	    virtual inline void setPlayer1Offset(int x, int y){
+		    this->player1Offset.set(x,y);
+	    }
+	    
+	    virtual inline void setPlayer2Offset(int x, int y){
+		    this->player2Offset.set(x,y);
+	    }
+	    
+	    virtual inline FightElement & getPlayer1Counter(){
+		    return this->player1Counter;
+	    }
+	    
+	    virtual inline FightElement & getPlayer2Counter(){
+		    return this->player2Counter;
+	    }
+	    
+	    virtual FightElement &getPlayer1Win(const WinGame::WinType &);
+	    
+	    virtual FightElement &getPlayer2Win(const WinGame::WinType &);
+	    
+	    virtual inline void setUseIconUpTo(int number){
+		this->useIconUpTo = number;
+	    }
+		
+	private:
+	    //! Current characters
+	    Character * player1;
+	    Character * player2;
+	    
+	    //! Starting position for players
+	    Mugen::Point player1Position;
+	    Mugen::Point player2Position;
+	    
+	    //! Incremental Offset for each icon
+	    Mugen::Point player1Offset;
+	    Mugen::Point player2Offset;
+	    
+	    //! Counter font
+	    FightElement player1Counter;
+	    FightElement player2Counter;
+	    
+	    //! Win icons
+	    std::map<WinGame::WinType, FightElement *> player1Icons;
+	    
+	    //! Win icons
+	    std::map<WinGame::WinType, FightElement *> player2Icons;
+	    
+	    //! Use icons limit, once exceeded number will be printed
+	    unsigned int useIconUpTo;
+	    
 };
 
 /*! Player HUD *TODO Need to compensate for team stuff later */
@@ -676,7 +747,7 @@ class GameInfo{
 	virtual ~GameInfo();
 
         virtual void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
-        virtual void render(Element::Layer layer, const Bitmap &);
+        virtual void render(const Element::Layer &, const Bitmap &);
 
         virtual void reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
@@ -704,9 +775,12 @@ class GameInfo{
 	//! Round
 	Round roundControl;
 	
+	//! Win Icon
+	WinIcon winIconDisplay;
+	
 	Mugen::SpriteMap sprites;
-        std::map<int, MugenAnimation *> animations;
-        std::vector<MugenFont *> fonts;
+	std::map<int, MugenAnimation *> animations;
+	std::vector<MugenFont *> fonts;
 	Mugen::SoundMap sounds;
 };
 

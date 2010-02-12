@@ -877,6 +877,11 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    winStateSet = true;
 			    player1.changeState(stage,Mugen::Win,vec);
 			    // Add win to character
+			    if (KO.isDone()){
+				player1.addWin(WinGame::Normal);
+			    } else if (TO.isDone()){
+				player1.addWin(WinGame::TimeOver);
+			    }
                             if (player2.getHealth() > 0){
                                 player2.changeState(stage, Mugen::Lose, vec);
                             }
@@ -885,7 +890,12 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    winStateSet = true;
 			    player2.changeState(stage,Mugen::Win,vec);
 			    // Add win to character
-                            if (player1.getHealth() > 0){
+			    if (KO.isDone()){
+				player2.addWin(WinGame::Normal);
+			    } else if (TO.isDone()){
+				player2.addWin(WinGame::TimeOver);
+			    }
+			    if (player1.getHealth() > 0){
                                 player1.changeState(stage, Mugen::Lose, vec);
                             }
 			}
@@ -1083,6 +1093,82 @@ FightElement & Round::getRoundSoundElement(){
         }
     }   
     return defaultRoundSound;
+}
+
+WinIcon::WinIcon():
+useIconUpTo(0){
+}
+WinIcon::~WinIcon(){
+    for (std::map<WinGame::WinType, FightElement *>::iterator i =  player1Icons.begin(); i != player1Icons.end(); ++i){
+	if (i->second){
+	    delete i->second;
+	}
+    }
+    for (std::map<WinGame::WinType, FightElement *>::iterator i =  player2Icons.begin(); i != player2Icons.end(); ++i){
+	if (i->second){
+	    delete i->second;
+	}
+    }
+}
+void WinIcon::act(Character & p1, Character & p2){
+    player1 = &p1;
+    player2 = &p2;
+    for (std::map<WinGame::WinType, FightElement *>::iterator i =  player1Icons.begin(); i != player1Icons.end(); ++i){
+	if (i->second){
+	    i->second->act();
+	}
+    }
+    for (std::map<WinGame::WinType, FightElement *>::iterator i =  player2Icons.begin(); i != player2Icons.end(); ++i){
+	if (i->second){
+	    i->second->act();
+	}
+    }
+}
+void WinIcon::render(const Element::Layer & layer, const Bitmap &bmp){
+    if (player1->getWins().size() < useIconUpTo){
+	Mugen::Point position = player1Position;
+	for (std::vector<WinGame::WinType>::const_iterator i = player1->getWins().begin(); i != player1->getWins().end(); ++i){
+	    FightElement & element = getPlayer1Win(*i);
+	    element.render(layer, position.x, position.y, bmp);
+	    position.x += player1Offset.x;
+	    position.y += player1Offset.y;
+	}
+    } else {
+	ostringstream str;
+	str << player1->getWins().size();
+	player1Counter.setText(str.str());
+	player1Counter.render(layer, player1Position.x, player1Position.y, bmp);
+    }
+    if (player2->getWins().size() < useIconUpTo){
+	Mugen::Point position = player1Position;
+	for (std::vector<WinGame::WinType>::const_iterator i = player2->getWins().begin(); i != player2->getWins().end(); ++i){
+	    FightElement & element = getPlayer2Win(*i);
+	    element.render(layer, position.x, position.y, bmp);
+	    position.x += player2Offset.x;
+	    position.y += player2Offset.y;
+	}
+    } else {
+	ostringstream str;
+	str << player2->getWins().size();
+	player2Counter.setText(str.str());
+	player2Counter.render(layer, player1Position.x, player1Position.y, bmp);
+    }
+}
+
+FightElement &WinIcon::getPlayer1Win(const WinGame::WinType &win){
+	std::map<WinGame::WinType, FightElement *>::iterator icon = player1Icons.find(win);
+	if (icon == player1Icons.end()){
+		player1Icons[win] = new FightElement();
+	}
+	return *player1Icons[win];
+}
+
+FightElement &WinIcon::getPlayer2Win(const WinGame::WinType &win){
+	std::map<WinGame::WinType, FightElement *>::iterator icon = player2Icons.find(win);
+	if (icon == player2Icons.end()){
+		player2Icons[win] = new FightElement();
+	}
+	return *player2Icons[win];
 }
 
 GameInfo::GameInfo(const std::string & fightFile){
@@ -1608,7 +1694,99 @@ GameInfo::GameInfo(const std::string & fightFile){
 
             // Set sound time
             roundControl.setRoundSoundTime(soundTime);
-        }
+        } else if (head == "WinIcon"){
+            class WinIconWalk: public Ast::Walker{
+            public:
+                WinIconWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                self(self),
+		sprites(sprites),
+                animations(animations),
+                fonts(fonts){
+                }
+                GameInfo & self;
+		Mugen::SpriteMap & sprites;
+                std::map<int,MugenAnimation *> & animations;
+                std::vector<MugenFont *> & fonts;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "p1.pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			self.winIconDisplay.setPlayer1Position(x,y);
+                    } else if (simple == "p2.pos"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			self.winIconDisplay.setPlayer2Position(x,y);
+                    } else if (simple == "p1.iconoffset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			self.winIconDisplay.setPlayer1Offset(x,y);
+                    } else if (simple == "p2.iconoffset"){
+			int x=0, y=0;
+			try{
+			    simple >> x >> y;
+			} catch (const Ast::Exception & e){
+			}
+			self.winIconDisplay.setPlayer2Offset(x,y);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.counter.")){
+			getElementProperties(simple,"p1","counter", self.winIconDisplay.getPlayer1Counter(),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.counter.")){
+			getElementProperties(simple,"p2","counter", self.winIconDisplay.getPlayer1Counter(),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.n.")){
+			getElementProperties(simple,"p1","n", self.winIconDisplay.getPlayer1Win(WinGame::Normal),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.n.")){
+			getElementProperties(simple,"p2","n", self.winIconDisplay.getPlayer2Win(WinGame::Normal),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.s.")){
+			getElementProperties(simple,"p1","s", self.winIconDisplay.getPlayer1Win(WinGame::Special),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.s.")){
+			getElementProperties(simple,"p2","s", self.winIconDisplay.getPlayer2Win(WinGame::Special),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.h.")){
+			getElementProperties(simple,"p1","h", self.winIconDisplay.getPlayer1Win(WinGame::Hyper),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.h.")){
+			getElementProperties(simple,"p2","h", self.winIconDisplay.getPlayer2Win(WinGame::Hyper),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.throw.")){
+			getElementProperties(simple,"p1","throw", self.winIconDisplay.getPlayer1Win(WinGame::NormalThrow),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.throw.")){
+			getElementProperties(simple,"p2","throw", self.winIconDisplay.getPlayer2Win(WinGame::NormalThrow),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.c.")){
+			getElementProperties(simple,"p1","c", self.winIconDisplay.getPlayer1Win(WinGame::Cheese),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.c.")){
+			getElementProperties(simple,"p2","c", self.winIconDisplay.getPlayer2Win(WinGame::Cheese),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.t.")){
+			getElementProperties(simple,"p1","t", self.winIconDisplay.getPlayer1Win(WinGame::TimeOver),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.t.")){
+			getElementProperties(simple,"p2","t", self.winIconDisplay.getPlayer2Win(WinGame::TimeOver),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.suicide.")){
+			getElementProperties(simple,"p1","suicide", self.winIconDisplay.getPlayer1Win(WinGame::Suicide),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.suicide.")){
+			getElementProperties(simple,"p2","suicide", self.winIconDisplay.getPlayer2Win(WinGame::Suicide),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.teammate.")){
+			getElementProperties(simple,"p1","teammate", self.winIconDisplay.getPlayer1Win(WinGame::Teammate),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.teammate.")){
+			getElementProperties(simple,"p2","teammate", self.winIconDisplay.getPlayer2Win(WinGame::Teammate),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.perfect.")){
+			getElementProperties(simple,"p1","perfect", self.winIconDisplay.getPlayer1Win(WinGame::Perfect),sprites,animations,fonts);
+                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.perfect.")){
+			getElementProperties(simple,"p2","perfect", self.winIconDisplay.getPlayer2Win(WinGame::Perfect),sprites,animations,fonts);
+                    } else if (simple == "useiconupto"){
+			int num;
+			simple >> num;
+			self.winIconDisplay.setUseIconUpTo(num);
+		    }
+                }
+            };
+
+            WinIconWalk walk(*this,sprites,animations,fonts);
+            section->walk(walk);
+        } 
     }
 }
 
@@ -1657,6 +1835,7 @@ void GameInfo::act(MugenStage & stage, Mugen::Character & player1, Mugen::Charac
     team1Combo.act(player1);
     team2Combo.act(player2);
     roundControl.act(stage, player1, player2);
+    winIconDisplay.act(player1, player2);
     if (roundControl.getState() == Round::PlayingGame){
 	if (!timer.isStarted()){
 	    timer.reset();
@@ -1673,7 +1852,7 @@ void GameInfo::act(MugenStage & stage, Mugen::Character & player1, Mugen::Charac
     }
 }
 
-void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
+void GameInfo::render(const Element::Layer & layer, const Bitmap &bmp){
     player1LifeBar.render(layer,bmp);
 
     // Program received signal SIGFPE, Arithmetic exception.
@@ -1688,6 +1867,7 @@ void GameInfo::render(Element::Layer layer, const Bitmap &bmp){
     team1Combo.render(layer,bmp);
     team2Combo.render(layer,bmp);
     roundControl.render(layer,bmp);
+    winIconDisplay.render(layer,bmp);
 }
 
 void GameInfo::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
