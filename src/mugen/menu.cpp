@@ -392,17 +392,18 @@ void MugenMenu::run(){
     fader.setState(Mugen::FadeTool::FadeIn);
     
     // Keys
-    InputMap<Mugen::Keys> input = Mugen::getPlayer1MenuKeys();
+    InputMap<Mugen::Keys> player1Input = Mugen::getPlayer1Keys(20);
+    InputMap<Mugen::Keys> player2Input = Mugen::getPlayer2Keys(20);
   
     // Do we have logos or intros?
     // Logo run it no repeat
     if (logo){
-        logo->setInput(input);
+        logo->setInput(player1Input);
 	logo->run( *work,false);
     }
     // Intro run it no repeat
     if (intro){
-        intro->setInput(input);
+        intro->setInput(player1Input);
 	intro->run( *work,false);
     }
   
@@ -426,7 +427,7 @@ void MugenMenu::run(){
 		    ticker++;
 		    runCounter -= 1;
 		    // Keys
-		    InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
+		    InputMap<Mugen::Keys>::Output out = InputManager::getMap(player1Input);
 		    
 		    if (fader.getState() == Mugen::FadeTool::NoFade){
 			if ( out[Mugen::Up]){	
@@ -485,7 +486,7 @@ void MugenMenu::run(){
 			    // Set the fade state
 			    fader.setState(Mugen::FadeTool::FadeOut);
 			    (*selectedOption)->setState(MenuOption::Deselected);
-                            InputManager::waitForRelease(input, Mugen::Esc);
+                            InputManager::waitForRelease(player1Input, Mugen::Esc);
                             if (sounds[cancelSound.x][cancelSound.y] != 0){
                                 sounds[cancelSound.x][cancelSound.y]->play();
                             }

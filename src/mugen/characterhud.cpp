@@ -885,12 +885,16 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    // Add win to character
 			    if (overByKO){
                                 if (player1.getHealth() == player1.getMaxHealth()){
-                                    player1.addWin(WinGame::Perfect);
+                                    player1.addWin(WinGame::NormalPerfect);
                                 } else {
                                     player1.addWin(WinGame::Normal);
                                 }
 			    } else {
-				player1.addWin(WinGame::TimeOver);
+				if (player1.getHealth() == player1.getMaxHealth()){
+                                    player1.addWin(WinGame::TimeOverPerfect);
+                                } else {
+                                    player1.addWin(WinGame::TimeOver);
+                                }
 			    }
                             if (player2.getHealth() > 0){
                                 player2.changeState(stage, Mugen::Lose, vec);
@@ -902,12 +906,16 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    // Add win to character
 			    if (overByKO){
 				if (player2.getHealth() == player2.getMaxHealth()){
-                                    player2.addWin(WinGame::Perfect);
+                                    player2.addWin(WinGame::NormalPerfect);
                                 } else {
                                     player2.addWin(WinGame::Normal);
                                 }
 			    } else {
-				player2.addWin(WinGame::TimeOver);
+				if (player2.getHealth() == player2.getMaxHealth()){
+                                    player2.addWin(WinGame::TimeOverPerfect);
+                                } else {
+                                    player2.addWin(WinGame::TimeOver);
+                                }
 			    }
 			    if (player1.getHealth() > 0){
                                 player1.changeState(stage, Mugen::Lose, vec);
@@ -1167,11 +1175,92 @@ void WinIcon::render(const Element::Layer & layer, const Bitmap &bmp){
     if (player1->getWins().size() < useIconUpTo){
 	Mugen::Point position = player1Position;
 	for (std::vector<WinGame::WinType>::const_iterator i = player1->getWins().begin(); i != player1->getWins().end(); ++i){
-	    FightElement & element = getPlayer1Win(*i);
-	    element.render(layer, position.x, position.y, bmp);
-	    position.x += player1Offset.x;
-	    position.y += player1Offset.y;
-	}
+            const WinGame::WinType & type = *i;
+            switch (type){
+                case WinGame::Normal:
+                case WinGame::Special:
+                case WinGame::Hyper:
+                case WinGame::NormalThrow:
+                case WinGame::Cheese:
+                case WinGame::TimeOver:
+                case WinGame::Suicide:
+                case WinGame::Teammate:
+                    {
+                    FightElement & element = getPlayer1Win(type);
+	            element.render(layer, position.x, position.y, bmp);
+                    }
+	            break;
+                case WinGame::NormalPerfect:
+                    {
+                    FightElement & element = getPlayer1Win(WinGame::Normal);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer1Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::SpecialPerfect:
+                    {
+                    FightElement & element = getPlayer1Win(WinGame::Special);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer1Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::HyperPerfect:
+                    {
+                    FightElement & element = getPlayer1Win(WinGame::Hyper);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer1Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::NormalThrowPerfect:
+                    {
+                    FightElement & element = getPlayer1Win(WinGame::NormalThrow);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer1Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::CheesePerfect:
+                    {
+                    FightElement & element = getPlayer1Win(WinGame::CheesePerfect);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer1Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::TimeOverPerfect:
+                    {
+                    FightElement & element = getPlayer1Win(WinGame::TimeOver);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer1Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::SuicidePerfect:
+                    {
+                    FightElement & element = getPlayer1Win(WinGame::Suicide);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer1Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::TeammatePerfect:
+                    {
+                    FightElement & element = getPlayer1Win(WinGame::Teammate);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer1Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::Perfect:
+                default:
+                    break;
+            }
+            position.x += player1Offset.x;
+	    position.y += player1Offset.y;        
+        }
     } else {
 	ostringstream str;
 	str << player1->getWins().size();
@@ -1179,18 +1268,99 @@ void WinIcon::render(const Element::Layer & layer, const Bitmap &bmp){
 	player1Counter.render(layer, player1Position.x, player1Position.y, bmp);
     }
     if (player2->getWins().size() < useIconUpTo){
-	Mugen::Point position = player1Position;
+	Mugen::Point position = player2Position;
 	for (std::vector<WinGame::WinType>::const_iterator i = player2->getWins().begin(); i != player2->getWins().end(); ++i){
-	    FightElement & element = getPlayer2Win(*i);
-	    element.render(layer, position.x, position.y, bmp);
-	    position.x += player2Offset.x;
-	    position.y += player2Offset.y;
-	}
+            const WinGame::WinType & type = *i;
+            switch (type){
+                case WinGame::Normal:
+                case WinGame::Special:
+                case WinGame::Hyper:
+                case WinGame::NormalThrow:
+                case WinGame::Cheese:
+                case WinGame::TimeOver:
+                case WinGame::Suicide:
+                case WinGame::Teammate:
+                    {
+                    FightElement & element = getPlayer2Win(type);
+	            element.render(layer, position.x, position.y, bmp);
+                    }
+	            break;
+                case WinGame::NormalPerfect:
+                    {
+                    FightElement & element = getPlayer2Win(WinGame::Normal);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer2Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::SpecialPerfect:
+                    {
+                    FightElement & element = getPlayer2Win(WinGame::Special);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer2Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::HyperPerfect:
+                    {
+                    FightElement & element = getPlayer2Win(WinGame::Hyper);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer2Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::NormalThrowPerfect:
+                    {
+                    FightElement & element = getPlayer2Win(WinGame::NormalThrow);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer2Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::CheesePerfect:
+                    {
+                    FightElement & element = getPlayer2Win(WinGame::CheesePerfect);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer2Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::TimeOverPerfect:
+                    {
+                    FightElement & element = getPlayer2Win(WinGame::TimeOver);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer2Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::SuicidePerfect:
+                    {
+                    FightElement & element = getPlayer2Win(WinGame::Suicide);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer2Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::TeammatePerfect:
+                    {
+                    FightElement & element = getPlayer2Win(WinGame::Teammate);
+	            element.render(layer, position.x, position.y, bmp);
+                    FightElement & overlay = getPlayer2Win(WinGame::Perfect);
+                    overlay.render(layer, position.x, position.y, bmp);
+                    }
+                    break;
+                case WinGame::Perfect:
+                default:
+                    break;
+            }
+            position.x += player2Offset.x;
+	    position.y += player2Offset.y;        
+        }
     } else {
 	ostringstream str;
 	str << player2->getWins().size();
 	player2Counter.setText(str.str());
-	player2Counter.render(layer, player1Position.x, player1Position.y, bmp);
+	player2Counter.render(layer, player2Position.x, player2Position.y, bmp);
     }
 }
 

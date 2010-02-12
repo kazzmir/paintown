@@ -305,7 +305,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     Mugen::CharacterSelect selector("data/mugen/data/system.def", Mugen::Arcade);
     try {
 	selector.load();
-	selector.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
+	selector.setPlayer1Keys(Mugen::getPlayer1Keys());
 	selector.run("Test", Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
@@ -575,8 +575,8 @@ void doSelectScreen(const std::string &file){
     Mugen::CharacterSelect selector(file, Mugen::Versus);
     try {
 	selector.load();
-	selector.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
-	selector.setPlayer2Keys(Mugen::getPlayer2MenuKeys());
+	selector.setPlayer1Keys(Mugen::getPlayer1Keys());
+	selector.setPlayer2Keys(Mugen::getPlayer2Keys());
 	selector.run("Test", Bitmap::temporaryBitmap(640,480));
 	selector.renderVersusScreen(Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
@@ -983,7 +983,7 @@ int main( int argc, char ** argv ){
 	else if ( configLoaded == 4 ){
 	    try{
                 Mugen::Storyboard story(ourFile);
-		story.setInput(Mugen::getPlayer1MenuKeys());
+		story.setInput(Mugen::getPlayer1Keys());
 		// run it and repeat
 		Bitmap screen(640, 480);
 		story.run(screen, true);

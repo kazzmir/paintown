@@ -1882,7 +1882,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     int game_time = 100;
     
     // Set game keys temporary
-    InputMap<Mugen::Keys> gameInput = Mugen::getPlayer1MenuKeys();
+    InputMap<Mugen::Keys> gameInput = Mugen::getPlayer1Keys(20);
     
     while ( ! done && fader.getState() != Mugen::FadeTool::RunFade ){
     

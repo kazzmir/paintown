@@ -77,39 +77,23 @@ void Game::run(){
     }
 }
 
-
-static InputMap<Mugen::Command::Keys> getPlayer1InputRight(){
-    InputMap<Mugen::Command::Keys> input;
-    input.set(Keyboard::Key_UP, 0, false, Mugen::Command::Up);
-    input.set(Keyboard::Key_DOWN, 0, false, Mugen::Command::Down);
-    input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Command::Forward);
-    input.set(Keyboard::Key_LEFT, 0, false, Mugen::Command::Back);
-
-    input.set(Keyboard::Key_A, 0, false, Mugen::Command::A);
-    input.set(Keyboard::Key_S, 0, false, Mugen::Command::B);
-    input.set(Keyboard::Key_D, 0, false, Mugen::Command::C);
-    input.set(Keyboard::Key_Z, 0, false, Mugen::Command::X);
-    input.set(Keyboard::Key_X, 0, false, Mugen::Command::Y);
-    input.set(Keyboard::Key_C, 0, false, Mugen::Command::Z);
-    return input;
-}
-
 /* kind of dumb to just copy/paste the above. find a better solution */
-static InputMap<Mugen::Command::Keys> getPlayer1InputLeft(){
-    InputMap<Mugen::Command::Keys> input;
-    input.set(Keyboard::Key_UP, 0, false, Mugen::Command::Up);
-    input.set(Keyboard::Key_DOWN, 0, false, Mugen::Command::Down);
+static InputMap<Mugen::Keys> getPlayer1InputLeft(){
+    InputMap<Mugen::Keys> input;
+    input.set(Keyboard::Key_UP, 0, false, Mugen::Up);
+    input.set(Keyboard::Key_DOWN, 0, false, Mugen::Down);
+    input.set(Keyboard::Key_LEFT, 0, false, Mugen::Right);
+    input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Left);
 
-    /* these keys are flipped from ...InputRight */
-    input.set(Keyboard::Key_LEFT, 0, false, Mugen::Command::Forward);
-    input.set(Keyboard::Key_RIGHT, 0, false, Mugen::Command::Back);
-
-    input.set(Keyboard::Key_A, 0, false, Mugen::Command::A);
-    input.set(Keyboard::Key_S, 0, false, Mugen::Command::B);
-    input.set(Keyboard::Key_D, 0, false, Mugen::Command::C);
-    input.set(Keyboard::Key_Z, 0, false, Mugen::Command::X);
-    input.set(Keyboard::Key_X, 0, false, Mugen::Command::Y);
-    input.set(Keyboard::Key_C, 0, false, Mugen::Command::Z);
+    input.set(Keyboard::Key_A, 0, true, Mugen::A);
+    input.set(Keyboard::Key_S, 0, true, Mugen::B);
+    input.set(Keyboard::Key_D, 0, true, Mugen::C);
+    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
+    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
+    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
+    input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
     return input;
 }
 
@@ -117,7 +101,7 @@ static InputMap<Mugen::Command::Keys> getPlayer1InputLeft(){
 
 void Game::doArcade(const Bitmap & bmp){
     Mugen::CharacterSelect select(systemFile,type);
-    select.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
+    select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
     select.load();
     select.run("Arcade", bmp);
     std::string intro;
@@ -167,7 +151,7 @@ void Game::doArcade(const Bitmap & bmp){
     // Run intro before we begin game
     if (!intro.empty()){
 	Storyboard story(intro);
-	story.setInput(Mugen::getPlayer1MenuKeys());
+	story.setInput(Mugen::getPlayer1Keys(20));
 	story.run(bmp);
     }
     bool quit = false;
@@ -184,7 +168,7 @@ void Game::doArcade(const Bitmap & bmp){
 
     while (!quit){
 	select.renderVersusScreen(bmp);
-	select.getPlayer1()->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
+	select.getPlayer1()->setInput(getPlayer1Keys(), getPlayer1InputLeft());
 	MugenStage *stage = select.getStage();
 	InputMap<int> gameInput;
 	gameInput.set(Keyboard::Key_F1, 10, false, 0);
@@ -302,26 +286,26 @@ void Game::doArcade(const Bitmap & bmp){
                     if (defaultEndingEnabled){
                         if (!defaultEnding.empty()){
                             Storyboard story(defaultEnding);
-                            story.setInput(Mugen::getPlayer1MenuKeys());
+                            story.setInput(Mugen::getPlayer1Keys(20));
                             story.run(bmp);
                         }
                     }
                 } else if (defaultEndingEnabled && ending.empty()){
                     if (!defaultEnding.empty()){
                         Storyboard story(defaultEnding);
-                        story.setInput(Mugen::getPlayer1MenuKeys());
+                        story.setInput(Mugen::getPlayer1Keys(20));
                         story.run(bmp);
                     }
                 } else if (!ending.empty()){
 	            Storyboard story(ending);
-	            story.setInput(Mugen::getPlayer1MenuKeys());
+	            story.setInput(Mugen::getPlayer1Keys(20));
 	            story.run(bmp);
                 } 
                 if (creditsEnabled){                    
                     // credits
                     if (!credits.empty()){
                         Storyboard story(defaultEnding);
-                        story.setInput(Mugen::getPlayer1MenuKeys());
+                        story.setInput(Mugen::getPlayer1Keys(20));
                         story.run(bmp);
                     }
                 }
@@ -339,7 +323,7 @@ void Game::doArcade(const Bitmap & bmp){
     if (displayGameOver){
         if (!gameOver.empty()){
             Storyboard story(gameOver);
-            story.setInput(Mugen::getPlayer1MenuKeys());
+            story.setInput(Mugen::getPlayer1Keys(20));
             story.run(bmp);
         }
     }
@@ -349,12 +333,12 @@ void Game::doVersus(const Bitmap & bmp){
     bool quit = false;
     while(!quit){
         Mugen::CharacterSelect select(systemFile,type);
-        select.setPlayer1Keys(Mugen::getPlayer1MenuKeys());
-        select.setPlayer2Keys(Mugen::getPlayer2MenuKeys());
+        select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
+        select.setPlayer2Keys(Mugen::getPlayer2Keys());
         select.load();
 	select.run("Versus Mode", bmp);
 	select.renderVersusScreen(bmp);
-	select.getPlayer1()->setInput(getPlayer1InputRight(), getPlayer1InputLeft());
+	select.getPlayer1()->setInput(Mugen::getPlayer1Keys(), getPlayer1InputLeft());
 	MugenStage *stage = select.getStage();
 	InputMap<int> gameInput;
 	gameInput.set(Keyboard::Key_F1, 10, false, 0);

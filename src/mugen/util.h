@@ -173,44 +173,46 @@ enum Keys{
     Z,
     Start,
     Enter,
-    Esc
+    Esc,
 };
 
 /*! Player1 keys for menus including keyboard shortcuts */
-inline static InputMap<Mugen::Keys> getPlayer1MenuKeys(){
+inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     InputMap<Mugen::Keys> input;
-    input.set(Keyboard::Key_UP, 20, false, Mugen::Up);
-    input.set(Keyboard::Key_DOWN, 20, false, Mugen::Down);
-    input.set(Keyboard::Key_RIGHT, 20, false, Mugen::Right);
-    input.set(Keyboard::Key_LEFT, 20, false, Mugen::Left);
+    input.set(Keyboard::Key_UP, delay, false, Mugen::Up);
+    input.set(Keyboard::Key_DOWN, delay, false, Mugen::Down);
+    input.set(Keyboard::Key_RIGHT, delay, false, Mugen::Right);
+    input.set(Keyboard::Key_LEFT, delay, false, Mugen::Left);
 
-    input.set(Keyboard::Key_A, 0, true, Mugen::A);
-    input.set(Keyboard::Key_S, 0, true, Mugen::B);
-    input.set(Keyboard::Key_D, 0, true, Mugen::C);
-    input.set(Keyboard::Key_Z, 0, true, Mugen::X);
-    input.set(Keyboard::Key_X, 0, true, Mugen::Y);
-    input.set(Keyboard::Key_C, 0, true, Mugen::Z);
-    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
+    input.set(Keyboard::Key_A, 0, false, Mugen::A);
+    input.set(Keyboard::Key_S, 0, false, Mugen::B);
+    input.set(Keyboard::Key_D, 0, false, Mugen::C);
+    input.set(Keyboard::Key_Z, 0, false, Mugen::X);
+    input.set(Keyboard::Key_X, 0, false, Mugen::Y);
+    input.set(Keyboard::Key_C, 0, false, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, 0, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
     input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
     return input;
 }
 
 /*! Player2 keys for menus */
-inline static InputMap<Mugen::Keys> getPlayer2MenuKeys(){
+inline static InputMap<Mugen::Keys> getPlayer2Keys(int delay = 0){
     InputMap<Mugen::Keys> input;
-    input.set(Keyboard::Key_H, 20, false, Mugen::Up);
-    input.set(Keyboard::Key_Y, 20, false, Mugen::Down);
-    input.set(Keyboard::Key_J, 20, false, Mugen::Right);
-    input.set(Keyboard::Key_G, 20, false, Mugen::Left);
+    input.set(Keyboard::Key_H, delay, false, Mugen::Up);
+    input.set(Keyboard::Key_Y, delay, false, Mugen::Down);
+    input.set(Keyboard::Key_J, delay, false, Mugen::Right);
+    input.set(Keyboard::Key_G, delay, false, Mugen::Left);
 
-    input.set(Keyboard::Key_I, 0, true, Mugen::A);
-    input.set(Keyboard::Key_O, 0, true, Mugen::B);
-    input.set(Keyboard::Key_P, 0, true, Mugen::C);
-    input.set(Keyboard::Key_8, 0, true, Mugen::X);
-    input.set(Keyboard::Key_9, 0, true, Mugen::Y);
-    input.set(Keyboard::Key_0, 0, true, Mugen::Z);
-    input.set(Keyboard::Key_L, 0, true, Mugen::Start);
+    input.set(Keyboard::Key_I, 0, false, Mugen::A);
+    input.set(Keyboard::Key_O, 0, false, Mugen::B);
+    input.set(Keyboard::Key_P, 0, false, Mugen::C);
+    input.set(Keyboard::Key_8, 0, false, Mugen::X);
+    input.set(Keyboard::Key_9, 0, false, Mugen::Y);
+    input.set(Keyboard::Key_0, 0, false, Mugen::Z);
+    input.set(Keyboard::Key_L, 0, false, Mugen::Start);
+    input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
+    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
     return input;
 }
 

@@ -730,10 +730,10 @@ successTime(0),
 needRelease(0){
 }
 
-bool Command::handle(InputMap<Keys>::Output keys){
+bool Command::handle(InputMap<Mugen::Keys>::Output keys){
     class KeyWalker: public Ast::Walker{
     public:
-        KeyWalker(InputMap<Keys>::Output & keys, const InputMap<Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease):
+        KeyWalker(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease):
         ok(false),
         fail(false),
         holdKey(holdKey),
@@ -746,47 +746,49 @@ bool Command::handle(InputMap<Keys>::Output keys){
         bool ok;
         bool fail;
         int & holdKey;
-        InputMap<Keys>::Output & keys;
-        const InputMap<Keys>::Output & oldKeys;
+        InputMap<Mugen::Keys>::Output & keys;
+        const InputMap<Mugen::Keys>::Output & oldKeys;
         const Ast::Key *& holder;
         const Ast::Key *& needRelease;
 
         virtual void onKeySingle(const Ast::KeySingle & key){
             if (key == "a"){
-                ok = keys[A];
+                ok = keys[Mugen::A];
             } else if (key == "b"){
-                ok = keys[B];
+                ok = keys[Mugen::B];
             } else if (key == "c"){
-                ok = keys[C];
+                ok = keys[Mugen::C];
             } else if (key == "x"){
-                ok = keys[X];
+                ok = keys[Mugen::X];
             } else if (key == "y"){
-                ok = keys[Y];
+                ok = keys[Mugen::Y];
             } else if (key == "z"){
-                ok = keys[Z];
+                ok = keys[Mugen::Z];
             } else if (key == "B"){
-                ok = keys[Back];
+                ok = keys[Mugen::Left];
             } else if (key == "DB"){
-                ok = keys[Back] && keys[Down];
+                ok = keys[Mugen::Left] && keys[Mugen::Down];
             } else if (key == "D"){
-                ok = keys[Down];
+                ok = keys[Mugen::Down];
             } else if (key == "DF"){
-                ok = keys[Forward] && keys[Down];
+                ok = keys[Mugen::Right] && keys[Mugen::Down];
             } else if (key == "F"){
-                ok = keys[Forward];
+                ok = keys[Mugen::Right];
             } else if (key == "UF"){
-                ok = keys[Forward] && keys[Up];
+                ok = keys[Mugen::Right] && keys[Mugen::Up];
             } else if (key == "U"){
-                ok = keys[Up];
+                ok = keys[Mugen::Up];
             } else if (key == "UB"){
-                ok = keys[Back] && keys[Up];
+                ok = keys[Mugen::Left] && keys[Mugen::Up];
+            } else if (key == "start"){
+                ok = keys[Mugen::Start];
             }
             if (ok){
                 needRelease = &key;
             }
         }
 
-        bool sameKeys(const InputMap<Keys>::Output & map1, const InputMap<Keys>::Output & map2 ){
+        bool sameKeys(const InputMap<Mugen::Keys>::Output & map1, const InputMap<Mugen::Keys>::Output & map2 ){
             return map1 == map2;
         }
 
@@ -2634,7 +2636,7 @@ MugenAnimation * Character::getCurrentAnimation() const {
 }
 
 /* returns all the commands that are currently active */
-vector<string> Character::doInput(InputMap<Command::Keys>::Output output){
+vector<string> Character::doInput(InputMap<Mugen::Keys>::Output output){
     vector<string> out;
 
     // if (hasControl()){
@@ -2655,7 +2657,7 @@ bool Character::isPaused(){
     return hitState.shakeTime > 0;
 }
 
-InputMap<Command::Keys> & Character::getInput(){
+InputMap<Mugen::Keys> & Character::getInput(){
     if (getFacing() == Object::FACING_RIGHT){
         return inputLeft;
     }

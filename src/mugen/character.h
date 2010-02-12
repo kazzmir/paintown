@@ -12,6 +12,7 @@
 #include "network/network.h"
 #include "input/input-map.h"
 #include "mugen/animation.h"
+#include "mugen/util.h"
 
 namespace Ast{
     class KeyList;
@@ -106,14 +107,22 @@ namespace AttackType{
 namespace WinGame{
     enum WinType{
         Normal,
+        NormalPerfect,
         Special,
+        SpecialPerfect,
         Hyper,
+        HyperPerfect,
         NormalThrow,
+        NormalThrowPerfect,
         Cheese,
+        CheesePerfect,
         TimeOver,
+        TimeOverPerfect,
         Suicide,
+        SuicidePerfect,
         Teammate,
-        /* overlay? */
+        TeammatePerfect,
+        /* Overlayed */
         Perfect,
     };
 }
@@ -841,7 +850,7 @@ protected:
 class Command{
 public:
     Command(std::string name, Ast::KeyList * keys, int maxTime, int bufferTime);
-
+#if 0
     enum Keys{
         Down,
         Up,
@@ -854,12 +863,12 @@ public:
         B,
         C,
     };
-
+#endif 
     virtual inline std::string getName() const {
         return name;
     }
 
-    virtual bool handle(InputMap<Keys>::Output keys);
+    virtual bool handle(InputMap<Mugen::Keys>::Output keys);
 
     virtual ~Command();
 
@@ -871,7 +880,7 @@ protected:
     int ticks;
     int holdKey;
     std::vector<Ast::Key*>::const_iterator current;
-    InputMap<Keys>::Output oldKeys;
+    InputMap<Mugen::Keys>::Output oldKeys;
     const Ast::Key * holder;
     int successTime;
     const Ast::Key * needRelease;
@@ -915,7 +924,7 @@ public:
             return animations;
         }
 
-        virtual inline void setInput(const InputMap<Command::Keys> & inputLeft, const InputMap<Command::Keys> & inputRight){
+        virtual inline void setInput(const InputMap<Mugen::Keys> & inputLeft, const InputMap<Mugen::Keys> & inputRight){
             this->inputLeft = inputLeft;
             this->inputRight = inputRight;
         }
@@ -1324,7 +1333,7 @@ protected:
     virtual void setConstant(std::string name, const std::vector<double> & values);
     virtual void setConstant(std::string name, double value);
 
-    virtual std::vector<std::string> doInput(InputMap<Command::Keys>::Output output);
+    virtual std::vector<std::string> doInput(InputMap<Mugen::Keys>::Output output);
     virtual bool doStates(const MugenStage & stage, const std::vector<std::string> & active, int state);
 
     void resetJump(const MugenStage & stage, const std::vector<std::string> & inputs);
@@ -1334,7 +1343,7 @@ protected:
     virtual void parseState(Ast::Section * section);
     virtual void parseStateDefinition(Ast::Section * section);
 
-    InputMap<Command::Keys> & getInput();
+    InputMap<Mugen::Keys> & getInput();
 
 protected:
 
@@ -1543,8 +1552,8 @@ protected:
 	// Debug state
 	bool debug;
 
-        InputMap<Command::Keys> inputLeft;
-        InputMap<Command::Keys> inputRight;
+        InputMap<Mugen::Keys> inputLeft;
+        InputMap<Mugen::Keys> inputRight;
 
         double velocity_x, velocity_y;
 

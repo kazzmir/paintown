@@ -719,6 +719,7 @@ class WinIcon{
 	}
 		
     private:
+
         //! Current characters
 	Character * player1;
 	Character * player2;
