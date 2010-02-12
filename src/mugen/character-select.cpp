@@ -928,8 +928,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 			// Load player 2
 			player2.loadPlayer2();
 			// Load stage
-			stage->addp1(player1.getPlayer1());
-			stage->addp2(player2.getPlayer2());
+			stage->addPlayer1(player1.getPlayer1());
+			stage->addPlayer2(player2.getPlayer2());
 			stage->load();
 			Loader::stopLoading(loader);
 		    } catch (const MugenException & e){
@@ -1995,6 +1995,14 @@ bool CharacterSelect::setNextArcadeMatch(){
     }
     currentPlayer2 = characters.front();
     characters.pop();
+    if (currentStage){
+        delete currentStage;
+    }
+    if (currentPlayer2->hasRandomStage()){
+        currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
+    } else {
+        currentStage = new MugenStage(currentPlayer2->getStage());
+    }
     return true;
 }
 
@@ -2009,14 +2017,6 @@ bool CharacterSelect::checkPlayerData(){
 		currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
 		// Set initial player
 		setNextArcadeMatch();
-		if (currentStage){
-		    delete currentStage;
-		}
-		if (currentPlayer2->hasRandomStage()){
-		    currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
-		} else {
-		    currentStage = new MugenStage(currentPlayer2->getStage());
-		}
 		return true;
 	    }
 	    break;

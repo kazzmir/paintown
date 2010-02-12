@@ -24,6 +24,9 @@
 #include "character-select.h"
 #include "storyboard.h"
 
+#include "mugen/match-exception.h"
+#include "mugen/config.h"
+
 namespace PaintownUtil = ::Util;
 
 using namespace Mugen;
@@ -120,12 +123,47 @@ static InputMap<Mugen::Command::Keys> getPlayer1InputLeft(){
 void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
     select.run("Arcade", bmp);
     std::string intro;
-    std::string ending;  
+    std::string ending;
+    bool displayWinScreen = false;
+    bool continueScreenEnabled = false;
+    bool defaultEndingEnabled = false;
+    std::string defaultEnding;
+    bool gameOverEnabled = false;
+    std::string gameOver;
+    bool creditsEnabled = false;
+    std::string credits;
     try{
+        // get intro and ending for player
 	std::string file = Filesystem::find(select.getPlayer1Def());
 	std::string baseDir = Util::getFileDir(file);
 	intro = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","intro.storyboard"));
 	ending = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","ending.storyboard"));
+        
+        // Win screen if player has ending it will not show this
+        if (Util::probeDef(systemFile, "win screen", "enabled") == "1"){
+            displayWinScreen = true;
+        }
+
+        // Continue screen
+        if (Util::probeDef(systemFile, "continue screen", "enabled") == "1"){
+            continueScreenEnabled = true;
+        }
+        // Get Default ending
+        if (Util::probeDef(systemFile, "default ending", "enabled") == "1"){
+            defaultEndingEnabled = true;
+            defaultEnding = Mugen::Data::getInstance().getFileFromMotif(Util::probeDef(systemFile, "default ending", "storyboard"));
+        }
+        // Get Game Over
+        if (Util::probeDef(systemFile, "game over screen", "enabled") == "1"){
+            gameOverEnabled = true;
+            gameOver = Mugen::Data::getInstance().getFileFromMotif(Util::probeDef(systemFile, "game over screen", "storyboard"));
+        }
+        // Get credits
+        if (Util::probeDef(systemFile, "end credits", "enabled") == "1"){
+            gameOverEnabled = true;
+            credits = Mugen::Data::getInstance().getFileFromMotif(Util::probeDef(systemFile, "end credits", "storyboard"));
+        }
+
     } catch (const MugenException & e){
     }
     // Run intro before we begin game
@@ -139,6 +177,12 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
     int frames = 0;
     double fps = Global::TICS_PER_SECOND;
     bool show_fps = true;
+
+    // Total wins from player
+    int wins = 0;
+
+    // Display game over storyboard
+    bool displayGameOver = false;
 
     while (!quit){
 	select.renderVersusScreen(bmp);
@@ -159,7 +203,9 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 	// Lets reset the stage for good measure
 	stage->reset();
 
-	while (!quit){
+        bool endMatch = false;
+
+	while (!endMatch){
 	    bool draw = false;
 
 	    if (Global::speed_counter > 0){
@@ -170,7 +216,12 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 
 		while (runCounter > 1){
 		    InputManager::poll();
-		    stage->logic();
+                    // Do stage logic catch match exception to handle the next match
+                    try{
+		        stage->logic();
+                    } catch (const MatchException & e){
+                        endMatch = true;
+                    }
 		    runCounter -= 1;
 		    draw = true;
 
@@ -193,6 +244,7 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 		    }
 		    if (out[4]){
 			quit = true;
+                        endMatch = true;
 		    }
 		    if (gameSpeed < 0.1){
 			gameSpeed = 0.1;
@@ -239,7 +291,61 @@ void Game::doArcade(const Bitmap & bmp, CharacterSelect & select){
 	* Set next match and check if we have 
 	* completed the game to handle appropriately and other misc arcade stuff
 	*/
-	select.setNextArcadeMatch();
+        // Check players wins
+        if (select.getPlayer1()->getMatchWins() > wins){
+            wins = select.getPlayer1()->getMatchWins();
+            // Reset player for next match
+            select.getPlayer1()->resetPlayer();
+            // There is a win they may proceed
+            if (!select.setNextArcadeMatch()){
+                // Game is over and player has won display ending storyboard
+                if (displayWinScreen && ending.empty()){
+                    // Need to parse that and display it for now just ignore
+                    
+                    // Show Default ending if enabled
+                    if (defaultEndingEnabled){
+                        if (!defaultEnding.empty()){
+                            Storyboard story(defaultEnding);
+                            story.setInput(Mugen::getPlayer1MenuKeys());
+                            story.run(bmp);
+                        }
+                    }
+                } else if (defaultEndingEnabled && ending.empty()){
+                    if (!defaultEnding.empty()){
+                        Storyboard story(defaultEnding);
+                        story.setInput(Mugen::getPlayer1MenuKeys());
+                        story.run(bmp);
+                    }
+                } else if (!ending.empty()){
+	            Storyboard story(ending);
+	            story.setInput(Mugen::getPlayer1MenuKeys());
+	            story.run(bmp);
+                } 
+                if (creditsEnabled){                    
+                    // credits
+                    if (!credits.empty()){
+                        Storyboard story(defaultEnding);
+                        story.setInput(Mugen::getPlayer1MenuKeys());
+                        story.run(bmp);
+                    }
+                }
+                quit = displayGameOver = true;
+            }
+        } else {
+            // Player lost do continue screen if enabled for now just quit
+            if (continueScreenEnabled){
+            } else {
+            }
+            quit = displayGameOver = true;
+        }
+    }
+    // Show game over if ended through game otherwise just get out
+    if (displayGameOver){
+        if (!gameOver.empty()){
+            Storyboard story(gameOver);
+            story.setInput(Mugen::getPlayer1MenuKeys());
+            story.run(bmp);
+        }
     }
 }
 

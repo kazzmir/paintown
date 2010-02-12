@@ -16,6 +16,8 @@
 #include "ast/all.h"
 #include "parser/all.h"
 
+#include "mugen/match-exception.h"
+
 namespace PaintownUtil = ::Util;
 
 using namespace std;
@@ -708,6 +710,7 @@ void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
 Round::Round():
 state(WaitForIntro),
 currentRound(1),
+totalDraws(0),
 matchWins(0),
 matchMaxDrawGames(0),
 startWaitTime(0),
@@ -715,6 +718,7 @@ roundDisplayTime(0),
 fightDisplayTime(0),
 controlTime(0),
 KODisplayTime(0),
+overByKO(false),
 slowTime(0),
 overWaitTime(0),
 overHitTime(0),
@@ -855,6 +859,8 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    if (draw.notStarted()){
 				draw.play();
 				drawSound.play();
+                                // Increment draw for now, though I think this actually counts as win for both
+                                totalDraws++;
 			    }
 			}
 		    } else if (player1.getHealth() == player2.getHealth()){
@@ -868,6 +874,8 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    if (draw.notStarted()){
 			        draw.play();
 			        drawSound.play();
+                                // Increment draw
+                                totalDraws++;
 			    }
 		        }
 		    } else {
@@ -877,9 +885,13 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    winStateSet = true;
 			    player1.changeState(stage,Mugen::Win,vec);
 			    // Add win to character
-			    if (KO.isDone()){
-				player1.addWin(WinGame::Normal);
-			    } else if (TO.isDone()){
+			    if (overByKO){
+                                if (player1.getHealth() == player1.getMaxHealth()){
+                                    player1.addWin(WinGame::Perfect);
+                                } else {
+                                    player1.addWin(WinGame::Normal);
+                                }
+			    } else {
 				player1.addWin(WinGame::TimeOver);
 			    }
                             if (player2.getHealth() > 0){
@@ -890,9 +902,13 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    winStateSet = true;
 			    player2.changeState(stage,Mugen::Win,vec);
 			    // Add win to character
-			    if (KO.isDone()){
-				player2.addWin(WinGame::Normal);
-			    } else if (TO.isDone()){
+			    if (overByKO){
+				if (player2.getHealth() == player2.getMaxHealth()){
+                                    player2.addWin(WinGame::Perfect);
+                                } else {
+                                    player2.addWin(WinGame::Normal);
+                                }
+			    } else {
 				player2.addWin(WinGame::TimeOver);
 			    }
 			    if (player1.getHealth() > 0){
@@ -922,6 +938,26 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 		} else if (ticker >= overTime + fader.getFadeOutTime()) {
 		    currentRound++;
 		    stage.reset();
+                    // Lets check draws
+                    if (matchMaxDrawGames != -1){
+                        // Exit match
+                        if (totalDraws > matchMaxDrawGames){
+                            throw MatchException();
+                        }
+                        // Check current match and draws assign winner / loser info and exit match if needed
+                    } if (matchWins != -1){
+                        if (player1.getWins().size() >= matchWins){
+                            player1.addMatchWin();
+                            // Later on add lose information to other player
+                            // Exit match
+                            throw MatchException();
+                        } else if (player2.getWins().size() >= matchWins){
+                            player2.addMatchWin();
+                            // Same as above
+                            // Exit match
+                            throw MatchException();
+                        }
+                    }
 		}
             }
             break;
@@ -994,6 +1030,7 @@ void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Charact
     win2.reset();
     draw.reset();
     fader.setState(Mugen::FadeTool::FadeIn);
+    overByKO = false;
 }
 
 void Round::setState(const State & state, MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
@@ -1042,7 +1079,11 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 	    break;
 	case RoundOver:
 	    roundEnd = true;
+            overByKO = true;
 	    break;
+        case DoTimeOver:
+            overByKO = false;
+            break;
 	default:
 	    break;
     }
@@ -1531,7 +1572,13 @@ GameInfo::GameInfo(const std::string & fightFile){
                 int & soundTime;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "match.wins"){
+                        int wins;
+                        simple >> wins;
+                        self.roundControl.setMatchWins(wins);
 		    } else if (simple == "match.maxdrawgames"){
+                        int draws;
+                        simple >> draws;
+                        self.roundControl.setMatchMaxDrawGames(draws);
 		    } else if (simple == "start.waittime"){
 			int time = 0;
 			simple >> time;

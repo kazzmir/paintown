@@ -2996,4 +2996,10 @@ void Character::addMatchWin(){
     matchWins += 1;
 }
 
+void Character::resetPlayer(){
+    clearWins();
+    power = 0;
+    setHealth(getMaxHealth());
+}
+
 }

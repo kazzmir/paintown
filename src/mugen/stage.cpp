@@ -1121,7 +1121,7 @@ void MugenStage::reset(){
 }
 
 // Add player1 people
-void MugenStage::addp1( Object * o ){
+void MugenStage::addPlayer1( Object * o ){
     o->setAlliance(Player1Side);
     o->setX(p1startx);
     o->setY(p1starty);
@@ -1129,8 +1129,7 @@ void MugenStage::addp1( Object * o ){
     o->setFacing( Object::FACING_RIGHT );
     objects.push_back(o);
     players.push_back(o);
-    /* FIXME! */
-    // ((Mugen::Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
+
     playerInfo[o].oldx = o->getX();
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;
@@ -1143,16 +1142,16 @@ void MugenStage::addp1( Object * o ){
 }
 
 // Add player2 people
-void MugenStage::addp2( Object * o ){
+void MugenStage::addPlayer2( Object * o ){
     o->setAlliance(Player2Side);
     o->setX(p2startx);
     o->setY(p2starty);
     o->setZ(currentZOffset());
     o->setFacing( Object::FACING_LEFT );
+    std::vector<Object *>::iterator obj = objects.begin()+1;
     objects.push_back(o);
     players.push_back(o);
-    /* FIXME! */
-    // ((Mugen::Character *)o)->setJumpingYVelocity(DEFAULT_JUMP_VELOCITY);
+    
     playerInfo[o].oldx = o->getX();
     playerInfo[o].oldy = o->getY();
     playerInfo[o].leftTension = false;

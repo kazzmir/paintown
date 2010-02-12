@@ -1292,6 +1292,10 @@ public:
             return wins;
         }
 
+        virtual inline void clearWins(){
+            wins.clear();
+        }
+
         virtual void addWin(WinGame::WinType win);
 
         virtual inline int getMatchWins() const {
@@ -1299,6 +1303,8 @@ public:
         }
 
         virtual void addMatchWin();
+
+        virtual void resetPlayer();
 
 protected:
     void initialize();

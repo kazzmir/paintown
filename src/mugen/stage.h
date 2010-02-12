@@ -86,10 +86,10 @@ public:
 	void reset();
 	
 	// Add player1 people
-	virtual void addp1( Object * o );
+	virtual void addPlayer1( Object * o );
 	
 	// Add player2 people
-	virtual void addp2( Object * o );
+	virtual void addPlayer2( Object * o );
 
         virtual int currentZOffset() const;
 
