@@ -105,6 +105,9 @@ namespace AttackType{
 }
 
 struct WinGame{
+    /* TODO: add an explanation for each win type that describes how to
+     * achieve that state.
+     */
     enum WinType{
         Normal,
         Special,
@@ -115,8 +118,14 @@ struct WinGame{
         Suicide,
         Teammate,
         /* Overlayed */
+        /* is this needed now that the `perfect' bool exists? */
         Perfect,
     };
+
+    WinGame():
+    type(Normal),
+    perfect(false){
+    }
 
     WinType type;
     bool perfect;
