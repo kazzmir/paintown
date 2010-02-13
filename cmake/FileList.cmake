@@ -201,6 +201,7 @@ src/mugen/character-select.cpp
 src/mugen/config.cpp
 src/mugen/evaluator.cpp
 src/mugen/game.cpp
+src/mugen/command.cpp
 src/mugen/storyboard.cpp
 src/mugen/state.cpp
 src/mugen/animation.cpp
