@@ -199,12 +199,7 @@ class Escape : public Mugen::Option {
 	}
 };
 
-OptionOptions::OptionOptions(Token *token) throw (LoadException): 
-MenuOption(token, Event){
-    // notin
-}
-OptionOptions::OptionOptions( const std::string &name ) throw( LoadException ):
-MenuOption(0, Event){
+OptionOptions::OptionOptions( const std::string &name ) throw( LoadException ){
     if (name.empty()){
 	throw LoadException("No name given to Options");
     }
@@ -232,10 +227,7 @@ OptionOptions::~OptionOptions(){
     }
 }
 
-void OptionOptions::logic(){
-}
-
-void OptionOptions::run(bool &endGame){
+void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGame){
     std::string systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
     // Lets look for our def since some people think that all file systems are case insensitive
     std::string baseDir = Mugen::Util::getFileDir(systemFile);

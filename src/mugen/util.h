@@ -176,6 +176,14 @@ enum Keys{
     Esc,
 };
 
+/*! Player type */
+enum PlayerType{
+    Player1,
+    Player2,
+    CPU,
+    NoControl,
+};
+
 /*! Player1 keys for menus including keyboard shortcuts */
 inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     InputMap<Mugen::Keys> input;

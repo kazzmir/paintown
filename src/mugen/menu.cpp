@@ -65,6 +65,43 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+Mugen::ItemOption::ItemOption():
+MenuOption(0){
+}
+
+Mugen::ItemOption::~ItemOption(){
+}
+
+void Mugen::ItemOption::logic(){
+}
+void Mugen::ItemOption::run(bool &endGame){
+}
+namespace Mugen {
+class QuitOption : public ItemOption {
+    public:
+	QuitOption(const std::string & name){
+	    this->setText(name);
+	}
+	virtual ~QuitOption(){
+	}
+	void executeOption(const Mugen::PlayerType & player, bool & endGame){
+	    endGame = true;
+	}
+};
+
+class DummyOption : public ItemOption {
+    public:
+	DummyOption(const std::string & name){
+	    this->setText(name);
+	}
+	virtual ~DummyOption(){
+	}
+	void executeOption(const Mugen::PlayerType & player, bool & endGame){
+	
+	}
+};
+}
+
 MugenMenu::MugenMenu(const std::string &filename):
 optionLocation(0),
 location(filename),
@@ -248,57 +285,57 @@ void MugenMenu::loadData() throw (MugenException){
                         simple >> menu.fontSpacing.y;
 		    } else if (simple == "menu.itemname.arcade"){
                         try{
-                            menu.addOption(new Mugen::OptionArcade(simple.valueAsString()));
+                            menu.addMenuOption(new Mugen::OptionArcade(simple.valueAsString()));
                         } catch (const Ast::Exception & e){
                         }
                     } else if (simple == "menu.itemname.versus"){
                         try{
-                            menu.addOption(new MugenOptionVersus(simple.valueAsString()));
+                            menu.addMenuOption(new Mugen::OptionVersus(simple.valueAsString()));
                         } catch (const Ast::Exception & e){
                         }
 		   } else if (simple == "menu.itemname.teamarcade"){
                        try{
-                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.teamversus"){
                        try{
-                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.teamcoop"){
                        try{
-                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.survival"){
                        try{
-                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.survivalcoop"){
                        try{
-                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.training"){
                        try{
-                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.watch"){
                        try{
-                           menu.addOption(new OptionDummy(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.options"){
                        try{
-                           menu.addOption(new Mugen::OptionOptions(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::OptionOptions(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.exit"){
                        try{
-                           menu.addOption(new OptionQuit(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::QuitOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
                    } else if (simple == "menu.window.margins.x"){
@@ -380,13 +417,13 @@ void MugenMenu::run(){
     bool done = false;
     bool endGame = false;
     
-    if ( menuOptions.empty() ){
+    if ( options.empty() ){
 	    return;
     }
     
-    selectedOption = menuOptions.begin();
+    currentOption = options.begin();
     optionLocation = 0;
-    menuOptions.front()->setState(MenuOption::Selected);
+    options.front()->setState(MenuOption::Selected);
     
     // Set the fade state
     fader.setState(Mugen::FadeTool::FadeIn);
@@ -413,7 +450,7 @@ void MugenMenu::run(){
 	Global::second_counter = 0;
 	int game_time = 100;
     
-	while ( ! done && (*selectedOption)->getState() != MenuOption::Run && fader.getState() != Mugen::FadeTool::RunFade ){
+	while ( ! done && (*currentOption)->getState() != MenuOption::Run && fader.getState() != Mugen::FadeTool::RunFade ){
 
 	    bool draw = false;
 	    
@@ -431,49 +468,49 @@ void MugenMenu::run(){
 		    
 		    if (fader.getState() == Mugen::FadeTool::NoFade){
 			if ( out[Mugen::Up]){	
-			    (*selectedOption)->setState(MenuOption::Deselected);
-			    if ( selectedOption > menuOptions.begin() ){
-				    selectedOption--;
+			    (*currentOption)->setState(MenuOption::Deselected);
+			    if ( currentOption > options.begin() ){
+				    currentOption--;
 				    optionLocation--;
 			    } else { 
-				selectedOption = menuOptions.end() -1;
-				optionLocation = menuOptions.size() -1;
+				currentOption = options.end() -1;
+				optionLocation = options.size() -1;
 			    }
-			    (*selectedOption)->setState(MenuOption::Selected);
+			    (*currentOption)->setState(MenuOption::Selected);
 			    if (sounds[moveSound.x][moveSound.y] != 0){
                                 sounds[moveSound.x][moveSound.y]->play();
                             }
 			}
 
 			if (out[Mugen::Down]){
-			    (*selectedOption)->setState(MenuOption::Deselected);
-			    if ( selectedOption < menuOptions.begin()+menuOptions.size()-1 ){
-				    selectedOption++;
+			    (*currentOption)->setState(MenuOption::Deselected);
+			    if ( currentOption < options.begin()+options.size()-1 ){
+				    currentOption++;
 				    optionLocation++;
 			    } else {
-				selectedOption = menuOptions.begin();
+				currentOption = options.begin();
 				optionLocation = 0;
 			    }
-			    (*selectedOption)->setState(MenuOption::Selected);
+			    (*currentOption)->setState(MenuOption::Selected);
 			    if (sounds[moveSound.x][moveSound.y] != 0){
                                 sounds[moveSound.x][moveSound.y]->play();
                             }
 			}
 			
 			if (out[Mugen::Left]){
-			    if ( (*selectedOption)->leftKey()){
+			    if ( (*currentOption)->leftKey()){
 				/* ??? */
 			    }
 			}
 			
 			if (out[Mugen::Right]){
-			    if ( (*selectedOption)->rightKey()){
+			    if ( (*currentOption)->rightKey()){
 				/* ??? */
 			    }
 			}
 			
 			if ( out[Mugen::Enter] ){
-			    if((*selectedOption)->isRunnable())(*selectedOption)->setState( MenuOption::Run );
+			    if((*currentOption)->isRunnable())(*currentOption)->setState( MenuOption::Run );
 			    // Set the fade state
 			    fader.setState(Mugen::FadeTool::FadeOut);
                             if (sounds[doneSound.x][doneSound.y] != 0){
@@ -485,7 +522,7 @@ void MugenMenu::run(){
 			    endGame = done = true;
 			    // Set the fade state
 			    fader.setState(Mugen::FadeTool::FadeOut);
-			    (*selectedOption)->setState(MenuOption::Deselected);
+			    (*currentOption)->setState(MenuOption::Deselected);
                             InputManager::waitForRelease(player1Input, Mugen::Esc);
                             if (sounds[cancelSound.x][cancelSound.y] != 0){
                                 sounds[cancelSound.x][cancelSound.y]->play();
@@ -494,11 +531,6 @@ void MugenMenu::run(){
 		    }
 		    // Fader
 		    fader.act();
-		    
-		    // Options
-		    for( vector< MenuOption *>::iterator b = menuOptions.begin(); b != menuOptions.end(); ++b ){
-			    (*b)->logic();
-		    }
 		    
 		    // Backgrounds
 		    background->act();
@@ -519,13 +551,13 @@ void MugenMenu::run(){
 		// backgrounds
 		background->renderBackground(0,0,workArea);
 		// Draw any misc stuff in the background of the menu of selected object 
-		(*selectedOption)->drawBelow(work);
+		(*currentOption)->drawBelow(work);
 		// Draw text
 		renderText(&workArea);
 		// Foregrounds
 		background->renderForeground(0,0,workArea);
 		// Draw any misc stuff in the foreground of the menu of selected object 
-		(*selectedOption)->drawAbove(work);
+		(*currentOption)->drawAbove(work);
 		// Do fades
 		fader.draw(workArea);
 		// Finally render to screen
@@ -539,21 +571,28 @@ void MugenMenu::run(){
 	}
 	    
 	// do we got an option to run, lets do it
-	if ((*selectedOption)->getState() == MenuOption::Run){
+	if ((*currentOption)->getState() == MenuOption::Run){
 	    try{
-		(*selectedOption)->run(endGame);
+		(*currentOption)->executeOption(Mugen::Player1, endGame);
 	    } catch ( const ReturnException & re ){
 	    }
 	    // Reset it's state
-	    (*selectedOption)->setState(MenuOption::Selected);
+	    (*currentOption)->setState(MenuOption::Selected);
 	    fader.setState(Mugen::FadeTool::FadeIn);
 	}
 	if (endGame){
 	    // Deselect selected entry
-	    (*selectedOption)->setState(MenuOption::Deselected);
+	    (*currentOption)->setState(MenuOption::Deselected);
 	}
     }
     throw ReturnException();
+}
+
+void MugenMenu::addMenuOption(Mugen::ItemOption * option){
+    if (option){
+	option->setParent(this);
+	options.push_back(option);
+    }
 }
 
 void MugenMenu::copyBackground(Bitmap & copyTo){
@@ -593,8 +632,8 @@ void MugenMenu::renderText(Bitmap *bmp){
     int yplacement = position.y;
     int visibleCounter = 0;
     int offset = optionLocation >= windowVisibleItems ? optionLocation - windowVisibleItems + 1 : 0;
-    for( std::vector <MenuOption *>::iterator i = menuOptions.begin() + offset; i != menuOptions.end(); ++i){
-	MenuOption *option = *i;
+    for( std::vector <Mugen::ItemOption *>::iterator i = options.begin() + offset; i != options.end(); ++i){
+	Mugen::ItemOption *option = *i;
 	if (option->getState() == MenuOption::Selected){
 	    MugenFont *font = fonts[fontActive.index-1];
 	    if(showBoxCursor){

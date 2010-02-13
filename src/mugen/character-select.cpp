@@ -1040,7 +1040,7 @@ cancelSound(0),
 currentPlayer1(0),
 currentPlayer2(0),
 currentStage(0){
-    grid.setGameType(type);
+grid.setGameType(type);
     
     switch (type){
 	case Arcade:

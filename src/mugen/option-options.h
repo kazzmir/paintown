@@ -2,7 +2,7 @@
 #define _mugen_option_options_h
 
 #include "mugen/util.h"
-#include "menu/menu_option.h"
+#include "mugen/menu.h"
 #include "util/load_exception.h"
 
 #include <string>
@@ -40,18 +40,12 @@ class Option {
 };
 
 /*! Handles Mugen Options */
-class OptionOptions: public MenuOption {
+class OptionOptions: public ItemOption {
 public:
-    // Finally it has been selected, this is what shall run 
-    // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
-    
-    virtual void logic();
-    
-    OptionOptions(Token *token) throw (LoadException);
     OptionOptions(const std::string &name) throw (LoadException);
-
+    
     virtual ~OptionOptions();
+    void executeOption(const Mugen::PlayerType &, bool & endGame);
 
 private:
     

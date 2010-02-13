@@ -8,6 +8,7 @@
 #include "mugen/fadetool.h"
 
 #include "menu/menu.h"
+#include "menu/menu_option.h"
 
 #include "mugen/util.h"
 #include "return_exception.h"
@@ -30,6 +31,18 @@ namespace Mugen{
     class Character;
     class CharacterSelect;
     class Storyboard;
+    
+class ItemOption : public MenuOption {
+    public:
+	ItemOption();
+	virtual ~ItemOption();
+	
+	virtual void logic();
+	virtual void run(bool &endGame);
+	
+	virtual void executeOption(const Mugen::PlayerType &, bool & endGame)=0;
+};
+
 }
 
 class MugenStage;
@@ -63,6 +76,7 @@ class MugenMenu : public Menu {
         }
 	
     private:
+	void addMenuOption(Mugen::ItemOption * option);
 	// Option offset
 	int optionLocation;
 	
@@ -172,6 +186,11 @@ class MugenMenu : public Menu {
 	void renderText(Bitmap *bmp);
 
         std::string selectInfoFile;
+	
+	// Options
+	std::vector<Mugen::ItemOption *> options;
+	
+	std::vector<Mugen::ItemOption *>::iterator currentOption;
 };
 
 #endif
