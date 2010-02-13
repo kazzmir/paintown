@@ -1,7 +1,7 @@
 .PHONY: all doc static quiet clean win nsis count test
 
 all:
-	@scons -j `python misc/cores.py` || scons || echo "Get scons at www.scons.org or read the README for compilation instructions"
+	@scons -j `python misc/cores.py` || echo "Get scons at www.scons.org or read the README for compilation instructions"
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 
 test:

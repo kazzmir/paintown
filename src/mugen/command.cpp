@@ -96,24 +96,84 @@ protected:
     Keys key;
 };
 
+class CompiledKeyCombined: public CompiledKey {
+public:
+    CompiledKeyCombined(const CompiledKey * key1, const CompiledKey * key2){
+    }
+
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+        int fake = -1;
+        bool ok = key1->pressed(keys, oldKeys, fake, holder, needRelease) &&
+                  key2->pressed(keys, oldKeys, fake, holder, needRelease);
+        if (ok){
+            needRelease = this;
+        }
+        return ok;
+    }
+
+    virtual ~CompiledKeyCombined(){
+        delete key1;
+        delete key2;
+    }
+
+protected:
+    CompiledKey * key1;
+    CompiledKey * key2;
+};
+
 Command::Exception::Exception(){
 }
 
 Command::Exception::~Exception() throw () {
 }
 
-static vector<CompiledKey*> compile(Ast::KeyList * keys){
+static CompiledKey* compile(const Ast::Key * key){
     class Walker: public Ast::Walker {
     public:
-        Walker(){
+        Walker():
+        key(NULL){
         }
 
-        vector<CompiledKey*> keys;
+        CompiledKey* key;
+
+        CompiledKey* compile(const Ast::KeySingle & key){
+            return new CompiledKeySingle(key);
+        }
+        
+        CompiledKey* compile(const Ast::KeyModifier & key){
+            return NULL;
+        }
+        
+        CompiledKey* compile(const Ast::KeyCombined & key){
+            return new CompiledKeyCombined(Mugen::compile(key.getKey1()), Mugen::compile(key.getKey2()));
+        }
+
+        virtual void onKeySingle(const Ast::KeySingle & key){
+            this->key = compile(key);
+        }
+        
+        virtual void onKeyModifier(const Ast::KeyModifier & key){
+            this->key = compile(key);
+        }
+        
+        virtual void onKeyCombined(const Ast::KeyCombined & key){
+            this->key = compile(key);
+        }
     };
 
     Walker walk;
-    keys->walk(walk);
-    return walk.keys;
+    key->walk(walk);
+    return walk.key;
+}
+
+static vector<CompiledKey*> compile(Ast::KeyList * keys){
+    vector<CompiledKey*> compiled;
+
+    for (vector<Ast::Key*>::const_iterator it = keys->getKeys().begin(); it != keys->getKeys().end(); it++){
+        compiled.push_back(compile(*it));
+    }
+    
+    return compiled;
 }
 
 Command::Command(string name, Ast::KeyList * keys, int maxTime, int bufferTime):
