@@ -1,2 +1,30 @@
-3.4
+3.3
 ---
+
+Paintown Engine:
+
+Paintown Menus:
+    - Added Animations
+    - Added Tabbed Menus
+    - Clean ups removing most things from global space ie:
+	-　Removed option info box from global space and made it part of menu.
+    - Made menu info and option info default to specific locations
+    - Added static doDialog to Box
+    - Use return exception in menus
+    - 
+
+Paintown Utilities:
+
+Mugen Engine:
+    - Implemented base file readers for Mugen
+    - Created necessary classes to handle the Engine:
+	- Fonts
+	- Sprites
+	- Animations
+	- Sounds
+	- Backgrounds
+	- Menus
+	- Utils
+	- Characters
+	- Game
+	- Parser
