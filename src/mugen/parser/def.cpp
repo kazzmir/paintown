@@ -2557,7 +2557,7 @@ Result rule_section_line(Stream & stream, const int position, Value section){
         
         
         
-        result_peg_965 = rule_valuelist(stream, result_peg_965.getPosition());
+        result_peg_965 = rule_loopstart(stream, result_peg_965.getPosition());
             if (result_peg_965.error()){
                 goto out_peg_983;
             }
@@ -2630,7 +2630,7 @@ Result rule_section_line(Stream & stream, const int position, Value section){
         
         
         
-        result_peg_985 = rule_loopstart(stream, result_peg_985.getPosition());
+        result_peg_985 = rule_valuelist(stream, result_peg_985.getPosition());
             if (result_peg_985.error()){
                 goto out_peg_1003;
             }

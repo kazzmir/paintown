@@ -228,8 +228,8 @@ rules:
 	section = section_start ast:{{value = makeSection($1); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
     section_line(section) = s comment
                           | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
-                          | s data:valuelist {{ asSection(section)->addValue(asValue(data)); }}
                           | s data:loopstart {{ asSection(section)->addValue(asValue(data)); }}
+                          | s data:valuelist {{ asSection(section)->addValue(asValue(data)); }}
                           | space+ !"["
     section_start = "[" s data:(!"]" .)+ s "]" {{ value = toString(data); }}
 	loopstart = "loopstart"{case} {{ value = makeValue(); }}
