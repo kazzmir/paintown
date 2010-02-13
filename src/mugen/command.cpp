@@ -5,6 +5,13 @@ using namespace std;
 
 namespace Mugen{
 
+
+Command::Exception::Exception(){
+}
+
+Command::Exception::~Exception() throw () {
+}
+
 Command::Command(string name, Ast::KeyList * keys, int maxTime, int bufferTime):
 name(name),
 keys(keys),
@@ -18,12 +25,11 @@ successTime(0),
 needRelease(0){
 }
 
-bool Command::handle(InputMap<Mugen::Keys>::Output keys){
+bool Command::interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease){
     class KeyWalker: public Ast::Walker{
     public:
         KeyWalker(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease):
         ok(false),
-        fail(false),
         holdKey(holdKey),
         keys(keys),
         oldKeys(keys),
@@ -32,7 +38,6 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
         }
         
         bool ok;
-        bool fail;
         int & holdKey;
         InputMap<Mugen::Keys>::Output & keys;
         const InputMap<Mugen::Keys>::Output & oldKeys;
@@ -100,7 +105,7 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
                             if (walker.ok){
                                 holdKey -= 1;
                             } else {
-                                fail = true;
+                                throw Exception();
                             }
                         } else if (holdKey == 0){
                             int fake = -1;
@@ -132,7 +137,7 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
                     key.getKey()->walk(*this);
                     if (!ok){
                         if (!sameKeys(keys, oldKeys)){
-                            fail = true;
+                            throw Exception();
                         }
                     }
                     break;
@@ -152,6 +157,14 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
             }
         }
     };
+
+    KeyWalker walker(keys, oldKeys, holdKey, holder, needRelease);
+    key->walk(walker);
+
+    return walker.ok;
+}
+
+bool Command::handle(InputMap<Mugen::Keys>::Output keys){
     
     if (successTime > 0){
         successTime -= 1;
@@ -162,16 +175,24 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
     bool use = true;
     if (needRelease != NULL && *needRelease == *(*current)){
         const Ast::Key * fake;
-        KeyWalker walker(keys, oldKeys, holdKey, holder, fake);
-        needRelease->walk(walker);
-        Global::debug(1) << "Waiting for key " << needRelease->toString() << " to be released: " << walker.ok << endl;
+        try{
+            bool ok = interpret(needRelease, keys, oldKeys, holdKey, holder, fake);
 
-        if (walker.ok){
-            /* if the key is still held down then don't continue */
-            use = false;
-        } else {
-            /* otherwise the key is released so reset the release key */
-            needRelease = NULL;
+            /*
+               KeyWalker walker(keys, oldKeys, holdKey, holder, fake);
+               needRelease->walk(walker);
+               */
+            Global::debug(1) << "Waiting for key " << needRelease->toString() << " to be released: " << ok << endl;
+
+            if (ok){
+                /* if the key is still held down then don't continue */
+                use = false;
+            } else {
+                /* otherwise the key is released so reset the release key */
+                needRelease = NULL;
+            }
+        } catch (const Exception & ce){
+            /* what to do here/ */
         }
     } else {
         needRelease = NULL;
@@ -181,20 +202,32 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
     bool ok = false;
 
     if (use){
+        /*
         KeyWalker walker(keys, oldKeys, holdKey, holder, needRelease);
         (*current)->walk(walker);
+        */
+        try{
+            ok = interpret(*current, keys, oldKeys, holdKey, holder, needRelease);
+        } catch (const Exception & ce){
+            fail = true;
+        }
 
-        ok = walker.ok;
-        fail = walker.fail;
         /*
         if (name == "a"){
             Global::debug(0) << "Tried move " << (*current)->toString() << " was " << ok << endl;
         }
         */
         if (holder != 0){
+            try{
+                ok &= interpret(holder, keys, oldKeys, holdKey, holder, needRelease);
+            } catch (const Exception & e){
+                fail = true;
+            }
+            /*
             holder->walk(walker);
             ok &= walker.ok;
             fail |= walker.fail;
+            */
         }
     }
 

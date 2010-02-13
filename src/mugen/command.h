@@ -15,6 +15,13 @@ namespace Mugen{
 class Command{
 public:
     Command(std::string name, Ast::KeyList * keys, int maxTime, int bufferTime);
+
+    class Exception: public MugenException {
+    public:
+        Exception();
+        virtual ~Exception() throw ();
+    };
+
 #if 0
     enum Keys{
         Down,
@@ -36,6 +43,10 @@ public:
     virtual bool handle(InputMap<Mugen::Keys>::Output keys);
 
     virtual ~Command();
+
+protected:
+
+    bool interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease);
 
 protected:
     std::string name;
