@@ -3,6 +3,8 @@
 #include "mugen/game.h"
 #include "mugen/menu.h"
 
+#include "mugen/config.h"
+
 using namespace std;
 using namespace Mugen;
 
@@ -18,7 +20,7 @@ OptionVersus::~OptionVersus(){
 }
 
 void OptionVersus::executeOption(const Mugen::PlayerType & player, bool &endGame){
-    /* an ugly way to get the select info file */
-    Mugen::Game versus(Mugen::Versus, ((MugenMenu*) getParent())->getSelectInfoFile());
+    /* Get motif system.def */
+    Mugen::Game versus(player, Mugen::Versus, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));;
     versus.run();
 }

@@ -33,8 +33,9 @@ using namespace Mugen;
 const int DEFAULT_WIDTH = 320;
 const int DEFAULT_HEIGHT = 240;
 
-Game::Game(GameType type, const std::string & systemFile):
-type(type),
+Game::Game(const PlayerType & playerType, const GameType & gameType, const std::string & systemFile):
+playerType(playerType),
+gameType(gameType),
 systemFile(systemFile),
 motifDirectory(Util::getFileDir(systemFile)){
 }
@@ -45,7 +46,7 @@ Game::~Game(){
 void Game::run(){
     Bitmap screen(GFX_X, GFX_Y);
     
-    switch (type){
+    switch (gameType){
 	default:
 	case Arcade:
 	    doArcade(screen);
@@ -96,12 +97,31 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
     return input;
 }
+static InputMap<Mugen::Keys> getPlayer2InputLeft(){
+    InputMap<Mugen::Keys> input;
+    input.set(Keyboard::Key_H, 0, false, Mugen::Up);
+    input.set(Keyboard::Key_Y, 0, false, Mugen::Down);
+    input.set(Keyboard::Key_G, 0, false, Mugen::Right);
+    input.set(Keyboard::Key_J, 0, false, Mugen::Left);
+
+    input.set(Keyboard::Key_I, 0, false, Mugen::A);
+    input.set(Keyboard::Key_O, 0, false, Mugen::B);
+    input.set(Keyboard::Key_P, 0, false, Mugen::C);
+    input.set(Keyboard::Key_8, 0, false, Mugen::X);
+    input.set(Keyboard::Key_9, 0, false, Mugen::Y);
+    input.set(Keyboard::Key_0, 0, false, Mugen::Z);
+    input.set(Keyboard::Key_L, 0, false, Mugen::Start);
+    input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
+    input.set(Keyboard::Key_K, 0, true, Mugen::Enter);
+    return input;
+}
 
 /* is there a reason why doArcade and doVersus don't share the main loop? */
 
 void Game::doArcade(const Bitmap & bmp){
-    Mugen::CharacterSelect select(systemFile,type);
+    Mugen::CharacterSelect select(systemFile, playerType, gameType);
     select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
+    select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
     select.load();
     select.run("Arcade", bmp);
     std::string intro;
@@ -148,10 +168,18 @@ void Game::doArcade(const Bitmap & bmp){
 
     } catch (const MugenException & e){
     }
+    InputMap<Mugen::Keys> input;
+    // Get player keys
+    if (playerType == Mugen::Player1){
+	input = Mugen::getPlayer1Keys(20);
+    } else if (playerType == Mugen::Player2){
+	input = Mugen::getPlayer2Keys(20);
+    }
+	
     // Run intro before we begin game
     if (!intro.empty()){
 	Storyboard story(intro);
-	story.setInput(Mugen::getPlayer1Keys(20));
+	story.setInput(input);
 	story.run(bmp);
     }
     bool quit = false;
@@ -165,10 +193,18 @@ void Game::doArcade(const Bitmap & bmp){
 
     // Display game over storyboard
     bool displayGameOver = false;
-
+    
     while (!quit){
 	select.renderVersusScreen(bmp);
-	select.getPlayer1()->setInput(getPlayer1Keys(), getPlayer1InputLeft());
+	
+	Mugen::Character * player = 0;
+	if (playerType == Mugen::Player1){
+	    player = select.getPlayer1();
+	    player->setInput(getPlayer1Keys(), getPlayer1InputLeft());
+	} else if (playerType == Mugen::Player2){
+	    player = select.getPlayer2();
+	    player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
+	}
 	MugenStage *stage = select.getStage();
 	InputMap<int> gameInput;
 	gameInput.set(Keyboard::Key_F1, 10, false, 0);
@@ -272,10 +308,10 @@ void Game::doArcade(const Bitmap & bmp){
 	* completed the game to handle appropriately and other misc arcade stuff
 	*/
         // Check players wins
-        if (select.getPlayer1()->getMatchWins() > wins){
-            wins = select.getPlayer1()->getMatchWins();
+        if (player->getMatchWins() > wins){
+            wins = player->getMatchWins();
             // Reset player for next match
-            select.getPlayer1()->resetPlayer();
+            player->resetPlayer();
             // There is a win they may proceed
             if (!select.setNextArcadeMatch()){
                 // Game is over and player has won display ending storyboard
@@ -286,26 +322,26 @@ void Game::doArcade(const Bitmap & bmp){
                     if (defaultEndingEnabled){
                         if (!defaultEnding.empty()){
                             Storyboard story(defaultEnding);
-                            story.setInput(Mugen::getPlayer1Keys(20));
+                            story.setInput(input);
                             story.run(bmp);
                         }
                     }
                 } else if (defaultEndingEnabled && ending.empty()){
                     if (!defaultEnding.empty()){
                         Storyboard story(defaultEnding);
-                        story.setInput(Mugen::getPlayer1Keys(20));
+                        story.setInput(input);
                         story.run(bmp);
                     }
                 } else if (!ending.empty()){
 	            Storyboard story(ending);
-	            story.setInput(Mugen::getPlayer1Keys(20));
+	            story.setInput(input);
 	            story.run(bmp);
                 } 
                 if (creditsEnabled){                    
                     // credits
                     if (!credits.empty()){
                         Storyboard story(defaultEnding);
-                        story.setInput(Mugen::getPlayer1Keys(20));
+                        story.setInput(input);
                         story.run(bmp);
                     }
                 }
@@ -323,7 +359,7 @@ void Game::doArcade(const Bitmap & bmp){
     if (displayGameOver){
         if (!gameOver.empty()){
             Storyboard story(gameOver);
-            story.setInput(Mugen::getPlayer1Keys(20));
+            story.setInput(input);
             story.run(bmp);
         }
     }
@@ -332,7 +368,7 @@ void Game::doArcade(const Bitmap & bmp){
 void Game::doVersus(const Bitmap & bmp){
     bool quit = false;
     while(!quit){
-        Mugen::CharacterSelect select(systemFile,type);
+        Mugen::CharacterSelect select(systemFile, playerType, gameType);
         select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
         select.setPlayer2Keys(Mugen::getPlayer2Keys());
         select.load();

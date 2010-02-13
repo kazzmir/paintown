@@ -431,6 +431,9 @@ void MugenMenu::run(){
     // Keys
     InputMap<Mugen::Keys> player1Input = Mugen::getPlayer1Keys(20);
     InputMap<Mugen::Keys> player2Input = Mugen::getPlayer2Keys(20);
+    
+    // Selecting player
+    Mugen::PlayerType selectingPlayer;
   
     // Do we have logos or intros?
     // Logo run it no repeat
@@ -464,10 +467,11 @@ void MugenMenu::run(){
 		    ticker++;
 		    runCounter -= 1;
 		    // Keys
-		    InputMap<Mugen::Keys>::Output out = InputManager::getMap(player1Input);
+		    InputMap<Mugen::Keys>::Output out1 = InputManager::getMap(player1Input);
+		    InputMap<Mugen::Keys>::Output out2 = InputManager::getMap(player2Input);
 		    
 		    if (fader.getState() == Mugen::FadeTool::NoFade){
-			if ( out[Mugen::Up]){	
+			if ( out1[Mugen::Up] || out2[Mugen::Up]){	
 			    (*currentOption)->setState(MenuOption::Deselected);
 			    if ( currentOption > options.begin() ){
 				    currentOption--;
@@ -482,7 +486,7 @@ void MugenMenu::run(){
                             }
 			}
 
-			if (out[Mugen::Down]){
+			if (out1[Mugen::Down] || out2[Mugen::Down]){
 			    (*currentOption)->setState(MenuOption::Deselected);
 			    if ( currentOption < options.begin()+options.size()-1 ){
 				    currentOption++;
@@ -497,28 +501,27 @@ void MugenMenu::run(){
                             }
 			}
 			
-			if (out[Mugen::Left]){
-			    if ( (*currentOption)->leftKey()){
-				/* ??? */
-			    }
-			}
-			
-			if (out[Mugen::Right]){
-			    if ( (*currentOption)->rightKey()){
-				/* ??? */
-			    }
-			}
-			
-			if ( out[Mugen::Enter] ){
+			if ( out1[Mugen::Enter] ){
 			    if((*currentOption)->isRunnable())(*currentOption)->setState( MenuOption::Run );
 			    // Set the fade state
 			    fader.setState(Mugen::FadeTool::FadeOut);
                             if (sounds[doneSound.x][doneSound.y] != 0){
                                 sounds[doneSound.x][doneSound.y]->play();
                             }
+                            selectingPlayer = Mugen::Player1;
 			}
 			
-                        if ( out[Mugen::Esc] ){
+			if ( out2[Mugen::Enter] ){
+			    if((*currentOption)->isRunnable())(*currentOption)->setState( MenuOption::Run );
+			    // Set the fade state
+			    fader.setState(Mugen::FadeTool::FadeOut);
+                            if (sounds[doneSound.x][doneSound.y] != 0){
+                                sounds[doneSound.x][doneSound.y]->play();
+                            }
+                            selectingPlayer = Mugen::Player2;
+			}
+			
+                        if ( out1[Mugen::Esc] || out2[Mugen::Esc] ){
 			    endGame = done = true;
 			    // Set the fade state
 			    fader.setState(Mugen::FadeTool::FadeOut);
@@ -573,7 +576,7 @@ void MugenMenu::run(){
 	// do we got an option to run, lets do it
 	if ((*currentOption)->getState() == MenuOption::Run){
 	    try{
-		(*currentOption)->executeOption(Mugen::Player1, endGame);
+		(*currentOption)->executeOption(selectingPlayer, endGame);
 	    } catch ( const ReturnException & re ){
 	    }
 	    // Reset it's state

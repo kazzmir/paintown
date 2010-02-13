@@ -1030,22 +1030,29 @@ static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iter
     return stuff;
 }
 
-CharacterSelect::CharacterSelect(const std::string &file, const GameType &type):
+CharacterSelect::CharacterSelect(const std::string &file, const PlayerType & playerType, const GameType & gameType):
 systemFile(file),
 sffFile(""),
 sndFile(""),
 selectFile(""),
-type(type),
+gameType(gameType),
 cancelSound(0),
 currentPlayer1(0),
 currentPlayer2(0),
-currentStage(0){
-grid.setGameType(type);
+currentStage(0),
+playerType(playerType){
+grid.setGameType(gameType);
     
-    switch (type){
+    switch (gameType){
 	case Arcade:
 	    // set first cursor1
-	    player1Cursor.setState(Cursor::CharacterSelect);
+	    if (playerType == Player1){
+		player1Cursor.setState(Cursor::CharacterSelect);
+		player2Cursor.setState(Cursor::NotActive);
+	    } else if (playerType == Player2){
+		player2Cursor.setState(Cursor::CharacterSelect);
+		player1Cursor.setState(Cursor::NotActive);
+	    }
 	    break;
 	case Versus:
 	    player1Cursor.setState(Cursor::CharacterSelect);
@@ -1581,9 +1588,21 @@ void CharacterSelect::load() throw (MugenException){
     grid.initialize();
     
     // Setup cursors
-    grid.setCursorStart(player1Cursor);
-    grid.setCursorStart(player2Cursor);
-    
+    switch (gameType){
+	case Arcade:
+	    if (playerType == Player1){
+		grid.setCursorStart(player1Cursor);
+	    } else if (playerType == Player2){
+		grid.setCursorStart(player2Cursor);
+	    }
+	    break;
+	case Versus:
+	    grid.setCursorStart(player1Cursor);
+	    grid.setCursorStart(player2Cursor);
+	    break;
+	default:
+	    break;
+    }
     // Now load up our characters
     parseSelect(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
 }
@@ -1993,12 +2012,17 @@ bool CharacterSelect::setNextArcadeMatch(){
 	}
 	characters = arcadeMatches.front();
     }
-    currentPlayer2 = characters.front();
+    CharacterInfo * tempPlayer;
+    if (playerType == Player1){
+	tempPlayer = currentPlayer2 = characters.front();
+    } else if (playerType == Player2){
+	tempPlayer = currentPlayer1 = characters.front();
+    }
     characters.pop();
     if (currentStage){
         delete currentStage;
     }
-    if (currentPlayer2->hasRandomStage()){
+    if (tempPlayer->hasRandomStage()){
         currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
     } else {
         currentStage = new MugenStage(currentPlayer2->getStage());
@@ -2011,13 +2035,22 @@ bool CharacterSelect::setNextTeamMatch(){
 }
 
 bool CharacterSelect::checkPlayerData(){
-    switch (type){
+    switch (gameType){
 	case Arcade:
-	    if (player1Cursor.getState() == Cursor::Done){
-		currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
-		// Set initial player
-		setNextArcadeMatch();
-		return true;
+	    if (playerType == Player1){
+		if (player1Cursor.getState() == Cursor::Done){
+		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+		    // Set initial player
+		    setNextArcadeMatch();
+		    return true;
+		}
+	    } else if (playerType == Player2){
+		if (player2Cursor.getState() == Cursor::Done){
+		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
+		    // Set initial player
+		    setNextArcadeMatch();
+		    return true;
+		}
 	    }
 	    break;
 	case Versus:

@@ -15,7 +15,7 @@ class CharacterSelect;
 /* Our game definition, this is to facilitate running a game */
 class Game {
     public:
-	Game(GameType type, const std::string & systemFile);
+	Game(const PlayerType &, const GameType &, const std::string & systemFile);
 	virtual ~Game();
 	
 	//! Runs everything
@@ -26,8 +26,10 @@ class Game {
 	//! do versus mode
 	void doVersus(const Bitmap &);
 	
+	//! Player type
+	PlayerType playerType;
 	//! Game type
-	GameType type;
+	GameType gameType;
 	//! System file
 	std::string systemFile;
 	//! Motif Base Directory

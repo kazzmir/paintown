@@ -901,7 +901,7 @@ class VersusScreen {
 
 class CharacterSelect {
     public:
-        CharacterSelect(const std::string & file, const GameType &type);
+        CharacterSelect(const std::string & file, const PlayerType &, const GameType &);
         virtual ~CharacterSelect();
 	
 	virtual void load() throw (MugenException);
@@ -975,7 +975,7 @@ class CharacterSelect {
 	std::string selectFile;
 	
 	//! Game Type
-	GameType type;
+	GameType gameType;
 	
 	//! Fonts
 	std::vector<MugenFont *>fonts;
@@ -1025,6 +1025,9 @@ class CharacterSelect {
 	CharacterInfo *currentPlayer2;
 	//! Current set Stage
 	MugenStage *currentStage;
+	
+	//! PlayerType
+	Mugen::PlayerType playerType;
 };
 
 }

@@ -946,7 +946,7 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 				std::string temp;
 				if (player1.getHealth() > player2.getHealth()){
 				    temp = replaceString("%s",player1.getName(),winText);
-				} else if (player2.getHealth() > player2.getHealth()){
+				} else if (player2.getHealth() > player1.getHealth()){
 				    temp = replaceString("%s",player2.getName(),winText);
 				}
 				win.setText(temp);

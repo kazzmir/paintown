@@ -220,7 +220,7 @@ inline static InputMap<Mugen::Keys> getPlayer2Keys(int delay = 0){
     input.set(Keyboard::Key_0, 0, false, Mugen::Z);
     input.set(Keyboard::Key_L, 0, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
-    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
+    input.set(Keyboard::Key_K, 0, true, Mugen::Enter);
     return input;
 }
 

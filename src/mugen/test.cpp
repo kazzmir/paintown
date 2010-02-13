@@ -302,7 +302,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     VersusEnemy p2v( *(Player *) p2 );
     //VersusPlayer p2v( *(Player *) p2 );
     */
-    Mugen::CharacterSelect selector("data/mugen/data/system.def", Mugen::Arcade);
+    Mugen::CharacterSelect selector("data/mugen/data/system.def", Mugen::Player1, Mugen::Arcade);
     try {
 	selector.load();
 	selector.setPlayer1Keys(Mugen::getPlayer1Keys());
@@ -572,7 +572,7 @@ void showSFF(const string & ourFile){
 }
 
 void doSelectScreen(const std::string &file){
-    Mugen::CharacterSelect selector(file, Mugen::Versus);
+    Mugen::CharacterSelect selector(file, Mugen::Player1, Mugen::Versus);
     try {
 	selector.load();
 	selector.setPlayer1Keys(Mugen::getPlayer1Keys());
