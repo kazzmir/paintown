@@ -123,10 +123,16 @@ protected:
 
 class CompiledKeyMustBeHeldDown: public CompiledKey {
 public:
-    CompiledKeyMustBeHeldDown(const Ast::KeyModifier & ast, CompiledKey * key){
+    CompiledKeyMustBeHeldDown(const Ast::KeyModifier & ast, CompiledKey * key):
+    key(key){
     }
     
     bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+        if (key->pressed(keys, oldKeys, holdKey, holder, needRelease)){
+            holder = key;
+            return true;
+        }
+        return false;
     }
 
     virtual ~CompiledKeyMustBeHeldDown(){
@@ -139,10 +145,34 @@ protected:
 
 class CompiledKeyRelease: public CompiledKey {
 public:
-    CompiledKeyRelease(const Ast::KeyModifier & ast, CompiledKey * key){
+    CompiledKeyRelease(const Ast::KeyModifier & ast, CompiledKey * key):
+    key(key){
+        time = ast.getExtra();
     }
     
     bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+        if (time > 0){
+            if (holdKey > 0){
+                int fake = -1;
+                const CompiledKey * fakeKey;
+                if (key->pressed(keys, oldKeys, fake, holder, fakeKey)){
+                    holdKey -= 1;
+                    return false;
+                } else {
+                    throw Command::Exception();
+                }
+            } else if (holdKey == 0){
+                int fake = -1;
+                const CompiledKey * fakeKey;
+                return !key->pressed(keys, oldKeys, fake, holder, fakeKey);
+            } else if (holdKey == -1){
+                holdKey = time;
+            }
+        } else {
+            int fake = -1;
+            return !key->pressed(keys, oldKeys, fake, holder, needRelease);
+        }
+
     }
 
     virtual ~CompiledKeyRelease(){
@@ -151,14 +181,17 @@ public:
 
 protected:
     CompiledKey * key;
+    int time;
 };
  
 class CompiledKeyDirection: public CompiledKey {
 public:
-    CompiledKeyDirection(const Ast::KeyModifier & ast, CompiledKey * key){
+    CompiledKeyDirection(const Ast::KeyModifier & ast, CompiledKey * key):
+    key(key){
     }
 
     bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+        return false;
     }
 
     virtual ~CompiledKeyDirection(){
@@ -171,10 +204,23 @@ protected:
 
 class CompiledKeyOnly: public CompiledKey {
 public:
-    CompiledKeyOnly(const Ast::KeyModifier & ast, CompiledKey * key){
+    CompiledKeyOnly(const Ast::KeyModifier & ast, CompiledKey * key):
+    key(key){
     }
-    
+        
+    bool sameKeys(const InputMap<Mugen::Keys>::Output & map1, const InputMap<Mugen::Keys>::Output & map2 ){
+        return map1 == map2;
+    }
+
     bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+        if (!key->pressed(keys, oldKeys, holdKey, holder, needRelease)){
+            if (!sameKeys(keys, oldKeys)){
+                throw Command::Exception();
+            }
+            return false;
+        } else {
+            return true;
+        }
     }
 
     virtual ~CompiledKeyOnly(){
@@ -208,7 +254,8 @@ static CompiledKey* compile(const Ast::Key * key){
             switch (key.getModifierType()){
                 case Ast::KeyModifier::MustBeHeldDown: return new CompiledKeyMustBeHeldDown(key, Mugen::compile(key.getKey()));
                 case Ast::KeyModifier::Release: return new CompiledKeyRelease(key, Mugen::compile(key.getKey()));
-                case Ast::KeyModifier::Direction: return new CompiledKeyDirection(key, Mugen::compile(key.getKey()));
+                // case Ast::KeyModifier::Direction: return new CompiledKeyDirection(key, Mugen::compile(key.getKey()));
+                case Ast::KeyModifier::Direction: return Mugen::compile(key.getKey());
                 case Ast::KeyModifier::Only: return new CompiledKeyOnly(key, Mugen::compile(key.getKey()));
             }
         }
