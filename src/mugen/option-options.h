@@ -20,6 +20,7 @@ class Option {
 	
 	virtual void next()=0;
 	virtual void prev()=0;
+	virtual void enter();
 	virtual void render(MugenFont &, int x, int y, const Bitmap &);
 	virtual inline const Mugen::Point & getPosition() const {
 	    return this->position;

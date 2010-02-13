@@ -45,6 +45,9 @@ alphaMod(6){
 Option::~Option(){
 }
 
+void Option::enter(){
+}
+
 void Option::render(MugenFont & font, int x, int y, const Bitmap & bmp){
     const int rightX = x + 195;
     font.render(x+5, y, 1, 0, bmp, optionName);
@@ -61,7 +64,7 @@ void Option::render(MugenFont & font, int x, int y, const Bitmap & bmp){
 	}
 	Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	Bitmap::transBlender(0,0,0,alpha);
-	bmp.rectangleFill(x+2, y-10, rightX+3, y+2,Bitmap::makeColor(255,255,255));
+	bmp.rectangleFill(x+2, y-10, rightX+2, y+2,Bitmap::makeColor(255,255,255));
 	Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
@@ -189,6 +192,10 @@ class Escape : public Mugen::Option {
 	void next(){
 	}
 	void prev(){
+	}
+	void enter(){
+	    // **FIXME Hack figure something out
+	    throw ReturnException();
 	}
 };
 
@@ -410,6 +417,9 @@ void OptionOptions::run(bool &endGame){
 		}
 		if (out1[Mugen::Right] || out2[Mugen::Right]){
 		    (*selectedOption)->next();
+		}
+		if (out1[Mugen::Enter] || out2[Mugen::Enter]){
+		    (*selectedOption)->enter();
 		}
 		// Backgrounds
 		background->act();
