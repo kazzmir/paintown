@@ -370,11 +370,12 @@ void Game::doVersus(const Bitmap & bmp){
     while(!quit){
         Mugen::CharacterSelect select(systemFile, playerType, gameType);
         select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
-        select.setPlayer2Keys(Mugen::getPlayer2Keys());
+        select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
         select.load();
 	select.run("Versus Mode", bmp);
 	select.renderVersusScreen(bmp);
 	select.getPlayer1()->setInput(Mugen::getPlayer1Keys(), getPlayer1InputLeft());
+	select.getPlayer2()->setInput(Mugen::getPlayer2Keys(), getPlayer2InputLeft());
 	MugenStage *stage = select.getStage();
 	InputMap<int> gameInput;
 	gameInput.set(Keyboard::Key_F1, 10, false, 0);
