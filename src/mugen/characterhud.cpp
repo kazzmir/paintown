@@ -972,12 +972,12 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
                         }
                         // Check current match and draws assign winner / loser info and exit match if needed
                     } if (matchWins != -1){
-                        if (player1.getWins().size() >= matchWins){
+                        if (player1.getWins().size() >= (unsigned int)matchWins){
                             player1.addMatchWin();
                             // Later on add lose information to other player
                             // Exit match
                             stage.setMatchOver(true);
-                        } else if (player2.getWins().size() >= matchWins){
+                        } else if (player2.getWins().size() >= (unsigned int)matchWins){
                             player2.addMatchWin();
                             // Same as above
                             // Exit match
@@ -1177,9 +1177,9 @@ WinIcon::~WinIcon(){
 	}
     }
 }
-void WinIcon::act(Character & p1, Character & p2){
-    player1 = &p1;
-    player2 = &p2;
+void WinIcon::act(const Character & p1, const Character & p2){
+    player1Wins = p1.getWins();
+    player2Wins = p2.getWins();
     for (std::map<WinGame::WinType, FightElement *>::iterator i =  player1Icons.begin(); i != player1Icons.end(); ++i){
 	if (i->second){
 	    i->second->act();
@@ -1192,9 +1192,9 @@ void WinIcon::act(Character & p1, Character & p2){
     }
 }
 void WinIcon::render(const Element::Layer & layer, const Bitmap &bmp){
-    if (player1->getWins().size() < useIconUpTo){
+    if (player1Wins.size() < useIconUpTo){
 	Mugen::Point position = player1Position;
-	for (std::vector<WinGame>::const_iterator i = player1->getWins().begin(); i != player1->getWins().end(); ++i){
+	for (std::vector<WinGame>::const_iterator i = player1Wins.begin(); i != player1Wins.end(); ++i){
             const WinGame & win = *i;
 	    FightElement & element = getPlayer1Win(win.type);
 	    element.render(layer, position.x, position.y, bmp);
@@ -1207,13 +1207,13 @@ void WinIcon::render(const Element::Layer & layer, const Bitmap &bmp){
 	}
     } else {
 	ostringstream str;
-	str << player1->getWins().size();
+	str << player1Wins.size();
 	player1Counter.setText(str.str());
 	player1Counter.render(layer, player1Position.x, player1Position.y, bmp);
     }
-    if (player2->getWins().size() < useIconUpTo){
+    if (player2Wins.size() < useIconUpTo){
 	Mugen::Point position = player2Position;
-	for (std::vector<WinGame>::const_iterator i = player2->getWins().begin(); i != player2->getWins().end(); ++i){
+	for (std::vector<WinGame>::const_iterator i = player2Wins.begin(); i != player2Wins.end(); ++i){
             const WinGame & win = *i;
 	    FightElement & element = getPlayer2Win(win.type);
 	    element.render(layer, position.x, position.y, bmp);
@@ -1226,7 +1226,7 @@ void WinIcon::render(const Element::Layer & layer, const Bitmap &bmp){
 	}
     } else {
 	ostringstream str;
-	str << player2->getWins().size();
+	str << player2Wins.size();
 	player2Counter.setText(str.str());
 	player2Counter.render(layer, player2Position.x, player2Position.y, bmp);
     }

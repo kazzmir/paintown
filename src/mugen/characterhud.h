@@ -683,7 +683,7 @@ class WinIcon{
         WinIcon();
 	virtual ~WinIcon();
 	    
-	virtual void act(Mugen::Character &, Mugen::Character &);
+	virtual void act(const Mugen::Character &, const Mugen::Character &);
 	virtual void render(const Element::Layer &, const Bitmap &);
 	
         virtual inline void setPlayer1Position(int x, int y){
@@ -721,8 +721,8 @@ class WinIcon{
     private:
 
         //! Current characters
-	Character * player1;
-	Character * player2;
+	std::vector<WinGame> player1Wins;
+	std::vector<WinGame> player2Wins;
 	    
 	//! Starting position for players
 	Mugen::Point player1Position;
