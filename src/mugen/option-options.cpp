@@ -8,6 +8,7 @@
 #include "mugen/background.h"
 
 #include <ostream>
+#include <vector>
 
 #include "ast/all.h"
 #include "parser/all.h"
@@ -29,6 +30,168 @@ using namespace Mugen;
 const int DEFAULT_WIDTH = 320;
 const int DEFAULT_HEIGHT = 240;
 
+static std::string getString(int number){
+    std::ostringstream str;
+    str << number;
+    return str.str();
+}
+
+Option::Option():
+selected(false),
+alpha(0),
+alphaMod(6){
+}
+
+Option::~Option(){
+}
+
+void Option::render(MugenFont & font, int x, int y, const Bitmap & bmp){
+    const int rightX = x + 195;
+    font.render(x+5, y, 1, 0, bmp, optionName);
+    font.render(rightX, y, -1, 0, bmp, currentValue);
+    if (selected){
+	alpha += alphaMod;
+	if (alpha <= 0){
+	    alpha = 0;
+	    alphaMod = 6;
+	}
+	else if (alpha >= 128){
+	    alpha = 128;
+	    alphaMod = -6;
+	}
+	Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	Bitmap::transBlender(0,0,0,alpha);
+	bmp.rectangleFill(x+2, y-10, rightX+3, y+2,Bitmap::makeColor(255,255,255));
+	Bitmap::drawingMode(Bitmap::MODE_SOLID);
+    }
+}
+
+class Difficulty : public Mugen::Option {
+    public:
+	Difficulty(){
+	    optionName = "Difficulty";
+	    currentValue = getString(Mugen::Data::getInstance().getDifficulty());
+	}
+	~Difficulty(){
+	}
+	void next(){
+	}
+	void prev(){
+	}
+};
+
+class Life : public Mugen::Option {
+    public:
+	Life(){
+	    optionName = "Life";
+	    currentValue = getString(Mugen::Data::getInstance().getLife());
+	}
+	~Life(){
+	}
+	void next(){
+	}
+	void prev(){
+	}
+};
+
+class TimeLimit : public Mugen::Option {
+    public:
+	TimeLimit(){
+	    optionName = "Time Limit";
+	    currentValue = getString(Mugen::Data::getInstance().getTime());
+	}
+	~TimeLimit(){
+	}
+	void next(){
+	    int time = Mugen::Data::getInstance().getTime();
+	    if (time != -1){
+		time+=20;
+	    }
+	    if (time == 100){
+		time = 99;
+	    } else if (time > 100){
+		time = -1;
+	    }
+	    Mugen::Data::getInstance().setTime(time);
+	    if (time == -1){
+		currentValue = "None";
+	    } else {
+		currentValue = getString(time);
+	    }
+	}
+	void prev(){
+	    int time = Mugen::Data::getInstance().getTime();
+	    if (time == -1){
+		time = 99;
+	    } else if (time >= 20 && time != 99){
+		time-=20;
+	    } else if (time == 99){
+		time = 80;
+	    }
+	    if (time < 20){
+		time = 20;
+	    }
+	    Mugen::Data::getInstance().setTime(time);
+	    currentValue = getString(time);
+	}
+};
+
+class Speed : public Mugen::Option {
+    public:
+	Speed(){
+	    optionName = "Speed";
+	    currentValue = getString(Mugen::Data::getInstance().getSpeed());
+	}
+	~Speed(){
+	}
+	void next(){
+	}
+	void prev(){
+	}
+};
+
+class OneVsTeam : public Mugen::Option {
+    public:
+	OneVsTeam(){
+	    optionName = "1P VS Team Advantage";
+	    currentValue = getString(Mugen::Data::getInstance().getTeam1vs2Life());
+	}
+	~OneVsTeam(){
+	}
+	void next(){
+	}
+	void prev(){
+	}
+};
+
+class TeamLoseOnKO : public Mugen::Option {
+    public:
+	TeamLoseOnKO(){
+	    optionName = "If player KOed";
+	    currentValue = getString(Mugen::Data::getInstance().getTeamLoseOnKO());
+	}
+	~TeamLoseOnKO(){
+	}
+	void next(){
+	}
+	void prev(){
+	}
+};
+
+class Escape : public Mugen::Option {
+    public:
+	Escape(){
+	    optionName = "Return to Main Menu";
+	    currentValue = "(Esc)";
+	}
+	~Escape(){
+	}
+	void next(){
+	}
+	void prev(){
+	}
+};
+
 OptionOptions::OptionOptions(Token *token) throw (LoadException): 
 MenuOption(token, Event){
     // notin
@@ -39,10 +202,27 @@ MenuOption(0, Event){
 	throw LoadException("No name given to Options");
     }
     this->setText(name);
+    
+    // Add options
+    options.push_back(new Difficulty());
+    options.push_back(new Life());
+    options.push_back(new TimeLimit());
+    options.push_back(new Speed());
+    options.push_back(new OneVsTeam());
+    options.push_back(new TeamLoseOnKO());
+    options.push_back(new Escape());
+    
+    // Set first one
+    options[0]->toggleSelected();
+    selectedOption = options.begin();
 }
 
 OptionOptions::~OptionOptions(){
-	// Nothing
+    for (std::vector<Mugen::Option *>::iterator i = options.begin(); i != options.end(); ++i){
+	if (*i){
+	    delete *i;
+	}
+    }
 }
 
 void OptionOptions::logic(){
@@ -159,8 +339,8 @@ void OptionOptions::run(bool &endGame){
     int game_time = 100;
     
     // Set game keys temporary
-    InputMap<Mugen::Keys> gameInput;
-    gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
+    InputMap<Mugen::Keys> player1Input = Mugen::getPlayer1Keys(20);
+    InputMap<Mugen::Keys> player2Input = Mugen::getPlayer2Keys(20);
     
     // Our Font
     MugenFont * font = fonts[1];
@@ -192,15 +372,45 @@ void OptionOptions::run(bool &endGame){
 		// Key handler
 		InputManager::poll();
 		
-		InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
-		if (out[Mugen::Esc]){
+		InputMap<Mugen::Keys>::Output out1 = InputManager::getMap(player1Input);
+		InputMap<Mugen::Keys>::Output out2 = InputManager::getMap(player2Input);
+		if (out1[Mugen::Esc] || out2[Mugen::Esc]){
 		    done = escaped = true;
 		    if (sounds[cancelSound.x][cancelSound.y]){
 			sounds[cancelSound.x][cancelSound.y]->play();
 		    }
-		    InputManager::waitForRelease(gameInput, Mugen::Esc);
+		    InputManager::waitForRelease(player1Input, Mugen::Esc);
+		    InputManager::waitForRelease(player2Input, Mugen::Esc);
 		}
-		
+		if (out1[Mugen::Up] || out2[Mugen::Up]){
+		    (*selectedOption)->toggleSelected();
+		    if (selectedOption > options.begin()){
+			selectedOption--;
+		    } else {
+			selectedOption = options.begin() + options.size()-1;
+		    }
+		    (*selectedOption)->toggleSelected();
+		    if (sounds[moveSound.x][moveSound.y]){
+			sounds[moveSound.x][moveSound.y]->play();
+		    }
+		}
+		if (out1[Mugen::Down] || out2[Mugen::Down]){
+		    (*selectedOption)->toggleSelected();
+		    selectedOption++;
+		    if (selectedOption == options.end()){
+			selectedOption = options.begin();
+		    }
+		    (*selectedOption)->toggleSelected();
+		    if (sounds[moveSound.x][moveSound.y]){
+			sounds[moveSound.x][moveSound.y]->play();
+		    }
+		}
+		if (out1[Mugen::Left] || out2[Mugen::Left]){
+		    (*selectedOption)->prev();
+		}
+		if (out1[Mugen::Right] || out2[Mugen::Right]){
+		    (*selectedOption)->next();
+		}
 		// Backgrounds
 		background->act();
 		
@@ -264,27 +474,11 @@ void OptionOptions::run(bool &endGame){
     }
 }
 
-static std::string getString(int number){
-    std::ostringstream str;
-    str << number;
-    return str.str();
-}
-
 void OptionOptions::doOptions(MugenFont & font, int x, int y, const Bitmap & bmp){
-    const int rightX = x + 195;
-    Mugen::Data & data = Mugen::Data::getInstance();
-    font.render(x+5, y+30, 1, 0, bmp, "Difficulty" );
-    font.render(rightX, y+30, -1, 0, bmp, getString(data.getDifficulty()));
-    font.render(x+5, y+50, 1, 0, bmp, "Life" );
-    font.render(rightX, y+50, -1, 0, bmp, getString(data.getLife()));
-    font.render(x+5, y+70, 1, 0, bmp, "Time Limit" );
-    font.render(rightX, y+70, -1, 0, bmp, getString(data.getTime()));
-    font.render(x+5, y+90, 1, 0, bmp, "Game Speed" );
-    font.render(rightX, y+90, -1, 0, bmp, getString(data.getSpeed()));
-    font.render(x+5, y+110, 1, 0, bmp, "1P VS Team Advantage" );
-    font.render(rightX, y+110, -1, 0, bmp, getString(data.getTeam1vs2Life()));
-    font.render(x+5, y+130, 1, 0, bmp, "If player KOed" );
-    font.render(rightX, y+130, -1, 0, bmp, getString(data.getTeamLoseOnKO()));
-    font.render(x+5, y+150, 1, 0, bmp, "Return to Main Menu" );
-    font.render(rightX, y+150, -1, 0, bmp, "(Esc)");
+    int mod = 30;
+    for (std::vector<Mugen::Option *>::iterator i = options.begin(); i != options.end(); ++i){
+	Mugen::Option * option = *i;
+	option->render(font, x, y+mod, bmp);
+	mod+=20;
+    }
 }

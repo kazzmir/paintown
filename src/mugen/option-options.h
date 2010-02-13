@@ -1,15 +1,42 @@
 #ifndef _mugen_option_options_h
 #define _mugen_option_options_h
 
+#include "mugen/util.h"
 #include "menu/menu_option.h"
 #include "util/load_exception.h"
 
 #include <string>
+#include <vector>
 
 class Token;
 class MugenFont;
 
 namespace Mugen{
+    
+class Option {
+    public:
+	Option();
+	virtual ~Option();
+	
+	virtual void next()=0;
+	virtual void prev()=0;
+	virtual void render(MugenFont &, int x, int y, const Bitmap &);
+	virtual inline const Mugen::Point & getPosition() const {
+	    return this->position;
+	}
+	virtual inline void toggleSelected(){
+	    this->selected = !this->selected;
+	}
+    protected:
+	Mugen::Point position;
+	std::string optionName;
+	std::string currentValue;
+	
+    private:
+	bool selected;
+	// box
+	int alpha,alphaMod;
+};
 
 /*! Handles Mugen Options */
 class OptionOptions: public MenuOption {
@@ -27,18 +54,13 @@ public:
 
 private:
     
-    enum Options{
-	Difficult,
-	Life,
-	TimeLimit,
-	GameSpeed,
-	OneVSTeam,
-	TeamPlayerKO,
-    };
+    std::vector<Mugen::Option *> options;
     
-    Options currentOption;
+    std::vector<Mugen::Option *>::iterator selectedOption;
     
     void doOptions(MugenFont & font, int x, int y, const Bitmap &);
+    
+    
 	    
 };
 
