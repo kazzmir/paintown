@@ -121,6 +121,70 @@ protected:
     CompiledKey * key2;
 };
 
+class CompiledKeyMustBeHeldDown: public CompiledKey {
+public:
+    CompiledKeyMustBeHeldDown(const Ast::KeyModifier & ast, CompiledKey * key){
+    }
+    
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    }
+
+    virtual ~CompiledKeyMustBeHeldDown(){
+        delete key;
+    }
+
+protected:
+    CompiledKey * key;
+};
+
+class CompiledKeyRelease: public CompiledKey {
+public:
+    CompiledKeyRelease(const Ast::KeyModifier & ast, CompiledKey * key){
+    }
+    
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    }
+
+    virtual ~CompiledKeyRelease(){
+        delete key;
+    }
+
+protected:
+    CompiledKey * key;
+};
+ 
+class CompiledKeyDirection: public CompiledKey {
+public:
+    CompiledKeyDirection(const Ast::KeyModifier & ast, CompiledKey * key){
+    }
+
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    }
+
+    virtual ~CompiledKeyDirection(){
+        delete key;
+    }
+
+protected:
+    CompiledKey * key;
+};
+
+class CompiledKeyOnly: public CompiledKey {
+public:
+    CompiledKeyOnly(const Ast::KeyModifier & ast, CompiledKey * key){
+    }
+    
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    }
+
+    virtual ~CompiledKeyOnly(){
+        delete key;
+    }
+
+protected:
+    CompiledKey * key;
+};
+
 Command::Exception::Exception(){
 }
 
@@ -141,7 +205,12 @@ static CompiledKey* compile(const Ast::Key * key){
         }
         
         CompiledKey* compile(const Ast::KeyModifier & key){
-            return NULL;
+            switch (key.getModifierType()){
+                case Ast::KeyModifier::MustBeHeldDown: return new CompiledKeyMustBeHeldDown(key, Mugen::compile(key.getKey()));
+                case Ast::KeyModifier::Release: return new CompiledKeyRelease(key, Mugen::compile(key.getKey()));
+                case Ast::KeyModifier::Direction: return new CompiledKeyDirection(key, Mugen::compile(key.getKey()));
+                case Ast::KeyModifier::Only: return new CompiledKeyOnly(key, Mugen::compile(key.getKey()));
+            }
         }
         
         CompiledKey* compile(const Ast::KeyCombined & key){
