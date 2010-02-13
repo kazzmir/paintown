@@ -11,6 +11,15 @@ namespace Ast{
 
 namespace Mugen{
 
+class CompiledKey{
+public:
+    CompiledKey();
+
+    virtual bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) = 0;
+
+    virtual ~CompiledKey();
+};
+
 /* key command */
 class Command{
 public:
@@ -22,20 +31,6 @@ public:
         virtual ~Exception() throw ();
     };
 
-#if 0
-    enum Keys{
-        Down,
-        Up,
-        Forward,
-        Back,
-        X,
-        Y,
-        Z,
-        A,
-        B,
-        C,
-    };
-#endif 
     virtual inline std::string getName() const {
         return name;
     }
@@ -51,6 +46,7 @@ protected:
 protected:
     std::string name;
     Ast::KeyList * keys;
+    std::vector<CompiledKey*> compiledKeys;
     const int maxTime;
     const int bufferTime;
     int ticks;

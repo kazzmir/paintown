@@ -5,6 +5,96 @@ using namespace std;
 
 namespace Mugen{
 
+CompiledKey::CompiledKey(){
+}
+
+CompiledKey::~CompiledKey(){
+}
+
+class CompiledKeySingle: public CompiledKey {
+public:
+    enum Keys{
+        A, B, C, X, Y, Z,
+        Back, Forward, Down, Up,
+        DownBack, UpBack,
+        DownForward, UpForward,
+        Start,
+    };
+
+    CompiledKeySingle(const Ast::KeySingle & name):
+    key(convertKey(name)){
+    }
+
+    static Keys convertKey(const Ast::KeySingle & name){
+        if (name == "a"){
+            return A;
+        } else if (name == "b"){
+            return B;
+        } else if (name == "c"){
+            return C;
+        } else if (name == "x"){
+            return X;
+        } else if (name == "y"){
+            return Y;
+        } else if (name == "z"){
+            return Z;
+        } else if (name == "B"){
+            return B;
+        } else if (name == "DB"){
+            return DownBack;
+        } else if (name == "D"){
+            return Down;
+        } else if (name == "DF"){
+            return DownForward;
+        } else if (name == "F"){
+            return Forward;
+        } else if (name == "UF"){
+            return UpForward;
+        } else if (name == "U"){
+            return Up;
+        } else if (name == "UB"){
+            return UpBack;
+        } else if (name == "start"){
+            return Start;
+        }
+
+        /* maybe throw an exception? */
+        return Start;
+    }
+
+    bool pressedKey(InputMap<Mugen::Keys>::Output & keys){
+        switch (key){
+            case A: return keys[Mugen::A];
+            case B: return keys[Mugen::B];
+            case C: return keys[Mugen::C];
+            case X: return keys[Mugen::X];
+            case Y: return keys[Mugen::Y];
+            case Z: return keys[Mugen::Z];
+            case Back: return keys[Mugen::Left];
+            case Forward: return keys[Mugen::Right];
+            case Down: return keys[Mugen::Down];
+            case Up: return keys[Mugen::Up];
+            case DownBack: return keys[Mugen::Down] && keys[Mugen::Left];
+            case UpBack: return keys[Mugen::Up] && keys[Mugen::Left];
+            case DownForward: return keys[Mugen::Down] && keys[Mugen::Right];
+            case UpForward: return keys[Mugen::Up] && keys[Mugen::Down];
+            case Start: return keys[Mugen::Start];
+            default: return false;
+        }
+    }
+    
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+        if (pressedKey(keys)){
+            needRelease = this;
+            return true;
+        }
+
+        return false;
+    }
+
+protected:
+    Keys key;
+};
 
 Command::Exception::Exception(){
 }
@@ -12,9 +102,24 @@ Command::Exception::Exception(){
 Command::Exception::~Exception() throw () {
 }
 
+static vector<CompiledKey*> compile(Ast::KeyList * keys){
+    class Walker: public Ast::Walker {
+    public:
+        Walker(){
+        }
+
+        vector<CompiledKey*> keys;
+    };
+
+    Walker walk;
+    keys->walk(walk);
+    return walk.keys;
+}
+
 Command::Command(string name, Ast::KeyList * keys, int maxTime, int bufferTime):
 name(name),
 keys(keys),
+compiledKeys(compile(keys)),
 maxTime(maxTime),
 bufferTime(bufferTime),
 ticks(-1),
