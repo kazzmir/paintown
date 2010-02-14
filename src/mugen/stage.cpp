@@ -856,89 +856,96 @@ vector<Object*> MugenStage::getOpponents(Object * who){
 
 void MugenStage::logic( ){
     Console::ConsoleEnd & cend = Console::Console::endl;
-    // camera crap
-    if (quake_time > 0){
-	quake_time--;
-    }
 
-    for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end();){ 
-        Mugen::Spark * spark = *it;
-        spark->logic();
+    cycles += 1;
+    if (cycles >= 1 / gameRate){
+        cycles = 0;
 
-        /* if the spark looped then kill it */
-        if (spark->isDead()){
-            delete spark;
-            it = showSparks.erase(it);
-        } else {
-            it++;
+        // camera crap
+        if (quake_time > 0){
+            quake_time--;
         }
-    }
-    
-    // implement some stuff before we actually begin the round then start the round
-    if (!stageStart){
-        stageStart = true;
-    }
 
-    // Run our ticker on and on like energizer bunnies (tm)
-    ticker++;
-    
-    const double diffx = startx - camerax;
-    const double diffy = starty - cameray;
-    
-    // Clear console so we can see our debug
-    console->clear();
-    
-    /*
-    //zoffsetlink
-    const Mugen::Background *zlinkbackground = 0;
+        for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end();){ 
+            Mugen::Spark * spark = *it;
+            spark->logic();
 
-    if (zoffsetlink != DEFAULT_BACKGROUND_ID){
-        / *
-	zlinkbackground = background->getBackground(zoffsetlink);
-	zoffset = zlinkbackground->y;
-        * /
-        vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
-        if (elements.size() != 0){
-            Mugen::BackgroundElement * element = elements[0];
-            zoffset = element->getCurrentY();
-        }
-    }
-    */
-
-    *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
-    
-    // Backgrounds
-    background->act();
-    
-    // Players go in here
-    std::vector<Object *> add;
-    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
-        /* use local variables more often, iterators can be easily confused */
-        Object * player = *it;
-        player->act( &objects, this, &add);
-        physics(player);
-	
-	if (isaPlayer(player)){
-	    // Lets check their boundaries and camera whateva
-	    updatePlayer( player );
-	   	    
-	    // Update old position
-	    playerInfo[player].oldx = player->getX();
-	    playerInfo[player].oldy = player->getY();
-		
-	// Non players, objects, projectiles misc
-	} else if (!isaPlayer(player) && player->getHealth() <= 0){
-	    delete player;
-	    it = objects.erase(it);
-	    if (it == objects.end()){
-                break;
+            /* if the spark looped then kill it */
+            if (spark->isDead()){
+                delete spark;
+                it = showSparks.erase(it);
+            } else {
+                it++;
             }
-	}
+        }
 
-	// Debug crap put it on console
-	*console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
+        // implement some stuff before we actually begin the round then start the round
+        if (!stageStart){
+            stageStart = true;
+        }
+
+        // Run our ticker on and on like energizer bunnies (tm)
+        ticker++;
+
+        const double diffx = startx - camerax;
+        const double diffy = starty - cameray;
+
+        // Clear console so we can see our debug
+        console->clear();
+
+        /*
+        //zoffsetlink
+        const Mugen::Background *zlinkbackground = 0;
+
+        if (zoffsetlink != DEFAULT_BACKGROUND_ID){
+        / *
+        zlinkbackground = background->getBackground(zoffsetlink);
+        zoffset = zlinkbackground->y;
+         * /
+         vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
+         if (elements.size() != 0){
+         Mugen::BackgroundElement * element = elements[0];
+         zoffset = element->getCurrentY();
+         }
+         }
+         */
+
+        *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
+
+        // Backgrounds
+        background->act();
+
+        // Players go in here
+        std::vector<Object *> add;
+        for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+            /* use local variables more often, iterators can be easily confused */
+            Object * player = *it;
+            player->act( &objects, this, &add);
+            physics(player);
+
+            if (isaPlayer(player)){
+                // Lets check their boundaries and camera whateva
+                updatePlayer( player );
+
+                // Update old position
+                playerInfo[player].oldx = player->getX();
+                playerInfo[player].oldy = player->getY();
+
+                // Non players, objects, projectiles misc
+            } else if (!isaPlayer(player) && player->getHealth() <= 0){
+                delete player;
+                it = objects.erase(it);
+                if (it == objects.end()){
+                    break;
+                }
+            }
+
+            // Debug crap put it on console
+            *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
+        }
+        objects.insert(objects.end(),add.begin(),add.end());
+
     }
-    objects.insert(objects.end(),add.begin(),add.end());
     
     // Correct camera
     if ((verticalfollow > 0) && !inabove && (getCameraY() < 0)){
@@ -1513,4 +1520,7 @@ void MugenStage::initializeName(){
         
 void MugenStage::setGameRate(double rate){
     gameRate = rate;
+    if (rate <= 0){
+        gameRate = 0.1;
+    }
 }
