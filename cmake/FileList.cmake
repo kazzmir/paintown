@@ -195,6 +195,7 @@ src/gui/widget.cpp
 
 set(MUGEN_SRC
 src/mugen/background.cpp
+src/mugen/behavior.cpp
 src/mugen/characterhud.cpp
 src/mugen/character.cpp
 src/mugen/character-select.cpp

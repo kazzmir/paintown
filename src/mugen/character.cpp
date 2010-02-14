@@ -34,6 +34,7 @@
 #include "state.h"
 #include "evaluator.h"
 #include "command.h"
+#include "behavior.h"
 
 #include "input/input-map.h"
 #include "input/input-manager.h"
@@ -877,6 +878,7 @@ void Character::initialize(){
     has_control = true;
     airjumpnum = 0;
     airjumpheight = 35;
+    behavior = 0;
 
     matchWins = 0;
 
@@ -2428,6 +2430,13 @@ MugenAnimation * Character::getCurrentAnimation() const {
 
 /* returns all the commands that are currently active */
 vector<string> Character::doInput(){
+    if (behavior == 0){
+        throw MugenException("Internal error: No behavior specified");
+    }
+
+    return behavior->currentCommands(commands, getFacing() == Object::FACING_RIGHT);
+
+    /*
     vector<string> out;
 
     InputMap<Mugen::Keys>::Output output = InputManager::getMap(getInput());
@@ -2444,18 +2453,21 @@ vector<string> Character::doInput(){
     // }
 
     return out;
+    */
 }
 
 bool Character::isPaused(){
     return hitState.shakeTime > 0;
 }
 
+/*
 InputMap<Mugen::Keys> & Character::getInput(){
     if (getFacing() == Object::FACING_RIGHT){
         return inputLeft;
     }
     return inputRight;
 }
+*/
 
 /* Inherited members */
 void Character::act(vector<Object*>* others, World* world, vector<Object*>* add){

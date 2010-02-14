@@ -30,6 +30,8 @@ class MugenStage;
 
 namespace Mugen{
 
+class Behavior;
+
 struct Constant{
     enum ConstantType{
         None,
@@ -934,10 +936,12 @@ public:
             return animations;
         }
 
+        /*
         virtual inline void setInput(const InputMap<Mugen::Keys> & inputLeft, const InputMap<Mugen::Keys> & inputRight){
             this->inputLeft = inputLeft;
             this->inputRight = inputRight;
         }
+        */
 	
 	virtual inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
             return sounds;
@@ -1325,6 +1329,10 @@ public:
 
         virtual void resetPlayer();
 
+        virtual inline void setBehavior(Behavior * b){
+            behavior = b;
+        }
+
 protected:
     void initialize();
 
@@ -1353,7 +1361,7 @@ protected:
     virtual void parseState(Ast::Section * section);
     virtual void parseStateDefinition(Ast::Section * section);
 
-    InputMap<Mugen::Keys> & getInput();
+    // InputMap<Mugen::Keys> & getInput();
 
 protected:
 
@@ -1562,8 +1570,10 @@ protected:
 	// Debug state
 	bool debug;
 
+        /*
         InputMap<Mugen::Keys> inputLeft;
         InputMap<Mugen::Keys> inputRight;
+        */
 
         double velocity_x, velocity_y;
 
@@ -1602,6 +1612,8 @@ protected:
         int matchWins;
 
         Ast::Value * internalJumpNumber;
+
+        Behavior * behavior;
 };
 
 }

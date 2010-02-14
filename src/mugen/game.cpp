@@ -17,14 +17,15 @@
 #include "loading.h"
 
 #include "character.h"
-#include "mugen/util.h"
-#include "mugen/font.h"
-#include "mugen/menu.h"
-#include "mugen/stage.h"
+#include "util.h"
+#include "font.h"
+#include "menu.h"
+#include "stage.h"
 #include "character-select.h"
 #include "storyboard.h"
+#include "behavior.h"
 
-#include "mugen/config.h"
+#include "config.h"
 
 namespace PaintownUtil = ::Util;
 
@@ -97,10 +98,11 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
     return input;
 }
+
 static InputMap<Mugen::Keys> getPlayer2InputLeft(){
     InputMap<Mugen::Keys> input;
-    input.set(Keyboard::Key_H, 0, false, Mugen::Up);
-    input.set(Keyboard::Key_Y, 0, false, Mugen::Down);
+    input.set(Keyboard::Key_Y, 0, false, Mugen::Up);
+    input.set(Keyboard::Key_H, 0, false, Mugen::Down);
     input.set(Keyboard::Key_G, 0, false, Mugen::Right);
     input.set(Keyboard::Key_J, 0, false, Mugen::Left);
 
@@ -301,6 +303,12 @@ void Game::doArcade(const Bitmap & bmp){
 	story.run(bmp);
     }
 
+    HumanBehavior player1HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
+    HumanBehavior player2HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+
+    AIBehavior player1AIBehavior;
+    AIBehavior player2AIBehavior;
+
     bool quit = false;
     
     // Total wins from player
@@ -317,10 +325,14 @@ void Game::doArcade(const Bitmap & bmp){
             Mugen::Character * player = 0;
             if (playerType == Mugen::Player1){
                 player = select.getPlayer1();
-                player->setInput(getPlayer1Keys(), getPlayer1InputLeft());
+                player->setBehavior(&player1HumanBehavior);
+                select.getPlayer2()->setBehavior(&player2AIBehavior);
+                // player->setInput(getPlayer1Keys(), getPlayer1InputLeft());
             } else if (playerType == Mugen::Player2){
                 player = select.getPlayer2();
-                player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
+                // player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
+                player->setBehavior(&player2HumanBehavior);
+                select.getPlayer1()->setBehavior(&player1AIBehavior);
             }
 
 
@@ -406,8 +418,17 @@ void Game::doVersus(const Bitmap & bmp){
         select.load();
 	select.run("Versus Mode", bmp);
 	select.renderVersusScreen(bmp);
+
+        HumanBehavior player1Input(getPlayer1Keys(), getPlayer1InputLeft());
+        HumanBehavior player2Input(getPlayer2Keys(), getPlayer2InputLeft());
+
+        /*
 	select.getPlayer1()->setInput(Mugen::getPlayer1Keys(), getPlayer1InputLeft());
 	select.getPlayer2()->setInput(Mugen::getPlayer2Keys(), getPlayer2InputLeft());
+        */
+	select.getPlayer1()->setBehavior(&player1Input);
+	select.getPlayer2()->setBehavior(&player2Input);
+
 	MugenStage *stage = select.getStage();
 	InputMap<int> gameInput;
 	gameInput.set(Keyboard::Key_F1, 10, false, 0);
