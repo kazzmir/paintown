@@ -24,6 +24,35 @@ public:
     CompiledKeySingle(const Ast::KeySingle & name):
     key(convertKey(name)){
     }
+    
+    using CompiledKey::same;
+    virtual bool same(const CompiledKeySingle & key) const {
+        return this->key == key.key;
+    }
+    
+    virtual bool operator==(const CompiledKey & key) const {
+        return key.same(*this);
+    }
+    
+    std::string toString() const{
+        switch (key){
+            case A : return "a";
+            case B : return "b";
+            case C : return "c";
+            case X : return "x";
+            case Y : return "y";
+            case Z : return "z";
+            case Back : return "B";
+            case Forward : return "F";
+            case Down : return "D";
+            case Up : return "U";
+            case DownBack : return "DB";
+            case UpBack : return "UB";
+            case DownForward : return "DF";
+            case UpForward : return "UF";
+            case Start : return "start";
+        }
+    }
 
     static Keys convertKey(const Ast::KeySingle & name){
         if (name == "a"){
@@ -39,7 +68,7 @@ public:
         } else if (name == "z"){
             return Z;
         } else if (name == "B"){
-            return B;
+            return Back;
         } else if (name == "DB"){
             return DownBack;
         } else if (name == "D"){
@@ -62,7 +91,7 @@ public:
         return Start;
     }
 
-    bool pressedKey(InputMap<Mugen::Keys>::Output & keys){
+    bool pressedKey(InputMap<Mugen::Keys>::Output & keys) const {
         switch (key){
             case A: return keys[Mugen::A];
             case B: return keys[Mugen::B];
@@ -83,7 +112,7 @@ public:
         }
     }
     
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         if (pressedKey(keys)){
             needRelease = this;
             return true;
@@ -98,10 +127,22 @@ protected:
 
 class CompiledKeyCombined: public CompiledKey {
 public:
-    CompiledKeyCombined(const CompiledKey * key1, const CompiledKey * key2){
+    CompiledKeyCombined(const CompiledKey * key1, const CompiledKey * key2):
+    key1(key1),
+    key2(key2){
+    }
+    
+    virtual std::string toString() const {
+        ostringstream out;
+        out << key1->toString() << "+" << key2->toString();
+        return out.str();
+    }
+    
+    virtual bool operator==(const CompiledKey & key) const {
+        return key.same(*this);
     }
 
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         int fake = -1;
         bool ok = key1->pressed(keys, oldKeys, fake, holder, needRelease) &&
                   key2->pressed(keys, oldKeys, fake, holder, needRelease);
@@ -117,8 +158,8 @@ public:
     }
 
 protected:
-    CompiledKey * key1;
-    CompiledKey * key2;
+    const CompiledKey * key1;
+    const CompiledKey * key2;
 };
 
 class CompiledKeyMustBeHeldDown: public CompiledKey {
@@ -127,12 +168,23 @@ public:
     key(key){
     }
     
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    virtual std::string toString() const {
+        ostringstream out;
+        out << "/" << key->toString();
+        return out.str();
+    }
+    
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         if (key->pressed(keys, oldKeys, holdKey, holder, needRelease)){
+            needRelease = NULL;
             holder = key;
             return true;
         }
         return false;
+    }
+    
+    virtual bool operator==(const CompiledKey & key) const {
+        return key.same(*this);
     }
 
     virtual ~CompiledKeyMustBeHeldDown(){
@@ -150,7 +202,21 @@ public:
         time = ast.getExtra();
     }
     
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    virtual bool operator==(const CompiledKey & key) const {
+        return key.same(*this);
+    }
+
+    virtual std::string toString() const {
+        ostringstream out;
+        out << "~";
+        if (time != 0){
+            out << time;
+        }
+        out << key->toString(); 
+        return out.str();
+    }
+    
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         if (time > 0){
             if (holdKey > 0){
                 int fake = -1;
@@ -167,12 +233,14 @@ public:
                 return !key->pressed(keys, oldKeys, fake, holder, fakeKey);
             } else if (holdKey == -1){
                 holdKey = time;
+                return false;
             }
         } else {
             int fake = -1;
             return !key->pressed(keys, oldKeys, fake, holder, needRelease);
         }
 
+        throw Command::Exception();
     }
 
     virtual ~CompiledKeyRelease(){
@@ -189,8 +257,18 @@ public:
     CompiledKeyDirection(const Ast::KeyModifier & ast, CompiledKey * key):
     key(key){
     }
+    
+    virtual bool operator==(const CompiledKey & key) const {
+        return key.same(*this);
+    }
+    
+    virtual std::string toString() const {
+        ostringstream out;
+        out << "$" << key->toString();
+        return out.str();
+    }
 
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         return false;
     }
 
@@ -208,11 +286,21 @@ public:
     key(key){
     }
         
-    bool sameKeys(const InputMap<Mugen::Keys>::Output & map1, const InputMap<Mugen::Keys>::Output & map2 ){
+    bool sameKeys(const InputMap<Mugen::Keys>::Output & map1, const InputMap<Mugen::Keys>::Output & map2 ) const {
         return map1 == map2;
     }
+    
+    virtual std::string toString() const {
+        ostringstream out;
+        out << ">" << key->toString();
+        return out.str();
+    }
+    
+    virtual bool operator==(const CompiledKey & key) const {
+        return key.same(*this);
+    }
 
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease){
+    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         if (!key->pressed(keys, oldKeys, holdKey, holder, needRelease)){
             if (!sameKeys(keys, oldKeys)){
                 throw Command::Exception();
@@ -258,6 +346,7 @@ static CompiledKey* compile(const Ast::Key * key){
                 case Ast::KeyModifier::Direction: return Mugen::compile(key.getKey());
                 case Ast::KeyModifier::Only: return new CompiledKeyOnly(key, Mugen::compile(key.getKey()));
             }
+            throw Command::Exception();
         }
         
         CompiledKey* compile(const Ast::KeyCombined & key){
@@ -300,10 +389,10 @@ maxTime(maxTime),
 bufferTime(bufferTime),
 ticks(-1),
 holdKey(-1),
-current(keys->getKeys().begin()),
-holder(0),
+current(compiledKeys.begin()),
+holder(NULL),
 successTime(0),
-needRelease(0){
+needRelease(NULL){
 }
 
 bool Command::interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease){
@@ -454,16 +543,24 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
     }
 
     bool use = true;
+
+    /*
+    if (needRelease != NULL){
+        Global::debug(0) << "Waiting for release: " << needRelease->toString() << endl;
+    }
+    */
+
     if (needRelease != NULL && *needRelease == *(*current)){
-        const Ast::Key * fake;
+    // if (needRelease != NULL){
+        const CompiledKey * fake;
         try{
-            bool ok = interpret(needRelease, keys, oldKeys, holdKey, holder, fake);
+            bool ok = needRelease->pressed(keys, oldKeys, holdKey, holder, fake);
 
             /*
                KeyWalker walker(keys, oldKeys, holdKey, holder, fake);
                needRelease->walk(walker);
                */
-            Global::debug(1) << "Waiting for key " << needRelease->toString() << " to be released: " << ok << endl;
+            // Global::debug(1) << "Waiting for key " << needRelease->toString() << " to be released: " << ok << endl;
 
             if (ok){
                 /* if the key is still held down then don't continue */
@@ -488,7 +585,7 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
         (*current)->walk(walker);
         */
         try{
-            ok = interpret(*current, keys, oldKeys, holdKey, holder, needRelease);
+            ok = (*current)->pressed(keys, oldKeys, holdKey, holder, needRelease);
         } catch (const Exception & ce){
             fail = true;
         }
@@ -499,8 +596,9 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
         }
         */
         if (holder != 0){
+            const CompiledKey * fake;
             try{
-                ok &= interpret(holder, keys, oldKeys, holdKey, holder, needRelease);
+                ok &= holder->pressed(keys, oldKeys, holdKey, holder, fake);
             } catch (const Exception & e){
                 fail = true;
             }
@@ -528,7 +626,7 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
     // Global::debug(0) << "Command " << name << " at ticks " << ticks << endl;
 
     if (fail){
-        current = this->keys->getKeys().begin();
+        current = this->compiledKeys.begin();
         ticks = -1;
         // needRelease = NULL;
         holdKey = -1;
@@ -539,9 +637,9 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
             ticks = 1;
         }
         holdKey = -1;
-        if (current == this->keys->getKeys().end()){
+        if (current == this->compiledKeys.end()){
             /* success! */
-            current = this->keys->getKeys().begin();
+            current = this->compiledKeys.begin();
             ticks = -1;
             // needRelease = NULL;
             holder = 0;
@@ -556,6 +654,9 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
 
 Command::~Command(){
     delete keys;
+    for (vector<CompiledKey*>::iterator it = compiledKeys.begin(); it != compiledKeys.end(); it++){
+        delete (*it);
+    }
 }
 
 }

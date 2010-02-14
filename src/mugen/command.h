@@ -11,11 +11,26 @@ namespace Ast{
 
 namespace Mugen{
 
+class CompiledKeySingle;
 class CompiledKey{
 public:
     CompiledKey();
 
-    virtual bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) = 0;
+    virtual bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const = 0;
+
+    virtual std::string toString() const = 0;
+
+    virtual bool same(const CompiledKey & key) const {
+        return false;
+    }
+
+    virtual bool same(const CompiledKeySingle & key) const {
+        return false;
+    }
+
+    virtual bool operator==(const CompiledKey & key) const {
+        return key.same(*this);
+    }
 
     virtual ~CompiledKey();
 };
@@ -51,11 +66,11 @@ protected:
     const int bufferTime;
     int ticks;
     int holdKey;
-    std::vector<Ast::Key*>::const_iterator current;
+    std::vector<CompiledKey*>::const_iterator current;
     InputMap<Mugen::Keys>::Output oldKeys;
-    const Ast::Key * holder;
+    const CompiledKey * holder;
     int successTime;
-    const Ast::Key * needRelease;
+    const CompiledKey * needRelease;
 };
 
 }
