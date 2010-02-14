@@ -116,6 +116,111 @@ static InputMap<Mugen::Keys> getPlayer2InputLeft(){
     return input;
 }
 
+static void runMatch(MugenStage * stage, const Bitmap & buffer){
+    Bitmap work(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+    InputMap<int> gameInput;
+    gameInput.set(Keyboard::Key_F1, 10, false, 0);
+    gameInput.set(Keyboard::Key_F2, 10, false, 1);
+    gameInput.set(Keyboard::Key_F3, 10, false, 2);
+    gameInput.set(Keyboard::Key_F4, 10, true, 3);
+    gameInput.set(Keyboard::Key_ESC, 0, true, 4);
+
+    double gameSpeed = 1.0;
+    double runCounter = 0;
+    double mugenSpeed = 60;
+
+    unsigned int second_counter = Global::second_counter;
+    int frames = 0;
+    double fps = Global::TICS_PER_SECOND;
+    bool show_fps = true;
+
+    bool endMatch = false;
+
+    while (!endMatch){
+        bool draw = false;
+
+        if (Global::speed_counter > 0){
+            runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+            if (runCounter > 10){
+                runCounter = 10;
+            }
+
+            while (runCounter > 1){
+                InputManager::poll();
+                // Do stage logic catch match exception to handle the next match
+                stage->logic();
+                endMatch = stage->isMatchOver();
+
+                runCounter -= 1;
+                draw = true;
+
+                if (Global::shutdown()){
+                    throw ShutdownException();
+                }
+
+                InputMap<int>::Output out = InputManager::getMap(gameInput);
+                if (out[0]){
+                    gameSpeed -= 0.1;
+                }
+                if (out[1]){
+                    gameSpeed += 0.1;
+                }
+                if (out[2]){
+                    gameSpeed = 1;
+                }
+                if (out[3]){
+                    stage->toggleDebug();
+                }
+                if (out[4]){
+                    throw MugenException();
+                    /*
+                    quit = true;
+                    endMatch = true;
+                    */
+                }
+                if (gameSpeed < 0.1){
+                    gameSpeed = 0.1;
+                }
+            }
+            Global::speed_counter = 0;
+        }
+
+        if (second_counter != Global::second_counter){
+            int difference = Global::second_counter - second_counter;
+            /* unlikely, but just in case */
+            if (difference == 0){
+                difference = 1;
+            }
+            fps = (0.75 * fps) + (0.25 * (double) frames / difference);
+            // fps[fps_index] = (double) frames / (double) difference;
+            // fps_index = (fps_index+1) % max_fps_index;
+            second_counter = Global::second_counter;
+            frames = 0;
+        }
+
+        if (draw){
+            frames += 1;
+            stage->render(&work);
+            work.Stretch(buffer);
+
+            FontRender * render = FontRender::getInstance();
+            render->render(&buffer);
+
+            if (show_fps){
+                static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+                const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 20, 20 );
+                font.printf(buffer.getWidth() - 120, buffer.getHeight() - font.getHeight() - 1, Bitmap::makeColor(255,255,255), buffer, "FPS: %0.2f", 0, fps );
+            }
+
+            buffer.BlitToScreen();
+        }
+
+        while (Global::speed_counter == 0){
+            PaintownUtil::rest(1);
+        }
+    }
+}
+
 /* is there a reason why doArcade and doVersus don't share the main loop? */
 
 void Game::doArcade(const Bitmap & bmp){
@@ -134,6 +239,7 @@ void Game::doArcade(const Bitmap & bmp){
     std::string gameOver;
     bool creditsEnabled = false;
     std::string credits;
+
     try{
         // get intro and ending for player
 	std::string file = Filesystem::find(select.getPlayer1Def());
@@ -168,6 +274,7 @@ void Game::doArcade(const Bitmap & bmp){
 
     } catch (const MugenException & e){
     }
+
     InputMap<Mugen::Keys> input;
     // Get player keys
     if (playerType == Mugen::Player1){
@@ -182,12 +289,9 @@ void Game::doArcade(const Bitmap & bmp){
 	story.setInput(input);
 	story.run(bmp);
     }
-    bool quit = false;
-    unsigned int second_counter = Global::second_counter;
-    int frames = 0;
-    double fps = Global::TICS_PER_SECOND;
-    bool show_fps = true;
 
+    bool quit = false;
+    
     // Total wins from player
     int wins = 0;
 
@@ -205,104 +309,18 @@ void Game::doArcade(const Bitmap & bmp){
 	    player = select.getPlayer2();
 	    player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
 	}
-	MugenStage *stage = select.getStage();
-	InputMap<int> gameInput;
-	gameInput.set(Keyboard::Key_F1, 10, false, 0);
-	gameInput.set(Keyboard::Key_F2, 10, false, 1);
-	gameInput.set(Keyboard::Key_F3, 10, false, 2);
-	gameInput.set(Keyboard::Key_F4, 10, true, 3);
-	gameInput.set(Keyboard::Key_ESC, 0, true, 4);
-	
-	Bitmap work(DEFAULT_WIDTH,DEFAULT_HEIGHT);
-	double gameSpeed = 1.0;
-	double runCounter = 0;
-	double mugenSpeed = 60;
 
-	// Lets reset the stage for good measure
+	MugenStage *stage = select.getStage();
+		
+        // Lets reset the stage for good measure
 	stage->reset();
 
-        bool endMatch = false;
+        try{
+            runMatch(stage, bmp);
+        } catch (const MugenException & e){
+            quit = true;
+        }
 
-	while (!endMatch){
-	    bool draw = false;
-
-	    if (Global::speed_counter > 0){
-		runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
-                if (runCounter > 10){
-                    runCounter = 10;
-                }
-
-		while (runCounter > 1){
-		    InputManager::poll();
-                    // Do stage logic catch match exception to handle the next match
-                    stage->logic();
-                    endMatch = stage->isMatchOver();
-
-		    runCounter -= 1;
-		    draw = true;
-
-                    if (Global::shutdown()){
-                        throw ShutdownException();
-                    }
-
-		    InputMap<int>::Output out = InputManager::getMap(gameInput);
-		    if (out[0]){
-			gameSpeed -= 0.1;
-		    }
-		    if (out[1]){
-			gameSpeed += 0.1;
-		    }
-		    if (out[2]){
-			gameSpeed = 1;
-		    }
-		    if (out[3]){
-			stage->toggleDebug();
-		    }
-		    if (out[4]){
-			quit = true;
-                        endMatch = true;
-		    }
-		    if (gameSpeed < 0.1){
-			gameSpeed = 0.1;
-		    }
-		}
-		Global::speed_counter = 0;
-	    }
-
-            if (second_counter != Global::second_counter){
-                int difference = Global::second_counter - second_counter;
-                /* unlikely, but just in case */
-                if (difference == 0){
-                    difference = 1;
-                }
-                fps = (0.75 * fps) + (0.25 * (double) frames / difference);
-                // fps[fps_index] = (double) frames / (double) difference;
-                // fps_index = (fps_index+1) % max_fps_index;
-                second_counter = Global::second_counter;
-                frames = 0;
-            }
-
-	    if (draw){
-                frames += 1;
-		stage->render(&work);
-		work.Stretch(bmp);
-
-		FontRender * render = FontRender::getInstance();
-		render->render(&bmp);
-
-                if (show_fps){
-                    static const char * DEFAULT_FONT = "/fonts/arial.ttf";
-                    const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 20, 20 );
-                    font.printf(bmp.getWidth() - 120, bmp.getHeight() - font.getHeight() - 1, Bitmap::makeColor(255,255,255), bmp, "FPS: %0.2f", 0, fps );
-                }
-    
-		bmp.BlitToScreen();
-	    }
-
-	    while (Global::speed_counter == 0){
-		PaintownUtil::rest(1);
-	    }
-	}
 	/*! *FIXME *TODO
 	* Set next match and check if we have 
 	* completed the game to handle appropriately and other misc arcade stuff
@@ -367,7 +385,7 @@ void Game::doArcade(const Bitmap & bmp){
 
 void Game::doVersus(const Bitmap & bmp){
     bool quit = false;
-    while(!quit){
+    while (!quit){
         Mugen::CharacterSelect select(systemFile, playerType, gameType);
         select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
         select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
@@ -394,7 +412,7 @@ void Game::doVersus(const Bitmap & bmp){
 
         bool endMatch = false;
 
-	while( !endMatch ){
+	while (!endMatch){
 	    bool draw = false;
 
 	    if ( Global::speed_counter > 0 ){

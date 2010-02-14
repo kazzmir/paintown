@@ -1630,8 +1630,10 @@ class CharacterCollect{
 	order(1),
 	song(""){
 	}
+
 	~CharacterCollect(){
 	}
+
 	bool random;
 	bool randomStage;
 	std::string name;
@@ -1734,7 +1736,7 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 			list >> temp;
 			Global::debug(0) << "stage: " << temp << endl;
 			names.push_back(temp);
-		    } catch (...){
+		    } catch (const Ast::Exception & e){
 		    }
                 }
             };

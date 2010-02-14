@@ -8,10 +8,11 @@
 using namespace std;
 using namespace Mugen;
 
-OptionArcade::OptionArcade( const std::string &name ) throw( LoadException ){
+OptionArcade::OptionArcade(const string & name){
     if (name.empty()){
 	throw LoadException("No name given to versus");
     }
+
     this->setText(name);
 }
 

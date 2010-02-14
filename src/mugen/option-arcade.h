@@ -12,7 +12,7 @@ namespace Mugen {
 
 class OptionArcade: public ItemOption {
 public:
-    OptionArcade(const std::string &name) throw (LoadException);
+    OptionArcade(const std::string &name);
     virtual ~OptionArcade();
     
     void executeOption(const Mugen::PlayerType &, bool & endGame);
