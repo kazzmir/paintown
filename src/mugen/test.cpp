@@ -388,7 +388,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
 void showFont(const string & ourFile){
     Global::debug(0) << "Trying to load font: " << ourFile << "..." << endl;
-    MugenFont font( Filesystem::find("mugen/font/" + ourFile ));
+    MugenFont font( Filesystem::find( ourFile ));
     Global::debug(0) << "Loaded font: \"" << ourFile << "\" successfully." << endl;
     
     bool quit = false;

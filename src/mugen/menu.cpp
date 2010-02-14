@@ -598,11 +598,6 @@ void MugenMenu::addMenuOption(Mugen::ItemOption * option){
     }
 }
 
-void MugenMenu::copyBackground(Bitmap & copyTo){
-    copyTo.resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    background->renderBackground(0, 0, copyTo);
-}
-
 void MugenMenu::cleanup(){
     
     //Backgrounds

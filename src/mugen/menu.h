@@ -69,8 +69,6 @@ class MugenMenu : public Menu {
 	/*! do logic, draw whatever */
 	virtual void run();
 	
-        virtual void copyBackground(Bitmap & copyTo);
-	
         virtual inline std::string getSelectInfoFile() const {
             return selectInfoFile;
         }
