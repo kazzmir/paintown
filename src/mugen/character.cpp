@@ -840,6 +840,8 @@ Character::~Character(){
         State * state = (*it).second;
         delete state;
     }
+
+    delete internalJumpNumber;
 }
 
 void Character::initialize(){
@@ -860,6 +862,8 @@ void Character::initialize(){
     nextCombo = 0;
 
     lastTicket = 0;
+
+    internalJumpNumber = NULL;
     
     /* Load up info for the select screen */
     //loadSelectData();
@@ -2185,7 +2189,8 @@ void Character::fixAssumptions(){
             Command * doubleJumpCommand = new Command(jumpCommand, new Ast::KeyList(keys), 5, 0);
             addCommand(doubleJumpCommand);
 
-            setSystemVariable(JumpIndex, new Ast::MutableNumber(0));
+            internalJumpNumber = new Ast::MutableNumber(0);
+            setSystemVariable(JumpIndex, internalJumpNumber);
 
             StateController * controller = new StateController("double jump");
             controller->setType(StateController::InternalCommand);

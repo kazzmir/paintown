@@ -1557,6 +1557,8 @@ protected:
         std::vector<WinGame> wins;
 
         int matchWins;
+
+        Ast::Value * internalJumpNumber;
 };
 
 }
