@@ -1109,7 +1109,7 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 	    roundEnd = true;
             overByKO = true;
 	    // Start slow time
-	    stage.setGameRate(0.5);
+	    stage.setGameRate(0.3);
 	    break;
         case DoTimeOver:
             overByKO = false;
