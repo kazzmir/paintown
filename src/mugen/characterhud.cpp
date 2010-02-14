@@ -813,6 +813,8 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    // Only show KO after slowtime
 	    if (ticker < slowTime){
 		break;
+	    } else if (ticker == slowTime){
+		stage.setGameRate(1);
 	    }
 	    // Check KO State
 	    if (player1.getHealth() <= 0 && player2.getHealth() <= 0){
@@ -1106,6 +1108,8 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 	case RoundOver:
 	    roundEnd = true;
             overByKO = true;
+	    // Start slow time
+	    stage.setGameRate(0.5);
 	    break;
         case DoTimeOver:
             overByKO = false;

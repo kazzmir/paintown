@@ -690,16 +690,16 @@ void MugenMenu::cleanupSprites(){
 // Draw text
 void MugenMenu::renderText(Bitmap *bmp){
     
-    const int top = (position.y - fontSpacing.y) - windowMargin.x;
+    const int top = (position.y) - windowMargin.x;
     const int bottom = (position.y + fontSpacing.y) + ((windowVisibleItems) * fontCursor.getFontHeight(fonts)) + windowMargin.y;
     bmp->setClipRect(0, top, bmp->getWidth(), bottom);
     
-    int xplacement = position.x;
-    int yplacement = position.y;
-    
     int offset = optionLocation >= windowVisibleItems ? optionLocation - windowVisibleItems + 1 : 0;
-   
-    for( std::vector <Mugen::ItemOption *>::iterator i = options.begin() + offset; i != options.end(); ++i){
+    
+    int xplacement = position.x;
+    int yplacement = position.y - (offset * (fontCursor.getFontHeight(fonts))) + (offset > 0 ? fontSpacing.y : 0);
+    
+    for( std::vector <Mugen::ItemOption *>::iterator i = options.begin(); i != options.end(); ++i){
 	
 	Mugen::ItemOption *option = *i;
 	// Render
