@@ -231,8 +231,9 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
     }
 }
 
-/* is there a reason why doArcade and doVersus don't share the main loop? */
-
+/* is there a reason why doArcade and doVersus don't share the main loop?
+ * answer: jon moved the main loop to runMatch(). versus should use this eventually
+ */
 void Game::doArcade(const Bitmap & bmp){
     Mugen::CharacterSelect select(systemFile, playerType, gameType);
     select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
@@ -312,6 +313,7 @@ void Game::doArcade(const Bitmap & bmp){
         while (!quit){
             select.renderVersusScreen(bmp);
 
+            /* this is the guy thats in control */
             Mugen::Character * player = 0;
             if (playerType == Mugen::Player1){
                 player = select.getPlayer1();
@@ -320,6 +322,7 @@ void Game::doArcade(const Bitmap & bmp){
                 player = select.getPlayer2();
                 player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
             }
+
 
             MugenStage *stage = select.getStage();
 
@@ -393,6 +396,7 @@ void Game::doArcade(const Bitmap & bmp){
     }
 }
 
+/* FIXME: can this code use runMatch() ? */
 void Game::doVersus(const Bitmap & bmp){
     bool quit = false;
     while (!quit){

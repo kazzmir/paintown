@@ -870,7 +870,7 @@ VersusScreen::~VersusScreen(){
 }
 
 void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, MugenStage * stage, const Bitmap &bmp){
-    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+    Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     bool done = false;
     bool escaped = false;
     
@@ -882,13 +882,12 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     double runCounter = 0;
     Global::speed_counter = 0;
     Global::second_counter = 0;
-    int game_time = 100;
     
     // Set game keys temporary
     InputMap<Mugen::Keys> gameInput;
     gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
     
-    while ( ! done && fader.getState() != Mugen::FadeTool::RunFade ){
+    while (!done && fader.getState() != Mugen::FadeTool::RunFade){
     
 	bool draw = false;
 	
@@ -953,16 +952,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 	    
 	    Global::speed_counter = 0;
 	}
-		
-	while ( Global::second_counter > 0 ){
-	    game_time--;
-	    Global::second_counter--;
-	    if ( game_time < 0 ){
-		    game_time = 0;
-	    }
-	}
-
-	if ( draw ){
+	
+	if (draw){
 	    // render backgrounds
 	    background->renderBackground(0,0,workArea);
 	    
@@ -985,7 +976,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 	    bmp.BlitToScreen();
 	}
 
-	while ( Global::speed_counter < 1 ){
+	while (Global::speed_counter < 1){
 		PaintownUtil::rest( 1 );
 	}
     }
