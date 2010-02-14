@@ -599,6 +599,7 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
            sendToAll( sockets, addServer );
            */
 
+        int showHelp = 800;
         for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
             string level = *it;
             debug( 1 ) << "Sending level '" << level << "'" << endl;
@@ -637,7 +638,8 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
             world.startMessageHandlers();
 
             Loader::stopLoading(loading_screen_thread);
-            bool played = Game::playLevel( world, players, 200 );
+            bool played = Game::playLevel(world, players, showHelp);
+            showHelp = 0;
 
             ObjectFactory::destroy();
             HeartFactory::destroy();

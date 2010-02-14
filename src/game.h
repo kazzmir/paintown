@@ -14,7 +14,7 @@ class World;
 namespace Game{
 
 /* play a single world */
-bool playLevel( World & world, const std::vector< Object * > & players, int helpTime );
+bool playLevel( World & world, const std::vector< Object * > & players, double helpTime);
 /* do the required setup to play a single level */
 void realGame(const std::vector< Object * > & players, const Level::LevelInfo & levelInfo);
 

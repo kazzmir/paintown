@@ -109,6 +109,7 @@ static void playGame( Socket socket ){
         map<Object::networkid_t, string> clientNames;
 
         bool done = false;
+        int showHelp = 800;
         while ( ! done ){
             Message next( socket );
             int type;
@@ -150,7 +151,8 @@ static void playGame( Socket socket ){
                     Loader::stopLoading(loadingThread);
                     try{
                         vector<Object*> xplayers;
-                        bool forceQuit = ! Game::playLevel( world, xplayers, 100 );
+                        bool forceQuit = ! Game::playLevel(world, xplayers, showHelp);
+                        showHelp = 0;
 
                         ObjectFactory::destroy();
                         HeartFactory::destroy();

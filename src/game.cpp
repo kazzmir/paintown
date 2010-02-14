@@ -174,7 +174,7 @@ namespace Game{
     };
 }
 
-bool playLevel( World & world, const vector< Object * > & players, int helpTime ){
+bool playLevel( World & world, const vector< Object * > & players, double helpTime){
     // Keyboard key;
     InputMap<Game::Input> input;
 
@@ -259,6 +259,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
     double gameSpeed = startingGameSpeed();
 
     const bool paused = false;
+    bool helped = false;
     bool force_quit = false;
 
     unsigned int second_counter = Global::second_counter;
@@ -305,8 +306,12 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
                         }
                     }
 
-                    if ( helpTime > 0 ){
-                        helpTime -= 2;
+                    if (helpTime > 0){
+                        if (helped){
+                            helpTime -= 2;
+                        } else {
+                            helpTime -= 0.5;
+                        }
                     }
                 }
             }
@@ -314,6 +319,7 @@ bool playLevel( World & world, const vector< Object * > & players, int helpTime 
             InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
 
             if (inputState[Game::ShowHelp]){
+                helped = true;
                 helpTime = helpTime < 260 ? 260 : helpTime;
             }
 
@@ -578,7 +584,6 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
 
             gameState = playLevel( world, players, showHelp );
             showHelp = 0;
-
         } catch ( const LoadException & le ){
             Global::debug( 0 ) << "Could not load " << *it << " because " << le.getReason() << endl;
             /* if the level couldn't be loaded turn off
