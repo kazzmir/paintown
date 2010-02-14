@@ -297,6 +297,12 @@ struct HitDefinition{
      * This is the sound to play on guard (from common.snd). Only 6,0 is available at this time. To play a sound from the player's own SND file, precede the first number with an "S". There is no facility to play a sound from the opponent's SND file. Defaults to the value set in the player variables if omitted.
      */
     struct GuardHitSound{
+        GuardHitSound():
+            own(false),
+            group(0),
+            item(0){
+            }
+
         bool own;
         int group;
         int item;
@@ -735,8 +741,32 @@ public:
         return name;
     }
 
+    /*
     virtual void setValue1(Ast::Value * value);
     virtual void setValue2(Ast::Value * value);
+    */
+
+    virtual void setX(Ast::Value * value);
+    virtual void setY(Ast::Value * value);
+    virtual void setValue(Ast::Value * value);
+    virtual void setVariable(Ast::Value * value);
+
+    virtual inline Ast::Value * getX() const {
+        return this->x;
+    }
+
+    virtual inline Ast::Value * getY() const {
+        return this->y;
+    }
+
+    virtual inline Ast::Value * getValue() const {
+        return this->value;
+    }
+
+    virtual inline Ast::Value * getVariable() const {
+        return this->variable;
+    }
+
     virtual void addTriggerAll(Ast::Value * trigger);
     virtual void addTrigger(int number, Ast::Value * trigger);
     virtual void addVariable(int number, Ast::Value * variable);
@@ -772,8 +802,20 @@ protected:
     std::string name;
     bool changeControl;
     Ast::Value * control;
+
+    /* each state controller should be a unique subclass but before we get there
+     * this is a convenient hack:
+     * only these values can be used to store expressions. state controllers will
+     * never use all the properties available, such as 'x', 'y' and 'value'.
+     * this means we can reuse the same variables for mutually exclusive variables.
+     */
     Ast::Value * value1;
     Ast::Value * value2;
+
+    typedef Ast::Value *& ValueAlias;
+
+    ValueAlias x, y, value, variable;
+
     std::map<int, std::vector<Ast::Value*> > triggers;
 
     /* var(1) and whatnot */

@@ -93,6 +93,10 @@ changeControl(false),
 control(NULL),
 value1(NULL),
 value2(NULL),
+x(value1),
+y(value2),
+value(value1),
+variable(value2),
 internal(0){
 }
 
@@ -120,12 +124,30 @@ StateController::~StateController(){
     delete control;
 }
 
+/*
 void StateController::setValue1(Ast::Value * value){
     this->value1 = value;
 }
 
 void StateController::setValue2(Ast::Value * value){
     this->value2 = value;
+}
+*/
+
+void StateController::setX(Ast::Value * value){
+    this->x = value;
+}
+
+void StateController::setY(Ast::Value * value){
+    this->y = value;
+}
+
+void StateController::setValue(Ast::Value * value){
+    this->value = value;
+}
+
+void StateController::setVariable(Ast::Value * value){
+    this->variable = value;
 }
 
 void StateController::addTriggerAll(Ast::Value * trigger){
@@ -263,7 +285,7 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case ChangeAnim : {
-            RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            RuntimeValue result = evaluate(getValue(), Environment(stage, guy));
             if (result.isDouble()){
                 int value = (int) result.getDoubleValue();
                 guy.setAnimation(value);
@@ -274,7 +296,7 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case ChangeState : {
-            RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            RuntimeValue result = evaluate(getValue(), Environment(stage, guy));
             if (result.isDouble()){
                 int value = (int) result.getDoubleValue();
                 guy.changeState(stage, value, commands);
@@ -285,7 +307,7 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case CtrlSet : {
-            RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            RuntimeValue result = evaluate(getValue(), Environment(stage, guy));
             guy.setControl(toBool(result));
             break;
         }
@@ -349,15 +371,15 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case HitVelSet : {
-            if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            if (getX() != NULL){
+                RuntimeValue result = evaluate(getX(), Environment(stage, guy));
                 if (result.getBoolValue()){
                     guy.setXVelocity(guy.getHitState().xVelocity);
                 }
             }
 
-            if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(stage, guy));
+            if (getY() != NULL){
+                RuntimeValue result = evaluate(getY(), Environment(stage, guy));
                 if (result.getBoolValue()){
                     guy.setYVelocity(guy.getHitState().yVelocity);
                 }
@@ -408,8 +430,8 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
                 /* FIXME: group could start with F */
                 string group;
                 Ast::Value * item = 0;
-                value1->reset();
-                *value1 >> group >> item;
+                getValue()->reset();
+                *getValue() >> group >> item;
                 int realItem = (int) toNumber(evaluate(item, Environment(stage, guy)));
                 MugenSound * sound = 0;
                 if (PaintownUtil::matchRegex(group, "F[0-9]+")){
@@ -430,15 +452,15 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case PosAdd : {
-            if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            if (getX() != NULL){
+                RuntimeValue result = evaluate(getX(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.moveX(result.getDoubleValue());
                     // guy.setX(guy.getX() + result.getDoubleValue());
                 }
             }
-            if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(stage, guy));
+            if (getY() != NULL){
+                RuntimeValue result = evaluate(getY(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.moveYNoCheck(-result.getDoubleValue());
                     // guy.setY(guy.getY() + result.getDoubleValue());
@@ -450,14 +472,14 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case PosSet : {
-            if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            if (getX() != NULL){
+                RuntimeValue result = evaluate(getX(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setX(result.getDoubleValue());
                 }
             }
-            if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(stage, guy));
+            if (getY() != NULL){
+                RuntimeValue result = evaluate(getY(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setY(result.getDoubleValue());
                 }
@@ -553,24 +575,24 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
                 guy.setSystemVariable(index, value);
             }
 
-            if (value1 != NULL && value2 != NULL){
+            if (getValue() != NULL && getVariable() != NULL){
                 /* 'value = 23' is value1
                  * 'v = 9' is value2
                  */
-                guy.setVariable((int) toNumber(evaluate(value2, Environment(stage, guy, commands))), value1);
+                guy.setVariable((int) toNumber(evaluate(getVariable(), Environment(stage, guy, commands))), getValue());
             }
 
             break;
         }
         case VelAdd : {
-            if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            if (getX() != NULL){
+                RuntimeValue result = evaluate(getX(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
                 }
             }
-            if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(stage, guy));
+            if (getY() != NULL){
+                RuntimeValue result = evaluate(getY(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(guy.getYVelocity() + result.getDoubleValue());
                 }
@@ -578,15 +600,15 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case VelMul : {
-            if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            if (getX() != NULL){
+                RuntimeValue result = evaluate(getX(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(guy.getXVelocity() * result.getDoubleValue());
                 }
             }
 
-            if (value2 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            if (getY() != NULL){
+                RuntimeValue result = evaluate(getY(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(guy.getYVelocity() * result.getDoubleValue());
                 }
@@ -594,14 +616,14 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case VelSet : {
-            if (value1 != NULL){
-                RuntimeValue result = evaluate(value1, Environment(stage, guy));
+            if (getX() != NULL){
+                RuntimeValue result = evaluate(getX(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(result.getDoubleValue());
                 }
             }
-            if (value2 != NULL){
-                RuntimeValue result = evaluate(value2, Environment(stage, guy));
+            if (getY() != NULL){
+                RuntimeValue result = evaluate(getY(), Environment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(result.getDoubleValue());
                 }
@@ -1539,18 +1561,18 @@ void Character::parseState(Ast::Section * section){
                         Global::debug(0) << "Unknown state controller type " << type << endl;
                     }
                 } else if (simple == "value"){
-                    controller->setValue1((Ast::Value*) simple.getValue()->copy());
+                    controller->setValue((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "triggerall"){
                     controller->addTriggerAll((Ast::Value*) simple.getValue()->copy());
                 } else if (PaintownUtil::matchRegex(simple.idString(), "trigger[0-9]+")){
                     int trigger = atoi(PaintownUtil::captureRegex(simple.idString(), "trigger([0-9]+)", 0).c_str());
                     controller->addTrigger(trigger, (Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "x"){
-                    controller->setValue1((Ast::Value*) simple.getValue()->copy());
+                    controller->setX((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "y"){
-                    controller->setValue2((Ast::Value*) simple.getValue()->copy());
+                    controller->setY((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "v"){
-                    controller->setValue2((Ast::Value*) simple.getValue()->copy());
+                    controller->setVariable((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "movetype"){
                     string type;
                     simple >> type;
@@ -1759,6 +1781,13 @@ void Character::parseState(Ast::Section * section){
                     simple >> controller->getHit().airGuardControlTime;
                 } else if (simple == "air.juggle"){
                     simple >> controller->getHit().airJuggle;
+                } else if (simple == "guardsound"){
+                    try{
+                        /* FIXME: parse a string and then determine if its S# or just # */
+                        simple >> controller->getHit().guardHitSound.group;
+                        simple >> controller->getHit().guardHitSound.item;
+                    } catch (const Ast::Exception & e){
+                    }
                 } else if (simple == "mindist"){
                     simple >> controller->getHit().minimum.x;
                     simple >> controller->getHit().minimum.y;
@@ -1829,8 +1858,12 @@ void Character::parseState(Ast::Section * section){
 
 static string findStateFile(const string & base, const string & path){
     try{
+        /* first look in the character's directory */
         return Filesystem::find(base + "/" + path);
     } catch (const Filesystem::NotFound & f){
+        /* then look for it in the common data directory.
+         * this is where common1.cns lives
+         */
         return Filesystem::find("mugen/data/" + path);
     }
 }
@@ -2108,23 +2141,12 @@ static const int JumpIndex = 234823;
 void Character::resetJump(const MugenStage & stage, const vector<string> & inputs){
     Ast::MutableNumber * number = (Ast::MutableNumber*) getSystemVariable(JumpIndex);
     number->set(0);
-
-    /* FIXME: creating a new ast node is a leak. put it in some global array
-     * or something.
-     */
-    // setSystemVariable(JumpIndex, new Ast::Number(0));
     changeState(stage, JumpStart, inputs);
 }
 
 void Character::doubleJump(const MugenStage & stage, const vector<string> & inputs){
     Ast::MutableNumber * number = (Ast::MutableNumber*) getSystemVariable(JumpIndex);
     number->set(number->get() + 1);
-
-    /*
-    int current;
-    *getSystemVariable(JumpIndex) >> current;
-    setSystemVariable(JumpIndex, new Ast::Number(1 + current));
-    */
     changeState(stage, AirJumpStart, inputs);
 }
 
@@ -2138,7 +2160,7 @@ void Character::fixAssumptions(){
         {
             StateController * controller = new StateController("walk");
             controller->setType(StateController::ChangeState);
-            controller->setValue1(new Ast::Number(WalkingForwards));
+            controller->setValue(new Ast::Number(WalkingForwards));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
                         new Ast::Number(0)));
@@ -2156,7 +2178,7 @@ void Character::fixAssumptions(){
         {
             StateController * controller = new StateController("crouch");
             controller->setType(StateController::ChangeState);
-            controller->setValue1(new Ast::Number(StandToCrouch));
+            controller->setValue(new Ast::Number(StandToCrouch));
             controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
@@ -2223,7 +2245,7 @@ void Character::fixAssumptions(){
     if (states[20] != 0){
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
-        controller->setValue1(new Ast::Number(Standing));
+        controller->setValue(new Ast::Number(Standing));
         controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
                     new Ast::String(new string("holdfwd"))));
@@ -2241,7 +2263,7 @@ void Character::fixAssumptions(){
     if (states[11] != 0){
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
-        controller->setValue1(new Ast::Number(CrouchToStand));
+        controller->setValue(new Ast::Number(CrouchToStand));
         controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
                     new Ast::String(new string("holddown"))));
@@ -2252,7 +2274,7 @@ void Character::fixAssumptions(){
     if (states[Liedown] != 0){
         StateController * controller = new StateController("get up");
         controller->setType(StateController::ChangeState);
-        controller->setValue1(new Ast::Number(GetUpFromLiedown));
+        controller->setValue(new Ast::Number(GetUpFromLiedown));
 
         controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
                     new Ast::SimpleIdentifier("time"),
@@ -2270,7 +2292,7 @@ void Character::fixAssumptions(){
 
         StateController * controller = new StateController("stand");
         controller->setType(StateController::ChangeState);
-        controller->setValue1(new Ast::Number(Standing));
+        controller->setValue(new Ast::Number(Standing));
         controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
                     new Ast::Number(0)));
