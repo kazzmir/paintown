@@ -3,10 +3,13 @@
 #include <string>
 #include "input/input-map.h"
 #include "command.h"
+#include "util/funcs.h"
 
 using namespace std;
 
 namespace Mugen{
+
+namespace PaintownUtil = ::Util;
 
 Behavior::Behavior(){
 }
@@ -49,8 +52,20 @@ HumanBehavior::~HumanBehavior(){
 AIBehavior::AIBehavior(){
 }
 
+static string randomCommand(const vector<Command*> & commands){
+    if (commands.size() == 0){
+        return "";
+    }
+
+    int choice = PaintownUtil::rnd(commands.size());
+    return commands[choice]->getName();
+}
+
 vector<string> AIBehavior::currentCommands(const vector<Command*> & commands, bool reversed){
     vector<string> out;
+    if (PaintownUtil::rnd(100) > 90){
+        out.push_back(randomCommand(commands));
+    }
     return out;
 }
 
