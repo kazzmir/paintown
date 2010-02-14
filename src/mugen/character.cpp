@@ -1774,6 +1774,8 @@ void Character::parseState(Ast::Section * section){
                     simple >> controller->getHit().player2SpritePriority;
                 } else if (simple == "p1facing"){
                     controller->getHit().player1Facing = (Ast::Value*) simple.getValue()->copy();
+                } else if (simple == "p2facing"){
+                    controller->getHit().player2Facing = (Ast::Value*) simple.getValue()->copy();
                 } else if (simple == "p1getp2facing"){
                     simple >> controller->getHit().player1GetPlayer2Facing;
                 } else if (simple == "player2Facing"){

@@ -152,7 +152,8 @@ struct HitDefinition{
     airHitTime(20),
     yAcceleration(0.35),
     airJuggle(0),
-    player1Facing(NULL)
+    player1Facing(NULL),
+    player2Facing(NULL)
     {}
 
     ~HitDefinition();
@@ -460,7 +461,7 @@ struct HitDefinition{
     /* p2facing = facing (int)
     * Set to 1 to make P2 face the same direction as P1 if the hit is successful, -1 to make P2 face away. The default value is 0, no change in where P2 is facing.
     */
-    int player2Facing;
+    Ast::Value * player2Facing;
 
     /* p1stateno = state_no (int)
     * This is the number of the state to set P1 to if the hit is successful. The state must be an attack state (movetype = A) for at least 1 tick. Used mainly for throws. Defaults to -1, no change.
