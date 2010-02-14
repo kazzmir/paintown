@@ -116,6 +116,16 @@ static InputMap<Mugen::Keys> getPlayer2InputLeft(){
     return input;
 }
 
+class QuitGameException: public MugenException {
+public:
+    QuitGameException():
+        MugenException(){
+        }
+
+    virtual ~QuitGameException() throw (){
+    }
+};
+
 static void runMatch(MugenStage * stage, const Bitmap & buffer){
     Bitmap work(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     InputMap<int> gameInput;
@@ -172,7 +182,7 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
                     stage->toggleDebug();
                 }
                 if (out[4]){
-                    throw MugenException();
+                    throw QuitGameException();
                     /*
                     quit = true;
                     endMatch = true;
@@ -298,81 +308,81 @@ void Game::doArcade(const Bitmap & bmp){
     // Display game over storyboard
     bool displayGameOver = false;
     
-    while (!quit){
-	select.renderVersusScreen(bmp);
-	
-	Mugen::Character * player = 0;
-	if (playerType == Mugen::Player1){
-	    player = select.getPlayer1();
-	    player->setInput(getPlayer1Keys(), getPlayer1InputLeft());
-	} else if (playerType == Mugen::Player2){
-	    player = select.getPlayer2();
-	    player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
-	}
+    try{
+        while (!quit){
+            select.renderVersusScreen(bmp);
 
-	MugenStage *stage = select.getStage();
-		
-        // Lets reset the stage for good measure
-	stage->reset();
+            Mugen::Character * player = 0;
+            if (playerType == Mugen::Player1){
+                player = select.getPlayer1();
+                player->setInput(getPlayer1Keys(), getPlayer1InputLeft());
+            } else if (playerType == Mugen::Player2){
+                player = select.getPlayer2();
+                player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
+            }
 
-        try{
+            MugenStage *stage = select.getStage();
+
+            // Lets reset the stage for good measure
+            stage->reset();
+
             runMatch(stage, bmp);
-        } catch (const MugenException & e){
-            quit = true;
-        }
 
-	/*! *FIXME *TODO
-	* Set next match and check if we have 
-	* completed the game to handle appropriately and other misc arcade stuff
-	*/
-        // Check players wins
-        if (player->getMatchWins() > wins){
-            wins = player->getMatchWins();
-            // Reset player for next match
-            player->resetPlayer();
-            // There is a win they may proceed
-            if (!select.setNextArcadeMatch()){
-                // Game is over and player has won display ending storyboard
-                if (displayWinScreen && ending.empty()){
-                    // Need to parse that and display it for now just ignore
-                    
-                    // Show Default ending if enabled
-                    if (defaultEndingEnabled){
+            /*! *FIXME *TODO
+             * Set next match and check if we have 
+             * completed the game to handle appropriately and other misc arcade stuff
+             */
+            // Check players wins
+            if (player->getMatchWins() > wins){
+                wins = player->getMatchWins();
+                // Reset player for next match
+                player->resetPlayer();
+                // There is a win they may proceed
+                if (!select.setNextArcadeMatch()){
+                    // Game is over and player has won display ending storyboard
+                    if (displayWinScreen && ending.empty()){
+                        // Need to parse that and display it for now just ignore
+
+                        // Show Default ending if enabled
+                        if (defaultEndingEnabled){
+                            if (!defaultEnding.empty()){
+                                Storyboard story(defaultEnding);
+                                story.setInput(input);
+                                story.run(bmp);
+                            }
+                        }
+                    } else if (defaultEndingEnabled && ending.empty()){
                         if (!defaultEnding.empty()){
                             Storyboard story(defaultEnding);
                             story.setInput(input);
                             story.run(bmp);
                         }
-                    }
-                } else if (defaultEndingEnabled && ending.empty()){
-                    if (!defaultEnding.empty()){
-                        Storyboard story(defaultEnding);
+                    } else if (!ending.empty()){
+                        Storyboard story(ending);
                         story.setInput(input);
                         story.run(bmp);
+                    } 
+                    if (creditsEnabled){                    
+                        // credits
+                        if (!credits.empty()){
+                            Storyboard story(defaultEnding);
+                            story.setInput(input);
+                            story.run(bmp);
+                        }
                     }
-                } else if (!ending.empty()){
-	            Storyboard story(ending);
-	            story.setInput(input);
-	            story.run(bmp);
-                } 
-                if (creditsEnabled){                    
-                    // credits
-                    if (!credits.empty()){
-                        Storyboard story(defaultEnding);
-                        story.setInput(input);
-                        story.run(bmp);
-                    }
+                    quit = displayGameOver = true;
+                }
+            } else {
+                // Player lost do continue screen if enabled for now just quit
+                if (continueScreenEnabled){
+                } else {
                 }
                 quit = displayGameOver = true;
             }
-        } else {
-            // Player lost do continue screen if enabled for now just quit
-            if (continueScreenEnabled){
-            } else {
-            }
-            quit = displayGameOver = true;
         }
+    } catch (const QuitGameException & e){
     }
+
     // Show game over if ended through game otherwise just get out
     if (displayGameOver){
         if (!gameOver.empty()){
