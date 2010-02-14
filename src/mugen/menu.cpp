@@ -65,6 +65,57 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+CursorHandler::CursorHandler(){
+    // It seems that mugen defaults to something
+    cursor.x1 = -30;
+    cursor.y1 = -10;
+    cursor.x2 = 30;    
+    cursor.y2 = 2;
+    cursor.visible = true;
+    cursor.alpha = 128;
+    cursor.alphaMove = -6;
+}
+
+CursorHandler::~CursorHandler(){
+}
+
+void CursorHandler::act(){
+    if(cursor.visible){
+	cursor.alpha += cursor.alphaMove;
+	if (cursor.alpha <= 0){
+	    cursor.alpha = 0;
+	    cursor.alphaMove = 6;
+	}
+	else if (cursor.alpha >= 128){
+	    cursor.alpha = 128;
+	    cursor.alphaMove = -6;
+	}
+    }
+}
+
+void CursorHandler::renderCursor(int x, int y, const Bitmap & bmp){
+    if (cursor.visible){
+	Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	Bitmap::transBlender(0,0,0,cursor.alpha);
+	bmp.rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Bitmap::makeColor(255,255,255));
+	Bitmap::drawingMode(Bitmap::MODE_SOLID);
+    }
+}
+
+void CursorHandler::renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> & fonts, const Bitmap & bmp){
+    if(active){
+	renderCursor(x, y, bmp);
+	fonts[activeFont.index-1]->render(x, y, activeFont.position, activeFont.bank, bmp, text);
+    } else {
+	fonts[itemFont.index-1]->render(x, y, itemFont.position, itemFont.bank, bmp, text);
+    }
+}
+
+int CursorHandler::getFontHeight(std::vector<MugenFont *> & fonts){
+    return fonts[itemFont.index-1]->getHeight();
+}
+	
+
 Mugen::ItemOption::ItemOption():
 MenuOption(0){
 }
@@ -76,6 +127,11 @@ void Mugen::ItemOption::logic(){
 }
 void Mugen::ItemOption::run(bool &endGame){
 }
+
+void Mugen::ItemOption::render(int x, int y, CursorHandler & handler,  std::vector<MugenFont *> & fonts, const Bitmap & bmp){
+    handler.renderText(x, y, (getState() == MenuOption::Selected), getText(), fonts, bmp);
+}
+
 namespace Mugen {
 class QuitOption : public ItemOption {
     public:
@@ -111,8 +167,8 @@ logoFile(""),
 introFile(""),
 selectFile(""),
 fightFile(""),
-windowVisibleItems(0),
-showBoxCursor(false),
+windowMargin(0,0),
+windowVisibleItems(5),
 ticker(0),
 background(0),
 logo(0),
@@ -273,13 +329,19 @@ void MugenMenu::loadData() throw (MugenException){
                         simple >> menu.position.x;
                         simple >> menu.position.y;
                     } else if (simple == "menu.item.font"){
-                        simple >> menu.fontItem.index;
-                        simple >> menu.fontItem.bank;
-                        simple >> menu.fontItem.position;
+                        int index=0,bank=0,position=0;
+			try{
+			    simple >> index >> bank >> position;
+			} catch (const Ast::Exception & e){
+			}
+                        menu.fontCursor.setItemFont(index,bank,position);
                     } else if (simple == "menu.item.active.font"){
-                        simple >> menu.fontActive.index;
-                        simple >> menu.fontActive.bank;
-                        simple >> menu.fontActive.position;
+			int index=0,bank=0,position=0;
+			try{
+			    simple >> index >> bank >> position;
+			} catch (const Ast::Exception & e){
+			}
+                        menu.fontCursor.setActiveFont(index,bank,position);
                     } else if (simple == "menu.item.spacing"){
                         simple >> menu.fontSpacing.x;
                         simple >> menu.fontSpacing.y;
@@ -338,23 +400,22 @@ void MugenMenu::loadData() throw (MugenException){
                            menu.addMenuOption(new Mugen::QuitOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
-                   } else if (simple == "menu.window.margins.x"){
-                       simple >> menu.windowMarginX.x;
-                       simple >> menu.windowMarginX.y;
                    } else if (simple == "menu.window.margins.y"){
-                       simple >> menu.windowMarginY.x;
-                       simple >> menu.windowMarginY.y;
+                       simple >> menu.windowMargin.x;
+                       simple >> menu.windowMargin.y;
                    } else if (simple == "menu.window.visibleitems"){
                        simple >> menu.windowVisibleItems;
                    } else if (simple == "menu.boxcursor.visible"){
-                       simple >> menu.showBoxCursor;
+                       bool visible = false;
+		       simple >> visible;
+		       menu.fontCursor.setCursorVisible(visible);
                    } else if (simple == "menu.boxcursor.coords"){
-                       simple >> menu.boxCursorCoords.x1;
-                       simple >> menu.boxCursorCoords.y1;
-                       simple >> menu.boxCursorCoords.x2;
-                       simple >> menu.boxCursorCoords.y2;
-                       menu.boxCursorCoords.alpha = 128;
-                       menu.boxCursorCoords.alphaMove = -6;
+		       int x1=0,y1=0,x2=0,y2=0;
+			try{
+			    simple >> x1 >> y1 >> x2 >> y2;
+			} catch (const Ast::Exception & e){
+			}
+                        menu.fontCursor.setCursor(x1,y1,x2,y2);
                    } else if (simple == "cursor.move.snd"){
                        try{
                             simple >> menu.moveSound.x >> menu.moveSound.y;
@@ -532,6 +593,9 @@ void MugenMenu::run(){
                             }
 			}
 		    }
+		    // Font Cursor
+		    fontCursor.act();
+		    
 		    // Fader
 		    fader.act();
 		    
@@ -626,41 +690,24 @@ void MugenMenu::cleanupSprites(){
 // Draw text
 void MugenMenu::renderText(Bitmap *bmp){
     
+    const int top = (position.y - fontSpacing.y) - windowMargin.x;
+    const int bottom = (position.y + fontSpacing.y) + ((windowVisibleItems) * fontCursor.getFontHeight(fonts)) + windowMargin.y;
+    bmp->setClipRect(0, top, bmp->getWidth(), bottom);
+    
     int xplacement = position.x;
     int yplacement = position.y;
-    int visibleCounter = 0;
+    
     int offset = optionLocation >= windowVisibleItems ? optionLocation - windowVisibleItems + 1 : 0;
+   
     for( std::vector <Mugen::ItemOption *>::iterator i = options.begin() + offset; i != options.end(); ++i){
-	Mugen::ItemOption *option = *i;
-	if (option->getState() == MenuOption::Selected){
-	    MugenFont *font = fonts[fontActive.index-1];
-	    if(showBoxCursor){
-		boxCursorCoords.alpha += boxCursorCoords.alphaMove;
-		if (boxCursorCoords.alpha <= 0){
-		    boxCursorCoords.alpha = 0;
-		    boxCursorCoords.alphaMove = 6;
-		}
-		else if (boxCursorCoords.alpha >= 128){
-		    boxCursorCoords.alpha = 128;
-		    boxCursorCoords.alphaMove = -6;
-		}
-		Bitmap::drawingMode(Bitmap::MODE_TRANS);
-		Bitmap::transBlender(0,0,0,boxCursorCoords.alpha);
-		bmp->rectangleFill(xplacement + boxCursorCoords.x1, yplacement + boxCursorCoords.y1, xplacement + boxCursorCoords.x2,yplacement + boxCursorCoords.y2,Bitmap::makeColor(255,255,255));
-		Bitmap::drawingMode(Bitmap::MODE_SOLID);
-	    }
-	    font->render(xplacement, yplacement, fontActive.position, fontActive.bank, *bmp, option->getText());
-	    xplacement += fontSpacing.x;
-	    yplacement += fontSpacing.y;
-	} else {
-	    MugenFont *font = fonts[fontItem.index-1];
-	    font->render(xplacement, yplacement, fontItem.position, fontItem.bank, *bmp, option->getText());
-	    xplacement += fontSpacing.x;
-	    yplacement += fontSpacing.y;
-	}
 	
-	// Visible counter
-	visibleCounter++;
-	if (visibleCounter >= windowVisibleItems)break;
+	Mugen::ItemOption *option = *i;
+	// Render
+	option->render(xplacement, yplacement, fontCursor, fonts, *bmp);
+	// Displacement
+	xplacement += fontSpacing.x;
+	yplacement += fontSpacing.y;
     }
+    
+    bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
 }

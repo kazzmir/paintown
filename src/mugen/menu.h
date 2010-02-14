@@ -26,6 +26,55 @@ namespace Ast{
     class Section;
 }
 
+struct MugenMenuArea{
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+    int alpha;
+    int alphaMove;
+    bool visible;
+};
+
+class CursorHandler{
+    public:
+	CursorHandler();
+	virtual ~CursorHandler();
+	
+	// Handles cursor box blinking
+	virtual void act();
+	virtual void renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> &, const Bitmap &);
+	int getFontHeight(std::vector<MugenFont *> & fonts);
+	virtual inline void setCursor(int x1, int y1, int x2, int y2){
+	    this->cursor.x1 = x1;
+	    this->cursor.y1 = y1;
+	    this->cursor.x2 = x2;
+	    this->cursor.y2 = y2;
+	}
+	
+	virtual inline void setCursorVisible(bool visible){
+	    this->cursor.visible = visible;
+	}
+	
+	virtual inline void setItemFont(int index, int bank, int position){
+	    this->itemFont.index = index;
+	    this->itemFont.position = position;
+	    this->itemFont.bank = bank;
+	}
+	
+	virtual inline void setActiveFont(int index, int bank, int position){
+	    this->activeFont.index = index;
+	    this->activeFont.position = position;
+	    this->activeFont.bank = bank;
+	}
+	
+    private:
+	virtual void renderCursor(int x, int y, const Bitmap &);
+	MugenMenuArea cursor;
+	Mugen::FontInfo itemFont;
+	Mugen::FontInfo activeFont;
+};
+
 namespace Mugen{
     class Background;
     class Character;
@@ -40,21 +89,14 @@ class ItemOption : public MenuOption {
 	virtual void logic();
 	virtual void run(bool &endGame);
 	
+	virtual void render(int x, int y, CursorHandler &, std::vector<MugenFont *> &, const Bitmap &);
+	
 	virtual void executeOption(const Mugen::PlayerType &, bool & endGame)=0;
 };
 
 }
 
 class MugenStage;
-
-struct MugenMenuArea{
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-    int alpha;
-    int alphaMove;
-};
 
 class MugenMenu : public Menu {
     public:
@@ -92,58 +134,29 @@ class MugenMenu : public Menu {
 	std::string selectFile;
 	//fight = fight.def         ;Fight definition filename
 	std::string fightFile;
-	/*
-	; Notes about fonts:
-	;   - do not index fonts greater than 9 (crash) -- according to mugen..... we aren't them we can use more :P
-	;   - fonts indexed here do not refer to the ones in fight.def
-	*/
+	
+	/*! Fonts */
 	std::vector<MugenFont *>fonts;
 	
-	//fadein.time = 10
-	//fadeout.time = 10
-	// Utilize fade tool
-        Mugen::FadeTool fader;
+	/*! Fade tool */
+	Mugen::FadeTool fader;
 	
-	//menu.pos = 159,158
+	/*! Menu Position */
 	Mugen::Point position;
-	/*menu.item.font = 3,0,0
-	//menu.item.active.font = 3,5,0
-	//menu.item.spacing = 0, 13
-	*/
-	Mugen::FontInfo fontItem;
-	Mugen::FontInfo fontActive;
-	Mugen::Point fontSpacing;
-	/*
-	; Names for each of the items in the menu. Names must be in quotes.
-	; Use "" to disable an item. If all are disabled, goes straight to demo mode
-	; (hold Esc to quit demos). *2001.11.14 NEW*
-	menu.itemname.arcade = "ARCADE"
-	menu.itemname.versus = "VS MODE"
-	menu.itemname.teamarcade = "TEAM ARCADE"
-	menu.itemname.teamversus = "TEAM VS"
-	menu.itemname.teamcoop = "TEAM CO-OP"
-	menu.itemname.survival = "SURVIVAL"
-	menu.itemname.survivalcoop = "SURVIVAL CO-OP"
-	menu.itemname.training = "TRAINING"
-	menu.itemname.watch = "WATCH"
-	menu.itemname.options = "OPTIONS"
-	menu.itemname.exit = "EXIT"
 	
-	The menu items will be of type MenuOption so this will be easy
-	*/
+	/*! Box cursor and fonts */
+	CursorHandler fontCursor;
+	
+	/*! Fonts spacing */
+	Mugen::Point fontSpacing;
 	
 	/*
 	; These parameters define the window in which the items are visible
 	; in.*/
 	//menu.window.margins.y = 12, 8 I can only assume there is an X version of this as well
-	Mugen::Point windowMarginX;
-	Mugen::Point windowMarginY;
+	Mugen::Point windowMargin;
 	//menu.window.visibleitems = 5
 	int windowVisibleItems;
-	//menu.boxcursor.visible = 1     ;Set to 0 to disable default cursor display
-	bool showBoxCursor;
-	//menu.boxcursor.coords = -58,-10,57,2
-	MugenMenuArea boxCursorCoords;
 	//; These are the sounds for cursor movement (will be implemented later)
 	//cursor.move.snd = 100,0
 	//cursor.done.snd = 100,1
