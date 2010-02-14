@@ -101,6 +101,9 @@ public:
             return this->gameOver;
         }
 
+        /* 1 is normal, 0<rate<1 is slower, 1<rate is faster */
+        virtual void setGameRate(double rate);
+
         virtual int currentZOffset() const;
 
         virtual void pause();
@@ -140,7 +143,7 @@ public:
     virtual void killAllHumans( Object * player );
     virtual void addMessage(Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
     virtual Network::Message createBangMessage( int x, int y, int z );
-	
+
     static const std::string getStageName(const std::string &filename) throw (MugenException);
 
     // Alliance setting
@@ -460,6 +463,10 @@ protected:
         Mugen::GameInfo *gameHUD;
 
         bool gameOver;
+
+        /* frequency of logic updates. 1 is normal, lower is slower */
+        double gameRate;
+        int cycles;
 };
 
 #endif

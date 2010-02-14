@@ -183,7 +183,9 @@ onRightSide(0),
 inabove(0),
 loaded(false),
 gameHUD(0),
-gameOver(false){
+gameOver(false),
+gameRate(1),
+cycles(0){
 }
 
 MugenStage::MugenStage( const char * location ):
@@ -254,7 +256,9 @@ onRightSide(0),
 inabove(0),
 loaded(false),
 gameHUD(0),
-gameOver(false){
+gameOver(false),
+gameRate(1),
+cycles(0){
 }
 
 MugenStage::~MugenStage(){
@@ -1207,6 +1211,7 @@ int MugenStage::getY(){
 const deque<Bitmap*> & MugenStage::getScreenshots(){
     return garbage;
 }
+
 int MugenStage::levelLength() const { return 0; }
 // Since this isn't a paintown level, I guess block wouldn't apply
 const Block * MugenStage::currentBlock() const { return NULL; }
@@ -1504,4 +1509,8 @@ void MugenStage::initializeName(){
 	Global::debug(1) << "Couldn't find the name of the map!" << endl;
 	Global::debug(1) << "Error was: " << ex.getReason() << endl;
     }
+}
+        
+void MugenStage::setGameRate(double rate){
+    gameRate = rate;
 }
