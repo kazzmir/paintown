@@ -18,6 +18,7 @@ test/mugen/util.cpp
 test/mugen/animation.cpp
 test/mugen/item-content.cpp
 test/mugen/item.cpp
+test/mugen/command.cpp
 test/mugen/background.cpp
 test/mugen/parse-cache.cpp
 test/gui/rectarea.cpp

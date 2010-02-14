@@ -252,6 +252,7 @@ protected:
     int time;
 };
  
+/* FIXME: make direction keys work */
 class CompiledKeyDirection: public CompiledKey {
 public:
     CompiledKeyDirection(const Ast::KeyModifier & ast, CompiledKey * key):
@@ -395,6 +396,7 @@ successTime(0),
 needRelease(NULL){
 }
 
+/* AST walking way, purely interpreted */
 bool Command::interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease){
     class KeyWalker: public Ast::Walker{
     public:
