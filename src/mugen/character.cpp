@@ -2427,8 +2427,10 @@ MugenAnimation * Character::getCurrentAnimation() const {
 }
 
 /* returns all the commands that are currently active */
-vector<string> Character::doInput(InputMap<Mugen::Keys>::Output output){
+vector<string> Character::doInput(){
     vector<string> out;
+
+    InputMap<Mugen::Keys>::Output output = InputManager::getMap(getInput());
 
     // if (hasControl()){
         Global::debug(2) << "Commands" << endl;
@@ -2503,7 +2505,7 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
     stateTime += 1;
 
     /* active is the current set of commands */
-    vector<string> active = doInput(InputManager::getMap(getInput()));
+    vector<string> active = doInput();
     /* always run through the negative states */
 
     /* hack! */
