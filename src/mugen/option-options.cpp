@@ -1,11 +1,11 @@
 #include "util/bitmap.h"
-#include "mugen/option-options.h"
-#include "mugen/game.h"
-#include "mugen/menu.h"
-#include "mugen/config.h"
-#include "mugen/font.h"
-#include "mugen/sound.h"
-#include "mugen/background.h"
+#include "option-options.h"
+#include "game.h"
+#include "menu.h"
+#include "config.h"
+#include "font.h"
+#include "sound.h"
+#include "background.h"
 
 #include <ostream>
 #include <vector>
@@ -25,10 +25,11 @@
 
 namespace PaintownUtil = ::Util;
 using namespace std;
-using namespace Mugen;
 
-const int DEFAULT_WIDTH = 320;
-const int DEFAULT_HEIGHT = 240;
+namespace Mugen{
+
+static const int DEFAULT_WIDTH = 320;
+static const int DEFAULT_HEIGHT = 240;
 
 static std::string getString(int number){
     std::ostringstream str;
@@ -69,11 +70,11 @@ void Option::render(MugenFont & font, int x, int y, const Bitmap & bmp){
     }
 }
 
-class Difficulty : public Mugen::Option {
+class Difficulty: public Option {
     public:
 	Difficulty(){
 	    optionName = "Difficulty";
-	    currentValue = getString(Mugen::Data::getInstance().getDifficulty());
+	    currentValue = getString(Data::getInstance().getDifficulty());
 	}
 	~Difficulty(){
 	}
@@ -83,11 +84,11 @@ class Difficulty : public Mugen::Option {
 	}
 };
 
-class Life : public Mugen::Option {
+class Life : public Option {
     public:
 	Life(){
 	    optionName = "Life";
-	    currentValue = getString(Mugen::Data::getInstance().getLife());
+	    currentValue = getString(Data::getInstance().getLife());
 	}
 	~Life(){
 	}
@@ -97,16 +98,16 @@ class Life : public Mugen::Option {
 	}
 };
 
-class TimeLimit : public Mugen::Option {
+class TimeLimit : public Option {
     public:
 	TimeLimit(){
 	    optionName = "Time Limit";
-	    currentValue = getString(Mugen::Data::getInstance().getTime());
+	    currentValue = getString(Data::getInstance().getTime());
 	}
 	~TimeLimit(){
 	}
 	void next(){
-	    int time = Mugen::Data::getInstance().getTime();
+	    int time = Data::getInstance().getTime();
 	    if (time != -1){
 		time+=20;
 	    }
@@ -115,7 +116,7 @@ class TimeLimit : public Mugen::Option {
 	    } else if (time > 100){
 		time = -1;
 	    }
-	    Mugen::Data::getInstance().setTime(time);
+	    Data::getInstance().setTime(time);
 	    if (time == -1){
 		currentValue = "None";
 	    } else {
@@ -123,7 +124,7 @@ class TimeLimit : public Mugen::Option {
 	    }
 	}
 	void prev(){
-	    int time = Mugen::Data::getInstance().getTime();
+	    int time = Data::getInstance().getTime();
 	    if (time == -1){
 		time = 99;
 	    } else if (time >= 20 && time != 99){
@@ -134,16 +135,16 @@ class TimeLimit : public Mugen::Option {
 	    if (time < 20){
 		time = 20;
 	    }
-	    Mugen::Data::getInstance().setTime(time);
+	    Data::getInstance().setTime(time);
 	    currentValue = getString(time);
 	}
 };
 
-class Speed : public Mugen::Option {
+class Speed : public Option {
     public:
 	Speed(){
 	    optionName = "Speed";
-	    currentValue = getString(Mugen::Data::getInstance().getSpeed());
+	    currentValue = getString(Data::getInstance().getSpeed());
 	}
 	~Speed(){
 	}
@@ -153,11 +154,11 @@ class Speed : public Mugen::Option {
 	}
 };
 
-class OneVsTeam : public Mugen::Option {
+class OneVsTeam : public Option {
     public:
 	OneVsTeam(){
 	    optionName = "1P VS Team Advantage";
-	    currentValue = getString(Mugen::Data::getInstance().getTeam1vs2Life());
+	    currentValue = getString(Data::getInstance().getTeam1vs2Life());
 	}
 	~OneVsTeam(){
 	}
@@ -167,11 +168,11 @@ class OneVsTeam : public Mugen::Option {
 	}
 };
 
-class TeamLoseOnKO : public Mugen::Option {
+class TeamLoseOnKO : public Option {
     public:
 	TeamLoseOnKO(){
 	    optionName = "If player KOed";
-	    currentValue = getString(Mugen::Data::getInstance().getTeamLoseOnKO());
+	    currentValue = getString(Data::getInstance().getTeamLoseOnKO());
 	}
 	~TeamLoseOnKO(){
 	}
@@ -181,22 +182,26 @@ class TeamLoseOnKO : public Mugen::Option {
 	}
 };
 
-class Escape : public Mugen::Option {
-    public:
-	Escape(){
-	    optionName = "Return to Main Menu";
-	    currentValue = "(Esc)";
-	}
-	~Escape(){
-	}
-	void next(){
-	}
-	void prev(){
-	}
-	void enter(){
-	    // **FIXME Hack figure something out
-	    throw ReturnException();
-	}
+class Escape: public Option {
+public:
+    Escape(){
+        optionName = "Return to Main Menu";
+        currentValue = "(Esc)";
+    }
+
+    virtual ~Escape(){
+    }
+
+    void next(){
+    }
+
+    void prev(){
+    }
+
+    void enter(){
+        // **FIXME Hack figure something out
+        throw ReturnException();
+    }
 };
 
 OptionOptions::OptionOptions( const std::string &name ) throw( LoadException ){
@@ -220,17 +225,17 @@ OptionOptions::OptionOptions( const std::string &name ) throw( LoadException ){
 }
 
 OptionOptions::~OptionOptions(){
-    for (std::vector<Mugen::Option *>::iterator i = options.begin(); i != options.end(); ++i){
+    for (vector<class Option *>::iterator i = options.begin(); i != options.end(); ++i){
 	if (*i){
 	    delete *i;
 	}
     }
 }
 
-void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGame){
-    std::string systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
+void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
+    std::string systemFile = Data::getInstance().getFileFromMotif(Data::getInstance().getMotif());
     // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Mugen::Util::getFileDir(systemFile);
+    std::string baseDir = Util::getFileDir(systemFile);
     
     Global::debug(1) << baseDir << endl;
     
@@ -240,17 +245,17 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(systemFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Def::main(systemFile));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile + " in" + diff.printTime("") << endl;
     
-    Mugen::Background * background = 0;
+    Background * background = 0;
     std::vector< MugenFont *> fonts;
-    Mugen::SoundMap sounds;
+    SoundMap sounds;
     
-    Mugen::Point moveSound;
-    Mugen::Point doneSound;
-    Mugen::Point cancelSound;
+    Point moveSound;
+    Point doneSound;
+    Point cancelSound;
     
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
@@ -258,26 +263,26 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
 	if (head == "Files"){
             class FileWalker: public Ast::Walker{
                 public:
-                    FileWalker(std::vector<MugenFont *> & fonts, Mugen::SoundMap & sounds, const string & baseDir):
+                    FileWalker(std::vector<MugenFont *> & fonts, SoundMap & sounds, const string & baseDir):
                         fonts(fonts),
 			sounds(sounds),
                         baseDir(baseDir){
                         }
 
                     std::vector<MugenFont *> & fonts;
-		    Mugen::SoundMap & sounds;
+		    SoundMap & sounds;
                     const string & baseDir;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "snd"){
 			    std::string file;
                             simple >> file;
-                            Mugen::Util::readSounds( Mugen::Util::getCorrectFileLocation(baseDir, file ), sounds);
+                            Util::readSounds( Util::getCorrectFileLocation(baseDir, file ), sounds);
                             Global::debug(1) << "Got Sound File: '" << file << "'" << endl;
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string temp;
                             simple >> temp;
-                            fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
+                            fonts.push_back(new MugenFont(Util::getCorrectFileLocation(baseDir, temp)));
                             Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
                         }
                     }
@@ -287,15 +292,15 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
         } else if (head == "Option Info"){
 	    class InfoWalker: public Ast::Walker{
                 public:
-                    InfoWalker(Mugen::Point & moveSound, Mugen::Point & doneSound, Mugen::Point & cancelSound):
+                    InfoWalker(Point & moveSound, Point & doneSound, Point & cancelSound):
                         moveSound(moveSound),
                         doneSound(doneSound),
 			cancelSound(cancelSound){
                         }
 
-                    Mugen::Point & moveSound;
-		    Mugen::Point & doneSound;
-		    Mugen::Point & cancelSound;
+                    Point & moveSound;
+		    Point & doneSound;
+		    Point & cancelSound;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "cursor.move.snd"){
@@ -320,7 +325,7 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
             section->walk(walker);
 	} else if (head == "OptionBGdef"){ 
 	    /* Background management */
-	    background = new Mugen::Background(systemFile, "optionbg");
+	    background = new Background(systemFile, "optionbg");
 	}
     }
     
@@ -338,8 +343,8 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
     int game_time = 100;
     
     // Set game keys temporary
-    InputMap<Mugen::Keys> player1Input = Mugen::getPlayer1Keys(20);
-    InputMap<Mugen::Keys> player2Input = Mugen::getPlayer2Keys(20);
+    InputMap<Keys> player1Input = getPlayer1Keys(20);
+    InputMap<Keys> player2Input = getPlayer2Keys(20);
     
     // Our Font
     MugenFont * font = fonts[1];
@@ -371,17 +376,17 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
 		// Key handler
 		InputManager::poll();
 		
-		InputMap<Mugen::Keys>::Output out1 = InputManager::getMap(player1Input);
-		InputMap<Mugen::Keys>::Output out2 = InputManager::getMap(player2Input);
-		if (out1[Mugen::Esc] || out2[Mugen::Esc]){
+		InputMap<Keys>::Output out1 = InputManager::getMap(player1Input);
+		InputMap<Keys>::Output out2 = InputManager::getMap(player2Input);
+		if (out1[Esc] || out2[Esc]){
 		    done = escaped = true;
 		    if (sounds[cancelSound.x][cancelSound.y]){
 			sounds[cancelSound.x][cancelSound.y]->play();
 		    }
-		    InputManager::waitForRelease(player1Input, Mugen::Esc);
-		    InputManager::waitForRelease(player2Input, Mugen::Esc);
+		    InputManager::waitForRelease(player1Input, Esc);
+		    InputManager::waitForRelease(player2Input, Esc);
 		}
-		if (out1[Mugen::Up] || out2[Mugen::Up]){
+		if (out1[Up] || out2[Up]){
 		    (*selectedOption)->toggleSelected();
 		    if (selectedOption > options.begin()){
 			selectedOption--;
@@ -393,7 +398,7 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
 			sounds[moveSound.x][moveSound.y]->play();
 		    }
 		}
-		if (out1[Mugen::Down] || out2[Mugen::Down]){
+		if (out1[Down] || out2[Down]){
 		    (*selectedOption)->toggleSelected();
 		    selectedOption++;
 		    if (selectedOption == options.end()){
@@ -404,13 +409,13 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
 			sounds[moveSound.x][moveSound.y]->play();
 		    }
 		}
-		if (out1[Mugen::Left] || out2[Mugen::Left]){
+		if (out1[Left] || out2[Left]){
 		    (*selectedOption)->prev();
 		}
-		if (out1[Mugen::Right] || out2[Mugen::Right]){
+		if (out1[Right] || out2[Right]){
 		    (*selectedOption)->next();
 		}
-		if (out1[Mugen::Enter] || out2[Mugen::Enter]){
+		if (out1[Enter] || out2[Enter]){
 		    (*selectedOption)->enter();
 		}
 		// Backgrounds
@@ -478,9 +483,11 @@ void OptionOptions::executeOption(const Mugen::PlayerType & player, bool &endGam
 
 void OptionOptions::doOptions(MugenFont & font, int x, int y, const Bitmap & bmp){
     int mod = 30;
-    for (std::vector<Mugen::Option *>::iterator i = options.begin(); i != options.end(); ++i){
-	Mugen::Option * option = *i;
+    for (vector<class Option *>::iterator i = options.begin(); i != options.end(); ++i){
+	class Option * option = *i;
 	option->render(font, x, y+mod, bmp);
 	mod+=20;
     }
+}
+
 }
