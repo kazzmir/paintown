@@ -721,17 +721,11 @@ void MugenMenu::renderText(Bitmap *bmp){
     // Displace by the offset
     int yplacement = position.y - (offset * fontSpacing.y);
     
-    int count = 1;
     for( std::vector <Mugen::ItemOption *>::iterator i = options.begin(); i != options.end(); ++i){
 	
 	Mugen::ItemOption *option = *i;
 	// Render
 	option->render(xplacement, yplacement, fontCursor, fonts, *bmp);
-	
-	if ((count - offset) == windowVisibleItems){
-	    Global::debug(0) << "Last item position: " << yplacement << endl;
-	}
-	count++;
 	
 	// Displacement
 	xplacement += fontSpacing.x;
