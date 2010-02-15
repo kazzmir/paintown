@@ -257,14 +257,14 @@ void MugenFont::load(){
     int location = 16;
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
     ifile.seekg(location,ios::beg);
-    unsigned long pcxlocation;
-    unsigned long txtlocation;
-    unsigned long txtsize;
+    uint32_t pcxlocation;
+    uint32_t txtlocation;
+    uint32_t txtsize;
 
-    ifile.read( (char *)&pcxlocation, sizeof(unsigned long) );
-    ifile.read( (char *)&pcxsize, sizeof(unsigned long) );
-    ifile.read( (char *)&txtlocation, sizeof(unsigned long) );
-    ifile.read( (char *)&txtsize, sizeof(unsigned long) );
+    ifile.read( (char *)&pcxlocation, sizeof(pcxlocation) );
+    ifile.read( (char *)&pcxsize, sizeof(pcxsize) );
+    ifile.read( (char *)&txtlocation, sizeof(txtlocation) );
+    ifile.read( (char *)&txtsize, sizeof(txtsize) );
     Global::debug(1) << "PCX Location: " << pcxlocation << " | PCX Size: " << pcxsize << endl;
     Global::debug(1) << "TXT Location: " << txtlocation << " | TXT Actual location: " << pcxlocation + pcxsize << " | TXT Size: " << txtsize << endl;
 
