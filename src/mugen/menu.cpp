@@ -180,6 +180,7 @@ logoFile(""),
 introFile(""),
 selectFile(""),
 fightFile(""),
+currentMenuPosition(0),
 windowMargin(12,8),
 windowVisibleItems(5),
 ticker(0),
@@ -482,7 +483,11 @@ void MugenMenu::loadData(){
         else {
             //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
         }
-    }  
+    } 
+
+    // Set defaults
+    currentMenuPosition = position.y;
+    menuRange.y = windowVisibleItems-1;
 }
 
 MugenMenu::~MugenMenu(){
@@ -550,33 +555,11 @@ void MugenMenu::run(){
 		    
 		    if (fader.getState() == Mugen::FadeTool::NoFade){
 			if ( out1[Mugen::Up] || out2[Mugen::Up]){	
-			    (*currentOption)->setState(MenuOption::Deselected);
-			    if ( currentOption > options.begin() ){
-				    currentOption--;
-				    optionLocation--;
-			    } else { 
-				currentOption = options.end() -1;
-				optionLocation = options.size() -1;
-			    }
-			    (*currentOption)->setState(MenuOption::Selected);
-			    if (sounds[moveSound.x][moveSound.y] != 0){
-                                sounds[moveSound.x][moveSound.y]->play();
-                            }
+			    moveMenuUp();
 			}
 
 			if (out1[Mugen::Down] || out2[Mugen::Down]){
-			    (*currentOption)->setState(MenuOption::Deselected);
-			    if ( currentOption < options.begin()+options.size()-1 ){
-				    currentOption++;
-				    optionLocation++;
-			    } else {
-				currentOption = options.begin();
-				optionLocation = 0;
-			    }
-			    (*currentOption)->setState(MenuOption::Selected);
-			    if (sounds[moveSound.x][moveSound.y] != 0){
-                                sounds[moveSound.x][moveSound.y]->play();
-                            }
+			    moveMenuDown();
 			}
 			
 			if ( out1[Mugen::Enter] ){
@@ -610,6 +593,9 @@ void MugenMenu::run(){
                             }
 			}
 		    }
+                    // Update menu position
+                    doMenuMovement(); 
+
 		    // Font Cursor
 		    fontCursor.act();
 		    
@@ -704,6 +690,58 @@ void MugenMenu::cleanupSprites(){
     }
 }
 
+// Move menu up
+void MugenMenu::moveMenuUp(){
+    (*currentOption)->setState(MenuOption::Deselected);
+    if ( currentOption > options.begin() ){
+        currentOption--;
+        optionLocation--;
+        if (optionLocation < menuRange.x){
+            menuRange.x--;
+            menuRange.y--;
+        }
+    } else { 
+        currentOption = options.end() -1;
+        optionLocation = options.size() -1;
+        menuRange.x = options.size() - (windowVisibleItems);
+        menuRange.y = options.size() - 1;
+    }
+    (*currentOption)->setState(MenuOption::Selected);
+    if (sounds[moveSound.x][moveSound.y] != 0){
+        sounds[moveSound.x][moveSound.y]->play();
+    }
+}
+
+
+// Move menu down
+void MugenMenu::moveMenuDown(){
+    (*currentOption)->setState(MenuOption::Deselected);
+    if ( currentOption < options.begin()+options.size()-1 ){
+        currentOption++;
+        optionLocation++;
+        if (optionLocation > menuRange.y){
+            menuRange.x++;
+            menuRange.y++;
+        }
+    } else {
+        currentOption = options.begin();
+        optionLocation = 0;
+        menuRange.x = 0;
+        menuRange.y = windowVisibleItems-1;
+    }
+    (*currentOption)->setState(MenuOption::Selected);
+    if (sounds[moveSound.x][moveSound.y] != 0){
+        sounds[moveSound.x][moveSound.y]->play();
+    }
+}
+
+void MugenMenu::doMenuMovement(){
+    //const int offset = optionLocation >= windowVisibleItems ? optionLocation - windowVisibleItems + 1 : 0;
+    //const int endPosition = position.y - (offset * fontSpacing.y);
+    const int endPosition = position.y - (menuRange.x * fontSpacing.y);
+    currentMenuPosition = (currentMenuPosition + endPosition)/2;
+}
+
 // Draw text
 void MugenMenu::renderText(Bitmap *bmp){
     
@@ -716,11 +754,9 @@ void MugenMenu::renderText(Bitmap *bmp){
     bmp->setClipRect(0, top, bmp->getWidth(), bottom);
     //bmp->rectangle(0,top,bmp->getWidth(),bottom,Bitmap::makeColor(255,255,255));
     
-    int offset = optionLocation >= windowVisibleItems ? optionLocation - windowVisibleItems + 1 : 0;
-    
     int xplacement = position.x;
     // Displace by the offset
-    int yplacement = position.y - (offset * fontSpacing.y);
+    int yplacement = currentMenuPosition;
     
     for( std::vector <Mugen::ItemOption *>::iterator i = options.begin(); i != options.end(); ++i){
 	

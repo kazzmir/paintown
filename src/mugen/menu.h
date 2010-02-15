@@ -118,7 +118,9 @@ class MugenMenu : public Menu {
         }
 	
     private:
+        // Add option
 	void addMenuOption(Mugen::ItemOption * option);
+
 	// Option offset
 	int optionLocation;
 	
@@ -145,6 +147,12 @@ class MugenMenu : public Menu {
 	
 	/*! Menu Position */
 	Mugen::Point position;
+        
+        /*! Current menu position for smooth scrolling */
+        int currentMenuPosition;
+
+        /*! Y Menu range positioning x = top y = bottom */
+        Mugen::Point menuRange;
 	
 	/*! Box cursor and fonts */
 	CursorHandler fontCursor;
@@ -165,7 +173,7 @@ class MugenMenu : public Menu {
 	//cancel.snd = 100,2
 	
 	// Our ticker/frames during duration of title
-	unsigned long int ticker;
+	int ticker;
 	
 	/* Sprites */
 	Mugen::SpriteMap sprites;
@@ -194,6 +202,15 @@ class MugenMenu : public Menu {
 	
 	// Cleanup sprites
 	void cleanupSprites();
+
+        // Move menu up
+        void moveMenuUp();
+
+        // Move menu down
+        void moveMenuDown();
+
+        // Handle movement
+        void doMenuMovement();
 	
 	// Draw text
 	void renderText(Bitmap *bmp);
