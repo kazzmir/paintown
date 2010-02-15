@@ -74,6 +74,9 @@ class FightElement: public Element {
 
 	virtual void setSprite(MugenSprite *);
 	virtual void setFont(MugenFont *, int bank, int position);
+        virtual inline void setPosition(int position){
+            this->position = position;
+        }
         virtual void setSound(MugenSound *);
 	virtual int getWidth();
 	virtual int getHeight();
@@ -351,16 +354,9 @@ class Combo{
     public:
 	Combo();
 	virtual ~Combo();
-	virtual void act(Mugen::Character & character);
+	virtual void act(Mugen::Character & player1, Mugen::Character & player2);
 	virtual void render(const Element::Layer &, const Bitmap &);
 	
-	enum Side{
-	    Left,
-	    Right,
-	};
-	virtual inline void setSide(Side side){
-	    this->side = Left;
-	}
 	virtual inline void setPosition(int x, int y){
 	    position.set(x,y);
 	}
@@ -390,18 +386,26 @@ class Combo{
 	    Retracting,
 	};
 	Mugen::Point position;
-	Mugen::Point currentPosition;
-	Side side;
+	Mugen::Point player1Position;
+        Mugen::Point player2Position;
 	int startOffset;
 	int displayTime;
-	int ticker;
+	int player1Ticker;
+        int player2Ticker;
 	bool shake;
-	int shakeTime;
-	int total;
+	int player1ShakeTime;
+        int player2ShakeTime;
+	int player1Total;
+        int player2Total;
 	FightElement combo;
 	FightElement text;
 	std::string message;
-	State state;
+	State player1State;
+        State player2State;
+        std::string player1Combo;
+        std::string player1Text;
+        std::string player2Combo;
+        std::string player2Text;
 };
 
 class Round{
@@ -775,8 +779,7 @@ class GameInfo{
 	GameTime timer;
 	
 	//! Combo
-	Combo team1Combo;
-	Combo team2Combo;
+	Combo combo;
 	
 	//! Round
 	Round roundControl;

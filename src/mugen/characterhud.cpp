@@ -16,6 +16,9 @@
 #include "ast/all.h"
 #include "parser/all.h"
 
+const int DEFAULT_WIDTH = 320;
+const int DEFAULT_HEIGHT = 240;
+
 namespace PaintownUtil = ::Util;
 
 using namespace std;
@@ -115,7 +118,7 @@ void FightElement::render(int x, int y, const Bitmap & bmp){
             sprite->render(x + offset.x, y + offset.y, bmp,effects);
             break;
 	case IS_FONT:
-	    font->render(x + offset.x, y + offset.y, bank, position, bmp, text);
+	    font->render(x + offset.x, y + offset.y, position, bank, bmp, text);
             break;
         case IS_SOUND:
 	case IS_NOTSET:
@@ -159,7 +162,7 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
 	    break;
 	case IS_FONT:
             if (layer == getLayer()){
-		font->render(realX, realY, bank, position, bmp, text);
+		font->render(realX, realY, position, bank, bmp, text);
             }
 	    break;
         case IS_SOUND:
@@ -598,110 +601,135 @@ void GameTime::stop(){
 }
 
 Combo::Combo():
-side(Left),
 startOffset(0),
 displayTime(0),
-ticker(0),
+player1Ticker(0),
+player2Ticker(0),
 shake(false),
-shakeTime(0),
-total(0),
-state(Disabled){
+player1ShakeTime(0),
+player2ShakeTime(0),
+player1Total(0),
+player2Total(0),
+player1State(Disabled),
+player2State(Disabled){
     combo.setLayer(Element::Top);
     text.setLayer(Element::Top);
 }
 Combo::~Combo(){
 }
-void Combo::act(Mugen::Character & character){
-    if (character.getCurrentCombo() >= 2 && total !=character.getCurrentCombo()){
-	if (state == Disabled){
-	    switch (side){
-		case Left:
-		    currentPosition = position;
-		    currentPosition.x += startOffset;
-		    break;
-		case Right:
-		    currentPosition = position;
-		    currentPosition.x += abs(startOffset);
-		    break;
-		default:
-		    break;
-	    }
+void Combo::act(Mugen::Character & player1, Mugen::Character & player2){
+    if (player1.getCurrentCombo() >= 2 && player1Total !=player1.getCurrentCombo()){
+	if (player1State == Disabled){
+	    player1Position = position;
+	    player1Position.x += startOffset;
 	}
-	state = Forward;
+	player1State = Forward;
 	if (shake){
-	    shakeTime = 10;
+	    player1ShakeTime = 10;
 	}
-	total = character.getCurrentCombo();
+	player1Total = player1.getCurrentCombo();
 	std::ostringstream str;
-	str << total;
-	combo.setText(str.str());
-	std::string temp = replaceString("%i",str.str(),message);
-	text.setText(temp);
+	str << player1Total;
+        player1Combo = str.str();
+	player1Text = replaceString("%i",player1Combo,message);
     }
-    if (shakeTime > 0){
-	shakeTime--;
+    if (player2.getCurrentCombo() >= 2 && player2Total !=player2.getCurrentCombo()){
+	if (player2State == Disabled){
+	    player2Position.set(DEFAULT_WIDTH - position.x, position.y);
+	    player2Position.x += abs(startOffset);
+	}
+	player2State = Forward;
+	if (shake){
+	    player2ShakeTime = 10;
+	}
+	player2Total = player2.getCurrentCombo();
+	std::ostringstream str;
+	str << player2Total;
+        player2Combo = str.str();
+	player2Text = replaceString("%i",player2Combo,message);
     }
-    switch (state){
+    if (player1ShakeTime > 0){
+	player1ShakeTime--;
+    }
+    if (player2ShakeTime > 0){
+        player2ShakeTime--;
+    }
+    switch (player1State){
 	case Forward:
-	    switch (side){
-		case Left:
-		    currentPosition.x+=2;
-		    if (currentPosition.x >= position.x){
-			currentPosition = position;
-			state = Wait;
-			ticker = 0;
-		    }
-		    break;
-		case Right:
-		    currentPosition.x-=2;
-		    if (currentPosition.x <= position.x){
-			currentPosition = position;
-			state = Wait;
-			ticker = 0;
-		    }
-		    break;
-		default:
-		    break;
-	    }
+            player1Position.x+=2;
+            if (player1Position.x >= position.x){
+                player1Position = position;
+                player1State = Wait;
+                player1Ticker = 0;
+            }
 	    break;
 	case Wait:
-	    if (ticker == displayTime){
-		state = Retracting;
+	    if (player1Ticker == displayTime){
+		player1State = Retracting;
 	    }
-	    ticker++;
+	    player1Ticker++;
 	    break;
 	case Retracting:
-	    switch (side){
-		case Left:
-		    currentPosition.x-=2;
-		    if (currentPosition.x <= (position.x + startOffset)){
-			state = Disabled;
-		    }
-		    break;
-		case Right:
-		    currentPosition.x+=2;
-		    if (currentPosition.x >= (position.x + abs(startOffset))){
-			state = Disabled;
-		    }
-		    break;
-		default:
-		    break;
-	    }
+	    player1Position.x-=2;
+            if (player1Position.x <= (position.x + startOffset)){
+                player1State = Disabled;
+            }
 	    break;
 	case Disabled:
 	default:
 	    break;
     }
-    total = character.getCurrentCombo();
+    switch (player2State){
+	case Forward:
+            player2Position.x-=2;
+            if (player2Position.x <= (DEFAULT_WIDTH - position.x)){
+                player2Position.set(DEFAULT_WIDTH - position.x, position.y);
+                player2State = Wait;
+                player2Ticker = 0;
+            }
+	    break;
+	case Wait:
+	    if (player2Ticker == displayTime){
+		player2State = Retracting;
+	    }
+	    player2Ticker++;
+	    break;
+	case Retracting:
+            player2Position.x+=2;
+            if (player2Position.x >= (DEFAULT_WIDTH - position.x + abs(startOffset))){
+                player2State = Disabled;
+            }
+	    break;
+	case Disabled:
+	default:
+	    break;
+    }
+    player1Total = player1.getCurrentCombo();
+    player2Total = player2.getCurrentCombo();
 }
 
 void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
-    if (state != Disabled){
-	const int modifierX = (shakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
-	const int modifierY = (shakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
-	combo.render(layer,currentPosition.x + modifierX,currentPosition.y + modifierY,bmp);
+    if (player1State != Disabled){
+	const int modifierX = (player1ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
+	const int modifierY = (player1ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
+        combo.setPosition(0);
+        combo.setText(player1Combo);
+        combo.render(layer,player1Position.x + modifierX,player1Position.y + modifierY,bmp);
 	// Hacking in adjustment for now, need to get correct width from font which is wrong
-	text.render(layer,currentPosition.x + combo.getWidth() + (total > 9 ? 10 : 15),currentPosition.y,bmp);
+        text.setPosition(0);
+        text.setText(player1Text);
+	text.render(layer,player1Position.x + combo.getWidth() + (player1Total > 9 ? 10 : 15),player1Position.y,bmp);
+    }
+    if (player2State != Disabled){
+	const int modifierX = (player2ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
+	const int modifierY = (player2ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
+	// Hacking in adjustment for now, need to get correct width from font which is wrong
+        text.setPosition(-1);
+        text.setText(player2Text);
+	text.render(layer,player2Position.x, player2Position.y,bmp);
+        combo.setPosition(1);
+        combo.setText(player2Combo);
+	combo.render(layer,player2Position.x - text.getWidth() + (player2Total > 9 ? 10 : 15) + modifierX, player2Position.y + modifierY,bmp);
     }
 }
 	
@@ -1109,7 +1137,7 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 	    roundEnd = true;
             overByKO = true;
 	    // Start slow time
-	    stage.setGameRate(0.3);
+	    stage.setGameRate(0.4);
 	    break;
         case DoTimeOver:
             overByKO = false;
@@ -1563,31 +1591,26 @@ GameInfo::GameInfo(const std::string & fightFile){
 			    simple >> x >> y;
 			} catch (const Ast::Exception & e){
 			}
-			self.team1Combo.setPosition(x,y);
-			self.team2Combo.setPosition(x,y);
+			self.combo.setPosition(x,y);
 		    } else if (simple == "start.x"){
 			int x=0;
 			simple >> x;
-			self.team1Combo.setStartOffset(x);
-			self.team2Combo.setStartOffset(x);
+			self.combo.setStartOffset(x);
 		    } else if (simple == "counter.shake"){
 			bool shake;
 			simple >> shake;
-			self.team1Combo.setShake(shake);
-			self.team2Combo.setShake(shake);
+			self.combo.setShake(shake);
 		    } else if (simple == "text.text"){
 			std::string text;
 			simple >> text;
-			self.team1Combo.setMessage(text);
-			self.team2Combo.setMessage(text);
+			self.combo.setMessage(text);
 		    } else if (simple == "displaytime"){
 			int time;
 			simple >> time;
-			self.team1Combo.setDisplayTime(time);
-			self.team2Combo.setDisplayTime(time);
+			self.combo.setDisplayTime(time);
 		    } 
-		    getElementProperties(simple,"","counter", self.team1Combo.getCombo(),sprites,animations,fonts);
-		    getElementProperties(simple,"","text", self.team1Combo.getText(),sprites,animations,fonts);
+		    getElementProperties(simple,"","counter", self.combo.getCombo(),sprites,animations,fonts);
+		    getElementProperties(simple,"","text", self.combo.getText(),sprites,animations,fonts);
 		}
             };
 
@@ -1919,8 +1942,7 @@ void GameInfo::act(MugenStage & stage, Mugen::Character & player1, Mugen::Charac
     player1Name.act(player1);
     player2Name.act(player2);
     timer.act();
-    team1Combo.act(player1);
-    team2Combo.act(player2);
+    combo.act(player1, player2);
     roundControl.act(stage, player1, player2);
     winIconDisplay.act(player1, player2);
     if (roundControl.getState() == Round::PlayingGame){
@@ -1951,8 +1973,7 @@ void GameInfo::render(const Element::Layer & layer, const Bitmap &bmp){
     player1Name.render(layer,bmp);
     player2Name.render(layer,bmp);
     timer.render(layer,bmp);
-    team1Combo.render(layer,bmp);
-    team2Combo.render(layer,bmp);
+    combo.render(layer,bmp);
     roundControl.render(layer,bmp);
     winIconDisplay.render(layer,bmp);
 }

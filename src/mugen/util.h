@@ -207,8 +207,8 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
 /*! Player2 keys for menus */
 inline static InputMap<Mugen::Keys> getPlayer2Keys(int delay = 0){
     InputMap<Mugen::Keys> input;
-    input.set(Keyboard::Key_H, delay, false, Mugen::Up);
-    input.set(Keyboard::Key_Y, delay, false, Mugen::Down);
+    input.set(Keyboard::Key_Y, delay, false, Mugen::Up);
+    input.set(Keyboard::Key_H, delay, false, Mugen::Down);
     input.set(Keyboard::Key_J, delay, false, Mugen::Right);
     input.set(Keyboard::Key_G, delay, false, Mugen::Left);
 
