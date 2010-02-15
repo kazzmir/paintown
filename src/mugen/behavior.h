@@ -6,6 +6,8 @@
 #include "util.h"
 #include "input/input-map.h"
 
+class MugenStage;
+
 namespace Mugen{
 
 class Command;
@@ -15,7 +17,7 @@ class Behavior{
 public:
     Behavior();
 
-    virtual std::vector<std::string> currentCommands(const std::vector<Command*> & commands, bool reversed) = 0;
+    virtual std::vector<std::string> currentCommands(const MugenStage & stage, const std::vector<Command*> & commands, bool reversed) = 0;
 
     virtual ~Behavior();
 };
@@ -24,7 +26,7 @@ class HumanBehavior: public Behavior {
 public:
     HumanBehavior(InputMap<Keys> left, InputMap<Keys> right);
 
-    virtual std::vector<std::string> currentCommands(const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const MugenStage & stage, const std::vector<Command*> & commands, bool reversed);
 
     virtual ~HumanBehavior();
 
@@ -40,7 +42,7 @@ class AIBehavior: public Behavior {
 public:
     AIBehavior();
 
-    virtual std::vector<std::string> currentCommands(const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const MugenStage & stage, const std::vector<Command*> & commands, bool reversed);
 
     virtual ~AIBehavior();
 };

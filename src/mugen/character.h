@@ -1351,7 +1351,7 @@ protected:
     virtual void setConstant(std::string name, const std::vector<double> & values);
     virtual void setConstant(std::string name, double value);
 
-    virtual std::vector<std::string> doInput();
+    virtual std::vector<std::string> doInput(const MugenStage & stage);
     virtual bool doStates(const MugenStage & stage, const std::vector<std::string> & active, int state);
 
     void resetJump(const MugenStage & stage, const std::vector<std::string> & inputs);

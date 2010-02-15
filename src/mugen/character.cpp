@@ -878,7 +878,7 @@ void Character::initialize(){
     has_control = true;
     airjumpnum = 0;
     airjumpheight = 35;
-    behavior = 0;
+    behavior = NULL;
 
     matchWins = 0;
 
@@ -2429,12 +2429,12 @@ MugenAnimation * Character::getCurrentAnimation() const {
 }
 
 /* returns all the commands that are currently active */
-vector<string> Character::doInput(){
-    if (behavior == 0){
+vector<string> Character::doInput(const MugenStage & stage){
+    if (behavior == NULL){
         throw MugenException("Internal error: No behavior specified");
     }
 
-    return behavior->currentCommands(commands, getFacing() == Object::FACING_RIGHT);
+    return behavior->currentCommands(stage, commands, getFacing() == Object::FACING_RIGHT);
 
     /*
     vector<string> out;
@@ -2515,13 +2515,14 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
 
     /* if shakeTime is non-zero should we update stateTime? */
     stateTime += 1;
-
-    /* active is the current set of commands */
-    vector<string> active = doInput();
-    /* always run through the negative states */
-
+    
     /* hack! */
     const MugenStage & stage = *(MugenStage*) world;
+
+    /* active is the current set of commands */
+    vector<string> active = doInput(stage);
+    /* always run through the negative states */
+
     doStates(stage, active, -3);
     doStates(stage, active, -2);
     doStates(stage, active, -1);

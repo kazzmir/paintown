@@ -29,7 +29,7 @@ InputMap<Keys> & HumanBehavior::getInput(bool facingRight){
     return left;
 }
 
-vector<string> HumanBehavior::currentCommands(const vector<Command*> & commands, bool reversed){
+vector<string> HumanBehavior::currentCommands(const MugenStage & stage, const vector<Command*> & commands, bool reversed){
     vector<string> out;
     
     InputMap<Mugen::Keys>::Output output = InputManager::getMap(getInput(reversed));
@@ -61,7 +61,7 @@ static string randomCommand(const vector<Command*> & commands){
     return commands[choice]->getName();
 }
 
-vector<string> AIBehavior::currentCommands(const vector<Command*> & commands, bool reversed){
+vector<string> AIBehavior::currentCommands(const MugenStage & stage, const vector<Command*> & commands, bool reversed){
     vector<string> out;
     if (PaintownUtil::rnd(100) > 90){
         out.push_back(randomCommand(commands));
