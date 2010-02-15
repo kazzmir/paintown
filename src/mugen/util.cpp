@@ -285,7 +285,7 @@ public:
          * Data starts at the 16th byte.
          */
         location = 16;
-        sffStream.seekg(location,ios::beg);
+        sffStream.seekg(location, ios::beg);
         /* FIXME: change these to uint32 or whatever */
         uint32_t totalGroups = 0;
         totalImages = 0;
@@ -442,7 +442,7 @@ protected:
     bool useact;
     int filesize;
     int location;
-    unsigned long totalImages;
+    uint32_t totalImages;
     unsigned char palsave1[768]; // First image palette
 };
 
