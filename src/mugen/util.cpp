@@ -704,6 +704,12 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
         bool clsn2Reset;
         bool setloop;
 
+        enum Expect{
+            clsn1, clsn2
+        };
+
+        Expect expected;
+
         MugenSprite * getSprite(int group, int item){
             Mugen::SpriteMap::const_iterator map = sprites.find(group);
             if (map == sprites.end()){
@@ -810,8 +816,14 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             array >> area.x1 >> area.y1 >> area.x2 >> area.y2;
             Global::debug(2) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
             if (array == "clsn1"){
+                if (expected == clsn2){
+                    Global::debug(0) << "Expected clsn2 but read clsn1: " << array.toString() << endl;
+                }
                 clsn1Holder.push_back(area);
             } else if (array == "clsn2"){
+                if (expected == clsn1){
+                    Global::debug(0) << "Expected clsn1 but read clsn2: " << array.toString() << endl;
+                }
                 clsn2Holder.push_back(area);
             }
         }
@@ -826,6 +838,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             }
 
             if (simple == "clsn1default"){
+                expected = clsn1;
                 clsn1Holder.clear();
                 clsn1Reset = false;
                 /* do we really care how many boxes are specified here? it seems good
@@ -842,16 +855,19 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
                 int boxes;
                 simple >> boxes;
             } else if (simple == "clsn2default"){
+                expected = clsn2;
                 clsn2Holder.clear();
                 clsn2Reset = false;
                 int boxes;
                 simple >> boxes;
             } else if (simple == "clsn1"){
+                expected = clsn1;
                 clsn1Holder.clear();
                 clsn1Reset = true;
                 int boxes;
                 simple >> boxes;
             } else if (simple == "clsn2"){
+                expected = clsn2;
                 clsn2Holder.clear();
                 clsn2Reset = true;
                 int boxes;
