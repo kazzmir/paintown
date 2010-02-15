@@ -87,13 +87,12 @@ public:
         /* maximum known distance the move succeeded */
         int maximumDistance;
     };
-
-protected:
-
+    
     enum Direction{
-        Forward, Backward, Crouch
+        Forward, Backward, Crouch, Stopped
     };
 
+protected:
     std::string selectBestCommand(int distance, const std::vector<Command*> & commands);
 
     std::map<std::string, Move> moves;

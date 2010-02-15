@@ -448,7 +448,7 @@ protected:
     }
 }
 
-void Mugen::Util::readSprites(const string & filename, const string & palette, Mugen::SpriteMap & sprites) throw (MugenException){
+void Mugen::Util::readSprites(const string & filename, const string & palette, Mugen::SpriteMap & sprites){
     SffReader reader(filename, palette);
     while (reader.moreSprites()){
         try{

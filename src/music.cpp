@@ -427,7 +427,7 @@ bool Music::internal_loadSong( const char * path ){
                      }
         }
         if ( music_file != NULL ){
-            Global::debug( 0 ) << "Loaded " << path << " type " << typeToExtension( i ) << "( " << i << " )" << endl;
+            Global::debug(0) << "Loaded " << path << " type " << typeToExtension( i ) << "(" << i << ")" << endl;
             break;
         }
     }

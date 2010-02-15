@@ -133,6 +133,19 @@ string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*
     return what;
 }
 
+static LearningAIBehavior::Direction randomDirection(){
+    int what = PaintownUtil::rnd(100);
+    if (what > 65){
+        return LearningAIBehavior::Forward;
+    } else if (what > 30){
+        return LearningAIBehavior::Backward;
+    } else if (what > 10){
+        return LearningAIBehavior::Stopped;
+    } else {
+        return LearningAIBehavior::Crouch;
+    }
+}
+
 vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
 
     vector<string> out;
@@ -147,12 +160,21 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
     } else if (direction == Forward){
         out.push_back("holdfwd");
         if (PaintownUtil::rnd(10) > 8){
-            direction = Backward;
+            direction = randomDirection();
         }
-    } else {
+    } else if (direction == Backward){
         out.push_back("holdback");
         if (PaintownUtil::rnd(10) > 8){
-            direction = Forward;
+            direction = randomDirection();
+        }
+    } else if (direction == Crouch){
+        out.push_back("holddown");
+        if (PaintownUtil::rnd(10) > 8){
+            direction = randomDirection();
+        }
+    } else if (direction == Stopped){
+        if (PaintownUtil::rnd(10) > 8){
+            direction = randomDirection();
         }
     }
 
