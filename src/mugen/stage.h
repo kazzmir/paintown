@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "mugen/exception.h"
-#include "mugen/util.h"
+#include "exception.h"
+#include "util.h"
 
 #include "world.h"
 
@@ -145,6 +145,8 @@ public:
     virtual Network::Message createBangMessage( int x, int y, int z );
 
     static const std::string getStageName(const std::string &filename) throw (MugenException);
+
+    virtual const Mugen::Character * getEnemy(Mugen::Character * who) const;
 
     // Alliance setting
     enum teams{
@@ -428,7 +430,7 @@ protected:
 	bool debugMode;
 	
 	void cleanup();
-	bool isaPlayer( Object * o );
+	bool isaPlayer(Object * o) const;
 	
 	// player list so we can distinguish
 	std::vector<Object *> players;

@@ -306,8 +306,10 @@ void Game::doArcade(const Bitmap & bmp){
     HumanBehavior player1HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
     HumanBehavior player2HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
 
-    RandomAIBehavior player1AIBehavior;
-    RandomAIBehavior player2AIBehavior;
+    // RandomAIBehavior player1AIBehavior;
+    // RandomAIBehavior player2AIBehavior;
+    LearningAIBehavior player1AIBehavior;
+    LearningAIBehavior player2AIBehavior;
 
     bool quit = false;
     

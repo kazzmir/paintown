@@ -2434,7 +2434,7 @@ vector<string> Character::doInput(const MugenStage & stage){
         throw MugenException("Internal error: No behavior specified");
     }
 
-    return behavior->currentCommands(stage, commands, getFacing() == Object::FACING_RIGHT);
+    return behavior->currentCommands(stage, this, commands, getFacing() == Object::FACING_RIGHT);
 
     /*
     vector<string> out;
@@ -2549,6 +2549,10 @@ void Character::didHit(Character * enemy){
     nextCombo = 15;
 
     hitCount += 1;
+
+    if (behavior != NULL){
+        behavior->hit(enemy);
+    }
 }
 
 void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hisHit){

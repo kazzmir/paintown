@@ -1336,8 +1336,8 @@ void MugenStage::cleanup(){
     }
 }
 
-bool MugenStage::isaPlayer( Object * o ){
-    for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+bool MugenStage::isaPlayer( Object * o ) const {
+    for (vector<Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
         if ( (*it) == o ){
             return true;
         }
@@ -1523,4 +1523,15 @@ void MugenStage::setGameRate(double rate){
     if (rate <= 0){
         gameRate = 0.1;
     }
+}
+    
+const Mugen::Character * MugenStage::getEnemy(Mugen::Character * who) const {
+    for (vector<Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
+        Object * enemy = *enem;
+        if (who->getAlliance() != enemy->getAlliance() && isaPlayer(enemy)){
+            return (const Mugen::Character*) enemy;
+        }
+    }
+
+    return NULL;
 }
