@@ -52,6 +52,8 @@ class CursorHandler{
 	    this->cursor.y2 = y2;
 	}
 	
+	virtual int getCursorHeight() const;
+	
 	virtual inline void setCursorVisible(bool visible){
 	    this->cursor.visible = visible;
 	}

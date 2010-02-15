@@ -67,9 +67,9 @@ static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
 CursorHandler::CursorHandler(){
     // It seems that mugen defaults to something
-    cursor.x1 = -30;
+    cursor.x1 = -32;
     cursor.y1 = -10;
-    cursor.x2 = 30;    
+    cursor.x2 = 32;    
     cursor.y2 = 2;
     cursor.visible = true;
     cursor.alpha = 128;
@@ -113,6 +113,19 @@ void CursorHandler::renderText(int x, int y, bool active, const std::string & te
 
 int CursorHandler::getFontHeight(std::vector<MugenFont *> & fonts){
     return fonts[itemFont.index-1]->getHeight();
+}
+
+int CursorHandler::getCursorHeight() const {
+    const int y1 = abs(cursor.y1);
+    const int y2 = abs(cursor.y2);
+    
+    if (y2 > y1){
+	return y2 - y1;
+    } else if (y1 > y2){
+	return y1 - y2;
+    }
+    
+    return 0;
 }
 	
 
@@ -167,7 +180,7 @@ logoFile(""),
 introFile(""),
 selectFile(""),
 fightFile(""),
-windowMargin(0,0),
+windowMargin(12,8),
 windowVisibleItems(5),
 ticker(0),
 background(0),
@@ -403,6 +416,10 @@ void MugenMenu::loadData() throw (MugenException){
                    } else if (simple == "menu.window.margins.y"){
                        simple >> menu.windowMargin.x;
                        simple >> menu.windowMargin.y;
+		       // Undocumented but it defaults to 5 if it's 0 or not specified
+		       if (menu.windowMargin.y == 0){
+			   menu.windowMargin.y = 5;
+		       }
                    } else if (simple == "menu.window.visibleitems"){
                        simple >> menu.windowVisibleItems;
                    } else if (simple == "menu.boxcursor.visible"){
@@ -690,20 +707,32 @@ void MugenMenu::cleanupSprites(){
 // Draw text
 void MugenMenu::renderText(Bitmap *bmp){
     
-    const int top = (position.y) - windowMargin.x;
-    const int bottom = (position.y + fontSpacing.y) + ((windowVisibleItems) * fontCursor.getFontHeight(fonts)) + windowMargin.y;
+    // Top of the window
+    const int top = position.y - windowMargin.x;
+    // Pretty accurate tested with 5 different screen packs and different settings
+    const int bottom = position.y + ((windowVisibleItems-1) * fontSpacing.y) + windowMargin.y;
+    
     bmp->setClipRect(0, top, bmp->getWidth(), bottom);
+    //bmp->rectangle(0,top,bmp->getWidth(),bottom,Bitmap::makeColor(255,255,255));
     
     int offset = optionLocation >= windowVisibleItems ? optionLocation - windowVisibleItems + 1 : 0;
     
     int xplacement = position.x;
-    int yplacement = position.y - (offset * (fontCursor.getFontHeight(fonts))) + (offset > 0 ? fontSpacing.y : 0);
+    // Displace by the offset
+    int yplacement = position.y - (offset * fontSpacing.y);
     
+    int count = 1;
     for( std::vector <Mugen::ItemOption *>::iterator i = options.begin(); i != options.end(); ++i){
 	
 	Mugen::ItemOption *option = *i;
 	// Render
 	option->render(xplacement, yplacement, fontCursor, fonts, *bmp);
+	
+	if ((count - offset) == windowVisibleItems){
+	    Global::debug(0) << "Last item position: " << yplacement << endl;
+	}
+	count++;
+	
 	// Displacement
 	xplacement += fontSpacing.x;
 	yplacement += fontSpacing.y;
