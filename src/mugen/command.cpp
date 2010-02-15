@@ -50,8 +50,9 @@ public:
             case UpBack : return "UB";
             case DownForward : return "DF";
             case UpForward : return "UF";
-            case Start : return "start";
+            case Start : return "s";
         }
+        return "???";
     }
 
     static Keys convertKey(const Ast::KeySingle & name){
@@ -83,7 +84,7 @@ public:
             return Up;
         } else if (name == "UB"){
             return UpBack;
-        } else if (name == "start"){
+        } else if (name == "s"){
             return Start;
         }
 
