@@ -878,6 +878,7 @@ void Character::initialize(){
     has_control = true;
     airjumpnum = 0;
     airjumpheight = 35;
+    blocking = false;
     behavior = NULL;
 
     matchWins = 0;
@@ -2469,8 +2470,20 @@ InputMap<Mugen::Keys> & Character::getInput(){
 }
 */
 
+static bool holdingBlock(const vector<string> & commands){
+    for (vector<string>::const_iterator it = commands.begin(); it != commands.end(); it++){
+        if (*it == "holdback"){
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /* Inherited members */
 void Character::act(vector<Object*>* others, World* world, vector<Object*>* add){
+
+    blocking = false;
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
     if (hitState.shakeTime > 0){
@@ -2522,6 +2535,8 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
     /* active is the current set of commands */
     vector<string> active = doInput(stage);
     /* always run through the negative states */
+
+    blocking = holdingBlock(active);
 
     doStates(stage, active, -3);
     doStates(stage, active, -2);
@@ -2812,6 +2827,11 @@ void Character::resetPlayer(){
     clearWins();
     power = 0;
     setHealth(getMaxHealth());
+}
+        
+bool Character::isBlocking(const HitDefinition & hit){
+    /* can only block if in the proper state relative to the hit def */
+    return blocking;
 }
 
 }

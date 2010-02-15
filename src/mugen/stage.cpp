@@ -10,7 +10,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "mugen/stage.h"
+#include "stage.h"
 
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -29,18 +29,17 @@
 
 #include "parser/all.h"
 
-#include "mugen/animation.h"
+#include "animation.h"
 #include "background.h"
-#include "mugen/config.h"
-#include "mugen/item.h"
-#include "mugen/item-content.h"
-#include "mugen/section.h"
-#include "mugen/sound.h"
-#include "mugen/reader.h"
-#include "mugen/sprite.h"
-#include "mugen/util.h"
-
-#include "mugen/characterhud.h"
+#include "config.h"
+#include "item.h"
+#include "item-content.h"
+#include "section.h"
+#include "sound.h"
+#include "reader.h"
+#include "sprite.h"
+#include "util.h"
+#include "characterhud.h"
 
 using namespace std;
 
@@ -730,14 +729,18 @@ void MugenStage::physics(Object * player){
             Mugen::Character * enemy = (Mugen::Character*) *enem;
             if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit(mugen)){
                 if (doCollisionDetection(mugen, enemy)){
-                    /* do hitdef stuff */
-                    // Global::debug(0) << "Collision!" << endl;
-                    /* the hit state */
-                    addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), mugen->getHit()->spark);
-                    playSound(mugen->getHit()->hitSound.group, mugen->getHit()->hitSound.item, mugen->getHit()->hitSound.own);
-                    mugen->didHit(enemy);
-                    enemy->wasHit(*this, mugen, *mugen->getHit());
-                    // enemy->changeState(5000);
+                    if (enemy->isBlocking(*mugen->getHit())){
+                        /* add guard spark and play guard sound */
+                    } else {
+                        /* do hitdef stuff */
+                        // Global::debug(0) << "Collision!" << endl;
+                        /* the hit state */
+                        addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), mugen->getHit()->spark);
+                        playSound(mugen->getHit()->hitSound.group, mugen->getHit()->hitSound.item, mugen->getHit()->hitSound.own);
+                        mugen->didHit(enemy);
+                        enemy->wasHit(*this, mugen, *mugen->getHit());
+                        // enemy->changeState(5000);
+                    }
                 }
             }
         }

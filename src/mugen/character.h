@@ -1244,6 +1244,8 @@ public:
         /* `enemy' hit `this' with hitdef `hit' */
         void wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hit);
 
+        bool isBlocking(const HitDefinition & hit);
+
         virtual const HitState & getHitState() const {
             return hitState;
         }
@@ -1614,6 +1616,7 @@ protected:
         Ast::Value * internalJumpNumber;
 
         Behavior * behavior;
+        bool blocking;
 };
 
 }
