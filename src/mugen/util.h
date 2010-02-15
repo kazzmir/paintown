@@ -51,11 +51,11 @@ namespace Util{
     const std::string getCorrectFileLocation( const std::string &dir, const std::string &file );
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
     // Usefull for getting names of maps, characters, etc without loading the entire Object....
-    const std::string probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException);
+    const std::string probeDef(const std::string &file, const std::string &section, const std::string &search);
     /*! Use to probe a SFF file for a specific sprite without loading the whole sprite list
        Throws exception if not found
     */
-    MugenSprite *probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile="") throw (MugenException);
+    MugenSprite *probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile="");
 
     /* convenient parser functions. throw MugenException on failure instead
      * of Ast::Exception.

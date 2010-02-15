@@ -971,7 +971,7 @@ const std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, c
     return dir + ourFile;
 }
 
-const std::string Mugen::Util::probeDef(const std::string &file, const std::string &section, const std::string &search) throw (MugenException){
+const std::string Mugen::Util::probeDef(const std::string &file, const std::string &section, const std::string &search){
     TimeDifference diff;
     diff.startTime();
     Ast::AstParse parsed(parseDef(file));
@@ -1018,7 +1018,7 @@ const std::string Mugen::Util::probeDef(const std::string &file, const std::stri
 }
 
 /* clean this function up */
-MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile) throw (MugenException){
+MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile){
     SffReader reader(file, actFile);
     vector<MugenSprite*> sprites;
     while (reader.moreSprites()){
