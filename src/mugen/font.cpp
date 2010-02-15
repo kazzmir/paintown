@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <stdint.h>
 
 #include "mugen/font.h"
 
