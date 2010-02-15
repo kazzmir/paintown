@@ -308,8 +308,8 @@ void Game::doArcade(const Bitmap & bmp){
 
     // RandomAIBehavior player1AIBehavior;
     // RandomAIBehavior player2AIBehavior;
-    LearningAIBehavior player1AIBehavior(2);
-    LearningAIBehavior player2AIBehavior(2);
+    LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
+    LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
 
     bool quit = false;
     

@@ -64,7 +64,7 @@ firstRun(){
                 }
                 Data & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "dificulty"){
+                    if (simple == "difficulty"){
 			simple >> self.difficulty;
                     } else if (simple == "life"){
                         simple >> self.life;

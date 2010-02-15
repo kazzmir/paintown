@@ -74,27 +74,90 @@ class Difficulty: public Option {
     public:
 	Difficulty(){
 	    optionName = "Difficulty";
-	    currentValue = getString(Data::getInstance().getDifficulty());
+            int difficulty = Data::getInstance().getDifficulty();
+            if (difficulty < 1){
+                difficulty = 1;
+                Data::getInstance().setDifficulty(difficulty);
+            } else if (difficulty > 8){
+                difficulty = 8;
+                Data::getInstance().setDifficulty(difficulty);
+            }
+	    currentValue = getDifficultyName(difficulty);
 	}
 	~Difficulty(){
 	}
 	void next(){
-	}
+            int difficulty = Data::getInstance().getDifficulty() + 1;
+            if (difficulty > 8){
+                difficulty = 8;
+            }
+            Data::getInstance().setDifficulty(difficulty);
+            currentValue = getDifficultyName(difficulty);
+        }
 	void prev(){
+            int difficulty = Data::getInstance().getDifficulty() - 1;
+            if (difficulty < 1){
+                difficulty = 1;
+            }
+            Data::getInstance().setDifficulty(difficulty);
+            currentValue = getDifficultyName(difficulty);
 	}
+        
+        std::string getDifficultyName(int difficulty){
+            
+            switch (difficulty){
+                case 1:
+                case 2:
+                    return "Easy " + getString(difficulty);
+                    break;
+                case 3:
+                case 4:
+                case 5:
+                    return "Medium " + getString(difficulty);
+                    break;
+                case 6:
+                case 7:
+                case 8:
+                    return "Hard " + getString(difficulty);
+                    break;
+                default:
+                    break;
+            }
+            return std::string();
+        }
 };
 
 class Life : public Option {
     public:
 	Life(){
 	    optionName = "Life";
-	    currentValue = getString(Data::getInstance().getLife());
+            int life = Data::getInstance().getLife();
+            if (life < 30){
+                life = 30;
+                Data::getInstance().setLife(life);
+            } else if (life > 300){
+                life = 300;
+                Data::getInstance().setLife(life);
+            }
+	    currentValue = getString(life)+"%%";
 	}
 	~Life(){
 	}
 	void next(){
-	}
+            int life = Data::getInstance().getLife()+10;
+            if (life > 300){
+                life = 300;
+            }
+            Data::getInstance().setLife(life);
+	    currentValue = getString(life)+"%%";
+        }
 	void prev(){
+            int life = Data::getInstance().getLife()-10;
+            if (life < 30){
+                life = 30;
+            }
+            Data::getInstance().setLife(life);
+	    currentValue = getString(life)+"%%";
 	}
 };
 
@@ -144,14 +207,45 @@ class Speed : public Option {
     public:
 	Speed(){
 	    optionName = "Speed";
-	    currentValue = getString(Data::getInstance().getSpeed());
+            int speed = Data::getInstance().getSpeed();
+            if (speed < -9){
+                speed = -9;
+                Data::getInstance().setSpeed(speed);
+            } else if (speed > 9){
+                speed = 9;
+                Data::getInstance().setSpeed(speed);
+            }
+	    currentValue = getSpeedName(speed);
 	}
 	~Speed(){
 	}
 	void next(){
+            int speed = Data::getInstance().getSpeed() + 1;
+            if (speed > 9){
+                speed = 9;
+            }
+            Data::getInstance().setSpeed(speed);
+	    currentValue = getSpeedName(speed);
 	}
 	void prev(){
+            int speed = Data::getInstance().getSpeed() - 1;
+            if (speed < -9){
+                speed = -9;
+            }
+            Data::getInstance().setSpeed(speed);
+	    currentValue = getSpeedName(speed);
 	}
+
+        std::string getSpeedName(int speed){
+            if (speed == 0){
+                return "Normal";
+            } else if (speed < 0){
+                return "Slow " + getString(abs(speed));
+            } else if (speed > 0){
+                return "Fast " + getString(speed);
+            }
+            return std::string();
+        }
 };
 
 class OneVsTeam : public Option {
