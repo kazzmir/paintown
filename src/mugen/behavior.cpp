@@ -105,7 +105,7 @@ string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*
                 morePoints += 2;
             }
         }
-        morePoints -= log(move.attempts);
+        morePoints -= log((double) move.attempts);
 
         if (currentMove == NULL){
             currentMove = &move;
