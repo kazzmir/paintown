@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <stdint.h>
 
 // Extend the font interface already made for paintown
 #include "util/font.h"
@@ -69,7 +70,7 @@ protected:
     Bitmap * bmp;
     unsigned char *pcx;
     unsigned char palette[768];
-    unsigned long pcxsize;
+    uint32_t pcxsize;
     // mapping positions of font in bitmap
     std::map< char, FontLocation> positions;
     
