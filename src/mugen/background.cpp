@@ -948,7 +948,8 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
     } else {
         ostringstream out;
         out << "Unknown background type '" << type << "' in " << name;
-        throw MugenException(out.str());
+        //throw MugenException(out.str());
+        Global::debug(0) << out.str() << __FILE__ << __LINE__;
     }
 }
 
@@ -1480,7 +1481,8 @@ ticker(0){
                 } catch (const Ast::Exception & e){
                 }
             } else {
-                throw MugenException("Unhandled option in BGCtrlDef " + self.name + " Section: " + simple.toString());
+                //throw MugenException("Unhandled option in BGCtrlDef " + self.name + " Section: " + simple.toString());
+                Global::debug(0) << "Unhandled option in BGCtrlDef " << self.name << " Section: " << simple.toString() << __FILE__ << __LINE__;
             }
         }
     };
@@ -1618,7 +1620,8 @@ clearColor(-1){
                             }
 			    self.clearColor = Bitmap::makeColor(r,g,b);
 			} else {
-			    throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
+			    //throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
+                            Global::debug(0) << "Unhandled option in Background Definition Section: " << simple.toString() << __FILE__ << __LINE__;
 			}
 		    }
             };
@@ -1703,7 +1706,8 @@ clearColor(-1){
             } else {
                 ostringstream out;
                 out << "Unknown background type '" << type << "' in " << head;
-                throw MugenException(out.str());
+                //throw MugenException(out.str());
+                Global::debug(0) << out.str() << __FILE__ << __LINE__;
             }
             // Finally add it to our background controller
             control->addController(controller);

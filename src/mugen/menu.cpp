@@ -236,7 +236,8 @@ void MugenMenu::loadData(){
                         simple >> temp;
                         Global::debug(1) << "Made by: '" << temp << "'" << endl;
                     } else {
-                        throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                        //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                        Global::debug(0) << "Unhandled option in Info Section: " << simple.toString() << __FILE__ << __LINE__;
                     }
                 }
             };
@@ -304,7 +305,8 @@ void MugenMenu::loadData(){
                             Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
 
                         } else {
-                            throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
+                            //throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
+                            Global::debug(0) << "Unhandled option in Files Section: " << simple.toString() << __FILE__ << __LINE__;
                         }
                     }
             };
@@ -451,7 +453,8 @@ void MugenMenu::loadData(){
                        } catch (const Ast::Exception & e){
                        }
                    } else {
-                       throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                       //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                       Global::debug(0) << "Unhandled option in Title Info Section: " << simple.toString() << __FILE__ << __LINE__;
                    }
                 }
 	    };
@@ -481,7 +484,8 @@ void MugenMenu::loadData(){
 	else if (head == "music" ){ /* Ignore for now */ }
 	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
         else {
-            //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ ); 
+            //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ );
+            Global::debug(0) << "Unhandled Section: " << head << __FILE__ << __LINE__; 
         }
     } 
 
