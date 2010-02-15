@@ -1,6 +1,7 @@
 #ifndef mugen_sprite_h
 #define mugen_sprite_h
 
+#include <stdint.h>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -39,6 +40,7 @@ class MugenSprite{
 	const int getWidth();
 	const int getHeight();
 	
+        /* FIXME: replace types with uintX_t */
 	// Setters getters
 	inline void setNext(const long n) { next = n; }
 	inline void setLocation(const long l) { location = l; }
@@ -76,16 +78,16 @@ class MugenSprite{
          * unsigned long -> uint32
          * short -> int16
          */
-	unsigned long next;
-	unsigned long location;
-	unsigned long length;
-	unsigned long reallength;
-	unsigned long newlength;
-	short x;
-	short y;
-	unsigned short groupNumber;
-	unsigned short imageNumber;
-	unsigned short prev;
+	uint32_t next;
+	uint32_t location;
+	uint32_t length;
+	uint32_t reallength;
+	uint32_t newlength;
+	int16_t x;
+	int16_t y;
+	uint16_t groupNumber;
+	uint16_t imageNumber;
+	uint16_t prev;
 	bool samePalette;
 	char comments[12];
 	char * pcx;

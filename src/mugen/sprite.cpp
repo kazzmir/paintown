@@ -128,14 +128,14 @@ void MugenSprite::read(std::ifstream & ifile, const int loc){
     // set the sprite location
     this->location = loc;
     
-    ifile.read((char *)&next, sizeof(unsigned long));
-    ifile.read((char *)&length, sizeof(unsigned long));
-    ifile.read((char *)&x, sizeof(short));
-    ifile.read((char *)&y, sizeof(short));
-    ifile.read((char *)&groupNumber, sizeof(unsigned short));
-    ifile.read((char *)&imageNumber, sizeof(unsigned short));
-    ifile.read((char *)&prev, sizeof(unsigned short));
-    ifile.read((char *)&samePalette, sizeof(bool));
+    ifile.read((char *)&next, sizeof(next));
+    ifile.read((char *)&length, sizeof(length));
+    ifile.read((char *)&x, sizeof(x));
+    ifile.read((char *)&y, sizeof(y));
+    ifile.read((char *)&groupNumber, sizeof(groupNumber));
+    ifile.read((char *)&imageNumber, sizeof(imageNumber));
+    ifile.read((char *)&prev, sizeof(prev));
+    ifile.read((char *)&samePalette, sizeof(samePalette));
     ifile.read((char *)comments, sizeof(comments));
     newlength = reallength = next - loc - 32;
      

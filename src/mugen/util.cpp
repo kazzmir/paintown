@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -286,11 +287,11 @@ public:
         location = 16;
         sffStream.seekg(location,ios::beg);
         /* FIXME: change these to uint32 or whatever */
-        unsigned long totalGroups = 0;
+        uint32_t totalGroups = 0;
         totalImages = 0;
-        unsigned long suboffset = 0;
-        unsigned long subhead = 0;
-        unsigned int sharedPal = 0;
+        uint32_t suboffset = 0;
+        uint32_t subhead = 0;
+        uint32_t sharedPal = 0;
 
         /* this probably isn't endian safe.. */
         sffStream.read((char *)&totalGroups, sizeof(totalGroups));
