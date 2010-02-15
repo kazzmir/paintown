@@ -78,7 +78,9 @@ vector<string> RandomAIBehavior::currentCommands(const MugenStage & stage, Chara
 RandomAIBehavior::~RandomAIBehavior(){
 }
 
-LearningAIBehavior::LearningAIBehavior(){
+LearningAIBehavior::LearningAIBehavior(int difficulty):
+direction(Forward),
+difficulty(difficulty){
     /* make walking more likely to begin with */
     moves["holdfwd"].points -= 10;
     moves["holdfwd"].minimumDistance = 999999;
@@ -87,8 +89,6 @@ LearningAIBehavior::LearningAIBehavior(){
     moves["holdback"].minimumDistance = 999999;
     moves["holdback"].maximumDistance = 0;
     moves["not-possible+#$*(@#$"].points = 5;
-
-    direction = Forward;
 }
 
 string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*> & commands){
@@ -105,7 +105,9 @@ string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*
                 morePoints += 2;
             }
         }
-        morePoints -= log((double) move.attempts);
+
+        morePoints -= log((double) move.attempts * 3);
+        morePoints -= move.consecutive * 2;
 
         if (currentMove == NULL){
             currentMove = &move;
@@ -118,18 +120,27 @@ string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*
         }
     }
 
+    for (map<string, Move>::iterator it = moves.begin(); it != moves.end(); it++){
+        Move & move = (*it).second;
+        if (currentMove != &move){
+            move.consecutive /= 2;
+        }
+    }
+        
+    currentMove->attempts += 1;
+    currentMove->consecutive += 1;
+
     return what;
 }
 
 vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
-        
+
     vector<string> out;
 
-    if (PaintownUtil::rnd(10) > 8){
+    if (PaintownUtil::rnd(200) < difficulty * 2){
         const Character * enemy = stage.getEnemy(owner);
         int xDistance = (int) fabs(owner->getX() - enemy->getX());
         string command = selectBestCommand(xDistance, commands);
-        moves[command].attempts += 1;
         out.push_back(command);
         lastCommand = command;
         lastDistance = xDistance;
@@ -151,6 +162,10 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
 void LearningAIBehavior::hit(Character * enemy){
     Move & move = moves[lastCommand];
     move.points += 1;
+    if (move.points > 5){
+        move.points = 5;
+    }
+
     if (move.maximumDistance == -1 || lastDistance > move.maximumDistance){
         move.maximumDistance = lastDistance;
     }

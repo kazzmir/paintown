@@ -53,7 +53,8 @@ public:
 
 class LearningAIBehavior: public Behavior {
 public:
-    LearningAIBehavior();
+    /* 1 is easy, 10 is high */
+    LearningAIBehavior(int difficult);
 
     virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     
@@ -66,6 +67,7 @@ public:
         Move():
         points(0),
         attempts(0),
+        consecutive(0),
         minimumDistance(-1),
         maximumDistance(-1){
         }
@@ -75,6 +77,9 @@ public:
 
         /* times the move was tried */
         int attempts;
+
+        /* how many consecutive times this move was tried */
+        double consecutive;
 
         /* minimum known distance the move succeeded */
         int minimumDistance;
@@ -96,6 +101,7 @@ protected:
     std::string lastCommand;
     int lastDistance;
     Direction direction;
+    int difficulty;
 };
 
 }
