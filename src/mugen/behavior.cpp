@@ -49,7 +49,7 @@ vector<string> HumanBehavior::currentCommands(const MugenStage & stage, const ve
 HumanBehavior::~HumanBehavior(){
 }
 
-AIBehavior::AIBehavior(){
+RandomAIBehavior::RandomAIBehavior(){
 }
 
 static string randomCommand(const vector<Command*> & commands){
@@ -61,7 +61,7 @@ static string randomCommand(const vector<Command*> & commands){
     return commands[choice]->getName();
 }
 
-vector<string> AIBehavior::currentCommands(const MugenStage & stage, const vector<Command*> & commands, bool reversed){
+vector<string> RandomAIBehavior::currentCommands(const MugenStage & stage, const vector<Command*> & commands, bool reversed){
     vector<string> out;
     if (PaintownUtil::rnd(100) > 90){
         out.push_back(randomCommand(commands));
@@ -69,7 +69,7 @@ vector<string> AIBehavior::currentCommands(const MugenStage & stage, const vecto
     return out;
 }
 
-AIBehavior::~AIBehavior(){
+RandomAIBehavior::~RandomAIBehavior(){
 }
 
 }

@@ -38,13 +38,13 @@ protected:
     InputMap<Keys> left;
 };
 
-class AIBehavior: public Behavior {
+class RandomAIBehavior: public Behavior {
 public:
-    AIBehavior();
+    RandomAIBehavior();
 
     virtual std::vector<std::string> currentCommands(const MugenStage & stage, const std::vector<Command*> & commands, bool reversed);
 
-    virtual ~AIBehavior();
+    virtual ~RandomAIBehavior();
 };
 
 }
