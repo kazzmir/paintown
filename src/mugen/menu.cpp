@@ -712,6 +712,7 @@ void MugenMenu::renderText(Bitmap *bmp){
     // Pretty accurate tested with 5 different screen packs and different settings
     const int bottom = position.y + ((windowVisibleItems-1) * fontSpacing.y) + windowMargin.y;
     
+    /* FIXME: avoid using clip rect */
     bmp->setClipRect(0, top, bmp->getWidth(), bottom);
     //bmp->rectangle(0,top,bmp->getWidth(),bottom,Bitmap::makeColor(255,255,255));
     

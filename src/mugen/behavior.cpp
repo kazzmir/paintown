@@ -86,7 +86,7 @@ LearningAIBehavior::LearningAIBehavior(){
     moves["holdback"].points -= 10;
     moves["holdback"].minimumDistance = 999999;
     moves["holdback"].maximumDistance = 0;
-    moves["not-possible+#$*(@#$"].points = 7;
+    moves["not-possible+#$*(@#$"].points = 5;
 
     direction = Forward;
 }
@@ -94,17 +94,18 @@ LearningAIBehavior::LearningAIBehavior(){
 string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*> & commands){
     Move * currentMove = NULL;
     string what = "";
-    int points = 0;
+    double points = 0;
 
     for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
         string name = (*it)->getName();
         Move & move = moves[name];
-        int morePoints = move.points + PaintownUtil::rnd(8);
+        double morePoints = move.points + PaintownUtil::rnd(10);
         if (move.minimumDistance != -1){
             if (distance < move.maximumDistance + 10 && distance > move.minimumDistance - 10){
-                morePoints += 3;
+                morePoints += 2;
             }
         }
+        morePoints -= log(move.attempts);
 
         if (currentMove == NULL){
             currentMove = &move;
@@ -128,6 +129,7 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
         const Character * enemy = stage.getEnemy(owner);
         int xDistance = (int) fabs(owner->getX() - enemy->getX());
         string command = selectBestCommand(xDistance, commands);
+        moves[command].attempts += 1;
         out.push_back(command);
         lastCommand = command;
         lastDistance = xDistance;

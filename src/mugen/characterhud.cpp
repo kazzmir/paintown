@@ -16,8 +16,8 @@
 #include "ast/all.h"
 #include "parser/all.h"
 
-const int DEFAULT_WIDTH = 320;
-const int DEFAULT_HEIGHT = 240;
+static const int DEFAULT_WIDTH = 320;
+static const int DEFAULT_HEIGHT = 240;
 
 namespace PaintownUtil = ::Util;
 

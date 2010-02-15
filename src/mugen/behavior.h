@@ -65,19 +65,28 @@ public:
     struct Move{
         Move():
         points(0),
+        attempts(0),
         minimumDistance(-1),
         maximumDistance(-1){
         }
 
+        /* times the move succeeded */
         int points;
+
+        /* times the move was tried */
+        int attempts;
+
+        /* minimum known distance the move succeeded */
         int minimumDistance;
+
+        /* maximum known distance the move succeeded */
         int maximumDistance;
     };
 
 protected:
 
     enum Direction{
-        Forward, Backward,
+        Forward, Backward, Crouch
     };
 
     std::string selectBestCommand(int distance, const std::vector<Command*> & commands);
