@@ -1709,7 +1709,7 @@ void Character::parseState(Ast::Section * section){
                     controller->getHit().hitSound.own = own;
                     controller->getHit().hitSound.group = group;
                     controller->getHit().hitSound.item = item;
-                } else if (simple == "guard.hitsound"){
+                } else if (simple == "guardsound"){
                     string first;
                     bool own = false;
                     int group;

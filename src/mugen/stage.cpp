@@ -736,6 +736,7 @@ void MugenStage::physics(Object * player){
                             spark = mugen->getDefaultGuardSpark();
                         }
                         addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
+                        playSound(mugen->getHit()->guardHitSound.group, mugen->getHit()->guardHitSound.item, mugen->getHit()->guardHitSound.own);
                         enemy->guarded(mugen);
                     } else {
                         /* do hitdef stuff */
