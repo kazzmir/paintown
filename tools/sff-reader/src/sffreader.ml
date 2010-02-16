@@ -22,8 +22,27 @@ let read_bytes bytes input =
 ;;
 
 (* curried functions *)
+let read_bytes_1 : in_channel -> int = read_bytes 1;;
 let read_bytes_2 : in_channel -> int = read_bytes 2;;
 let read_bytes_4 : in_channel -> int = read_bytes 4;;
+
+let read_sprite input =
+  let here = pos_in input in 
+  let nextLocation = read_bytes_4 input in
+  let length = read_bytes_4 input in
+  let x = read_bytes_2 input in
+  let y = read_bytes_2 input in
+  let groupNumber = read_bytes_4 input in
+  let imageNumber = read_bytes_4 input in
+  let previous = read_bytes_4 input in
+  let samePalette = read_bytes_1 input in
+  (*
+  let comments = read_bytes 13 input in
+  *)
+  let realLength = nextLocation - here - 32 in
+  Printf.printf "  Length %d x %d y %d\n" realLength x y;
+  nextLocation
+;;
 
 let read_header input =
   (* skip first 16 bytes *)
@@ -32,9 +51,16 @@ let read_header input =
   let totalImages = read_bytes_4 input in
   let suboffset = read_bytes_4 input in
   let subhead = read_bytes_4 input in
-  let sharedPalette = read_bytes_2 input in
+  let sharedPalette = read_bytes_1 input in
   Printf.printf "Total groups %u\n" totalGroups;
   Printf.printf "Total images %u\n" totalImages;
+  seek_in input suboffset;
+
+  for i = 0 to totalImages do
+    Printf.printf "Image %d\n" i;
+    seek_in input (read_sprite input)
+  done;
+
   0
 ;;
 
