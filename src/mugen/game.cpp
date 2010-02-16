@@ -137,6 +137,7 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
     gameInput.set(Keyboard::Key_F3, 10, false, 2);
     gameInput.set(Keyboard::Key_F4, 10, true, 3);
     gameInput.set(Keyboard::Key_ESC, 0, true, 4);
+    gameInput.set(Keyboard::Key_F5, 10, true, 5);
 
     double gameSpeed = 1.0;
     double runCounter = 0;
@@ -191,6 +192,9 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
                     endMatch = true;
                     */
                 }
+                if (out[5]){
+                    stage->setPlayerHealth(1);
+                }
                 if (gameSpeed < 0.1){
                     gameSpeed = 0.1;
                 }
@@ -235,9 +239,7 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
 }
 
 void Game::doWatch(const Bitmap & bmp){
-    /* **WRONG! you don't select randomly!
-    Current player makes selection for his slot then chooses opponent then stage
-    This is very wrong! -> make select choose random characters and screens */
+    /* Do watch screen */
     bool quit = false;
     while (!quit){
 	Mugen::CharacterSelect select(systemFile, playerType, gameType);
@@ -346,6 +348,9 @@ void Game::doArcade(const Bitmap & bmp){
 
     // Display game over storyboard
     bool displayGameOver = false;
+
+    // Set initial oponent
+    select.setNextArcadeMatch();
     
     try{
         while (!quit){
@@ -419,10 +424,14 @@ void Game::doArcade(const Bitmap & bmp){
                 }
             } else {
                 // Player lost do continue screen if enabled for now just quit
-                if (continueScreenEnabled){
+                if (stage->doContinue(playerType, input, bmp)){
+                    select.reset();
+                    select.getPlayer1()->resetPlayer();
+                    select.getPlayer2()->resetPlayer();
+                    select.run("Arcade", bmp);
                 } else {
+                    quit = displayGameOver = true;
                 }
-                quit = displayGameOver = true;
             }
         }
     } catch (const QuitGameException & e){

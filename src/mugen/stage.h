@@ -91,6 +91,9 @@ public:
 	// Add player2 people
 	virtual void addPlayer2( Object * o );
 
+        // Set player health
+        virtual void setPlayerHealth(int health);
+
         //! Set match
         virtual void setMatchOver(bool over){
             this->gameOver = over;
@@ -100,6 +103,9 @@ public:
         virtual const bool isMatchOver() const {
             return this->gameOver;
         }
+
+        //! Do continue screen return true to continue playing, false to end
+        virtual bool doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> &,  const Bitmap &);
 
         /* 1 is normal, 0<rate<1 is slower, 1<rate is faster */
         virtual void setGameRate(double rate);

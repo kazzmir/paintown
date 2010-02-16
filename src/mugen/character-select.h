@@ -914,6 +914,8 @@ class CharacterSelect {
 	virtual void load() throw (MugenException);
 	
 	virtual void run(const std::string & title, const Bitmap &);
+
+        virtual void reset();
 	
 	//! This will load the character and stage so that you can retrieve them when setting up
 	virtual void renderVersusScreen(const Bitmap &);

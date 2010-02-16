@@ -1047,53 +1047,8 @@ currentStage(0),
 playerType(playerType){
 grid.setGameType(gameType);
     
-    switch (gameType){
-	case Arcade:
-	    // set first cursor1
-	    if (playerType == Player1){
-		player1Cursor.setState(Cursor::CharacterSelect);
-		player2Cursor.setState(Cursor::NotActive);
-	    } else if (playerType == Player2){
-		player2Cursor.setState(Cursor::CharacterSelect);
-		player1Cursor.setState(Cursor::NotActive);
-	    }
-	    break;
-	case Versus:
-	    player1Cursor.setState(Cursor::CharacterSelect);
-	    player2Cursor.setState(Cursor::CharacterSelect);
-	    break;
-	case TeamArcade:
-	    player1Cursor.setState(Cursor::TeamSelect);
-	    break;
-	case TeamVersus:
-	    player1Cursor.setState(Cursor::TeamSelect);
-	    player2Cursor.setState(Cursor::TeamSelect);
-	    break;
-	case TeamCoop:
-	    player1Cursor.setState(Cursor::CharacterSelect);
-	    break;
-	case Survival:
-	    player1Cursor.setState(Cursor::TeamSelect);
-	    break;
-	case SurvivalCoop:
-	    player1Cursor.setState(Cursor::CharacterSelect);
-	    break;
-	case Training:
-	    player1Cursor.setState(Cursor::CharacterSelect);
-	    break;
-	case Watch:
-	    // set first cursor1
-	    if (playerType == Player1){
-		player1Cursor.setState(Cursor::CharacterSelect);
-		player2Cursor.setState(Cursor::NotActive);
-	    } else if (playerType == Player2){
-		player2Cursor.setState(Cursor::CharacterSelect);
-		player1Cursor.setState(Cursor::NotActive);
-	    }
-	    break;
-	default:
-	    break;
-    }
+    // Set defaults
+    reset();
 }
 
 CharacterSelect::~CharacterSelect(){
@@ -2017,6 +1972,72 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     }
 }
 
+void CharacterSelect::reset(){
+    switch (gameType){
+	case Arcade:
+	    // set first cursor1
+	    if (playerType == Player1){
+		player1Cursor.setState(Cursor::CharacterSelect);
+		player2Cursor.setState(Cursor::NotActive);
+                if (currentStage){
+                    delete currentStage;
+                    if (currentPlayer2->hasRandomStage()){
+                        currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
+                    } else {
+                        currentStage = new MugenStage(currentPlayer2->getStage());
+                    }
+                }
+	    } else if (playerType == Player2){
+		player2Cursor.setState(Cursor::CharacterSelect);
+		player1Cursor.setState(Cursor::NotActive);
+                if (currentStage){
+                    delete currentStage;
+                    if (currentPlayer1->hasRandomStage()){
+                        currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
+                    } else {
+                        currentStage = new MugenStage(currentPlayer1->getStage());
+                    }
+                }
+	    }
+	    break;
+	case Versus:
+	    player1Cursor.setState(Cursor::CharacterSelect);
+	    player2Cursor.setState(Cursor::CharacterSelect);
+	    break;
+	case TeamArcade:
+	    player1Cursor.setState(Cursor::TeamSelect);
+	    break;
+	case TeamVersus:
+	    player1Cursor.setState(Cursor::TeamSelect);
+	    player2Cursor.setState(Cursor::TeamSelect);
+	    break;
+	case TeamCoop:
+	    player1Cursor.setState(Cursor::CharacterSelect);
+	    break;
+	case Survival:
+	    player1Cursor.setState(Cursor::TeamSelect);
+	    break;
+	case SurvivalCoop:
+	    player1Cursor.setState(Cursor::CharacterSelect);
+	    break;
+	case Training:
+	    player1Cursor.setState(Cursor::CharacterSelect);
+	    break;
+	case Watch:
+	    // set first cursor1
+	    if (playerType == Player1){
+		player1Cursor.setState(Cursor::CharacterSelect);
+		player2Cursor.setState(Cursor::NotActive);
+	    } else if (playerType == Player2){
+		player2Cursor.setState(Cursor::CharacterSelect);
+		player1Cursor.setState(Cursor::NotActive);
+	    }
+	    break;
+	default:
+	    break;
+    }
+}
+
 void CharacterSelect::renderVersusScreen(const Bitmap & bmp){
     versus.render(*currentPlayer1,*currentPlayer2, currentStage, bmp);
 }
@@ -2061,15 +2082,11 @@ bool CharacterSelect::checkPlayerData(){
 	    if (playerType == Player1){
 		if (player1Cursor.getState() == Cursor::Done){
 		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
-		    // Set initial player
-		    setNextArcadeMatch();
 		    return true;
 		}
 	    } else if (playerType == Player2){
 		if (player2Cursor.getState() == Cursor::Done){
 		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
-		    // Set initial player
-		    setNextArcadeMatch();
 		    return true;
 		}
 	    }

@@ -12,6 +12,8 @@
 
 #include "stage.h"
 
+#include "init.h"
+
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/bitmap.h"
@@ -40,6 +42,8 @@
 #include "sprite.h"
 #include "util.h"
 #include "characterhud.h"
+
+#include "mugen/font.h"
 
 using namespace std;
 
@@ -1190,6 +1194,13 @@ void MugenStage::addPlayer2( Object * o ){
     ((Mugen::Character *) o)->setCommonSounds(&sounds);
 }
 
+void MugenStage::setPlayerHealth(int health){
+    for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+        Mugen::Character *player = (Mugen::Character *)(*it);
+	player->setHealth(health);
+    }
+}
+
 // Console
 void MugenStage::toggleConsole(){ 
     console->toggle(); 
@@ -1536,6 +1547,151 @@ void MugenStage::setGameRate(double rate){
     gameRate = rate;
     if (rate <= 0){
         gameRate = 0.1;
+    }
+}
+
+//! Do continue screen return true to continue playing, false to end
+bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input, const Bitmap & buffer){
+
+    std::string systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
+    
+    // Check if we have the continue screen enabled
+    std::string enabled = Mugen::Util::probeDef(systemFile,"Continue Screen", "enabled");
+    // If so we can render it otherwise it's not enabled, so no continue
+    if (enabled != "1"){
+        return false;
+    }
+
+    // Lets look for our def since some people think that all file systems are case insensitive
+    std::string baseDir = Mugen::Util::getFileDir(systemFile);
+
+    // Uses system font3 by default
+    std::string fontFile = Mugen::Util::probeDef(systemFile,"Files", "font3");
+
+    MugenFont font(Mugen::Util::getCorrectFileLocation(baseDir, fontFile));
+    
+    Mugen::Character * character;
+
+    switch (type){
+        case Mugen::Player1:
+            character = ((Mugen::Character *)players[0]);
+            character->setFacing(Object::FACING_RIGHT);
+            break;
+        case Mugen::Player2:
+            character = ((Mugen::Character *)players[1]);
+            character->setFacing(Object::FACING_LEFT);
+            break;
+        default:
+            break;
+    }
+    
+
+    double gameSpeed = 1.0;
+    double runCounter = 0;
+    double mugenSpeed = 60;
+
+    unsigned int second_counter = Global::second_counter;
+
+    bool endMatch = false;
+
+    bool selector = true;
+
+    // Put character in continue state
+    std::vector<std::string> vec;
+    character->changeState(*this,Mugen::Continue,vec);
+
+    while (!endMatch){
+        bool draw = false;
+
+        if (Global::speed_counter > 0){
+            runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+            if (runCounter > 10){
+                runCounter = 10;
+            }
+
+            while (runCounter > 1){
+                InputManager::poll();
+                
+                runCounter -= 1;
+                draw = true;
+
+                InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
+                if (out[Mugen::Left] || out[Mugen::Right]){
+                    selector = !selector;
+                }
+                if (out[Mugen::A] || out[Mugen::B] || out[Mugen::C] || out[Mugen::X] || out[Mugen::Y] || out[Mugen::Z]){
+                    if (selector){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                // If enter return true
+                if (out[Mugen::Esc]){
+                    return false;
+                }
+                std::vector<Object *> add;
+                character->act(&add,this,&add);
+
+                if (gameSpeed < 0.1){
+                    gameSpeed = 0.1;
+                }
+            }
+            Global::speed_counter = 0;
+        }
+
+        if (second_counter != Global::second_counter){
+            int difference = Global::second_counter - second_counter;
+            /* unlikely, but just in case */
+            if (difference == 0){
+                difference = 1;
+            }
+            second_counter = Global::second_counter;
+        }
+
+        if (draw){
+            
+            // Render background
+            background->renderBackground(0, 0, *board);
+        
+            // do darkened background
+            Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	    Bitmap::transBlender(0,0,0,150);
+	    board->rectangleFill(0, 0, board->getWidth(), board->getHeight(), Bitmap::makeColor(0,0,0));
+	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
+            
+            // Render character
+            if (reflectionIntensity > 0){
+                character->drawReflection(board, -(DEFAULT_WIDTH / 2), cameray, reflectionIntensity);
+            }
+
+	    /* Shadow */
+	    character->drawShade(board, -(DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+        
+            character->draw(board, -(DEFAULT_WIDTH / 2), cameray); 
+            
+            // Render continue text
+            font.render(DEFAULT_WIDTH/2, 40, 0, 0, *board, "Continue?" );
+
+            // Render yes and no
+            if (selector){
+                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 4, *board, "Yes");
+                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 0, *board, "No");
+            } else {
+                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 0, *board, "Yes");
+                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 4, *board, "No");
+            }
+        
+            // Foreground
+            background->renderForeground(0, 0, *board);
+
+            board->Stretch(buffer);
+            buffer.BlitToScreen();
+        }
+
+        while (Global::speed_counter == 0){
+            Util::rest(1);
+        }
     }
 }
     
