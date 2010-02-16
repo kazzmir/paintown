@@ -250,7 +250,7 @@ void MugenMenu::loadData(){
                         Global::debug(1) << "Made by: '" << temp << "'" << endl;
                     } else {
                         //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
-                        Global::debug(0) << "Unhandled option in Info Section: " << simple.toString() << __FILE__ << __LINE__;
+                        Global::debug(0) << "Unhandled option in Info Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
                     }
                 }
             };
@@ -319,7 +319,7 @@ void MugenMenu::loadData(){
 
                         } else {
                             //throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
-                            Global::debug(0) << "Unhandled option in Files Section: " << simple.toString() << __FILE__ << __LINE__;
+                            Global::debug(0) << "Unhandled option in Files Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
                         }
                     }
             };
@@ -498,7 +498,9 @@ void MugenMenu::loadData(){
 	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
         else {
             //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ );
-            Global::debug(0) << "Unhandled Section: " << head << __FILE__ << __LINE__; 
+            ostringstream context;
+            context << __FILE__ << ":" << __LINE__;
+            Global::debug(0, context.str()) << "Unhandled Section: " << head << endl;
         }
     } 
 

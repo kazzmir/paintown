@@ -948,9 +948,13 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
     } else {
         ostringstream out;
         out << "Unknown background type '" << type << "' in " << name;
+        ostringstream context;
+        context << __FILE__ << ":" << __LINE__;
         //throw MugenException(out.str());
-        Global::debug(0) << out.str() << __FILE__ << __LINE__;
+        Global::debug(0, context.str()) << out.str() << endl;
     }
+
+    return NULL;
 }
 
 /* Controller */
@@ -1482,7 +1486,7 @@ ticker(0){
                 }
             } else {
                 //throw MugenException("Unhandled option in BGCtrlDef " + self.name + " Section: " + simple.toString());
-                Global::debug(0) << "Unhandled option in BGCtrlDef " << self.name << " Section: " << simple.toString() << __FILE__ << __LINE__;
+                Global::debug(0) << "Unhandled option in BGCtrlDef " << self.name << " Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
             }
         }
     };
@@ -1631,22 +1635,24 @@ clearColor(-1){
         /* probably need a better regex here */
 	} else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " ")){
 	    BackgroundElement * element = getElement(*section_it, sprites, animations);
-	    
-	    // Background or Forgeground?
-	    if (element->getLayer() == Element::Background){
-                backgrounds.push_back(element);
-            } else if (element->getLayer() == Element::Foreground){
-                foregrounds.push_back(element);
-            }
-            // Lets check if this element is linked to the prior one
-            if (element->getPositionLink()){
-                // Ensure prior exists, usually won't happen though as you can't link to any objects if there are non preceeding this one
-                if (priorElement){
-                    // use prior element to set the current elements properties
-	            priorElement->setLink(element);
+
+            if (element != NULL){
+                // Background or Forgeground?
+                if (element->getLayer() == Element::Background){
+                    backgrounds.push_back(element);
+                } else if (element->getLayer() == Element::Foreground){
+                    foregrounds.push_back(element);
                 }
+                // Lets check if this element is linked to the prior one
+                if (element->getPositionLink()){
+                    // Ensure prior exists, usually won't happen though as you can't link to any objects if there are non preceeding this one
+                    if (priorElement){
+                        // use prior element to set the current elements properties
+                        priorElement->setLink(element);
+                    }
+                }
+                priorElement = element;
             }
-            priorElement = element;
 	} else if (PaintownUtil::matchRegex(head, "begin *action")){
             /* This creates the animations. It differs from character animation since
              * these are included in the stage.def file with the other defaults
