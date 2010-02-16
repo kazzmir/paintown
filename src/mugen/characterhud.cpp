@@ -1007,11 +1007,13 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
                             // Later on add lose information to other player
                             // Exit match
                             stage.setMatchOver(true);
+                            setState(MatchOver, stage, player1, player2);
                         } else if (player2.getWins().size() >= (unsigned int)matchWins){
                             player2.addMatchWin();
                             // Same as above
                             // Exit match
                             stage.setMatchOver(true);
+                            setState(MatchOver, stage, player1, player2);
                         }
                     }
 		}
@@ -1021,17 +1023,19 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    break;
     }
     
-    getRoundElement().act();
-    getRoundSoundElement().act();
-    fight.act();
-    KO.act();
-    DKO.act();
-    TO.act();
-    win.act();
-    win2.act();
-    draw.act();
-    ticker++;
-    fader.act();
+    if (state != MatchOver){
+        getRoundElement().act();
+        getRoundSoundElement().act();
+        fight.act();
+        KO.act();
+        DKO.act();
+        TO.act();
+        win.act();
+        win2.act();
+        draw.act();
+        ticker++;
+        fader.act();
+    }
 }
 
 void Round::render(const Element::Layer & layer, const Bitmap & bmp){

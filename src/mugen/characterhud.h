@@ -429,6 +429,7 @@ class Round{
 	    RoundOver,
 	    DoTimeOver,
             DoWin,
+            MatchOver,
 	};
 	
 	virtual void setRound(int round){
