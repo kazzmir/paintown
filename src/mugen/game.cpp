@@ -255,6 +255,7 @@ void Game::doWatch(const Bitmap & bmp){
             stage->reset();
             runMatch(stage, bmp);
         } catch (const ReturnException & e){
+	    quit = true;
 	} catch (const QuitGameException & e){
         }
     }
