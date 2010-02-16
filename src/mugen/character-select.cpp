@@ -1,5 +1,5 @@
 #include "util/bitmap.h"
-#include "mugen/character-select.h"
+#include "character-select.h"
 
 #include <fstream>
 #include <iostream>
@@ -34,16 +34,16 @@
 #include "menu/option_quit.h"
 #include "menu/option_dummy.h"
 
-#include "mugen/animation.h"
-#include "mugen/background.h"
+#include "animation.h"
+#include "background.h"
 #include "character.h"
-#include "mugen/sound.h"
-#include "mugen/reader.h"
-#include "mugen/sprite.h"
-#include "mugen/util.h"
-#include "mugen/font.h"
+#include "sound.h"
+#include "reader.h"
+#include "sprite.h"
+#include "util.h"
+#include "font.h"
 
-#include "mugen/option-versus.h"
+#include "option-versus.h"
 #include "ast/all.h"
 #include "parser/all.h"
 
@@ -63,13 +63,14 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
-
 static const std::string fixStageName(const std::string &stage){
-    // *FIXME not a good solution to get file
+    /* FIXME not a good solution to get file
+     * jon: why isn't it good?
+     */
     std::string ourDefFile = stage;
     std::string baseDir = Filesystem::find("mugen/stages/");
     if (ourDefFile.find(".def")==std::string::npos){
-	ourDefFile+=".def";
+	ourDefFile += ".def";
     }
     // Get correct directory
     baseDir = Mugen::Util::getFileDir(baseDir + ourDefFile);

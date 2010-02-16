@@ -80,7 +80,8 @@ RandomAIBehavior::~RandomAIBehavior(){
 
 LearningAIBehavior::LearningAIBehavior(int difficulty):
 direction(Forward),
-difficulty(difficulty){
+difficulty(difficulty),
+dontMove(0){
     /* make walking more likely to begin with */
     moves["holdfwd"].points -= 10;
     moves["holdfwd"].minimumDistance = 999999;
@@ -157,24 +158,20 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
         out.push_back(command);
         lastCommand = command;
         lastDistance = xDistance;
-    } else if (direction == Forward){
-        out.push_back("holdfwd");
-        if (PaintownUtil::rnd(10) > 8){
-            direction = randomDirection();
+    } else {
+        dontMove += 1;
+        if (direction == Forward){
+            out.push_back("holdfwd");
+        } else if (direction == Backward){
+            out.push_back("holdback");
+        } else if (direction == Crouch){
+            out.push_back("holddown");
+        } else if (direction == Stopped){
         }
-    } else if (direction == Backward){
-        out.push_back("holdback");
-        if (PaintownUtil::rnd(10) > 8){
+            
+        if (dontMove > 40 && PaintownUtil::rnd(10) > 8){
             direction = randomDirection();
-        }
-    } else if (direction == Crouch){
-        out.push_back("holddown");
-        if (PaintownUtil::rnd(10) > 8){
-            direction = randomDirection();
-        }
-    } else if (direction == Stopped){
-        if (PaintownUtil::rnd(10) > 8){
-            direction = randomDirection();
+            dontMove = 0;
         }
     }
 

@@ -937,10 +937,10 @@ class CharacterSelect {
 	    return this->currentStage;
 	}
 	
-	
 	virtual inline const std::string &getPlayer1Def(){
 	    return currentPlayer1->getDefinitionFile();
 	}
+
 	virtual inline const std::string &getPlayer2Def(){
 	    return currentPlayer2->getDefinitionFile();
 	}

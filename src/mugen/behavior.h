@@ -101,6 +101,7 @@ protected:
     int lastDistance;
     Direction direction;
     int difficulty;
+    int dontMove;
 };
 
 }
