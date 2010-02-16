@@ -1,5 +1,5 @@
-lbxreader.native:
-	ocamlbuild -Is src,lib/extlib-1.5 lbxreader.native
+sffreader.native:
+	ocamlbuild -Is src,lib/extlib-1.5 sffreader.native
 
 clean:
 	ocamlbuild -clean
