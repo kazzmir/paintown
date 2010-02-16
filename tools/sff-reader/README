@@ -1,0 +1,4 @@
+Sffreader in ocaml
+
+To build this you need ocaml (3.10 or higher) and ocamlbuild.
+$ make
