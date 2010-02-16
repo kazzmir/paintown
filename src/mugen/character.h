@@ -148,7 +148,8 @@ struct HitDefinition{
     animationType(AttackType::Light),
     animationTypeAir(AttackType::NoAnimation),
     animationTypeFall(AttackType::NoAnimation),
-    spark(0),
+    spark(-1),
+    guardSpark(-1),
     groundType(AttackType::None),
     groundHitTime(0),
     airHitTime(20),
@@ -1244,6 +1245,9 @@ public:
         /* `enemy' hit `this' with hitdef `hit' */
         void wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hit);
 
+        /* `this' character guarded `enemy' */
+        void guarded(Character * enemy);
+
         bool isBlocking(const HitDefinition & hit);
 
         virtual const HitState & getHitState() const {
@@ -1333,6 +1337,22 @@ public:
 
         virtual inline void setBehavior(Behavior * b){
             behavior = b;
+        }
+
+        virtual inline void setDefaultSpark(int s){
+            sparkno = s;
+        }
+
+        virtual inline void setDefaultGuardSpark(int s){
+            guardsparkno = s;
+        }
+
+        virtual inline int getDefaultSpark() const {
+            return sparkno;
+        }
+
+        virtual inline int getDefaultGuardSpark() const {
+            return guardsparkno;
         }
 
 protected:

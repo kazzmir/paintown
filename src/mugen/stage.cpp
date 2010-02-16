@@ -731,11 +731,21 @@ void MugenStage::physics(Object * player){
                 if (doCollisionDetection(mugen, enemy)){
                     if (enemy->isBlocking(*mugen->getHit())){
                         /* add guard spark and play guard sound */
+                        int spark = mugen->getHit()->guardSpark;
+                        if (spark == -1){
+                            spark = mugen->getDefaultGuardSpark();
+                        }
+                        addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
+                        enemy->guarded(mugen);
                     } else {
                         /* do hitdef stuff */
                         // Global::debug(0) << "Collision!" << endl;
                         /* the hit state */
-                        addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), mugen->getHit()->spark);
+                        int spark = mugen->getHit()->spark;
+                        if (spark == -1){
+                            spark = mugen->getDefaultSpark();
+                        }
+                        addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
                         playSound(mugen->getHit()->hitSound.group, mugen->getHit()->hitSound.item, mugen->getHit()->hitSound.own);
                         mugen->didHit(enemy);
                         enemy->wasHit(*this, mugen, *mugen->getHit());

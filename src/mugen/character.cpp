@@ -881,6 +881,9 @@ void Character::initialize(){
     blocking = false;
     behavior = NULL;
 
+    sparkno = 0;
+    guardsparkno = 0;
+
     matchWins = 0;
 
     combo = 0;
@@ -1251,6 +1254,14 @@ void Character::loadCnsFile(const string & path){
                             simple >> x;
                             self.setMaxHealth(x);
                             self.setHealth(x);
+                        } else if (simple == "sparno"){
+                            int x;
+                            simple >> x;
+                            self.setDefaultSpark(x);
+                        } else if (simple == "guard.sparkno"){
+                            int x;
+                            simple >> x;
+                            self.setDefaultGuardSpark(x);
                         }
                     }
 
@@ -2832,6 +2843,10 @@ void Character::resetPlayer(){
 bool Character::isBlocking(const HitDefinition & hit){
     /* can only block if in the proper state relative to the hit def */
     return blocking;
+}
+        
+void Character::guarded(Character * enemy){
+    lastTicket = enemy->getTicket();
 }
 
 }
