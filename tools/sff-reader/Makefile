@@ -1,4 +1,4 @@
-sffreader.native:
+sffreader.native: src/sffreader.ml
 	ocamlbuild -Is src,lib/extlib-1.5 sffreader.native
 
 clean:
