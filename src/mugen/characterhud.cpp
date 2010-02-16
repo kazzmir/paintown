@@ -360,7 +360,7 @@ void Bar::act(Mugen::Character & character){
             }
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
-            if (character.hasControl()){
+            if (character.getCurrentState() != Mugen::Liedown && character.getCurrentState() != Mugen::Liedown2 && character.getCurrentState() != Mugen::AirFall && character.getCurrentState() != Mugen::AirFallComingDown){
                 if (damage > currentHealth){
                     damage--;
                 } else {
@@ -380,7 +380,7 @@ void Bar::act(Mugen::Character & character){
 	    // Level 1 = 1000
 	    // Level 2 = 2000
 	    // Level 3 = 3000
-	    if (character.getPower() == 3000){
+	    if (character.getPower() >= 3000){
 		if (powerLevel != Level3){
 		    level3Sound.play();
 		}
