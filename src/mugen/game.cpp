@@ -285,7 +285,12 @@ void Game::doArcade(const Bitmap & bmp){
 
     try{
         // get intro and ending for player
-	std::string file = Filesystem::find(select.getPlayer1Def());
+	std::string file;
+	if (playerType == Player1){
+	    file = Filesystem::find(select.getPlayer1Def());
+	} else {
+	    file = Filesystem::find(select.getPlayer2Def());
+	}
 	std::string baseDir = Util::getFileDir(file);
 	intro = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","intro.storyboard"));
 	ending = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","ending.storyboard"));
@@ -294,11 +299,7 @@ void Game::doArcade(const Bitmap & bmp){
         if (Util::probeDef(systemFile, "win screen", "enabled") == "1"){
             displayWinScreen = true;
         }
-
-        // Continue screen
-        if (Util::probeDef(systemFile, "continue screen", "enabled") == "1"){
-            continueScreenEnabled = true;
-        }
+        
         // Get Default ending
         if (Util::probeDef(systemFile, "default ending", "enabled") == "1"){
             defaultEndingEnabled = true;
