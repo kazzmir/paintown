@@ -192,13 +192,13 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     input.set(Keyboard::Key_RIGHT, delay, false, Mugen::Right);
     input.set(Keyboard::Key_LEFT, delay, false, Mugen::Left);
 
-    input.set(Keyboard::Key_A, 0, false, Mugen::A);
-    input.set(Keyboard::Key_S, 0, false, Mugen::B);
-    input.set(Keyboard::Key_D, 0, false, Mugen::C);
-    input.set(Keyboard::Key_Z, 0, false, Mugen::X);
-    input.set(Keyboard::Key_X, 0, false, Mugen::Y);
-    input.set(Keyboard::Key_C, 0, false, Mugen::Z);
-    input.set(Keyboard::Key_ENTER, 0, false, Mugen::Start);
+    input.set(Keyboard::Key_A, delay, false, Mugen::A);
+    input.set(Keyboard::Key_S, delay, false, Mugen::B);
+    input.set(Keyboard::Key_D, delay, false, Mugen::C);
+    input.set(Keyboard::Key_Z, delay, false, Mugen::X);
+    input.set(Keyboard::Key_X, delay, false, Mugen::Y);
+    input.set(Keyboard::Key_C, delay, false, Mugen::Z);
+    input.set(Keyboard::Key_ENTER, delay, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
     input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
     return input;
@@ -212,13 +212,13 @@ inline static InputMap<Mugen::Keys> getPlayer2Keys(int delay = 0){
     input.set(Keyboard::Key_J, delay, false, Mugen::Right);
     input.set(Keyboard::Key_G, delay, false, Mugen::Left);
 
-    input.set(Keyboard::Key_I, 0, false, Mugen::A);
-    input.set(Keyboard::Key_O, 0, false, Mugen::B);
-    input.set(Keyboard::Key_P, 0, false, Mugen::C);
-    input.set(Keyboard::Key_8, 0, false, Mugen::X);
-    input.set(Keyboard::Key_9, 0, false, Mugen::Y);
-    input.set(Keyboard::Key_0, 0, false, Mugen::Z);
-    input.set(Keyboard::Key_L, 0, false, Mugen::Start);
+    input.set(Keyboard::Key_I, delay, false, Mugen::A);
+    input.set(Keyboard::Key_O, delay, false, Mugen::B);
+    input.set(Keyboard::Key_P, delay, false, Mugen::C);
+    input.set(Keyboard::Key_8, delay, false, Mugen::X);
+    input.set(Keyboard::Key_9, delay, false, Mugen::Y);
+    input.set(Keyboard::Key_0, delay, false, Mugen::Z);
+    input.set(Keyboard::Key_L, delay, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
     input.set(Keyboard::Key_K, 0, true, Mugen::Enter);
     return input;

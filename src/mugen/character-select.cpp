@@ -483,10 +483,21 @@ void Grid::addCharacter(CharacterInfo *character, bool isRandom){
     }
 }
 
-void Grid::setCursorStart(Cursor &cursor){
-    Cell *cell = getCell(cursor.getStart().x,cursor.getStart().y);
+void Grid::setCursorPlayer1Start(Cursor &cursor){
+    Cell *cell = getCell(player1Start.x,player1Start.y);
     cell->setCursorState(Cell::One);
     cursor.setCurrentCell(cell);
+}
+
+void Grid::setCursorPlayer2Start(Cursor &cursor){
+    Cell *cell = getCell(player2Start.x,player2Start.y);
+    cell->setCursorState(Cell::One);
+    cursor.setCurrentCell(cell);
+}
+
+void Grid::setCursorStageSelect(Cursor & cursor){
+    stages.setDisplay(true);
+    cursor.setState(Cursor::StageSelect);
 }
 
 void Grid::moveCursorLeft(Cursor &cursor){
@@ -616,8 +627,7 @@ void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key){
             cursor.playSelectSound();
 	    break;
 	case Versus:
-	    stages.setDisplay(true);
-	    cursor.setState(Cursor::StageSelect);
+	    setCursorStageSelect(cursor);
             cursor.playSelectSound();
 	    break;
 	case TeamArcade:
@@ -633,6 +643,8 @@ void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key){
 	case Training:
 	    break;
 	case Watch:
+	    cursor.setState(Cursor::Done);
+            cursor.playSelectSound();
 	    break;
 	default:
 	    break;
@@ -1070,6 +1082,14 @@ grid.setGameType(gameType);
 	    player1Cursor.setState(Cursor::CharacterSelect);
 	    break;
 	case Watch:
+	    // set first cursor1
+	    if (playerType == Player1){
+		player1Cursor.setState(Cursor::CharacterSelect);
+		player2Cursor.setState(Cursor::NotActive);
+	    } else if (playerType == Player2){
+		player2Cursor.setState(Cursor::CharacterSelect);
+		player1Cursor.setState(Cursor::NotActive);
+	    }
 	    break;
 	default:
 	    break;
@@ -1254,7 +1274,7 @@ void CharacterSelect::load() throw (MugenException){
 		} else if (simple == "p1.cursor.startcell"){
 		    int x,y;
                     simple >> x >> y;
-		    self.player1Cursor.setStart(x,y);
+		    self.grid.setPlayer1Start(x,y);
 		} else if (simple == "p1.cursor.active.spr"){
 		    int group, sprite;
 		    simple >> group >> sprite;
@@ -1287,7 +1307,7 @@ void CharacterSelect::load() throw (MugenException){
                 } else if (simple == "p2.cursor.startcell"){
                     int x,y;
                     simple >> x >> y;
-		    self.player2Cursor.setStart(x,y);
+		    self.grid.setPlayer2Start(x,y);
 		} else if (simple == "p2.cursor.active.spr"){
 		    int group, sprite;
                     simple >> group >> sprite;
@@ -1583,14 +1603,21 @@ void CharacterSelect::load() throw (MugenException){
     switch (gameType){
 	case Arcade:
 	    if (playerType == Player1){
-		grid.setCursorStart(player1Cursor);
+		grid.setCursorPlayer1Start(player1Cursor);
 	    } else if (playerType == Player2){
-		grid.setCursorStart(player2Cursor);
+		grid.setCursorPlayer2Start(player2Cursor);
 	    }
 	    break;
 	case Versus:
-	    grid.setCursorStart(player1Cursor);
-	    grid.setCursorStart(player2Cursor);
+	    grid.setCursorPlayer1Start(player1Cursor);
+	    grid.setCursorPlayer2Start(player2Cursor);
+	    break;
+	case Watch:
+	    if (playerType == Player1){
+		grid.setCursorPlayer1Start(player1Cursor);
+	    } else if (playerType == Player2){
+		grid.setCursorPlayer2Start(player2Cursor);
+	    }
 	    break;
 	default:
 	    break;
@@ -2077,7 +2104,41 @@ bool CharacterSelect::checkPlayerData(){
 	    /* Ignore */
 	    break;
 	case Watch:
-	    /* Ignore */
+	    if (playerType == Player1){
+		if (player1Cursor.getState() == Cursor::Done && !currentPlayer1){
+		    // Store character in other slot to swap later
+		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+		    // Reset state and pick next player
+		    player1Cursor.setState(Cursor::CharacterSelect);
+		    grid.setCursorPlayer2Start(player1Cursor);
+		    return false;
+		} else if (player1Cursor.getState() == Cursor::Done && !currentPlayer2){
+		    currentPlayer2 = player1Cursor.getCurrentCell()->getCharacter();
+		    grid.setCursorStageSelect(player1Cursor);
+		    return false;
+		} else if (player1Cursor.getState() == Cursor::Done){
+		    // Finish up
+		    currentStage = new MugenStage(grid.getStageHandler().getStage());
+		    return true;
+		}
+	    } else if (playerType == Player2){
+		if (player2Cursor.getState() == Cursor::Done && !currentPlayer2){
+		    // Store character in other slot to swap later
+		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
+		    // Reset state and pick next player
+		    player2Cursor.setState(Cursor::CharacterSelect);
+		    grid.setCursorPlayer1Start(player2Cursor);
+		    return false;
+		} else if (player2Cursor.getState() == Cursor::Done && !currentPlayer1){
+		    currentPlayer1 = player2Cursor.getCurrentCell()->getCharacter();
+		    grid.setCursorStageSelect(player2Cursor);
+		    return false;
+		} else if (player2Cursor.getState() == Cursor::Done){
+		    // Finish up
+		    currentStage = new MugenStage(grid.getStageHandler().getStage());
+		    return true;
+		}
+	    }
 	    break;
 	default:
 	    /* Ignore */

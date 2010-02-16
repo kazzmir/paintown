@@ -235,20 +235,34 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
 }
 
 void Game::doWatch(const Bitmap & bmp){
-    /* make select choose random characters and screens */
-    Mugen::CharacterSelect select(systemFile, playerType, gameType);
+    /* **WRONG! you don't select randomly!
+    Current player makes selection for his slot then chooses opponent then stage
+    This is very wrong! -> make select choose random characters and screens */
+    bool quit = false;
+    while (!quit){
+	Mugen::CharacterSelect select(systemFile, playerType, gameType);
+	select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
+	select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
+	select.load();
+	try{
+	    select.run("Arcade", bmp);
+	} catch (const ReturnException & e){
+	    return;
+	}
+	select.renderVersusScreen(bmp);
+	LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
+	LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
+	select.getPlayer1()->setBehavior(&player1AIBehavior);
+	select.getPlayer2()->setBehavior(&player2AIBehavior);
+	MugenStage *stage = select.getStage();
 
-    LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
-    LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
-    select.getPlayer1()->setBehavior(&player1AIBehavior);
-    select.getPlayer2()->setBehavior(&player2AIBehavior);
-
-    MugenStage *stage = select.getStage();
-
-    // Lets reset the stage for good measure
-    stage->reset();
-
-    runMatch(stage, bmp);
+	// Lets reset the stage for good measure
+	stage->reset();
+	try{
+	    runMatch(stage, bmp);
+	} catch (const QuitGameException & e){
+	}
+    }
 }
 
 /* is there a reason why doArcade and doVersus don't share the main loop?
@@ -499,8 +513,7 @@ void Game::doVersus(const Bitmap & bmp){
 			stage->toggleDebug();
 		    }
 		    if (out[4]){
-			quit = true;
-                        endMatch = true;
+			endMatch = true;
 		    }
 		    if (gameSpeed < 0.1){
 			gameSpeed = 0.1;
@@ -525,3 +538,4 @@ void Game::doVersus(const Bitmap & bmp){
 	}
     }
 }
+

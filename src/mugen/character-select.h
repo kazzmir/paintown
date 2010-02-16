@@ -489,7 +489,11 @@ class Grid{
 	
 	virtual void addCharacter(CharacterInfo *character, bool isRandom = false);
 	
-	virtual void setCursorStart(Cursor &cursor);
+	virtual void setCursorPlayer1Start(Cursor &cursor);
+	
+	virtual void setCursorPlayer2Start(Cursor &cursor);
+	
+	virtual void setCursorStageSelect(Cursor &cursor);
 	
 	virtual void moveCursorLeft(Cursor & cursor);
 	virtual void moveCursorRight(Cursor & cursor);
@@ -551,6 +555,14 @@ class Grid{
 	virtual inline void setGameType(const GameType &type){
 	    this->type = type;
 	}
+	
+	virtual inline void setPlayer1Start(int x, int y){
+	    this->player1Start.set(x, y);
+	}
+	
+	virtual inline void setPlayer2Start(int x, int y){
+	    this->player2Start.set(x, y);
+	}
     
     private:
 	
@@ -610,6 +622,12 @@ class Grid{
 	
 	//! Game Type
 	GameType type;
+	
+	//! Player1 starting position
+	Mugen::Point player1Start;
+	
+	//! Player2 starting position
+	Mugen::Point player2Start;
 };
 
 /*! Handles Team Menu */
@@ -676,15 +694,6 @@ class Cursor{
 	
 	virtual inline void setInput(const InputMap<Mugen::Keys> & input){
 	    this->input = input;
-	}
-	
-	virtual inline void setStart(int x, int y){
-	    this->start.x = x;
-	    this->start.y = y;
-	}
-	
-	virtual inline const Mugen::Point &getStart() const {
-	    return this->start;
 	}
 	
 	virtual inline void setCurrentCell(Cell *cell){
@@ -772,8 +781,6 @@ class Cursor{
 	void renderPortrait(const Bitmap &);
 	
 	InputMap<Mugen::Keys> input;
-	//! Starting cell position in terms of row and column
-	Mugen::Point start;
 	
 	//! Cell
 	Cell *currentCell;

@@ -53,6 +53,7 @@
 #include "mugen/option-arcade.h"
 #include "mugen/option-options.h"
 #include "mugen/option-versus.h"
+#include "mugen/game.h"
 #include "ast/all.h"
 #include "parser/all.h"
 
@@ -167,6 +168,18 @@ class DummyOption : public ItemOption {
 	}
 	void executeOption(const Mugen::PlayerType & player, bool & endGame){
 	
+	}
+};
+class WatchOption : public ItemOption {
+    public:
+	WatchOption(const std::string & name){
+	    this->setText(name);
+	}
+	virtual ~WatchOption(){
+	}
+	void executeOption(const Mugen::PlayerType & player, bool & endGame){
+	    Mugen::Game watch(player, Mugen::Watch, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));;
+	    watch.run();
 	}
 };
 }
@@ -403,7 +416,7 @@ void MugenMenu::loadData(){
                        }
 		   } else if (simple == "menu.itemname.watch"){
                        try{
-                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::WatchOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.options"){
