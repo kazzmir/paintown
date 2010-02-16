@@ -244,24 +244,19 @@ void Game::doWatch(const Bitmap & bmp){
 	select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
 	select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
 	select.load();
-	try{
-	    select.run("Arcade", bmp);
-	} catch (const ReturnException & e){
-	    return;
-	}
-	select.renderVersusScreen(bmp);
-	LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
-	LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
-	select.getPlayer1()->setBehavior(&player1AIBehavior);
-	select.getPlayer2()->setBehavior(&player2AIBehavior);
-	MugenStage *stage = select.getStage();
-
-	// Lets reset the stage for good measure
-	stage->reset();
-	try{
-	    runMatch(stage, bmp);
+        try{
+            select.run("Arcade", bmp);
+            select.renderVersusScreen(bmp);
+            LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
+            LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
+            select.getPlayer1()->setBehavior(&player1AIBehavior);
+            select.getPlayer2()->setBehavior(&player2AIBehavior);
+            MugenStage *stage = select.getStage();
+            stage->reset();
+            runMatch(stage, bmp);
+        } catch (const ReturnException & e){
 	} catch (const QuitGameException & e){
-	}
+        }
     }
 }
 
