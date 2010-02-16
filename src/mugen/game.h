@@ -25,6 +25,7 @@ class Game {
 	void doArcade(const Bitmap &);
 	//! do versus mode
 	void doVersus(const Bitmap &);
+	void doWatch(const Bitmap &);
 	
 	//! Player type
 	PlayerType playerType;

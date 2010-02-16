@@ -75,6 +75,7 @@ void Game::run(){
 	    break;
 	case Watch:
 	    //gameInfo = select.run("Watch Mode" , 1, true, &screen);
+	    doWatch(screen);
 	    break;
     }
 }
@@ -231,6 +232,23 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
             PaintownUtil::rest(1);
         }
     }
+}
+
+void Game::doWatch(const Bitmap & bmp){
+    /* make select choose random characters and screens */
+    Mugen::CharacterSelect select(systemFile, playerType, gameType);
+
+    LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
+    LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
+    select.getPlayer1()->setBehavior(&player1AIBehavior);
+    select.getPlayer2()->setBehavior(&player2AIBehavior);
+
+    MugenStage *stage = select.getStage();
+
+    // Lets reset the stage for good measure
+    stage->reset();
+
+    runMatch(stage, bmp);
 }
 
 /* is there a reason why doArcade and doVersus don't share the main loop?
