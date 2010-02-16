@@ -250,6 +250,8 @@ class Bar{
         
         //! Damage that has been done, will be reduced to 0 and subtract from current hit points
         int damage;
+        /* time to wait before adjusting damage */
+        int wait;
 	
 	//! Power Level
 	PowerState powerLevel;

@@ -361,11 +361,22 @@ void Bar::act(Mugen::Character & character){
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
             if (character.getCurrentState() != Mugen::Liedown && character.getCurrentState() != Mugen::Liedown2 && character.getCurrentState() != Mugen::AirFall && character.getCurrentState() != Mugen::AirFallComingDown){
+                if (damage == currentHealth){
+                    wait = 20;
+                } else {
+                    if (wait <= 0){
+                        damage = (damage + currentHealth) / 2;
+                    } else {
+                        wait -= 1;
+                    }
+                }
+                /*
                 if (damage > currentHealth){
                     damage--;
                 } else {
                     damage = currentHealth;
                 }
+                */
             }
             break;
         }

@@ -534,4 +534,3 @@ void Game::doVersus(const Bitmap & bmp){
 	}
     }
 }
-
