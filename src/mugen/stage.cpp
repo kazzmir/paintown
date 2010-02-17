@@ -727,12 +727,14 @@ void MugenStage::physics(Object * player){
         }
     }
 
-    if (mugen->getMoveType() == Mugen::Move::Attack){
+    if (mugen->getMoveType() == Mugen::Move::Attack && mugen->getHit() != NULL){
 
         for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Character * enemy = (Mugen::Character*) *enem;
             if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit(mugen)){
                 if (doCollisionDetection(mugen, enemy)){
+
+                    /* guarding */
                     if (enemy->isBlocking(*mugen->getHit())){
                         /* add guard spark and play guard sound */
                         int spark = mugen->getHit()->guardSpark;

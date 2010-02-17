@@ -355,8 +355,10 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case HitDef : {
-            guy.setHitDef(&getHit());
-            guy.nextTicket();
+            if (guy.getHit() != &getHit()){
+                guy.setHitDef(&getHit());
+                guy.nextTicket();
+            }
             break;
         }
         case HitFallDamage : {
@@ -656,7 +658,8 @@ changePower(false),
 powerAdd(0),
 moveType(Move::Idle),
 /* FIXME: whats the default juggle? */
-juggle(1){
+juggle(1),
+hitDefPersist(false){
 }
 
 void State::addController(StateController * controller){
@@ -699,6 +702,21 @@ void State::transitionTo(const MugenStage & stage, Character & who){
     who.setCurrentJuggle(juggle);
 
     who.setMoveType(moveType);
+
+    /* I don't think a hit definition should persist across state changes, unless
+     * hitdefpersist is set to 1. Anyway this is needed because a state could try
+     * to repeatedly set the same hitdef, like:
+     *   state 200
+     *   type = hitdef
+     *   trigger1 = animelem = 3
+     * But since the animelem won't change every game tick, this trigger will be
+     * activated a few times (like 3-4).
+     * Resetting the hitdef to NULL allows the hitdef controller to ensure only
+     * unique hitdef's get set as well as repeat the same hitdef in sequence.
+     */
+    if (!doesHitDefPersist()){
+        who.setHitDef(NULL);
+    }
 
     if (changeVelocity){
         who.setXVelocity(velocity_x);
@@ -1400,6 +1418,9 @@ void Character::parseStateDefinition(Ast::Section * section){
                     definition->setJuggle(j);
                 } else if (simple == "facep2"){
                 } else if (simple == "hitdefpersist"){
+                    bool what;
+                    simple >> what;
+                    definition->setHitDefPersist(what);
                 } else if (simple == "movehitpersist"){
                 } else if (simple == "hitcountpersist"){
                 } else if (simple == "sprpriority"){

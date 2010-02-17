@@ -870,6 +870,14 @@ public:
     }
 
     virtual void setMoveType(const std::string & type);
+                    
+    virtual inline void setHitDefPersist(bool what){
+        hitDefPersist = what;
+    }
+    
+    virtual inline bool doesHitDefPersist() const {
+        return hitDefPersist;
+    }
 
     virtual inline const std::vector<StateController*> & getControllers() const {
         return controllers;
@@ -895,6 +903,7 @@ protected:
     int powerAdd;
     std::string moveType;
     int juggle;
+    bool hitDefPersist;
 };
 
 class Command;
