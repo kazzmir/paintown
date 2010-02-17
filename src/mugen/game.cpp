@@ -250,6 +250,9 @@ void Game::doTraining(const Bitmap & bmp){
                 HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
                 HumanBehavior player2Behavior(getPlayer2Keys(), getPlayer2InputLeft());
                 DummyBehavior dummyBehavior;
+                // Set regenerative health
+                select.getPlayer1()->setRegeneration(true);
+                select.getPlayer2()->setRegeneration(true);
                 if (playerType == Player1){
                     select.getPlayer1()->setBehavior(&player1Behavior);
                     select.getPlayer2()->setBehavior(&dummyBehavior);

@@ -45,6 +45,8 @@
 
 using namespace std;
 
+static const int REGENERATE_TIME = 40;
+
 namespace Mugen{
 
 namespace StateType{
@@ -931,6 +933,11 @@ void Character::initialize(){
     standFriction = 1;
 
     stateTime = 0;
+
+    /* Regeneration */
+    regenerateHealth = false;
+    regenerateTime = REGENERATE_TIME;
+    regenerateHealthDifference = 0;
 }
 
 void Character::loadSelectData(){
@@ -2581,6 +2588,24 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
         / * empty * /
     }
     */
+
+    /*! do regeneration if set */
+    if (regenerateHealth){
+        if (getHealth() < 5){
+            setHealth(5);
+            regenerateTime = REGENERATE_TIME;
+        }
+        if (regenerateHealthDifference <= getHealth()){
+            regenerateTime = REGENERATE_TIME;
+            regenerateHealthDifference = getHealth();
+        } else {
+            if (regenerateTime <= 0){
+                setHealth((getMaxHealth() + getHealth())/2);
+            } else {
+                regenerateTime-=1;
+            }
+        }
+    }
 }
         
 void Character::addPower(double d){

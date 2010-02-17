@@ -345,7 +345,7 @@ Bar::Bar():
 type(None),
 maxHealth(1000),
 currentHealth(1000),
-damage(0),
+damage(1000),
 wait(DAMAGE_WAIT_TIME),
 powerLevel(Level0){
 }

@@ -1364,6 +1364,10 @@ public:
             return guardsparkno;
         }
 
+        virtual inline void setRegeneration(bool r){
+            this->regenerateHealth = r;
+        }
+
 protected:
     void initialize();
 
@@ -1646,6 +1650,11 @@ protected:
 
         Behavior * behavior;
         bool blocking;
+
+        //! regenerate health?
+        bool regenerateHealth;
+        int regenerateTime;
+        int regenerateHealthDifference;
 };
 
 }
