@@ -514,6 +514,7 @@ void Grid::moveCursorLeft(Cursor &cursor){
     try {
 	cell = getCell(current.x,current.y);
     } catch (const MugenException &me){
+        Global::debug(0) << "Could not get a cell at " << current.x << ", " << current.y << endl;
 	// Shouldn't happen but you never know lets not continue
 	return;
     }
@@ -641,6 +642,8 @@ void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key){
 	case SurvivalCoop:
 	    break;
 	case Training:
+	    cursor.setState(Cursor::Done);
+            cursor.playSelectSound();
 	    break;
 	case Watch:
 	    cursor.setState(Cursor::Done);
@@ -1556,25 +1559,19 @@ void CharacterSelect::load() throw (MugenException){
     
     // Setup cursors
     switch (gameType){
-	case Arcade:
-	    if (playerType == Player1){
-		grid.setCursorPlayer1Start(player1Cursor);
-	    } else if (playerType == Player2){
-		grid.setCursorPlayer2Start(player2Cursor);
-	    }
-	    break;
 	case Versus:
 	    grid.setCursorPlayer1Start(player1Cursor);
 	    grid.setCursorPlayer2Start(player2Cursor);
 	    break;
+        case Arcade:
+        case Training:
 	case Watch:
+        default:
 	    if (playerType == Player1){
 		grid.setCursorPlayer1Start(player1Cursor);
 	    } else if (playerType == Player2){
 		grid.setCursorPlayer2Start(player2Cursor);
 	    }
-	    break;
-	default:
 	    break;
     }
     // Now load up our characters
@@ -1948,7 +1945,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	    player2Cursor.render(grid, workArea);
 	    
 	    // render title
-	    titleFont.render(title,workArea);
+	    titleFont.render(title, workArea);
 	    
 	    // render Foregrounds
 	    background->renderForeground(0,0,workArea);
@@ -2118,7 +2115,42 @@ bool CharacterSelect::checkPlayerData(){
 	    /* Ignore */
 	    break;
 	case Training:
-	    /* Ignore */
+            /* FIXME: I copy/pasted this from watch, is it right? */
+            if (playerType == Player1){
+		if (player1Cursor.getState() == Cursor::Done && !currentPlayer1){
+		    // Store character in other slot to swap later
+		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+		    // Reset state and pick next player
+		    player1Cursor.setState(Cursor::CharacterSelect);
+		    grid.setCursorPlayer2Start(player1Cursor);
+		    return false;
+		} else if (player1Cursor.getState() == Cursor::Done && !currentPlayer2){
+		    currentPlayer2 = player1Cursor.getCurrentCell()->getCharacter();
+		    grid.setCursorStageSelect(player1Cursor);
+		    return false;
+		} else if (player1Cursor.getState() == Cursor::Done){
+		    // Finish up
+		    currentStage = new MugenStage(grid.getStageHandler().getStage());
+		    return true;
+		}
+	    } else if (playerType == Player2){
+		if (player2Cursor.getState() == Cursor::Done && !currentPlayer2){
+		    // Store character in other slot to swap later
+		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
+		    // Reset state and pick next player
+		    player2Cursor.setState(Cursor::CharacterSelect);
+		    grid.setCursorPlayer1Start(player2Cursor);
+		    return false;
+		} else if (player2Cursor.getState() == Cursor::Done && !currentPlayer1){
+		    currentPlayer1 = player2Cursor.getCurrentCell()->getCharacter();
+		    grid.setCursorStageSelect(player2Cursor);
+		    return false;
+		} else if (player2Cursor.getState() == Cursor::Done){
+		    // Finish up
+		    currentStage = new MugenStage(grid.getStageHandler().getStage());
+		    return true;
+		}
+	    }
 	    break;
 	case Watch:
 	    if (playerType == Player1){

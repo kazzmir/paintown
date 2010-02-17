@@ -339,12 +339,14 @@ void FightElement::reset(){
     }
 }
 
+static const int DAMAGE_WAIT_TIME = 30;
+
 Bar::Bar():
 type(None),
 maxHealth(1000),
 currentHealth(1000),
 damage(0),
-wait(50),
+wait(DAMAGE_WAIT_TIME),
 powerLevel(Level0){
 }
 
@@ -356,7 +358,7 @@ void Bar::act(Mugen::Character & character){
         case Health: {
             maxHealth = character.getMaxHealth();
 	    if (currentHealth != character.getHealth()){
-		wait = 50;
+		wait = DAMAGE_WAIT_TIME;
 	    }
             currentHealth = character.getHealth();
             if (maxHealth == 0){
@@ -365,7 +367,7 @@ void Bar::act(Mugen::Character & character){
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
             if (damage == currentHealth){
-		wait = 50;
+		wait = DAMAGE_WAIT_TIME;
 	    } else {
 		if (wait <= 0){
 		    damage -= (int)((double) (damage - currentHealth) / 8.0 + 0.5);
@@ -377,6 +379,7 @@ void Bar::act(Mugen::Character & character){
         }
         case Power: {
 	    maxHealth = 3000;
+            /* FIXME: characters power should never go above 3000. fix in the character */
 	    currentHealth = (int)character.getPower();
             if (currentHealth > 3000){
                 currentHealth = 3000;
@@ -423,6 +426,7 @@ void Bar::render(Element::Layer layer, const Bitmap & bmp){
         back1.render(layer, position.x, position.y, bmp);
 
         /* Q: how is range.x supposed to be used? isn't it always 0? */
+        /* TODO: show the damage number */
         middle.render(layer, position.x, position.y, bmp, (int)(damage * range.y / maxHealth));
 
         double width = currentHealth * range.y / maxHealth;

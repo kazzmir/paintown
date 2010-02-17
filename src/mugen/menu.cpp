@@ -170,18 +170,37 @@ class DummyOption : public ItemOption {
 	
 	}
 };
-class WatchOption : public ItemOption {
-    public:
-	WatchOption(const std::string & name){
-	    this->setText(name);
-	}
-	virtual ~WatchOption(){
-	}
-	void executeOption(const Mugen::PlayerType & player, bool & endGame){
-	    Mugen::Game watch(player, Mugen::Watch, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));;
-	    watch.run();
-	}
+
+class WatchOption: public ItemOption {
+public:
+    WatchOption(const std::string & name){
+        this->setText(name);
+    }
+
+    virtual ~WatchOption(){
+    }
+
+    void executeOption(const Mugen::PlayerType & player, bool & endGame){
+        Mugen::Game watch(player, Mugen::Watch, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));;
+        watch.run();
+    }
 };
+
+class TrainingOption: public ItemOption {
+public:
+    TrainingOption(const std::string & name){
+        this->setText(name);
+    }
+
+    virtual ~TrainingOption(){
+    }
+
+    void executeOption(const Mugen::PlayerType & player, bool & endGame){
+        Mugen::Game game(player, Mugen::Training, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));;
+        game.run();
+    }
+};
+
 }
 
 MugenMenu::MugenMenu(const std::string &filename):
@@ -412,7 +431,7 @@ void MugenMenu::loadData(){
                        }
 		   } else if (simple == "menu.itemname.training"){
                        try{
-                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
+                           menu.addMenuOption(new Mugen::TrainingOption(simple.valueAsString()));
                        } catch (const Ast::Exception & e){
                        }
 		   } else if (simple == "menu.itemname.watch"){
