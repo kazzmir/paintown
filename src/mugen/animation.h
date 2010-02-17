@@ -112,8 +112,12 @@ class MugenAnimation{
 	// Add a frame
 	void addFrame( MugenFrame * );
 
-        inline unsigned int getPosition() const {
+        virtual inline unsigned int getPosition() const {
             return position;
+        }
+
+        virtual inline int getTicks() const {
+            return ticks;
         }
 	
 	// Get name of type of animation

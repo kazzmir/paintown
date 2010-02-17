@@ -567,7 +567,13 @@ public:
 
         if (function == "animelem"){
             unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
-            return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index);
+            MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+            if (animation->getPosition() == 1 + index){
+                /* handle the second argument of animelem here */
+                return RuntimeValue(animation->getTicks() == 0);
+            }
+            return RuntimeValue(false);
+            // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
         }
 
         if (function == "ifelse"){
