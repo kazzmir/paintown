@@ -247,15 +247,14 @@ void Game::doTraining(const Bitmap & bmp){
             try{
                 select.run("Training Mode", bmp);
                 select.renderVersusScreen(bmp);
+                HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+                HumanBehavior player2Behavior(getPlayer2Keys(), getPlayer2InputLeft());
+                DummyBehavior dummyBehavior;
                 if (playerType == Player1){
-                    HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
-                    DummyBehavior player2Behavior;
                     select.getPlayer1()->setBehavior(&player1Behavior);
-                    select.getPlayer2()->setBehavior(&player2Behavior);
+                    select.getPlayer2()->setBehavior(&dummyBehavior);
                 } else {
-                    HumanBehavior player2Behavior(getPlayer2Keys(), getPlayer2InputLeft());
-                    DummyBehavior player1Behavior;
-                    select.getPlayer1()->setBehavior(&player1Behavior);
+                    select.getPlayer1()->setBehavior(&dummyBehavior);
                     select.getPlayer2()->setBehavior(&player2Behavior);
                 }
                 MugenStage *stage = select.getStage();
