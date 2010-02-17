@@ -367,8 +367,8 @@ void Bar::act(Mugen::Character & character){
             if (damage == currentHealth){
 		wait = 50;
 	    } else {
-		if (wait <= 0 && (abs(wait) % 2) == 0){
-		    damage = (damage + currentHealth) / 2;
+		if (wait <= 0){
+		    damage -= (int)((double) (damage - currentHealth) / 8.0 + 0.5);
 		} else {
 		    wait -= 1;
 		}

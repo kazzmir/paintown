@@ -140,9 +140,12 @@ void MugenSprite::read(std::ifstream & ifile, const int loc){
     newlength = reallength = next - loc - 32;
      
     // Last sprite
-    if( next == 0 ) {
-	if( samePalette ) newlength = reallength = length-768;
-	else newlength = reallength = length;
+    if (next == 0){
+	if (samePalette){
+            newlength = reallength = length - 768;
+        } else {
+            newlength = reallength = length;
+        }
     }
 }
 /*
