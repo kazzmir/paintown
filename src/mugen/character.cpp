@@ -1945,7 +1945,7 @@ struct Location{
     string file;
 };
 
-void Character::load(){
+void Character::load(int useAct){
 #if 0
     // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/chars/" + location + "/");
@@ -2135,6 +2135,7 @@ void Character::load(){
 	    palDefaults.push_back(i);
 	}
     }
+    /*
     if (palDefaults.size() < palFile.size()){
 	bool setPals[palFile.size()];
 	for( unsigned int i =0;i<palFile.size();++i){
@@ -2151,12 +2152,16 @@ void Character::load(){
 	    }
 	}
     }
+    */
 
-    currentPalette = 0;
+    currentPalette = useAct;
+    if (currentPalette > palFile.size() - 1){
+        currentPalette = 1;
+    }
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
-    Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]), sprites);
+    Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, palFile[currentPalette]), sprites);
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);

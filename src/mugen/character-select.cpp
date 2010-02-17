@@ -142,7 +142,8 @@ baseDirectory(Util::getFileDir(definitionFile)),
 spriteFile(Util::probeDef(definitionFile,"files","sprite")),
 name(Util::probeDef(definitionFile,"info","name")),
 displayName(Util::probeDef(definitionFile,"info","displayname")),
-currentAct(0),
+currentPlayer1Act(1),
+currentPlayer2Act(1),
 icon(0),
 portrait(0),
 randomStage(false),
@@ -163,8 +164,8 @@ character2(0){
     }
     // just a precaution
     spriteFile = Util::removeSpaces(spriteFile);
-    icon = Util::probeSff(baseDirectory + spriteFile,9000,0,baseDirectory + actCollection[currentAct]);
-    portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
+    icon = Util::probeSff(baseDirectory + spriteFile,9000,0,baseDirectory + actCollection[0]);
+    portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[0]);
 }
 
 CharacterInfo::~CharacterInfo(){
@@ -187,7 +188,7 @@ void CharacterInfo::loadPlayer1(){
 	return;
     }
     character1 = new Mugen::Character(definitionFile);
-    character1->load();
+    character1->load(currentPlayer1Act);
 }
 
 void CharacterInfo::loadPlayer2(){
@@ -195,25 +196,15 @@ void CharacterInfo::loadPlayer2(){
 	return;
     }
     character2 = new Mugen::Character(definitionFile);
-    character2->load();
+    character2->load(currentPlayer2Act);
 }
 
-void CharacterInfo::setAct(int number){
-    if (number == currentAct){
-        return;
-    }
+void CharacterInfo::setPlayer1Act(int number){
+    currentPlayer1Act = number;
+}
 
-    currentAct = number;
-    if (icon){
-        delete icon;
-    }
-
-    if (portrait){
-        delete portrait;
-    }
-
-    icon = Util::probeSff(baseDirectory + spriteFile,9000,0,baseDirectory + actCollection[currentAct]);
-    portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[currentAct]);
+void CharacterInfo::setPlayer2Act(int number){
+    currentPlayer2Act = number;
 }
 
 // Stage selector
@@ -620,6 +611,7 @@ void Grid::moveCursorDown(Cursor &cursor){
 void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key){
     // *TODO use the key to determine which map(act) is used
     // Get the appropriate cell for flashing in case of random
+    cursor.setActSelection(key);
     cursor.getCurrentCell()->getCharacter()->getReferenceCell()->startFlash();
     // set cursor state depending on state
     switch (type){
@@ -689,7 +681,8 @@ state(NotActive),
 moveSound(0),
 selectSound(0),
 randomSound(0),
-cancelRandom(false){
+cancelRandom(false),
+actSelection(A){
 }
 
 Cursor::~Cursor(){
@@ -877,6 +870,28 @@ void Cursor::renderPortrait(const Bitmap &bmp){
     }
 }
 
+int Cursor::getActSelection(){
+    switch (actSelection){
+        case A:
+            return 1;
+        case B:
+            return 2;
+        case C:
+            return 3;
+        case X:
+            return 4;
+        case Y:
+            return 5;
+        case Z:
+            return 6;
+        case Start:
+            return 7;
+        default:
+            break;
+    }
+    return PaintownUtil::rnd(1,7);
+}
+
 VersusScreen::VersusScreen():
 background(0),
 time(0){
@@ -938,6 +953,16 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 			info.setLoadingMessage("Loading...");
                         info.setPosition(-1, 400);
 			Loader::startLoading(&loader, (void*) &info);
+                        // Check acts lets make them use seperate ones
+                        if (player1.getDefinitionFile() == player2.getDefinitionFile()){
+                            if (player1.getPlayer1Act() == player2.getPlayer2Act()){
+                                int act = player1.getPlayer1Act()-1;
+                                if (act <=0){
+                                    act+=2;
+                                }
+                                player2.setPlayer2Act(act);
+                            }
+                        }
 			// Load player 1
 			player1.loadPlayer1();
 			// Load player 2
@@ -2066,8 +2091,10 @@ bool CharacterSelect::setNextArcadeMatch(){
     CharacterInfo * tempPlayer;
     if (playerType == Player1){
 	tempPlayer = currentPlayer2 = characters.front();
+        currentPlayer2->setPlayer2Act(PaintownUtil::rnd(1,12));
     } else if (playerType == Player2){
 	tempPlayer = currentPlayer1 = characters.front();
+        currentPlayer1->setPlayer1Act(PaintownUtil::rnd(1,12));
     }
     characters.pop();
     if (currentStage){
@@ -2091,11 +2118,13 @@ bool CharacterSelect::checkPlayerData(){
 	    if (playerType == Player1){
 		if (player1Cursor.getState() == Cursor::Done){
 		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer1->setPlayer1Act(player1Cursor.getActSelection());
 		    return true;
 		}
 	    } else if (playerType == Player2){
 		if (player2Cursor.getState() == Cursor::Done){
 		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer2->setPlayer1Act(player2Cursor.getActSelection());
 		    return true;
 		}
 	    }
@@ -2103,7 +2132,9 @@ bool CharacterSelect::checkPlayerData(){
 	case Versus:
 	    if ((player1Cursor.getState() == Cursor::Done) && (player2Cursor.getState() == Cursor::Done)){
 		currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+                currentPlayer1->setPlayer1Act(player1Cursor.getActSelection());
 		currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
+                currentPlayer2->setPlayer1Act(player2Cursor.getActSelection());
 		if (currentStage){
 		    delete currentStage;
 		}
@@ -2130,14 +2161,16 @@ bool CharacterSelect::checkPlayerData(){
             /* FIXME: I copy/pasted this from watch, is it right? */
             if (playerType == Player1){
 		if (player1Cursor.getState() == Cursor::Done && !currentPlayer1){
-		    // Store character in other slot to swap later
+		    // Store 
 		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer1->setPlayer1Act(player1Cursor.getActSelection());
 		    // Reset state and pick next player
 		    player1Cursor.setState(Cursor::CharacterSelect);
 		    grid.setCursorPlayer2Start(player1Cursor);
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done && !currentPlayer2){
 		    currentPlayer2 = player1Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer2->setPlayer2Act(player1Cursor.getActSelection());
 		    grid.setCursorStageSelect(player1Cursor);
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done){
@@ -2147,14 +2180,16 @@ bool CharacterSelect::checkPlayerData(){
 		}
 	    } else if (playerType == Player2){
 		if (player2Cursor.getState() == Cursor::Done && !currentPlayer2){
-		    // Store character in other slot to swap later
+		    // Store
 		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer2->setPlayer2Act(player2Cursor.getActSelection());
 		    // Reset state and pick next player
 		    player2Cursor.setState(Cursor::CharacterSelect);
 		    grid.setCursorPlayer1Start(player2Cursor);
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done && !currentPlayer1){
 		    currentPlayer1 = player2Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer1->setPlayer1Act(player2Cursor.getActSelection());
 		    grid.setCursorStageSelect(player2Cursor);
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done){
@@ -2167,14 +2202,16 @@ bool CharacterSelect::checkPlayerData(){
 	case Watch:
 	    if (playerType == Player1){
 		if (player1Cursor.getState() == Cursor::Done && !currentPlayer1){
-		    // Store character in other slot to swap later
+		    // Store
 		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer1->setPlayer1Act(player1Cursor.getActSelection());
 		    // Reset state and pick next player
 		    player1Cursor.setState(Cursor::CharacterSelect);
 		    grid.setCursorPlayer2Start(player1Cursor);
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done && !currentPlayer2){
 		    currentPlayer2 = player1Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer2->setPlayer2Act(player1Cursor.getActSelection());
 		    grid.setCursorStageSelect(player1Cursor);
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done){
@@ -2184,14 +2221,16 @@ bool CharacterSelect::checkPlayerData(){
 		}
 	    } else if (playerType == Player2){
 		if (player2Cursor.getState() == Cursor::Done && !currentPlayer2){
-		    // Store character in other slot to swap later
+		    // Store
 		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer2->setPlayer2Act(player2Cursor.getActSelection());
 		    // Reset state and pick next player
 		    player2Cursor.setState(Cursor::CharacterSelect);
 		    grid.setCursorPlayer1Start(player2Cursor);
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done && !currentPlayer1){
 		    currentPlayer1 = player2Cursor.getCurrentCell()->getCharacter();
+                    currentPlayer1->setPlayer1Act(player2Cursor.getActSelection());
 		    grid.setCursorStageSelect(player2Cursor);
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done){

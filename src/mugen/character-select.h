@@ -148,7 +148,17 @@ class CharacterInfo {
             return displayName;
         }
 
-        virtual void setAct(int index);
+        virtual void setPlayer1Act(int index);
+
+        virtual inline int getPlayer1Act() const {
+            return this->currentPlayer1Act;
+        }
+
+        virtual void setPlayer2Act(int index);
+
+        virtual inline int getPlayer2Act() const {
+            return this->currentPlayer2Act;
+        }
 
         virtual inline void setRandomStage(bool r){
             randomStage = r;
@@ -210,7 +220,8 @@ class CharacterInfo {
         /* Characters Display Name */
         std::string displayName;
         /* Current Act */
-        int currentAct;
+        int currentPlayer1Act;
+        int currentPlayer2Act;
         /* Act Collection */
         std::vector< std::string > actCollection;
         /* image 9000 */
@@ -775,6 +786,12 @@ class Cursor{
         virtual inline void setRandomCancel(bool cancel){
             this->cancelRandom = cancel;
         }
+
+        virtual inline void setActSelection(const Mugen::Keys & key){
+            this->actSelection = key;
+        }
+
+        virtual int getActSelection();
 	
     private:
 	
@@ -830,6 +847,9 @@ class Cursor{
 
         //! Cancel Random
         bool cancelRandom;
+
+        //! Character Key selection for determing act
+        Mugen::Keys actSelection;
 };
 
 class VersusScreen {

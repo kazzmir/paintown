@@ -238,6 +238,8 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
 }
 
 void Game::doTraining(const Bitmap & bmp){
+    int time = Mugen::Data::getInstance().getTime();
+    Mugen::Data::getInstance().setTime(-1);
     try{
         while (true){
             Mugen::CharacterSelect select(systemFile, playerType, gameType);
@@ -268,6 +270,7 @@ void Game::doTraining(const Bitmap & bmp){
         }
     } catch (const ReturnException & e){
     }
+    Mugen::Data::getInstance().setTime(time);
 }
 
 void Game::doWatch(const Bitmap & bmp){
