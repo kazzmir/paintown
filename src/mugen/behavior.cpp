@@ -115,6 +115,8 @@ string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*
         if (move.minimumDistance != -1){
             if (distance < move.maximumDistance + 10 && distance > move.minimumDistance - 10){
                 morePoints += 2;
+            } else if (distance > move.maximumDistance + 10){
+                morePoints -= 3;
             }
         }
 

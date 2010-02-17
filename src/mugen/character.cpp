@@ -355,6 +355,7 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case HitDef : {
+            /* prevent the same hitdef from being applied */
             if (guy.getHit() != &getHit()){
                 guy.setHitDef(&getHit());
                 guy.nextTicket();
