@@ -1653,6 +1653,7 @@ protected:
 
         //! regenerate health?
         bool regenerateHealth;
+        bool regenerating;
         int regenerateTime;
         int regenerateHealthDifference;
 };

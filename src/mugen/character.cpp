@@ -936,6 +936,7 @@ void Character::initialize(){
 
     /* Regeneration */
     regenerateHealth = false;
+    regenerating = false;
     regenerateTime = REGENERATE_TIME;
     regenerateHealthDifference = 0;
 }
@@ -2595,21 +2596,51 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
             setHealth(5);
             regenerateTime = REGENERATE_TIME;
         }
-        if (regenerateHealthDifference <= getHealth()){
+
+        if (regenerating){
+
+            /* avoid rounding errors */
+            if (getHealth() >= getMaxHealth() - 2){
+                setHealth(getMaxHealth());
+            } else {
+                setHealth((getMaxHealth() + getHealth()) / 2.0);
+            }
+
+            if (getHealth() == getMaxHealth()){
+                regenerating = false;
+            }
             regenerateTime = REGENERATE_TIME;
-            regenerateHealthDifference = getHealth();
+        } else if (getHealth() < getMaxHealth() && regenerateTime == REGENERATE_TIME){
+            regenerateTime -= 1;
+        } else if (regenerateTime <= 0){
+            regenerating = true;
+        } else {
+            regenerateTime -= 1;
+        }
+
+        /*
+        if (getHealth() < getMaxHealth()){
+            regenerateTime = REGENERATE_TIME;
         } else {
             if (regenerateTime <= 0){
                 setHealth((getMaxHealth() + getHealth())/2);
+                regenerateHealthDifference = getHealth();
             } else {
-                regenerateTime-=1;
+                regenerateTime -= 1;
             }
         }
+        */
     }
 }
         
 void Character::addPower(double d){
     power += d;
+    /* max power is 3000. is that specified somewhere or just hard coded
+     * in the engine?
+     */
+    if (power > 3000){
+        power = 3000;
+    }
 }
         
 void Character::didHit(Character * enemy){
