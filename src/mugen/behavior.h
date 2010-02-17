@@ -42,6 +42,16 @@ protected:
     InputMap<Keys> left;
 };
 
+/* dummy does absolutely nothing */
+class DummyBehavior: public Behavior {
+public:
+    DummyBehavior();
+
+    virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+
+    virtual ~DummyBehavior();
+};
+
 class RandomAIBehavior: public Behavior {
 public:
     RandomAIBehavior();

@@ -71,10 +71,9 @@ void Game::run(){
 	    //gameInfo = select.run("Survival Cooperative" , 1, true, &screen);
 	    break;
 	case Training:
-	    //gameInfo = select.run("Training Mode" , 1, true, &screen);
+	    doTraining(screen);
 	    break;
 	case Watch:
-	    //gameInfo = select.run("Watch Mode" , 1, true, &screen);
 	    doWatch(screen);
 	    break;
     }
@@ -235,6 +234,31 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
         while (Global::speed_counter == 0){
             PaintownUtil::rest(1);
         }
+    }
+}
+
+void Game::doTraining(const Bitmap & bmp){
+    try{
+        while (true){
+            Mugen::CharacterSelect select(systemFile, playerType, gameType);
+            select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
+            select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
+            select.load();
+            try{
+                select.run("Training", bmp);
+                /* should we automatically select the training room..? */
+                select.renderVersusScreen(bmp);
+                HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+                DummyBehavior player2Behavior;
+                select.getPlayer1()->setBehavior(&player1Behavior);
+                select.getPlayer2()->setBehavior(&player2Behavior);
+                MugenStage *stage = select.getStage();
+                stage->reset();
+                runMatch(stage, bmp);
+            } catch (const QuitGameException & e){
+            }
+        }
+    } catch (const ReturnException & e){
     }
 }
 

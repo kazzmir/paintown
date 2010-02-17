@@ -23,6 +23,17 @@ Behavior::~Behavior(){
 void Behavior::hit(Character * enemy){
 }
 
+DummyBehavior::DummyBehavior(){
+}
+
+vector<string> DummyBehavior::currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+    vector<string> out;
+    return out;
+}
+
+DummyBehavior::~DummyBehavior(){
+}
+
 HumanBehavior::HumanBehavior(InputMap<Mugen::Keys> right, InputMap<Mugen::Keys> left):
 right(right),
 left(left){

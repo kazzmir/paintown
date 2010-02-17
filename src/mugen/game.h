@@ -21,9 +21,8 @@ class Game {
 	//! Runs everything
 	virtual void run();
     private:
-	//! do arcade mode
 	void doArcade(const Bitmap &);
-	//! do versus mode
+        void doTraining(const Bitmap & bmp);
 	void doVersus(const Bitmap &);
 	void doWatch(const Bitmap &);
 	
