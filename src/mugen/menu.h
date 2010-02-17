@@ -154,6 +154,9 @@ class MugenMenu : public Menu {
         /*! Y Menu range positioning x = top y = bottom */
         Mugen::Point menuRange;
 	
+	/*! Limit speed on scroll */
+	int menuScrollWait;
+	
 	/*! Box cursor and fonts */
 	CursorHandler fontCursor;
 	

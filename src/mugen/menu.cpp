@@ -194,6 +194,7 @@ introFile(""),
 selectFile(""),
 fightFile(""),
 currentMenuPosition(0),
+menuScrollWait(4),
 windowMargin(12,8),
 windowVisibleItems(5),
 ticker(0),
@@ -758,7 +759,16 @@ void MugenMenu::doMenuMovement(){
     //const int offset = optionLocation >= windowVisibleItems ? optionLocation - windowVisibleItems + 1 : 0;
     //const int endPosition = position.y - (offset * fontSpacing.y);
     const int endPosition = position.y - (menuRange.x * fontSpacing.y);
-    currentMenuPosition = (currentMenuPosition + endPosition)/2;
+    if (currentMenuPosition == endPosition){
+	menuScrollWait = 4;
+    } else {
+	if (menuScrollWait <= 0){
+	    currentMenuPosition = (currentMenuPosition + endPosition)/2;
+	    menuScrollWait = 4;
+	} else {
+	    menuScrollWait--;
+	}
+    }
 }
 
 // Draw text

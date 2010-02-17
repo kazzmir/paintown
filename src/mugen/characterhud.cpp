@@ -344,6 +344,7 @@ type(None),
 maxHealth(1000),
 currentHealth(1000),
 damage(0),
+wait(50),
 powerLevel(Level0){
 }
 
@@ -354,30 +355,24 @@ void Bar::act(Mugen::Character & character){
     switch (type){
         case Health: {
             maxHealth = character.getMaxHealth();
+	    if (currentHealth != character.getHealth()){
+		wait = 50;
+	    }
             currentHealth = character.getHealth();
             if (maxHealth == 0){
                 throw MugenException("Character max health is 0. It should have been set in the [Data] section of the constants file");
             }
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
-            if (character.getCurrentState() != Mugen::Liedown && character.getCurrentState() != Mugen::Liedown2 && character.getCurrentState() != Mugen::AirFall && character.getCurrentState() != Mugen::AirFallComingDown){
-                if (damage == currentHealth){
-                    wait = 20;
-                } else {
-                    if (wait <= 0){
-                        damage = (damage + currentHealth) / 2;
-                    } else {
-                        wait -= 1;
-                    }
-                }
-                /*
-                if (damage > currentHealth){
-                    damage--;
-                } else {
-                    damage = currentHealth;
-                }
-                */
-            }
+            if (damage == currentHealth){
+		wait = 50;
+	    } else {
+		if (wait <= 0 && (abs(wait) % 2) == 0){
+		    damage = (damage + currentHealth) / 2;
+		} else {
+		    wait -= 1;
+		}
+	    }
             break;
         }
         case Power: {
