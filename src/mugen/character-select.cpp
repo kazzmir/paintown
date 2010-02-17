@@ -1565,6 +1565,11 @@ void CharacterSelect::load() throw (MugenException){
 	    break;
         case Arcade:
         case Training:
+            if (playerType == Player1){
+		grid.setCursorPlayer1Start(player1Cursor);
+	    } else if (playerType == Player2){
+		grid.setCursorPlayer2Start(player2Cursor);
+	    }
 	case Watch:
         default:
 	    if (playerType == Player1){
@@ -2018,7 +2023,14 @@ void CharacterSelect::reset(){
 	    player1Cursor.setState(Cursor::CharacterSelect);
 	    break;
 	case Training:
-	    player1Cursor.setState(Cursor::CharacterSelect);
+	    // set first cursor1
+	    if (playerType == Player1){
+		player1Cursor.setState(Cursor::CharacterSelect);
+		player2Cursor.setState(Cursor::NotActive);
+	    } else if (playerType == Player2){
+		player2Cursor.setState(Cursor::CharacterSelect);
+		player1Cursor.setState(Cursor::NotActive);
+	    }
 	    break;
 	case Watch:
 	    // set first cursor1

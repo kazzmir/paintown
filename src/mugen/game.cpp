@@ -245,13 +245,19 @@ void Game::doTraining(const Bitmap & bmp){
             select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
             select.load();
             try{
-                select.run("Training", bmp);
-                /* should we automatically select the training room..? */
+                select.run("Training Mode", bmp);
                 select.renderVersusScreen(bmp);
-                HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
-                DummyBehavior player2Behavior;
-                select.getPlayer1()->setBehavior(&player1Behavior);
-                select.getPlayer2()->setBehavior(&player2Behavior);
+                if (playerType == Player1){
+                    HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+                    DummyBehavior player2Behavior;
+                    select.getPlayer1()->setBehavior(&player1Behavior);
+                    select.getPlayer2()->setBehavior(&player2Behavior);
+                } else {
+                    HumanBehavior player2Behavior(getPlayer2Keys(), getPlayer2InputLeft());
+                    DummyBehavior player1Behavior;
+                    select.getPlayer1()->setBehavior(&player1Behavior);
+                    select.getPlayer2()->setBehavior(&player2Behavior);
+                }
                 MugenStage *stage = select.getStage();
                 stage->reset();
                 runMatch(stage, bmp);
@@ -271,7 +277,7 @@ void Game::doWatch(const Bitmap & bmp){
 	select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
 	select.load();
         try{
-            select.run("Arcade", bmp);
+            select.run("Watch Mode", bmp);
             select.renderVersusScreen(bmp);
             LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
             LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
