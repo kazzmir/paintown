@@ -884,6 +884,7 @@ public:
     }
 
     virtual void addController(StateController * controller);
+    virtual void addControllerFront(StateController * controller);
 
     virtual void transitionTo(const MugenStage & stage, Character & who);
 

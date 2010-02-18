@@ -669,6 +669,11 @@ void State::addController(StateController * controller){
     controllers.push_back(controller);
 }
 
+void State::addControllerFront(StateController * controller){
+    controllers.insert(controllers.begin(), controller);
+    controllers.push_back(controller);
+}
+
 void State::setJuggle(int juggle){
     this->juggle = juggle;
 }
@@ -2239,13 +2244,16 @@ void Character::fixAssumptions(){
             controller->setType(StateController::ChangeState);
             controller->setValue(new Ast::Number(StandToCrouch));
             controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
-            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
                         new Ast::Number(0)));
-            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTrigger(2, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("stateno"),
+                        new Ast::Number(WalkingForwards)));
+            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holddown"))));
-            states[-1]->addController(controller);
+            states[-1]->addControllerFront(controller);
         }
 
         /* jump */
