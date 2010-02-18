@@ -294,10 +294,13 @@ void StageHandler::addStage(const std::string &stage){
     try {
 	// *FIXME not a good solution to get file
 	std::string ourDefFile = fixStageName(stage);
-	stringstream temp;
-        temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile,"info","name");
-	stageNames.push_back(temp.str());
-	stages.push_back(ourDefFile);
+        // If stage is already stored, ignore it
+        if (std::find(stages.begin(),stages.end(),ourDefFile) == stages.end()){
+            stringstream temp;
+            temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile,"info","name");
+	    stageNames.push_back(temp.str());
+	    stages.push_back(ourDefFile);
+        }
     } catch (const MugenException &ex){
 	Global::debug(0) << "Problem adding stage. Reason: " << ex.getReason() << endl;
     }
