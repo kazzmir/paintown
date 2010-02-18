@@ -2155,9 +2155,16 @@ void Character::load(int useAct){
     */
 
     currentPalette = useAct;
+    if (palFile.find(currentPalette) == palFile.end()){
+        /* FIXME: choose a default. its not just palette 1 because that palette
+         * might not exist
+         */
+    }
+    /*
     if (currentPalette > palFile.size() - 1){
         currentPalette = 1;
     }
+    */
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
