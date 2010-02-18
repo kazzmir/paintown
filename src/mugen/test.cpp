@@ -444,12 +444,12 @@ void showFont(const string & ourFile){
     }
 }
 
-void showSFF(const string & ourFile){
+void showSFF(const string & ourFile, const std::string &actFile){
     std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
     int currentGroup = 0;
     int currentSprite = 0;
     Global::debug(0) << "Trying to load SFF File: " << ourFile << "..." << endl;
-    Mugen::Util::readSprites(ourFile, "", sprites);
+    Mugen::Util::readSprites(ourFile, actFile, sprites);
     Global::debug(0) << "Loaded SFF file: \"" << ourFile << "\" successfully." << endl;
     
     bool quit = false;
@@ -862,6 +862,10 @@ int main( int argc, char ** argv ){
 			  showOptions();
 			  return 0;
 			}
+			q += 1;
+			if ( q < argc ){
+				other = std::string( argv[ q ] );
+			}
 		} else if ( isArg( argv[ q ], SELECT_ARG ) ){
 			q += 1;
 			if ( q < argc ){
@@ -998,7 +1002,7 @@ int main( int argc, char ** argv ){
 	    }
 	} else if ( configLoaded == 5 ){
 	    try{
-                showSFF(ourFile);
+                showSFF(ourFile, other);
             } catch( MugenException &ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
