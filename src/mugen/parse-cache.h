@@ -21,7 +21,7 @@ public:
     static std::list<Ast::Section*> * parseCmd(const std::string & path);
 
 protected:
-    friend class ::OptionMugenMenu;
+    friend void run();
     friend int ::main(int argc, char ** argv);
     ParseCache();
     ~ParseCache();

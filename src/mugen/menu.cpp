@@ -1,5 +1,5 @@
 #include "util/bitmap.h"
-#include "mugen/menu.h"
+#include "menu.h"
 
 #include <fstream>
 #include <iostream>
@@ -35,27 +35,30 @@
 
 #include "input/input-manager.h"
 
-#include "mugen/animation.h"
-#include "mugen/background.h"
-#include "mugen/config.h"
+#include "animation.h"
+#include "background.h"
+#include "config.h"
 #include "character-select.h"
 #include "character.h"
-#include "mugen/item.h"
-#include "mugen/item-content.h"
-#include "mugen/section.h"
-#include "mugen/sound.h"
-#include "mugen/reader.h"
-#include "mugen/sprite.h"
-#include "mugen/util.h"
-#include "mugen/font.h"
-#include "mugen/storyboard.h"
+#include "item.h"
+#include "item-content.h"
+#include "section.h"
+#include "sound.h"
+#include "reader.h"
+#include "sprite.h"
+#include "util.h"
+#include "font.h"
+#include "storyboard.h"
 
-#include "mugen/option-arcade.h"
-#include "mugen/option-options.h"
-#include "mugen/option-versus.h"
-#include "mugen/game.h"
+#include "option-arcade.h"
+#include "option-options.h"
+#include "option-versus.h"
+#include "game.h"
 #include "ast/all.h"
 #include "parser/all.h"
+#include "loading.h"
+
+#include "parse-cache.h"
 
 namespace PaintownUtil = ::Util;
 
@@ -818,4 +821,33 @@ void MugenMenu::renderText(Bitmap *bmp){
     }
     
     bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
+}
+
+namespace Mugen{
+
+void run(){
+    ParseCache cache;
+    // Load er up and throw up a load box to inform the user
+    // Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
+    MugenMenu menu(Mugen::Data::getInstance().getMotif());
+    pthread_t loading;
+    Level::LevelInfo info;
+    info.setLoadingMessage("Loading M.U.G.E.N");
+    Loader::startLoading(&loading, (void*) &info);
+
+    try {
+        menu.loadData();
+        Loader::stopLoading(loading);
+        menu.run();
+    } catch (const ReturnException & re){
+        // Say what?
+        // Do not quit game
+    } catch (const MugenException & ex){
+        string m("Problem with loading MUGEN menu: ");
+        m += ex.getFullReason();
+        Loader::stopLoading(loading);
+        throw LoadException(m);
+    }
+}
+
 }

@@ -226,4 +226,9 @@ class MugenMenu : public Menu {
 	std::vector<Mugen::ItemOption *>::iterator currentOption;
 };
 
+namespace Mugen{
+    /* run the mugen menu */
+    void run();
+}
+
 #endif

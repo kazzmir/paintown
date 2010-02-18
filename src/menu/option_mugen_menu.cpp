@@ -6,18 +6,25 @@
 #include "util/funcs.h"
 #include "level/utils.h"
 #include "globals.h"
-#include "loading.h"
-#include <pthread.h>
 
+/*
+#include <pthread.h>
+#include "loading.h"
+*/
+
+/*
 #include "mugen/parse-cache.h"
-#include "mugen/menu.h"
 #include "mugen/exception.h"
+*/
+#include "mugen/menu.h"
 #include "mugen/config.h"
+
 #include "return_exception.h"
 
 using namespace std;
 
-OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption(token, Event), _menu(0){
+OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException):
+MenuOption(token, Event){
     if ( *token != "mugen" ){
         throw LoadException("Not a mugen motif menu");
     }
@@ -38,7 +45,7 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
                 *tok >> temp;
                 // Set the default motif
                 Mugen::Data::getInstance().setMotif(temp);
-            }else {
+            } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
                     tok->print(" ");
@@ -51,10 +58,13 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
             throw LoadException( m );
         } 
     }
+
+    /*
     // Load menu with default motif
     _menu = new MugenMenu(Mugen::Data::getInstance().getMotif());
     // Set this menu as an option
     _menu->setAsOption(true);
+    */
 
     // Lets check if this menu is going bye bye
     //if ( _menu->checkRemoval() ) setForRemoval(true);
@@ -62,9 +72,11 @@ OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException): MenuOption
 
 OptionMugenMenu::~OptionMugenMenu(){
     // Delete our menu
+    /*
     if (_menu){
         delete _menu;
     }
+    */
 }
 
 void OptionMugenMenu::logic(){
@@ -72,29 +84,5 @@ void OptionMugenMenu::logic(){
 }
 
 void OptionMugenMenu::run(bool &endGame){
-    Mugen::ParseCache cache;
-    // Load er up and throw up a load box to inform the user
-    // Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
-    pthread_t loading;
-    Level::LevelInfo info;
-    info.setLoadingMessage("Loading M.U.G.E.N");
-    Loader::startLoading(&loading, (void*) &info);
-    try {
-        _menu->loadData();
-    } catch (const MugenException & ex){
-        string m("Problem with loading MUGEN menu: ");
-        m += ex.getFullReason();
-        Loader::stopLoading(loading);
-        throw LoadException(m);
-    }
-    Loader::stopLoading(loading);
-
-    try {
-        // Run
-        _menu->run();
-    } catch (const ReturnException & re){
-        // Say what?
-        // Do not quit game
-    }
+    Mugen::run();
 }
-

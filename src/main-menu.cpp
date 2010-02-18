@@ -4,6 +4,7 @@
 // #include "network/network.h"
 #include "util/token_exception.h"
 #include "mugen/exception.h"
+#include "mugen/menu.h"
 #include "music.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"
@@ -33,6 +34,7 @@ static const char * DATAPATH_ARG[] = {"-d", "data", "datapath", "data-path", "pa
 static const char * DEBUG_ARG[] = {"-l", "debug"};
 static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
+static const char * MUGEN_ARG[] = {"mugen"};
 
 static const char * closestMatch(const char * s1, vector<const char *> args){
 
@@ -84,6 +86,7 @@ static void showOptions(){
 	Global::debug(0) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2() << endl;
 	Global::debug(0) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
 	Global::debug(0) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
+        Global::debug(0) << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
 	// Global::debug(0) << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
 	Global::debug(0) << endl;
 }
@@ -115,6 +118,7 @@ static string mainMenuPath() throw (TokenException, LoadException, Filesystem::N
 int paintown_main( int argc, char ** argv ){
 
     bool music_on = true;
+    bool mugen = false;
     // bool just_network_server = false;
     Collector janitor;
 
@@ -126,6 +130,7 @@ int paintown_main( int argc, char ** argv ){
     ADD_ARGS(DATAPATH_ARG);
     ADD_ARGS(DEBUG_ARG);
     ADD_ARGS(MUSIC_ARG);
+    ADD_ARGS(MUGEN_ARG);
     // ADD_ARGS(NETWORK_SERVER_ARG);
 #undef ADD_ARGS
 
@@ -139,6 +144,8 @@ int paintown_main( int argc, char ** argv ){
             }
         } else if ( isArg( argv[ q ], MUSIC_ARG, NUM_ARGS(MUSIC_ARG) ) ){
             music_on = false;
+        } else if (isArg(argv[q], MUGEN_ARG, NUM_ARGS(MUGEN_ARG))){
+            mugen = true;
         } else if ( isArg( argv[ q ], DEBUG_ARG, NUM_ARGS(DEBUG_ARG) ) ){
             q += 1;
             if ( q < argc ){
@@ -192,9 +199,13 @@ int paintown_main( int argc, char ** argv ){
     InputManager input;
     Music music(music_on);
     try{
-        Menu game;
-        game.load(mainMenuPath());
-        game.run();
+        if (mugen){
+            Mugen::run();
+        } else {
+            Menu game;
+            game.load(mainMenuPath());
+            game.run();
+        }
     } catch (const Filesystem::NotFound & ex){
         Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
     } catch (const TokenException & ex){

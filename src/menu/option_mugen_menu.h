@@ -23,7 +23,7 @@ public:
     virtual ~OptionMugenMenu();
 
 private:
-    MugenMenu *_menu;
+    // MugenMenu *_menu;
 };
 
 #endif
