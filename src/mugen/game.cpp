@@ -95,7 +95,6 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Keyboard::Key_C, 0, true, Mugen::Z);
     input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
-    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
     return input;
 }
 
@@ -112,9 +111,8 @@ static InputMap<Mugen::Keys> getPlayer2InputLeft(){
     input.set(Keyboard::Key_8, 0, false, Mugen::X);
     input.set(Keyboard::Key_9, 0, false, Mugen::Y);
     input.set(Keyboard::Key_0, 0, false, Mugen::Z);
-    input.set(Keyboard::Key_L, 0, false, Mugen::Start);
+    input.set(Keyboard::Key_K, 0, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
-    input.set(Keyboard::Key_K, 0, true, Mugen::Enter);
     return input;
 }
 

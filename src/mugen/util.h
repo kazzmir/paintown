@@ -200,7 +200,6 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     input.set(Keyboard::Key_C, delay, false, Mugen::Z);
     input.set(Keyboard::Key_ENTER, delay, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
-    input.set(Keyboard::Key_ENTER, 0, true, Mugen::Enter);
     return input;
 }
 
@@ -218,9 +217,8 @@ inline static InputMap<Mugen::Keys> getPlayer2Keys(int delay = 0){
     input.set(Keyboard::Key_8, delay, false, Mugen::X);
     input.set(Keyboard::Key_9, delay, false, Mugen::Y);
     input.set(Keyboard::Key_0, delay, false, Mugen::Z);
-    input.set(Keyboard::Key_L, delay, false, Mugen::Start);
+    input.set(Keyboard::Key_K, delay, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
-    input.set(Keyboard::Key_K, 0, true, Mugen::Enter);
     return input;
 }
 

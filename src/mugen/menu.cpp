@@ -604,24 +604,30 @@ void MugenMenu::run(){
 			    moveMenuDown();
 			}
 			
-			if ( out1[Mugen::Enter] ){
-			    if((*currentOption)->isRunnable())(*currentOption)->setState( MenuOption::Run );
-			    // Set the fade state
-			    fader.setState(Mugen::FadeTool::FadeOut);
-                            if (sounds[doneSound.x][doneSound.y] != 0){
-                                sounds[doneSound.x][doneSound.y]->play();
+			Mugen::Keys selectable[] = {Mugen::A, Mugen::B, Mugen::C, Mugen::X, Mugen::Y, Mugen::Z, Mugen::Start};
+                        for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
+                            if (out1[selectable[key]]){
+                                if((*currentOption)->isRunnable()){
+                                    (*currentOption)->setState( MenuOption::Run );
+                                }
+			        // Set the fade state
+			        fader.setState(Mugen::FadeTool::FadeOut);
+                                if (sounds[doneSound.x][doneSound.y] != 0){
+                                    sounds[doneSound.x][doneSound.y]->play();
+                                }
+                                selectingPlayer = Mugen::Player1;
                             }
-                            selectingPlayer = Mugen::Player1;
-			}
-			
-			if ( out2[Mugen::Enter] ){
-			    if((*currentOption)->isRunnable())(*currentOption)->setState( MenuOption::Run );
-			    // Set the fade state
-			    fader.setState(Mugen::FadeTool::FadeOut);
-                            if (sounds[doneSound.x][doneSound.y] != 0){
-                                sounds[doneSound.x][doneSound.y]->play();
-                            }
-                            selectingPlayer = Mugen::Player2;
+                            if ( out2[selectable[key]] ){
+			        if((*currentOption)->isRunnable()){
+                                    (*currentOption)->setState( MenuOption::Run );
+                                }
+                                // Set the fade state
+			        fader.setState(Mugen::FadeTool::FadeOut);
+                                if (sounds[doneSound.x][doneSound.y] != 0){
+                                    sounds[doneSound.x][doneSound.y]->play();
+                                }
+                                selectingPlayer = Mugen::Player2;
+			    }
 			}
 			
                         if ( out1[Mugen::Esc] || out2[Mugen::Esc] ){

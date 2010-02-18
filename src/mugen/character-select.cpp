@@ -733,7 +733,7 @@ void Cursor::act(Grid &grid){
 	    }
 
             if (!getCurrentCell()->isEmpty()){
-                    Mugen::Keys selectable[] = {A, B, C, X, Y, Z};
+                    Mugen::Keys selectable[] = {A, B, C, X, Y, Z, Start};
                 for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
                     if (out[selectable[key]]){
                         grid.selectCell(*this, selectable[key]);
