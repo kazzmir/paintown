@@ -2943,7 +2943,7 @@ void Character::resetPlayer(){
         
 bool Character::isBlocking(const HitDefinition & hit){
     /* can only block if in the proper state relative to the hit def */
-    return blocking;
+    return hasControl() && blocking;
 }
         
 void Character::guarded(Character * enemy){
