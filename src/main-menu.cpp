@@ -199,11 +199,11 @@ int paintown_main( int argc, char ** argv ){
     InputManager input;
     Music music(music_on);
     try{
+        Menu game;
+        game.load(mainMenuPath());
         if (mugen){
             Mugen::run();
         } else {
-            Menu game;
-            game.load(mainMenuPath());
             game.run();
         }
     } catch (const Filesystem::NotFound & ex){
