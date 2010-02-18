@@ -722,11 +722,9 @@ void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
     if (player1State != Disabled){
 	const int modifierX = (player1ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
 	const int modifierY = (player1ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
-        combo.setPosition(0);
         combo.setText(player1Combo);
         combo.render(layer,player1Position.x + modifierX,player1Position.y + modifierY,bmp);
 	// Hacking in adjustment for now, need to get correct width from font which is wrong
-        text.setPosition(0);
         text.setText(player1Text);
 	text.render(layer,player1Position.x + combo.getWidth() + (player1Total > 9 ? 10 : 15),player1Position.y,bmp);
     }
@@ -734,12 +732,10 @@ void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
 	const int modifierX = (player2ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
 	const int modifierY = (player2ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
 	// Hacking in adjustment for now, need to get correct width from font which is wrong
-        text.setPosition(-1);
         text.setText(player2Text);
-	text.render(layer,player2Position.x, player2Position.y,bmp);
-        combo.setPosition(1);
+	text.render(layer,player2Position.x - text.getWidth() + (player1Total > 9 ? 10 : 15), player2Position.y,bmp);
         combo.setText(player2Combo);
-	combo.render(layer,player2Position.x - text.getWidth() + (player2Total > 9 ? 10 : 15) + modifierX, player2Position.y + modifierY,bmp);
+	combo.render(layer,player2Position.x - text.getWidth() - (player1Total > 9 ? 10 : 15) + modifierX, player2Position.y + modifierY,bmp);
     }
 }
 	

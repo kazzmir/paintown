@@ -2153,22 +2153,25 @@ void Character::load(int useAct){
 	}
     }
     */
-
+    std::string paletteFile = "";
     currentPalette = useAct;
     if (palFile.find(currentPalette) == palFile.end()){
         /* FIXME: choose a default. its not just palette 1 because that palette
          * might not exist
          */
+	Global::debug(1) << "Couldn't find palette: " << currentPalette << " in palette collection. Defaulting to internal palette if available." << endl;
+    } else {
+	paletteFile = palFile[currentPalette];
+	Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << paletteFile << endl;
     }
     /*
     if (currentPalette > palFile.size() - 1){
         currentPalette = 1;
     }
     */
-    Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
-    Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, palFile[currentPalette]), sprites);
+    Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
