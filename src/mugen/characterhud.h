@@ -8,6 +8,7 @@
 #include "mugen/exception.h"
 #include "mugen/fadetool.h"
 #include "mugen/character.h"
+#include "mugen/behavior.h"
 
 class Bitmap;
 class MugenSprite;
@@ -426,7 +427,6 @@ class Round{
 	    DisplayRound,
 	    WaitForFight,
 	    DisplayFight,
-	    WaitForControl,
 	    PlayingGame,
 	    RoundOver,
 	    DoTimeOver,
@@ -683,6 +683,12 @@ class Round{
         
         // Fadebetween states
         Mugen::FadeTool fader;
+
+        //! Player behaviors
+        Behavior * player1Behavior;
+        Behavior * player2Behavior;
+        DummyBehavior dummyBehavior;
+
 };
 
 class WinIcon{

@@ -759,7 +759,9 @@ overTime(0),
 winDisplayTime(0),
 roundEnd(false),
 winStateSet(false),
-ticker(0){
+ticker(0),
+player1Behavior(0),
+player2Behavior(0){
     // Set layers for top
     defaultRound.setLayer(Element::Top);
     fight.setLayer(Element::Top);
@@ -819,17 +821,11 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Fight: " << fightDisplayTime << endl;
 	    break;
 	case DisplayFight:
-            if(fight.isDone()){
-		setState(WaitForControl,stage,player1,player2);
-	    }
-	    Global::debug(1) << "Round Ticker: " << ticker << " | Playing Fight. " << endl;
-	    break;
-	case WaitForControl:
-	    if (ticker >= controlTime){
+            if (ticker >= controlTime){
 		setState(PlayingGame, stage, player1, player2);
 		Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Fight to end." << endl;
 	    }
-	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for Player Control: " << controlTime << endl;
+	    Global::debug(1) << "Round Ticker: " << ticker << " | Playing Fight. " << endl;
 	    break;
 	case PlayingGame:
 	    // Evaluate players and then go to the appropriate finish
@@ -870,6 +866,12 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
                     }
 		}
 	    }
+            // Check wait time, remove player control
+	    if (ticker >= overWaitTime){
+                // Remove player control
+	        player1.setBehavior(&dummyBehavior);
+                player2.setBehavior(&dummyBehavior);
+            }
 	    break;
 	case DoTimeOver:
 	    // Run Time Over
@@ -879,12 +881,17 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    } else if (TO.isDone()){
                 setState(DoWin, stage, player1, player2);
             }
-	    break;
-        case DoWin:
             // Check wait time, remove player control
 	    if (ticker >= overWaitTime){
                 // Remove player control
-		
+	        player1.setBehavior(&dummyBehavior);
+                player2.setBehavior(&dummyBehavior);
+            }
+	    break;
+        case DoWin:
+            // Just a precaution
+            player1.setBehavior(&dummyBehavior);
+            player2.setBehavior(&dummyBehavior);
 		// Change into win state
 		if (ticker >= overWinTime){
 		    // Check ko / dko
@@ -992,7 +999,6 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			}
 		    }
 		}
-            }
 	    // End round
 	    if (ticker >= overTime){
 		if (fader.getState() != Mugen::FadeTool::FadeOut){
@@ -1077,6 +1083,15 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
 }
 
 void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
+    if (!player1Behavior){
+        player1Behavior = player1.getBehavior();
+    }
+    if (!player2Behavior){
+        player2Behavior = player2.getBehavior();
+    }
+    // Set dummy behaviors until control is given back
+    player1.setBehavior(&dummyBehavior);
+    player2.setBehavior(&dummyBehavior);
     roundEnd = false;
     winStateSet = false;
     if (currentRound == 1){
@@ -1138,10 +1153,10 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 		fightSound.play();
 	    }
 	    break;
-	case WaitForControl:
-	    break;
 	case PlayingGame:
 	    // Give control back
+            player1.setBehavior(player1Behavior);
+            player2.setBehavior(player2Behavior);
 	    break;
 	case RoundOver:
 	    roundEnd = true;

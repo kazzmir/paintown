@@ -1349,6 +1349,10 @@ public:
             behavior = b;
         }
 
+        virtual inline Behavior * getBehavior(){
+            return this->behavior;
+        }
+
         virtual inline void setDefaultSpark(int s){
             sparkno = s;
         }
