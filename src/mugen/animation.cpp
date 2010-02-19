@@ -170,7 +170,20 @@ const MugenFrame * MugenAnimation::getNext(){
 
 /* time left in the animation */
 int MugenAnimation::animationTime() const {
-    return (int) position - (int) frames.size() + 1;
+    // return (int) position - (int) frames.size() + 1;
+    if (frames[position]->time == -1){
+        return -1;
+    }
+
+    int left = frames[position]->time - ticks - 1;
+    for (unsigned int rest = position + 1; rest < frames.size(); rest++){
+        if (frames[rest]->time == -1){
+            return -1;
+        }
+        left += frames[rest]->time;
+    }
+    // Global::debug(0) << "Animation time " << left << endl;
+    return left;
 }
 
 /* reverses through the y-axis (just the x coordinates */
@@ -212,7 +225,7 @@ void MugenAnimation::logic(){
             ticks += 1;
             if (ticks >= frames[position]->time){
                 ticks = 0;
-                if (position < frames.size() -1){
+                if (position < frames.size() - 1){
                     position += 1;
                 } else {
 		    if (!playOnce){

@@ -100,7 +100,8 @@ x(value1),
 y(value2),
 value(value1),
 variable(value2),
-internal(0){
+internal(NULL),
+debug(false){
 }
 
 StateController::~StateController(){
@@ -191,7 +192,10 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
     for (vector<Ast::Value*>::const_iterator it = expressions.begin(); it != expressions.end(); it++){
         const Ast::Value * value = *it;
         if (!canTrigger(stage, character, value, commands)){
+            Global::debug(2*!getDebug()) << value->toString() << " did not trigger" << endl;
             return false;
+        } else {
+            Global::debug(2*!getDebug()) << value->toString() << " did trigger" << endl;
         }
     }
     return true;
@@ -235,7 +239,7 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
 }
 
 void StateController::activate(const MugenStage & stage, Character & guy, const vector<string> & commands) const {
-    Global::debug(1) << "Activate controller " << name << endl;
+    Global::debug(1 * !debug) << "Activate controller " << name << endl;
 
     if (changeControl){
         guy.setControl(toBool(evaluate(control, Environment(stage, guy, commands))));
@@ -910,6 +914,8 @@ void Character::initialize(){
     sparkno = 0;
     guardsparkno = 0;
 
+    needToGuard = false;
+
     matchWins = 0;
 
     combo = 0;
@@ -1414,6 +1420,10 @@ void Character::parseStateDefinition(Ast::Section * section){
                     } else if (type == "A"){
                         definition->setPhysics(Physics::Air);
                     }
+                    /* if physics is U (unchanged) then dont set the state physics
+                     * and then the character's physics won't change during
+                     * a state transition.
+                     */
                 } else if (simple == "anim"){
                     definition->setAnimation((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "velset"){
@@ -1667,6 +1677,8 @@ void Character::parseState(Ast::Section * section){
                     string anim;
                     simple >> anim;
                     controller->getHit().animationTypeAir = parseAnimationType(anim);
+                } else if (simple == "debug"){
+                    controller->setDebug(true);
                 } else if (simple == "fall.animtype"){
                     string anim;
                     simple >> anim;
@@ -2214,6 +2226,16 @@ void Character::doubleJump(const MugenStage & stage, const vector<string> & inpu
     changeState(stage, AirJumpStart, inputs);
 }
 
+void Character::stopGuarding(const MugenStage & stage, const vector<string> & inputs){
+    if (stateType == StateType::Crouch){
+        changeState(stage, Crouching, inputs);
+    } else if (stateType == StateType::Air){
+        changeState(stage, 51, inputs);
+    } else {
+        changeState(stage, Standing, inputs);
+    }
+}
+
 void Character::fixAssumptions(){
     /* need a -1 state controller that changes to state 20 if holdfwd
      * or holdback is pressed
@@ -2303,6 +2325,18 @@ void Character::fixAssumptions(){
                         new Ast::String(new string(jumpCommand)
                             )));
             states[-1]->addController(controller);
+        }
+    }
+
+    {
+        if (states[StopGuardStand] != 0){
+            StateController * controller = new StateController("stop guarding");
+            states[StopGuardStand]->addController(controller);
+            controller->setType(StateController::InternalCommand);
+            controller->setInternal(&Mugen::Character::stopGuarding);
+            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                    new Ast::SimpleIdentifier("animtime"),
+                    new Ast::Number(0)));
         }
     }
 
@@ -2602,6 +2636,11 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
 
     blocking = holdingBlock(active);
 
+    if (needToGuard){
+        needToGuard = false;
+        changeState(stage, Mugen::StartGuardStand, active);
+    }
+
     doStates(stage, active, -3);
     doStates(stage, active, -2);
     doStates(stage, active, -1);
@@ -2718,7 +2757,7 @@ bool Character::doStates(const MugenStage & stage, const vector<string> & active
         State * state = states[stateNumber];
         for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
             const StateController * controller = *it;
-            Global::debug(2) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
+            Global::debug(2 * !controller->getDebug()) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
 
 #if 0
             /* more debugging */
@@ -2948,6 +2987,7 @@ bool Character::isBlocking(const HitDefinition & hit){
         
 void Character::guarded(Character * enemy){
     lastTicket = enemy->getTicket();
+    needToGuard = true;
 }
 
 }

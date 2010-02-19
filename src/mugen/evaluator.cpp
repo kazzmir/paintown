@@ -256,7 +256,7 @@ public:
 
         if (identifier == "inguarddist"){
             /* FIXME */
-            return RuntimeValue(false);
+            return RuntimeValue(true);
         }
 
         if (identifier == "animtime"){

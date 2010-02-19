@@ -13,6 +13,7 @@
 #include "stage.h"
 
 #include "init.h"
+#include "state.h"
 
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -744,6 +745,10 @@ void MugenStage::physics(Object * player){
                         addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
                         playSound(mugen->getHit()->guardHitSound.group, mugen->getHit()->guardHitSound.item, mugen->getHit()->guardHitSound.own);
                         enemy->guarded(mugen);
+                        /*
+                        vector<string> empty;
+                        enemy->changeState(*this, Mugen::StartGuardStand, empty);
+                        */
                     } else {
                         /* do hitdef stuff */
                         // Global::debug(0) << "Collision!" << endl;
@@ -1599,8 +1604,8 @@ bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys
     bool selector = true;
 
     // Put character in continue state
-    std::vector<std::string> vec;
-    character->changeState(*this,Mugen::Continue,vec);
+    std::vector<std::string> empty;
+    character->changeState(*this, Mugen::Continue, empty);
 
     while (!endMatch){
         bool draw = false;
@@ -1695,6 +1700,11 @@ bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys
             Util::rest(1);
         }
     }
+
+    /* FIXME: what should we do here? I just added 'return false' to
+     * silence the compiler.
+     */
+    return false;
 }
     
 const Mugen::Character * MugenStage::getEnemy(Mugen::Character * who) const {

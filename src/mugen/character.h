@@ -792,6 +792,14 @@ public:
         internal = v;
     }
 
+    virtual inline void setDebug(bool f){
+        debug = f;
+    }
+
+    virtual inline bool getDebug() const {
+        return debug;
+    }
+
     virtual ~StateController();
 
 protected:
@@ -831,6 +839,8 @@ protected:
     std::string moveType;
 
     void (Character::*internal)(const MugenStage & stage, const std::vector<std::string> & inputs);
+
+    bool debug;
 };
 
 /* comes from a StateDef */
@@ -1394,8 +1404,16 @@ protected:
     virtual std::vector<std::string> doInput(const MugenStage & stage);
     virtual bool doStates(const MugenStage & stage, const std::vector<std::string> & active, int state);
 
+    typedef void (internalCommand_t)(const MugenStage & stage, const std::vector<std::string> & inputs);
+
+    /*
     void resetJump(const MugenStage & stage, const std::vector<std::string> & inputs);
     void doubleJump(const MugenStage & stage, const std::vector<std::string> & inputs);
+    void stopGuarding(const MugenStage & stage, const std::vector<std::string> & inputs);
+    */
+    internalCommand_t resetJump;
+    internalCommand_t doubleJump;
+    internalCommand_t stopGuarding;
 
     virtual void fixAssumptions();
     virtual void parseState(Ast::Section * section);
@@ -1661,6 +1679,7 @@ protected:
         bool regenerating;
         int regenerateTime;
         int regenerateHealthDifference;
+        bool needToGuard;
 };
 
 }
