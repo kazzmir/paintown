@@ -671,12 +671,12 @@ static bool anyBlocking(const vector<MugenArea> & boxes1, int x1, int y1, int at
     for (vector<MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
         for (vector<MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
             const MugenArea & attack = *attack_i;
-            const MugenArea & defense = *defense_i;
-            if (attack.collision(x1, y1, defense, x2 + attackDist, y2)){
+            MugenArea defense = *defense_i;
+	    defense.x1 -= attackDist;
+	    defense.x2 += attackDist;
+            if (attack.collision(x1, y1, defense, x2, y2)){
                 return true;
-            } else if (attack.collision(x1, y1, defense, x2 - attackDist, y2)){
-		return true;
-	    }
+            }
         }
     }
 
