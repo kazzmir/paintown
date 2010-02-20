@@ -2298,7 +2298,7 @@ void Character::stopGuarding(const MugenStage & stage, const vector<string> & in
     if (stateType == StateType::Crouch){
         changeState(stage, Crouching, inputs);
     } else if (stateType == StateType::Air){
-        changeState(stage, 51, inputs);
+        changeState(stage, 52, inputs);
     } else {
         changeState(stage, Standing, inputs);
     }
