@@ -191,7 +191,7 @@ class MugenAnimation{
 
     protected:
 
-        void renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Bitmap & work, double scalex, double scaley, const Mugen::Effects & effects);
+        void renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects);
 	
     private:
 	

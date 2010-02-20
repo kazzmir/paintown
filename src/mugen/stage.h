@@ -178,6 +178,7 @@ protected:
 
     void updatePlayer(Object *o);
     void physics(Object * o);
+    bool doBlockingDetection(Mugen::Character * obj1, Mugen::Character * obj2);
     bool doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2);
 
     int maximumRight() const;

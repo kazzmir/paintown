@@ -667,6 +667,26 @@ static bool anyCollisions(const vector<MugenArea> & boxes1, int x1, int y1, cons
 
 }
 
+static bool anyBlocking(const vector<MugenArea> & boxes1, int x1, int y1, int attackDist, const vector<MugenArea> & boxes2, int x2, int y2){
+    for (vector<MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
+        for (vector<MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
+            const MugenArea & attack = *attack_i;
+            const MugenArea & defense = *defense_i;
+            if (attack.collision(x1, y1, defense, x2 + attackDist, y2)){
+                return true;
+            } else if (attack.collision(x1, y1, defense, x2 - attackDist, y2)){
+		return true;
+	    }
+        }
+    }
+
+    return false;
+}
+
+bool MugenStage::doBlockingDetection(Mugen::Character * obj1, Mugen::Character * obj2){
+    return anyBlocking(obj1->getAttackBoxes(), obj1->getX(), obj1->getY(), obj1->getAttackDistance(), obj2->getDefenseBoxes(), obj2->getX(), obj2->getY());
+}
+
 bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2){
     return anyCollisions(obj1->getAttackBoxes(), obj1->getX(), obj1->getY(), obj2->getDefenseBoxes(), obj2->getX(), obj2->getY());
 }
@@ -733,6 +753,10 @@ void MugenStage::physics(Object * player){
         for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Character * enemy = (Mugen::Character*) *enem;
             if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit(mugen)){
+		// Check attack distance to make sure we begin block at the correct distance
+		if (doBlockingDetection(mugen, enemy)){
+		    enemy->guarded(mugen);
+		}
                 if (doCollisionDetection(mugen, enemy)){
 
                     /* guarding */
@@ -744,7 +768,7 @@ void MugenStage::physics(Object * player){
                         }
                         addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
                         playSound(mugen->getHit()->guardHitSound.group, mugen->getHit()->guardHitSound.item, mugen->getHit()->guardHitSound.own);
-                        enemy->guarded(mugen);
+                        //enemy->guarded(mugen);
                         /*
                         vector<string> empty;
                         enemy->changeState(*this, Mugen::StartGuardStand, empty);

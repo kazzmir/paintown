@@ -238,7 +238,7 @@ void MugenAnimation::logic(){
     }
 }
 
-void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Bitmap & work, double scalex, double scaley, const Mugen::Effects & effects){
+void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects){
     
     frame->render(xaxis, yaxis, work, effects);
 
@@ -259,8 +259,12 @@ void MugenAnimation::render(int xaxis, int yaxis, const Bitmap &work, double sca
     if (frames[position]->sprite == 0){
 	return;
     }
+    
+    Mugen::Effects effects = frames[position]->effects;
+    effects.scalex = scalex;
+    effects.scaley = scaley;
 
-    renderFrame(frames[position], xaxis, yaxis, work, scalex, scaley, frames[position]->effects);
+    renderFrame(frames[position], xaxis, yaxis, work, effects);
 
 #if 0
     // Modify with frame adjustment
@@ -295,10 +299,12 @@ void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const in
 
     MugenFrame * frame = frames[position];
     Mugen::Effects effects = frame->effects;
+    effects.scalex = scalex;
+    effects.scaley = scaley;
     effects.facing = (facing ? -1 : 1);
     effects.vfacing = (vfacing ? -1 : 1);
 
-    renderFrame(frame, xaxis, yaxis, work, scalex, scaley, effects);
+    renderFrame(frame, xaxis, yaxis, work, effects);
     /*
     // Override flip and set back to original when done
     const int horizontal = frames[position]->effects.facing;
@@ -328,8 +334,10 @@ void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, cons
     effects.vfacing = (vfacing ? -1 : 1);
     effects.trans = Mugen::ADDALPHA;
     effects.alphalow = alpha;
+    effects.scalex = scalex;
+    effects.scaley = scaley;
 
-    renderFrame(frame, xaxis, yaxis, work, scalex, scaley, effects);
+    renderFrame(frame, xaxis, yaxis, work, effects);
 }
 
 void MugenAnimation::forwardFrame(){

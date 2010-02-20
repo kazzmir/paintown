@@ -1321,7 +1321,45 @@ void Character::loadCnsFile(const string & path){
                             int x;
                             simple >> x;
                             self.setHeight(x);
-                        }
+                        } else if (simple == "xscale"){
+			    simple >> self.xscale;
+			} else if (simple == "yscale"){
+			    simple >> self.yscale;
+			} else if (simple == "ground.back"){
+			    simple >> self.groundback;
+			} else if (simple == "ground.front"){
+			    simple >> self.groundfront;
+			} else if (simple == "air.back"){
+			    simple >> self.airback;
+			} else if (simple == "air.front"){
+			    simple >> self.airfront;
+			} else if (simple == "attack.dist"){
+			    simple >> self.attackdist;
+			} else if (simple == "proj.attack.dist"){
+			    simple >> self.projattackdist;
+			} else if (simple == "proj.doscale"){
+			    simple >> self.projdoscale;
+			} else if (simple == "head.pos"){
+			    int x=0,y=0;
+			    try{
+				simple >> self.headPosition.x >> self.headPosition.y;
+			    } catch (const Ast::Exception & e){
+			    }
+			} else if (simple == "mid.pos"){
+			    int x=0,y=0;
+			    try{
+				simple >> self.midPosition.x >> self.midPosition.y;
+			    } catch (const Ast::Exception & e){
+			    }
+			} else if (simple == "shadowoffset"){
+			    simple >> self.shadowoffset;
+			} else if (simple == "draw.offset"){
+			    int x=0,y=0;
+			    try{
+				simple >> self.drawOffset.x >> self.drawOffset.y;
+			    } catch (const Ast::Exception & e){
+			    }
+			}
                     }
                 };
                 
@@ -2837,7 +2875,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             x += PaintownUtil::rnd(3) - 1;
         }
 
-        animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, 0, 0);
+        animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
     }
 }
 
@@ -2847,8 +2885,8 @@ bool Character::canTurn() const {
            getCurrentState() == WalkingBackwards;
 }
 
-static MugenSound * findSound(const map<unsigned int, map<unsigned int, MugenSound*> > & sounds, int group, int item){
-    map<unsigned int, map<unsigned int, MugenSound*> >::const_iterator findGroup = sounds.find(group);
+static MugenSound * findSound(const Mugen::SoundMap & sounds, int group, int item){
+    Mugen::SoundMap::const_iterator findGroup = sounds.find(group);
     if (findGroup != sounds.end()){
         const map<unsigned int, MugenSound*> & found = (*findGroup).second;
         map<unsigned int, MugenSound*>::const_iterator sound = found.find(item);

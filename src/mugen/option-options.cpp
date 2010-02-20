@@ -509,7 +509,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 		if (out1[Right] || out2[Right]){
 		    (*selectedOption)->next();
 		}
-		if (out1[Enter] || out2[Enter]){
+		if (out1[Start] || out2[Start]){
 		    (*selectedOption)->enter();
 		}
 		// Backgrounds

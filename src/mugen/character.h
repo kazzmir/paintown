@@ -1382,6 +1382,10 @@ public:
         virtual inline void setRegeneration(bool r){
             this->regenerateHealth = r;
         }
+        
+        virtual inline int getAttackDistance() const {
+	    return this->attackdist;
+	}
 
 protected:
     void initialize();
@@ -1545,16 +1549,13 @@ protected:
 	//  = 0     ;Set to 1 to scale projectiles too
 	bool projdoscale;
 	// = -5, -90   ;Approximate position of head
-	int headposx;
-	int headposy;
+	Mugen::Point headPosition;
 	//  = -5, -60    ;Approximate position of midsection
-	int midposx;
-	int midposy;
+	Mugen::Point midPosition;
 	//  = 0     ;Number of pixels to vertically offset the shadow
 	int shadowoffset;
 	// = 0,0    ;Player drawing offset in pixels (x, y)
-	int drawoffsetx;
-	int drawoffsety;
+	Mugen::Point drawOffset;
 	
 	/* Section [Velocity] */
 	
