@@ -100,6 +100,9 @@ x(value1),
 y(value2),
 value(value1),
 variable(value2),
+changeMoveType(false),
+changeStateType(false),
+changePhysics(false),
 internal(NULL),
 debug(false){
 }
@@ -521,7 +524,17 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case StateTypeSet : {
-            guy.setMoveType(moveType);
+            if (changeMoveType){
+                guy.setMoveType(moveType);
+            }
+
+            if (changeStateType){
+                guy.setStateType(stateType);
+            }
+
+            if (changePhysics){
+                guy.setCurrentPhysics(physics);
+            }
             break;
         }
         case SndPan : {
@@ -1674,6 +1687,22 @@ void Character::parseState(Ast::Section * section){
                     string type;
                     simple >> type;
                     controller->setMoveType(type);
+                } else if (simple == "physics"){
+                    string type;
+                    simple >> type;
+                    if (type == "S"){
+                        controller->setPhysics(Physics::Stand);
+                    } else if (type == "N"){
+                        controller->setPhysics(Physics::None);
+                    } else if (type == "C"){
+                        controller->setPhysics(Physics::Crouch);
+                    } else if (type == "A"){
+                        controller->setPhysics(Physics::Air);
+                    }
+                } else if (simple == "statetype"){
+                    string type;
+                    simple >> type;
+                    controller->setStateType(type);
                 } else if (simple == "ctrl"){
                     controller->setControl((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "attr"){

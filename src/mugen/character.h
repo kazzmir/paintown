@@ -785,7 +785,18 @@ public:
     }
 
     virtual inline void setMoveType(const std::string & str){
+        changeMoveType = true;
         this->moveType = str;
+    }
+
+    virtual inline void setStateType(const std::string & str){
+        changeStateType = true;
+        this->stateType = str;
+    }
+    
+    virtual inline void setPhysics(Physics::Type p){
+        changePhysics = true;
+        this->physics = p;
     }
 
     virtual inline void setInternal(void (Character::*v)(const MugenStage & stage, const std::vector<std::string> & inputs)){
@@ -836,7 +847,13 @@ protected:
     std::map<int, Ast::Value*> systemVariables;
 
     HitDefinition hit;
+
+    bool changeMoveType;
+    bool changeStateType;
+    bool changePhysics;
     std::string moveType;
+    std::string stateType;
+    Physics::Type physics;
 
     void (Character::*internal)(const MugenStage & stage, const std::vector<std::string> & inputs);
 
