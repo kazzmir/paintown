@@ -153,6 +153,8 @@ public:
     static const std::string getStageName(const std::string &filename) throw (MugenException);
 
     virtual const Mugen::Character * getEnemy(Mugen::Character * who) const;
+    
+    virtual const int getGameTime() const;
 
     // Alliance setting
     enum teams{

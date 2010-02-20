@@ -320,6 +320,9 @@ class GameTime{
 	virtual void start();
 	virtual void stop();
 	virtual void reset();
+	virtual inline int getElapsedTicks(){
+	    return this->ticker;
+	}
 	virtual inline bool isStarted() const {
 	    return started;
 	}
@@ -769,6 +772,10 @@ class GameInfo{
         virtual void render(const Element::Layer &, const Bitmap &);
 
         virtual void reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
+	
+	virtual inline int getGameTime(){
+	    return this->timer.getElapsedTicks();
+	}
 	
     private:
         

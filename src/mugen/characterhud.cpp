@@ -566,11 +566,11 @@ GameTime::~GameTime(){
 }
 
 void GameTime::act(){
-    if (disabled){
-        return;
-    }
     if (started){
 	ticker++;
+	if (disabled){
+	    return;
+	}
 	if (ticker >= frameCount && time > 0){
 	    time--;
 	    ticker = 0;

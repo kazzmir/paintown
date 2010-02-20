@@ -291,6 +291,10 @@ public:
             /* FIXME */
             return RuntimeValue(0);
         }
+        
+        if (identifier == "gametime"){
+	    return RuntimeValue(environment.getStage().getGameTime());
+	}
 
         if (identifier == "hitshakeover"){
             return RuntimeValue(environment.getCharacter().getHitState().shakeTime <= 0);

@@ -1747,3 +1747,10 @@ const Mugen::Character * MugenStage::getEnemy(Mugen::Character * who) const {
 
     return NULL;
 }
+
+const int MugenStage::getGameTime() const {
+    if (gameHUD){
+	return gameHUD->getGameTime();
+    }
+    return 0;
+}
