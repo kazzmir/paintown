@@ -2244,6 +2244,7 @@ void Character::load(int useAct){
          * might not exist
          */
 	Global::debug(1) << "Couldn't find palette: " << currentPalette << " in palette collection. Defaulting to internal palette if available." << endl;
+        paletteFile = palFile.begin()->second;
     } else {
 	paletteFile = palFile[currentPalette];
 	Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << paletteFile << endl;
