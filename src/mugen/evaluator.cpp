@@ -190,6 +190,15 @@ public:
         if (identifier == "alive"){
             return RuntimeValue(environment.getCharacter().getHealth() > 0);
         }
+        
+        if (identifier == "facing"){
+	    if (environment.getCharacter().getFacing() == Object::FACING_LEFT){
+		return -1;
+	    } else if (environment.getCharacter().getFacing() == Object::FACING_RIGHT){
+		return 1;
+	    }
+	    return 0;
+	}
 
         if (identifier == "life"){
             return RuntimeValue(environment.getCharacter().getHealth());
