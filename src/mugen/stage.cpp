@@ -760,11 +760,13 @@ void MugenStage::physics(Object * player){
 		}
                 */
 
-                if (doCollisionDetection(mugen, enemy) || (doBlockingDetection(mugen, enemy) &&
-                                                           enemy->isBlocking(*mugen->getHit()))){
+                bool collision = doCollisionDetection(mugen, enemy);
+                /* blocking collision extends a little further than a a normal collision */
+                bool blockingCollision = doBlockingDetection(mugen, enemy);
 
-                    /* guarding */
-                    if (enemy->isBlocking(*mugen->getHit())){
+                /* guarding */
+                if ((collision || blockingCollision) && enemy->isBlocking(*mugen->getHit())){
+                    if (collision){
                         /* add guard spark and play guard sound */
                         int spark = mugen->getHit()->guardSpark;
                         if (spark == -1){
@@ -772,25 +774,25 @@ void MugenStage::physics(Object * player){
                         }
                         addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
                         playSound(mugen->getHit()->guardHitSound.group, mugen->getHit()->guardHitSound.item, mugen->getHit()->guardHitSound.own);
-                        enemy->guarded(mugen);
-                        /*
-                        vector<string> empty;
-                        enemy->changeState(*this, Mugen::StartGuardStand, empty);
-                        */
-                    } else {
-                        /* do hitdef stuff */
-                        // Global::debug(0) << "Collision!" << endl;
-                        /* the hit state */
-                        int spark = mugen->getHit()->spark;
-                        if (spark == -1){
-                            spark = mugen->getDefaultSpark();
-                        }
-                        addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
-                        playSound(mugen->getHit()->hitSound.group, mugen->getHit()->hitSound.item, mugen->getHit()->hitSound.own);
-                        mugen->didHit(enemy);
-                        enemy->wasHit(*this, mugen, *mugen->getHit());
-                        // enemy->changeState(5000);
                     }
+                    enemy->guarded(mugen);
+                    /*
+                       vector<string> empty;
+                       enemy->changeState(*this, Mugen::StartGuardStand, empty);
+                       */
+                } else if (collision){
+                    /* do hitdef stuff */
+                    // Global::debug(0) << "Collision!" << endl;
+                    /* the hit state */
+                    int spark = mugen->getHit()->spark;
+                    if (spark == -1){
+                        spark = mugen->getDefaultSpark();
+                    }
+                    addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
+                    playSound(mugen->getHit()->hitSound.group, mugen->getHit()->hitSound.item, mugen->getHit()->hitSound.own);
+                    mugen->didHit(enemy);
+                    enemy->wasHit(*this, mugen, *mugen->getHit());
+                    // enemy->changeState(5000);
                 }
             }
         }
