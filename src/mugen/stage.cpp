@@ -754,10 +754,14 @@ void MugenStage::physics(Object * player){
             Mugen::Character * enemy = (Mugen::Character*) *enem;
             if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit(mugen)){
 		// Check attack distance to make sure we begin block at the correct distance
-		if (doBlockingDetection(mugen, enemy)){
+                /*
+		if (doBlockingDetection(mugen, enemy) && enemy->isBlocking(*mugen->getHit())){
 		    enemy->guarded(mugen);
 		}
-                if (doCollisionDetection(mugen, enemy)){
+                */
+
+                if (doCollisionDetection(mugen, enemy) || (doBlockingDetection(mugen, enemy) &&
+                                                           enemy->isBlocking(*mugen->getHit()))){
 
                     /* guarding */
                     if (enemy->isBlocking(*mugen->getHit())){
@@ -768,7 +772,7 @@ void MugenStage::physics(Object * player){
                         }
                         addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
                         playSound(mugen->getHit()->guardHitSound.group, mugen->getHit()->guardHitSound.item, mugen->getHit()->guardHitSound.own);
-                        //enemy->guarded(mugen);
+                        enemy->guarded(mugen);
                         /*
                         vector<string> empty;
                         enemy->changeState(*this, Mugen::StartGuardStand, empty);
