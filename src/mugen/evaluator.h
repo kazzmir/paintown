@@ -148,6 +148,10 @@ public:
     virtual inline const Character & getCharacter() const {
         return character;
     }
+    
+    virtual inline const MugenStage & getStage() const {
+	return stage;
+    }
 
     virtual inline const std::vector<std::string> getCommands() const {
         return commands;

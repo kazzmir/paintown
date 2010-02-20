@@ -1,6 +1,7 @@
 #include "evaluator.h"
 #include "mugen/exception.h"
 #include "character.h"
+#include "mugen/stage.h"
 #include "mugen/animation.h"
 #include "ast/all.h"
 #include "util/funcs.h"
@@ -190,13 +191,21 @@ public:
             return RuntimeValue(environment.getCharacter().getHealth() > 0);
         }
 
-        if (identifier == "matchover"){
-            /* FIXME */
-            return RuntimeValue(false);
-        }
-
         if (identifier == "life"){
             return RuntimeValue(environment.getCharacter().getHealth());
+        }
+        
+        if (identifier == "lifemax"){
+	    return RuntimeValue(environment.getCharacter().getMaxHealth());
+	}
+	
+	if (identifier == "matchno"){
+	    int wins = environment.getCharacter().getWins().size()+1;
+	    return RuntimeValue(wins);
+	}
+	
+        if (identifier == "matchover"){
+            return RuntimeValue(environment.getStage().isMatchOver());
         }
 
         if (identifier == "movetype"){
@@ -591,6 +600,8 @@ public:
         }
 
         if (function == "selfanimexist"){
+	    /* FIXME this should actually be animexist... self checks if player has animation.
+	    If the opponent had given animation it will not be checked */
             int animation = (int) toNumber(evaluate(function.getArg1()));
             return RuntimeValue(environment.getCharacter().hasAnimation(animation));
         }
@@ -690,9 +701,9 @@ public:
                 return RuntimeValue(toNumber(evaluate(expression.getLeft())) / toNumber(evaluate(expression.getRight())));
             }
             case ExpressionInfix::Modulo : {
-                return RuntimeValue((int)toNumber(evaluate(expression.getLeft())) % (int)toNumber(evaluate(expression.getRight())));
-            }
-            case ExpressionInfix::Power : {
+                return RuntimeValue((int)toNumber(evaluate(expression.getLeft())) % (int)toNumber(evaluate(expression.getRight()))); 
+	    }
+	    case ExpressionInfix::Power : {
                 return RuntimeValue(pow(toNumber(evaluate(expression.getLeft())), toNumber(evaluate(expression.getRight()))));
             }
         }
