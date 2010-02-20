@@ -1,0 +1,6 @@
+This tool should be a GUI that helps the user manage paintown mods.
+
+It should allow users to select zip files (or maybe with drag+drop) and have them
+installed as paintown mods but copying the files to the mod directory.
+
+Using python+qt would be nice. Sort out the details of dll's on windows.
