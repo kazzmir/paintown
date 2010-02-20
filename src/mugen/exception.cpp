@@ -4,7 +4,10 @@
 #include "mugen/exception.h"
 	
 MugenException::MugenException():
-std::exception(){
+std::exception(),
+reason("unspecified"),
+where(0),
+line(0){
 }
 
 MugenException::MugenException(const std::string & reason, const std::string & where, int line):

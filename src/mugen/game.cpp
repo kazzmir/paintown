@@ -119,7 +119,7 @@ static InputMap<Mugen::Keys> getPlayer2InputLeft(){
 class QuitGameException: public MugenException {
 public:
     QuitGameException():
-        MugenException(){
+        MugenException("Quit game"){
         }
 
     virtual ~QuitGameException() throw (){
@@ -502,6 +502,13 @@ void Game::doVersus(const Bitmap & bmp){
 	select.getPlayer1()->setBehavior(&player1Input);
 	select.getPlayer2()->setBehavior(&player2Input);
 
+        select.getStage()->reset();
+        try{
+            runMatch(select.getStage(), bmp);
+        } catch (const QuitGameException & e){
+        }
+#if 0
+
 	MugenStage *stage = select.getStage();
 	InputMap<int> gameInput;
 	gameInput.set(Keyboard::Key_F1, 10, false, 0);
@@ -575,5 +582,6 @@ void Game::doVersus(const Bitmap & bmp){
 		PaintownUtil::rest(1);
 	    }
 	}
+#endif
     }
 }
