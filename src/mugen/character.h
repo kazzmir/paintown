@@ -154,6 +154,7 @@ struct HitDefinition{
     groundHitTime(0),
     airHitTime(20),
     yAcceleration(0.35),
+    guardVelocity(0),
     airJuggle(0),
     player1Facing(NULL),
     player2Facing(NULL)
@@ -1283,7 +1284,7 @@ public:
         void wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hit);
 
         /* `this' character guarded `enemy' */
-        void guarded(Character * enemy);
+        void guarded(Character * enemy, const HitDefinition & hit);
 
         bool isBlocking(const HitDefinition & hit);
 

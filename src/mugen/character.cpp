@@ -3053,9 +3053,14 @@ bool Character::isBlocking(const HitDefinition & hit){
     return hasControl() && blocking;
 }
         
-void Character::guarded(Character * enemy){
+void Character::guarded(Character * enemy, const HitDefinition & hit){
     lastTicket = enemy->getTicket();
     needToGuard = true;
+    bool inAir = getY() > 0;
+    if (inAir){
+    } else {
+        setXVelocity(hit.guardVelocity);
+    }
 }
 
 }
